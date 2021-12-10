@@ -149,6 +149,7 @@ language_mappings = {
   'fr': 'Français',
   'gd': 'Gaelic',
   'gl': 'Galego',
+  'he': 'עִבְרִית',
   'hi': 'हिन्दी',
   'id': 'bahasa Indonesia',
   'it': 'Italiano',

@@ -1,27 +1,13 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# Weblate <noreply@weblate.org>, 2019.
-# Weblate Admin <weblate.admin@zrythm.org>, 2019.
-# YoGo <officialyogomusic@gmail.com>, 2020.
-# Alexandros Theodotou <alextee@posteo.net>, 2020.
-# Ali A <ali0088552211@gmail.com>, 2021.
+# Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+# This file is distributed under the same license as the zrythm package.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-12-10 17:21+0000\n"
-"PO-Revision-Date: 2021-08-27 21:44+0000\n"
-"Last-Translator: Ali A <ali0088552211@gmail.com>\n"
-"Language-Team: Arabic <https://hosted.weblate.org/projects/zrythm/zrythm/ar/"
-">\n"
-"Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
-"&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.8.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -69,7 +55,7 @@ msgstr ""
 #: inc/schemas/gui/backend/arranger_object.h:64
 #: inc/gui/backend/arranger_object.h:111 inc/audio/track.h:198
 msgid "Marker"
-msgstr "علامة"
+msgstr ""
 
 #: inc/schemas/gui/backend/arranger_object.h:66
 #: inc/gui/backend/arranger_object.h:113
@@ -85,88 +71,87 @@ msgstr ""
 #: inc/schemas/audio/curve.h:44 inc/audio/curve.h:112 src/audio/curve.c:70
 #, c-format
 msgid "Exponent"
-msgstr "الأس"
+msgstr ""
 
 #: inc/schemas/audio/curve.h:46 inc/audio/curve.h:114 src/audio/curve.c:73
 #, c-format
 msgid "Superellipse"
-msgstr "القطع الناقص الفائق"
+msgstr ""
 
 #: inc/schemas/audio/curve.h:48 inc/audio/curve.h:116 src/audio/curve.c:373
 msgid "Vital"
-msgstr "مهم للغاية"
+msgstr ""
 
 #: inc/schemas/audio/curve.h:50 inc/audio/curve.h:118 src/audio/curve.c:79
 #, c-format
 msgid "Pulse"
-msgstr "نبض"
+msgstr ""
 
 #: inc/schemas/audio/region.h:47 inc/audio/region.h:87
 #: src/gui/widgets/track.c:1954
 msgid "Inherit"
-msgstr "يرث"
+msgstr ""
 
 #: inc/schemas/audio/region.h:49 inc/audio/region.h:89
 #: src/gui/widgets/bot_bar.c:518 src/audio/automation_track.c:207
 msgid "Off"
-msgstr "إيقاف"
+msgstr ""
 
 #: inc/schemas/audio/region.h:51 inc/audio/region.h:91
 #: src/gui/widgets/bot_bar.c:518 src/gui/widgets/port_connections_tree.c:255
 #: src/gui/widgets/cc_bindings_tree.c:192 src/gui/widgets/item_factory.c:408
 #: src/audio/automation_track.c:201
 msgid "On"
-msgstr "تشغيل"
+msgstr ""
 
 #: inc/utils/ui.h:76
 msgid "High"
-msgstr "عالي"
+msgstr ""
 
 #: inc/utils/ui.h:77
 msgid "Normal"
-msgstr "متوسط"
+msgstr ""
 
 #: inc/utils/ui.h:78
 msgid "Low"
-msgstr "منخفض"
+msgstr ""
 
 #: inc/utils/ui.h:79
 msgid "Ultra Low"
 msgstr ""
 
 #: inc/utils/gtk.h:55
-#, fuzzy
 msgid "MIDI learn"
-msgstr "MIDI داخل"
+msgstr ""
 
 #: inc/utils/gtk.h:59
 msgid "Cu_t"
-msgstr "قطع"
+msgstr ""
 
 #: inc/utils/gtk.h:63
 msgid "_Copy"
-msgstr "نسخ"
+msgstr ""
 
 #: inc/utils/gtk.h:67
 msgid "_Paste"
-msgstr "لصق"
+msgstr ""
 
 #: inc/utils/gtk.h:71
 msgid "_Delete"
-msgstr "مسح"
+msgstr ""
 
 #. TRANSLATORS: deselects everything
 #: inc/utils/gtk.h:76
 msgid "Cle_ar Selection"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: inc/utils/gtk.h:81
 msgid "Select A_ll"
-msgstr "اختر الكل"
+msgstr ""
 
 #: inc/utils/gtk.h:86 src/gui/widgets/home_toolbar.c:176
 msgid "Duplicate"
-msgstr "تكرير"
+msgstr ""
 
 #: inc/utils/gtk.h:90 src/gui/widgets/channel.c:719
 #: src/gui/widgets/monitor_section.c:56 src/gui/widgets/monitor_section.c:371
@@ -179,26 +164,23 @@ msgstr ""
 #: inc/utils/gtk.h:94 src/gui/widgets/channel.c:729
 #: src/gui/widgets/track.c:1220 src/gui/widgets/track.c:1808
 msgid "Unmute"
-msgstr "إلغاء كتم الصوت"
+msgstr ""
 
 #: inc/audio/audio_function.h:70
 msgid "Invert"
 msgstr ""
 
 #: inc/audio/audio_function.h:71
-#, fuzzy
 msgid "Normalize peak"
-msgstr "متوسط"
+msgstr ""
 
 #: inc/audio/audio_function.h:72
-#, fuzzy
 msgid "Normalize RMS"
-msgstr "متوسط"
+msgstr ""
 
 #: inc/audio/audio_function.h:73
-#, fuzzy
 msgid "Normalize LUFS"
-msgstr "متوسط"
+msgstr ""
 
 #: inc/audio/audio_function.h:74
 msgid "Linear fade in"
@@ -225,9 +207,8 @@ msgid "External program"
 msgstr ""
 
 #: inc/audio/audio_function.h:82
-#, fuzzy
 msgid "Guile script"
-msgstr "البنك الافتراضي"
+msgstr ""
 
 #: inc/audio/audio_function.h:83
 msgid "Custom plugin"
@@ -274,7 +255,7 @@ msgstr ""
 #: inc/audio/track.h:199 src/gui/widgets/automatable_selector_popover.c:394
 #: src/audio/tempo_track.c:124
 msgid "Tempo"
-msgstr "زمن"
+msgstr ""
 
 #: inc/audio/track.h:200
 msgid "Modulator"
@@ -282,24 +263,24 @@ msgstr ""
 
 #: inc/audio/track.h:201
 msgid "Audio FX"
-msgstr "صوت اف اكس"
+msgstr ""
 
 #: inc/audio/track.h:202
 msgid "Audio Group"
-msgstr "مجموعة صوتية"
+msgstr ""
 
 #: inc/audio/track.h:203 src/audio/region.c:506
 #: resources/ui/file_browser_filters.ui:17
 msgid "MIDI"
-msgstr "MIDI"
+msgstr ""
 
 #: inc/audio/track.h:204
 msgid "MIDI FX"
-msgstr "MIDI اف اكس"
+msgstr ""
 
 #: inc/audio/track.h:205
 msgid "MIDI Group"
-msgstr "مجموعة MIDI"
+msgstr ""
 
 #: inc/audio/track.h:206
 msgid "Folder"
@@ -312,57 +293,55 @@ msgstr ""
 
 #: inc/audio/engine.h:204
 msgid "1,024"
-msgstr "١,٠٢٤"
+msgstr ""
 
 #: inc/audio/engine.h:205
 msgid "2,048"
-msgstr "٢,٠٤٨"
+msgstr ""
 
 #: inc/audio/engine.h:206
 msgid "4,096"
-msgstr "٤,٠٩٦"
+msgstr ""
 
 #: inc/audio/engine.h:233
 msgid "22,050"
-msgstr "٢٢,٠٥٠"
+msgstr ""
 
 #: inc/audio/engine.h:234
 msgid "32,000"
-msgstr "٣٢,٠٠٠"
+msgstr ""
 
 #: inc/audio/engine.h:235
 msgid "44,100"
-msgstr "٤٤,١٠٠"
+msgstr ""
 
 #: inc/audio/engine.h:236
 msgid "48,000"
-msgstr "٤٨,٠٠٠"
+msgstr ""
 
 #: inc/audio/engine.h:237
 msgid "88,200"
-msgstr "٨٨,٢٠٠"
+msgstr ""
 
 #: inc/audio/engine.h:238
 msgid "96,000"
-msgstr "٩٦,٠٠٠"
+msgstr ""
 
 #: inc/audio/engine.h:239
 msgid "192,000"
-msgstr "١٩٢,٠٠٠"
+msgstr ""
 
 #: inc/audio/engine.h:295
 msgid "Dummy (libsoundio)"
 msgstr ""
 
 #: inc/audio/engine.h:362
-#, fuzzy
 msgid "ALSA Sequencer (not working)"
-msgstr "تسلسل السا"
+msgstr ""
 
 #: inc/audio/engine.h:363
-#, fuzzy
 msgid "ALSA Sequencer (rtmidi)"
-msgstr "تسلسل السا"
+msgstr ""
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:107
 msgid "Crescendo"
@@ -411,15 +390,15 @@ msgstr ""
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
 msgid "0dB"
-msgstr "دب٠"
+msgstr ""
 
 #: inc/audio/pan.h:53
 msgid "-3dB"
-msgstr "٣- دب"
+msgstr ""
 
 #: inc/audio/pan.h:54
 msgid "-6dB"
-msgstr "٦- دب"
+msgstr ""
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/utils/ui.c:881 src/audio/curve.c:353
@@ -432,17 +411,16 @@ msgstr ""
 
 #: inc/audio/pan.h:78
 msgid "Sine"
-msgstr "جيب"
+msgstr ""
 
 #: src/project.c:895
 #, c-format
 msgid "Unable to read file: %s"
-msgstr "غير قادر على قراءة ملف: %s"
+msgstr ""
 
 #: src/project.c:919
-#, fuzzy
 msgid "Failed to decompress project file"
-msgstr "فشل فك ضغط ملف المشروع: %s"
+msgstr ""
 
 #: src/project.c:978
 #, c-format
@@ -451,13 +429,10 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
-"تم العثور على نسخة احتياطية أحدث:\n"
-"%s\n"
-"هل تريد استخدام النسخة الاحتياطية الأحدث؟"
 
 #: src/project.c:983
 msgid "Backup found"
-msgstr "تم العثور على نسخة احتياطية"
+msgstr ""
 
 #: src/project.c:1042
 #, c-format
@@ -465,43 +440,40 @@ msgid ""
 "This project was created with a different version of %s (%s). It may not "
 "work correctly."
 msgstr ""
-"هذا المشروع تم انشائه بإستخدام اصدار مختلف من نفس البرنامج (%s) %s قد لا "
-"يعمل بالشكل الصحيح"
 
 #: src/project.c:1059
 msgid "Failed to load project. Please check the logs for more information."
-msgstr "فشلت عملية تحميل المشروع ، رجاءا تحقق من السجلات للمزيد من المعلومات."
+msgstr ""
 
 #: src/project.c:1284
 msgid "Failed to load project. Will create a new one instead."
-msgstr "فشلت عملية تحميل المشروع. رجاء تحقق من السجلات للمزيد من المعلومات."
+msgstr ""
 
 #: src/project.c:1612
-#, fuzzy
 msgid "Failed to compress project file"
-msgstr "فشل فك ضغط ملف المشروع: %s"
+msgstr ""
 
 #: src/project.c:1658
 msgid "Backup saved."
-msgstr "تم حفظ النسخة الاحتياطية."
+msgstr ""
 
 #: src/project.c:1668
 msgid "Project saved."
-msgstr "تم حفظ المشروع"
+msgstr ""
 
 #: src/zrythm_app.c:139
 msgid "Error - Backtrace:\n"
-msgstr "خطأ - التراجع:\n"
+msgstr ""
 
 #: src/zrythm_app.c:143
 #, c-format
 msgid "Error: %s - Backtrace:\n"
-msgstr "خطأ:%s - التتبع للخلف:\n"
+msgstr ""
 
 #: src/zrythm_app.c:159
 #, c-format
 msgid "%s has crashed. "
-msgstr "%s تعطل. "
+msgstr ""
 
 #: src/zrythm_app.c:203
 #, c-format
@@ -522,52 +494,52 @@ msgstr ""
 
 #: src/zrythm_app.c:372
 msgid "Setting up main window"
-msgstr "إعداد النافذة الرئيسية"
+msgstr ""
 
 #: src/zrythm_app.c:417
 msgid "Loading project"
-msgstr "تحميل المشروع"
+msgstr ""
 
 #: src/zrythm_app.c:435
 #, c-format
 msgid "No project has been selected. %s will now close."
-msgstr "لم يتم اختيار مشروع. %s سيتم إغلاق الآن."
+msgstr ""
 
 #: src/zrythm_app.c:458
 msgid "Initializing settings"
-msgstr "تحضير الإعدادات"
+msgstr ""
 
 #: src/zrythm_app.c:465
 #, c-format
 msgid "Initializing %s directories"
-msgstr "تحضير %s مجلدات"
+msgstr ""
 
 #: src/zrythm_app.c:475
 msgid "Initializing logging system"
-msgstr "تحضير نظام السجلات"
+msgstr ""
 
 #: src/zrythm_app.c:485
 msgid "Initializing caches"
-msgstr "تحضير الملفات المؤقتة"
+msgstr ""
 
 #: src/zrythm_app.c:489
 msgid "Initializing file manager"
-msgstr "تحضير مدير الإضافات"
+msgstr ""
 
 #: src/zrythm_app.c:496
 msgid "Scanning plugins"
-msgstr "فحص الإضافات"
+msgstr ""
 
 #: src/zrythm_app.c:600
 msgid "License Information"
-msgstr "معلومات ترخيص البرنامج"
+msgstr ""
 
 #: src/zrythm_app.c:613
 msgid "Waiting for project"
-msgstr "انتظار المشروع"
+msgstr ""
 
 #: src/zrythm_app.c:1016
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s-%s\n"
 "%s\n"
@@ -581,36 +553,24 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"%s-%s حقوق النشر (C) 2018-2020 المساهمون في Zrythm\n"
-"\n"
-"يأتي%s بدون أي ضمانات على الإطلاق!\n"
-"\n"
-"هذا برنامج مجاني ، وأنت مدعو لإعادة توزيعه\n"
-"تحت ظروف معينة. راجع ملف \"النسخ\" للحصول على التفاصيل.\n"
-"\n"
-"اكتب التعليقات والأخطاء إلى %s\n"
-"ادعم هذا المشروع على https://liberapay.com/Zrythm\n"
-"\n"
 
 #: src/zrythm_app.c:1500
 #, c-format
 msgid "File %s not found."
-msgstr "لم يتم العثور على الملف %s."
+msgstr ""
 
 #: src/zrythm_app.c:1521
-#, fuzzy
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
-msgstr "لم يتم تحديد ملف الإخراج. يرجى تمرير واحد مع '--إخراج [FILE]`."
+msgstr ""
 
 #: src/zrythm_app.c:1587
 #, c-format
 msgid "Project failed to decompress: %s\n"
-msgstr "فشل المشروع في فك الضغط: %s\n"
+msgstr ""
 
 #: src/zrythm_app.c:1606
-#, fuzzy
 msgid "Unknown operation"
-msgstr "خيار غير معروف\n"
+msgstr ""
 
 #: src/zrythm_app.c:1626
 #, c-format
@@ -618,9 +578,8 @@ msgid "libguile is required for this option\n"
 msgstr ""
 
 #: src/zrythm_app.c:1791
-#, fuzzy
 msgid "Print version information"
-msgstr "معلومات ترخيص البرنامج"
+msgstr ""
 
 #: src/zrythm_app.c:1796
 msgid "Convert ZPJ-FILE to YAML"
@@ -681,7 +640,7 @@ msgstr ""
 
 #: src/plugins/carla_native_plugin.c:369 src/plugins/lv2_plugin.c:3752
 msgid "Default bank"
-msgstr "البنك الافتراضي"
+msgstr ""
 
 #: src/plugins/carla_native_plugin.c:374 src/plugins/lv2_plugin.c:3757
 msgid "Init"
@@ -689,19 +648,19 @@ msgstr ""
 
 #: src/plugins/carla_native_plugin.c:857
 msgid "Audio in"
-msgstr "مدخل الصوت"
+msgstr ""
 
 #: src/plugins/carla_native_plugin.c:867
 msgid "Audio out"
-msgstr "مخرج الصوت"
+msgstr ""
 
 #: src/plugins/carla_native_plugin.c:877 src/gui/widgets/header.c:123
 msgid "MIDI in"
-msgstr "MIDI داخل"
+msgstr ""
 
 #: src/plugins/carla_native_plugin.c:889
 msgid "MIDI out"
-msgstr "MIDI خارج"
+msgstr ""
 
 #: src/plugins/carla_native_plugin.c:901
 msgid "CV in"
@@ -717,9 +676,8 @@ msgid "Error adding carla plugin: %s"
 msgstr ""
 
 #: src/plugins/carla_native_plugin.c:1346
-#, fuzzy
 msgid "Failed to load Carla state"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/plugins/carla_native_plugin.c:1361
 msgid ""
@@ -737,36 +695,35 @@ msgid "Error loading LV2 bundle dir: "
 msgstr ""
 
 #: src/plugins/plugin_manager.c:1096
-#, fuzzy, c-format
+#, c-format
 msgid "Scanned %s plugin: %s"
-msgstr "فحص الإضافات ال AU"
+msgstr ""
 
 #. TRANSLATORS: first argument
 #. * is plugin protocol, 2nd
 #. * argument is path
 #: src/plugins/plugin_manager.c:1110
-#, fuzzy, c-format
+#, c-format
 msgid "Skipped %1$s plugin at %2$s"
-msgstr "تخطي البرنامج المساعد LV2 في %s"
+msgstr ""
 
 #: src/plugins/plugin_manager.c:1244
-#, fuzzy
 msgid "Scanned LV2 plugin"
-msgstr "فحص الإضافات"
+msgstr ""
 
 #: src/plugins/plugin_manager.c:1255
 #, c-format
 msgid "Skipped LV2 plugin at %s"
-msgstr "تخطي البرنامج المساعد LV2 في %s"
+msgstr ""
 
 #: src/plugins/plugin_manager.c:1343
 msgid "Scanned AU plugin"
-msgstr "فحص الإضافات ال AU"
+msgstr ""
 
 #: src/plugins/plugin_manager.c:1350
 #, c-format
 msgid "Skipped AU plugin at %u"
-msgstr "تم تخطي المكوّن الإضافي AU في %u"
+msgstr ""
 
 #: src/plugins/plugin.c:256
 #, c-format
@@ -774,9 +731,8 @@ msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr ""
 
 #: src/plugins/plugin.c:300
-#, fuzzy
 msgid "Enabled"
-msgstr "مفعل"
+msgstr ""
 
 #: src/plugins/plugin.c:302
 msgid "Enables or disables the plugin"
@@ -787,24 +743,21 @@ msgid "Gain"
 msgstr ""
 
 #: src/plugins/plugin.c:326
-#, fuzzy
 msgid "Plugin gain"
-msgstr "الإضافات"
+msgstr ""
 
 #: src/plugins/plugin.c:528 src/plugins/plugin_gtk.c:177
 #: src/gui/widgets/plugin_properties_expander.c:160
-#, fuzzy
 msgid "Failed to apply preset"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/plugins/plugin.c:603
 msgid "Failed to get Carla plugin"
 msgstr ""
 
 #: src/plugins/plugin.c:619
-#, fuzzy
 msgid "Failed to get LV2 plugin"
-msgstr "فحص الإضافات"
+msgstr ""
 
 #: src/plugins/plugin.c:1131
 #, c-format
@@ -834,13 +787,13 @@ msgid ""
 msgstr ""
 
 #: src/plugins/plugin.c:2286
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create plugin clone for %s"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/plugins/plugin_gtk.c:101 src/plugins/lv2/lv2_gtk.c:75
 msgid "Save State"
-msgstr "حفظ الحالة"
+msgstr ""
 
 #: src/plugins/plugin_gtk.c:104 src/plugins/plugin_gtk.c:324
 #: src/plugins/lv2/lv2_gtk.c:78 src/plugins/lv2/lv2_gtk.c:268
@@ -854,17 +807,16 @@ msgstr "حفظ الحالة"
 #: resources/ui/port_selector_popover.ui:123
 #: resources/ui/quantize_dialog.ui:149
 msgid "_Cancel"
-msgstr "_إلغاء"
+msgstr ""
 
 #: src/plugins/plugin_gtk.c:105 src/plugins/plugin_gtk.c:325
 #: src/plugins/lv2/lv2_gtk.c:79 src/actions/actions.c:729
 msgid "_Save"
-msgstr "_حفظ"
+msgstr ""
 
 #: src/plugins/plugin_gtk.c:320
-#, fuzzy
 msgid "Save Preset"
-msgstr "حذف اعداد هذه الاضافة؟"
+msgstr ""
 
 #: src/plugins/plugin_gtk.c:367
 msgid "_Prefix plugin name"
@@ -880,7 +832,7 @@ msgstr ""
 
 #: src/plugins/plugin_gtk.c:1533
 msgid "Close"
-msgstr "إغلاق"
+msgstr ""
 
 #: src/plugins/plugin_gtk.c:1641
 msgid "Unknown widget type for value"
@@ -891,9 +843,9 @@ msgid "Unknown widget type for value\n"
 msgstr ""
 
 #: src/plugins/lv2_plugin.c:1979
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get LV2 plugin from URI <%s>"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/plugins/lv2_plugin.c:2283
 #, c-format
@@ -905,29 +857,29 @@ msgid "Failed to make temporary dir"
 msgstr ""
 
 #: src/plugins/lv2_plugin.c:2682
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find preset with URI <%s>"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/plugins/lv2_plugin.c:2703
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to load state from %s"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/plugins/lv2_plugin.c:2737
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find plugin with URI <%s>"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/plugins/lv2_plugin.c:2761
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to dlopen %s: %s"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/plugins/lv2_plugin.c:2773
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get dlinfo for %s"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/plugins/lv2_plugin.c:2796
 #, c-format
@@ -939,9 +891,8 @@ msgid ""
 msgstr ""
 
 #: src/plugins/lv2_plugin.c:2831
-#, fuzzy
 msgid "Failed to create or init ports and parameters"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/plugins/lv2_plugin.c:2861
 #, c-format
@@ -963,33 +914,31 @@ msgstr ""
 
 #: src/plugins/lv2_plugin.c:3796
 msgid "Unnamed bank"
-msgstr "بنك بدون اسم"
+msgstr ""
 
 #: src/plugins/lv2/lv2_state.c:456
-#, fuzzy
 msgid "Failed to apply LV2 preset"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/plugins/lv2/lv2_gtk.c:263
 msgid "Delete Preset?"
-msgstr "حذف اعداد هذه الاضافة؟"
+msgstr ""
 
 #: src/plugins/lv2/lv2_gtk.c:269
 #: src/gui/widgets/dialogs/bug_report_dialog.c:352 src/utils/dialogs.c:70
 #: src/audio/clip.c:674 resources/ui/string_entry_dialog.ui:55
 #: resources/ui/port_selector_popover.ui:131
 msgid "_OK"
-msgstr "_أوكي"
+msgstr ""
 
 #: src/plugins/lv2/lv2_gtk.c:575
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open LV2 UI for %s"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/editor_ruler.c:289
-#, fuzzy
 msgid "Failed to edit position"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/bounce_step_selector.c:188
 msgid "Bounce step selector"
@@ -997,7 +946,7 @@ msgstr ""
 
 #: src/gui/widgets/fader_controls_grid.c:98
 msgid "Peak"
-msgstr "قمة"
+msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:71
 msgid "INPUTS"
@@ -1010,7 +959,7 @@ msgstr ""
 #: src/gui/widgets/port_connections_popover.c:196
 #: src/gui/widgets/plugin_browser.c:486 src/gui/widgets/track.c:1281
 msgid "Add"
-msgstr "إضافة"
+msgstr ""
 
 #: src/gui/widgets/inspector_port.c:158 src/gui/widgets/modulator_inner.c:171
 #: src/gui/widgets/plugin_browser.c:566 src/gui/widgets/plugin_browser.c:616
@@ -1025,9 +974,9 @@ msgid "View info"
 msgstr ""
 
 #: src/gui/widgets/inspector_port.c:328
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set control %s to %f"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/inspector_port.c:382
 msgid "Incoming signals"
@@ -1060,7 +1009,7 @@ msgstr ""
 #: src/gui/widgets/track_properties_expander.c:109
 #: src/gui/widgets/track_visibility_tree.c:162
 msgid "Track Name"
-msgstr "اسم المقطوعة"
+msgstr ""
 
 #: src/gui/widgets/track_properties_expander.c:121
 msgid "Direct Out"
@@ -1139,9 +1088,8 @@ msgstr ""
 
 #: src/gui/widgets/channel.c:775 src/gui/widgets/bot_bar.c:539
 #: src/gui/widgets/track.c:1895 src/gui/widgets/dialogs/export_dialog.c:1309
-#, fuzzy
 msgid "Enable"
-msgstr "مفعل"
+msgstr ""
 
 #: src/gui/widgets/channel.c:782 src/gui/widgets/track.c:1902
 msgid "Change color..."
@@ -1227,9 +1175,8 @@ msgid "JACK MIDI can only be used with JACK audio"
 msgstr ""
 
 #: src/gui/widgets/first_run_assistant.c:406
-#, fuzzy
 msgid "Select a directory"
-msgstr "تحضير مجلدات Zrythm"
+msgstr ""
 
 #: src/gui/widgets/project_assistant.c:351
 #: src/gui/widgets/plugin_properties_expander.c:235
@@ -1270,23 +1217,21 @@ msgid "Inserts"
 msgstr ""
 
 #: src/gui/widgets/midi_arranger.c:549
-#, fuzzy
 msgid "Selection"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/gui/widgets/modulator_inner.c:101 src/actions/actions.c:1224
-#, fuzzy
 msgid "Failed to delete plugins"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/port_selector_popover.c:58
 msgid "No port selected"
 msgstr ""
 
 #: src/gui/widgets/port_selector_popover.c:89
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to connect %s to %s"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/port_selector_popover.c:100
 msgid "These ports cannot be connected"
@@ -1297,16 +1242,14 @@ msgid "Track Ports"
 msgstr ""
 
 #: src/gui/widgets/channel_send_selector.c:152
-#, fuzzy
 msgid "Failed to disconnect send"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/channel_send_selector.c:188
 #: src/gui/widgets/channel_send_selector.c:220
 #: src/gui/widgets/channel_send_selector.c:259
-#, fuzzy
 msgid "Failed to connect send"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/channel_send_selector.c:541
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:89
@@ -1325,9 +1268,8 @@ msgid "No object selected"
 msgstr ""
 
 #: src/gui/widgets/channel_send.c:219
-#, fuzzy
 msgid "Failed to change send amount"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/bot_dock_edge.c:215 src/utils/gtk.c:1235
 msgid "Editor"
@@ -1375,9 +1317,8 @@ msgid "triplet"
 msgstr ""
 
 #: src/gui/widgets/digital_meter.c:697 src/gui/widgets/digital_meter.c:714
-#, fuzzy
 msgid "Failed to change time signature"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/digital_meter.c:1257
 msgid "Tempo/BPM"
@@ -1395,24 +1336,20 @@ msgstr ""
 
 #: src/gui/widgets/drag_dest_box.c:356 src/gui/widgets/panel_file_browser.c:421
 #: src/audio/tracklist.c:1508 src/audio/track.c:3833 src/actions/actions.c:3341
-#, fuzzy
 msgid "Failed to create track"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/drag_dest_box.c:376 src/audio/audio_function.c:151
-#, fuzzy
 msgid "Failed to create plugin"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/drag_dest_box.c:416
-#, fuzzy
 msgid "Failed to move or copy plugin"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/drag_dest_box.c:454
-#, fuzzy
 msgid "Failed to move or copy track"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/drag_dest_box.c:475
 msgid "Add _MIDI Track"
@@ -1444,15 +1381,14 @@ msgid "Slot #%d"
 msgstr ""
 
 #: src/gui/widgets/channel_slot.c:327
-#, fuzzy
 msgid "Failed to move or copy plugins"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/channel_slot.c:356 src/audio/sample_processor.c:639
 #: src/actions/tracklist_selections.c:824
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create plugin %s"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/channel_slot.c:372
 #, c-format
@@ -1477,9 +1413,8 @@ msgid "Edit"
 msgstr ""
 
 #: src/gui/widgets/channel_slot.c:786
-#, fuzzy
 msgid "Select"
-msgstr "اختر الكل"
+msgstr ""
 
 #: src/gui/widgets/channel_slot.c:1090
 msgid "empty slot"
@@ -1488,14 +1423,12 @@ msgstr ""
 #: src/gui/widgets/arranger.c:1804 src/gui/widgets/arranger.c:1826
 #: src/gui/widgets/arranger.c:1874 src/gui/widgets/arranger.c:1943
 #: src/gui/widgets/arranger.c:1964
-#, fuzzy
 msgid "Failed to move selection"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:1895 src/gui/widgets/arranger.c:4305
-#, fuzzy
 msgid "Failed to move chords"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:2491 src/gui/widgets/track.c:1639
 #: resources/ui/string_entry_dialog.ui:23
@@ -1513,112 +1446,91 @@ msgid ""
 msgstr ""
 
 #: src/gui/widgets/arranger.c:3798
-#, fuzzy
 msgid "Failed to delete selection"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:3827 src/gui/widgets/arranger.c:4496
-#, fuzzy
 msgid "Failed to edit selection"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:3882
-#, fuzzy
 msgid "Failed to move automation"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:3911
-#, fuzzy
 msgid "Failed to duplicate automation"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:3935 src/gui/widgets/arranger.c:4350
 #: src/gui/widgets/arranger.c:4827
-#, fuzzy
 msgid "Failed to create objects"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:3957
-#, fuzzy
 msgid "Failed to fill automation"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:3990 src/gui/widgets/arranger.c:4043
 #: src/gui/widgets/arranger.c:4066 src/gui/widgets/timeline_arranger.c:993
-#, fuzzy
 msgid "Failed to edit selections"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:4101 src/gui/widgets/arranger.c:4127
-#, fuzzy
 msgid "Failed to resize objects"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:4139 src/gui/widgets/arranger.c:4189
-#, fuzzy
 msgid "Failed to move MIDI notes"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:4215
-#, fuzzy
 msgid "Failed to duplicate MIDI notes"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:4238
-#, fuzzy
 msgid "Failed to create MIDI notes"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:4327
-#, fuzzy
 msgid "Failed to duplicate chords"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:4425 src/gui/widgets/arranger.c:4716
-#, fuzzy
 msgid "Failed resizing selection"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:4532
-#, fuzzy
 msgid "Failed to edit timeline objects"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:4555 src/gui/widgets/arranger.c:4578
-#, fuzzy
 msgid "Failed to resize timeline objects"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:4601
-#, fuzzy
 msgid "Failed to resize selection"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:4623
-#, fuzzy
 msgid "Failed setting fade in position"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:4647 src/gui/widgets/arranger.c:4672
 #: src/gui/widgets/arranger.c:4694
-#, fuzzy
 msgid "Failed resizing selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:4761
-#, fuzzy
 msgid "Failed to move objects"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:4803
-#, fuzzy
 msgid "Failed to link or move selection"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:4863
-#, fuzzy
 msgid "Failed to split selection"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/arranger.c:4875
 #, c-format
@@ -1739,9 +1651,8 @@ msgid "Metronome"
 msgstr ""
 
 #: src/gui/widgets/bot_bar.c:571
-#, fuzzy
 msgid "Metronome options"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #. volume
 #: src/gui/widgets/bot_bar.c:582 resources/ui/file_auditioner_controls.ui:28
@@ -1840,9 +1751,8 @@ msgid "Custom Marker"
 msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:949
-#, fuzzy
 msgid "Fade Preset"
-msgstr "حذف اعداد هذه الاضافة؟"
+msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:1014
 msgid "Musical Mode"
@@ -1857,18 +1767,16 @@ msgid "Region Functions"
 msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:1187
-#, fuzzy
 msgid "Audio Regions"
-msgstr "مدخل الصوت"
+msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:1217
 msgid "Export as MIDI file"
 msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:1223
-#, fuzzy
 msgid "MIDI Regions"
-msgstr "MIDI داخل"
+msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:1230 src/gui/widgets/track.c:1748
 msgid "Quick bounce"
@@ -1879,9 +1787,8 @@ msgid "Bounce..."
 msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:1449
-#, fuzzy
 msgid "Failed to create selections"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/automation_arranger.c:251
 #: build/data/org.zrythm.Zrythm.gschema.xml:1064
@@ -1889,14 +1796,13 @@ msgid "Curve algorithm"
 msgstr ""
 
 #: src/gui/widgets/header.c:128
-#, fuzzy, c-format
+#, c-format
 msgid "About %s"
-msgstr "Zrythm"
+msgstr ""
 
 #: src/gui/widgets/header.c:133
-#, fuzzy
 msgid "About Zrythm"
-msgstr "Zrythm"
+msgstr ""
 
 #: src/gui/widgets/header.c:134 src/gui/widgets/preferences.c:978
 #: resources/gtk/menus.ui:40 resources/gtk/help-overlay.ui:39
@@ -1913,9 +1819,8 @@ msgid "Scripting interface"
 msgstr ""
 
 #: src/gui/widgets/panel_file_browser.c:274 src/gui/widgets/file_browser.c:72
-#, fuzzy
 msgid "No file selected"
-msgstr "لم يتم العثور على الملف %s."
+msgstr ""
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
@@ -1923,7 +1828,7 @@ msgstr ""
 
 #: src/gui/widgets/help_toolbar.c:40
 msgid "Manual"
-msgstr "يدوي"
+msgstr ""
 
 #: src/gui/widgets/help_toolbar.c:41 resources/gtk/help-overlay.ui:46
 msgid "Keyboard Shortcuts"
@@ -1938,9 +1843,9 @@ msgid "Report a Bug"
 msgstr ""
 
 #: src/gui/widgets/port_connections_tree.c:97
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to enable connection from %s to %s"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/port_connections_tree.c:268
 msgid "Source"
@@ -1977,9 +1882,8 @@ msgid "Paste"
 msgstr ""
 
 #: src/gui/widgets/home_toolbar.c:180
-#, fuzzy
 msgid "Clear selection"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/gui/widgets/home_toolbar.c:182 resources/gtk/help-overlay.ui:180
 msgid "Select all"
@@ -2015,9 +1919,8 @@ msgid "Show file browser"
 msgstr ""
 
 #: src/gui/widgets/plugin_properties_expander.c:104
-#, fuzzy
 msgid "Load Preset"
-msgstr "تحميل المشروع"
+msgstr ""
 
 #: src/gui/widgets/plugin_properties_expander.c:110
 msgid "_Load"
@@ -2057,9 +1960,8 @@ msgid "Load"
 msgstr ""
 
 #: src/gui/widgets/plugin_properties_expander.c:324
-#, fuzzy
 msgid "Load preset"
-msgstr "تحميل المشروع"
+msgstr ""
 
 #: src/gui/widgets/route_target_selector.c:88
 msgid "Cannot be routed"
@@ -2090,9 +1992,9 @@ msgid "Macros"
 msgstr ""
 
 #: src/gui/widgets/automatable_selector_popover.c:416
-#, fuzzy, c-format
+#, c-format
 msgid "MIDI Ch%d"
-msgstr "MIDI اف اكس"
+msgstr ""
 
 #: src/gui/widgets/automatable_selector_popover.c:445
 #, c-format
@@ -2115,9 +2017,8 @@ msgid "[Modulator %d] %s"
 msgstr ""
 
 #: src/gui/widgets/main_window.c:147
-#, fuzzy
 msgid "Failed to serialize current project"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/main_window.c:215
 msgid "Unsaved changes"
@@ -2205,19 +2106,16 @@ msgid "Currently listened tracks"
 msgstr ""
 
 #: src/gui/widgets/monitor_section.c:147
-#, fuzzy
 msgid "Failed to unsolo all tracks"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/monitor_section.c:185
-#, fuzzy
 msgid "Failed to unmute all tracks"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/monitor_section.c:223
-#, fuzzy
 msgid "Failed to unlisten all tracks"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/monitor_section.c:416
 msgid "Unsolo all tracks"
@@ -2261,9 +2159,8 @@ msgid "Click to enable outputs"
 msgstr ""
 
 #: src/gui/widgets/folder_channel.c:162
-#, fuzzy
 msgid "Failed to move or copy track(s)"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/file_auditioner_controls.c:275
 #: build/data/org.zrythm.Zrythm.gschema.xml:564
@@ -2281,14 +2178,12 @@ msgid "Show hidden files"
 msgstr ""
 
 #: src/gui/widgets/port_connection_row.c:58
-#, fuzzy
 msgid "Failed to enable connection"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/port_connection_row.c:81
-#, fuzzy
 msgid "Failed to disconnect"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/port_connection_row.c:137
 msgid "Enable/disable connection"
@@ -2299,9 +2194,8 @@ msgid "Delete connection"
 msgstr ""
 
 #: src/gui/widgets/balance_control.c:310
-#, fuzzy
 msgid "Failed to change balance"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/live_waveform.c:324
 msgid "Live waveform indicator"
@@ -2321,9 +2215,8 @@ msgid "Sends"
 msgstr ""
 
 #: src/gui/widgets/scale_selector_window.c:74
-#, fuzzy
 msgid "Failed to edit scale"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/event_viewer.c:571 src/gui/widgets/event_viewer.c:688
 msgid "Start"
@@ -2370,9 +2263,8 @@ msgid "Selection start"
 msgstr ""
 
 #: src/gui/widgets/event_viewer.c:834
-#, fuzzy
 msgid "Selection end"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/gui/widgets/cc_bindings_tree.c:199
 msgid "Device"
@@ -2446,14 +2338,12 @@ msgid "Routing to %s"
 msgstr ""
 
 #: src/gui/widgets/route_target_selector_popover.c:358
-#, fuzzy
 msgid "Failed to change direct out"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/route_target_selector_popover.c:373
-#, fuzzy
 msgid "Failed to remove direct out"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
@@ -2516,14 +2406,12 @@ msgid "Toggle Right Panel"
 msgstr ""
 
 #: src/gui/widgets/item_factory.c:98
-#, fuzzy
 msgid "Failed to enable binding"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/item_factory.c:229
-#, fuzzy
 msgid "Add to project"
-msgstr "تحميل المشروع"
+msgstr ""
 
 #: src/gui/widgets/item_factory.c:236 src/gui/widgets/item_factory.c:249
 #: src/gui/widgets/item_factory.c:257
@@ -2535,9 +2423,8 @@ msgid "Use _Generic UI"
 msgstr ""
 
 #: src/gui/widgets/item_factory.c:307
-#, fuzzy
 msgid "Add to collection"
-msgstr "تحميل المشروع"
+msgstr ""
 
 #: src/gui/widgets/item_factory.c:349
 msgid "Remove from collection"
@@ -2548,14 +2435,12 @@ msgid "Add Bookmark"
 msgstr ""
 
 #: src/gui/widgets/file_chooser_button.c:68
-#, fuzzy
 msgid "Select path"
-msgstr "اختر الكل"
+msgstr ""
 
 #: src/gui/widgets/editor_toolbar.c:157
-#, fuzzy
 msgid "Plugin Effect"
-msgstr "الإضافات"
+msgstr ""
 
 #: src/gui/widgets/editor_toolbar.c:171 src/gui/widgets/editor_toolbar.c:189
 #: src/gui/widgets/editor_toolbar.c:207
@@ -2591,9 +2476,9 @@ msgid "Highlight Both"
 msgstr ""
 
 #: src/gui/widgets/file_browser.c:130
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create track for file '%s'"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/inspector_track.c:157
 msgid "Comment"
@@ -2672,9 +2557,8 @@ msgid "Direct out"
 msgstr ""
 
 #: src/gui/widgets/track.c:1876
-#, fuzzy
 msgid "New direct out"
-msgstr "مجموعة MIDI"
+msgstr ""
 
 #: src/gui/widgets/track.c:1909
 msgid "Rename lane..."
@@ -2706,9 +2590,8 @@ msgid "Bindings"
 msgstr ""
 
 #: src/gui/widgets/main_notebook.c:150
-#, fuzzy
 msgid "MIDI CC bindings"
-msgstr "MIDI داخل"
+msgstr ""
 
 #: src/gui/widgets/main_notebook.c:154 src/utils/gtk.c:1266
 msgid "Scenes"
@@ -2724,7 +2607,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/create_project_dialog.c:118
 msgid "Create New Project"
-msgstr "إنشاء مشروع جديد"
+msgstr ""
 
 #: src/gui/widgets/dialogs/create_project_dialog.c:130
 msgid "Untitled Project"
@@ -2735,27 +2618,24 @@ msgid "Select parent directory to save the project in"
 msgstr ""
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:85
-#, fuzzy
 msgid "Failed to quantize editor selections"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:100
-#, fuzzy
 msgid "Failed to quantize timeline selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:135
 msgid "note length"
-msgstr "عرض النوتة"
+msgstr ""
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:144
 msgid "note type"
-msgstr "نوع النوتة"
+msgstr ""
 
 #: src/gui/widgets/dialogs/bind_cc_dialog.c:55
-#, fuzzy
 msgid "Failed to bind mapping"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/dialogs/bind_cc_dialog.c:121
 msgid "Not a control change event"
@@ -2790,9 +2670,8 @@ msgid "Format 1"
 msgstr ""
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:106
-#, fuzzy
 msgid "MIDI Format"
-msgstr "MIDI خارج"
+msgstr ""
 
 #: src/gui/widgets/dialogs/string_entry_dialog.c:84
 msgid "Please enter a value"
@@ -2820,9 +2699,8 @@ msgid "Group name"
 msgstr ""
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:97
-#, fuzzy
 msgid "New Group"
-msgstr "مجموعة MIDI"
+msgstr ""
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:103
 msgid "Move tracks under group"
@@ -2830,15 +2708,13 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:133
 #: src/actions/actions.c:1692
-#, fuzzy
 msgid "Failed to create audio group track"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:148
 #: src/actions/actions.c:1706
-#, fuzzy
 msgid "Failed to create MIDI group track"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/widgets/dialogs/about_dialog.c:78
 msgid "a highly automated and intuitive digital audio workstation"
@@ -2935,16 +2811,13 @@ msgid "Sending..."
 msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:581
-#, fuzzy
 msgid "Sent successfully"
-msgstr "تم ضغط المشروع بنجاح.\n"
+msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:654
-#, fuzzy, c-format
+#, c-format
 msgid "%sPlease help us fix this by submitting a bug report."
 msgstr ""
-"لقد توقف التطبيق عن العمل ، يمكنك مساعدتنا في تصحيح هذه المشكلة عن طريق %s "
-"ارسال تقرير خطأ %s."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:685
 msgid "Enter a list of steps to reproduce the error. Markdown is supported."
@@ -2965,9 +2838,8 @@ msgid "Track color"
 msgstr ""
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:143
-#, fuzzy
 msgid "Failed to change color"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/widgets/dialogs/export_dialog.c:237
 msgid "none"
@@ -2991,9 +2863,8 @@ msgid "The following files will be created:"
 msgstr ""
 
 #: src/gui/widgets/dialogs/export_dialog.c:430
-#, fuzzy
 msgid "in the directory:"
-msgstr "تحضير مجلدات Zrythm"
+msgstr ""
 
 #: src/gui/widgets/dialogs/export_dialog.c:587
 msgid "<name>.<format>"
@@ -3012,14 +2883,12 @@ msgid "Saving..."
 msgstr ""
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:68
-#, fuzzy
 msgid "Saved"
-msgstr "_حفظ"
+msgstr ""
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:71
-#, fuzzy
 msgid "Project Progress"
-msgstr "المشروع"
+msgstr ""
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:158
 #, c-format
@@ -3027,9 +2896,8 @@ msgid "%s icon"
 msgstr ""
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:169
-#, fuzzy
 msgid "_Select"
-msgstr "اختر الكل"
+msgstr ""
 
 #: src/gui/widgets/dialogs/changelog_dialog.c:47
 #, c-format
@@ -3047,9 +2915,8 @@ msgid "Desktop"
 msgstr ""
 
 #: src/gui/backend/arranger_selections.c:2646
-#, fuzzy
 msgid "Failed to paste selections"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/gui/backend/arranger_object.c:3352
 #, c-format
@@ -3057,9 +2924,8 @@ msgid "Invalid object name %s"
 msgstr ""
 
 #: src/gui/backend/arranger_object.c:3391
-#, fuzzy
 msgid "Failed to rename object"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/backend/event_manager.c:547
 #, c-format
@@ -3072,14 +2938,13 @@ msgid "Trial limit has been reached. %s will now go silent"
 msgstr ""
 
 #: src/gui/backend/tracklist_selections.c:699
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to clone track '%s'"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/gui/backend/mixer_selections.c:617
-#, fuzzy
 msgid "Failed to paste plugins"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/utils/log.c:772
 #, c-format
@@ -3089,19 +2954,16 @@ msgid ""
 msgstr ""
 
 #: src/utils/gtk.c:1241
-#, fuzzy
 msgid "Track Inspector"
-msgstr "اسم المقطوعة"
+msgstr ""
 
 #: src/utils/gtk.c:1244
-#, fuzzy
 msgid "Plugin Inspector"
-msgstr "الإضافات"
+msgstr ""
 
 #: src/utils/gtk.c:1260
-#, fuzzy
 msgid "MIDI CC Bindings"
-msgstr "MIDI داخل"
+msgstr ""
 
 #: src/utils/gtk.c:1263
 msgid "Port Connections"
@@ -3206,9 +3068,8 @@ msgid "Reset to factory settings successful\n"
 msgstr ""
 
 #: src/audio/tracklist.c:1335
-#, fuzzy
 msgid "No file was found"
-msgstr "لم يتم العثور على الملف %s."
+msgstr ""
 
 #: src/audio/tracklist.c:1365
 #, c-format
@@ -3235,49 +3096,41 @@ msgid "Can only drop audio files on audio tracks"
 msgstr ""
 
 #: src/audio/tracklist.c:1479
-#, fuzzy
 msgid "Failed to create arranger objects"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/audio/tracklist.c:1549
-#, fuzzy
 msgid "Failed to move tracks after copying or moving inside folder"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/tracklist.c:1622
-#, fuzzy
 msgid "Failed to copy tracks inside"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/tracklist.c:1670
-#, fuzzy
 msgid "Failed to copy track inside"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/tracklist.c:1691 src/audio/tracklist.c:1833
 #: src/actions/tracklist_selections.c:374
-#, fuzzy
 msgid "Failed to clone track"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/tracklist.c:1716
-#, fuzzy
 msgid "Failed to copy tracks"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/tracklist.c:1743
 msgid "Cannot drag folder into itself"
 msgstr ""
 
 #: src/audio/tracklist.c:1762 src/audio/tracklist.c:1812
-#, fuzzy
 msgid "Failed to move track inside folder"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/tracklist.c:1858
-#, fuzzy
 msgid "Failed to move tracks"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/chord_track.c:59 resources/ui/inspector_chord.ui:7
 msgid "Chords"
@@ -3296,9 +3149,8 @@ msgid "Latch"
 msgstr ""
 
 #: src/audio/channel.c:1938 src/actions/mixer_selections_action.c:499
-#, fuzzy
 msgid "Failed to clone plugin"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/channel_send.c:106
 #, c-format
@@ -3383,14 +3235,12 @@ msgid ""
 msgstr ""
 
 #: src/audio/exporter.c:820 src/audio/exporter.c:829 src/actions/actions.c:1636
-#, fuzzy
 msgid "Failed to create audio track"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/audio/supported_file.c:311
-#, fuzzy
 msgid "Failed opening file"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/supported_file.c:316
 #, c-format
@@ -3425,9 +3275,8 @@ msgid "Beat unit"
 msgstr ""
 
 #: src/audio/tempo_track.c:227
-#, fuzzy
 msgid "Failed to change BPM"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/engine.c:543
 #, c-format
@@ -3497,24 +3346,21 @@ msgid "Lane %d"
 msgstr ""
 
 #: src/audio/track_lane.c:117
-#, fuzzy
 msgid "Failed to rename lane"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/audio_function.c:161 src/audio/track.c:2271 src/audio/track.c:3363
 #: src/actions/mixer_selections_action.c:627
-#, fuzzy
 msgid "Failed to instantiate plugin"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/audio_function.c:398
 msgid "Invalid positions - skipping function"
 msgstr ""
 
 #: src/audio/audio_function.c:552
-#, fuzzy
 msgid "Failed to apply plugin"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/engine_alsa.c:344
 #, c-format
@@ -3522,24 +3368,21 @@ msgid "ALSA Error: %s"
 msgstr ""
 
 #: src/audio/sample_processor.c:649
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to instantiate plugin %s"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/recording_manager.c:171
-#, fuzzy
 msgid "Failed to create recorded regions"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/audio/track.c:389
-#, fuzzy
 msgid "Track record"
-msgstr "اسم المقطوعة"
+msgstr ""
 
 #: src/audio/track.c:534
-#, fuzzy
 msgid "Failed to clone channel"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/track.c:965
 msgid "Cannot set track muted"
@@ -3558,9 +3401,8 @@ msgid "Cannot set track listened"
 msgstr ""
 
 #: src/audio/track.c:3054
-#, fuzzy
 msgid "Failed to rename track"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/track.c:3413 src/audio/track.c:3461
 msgid "Cannot set track comment"
@@ -3689,14 +3531,12 @@ msgid "Ch MIDI Fader out"
 msgstr ""
 
 #: src/audio/fader.c:611
-#, fuzzy
 msgid "Failed to change volume"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/fader.c:666
-#, fuzzy
 msgid "Failed to set MIDI mode"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/audio/engine_jack.c:396
 msgid "XRUN occurred - check your JACK configuration"
@@ -3764,15 +3604,13 @@ msgid "Arranger selections contain an undeletable object"
 msgstr ""
 
 #: src/actions/arranger_selections.c:533 src/actions/actions.c:2435
-#, fuzzy
 msgid "Failed to apply MIDI function"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/arranger_selections.c:571 src/actions/actions.c:2463
 #: src/actions/actions.c:2508
-#, fuzzy
 msgid "Failed to apply automation function"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/arranger_selections.c:614 src/actions/arranger_selections.c:630
 #: src/actions/actions.c:2911
@@ -3794,83 +3632,68 @@ msgid "Cannot perform %s resize - selections contain unloopable objects"
 msgstr ""
 
 #: src/actions/arranger_selections.c:3139
-#, fuzzy
 msgid "Create timeline selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/actions/arranger_selections.c:3143
-#, fuzzy
 msgid "Create audio selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/actions/arranger_selections.c:3147
-#, fuzzy
 msgid "Create automation selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/actions/arranger_selections.c:3151
-#, fuzzy
 msgid "Create chord selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/actions/arranger_selections.c:3155
-#, fuzzy
 msgid "Create MIDI selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/actions/arranger_selections.c:3161
-#, fuzzy
 msgid "Delete arranger selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/actions/arranger_selections.c:3165
-#, fuzzy
 msgid "Duplicate arranger selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/actions/arranger_selections.c:3168
-#, fuzzy
 msgid "Move arranger selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/actions/arranger_selections.c:3171
-#, fuzzy
 msgid "Link arranger selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/actions/arranger_selections.c:3174
-#, fuzzy
 msgid "Record arranger selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/actions/arranger_selections.c:3177
-#, fuzzy
 msgid "Edit arranger selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/actions/arranger_selections.c:3180
 msgid "Automation fill"
 msgstr ""
 
 #: src/actions/arranger_selections.c:3183
-#, fuzzy
 msgid "Split arranger selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/actions/arranger_selections.c:3186
-#, fuzzy
 msgid "Merge arranger selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/actions/arranger_selections.c:3189
-#, fuzzy
 msgid "Resize arranger selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/actions/arranger_selections.c:3193
-#, fuzzy
 msgid "Quantize arranger selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: src/actions/midi_mapping_action.c:280
 msgid "MIDI mapping enable"
@@ -3958,129 +3781,106 @@ msgid "Graph exported"
 msgstr ""
 
 #: src/actions/actions.c:889 src/guile/actions/undo_manager.c:65
-#, fuzzy
 msgid "Failed to undo"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:919 src/actions/undo_manager.c:276
-#, fuzzy
 msgid "Failed to redo action"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:925 src/actions/undo_manager.c:216
-#, fuzzy
 msgid "Failed to undo action"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:951 src/guile/actions/undo_manager.c:87
-#, fuzzy
 msgid "Failed to redo"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:992 src/actions/actions.c:1011
 #: src/actions/actions.c:1198
-#, fuzzy
 msgid "Failed to delete selections"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1167
 msgid "Can't paste incompatible data"
 msgstr ""
 
 #: src/actions/actions.c:1259
-#, fuzzy
 msgid "Failed to duplicate selections"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1506
-#, fuzzy
 msgid "Failed to unbind"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1551 src/actions/actions.c:2036
 #: src/actions/actions.c:2072
-#, fuzzy
 msgid "Failed to quantize"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1650
-#, fuzzy
 msgid "Failed to create MIDI track"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1664
-#, fuzzy
 msgid "Failed to create audio FX track"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1678
-#, fuzzy
 msgid "Failed to create MIDI FX track"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1720
-#, fuzzy
 msgid "Failed to create folder track"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1736
-#, fuzzy
 msgid "Failed to duplicate tracks"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1784
 msgid "Cannot delete tracks: selection contains an undeletable track"
 msgstr ""
 
 #: src/actions/actions.c:1798
-#, fuzzy
 msgid "Failed to delete tracks"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1836
-#, fuzzy
 msgid "Failed to pin/unpin tracks"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1849
-#, fuzzy
 msgid "Failed to solo tracks"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1862
-#, fuzzy
 msgid "Failed to unsolo tracks"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1875
-#, fuzzy
 msgid "Failed to mute tracks"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1888
-#, fuzzy
 msgid "Failed to unmute tracks"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1901
-#, fuzzy
 msgid "Failed to listen tracks"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1914
-#, fuzzy
 msgid "Failed to unlisten tracks"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1927
-#, fuzzy
 msgid "Failed to enable tracks"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:1940
-#, fuzzy
 msgid "Failed to disable tracks"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:2091
 #, c-format
@@ -4090,9 +3890,8 @@ msgid ""
 msgstr ""
 
 #: src/actions/actions.c:2168
-#, fuzzy
 msgid "Failed to mute selections"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:2182
 msgid "No regions selected"
@@ -4107,19 +3906,16 @@ msgid "Cannot merge looped regions"
 msgstr ""
 
 #: src/actions/actions.c:2215
-#, fuzzy
 msgid "Failed to merge selections"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:2332
-#, fuzzy
 msgid "Failed to insert silence"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:2355
-#, fuzzy
 msgid "Failed to remove range"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:2711
 msgid "Region name"
@@ -4130,9 +3926,8 @@ msgid "Please enter a BPM"
 msgstr ""
 
 #: src/actions/actions.c:2826
-#, fuzzy
 msgid "Failed to move selections"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:2846
 #, c-format
@@ -4144,24 +3939,22 @@ msgid "Candidates:"
 msgstr ""
 
 #: src/actions/actions.c:3051
-#, fuzzy
 msgid "Failed to set curve algorithm"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:3112
-#, fuzzy
 msgid "Failed to edit fades"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:3221
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reset %s"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:3252
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to disconnect %s from %s"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/actions.c:3284
 msgid "Cannot delete standard bookmark"
@@ -4182,9 +3975,8 @@ msgid ""
 msgstr ""
 
 #: src/actions/actions.c:3731
-#, fuzzy
 msgid "Failed to change direct output"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/port_connection_action.c:204
 msgid "Connect ports"
@@ -4219,19 +4011,17 @@ msgid "Beat unit change"
 msgstr ""
 
 #: src/actions/channel_send_action.c:173
-#, fuzzy
 msgid "Failed to connect MIDI send"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/channel_send_action.c:199
-#, fuzzy
 msgid "Failed to connect audio send"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/channel_send_action.c:266 src/actions/channel_send_action.c:332
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to perform channel send action: %s"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/channel_send_action.c:361
 msgid "Connect sidechain"
@@ -4262,9 +4052,8 @@ msgid "Channel send connection"
 msgstr ""
 
 #: src/actions/mixer_selections_action.c:193
-#, fuzzy
 msgid "Failed to clone mixer selections"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/mixer_selections_action.c:614
 msgid "Could not create plugin"
@@ -4272,9 +4061,8 @@ msgstr ""
 
 #: src/actions/mixer_selections_action.c:838
 #: src/actions/mixer_selections_action.c:1248
-#, fuzzy
 msgid "Failed to revert deleted plugin"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/actions/mixer_selections_action.c:1364
 #, c-format
@@ -4316,33 +4104,31 @@ msgid "Copy %d Plugins"
 msgstr ""
 
 #: src/actions/mixer_selections_action.c:1418
-#, fuzzy, c-format
+#, c-format
 msgid "Paste %s"
-msgstr "لصق"
+msgstr ""
 
 #: src/actions/mixer_selections_action.c:1425
-#, fuzzy, c-format
+#, c-format
 msgid "Paste %d Plugins"
-msgstr "الإضافات"
+msgstr ""
 
 #: src/actions/range_action.c:718 resources/ui/range_action_buttons.ui:11
 msgid "Insert silence"
 msgstr ""
 
 #: src/actions/range_action.c:721
-#, fuzzy
 msgid "Delete range"
-msgstr "حذف اعداد هذه الاضافة؟"
+msgstr ""
 
 #: src/actions/tracklist_selections.c:295
-#, fuzzy, c-format
+#, c-format
 msgid "Failed getting contents for %s"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/tracklist_selections.c:333
-#, fuzzy
 msgid "No tracks selected"
-msgstr "لم يتم العثور على الملف %s."
+msgstr ""
 
 #: src/actions/tracklist_selections.c:353
 msgid "Failed to clone tracklist selections"
@@ -4363,20 +4149,20 @@ msgid "Error instantiating plugin %s"
 msgstr ""
 
 #: src/actions/tracklist_selections.c:919
-#, fuzzy, c-format
+#, c-format
 msgid "Failed saving file %s"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/tracklist_selections.c:1016
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create track at %d"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: src/actions/tracklist_selections.c:1064
 #: src/actions/tracklist_selections.c:1591
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to clone track: %s"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/actions/tracklist_selections.c:2194
 msgid "Copy Track inside"
@@ -4440,23 +4226,20 @@ msgid "Unlisten Track"
 msgstr ""
 
 #: src/actions/tracklist_selections.c:2271
-#, fuzzy
 msgid "Enable Track"
-msgstr "مفعل"
+msgstr ""
 
 #: src/actions/tracklist_selections.c:2274
 msgid "Disable Track"
 msgstr ""
 
 #: src/actions/tracklist_selections.c:2278
-#, fuzzy
 msgid "Fold Track"
-msgstr "مفعل"
+msgstr ""
 
 #: src/actions/tracklist_selections.c:2281
-#, fuzzy
 msgid "Unfold Track"
-msgstr "مفعل"
+msgstr ""
 
 #: src/actions/tracklist_selections.c:2284
 msgid "Change Fader"
@@ -4476,9 +4259,8 @@ msgid "Rename track"
 msgstr ""
 
 #: src/actions/tracklist_selections.c:2296
-#, fuzzy
 msgid "Rename lane"
-msgstr "بنك بدون اسم"
+msgstr ""
 
 #: src/actions/tracklist_selections.c:2299
 #: src/actions/tracklist_selections.c:2365
@@ -4585,9 +4367,8 @@ msgid "Unpin %d Tracks"
 msgstr ""
 
 #: src/actions/undo_manager.c:328
-#, fuzzy
 msgid "Failed to perform action"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/guile/guile.c:40
 msgid "Script execution successful"
@@ -4598,14 +4379,12 @@ msgid "Script execution failed"
 msgstr ""
 
 #: src/guile/actions/port_connection_action.c:50
-#, fuzzy
 msgid "Failed to connect ports"
-msgstr "فشل فتح ملف: %s"
+msgstr ""
 
 #: src/guile/actions/channel_send_action.c:46
-#, fuzzy
 msgid "Failed to create audio send"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: resources/gtk/help-overlay.ui:30
 msgid "Global Shortcuts"
@@ -4647,7 +4426,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:98 resources/ui/header.ui:50
 msgid "Project"
-msgstr "المشروع"
+msgstr ""
 
 #: resources/gtk/help-overlay.ui:110
 msgid "Open a project"
@@ -4763,7 +4542,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:15
 msgid "Language"
-msgstr "لغة"
+msgstr ""
 
 #: resources/ui/first_run_assistant.ui:27
 msgid ""
@@ -4817,9 +4596,8 @@ msgid "Press a key or move a knob on your MIDI device"
 msgstr ""
 
 #: resources/ui/bind_cc_dialog.ui:23
-#, fuzzy
 msgid "Waiting for input..."
-msgstr "انتظار المشروع"
+msgstr ""
 
 #: resources/ui/bind_cc_dialog.ui:36 resources/ui/create_project_dialog.ui:61
 #: resources/ui/generic_progress_dialog.ui:52 resources/ui/bounce_dialog.ui:94
@@ -4956,9 +4734,8 @@ msgid "Musical mode"
 msgstr ""
 
 #: resources/ui/timeline_toolbar.ui:63
-#, fuzzy
 msgid "Merge selections"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: resources/ui/timeline_toolbar.ui:73 resources/ui/editor_toolbar.ui:100
 msgid "Toggle event viewer"
@@ -5446,9 +5223,8 @@ msgid "Full Quantize..."
 msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:66 resources/ui/snap_grid_popover.ui:149
-#, fuzzy
 msgid "Note length"
-msgstr "عرض النوتة"
+msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:84 resources/ui/snap_grid_popover.ui:167
 msgid "t"
@@ -5467,9 +5243,8 @@ msgid "Adaptive"
 msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:118 resources/ui/snap_grid_popover.ui:201
-#, fuzzy
 msgid "Adaptive length"
-msgstr "عرض النوتة"
+msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:130
 msgid "Snap"
@@ -5484,14 +5259,12 @@ msgid "Link length to snap setting"
 msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:224
-#, fuzzy
 msgid "Last object"
-msgstr "تحميل المشروع"
+msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:225
-#, fuzzy
 msgid "Use last created object's length"
-msgstr "عرض النوتة"
+msgstr ""
 
 #: resources/ui/range_action_buttons.ui:24
 msgid "Remove range"
@@ -5510,13 +5283,12 @@ msgid "Vertical"
 msgstr ""
 
 #: data/zrythm.desktop.in:10
-#, fuzzy
 msgid "Zrythm"
-msgstr "Zrythm"
+msgstr ""
 
 #: data/zrythm.desktop.in:11
 msgid "Digital Audio Workstation"
-msgstr "محطة عمل الصوت الرقمي"
+msgstr ""
 
 #: data/zrythm.desktop.in:13
 msgid "highly automated and intuitive digital audio workstation"
@@ -5539,9 +5311,8 @@ msgid "Whether this is the first run or not."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:252
-#, fuzzy
 msgid "Installation directory"
-msgstr "تحضير مجلدات Zrythm"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:253
 msgid ""
@@ -5674,9 +5445,8 @@ msgid ""
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:354
-#, fuzzy
 msgid "Timeline object length"
-msgstr "عرض النوتة"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:355
 msgid "Default length to use when creating timeline objects."
@@ -5693,9 +5463,8 @@ msgid ""
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:365
-#, fuzzy
 msgid "Last timeline object's length"
-msgstr "عرض النوتة"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:366
 msgid "The length of the last created timeline object (in ticks)."
@@ -5720,9 +5489,8 @@ msgid ""
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:381
-#, fuzzy
 msgid "Last editor object's length"
-msgstr "عرض النوتة"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:382
 msgid "The length of the last created editor object (in ticks)."
@@ -6027,18 +5795,16 @@ msgid "Whether to show hidden files in the file browser."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:579
-#, fuzzy
 msgid "File browser filter"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:580
 msgid "Selected file browser filter"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:584
-#, fuzzy
 msgid "Last location"
-msgstr "تحميل المشروع"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:585
 msgid "Last visited location."
@@ -6057,9 +5823,8 @@ msgid "Whether inserts are expanded."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:603
-#, fuzzy
 msgid "MIDI FX expanded"
-msgstr "MIDI داخل"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:604
 msgid "Whether MIDI FX are expanded."
@@ -6162,18 +5927,16 @@ msgid "Track visibility panel size when detached."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:676
-#, fuzzy
 msgid "Track inspector detached"
-msgstr "اسم المقطوعة"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:677
 msgid "Whether the track inspector panel is detached."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:681
-#, fuzzy
 msgid "Track inspector size"
-msgstr "اسم المقطوعة"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:682
 msgid "Track inspector panel size when detached."
@@ -6204,27 +5967,24 @@ msgid "Whether the plugin browser panel is detached."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:701
-#, fuzzy
 msgid "Plugin browser size"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:702
 msgid "Plugin browser panel size when detached."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:706
-#, fuzzy
 msgid "File browser detached"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:707
 msgid "Whether the file browser panel is detached."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:711
-#, fuzzy
 msgid "File browser size"
-msgstr "فشلت كتابة الملف: %s"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:712
 msgid "File browser panel size when detached."
@@ -6239,9 +5999,8 @@ msgid "Whether the monitor section panel is detached."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:721
-#, fuzzy
 msgid "Monitor section size"
-msgstr "مسح الاختيار"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:722
 msgid "Monitor section panel size when detached."
@@ -6312,9 +6071,8 @@ msgid "Chord pad panel size when detached."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:766
-#, fuzzy
 msgid "Timeline detached"
-msgstr "عرض النوتة"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:767
 msgid "Whether the timeline panel is detached."
@@ -6329,18 +6087,16 @@ msgid "Timeline panel size when detached."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:776
-#, fuzzy
 msgid "CC bindings detached"
-msgstr "MIDI داخل"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:777
 msgid "Whether the CC bindings panel is detached."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:781
-#, fuzzy
 msgid "CC bindings size"
-msgstr "MIDI داخل"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:782
 msgid "CC bindings panel size when detached."
@@ -6547,9 +6303,8 @@ msgid "The MIDI backend to use."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:944
-#, fuzzy
 msgid "Audio inputs"
-msgstr "مدخل الصوت"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:945
 msgid "A list of audio inputs to enable."
@@ -6569,9 +6324,8 @@ msgid "Paths"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:963
-#, fuzzy
 msgid "Zrythm path"
-msgstr "Zrythm"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:964
 msgid "The directory used to save user data in."
@@ -6592,7 +6346,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:986
 #: build/data/org.zrythm.Zrythm.gschema.xml:1017
 msgid "Plugins"
-msgstr "الإضافات"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:987
 msgid "UIs"
@@ -6634,9 +6388,8 @@ msgid ""
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1026
-#, fuzzy
 msgid "VST plugins"
-msgstr "فحص الإضافات"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1027
 msgid ""
@@ -6683,9 +6436,8 @@ msgid "Default algorithm to use for automation curves."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1079
-#, fuzzy
 msgid "Undo stack length"
-msgstr "عرض النوتة"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1080
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
@@ -6782,121 +6534,9 @@ msgid "Scripting"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1162
-#, fuzzy
 msgid "Default script"
-msgstr "البنك الافتراضي"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1163
 msgid "The default script to use in the scripting window."
 msgstr ""
-
-#, fuzzy
-#~ msgid "Add to project with UI"
-#~ msgstr "تحميل المشروع"
-
-#, fuzzy, c-format
-#~ msgid "Failed to reset control '%s'"
-#~ msgstr "فشل فتح ملف: %s"
-
-#, fuzzy, c-format
-#~ msgid "Failed to instantiate cloned plugin %s"
-#~ msgstr "فشل فتح ملف: %s"
-
-#, fuzzy, c-format
-#~ msgid "Failed to instantiate source plugin %s"
-#~ msgstr "فشل فتح ملف: %s"
-
-#, fuzzy
-#~ msgid "Failed to load Carla plugin state"
-#~ msgstr "فشلت كتابة الملف: %s"
-
-#, fuzzy
-#~ msgid "Failed to create plugin clone"
-#~ msgstr "فشلت كتابة الملف: %s"
-
-#, fuzzy
-#~ msgid "Failed to move track inside"
-#~ msgstr "فشل فتح ملف: %s"
-
-#, fuzzy
-#~ msgid "Project not compressed by zstd"
-#~ msgstr "المشروع غير مضغوط بواسطة zstd!"
-
-#, c-format
-#~ msgid "Failed to write file: %s"
-#~ msgstr "فشلت كتابة الملف: %s"
-
-#, fuzzy
-#~ msgid "My Project"
-#~ msgstr "المشروع"
-
-#, fuzzy
-#~ msgid "[Zrythm] Enabled"
-#~ msgstr "مفعل"
-
-#, fuzzy
-#~ msgid "[Zrythm] Gain"
-#~ msgstr "Zrythm"
-
-#, fuzzy
-#~ msgid "zrythm"
-#~ msgstr "Zrythm"
-
-#, c-format
-#~ msgid "Project failed to compress: %s\n"
-#~ msgstr "فشل المشروع في ضغط: %s\n"
-
-#, c-format
-#~ msgid "Project successfully decompressed.\n"
-#~ msgstr "تم فك ضغط المشروع بنجاح.\n"
-
-#, fuzzy
-#~ msgctxt "guilabel"
-#~ msgid "Plugins"
-#~ msgstr "الإضافات"
-
-#, fuzzy
-#~ msgctxt "guilabel"
-#~ msgid "Audio"
-#~ msgstr "صوت اف اكس"
-
-#~ msgid ""
-#~ "uncompressed_size != frame_content_size impossible because zstd will "
-#~ "check this condition!"
-#~ msgstr ""
-#~ "uncompressed_size! = frame_content_size مستحيل لأن zstd سيتحقق من هذا "
-#~ "الشرط!"
-
-#~ msgid "(trial) "
-#~ msgstr "(التجربة) "
-
-#, fuzzy
-#~ msgctxt "guilabel"
-#~ msgid "\"normal\""
-#~ msgstr "متوسط"
-
-#, fuzzy
-#~ msgctxt "guilabel"
-#~ msgid "\"Zrythm\""
-#~ msgstr "Zrythm"
-
-#, fuzzy
-#~ msgctxt "guilabel"
-#~ msgid "\"superellipse\""
-#~ msgstr "القطع الناقص الفائق"
-
-#~ msgid "Scanned VST plugin"
-#~ msgstr "فحص الإضافات ال VST"
-
-#, c-format
-#~ msgid "Skipped VST plugin at %s"
-#~ msgstr "تم تخطي مكون VST الإضافي في %s"
-
-#~ msgid "Initializing main window"
-#~ msgstr "بدء النافذة الرئيسية"
-
-#~ msgid "Initializing plugin manager"
-#~ msgstr "تحضير مدير الإضافات"
-
-#~ msgid "Initializing symap"
-#~ msgstr "بدء الـSymap"

@@ -1,45 +1,14 @@
-# #-#-#-#-#  appendix.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2019-2020 The Zrythm contributors
+# Copyright (C) 2019, Alexandros Theodotou
 # This file is distributed under the same license as the Zrythm package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-#
-# #-#-#-#-#  chords-and-scales.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  configuration.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  contributing.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  credits.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  editing.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  exporting.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  getting-started.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  index.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  invoking-from-command-line.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  mixing.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  modulators.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  playback-and-recording.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  plugins-files.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  projects.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  routing.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# Alexandros Theodotou <alex@zrythm.org>, 2020.
-# #-#-#-#-#  theming.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  tracks.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  user-media.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  zrythm-interface.po (Zrythm 1.0.0-alpha.3)  #-#-#-#-#
-# #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
-# #-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-12-10 17:08+0000\n"
-"PO-Revision-Date: 2021-06-09 02:59+0000\n"
-"Last-Translator: gnu-ewm <gnu.ewm@protonmail.com>\n"
-"Language: pl\n"
-"Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/pl/>\n"
-"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1267,7 +1236,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Superellipse"
-msgstr "Super elipsa"
+msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Elliptical curve."
@@ -3449,7 +3418,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:134
 msgid "Region"
-msgstr "Region"
+msgstr ""
 
 #: ../../glossary/intro.rst:136
 msgid ""
@@ -6802,7 +6771,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:77 ../../tracks/track-types.rst:78
 #: ../../tracks/track-types.rst:80
 msgid "None"
-msgstr "Brak"
+msgstr ""
 
 #: ../../tracks/track-types.rst:31
 msgid "Audio FX"
