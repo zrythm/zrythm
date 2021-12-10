@@ -5,11 +5,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2021-12-10 17:21+0000\n"
+"POT-Creation-Date: 2021-12-10 22:38+0000\n"
 "PO-Revision-Date: 2021-11-24 13:38+0000\n"
 "Last-Translator: moshe <shinmem58@gmail.com>\n"
-"Language-Team: Hebrew <https://hosted.weblate.org/projects/zrythm/zrythm/he/>"
-"\n"
+"Language-Team: Hebrew <https://hosted.weblate.org/projects/zrythm/zrythm/he/"
+">\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -461,19 +461,19 @@ msgstr "טעינת הפרויקט נכשלה. אנא בדוק את הרשומו�
 msgid "Failed to load project. Will create a new one instead."
 msgstr "טעינת הפרויקט נכשלה. יצור אחד חדש במקום זאת."
 
-#: src/project.c:1608
+#: src/project.c:1612
 msgid "Failed to compress project file"
 msgstr "דחיסת קובץ הפרויקט נכשלה"
 
-#: src/project.c:1654
+#: src/project.c:1658
 msgid "Backup saved."
 msgstr "הגיבוי נשמר."
 
-#: src/project.c:1664
+#: src/project.c:1668
 msgid "Project saved."
 msgstr "הפרויקט נשמר."
 
-#: src/zrythm_app.c:141
+#: src/zrythm_app.c:139
 msgid "Error - Backtrace:\n"
 msgstr "שגיאה - מעקב אחורה:\n"
 
@@ -487,12 +487,12 @@ msgstr "שגיאה: %s - מעקב אחורה:\n"
 msgid "%s has crashed. "
 msgstr "%s קרס. "
 
-#: src/zrythm_app.c:205
+#: src/zrythm_app.c:203
 #, c-format
 msgid "Do you want %s to check for updates on startup?"
 msgstr "האם אתה רוצה ש-%s יבדוק אם יש עדכונים בעת ההפעלה?"
 
-#: src/zrythm_app.c:212
+#: src/zrythm_app.c:210
 msgid "Check for Updates"
 msgstr "בדוק אם יש עדכונים"
 
@@ -507,53 +507,53 @@ msgstr ""
 "\n"
 "הגרסה הנוכחית שלך היא %s"
 
-#: src/zrythm_app.c:376
+#: src/zrythm_app.c:372
 msgid "Setting up main window"
 msgstr "מגדיר את החלון הראשי"
 
-#: src/zrythm_app.c:421
+#: src/zrythm_app.c:417
 msgid "Loading project"
 msgstr "טוען פרויקט"
 
-#: src/zrythm_app.c:434
+#: src/zrythm_app.c:435
 #, c-format
 msgid "No project has been selected. %s will now close."
 msgstr "לא נבחר פרויקט. %s ייסגר כעת."
 
-#: src/zrythm_app.c:457
+#: src/zrythm_app.c:458
 msgid "Initializing settings"
 msgstr "מאתחל הגדרות"
 
-#: src/zrythm_app.c:464
+#: src/zrythm_app.c:465
 #, c-format
 msgid "Initializing %s directories"
 msgstr "מאתחל תיקיות %s"
 
-#: src/zrythm_app.c:474
+#: src/zrythm_app.c:475
 msgid "Initializing logging system"
 msgstr "מאתחל מערכת רישום"
 
-#: src/zrythm_app.c:484
+#: src/zrythm_app.c:485
 msgid "Initializing caches"
 msgstr "מאתחל מטמונים"
 
-#: src/zrythm_app.c:488
+#: src/zrythm_app.c:489
 msgid "Initializing file manager"
 msgstr "מאתחל את מנהל הקבצים"
 
-#: src/zrythm_app.c:495
+#: src/zrythm_app.c:496
 msgid "Scanning plugins"
 msgstr "סורק תוספים"
 
-#: src/zrythm_app.c:656
+#: src/zrythm_app.c:600
 msgid "License Information"
 msgstr "מידע הרישיון"
 
-#: src/zrythm_app.c:684
+#: src/zrythm_app.c:613
 msgid "Waiting for project"
 msgstr "מחכה לפרויקט"
 
-#: src/zrythm_app.c:1094
+#: src/zrythm_app.c:1016
 #, c-format
 msgid ""
 "%s-%s\n"
@@ -672,36 +672,36 @@ msgstr "בנק ברירת מחדל"
 msgid "Init"
 msgstr "איניט"
 
-#: src/plugins/carla_native_plugin.c:856
+#: src/plugins/carla_native_plugin.c:857
 msgid "Audio in"
 msgstr "כניסת אודיו"
 
-#: src/plugins/carla_native_plugin.c:866
+#: src/plugins/carla_native_plugin.c:867
 msgid "Audio out"
 msgstr "יציאת אודיו"
 
-#: src/plugins/carla_native_plugin.c:876
+#: src/plugins/carla_native_plugin.c:877 src/gui/widgets/header.c:123
 msgid "MIDI in"
 msgstr "כניסת MIDI"
 
-#: src/plugins/carla_native_plugin.c:888
+#: src/plugins/carla_native_plugin.c:889
 msgid "MIDI out"
 msgstr "יציאת MIDI"
 
-#: src/plugins/carla_native_plugin.c:900
+#: src/plugins/carla_native_plugin.c:901
 msgid "CV in"
 msgstr "כניסת CV"
 
-#: src/plugins/carla_native_plugin.c:910
+#: src/plugins/carla_native_plugin.c:911
 msgid "CV out"
 msgstr "יציאת CV"
 
-#: src/plugins/carla_native_plugin.c:1309
+#: src/plugins/carla_native_plugin.c:1310
 #, c-format
 msgid "Error adding carla plugin: %s"
 msgstr "שגיאה בהוספת תוסף קראלה: %s"
 
-#: src/plugins/carla_native_plugin.c:1345
+#: src/plugins/carla_native_plugin.c:1346
 msgid "Failed to load Carla state"
 msgstr "טעינת מצב קארלה נכשלה"
 
@@ -753,54 +753,54 @@ msgstr "תוסף AU נסרק"
 msgid "Skipped AU plugin at %u"
 msgstr "תוסף AU דולג ב%u"
 
-#: src/plugins/plugin.c:257
+#: src/plugins/plugin.c:256
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr "התקנה נכשלה עבור התוסף'%s'. משבית..."
 
-#: src/plugins/plugin.c:301
+#: src/plugins/plugin.c:300
 msgid "Enabled"
 msgstr "מופעל"
 
-#: src/plugins/plugin.c:303
+#: src/plugins/plugin.c:302
 msgid "Enables or disables the plugin"
 msgstr "מפעיל או משבית את התוסף"
 
-#: src/plugins/plugin.c:326 src/gui/widgets/track_input_expander.c:727
+#: src/plugins/plugin.c:325 src/gui/widgets/track_input_expander.c:728
 msgid "Gain"
 msgstr "הגברה"
 
-#: src/plugins/plugin.c:327
+#: src/plugins/plugin.c:326
 msgid "Plugin gain"
 msgstr "הגברת התוסף"
 
-#: src/plugins/plugin.c:525 src/plugins/plugin_gtk.c:170
-#: src/gui/widgets/plugin_properties_expander.c:155
+#: src/plugins/plugin.c:528 src/plugins/plugin_gtk.c:177
+#: src/gui/widgets/plugin_properties_expander.c:160
 msgid "Failed to apply preset"
 msgstr "הפעלת הגדרות קבועות מראש נכשלה"
 
-#: src/plugins/plugin.c:577
+#: src/plugins/plugin.c:603
 msgid "Failed to get Carla plugin"
 msgstr "נכשל בהשגת תוסף קארלה"
 
-#: src/plugins/plugin.c:593
+#: src/plugins/plugin.c:619
 msgid "Failed to get LV2 plugin"
 msgstr "נכשל בהשגת תוסף LV2"
 
-#: src/plugins/plugin.c:1105
+#: src/plugins/plugin.c:1131
 #, c-format
 msgid " - bridge: %s"
 msgstr " - גשר: %s"
 
-#: src/plugins/plugin.c:1116
+#: src/plugins/plugin.c:1142
 msgid "instrument"
 msgstr "כלי נגינה"
 
-#: src/plugins/plugin.c:1674
+#: src/plugins/plugin.c:1710
 msgid "Carla plugin instantiation failed"
 msgstr "התקנת תוסף קארלה נכשלה"
 
-#: src/plugins/plugin.c:1702
+#: src/plugins/plugin.c:1738
 msgid "LV2 plugin instantiation failed"
 msgstr "התקנת תוסף LV2 נכשלה"
 

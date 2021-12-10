@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2021-12-10 17:21+0000\n"
+"POT-Creation-Date: 2021-12-10 22:38+0000\n"
 "PO-Revision-Date: 2021-12-05 13:50+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
@@ -5104,7 +5104,7 @@ msgstr "Erreur"
 
 #: resources/ui/bug_report_dialog.ui:31
 msgid "What did you do?"
-msgstr "Qu’avez-vous fait ?"
+msgstr "Qu’avez-vous fait?"
 
 #: resources/ui/bug_report_dialog.ui:42
 #, fuzzy
