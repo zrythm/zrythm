@@ -5,13 +5,15 @@
 # Alexandros Theodotou <alex@zrythm.org>, 2021.
 # Yuri Musachio Montezuma da Cruz <yuri.musachio@gmail.com>, 2021.
 # Vinicius Monego <monego@posteo.net>, 2021.
+# Rodrigo Zimmermann <rodrigo.zimmermann23@gmail.com>, 2021.
+# Pedro Portela <pportela@disroot.org>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-12-10 17:21+0000\n"
-"PO-Revision-Date: 2021-10-16 04:35+0000\n"
-"Last-Translator: Vinicius Monego <monego@posteo.net>\n"
+"PO-Revision-Date: 2021-12-08 23:53+0000\n"
+"Last-Translator: Pedro Portela <pportela@disroot.org>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -19,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.10-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -181,31 +183,27 @@ msgstr "Ativar som"
 
 #: inc/audio/audio_function.h:70
 msgid "Invert"
-msgstr ""
+msgstr "Inverso"
 
 #: inc/audio/audio_function.h:71
-#, fuzzy
 msgid "Normalize peak"
-msgstr "Normal"
+msgstr "Normalizar pico"
 
 #: inc/audio/audio_function.h:72
-#, fuzzy
 msgid "Normalize RMS"
-msgstr "Normal"
+msgstr "Normalizar RMS"
 
 #: inc/audio/audio_function.h:73
-#, fuzzy
 msgid "Normalize LUFS"
-msgstr "Normal"
+msgstr "Normalizar LUFS"
 
 #: inc/audio/audio_function.h:74
-#, fuzzy
 msgid "Linear fade in"
-msgstr "Linear"
+msgstr "Fade in linear"
 
 #: inc/audio/audio_function.h:76
 msgid "Linear fade out"
-msgstr ""
+msgstr "Fade out linear"
 
 #: inc/audio/audio_function.h:78 src/gui/widgets/home_toolbar.c:186
 msgid "Nudge left"
@@ -217,11 +215,11 @@ msgstr ""
 
 #: inc/audio/audio_function.h:80
 msgid "Reverse"
-msgstr ""
+msgstr "Reverso"
 
 #: inc/audio/audio_function.h:81
 msgid "External program"
-msgstr ""
+msgstr "Programa externo"
 
 #: inc/audio/audio_function.h:82
 #, fuzzy
@@ -230,23 +228,23 @@ msgstr "Script Guile"
 
 #: inc/audio/audio_function.h:83
 msgid "Custom plugin"
-msgstr ""
+msgstr "Adicional personalizado"
 
 #: inc/audio/audio_function.h:84
 msgid "Invalid"
-msgstr ""
+msgstr "Inválido"
 
 #: inc/audio/transport.h:73
 msgid "1 bar"
-msgstr ""
+msgstr "1 compasso"
 
 #: inc/audio/transport.h:74
 msgid "2 bars"
-msgstr ""
+msgstr "2 compassos"
 
 #: inc/audio/transport.h:75
 msgid "4 bars"
-msgstr ""
+msgstr "4 compassos"
 
 #: inc/audio/track.h:194 src/gui/widgets/track_properties_expander.c:132
 #: src/gui/widgets/route_target_selector_popover.c:188
@@ -302,7 +300,7 @@ msgstr "Grupo MIDI"
 
 #: inc/audio/track.h:206
 msgid "Folder"
-msgstr ""
+msgstr "Pasta"
 
 #: inc/audio/curve.h:120 src/audio/curve.c:82 src/audio/curve.c:368
 #, fuzzy, c-format
@@ -395,7 +393,7 @@ msgstr "Dedilhado"
 
 #: inc/audio/exporter.h:90
 msgid "Before inserts"
-msgstr ""
+msgstr "Antes das inserções"
 
 #: inc/audio/exporter.h:91
 msgid "Pre-fader"
@@ -403,7 +401,7 @@ msgstr ""
 
 #: inc/audio/exporter.h:92
 msgid "Post fader"
-msgstr ""
+msgstr "Pós-fader"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
@@ -589,7 +587,7 @@ msgstr ""
 "%s não possui ABSOLUTAMENTE NENHUMA GARANTIA!\n"
 "\n"
 "Este é um software livre e você pode distribuí-lo sob certas condições.\n"
-"Veja o arquivo `COPYING' para obter detalhes.\n"
+"Veja o arquivo 'COPYING' para obter detalhes.\n"
 "\n"
 "Envie comentários e bugs para %s\n"
 "Apoie este projeto em https://liberapay.com/Zrythm\n"
@@ -623,9 +621,8 @@ msgid "libguile is required for this option\n"
 msgstr "libguile é necessária para esta opção\n"
 
 #: src/zrythm_app.c:1791
-#, fuzzy
 msgid "Print version information"
-msgstr "Informações sobre a licença"
+msgstr "Informações sobre a versão"
 
 #: src/zrythm_app.c:1796
 #, fuzzy
@@ -646,7 +643,7 @@ msgstr ""
 
 #: src/zrythm_app.c:1814
 msgid "Print current settings"
-msgstr ""
+msgstr "Imprimir definições atuais"
 
 #: src/zrythm_app.c:1818
 msgid "Reset to factory settings"
@@ -654,11 +651,11 @@ msgstr "Restaurar as configurações de fábrica"
 
 #: src/zrythm_app.c:1821
 msgid "Override the audio backend to use"
-msgstr ""
+msgstr "Substitua o backend de áudio para usar"
 
 #: src/zrythm_app.c:1825
 msgid "Override the MIDI backend to use"
-msgstr ""
+msgstr "Substitua o backend MIDI para usar"
 
 #: src/zrythm_app.c:1829
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
@@ -666,7 +663,7 @@ msgstr ""
 
 #: src/zrythm_app.c:1861
 msgid "[PROJECT-FILE]"
-msgstr ""
+msgstr "[PROJETO-ARQUIVO]"
 
 #: src/zrythm_app.c:1866
 #, c-format

@@ -1119,7 +1119,7 @@ msgstr "Закріпити/відкріпити доріжки"
 
 #: src/gui/widgets/channel.c:683 resources/ui/port_selector_popover.ui:26
 msgid "Track"
-msgstr ""
+msgstr "Доріжка"
 
 #: src/gui/widgets/channel.c:698 src/gui/widgets/track.c:1202
 #: src/gui/widgets/track.c:1777 resources/ui/fader_buttons.ui:34
@@ -1947,7 +1947,7 @@ msgstr "Гарячі клавіші/Keyboard Shortcuts"
 
 #: src/gui/widgets/help_toolbar.c:42
 msgid "Donate"
-msgstr "Пожертвувати"
+msgstr "Пожертвування"
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Report a Bug"
@@ -2918,7 +2918,7 @@ msgstr ""
 #: src/gui/widgets/dialogs/bug_report_dialog.c:331
 #: src/gui/widgets/dialogs/bug_report_dialog.c:548
 msgid "Done"
-msgstr ""
+msgstr "Виконано"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:350
 #, fuzzy

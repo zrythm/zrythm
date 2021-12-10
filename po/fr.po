@@ -12,12 +12,13 @@
 # J. Lavoie <j.lavoie@net-c.ca>, 2021.
 # Panos Alevropoulos <panosalevropoulos@protonmail.com>, 2021.
 # sub26nico10b0a294e11e4b4b <faurenicolas5595@neuf.fr>, 2021.
+# Maxime Leroy <lisacintosh@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-12-10 17:21+0000\n"
-"PO-Revision-Date: 2021-10-19 03:39+0000\n"
+"PO-Revision-Date: 2021-12-05 13:50+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
 ">\n"
@@ -26,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.10-dev\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -192,37 +193,32 @@ msgid "Invert"
 msgstr "Inverser"
 
 #: inc/audio/audio_function.h:71
-#, fuzzy
 msgid "Normalize peak"
-msgstr "Normaliser"
+msgstr "Normaliser les crêtes"
 
 #: inc/audio/audio_function.h:72
-#, fuzzy
 msgid "Normalize RMS"
-msgstr "Normaliser"
+msgstr "Normaliser RMS"
 
 #: inc/audio/audio_function.h:73
-#, fuzzy
 msgid "Normalize LUFS"
-msgstr "Normaliser"
+msgstr "Normaliser LUFS"
 
 #: inc/audio/audio_function.h:74
-#, fuzzy
 msgid "Linear fade in"
-msgstr "Linéaire"
+msgstr "Fondu à la fermeture linéaire"
 
 #: inc/audio/audio_function.h:76
-#, fuzzy
 msgid "Linear fade out"
-msgstr "Sortie Moniteur"
+msgstr "Fondu à l'ouverture linéaire"
 
 #: inc/audio/audio_function.h:78 src/gui/widgets/home_toolbar.c:186
 msgid "Nudge left"
-msgstr ""
+msgstr "Pousser vers la gauche"
 
 #: inc/audio/audio_function.h:79 src/gui/widgets/home_toolbar.c:188
 msgid "Nudge right"
-msgstr ""
+msgstr "Pousser vers la droite"
 
 #: inc/audio/audio_function.h:80
 msgid "Reverse"
@@ -233,14 +229,12 @@ msgid "External program"
 msgstr "Programme externe"
 
 #: inc/audio/audio_function.h:82
-#, fuzzy
 msgid "Guile script"
-msgstr "Script par défaut"
+msgstr "Script Guile"
 
 #: inc/audio/audio_function.h:83
-#, fuzzy
 msgid "Custom plugin"
-msgstr "Personnalisé"
+msgstr "Greffon personnalisé"
 
 #: inc/audio/audio_function.h:84
 msgid "Invalid"
@@ -317,7 +311,7 @@ msgstr "Dossier"
 #: inc/audio/curve.h:120 src/audio/curve.c:82 src/audio/curve.c:368
 #, c-format
 msgid "Logarithmic"
-msgstr ""
+msgstr "Logarithmique"
 
 #: inc/audio/engine.h:204
 msgid "1,024"
@@ -447,9 +441,8 @@ msgid "Unable to read file: %s"
 msgstr "Échec de l'écriture du fichier : %s"
 
 #: src/project.c:919
-#, fuzzy
 msgid "Failed to decompress project file"
-msgstr "Échec de la décompression du fichier-projet : %s"
+msgstr "Échec de la décompression du fichier du projet"
 
 #: src/project.c:978
 #, c-format
@@ -486,9 +479,8 @@ msgid "Failed to load project. Will create a new one instead."
 msgstr "Impossible de charger le projet. Création d'un nouveau à la place."
 
 #: src/project.c:1612
-#, fuzzy
 msgid "Failed to compress project file"
-msgstr "Échec de la décompression du fichier-projet : %s"
+msgstr "Échec de la compression du fichier-projet"
 
 #: src/project.c:1658
 msgid "Backup saved."
@@ -579,7 +571,7 @@ msgid "Waiting for project"
 msgstr "En attente du projet"
 
 #: src/zrythm_app.c:1016
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s-%s\n"
 "%s\n"
@@ -593,7 +585,8 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"%s-%s Copyright (C) 2018-2021 Les contributeurs à Zrythm\n"
+"%s-%s\n"
+"%s\n"
 "\n"
 "%s est fourni SANS AUCUNE GARANTIE !\n"
 "\n"
@@ -601,7 +594,7 @@ msgstr ""
 "certaines conditions. Consultez le fichier `COPYING' pour les détails.\n"
 "\n"
 "Écrivez des commentaires et reportez des bogues à %s\n"
-"Supporter ce projet à https://liberapay.com/Zrythm\n"
+"Pour supporter ce projet : https://liberapay.com/Zrythm\n"
 "\n"
 
 #: src/zrythm_app.c:1500
@@ -735,21 +728,21 @@ msgid "Error adding carla plugin: %s"
 msgstr "Erreur lors de l'ajout du greffon Carla : %s"
 
 #: src/plugins/carla_native_plugin.c:1346
-#, fuzzy
 msgid "Failed to load Carla state"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec du chargement de l'état de Carla"
 
 #: src/plugins/carla_native_plugin.c:1361
-#, fuzzy
 msgid ""
 "Failed to instantiate Carla plugin: handle/descriptor not initialized "
 "properly"
-msgstr "Échec de l'instanciation du greffon Carla"
+msgstr ""
+"Échec de l'instanciation du greffon Carla : handle/descriptor n'a pas été "
+"initialisé correctement"
 
 #: src/plugins/carla_native_plugin.c:1746
-#, fuzzy, c-format
+#, c-format
 msgid "State file %s doesn't exist"
-msgstr "Le client demandé n'existe pas"
+msgstr "Le fichier d'état %s n'existe pas"
 
 #: src/plugins/plugin_manager.c:395
 msgid "Error loading LV2 bundle dir: "
@@ -809,18 +802,16 @@ msgstr "Gain du greffon"
 
 #: src/plugins/plugin.c:528 src/plugins/plugin_gtk.c:177
 #: src/gui/widgets/plugin_properties_expander.c:160
-#, fuzzy
 msgid "Failed to apply preset"
-msgstr "Impossible de trouver le greffon avec l'URI:%s"
+msgstr "Échec de l'application du préréglage"
 
 #: src/plugins/plugin.c:603
 msgid "Failed to get Carla plugin"
 msgstr "Impossible d'obtenir le greffon Carla"
 
 #: src/plugins/plugin.c:619
-#, fuzzy
 msgid "Failed to get LV2 plugin"
-msgstr "Greffon LV2 scanné"
+msgstr "Échec de la récupération du greffon LV2"
 
 #: src/plugins/plugin.c:1131
 #, c-format
@@ -832,11 +823,8 @@ msgid "instrument"
 msgstr "Instrument"
 
 #: src/plugins/plugin.c:1710
-#, fuzzy
 msgid "Carla plugin instantiation failed"
-msgstr ""
-"Erreur lors de l'instanciation du greffon. Veuillez consulter le journal "
-"pour plus de détails"
+msgstr "Échec de l'instanciation du greffon Carla"
 
 #: src/plugins/plugin.c:1738
 #, fuzzy
@@ -984,6 +972,8 @@ msgstr "Le format %s n'est pas encore supporté"
 #: src/plugins/lv2_plugin.c:2955
 msgid "Failed checking whether lv2 plugin UI is external"
 msgstr ""
+"Échec de la vérification si l'interface utilisateur du greffon lv2 est "
+"externe"
 
 #: src/plugins/lv2_plugin.c:3125
 #, fuzzy, c-format
@@ -1002,9 +992,8 @@ msgid "Unnamed bank"
 msgstr "Banque sans nom"
 
 #: src/plugins/lv2/lv2_state.c:456
-#, fuzzy
 msgid "Failed to apply LV2 preset"
-msgstr "Impossible de trouver le greffon avec l'URI:%s"
+msgstr "Impossible d'appliquer le préréglage LV2"
 
 #: src/plugins/lv2/lv2_gtk.c:263
 msgid "Delete Preset?"
@@ -1542,12 +1531,16 @@ msgstr "Nom du marqueur"
 #: src/gui/widgets/arranger.c:2537
 msgid "Cannot resize because the selection contains objects without length"
 msgstr ""
+"Impossible de redimensionner car la sélection contient des objets sans "
+"longueur"
 
 #: src/gui/widgets/arranger.c:2565
 msgid ""
 "Cannot resize because the selection contains a mix of looped and unloopable "
 "objects"
 msgstr ""
+"Impossible de redimensionner car la sélection contient un mélange d'objets "
+"bouclés et non bouclés."
 
 #: src/gui/widgets/arranger.c:3798
 #, fuzzy
@@ -2701,11 +2694,11 @@ msgstr "Verrouiller/déverrouiller"
 
 #: src/gui/widgets/track.c:1297
 msgid "Fold"
-msgstr ""
+msgstr "Enrouler"
 
 #: src/gui/widgets/track.c:1301
 msgid "Unfold"
-msgstr ""
+msgstr "Dérouler"
 
 #: src/gui/widgets/track.c:1711
 msgid "Add Region"
@@ -2931,12 +2924,12 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:162
 msgid "Send via Sourcehut"
-msgstr ""
+msgstr "Envoyer via Sourcehut"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:171
 #, c-format
 msgid "Please copy the template below in a %snew issue%s."
-msgstr ""
+msgstr "Veuillez copier le modèle ci-dessous dans un %snouveau problème%s."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:326
 #, fuzzy, c-format
@@ -2946,7 +2939,7 @@ msgstr "Erreur ALSA : %s"
 #: src/gui/widgets/dialogs/bug_report_dialog.c:331
 #: src/gui/widgets/dialogs/bug_report_dialog.c:548
 msgid "Done"
-msgstr ""
+msgstr "Terminé"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:350
 #, fuzzy
@@ -2959,18 +2952,21 @@ msgid ""
 "Click OK to submit. You can verify what will be sent below. By clicking OK, "
 "you agree to our %sPrivacy Policy%s."
 msgstr ""
+"Cliquez sur OK pour soumettre. Vous pouvez vérifier ce qui sera envoyé ci-"
+"dessous. En cliquant sur OK, vous acceptez notre %sPolitique de "
+"confidentialité%s."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:392
 msgid "<b>Data</b>"
-msgstr ""
+msgstr "<b>Données</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:446
 msgid "<b>Log file</b>"
-msgstr ""
+msgstr "<b>Fichier journal</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:487
 msgid "<b>Screenshot</b>"
-msgstr ""
+msgstr "<b>Capture d'écran</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:537
 #, fuzzy
@@ -2979,11 +2975,11 @@ msgstr "Liaisons"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:546
 msgid "Sending data..."
-msgstr ""
+msgstr "Envoi de données..."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:549
 msgid "Failed"
-msgstr ""
+msgstr "Échec"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:553
 #, fuzzy
@@ -3005,10 +3001,14 @@ msgstr ""
 #: src/gui/widgets/dialogs/bug_report_dialog.c:685
 msgid "Enter a list of steps to reproduce the error. Markdown is supported."
 msgstr ""
+"Saisissez une liste d'étapes permettant de reproduire l'erreur. Le Markdown "
+"est supporté."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:690
 msgid "Enter more context, what distro you use, etc. Markdown is supported."
 msgstr ""
+"Entrez plus de contexte : quelle distribution vous utilisez, etc. Le "
+"Markdown est supporté."
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:55
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:71
@@ -3342,7 +3342,7 @@ msgstr "Copier la piste à l'intérieur"
 
 #: src/audio/tracklist.c:1743
 msgid "Cannot drag folder into itself"
-msgstr ""
+msgstr "Impossible de déplacer un dossier dans lui-même"
 
 #: src/audio/tracklist.c:1762 src/audio/tracklist.c:1812
 #, fuzzy
@@ -3391,9 +3391,9 @@ msgid "Channel Send %d audio in"
 msgstr "Quantité de l'envoi du canal %d"
 
 #: src/audio/channel_send.c:144
-#, fuzzy, c-format
+#, c-format
 msgid "Channel Send %d MIDI in"
-msgstr "Quantité de l'envoi du canal %d"
+msgstr "Le canal a envoyé %d MIDI en entrée"
 
 #: src/audio/channel_send.c:152
 #, fuzzy, c-format
@@ -3401,9 +3401,9 @@ msgid "Channel Send %d audio out"
 msgstr "Quantité de l'envoi du canal %d"
 
 #: src/audio/channel_send.c:162
-#, fuzzy, c-format
+#, c-format
 msgid "Channel Send %d MIDI out"
-msgstr "Quantité de l'envoi du canal %d"
+msgstr "Le canal à envoyé %d MIDI en sortie"
 
 #: src/audio/channel_send.c:497 src/audio/channel_send.c:559
 #, fuzzy
@@ -3478,6 +3478,11 @@ msgid ""
 "Channel(s): %d | Bitrate: %'d.%d kb/s\n"
 "Bit depth: %d bits"
 msgstr ""
+"<b>%s</b>\n"
+"Fréquence d'échantillonnage : %d\n"
+"Longueur : %ld s %ld ms | BPM : %.1f\n"
+"Canal(aux) : %d | Débit : %'d.%d kb/s\n"
+"Définition : %d bits"
 
 #: src/audio/engine_pa.c:242 src/audio/engine_pa.c:262
 #: src/audio/engine_pa.c:273
@@ -3604,7 +3609,7 @@ msgstr "Active ou désactive le greffon"
 
 #: src/audio/audio_function.c:398
 msgid "Invalid positions - skipping function"
-msgstr ""
+msgstr "Positions non valides - fonction ignorée"
 
 #: src/audio/audio_function.c:552
 #, fuzzy
@@ -3683,16 +3688,16 @@ msgstr "Non-implémenté"
 
 #: src/audio/clip.c:670
 msgid "Edit in external app"
-msgstr ""
+msgstr "Modifier dans une application externe"
 
 #: src/audio/clip.c:695
 #, c-format
 msgid "Edit the file at <u>%s</u>, then press OK"
-msgstr ""
+msgstr "Modifiez le fichier à <u>%s</u>, puis pressez OK."
 
 #: src/audio/clip.c:711
 msgid "Launch"
-msgstr ""
+msgstr "Lancer"
 
 #: src/audio/fader.c:141
 msgid "Prefader Volume"
@@ -3868,7 +3873,7 @@ msgstr "Fixe la valeur du contrôle"
 
 #: src/actions/arranger_selections.c:416
 msgid "Arranger selections contain an undeletable object"
-msgstr ""
+msgstr "Les sélections d'arrangeurs contiennent un objet non supprimable."
 
 #: src/actions/arranger_selections.c:533 src/actions/actions.c:2435
 #, fuzzy
@@ -4151,9 +4156,8 @@ msgid "Failed to pin/unpin tracks"
 msgstr "Impossible de trouver le greffon avec l'URI:%s"
 
 #: src/actions/actions.c:1849
-#, fuzzy
 msgid "Failed to solo tracks"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de la mise en solo des pistes"
 
 #: src/actions/actions.c:1862
 #, fuzzy
@@ -4161,9 +4165,8 @@ msgid "Failed to unsolo tracks"
 msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/actions/actions.c:1875
-#, fuzzy
 msgid "Failed to mute tracks"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de la mise en sourdine des pistes"
 
 #: src/actions/actions.c:1888
 #, fuzzy
@@ -4181,14 +4184,12 @@ msgid "Failed to unlisten tracks"
 msgstr "Impossible de réinitialiser le schéma %s"
 
 #: src/actions/actions.c:1927
-#, fuzzy
 msgid "Failed to enable tracks"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de l'activation des pistes"
 
 #: src/actions/actions.c:1940
-#, fuzzy
 msgid "Failed to disable tracks"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de la désactivation des pistes"
 
 #: src/actions/actions.c:2091
 #, c-format
@@ -4196,11 +4197,12 @@ msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
 msgstr ""
+"Vous devez d'abord sélectionner soit la ligne temporelle, soit l'éditeur. La "
+"sélection actuelle est %s"
 
 #: src/actions/actions.c:2168
-#, fuzzy
 msgid "Failed to mute selections"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de la mise en sourdine des sélections"
 
 #: src/actions/actions.c:2182
 msgid "No regions selected"
@@ -4220,14 +4222,12 @@ msgid "Failed to merge selections"
 msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/actions/actions.c:2332
-#, fuzzy
 msgid "Failed to insert silence"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de l'insertion d'un silence"
 
 #: src/actions/actions.c:2355
-#, fuzzy
 msgid "Failed to remove range"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de la suppression de l'intervalle"
 
 #: src/actions/actions.c:2711
 msgid "Region name"
@@ -4239,9 +4239,8 @@ msgid "Please enter a BPM"
 msgstr "Entrer une valeur"
 
 #: src/actions/actions.c:2826
-#, fuzzy
 msgid "Failed to move selections"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec lors du déplacement des sélections"
 
 #: src/actions/actions.c:2846
 #, c-format
@@ -4274,7 +4273,7 @@ msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/actions/actions.c:3284
 msgid "Cannot delete standard bookmark"
-msgstr ""
+msgstr "Impossible de supprimer un signet standard"
 
 #: src/actions/actions.c:3296
 msgid "Are you sure you want to remove this bookmark?"
@@ -4383,9 +4382,8 @@ msgstr "Greffons"
 
 #: src/actions/mixer_selections_action.c:838
 #: src/actions/mixer_selections_action.c:1248
-#, fuzzy
 msgid "Failed to revert deleted plugin"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec au rétablissement du greffon supprimé"
 
 #: src/actions/mixer_selections_action.c:1364
 #, c-format
@@ -4456,11 +4454,11 @@ msgstr "Aucun port sélectionné"
 
 #: src/actions/tracklist_selections.c:353
 msgid "Failed to clone tracklist selections"
-msgstr ""
+msgstr "Échec du clonage des sélections de la liste de piste"
 
 #: src/actions/tracklist_selections.c:404
 msgid "Failed to clone tracklist selections: "
-msgstr ""
+msgstr "Échec du clonage des sélections de la liste de piste : "
 
 #: src/actions/tracklist_selections.c:765
 #, c-format
@@ -4713,9 +4711,8 @@ msgid "Script execution failed"
 msgstr "Exécution du script en échec"
 
 #: src/guile/actions/port_connection_action.c:50
-#, fuzzy
 msgid "Failed to connect ports"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de la connexion des ports"
 
 #: src/guile/actions/channel_send_action.c:46
 #, fuzzy
@@ -5103,11 +5100,11 @@ msgstr "Sélectionner un modèle"
 
 #: resources/ui/bug_report_dialog.ui:6
 msgid "Error"
-msgstr ""
+msgstr "Erreur"
 
 #: resources/ui/bug_report_dialog.ui:31
 msgid "What did you do?"
-msgstr ""
+msgstr "Qu’avez-vous fait ?"
 
 #: resources/ui/bug_report_dialog.ui:42
 #, fuzzy
@@ -5204,7 +5201,7 @@ msgstr "Aftertouch"
 
 #: resources/ui/playhead_scroll_buttons.ui:11
 msgid "Scroll when playhead reaches the edge"
-msgstr ""
+msgstr "Défilement lorsque la tête de lecture atteint le bord"
 
 #: resources/ui/playhead_scroll_buttons.ui:24
 #, fuzzy
@@ -5305,7 +5302,7 @@ msgstr "Information sur le port"
 
 #: resources/ui/panel_file_browser.ui:28
 msgid "Bookmarks"
-msgstr ""
+msgstr "Signets"
 
 #: resources/ui/port_selector_popover.ui:10
 msgid "Select a port..."
@@ -5317,7 +5314,7 @@ msgstr "Port"
 
 #: resources/ui/file_auditioner_controls.ui:14
 msgid "Play/Pause"
-msgstr ""
+msgstr "Lecture/pause"
 
 #: resources/ui/file_auditioner_controls.ui:21
 #: resources/ui/transport_controls.ui:38
@@ -5701,7 +5698,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:272
 msgid "First check for updates"
-msgstr ""
+msgstr "Vérifiez d'abord les mises à jour"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:273
 #, fuzzy
@@ -6085,40 +6082,48 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:496
 msgid "Playhead scroll edges (timeline)"
-msgstr ""
+msgstr "Bords de défilement de la tête de lecture (ligne temporelle)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:497
 msgid ""
 "Whether to scroll when the playhead reaches the visible edge (timeline)."
 msgstr ""
+"Si le défilement doit avoir lieu lorsque la tête de lecture atteint le bord "
+"visible (ligne temporelle)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:501
 msgid "Follow playhead (timeline)"
-msgstr ""
+msgstr "Suivre la tête de lecture (ligne temporelle)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:502
 msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
 "centered on the playhead (timeline)."
 msgstr ""
+"S'il faut suivre la tête de lecture. Lorsque cette option est activée, la "
+"zone visible reste centrée sur la tête de lecture (ligne temporelle)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:506
 msgid "Playhead scroll edges (editor)"
-msgstr ""
+msgstr "Bords de défilement de la tête de lecture (éditeur)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:507
 msgid "Whether to scroll when the playhead reaches the visible edge (editor)."
 msgstr ""
+"Si le défilement doit avoir lieu lorsque la tête de lecture atteint le bord "
+"visible (éditeur)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:511
 msgid "Follow playhead (editor)"
-msgstr ""
+msgstr "Suivre la tête de lecture (éditeur)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:512
 msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
 "centered on the playhead (editor)."
 msgstr ""
+"S'il faut suivre la tête de lecture. Lorsque cette option est activée, la "
+"zone visible reste centrée sur la tête de lecture (éditeur)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:520
 msgid "Plugin browser tab"
@@ -6181,10 +6186,11 @@ msgstr "Navigateur de fichier"
 #: build/data/org.zrythm.Zrythm.gschema.xml:555
 msgid "Location bookmarks for file browser (absolute paths)."
 msgstr ""
+"Signets des emplacements pour le navigateur de fichiers (chemins absolus)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:559
 msgid "File browser selected bookmark"
-msgstr ""
+msgstr "Signet sélectionné dans le navigateur de fichiers"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:560
 #, fuzzy
@@ -6337,7 +6343,7 @@ msgstr "Si les pistes de commentaire sont étendues."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:666
 msgid "Track visibility detached"
-msgstr ""
+msgstr "Visibilité de piste détaché"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:667
 #, fuzzy
@@ -6346,16 +6352,15 @@ msgstr "Si les pistes d'insert sont étendues."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:671
 msgid "Track visibility size"
-msgstr ""
+msgstr "Taille de la visibilité de la piste"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:672
 msgid "Track visibility panel size when detached."
-msgstr ""
+msgstr "Taille du panneau de visibilité de pistes lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:676
-#, fuzzy
 msgid "Track inspector detached"
-msgstr "Inspecteur de piste"
+msgstr "Inspecteur de piste détaché"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:677
 #, fuzzy
@@ -6369,12 +6374,11 @@ msgstr "Inspecteur de piste"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:682
 msgid "Track inspector panel size when detached."
-msgstr ""
+msgstr "Taille du panneau de l'inspecteur de piste lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:686
-#, fuzzy
 msgid "Plugin inspector detached"
-msgstr "Visualiseur de greffon"
+msgstr "Inspecteur de greffons détaché"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:687
 #, fuzzy
@@ -6388,7 +6392,7 @@ msgstr "Visualiseur de greffon"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:692
 msgid "Plugin inspector panel size when detached."
-msgstr ""
+msgstr "Taille du panneau de l'inspecteur de greffon lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:696
 #, fuzzy
@@ -6407,12 +6411,11 @@ msgstr "Filtre du navigateur de greffon"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:702
 msgid "Plugin browser panel size when detached."
-msgstr ""
+msgstr "Taille du panneau du navigateur de greffons lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:706
-#, fuzzy
 msgid "File browser detached"
-msgstr "Filtre du navigateur de greffon"
+msgstr "Navigateur de fichiers détaché"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:707
 #, fuzzy
@@ -6426,7 +6429,7 @@ msgstr "Filtre du navigateur de greffon"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:712
 msgid "File browser panel size when detached."
-msgstr ""
+msgstr "Taille du panneau du navigateur de fichiers lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:716
 #, fuzzy
@@ -6445,11 +6448,11 @@ msgstr "Entrée Moniteur"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:722
 msgid "Monitor section panel size when detached."
-msgstr ""
+msgstr "Taille du panneau de section du moniteur lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:726
 msgid "Modulator view detached"
-msgstr ""
+msgstr "Vue du modulateur détachée"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:727
 #, fuzzy
@@ -6463,11 +6466,11 @@ msgstr "Modulateurs"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:732
 msgid "Modulator view panel size when detached."
-msgstr ""
+msgstr "Taille du panneau de la vue du modulateur lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:736
 msgid "Mixer detached"
-msgstr ""
+msgstr "Mixeur détaché"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:737
 #, fuzzy
@@ -6481,11 +6484,11 @@ msgstr "Mixeur"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:742
 msgid "Mixer panel size when detached."
-msgstr ""
+msgstr "Taille du panneau du mixeur lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:746
 msgid "Clip editor detached"
-msgstr ""
+msgstr "Éditeur de clips détaché"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:747
 #, fuzzy
@@ -6494,11 +6497,11 @@ msgstr "Si le métronome est activé."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:751
 msgid "Clip editor size"
-msgstr ""
+msgstr "Taille de l'éditeur de clips"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:752
 msgid "Clip editor panel size when detached."
-msgstr ""
+msgstr "Taille du panneau de l'éditeur de clips lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:756
 #, fuzzy
@@ -6517,7 +6520,7 @@ msgstr "Table d'accord"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:762
 msgid "Chord pad panel size when detached."
-msgstr ""
+msgstr "Taille du panneau de bloc d'accords lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:766
 #, fuzzy
@@ -6530,13 +6533,12 @@ msgid "Whether the timeline panel is detached."
 msgstr "Si le métronome est activé."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:771
-#, fuzzy
 msgid "Timeline size"
-msgstr "Ligne temporelle"
+msgstr "Taille de la ligne temporelle"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:772
 msgid "Timeline panel size when detached."
-msgstr ""
+msgstr "Taille du panneau de la ligne temporelle lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:776
 #, fuzzy
@@ -6574,11 +6576,11 @@ msgstr "Connexions du port"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:792
 msgid "Port connections panel size when detached."
-msgstr ""
+msgstr "Taille du panneau des connexions des ports lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:796
 msgid "Scenes detached"
-msgstr ""
+msgstr "Scènes détachées"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:797
 #, fuzzy
@@ -6592,7 +6594,7 @@ msgstr "Scènes"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:802
 msgid "Scenes panel size when detached."
-msgstr ""
+msgstr "Taille du panneau des scènes lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:811
 msgid "Genre to use when exporting, if the file type supports it."
@@ -6684,7 +6686,7 @@ msgstr "Volume du métronome"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:881
 msgid "Count-in bars for the metronome."
-msgstr ""
+msgstr "Mesures de décompte pour le métronome."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:885
 msgid "Punch mode enabled"
@@ -6799,11 +6801,11 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:973
 msgid "Updates"
-msgstr ""
+msgstr "Mises à jour"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:977
 msgid "Check for updates"
-msgstr ""
+msgstr "Vérifier les mises à jour"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:978
 #, fuzzy
@@ -6971,7 +6973,7 @@ msgstr "La langue de l'interface de Zrythm."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1124
 msgid "CSS theme"
-msgstr ""
+msgstr "Thème CSS"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1125
 msgid "The CSS theme to use."
@@ -6979,11 +6981,11 @@ msgstr "Le thème CSS à utiliser."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1129
 msgid "Icon theme"
-msgstr ""
+msgstr "Thème d'icônes"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1130
 msgid "The icon theme to use. This is the directory name."
-msgstr ""
+msgstr "Le thème d'icône à utiliser. Il s'agit du nom du dossier."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1138
 msgid "DSP"
