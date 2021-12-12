@@ -16,6 +16,7 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 if (not sphinx_build.found ()) or (not sphinx_intl.found ()) or (not sass.found ())
+  warning ('sphinx-build/sphinx-intl/sass not found - user manual cannot be built')
   subdir_done ()
 endif
 
