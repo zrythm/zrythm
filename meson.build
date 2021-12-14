@@ -999,11 +999,15 @@ if os_darwin or os_freebsd
     cc.find_library (
       'fftw3_threads', required: true,
       static: all_static,
-      dirs: [ '/usr/lib', '/usr/local/lib' ]),
+      dirs: [
+        '/usr/lib', '/usr/local/lib',
+        '/opt/homebrew/lib' ]),
     cc.find_library (
       'fftw3f_threads', required: true,
       static: all_static,
-      dirs: [ '/usr/lib', '/usr/local/lib' ])
+      dirs: [
+        '/usr/lib', '/usr/local/lib',
+        '/opt/homebrew/lib' ]),
     ]
 else
   fftw3_deps += [
