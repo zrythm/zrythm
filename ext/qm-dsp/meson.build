@@ -17,6 +17,23 @@
 
 qm_dsp_inc = include_directories ('.')
 
+qm_dsp_lib_c_args = [
+  '-DNDEBUG',
+  '-Dkiss_fft_scalar=double',
+  '-Wall',
+  '-Wextra',
+  '-O3',
+  '-ftree-vectorize',
+  '-DUSE_PTHREADS',
+  ]
+if host_machine.cpu() == 'x86_64'
+  qm_dsp_lib_c_args += [
+    '-msse',
+    '-msse2',
+    '-mfpmath=sse',
+    ]
+endif
+
 qm_dsp_lib = static_library (
   'qm_dsp',
   'dsp/onsets/DetectionFunction.cpp',
@@ -33,18 +50,7 @@ qm_dsp_lib = static_library (
   'ext/kissfft/tools/kiss_fftr.c',
   'maths/Correlation.cpp',
   'maths/MathUtilities.cpp',
-  c_args: [
-    '-DNDEBUG',
-    '-Dkiss_fft_scalar=double',
-    '-Wall',
-    '-Wextra',
-    '-O3',
-    '-msse',
-    '-msse2',
-    '-mfpmath=sse',
-    '-ftree-vectorize',
-    '-DUSE_PTHREADS',
-    ],
+  c_args: qm_dsp_lib_c_args,
   cpp_args: [
     '-Dkiss_fft_scalar=double',
     ],
