@@ -38,17 +38,17 @@ jobs:
         displayName: 'Fetch repos'
 
       - script: |
-          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 C:\msys64\usr\bin\bash.exe --login -c "cd zrythm-installer && meson build -Ddistro=windows10-msys && ninja -C build run-mingw-lilv"
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 C:\msys64\usr\bin\bash.exe --login -c "cd zrythm-installer && /ucrt64/bin/meson.exe build -Ddistro=windows10-msys && /ucrt64/bin/ninja.exe -C build run-mingw-lilv"
         displayName: 'Install lilv'
 
       - script: |
-          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 C:\msys64\usr\bin\bash.exe --login -c "cd zrythm && meson build -Dtests=true && meson compile -C build"
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 C:\msys64\usr\bin\bash.exe --login -c "cd zrythm && /ucrt64/bin/meson.exe build -Dtests=true && /ucrt64/bin/meson.exe compile -C build"
         displayName: 'Configure and build'
 
       - script: |
-          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 C:\msys64\usr\bin\bash.exe --login -c "cd zrythm && meson test -C build"
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 C:\msys64\usr\bin\bash.exe --login -c "cd zrythm && /ucrt64/bin/meson.exe test -C build"
         displayName: 'Test'
 
       - script: |
-          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 C:\msys64\usr\bin\bash.exe --login -c "cd zrythm && meson install -C build"
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 C:\msys64\usr\bin\bash.exe --login -c "cd zrythm && /ucrt64/bin/meson.exe install -C build"
         displayName: 'Install'
