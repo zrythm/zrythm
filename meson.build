@@ -923,7 +923,7 @@ gtk_dep = dependency (
   static: all_static)
 
 libadwaita_dep = dependency (
-  'libadwaita-1', version: '>=1.0.0.alpha.4',
+  'libadwaita-1', version: '>=1.0.0.beta.1',
   fallback: ['libadwaita', 'libadwaita_dep'],
   default_options: [
     'vapi=false', 'tests=false',
@@ -1085,7 +1085,7 @@ if have_guile
 endif
 
 carla_host_plugin_dep = dependency (
-  'carla-host-plugin', version: '>=2.2.91',
+  'carla-host-plugin', version: '>=2.4.1',
   required: get_option ('carla'),
   static: all_static)
 have_carla = carla_host_plugin_dep.found ()

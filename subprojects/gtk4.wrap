@@ -1,6 +1,6 @@
 [wrap-file]
-directory = gtk-12bb700c620c8a9a29947314ab35d0f2a22d795c
+directory = gtk-4.5.1
 
-source_url = https://gitlab.gnome.org/GNOME/gtk/-/archive/12bb700c620c8a9a29947314ab35d0f2a22d795c/gtk-12bb700c620c8a9a29947314ab35d0f2a22d795c.tar.gz
-source_filename = gtk-12bb700c620c8a9a29947314ab35d0f2a22d795c.tar.gz
-source_hash = cb2dfb5eb8b59094a44ec238b24af418d8df59d428c3cc6e0b7c1f581cb2dc17
+source_url = https://gitlab.gnome.org/GNOME/gtk/-/archive/4.5.1/gtk-4.5.1.tar.gz
+source_filename = gtk-4.5.1.tar.gz
+source_hash = 89e54b504c6f4276f86019687f4c0170abe199cdf440b69f84e7fbd8c1e9b1d0
