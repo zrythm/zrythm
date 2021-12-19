@@ -364,7 +364,7 @@ illegal_char_test_args = [
 
 # GTK/GLIB versions
 pango_req = '1.50.0' # keep in sync with gtk4
-gtk_req = '4.5.0'
+gtk_req = '4.5.1'
 glib_req = '2.66.0'
 
 # --- Add extra languages ---
