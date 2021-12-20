@@ -3258,12 +3258,15 @@ DEFINE_SIMPLE (activate_port_connection_remove)
 DEFINE_SIMPLE (
   activate_panel_file_browser_add_bookmark)
 {
-  g_return_if_fail (
-    MW_PANEL_FILE_BROWSER->cur_file);
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  SupportedFile * sfile = NULL;
+  sscanf (str, "%p", &sfile);
+  g_return_if_fail (sfile != NULL);
 
   file_manager_add_location_and_save (
-    FILE_MANAGER,
-    MW_PANEL_FILE_BROWSER->cur_file->abs_path);
+    FILE_MANAGER, sfile->abs_path);
 
   EVENTS_PUSH (
     ET_FILE_BROWSER_BOOKMARK_ADDED, NULL);
@@ -3350,8 +3353,12 @@ activate_plugin_setting (
 DEFINE_SIMPLE (
   activate_plugin_browser_add_to_project)
 {
-  const PluginDescriptor * descr =
-    MW_PLUGIN_BROWSER->current_descriptors[0];
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  PluginDescriptor * descr = NULL;
+  sscanf (str, "%p", &descr);
+  g_return_if_fail (descr != NULL);
 
   PluginSetting * setting =
     plugin_setting_new_default (descr);
@@ -3364,8 +3371,12 @@ DEFINE_SIMPLE (
 DEFINE_SIMPLE (
   activate_plugin_browser_add_to_project_carla)
 {
-  const PluginDescriptor * descr =
-    MW_PLUGIN_BROWSER->current_descriptors[0];
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  PluginDescriptor * descr = NULL;
+  sscanf (str, "%p", &descr);
+  g_return_if_fail (descr != NULL);
 
   PluginSetting * setting =
     plugin_setting_new_default (descr);
@@ -3378,8 +3389,12 @@ DEFINE_SIMPLE (
 DEFINE_SIMPLE (
   activate_plugin_browser_add_to_project_bridged_ui)
 {
-  const PluginDescriptor * descr =
-    MW_PLUGIN_BROWSER->current_descriptors[0];
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  PluginDescriptor * descr = NULL;
+  sscanf (str, "%p", &descr);
+  g_return_if_fail (descr != NULL);
 
   PluginSetting * setting =
     plugin_setting_new_default (descr);
@@ -3392,8 +3407,12 @@ DEFINE_SIMPLE (
 DEFINE_SIMPLE (
   activate_plugin_browser_add_to_project_bridged_full)
 {
-  const PluginDescriptor * descr =
-    MW_PLUGIN_BROWSER->current_descriptors[0];
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  PluginDescriptor * descr = NULL;
+  sscanf (str, "%p", &descr);
+  g_return_if_fail (descr != NULL);
 
   PluginSetting * setting =
     plugin_setting_new_default (descr);

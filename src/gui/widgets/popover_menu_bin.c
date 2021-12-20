@@ -35,13 +35,17 @@ on_right_click (
 {
   PopoverMenuBinWidget * self =
     Z_POPOVER_MENU_BIN_WIDGET (user_data);
-  g_message ("right click");
+  g_debug ("right click");
   if (!self->menu_model)
-    return;
+    {
+      g_debug ("no menu model");
+      return;
+    }
 
   gtk_popover_set_pointing_to (
     GTK_POPOVER (self->popover_menu),
     &Z_GDK_RECTANGLE_INIT_UNIT ((int) x, (int) y));
+  g_debug ("popping up");
   gtk_popover_popup (
     GTK_POPOVER (self->popover_menu));
 }
@@ -65,6 +69,8 @@ popover_menu_bin_widget_set_menu_model (
 {
   if (model == self->menu_model)
     return;
+
+  self->menu_model = model;
 
   gtk_popover_menu_set_menu_model (
     self->popover_menu, model);

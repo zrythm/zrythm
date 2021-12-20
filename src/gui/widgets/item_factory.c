@@ -221,20 +221,33 @@ add_plugin_descr_context_menu (
   else
     menu = g_menu_new ();
 
-  /* set right click model */
   GMenuItem * menuitem;
+  char tmp[600];
 
-  menuitem =
-    z_gtk_create_menu_item (
-      _("Add to project"), NULL,
-      "app.plugin-browser-add-to-project");
-  g_menu_append_item (menu, menuitem);
+  /* TODO */
+#if 0
+  /* add option for native generic LV2 UI */
+  if (descr->protocol == PROT_LV2
+      &&
+      descr->min_bridge_mode == CARLA_BRIDGE_NONE)
+    {
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Add to project (native generic UI)"),
+          NULL,
+          "app.plugin-browser-add-to-project");
+      g_menu_append_item (menu, menuitem);
+    }
+#endif
 
 #ifdef HAVE_CARLA
+  sprintf (
+    tmp,
+    "app.plugin-browser-add-to-project-carla::%p",
+    descr);
   menuitem =
     z_gtk_create_menu_item (
-      _("Add to project (carla)"), NULL,
-      "app.plugin-browser-add-to-project-carla");
+      _("Add to project"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
   PluginSetting * new_setting =
@@ -244,18 +257,28 @@ add_plugin_descr_context_menu (
         CARLA_BRIDGE_NONE &&
       !new_setting->force_generic_ui)
     {
+      sprintf (
+        tmp,
+        "app.plugin-browser-add-to-project-"
+        "bridged-ui::%p",
+        descr);
       menuitem =
         z_gtk_create_menu_item (
-          _("Add to project (carla)"), NULL,
-          "app.plugin-browser-add-to-project-bridged-ui");
+          _("Add to project (bridged UI)"), NULL,
+          tmp);
       g_menu_append_item (menu, menuitem);
     }
   plugin_setting_free (new_setting);
 
+  sprintf (
+    tmp,
+    "app.plugin-browser-add-to-project-bridged-"
+    "full::%p",
+    descr);
   menuitem =
     z_gtk_create_menu_item (
-      _("Add to project (carla)"), NULL,
-      "app.plugin-browser-add-to-project-bridged-full");
+      _("Add to project (bridged full)"), NULL,
+      tmp);
   g_menu_append_item (menu, menuitem);
 #endif
 
@@ -289,7 +312,6 @@ add_plugin_descr_context_menu (
           continue;
         }
 
-      char tmp[600];
       sprintf (
         tmp,
         "app.plugin-browser-add-to-collection::%p",
@@ -331,7 +353,6 @@ add_plugin_descr_context_menu (
           continue;
         }
 
-      char tmp[600];
       sprintf (
         tmp,
         "app.plugin-browser-remove-from-collection::%p",
@@ -364,13 +385,17 @@ add_supported_file_context_menu (
 {
   GMenu * menu = g_menu_new ();
   GMenuItem * menuitem;
+  char tmp[600];
 
   if (descr->type == FILE_TYPE_DIR)
     {
+      sprintf (
+        tmp,
+        "app.panel-file-browser-add-bookmark::%p",
+        descr);
       menuitem =
         z_gtk_create_menu_item (
-          _("Add Bookmark"), "favorite",
-          "app.panel-file-browser-add-bookmark");
+          _("Add Bookmark"), "favorite", tmp);
       g_menu_append_item (menu, menuitem);
     }
 
@@ -553,8 +578,6 @@ item_factory_bind_cb (
                 GTK_EVENT_CONTROLLER (
                   drag_source));
 
-              /* FIXME wait for gtk bug fix */
-              break;
               add_plugin_descr_context_menu (
                 bin, descr);
             }
@@ -594,8 +617,6 @@ item_factory_bind_cb (
                 GTK_EVENT_CONTROLLER (
                   drag_source));
 
-              /* FIXME wait for gtk bug fix */
-              break;
               add_supported_file_context_menu (
                 bin, descr);
             }

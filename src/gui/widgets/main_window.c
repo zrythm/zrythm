@@ -776,19 +776,23 @@ main_window_widget_init (MainWindowWidget * self)
 
     /* panel file browser actions */
     { "panel-file-browser-add-bookmark",
-      activate_panel_file_browser_add_bookmark },
+      activate_panel_file_browser_add_bookmark,
+      "s" },
     { "panel-file-browser-delete-bookmark",
       activate_panel_file_browser_delete_bookmark },
 
     /* pluginbrowser actions */
     { "plugin-browser-add-to-project",
-      activate_plugin_browser_add_to_project },
+      activate_plugin_browser_add_to_project, "s" },
     { "plugin-browser-add-to-project-carla",
-      activate_plugin_browser_add_to_project_carla },
+      activate_plugin_browser_add_to_project_carla,
+      "s"},
     { "plugin-browser-add-to-project-bridged-ui",
-      activate_plugin_browser_add_to_project_bridged_ui },
+      activate_plugin_browser_add_to_project_bridged_ui,
+      "s" },
     { "plugin-browser-add-to-project-bridged-full",
-      activate_plugin_browser_add_to_project_bridged_full },
+      activate_plugin_browser_add_to_project_bridged_full,
+      "s" },
     { "plugin-browser-toggle-generic-ui",
       NULL, NULL, "false",
       change_state_plugin_browser_toggle_generic_ui },
