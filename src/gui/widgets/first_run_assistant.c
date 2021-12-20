@@ -414,7 +414,7 @@ first_run_assistant_widget_present (
   gtk_box_append (fc_btn_box, GTK_WIDGET (fc_btn));
   char * dir =
     zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
-  file_chooser_button_widget_set_current_dir (
+  file_chooser_button_widget_set_path (
     fc_btn, dir);
   g_settings_set_string (
     S_P_GENERAL_PATHS, "zrythm-dir", dir);

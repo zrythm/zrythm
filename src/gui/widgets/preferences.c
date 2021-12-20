@@ -503,8 +503,9 @@ make_control (
           char * path =
             g_settings_get_string (
               info->settings, key);
-          file_chooser_button_widget_set_current_dir (
-            Z_FILE_CHOOSER_BUTTON_WIDGET (widget),
+          file_chooser_button_widget_set_path (
+            Z_FILE_CHOOSER_BUTTON_WIDGET (
+              widget),
             path);
           g_free (path);
           CallbackData * data =
