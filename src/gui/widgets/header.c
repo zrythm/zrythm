@@ -119,8 +119,16 @@ header_widget_init (
     self->midi_in_rotated_lbl);
   gtk_widget_add_css_class (
     GTK_WIDGET (lbl), "small-vertical-lbl");
+  const char * midi_in_txt_translated =
+    /* TRANSLATORS: either leave this
+     * untranslated or make sure the translated text
+     * is max 7 characters */
+    _("MIDI in");
+  const char * midi_in_txt = midi_in_txt_translated;
+  if (g_utf8_strlen (midi_in_txt, -1) > 8)
+    midi_in_txt = "MIDI in";
   rotated_label_widget_set_markup (
-    self->midi_in_rotated_lbl, _("MIDI in"));
+    self->midi_in_rotated_lbl, midi_in_txt);
 
   /* set tooltips */
   char about_tooltip[500];

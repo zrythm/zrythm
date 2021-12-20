@@ -45,6 +45,7 @@ about_dialog_widget_new (
   const char * authors[] =
     {
       "Alexandros Theodotou <alex@zrythm.org>",
+      "Ryan Gonzalez",
       "Sascha Bast <sash@mischkonsum.org>",
       "Georg Krause",
       NULL

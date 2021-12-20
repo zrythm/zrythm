@@ -69,10 +69,16 @@ jobs:
           cd zrythm-installer
           meson build -Ddistro=windows10-msys
           ninja -C build run-mingw-lilv mingw-carla-ucrt64-build mingw-carla-mingw32-build
+      - name: Replace non-ASCII chars in TRANSLATORS
+        run: |
+          cd zrythm
+          iconv -c -f utf-8 -t ascii//TRANSLIT TRANSLATORS > TRANSLATORS2 || true
+          rm TRANSLATORS
+          mv TRANSLATORS2 TRANSLATORS
+          sed -i -e 's|"|'\''|g' TRANSLATORS
       - name: Build and test
         run: |
           cd zrythm
-          #cp /mingw32/lib/carla/carla-*-win32.exe /ucrt64/lib/carla/
           meson build -Dtests=true -Dcarla_binaries_dir_32bit=D:/a/_temp/msys64/mingw32/lib/carla
           ninja -C build
           meson test -C build
