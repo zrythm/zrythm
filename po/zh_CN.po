@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-12-10 22:38+0000\n"
-"PO-Revision-Date: 2021-10-19 03:39+0000\n"
+"PO-Revision-Date: 2021-12-12 03:52+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.10-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -895,9 +895,9 @@ msgid "Failed to make temporary dir"
 msgstr "未能创建临时目录"
 
 #: src/plugins/lv2_plugin.c:2682
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find preset with URI <%s>"
-msgstr "无法通过 URI <%s>找到插件"
+msgstr "未能通过 URI <%s>找到预设"
 
 #: src/plugins/lv2_plugin.c:2703
 #, c-format
@@ -915,9 +915,9 @@ msgid "Failed to dlopen %s: %s"
 msgstr "无法打开文件:%s"
 
 #: src/plugins/lv2_plugin.c:2773
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get dlinfo for %s"
-msgstr "未能为 %s 创建插件克隆"
+msgstr "未能获取 %s 的 dlinfo"
 
 #: src/plugins/lv2_plugin.c:2796
 #, c-format
@@ -929,28 +929,26 @@ msgid ""
 msgstr ""
 
 #: src/plugins/lv2_plugin.c:2831
-#, fuzzy
 msgid "Failed to create or init ports and parameters"
-msgstr "未能创建编曲对象"
+msgstr "未能创建或初始化端口和参数"
 
 #: src/plugins/lv2_plugin.c:2861
-#, fuzzy, c-format
+#, c-format
 msgid "Required feature %s is not supported"
-msgstr "格式 %s 尚不被支持"
+msgstr "不支持所需的功能 %s"
 
 #: src/plugins/lv2_plugin.c:2955
 msgid "Failed checking whether lv2 plugin UI is external"
 msgstr ""
 
 #: src/plugins/lv2_plugin.c:3125
-#, fuzzy, c-format
+#, c-format
 msgid "Required option %s is not supported"
-msgstr "不支持后端组合"
+msgstr "不支持所需的选项 %s"
 
 #: src/plugins/lv2_plugin.c:3187
-#, fuzzy
 msgid "lilv_plugin_instantiate() failed"
-msgstr "Carla 插件实例化失败"
+msgstr "lilv_plugin_instantiate() 失败"
 
 #: src/plugins/lv2_plugin.c:3796
 msgid "Unnamed bank"
@@ -1215,9 +1213,8 @@ msgid "JACK MIDI can only be used with JACK audio"
 msgstr "JACK MIDI只能与JACK Audio一起使用"
 
 #: src/gui/widgets/first_run_assistant.c:406
-#, fuzzy
 msgid "Select a directory"
-msgstr "选择项目"
+msgstr "选择目录"
 
 #: src/gui/widgets/project_assistant.c:351
 #: src/gui/widgets/plugin_properties_expander.c:235
@@ -1258,7 +1255,6 @@ msgid "Inserts"
 msgstr "插入"
 
 #: src/gui/widgets/midi_arranger.c:549
-#, fuzzy
 msgid "Selection"
 msgstr "选择"
 
@@ -1343,9 +1339,8 @@ msgid "Chord pad"
 msgstr "和弦垫"
 
 #: src/gui/widgets/bot_dock_edge.c:239
-#, fuzzy
 msgid "Show/hide top panel"
-msgstr "显示/隐藏 UI"
+msgstr "显示/隐藏顶部面板"
 
 #: src/gui/widgets/digital_meter.c:410
 msgid "normal"
@@ -1456,9 +1451,8 @@ msgid "Edit"
 msgstr "编辑"
 
 #: src/gui/widgets/channel_slot.c:786
-#, fuzzy
 msgid "Select"
-msgstr "_选择"
+msgstr "选择"
 
 #: src/gui/widgets/channel_slot.c:1090
 msgid "empty slot"
@@ -1622,7 +1616,6 @@ msgid "Playhead [Jack Client]"
 msgstr "Playhead[JACK客户端]"
 
 #: src/gui/widgets/bot_bar.c:165
-#, fuzzy
 msgid "Input"
 msgstr "输入"
 
@@ -1632,9 +1625,8 @@ msgid "Tap"
 msgstr ""
 
 #: src/gui/widgets/bot_bar.c:200
-#, fuzzy
 msgid "Transport display"
-msgstr "传输显示类型"
+msgstr "传输显示"
 
 #: src/gui/widgets/bot_bar.c:214
 msgid "Become JACK Transport master"
@@ -1797,7 +1789,6 @@ msgid "Custom Marker"
 msgstr "自定义标记"
 
 #: src/gui/widgets/timeline_arranger.c:949
-#, fuzzy
 msgid "Fade Preset"
 msgstr "淡入淡出预设"
 
@@ -1810,23 +1801,20 @@ msgid "Detect BPM"
 msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:1183
-#, fuzzy
 msgid "Region Functions"
-msgstr "区域内容"
+msgstr "区域功能"
 
 #: src/gui/widgets/timeline_arranger.c:1187
-#, fuzzy
 msgid "Audio Regions"
-msgstr "添加区域"
+msgstr "音频区域"
 
 #: src/gui/widgets/timeline_arranger.c:1217
 msgid "Export as MIDI file"
 msgstr "导出为MIDI文件"
 
 #: src/gui/widgets/timeline_arranger.c:1223
-#, fuzzy
 msgid "MIDI Regions"
-msgstr "MIDI In"
+msgstr "MIDI 区域"
 
 #: src/gui/widgets/timeline_arranger.c:1230 src/gui/widgets/track.c:1748
 msgid "Quick bounce"
@@ -2067,9 +2055,8 @@ msgid "[Modulator %d] %s"
 msgstr "[调制器 %d] %s"
 
 #: src/gui/widgets/main_window.c:147
-#, fuzzy
 msgid "Failed to serialize current project"
-msgstr "未能调整对象大小"
+msgstr "未能序列化当前项目"
 
 #: src/gui/widgets/main_window.c:215
 msgid "Unsaved changes"
@@ -2253,9 +2240,8 @@ msgid "Live waveform indicator"
 msgstr "现场波形指示器"
 
 #: src/gui/widgets/ruler.c:1627
-#, fuzzy
 msgid "Display"
-msgstr "BBT显示"
+msgstr "显示"
 
 #: src/gui/widgets/clip_editor_inner.c:334
 msgid "Select a region..."
@@ -2311,14 +2297,12 @@ msgid "Curviness"
 msgstr "弯曲度"
 
 #: src/gui/widgets/event_viewer.c:820
-#, fuzzy
 msgid "Selection start"
-msgstr "选择"
+msgstr "选择开头"
 
 #: src/gui/widgets/event_viewer.c:834
-#, fuzzy
 msgid "Selection end"
-msgstr "选择"
+msgstr "选择末尾"
 
 #: src/gui/widgets/cc_bindings_tree.c:199
 msgid "Device"
@@ -2489,9 +2473,8 @@ msgid "Add Bookmark"
 msgstr ""
 
 #: src/gui/widgets/file_chooser_button.c:68
-#, fuzzy
 msgid "Select path"
-msgstr "全选"
+msgstr "选择路径"
 
 #: src/gui/widgets/editor_toolbar.c:157
 msgid "Plugin Effect"
@@ -2608,14 +2591,12 @@ msgid "Bounce"
 msgstr "导出"
 
 #: src/gui/widgets/track.c:1869
-#, fuzzy
 msgid "Direct out"
 msgstr "直接输出"
 
 #: src/gui/widgets/track.c:1876
-#, fuzzy
 msgid "New direct out"
-msgstr "更改直接输出"
+msgstr "新的直接输出"
 
 #: src/gui/widgets/track.c:1909
 msgid "Rename lane..."
@@ -2715,7 +2696,6 @@ msgid "Full region"
 msgstr "完整区域"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:81
-#, fuzzy
 msgid "Region Content"
 msgstr "区域内容"
 
@@ -2728,9 +2708,8 @@ msgid "Format 1"
 msgstr "格式1"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:106
-#, fuzzy
 msgid "MIDI Format"
-msgstr "MIDI格式"
+msgstr "MIDI 格式"
 
 #: src/gui/widgets/dialogs/string_entry_dialog.c:84
 msgid "Please enter a value"
@@ -2804,9 +2783,8 @@ msgid "Opens the containing directory"
 msgstr "打开包含目录"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:62
-#, fuzzy
 msgid "Please enter steps to reproduce"
-msgstr "请输入值"
+msgstr "请输入重现步骤"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:75
 msgid "Please fill in all fields"
@@ -3248,7 +3226,6 @@ msgid "Channel Send %d MIDI out"
 msgstr "频道发出 %d MIDI"
 
 #: src/audio/channel_send.c:497 src/audio/channel_send.c:559
-#, fuzzy
 msgid "Ports cannot be connected"
 msgstr "这些端口无法连接"
 
@@ -3994,9 +3971,8 @@ msgid "Region name"
 msgstr "区域名"
 
 #: src/actions/actions.c:2750
-#, fuzzy
 msgid "Please enter a BPM"
-msgstr "请输入值"
+msgstr "请输入 BPM"
 
 #: src/actions/actions.c:2826
 msgid "Failed to move selections"
@@ -4086,12 +4062,12 @@ msgstr ""
 #: src/actions/channel_send_action.c:173
 #, fuzzy
 msgid "Failed to connect MIDI send"
-msgstr "未能连接 send"
+msgstr "连接 MIDI send 失败"
 
 #: src/actions/channel_send_action.c:199
 #, fuzzy
 msgid "Failed to connect audio send"
-msgstr "未能连接 send"
+msgstr "未能连接音频 send"
 
 #: src/actions/channel_send_action.c:266 src/actions/channel_send_action.c:332
 #, c-format
