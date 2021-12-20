@@ -13,6 +13,7 @@
       <object class="GtkAssistantPage">
         <property name="page_type">intro</property>
         <property name="title" translatable="yes">Language</property>
+        <property name="complete">True</property>
         <property name="child">
           <object class="GtkBox" id="select_project_box">
             <property name="margin-start">7</property>
