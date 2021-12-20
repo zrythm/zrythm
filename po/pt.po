@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-12-10 22:38+0000\n"
-"PO-Revision-Date: 2021-08-30 11:34+0000\n"
+"PO-Revision-Date: 2021-12-19 07:51+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8.1-dev\n"
+"X-Generator: Weblate 4.10\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -195,14 +195,12 @@ msgid "Normalize LUFS"
 msgstr "Normalizar LUFS"
 
 #: inc/audio/audio_function.h:74
-#, fuzzy
 msgid "Linear fade in"
-msgstr "Linear"
+msgstr "Fade in linear"
 
 #: inc/audio/audio_function.h:76
-#, fuzzy
 msgid "Linear fade out"
-msgstr "Saída de monitor fader"
+msgstr "Fade out linear"
 
 #: inc/audio/audio_function.h:78 src/gui/widgets/home_toolbar.c:186
 msgid "Nudge left"
@@ -1138,9 +1136,8 @@ msgstr "Ouvir"
 #: src/gui/widgets/channel.c:757
 #: src/gui/widgets/automatable_selector_popover.c:434
 #: src/gui/widgets/track.c:1836
-#, fuzzy
 msgid "Channel"
-msgstr "Canal %s"
+msgstr "Canal"
 
 #: src/gui/widgets/channel.c:767 src/gui/widgets/bot_bar.c:539
 #: src/gui/widgets/track.c:1887 src/gui/widgets/dialogs/export_dialog.c:1319
@@ -1568,24 +1565,20 @@ msgid "Failed to duplicate chords"
 msgstr "Falha ao redefinir o esquema %s"
 
 #: src/gui/widgets/arranger.c:4425 src/gui/widgets/arranger.c:4716
-#, fuzzy
 msgid "Failed resizing selection"
-msgstr "Falha ao recuperar o valor va_list: %s"
+msgstr "Falha ao redimensionar a seleção"
 
 #: src/gui/widgets/arranger.c:4532
-#, fuzzy
 msgid "Failed to edit timeline objects"
-msgstr "Falha ao redefinir o esquema %s"
+msgstr "Falha ao editar objetos da linha do tempo"
 
 #: src/gui/widgets/arranger.c:4555 src/gui/widgets/arranger.c:4578
-#, fuzzy
 msgid "Failed to resize timeline objects"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao redimensionar objetos da linha do tempo"
 
 #: src/gui/widgets/arranger.c:4601
-#, fuzzy
 msgid "Failed to resize selection"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao redimensionar a seleção"
 
 #: src/gui/widgets/arranger.c:4623
 #, fuzzy
@@ -1594,14 +1587,12 @@ msgstr "Falha ao abrir o ficheiro: %s"
 
 #: src/gui/widgets/arranger.c:4647 src/gui/widgets/arranger.c:4672
 #: src/gui/widgets/arranger.c:4694
-#, fuzzy
 msgid "Failed resizing selections"
-msgstr "Mesclar seleções"
+msgstr "Falha ao redimensionar as seleções"
 
 #: src/gui/widgets/arranger.c:4761
-#, fuzzy
 msgid "Failed to move objects"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao mover objetos"
 
 #: src/gui/widgets/arranger.c:4803
 #, fuzzy
@@ -1609,9 +1600,8 @@ msgid "Failed to link or move selection"
 msgstr "Falha ao abrir o ficheiro: %s"
 
 #: src/gui/widgets/arranger.c:4863
-#, fuzzy
 msgid "Failed to split selection"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao dividir a seleção"
 
 #: src/gui/widgets/arranger.c:4875
 #, c-format
@@ -1635,9 +1625,8 @@ msgid "chord"
 msgstr "acorde"
 
 #: src/gui/widgets/plugin_browser.c:470
-#, fuzzy
 msgid "Rename"
-msgstr "Nome da região"
+msgstr "Renomear"
 
 #: src/gui/widgets/plugin_browser.c:476
 #: src/gui/widgets/panel_file_browser.c:132
@@ -1913,9 +1902,8 @@ msgid "Scripting interface"
 msgstr "Interface de script"
 
 #: src/gui/widgets/panel_file_browser.c:274 src/gui/widgets/file_browser.c:72
-#, fuzzy
 msgid "No file selected"
-msgstr "Nenhum clipe selecionado"
+msgstr "Nenhum ficheiro selecionado"
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
@@ -1938,9 +1926,9 @@ msgid "Report a Bug"
 msgstr "Reportar um erro"
 
 #: src/gui/widgets/port_connections_tree.c:97
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to enable connection from %s to %s"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao ativar a conexão de %s para %s"
 
 #: src/gui/widgets/port_connections_tree.c:268
 msgid "Source"
@@ -1977,7 +1965,6 @@ msgid "Paste"
 msgstr "Colar"
 
 #: src/gui/widgets/home_toolbar.c:180
-#, fuzzy
 msgid "Clear selection"
 msgstr "Limpar seleção"
 
@@ -1990,14 +1977,12 @@ msgid "Loop selection"
 msgstr "Seleção de loop"
 
 #: src/gui/widgets/home_toolbar.c:209
-#, fuzzy
 msgid "Undo..."
-msgstr "Desfazer"
+msgstr "Desfazer..."
 
 #: src/gui/widgets/home_toolbar.c:212
-#, fuzzy
 msgid "Redo..."
-msgstr "Refazer"
+msgstr "Refazer..."
 
 #: src/gui/widgets/right_dock_edge.c:99 src/utils/gtk.c:1247
 msgid "Plugin Browser"
@@ -2018,13 +2003,12 @@ msgid "Show file browser"
 msgstr "Mostrar navegador de ficheiros"
 
 #: src/gui/widgets/plugin_properties_expander.c:104
-#, fuzzy
 msgid "Load Preset"
-msgstr "Predefinição de fade"
+msgstr "Carregar Predefinição"
 
 #: src/gui/widgets/plugin_properties_expander.c:110
 msgid "_Load"
-msgstr ""
+msgstr "_Carregar"
 
 #: src/gui/widgets/plugin_properties_expander.c:222
 msgid "Plugin Properties"
@@ -2061,9 +2045,8 @@ msgid "Load"
 msgstr "Carregar"
 
 #: src/gui/widgets/plugin_properties_expander.c:324
-#, fuzzy
 msgid "Load preset"
-msgstr "Predefinição de fade"
+msgstr "Carregar predefinição"
 
 #: src/gui/widgets/route_target_selector.c:88
 msgid "Cannot be routed"
@@ -2195,9 +2178,8 @@ msgid "<small>%d muted</small>"
 msgstr "<small>%d mudo</small>"
 
 #: src/gui/widgets/monitor_section.c:92
-#, fuzzy
 msgid "Currently muted tracks"
-msgstr "Desativar Silenciar Faixa"
+msgstr "Faixas atualmente silenciadas"
 
 #: src/gui/widgets/monitor_section.c:95
 #, c-format
@@ -2224,9 +2206,8 @@ msgid "Failed to unsolo all tracks"
 msgstr "Falha ao abrir o ficheiro: %s"
 
 #: src/gui/widgets/monitor_section.c:185
-#, fuzzy
 msgid "Failed to unmute all tracks"
-msgstr "Falha ao redefinir o esquema %s"
+msgstr "Falha ao ativar o som de todas as faixas"
 
 #: src/gui/widgets/monitor_section.c:223
 #, fuzzy
@@ -2239,9 +2220,8 @@ msgid "Unsolo all tracks"
 msgstr "Desfazer a Faixa Solo"
 
 #: src/gui/widgets/monitor_section.c:419
-#, fuzzy
 msgid "Unmute all tracks"
-msgstr "Desativar Silenciar Faixa"
+msgstr "Ativar o som de todas as faixas"
 
 #: src/gui/widgets/monitor_section.c:422
 #, fuzzy
@@ -2282,9 +2262,8 @@ msgid "Click to enable outputs"
 msgstr "Clique para ativar entradas"
 
 #: src/gui/widgets/folder_channel.c:162
-#, fuzzy
 msgid "Failed to move or copy track(s)"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao mover ou copiar faixa(s)"
 
 #: src/gui/widgets/file_auditioner_controls.c:275
 #: build/data/org.zrythm.Zrythm.gschema.xml:564
@@ -2299,9 +2278,8 @@ msgstr "Tipo de ficheiro não suportado %s"
 
 #: src/gui/widgets/file_auditioner_controls.c:280
 #: build/data/org.zrythm.Zrythm.gschema.xml:574
-#, fuzzy
 msgid "Show hidden files"
-msgstr "Mostrar/ocultar a IU"
+msgstr "Exibir ficheiros ocultos"
 
 #: src/gui/widgets/port_connection_row.c:58
 #, fuzzy
@@ -2309,9 +2287,8 @@ msgid "Failed to enable connection"
 msgstr "Ativar/desativar a coneção"
 
 #: src/gui/widgets/port_connection_row.c:81
-#, fuzzy
 msgid "Failed to disconnect"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao desconectar"
 
 #: src/gui/widgets/port_connection_row.c:137
 msgid "Enable/disable connection"
@@ -2560,13 +2537,12 @@ msgid "Use _Generic UI"
 msgstr "IUs genéricas"
 
 #: src/gui/widgets/item_factory.c:307
-#, fuzzy
 msgid "Add to collection"
-msgstr "Adicionar ao projeto"
+msgstr "Adicionar à coleção"
 
 #: src/gui/widgets/item_factory.c:349
 msgid "Remove from collection"
-msgstr ""
+msgstr "Remover da coleção"
 
 #: src/gui/widgets/item_factory.c:372
 msgid "Add Bookmark"
@@ -4056,14 +4032,12 @@ msgid "Failed to undo"
 msgstr "Falha ao redefinir o esquema %s"
 
 #: src/actions/actions.c:919 src/actions/undo_manager.c:276
-#, fuzzy
 msgid "Failed to redo action"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao refazer ação"
 
 #: src/actions/actions.c:925 src/actions/undo_manager.c:216
-#, fuzzy
 msgid "Failed to undo action"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao desfazer ação"
 
 #: src/actions/actions.c:951 src/guile/actions/undo_manager.c:87
 #, fuzzy
@@ -4253,9 +4227,9 @@ msgid "Failed to reset %s"
 msgstr "Falha ao reiniciar %s"
 
 #: src/actions/actions.c:3252
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to disconnect %s from %s"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao desconectar %s de %s"
 
 #: src/actions/actions.c:3284
 msgid "Cannot delete standard bookmark"
@@ -4266,15 +4240,14 @@ msgid "Are you sure you want to remove this bookmark?"
 msgstr ""
 
 #: src/actions/actions.c:3484 src/actions/actions.c:3515
-#, fuzzy
 msgid "Collection name"
-msgstr "Coleção"
+msgstr "Nome da coleção"
 
 #: src/actions/actions.c:3543
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
-msgstr ""
+msgstr "Esta coleção contém %d plugins. Tem certeza que deseja removê-la?"
 
 #: src/actions/actions.c:3731
 #, fuzzy
@@ -5547,7 +5520,7 @@ msgstr "Coleção"
 
 #: resources/ui/plugin_browser.ui:41
 msgid "Author"
-msgstr ""
+msgstr "Autor"
 
 #: resources/ui/plugin_browser.ui:55
 msgid "Category"
@@ -6745,9 +6718,8 @@ msgid "The audio backend to use."
 msgstr "O backend de áudio a usar."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:919
-#, fuzzy
 msgid "RtAudio device"
-msgstr "Entradas Áudio"
+msgstr "Aparelho RtAudio"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:920
 msgid "The name of the RtAudio device to use."
@@ -6994,17 +6966,16 @@ msgid "CSS theme"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1125
-#, fuzzy
 msgid "The CSS theme to use."
-msgstr "O algoritmo de pan para usar"
+msgstr "O tema CSS a ser utilizado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1129
 msgid "Icon theme"
-msgstr ""
+msgstr "Tema de ícones"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1130
 msgid "The icon theme to use. This is the directory name."
-msgstr ""
+msgstr "O tema de ícones a ser utilizado. Este é o nome do diretório."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1138
 msgid "DSP"
@@ -7041,13 +7012,12 @@ msgid "Scripting"
 msgstr "Interface de script"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1162
-#, fuzzy
 msgid "Default script"
-msgstr "Banco predefinido"
+msgstr "Script padrão"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1163
 msgid "The default script to use in the scripting window."
-msgstr ""
+msgstr "O script padrão a ser utilizado na janela de script."
 
 #~ msgid "Show automation lanes"
 #~ msgstr "Mostrar faixas de automação"
