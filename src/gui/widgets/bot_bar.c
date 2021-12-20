@@ -247,6 +247,8 @@ on_transport_playhead_right_click (
 void
 bot_bar_widget_refresh (BotBarWidget * self)
 {
+  bot_bar_widget_update_status (self);
+
   if (self->digital_transport)
     {
       /* FIXME */
@@ -361,8 +363,6 @@ bot_bar_widget_refresh (BotBarWidget * self)
   gtk_box_append (
     self->playhead_box,
     GTK_WIDGET (self->playhead_overlay));
-
-  bot_bar_widget_update_status (self);
 }
 
 static bool
@@ -537,6 +537,8 @@ bot_bar_widget_update_status (
     AUDIO_ENGINE->activated ? "disable" : "enable",
     AUDIO_ENGINE->activated ?
       _("Disable") : _("Enable"));
+
+  g_debug ("new status: %s", str);
 
   gtk_statusbar_push (
     MW_STATUS_BAR, MW_BOT_BAR->context_id, str);
