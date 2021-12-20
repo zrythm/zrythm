@@ -33,7 +33,7 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
               </object>
             </child>
             <child>
-              <object class="GtkComboBox" id="language_cb">
+              <object class="GtkDropDown" id="language_dropdown">
                 <property name="valign">center</property>
               </object>
             </child>

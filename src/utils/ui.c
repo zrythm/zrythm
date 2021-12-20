@@ -677,6 +677,7 @@ ui_gdk_rgba_to_hex (
  \
   return GTK_TREE_MODEL (store);
 
+#if 0
 /**
  * Creates and returns a language model for combo
  * boxes.
@@ -695,6 +696,7 @@ ui_create_language_model ()
 
   CREATE_SIMPLE_MODEL_BOILERPLATE;
 }
+#endif
 
 static GtkTreeModel *
 ui_create_audio_backends_model (void)
@@ -952,17 +954,26 @@ ui_create_samplerate_model (void)
  * languages.
  */
 void
-ui_setup_language_combo_box (
-  GtkComboBox * language)
+ui_setup_language_dropdown (
+  GtkDropDown * dropdown)
 {
-  z_gtk_configure_simple_combo_box (
-    language, ui_create_language_model ());
+  GtkStringList * string_list =
+    gtk_string_list_new (NULL);
+  const char ** lang_strings_w_codes =
+    localization_get_language_strings_w_codes ();
+  for (size_t i = 0; i < NUM_LL_LANGUAGES; i++)
+    {
+      gtk_string_list_append (
+        string_list, lang_strings_w_codes[i]);
+    }
+  gtk_drop_down_set_model (
+    dropdown, G_LIST_MODEL (string_list));
 
-  gtk_combo_box_set_active (
-    GTK_COMBO_BOX (language),
+  int active_lang =
     g_settings_get_enum (
-      S_P_UI_GENERAL,
-      "language"));
+      S_P_UI_GENERAL, "language");
+  gtk_drop_down_set_selected (
+    dropdown, (unsigned int) active_lang);
 }
 
 /**

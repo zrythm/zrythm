@@ -22,8 +22,15 @@ add_project_arguments (
   '-DGETTEXT_PACKAGE="' + meson.project_name () + '"',
   language:'c',
   )
+languages_for_gettext = []
+foreach l_key, l_mapping : locales
+  if l_key != 'en'
+    languages_for_gettext += l_key
+  endif
+endforeach
 i18n.gettext (
   meson.project_name(),
+  languages: languages_for_gettext,
   args: [
     '--directory=' + meson_src_root,
     '--msgid-bugs-address=https://todo.sr.ht/~alextee/zrythm-bug',

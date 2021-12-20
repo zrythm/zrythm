@@ -91,13 +91,17 @@ on_path_entry_changed (
 }
 
 static void
-on_enum_combo_box_active_changed (
-  GtkComboBox *  combo,
+on_enum_drop_down_selection_changed (
+  GObject    *   gobject,
+  GParamSpec *   pspec,
   CallbackData * data)
 {
+  GtkDropDown * dropdown =
+    GTK_DROP_DOWN (gobject);
   g_settings_set_enum (
     data->info->settings, data->key,
-    gtk_combo_box_get_active (combo));
+    (int)
+    gtk_drop_down_get_selected (dropdown));
 }
 
 static void
@@ -581,26 +585,29 @@ make_control (
 
           if (strv || cyaml_strv)
             {
-              widget =
-                gtk_combo_box_text_new ();
+              GtkStringList * string_list =
+                gtk_string_list_new (NULL);
               for (size_t i = 0; i < size; i++)
                 {
                   if (cyaml_strv)
                     {
-                      gtk_combo_box_text_append (
-                        GTK_COMBO_BOX_TEXT (widget),
-                        cyaml_strv[i].str,
+                      gtk_string_list_append (
+                        string_list,
                         _(cyaml_strv[i].str));
                     }
                   else if (strv)
                     {
-                      gtk_combo_box_text_append (
-                        GTK_COMBO_BOX_TEXT (widget),
-                        strv[i], _(strv[i]));
+                      gtk_string_list_append (
+                        string_list,
+                        _(strv[i]));
                     }
                 }
-              gtk_combo_box_set_active (
-                GTK_COMBO_BOX (widget),
+              widget =
+                gtk_drop_down_new (
+                  G_LIST_MODEL (string_list), NULL);
+              gtk_drop_down_set_selected (
+                GTK_DROP_DOWN (widget),
+                (unsigned int)
                 g_settings_get_enum (
                   info->settings, key));
               CallbackData * data =
@@ -609,9 +616,10 @@ make_control (
               data->preferences_widget = self;
               data->key = g_strdup (key);
               g_signal_connect_data (
-                G_OBJECT (widget), "changed",
+                G_OBJECT (widget),
+                "notify::selected",
                 G_CALLBACK (
-                  on_enum_combo_box_active_changed),
+                  on_enum_drop_down_selection_changed),
                 data,
                 (GClosureNotify)
                   on_closure_notify_delete_data,

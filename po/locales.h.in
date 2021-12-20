@@ -17,6 +17,16 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file
+ *
+ * This file must only be included in
+ * utils/localization.c.
+ *
+ * Each array can be accessed via localization_*()
+ * wrappers.
+ */
+
 #ifndef __PO_LOCALES_H__
 #define __PO_LOCALES_H__
 

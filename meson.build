@@ -139,9 +139,9 @@ language_mappings = {
   'cs': 'Czech',
   'da': 'Dansk',
   'de': 'Deutsch',
+  'el': 'Ελληνικά',
   'en': 'English',
   'en_GB': 'English UK',
-  'el': 'Ελληνικά',
   'es': 'Español',
   'et': 'Eeti',
   'fa': 'فارسی',
@@ -169,14 +169,15 @@ language_mappings = {
   'zh_CN': '简体中文',
   'zh_TW': '繁體中文',
   }
-locales_str = run_command ('cat', 'po/LINGUAS').stdout ().strip ()
-locales = {}
-foreach locale : locales_str.split (' ')
-  locales += { locale: language_mappings[locale] }
-  if locale == 'de'
-    locales += { 'en': language_mappings['en'], }
-  endif
-endforeach
+locales = language_mappings
+#locales_str = run_command ('cat', 'po/LINGUAS').stdout ().strip ()
+#locales = {}
+#foreach locale, mapping : language_mappings
+  #locales += { locale: language_mappings[locale] }
+  #if locale == 'de'
+    #locales += { 'en': language_mappings['en'], }
+  #endif
+#endforeach
 locales_str = ' '.join (locales.keys())
 
 # get host system and library suffix

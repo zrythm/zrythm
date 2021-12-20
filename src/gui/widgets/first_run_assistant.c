@@ -283,13 +283,19 @@ on_midi_backend_changed (
 
 static void
 on_language_changed (
-  GtkComboBox *  widget,
-  GtkBuilder *   builder)
+  GObject    * gobject,
+  GParamSpec * pspec,
+  GtkBuilder * builder)
 {
+  GtkDropDown * dropdown =
+    GTK_DROP_DOWN (
+      gtk_builder_get_object (
+        builder, "language_dropdown"));
+
   g_message ("language changed");
   LocalizationLanguage lang =
     (LocalizationLanguage)
-    gtk_combo_box_get_active (widget);
+    gtk_drop_down_get_selected (dropdown);
 
   /* update settings */
   g_settings_set_enum (
@@ -375,11 +381,11 @@ first_run_assistant_widget_present (
         builder, "assistant"));
 
   /* setup languages */
-  GtkComboBox * language_cb =
-    GTK_COMBO_BOX (
+  GtkDropDown * language_dropdown =
+    GTK_DROP_DOWN (
       gtk_builder_get_object (
-        builder, "language_cb"));
-  ui_setup_language_combo_box (language_cb);
+        builder, "language_dropdown"));
+  ui_setup_language_dropdown (language_dropdown);
 
   /* setup backends */
   GtkComboBox * audio_backend =
@@ -452,7 +458,7 @@ first_run_assistant_widget_present (
     G_CALLBACK (on_midi_backend_changed),
     assistant);
   g_signal_connect (
-    G_OBJECT (language_cb), "changed",
+    G_OBJECT (language_dropdown), "notify::selected",
     G_CALLBACK (on_language_changed), builder);
   file_chooser_button_widget_set_response_callback (
     fc_btn, G_CALLBACK (on_file_set), builder,
