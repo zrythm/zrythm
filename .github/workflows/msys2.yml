@@ -72,7 +72,8 @@ jobs:
       - name: Build and test
         run: |
           cd zrythm
-          meson build -Dtests=true
+          #cp /mingw32/lib/carla/carla-*-win32.exe /ucrt64/lib/carla/
+          meson build -Dtests=true -Dcarla_binaries_dir_32bit=D:/a/_temp/msys64/mingw32/lib/carla
           ninja -C build
           meson test -C build
           meson install -C build
