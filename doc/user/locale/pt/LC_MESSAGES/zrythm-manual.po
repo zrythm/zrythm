@@ -13,15 +13,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-12-10 17:08+0000\n"
-"PO-Revision-Date: 2021-12-05 13:50+0000\n"
+"PO-Revision-Date: 2021-12-19 07:51+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.10\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -1568,7 +1569,7 @@ msgstr ""
 #: ../../editing/clip-editors/toolbar.rst:18
 #: ../../zrythm-interface/bottom-panel.rst:29
 msgid "Piano Roll"
-msgstr "Cílindros de Piano"
+msgstr "Cilindros de piano"
 
 #: ../../editing/clip-editors/piano-roll.rst:10
 msgid "The piano roll is the main editor for editing MIDI regions."
@@ -8526,7 +8527,7 @@ msgstr "Mostrar todos os atalhos de teclado disponíveis."
 
 #: ../../zrythm-interface/main-toolbar.rst:104
 msgid "Donate"
-msgstr "Doar"
+msgstr "Doação"
 
 #: ../../zrythm-interface/main-toolbar.rst:105
 msgid "Donate to Zrythm through LiberaPay."
