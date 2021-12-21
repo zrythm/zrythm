@@ -1700,6 +1700,31 @@ test_replace_instrument (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_save_modulators (void)
+{
+  test_helper_zrythm_init ();
+
+#if defined (HAVE_CARLA) && defined (HAVE_GEONKICK)
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
+      GEONKICK_BUNDLE, GEONKICK_URI, false);
+  bool ret =
+    mixer_selections_action_perform_create (
+      PLUGIN_SLOT_MODULATOR,
+      track_get_name_hash (
+        P_MODULATOR_TRACK),
+      P_MODULATOR_TRACK->num_modulators,
+      setting, 1, NULL);
+  g_assert_true (ret);
+  plugin_setting_free (setting);
+
+  test_project_save_and_reload ();
+#endif
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1707,6 +1732,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/mixer_selections_action/"
 
+  g_test_add_func (
+    TEST_PREFIX "test save modulators",
+    (GTestFunc) test_save_modulators);
 #if 0
   /* needs to know if port is sidechain, not
    * implemented in carla yet */

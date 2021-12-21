@@ -507,13 +507,33 @@ track_clone (
         F_NO_PUBLISH_EVENTS);
     }
 
-  /* TODO */
   if (track->type == TRACK_TYPE_MODULATOR)
     {
       for (int i = 0; i < track->num_modulators;
            i++)
         {
+          GError * err = NULL;
+          Plugin * pl = track->modulators[i];
+          Plugin * clone_pl =
+            plugin_clone (pl, &err);
+          if (!clone_pl)
+            {
+              PROPAGATE_PREFIXED_ERROR (
+                error, err, "%s",
+                _("Failed to clone modulator "
+                "plugin"));
+              object_free_w_func_and_null (
+                track_free, new_track);
+              return NULL;
+            }
+          modulator_track_insert_modulator (
+            new_track, i, clone_pl, F_REPLACING,
+            F_NO_CONFIRM, F_GEN_AUTOMATABLES,
+            F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
         }
+      z_return_val_if_fail_cmp (
+        new_track->num_modulators, ==,
+        track->num_modulators, NULL);
     }
 
   if (track->channel)
