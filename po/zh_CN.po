@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-12-20 16:53+0000\n"
-"PO-Revision-Date: 2021-12-12 03:52+0000\n"
+"PO-Revision-Date: 2021-12-21 11:53+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10-dev\n"
+"X-Generator: Weblate 4.10\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -2451,9 +2451,8 @@ msgid "Failed to enable binding"
 msgstr "未能启用绑定"
 
 #: src/gui/widgets/item_factory.c:236
-#, fuzzy
 msgid "Add to project (native generic UI)"
-msgstr "添加到项目（桥接UI）"
+msgstr "添加到项目 （原生通用用户界面）"
 
 #: src/gui/widgets/item_factory.c:250
 msgid "Add to project"
@@ -4078,7 +4077,7 @@ msgstr "连接 MIDI send 失败"
 #: src/actions/channel_send_action.c:199
 #, fuzzy
 msgid "Failed to connect audio send"
-msgstr "未能连接音频 send"
+msgstr "连接音频 send 失败"
 
 #: src/actions/channel_send_action.c:266 src/actions/channel_send_action.c:332
 #, c-format

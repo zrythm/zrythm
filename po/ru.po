@@ -11,13 +11,14 @@
 # Artem <blinow99@mail.ru>, 2020.
 # Anna Malinovskaia <tacitcoast@gmail.com>, 2021.
 # Nikita Saschenko <neketa777@gmail.com>, 2021.
+# Mikhail Chekan <chekoopa@mail.ru>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-12-20 16:53+0000\n"
-"PO-Revision-Date: 2021-09-05 05:33+0000\n"
-"Last-Translator: Nikita Saschenko <neketa777@gmail.com>\n"
+"PO-Revision-Date: 2021-12-21 11:53+0000\n"
+"Last-Translator: Mikhail Chekan <chekoopa@mail.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
@@ -26,7 +27,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.8.1-dev\n"
+"X-Generator: Weblate 4.10\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -917,9 +918,9 @@ msgid "Failed to make temporary dir"
 msgstr "Не удалось создать временный каталог"
 
 #: src/plugins/lv2_plugin.c:2682
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find preset with URI <%s>"
-msgstr "Не удалось найти плагин с URI <%s>"
+msgstr "Не удалось найти пресет с URI <%s>"
 
 #: src/plugins/lv2_plugin.c:2703
 #, c-format
@@ -932,14 +933,14 @@ msgid "Failed to find plugin with URI <%s>"
 msgstr "Не удалось найти плагин с URI <%s>"
 
 #: src/plugins/lv2_plugin.c:2761
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to dlopen %s: %s"
-msgstr "Не удалось открыть файл: %s"
+msgstr "Не удалось открыть файл %s: %s"
 
 #: src/plugins/lv2_plugin.c:2773
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get dlinfo for %s"
-msgstr "Не удалось создать клон плагина для %s"
+msgstr "Не удалось выполнить dlinfo для %s"
 
 #: src/plugins/lv2_plugin.c:2796
 #, c-format
