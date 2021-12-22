@@ -184,7 +184,6 @@ static void
 draw_playhead (
   ArrangerWidget * self,
   GtkSnapshot *    snapshot,
-  cairo_t *        cr,
   GdkRectangle *   rect)
 {
   int cur_playhead_px =
@@ -193,12 +192,16 @@ draw_playhead (
   /*int px = self->queued_playhead_px;*/
   /*g_message ("drawing %d", px);*/
 
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+
   if (px >= rect->x && px <= rect->x + rect->width)
     {
       gtk_snapshot_append_color (
         snapshot, &Z_GDK_RGBA_INIT (1, 0, 0, 1),
         &GRAPHENE_RECT_INIT (
-          px - 1, 0, 2, rect->height));
+          px - 1, 0, 2, height));
       self->last_playhead_px = px;
     }
 }
@@ -206,7 +209,8 @@ draw_playhead (
 static void
 draw_timeline_bg (
   ArrangerWidget * self,
-  cairo_t *        cr,
+  GtkSnapshot *    snapshot,
+  const int        width,
   GdkRectangle *   rect)
 {
   /* handle horizontal drawing for tracks */
@@ -251,12 +255,12 @@ draw_timeline_bg (
       if (line_y >= rect->y &&
           line_y < rect->y + rect->height)
         {
-          cairo_set_source_rgb (
-            self->cached_cr, 0.3, 0.3, 0.3);
-          cairo_rectangle (
-            cr, 0, (line_y - rect->y) - 1,
-            rect->width, 2);
-          cairo_fill (cr);
+          gtk_snapshot_append_color (
+            snapshot,
+            &Z_GDK_RGBA_INIT (0.3, 0.3, 0.3, 1),
+            &GRAPHENE_RECT_INIT (
+              0, (float) (line_y - 1),
+              width, 2));
         }
 
       double total_height = track->main_height;
@@ -278,11 +282,15 @@ draw_timeline_bg (
                   OFFSET_PLUS_TOTAL_HEIGHT  <
                     rect->y + rect->height)
                 {
-                  z_cairo_draw_horizontal_line (
-                    cr,
-                    OFFSET_PLUS_TOTAL_HEIGHT -
-                      rect->y,
-                    0, rect->width, 0.5, 0.4);
+                  gtk_snapshot_append_color (
+                    snapshot,
+                    &Z_GDK_RGBA_INIT (
+                      0.7, 0.7, 0.7, 0.4),
+                    &GRAPHENE_RECT_INIT (
+                      0,
+                      (float)
+                      OFFSET_PLUS_TOTAL_HEIGHT,
+                      width, 1));
                 }
 
               total_height += (double) lane->height;
@@ -314,11 +322,15 @@ draw_timeline_bg (
                   OFFSET_PLUS_TOTAL_HEIGHT  <
                     rect->y + rect->height)
                 {
-                  z_cairo_draw_horizontal_line (
-                    cr,
-                    OFFSET_PLUS_TOTAL_HEIGHT -
-                      rect->y,
-                    0, rect->width, 0.5, 0.2);
+                  gtk_snapshot_append_color (
+                    snapshot,
+                    &Z_GDK_RGBA_INIT (
+                      0.7, 0.7, 0.7, 0.2),
+                    &GRAPHENE_RECT_INIT (
+                      0,
+                      (float)
+                      OFFSET_PLUS_TOTAL_HEIGHT,
+                      width, 1));
                 }
 
               float normalized_val =
@@ -344,34 +356,18 @@ draw_timeline_bg (
                   normalized_val);
 
               /* line at current val */
-              cairo_set_source_rgba (
-                cr,
-                track->color.red,
-                track->color.green,
-                track->color.blue,
-                0.3);
-              cairo_rectangle (
-                cr, 0,
-                (OFFSET_PLUS_TOTAL_HEIGHT + y_px) -
-                  rect->y,
-                rect->width, 1);
-              cairo_fill (cr);
-
-              /* show shade under the line */
-              /*cairo_set_source_rgba (*/
-                /*cr,*/
-                /*track->color.red,*/
-                /*track->color.green,*/
-                /*track->color.blue,*/
-                /*0.06);*/
-              /*cairo_rectangle (*/
-                /*cr,*/
-                /*0,*/
-                /*(OFFSET_PLUS_TOTAL_HEIGHT + y_px) -*/
-                  /*rect->y,*/
-                /*rect->width,*/
-                /*at->height - y_px);*/
-              /*cairo_fill (cr);*/
+              gtk_snapshot_append_color (
+                snapshot,
+                &Z_GDK_RGBA_INIT (
+                  track->color.red,
+                  track->color.green,
+                  track->color.blue,
+                  0.3),
+                &GRAPHENE_RECT_INIT (
+                  0,
+                  (float)
+                  (OFFSET_PLUS_TOTAL_HEIGHT + y_px),
+                  width, 1));
 
               total_height += (double) at->height;
             }
@@ -380,23 +376,10 @@ draw_timeline_bg (
 }
 
 static void
-draw_borders (
-  ArrangerWidget * self,
-  cairo_t *        cr,
-  int              x_from,
-  int              x_to,
-  double           y_offset)
-{
-  cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
-  cairo_rectangle (
-    cr, x_from, (int) y_offset, x_to - x_from, 0.5);
-  cairo_fill (cr);
-}
-
-static void
 draw_midi_bg (
   ArrangerWidget * self,
-  cairo_t *        cr,
+  GtkSnapshot *    snapshot,
+  const int        width,
   GdkRectangle *   rect)
 {
   /* px per key adjusted for border width */
@@ -415,22 +398,24 @@ draw_midi_bg (
       if (y_offset > rect->y &&
           y_offset < (rect->y + rect->height))
         {
-          draw_borders (
-            self, cr, 0, rect->width,
-            y_offset - rect->y);
+          gtk_snapshot_append_color (
+            snapshot,
+            &Z_GDK_RGBA_INIT (0.7, 0.7, 0.7, 0.5),
+            &GRAPHENE_RECT_INIT (
+              0, (float) y_offset, width, 1));
           if (piano_roll_is_key_black (
                 PIANO_ROLL->piano_descriptors[i]->
                   value))
             {
-              cairo_set_source_rgba (
-                cr, 0, 0, 0, 0.2);
-              cairo_rectangle (
-                cr, 0,
-                /* + 1 since the border is
-                 * bottom */
-                (int) ((y_offset - rect->y) + 1),
-                rect->width, (int) adj_px_per_key);
-              cairo_fill (cr);
+              gtk_snapshot_append_color (
+                snapshot,
+                &Z_GDK_RGBA_INIT (0, 0, 0, 0.2),
+                &GRAPHENE_RECT_INIT (
+                  0,
+                  /* + 1 since the border is
+                   * bottom */
+                  (int) (y_offset + 1),
+                  width, (int) adj_px_per_key));
             }
         }
       bool drum_mode =
@@ -444,14 +429,15 @@ draw_midi_bg (
            && PIANO_ROLL->piano_descriptors[i]->value
            == MW_MIDI_ARRANGER->hovered_note))
         {
-          cairo_set_source_rgba (
-            cr, 1, 1, 1, 0.06);
-          cairo_rectangle (
-            cr, 0,
-            /* + 1 since the border is bottom */
-            (y_offset - rect->y) + 1,
-            rect->width, adj_px_per_key);
-          cairo_fill (cr);
+          gtk_snapshot_append_color (
+            snapshot,
+            &Z_GDK_RGBA_INIT (1, 1, 1, 0.06),
+            &GRAPHENE_RECT_INIT (
+              0,
+              /* + 1 since the border is
+               * bottom */
+              (int) (y_offset + 1),
+              width, (int) adj_px_per_key));
         }
     }
 }
@@ -459,28 +445,28 @@ draw_midi_bg (
 static void
 draw_velocity_bg (
   ArrangerWidget * self,
-  cairo_t *        cr,
+  GtkSnapshot *    snapshot,
+  const int        width,
+  const int        height,
   GdkRectangle *   rect)
 {
-  int height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
-  cairo_set_source_rgba (
-    cr, 1, 1, 1, 0.2);
   for (int i = 1; i < 4; i++)
     {
       double y_offset = height * (i / 4.0);
-      cairo_rectangle (
-        cr, 0, y_offset - rect->y,
-        rect->width, 1);
-      cairo_fill (cr);
+      gtk_snapshot_append_color (
+        snapshot,
+        &Z_GDK_RGBA_INIT (1, 1, 1, 0.2),
+        &GRAPHENE_RECT_INIT (
+          0, (float) y_offset,
+          width, 1));
     }
 }
 
 static void
 draw_audio_bg (
   ArrangerWidget * self,
-  cairo_t *        cr,
+  GtkSnapshot *    snapshot,
+  int              height,
   GdkRectangle *   rect)
 {
   ZRegion * ar =
@@ -501,10 +487,6 @@ draw_audio_bg (
   Track * track =
     track_lane_get_track (lane);
   g_return_if_fail (lane);
-
-  int height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
 
   AudioClip * clip =
     AUDIO_POOL->clips[ar->pool_id];
@@ -567,7 +549,6 @@ draw_audio_bg (
   color_morph (
     &base_color, &track->color, 0.5, &fade_color);
   fade_color.alpha = 0.5;
-  gdk_cairo_set_source_rgba (cr, &fade_color);
   for (double i = local_start_x;
        i < local_end_x; i += increment)
     {
@@ -611,7 +592,7 @@ draw_audio_bg (
       else
         continue;
 
-      /* invert because cairo draws the other
+      /* invert because gtk draws the other
        * way around */
       max = 1.0 - max;
 
@@ -621,10 +602,11 @@ draw_audio_bg (
           (double) max * (double) height,
           (double) height) - rect->y) - from_y;
 
-      cairo_rectangle (
-        cr, i - rect->x, from_y, width,
-        draw_height);
-      cairo_fill (cr);
+      gtk_snapshot_append_color (
+        snapshot, &fade_color,
+        &GRAPHENE_RECT_INIT (
+          (float) i, (float) from_y,
+          (float) width, (float) draw_height));
 
       if (curr_frames >= clip->num_frames)
         break;
@@ -632,10 +614,9 @@ draw_audio_bg (
 
   /* draw audio part */
   GdkRGBA * color = &track->color;
-  cairo_set_source_rgba (
-    cr, color->red + 0.3, color->green + 0.3,
-    color->blue + 0.3, 0.9);
-  cairo_set_line_width (cr, 1);
+  GdkRGBA audio_lines_color = {
+    color->red + 0.3, color->green + 0.3,
+    color->blue + 0.3, 0.9 };
   for (double i = local_start_x;
        i < local_end_x; i += increment)
     {
@@ -673,23 +654,12 @@ draw_audio_bg (
                 }
             }
         }
-#define DRAW_VLINE(cr,x,from_y,_height) \
-  switch (detail) \
-    { \
-    case UI_DETAIL_HIGH: \
-      cairo_rectangle ( \
-        cr, x, from_y, \
-        width, _height); \
-      break; \
-    case UI_DETAIL_NORMAL: \
-    case UI_DETAIL_LOW: \
-    case UI_DETAIL_ULTRA_LOW: \
-      cairo_rectangle ( \
-        cr, (int) (x), (int) (from_y), \
-        width, (int) _height); \
-      break; \
-    } \
-  cairo_fill (cr)
+#define DRAW_VLINE(x,from_y,_height) \
+  gtk_snapshot_append_color ( \
+    snapshot, &audio_lines_color, \
+    &GRAPHENE_RECT_INIT ( \
+      (float) (x), (float) (from_y), \
+      (float) width, (float) (_height)))
 
       min = (min + 1.f) / 2.f; /* normallize */
       max = (max + 1.f) / 2.f; /* normalize */
@@ -701,9 +671,8 @@ draw_audio_bg (
           (double) max * (double) height,
           (double) height) - rect->y) - from_y;
       DRAW_VLINE (
-        cr,
         /* x */
-        i - rect->x,
+        i,
         /* from y */
         from_y,
         /* to y */
@@ -715,41 +684,41 @@ draw_audio_bg (
       prev_frames = curr_frames;
     }
 #undef DRAW_VLINE
-  cairo_fill (cr);
 
   /* draw gain line */
-  gdk_cairo_set_source_rgba (
-    cr, &UI_COLORS->bright_orange);
   float gain_fader_val =
     math_get_fader_val_from_amp (ar->gain);
   int gain_line_start_x =
     ui_pos_to_px_editor (&obj->pos, F_PADDING);
   int gain_line_end_x =
     ui_pos_to_px_editor (&obj->end_pos, F_PADDING);
-  cairo_rectangle (
-    cr,
-    /* need 1 pixel extra for some reason */
-    1 + (gain_line_start_x - rect->x),
-    /* invert because cairo draws the opposite
-     * way */
-    height * (1.0 - gain_fader_val) - rect->y,
-    gain_line_end_x - gain_line_start_x,
-    2);
-  cairo_fill (cr);
+  gtk_snapshot_append_color (
+    snapshot, &UI_COLORS->bright_orange,
+    &GRAPHENE_RECT_INIT (
+      /* need 1 pixel extra for some reason */
+      1.f + (float) gain_line_start_x,
+      /* invert because gtk draws the opposite
+       * way */
+      (float) (height * (1.0 - gain_fader_val)),
+      (float) (gain_line_end_x - gain_line_start_x),
+      2));
 
   /* draw gain text */
   double gain_db = math_amp_to_dbfs (ar->gain);
   char gain_txt[50];
   sprintf (gain_txt, "%.1fdB", gain_db);
   int gain_txt_padding = 3;
-  z_cairo_draw_text_full (
-    cr, GTK_WIDGET (self), self->audio_layout,
-    gain_txt,
-    (gain_txt_padding + gain_line_start_x) -
-      rect->x,
+  pango_layout_set_markup (
+    self->audio_layout, gain_txt, -1);
+  GtkStyleContext * style_ctx =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self));
+  gtk_snapshot_render_layout (
+    snapshot, style_ctx,
+    gain_txt_padding + gain_line_start_x,
     gain_txt_padding +
-      (int)
-      (height * (1.0 - gain_fader_val) - rect->y));
+      (int) (height * (1.0 - gain_fader_val)),
+    self->audio_layout);
 }
 
 static void
@@ -757,7 +726,6 @@ draw_vertical_lines (
   ArrangerWidget * self,
   RulerWidget *    ruler,
   GtkSnapshot *    snapshot,
-  cairo_t *        cr,
   GdkRectangle *   rect)
 {
   const GdkRGBA thick_color =
@@ -770,6 +738,10 @@ draw_vertical_lines (
   const int thick_width = 1;
   const int thinner_width = 1;
   const int thinnest_width = 1;
+
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
 
   /* if time display */
   if (self->ruler_display == TRANSPORT_DISPLAY_TIME)
@@ -803,7 +775,7 @@ draw_vertical_lines (
             snapshot, &thick_color,
             &GRAPHENE_RECT_INIT (
               (float) curr_px, 0,
-              thick_width, rect->height));
+              thick_width, height));
         }
       i = 0;
       if (ten_sec_interval > 0)
@@ -821,7 +793,7 @@ draw_vertical_lines (
                 snapshot, &thinner_color,
                 &GRAPHENE_RECT_INIT (
                   (float) curr_px, 0,
-                  thinner_width, rect->height));
+                  thinner_width, height));
             }
         }
       i = 0;
@@ -840,7 +812,7 @@ draw_vertical_lines (
                 snapshot, &thinnest_color,
                 &GRAPHENE_RECT_INIT (
                   (float) curr_px, 0,
-                  thinnest_width, rect->height));
+                  thinnest_width, height));
             }
         }
     }
@@ -878,7 +850,7 @@ draw_vertical_lines (
             snapshot, &thick_color,
             &GRAPHENE_RECT_INIT (
               (float) curr_px, 0,
-              thick_width, rect->height));
+              thick_width, height));
         }
       i = 0;
       if (beat_interval > 0)
@@ -896,7 +868,7 @@ draw_vertical_lines (
                 snapshot, &thinner_color,
                 &GRAPHENE_RECT_INIT (
                   (float) curr_px, 0,
-                  thinner_width, rect->height));
+                  thinner_width, height));
             }
         }
       i = 0;
@@ -915,7 +887,7 @@ draw_vertical_lines (
                 snapshot, &thinnest_color,
                 &GRAPHENE_RECT_INIT (
                   (float) curr_px, 0,
-                  thinnest_width, rect->height));
+                  thinnest_width, height));
             }
         }
     }
@@ -924,50 +896,37 @@ draw_vertical_lines (
 static void
 draw_range (
   ArrangerWidget * self,
+  GtkSnapshot *    snapshot,
   int              range_first_px,
   int              range_second_px,
-  GdkRectangle *   rect,
-  cairo_t *        cr)
+  GdkRectangle *   rect)
 {
-  /* draw range */
-  cairo_set_source_rgba (
-    cr, 0.3, 0.3, 0.3, 0.3);
-  cairo_rectangle (
-    cr,
-    MAX (0, range_first_px - rect->x), 0,
-    range_second_px -
-      MAX (rect->x, range_first_px),
-    rect->height);
-  cairo_fill (cr);
-  cairo_set_source_rgba (
-    cr, 0.8, 0.8, 0.8, 0.4);
-  cairo_set_line_width (cr, 2);
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
 
-  /* if start is within the screen */
-  if (range_first_px > rect->x &&
-      range_first_px <= rect->x + rect->width)
-    {
-      /* draw the start line */
-      double x =
-        (range_first_px - rect->x) + 1.0;
-      cairo_move_to (
-        cr, x, 0);
-      cairo_line_to (
-        cr, x, rect->height);
-      cairo_stroke (cr);
-    }
-  /* if end is within the screen */
-  if (range_second_px > rect->x &&
-      range_second_px < rect->x + rect->width)
-    {
-      double x =
-        (range_second_px - rect->x) - 1.0;
-      cairo_move_to (
-        cr, x, 0);
-      cairo_line_to (
-        cr, x, rect->height);
-      cairo_stroke (cr);
-    }
+  /* draw range */
+  gtk_snapshot_append_color (
+    snapshot,
+    &Z_GDK_RGBA_INIT (0.3, 0.3, 0.3, 0.3),
+    &GRAPHENE_RECT_INIT (
+      (float) MAX (0, range_first_px), 0,
+      (float) (range_second_px - range_first_px),
+      height));
+
+  /* draw start and end lines */
+  const int line_width = 2;
+  const GdkRGBA color = { 0.8, 0.8, 0.8, 0.4 };
+  gtk_snapshot_append_color (
+    snapshot, &color,
+    &GRAPHENE_RECT_INIT (
+      (float) range_first_px + 1.f, 0, line_width,
+      height));
+  gtk_snapshot_append_color (
+    snapshot, &color,
+    &GRAPHENE_RECT_INIT (
+      (float) range_second_px + 1.f, 0, line_width,
+      height));
 }
 
 void
@@ -987,6 +946,13 @@ arranger_snapshot (
     &visible_rect_gdk, &visible_rect);
 
   gint64 start_time = g_get_monotonic_time ();
+
+  int width =
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (self));
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
 
   RulerWidget * ruler =
     arranger_widget_get_ruler (self);
@@ -1098,14 +1064,14 @@ arranger_snapshot (
         snapshot, &loop_color,
         &GRAPHENE_RECT_INIT (
           (float) start_px + 1.f, 0, 2,
-          visible_rect.size.height));
+          height));
 
       /* draw loop end line */
       gtk_snapshot_append_color (
         snapshot, &loop_color,
         &GRAPHENE_RECT_INIT (
           (float) end_px + 1.f, 0, 2,
-          visible_rect.size.height));
+          height));
 
       /* draw transport loop area */
       double loop_start_x = MAX (0, start_px);
@@ -1115,14 +1081,13 @@ arranger_snapshot (
         &GRAPHENE_RECT_INIT (
           (float) loop_start_x, 0,
           (float) (end_px - start_px),
-          visible_rect.size.height));
+          height));
     }
 
   /* --- handle vertical drawing --- */
 
   draw_vertical_lines (
-    self, ruler, snapshot, self->cached_cr,
-    &visible_rect_gdk);
+    self, ruler, snapshot, &visible_rect_gdk);
 
   /* draw range */
   int range_first_px, range_second_px;
@@ -1190,29 +1155,33 @@ arranger_snapshot (
   if (have_range)
     {
       draw_range (
-        self, range_first_px, range_second_px,
-        &visible_rect_gdk, self->cached_cr);
+        self, snapshot,
+        range_first_px, range_second_px,
+        &visible_rect_gdk);
     }
 
   if (self->type == TYPE (TIMELINE))
     {
       draw_timeline_bg (
-        self, self->cached_cr, &visible_rect_gdk);
+        self, snapshot, width,
+        &visible_rect_gdk);
     }
   else if (self->type == TYPE (MIDI))
     {
       draw_midi_bg (
-        self, self->cached_cr, &visible_rect_gdk);
+        self, snapshot, width, &visible_rect_gdk);
     }
   else if (self->type == TYPE (MIDI_MODIFIER))
     {
       draw_velocity_bg (
-        self, self->cached_cr, &visible_rect_gdk);
+        self, snapshot, height, width,
+        &visible_rect_gdk);
     }
   else if (self->type == TYPE (AUDIO))
     {
       draw_audio_bg (
-        self, self->cached_cr, &visible_rect_gdk);
+        self, snapshot, height,
+        &visible_rect_gdk);
     }
 
   /* draw each arranger object */
@@ -1242,8 +1211,7 @@ arranger_snapshot (
     self, self->cached_cr, &visible_rect_gdk);
 
   draw_playhead (
-    self, snapshot, self->cached_cr,
-    &visible_rect_gdk);
+    self, snapshot, &visible_rect_gdk);
 
   cairo_set_antialias (
     self->cached_cr, antialias);
