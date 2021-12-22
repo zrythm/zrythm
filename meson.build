@@ -1157,12 +1157,8 @@ endif
 rtaudio_dep = dependency (
   'rtaudio', required: get_option ('rtaudio'),
   version: '>=5.1.0',
+  fallback: ['rtaudio', 'zrythm_rtaudio_dep'],
   static: all_static)
-if not rtaudio_dep.found() and not get_option ('rtaudio').disabled ()
-  rtaudio_proj = subproject('rtaudio')
-  rtaudio_dep = rtaudio_proj.get_variable(
-    'zrythm_rtaudio_dep')
-endif
 if rtaudio_dep.found ()
   cdata.set('HAVE_RTAUDIO', 1)
 endif
