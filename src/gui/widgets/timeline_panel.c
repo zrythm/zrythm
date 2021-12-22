@@ -106,6 +106,8 @@ timeline_panel_widget_setup (
     ARRANGER_WIDGET_TYPE_TIMELINE,
     SNAP_GRID_TIMELINE);
   self->pinned_timeline->is_pinned = 1;
+  gtk_widget_add_css_class (
+    GTK_WIDGET (self->pinned_timeline), "pinned");
   arranger_widget_setup (
     Z_ARRANGER_WIDGET (self->pinned_timeline),
     ARRANGER_WIDGET_TYPE_TIMELINE,

@@ -531,6 +531,8 @@ tracklist_widget_init (TracklistWidget * self)
   gtk_widget_set_name (
     GTK_WIDGET (self->pinned_box),
     "tracklist-pinned-box");
+  gtk_widget_set_margin_bottom (
+    GTK_WIDGET (self->pinned_box), 3);
 
   self->unpinned_scroll =
     GTK_SCROLLED_WINDOW (

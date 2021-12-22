@@ -6897,21 +6897,30 @@ arranger_widget_setup (
     {
     case TYPE (TIMELINE):
       /* make drag dest */
+      gtk_widget_add_css_class (
+        GTK_WIDGET (self), "timeline-arranger");
       timeline_arranger_setup_drag_dest (self);
       break;
     case TYPE (AUTOMATION):
+      gtk_widget_add_css_class (
+        GTK_WIDGET (self), "automation-arranger");
       self->ap_layout =
         z_cairo_create_pango_layout_from_string (
           GTK_WIDGET (self), "8",
           PANGO_ELLIPSIZE_NONE, 0);
       break;
     case TYPE (MIDI_MODIFIER):
+      gtk_widget_add_css_class (
+        GTK_WIDGET (self),
+        "midi-modifier-arranger");
       self->vel_layout =
         z_cairo_create_pango_layout_from_string (
           GTK_WIDGET (self), "8",
           PANGO_ELLIPSIZE_NONE, 0);
       break;
     case TYPE (AUDIO):
+      gtk_widget_add_css_class (
+        GTK_WIDGET (self), "audio-arranger");
       self->audio_layout =
         z_cairo_create_pango_layout_from_string (
           GTK_WIDGET (self), "8",
@@ -7054,6 +7063,8 @@ arranger_widget_class_init (
 
   gtk_widget_class_set_layout_manager_type (
     wklass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_css_name (
+    wklass, "arranger");
 }
 
 static void
