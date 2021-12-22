@@ -183,6 +183,7 @@ draw_arranger_object (
 static void
 draw_playhead (
   ArrangerWidget * self,
+  GtkSnapshot *    snapshot,
   cairo_t *        cr,
   GdkRectangle *   rect)
 {
@@ -194,33 +195,11 @@ draw_playhead (
 
   if (px >= rect->x && px <= rect->x + rect->width)
     {
-      cairo_set_source_rgba (
-        cr, 1, 0, 0, 1);
-      switch (ui_get_detail_level ())
-        {
-        case UI_DETAIL_HIGH:
-          cairo_rectangle (
-            cr, (px - rect->x) - 1, 0, 2,
-            rect->height);
-          break;
-        case UI_DETAIL_NORMAL:
-        case UI_DETAIL_LOW:
-        case UI_DETAIL_ULTRA_LOW:
-          cairo_rectangle (
-            cr, (int) (px - rect->x) - 1, 0, 2,
-            (int) rect->height);
-          break;
-        }
-      cairo_fill (cr);
+      gtk_snapshot_append_color (
+        snapshot, &Z_GDK_RGBA_INIT (1, 0, 0, 1),
+        &GRAPHENE_RECT_INIT (
+          px - 1, 0, 2, rect->height));
       self->last_playhead_px = px;
-
-#if 0
-      if (cur_playhead_px !=
-            self->queued_playhead_px)
-        {
-          arranger_widget_redraw_playhead (self);
-        }
-#endif
     }
 }
 
@@ -1054,246 +1033,240 @@ arranger_snapshot (
       gtk_adjustment_set_value (vadj, new_y);
     }
 
-  if (self->redraw ||
-      !graphene_rect_equal (
-         &visible_rect, &self->last_rect))
+  /* skip drawing if rectangle too large */
+  if (visible_rect.size.width > 10000 ||
+      visible_rect.size.height > 10000)
     {
-      /* skip drawing if rectangle too large */
-      if (visible_rect.size.width > 10000 ||
-          visible_rect.size.height > 10000)
+      g_warning (
+        "skipping draw - rectangle too large");
+      cairo_destroy (cr);
+      return;
+    }
+
+  /*g_message (*/
+    /*"redrawing arranger in rect: "*/
+    /*"(%d, %d) width: %d height %d)",*/
+    /*rect.x, rect.y, rect.width, rect.height);*/
+  self->last_rect = visible_rect;
+
+  GtkStyleContext *context =
+    gtk_widget_get_style_context (widget);
+
+  z_cairo_reset_caches (
+    &self->cached_cr,
+    &self->cached_surface,
+    visible_rect_gdk.width,
+    visible_rect_gdk.height, cr);
+
+  cairo_antialias_t antialias =
+    cairo_get_antialias (self->cached_cr);
+  double tolerance =
+    cairo_get_tolerance (self->cached_cr);
+  cairo_set_antialias (
+    self->cached_cr, CAIRO_ANTIALIAS_FAST);
+  cairo_set_tolerance (self->cached_cr, 1.5);
+
+  gtk_render_background (
+    context, self->cached_cr, 0, 0,
+    visible_rect.size.width,
+    visible_rect.size.height);
+
+  /* draw loop background */
+  if (TRANSPORT->loop)
+    {
+      double start_px = 0, end_px = 0;
+      if (self->type == TYPE (TIMELINE))
         {
-          g_warning (
-            "skipping draw - rectangle too large");
-          cairo_destroy (cr);
-          return;
+          start_px =
+            ui_pos_to_px_timeline (
+              &TRANSPORT->loop_start_pos, 1);
+          end_px =
+            ui_pos_to_px_timeline (
+              &TRANSPORT->loop_end_pos, 1);
         }
-
-      /*g_message (*/
-        /*"redrawing arranger in rect: "*/
-        /*"(%d, %d) width: %d height %d)",*/
-        /*rect.x, rect.y, rect.width, rect.height);*/
-      self->last_rect = visible_rect;
-
-      GtkStyleContext *context =
-        gtk_widget_get_style_context (widget);
-
-      z_cairo_reset_caches (
-        &self->cached_cr,
-        &self->cached_surface,
-        visible_rect_gdk.width,
-        visible_rect_gdk.height, cr);
-
-      cairo_antialias_t antialias =
-        cairo_get_antialias (self->cached_cr);
-      double tolerance =
-        cairo_get_tolerance (self->cached_cr);
-      cairo_set_antialias (
-        self->cached_cr, CAIRO_ANTIALIAS_FAST);
-      cairo_set_tolerance (self->cached_cr, 1.5);
-
-      gtk_render_background (
-        context, self->cached_cr, 0, 0,
-        visible_rect.size.width,
-        visible_rect.size.height);
-
-      /* draw loop background */
-      if (TRANSPORT->loop)
+      else
         {
-          double start_px = 0, end_px = 0;
-          if (self->type == TYPE (TIMELINE))
-            {
-              start_px =
-                ui_pos_to_px_timeline (
-                  &TRANSPORT->loop_start_pos, 1);
-              end_px =
-                ui_pos_to_px_timeline (
-                  &TRANSPORT->loop_end_pos, 1);
-            }
-          else
-            {
-              start_px =
-                ui_pos_to_px_editor (
-                  &TRANSPORT->loop_start_pos, 1);
-              end_px =
-                ui_pos_to_px_editor (
-                  &TRANSPORT->loop_end_pos, 1);
-            }
-          cairo_set_source_rgba (
-            self->cached_cr, 0, 0.9, 0.7, 0.08);
-          cairo_set_line_width (
-            self->cached_cr, 2);
+          start_px =
+            ui_pos_to_px_editor (
+              &TRANSPORT->loop_start_pos, 1);
+          end_px =
+            ui_pos_to_px_editor (
+              &TRANSPORT->loop_end_pos, 1);
+        }
+      cairo_set_source_rgba (
+        self->cached_cr, 0, 0.9, 0.7, 0.08);
+      cairo_set_line_width (
+        self->cached_cr, 2);
 
-          /* if transport loop start is within the
-           * screen */
-          if (start_px > visible_rect.origin.x &&
-              start_px <= visible_rect.origin.x + visible_rect.size.width)
-            {
-              /* draw the loop start line */
-              double x =
-                (start_px - visible_rect.origin.x) + 1.0;
-              cairo_rectangle (
-                self->cached_cr,
-                (int) x, 0, 2, visible_rect.size.height);
-              cairo_fill (self->cached_cr);
-            }
-          /* if transport loop end is within the
-           * screen */
-          if (end_px > visible_rect.origin.x &&
-              end_px < visible_rect.origin.x + visible_rect.size.width)
-            {
-              double x =
-                (end_px - visible_rect.origin.x) - 1.0;
-              cairo_rectangle (
-                self->cached_cr,
-                (int) x, 0, 2, visible_rect.size.height);
-              cairo_fill (self->cached_cr);
-            }
-
-          /* draw transport loop area */
-          cairo_set_source_rgba (
-            self->cached_cr, 0, 0.9, 0.7, 0.02);
-          double loop_start_local_x =
-            MAX (0, start_px - visible_rect.origin.x);
+      /* if transport loop start is within the
+       * screen */
+      if (start_px > visible_rect.origin.x &&
+          start_px <= visible_rect.origin.x + visible_rect.size.width)
+        {
+          /* draw the loop start line */
+          double x =
+            (start_px - visible_rect.origin.x) + 1.0;
           cairo_rectangle (
             self->cached_cr,
-            (int) loop_start_local_x, 0,
-            (int) (end_px - MAX (visible_rect.origin.x, start_px)),
-            visible_rect.size.height);
+            (int) x, 0, 2, visible_rect.size.height);
+          cairo_fill (self->cached_cr);
+        }
+      /* if transport loop end is within the
+       * screen */
+      if (end_px > visible_rect.origin.x &&
+          end_px < visible_rect.origin.x + visible_rect.size.width)
+        {
+          double x =
+            (end_px - visible_rect.origin.x) - 1.0;
+          cairo_rectangle (
+            self->cached_cr,
+            (int) x, 0, 2, visible_rect.size.height);
           cairo_fill (self->cached_cr);
         }
 
-      /* --- handle vertical drawing --- */
-
-      draw_vertical_lines (
-        self, ruler, self->cached_cr,
-        &visible_rect_gdk);
-
-      /* draw range */
-      int range_first_px, range_second_px;
-      bool have_range = false;
-      if (self->type == TYPE (AUDIO) &&
-          AUDIO_SELECTIONS->has_selection)
-        {
-          Position * range_first_pos,
-                   * range_second_pos;
-          if (position_is_before_or_equal (
-                &TRANSPORT->range_1,
-                &TRANSPORT->range_2))
-            {
-              range_first_pos =
-                &AUDIO_SELECTIONS->sel_start;
-              range_second_pos =
-                &AUDIO_SELECTIONS->sel_end;
-            }
-          else
-            {
-              range_first_pos =
-                &AUDIO_SELECTIONS->sel_end;
-              range_second_pos =
-                &AUDIO_SELECTIONS->sel_start;
-            }
-
-          range_first_px =
-            ui_pos_to_px_editor (
-              range_first_pos, 1);
-          range_second_px =
-            ui_pos_to_px_editor (
-              range_second_pos, 1);
-          have_range = true;
-        }
-      else if (self->type == TYPE (TIMELINE) &&
-          TRANSPORT->has_range)
-        {
-          /* in order they appear */
-          Position * range_first_pos,
-                   * range_second_pos;
-          if (position_is_before_or_equal (
-                &TRANSPORT->range_1,
-                &TRANSPORT->range_2))
-            {
-              range_first_pos = &TRANSPORT->range_1;
-              range_second_pos =
-                &TRANSPORT->range_2;
-            }
-          else
-            {
-              range_first_pos = &TRANSPORT->range_2;
-              range_second_pos =
-                &TRANSPORT->range_1;
-            }
-
-          range_first_px =
-            ui_pos_to_px_timeline (
-              range_first_pos, 1);
-          range_second_px =
-            ui_pos_to_px_timeline (
-              range_second_pos, 1);
-          have_range = true;
-        }
-
-      if (have_range)
-        {
-          draw_range (
-            self, range_first_px, range_second_px,
-            &visible_rect_gdk, self->cached_cr);
-        }
-
-      if (self->type == TYPE (TIMELINE))
-        {
-          draw_timeline_bg (
-            self, self->cached_cr, &visible_rect_gdk);
-        }
-      else if (self->type == TYPE (MIDI))
-        {
-          draw_midi_bg (
-            self, self->cached_cr, &visible_rect_gdk);
-        }
-      else if (self->type == TYPE (MIDI_MODIFIER))
-        {
-          draw_velocity_bg (
-            self, self->cached_cr, &visible_rect_gdk);
-        }
-      else if (self->type == TYPE (AUDIO))
-        {
-          draw_audio_bg (
-            self, self->cached_cr, &visible_rect_gdk);
-        }
-
-      /* draw each arranger object */
-      ArrangerObject * objs[2000];
-      int num_objs;
-      arranger_widget_get_hit_objects_in_rect (
-        self, ARRANGER_OBJECT_TYPE_ALL, &visible_rect_gdk,
-        objs, &num_objs);
-
-      /*g_message (*/
-        /*"objects found: %d (is pinned %d)",*/
-        /*num_objs, self->is_pinned);*/
-      /* note: these are only project objects */
-      for (int j = 0; j < num_objs; j++)
-        {
-          draw_arranger_object (
-            self, objs[j], snapshot, self->cached_cr,
-            &visible_rect_gdk);
-        }
-
-      /* draw dnd highlight */
-      draw_highlight (
-        self, self->cached_cr, &visible_rect_gdk);
-
-      /* draw selections */
-      draw_selections (
-        self, self->cached_cr, &visible_rect_gdk);
-
-      draw_playhead (self, self->cached_cr, &visible_rect_gdk);
-
-      cairo_set_antialias (
-        self->cached_cr, antialias);
-      cairo_set_tolerance (self->cached_cr, tolerance);
-
-      /*self->redraw = false;*/
-      self->redraw = true;
+      /* draw transport loop area */
+      cairo_set_source_rgba (
+        self->cached_cr, 0, 0.9, 0.7, 0.02);
+      double loop_start_local_x =
+        MAX (0, start_px - visible_rect.origin.x);
+      cairo_rectangle (
+        self->cached_cr,
+        (int) loop_start_local_x, 0,
+        (int) (end_px - MAX (visible_rect.origin.x, start_px)),
+        visible_rect.size.height);
+      cairo_fill (self->cached_cr);
     }
+
+  /* --- handle vertical drawing --- */
+
+  draw_vertical_lines (
+    self, ruler, self->cached_cr,
+    &visible_rect_gdk);
+
+  /* draw range */
+  int range_first_px, range_second_px;
+  bool have_range = false;
+  if (self->type == TYPE (AUDIO) &&
+      AUDIO_SELECTIONS->has_selection)
+    {
+      Position * range_first_pos,
+               * range_second_pos;
+      if (position_is_before_or_equal (
+            &TRANSPORT->range_1,
+            &TRANSPORT->range_2))
+        {
+          range_first_pos =
+            &AUDIO_SELECTIONS->sel_start;
+          range_second_pos =
+            &AUDIO_SELECTIONS->sel_end;
+        }
+      else
+        {
+          range_first_pos =
+            &AUDIO_SELECTIONS->sel_end;
+          range_second_pos =
+            &AUDIO_SELECTIONS->sel_start;
+        }
+
+      range_first_px =
+        ui_pos_to_px_editor (
+          range_first_pos, 1);
+      range_second_px =
+        ui_pos_to_px_editor (
+          range_second_pos, 1);
+      have_range = true;
+    }
+  else if (self->type == TYPE (TIMELINE) &&
+      TRANSPORT->has_range)
+    {
+      /* in order they appear */
+      Position * range_first_pos,
+               * range_second_pos;
+      if (position_is_before_or_equal (
+            &TRANSPORT->range_1,
+            &TRANSPORT->range_2))
+        {
+          range_first_pos = &TRANSPORT->range_1;
+          range_second_pos =
+            &TRANSPORT->range_2;
+        }
+      else
+        {
+          range_first_pos = &TRANSPORT->range_2;
+          range_second_pos =
+            &TRANSPORT->range_1;
+        }
+
+      range_first_px =
+        ui_pos_to_px_timeline (
+          range_first_pos, 1);
+      range_second_px =
+        ui_pos_to_px_timeline (
+          range_second_pos, 1);
+      have_range = true;
+    }
+
+  if (have_range)
+    {
+      draw_range (
+        self, range_first_px, range_second_px,
+        &visible_rect_gdk, self->cached_cr);
+    }
+
+  if (self->type == TYPE (TIMELINE))
+    {
+      draw_timeline_bg (
+        self, self->cached_cr, &visible_rect_gdk);
+    }
+  else if (self->type == TYPE (MIDI))
+    {
+      draw_midi_bg (
+        self, self->cached_cr, &visible_rect_gdk);
+    }
+  else if (self->type == TYPE (MIDI_MODIFIER))
+    {
+      draw_velocity_bg (
+        self, self->cached_cr, &visible_rect_gdk);
+    }
+  else if (self->type == TYPE (AUDIO))
+    {
+      draw_audio_bg (
+        self, self->cached_cr, &visible_rect_gdk);
+    }
+
+  /* draw each arranger object */
+  ArrangerObject * objs[2000];
+  int num_objs;
+  arranger_widget_get_hit_objects_in_rect (
+    self, ARRANGER_OBJECT_TYPE_ALL, &visible_rect_gdk,
+    objs, &num_objs);
+
+  /*g_message (*/
+    /*"objects found: %d (is pinned %d)",*/
+    /*num_objs, self->is_pinned);*/
+  /* note: these are only project objects */
+  for (int j = 0; j < num_objs; j++)
+    {
+      draw_arranger_object (
+        self, objs[j], snapshot, self->cached_cr,
+        &visible_rect_gdk);
+    }
+
+  /* draw dnd highlight */
+  draw_highlight (
+    self, self->cached_cr, &visible_rect_gdk);
+
+  /* draw selections */
+  draw_selections (
+    self, self->cached_cr, &visible_rect_gdk);
+
+  draw_playhead (
+    self, snapshot, self->cached_cr,
+    &visible_rect_gdk);
+
+  cairo_set_antialias (
+    self->cached_cr, antialias);
+  cairo_set_tolerance (self->cached_cr, tolerance);
 
   cairo_set_source_surface (
     cr, self->cached_surface,

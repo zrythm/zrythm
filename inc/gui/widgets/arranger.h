@@ -448,7 +448,7 @@ typedef struct _ArrangerWidget
    * playhead will be drawn at the location it
    * was when the draw was queued.
    */
-  //int            queued_playhead_px;
+  int            queued_playhead_px;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;

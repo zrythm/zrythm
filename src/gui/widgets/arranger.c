@@ -6868,6 +6868,11 @@ arranger_tick_cb (
   gpointer user_data,
   GDestroyNotify notify)
 {
+  ArrangerWidget * self =
+    Z_ARRANGER_WIDGET (widget);
+  self->queued_playhead_px =
+    arranger_widget_get_playhead_px (self);
+
   gtk_widget_queue_draw (widget);
 
   return 5;
