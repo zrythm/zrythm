@@ -33,9 +33,9 @@ suil_ui_supported(const char* host_type_uri,
 	};
 
   /* not supported */
-  return SUIL_WRAPPING_UNSUPPORTED;
+  /*return SUIL_WRAPPING_UNSUPPORTED;*/
 
-	if (!strcmp(GTK3_UI_URI, ui_type_uri))
+	if (!strcmp(GTK4_UI_URI, ui_type_uri))
 		return SUIL_WRAPPING_NATIVE;
 #ifdef _WOE32
   else if (!strcmp(ui_type_uri, WIN_UI_URI))

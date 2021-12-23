@@ -3689,27 +3689,27 @@ msgstr "起動"
 
 #: src/audio/fader.c:141
 msgid "Prefader Volume"
-msgstr "プレフェーダーのボリューム"
+msgstr "プレフェーダーボリューム"
 
 #: src/audio/fader.c:141
 msgid "Fader Volume"
-msgstr "フェーダーのボリューム"
+msgstr "フェーダーボリューム"
 
 #: src/audio/fader.c:172
 msgid "Prefader Balance"
-msgstr "プリフェーダーのバランス"
+msgstr "プリフェーダーバランス"
 
 #: src/audio/fader.c:172
 msgid "Fader Balance"
-msgstr "フェーダーのバランス"
+msgstr "フェーダーバランス"
 
 #: src/audio/fader.c:191
 msgid "Prefader Mute"
-msgstr "プレフェーダーのミュート"
+msgstr "プレフェーダーミュート"
 
 #: src/audio/fader.c:191
 msgid "Fader Mute"
-msgstr "フェーダーのミュート"
+msgstr "フェーダーミュート"
 
 #: src/audio/fader.c:212
 #, fuzzy

@@ -116,10 +116,12 @@ carla_plugin_tick_cb (
     {
       GdkGLContext * context =
         gdk_gl_context_get_current ();
+      g_object_ref (context);
       gdk_gl_context_clear_current ();
       self->native_plugin_descriptor->ui_idle (
         self->native_plugin_handle);
       gdk_gl_context_make_current (context);
+      g_object_unref (context);
 
       return G_SOURCE_CONTINUE;
     }

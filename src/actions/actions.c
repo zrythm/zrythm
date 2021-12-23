@@ -3362,8 +3362,8 @@ DEFINE_SIMPLE (
 
   PluginSetting * setting =
     plugin_setting_new_default (descr);
-  setting->open_with_carla = false;
-  setting->bridge_mode = CARLA_BRIDGE_NONE;
+  /*setting->open_with_carla = true;*/
+  /*setting->bridge_mode = CARLA_BRIDGE_NONE;*/
   activate_plugin_setting (setting, NULL);
   plugin_setting_free (setting);
 }

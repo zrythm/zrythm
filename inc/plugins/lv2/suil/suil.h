@@ -44,6 +44,7 @@
 
 #define GTK2_UI_URI  LV2_UI__GtkUI
 #define GTK3_UI_URI  LV2_UI__Gtk3UI
+#define GTK4_UI_URI  LV2_UI__Gtk4UI
 #define QT4_UI_URI   LV2_UI__Qt4UI
 #define QT5_UI_URI   LV2_UI__Qt5UI
 #define X11_UI_URI   LV2_UI__X11UI
