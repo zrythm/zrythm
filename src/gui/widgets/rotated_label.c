@@ -23,6 +23,7 @@
 
 #include "gui/widgets/rotated_label.h"
 #include "utils/gtk.h"
+#include "utils/math.h"
 
 #include <gtk/gtk.h>
 
@@ -35,8 +36,8 @@ static void
 queue_changes (
   RotatedLabelWidget * self)
 {
-  /*gtk_widget_queue_allocate (GTK_WIDGET (self));*/
-  /*gtk_widget_queue_resize (GTK_WIDGET (self));*/
+  gtk_widget_queue_allocate (GTK_WIDGET (self));
+  gtk_widget_queue_resize (GTK_WIDGET (self));
 }
 
 void
@@ -122,6 +123,7 @@ on_size_allocate (
   RotatedLabelWidget * self =
     Z_ROTATED_LABEL_WIDGET (widget);
 
+  /* NOTE this only handles 0 or -90 degrees */
   GskTransform * transform =
     gsk_transform_rotate (NULL, self->angle);
   transform =

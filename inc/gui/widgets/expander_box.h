@@ -40,6 +40,8 @@ G_DECLARE_DERIVABLE_TYPE (
   Z, EXPANDER_BOX_WIDGET,
   GtkBox)
 
+typedef struct _GtkFlipper GtkFlipper;
+
 /**
  * @addtogroup widgets
  *
@@ -63,6 +65,7 @@ typedef struct
   GtkButton *    button;
   GtkBox *       btn_box;
   GtkLabel *     btn_label;
+  GtkFlipper *   btn_label_flipper;
   GtkImage *     btn_img;
   GtkRevealer *  revealer;
   GtkBox *       content;

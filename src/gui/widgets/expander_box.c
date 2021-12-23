@@ -18,6 +18,7 @@
  */
 
 #include "gui/widgets/expander_box.h"
+#include "gui/widgets/gtk_flipper.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
@@ -116,29 +117,38 @@ expander_box_widget_set_orientation (
     GTK_ORIENTATION_HORIZONTAL);
 
   /* set the label angle */
-  /* TODO */
-#if 0
   if (orientation == GTK_ORIENTATION_HORIZONTAL)
-    gtk_label_set_angle (
-      prv->btn_label, 90.0);
+    {
+      gtk_flipper_set_flip_horizontal (
+        prv->btn_label_flipper, true);
+      gtk_flipper_set_flip_vertical (
+        prv->btn_label_flipper, true);
+      gtk_flipper_set_rotate (
+        prv->btn_label_flipper, true);
+    }
   else
-    gtk_label_set_angle (
-      prv->btn_label, 0.0);
-#endif
+    {
+      gtk_flipper_set_flip_horizontal (
+        prv->btn_label_flipper, false);
+      gtk_flipper_set_flip_vertical (
+        prv->btn_label_flipper, false);
+      gtk_flipper_set_rotate (
+        prv->btn_label_flipper, false);
+    }
 
   if (orientation == GTK_ORIENTATION_HORIZONTAL)
     {
       gtk_widget_set_hexpand (
-        GTK_WIDGET (prv->btn_label), 0);
+        GTK_WIDGET (prv->btn_label_flipper), 0);
       gtk_widget_set_vexpand (
-        GTK_WIDGET (prv->btn_label), 1);
+        GTK_WIDGET (prv->btn_label_flipper), 1);
     }
   else
     {
       gtk_widget_set_hexpand (
-        GTK_WIDGET (prv->btn_label), 1);
+        GTK_WIDGET (prv->btn_label_flipper), 1);
       gtk_widget_set_vexpand (
-        GTK_WIDGET (prv->btn_label), 0);
+        GTK_WIDGET (prv->btn_label_flipper), 0);
     }
 }
 
@@ -232,7 +242,8 @@ expander_box_widget_class_init (
 }
 
 static void
-expander_box_widget_init (ExpanderBoxWidget * self)
+expander_box_widget_init (
+  ExpanderBoxWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -242,11 +253,15 @@ expander_box_widget_init (ExpanderBoxWidget * self)
     GTK_LABEL (gtk_label_new ("Label"));
   gtk_widget_set_name (
     GTK_WIDGET (prv->btn_label),
-    "expander-box-btn-label");
+    "expander-box-btn-rotated-label");
+  prv->btn_label_flipper =
+    GTK_FLIPPER (
+      gtk_flipper_new (
+        GTK_WIDGET (prv->btn_label)));
   gtk_widget_set_hexpand (
-    GTK_WIDGET (prv->btn_label), true);
+    GTK_WIDGET (prv->btn_label_flipper), true);
   gtk_widget_set_halign (
-    GTK_WIDGET (prv->btn_label),
+    GTK_WIDGET (prv->btn_label_flipper),
     GTK_ALIGN_START);
   prv->btn_img =
     GTK_IMAGE (
@@ -260,7 +275,7 @@ expander_box_widget_init (ExpanderBoxWidget * self)
     GTK_WIDGET (box), "expander-box-btn-box");
   gtk_box_append (
     GTK_BOX (box),
-    GTK_WIDGET (prv->btn_label));
+    GTK_WIDGET (prv->btn_label_flipper));
   gtk_box_append (
     GTK_BOX (box),
     GTK_WIDGET (
@@ -271,6 +286,9 @@ expander_box_widget_init (ExpanderBoxWidget * self)
   gtk_button_set_child (
     prv->button, GTK_WIDGET (box));
   prv->btn_box = GTK_BOX (box);
+
+  expander_box_widget_set_orientation (
+    self, GTK_ORIENTATION_VERTICAL);
 
   g_signal_connect (
     G_OBJECT (prv->button), "clicked",

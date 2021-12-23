@@ -45,7 +45,7 @@ G_DECLARE_FINAL_TYPE (
  */
 
 /**
- * Button with a separator and an arrow for a menu.
+ * Rotated label.
  */
 typedef struct _RotatedLabelWidget
 {
