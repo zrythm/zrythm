@@ -488,6 +488,16 @@ carla_native_plugin_process (
   self->time_info.bbt.beatsPerMinute =
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
 
+  /* 16 audio and 16 CV */
+  const size_t num_audio_ins = 16;
+  const size_t num_audio_outs = 16;
+  const size_t num_cv_ins = 16;
+  const size_t num_cv_outs = 16;
+  const size_t num_inputs =
+    num_audio_ins + num_cv_ins;
+  const size_t num_outputs =
+    num_audio_outs + num_cv_outs;
+
   const PluginDescriptor * descr =
     self->plugin->setting->descr;
   switch (descr->protocol)
@@ -501,79 +511,108 @@ carla_native_plugin_process (
     case PROT_SFZ:
     case PROT_SF2:
     {
-      float * inbuf[2];
-      float dummy_inbuf1[nframes];
-      memset (
-        dummy_inbuf1, 0, nframes * sizeof (float));
-      float dummy_inbuf2[nframes];
-      memset (
-        dummy_inbuf2, 0, nframes * sizeof (float));
-      float * outbuf[2];
-      float dummy_outbuf1[nframes];
-      memset (
-        dummy_outbuf1, 0, nframes * sizeof (float));
-      float dummy_outbuf2[nframes];
-      memset (
-        dummy_outbuf2, 0, nframes * sizeof (float));
-      int i = 0;
-      int audio_ports = 0;
-      while (i < self->plugin->num_in_ports)
+      float * inbuf[num_inputs];
+      float * outbuf[num_outputs];
+      float dummy_inbufs[num_inputs][nframes];
+      float dummy_outbufs[num_outputs][nframes];
+
+      /* set all ins/outs to zero bufs */
+      for (size_t i = 0; i < num_inputs; i++)
         {
-          Port * port = self->plugin->in_ports[i];
-          if (port->id.type == TYPE_AUDIO)
-            {
-              inbuf[audio_ports++] =
-                &self->plugin->in_ports[i]->buf[
-                  local_offset];
-            }
-          if (audio_ports == 2)
-            break;
-          i++;
+          memset (
+            dummy_inbufs[i], 0,
+            nframes * sizeof (float));
+          inbuf[i] = dummy_inbufs[i];
         }
-      switch (audio_ports)
+      for (size_t i = 0; i < num_outputs; i++)
         {
-        case 0:
-          inbuf[0] = dummy_inbuf1;
-          inbuf[1] = dummy_inbuf2;
-          break;
-        case 1:
-          inbuf[1] = dummy_inbuf2;
-          break;
-        default:
-          break;
+          memset (
+            dummy_outbufs[i], 0,
+            nframes * sizeof (float));
+          outbuf[i] = dummy_outbufs[i];
         }
 
-      i = 0;
-      audio_ports = 0;
-      while (i < self->plugin->num_out_ports)
-        {
-          Port * port = self->plugin->out_ports[i];
-          if (port->id.type == TYPE_AUDIO)
-            {
-              outbuf[audio_ports++] =
-                &self->plugin->out_ports[i]->buf[
-                  local_offset];
-            }
-          if (audio_ports == 2)
-            break;
-          i++;
-        }
-      switch (audio_ports)
-        {
-        case 0:
-          outbuf[0] = dummy_outbuf1;
-          outbuf[1] = dummy_outbuf2;
-          break;
-        case 1:
-          outbuf[1] = dummy_outbuf2;
-          break;
-        default:
-          break;
-        }
+      /* set actual audio in bufs */
+      {
+        size_t audio_ports = 0;
+        for (int i = 0;
+             i < self->plugin->num_in_ports; i++)
+          {
+            Port * port = self->plugin->in_ports[i];
+            if (port->id.type == TYPE_AUDIO)
+              {
+                inbuf[audio_ports++] =
+                  &self->plugin->in_ports[i]->buf[
+                    local_offset];
+              }
+            if (audio_ports == num_audio_ins)
+              break;
+            i++;
+          }
+      }
+
+      /* set actual cv in bufs */
+      {
+        size_t cv_ports = 0;
+        for (int i = 0;
+             i < self->plugin->num_in_ports; i++)
+          {
+            Port * port = self->plugin->in_ports[i];
+            if (port->id.type == TYPE_CV)
+              {
+                inbuf[num_audio_ins + cv_ports++] =
+                  &self->plugin->in_ports[i]->buf[
+                    local_offset];
+              }
+            if (cv_ports == num_cv_ins)
+              break;
+            i++;
+          }
+      }
+
+      /* set actual audio out bufs (carla will write
+       * to these) */
+      {
+        size_t audio_ports = 0;
+        for (int i = 0;
+             i < self->plugin->num_out_ports; i++)
+          {
+            Port * port = self->plugin->out_ports[i];
+            if (port->id.type == TYPE_AUDIO)
+              {
+                outbuf[audio_ports++] =
+                  &self->plugin->out_ports[i]->buf[
+                    local_offset];
+              }
+            if (audio_ports == num_audio_outs)
+              break;
+            i++;
+          }
+      }
+
+      /* set actual cv out bufs (carla will write
+       * to these) */
+      {
+        size_t cv_ports = 0;
+        for (int i = 0;
+             i < self->plugin->num_out_ports; i++)
+          {
+            Port * port = self->plugin->out_ports[i];
+            if (port->id.type == TYPE_CV)
+              {
+                outbuf[num_audio_outs + cv_ports++] =
+                  &self->plugin->out_ports[i]->buf[
+                    local_offset];
+              }
+            if (cv_ports == num_cv_outs)
+              break;
+            i++;
+          }
+      }
 
       /* get main midi port */
       Port * port = NULL;
-      for (i = 0;
+      for (int i = 0;
            i < self->plugin->num_in_ports; i++)
         {
           port = self->plugin->in_ports[i];
@@ -592,7 +631,7 @@ carla_native_plugin_process (
 #define MAX_EVENTS 4000
       NativeMidiEvent events[MAX_EVENTS];
       int num_events_written = 0;
-      for (i = 0; i < num_events; i++)
+      for (int i = 0; i < num_events; i++)
         {
           MidiEvent * ev =
             &port->midi_events->events[i];
@@ -1150,7 +1189,7 @@ carla_native_plugin_instantiate (
 
   /* instantiate the plugin to get its info */
   self->native_plugin_descriptor =
-    carla_get_native_rack_plugin ();
+    carla_get_native_patchbay_cv16_plugin ();
   self->native_plugin_handle =
     self->native_plugin_descriptor->instantiate (
       &self->native_host_descriptor);
