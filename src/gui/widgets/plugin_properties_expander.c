@@ -71,9 +71,12 @@ on_preset_changed (
 
   GtkListBoxRow * row =
     gtk_list_box_get_selected_row (box);
-  plugin_set_selected_preset_from_index (
-    self->plugin,
-    gtk_list_box_row_get_index (row));
+  if (row)
+    {
+      plugin_set_selected_preset_from_index (
+        self->plugin,
+        gtk_list_box_row_get_index (row));
+    }
 }
 
 static void
