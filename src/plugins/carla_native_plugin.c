@@ -55,10 +55,17 @@
 
 #include <CarlaHost.h>
 
+#ifdef CARLA_HAVE_CV32_PATCHBAY_VARIANT
 #define MAX_VARIANT_AUDIO_INS 64
 #define MAX_VARIANT_AUDIO_OUTS 64
 #define MAX_VARIANT_CV_INS 32
 #define MAX_VARIANT_CV_OUTS 32
+#else
+#define MAX_VARIANT_AUDIO_INS 2
+#define MAX_VARIANT_AUDIO_OUTS 2
+#define MAX_VARIANT_CV_INS 5
+#define MAX_VARIANT_CV_OUTS 5
+#endif
 #define MAX_VARIANT_MIDI_INS 1
 #define MAX_VARIANT_MIDI_OUTS 1
 
@@ -1263,8 +1270,13 @@ carla_native_plugin_instantiate (
   self->time_info.bbt.valid = 1;
 
   /* instantiate the plugin to get its info */
+#ifdef CARLA_HAVE_CV32_PATCHBAY_VARIANT
   self->native_plugin_descriptor =
     carla_get_native_patchbay_cv32_plugin ();
+#else
+  self->native_plugin_descriptor =
+    carla_get_native_patchbay_cv_plugin ();
+#endif
   self->native_plugin_handle =
     self->native_plugin_descriptor->instantiate (
       &self->native_host_descriptor);

@@ -461,8 +461,11 @@ cdata.set_quoted (
 cdata.set_quoted (
   'BUG_REPORT_API_ENDPOINT',
   'https://accounts.zrythm.org/api/v1/error-reports/new')
-if (get_option ('user_manual'))
+if get_option ('user_manual')
   cdata.set_quoted ('MANUAL_PATH', docdir)
+endif
+if get_option ('carla_use_cv32_patchbay_variant')
+  cdata.set ('CARLA_HAVE_CV32_PATCHBAY_VARIANT', 1)
 endif
 
 if os_windows
@@ -1086,7 +1089,6 @@ if have_guile
 endif
 
 carla_host_plugin_dep = dependency (
-  # note: using unreleased changes
   'carla-host-plugin', version: '>=2.4.1',
   required: get_option ('carla'),
   static: all_static)

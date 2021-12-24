@@ -189,6 +189,12 @@ option (
   description: 'Use static dependencies where possible.')
 
 option (
+  'carla_use_cv32_patchbay_variant',
+  type: 'boolean',
+  value: false,
+  description: 'Use new CV32 variant that supports up to 64 audio ins/outs and 32 cv ins/outs (needs carla-git).')
+
+option (
   'carla_binaries_dir',
   type: 'string',
   value: '',
