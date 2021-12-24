@@ -111,6 +111,8 @@ typedef struct CarlaNativePlugin
    * inside patchbay). */
   unsigned int     midi_output_port_id;
 
+  /** Used when connecting Carla's internal plugin
+   * to patchbay ports. */
   GPtrArray *      patchbay_port_info;
 
   /** GTK tick callback. */

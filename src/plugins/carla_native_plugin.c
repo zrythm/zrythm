@@ -2129,6 +2129,9 @@ carla_native_plugin_free (
 {
   carla_native_plugin_close (self);
 
+  object_free_w_func_and_null (
+    g_ptr_array_unref, self->patchbay_port_info);
+
   object_zero_and_free (self);
 }
 #endif
