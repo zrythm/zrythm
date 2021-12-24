@@ -55,6 +55,13 @@
 
 #include <CarlaHost.h>
 
+#define MAX_VARIANT_AUDIO_INS 64
+#define MAX_VARIANT_AUDIO_OUTS 64
+#define MAX_VARIANT_CV_INS 32
+#define MAX_VARIANT_CV_OUTS 32
+#define MAX_VARIANT_MIDI_INS 1
+#define MAX_VARIANT_MIDI_OUTS 1
+
 typedef enum
 {
   Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR_INSTANTIATION_FAILED,
@@ -354,6 +361,77 @@ engine_callback (
             ET_PLUGIN_CRASHED, self->plugin);
         }
       break;
+    case ENGINE_CALLBACK_PATCHBAY_CLIENT_ADDED:
+      g_debug (
+        "CLIENT ADDED client %u plugin %d name %s",
+        plugin_id, val2, val_str);
+      break;
+    case ENGINE_CALLBACK_PATCHBAY_CLIENT_REMOVED:
+      g_debug ("CLIENT REMOVED");
+      break;
+    case ENGINE_CALLBACK_PATCHBAY_PORT_ADDED:
+      {
+        g_debug (
+          "PORT ADDED: client %u port %d "
+          "group %d name %s", plugin_id, val1,
+          val3, val_str);
+        unsigned int port_id =
+          (unsigned int) val1;
+        switch (plugin_id)
+          {
+          case 1:
+            if (self->audio_input_port_id == 0)
+              self->audio_input_port_id = port_id;
+            break;
+          case 2:
+            if (self->audio_output_port_id == 0)
+              self->audio_output_port_id = port_id;
+            break;
+          case 3:
+            if (self->cv_input_port_id == 0)
+              self->cv_input_port_id = port_id;
+            break;
+          case 4:
+            if (self->cv_output_port_id == 0)
+              self->cv_output_port_id = port_id;
+            break;
+          case 5:
+            if (self->midi_input_port_id == 0)
+              self->midi_input_port_id = port_id;
+            break;
+          case 6:
+            if (self->midi_output_port_id == 0)
+              self->midi_output_port_id = port_id;
+            break;
+          default:
+            break;
+          }
+
+        if (plugin_id == 7)
+          {
+            unsigned int port_hints =
+              (unsigned int) val2;
+            CarlaPatchbayPortInfo * nfo =
+              object_new (CarlaPatchbayPortInfo);
+            nfo->port_hints = port_hints;
+            nfo->port_id = port_id;
+            nfo->port_name = g_strdup (val_str);
+            g_ptr_array_add (
+              self->patchbay_port_info,
+              nfo);
+          }
+
+      }
+      break;
+    case ENGINE_CALLBACK_PATCHBAY_PORT_REMOVED:
+      g_debug ("PORT REMOVED");
+      break;
+    case ENGINE_CALLBACK_PATCHBAY_CONNECTION_ADDED:
+      g_debug ("CONNECTION ADDED %s", val_str);
+      break;
+    case ENGINE_CALLBACK_PATCHBAY_CONNECTION_REMOVED:
+      g_debug ("CONNECTION REMOVED");
+      break;
     default:
       break;
     }
@@ -489,14 +567,10 @@ carla_native_plugin_process (
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
 
   /* 16 audio and 16 CV */
-  const size_t num_audio_ins = 16;
-  const size_t num_audio_outs = 16;
-  const size_t num_cv_ins = 16;
-  const size_t num_cv_outs = 16;
   const size_t num_inputs =
-    num_audio_ins + num_cv_ins;
+    MAX_VARIANT_AUDIO_INS + MAX_VARIANT_CV_INS;
   const size_t num_outputs =
-    num_audio_outs + num_cv_outs;
+    MAX_VARIANT_AUDIO_OUTS + MAX_VARIANT_CV_OUTS;
 
   const PluginDescriptor * descr =
     self->plugin->setting->descr;
@@ -542,12 +616,10 @@ carla_native_plugin_process (
             if (port->id.type == TYPE_AUDIO)
               {
                 inbuf[audio_ports++] =
-                  &self->plugin->in_ports[i]->buf[
-                    local_offset];
+                  &port->buf[local_offset];
               }
-            if (audio_ports == num_audio_ins)
+            if (audio_ports == MAX_VARIANT_AUDIO_INS)
               break;
-            i++;
           }
       }
 
@@ -560,13 +632,11 @@ carla_native_plugin_process (
             Port * port = self->plugin->in_ports[i];
             if (port->id.type == TYPE_CV)
               {
-                inbuf[num_audio_ins + cv_ports++] =
-                  &self->plugin->in_ports[i]->buf[
-                    local_offset];
+                inbuf[MAX_VARIANT_AUDIO_INS + cv_ports++] =
+                  &port->buf[local_offset];
               }
-            if (cv_ports == num_cv_ins)
+            if (cv_ports == MAX_VARIANT_CV_INS)
               break;
-            i++;
           }
       }
 
@@ -581,12 +651,10 @@ carla_native_plugin_process (
             if (port->id.type == TYPE_AUDIO)
               {
                 outbuf[audio_ports++] =
-                  &self->plugin->out_ports[i]->buf[
-                    local_offset];
+                  &port->buf[local_offset];
               }
-            if (audio_ports == num_audio_outs)
+            if (audio_ports == MAX_VARIANT_AUDIO_OUTS)
               break;
-            i++;
           }
       }
 
@@ -600,13 +668,11 @@ carla_native_plugin_process (
             Port * port = self->plugin->out_ports[i];
             if (port->id.type == TYPE_CV)
               {
-                outbuf[num_audio_outs + cv_ports++] =
-                  &self->plugin->out_ports[i]->buf[
-                    local_offset];
+                outbuf[MAX_VARIANT_AUDIO_OUTS + cv_ports++] =
+                  &port->buf[local_offset];
               }
-            if (cv_ports == num_cv_outs)
+            if (cv_ports == MAX_VARIANT_CV_OUTS)
               break;
-            i++;
           }
       }
 
@@ -687,7 +753,6 @@ carla_native_plugin_process (
 #endif
         }
 
-      /*g_warn_if_reached ();*/
       self->native_plugin_descriptor->process (
         self->native_plugin_handle, inbuf, outbuf,
         nframes, events,
@@ -1119,6 +1184,16 @@ create_ports (
   self->ports_created = true;
 }
 
+static void
+patchbay_port_info_free (
+  void * data)
+{
+  CarlaPatchbayPortInfo * nfo =
+    (CarlaPatchbayPortInfo *) data;
+  g_free (nfo->port_name);
+  free (nfo);
+}
+
 /**
  * Instantiates the plugin.
  *
@@ -1189,7 +1264,7 @@ carla_native_plugin_instantiate (
 
   /* instantiate the plugin to get its info */
   self->native_plugin_descriptor =
-    carla_get_native_patchbay_cv16_plugin ();
+    carla_get_native_patchbay_cv32_plugin ();
   self->native_plugin_handle =
     self->native_plugin_descriptor->instantiate (
       &self->native_host_descriptor);
@@ -1372,6 +1447,205 @@ carla_native_plugin_instantiate (
   /* add engine callback */
   carla_set_engine_callback (
     self->host_handle, engine_callback, self);
+
+  self->patchbay_port_info =
+    g_ptr_array_new_with_free_func (
+      patchbay_port_info_free);
+
+  g_debug ("refreshing patchbay");
+  carla_patchbay_refresh (
+    self->host_handle, false);
+  g_debug ("refreshed patchbay");
+
+  /* connect to patchbay ports */
+  unsigned int num_audio_ins_connected = 0;
+  unsigned int num_audio_outs_connected = 0;
+  unsigned int num_cv_ins_connected = 0;
+  unsigned int num_cv_outs_connected = 0;
+  unsigned int num_midi_ins_connected = 0;
+  unsigned int num_midi_outs_connected = 0;
+  for (size_t i = 0;
+       i < self->patchbay_port_info->len; i++)
+    {
+      CarlaPatchbayPortInfo * nfo =
+        g_ptr_array_index (
+          self->patchbay_port_info, i);
+      unsigned int port_hints = nfo->port_hints;
+      unsigned int port_id = nfo->port_id;
+      char * port_name = nfo->port_name;
+      g_debug (
+        "processing %s, portid %u, port hints %u",
+        port_name, port_id, port_hints);
+      if (port_hints & PATCHBAY_PORT_IS_INPUT)
+        {
+          if (port_hints &
+                PATCHBAY_PORT_TYPE_AUDIO
+              &&
+              num_audio_ins_connected <
+                MAX_VARIANT_AUDIO_INS)
+            {
+              g_debug (
+                "connecting out %u to in %u",
+                port_id,
+                self->audio_input_port_id +
+                  num_audio_ins_connected);
+              ret =
+                carla_patchbay_connect (
+                  self->host_handle,
+                  false,
+                  1,
+                  self->audio_input_port_id +
+                    num_audio_ins_connected++,
+                  7, port_id);
+              if (!ret)
+                {
+                  g_critical (
+                    "Error: %s",
+                    carla_get_last_error (
+                      self->host_handle));
+                }
+            }
+          else if (port_hints &
+                     PATCHBAY_PORT_TYPE_CV
+                   &&
+                   num_audio_ins_connected <
+                     MAX_VARIANT_CV_INS)
+            {
+              g_debug (
+                "connecting out %u to in %u",
+                port_id,
+                self->cv_input_port_id +
+                  num_cv_ins_connected);
+              ret =
+                carla_patchbay_connect (
+                  self->host_handle,
+                  false,
+                  3,
+                  self->cv_input_port_id +
+                    num_cv_ins_connected++,
+                  7, port_id);
+              if (!ret)
+                {
+                  g_critical (
+                    "Error: %s",
+                    carla_get_last_error (
+                      self->host_handle));
+                }
+            }
+          else if (port_hints &
+                     PATCHBAY_PORT_TYPE_MIDI
+                   &&
+                   num_midi_ins_connected <
+                     MAX_VARIANT_MIDI_INS)
+            {
+              g_debug (
+                "connecting out %u to in %u",
+                port_id,
+                self->midi_input_port_id +
+                  num_midi_ins_connected);
+              ret =
+                carla_patchbay_connect (
+                  self->host_handle,
+                  false,
+                  5,
+                  self->midi_input_port_id +
+                    num_midi_ins_connected++,
+                  7, port_id);
+              if (!ret)
+                {
+                  g_critical (
+                    "Error: %s",
+                    carla_get_last_error (
+                      self->host_handle));
+                }
+            }
+        }
+      /* else if output */
+      else
+        {
+          if (port_hints &
+                PATCHBAY_PORT_TYPE_AUDIO
+              &&
+              num_audio_outs_connected <
+                MAX_VARIANT_AUDIO_OUTS)
+            {
+              g_debug (
+                "connecting out %u to in %u",
+                self->audio_output_port_id +
+                  num_audio_outs_connected,
+                port_id);
+              ret =
+                carla_patchbay_connect (
+                  self->host_handle,
+                  false,
+                  7, port_id,
+                  2,
+                  self->audio_output_port_id +
+                    num_audio_outs_connected++);
+              if (!ret)
+                {
+                  g_critical (
+                    "Error: %s",
+                    carla_get_last_error (
+                      self->host_handle));
+                }
+            }
+          else if (port_hints &
+                     PATCHBAY_PORT_TYPE_CV
+                   &&
+                   num_cv_outs_connected <
+                     MAX_VARIANT_CV_OUTS)
+            {
+              g_debug (
+                "connecting out %u to in %u",
+                self->cv_output_port_id +
+                  num_cv_outs_connected,
+                port_id);
+              ret =
+                carla_patchbay_connect (
+                  self->host_handle,
+                  false,
+                  7, port_id,
+                  4,
+                  self->cv_output_port_id +
+                    num_cv_outs_connected++);
+              if (!ret)
+                {
+                  g_critical (
+                    "Error: %s",
+                    carla_get_last_error (
+                      self->host_handle));
+                }
+            }
+          else if (port_hints &
+                     PATCHBAY_PORT_TYPE_MIDI
+                   &&
+                   num_midi_outs_connected <
+                     MAX_VARIANT_MIDI_OUTS)
+            {
+              g_debug (
+                "connecting out %u to in %u",
+                self->midi_output_port_id +
+                  num_midi_outs_connected,
+                port_id);
+              ret =
+                carla_patchbay_connect (
+                  self->host_handle,
+                  false,
+                  7, port_id,
+                  6,
+                  self->midi_output_port_id +
+                    num_midi_outs_connected++);
+              if (!ret)
+                {
+                  g_critical (
+                    "Error: %s",
+                    carla_get_last_error (
+                      self->host_handle));
+                }
+            }
+        }
+    }
 
   if (use_state_file)
     {

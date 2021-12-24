@@ -57,6 +57,13 @@ typedef enum CarlaPluginType
   CARLA_PLUGIN_PATCHBAY64,
 } CarlaPluginType;
 
+typedef struct CarlaPatchbayPortInfo
+{
+  unsigned int port_hints;
+  unsigned int port_id;
+  char *       port_name;
+} CarlaPatchbayPortInfo;
+
 typedef struct CarlaNativePlugin
 {
 #ifdef HAVE_CARLA
@@ -82,6 +89,29 @@ typedef struct CarlaNativePlugin
 
   /** Flag. */
   bool             loading_state;
+
+  /** Port ID of first audio input (for connecting
+   * inside patchbay). */
+  unsigned int     audio_input_port_id;
+  /** Port ID of first audio output (for connecting
+   * inside patchbay). */
+  unsigned int     audio_output_port_id;
+
+  /** Port ID of first cv input (for connecting
+   * inside patchbay). */
+  unsigned int     cv_input_port_id;
+  /** Port ID of first cv output (for connecting
+   * inside patchbay). */
+  unsigned int     cv_output_port_id;
+
+  /** Port ID of first midi input (for connecting
+   * inside patchbay). */
+  unsigned int     midi_input_port_id;
+  /** Port ID of first midi output (for connecting
+   * inside patchbay). */
+  unsigned int     midi_output_port_id;
+
+  GPtrArray *      patchbay_port_info;
 
   /** GTK tick callback. */
   guint            tick_cb;

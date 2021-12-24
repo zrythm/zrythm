@@ -1086,6 +1086,7 @@ if have_guile
 endif
 
 carla_host_plugin_dep = dependency (
+  # note: using unreleased changes
   'carla-host-plugin', version: '>=2.4.1',
   required: get_option ('carla'),
   static: all_static)
