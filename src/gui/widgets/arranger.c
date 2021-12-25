@@ -7004,6 +7004,8 @@ arranger_widget_setup (
 
   gtk_widget_set_focus_on_click (
     GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (
+    GTK_WIDGET (self), true);
 
   g_debug ("done setting up arranger");
 }
