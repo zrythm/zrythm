@@ -62,7 +62,7 @@ with meaningful stack traces and bug reports.
 - breeze-icons (LGPLv3+): <https://github.com/KDE/breeze-icons>
 - carla (GPLv2+): <https://kx.studio/Applications:Carla>
 - fftw (GPLv2+): <http://www.fftw.org/>
-- gtk4 (LGPLv2.1+): <https://gitlab.gnome.org/GNOME/gtk>
+- gtk4 (LGPLv2.1+): <https://gtk.org/>
 - gtksourceview (LGPLv2.1+): <https://wiki.gnome.org/Projects/GtkSourceView>
 - guile (GPLv3+): <https://www.gnu.org/software/guile/>
 - json-glib (LGPLv2.1+): <https://wiki.gnome.org/Projects/JsonGlib>
