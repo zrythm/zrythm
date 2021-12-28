@@ -70,125 +70,22 @@ recreate_pango_layouts (
 }
 
 /**
- * Draws the background for a MidiNote.
- *
- * @param arr_rect The arranger's visible rectangle
- *   to draw in.
- */
-static void
-draw_midi_note_bg (
-  MidiNote *     self,
-  cairo_t *      cr,
-  GdkRectangle * arr_rect,
-  GdkRectangle * full_rect,
-  GdkRectangle * draw_rect)
-{
-  Track * tr =
-    arranger_object_get_track (
-      (ArrangerObject *) self);
-  g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
-  bool drum_mode = tr->drum_mode;
-
-  if (drum_mode)
-    {
-      cairo_save (cr);
-      /* translate to the full rect */
-      cairo_translate (
-        cr,
-        (int) (full_rect->x - arr_rect->x),
-        (int) (full_rect->y - arr_rect->y));
-      z_cairo_diamond (
-        cr, 0, 0,
-        full_rect->width,
-        full_rect->height);
-      cairo_restore (cr);
-    }
-  else
-    {
-      /* if there are still midi note parts
-       * outside the
-       * rect, add some padding so that the
-       * midi note
-       * doesn't curve when it's not its edge */
-      int draw_x = draw_rect->x - arr_rect->x;
-      int draw_x_has_padding = 0;
-      if (draw_rect->x > full_rect->x)
-        {
-          draw_x -=
-            MIN (draw_rect->x - full_rect->x, 4);
-          draw_x_has_padding = 1;
-        }
-      int draw_width = draw_rect->width;
-      if (draw_rect->x + draw_rect->width <
-          full_rect->x + full_rect->width)
-        {
-          draw_width +=
-            MAX (
-              (draw_rect->x + draw_rect->width) -
-                (full_rect->x + full_rect->width), 4);
-        }
-      if (draw_x_has_padding)
-        {
-          draw_width += 4;
-        }
-
-      z_cairo_rounded_rectangle (
-        cr, draw_x, full_rect->y - arr_rect->y,
-        draw_width, full_rect->height, 1.0,
-        full_rect->height / 8.0f);
-      /*cairo_rectangle (*/
-        /*cr, draw_x, full_rect->y - rect->y,*/
-        /*draw_width, full_rect->height);*/
-      /*cairo_fill (cr);*/
-    }
-}
-
-/**
  * @param cr Arranger's cairo context.
  * @param arr_rect Arranger's rectangle.
  */
 void
 midi_note_draw (
-  MidiNote *     self,
-  cairo_t *      cr,
-  GdkRectangle * arr_rect)
+  MidiNote *       self,
+  GtkSnapshot *    snapshot)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
 
   /* get rects */
-  GdkRectangle draw_rect;
   GdkRectangle full_rect = obj->full_rect;
-  arranger_object_get_draw_rectangle (
-    obj, arr_rect, &full_rect, &draw_rect);
 
   /* get color */
   GdkRGBA color;
   midi_note_get_adjusted_color (self, &color);
-  gdk_cairo_set_source_rgba (cr, &color);
-
-  draw_midi_note_bg (
-    self, cr, arr_rect,
-    &full_rect, &draw_rect);
-  cairo_fill (cr);
-
-  char str[30];
-  midi_note_get_val_as_string (self, str, 1);
-
-  char fontize_str[120];
-  int fontsize =
-    piano_roll_keys_widget_get_font_size (
-      MW_PIANO_ROLL_KEYS);
-  sprintf (
-    fontize_str, "<span size=\"%d\">",
-    /* subtract half a point for the padding */
-    fontsize * 1000 - 4000);
-  strcat (fontize_str, "%s</span>");
-
-  char str_to_use[120];
-  sprintf (str_to_use, fontize_str, str);
-
-  double fontsize_ratio =
-    (double) fontsize / 12.0;
 
   Track * tr =
     arranger_object_get_track (
@@ -196,27 +93,121 @@ midi_note_draw (
   g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
   bool drum_mode = tr->drum_mode;
 
+  /* create clip */
+  GskRoundedRect rounded_rect;
+  graphene_rect_t graphene_rect =
+    GRAPHENE_RECT_INIT (
+      full_rect.x, full_rect.y, full_rect.width,
+      full_rect.height);
+  if (drum_mode)
+    {
+      gtk_snapshot_push_clip (
+        snapshot, &graphene_rect);
+    }
+  else
+    {
+      /* clip rounded rectangle for whole note */
+      gsk_rounded_rect_init_from_rect (
+        &rounded_rect, &graphene_rect,
+            full_rect.height / 6.0f);
+      gtk_snapshot_push_rounded_clip (
+        snapshot, &rounded_rect);
+    }
+
+  /* draw bg */
+  cairo_t * diamond_cr = NULL;
+  if (drum_mode)
+    {
+      diamond_cr =
+        gtk_snapshot_append_cairo (
+          snapshot, &graphene_rect);
+      gdk_cairo_set_source_rgba (diamond_cr, &color);
+      /* translate to the full rect */
+      cairo_translate (
+        diamond_cr,
+        (int) (full_rect.x),
+        (int) (full_rect.y));
+      z_cairo_diamond (
+        diamond_cr, 0, 0,
+        full_rect.width,
+        full_rect.height);
+      cairo_fill_preserve (diamond_cr);
+    }
+  else
+    {
+      gtk_snapshot_append_color (
+        snapshot, &color, &graphene_rect);
+    }
+
+  /* draw text */
+  char str[30];
+  midi_note_get_val_as_string (self, str, 1);
+  char fontize_str[120];
+  int fontsize =
+    piano_roll_keys_widget_get_font_size (
+      MW_PIANO_ROLL_KEYS);
   if ((DEBUGGING || !drum_mode) && fontsize > 10)
     {
+      sprintf (
+        fontize_str, "<span size=\"%d\">",
+        /* subtract half a point for the padding */
+        fontsize * 1000 - 4000);
+      strcat (fontize_str, "%s</span>");
+
+      char str_to_use[120];
+      sprintf (str_to_use, fontize_str, str);
+
+      double fontsize_ratio =
+        (double) fontsize / 12.0;
+
       GdkRGBA c2;
       ui_get_contrast_color (&color, &c2);
-      gdk_cairo_set_source_rgba (cr, &c2);
 
       recreate_pango_layouts (
         self, MIN (full_rect.width, 400));
-      cairo_move_to (
-        cr,
-        REGION_NAME_BOX_PADDING +
-          (full_rect.x - arr_rect->x),
-        fontsize_ratio * REGION_NAME_BOX_PADDING +
-          (full_rect.y - arr_rect->y));
-      PangoLayout * layout = self->layout;
-      z_cairo_draw_text (
-        cr,
-        GTK_WIDGET (
-          arranger_object_get_arranger (obj)),
-        layout, str_to_use);
+      gtk_snapshot_save (snapshot);
+      gtk_snapshot_translate (
+        snapshot,
+        &GRAPHENE_POINT_INIT (
+          REGION_NAME_BOX_PADDING + full_rect.x,
+          (float)
+          (fontsize_ratio * REGION_NAME_BOX_PADDING +
+             full_rect.y)));
+      pango_layout_set_markup (
+        self->layout, str_to_use, -1);
+      gtk_snapshot_append_layout (
+        snapshot, self->layout, &c2);
+      gtk_snapshot_restore (snapshot);
     }
+
+  /* add border */
+  const float border_width = 1.f;
+  GdkRGBA border_color = { 0.5f, 0.5f, 0.5f, 0.4f };
+  if (drum_mode)
+    {
+      gdk_cairo_set_source_rgba (
+        diamond_cr, &border_color);
+      cairo_stroke (diamond_cr);
+    }
+  else
+    {
+      float border_widths[] = {
+        border_width, border_width, border_width,
+        border_width };
+      GdkRGBA border_colors[] = {
+        border_color, border_color, border_color,
+        border_color };
+      gtk_snapshot_append_border (
+        snapshot, &rounded_rect, border_widths,
+        border_colors);
+    }
+
+  /* pop clip */
+  gtk_snapshot_pop (snapshot);
+
+  /* free temp cairo context */
+  if (diamond_cr)
+    cairo_destroy (diamond_cr);
 }
 
 void

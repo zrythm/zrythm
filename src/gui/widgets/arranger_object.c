@@ -1113,7 +1113,7 @@ arranger_object_draw (
       break;
     case TYPE (MIDI_NOTE):
       midi_note_draw (
-        (MidiNote *) self, cr, rect);
+        (MidiNote *) self, snapshot);
       break;
     case TYPE (MARKER):
       marker_draw (
