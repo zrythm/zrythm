@@ -1129,7 +1129,7 @@ arranger_object_draw (
       break;
     case TYPE (VELOCITY):
       velocity_draw (
-        (Velocity *) self, cr, rect);
+        (Velocity *) self, snapshot);
       break;
     default:
       g_warn_if_reached ();

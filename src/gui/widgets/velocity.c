@@ -37,21 +37,20 @@
 #include "utils/cairo.h"
 #include "utils/color.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
+
+#include <gtk/gtk.h>
 
 /**
  * Draws the Velocity in the given cairo context in
  * relative coordinates.
- *
- * @param cr The arranger cairo context.
- * @param rect Arranger rectangle.
  */
 void
 velocity_draw (
-  Velocity *     self,
-  cairo_t *      cr,
-  GdkRectangle * rect)
+  Velocity *    self,
+  GtkSnapshot * snapshot)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   MidiNote * mn = velocity_get_midi_note (self);
@@ -61,48 +60,65 @@ velocity_draw (
   /* get color */
   GdkRGBA color;
   midi_note_get_adjusted_color (mn, &color);
-  gdk_cairo_set_source_rgba (cr, &color);
 
   /* make velocity start at 0,0 to make it easier to
    * draw */
-  cairo_save (cr);
-  cairo_translate (
-    cr,
-    obj->full_rect.x - rect->x,
-    obj->full_rect.y - rect->y);
-
-#if 0
-  cairo_rectangle (
-    cr, 0, 0,
-    obj->full_rect.width,
-    obj->full_rect.height);
-  cairo_stroke(cr);
-#endif
+  gtk_snapshot_save (snapshot);
+  gtk_snapshot_translate (
+    snapshot,
+    &GRAPHENE_POINT_INIT (
+      obj->full_rect.x, obj->full_rect.y));
 
   /* --- draw --- */
 
   const int circle_radius = obj->full_rect.width / 2;
 
   /* draw line */
-  cairo_rectangle (
-    cr,
-    obj->full_rect.width / 2 -
-      VELOCITY_LINE_WIDTH / 2,
-    circle_radius,
-    VELOCITY_LINE_WIDTH,
-    obj->full_rect.height);
-  cairo_fill (cr);
+  gtk_snapshot_append_color (
+    snapshot, &color,
+    &GRAPHENE_RECT_INIT (
+      obj->full_rect.width / 2 -
+        VELOCITY_LINE_WIDTH / 2,
+      circle_radius,
+      VELOCITY_LINE_WIDTH,
+      obj->full_rect.height));
 
-  /* draw circle */
-  cairo_arc (
-    cr, circle_radius, circle_radius, circle_radius,
-    0, 2 * M_PI);
-  cairo_set_source_rgba (cr, 0.8, 0.8, 0.8, 1);
-  cairo_fill_preserve (cr);
-
-  gdk_cairo_set_source_rgba (cr, &color);
-  cairo_set_line_width (cr, 2);
-  cairo_stroke (cr);
+  /*
+   * draw circle:
+   * 1. translate by a little because we add an
+   * extra pixel to VELOCITY_WIDTH to mimic previous
+   * behavior
+   * 2. push a circle clip and fill with white
+   * 3. append colored border
+   */
+  gtk_snapshot_save (snapshot);
+  gtk_snapshot_translate (
+    snapshot,
+    &GRAPHENE_POINT_INIT (- 0.5f, - 0.5f));
+  float circle_angle = 2 * M_PI;
+  GskRoundedRect rounded_rect;
+  gsk_rounded_rect_init_from_rect (
+    &rounded_rect,
+    &GRAPHENE_RECT_INIT (
+      0, 0, circle_radius * 2 + 1,
+      circle_radius * 2 + 1),
+    circle_angle);
+  gtk_snapshot_push_rounded_clip (
+    snapshot, &rounded_rect);
+  gtk_snapshot_append_color (
+    snapshot, &Z_GDK_RGBA_INIT (0.8, 0.8, 0.8, 1),
+    &rounded_rect.bounds);
+  const float border_width = 2.f;
+  float border_widths[] = {
+    border_width, border_width, border_width,
+    border_width };
+  GdkRGBA border_colors[] = {
+    color, color, color, color };
+  gtk_snapshot_append_border (
+    snapshot, &rounded_rect, border_widths,
+    border_colors);
+  gtk_snapshot_pop (snapshot);
+  gtk_snapshot_restore (snapshot);
 
   /* draw text */
   if (arranger->action != UI_OVERLAY_ACTION_NONE)
@@ -110,18 +126,25 @@ velocity_draw (
       char text[8];
       sprintf (
         text, "%d", self->vel);
-      cairo_set_source_rgba (cr, 1, 1, 1, 1);
       const int padding = 3;
       int text_start_y = padding;
       int text_start_x =
         obj->full_rect.width + padding;
-      z_cairo_draw_text_full (
-        cr, GTK_WIDGET (arranger),
-        arranger->vel_layout, text,
-        text_start_x, text_start_y);
+
+      gtk_snapshot_save (snapshot);
+      gtk_snapshot_translate (
+        snapshot,
+        &GRAPHENE_POINT_INIT (
+          text_start_x, text_start_y));
+      PangoLayout * layout = arranger->vel_layout;
+      pango_layout_set_markup (layout, text, -1);
+      gtk_snapshot_append_layout (
+        snapshot, layout,
+        &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+      gtk_snapshot_restore (snapshot);
     }
 
-  cairo_restore (cr);
+  gtk_snapshot_restore (snapshot);
 }
 
 

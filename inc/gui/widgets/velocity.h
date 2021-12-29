@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -45,33 +45,11 @@
 /**
  * Draws the Velocity in the given cairo context in
  * relative coordinates.
- *
- * @param cr The arranger cairo context.
- * @param rect Arranger rectangle.
  */
 void
 velocity_draw (
-  Velocity *     self,
-  cairo_t *      cr,
-  GdkRectangle * rect);
-
-#if 0
-typedef struct _VelocityWidget
-{
-  ArrangerObjectWidget parent_instance;
-
-  /** The Velocity associated with this. */
-  Velocity *       velocity;
-} VelocityWidget;
-
-/**
- * Creates a velocity.
- */
-VelocityWidget *
-velocity_widget_new (
-  Velocity * velocity);
-
-#endif
+  Velocity *    self,
+  GtkSnapshot * snapshot);
 
 /**
  * @}
