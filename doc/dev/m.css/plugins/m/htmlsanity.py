@@ -1,7 +1,7 @@
 #
 #   This file is part of m.css.
 #
-#   Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -22,6 +22,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+import copy
 import logging
 import os.path
 import re
@@ -40,7 +41,7 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-settings = {
+default_settings = {
     # Language used for hyphenation and smart quotes
     'M_HTMLSANITY_LANGUAGE': 'en',
     # Extra docutils settings
@@ -52,6 +53,19 @@ settings = {
     # List of formatted document-level fields (which should get hyphenation
     # and smart quotes applied as well)
     'M_HTMLSANITY_FORMATTED_FIELDS': []
+}
+
+settings = None
+
+# Default docutils settings. Some things added in register() / register_mcss(),
+# and from the M_HTMLSANITY_DOCUTILS_SETTINGS option.
+docutils_settings = {
+    'initial_header_level': '2',
+    'syntax_highlight': 'short',
+    'input_encoding': 'utf-8',
+    'halt_level': 2,
+    'traceback': True,
+    'embed_stylesheet': False
 }
 
 words_re = re.compile(r'\w+', re.UNICODE|re.X)
@@ -278,12 +292,8 @@ class SaneHtmlTranslator(HTMLTranslator):
         atts = {}
         uri = node['uri']
         ext = os.path.splitext(uri)[1].lower()
-        if ext in self.object_image_types:
-            atts['data'] = uri
-            atts['type'] = self.object_image_types[ext]
-        else:
-            atts['src'] = uri
-            if 'alt' in node: atts['alt'] = node['alt']
+        atts['src'] = uri
+        if 'alt' in node: atts['alt'] = node['alt']
         style = []
         if node.get('width'):
             style += ['width: {}'.format(node['width'])]
@@ -298,12 +308,7 @@ class SaneHtmlTranslator(HTMLTranslator):
             suffix = ''
         else:
             suffix = '\n'
-        if ext in self.object_image_types:
-            # do NOT use an empty tag: incorrect rendering in browsers
-            self.body.append(self.starttag(node, 'object', suffix, **atts) +
-                             node.get('alt', uri) + '</object>' + suffix)
-        else:
-            self.body.append(self.emptytag(node, 'img', suffix, **atts))
+        self.body.append(self.emptytag(node, 'img', suffix, **atts))
 
     def depart_image(self, node):
         pass
@@ -356,6 +361,15 @@ class SaneHtmlTranslator(HTMLTranslator):
         # why?!?!
         #if not isinstance(node.parent, nodes.TextElement):
             #assert len(node) == 1 and isinstance(node[0], nodes.image)
+
+        # If the link is a plain URL without explicitly specified title, apply
+        # m-link-wrap so it doesn't leak out of the view on narrow screens.
+        # This can be disabled by explicitly providing the URL also as a title
+        # --- then the node will have a name attribute and we'll skip in that
+        # case.
+        if len(node.children) == 1 and isinstance(node.children[0], nodes.Text) and 'name' not in node and 'refuri' in node and node.children[0] == node['refuri']:
+            node['classes'] += ['m-link-wrap']
+
         self.body.append(self.starttag(node, 'a', '', **atts))
 
     def depart_reference(self, node):
@@ -503,10 +517,8 @@ class SaneHtmlTranslator(HTMLTranslator):
         Determine if the <p> tags around paragraph ``node`` can be omitted.
         """
         if (isinstance(node.parent, nodes.document) or
-            isinstance(node.parent, nodes.compound) or
-            isinstance(node.parent, nodes.field_body)):
-            # Never compact paragraphs in document, compound or directly in
-            # field bodies (such as article summary or page footer)
+            isinstance(node.parent, nodes.compound)):
+            # Never compact paragraphs in document or compound
             return False
         for key, value in node.attlist():
             if (node.is_not_default(key) and
@@ -637,10 +649,20 @@ class _SaneFieldBodyTranslator(SaneHtmlTranslator):
     def __init__(self, document):
         SaneHtmlTranslator.__init__(self, document)
 
+    # Overriding the function in SaneHtmlTranslator, in addition never
+    # compacting paragraphs directly in field bodies (such as article summary
+    # or page footer) unless explicitly told it so. The sad thing is that the
+    # Pelican theme currently always expects the summaries to be wrapped in
+    # <p>, while the Python docs expect exactly the other case.
+    def should_be_compact_paragraph(self, node):
+        if isinstance(node.parent, nodes.field_body) and not self.compact_field_list:
+            return False
+        return SaneHtmlTranslator.should_be_compact_paragraph(self, node)
+
     def astext(self):
         return ''.join(self.body)
 
-    # Not sure why this is here
+    # If this wouldn't be here, the output would have <dd> around. Not useful.
     def visit_field_body(self, node):
         pass
 
@@ -657,26 +679,19 @@ class SaneHtmlWriter(docutils.writers.html5_polyglot.Writer):
         return docutils.writers.html5_polyglot.Writer.get_transforms(self) + [SmartQuotes, Pyphen]
 
 def render_rst(value):
-    extra_params = {'initial_header_level': '2',
-                    'syntax_highlight': 'short',
-                    'input_encoding': 'utf-8',
-                    'language_code': settings['M_HTMLSANITY_LANGUAGE'],
-                    'halt_level': 2,
-                    'traceback': True,
-                    'embed_stylesheet': False}
-    if settings['M_HTMLSANITY_DOCUTILS_SETTINGS']:
-        extra_params.update(settings['M_HTMLSANITY_DOCUTILS_SETTINGS'])
-
     pub = docutils.core.Publisher(
         writer=SaneHtmlWriter(),
         source_class=docutils.io.StringInput,
         destination_class=docutils.io.StringOutput)
     pub.set_components('standalone', 'restructuredtext', 'html')
     pub.writer.translator_class = _SaneFieldBodyTranslator
-    pub.process_programmatic_settings(None, extra_params, None)
+    pub.process_programmatic_settings(None, docutils_settings, None)
     pub.set_source(source=value)
     pub.publish(enable_exit_status=True)
     return pub.writer.parts.get('body').strip()
+
+def rtrim(value):
+    return value.rstrip()
 
 def hyphenate(value, enable=None, lang=None):
     if enable is None: enable = settings['M_HTMLSANITY_HYPHENATION']
@@ -690,20 +705,35 @@ def dehyphenate(value, enable=None):
     if not enable: return value
     return value.replace('&shy;', '')
 
-# Below is only Pelican-specific functionality and plugin registration
+def register_mcss(mcss_settings, jinja_environment, **kwargs):
+    global default_settings, settings
+    settings = copy.deepcopy(default_settings)
+    for key in settings.keys():
+        if key in mcss_settings: settings[key] = mcss_settings[key]
+    docutils_settings['language_code'] = settings['M_HTMLSANITY_LANGUAGE']
+    docutils_settings.update(settings['M_HTMLSANITY_DOCUTILS_SETTINGS'])
+
+    jinja_environment.filters['rtrim'] = rtrim
+    jinja_environment.filters['render_rst'] = render_rst
+    jinja_environment.filters['hyphenate'] = hyphenate
+    jinja_environment.filters['dehyphenate'] = dehyphenate
+
+# Below is only Pelican-specific functionality. If Pelican is not found, these
+# do nothing.
 try:
-    import pelican.signals
+    from pelican import signals
     from pelican.readers import RstReader
+
+    class PelicanSaneRstReader(RstReader):
+        writer_class = SaneHtmlWriter
+        field_body_translator_class = _SaneFieldBodyTranslator
+
 except ImportError:
     pass
 
-class SaneRstReader(RstReader):
-    writer_class = SaneHtmlWriter
-    field_body_translator_class = _SaneFieldBodyTranslator
-
 pelican_settings = {}
 
-def expand_link(link, content):
+def pelican_expand_link(link, content):
     link_regex = r"""^
         (?P<markup>)(?P<quote>)
         (?P<path>{0}(?P<value>.*))
@@ -713,7 +743,7 @@ def expand_link(link, content):
         lambda m: content._link_replacer(content.get_siteurl(), m),
         link)
 
-def expand_links(text, content):
+def pelican_expand_links(text, content):
     # TODO: fields that are in FORMATTED_FIELDS are already expanded, but that
     # requires extra work on user side. Ideal would be to handle that all on
     # template side, so keeping this one for the time when we can replace
@@ -723,39 +753,43 @@ def expand_links(text, content):
 # To be consistent with both what Pelican does now with '/'.join(SITEURL, url)
 # and with https://github.com/getpelican/pelican/pull/2196. Keep consistent
 # with m.alias.
-def format_siteurl(url):
+def pelican_format_siteurl(url):
     return urljoin(pelican_settings['SITEURL'] + ('/' if not pelican_settings['SITEURL'].endswith('/') else ''), url)
 
-def configure_pelican(pelicanobj):
+def _pelican_configure(pelicanobj):
+    pelicanobj.settings['JINJA_FILTERS']['rtrim'] = rtrim
     pelicanobj.settings['JINJA_FILTERS']['render_rst'] = render_rst
-    pelicanobj.settings['JINJA_FILTERS']['expand_link'] = expand_link
-    pelicanobj.settings['JINJA_FILTERS']['expand_links'] = expand_links
-    pelicanobj.settings['JINJA_FILTERS']['format_siteurl'] = format_siteurl
+    pelicanobj.settings['JINJA_FILTERS']['expand_link'] = pelican_expand_link
+    pelicanobj.settings['JINJA_FILTERS']['expand_links'] = pelican_expand_links
+    pelicanobj.settings['JINJA_FILTERS']['format_siteurl'] = pelican_format_siteurl
     pelicanobj.settings['JINJA_FILTERS']['hyphenate'] = hyphenate
     pelicanobj.settings['JINJA_FILTERS']['dehyphenate'] = dehyphenate
 
     # Map the setting key names from Pelican's own
-    global settings
-    for key, pelicankey, default in [
-        ('M_HTMLSANITY_LANGUAGE', 'DEFAULT_LANG', None),
-        ('M_HTMLSANITY_DOCUTILS_SETTINGS', 'DOCUTILS_SETTINGS', None),
-        ('M_HTMLSANITY_HYPHENATION', None, False),
-        ('M_HTMLSANITY_SMART_QUOTES', None, False),
-        ('M_HTMLSANITY_FORMATTED_FIELDS', 'FORMATTED_FIELDS', None)]:
-        if default is None:
-            settings[key] = pelicanobj.settings[pelicankey]
-        else:
-            if not pelicankey: pelicankey = key
-            settings[key] = pelicanobj.settings.get(pelicankey, default)
+    global default_settings, settings
+    settings = copy.deepcopy(default_settings)
+    for key, pelicankey in [
+        ('M_HTMLSANITY_LANGUAGE', 'DEFAULT_LANG'),
+        ('M_HTMLSANITY_DOCUTILS_SETTINGS', 'DOCUTILS_SETTINGS'),
+        ('M_HTMLSANITY_FORMATTED_FIELDS', 'FORMATTED_FIELDS')]:
+        settings[key] = pelicanobj.settings[pelicankey]
+
+    # Settings with the same name both here and in Pelican
+    for key in 'M_HTMLSANITY_HYPHENATION', 'M_HTMLSANITY_SMART_QUOTES':
+        if key in pelicanobj.settings: settings[key] = pelicanobj.settings[key]
 
     # Save settings needed only for Pelican-specific functionality
     global pelican_settings
     for key in 'INTRASITE_LINK_REGEX', 'SITEURL':
         pelican_settings[key] = pelicanobj.settings[key]
 
-def add_reader(readers):
-    readers.reader_classes['rst'] = SaneRstReader
+    # Update the docutils settings using the above
+    docutils_settings['language_code'] = settings['M_HTMLSANITY_LANGUAGE']
+    docutils_settings.update(settings['M_HTMLSANITY_DOCUTILS_SETTINGS'])
 
-def register():
-    pelican.signals.initialized.connect(configure_pelican)
-    pelican.signals.readers_init.connect(add_reader)
+def _pelican_add_reader(readers):
+    readers.reader_classes['rst'] = PelicanSaneRstReader
+
+def register(): # for Pelican
+    signals.initialized.connect(_pelican_configure)
+    signals.readers_init.connect(_pelican_add_reader)

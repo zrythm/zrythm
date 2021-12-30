@@ -1,7 +1,7 @@
 ..
     This file is part of m.css.
 
-    Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -70,11 +70,9 @@ Install Pelican either via ``pip`` or using your system package manager.
 .. note-danger::
 
     In order to use the m.css theme or `plugins <{filename}/plugins.rst>`_, you
-    need to install Pelican 4 and the Python 3 version of it. Most of the
-    plugins work with Python 3.4, while some (such as the
-    `math plugin <{filename}/plugins/math-and-code.rst#math>`_) need 3.5.
-    Python 2 is not supported and compatibility with Pelican 3.7 has been
-    dropped.
+    need to install Pelican 4 and the Python 3 version of it. The theme and
+    plugins work with Python 3.5 and newer. Python 2 is not supported and
+    compatibility with Pelican 3.7 has been dropped.
 
 .. code:: sh
 
@@ -221,6 +219,9 @@ neither is specified no :html:`<link>` tag is rendered. Example configuration:
 
     M_FAVICON = ('favicon.ico', 'image/x-ico')
     M_BLOG_FAVICON = ('favicon-blog.png', 'image/png')
+
+Arbitrary HTML content can be added at the end of the :html:`<head>` via the
+:py:`M_HTML_HEADER` option.
 
 `Top navbar`_
 -------------

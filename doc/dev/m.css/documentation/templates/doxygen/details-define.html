@@ -1,7 +1,7 @@
           <section class="m-doc-details" id="{{ define.id }}"><div>
             <h3>
               {% set j = joiner(',\n              ') %}
-              <span class="m-doc-wrap-bumper">#define <a href="#{{ define.id }}" class="m-doc-self">{{ define.name }}</a>{% if define.params != None %}(</span><span class="m-doc-wrap">{% for param in define.params %}{{ j() }}{{ param[0] }}{% endfor %}){% endif %}</span>
+              <span class="m-doc-wrap-bumper">#define <a href="#{{ define.id }}" class="m-doc-self">{{ define.name }}</a>{% if define.params != None %}(</span><span class="m-doc-wrap">{% for param in define.params %}{{ j() }}{{ param[0] }}{% endfor %}){% endif %}{% if define.since %} {{ define.since }}{% endif %}</span>
               {% if define.include %}
               <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="{{ define.include[1] }}">{{ define.include[0] }}</a></div>
               {% endif %}

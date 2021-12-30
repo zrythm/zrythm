@@ -1,7 +1,7 @@
 #
 #   This file is part of m.css.
 #
-#   Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -366,7 +366,7 @@ def label_flat_info(name, rawtext, text, lineno, inliner, options={}, content=[]
 def label_flat_dim(name, rawtext, text, lineno, inliner, options={}, content=[]):
     return label(['m-flat', 'm-dim'], name, rawtext, text, lineno, inliner, options, content)
 
-def register():
+def register_mcss(**kwargs):
     rst.directives.register_directive('transition', Transition)
 
     rst.directives.register_directive('note-default', DefaultNote)
@@ -424,3 +424,8 @@ def register():
     rst.roles.register_canonical_role('label-flat-danger', label_flat_danger)
     rst.roles.register_canonical_role('label-flat-info', label_flat_info)
     rst.roles.register_canonical_role('label-flat-dim', label_flat_dim)
+
+# Below is only Pelican-specific functionality. If Pelican is not found, these
+# do nothing.
+
+register = register_mcss # for Pelican

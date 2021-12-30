@@ -1,7 +1,7 @@
 ..
     This file is part of m.css.
 
-    Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -40,7 +40,7 @@ applied to all elements by default.
 `Quick start`_
 ==============
 
-To make full advantage of m.css, you need the following files written in plain
+To take full advantage of m.css, you need the following files written in plain
 CSS. Download them below or :gh:`grab the whole Git repository <mosra/m.css>`:
 
 -   :gh:`m-grid.css <mosra/m.css$master/css/m-grid.css>` with optional
@@ -64,7 +64,7 @@ terminal output) on your website, there's also a builtin style for
 -   :gh:`pygments-dark.css <mosra/m.css$master/css/pygments-dark.css>`,
     generated from :gh:`pygments-dark.py <mosra/m.css$master/css/pygments-dark.py>`
 -   :gh:`pygments-console.css <mosra/m.css$master/css/pygments-console.css>`,
-    generated from :gh:`pygments-dark.py <mosra/m.css$master/css/pygments-console.py>`
+    generated from :gh:`pygments-console.py <mosra/m.css$master/css/pygments-console.py>`
 
 Once you have the files, reference them from your HTML markup. The top-level
 ``m-dark.css`` / ``m-light.css`` file includes the others via a CSS

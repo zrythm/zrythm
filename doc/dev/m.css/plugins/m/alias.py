@@ -1,7 +1,7 @@
 #
 #   This file is part of m.css.
 #
-#   Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Loosely based on https://github.com/Nitron/pelican-alias,
 #   copyright © 2013 Christopher Williams
@@ -27,7 +27,6 @@
 
 import os
 import logging
-from pelican import signals
 from urllib.parse import urljoin
 
 logger = logging.getLogger(__name__)
@@ -66,8 +65,15 @@ class AliasGenerator:
                 with open(alias_file, 'w') as f:
                     f.write("""<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url={}" /></head></html>\n""".format(alias_target))
 
-def get_generators(generators): return AliasGenerator
+def register_mcss(**kwargs):
+    assert not "This plugin is Pelican-only" # pragma: no cover
 
-def register():
-    # TODO: why `lambda generators: AliasGenerator` doesn't work?
-    signals.get_generators.connect(get_generators)
+# Below is only Pelican-specific functionality. If Pelican is not found, these
+# do nothing.
+
+def _pelican_get_generators(generators): return AliasGenerator
+
+def register(): # for Pelican
+    from pelican import signals
+
+    signals.get_generators.connect(_pelican_get_generators)

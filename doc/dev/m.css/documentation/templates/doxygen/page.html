@@ -16,7 +16,9 @@
           {% for name, target in compound.breadcrumb[:-1] %}
           <span class="m-breadcrumb"><a href="{{ target }}">{{ name }}</a> &raquo;</span>
           {% endfor %}
-          {{ compound.breadcrumb[-1][0] }}
+          {{ compound.breadcrumb[-1][0] }}{% if compound.since %} {{ compound.since }}{% endif %}
+          {# need an explicit space here otherwise the newline gets removed #}
+
         </h1>
         {% if compound.brief %}
         <p>{{ compound.brief }}</p>
@@ -30,7 +32,7 @@
             <li>
               <a href="#{{ id }}">{{ name }}</a>
               <ul>
-{{ loop(children)|indent(4, true) }}
+{{ loop(children)|rtrim|indent(4, true) }}
               </ul>
             </li>
             {% else %}

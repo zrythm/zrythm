@@ -1,7 +1,7 @@
 /*
     This file is part of m.css.
 
-    Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -25,10 +25,13 @@
 "use strict"; /* it summons the Cthulhu in a proper way, they say */
 
 var Search = {
+    formatVersion: 1, /* the data filename contains this number too */
+
+    dataSize: 0, /* used mainly by tests, not here */
+    symbolCount: '&hellip;',
     trie: null,
     map: null,
-    dataSize: 0,
-    symbolCount: 0,
+    typeMap: null,
     maxResults: 0,
 
     /* Always contains at least the root node offset and then one node offset
@@ -52,8 +55,9 @@ var Search = {
     init: function(buffer, maxResults) {
         let view = new DataView(buffer);
 
-        /* The file is too short to contain at least the headers */
-        if(view.byteLength < 20) {
+        /* The file is too short to contain at least the headers and empty
+           sections */
+        if(view.byteLength < 26) {
             console.error("Search data too short");
             return false;
         }
@@ -65,27 +69,28 @@ var Search = {
             return false;
         }
 
-        if(view.getUint8(3) != 0) {
+        if(view.getUint8(3) != this.formatVersion) {
             console.error("Invalid search data version");
             return false;
         }
 
         /* Separate the data into the trie and the result map */
         let mapOffset = view.getUint32(6, true);
-        this.trie = new DataView(buffer, 10, mapOffset - 10);
-        this.map = new DataView(buffer, mapOffset);
+        let typeMapOffset = view.getUint32(10, true);
+        this.trie = new DataView(buffer, 14, mapOffset - 14);
+        this.map = new DataView(buffer, mapOffset, typeMapOffset - mapOffset);
+        this.typeMap = new DataView(buffer, typeMapOffset);
 
         /* Set initial properties */
         this.dataSize = buffer.byteLength;
-        this.symbolCount = view.getUint16(4, true);
+        this.symbolCount = view.getUint16(4, true) + " symbols (" + Math.round(this.dataSize/102.4)/10 + " kB)";
         this.maxResults = maxResults ? maxResults : 100;
         this.searchString = '';
         this.searchStack = [this.trie.getUint32(0, true)];
 
         /* istanbul ignore if */
         if(typeof document !== 'undefined') {
-            document.getElementById('search-symbolcount').innerHTML =
-                this.symbolCount + " symbols (" + Math.round(this.dataSize/102.4)/10 + " kB)";
+            document.getElementById('search-symbolcount').innerHTML = this.symbolCount;
             document.getElementById('search-input').disabled = false;
             document.getElementById('search-input').placeholder = "Type something here …";
             document.getElementById('search-input').focus();
@@ -189,7 +194,7 @@ var Search = {
     toUtf8: function(string) { return unescape(encodeURIComponent(string)); },
     fromUtf8: function(string) { return decodeURIComponent(escape(string)); },
 
-    autocompletedCharsToString: function(chars) {
+    autocompletedCharsToUtf8: function(chars) {
         /* Strip incomplete UTF-8 chars from the autocompletion end */
         for(let i = chars.length - 1; i >= 0; --i) {
             let c = chars[i];
@@ -221,14 +226,16 @@ var Search = {
         let suggestedTabAutocompletionString = '';
         for(let i = 0; i != chars.length; ++i)
             suggestedTabAutocompletionString += String.fromCharCode(chars[i]);
-        return this.fromUtf8(suggestedTabAutocompletionString);
+        return suggestedTabAutocompletionString;
     },
 
     /* Returns the values in UTF-8, but input is in whatever shitty 16bit
        encoding JS has */
     search: function(searchString) {
-        /* Normalize the search string first, convert to UTF-8 */
-        searchString = this.toUtf8(searchString.toLowerCase().trim());
+        /* Normalize the search string first, convert to UTF-8 and trim spaces
+           from the left. From the right they're trimmed only if nothing is
+           found, see below. */
+        searchString = this.toUtf8(searchString.toLowerCase().replace(/^\s+/,''));
 
         /* TODO: maybe i could make use of InputEvent.data and others here */
 
@@ -250,7 +257,15 @@ var Search = {
             /* Calculate offset and count of children */
             let offset = this.searchStack[this.searchStack.length - 1];
             let relChildOffset = 2 + this.trie.getUint8(offset)*2;
+
+            /* Calculate child count. If there's a lot of results, the count
+               "leaks over" to the child count storage. */
+            let resultCount = this.trie.getUint8(offset);
             let childCount = this.trie.getUint8(offset + 1);
+            if(resultCount & 0x80) {
+                resultCount = (resultCount & 0x7f) | ((childCount & 0xf0) << 3);
+                childCount = childCount & 0x0f;
+            }
 
             /* Go through all children and find the next offset */
             let childOffset = offset + relChildOffset;
@@ -264,8 +279,18 @@ var Search = {
                 break;
             }
 
-            /* Character not found, exit */
-            if(!found) break;
+            /* Character not found */
+            if(!found) {
+                /* If we found everything except spaces at the end, pretend the
+                   spaces aren't there. On the other hand, we *do* want to
+                   try searching with the spaces first -- it can narrow down
+                   the result list for page names or show subpages (which are
+                   after a lookahead barrier that's a space). */
+                if(!searchString.substr(foundPrefix).trim().length)
+                    searchString = searchString.substr(0, foundPrefix);
+
+                break;
+            }
         }
 
         /* Save the whole found prefix for next time */
@@ -293,21 +318,29 @@ var Search = {
             let offset = current[0];
             let suffixLength = current[1];
 
-            /* Populate the results with all values associated with this node */
+            /* Calculate child count. If there's a lot of results, the count
+               "leaks over" to the child count storage. */
+            /* TODO: hmmm. this is helluvalot duplicated code. hmm. */
             let resultCount = this.trie.getUint8(offset);
+            let childCount = this.trie.getUint8(offset + 1);
+            if(resultCount & 0x80) {
+                resultCount = (resultCount & 0x7f) | ((childCount & 0xf0) << 3);
+                childCount = childCount & 0x0f;
+            }
+
+            /* Populate the results with all values associated with this node */
             for(let i = 0; i != resultCount; ++i) {
-                let index = this.trie.getUint16(offset + (i + 1)*2, true);
+                let index = this.trie.getUint16(offset + 2 + i*2, true);
                 results.push(this.gatherResult(index, suffixLength, 0xffffff)); /* should be enough haha */
 
                 /* 'nuff said. */
                 if(results.length >= this.maxResults)
-                    return [results, this.autocompletedCharsToString(suggestedTabAutocompletionChars)];
+                    return [results, this.autocompletedCharsToUtf8(suggestedTabAutocompletionChars)];
             }
 
             /* Dig deeper */
             /* TODO: hmmm. this is helluvalot duplicated code. hmm. */
             let relChildOffset = 2 + this.trie.getUint8(offset)*2;
-            let childCount = this.trie.getUint8(offset + 1);
             let childOffset = offset + relChildOffset;
             for(let j = 0; j != childCount; ++j) {
                 let offsetBarrier = this.trie.getUint32(childOffset + j*4, true);
@@ -331,7 +364,7 @@ var Search = {
             }
         }
 
-        return [results, this.autocompletedCharsToString(suggestedTabAutocompletionChars)];
+        return [results, this.autocompletedCharsToUtf8(suggestedTabAutocompletionChars)];
     },
 
     gatherResult: function(index, suffixLength, maxUrlPrefix) {
@@ -388,14 +421,14 @@ var Search = {
            that's just wrong, fix! */
         if(aliasedIndex != null && maxUrlPrefix == 0xffffff) {
             let alias = this.gatherResult(aliasedIndex, 0 /* ignored */, 0xffffff); /* should be enough haha */
-            url = alias.url;
-            flags = alias.flags;
 
             /* Keeping in UTF-8, as we need that for proper slicing (and concatenating) */
             return {name: name,
                     alias: alias.name,
                     url: alias.url,
                     flags: alias.flags,
+                    cssClass: alias.cssClass,
+                    typeName: alias.typeName,
                     suffixLength: suffixLength + resultSuffixLength};
         }
 
@@ -405,10 +438,40 @@ var Search = {
             url += String.fromCharCode(this.map.getUint8(j));
         }
 
-        /* Keeping in UTF-8, as we need that for proper slicing (and concatenating) */
+        /* This is an alias, return what we have, without parsed CSS class and
+           type name as those are retrieved from the final target type */
+        if(!(flags >> 4))
+            return {name: name,
+                    url: url,
+                    flags: flags & 0x0f,
+                    suffixLength: suffixLength + resultSuffixLength};
+
+        /* Otherwise, get CSS class and type name for the result label */
+        let typeMapIndex = (flags >> 4) - 1;
+        let cssClass = [
+            /* Keep in sync with _search.py */
+            'm-default',
+            'm-primary',
+            'm-success',
+            'm-warning',
+            'm-danger',
+            'm-info',
+            'm-dim'
+        ][this.typeMap.getUint8(typeMapIndex*2)];
+        let typeNameOffset = this.typeMap.getUint8(typeMapIndex*2 + 1);
+        let nextTypeNameOffset = this.typeMap.getUint8((typeMapIndex + 1)*2 + 1);
+        let typeName = '';
+        for(let j = typeNameOffset; j != nextTypeNameOffset; ++j)
+            typeName += String.fromCharCode(this.typeMap.getUint8(j));
+
+        /* Keeping in UTF-8, as we need that for proper slicing (and
+           concatenating). Strip the type from the flags, as it's now expressed
+           directly. */
         return {name: name,
                 url: url,
-                flags: flags,
+                flags: flags & 0x0f,
+                cssClass: cssClass,
+                typeName: typeName,
                 suffixLength: suffixLength + resultSuffixLength};
     },
 
@@ -428,12 +491,8 @@ var Search = {
         return this.escape(name).replace(/[:=]/g, '&lrm;$&').replace(/(\)|&gt;|&amp;|\/)/g, '&lrm;$&&lrm;');
     },
 
-    renderResults: /* istanbul ignore next */ function(value, resultsSuggestedTabAutocompletion) {
-        /* Normalize the value and encode as UTF-8 so the slicing works
-           properly */
-        value = this.toUtf8(value.trim());
-
-        if(!value.length) {
+    renderResults: /* istanbul ignore next */ function(resultsSuggestedTabAutocompletion) {
+        if(!this.searchString.length) {
             document.getElementById('search-help').style.display = 'block';
             document.getElementById('search-results').style.display = 'none';
             document.getElementById('search-notfound').style.display = 'none';
@@ -451,79 +510,17 @@ var Search = {
 
             let list = '';
             for(let i = 0; i != results.length; ++i) {
-                let type = '';
-                let color = '';
-                switch(results[i].flags >> 4) {
-                    /* Keep in sync with doxygen.py */
-                    case 1:
-                        type = 'page';
-                        color = 'm-success';
-                        break;
-                    case 2:
-                        type = 'namespace';
-                        color = 'm-primary';
-                        break;
-                    case 3:
-                        type = 'group';
-                        color = 'm-success';
-                        break;
-                    case 4:
-                        type = 'class';
-                        color = 'm-primary';
-                        break;
-                    case 5:
-                        type = 'struct';
-                        color = 'm-primary';
-                        break;
-                    case 6:
-                        type = 'union';
-                        color = 'm-primary';
-                        break;
-                    case 7:
-                        type = 'typedef';
-                        color = 'm-primary';
-                        break;
-                    case 8:
-                        type = 'dir';
-                        color = 'm-warning';
-                        break;
-                    case 9:
-                        type = 'file';
-                        color = 'm-warning';
-                        break;
-                    case 10:
-                        type = 'func';
-                        color = 'm-info';
-                        break;
-                    case 11:
-                        type = 'define';
-                        color = 'm-info';
-                        break;
-                    case 12:
-                        type = 'enum';
-                        color = 'm-primary';
-                        break;
-                    case 13:
-                        type = 'enum val';
-                        color = 'm-default';
-                        break;
-                    case 14:
-                        type = 'var';
-                        color = 'm-default';
-                        break;
-                }
-
                 /* Labels + */
-                list += '<li' + (i ? '' : ' id="search-current"') + '><a href="' + results[i].url + '" onmouseover="selectResult(event)" data-md-link-title="' + this.escape(results[i].name.substr(results[i].name.length - value.length - results[i].suffixLength)) + '"><div class="m-label m-flat ' + color + '">' + type + '</div>' + (results[i].flags & 2 ? '<div class="m-label m-danger">deprecated</div>' : '') + (results[i].flags & 4 ? '<div class="m-label m-danger">deleted</div>' : '');
+                list += '<li' + (i ? '' : ' id="search-current"') + '><a href="' + results[i].url + '" onmouseover="selectResult(event)" data-md-link-title="' + this.escape(results[i].name.substr(results[i].name.length - this.searchString.length - results[i].suffixLength)) + '"><div class="m-label m-flat ' + results[i].cssClass + '">' + results[i].typeName + '</div>' + (results[i].flags & 2 ? '<div class="m-label m-danger">deprecated</div>' : '') + (results[i].flags & 4 ? '<div class="m-label m-danger">deleted</div>' : '');
 
                 /* Render the alias (cut off from the right) */
                 if(results[i].alias) {
-                    list += '<div class="m-doc-search-alias"><span class="m-text m-dim">' + this.escape(results[i].name.substr(0, results[i].name.length - value.length - results[i].suffixLength)) + '</span><span class="m-doc-search-typed">' + this.escape(results[i].name.substr(results[i].name.length - value.length - results[i].suffixLength, value.length)) + '</span>' + this.escapeForRtl(results[i].name.substr(results[i].name.length - results[i].suffixLength)) + '<span class="m-text m-dim">: ' + this.escape(results[i].alias) + '</span>';
+                    list += '<div class="m-doc-search-alias"><span class="m-text m-dim">' + this.escape(results[i].name.substr(0, results[i].name.length - this.searchString.length - results[i].suffixLength)) + '</span><span class="m-doc-search-typed">' + this.escape(results[i].name.substr(results[i].name.length - this.searchString.length - results[i].suffixLength, this.searchString.length)) + '</span>' + this.escapeForRtl(results[i].name.substr(results[i].name.length - results[i].suffixLength)) + '<span class="m-text m-dim">: ' + this.escape(results[i].alias) + '</span>';
 
                 /* Render the normal thing (cut off from the left, have to
                    escape for RTL) */
                 } else {
-                    list += '<div><span class="m-text m-dim">' + this.escapeForRtl(results[i].name.substr(0, results[i].name.length - value.length - results[i].suffixLength)) + '</span><span class="m-doc-search-typed">' + this.escapeForRtl(results[i].name.substr(results[i].name.length - value.length - results[i].suffixLength, value.length)) + '</span>' + this.escapeForRtl(results[i].name.substr(results[i].name.length - results[i].suffixLength));
+                    list += '<div><span class="m-text m-dim">' + this.escapeForRtl(results[i].name.substr(0, results[i].name.length - this.searchString.length - results[i].suffixLength)) + '</span><span class="m-doc-search-typed">' + this.escapeForRtl(results[i].name.substr(results[i].name.length - this.searchString.length - results[i].suffixLength, this.searchString.length)) + '</span>' + this.escapeForRtl(results[i].name.substr(results[i].name.length - results[i].suffixLength));
                 }
 
                 /* The closing */
@@ -563,13 +560,12 @@ var Search = {
         let prev = performance.now();
         let results = this.search(value);
         let after = performance.now();
-        this.renderResults(value, results);
-        if(value.trim().length) {
+        this.renderResults(results);
+        if(this.searchString.length) {
             document.getElementById('search-symbolcount').innerHTML =
-                results[0].length + (results.length >= this.maxResults ? '+' : '') + " results (" + Math.round((after - prev)*10)/10 + " ms)";
+                results[0].length + (results[0].length >= this.maxResults ? '+' : '') + " results (" + Math.round((after - prev)*10)/10 + " ms)";
         } else
-            document.getElementById('search-symbolcount').innerHTML =
-                this.symbolCount + " symbols (" + Math.round(this.dataSize/102.4)/10 + " kB)";
+            document.getElementById('search-symbolcount').innerHTML = this.symbolCount;
     },
 };
 
@@ -605,6 +601,7 @@ function showSearch() {
     Search.canGoBackToHideSearch = true;
 
     updateForSearchVisible();
+    document.getElementById('search-symbolcount').innerHTML = Search.symbolCount;
     return false;
 }
 
@@ -669,8 +666,10 @@ if(typeof document !== 'undefined') {
             } else if(event.key == 'Tab' && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
                 /* But only if the input has selection at the end */
                 let input = document.getElementById('search-input');
-                if(input.selectionEnd == input.value.length && input.selectionStart != input.selectionEnd)
+                if(input.selectionEnd == input.value.length && input.selectionStart != input.selectionEnd) {
                     input.setSelectionRange(input.value.length, input.value.length);
+                    return false; /* so input won't lose focus */
+                }
 
             /* Select next item */
             } else if(event.key == 'ArrowDown') {

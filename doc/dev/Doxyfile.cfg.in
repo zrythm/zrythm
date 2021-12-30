@@ -68,7 +68,7 @@ PROJECT_BRIEF          = "a highly automated and intuitive digital audio worksta
 # pixels and the maximum width should not exceed 200 pixels. Doxygen will copy
 # the logo to the output directory.
 
-PROJECT_LOGO           = resources/icons/zrythm/z.svg
+PROJECT_LOGO           = @MESON_SOURCE_ROOT@/data/icon-themes/zrythm-dark/scalable/apps/zrythm.svg
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) path
 # into which the generated documentation will be written. If a relative path is
@@ -879,7 +879,7 @@ EXCLUDE_SYMLINKS       = NO
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       =
+EXCLUDE_PATTERNS       = */Doxygen*
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the

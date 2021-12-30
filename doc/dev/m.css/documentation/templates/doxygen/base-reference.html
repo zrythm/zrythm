@@ -34,7 +34,7 @@
             <li>
               <a href="#{{ id }}">{{ name }}</a>
               <ul>
-{{ loop(children)|indent(4, true) }}
+{{ loop(children)|rtrim|indent(4, true) }}
               </ul>
             </li>
             {% else %}
@@ -73,7 +73,7 @@
                 <li><a href="#var-members">Variables</a></li>
                 {% endif %}
                 {% if compound.defines %}
-                <li><a href="#defines">Defines</a></li>
+                <li><a href="#define-members">Defines</a></li>
                 {% endif %}
                 {% for group in compound.groups %}
                 <li><a href="#{{ group.id }}">{{ group.name }}</a></li>

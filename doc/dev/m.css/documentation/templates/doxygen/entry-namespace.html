@@ -1,2 +1,2 @@
-            <dt>namespace <a href="{{ namespace.url }}" class="m-doc">{{ namespace.name }}</a>{% if namespace.is_deprecated %} <span class="m-label m-danger">deprecated</span>{% endif %}</dt>
+            <dt>namespace <a href="{{ namespace.url }}" class="m-doc">{{ namespace.name }}</a>{% if namespace.is_inline %} <span class="m-label m-flat m-info">inline</span>{% endif %}{% if namespace.deprecated %} <span class="m-label m-danger">{{ namespace.deprecated }}</span>{% endif %}{% if namespace.since %} {{ namespace.since }}{% endif %}</dt>
             <dd>{{ namespace.brief }}</dd>

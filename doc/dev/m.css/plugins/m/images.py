@@ -1,7 +1,7 @@
 #
 #   This file is part of m.css.
 #
-#   Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -22,6 +22,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+import copy
 import os
 from docutils.parsers import rst
 from docutils.parsers.rst import Directive
@@ -29,8 +30,6 @@ from docutils.parsers.rst import directives, states
 from docutils.nodes import fully_normalize_name, whitespace_normalize_name
 from docutils.parsers.rst.roles import set_classes
 from docutils import nodes
-from pelican import signals
-from pelican import StaticGenerator
 
 # If Pillow is not available, it's not an error unless one uses the image grid
 # functionality (or :scale: option for Image)
@@ -40,7 +39,12 @@ try:
 except ImportError:
     PIL = None
 
-settings = {}
+default_settings = {
+    'INPUT': None,
+    'M_IMAGES_REQUIRE_ALT_TEXT': False
+}
+
+settings = None
 
 class Image(Directive):
     """Image directive
@@ -96,14 +100,15 @@ class Image(Directive):
         width = None
         height = None
         # If scaling requested, open the files and calculate the scaled size
-        # Support both {filename} (3.7.1) and {static} (3.8) placeholders. In
-        # all cases use only width and not both so the max-width can correctly
+        # Support both {filename} (3.7.1) and {static} (3.8) placeholders,
+        # also prepend the absolute path in case we're not Pelican. In all
+        # cases use only width and not both so the max-width can correctly
         # scale the image down on smaller screen sizes.
         # TODO: implement ratio-preserving scaling to avoid jumps on load using
         # the margin-bottom hack
         if 'scale' in self.options:
-            file = os.path.join(os.getcwd(), settings['PATH'])
-            absuri = reference.format(filename=file, static=file)
+            file = os.path.join(os.getcwd(), settings['INPUT'])
+            absuri = os.path.join(file, reference.format(filename=file, static=file))
             im = PIL.Image.open(absuri)
             width = "{}px".format(int(im.width*self.options['scale']/100.0))
         elif 'width' in self.options:
@@ -182,13 +187,21 @@ class Figure(Image):
             elif not (isinstance(first_node, nodes.comment)
                       and len(first_node) == 0):
                 error = self.state_machine.reporter.error(
-                      'Figure caption must be a paragraph or empty comment.',
+                      'Figure caption must be a paragraph or empty comment, got %s' % type(first_node),
                       nodes.literal_block(self.block_text, self.block_text),
                       line=self.lineno)
                 return [figure_node, error]
             if len(node) > 1:
                 figure_node += nodes.legend('', *node[1:])
         return [figure_node]
+
+# Adapter to accommodate breaking change in Pillow 7.2
+# https://pillow.readthedocs.io/en/stable/releasenotes/7.2.0.html#moved-to-imagefiledirectory-v2-in-image-exif
+def _to_numerator_denominator_tuple(ratio):
+    if isinstance(ratio, tuple):
+        return ratio
+    else:
+        return ratio.numerator, ratio.denominator
 
 class ImageGrid(rst.Directive):
     has_content = True
@@ -209,9 +222,10 @@ class ImageGrid(rst.Directive):
             uri, _, caption = uri_caption.partition(' ')
 
             # Open the files and calculate the overall width
-            # Support both {filename} (3.7.1) and {static} (3.8) placeholders
-            file = os.path.join(os.getcwd(), settings['PATH'])
-            absuri = uri.format(filename=file, static=file)
+            # Support both {filename} (3.7.1) and {static} (3.8) placeholders,
+            # also prepend the absolute path in case we're not Pelican
+            file = os.path.join(os.getcwd(), settings['INPUT'])
+            absuri = os.path.join(file, uri.format(filename=file, static=file))
             im = PIL.Image.open(absuri)
 
             # If no caption provided, get EXIF info, if it's there
@@ -225,9 +239,10 @@ class ImageGrid(rst.Directive):
                 # Not all info might be present
                 caption = []
                 if 'FNumber' in exif:
-                    caption += ["F{}".format(float(float(exif['FNumber'][0])/float(exif['FNumber'][1])))]
+                    numerator, denominator = _to_numerator_denominator_tuple(exif['FNumber'])
+                    caption += ["F{}".format(float(numerator)/float(denominator))]
                 if 'ExposureTime' in exif:
-                    numerator, denominator = exif['ExposureTime']
+                    numerator, denominator = _to_numerator_denominator_tuple(exif['ExposureTime'])
                     if int(numerator) > int(denominator):
                         caption += ["{} s".format(float(numerator)/float(denominator))]
                     else:
@@ -271,13 +286,29 @@ class ImageGrid(rst.Directive):
 
         return [grid_node]
 
-def configure(pelicanobj):
-    settings['PATH'] = pelicanobj.settings.get('PATH', 'content')
-    settings['M_IMAGES_REQUIRE_ALT_TEXT'] = pelicanobj.settings.get('M_IMAGES_REQUIRE_ALT_TEXT', False)
-
-def register():
-    signals.initialized.connect(configure)
+def register_mcss(mcss_settings, **kwargs):
+    global default_settings, settings
+    settings = copy.deepcopy(default_settings)
+    for key in settings.keys():
+        if key in mcss_settings: settings[key] = mcss_settings[key]
 
     rst.directives.register_directive('image', Image)
     rst.directives.register_directive('figure', Figure)
     rst.directives.register_directive('image-grid', ImageGrid)
+
+# Below is only Pelican-specific functionality. If Pelican is not found, these
+# do nothing.
+
+def _pelican_configure(pelicanobj):
+    settings = {
+        'INPUT': pelicanobj.settings['PATH'],
+    }
+    for key in 'M_IMAGES_REQUIRE_ALT_TEXT':
+        if key in pelicanobj.settings: settings[key] = pelicanobj.settings[key]
+
+    register_mcss(mcss_settings=settings)
+
+def register(): # for Pelican
+    from pelican import signals
+
+    signals.initialized.connect(_pelican_configure)

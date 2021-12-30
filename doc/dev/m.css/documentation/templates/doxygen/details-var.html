@@ -15,7 +15,7 @@
                 {% endif %}
               </div>
               {% endif %}
-              {%+ if var.is_static %}static {% endif %}{{ var.type }} {{ prefix }}<a href="#{{ var.id }}" class="m-doc-self">{{ var.name }}</a>{% if var.is_protected %} <span class="m-label m-warning">protected</span>{% endif %}{% if var.is_constexpr %} <span class="m-label m-primary">constexpr</span>{% endif %}
+              {%+ if var.is_static %}static {% endif %}{{ var.type }} {{ prefix }}<a href="#{{ var.id }}" class="m-doc-self">{{ var.name }}</a>{% if var.is_protected %} <span class="m-label m-warning">protected</span>{% endif %}{% if var.is_constexpr %} <span class="m-label m-primary">constexpr</span>{% endif %}{% if var.since %} {{ var.since }}{% endif %}
               {# the empty line needs to be here to prevent the lines from merging #}
 
               {% if var.include and compound.templates == None and var.templates == None %}

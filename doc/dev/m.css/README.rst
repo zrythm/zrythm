@@ -7,8 +7,8 @@ content-oriented websites.*
 .. image:: https://badges.gitter.im/mosra/m.css.svg
     :alt: Join the chat at https://gitter.im/mosra/m.css
     :target: https://gitter.im/mosra/m.css?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-.. image:: https://travis-ci.org/mosra/m.css.svg?branch=master
-    :target: https://travis-ci.org/mosra/m.css
+.. image:: https://circleci.com/gh/mosra/m.css.svg?style=shield
+    :target: https://circleci.com/gh/mosra/m.css
 .. image:: https://codecov.io/gh/mosra/m.css/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/mosra/m.css
 .. image:: https://img.shields.io/badge/License-MIT-green.svg

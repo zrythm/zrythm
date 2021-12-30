@@ -1,7 +1,7 @@
 #
 #   This file is part of m.css.
 #
-#   Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -41,7 +41,7 @@ _comment_src = re.compile(r"""<!--[^-]+-->\n""")
 
 # Graphviz < 2.40 (Ubuntu 16.04 and older) doesn't have a linebreak between <g>
 # and <title>
-_class_src = re.compile(r"""<g id="(edge|node)\d+" class="(?P<type>edge|node)(?P<classes>[^"]*)">[\n]?<title>(?P<title>[^<]*)</title>
+_class_src = re.compile(r"""<g id="(edge|node|clust)\d+" class="(?P<type>edge|node|cluster)(?P<classes>[^"]*)">[\n]?<title>(?P<title>[^<]*)</title>
 <(?P<element>ellipse|polygon|path|text)( fill="(?P<fill>[^"]+)" stroke="[^"]+")? """)
 
 _class_dst = r"""<g class="{classes}">

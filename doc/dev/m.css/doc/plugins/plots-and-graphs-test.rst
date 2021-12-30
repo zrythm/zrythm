@@ -1,7 +1,7 @@
 ..
     This file is part of m.css.
 
-    Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -62,10 +62,22 @@ Plots
 Graphs
 ======
 
-First is colored except the self-pointing "no", second is colored globally,
-third is colored globally with overrides except for the self-pointing "no".
+.. container:: m-row m-container-inflate
 
-.. container:: m-row
+    .. container:: m-col-m-4
+
+        All should be colored except the self-pointing "no" and the "?" arrow.
+
+    .. container:: m-col-m-4
+
+        All should be colored globally with the same color.
+
+    .. container:: m-col-m-4
+
+        All should be colored globally with overrides except for the
+        self-pointing "no" and the "?" arrow.
+
+.. container:: m-row m-container-inflate
 
     .. container:: m-col-m-4
 
@@ -76,6 +88,14 @@ third is colored globally with overrides except for the self-pointing "no".
             no [shape=circle, class="m-default"]
             yes -> no [label="no", class="m-default"]
             no -> no [label="no"]
+
+            subgraph cluster_A {
+                label="Maybe"
+                class="m-default"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record, class="m-default"]
+                struct -> yes [label="?"]
+            }
 
     .. container:: m-col-m-4
 
@@ -88,6 +108,13 @@ third is colored globally with overrides except for the self-pointing "no".
             yes -> no [label="no"]
             no -> no [label="no"]
 
+            subgraph cluster_A {
+                label="Maybe"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record]
+                struct -> yes [label="?"]
+            }
+
     .. container:: m-col-m-4
 
         .. digraph:: FSM
@@ -99,6 +126,14 @@ third is colored globally with overrides except for the self-pointing "no".
             yes -> no [label="no", class="m-default"]
             no -> no [label="no"]
 
+            subgraph cluster_A {
+                label="Maybe"
+                class="m-default"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record, class="m-default"]
+                struct -> yes [label="?"]
+            }
+
     .. container:: m-col-m-4
 
         .. digraph:: FSM
@@ -108,6 +143,14 @@ third is colored globally with overrides except for the self-pointing "no".
             no [shape=circle, class="m-primary"]
             yes -> no [label="no", class="m-primary"]
             no -> no [label="no"]
+
+            subgraph cluster_A {
+                label="Maybe"
+                class="m-primary"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record, class="m-primary"]
+                struct -> yes [label="?"]
+            }
 
     .. container:: m-col-m-4
 
@@ -120,6 +163,13 @@ third is colored globally with overrides except for the self-pointing "no".
             yes -> no [label="no"]
             no -> no [label="no"]
 
+            subgraph cluster_A {
+                label="Maybe"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record]
+                struct -> yes [label="?"]
+            }
+
     .. container:: m-col-m-4
 
         .. digraph:: FSM
@@ -131,6 +181,14 @@ third is colored globally with overrides except for the self-pointing "no".
             yes -> no [label="no", class="m-primary"]
             no -> no [label="no"]
 
+            subgraph cluster_A {
+                label="Maybe"
+                class="m-primary"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record, class="m-primary"]
+                struct -> yes [label="?"]
+            }
+
     .. container:: m-col-m-4
 
         .. digraph:: FSM
@@ -140,6 +198,14 @@ third is colored globally with overrides except for the self-pointing "no".
             no [shape=circle, class="m-success"]
             yes -> no [label="no", class="m-success"]
             no -> no [label="no"]
+
+            subgraph cluster_A {
+                label="Maybe"
+                class="m-success"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record, class="m-success"]
+                struct -> yes [label="?"]
+            }
 
     .. container:: m-col-m-4
 
@@ -152,6 +218,13 @@ third is colored globally with overrides except for the self-pointing "no".
             yes -> no [label="no"]
             no -> no [label="no"]
 
+            subgraph cluster_A {
+                label="Maybe"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record]
+                struct -> yes [label="?"]
+            }
+
     .. container:: m-col-m-4
 
         .. digraph:: FSM
@@ -163,6 +236,14 @@ third is colored globally with overrides except for the self-pointing "no".
             yes -> no [label="no", class="m-success"]
             no -> no [label="no"]
 
+            subgraph cluster_A {
+                label="Maybe"
+                class="m-success"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record, class="m-success"]
+                struct -> yes [label="?"]
+            }
+
     .. container:: m-col-m-4
 
         .. digraph:: FSM
@@ -172,6 +253,14 @@ third is colored globally with overrides except for the self-pointing "no".
             no [shape=circle, class="m-warning"]
             yes -> no [label="no", class="m-warning"]
             no -> no [label="no"]
+
+            subgraph cluster_A {
+                label="Maybe"
+                class="m-warning"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record, class="m-warning"]
+                struct -> yes [label="?"]
+            }
 
     .. container:: m-col-m-4
 
@@ -184,6 +273,13 @@ third is colored globally with overrides except for the self-pointing "no".
             yes -> no [label="no"]
             no -> no [label="no"]
 
+            subgraph cluster_A {
+                label="Maybe"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record]
+                struct -> yes [label="?"]
+            }
+
     .. container:: m-col-m-4
 
         .. digraph:: FSM
@@ -195,6 +291,14 @@ third is colored globally with overrides except for the self-pointing "no".
             yes -> no [label="no", class="m-warning"]
             no -> no [label="no"]
 
+            subgraph cluster_A {
+                label="Maybe"
+                class="m-warning"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record, class="m-warning"]
+                struct -> yes [label="?"]
+            }
+
     .. container:: m-col-m-4
 
         .. digraph:: FSM
@@ -204,6 +308,14 @@ third is colored globally with overrides except for the self-pointing "no".
             no [shape=circle, class="m-danger"]
             yes -> no [label="no", class="m-danger"]
             no -> no [label="no"]
+
+            subgraph cluster_A {
+                label="Maybe"
+                class="m-danger"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record, class="m-danger"]
+                struct -> yes [label="?"]
+            }
 
     .. container:: m-col-m-4
 
@@ -215,6 +327,13 @@ third is colored globally with overrides except for the self-pointing "no".
             no [shape=circle]
             yes -> no [label="no"]
             no -> no [label="no"]
+
+            subgraph cluster_A {
+                label="Maybe"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record]
+                struct -> yes [label="?"]
+            }
 
     .. container:: m-col-m-4
 
@@ -227,6 +346,14 @@ third is colored globally with overrides except for the self-pointing "no".
             yes -> no [label="no", class="m-danger"]
             no -> no [label="no"]
 
+            subgraph cluster_A {
+                label="Maybe"
+                class="m-danger"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record, class="m-danger"]
+                struct -> yes [label="?"]
+            }
+
     .. container:: m-col-m-4
 
         .. digraph:: FSM
@@ -236,6 +363,14 @@ third is colored globally with overrides except for the self-pointing "no".
             no [shape=circle, class="m-info"]
             yes -> no [label="no", class="m-info"]
             no -> no [label="no"]
+
+            subgraph cluster_A {
+                label="Maybe"
+                class="m-info"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record, class="m-info"]
+                struct -> yes [label="?"]
+            }
 
     .. container:: m-col-m-4
 
@@ -248,6 +383,13 @@ third is colored globally with overrides except for the self-pointing "no".
             yes -> no [label="no"]
             no -> no [label="no"]
 
+            subgraph cluster_A {
+                label="Maybe"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record]
+                struct -> yes [label="?"]
+            }
+
     .. container:: m-col-m-4
 
         .. digraph:: FSM
@@ -259,6 +401,14 @@ third is colored globally with overrides except for the self-pointing "no".
             yes -> no [label="no", class="m-info"]
             no -> no [label="no"]
 
+            subgraph cluster_A {
+                label="Maybe"
+                class="m-info"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record, class="m-info"]
+                struct -> yes [label="?"]
+            }
+
     .. container:: m-col-m-4
 
         .. digraph:: FSM
@@ -268,6 +418,14 @@ third is colored globally with overrides except for the self-pointing "no".
             no [shape=circle, class="m-dim"]
             yes -> no [label="no", class="m-dim"]
             no -> no [label="no"]
+
+            subgraph cluster_A {
+                label="Maybe"
+                class="m-dim"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record, class="m-dim"]
+                struct -> yes [label="?"]
+            }
 
     .. container:: m-col-m-4
 
@@ -280,6 +438,13 @@ third is colored globally with overrides except for the self-pointing "no".
             yes -> no [label="no"]
             no -> no [label="no"]
 
+            subgraph cluster_A {
+                label="Maybe"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record]
+                struct -> yes [label="?"]
+            }
+
     .. container:: m-col-m-4
 
         .. digraph:: FSM
@@ -290,3 +455,11 @@ third is colored globally with overrides except for the self-pointing "no".
             no [shape=circle, class="m-dim"]
             yes -> no [label="no", class="m-dim"]
             no -> no [label="no"]
+
+            subgraph cluster_A {
+                label="Maybe"
+                class="m-dim"
+
+                struct [label="{ ? | { ?! | !? }}", shape=record, class="m-dim"]
+                struct -> yes [label="?"]
+            }

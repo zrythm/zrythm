@@ -1,7 +1,7 @@
 ..
     This file is part of m.css.
 
-    Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -151,7 +151,8 @@ but the CSS class can be used on any block element.
 Badges are blocks together with an avatar, containing for example info about
 the author of given article. Simply add :css:`.m-badge` to your colored block
 element and put an :html:`<img>` element with the avatar as the first child.
-Only :html:`<h3>` is supported for a badge.
+Only :html:`<h3>` is supported for a badge. For standalone rounded avatars, see
+`Images`_ below.
 
 .. code-figure::
 
@@ -642,6 +643,20 @@ not the surrounding area:
     Images can be conveniently created with an :rst:`.. image::` directive in
     your :abbr:`reST <reStructuredText>` markup using the
     `Pelican Images plugin <{filename}/plugins/images.rst>`_.
+
+For avatars, similarly to the `Badges`_ above, applying a :css:`.m-badge` class
+together with :css:`.m-image` will make the image round. Works for both plain
+:html:`<img>` and clickable images wrapped in :html:`<div class="m-image">`.
+
+.. code-figure::
+
+    .. code:: html
+
+        <img src="author.jpg" alt="The Author" class="m-image m-badge" />
+
+    .. raw:: html
+
+        <img src="{static}/static/mosra.jpg" alt="The Author" class="m-image m-badge" style="width: 125px" />
 
 `Figures`_
 ==========

@@ -1,7 +1,7 @@
 #
 #   This file is part of m.css.
 #
-#   Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -27,7 +27,6 @@ from docutils import nodes, utils
 from docutils.parsers import rst
 from docutils.parsers.rst.roles import set_classes
 
-from pelican import signals
 import xml.etree.ElementTree as ET
 import os
 import re
@@ -36,7 +35,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Modified from __init__ to add support for queries and hashes
+# Modified from abbr / gh / gl / ... to add support for queries and hashes
 link_regexp = re.compile(r'(?P<title>.*) <(?P<link>[^?#]+)(?P<hash>[?#].+)?>')
 
 def parse_link(text):
@@ -50,10 +49,8 @@ def parse_link(text):
 
     return title, link, hash
 
-def init(pelicanobj):
+def init(tagfiles, input):
     global symbol_mapping, symbol_prefixes, tagfile_basenames
-
-    tagfiles = pelicanobj.settings.get('M_DOX_TAGFILES', [])
 
     # Pre-round to populate subclasses. Clear everything in case we init'd
     # before already.
@@ -69,7 +66,7 @@ def init(pelicanobj):
         tagfile_basenames += [(os.path.splitext(os.path.basename(tagfile))[0], path, css_classes)]
         symbol_prefixes += prefixes
 
-        tree = ET.parse(tagfile)
+        tree = ET.parse(os.path.join(input, tagfile))
         root = tree.getroot()
         for child in root:
             if child.tag == 'compound' and 'kind' in child.attrib:
@@ -170,7 +167,26 @@ def dox(name, rawtext, text, lineno, inliner: Inliner, options={}, content=[]):
         node = nodes.literal(rawtext, target, **_options)
     return [node], []
 
-def register():
-    signals.initialized.connect(init)
-
+def register_mcss(mcss_settings, **kwargs):
     rst.roles.register_local_role('dox', dox)
+
+    init(input=mcss_settings['INPUT'],
+         tagfiles=mcss_settings.get('M_DOX_TAGFILES', []))
+
+# Below is only Pelican-specific functionality. If Pelican is not found, these
+# do nothing.
+
+def _pelican_configure(pelicanobj):
+    settings = {
+        # For backwards compatibility, the input directory is pelican's CWD
+        'INPUT': os.getcwd(),
+    }
+    for key in ['M_DOX_TAGFILES']:
+        if key in pelicanobj.settings: settings[key] = pelicanobj.settings[key]
+
+    register_mcss(mcss_settings=settings)
+
+def register(): # for Pelican
+    from pelican import signals
+
+    signals.initialized.connect(_pelican_configure)

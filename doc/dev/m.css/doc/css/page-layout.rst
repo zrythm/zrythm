@@ -1,7 +1,7 @@
 ..
     This file is part of m.css.
 
-    Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -249,6 +249,30 @@ items and sub-menus. Doesn't do anything on the :css:`#m-navbar-brand` element.
     page source to see how it's done here. Don't forget to try to shrink your
     browser window to see its behavior in various cases.
 
+`Brand logo`_
+-------------
+
+Add an :html:`<img>` with a logo inside the :css:`a#m-navbar-brand`. It will be
+a :css:`1.75rem` square vertically centered in the navbar. `See here how it looks <{filename}/css/page-layout-test-navbar-brand-logo.html>`__.
+
+.. code:: html
+    :hl_lines: 4 5 6 7
+    :class: m-inverted
+
+    <header><nav id="navigation">
+      <div class="m-container">
+        <div class="m-row">
+          <a href="#" id="m-navbar-brand" class="m-col-t-9 m-col-m-none m-left-m">
+            <img src="brand.png" />
+            Your Brand
+          </a>
+          <a id="m-navbar-show" href="#navigation" title="Show navigation" class="m-col-t-3 m-hide-m m-text-right"></a>
+          <a id="m-navbar-hide" href="#" title="Hide navigation" class="m-col-t-3 m-hide-m m-text-right"></a>
+          ...
+        </div>
+      </div>
+    </nav></header>
+
 `Link back to main site from a subsite`_
 ----------------------------------------
 
@@ -257,7 +281,8 @@ a forum or documentation subsite), you may want to prominently show its
 relation to the main site and link back to the main site as well as the subsite
 homepage. The markup looks like in the following snippet (note the
 :css:`#m-navbar-brand` is now a span containing two links and a "breadcrumb"
-separator), `see here how it looks <{filename}/css/page-layout-test-navbar-subsite.html>`_.
+separator), `see here how it looks <{filename}/css/page-layout-test-navbar-subsite.html>`__. The `brand logo`_ works here as well if you put it inside the
+:html:`<a>`.
 
 .. code:: html
     :hl_lines: 4 5 6 7 8

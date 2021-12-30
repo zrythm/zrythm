@@ -1,7 +1,7 @@
 #
 #   This file is part of m.css.
 #
-#   Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -45,5 +45,7 @@ def abbr(name, rawtext, text, lineno, inliner, options={}, content=[]):
         return [nodes.abbreviation(title, title, **options)], []
     return [nodes.abbreviation(abbr, abbr, title=title, **options)], []
 
-def register():
+def register_mcss(**kwargs):
     rst.roles.register_local_role('abbr', abbr)
+
+register = register_mcss # for Pelican

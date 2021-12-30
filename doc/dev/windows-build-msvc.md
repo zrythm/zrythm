@@ -20,10 +20,12 @@
 ` & 'C:\Program Files (x86)\GnuWin32\bin\cat.exe' .\README.md`
 
 # TODO
+See https://www.collabora.com/news-and-blog/blog/2021/03/18/build-and-run-gtk-4-applications-with-visual-studio/
+for building gtk4 on Windows.
 
 # Thanks
 
-Thanks to xclaesse, dcbaker and lazka for explanations.
+Thanks to Company, xclaesse, dcbaker and lazka for explanations.
 
 ----
 

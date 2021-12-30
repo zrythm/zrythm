@@ -1,12 +1,9 @@
 var projects = [['mosra/m.css', 'master']];
-var latestTravisJobs = [];
-var travisDone = 0;
-var travisJobIdRe = /JOBID=([a-zA-Z0-9-]+)/
 
 /* Ability to override the projects via query string */
 if(location.search) {
     let params = new URLSearchParams(location.search);
-    projects = []
+    projects = [];
     for(let p of params) projects.push(p);
 }
 
@@ -25,12 +22,12 @@ function timeDiff(before, now) {
         return "now";
 }
 
-function fetchTravisJobStatus(latestJobs) {
+/* https://circleci.com/docs/api/#recent-builds-for-a-single-project */
+function fetchLatestCircleCiJobs(project, branch) {
     var req = window.XDomainRequest ? new XDomainRequest() : new XMLHttpRequest();
     if(!req) return;
 
-    req.open("GET", 'https://api.travis-ci.org/jobs?ids[]=' + latestJobs.join('&ids[]='), true);
-    req.setRequestHeader("Accept", "application/vnd.travis-ci.2+json");
+    req.open('GET', 'https://circleci.com/api/v1.1/project/github/' + project + '/tree/' + branch + '?limit=10&offset=0&shallow=true');
     req.responseType = 'json';
     req.onreadystatechange = function() {
         if(req.readyState != 4) return;
@@ -38,83 +35,77 @@ function fetchTravisJobStatus(latestJobs) {
         //console.log(req.response);
 
         var now = new Date(Date.now());
-        var jobs = req.response['jobs'];
-        for(var i = 0; i != jobs.length; ++i) {
-            var match = jobs[i]['config']['env'].match(travisJobIdRe);
-            if(!match) continue;
 
-            /* ID is combined repository name (w/o author) and the job ID from
-               environment */
-            var repo = jobs[i]['repository_slug'];
-            var id = repo.substr(repo.indexOf('/') + 1).replace("m.css", "mcss") + "-" + match[1];
+        /* It's not possible to query just the latest build, so instead we have
+           to query N latest jobs and then go as long as they have the same
+           commit. Which is kinda silly, but better than going one-by-one like
+           with Travis, right? */
+        var commit = '';
+        for(var i = 0; i != req.response.length; ++i) {
+            var job = req.response[i];
+
+            /* Some other commit, we have everything. Otherwise remember the
+               commit for the next iteration. */
+            if(commit && job['vcs_revision'] != commit)
+                break;
+            commit = job['vcs_revision'];
+
+            /* If the YML fails to parse, job_name is Build Error. Skip it
+               completely to avoid errors down the line. */
+            if(job['workflows']['job_name'] == 'Build Error')
+                continue;
+
+            var id = job['reponame'].replace("m.css", "mcss") + '-' + job['workflows']['job_name'];
             var elem = document.getElementById(id);
             if(!elem) {
-                console.log('Unknown Travis job ID', id);
+                console.log('Unknown CircleCI job ID', id);
                 continue;
             }
 
             var type;
             var status;
             var ageField;
-            if(jobs[i]['state'] == 'passed') {
+            if(job['status'] == 'success') {
                 type = 'm-success';
                 status = '✔';
-                ageField = 'finished_at';
-            } else if(jobs[i]['state'] == 'started') {
-                type = 'm-warning';
-                status = '↺';
-                ageField = 'started_at';
-            } else if(jobs[i]['state'] == 'canceled') {
-                type = 'm-dim';
-                status = '∅';
-                ageField = 'finished_at';
-            } else if(jobs[i]['state'] == 'received' ||
-                      jobs[i]['state'] == 'created' ||
-                      jobs[i]['state'] == 'queued') {
+                ageField = 'stop_time';
+            } else if(job['status'] == 'queued' || job['status'] == 'scheduled' || job['status'] == 'not_running') {
                 type = 'm-info';
                 status = '…';
-                ageField = '';
-            } else if(jobs[i]['state'] == 'errored' ||
-                      jobs[i]['state'] == 'failed') {
+                ageField = 'queued_at';
+            } else if(job['status'] == 'not_running') {
+                type = 'm-info';
+                status = '…';
+                ageField = 'usage_queued_at';
+            } else if(job['status'] == 'running') {
+                type = 'm-warning';
+                status = '↺';
+                ageField = 'start_time';
+            } else if(job['status'] == 'failed' || job['status'] == 'infrastructure_fail' || job['status'] == 'timedout') {
                 type = 'm-danger';
                 status = '✘';
-                ageField = 'finished_at';
+                ageField = 'stop_time';
+            } else if(job['status'] == 'canceled') {
+                type = 'm-dim';
+                status = '∅';
+                ageField = 'stop_time';
             } else {
+                /* retried, not_run, not_running, no_test, fixed -- not sure
+                   what exactly these mean */
                 type = 'm-default';
-                status = jobs[i]['state'];
-                ageField = 'started_at';
+                status = job['status'];
+                ageField = 'usage_queued_at';
             }
 
-            var age;
-            var title;
-            if(ageField) {
-                age = timeDiff(new Date(Date.parse(jobs[i][ageField])), now);
-                title = jobs[i]['state'] + ' @ ' + jobs[i][ageField];
-            } else {
-                age = '';
-                title = jobs[i]['state'];
-            }
+            var age = timeDiff(new Date(Date.parse(job[ageField])), now);
 
-            elem.innerHTML = '<a href="https://travis-ci.org/' + repo + '/jobs/' + jobs[i]['id'] + '" title="' + title + '">' + status + '<br /><span class="m-text m-small">' + age + '</span></a>';
-            elem.className = type;
+            /* Update the field only if it's not already filled -- in that case
+               it means this job got re-run. */
+            if(!elem.className) {
+                elem.innerHTML = '<a href="' + job['build_url'] + '" title="' + job['status'] + ' @ ' + job[ageField] + '">' + status + '<br /><span class="m-text m-small">' + age + '</span></a>';
+                elem.className = type;
+            }
         }
-    };
-    req.send();
-}
-
-function fetchLatestTravisJobs(project, branch) {
-    var req = window.XDomainRequest ? new XDomainRequest() : new XMLHttpRequest();
-    if(!req) return;
-
-    req.open("GET", 'https://api.travis-ci.org/repos/' + project + '/branches/' + branch, true);
-    req.setRequestHeader("Accept", "application/vnd.travis-ci.2+json");
-    req.responseType = 'json';
-    req.onreadystatechange = function() {
-        if(req.readyState != 4) return;
-
-        latestTravisJobs = latestTravisJobs.concat(req.response['branch']['job_ids']);
-        if(++travisDone == projects.length)
-            fetchTravisJobStatus(latestTravisJobs);
     };
     req.send();
 }
@@ -152,6 +143,6 @@ function fetchLatestCodecovJobs(project, branch) {
 }
 
 for(var i = 0; i != projects.length; ++i) {
-    fetchLatestTravisJobs(projects[i][0], projects[i][1]);
+    fetchLatestCircleCiJobs(projects[i][0], projects[i][1]);
     fetchLatestCodecovJobs(projects[i][0], projects[i][1]);
 }

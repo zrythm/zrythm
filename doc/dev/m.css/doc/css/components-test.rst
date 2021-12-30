@@ -1,7 +1,7 @@
 ..
     This file is part of m.css.
 
-    Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -986,6 +986,20 @@ SVG image, fullwidth, with link outside:
           <text x="16" y="40" style="text-anchor: middle; fill: #ff0000">Hello</text>
         </svg>
       </a>
+    </div>
+
+Badge:
+
+.. raw:: html
+
+    <img src="{static}/static/mosra.jpg" class="m-image m-badge">
+
+Badge, with a link:
+
+.. raw:: html
+
+    <div class="m-image m-badge">
+      <a href="http://blog.mosra.cz/"><img src="{static}/static/mosra.jpg" /></a>
     </div>
 
 Figures

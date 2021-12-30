@@ -1,7 +1,7 @@
 ..
     This file is part of m.css.
 
-    Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -60,16 +60,18 @@ files, put them including the ``m/`` directory into one of your
 ``pelicanconf.py``. This plugin assumes presence of
 `m.htmlsanity <{filename}/plugins/htmlsanity.rst>`_.
 
-.. note-danger::
-
-    Note that this plugin, unlike most of the others, requires at least Python
-    3.5 to run properly.
-
 .. code:: python
 
     PLUGINS += ['m.htmlsanity', 'm.math']
     M_MATH_RENDER_AS_CODE = False
     M_MATH_CACHE_FILE = 'm.math.cache'
+
+For the Python doc theme, it's enough to mention it in :py:`PLUGINS`. The
+`m.htmlsanity`_ plugin is available always, no need to mention it explicitly:
+
+.. code:: py
+
+    PLUGINS += ['m.code']
 
 For the Doxygen theme, this feature is builtin. Use either the ``@f[`` command
 for block-level math or the ``@f$`` command for inline math. It's possible to
@@ -289,6 +291,15 @@ plugin assumes presence of `m.htmlsanity <{filename}/plugins/htmlsanity.rst>`_.
 .. code:: python
 
     PLUGINS += ['m-htmlsanity', 'm.code']
+    M_CODE_FILTERS_PRE = []
+    M_CODE_FILTERS_POST = []
+
+For the Python doc theme, it's enough to mention it in :py:`PLUGINS`. The
+`m.htmlsanity`_ plugin is available always, no need to mention it explicitly:
+
+.. code:: py
+
+    PLUGINS += ['m.code']
 
 For the Doxygen theme, this feature is builtin. Use the ``@code{.ext}`` command
 either in a block or inline, the various ``@include`` and ``@snippet`` commands
@@ -316,18 +327,25 @@ replaces `Pelican code-block directive <https://docs.getpelican.com/en/stable/co
     :html:`<pre>` element for code blocks with :css:`.m-code` CSS class
     applied.
 -   Removes useless CSS classes from the output.
+-   Adds a :rst:`:filters:` option. See `Filters`_ below.
 
 Put `code blocks <{filename}/css/components.rst#code>`_ into the :rst:`.. code::`
-directive and specify the language via a parameter. Use :rst:`:hl_lines:`
+directive and specify the language via a parameter. Use :rst:`:hl-lines:`
 option to highlight lines; if you want to add additional CSS classes, use the
 :rst:`:class:` option.
+
+.. note-dim::
+
+    Docutils (and Sphinx) have also :rst:`.. code-block::` and
+    :rst:`.. sourcecode::` aliases for the same thing. Those are included for
+    compatibility purposes and behave the same way as :rst:`.. code::`.
 
 .. code-figure::
 
     .. code:: rst
 
         .. code:: c++
-            :hl_lines: 4 5
+            :hl-lines: 4 5
             :class: m-inverted
 
             #include <iostream>
@@ -338,7 +356,7 @@ option to highlight lines; if you want to add additional CSS classes, use the
             }
 
     .. code:: c++
-        :hl_lines: 4 5
+        :hl-lines: 4 5
         :class: m-inverted
 
         #include <iostream>
@@ -348,10 +366,19 @@ option to highlight lines; if you want to add additional CSS classes, use the
             return 0;
         }
 
-The builtin `include directive <http://docutils.sourceforge.net/docs/ref/rst/directives.html#include>`_
-is also patched to use the improved code directive. Simply specify external
-code snippets filename and set the language using the :rst:`:code:` option.
-All options of the :rst:`.. code::` directive are supported as well.
+The `builtin include directive <http://docutils.sourceforge.net/docs/ref/rst/directives.html#include>`_
+is also patched to use the improved code directive, and:
+
+-   Drops the rarely useful :rst:`:encoding:`, :rst:`:literal:` and
+    :rst:`:name:` options
+-   Adds a :rst:`:hl-lines:` option to have the same behavior as
+    the :rst:`.. code::` directive
+-   Adds a :rst:`:start-on:` and :rst:`:strip-prefix:` options, and improves
+    :rst:`:end-before:`. See `Advanced file inclusion`_ below.
+
+Simply specify external code snippets filename and set the language using the
+:rst:`:code:` option. All options of the :rst:`.. code::` directive are
+supported as well.
 
 .. code-figure::
 
@@ -421,11 +448,11 @@ terminal, it's best to have the listings in external files and use
         :code: ansi
         :class: m-nopad
 
-Apart from the basic color set there's also a very rudimentary support for
-24bit colors using the ``\033[{?};2;{r};{g};{b}m`` color sequence --- currently
-either just the foreground (the ``\033[38;2;`` prefix) or foreground
-immediately followed by background color specification (the
-``\033[48;2;`` prefix):
+There's support for the basic foreground and background color sets, 256 palette
+colors using the ``\033[38;5;{p}m`` or ``\033[48;5;{p}m`` color sequences,
+and 24bit colors using the ``\033[38;2;{r};{g};{b}m`` and
+``\033[48;2;{r};{g};{b}m`` color sequences. The non-bright basic foreground
+colors can be independently brightened using the ``\033[1m`` color sequence:
 
 .. include:: math-and-code-console-colors.ansi
     :code: ansi
@@ -436,3 +463,170 @@ immediately followed by background color specification (the
 See the `m.components <{filename}/plugins/components.rst#code-math-and-graph-figure>`__
 plugin for details about code figures using the :rst:`.. code-figure::`
 directive.
+
+`Advanced file inclusion`_
+--------------------------
+
+Compared to the `builtin include directive`_, the m.css-patched variant
+additionally provides a :rst:`:strip-prefix:` option that strips a prefix from
+each included line. This can be used for example to remove excessive
+indentation from code blocks. To avoid trailing whitespace, you can wrap the
+value in quotes. Reusing the snippet from above, showing only the code inside
+:cpp:`main()`:
+
+.. code-figure::
+
+    .. code:: rst
+
+        .. include:: snippet.cpp
+            :code: c++
+            :start-line: 3
+            :end-line: 5
+            :strip-prefix: '    '
+
+    .. include:: math-and-code-snippet.cpp
+        :code: c++
+        :start-line: 3
+        :end-line: 5
+        :strip-prefix: '    '
+
+This isn't limited to just whitespace though --- since the :rst:`.. include::`
+directive works for including reStructuredText as well, it can be used to embed
+parts of self-contained python scripts on the page. Consider this file,
+``two-sins.py``:
+
+.. include:: math-and-code-selfcontained.py
+    :code: py
+
+Embedding it on a page, mixed together with other content (and unimportant
+parts omitted), can look like below. The :rst:`:start-on:` option can be used
+to pin to a particular line (instead of skipping it like :rst:`:start-after:`
+does) and an empty :rst:`:end-before:` will include everything until the next
+blank line. Finally, :rst:`:strip-prefix:` strips the leading :py:`#` from the
+comments embedded in Python code:
+
+.. code-figure::
+
+    .. code:: rst
+
+        .. include:: two-sins.py
+            :start-after: """
+            :end-before: """
+
+        .. code-figure::
+
+            .. include:: two-sins.py
+                :start-on: sin =
+                :end-before:
+                :code: py
+
+            0.13545234412104434
+
+        .. include:: two-sins.py
+            :start-on: # And a sum with itself
+            :strip-prefix: '# '
+            :end-before:
+
+        .. include:: two-sins.py
+            :start-on: two_sins
+            :code: py
+
+    .. include:: math-and-code-selfcontained.py
+        :start-after: """
+        :end-before: """
+
+    .. code-figure::
+
+        .. include:: math-and-code-selfcontained.py
+            :start-on: sin =
+            :end-before:
+            :code: py
+
+        0.13545234412104434
+
+    .. include:: math-and-code-selfcontained.py
+        :start-on: # And a sum with itself
+        :strip-prefix: '# '
+        :end-before:
+
+    .. include:: math-and-code-selfcontained.py
+        :start-on: two_sins
+        :code: py
+
+`Filters`_
+----------
+
+It's possible to supply filters that get applied both before and after a
+code snippet is rendered using the :py:`M_CODE_FILTERS_PRE` and
+:py:`M_CODE_FILTERS_POST` options. It's a dict with keys being the lexer
+name [1]_ and values being filter functions. Each function that gets string as
+an input and is expected to return a modified string. In the following example,
+all CSS code snippets have the hexadecimal color literals annotated with a
+`color swatch <{filename}/css/components.rst#color-swatches-in-code-snippets>`_:
+
+.. code:: py
+    :class: m-console-wrap
+
+    import re
+
+    _css_colors_src = re.compile(r"""<span class="mh">#(?P<hex>[0-9a-f]{6})</span>""")
+    _css_colors_dst = r"""<span class="mh">#\g<hex><span class="m-code-color" style="background-color: #\g<hex>;"></span></span>"""
+
+    M_CODE_FILTERS_POST = {
+        'CSS': lambda code: _css_colors_src.sub(_css_colors_dst, code)
+    }
+
+.. code-figure::
+
+    .. code:: rst
+
+        .. code:: css
+
+            p.green {
+              color: #3bd267;
+            }
+
+    .. code:: css
+
+        p.green {
+          color: #3bd267;
+        }
+
+In the above case, the filter gets applied globally to all code snippets of
+given language. Sometimes it might be desirable to apply a filter only to
+specific code snippet --- in that case, the dict key is a tuple of
+:py:`(lexer, filter)` where the second item is a filter name. This filter name
+is then referenced from the :rst:`:filters:` option of the :rst:`.. code::` and
+:rst:`.. include::` directives as well as the inline :rst:`:code:` text role.
+Multiple filters can be specified when separated by spaces.
+
+.. code:: py
+
+    M_CODE_FILTERS_PRE = {
+        ('C++', 'codename'): lambda code: code.replace('DirtyMess', 'P300::V1'),
+        ('C++', 'fix_typography'): lambda code: code.replace(' :', ':'),
+    }
+
+.. code-figure::
+
+    .. code:: rst
+
+        .. code:: cpp
+            :filters: codename fix_typography
+
+            for(auto& a : DirtyMess::managedEntities()) {
+                // ...
+            }
+
+    .. code:: cpp
+        :filters: codename fix_typography
+
+        for(auto& a : DirtyMess::managedEntities()) {
+            // ...
+        }
+
+.. [1] In order to have an unique mapping, the filters can't use the aliases
+    --- for example C++ code can be highlighted using either ``c++`` or ``cpp``
+    as a language name and the dict would need to have an entry for each. An unique lexer name is the :py:`name` field used in the particular lexer
+    source, you can also see the names in the language dropdown on the
+    `official website <http://pygments.org/demo/>`_.

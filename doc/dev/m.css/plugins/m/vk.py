@@ -1,7 +1,7 @@
 #
 #   This file is part of m.css.
 #
-#   Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -62,7 +62,12 @@ def vktype(name, rawtext, text, lineno, inliner, options={}, content=[]):
     node = nodes.reference(rawtext, title, refuri=url, **options)
     return [node], []
 
-def register():
+def register_mcss(**kwargs):
     rst.roles.register_local_role('vkext', vkext)
     rst.roles.register_local_role('vkfn', vkfn)
     rst.roles.register_local_role('vktype', vktype)
+
+# Below is only Pelican-specific functionality. If Pelican is not found, these
+# do nothing.
+
+register = register_mcss # for Pelican

@@ -7,6 +7,8 @@
 {% macro entry_data(data) %}{% include 'entry-data.html' %}{% endmacro %}
 
 {% macro details_enum(enum, prefix) %}{% include 'details-enum.html' %}{% endmacro %}
+{% macro details_function(function, prefix) %}{% include 'details-function.html' %}{% endmacro %}
+{% macro details_data(data, prefix) %}{% include 'details-data.html' %}{% endmacro %}
 
 {% block title %}{% set j = joiner('.') %}{% for name, _ in page.breadcrumb %}{{ j() }}{{ name }}{% endfor %} | {{ super() }}{% endblock %}
 
@@ -14,8 +16,8 @@
         <h1>
           {%+ for name, target in page.breadcrumb[:-1] %}<span class="m-breadcrumb"><a href="{{ target }}">{{ name }}</a>.<wbr/></span>{% endfor %}{{ page.breadcrumb[-1][0] }} <span class="m-thin">module</span>
         </h1>
-        {% if page.brief %}
-        <p>{{ page.brief }}</p>
+        {% if page.summary %}
+        <p>{{ page.summary }}</p>
         {% endif %}
         {% if page.modules or page.classes or page.functions or page.data %}
         <div class="m-block m-default">
@@ -43,6 +45,9 @@
             </li>
           </ul>
         </div>
+        {% endif %}
+        {% if page.content %}
+{{ page.content }}
         {% endif %}
         {% if page.modules %}
         <section id="namespaces">
@@ -100,6 +105,26 @@
           {% for enum in page.enums %}
           {% if enum.has_details %}
 {{ details_enum(enum, page.prefix_wbr) }}
+          {% endif %}
+          {% endfor %}
+        </section>
+        {% endif %}
+        {% if page.has_function_details %}
+        <section>
+          <h2>Function documentation</h2>
+          {% for function in page.functions %}
+          {% if function.has_details %}
+{{ details_function(function, page.prefix_wbr) }}
+          {% endif %}
+          {% endfor %}
+        </section>
+        {% endif %}
+        {% if page.has_data_details %}
+        <section>
+          <h2>Data documentation</h2>
+          {% for data in page.data %}
+          {% if data.has_details %}
+{{ details_data(data, page.prefix_wbr) }}
           {% endif %}
           {% endfor %}
         </section>

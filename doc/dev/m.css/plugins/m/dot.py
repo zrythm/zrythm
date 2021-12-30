@@ -1,7 +1,7 @@
 #
 #   This file is part of m.css.
 #
-#   Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -22,7 +22,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-import pelican
 import re
 import subprocess
 
@@ -102,14 +101,22 @@ class StrictGraph(Dot):
             self.arguments[0] if self.arguments else '',
             '\n'.join(self.content)))
 
-def configure(pelicanobj):
+def register_mcss(mcss_settings, **kwargs):
     dot2svg.configure(
-        pelicanobj.settings.get('M_DOT_FONT', 'Source Sans Pro'),
-        pelicanobj.settings.get('M_DOT_FONT_SIZE', 16.0))
-
-def register():
-    pelican.signals.initialized.connect(configure)
+        mcss_settings.get('M_DOT_FONT', 'Source Sans Pro'),
+        mcss_settings.get('M_DOT_FONT_SIZE', 16.0))
     rst.directives.register_directive('digraph', Digraph)
     rst.directives.register_directive('strict-digraph', StrictDigraph)
     rst.directives.register_directive('graph', Graph)
     rst.directives.register_directive('strict-graph', StrictGraph)
+
+# Below is only Pelican-specific functionality. If Pelican is not found, these
+# do nothing.
+
+def _pelican_configure(pelicanobj):
+    register_mcss(mcss_settings=pelicanobj.settings)
+
+def register(): # for Pelican
+    from pelican import signals
+
+    signals.initialized.connect(_pelican_configure)

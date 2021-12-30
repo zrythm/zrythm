@@ -1,7 +1,7 @@
 ..
     This file is part of m.css.
 
-    Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -43,8 +43,8 @@ Plots and graphs
 .. role:: css(code)
     :language: css
 
-These plugin allow you to render plots and graphs directly from data specified
-inline in the page source. Similarly to `math rendering <{filename}/admire/math.rst>`_,
+These plugin allow you to render plots, graphs or QR codes directly from data
+specified inline in the page source. Similarly to `math rendering <{filename}/admire/math.rst>`_,
 the graphics is rendered to a SVG that's embedded directly in the HTML markup.
 
 .. note-danger:: Experimental features
@@ -61,7 +61,8 @@ the graphics is rendered to a SVG that's embedded directly in the HTML markup.
 
 For Pelican, download the `m/plots.py <{filename}/plugins.rst>`_ file, put it
 including the ``m/`` directory into one of your :py:`PLUGIN_PATHS` and add
-``m.plots`` package to your :py:`PLUGINS` in ``pelicanconf.py``.
+``m.plots`` package to your :py:`PLUGINS` in ``pelicanconf.py``. For the
+Python doc theme, it's enough to just list it in :py:`PLUGINS`:
 
 .. code:: python
 
@@ -125,10 +126,13 @@ configure bar colors using :rst:`:colors:`. The colors correspond to m.css
 `color classes <{filename}/css/components.rst#colors>`_ and you can either
 use one color for all or one for each value, separated by whitespace. Bar chart
 height is calculated automatically based on amount of values, you can adjust
-the bar height using :rst:`:bar_height:`. Default value is :py:`0.4`.
+the bar height using :rst:`:bar-height:`. Default value is :py:`0.4`. Similarly
+it's possible to specify graph width using :rst:`:plot-width:`, the default
+:py:`8` is tuned for a page-wide plot.
 
-It's possible to add an extra line of labels using :rst:`:labels_extra:`.
-Again, there should be as many entries as primary labels and values. To omit an extra label for a value, specify it as the :abbr:`reST <reStructuredText>`
+It's possible to add an extra line of labels using :rst:`:labels-extra:`.
+Again, there should be as many entries as primary labels and values. To omit an
+extra label for a value, specify it as the :abbr:`reST <reStructuredText>`
 comment :rst:`..`.
 
 .. code-figure::
@@ -142,7 +146,7 @@ comment :rst:`..`.
                 Ours default
                 3rd party
                 Full setup
-            :labels_extra:
+            :labels-extra:
                 15 modules
                 60 modules
                 200 modules
@@ -151,7 +155,7 @@ comment :rst:`..`.
             :values: 15.09 84.98 197.13 934.27
             :errors: 0.74 3.65 9.45 25.66
             :colors: success info danger dim
-            :bar_height: 0.6
+            :bar-height: 0.6
 
     .. plot:: Runtime cost
         :type: barh
@@ -160,7 +164,7 @@ comment :rst:`..`.
             Ours default
             3rd party
             Full setup
-        :labels_extra:
+        :labels-extra:
             15 modules
             60 modules
             200 modules
@@ -169,19 +173,73 @@ comment :rst:`..`.
         :values: 15.09 84.98 197.13 934.27
         :errors: 0.74 3.65 9.45 25.66
         :colors: success info danger dim
-        :bar_height: 0.6
+        :bar-height: 0.6
+
+`Stacked values`_
+-----------------
+
+It's possible to stack several values on each other by providing a second
+(third, ...) like for :rst:`:values:` (and :rst:`:errors:` as well). The values
+are added together --- not overlapped --- so e.g. showing values of 20 and 40
+stacked together will result in the bar being 60 units long in total. Hovering
+over the stacked values will show magnitude of just given part, not the summed
+value.
+
+The :rst:`:colors:` option works for these as well, either have each line a
+single value on each line to color each "slice" differently, or have one color
+per value like shown above.
+
+.. code-figure::
+
+    .. code:: rst
+
+        .. plot:: Download size (*.js, *.wasm)
+            :type: barh
+            :labels:
+                Sdl2Application
+                Sdl2Application
+                EmscriptenApplication
+            :labels-extra:
+                -s USE_SDL=2
+                -s USE_SDL=1
+                ..
+            :units: kB
+            :values:
+                111.9 74.4 52.1
+                731.2 226.3 226.0
+            :colors:
+                success
+                info
+
+    .. plot:: Download size (*.js, *.wasm)
+        :type: barh
+        :labels:
+            Sdl2Application
+            Sdl2Application
+            EmscriptenApplication
+        :labels-extra:
+            -s USE_SDL=2
+            -s USE_SDL=1
+            ..
+        :units: kB
+        :values:
+            111.9 74.4 52.1
+            731.2 226.3 226.0
+        :colors:
+            success
+            info
+
+    .. class:: m-text-center m-text m-dim m-small
+
+    (graph source: https://blog.magnum.graphics/announcements/new-emscripten-application-implementation/)
 
 `Graphs`_
 =========
 
-For Pelican, ownload the `m/dot.py <{filename}/plugins.rst>`_ file, put it
+For Pelican, download the `m/dot.py <{filename}/plugins.rst>`_ file, put it
 including the ``m/`` directory into one of your :py:`PLUGIN_PATHS` and add
-``m.dot`` package to your :py:`PLUGINS` in ``pelicanconf.py``.
-
-.. note-danger::
-
-    Note that this plugin, unlike most of the others, requires at least Python
-    3.5 to run properly.
+``m.dot`` package to your :py:`PLUGINS` in ``pelicanconf.py``. For the
+Python doc theme, it's enough to just list it in :py:`PLUGINS`.
 
 .. code:: python
 
@@ -211,7 +269,7 @@ distribution package manager, for example on Ubuntu:
 
     sudo apt install graphviz
 
-The plugin produces SVG graphcs that make use of the
+The plugin produces SVG graphs that make use of the
 `CSS graph styling <{filename}/css/components.rst#graphs>`_.
 
 `Directed graphs`_
@@ -339,3 +397,40 @@ directive.
         .. class:: m-noindent
 
         No.
+
+`QR code`_
+==========
+
+For Pelican, download the `m/qr.py <{filename}/plugins.rst>`_ file, put it
+including the ``m/`` directory into one of your :py:`PLUGIN_PATHS` and add
+``m.qr`` package to your :py:`PLUGINS` in ``pelicanconf.py``. For the
+Python doc theme, it's enough to just list it in :py:`PLUGINS`:
+
+.. code:: python
+
+    PLUGINS += ['m.qr']
+
+This feature has no equivalent in the `Doxygen theme <{filename}/documentation/doxygen.rst>`_.
+
+In addition you need the :gh:`qrcode <lincolnloop/python-qrcode>` Python
+package installed. Get it via ``pip`` or your distribution package manager:
+
+.. code:: sh
+
+    pip3 install qrcode
+
+The QR code is rendered using the :rst:`.. qr::` directive. Directive argument
+is the data to render. The library will auto-scale the image based on the input
+data size, you can override it using the optional :rst:`:size:` parameter.
+Resulting SVG has the :css:`.m-image` class, meaning it's centered and at most
+100% of page width.
+
+.. code-figure::
+
+    .. code:: rst
+
+        .. qr:: https://mcss.mosra.cz/plugins/plots-and-graphs/#qr-code
+            :size: 256px
+
+    .. qr:: https://mcss.mosra.cz/plugins/plots-and-graphs/#qr-code
+        :size: 256px

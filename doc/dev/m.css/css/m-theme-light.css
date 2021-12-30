@@ -1,7 +1,7 @@
 /*
     This file is part of m.css.
 
-    Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -28,6 +28,7 @@
   --code-font: 'Source Code Pro', monospace;
   --font-size: 14px;
   --code-font-size: 1em; /* *not* rem, so it follows surrounding font size */
+  --line-height: normal;
   --paragraph-indent: 1.5rem;
   --paragraph-align: justify;
   --link-decoration: underline;
@@ -53,6 +54,10 @@
   --mark-background-color: #e6e69c;
   --code-color: #5b5b5b;
   --code-inverted-color: rgba(91, 91, 91, 0.33);
+  --console-color: var(--code-color);
+  --console-inverted-color: var(--code-inverted-color);
+  /* This is simply color-picked --code-note-background-color on top of
+     --background-color */
   --code-background-color: #fbf0ec;
   --code-note-background-color: rgba(251, 240, 236, 0.5);
   --console-background-color: #000000;
@@ -61,6 +66,7 @@
   /* Header */
   --header-border-width: 0.25rem 0 0 0;
   --header-color: #000000;
+  --header-breadcrumb-color: #bdbdbd; /* same as --dim-color */
   --header-background-color: #ffffff;
   --header-background-color-landing: rgba(255, 255, 255, 0.75);
   --header-background-color-jumbo: rgba(255, 255, 255, 0.25);
@@ -79,6 +85,10 @@
 
   /* Cover image */
   --cover-image-background-color: #666666;
+
+  /* Search (used only by m-documentation.css) */
+  --search-overlay-color: var(--header-background-color-landing);
+  --search-background-color: var(--header-background-color);
 
   /* Article */
   --article-header-color: #7a7a7a;

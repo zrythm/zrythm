@@ -7,5 +7,5 @@
           {% for name, target in compound.breadcrumb[:-1] %}
           <span class="m-breadcrumb"><a href="{{ target }}">{{ name }}</a> &raquo;</span>
           {% endfor %}
-          {{ compound.breadcrumb[-1][0] }} <span class="m-thin">module</span></h1>
+          {{ compound.breadcrumb[-1][0] }} <span class="m-thin">module</span>{% if compound.since %} {{ compound.since }}{% endif %}</h1>
 {% endblock %}

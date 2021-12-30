@@ -1,7 +1,7 @@
 /*
     This file is part of m.css.
 
-    Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -78,6 +78,14 @@ body > header > nav #m-navbar-brand, body > header > nav a#m-navbar-show, body >
 body > header > nav a#m-navbar-brand, body > header > nav #m-navbar-brand a {
   text-transform: var(--nav-brand-case);
 }
+body > header > nav a#m-navbar-brand img, body > header > nav #m-navbar-brand a img {
+  /* unfortuately, with SVGs, unless the size is hardcoded like this, it will
+     cause ugly jumps during loading :( */
+  width: 1.75rem;
+  height: 1.75rem;
+  vertical-align: -22.5%;
+  margin-right: 0.5rem;
+}
 body > header > nav #m-navbar-brand a {
   padding-left: 0;
   padding-right: 0;
@@ -86,7 +94,7 @@ body > header > nav #m-navbar-brand .m-thin {
   font-weight: normal;
 }
 body > header > nav #m-navbar-brand .m-breadcrumb {
-  color: var(--dim-color);
+  color: var(--header-breadcrumb-color);
 }
 body > header > nav a#m-navbar-show:before, body > header > nav a#m-navbar-hide:before {
   content:'\2630';

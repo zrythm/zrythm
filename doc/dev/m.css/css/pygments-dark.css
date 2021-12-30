@@ -50,9 +50,9 @@
 .m-code .dl { color: #e07f7c } /* Literal.String.Delimiter */
 .m-code .sd { color: #e07f7c } /* Literal.String.Doc */
 .m-code .s2 { color: #e07f7c } /* Literal.String.Double */
-.m-code .se { color: #e07f7c } /* Literal.String.Escape */
+.m-code .se { color: #e07cdc } /* Literal.String.Escape */
 .m-code .sh { color: #e07f7c } /* Literal.String.Heredoc */
-.m-code .si { color: #e07f7c } /* Literal.String.Interpol */
+.m-code .si { color: #a5c9ea } /* Literal.String.Interpol */
 .m-code .sx { color: #e07f7c } /* Literal.String.Other */
 .m-code .sr { color: #e07f7c } /* Literal.String.Regex */
 .m-code .s1 { color: #e07f7c } /* Literal.String.Single */

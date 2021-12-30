@@ -16,9 +16,9 @@
               </div>
               {% endif %}
               {% if typedef.is_using %}
-              using {{ prefix }}<a href="#{{ typedef.id }}" class="m-doc-self">{{ typedef.name }}</a> = {{ typedef.type }}{{ typedef.args }}{% if typedef.is_protected %} <span class="m-label m-warning">protected</span>{% endif %}
+              using {{ prefix }}<a href="#{{ typedef.id }}" class="m-doc-self">{{ typedef.name }}</a> = {{ typedef.type }}{{ typedef.args }}{% if typedef.is_protected %} <span class="m-label m-warning">protected</span>{% endif %}{% if typedef.since %} {{ typedef.since }}{% endif %}
               {% else %}
-              typedef {{ typedef.type }}{% if not typedef.args %} {% endif %}{{ prefix }}<a href="#{{ typedef.id }}" class="m-doc-self">{{ typedef.name }}</a>{{ typedef.args }}{% if typedef.is_protected %} <span class="m-label m-warning">protected</span>{% endif %}
+              typedef {{ typedef.type }}{% if not typedef.args %} {% endif %}{{ prefix }}<a href="#{{ typedef.id }}" class="m-doc-self">{{ typedef.name }}</a>{{ typedef.args }}{% if typedef.is_protected %} <span class="m-label m-warning">protected</span>{% endif %}{% if typedef.since %} {{ typedef.since }}{% endif %}
               {% endif %}
               {# the empty line has to be here to prevent the lines from merging #}
 

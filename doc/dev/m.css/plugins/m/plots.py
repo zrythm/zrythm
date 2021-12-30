@@ -1,7 +1,7 @@
 #
 #   This file is part of m.css.
 #
-#   Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -34,8 +34,6 @@ mpl.use('Agg') # otherwise it will attempt to use X11
 import matplotlib.pyplot as plt
 import numpy as np
 import io
-
-import pelican.signals
 
 mpl.rcParams['font.size'] = '11'
 mpl.rcParams['axes.titlesize'] = '13'
@@ -73,14 +71,26 @@ style_mapping = {
     'dim': '#cafe09'
 }
 
-# Patch to remove preamble and hardcoded sizes
+# Patch to remove preamble and hardcoded sizes. Matplotlib 2.2 has a http URL
+# while matplotlib 3 has a https URL, check for both. Matplotlib 3.3 has a new
+# <metadata> field (which we're not interested in) and slightly different
+# formatting of the global style after (which we unify to the compact version).
 _patch_src = re.compile(r"""<\?xml version="1\.0" encoding="utf-8" standalone="no"\?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1\.1//EN"
   "http://www\.w3\.org/Graphics/SVG/1\.1/DTD/svg11\.dtd">
-<!-- Created with matplotlib \(http://matplotlib.org/\) -->
-<svg height="\d+(\.\d+)?pt" version="1.1" (?P<viewBox>viewBox="0 0 \d+ \d+(\.\d+)?") width="\d+(\.\d+)?pt" xmlns="http://www\.w3\.org/2000/svg" xmlns:xlink="http://www\.w3\.org/1999/xlink">
-""")
+<!-- Created with matplotlib \(https?://matplotlib.org/\) -->
+<svg height="\d+(\.\d+)?pt" version="1.1" (?P<viewBox>viewBox="0 0 \d+ \d+(\.\d+)?") width="\d+(\.\d+)?pt" xmlns="http://www\.w3\.org/2000/svg" xmlns:xlink="http://www\.w3\.org/1999/xlink">(
+ <metadata>.+</metadata>)?
+ <defs>
+  <style type="text/css">
+?\*{stroke-linecap:butt;stroke-linejoin:round;}(
+  )?</style>
+ </defs>
+""", re.DOTALL)
 _patch_dst = r"""<svg \g<viewBox>>
+ <defs>
+  <style type="text/css">*{stroke-linecap:butt;stroke-linejoin:round;}</style>
+ </defs>
 """
 
 # Remove needless newlines and trailing space in path data
@@ -99,14 +109,21 @@ _class_mapping = [
     # <use>, everything is defined in <defs>, no need to repeat
     ('<use style="fill:#cafe02;stroke:#cafe02;stroke-width:0.8;"', '<use'),
 
+    # Text styles have `font-stretch:normal;` added in matplotlib 3.3, so
+    # all of them are duplicated to handle this
+
     # Label text on left
     ('style="fill:#cafe02;font-family:{font};font-size:11px;font-style:normal;font-weight:normal;"', 'class="m-label"'),
+    ('style="fill:#cafe02;font-family:{font};font-size:11px;font-stretch:normal;font-style:normal;font-weight:normal;"', 'class="m-label"'),
     # Label text on bottom (has extra style params)
     ('style="fill:#cafe02;font-family:{font};font-size:11px;font-style:normal;font-weight:normal;', 'class="m-label" style="'),
+    ('style="fill:#cafe02;font-family:{font};font-size:11px;font-stretch:normal;font-style:normal;font-weight:normal;', 'class="m-label" style="'),
     # Secondary label text
     ('style="fill:#cafe0b;font-family:{font};font-size:11px;font-style:normal;font-weight:normal;"', 'class="m-label m-dim"'),
+    ('style="fill:#cafe0b;font-family:{font};font-size:11px;font-stretch:normal;font-style:normal;font-weight:normal;"', 'class="m-label m-dim"'),
     # Title text
     ('style="fill:#cafe02;font-family:{font};font-size:13px;font-style:normal;font-weight:normal;', 'class="m-title" style="'),
+    ('style="fill:#cafe02;font-family:{font};font-size:13px;font-stretch:normal;font-style:normal;font-weight:normal;', 'class="m-title" style="'),
 
     # Bar colors. Keep in sync with latex2svgextra.
     ('style="fill:#cafe03;"', 'class="m-bar m-default"'),
@@ -126,9 +143,9 @@ _class_mapping = [
 ]
 
 # Titles for bars
-_bar_titles_src = '<g id="plot{}-value{}">'
-_bar_titles_dst = '<g id="plot{}-value{}"><title>{} {}</title>'
-_bar_titles_dst_error = '<g id="plot{}-value{}"><title>{} ± {} {}</title>'
+_bar_titles_src = '<g id="plot{}-value{}-{}">'
+_bar_titles_dst = '<g id="plot{}-value{}-{}"><title>{} {}</title>'
+_bar_titles_dst_error = '<g id="plot{}-value{}-{}"><title>{} ± {} {}</title>'
 
 class Plot(rst.Directive):
     required_arguments = 1
@@ -138,11 +155,15 @@ class Plot(rst.Directive):
                    'name': directives.unchanged,
                    'type': directives.unchanged_required,
                    'labels': directives.unchanged_required,
-                   'labels_extra': directives.unchanged,
+                   'labels-extra': directives.unchanged,
                    'units': directives.unchanged_required,
                    'values': directives.unchanged_required,
                    'errors': directives.unchanged,
                    'colors': directives.unchanged,
+                   'plot-width': directives.unchanged,
+                   'bar-height': directives.unchanged,
+                   # Legacy options with ugly underscores instead of dashes
+                   'labels_extra': directives.unchanged,
                    'bar_height': directives.unchanged}
     has_content = False
 
@@ -157,30 +178,54 @@ class Plot(rst.Directive):
         units = self.options['units']
         labels = self.options['labels'].split('\n')
 
-        # Optional extra labels
+        # Legacy options, convert underscores to dashes
         if 'labels_extra' in self.options:
-            labels_extra = self.options['labels_extra'].split('\n')
+            self.options['labels-extra'] = self.options['labels_extra']
+            del self.options['labels_extra']
+        if 'bar_height' in self.options:
+            self.options['bar-height'] = self.options['bar_height']
+            del self.options['bar_height']
+
+        # Optional extra labels
+        if 'labels-extra' in self.options:
+            labels_extra = self.options['labels-extra'].split('\n')
             assert len(labels_extra) == len(labels)
         else:
             labels_extra = None
 
-        # Values. Should be one for each label.
-        values = [float(v) for v in self.options['values'].split()]
-        assert len(values) == len(labels)
+        # Values. Should be one for each label, if there are multiple lines
+        # then the values get stacked.
+        value_sets = []
+        for row in self.options['values'].split('\n'):
+            values = [float(v) for v in row.split()]
+            assert len(values) == len(labels)
+            value_sets += [values]
 
         # Optional errors
         if 'errors' in self.options:
-            errors = [float(e) for e in self.options['errors'].split()]
+            error_sets = []
+            for row in self.options['errors'].split('\n'):
+                errors = [float(e) for e in row.split()]
+                assert len(errors) == len(values)
+                error_sets += [errors]
+            assert len(error_sets) == len(value_sets)
         else:
-            errors = None
+            error_sets = [None]*len(value_sets)
 
         # Colors. Should be either one for all or one for every value
-        colors = [style_mapping[c] for c in self.options.get('colors', 'default').split()]
-        if len(colors) == 1: colors = colors[0]
-        else: assert len(colors) == len(labels)
+        if 'colors' in self.options:
+            color_sets = []
+            for row in self.options['colors'].split('\n'):
+                colors = [style_mapping[c] for c in row.split()]
+                if len(colors) == 1: colors = colors[0]
+                else: assert len(colors) == len(labels)
+                color_sets += [colors]
+            assert len(color_sets) == len(value_sets)
+        else:
+            color_sets = [style_mapping['default']]*len(value_sets)
 
         # Bar height
-        bar_height = float(self.options.get('bar_height', '0.4'))
+        bar_height = float(self.options.get('bar-height', '0.4'))
 
         # Increase hashsalt for every plot to ensure (hopefully) unique SVG IDs
         mpl.rcParams['svg.hashsalt'] = int(mpl.rcParams['svg.hashsalt']) + 1
@@ -188,12 +233,15 @@ class Plot(rst.Directive):
         # Setup the graph
         fig, ax = plt.subplots()
         # TODO: let matplotlib calculate the height somehow
-        fig.set_size_inches(8, 0.78 + len(values)*bar_height)
+        fig.set_size_inches(float(self.options.get('plot-width', 8)), 0.78 + len(labels)*bar_height)
         yticks = np.arange(len(labels))
-        plot = ax.barh(yticks, values, xerr=errors,
-                       align='center', color=colors, ecolor='#cafe0a', capsize=5*bar_height/0.4)
-        for i, v in enumerate(plot):
-            v.set_gid('plot{}-value{}'.format(mpl.rcParams['svg.hashsalt'], i))
+        left = np.array([0.0]*len(labels))
+        for i in range(len(value_sets)):
+            plot = ax.barh(yticks, value_sets[i], xerr=error_sets[i],
+                           align='center', color=color_sets[i], ecolor='#cafe0a', capsize=5*bar_height/0.4, left=left)
+            left += np.array(value_sets[i])
+            for j, v in enumerate(plot):
+                v.set_gid('plot{}-value{}-{}'.format(mpl.rcParams['svg.hashsalt'], i, j))
         ax.set_yticks(yticks)
         ax.invert_yaxis() # top-to-bottom
         ax.set_xlabel(units)
@@ -224,13 +272,15 @@ class Plot(rst.Directive):
         # Replace color codes with CSS classes
         for src, dst in _class_mapping: imgdata = imgdata.replace(src, dst)
         # Add titles for bars
-        for i in range(len(values)):
-            if errors: imgdata = imgdata.replace(
-                _bar_titles_src.format(mpl.rcParams['svg.hashsalt'], i),
-                _bar_titles_dst_error.format(mpl.rcParams['svg.hashsalt'], i, values[i], errors[i], units))
-            else: imgdata = imgdata.replace(
-                _bar_titles_src.format(mpl.rcParams['svg.hashsalt'], i),
-                _bar_titles_dst.format(mpl.rcParams['svg.hashsalt'], i, values[i], units))
+        for i in range(len(value_sets)):
+            for j in range(len(labels)):
+                id = i*len(labels) + j
+                if error_sets[i]: imgdata = imgdata.replace(
+                    _bar_titles_src.format(mpl.rcParams['svg.hashsalt'], i, j),
+                    _bar_titles_dst_error.format(mpl.rcParams['svg.hashsalt'], i, j, value_sets[i][j], error_sets[i][j], units))
+                else: imgdata = imgdata.replace(
+                    _bar_titles_src.format(mpl.rcParams['svg.hashsalt'], i, j),
+                    _bar_titles_dst.format(mpl.rcParams['svg.hashsalt'], i, j, value_sets[i][j], units))
 
         container = nodes.container(**self.options)
         container['classes'] += ['m-plot']
@@ -238,17 +288,28 @@ class Plot(rst.Directive):
         container.append(node)
         return [container]
 
-def new_page(content):
+def new_page(*args, **kwargs):
     mpl.rcParams['svg.hashsalt'] = 0
 
-def configure(pelicanobj):
-    font = pelicanobj.settings.get('M_PLOTS_FONT', 'Source Sans Pro')
+def register_mcss(mcss_settings, hooks_pre_page, **kwargs):
+    font = mcss_settings.get('M_PLOTS_FONT', 'Source Sans Pro')
     for i in range(len(_class_mapping)):
         src, dst = _class_mapping[i]
         _class_mapping[i] = (src.format(font=font), dst)
     mpl.rcParams['font.family'] = font
 
-def register():
-    pelican.signals.initialized.connect(configure)
-    pelican.signals.content_object_init.connect(new_page)
+    hooks_pre_page += [new_page]
+
     rst.directives.register_directive('plot', Plot)
+
+# Below is only Pelican-specific functionality. If Pelican is not found, these
+# do nothing.
+
+def _pelican_configure(pelicanobj):
+    register_mcss(mcss_settings=pelicanobj.settings, hooks_pre_page=[])
+
+def register(): # for Pelican
+    from pelican import signals
+
+    signals.initialized.connect(_pelican_configure)
+    signals.content_object_init.connect(new_page)

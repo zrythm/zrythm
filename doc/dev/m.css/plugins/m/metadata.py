@@ -1,7 +1,7 @@
 #
 #   This file is part of m.css.
 #
-#   Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -77,5 +77,8 @@ def populate_metadata(article_generator):
         if hasattr(page, 'title'):
             article.category.badge_title = page.title
 
-def register():
+def register_mcss(**kwargs):
+    assert not "This plugin is Pelican-only" # pragma: no cover
+
+def register(): # for Pelican
     signals.article_generator_finalized.connect(populate_metadata)

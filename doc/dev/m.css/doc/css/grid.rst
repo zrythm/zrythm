@@ -1,7 +1,7 @@
 ..
     This file is part of m.css.
 
-    Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -229,11 +229,15 @@ content based on screen width. Learn by example:
 ==================
 
 It's also possible to responsively float or align the elements around using
-:css:`m-left-*`, :css:`m-right-*` and :css:`m-center-*` if you put the
+:css:`.m-left-*`, :css:`.m-right-*` and :css:`.m-center-*` if you put the
 :css:`.m-col-*` elements directly into text flow without wrapping them in a
 :css:`.m-row` element. The following example will float the contents to the
 right on medium-size screens, center them on small and put them full-width
-on tiny screens:
+on tiny screens.
+
+Perhaps even more important than in the `wrapping case mentioned above <#wrapping-around>`_
+is adding a :css:`.m-clearfix-*` element after, to avoid the floating element
+cutting into unrelated content that follows.
 
 .. code:: html
 
@@ -244,6 +248,7 @@ on tiny screens:
     tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
     quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
     consequat.</p>
+    <div class="m-clearfix-m"></div>
 
 .. raw:: html
 
@@ -254,10 +259,7 @@ on tiny screens:
     tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
     quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
     consequat.</p>
-
-.. container:: m-clearfix-m
-
-    ..
+    <div class="m-clearfix-m"></div>
 
 Left-aligned floating blocks additionally have :css:`1rem` padding on the right
 and right-aligned blocks on the left. All of them have implicitly padding on bottom, except if the element is a last child. Add a :css:`.m-nopadb` class to

@@ -1,7 +1,7 @@
 #
 #   This file is part of m.css.
 #
-#   Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -22,6 +22,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+import copy
 import html
 import os
 import re
@@ -31,12 +32,16 @@ from docutils.parsers import rst
 from docutils.parsers.rst import directives
 from docutils.parsers.rst.roles import set_classes
 
-import pelican.signals
-
 import latex2svg
 import latex2svgextra
 
-render_as_code = False
+default_settings = {
+    'INPUT': '',
+    'M_MATH_RENDER_AS_CODE': False,
+    'M_MATH_CACHE_FILE': 'm.math.cache'
+}
+
+settings = None
 
 def _is_math_figure(parent):
     # The parent has to be a figure, marked as m-figure
@@ -61,7 +66,7 @@ class Math(rst.Directive):
         parent = self.state.parent
 
         # Fallback rendering as code requested
-        if render_as_code:
+        if settings['M_MATH_RENDER_AS_CODE']:
             # If this is a math figure, replace the figure CSS class to have a
             # matching border
             if _is_math_figure(parent):
@@ -93,16 +98,15 @@ class Math(rst.Directive):
         container.append(node)
         return [container]
 
-def new_page(content):
+def new_page(*args, **kwargs):
     latex2svgextra.counter = 0
 
 def math(role, rawtext, text, lineno, inliner, options={}, content=[]):
-    # Otherwise the backslashes do quite a mess there
-    i = rawtext.find('`')
-    text = rawtext.split('`')[1]
+    # In order to properly preserve backslashes (well, and backticks)
+    text = rawtext[rawtext.find('`') + 1:rawtext.rfind('`')]
 
     # Fallback rendering as code requested
-    if render_as_code:
+    if settings['M_MATH_RENDER_AS_CODE']:
         set_classes(options)
         classes = []
         if 'classes' in options:
@@ -127,22 +131,41 @@ def math(role, rawtext, text, lineno, inliner, options={}, content=[]):
     node = nodes.raw(rawtext, latex2svgextra.patch(text, svg, depth, attribs), format='html', **options)
     return [node], []
 
-def configure_pelican(pelicanobj):
-    global render_as_code
-    render_as_code = pelicanobj.settings.get('M_MATH_RENDER_AS_CODE', False)
-    cache_file = pelicanobj.settings.get('M_MATH_CACHE_FILE', 'm.math.cache')
-    if cache_file and os.path.exists(cache_file):
-        latex2svgextra.unpickle_cache(cache_file)
+def save_cache(*args, **kwargs):
+    if settings['M_MATH_CACHE_FILE']:
+        latex2svgextra.pickle_cache(settings['M_MATH_CACHE_FILE'])
+
+def register_mcss(mcss_settings, hooks_pre_page, hooks_post_run, **kwargs):
+    global default_settings, settings
+    settings = copy.deepcopy(default_settings)
+    for key in settings.keys():
+        if key in mcss_settings: settings[key] = mcss_settings[key]
+
+    if settings['M_MATH_CACHE_FILE']:
+        settings['M_MATH_CACHE_FILE'] = os.path.join(settings['INPUT'], settings['M_MATH_CACHE_FILE'])
+
+    # Ensure that cache is unpickled again if M_MATH_CACHE_FILE is *not* set --
+    # otherwise tests will sporadically fail.
+    if settings['M_MATH_CACHE_FILE'] and os.path.exists(settings['M_MATH_CACHE_FILE']):
+        latex2svgextra.unpickle_cache(settings['M_MATH_CACHE_FILE'])
     else:
         latex2svgextra.unpickle_cache(None)
 
-def save_cache(pelicanobj):
-    cache_file = pelicanobj.settings.get('M_MATH_CACHE_FILE', 'm.math.cache')
-    if cache_file: latex2svgextra.pickle_cache(cache_file)
+    hooks_pre_page += [new_page]
+    hooks_post_run += [save_cache]
 
-def register():
-    pelican.signals.initialized.connect(configure_pelican)
-    pelican.signals.finalized.connect(save_cache)
-    pelican.signals.content_object_init.connect(new_page)
     rst.directives.register_directive('math', Math)
     rst.roles.register_canonical_role('math', math)
+
+# Below is only Pelican-specific functionality. If Pelican is not found, these
+# do nothing.
+
+def _configure_pelican(pelicanobj):
+    register_mcss(mcss_settings=pelicanobj.settings, hooks_pre_page=[], hooks_post_run=[])
+
+def register():
+    from pelican import signals
+
+    signals.initialized.connect(_configure_pelican)
+    signals.finalized.connect(save_cache)
+    signals.content_object_init.connect(new_page)

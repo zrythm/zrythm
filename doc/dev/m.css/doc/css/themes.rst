@@ -1,7 +1,7 @@
 ..
     This file is part of m.css.
 
-    Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -70,6 +70,7 @@ markup including theme color (used for example by Vivaldi or Android browser)
 is below:
 
 .. code:: html
+    :class: m-console-wrap
 
     <link rel="stylesheet" href="m-dark.css" /> <!-- or m-dark.compiled.css -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?Source+Sans+Pro:400,400i,600,600i%7Cfamily=Source+Code+Pro:400,400i,600" />
@@ -87,6 +88,7 @@ The light theme is contained in the `m-light.css <{filename}/css.rst>`_ (or
 (used for pre-formatted text and code).
 
 .. code:: html
+    :class: m-console-wrap
 
     <link rel="stylesheet" href="m-light.css" /> <!-- or m-light.compiled.css -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700,700i%7CSource+Code+Pro:400,400i,600" />
@@ -120,6 +122,9 @@ together and it will create a ``*.compiled.css`` file in the same directory:
     cd css
     ./postprocess.py m-dark.css # Creates a m-dark.compiled.css file
 
+`Modifying the Pygments higlighting style`_
+-------------------------------------------
+
 If you want to modify the Pygments style, it's a bit more involved. You need to
 edit the ``*.py`` file instead of the ``*.css``:
 
@@ -131,11 +136,22 @@ then generate a CSS file out of it:
 
 .. code:: sh
 
-    sudo cp pygments-dark.py /usr/lib/python3.6/site-packages/pygments/styles/dark.py
+    sudo cp pygments-dark.py /usr/lib/python3.8/site-packages/pygments/styles/dark.py
     pygmentize -f html -S dark -a .m-code > pygments-dark.css
 
-    sudo cp pygments-console.py /usr/lib/python3.6/site-packages/pygments/styles/console.py
+    sudo cp pygments-console.py /usr/lib/python3.8/site-packages/pygments/styles/console.py
     pygmentize -f html -S console -a .m-console > pygments-console.css
+
+Alternatively, you can use any of the builtin styles --- pick the one you like
+at http://pygments.org/demo/ and then tell ``pygmentize`` to generate a CSS for
+it. For example, the below command is for the ``pastie`` style. Note that you
+might want to remove the first two lines of the resulting CSS (setting
+:css:`background-color`) as those would in most cases conflict with the style
+in m.css.
+
+.. code:: sh
+
+    pygmentize -f html -S pastie -a .m-code > pygments-pastie.css
 
 .. note-success::
 

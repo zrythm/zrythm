@@ -1,0 +1,26 @@
+          <section class="m-doc-details" id="{{ property.id }}"><div>
+            <h3>
+              {{ prefix }}<a href="#{{ property.id }}" class="m-doc-self">{{ property.name }}</a>{% if property.type_link %}: {{ property.type_link }}{% endif %} <span class="m-label m-flat {% if property.is_gettable and property.is_settable %}m-success{% elif property.is_gettable %}m-warning{% else %}m-danger{% endif %}">{% if property.is_gettable and property.is_settable %}get set{% elif property.is_gettable %}get{% else %}set{% endif %}{% if property.is_deletable %} del{% endif %}</span>
+            </h3>
+            {% if property.summary %}
+            <p>{{ property.summary }}</p>
+            {% endif %}
+            {% if property.exceptions %}
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Exceptions</th></tr>
+              </thead>
+              <tbody>
+                {% for exception in property.exceptions %}
+                <tr>
+                  <td{% if loop.index == 1 %} style="width: 1%"{% endif %}>{{ exception.type_link }}</td>
+                  <td>{{ exception.content }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% endif %}
+            {% if property.content %}
+{{ property.content }}
+            {% endif %}
+          </div></section>

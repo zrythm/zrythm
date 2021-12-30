@@ -7,4 +7,4 @@ package-lock.json
 test_doxygen/package-lock.json
 test_python/*/output/
 test_python/build*
-test_python/*/*.so
+test_python/**/*.so

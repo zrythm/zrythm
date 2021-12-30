@@ -1,7 +1,7 @@
 ..
     This file is part of m.css.
 
-    Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -68,6 +68,18 @@ library installed. Get it via ``pip`` or your distribution package manager:
 .. code:: sh
 
     pip3 install Pillow
+
+`Python doc theme`_
+-------------------
+
+Simply list the plugin in your :py:`PLUGINS`. The `m.htmlsanity`_ plugin is
+available always, no need to mention it explicitly. The same dependencies as
+for `Pelican`_ apply here.
+
+.. code:: py
+
+    PLUGINS += ['m.images']
+    M_IMAGES_REQUIRE_ALT_TEXT = False
 
 `Doxygen theme`_
 ----------------

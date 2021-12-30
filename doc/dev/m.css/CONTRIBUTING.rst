@@ -37,7 +37,7 @@ Code contribution
         /*
             This file is part of m.css.
 
-            Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+            Copyright © 2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
             Copyright © YEAR YOUR_NAME <your@mail.com>
 
             Permission is hereby granted, free of charge, to any person obtaining a
@@ -88,7 +88,7 @@ There are no visual tests for the CSS style at the moment. Running the tests:
 
     cd documentation
     python -m unittest
-    node test_doxygen/test-search.js
+    node test/test-search.js
 
 Code coverage needs `coverage.py <https://coverage.readthedocs.io/>`_ for
 Python (use ``pip`` or your system package) and
@@ -109,7 +109,7 @@ There is no possibility of getting code coverage for Jinja2 templates, though.
     # open htmlcov/index.html in your browser
 
     cd documentation
-    node ./node_modules/istanbul/lib/cli.js cover test_doxygen/test-search.js
+    node ./node_modules/istanbul/lib/cli.js cover test/test-search.js
     # open coverage/lcov-report/index.html in your browser
 
     cd plugins
@@ -121,10 +121,11 @@ Test organization: files named ``test_something.py`` take their input from
 case of Doxygen, comment-out the line that removes the ``html`` directory in
 ``__init__.py`` to see all test output files.
 
-The project is built on Travis CI on Linux with Python 3.4, 3.5 and 3.6;
-Doxygen theme is tested only on 3.6 and math rendering is disabled as it's
-impossible to get it working on Travis (https://github.com/mosra/m.css/pull/75).
-Build and coverage status is presented at https://mcss.mosra.cz/build-status/.
+The project is built on CircleCI on Linux with Python 3.5, 3.6 and 3.7;
+documentation themes are tested only on 3.6+ and math rendering is currently
+disabled as getting it to work was historically impossible
+(https://github.com/mosra/m.css/pull/75). Build and coverage status is
+presented at https://mcss.mosra.cz/build-status/.
 
 Contact
 =======
