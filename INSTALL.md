@@ -66,6 +66,7 @@ with meaningful stack traces and bug reports.
 - gtksourceview (LGPLv2.1+): <https://wiki.gnome.org/Projects/GtkSourceView>
 - guile (GPLv3+): <https://www.gnu.org/software/guile/>
 - json-glib (LGPLv2.1+): <https://wiki.gnome.org/Projects/JsonGlib>
+- libadwaita (LGPLv2.1+): <https://gitlab.gnome.org/GNOME/libadwaita>
 - libaudec (AGPLv3+): <https://git.zrythm.org/zrythm/libaudec/>
 - libbacktrace (3-Clause BSD): <https://github.com/ianlancetaylor/libbacktrace>
 - libcyaml (ISC): <https://github.com/tlsa/libcyaml/>
