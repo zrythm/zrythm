@@ -132,161 +132,13 @@ get_last_rects (
  * @param full_rect Object full rectangle.
  */
 static void
-draw_background (
-  ZRegion *         self,
-  cairo_t *         cr,
-  GdkRectangle *    rect,
-  GdkRectangle *    full_rect,
-  GdkRectangle *    draw_rect,
-  RegionCounterpart counterpart)
-{
-  ArrangerObject * obj =
-    (ArrangerObject *) self;
-
-  ArrangerWidget * arranger =
-    arranger_object_get_arranger (obj);
-
-  Track * track =
-    arranger_object_get_track (obj);
-
-  /* set color */
-  GdkRGBA color;
-  if (track)
-    color = track->color;
-  else
-    {
-      color.red = 1;
-      color.green = 0;
-      color.blue = 0;
-      color.alpha = 1;
-    }
-  ui_get_arranger_object_color (
-    &color,
-    arranger->hovered_object == obj,
-    region_is_selected (self),
-    /* FIXME */
-    false,
-    arranger_object_get_muted (obj) ||
-      track->frozen);
-  gdk_cairo_set_source_rgba (
-    cr, &color);
-
-  int vis_offset_x =
-    draw_rect->x - full_rect->x;
-  /*int visible_offset_y =*/
-    /*draw_rect->y - full_rect->y;*/
-  int vis_width = draw_rect->width;
-  /*int visible_height = draw_rect->height;*/
-  /*int full_offset_x = full_rect->x;*/
-  /*int full_offset_y = full_rect->y;*/
-  int full_width = full_rect->width;
-  int full_height = full_rect->height;
-
-  /* if there are still region parts outside the
-   * rect, add some padding so that the region
-   * doesn't curve when it's not its edge */
-  int added_x_pre_padding = 0;
-  int added_x_post_padding = 0;
-  if (vis_offset_x > 0)
-    {
-      added_x_pre_padding =
-        MIN (vis_offset_x, 4);
-    }
-  if (vis_width < full_width)
-    {
-      /* this is to prevent artifacts during
-       * playback when the playhead is on the
-       * region */
-      int diff =
-        (vis_offset_x + vis_width) - full_width;
-      added_x_post_padding = MIN (abs (diff), 4);
-    }
-
-  z_cairo_rounded_rectangle (
-    cr, vis_offset_x - added_x_pre_padding, 0,
-    vis_width + added_x_pre_padding +
-      added_x_post_padding,
-    full_height, 1.0, 4.0);
-
-  /* clip this path so all drawing afterwards will
-   * be confined inside it. preserve so we can
-   * fill after this call. each region is drawn
-   * wrapped inside cairo_save() and
-   * cairo_restore() to remove the clip when done */
-  cairo_clip_preserve (cr);
-
-  cairo_fill_preserve (cr);
-
-  /* draw a thin border */
-  cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.3);
-  /* FIXME this is performance intensive 8% of this function call */
-  cairo_stroke (cr);
-
-  /* ---- draw applicable icons ---- */
-
-#define DRAW_ICON(name) \
-  cairo_surface_t * surface = \
-    z_cairo_get_surface_from_icon_name ( \
-      name, size, 1); \
-  cairo_set_source_surface ( \
-    cr, surface, \
-    full_width - \
-      (size + paddingh) * (icons_drawn + 1), \
-    paddingv); \
-  cairo_paint (cr); \
-  icons_drawn++
-
-  const int size = 16;
-  const int paddingh = 2;
-  const int paddingv = 0;
-  int icons_drawn = 0;
-
-  /* draw link icon if has linked parent */
-  if (self->id.link_group >= 0)
-    {
-      DRAW_ICON ("emblem-symbolic-link");
-    }
-
-  /* draw musical mode icon if region is in
-   * musical mode */
-  if (self->id.type == REGION_TYPE_AUDIO &&
-      region_get_musical_mode (self))
-    {
-      DRAW_ICON ("music-note-16th");
-    }
-
-  /* if track is frozen, show frozen icon */
-  if (track->frozen)
-    {
-      DRAW_ICON ("fork-awesome-snowflake-o");
-    }
-
-  /* draw loop icon if region is looped */
-  if (region_is_looped (self))
-    {
-      DRAW_ICON ("media-playlist-repeat");
-    }
-
-#undef DRAW_ICON
-}
-
-/**
- * @param rect Arranger rectangle.
- * @param full_rect Object full rectangle.
- */
-static void
 draw_loop_points (
-  ZRegion *       self,
-  cairo_t *      cr,
-  GdkRectangle * rect,
+  ZRegion *      self,
+  GtkSnapshot *  snapshot,
   GdkRectangle * full_rect,
-  GdkRectangle * draw_rect,
-  RegionCounterpart counterpart)
+  GdkRectangle * draw_rect)
 {
   double dashes[] = { 5 };
-  cairo_set_dash (
-    cr, dashes, 1, 0);
-  cairo_set_line_width (cr, 1);
 
   ArrangerObject * obj =
     (ArrangerObject *) self;
@@ -311,15 +163,14 @@ draw_loop_points (
 
   int vis_offset_x =
     draw_rect->x - full_rect->x;
-  /*int vis_offset_y =*/
-    /*draw_rect->y - full_rect->y;*/
   int vis_width = draw_rect->width;
-  /*int vis_height = draw_rect->height;*/
-  /*int full_offset_x = full_rect->x;*/
-  /*int full_offset_y = full_rect->y;*/
   int full_width = full_rect->width;
   int full_height = full_rect->height;
 
+  const int padding = 1;
+  const int line_width = 1;
+
+  /* draw clip start point */
   if (x_px != 0 &&
       /* if px is inside region */
       x_px >= 0 &&
@@ -328,19 +179,43 @@ draw_loop_points (
       x_px >= vis_offset_x &&
       x_px < vis_offset_x + vis_width)
     {
+      cairo_t * cr =
+        gtk_snapshot_append_cairo (
+          snapshot,
+          &GRAPHENE_RECT_INIT (
+            x_px - padding, 0,
+            line_width + padding * 2,
+            full_height));
       gdk_cairo_set_source_rgba (
         cr, &UI_COLORS->bright_green);
-      cairo_move_to (
-        cr, x_px, 0);
+      cairo_set_dash (
+        cr, dashes, 1, 0);
+      cairo_set_line_width (cr, line_width);
+      cairo_move_to (cr, padding + x_px, 0);
       cairo_line_to (
-        cr, x_px, full_height);
+        cr, padding + x_px, full_height);
       cairo_stroke (cr);
+      cairo_destroy (cr);
     }
 
+  /* draw loop points */
+  GskRenderNode * cr_node =
+    gsk_cairo_node_new (
+      &GRAPHENE_RECT_INIT (
+        0, 0, padding * 2 + line_width,
+        full_height));
+  cairo_t * loop_cr =
+    gsk_cairo_node_get_draw_context (cr_node);
+  cairo_set_dash (
+    loop_cr, dashes, 1, 0);
+  cairo_set_line_width (loop_cr, line_width);
+  cairo_set_source_rgba (
+    loop_cr, 0, 0, 0, 1.0);
+  cairo_move_to (loop_cr, padding, 0);
+  cairo_line_to (loop_cr, padding, full_height);
+  cairo_stroke (loop_cr);
   int num_loops =
     arranger_object_get_num_loops (obj, 1);
-  cairo_set_source_rgba (
-    cr, 0, 0, 0, 1.0);
   for (int i = 0; i < num_loops; i++)
     {
       x_px =
@@ -359,18 +234,17 @@ draw_loop_points (
           x_px >= 0 &&
           x_px < full_width)
         {
-          cairo_move_to (
-            cr, x_px, 0);
-          cairo_line_to (
-            cr, x_px, full_height);
-          /* note most costly call in this
-           * function 49% of function time */
-          cairo_stroke (cr);
+          gtk_snapshot_save (snapshot);
+          gtk_snapshot_translate (
+            snapshot,
+            &GRAPHENE_POINT_INIT (
+              x_px - padding, 0));
+          gtk_snapshot_append_node (
+            snapshot, cr_node);
+          gtk_snapshot_restore (snapshot);
         }
     }
-
-  cairo_set_dash (
-    cr, NULL, 0, 0);
+  gsk_render_node_unref (cr_node);
 }
 
 /**
@@ -378,12 +252,10 @@ draw_loop_points (
  */
 static void
 draw_midi_region (
-  ZRegion *       self,
-  cairo_t *      cr,
-  GdkRectangle * rect,
+  ZRegion *      self,
+  GtkSnapshot *  snapshot,
   GdkRectangle * full_rect,
-  GdkRectangle * draw_rect,
-  RegionCounterpart counterpart)
+  GdkRectangle * draw_rect)
 {
   ArrangerObject * obj =
     (ArrangerObject *) self;
@@ -392,14 +264,17 @@ draw_midi_region (
     arranger_object_get_track (obj);
 
   /* set color */
-  cairo_set_source_rgba (cr, 1, 1, 1, 1);
+  GdkRGBA color = { 1, 1, 1, 1 };
   if (track)
     {
       /* set to grey if track color is very
        *  bright */
       if (color_is_very_very_bright (&track->color))
-        cairo_set_source_rgba (
-          cr, 0.7, 0.7, 0.7, 1);
+        {
+          color.red = 0.7;
+          color.green = 0.7;
+          color.blue = 0.7;
+        }
     }
 
   int num_loops =
@@ -544,33 +419,32 @@ draw_midi_region (
               (x_start < vis_offset_x &&
                x_end > vis_offset_x))
             {
-              double draw_x =
+              float draw_x =
+                (float)
                 MAX (x_start, vis_offset_x);
-              double draw_width =
+              float draw_width =
+                (float)
                 MIN (
                   (x_end - x_start) -
                     (draw_x - x_start),
                   (vis_offset_x + vis_width) -
                   draw_x);
-              double draw_y =
+              float draw_y =
+                (float)
                 MAX (y_start, vis_offset_y);
-              double draw_height =
+              float draw_height =
+                (float)
                 MIN (
                   (y_note_size *
                     (double) full_height) -
                       (draw_y - y_start),
                   (vis_offset_y + vis_height) -
                     draw_y);
-              cairo_rectangle (
-                cr,
-                draw_x,
-                draw_y,
-                draw_width,
-                draw_height);
-              /* FIXME this is performance
-               * intensive 23% of this function
-               * call */
-              cairo_fill (cr);
+              gtk_snapshot_append_color (
+                snapshot, &color,
+                &GRAPHENE_RECT_INIT (
+                  draw_x, draw_y, draw_width,
+                  draw_height));
 
             } /* endif part of note is visible */
 
@@ -584,12 +458,10 @@ draw_midi_region (
  */
 static void
 draw_chord_region (
-  ZRegion *       self,
-  cairo_t *      cr,
-  GdkRectangle * rect,
+  ZRegion *      self,
+  GtkSnapshot *  snapshot,
   GdkRectangle * full_rect,
-  GdkRectangle * draw_rect,
-  RegionCounterpart counterpart)
+  GdkRectangle * draw_rect)
 {
   ArrangerObject * obj =
     (ArrangerObject *) self;
@@ -705,8 +577,7 @@ draw_chord_region (
               if (x_start < 0.0)
                 continue;
 
-              cairo_set_source_rgba (
-                cr, 1, 1, 1, 0.3);
+              GdkRGBA color = { 1, 1, 1, 0.3 };
 
               /* get actual values using the
                * ratios */
@@ -714,28 +585,32 @@ draw_chord_region (
               x_end *= (double) full_width;
 
               /* draw */
-              cairo_rectangle (
-                cr, x_start, 0,
-                12.0, full_height);
-              cairo_fill (cr);
-
-              cairo_set_source_rgba (
-                cr, 0, 0, 0, 1);
+              gtk_snapshot_append_color (
+                snapshot, &color,
+                &GRAPHENE_RECT_INIT (
+                  (float) x_start, 0,
+                  12.f, (float) full_height));
 
               /* draw name */
-              char descr_str[100];
+              char desc_str[100];
               chord_descriptor_to_string (
-                descr, descr_str);
-              ArrangerWidget * arranger =
-                arranger_object_get_arranger (obj);
-              z_cairo_draw_text_full (
-                cr, GTK_WIDGET (arranger),
-                self->chords_layout,
-                descr_str,
-                (int)
-                ((double) x_start *
-                  (double) full_width + 2.0),
-                2);
+                descr, desc_str);
+              gtk_snapshot_save (snapshot);
+              gtk_snapshot_translate (
+                snapshot,
+                &GRAPHENE_POINT_INIT (
+                  (int)
+                  ((double) x_start *
+                    (double) full_width + 2.0),
+                  2));
+              PangoLayout * layout =
+                self->chords_layout;
+              pango_layout_set_markup (
+                layout, desc_str, -1);
+              gtk_snapshot_append_layout (
+                snapshot, layout,
+                &Z_GDK_RGBA_INIT (0, 0, 0, 1));
+              gtk_snapshot_restore (snapshot);
             }
         }
     }
@@ -746,15 +621,34 @@ draw_chord_region (
  */
 static void
 draw_automation_region (
-  ZRegion *       self,
-  cairo_t *      cr,
-  GdkRectangle * rect,
+  ZRegion *      self,
+  GtkSnapshot *  snapshot,
   GdkRectangle * full_rect,
-  GdkRectangle * draw_rect,
-  RegionCounterpart counterpart)
+  GdkRectangle * draw_rect)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
-  cairo_set_source_rgba (cr, 1, 1, 1, 1);
+
+  GdkRGBA color = { 1, 1, 1, 1 };
+
+  UiDetail detail = ui_get_detail_level ();
+
+  /* if > 40% CPU, force lower level of detail */
+  if (detail < UI_DETAIL_ULTRA_LOW)
+    {
+      if (MW_CPU->cpu > 60)
+        detail = UI_DETAIL_ULTRA_LOW;
+      else if (MW_CPU->cpu > 50)
+        detail = UI_DETAIL_LOW;
+      else if (MW_CPU->cpu > 40)
+        detail++;
+    }
+
+  /* use cairo if normal detail or higher */
+  bool use_cairo = false;
+  if (detail < UI_DETAIL_LOW)
+    {
+      use_cairo = true;
+    }
 
   int num_loops =
     arranger_object_get_num_loops (
@@ -876,27 +770,47 @@ draw_automation_region (
                   x_start_real < full_width)
                 {
                   int padding = 1;
-                  cairo_rectangle (
-                    cr,
-                    x_start_real - padding,
-                    y_start_real - padding,
-                    2 * padding,
-                    2 * padding);
-                  cairo_fill (cr);
+                  gtk_snapshot_append_color (
+                    snapshot, &color,
+                    &GRAPHENE_RECT_INIT (
+                      (float)
+                      (x_start_real - padding),
+                      (float)
+                      y_start_real - padding,
+                      2 * padding,
+                      2 * padding));
                 }
 
               /* draw curve */
               if (next_ap)
                 {
+                  double ac_width =
+                    fabs (x_end - x_start);
+                  ac_width *= full_width;
+
+                  cairo_t * cr = NULL;
+                  if (use_cairo)
+                    {
+                      cr =
+                        gtk_snapshot_append_cairo (
+                          snapshot,
+                          &GRAPHENE_RECT_INIT (
+                            (float)
+                            MAX (x_start_real, 0.0),
+                            0,
+                            (float)
+                            (x_start_real + ac_width +
+                              0.1),
+                            full_height));
+                      cairo_set_source_rgba (
+                        cr, 1, 1, 1, 1);
+                      cairo_set_line_width (cr, 2.0);
+                    }
+
                   double new_x, ap_y, new_y;
                   double ac_height =
                     fabs (y_end - y_start);
                   ac_height *= full_height;
-                  double ac_width =
-                    fabs (x_end - x_start);
-                  ac_width *= full_width;
-                    cairo_set_line_width (
-                      cr, 2.0);
                   for (double k =
                          MAX (x_start_real, 0.0);
                        k < (x_start_real) +
@@ -934,16 +848,47 @@ draw_automation_region (
                       if (math_doubles_equal (
                             k, 0.0))
                         {
-                          cairo_move_to (
-                            cr, new_x, new_y);
+                          if (use_cairo)
+                            {
+                              cairo_move_to (
+                                cr, new_x, new_y);
+                            }
+                          else
+                            {
+                              gtk_snapshot_append_color (
+                                snapshot, &color,
+                                &GRAPHENE_RECT_INIT (
+                                  (float) new_x,
+                                  (float) new_y,
+                                  1, 1));
+                            }
                         }
 
-                      cairo_line_to (
-                        cr, new_x, new_y);
+                      if (use_cairo)
+                        {
+                          cairo_line_to (
+                            cr, new_x, new_y);
+                        }
+                      else
+                        {
+                          gtk_snapshot_append_color (
+                            snapshot, &color,
+                            &GRAPHENE_RECT_INIT (
+                              (float) new_x,
+                              (float) new_y,
+                              1, 1));
+                        }
                     }
-                  cairo_stroke (cr);
-                }
-            }
+
+                  if (use_cairo)
+                    {
+                      cairo_stroke (cr);
+                      cairo_destroy (cr);
+                    }
+
+                } /* endif have next ap */
+
+            } /* end foreach loop */
         }
     }
 }
@@ -954,12 +899,12 @@ draw_automation_region (
  */
 static void
 draw_fade_part (
-  ZRegion *      self,
-  cairo_t *      cr,
-  int            vis_offset_x,
-  int            vis_width,
-  int            full_width,
-  int            height)
+  ZRegion *     self,
+  GtkSnapshot * snapshot,
+  int           vis_offset_x,
+  int           vis_width,
+  int           full_width,
+  int           height)
 {
   ArrangerObject * obj =
     (ArrangerObject *) self;
@@ -967,11 +912,7 @@ draw_fade_part (
   g_return_if_fail (track);
 
   /* set color */
-  cairo_set_source_rgba (
-    cr, 0.2, 0.2, 0.2, 0.6);
-  cairo_set_line_width (cr, 3);
-
-  int full_height = height;
+  GdkRGBA color = { 0.2, 0.2, 0.2, 0.6 };
 
   /* get fade in px */
   int fade_in_px =
@@ -986,12 +927,49 @@ draw_fade_part (
   int vis_start_px =
     MAX (start_px, vis_offset_x);
 
+  UiDetail detail = ui_get_detail_level ();
+
+  /* if > 40% CPU, force lower level of detail */
+  if (detail < UI_DETAIL_ULTRA_LOW)
+    {
+      if (MW_CPU->cpu > 60)
+        detail = UI_DETAIL_ULTRA_LOW;
+      else if (MW_CPU->cpu > 50)
+        detail = UI_DETAIL_LOW;
+      else if (MW_CPU->cpu > 40)
+        detail++;
+    }
+
+  /* use cairo if normal detail or higher */
+  bool use_cairo = false;
+  if (detail < UI_DETAIL_LOW)
+    {
+      use_cairo = true;
+    }
+
+  const int step = 1;
   if (fade_in_px - start_px != 0)
     {
       double local_px_diff =
         (double) (fade_in_px - start_px);
+
+      /* create cairo node if necessary */
+      cairo_t * cr = NULL;
+      if (use_cairo)
+        {
+          cr =
+            gtk_snapshot_append_cairo (
+              snapshot,
+              &GRAPHENE_RECT_INIT (
+                vis_start_px, 0,
+                vis_fade_in_px - vis_start_px,
+                height));
+          cairo_set_source_rgba (
+            cr, 0.2, 0.2, 0.2, 0.6);
+          /*cairo_set_line_width (cr, 3);*/
+        }
       for (int i = vis_start_px;
-           i <= vis_fade_in_px; i++)
+           i <= vis_fade_in_px; i += step)
         {
           /* revert because cairo draws the other
            * way */
@@ -1001,41 +979,60 @@ draw_fade_part (
               (double) (i - start_px) /
                 local_px_diff,
               &obj->fade_in_opts, 1);
-          double next_val =
-            1.0 -
-            fade_get_y_normalized (
-              (double)
-                MIN (
-                  ((i + 1) - start_px),
-                  local_px_diff) /
-                local_px_diff,
-              &obj->fade_in_opts, 1);
 
-          /* if start */
-          if (i == vis_start_px)
+          float draw_y_val =
+            (float) (val * height);
+
+          if (use_cairo)
             {
-              cairo_move_to (
-                cr, i, val * full_height);
+              double next_val =
+                1.0 -
+                fade_get_y_normalized (
+                  (double)
+                    MIN (
+                      ((i + step) - start_px),
+                      local_px_diff) /
+                    local_px_diff,
+                  &obj->fade_in_opts, 1);
+
+              /* if start, move only */
+              if (i == vis_start_px)
+                {
+                  cairo_move_to (
+                    cr, i, val * height);
+                }
+
+              cairo_rel_line_to (
+                cr, 1,
+                (next_val - val) * height);
+
+              /* if end, draw */
+              if (i == vis_fade_in_px)
+                {
+                  /* paint a gradient in the faded out
+                   * part */
+                  cairo_rel_line_to (
+                    cr, 0, next_val - height);
+                  cairo_rel_line_to (
+                    cr, - i, 0);
+                  cairo_close_path (cr);
+                  cairo_fill (cr);
+                }
             }
-
-          cairo_rel_line_to (
-            cr, 1,
-            (next_val - val) * full_height);
-
-          /* if end */
-          if (i == vis_fade_in_px)
+          else
             {
-              /* paint a gradient in the faded out
-               * part */
-              cairo_rel_line_to (
-                cr, 0, next_val - full_height);
-              cairo_rel_line_to (
-                cr, - i, 0);
-              cairo_close_path (cr);
-              cairo_fill (cr);
+              gtk_snapshot_append_color (
+                snapshot, &color,
+                &GRAPHENE_RECT_INIT (
+                  (float) i, 0,
+                  (float) step, draw_y_val));
             }
         }
-    }
+
+      if (use_cairo)
+        cairo_destroy (cr);
+
+    } /* endif fade in visible */
 
   /* ---- fade out ---- */
 
@@ -1056,6 +1053,24 @@ draw_fade_part (
     {
       double local_px_diff =
         (double) (end_px - fade_out_px);
+
+      /* create cairo node if necessary */
+      cairo_t * cr = NULL;
+      if (use_cairo)
+        {
+          cr =
+            gtk_snapshot_append_cairo (
+              snapshot,
+              &GRAPHENE_RECT_INIT (
+                visible_fade_out_px, 0,
+                visible_end_px -
+                  visible_fade_out_px,
+                height));
+          cairo_set_source_rgba (
+            cr, 0.2, 0.2, 0.2, 0.6);
+          /*cairo_set_line_width (cr, 3);*/
+        }
+
       for (int i = visible_fade_out_px;
            i <= visible_end_px; i++)
         {
@@ -1067,47 +1082,64 @@ draw_fade_part (
               (double) (i - fade_out_px) /
                 local_px_diff,
               &obj->fade_out_opts, 0);
-          double tmp =
-            (double) ((i + 1) - fade_out_px);
-          double next_val =
-            1.0 -
-            fade_get_y_normalized (
-              tmp > local_px_diff ?
-                1.0 : tmp / local_px_diff,
-              &obj->fade_out_opts, 0);
 
-          /* if start, move only */
-          if (i == visible_fade_out_px)
+          if (use_cairo)
             {
-              cairo_move_to (
-                cr, i, val * full_height);
+              double tmp =
+                (double) ((i + 1) - fade_out_px);
+              double next_val =
+                1.0 -
+                fade_get_y_normalized (
+                  tmp > local_px_diff ?
+                    1.0 : tmp / local_px_diff,
+                  &obj->fade_out_opts, 0);
+
+              /* if start, move only */
+              if (i == visible_fade_out_px)
+                {
+                  cairo_move_to (
+                    cr, i, val * height);
+                }
+
+              cairo_rel_line_to (
+                cr, 1,
+                (next_val - val) * height);
+
+              /* if end, draw */
+              if (i == visible_end_px)
+                {
+                  /* paint a gradient in the faded
+                   * out part */
+                  cairo_rel_line_to (
+                    cr, 0, - height);
+                  cairo_rel_line_to (
+                    cr, - i, 0);
+                  cairo_close_path (cr);
+                  cairo_fill (cr);
+                }
             }
-
-          cairo_rel_line_to (
-            cr, 1,
-            (next_val - val) * full_height);
-
-          /* if end, draw */
-          if (i == visible_end_px)
+          else
             {
-              /* paint a gradient in the faded out
-               * part */
-              cairo_rel_line_to (
-                cr, 0, - full_height);
-              cairo_rel_line_to (
-                cr, - i, 0);
-              cairo_close_path (cr);
-              cairo_fill (cr);
+              float draw_y_val =
+                (float) (val * height);
+              gtk_snapshot_append_color (
+                snapshot, &color,
+                &GRAPHENE_RECT_INIT (
+                  (float) i, 0,
+                  1, draw_y_val));
             }
         }
-    }
+
+      if (use_cairo)
+        cairo_destroy (cr);
+
+    } /* endif fade out visible */
 }
 
 static void
 draw_audio_part (
   ZRegion * self,
   GtkSnapshot * snapshot,
-  cairo_t * cr,
   GdkRectangle * full_rect,
   int       vis_offset_x,
   int       vis_width,
@@ -1144,7 +1176,6 @@ draw_audio_part (
         detail++;
     }
 
-  cairo_set_source_rgba (cr, 1, 1, 1, 1);
   double increment = 1;
   double width = 1;
   switch (detail)
@@ -1243,31 +1274,12 @@ draw_audio_part (
 #define DRAW_VLINE(cr,_x,from_y,_height) \
   graphene_rect_t grect = \
     GRAPHENE_RECT_INIT ( \
-       (float) full_rect->x + (float) _x, \
-      (float) full_rect->y + (float) from_y, \
+       (float) _x, (float) from_y, \
       (float) width, (float) _height); \
   /*z_gtk_print_graphene_rect (&grect); \*/ \
   gtk_snapshot_append_color ( \
     snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 1), \
     &grect);
-
-#define DRAW_VLINE_CAIRO(cr,x,from_y,_height) \
-  switch (detail) \
-    { \
-    case UI_DETAIL_HIGH: \
-      cairo_rectangle ( \
-        cr, x, from_y, \
-        width, _height); \
-      break; \
-    case UI_DETAIL_NORMAL: \
-    case UI_DETAIL_LOW: \
-    case UI_DETAIL_ULTRA_LOW: \
-      cairo_rectangle ( \
-        cr, (int) (x), (int) (from_y), \
-        width, (int) _height); \
-      break; \
-    } \
-  cairo_fill (cr)
 
       /* normalize */
       min = (min + 1.f) / 2.f;
@@ -1300,8 +1312,6 @@ draw_audio_part (
 
       prev_frames = curr_frames;
     }
-
-  cairo_stroke (cr);
 }
 
 /**
@@ -1325,16 +1335,13 @@ draw_audio_part (
  */
 static void
 draw_audio_region (
-  ZRegion *         self,
-  GtkSnapshot * snapshot,
-  cairo_t *         cr,
-  GdkRectangle *    rect,
-  GdkRectangle *    full_rect,
-  GdkRectangle *    draw_rect,
-  bool              cache_applied,
-  int               cache_applied_offset_x,
-  int               cache_applied_width,
-  RegionCounterpart counterpart)
+  ZRegion *      self,
+  GtkSnapshot *  snapshot,
+  GdkRectangle * full_rect,
+  GdkRectangle * draw_rect,
+  bool           cache_applied,
+  int            cache_applied_offset_x,
+  int            cache_applied_width)
 {
   g_return_if_fail (cache_applied_width < 40000);
 
@@ -1347,95 +1354,18 @@ draw_audio_region (
       return;
     }
 
-  /* TODO explain why translation is needed */
-  cairo_save (cr);
-  cairo_translate (
-    cr, full_rect->x - draw_rect->x, 0);
-
   int full_height = full_rect->height;
 
   int vis_offset_x =
     draw_rect->x - full_rect->x;
-  /*int vis_offset_y =*/
-    /*draw_rect->y - full_rect->y;*/
   int vis_width = draw_rect->width;
-  if (cache_applied && false)
-    {
-      int cache_vis_offset =
-        MAX (cache_applied_offset_x, 0);
-      int cache_vis_width =
-        (cache_applied_offset_x +
-           cache_applied_width) -
-        cache_vis_offset;
-#if 0
-      g_debug (
-        "cache x %d, cache width %d, "
-        "vis offset x %d, vis width %d",
-        cache_vis_offset, cache_vis_width,
-        vis_offset_x, vis_width);
-#endif
-
-      /* if need to draw left part */
-      if (cache_vis_offset > vis_offset_x)
-        {
-          /* draw until the cache */
-          int new_vis_width =
-            cache_vis_offset - vis_offset_x;
-          g_debug (
-            "<- | drawing left part until cached part from %d (width %d)",
-            vis_offset_x, new_vis_width);
-
-          draw_audio_part (
-            self, snapshot, cr,
-            full_rect, vis_offset_x, new_vis_width,
-            full_height);
-          draw_fade_part (
-            self, cr, vis_offset_x, new_vis_width,
-            full_rect->width, full_height);
-        }
-      /* if need to draw right part */
-      if (
-        (cache_vis_offset + cache_vis_width) <
-        (vis_offset_x + vis_width))
-        {
-          int prev_vis_offset_x = vis_offset_x;
-          int new_vis_offset_x =
-            cache_vis_offset + cache_vis_width;
-          int new_vis_width =
-            vis_width -
-            (new_vis_offset_x - prev_vis_offset_x);
-#if 0
-          g_debug (
-            "drawing right part after cached part | ->, from %d (width %d)",
-            new_vis_offset_x, new_vis_width);
-#endif
-
-          draw_audio_part (
-            self, snapshot, cr,
-            full_rect, new_vis_offset_x,
-            new_vis_width, full_height);
-          draw_fade_part (
-            self, cr, new_vis_offset_x,
-            new_vis_width, full_rect->width,
-            full_height);
-        }
-    }
-  /* if no cache applied, draw the whole thing */
-  else
-    {
-      draw_audio_part (
-        self, snapshot, cr,
-        full_rect, vis_offset_x,
-        vis_width, full_height);
-      draw_fade_part (
-        self, cr, vis_offset_x,
-        vis_width, full_rect->width, full_height);
-    }
-
-  cairo_restore (cr);
-
-  arranger_object_queue_redraw (
-    (ArrangerObject *) self);
+  draw_audio_part (
+    self, snapshot,
+    full_rect, vis_offset_x,
+    vis_width, full_height);
+  draw_fade_part (
+    self, snapshot, vis_offset_x,
+    vis_width, full_rect->width, full_height);
 }
 
 /**
@@ -1443,18 +1373,11 @@ draw_audio_region (
  */
 static void
 draw_name (
-  ZRegion *         self,
-  cairo_t *         cr,
-  GdkRectangle *    rect,
-  GdkRectangle *    full_rect,
-  GdkRectangle *    draw_rect,
-  RegionCounterpart counterpart)
+  ZRegion *      self,
+  GtkSnapshot *  snapshot,
+  GdkRectangle * full_rect,
+  GdkRectangle * draw_rect)
 {
-  /* no need to draw if the start of the region is
-   * not visible */
-  if (rect->x - full_rect->x > 800)
-    return;
-
   g_return_if_fail (
     self && self->escaped_name);
 
@@ -1484,44 +1407,52 @@ draw_name (
         layout, self->escaped_name, -1);
     }
   PangoRectangle pangorect;
+
   /* get extents */
   pango_layout_get_pixel_extents (
     layout, NULL, &pangorect);
+  int black_box_height =
+    pangorect.height + 2 * REGION_NAME_BOX_PADDING;
+
+  /* create a rounded clip */
+  /*float degrees = G_PI / 180.f;*/
+  float radius = REGION_NAME_BOX_CURVINESS / 1.f;
+  GskRoundedRect rounded_rect;
+  gsk_rounded_rect_init (
+    &rounded_rect,
+    &GRAPHENE_RECT_INIT (
+      0, 0,
+      (pangorect.width + REGION_NAME_PADDING_R),
+      black_box_height),
+    &GRAPHENE_SIZE_INIT (0, 0),
+    &GRAPHENE_SIZE_INIT (0, 0),
+    &GRAPHENE_SIZE_INIT (radius, radius),
+    &GRAPHENE_SIZE_INIT (0, 0));
+  gtk_snapshot_push_rounded_clip (
+    snapshot, &rounded_rect);
+
+  /* fill bg color */
   GdkRGBA name_bg_color;
   gdk_rgba_parse (&name_bg_color, "#323232");
   name_bg_color.alpha = 0.8;
-  gdk_cairo_set_source_rgba (
-    cr, &name_bg_color);
-  double radius = REGION_NAME_BOX_CURVINESS / 1.0;
-  double degrees = G_PI / 180.0;
-  cairo_new_sub_path (cr);
-  cairo_move_to (
-    cr,
-    (pangorect.width + REGION_NAME_PADDING_R),
-    0);
-  int black_box_height =
-    pangorect.height + 2 * REGION_NAME_BOX_PADDING;
-  cairo_arc (
-    cr,
-    (pangorect.width + REGION_NAME_PADDING_R) -
-      radius,
-    black_box_height - radius, radius,
-    0 * degrees, 90 * degrees);
-  cairo_line_to (
-    cr, 0, black_box_height);
-  cairo_line_to (
-    cr, 0, 0);
-  cairo_close_path (cr);
-  cairo_fill (cr);
+  gtk_snapshot_append_color (
+    snapshot, &name_bg_color,
+    &rounded_rect.bounds);
 
   /* draw text */
-  cairo_set_source_rgba (
-    cr, 1, 1, 1, 1);
-  cairo_move_to (
-    cr,
-    REGION_NAME_BOX_PADDING,
-    REGION_NAME_BOX_PADDING);
-  pango_cairo_show_layout (cr, layout);
+  gtk_snapshot_save (snapshot);
+  gtk_snapshot_translate (
+    snapshot,
+    &GRAPHENE_POINT_INIT (
+      REGION_NAME_BOX_PADDING,
+      REGION_NAME_BOX_PADDING));
+  gtk_snapshot_append_layout (
+    snapshot, layout,
+    &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+  gtk_snapshot_restore (snapshot);
+
+  /* pop rounded clip */
+  gtk_snapshot_pop (snapshot);
 
   /* save rect */
   ArrangerObject * obj = (ArrangerObject *) self;
@@ -1538,12 +1469,10 @@ draw_name (
  */
 static void
 draw_bottom_right_part (
-  ZRegion *         self,
-  cairo_t *         cr,
-  GdkRectangle *    rect,
-  GdkRectangle *    full_rect,
-  GdkRectangle *    draw_rect,
-  RegionCounterpart counterpart)
+  ZRegion *      self,
+  GtkSnapshot *  snapshot,
+  GdkRectangle * full_rect,
+  GdkRectangle * draw_rect)
 {
   /* if audio region, draw BPM */
   if (self->id.type == REGION_TYPE_AUDIO)
@@ -1575,92 +1504,6 @@ draw_bottom_right_part (
 }
 
 /**
- * Returns if the region is cacheable.
- */
-static bool
-is_cacheable (
-  ZRegion * self)
-{
-  return self->id.type == REGION_TYPE_AUDIO;
-}
-
-/**
- * Returns whether the cached drawing is usable
- * (ie, contains usable parts).
- */
-static bool
-is_cache_usable (
-  ZRegion *         self,
-  GdkRectangle *    full_rect,
-  GdkRectangle *    draw_rect,
-  RegionCounterpart counterpart)
-{
-  ArrangerObject * obj = (ArrangerObject *) self;
-
-  if (!is_cacheable (self))
-    {
-      return false;
-    }
-
-  bool rects_equal = false;
-
-  if (counterpart == REGION_COUNTERPART_MAIN)
-    {
-      rects_equal =
-        self->last_main_full_rect.width ==
-          full_rect->width &&
-        self->last_main_full_rect.height ==
-          full_rect->height;
-    }
-  else
-    {
-      rects_equal =
-        self->last_lane_full_rect.width ==
-          full_rect->width &&
-        self->last_lane_full_rect.height ==
-          full_rect->height;
-    }
-
-  bool markers_equal =
-    position_is_equal (
-      &self->last_positions_obj.clip_start_pos,
-      &obj->clip_start_pos) &&
-    position_is_equal (
-      &self->last_positions_obj.loop_start_pos,
-      &obj->loop_start_pos) &&
-    position_is_equal (
-      &self->last_positions_obj.loop_end_pos,
-      &obj->loop_end_pos) &&
-    position_is_equal (
-      &self->last_positions_obj.fade_in_pos,
-      &obj->fade_in_pos) &&
-    position_is_equal (
-      &self->last_positions_obj.fade_out_pos,
-      &obj->fade_out_pos);
-
-  bool fades_equal =
-    curve_options_are_equal (
-      &self->last_positions_obj.fade_in_opts,
-      &obj->fade_in_opts) &&
-    curve_options_are_equal (
-      &self->last_positions_obj.fade_out_opts,
-      &obj->fade_out_opts);
-
-  bool clip_changed_before_last_change =
-    self->id.type != REGION_TYPE_AUDIO ||
-    self->last_clip_change < self->last_cache_time;
-
-  bool region_params_equal =
-    rects_equal && markers_equal && fades_equal &&
-    clip_changed_before_last_change;
-
-  return
-    region_params_equal ||
-    MW_TIMELINE->action ==
-      UI_OVERLAY_ACTION_STRETCHING_R;
-}
-
-/**
  * Draws the ZRegion in the given cairo context in
  * relative coordinates.
  *
@@ -1677,6 +1520,32 @@ region_draw (
 {
   ArrangerObject * obj = (ArrangerObject *) self;
 
+  ArrangerWidget * arranger =
+    arranger_object_get_arranger (obj);
+
+  Track * track =
+    arranger_object_get_track (obj);
+
+  /* set color */
+  GdkRGBA color;
+  if (track)
+    color = track->color;
+  else
+    {
+      color.red = 1;
+      color.green = 0;
+      color.blue = 0;
+      color.alpha = 1;
+    }
+  ui_get_arranger_object_color (
+    &color,
+    arranger->hovered_object == obj,
+    region_is_selected (self),
+    /* FIXME */
+    false,
+    arranger_object_get_muted (obj) ||
+      track->frozen);
+
   GdkRectangle draw_rect;
   GdkRectangle last_draw_rect, last_full_rect;
   GdkRectangle full_rect = obj->full_rect;
@@ -1688,8 +1557,6 @@ region_draw (
           if (!region_type_has_lane (self->id.type))
             break;
 
-          Track * track =
-            arranger_object_get_track (obj);
           if (!track->lanes_visible)
             break;
 
@@ -1733,125 +1600,115 @@ region_draw (
         draw_rect.width > 0 &&
         draw_rect.width < 40000);
 
-      cairo_save (cr);
+      /* make a rounded clip for the whole region */
+      GskRoundedRect rounded_rect;
+      graphene_rect_t graphene_rect =
+        GRAPHENE_RECT_INIT (
+          full_rect.x, full_rect.y, full_rect.width,
+          full_rect.height);
+      gsk_rounded_rect_init_from_rect (
+        &rounded_rect, &graphene_rect,
+            full_rect.height / 6.0f);
+      gtk_snapshot_push_rounded_clip (
+        snapshot, &rounded_rect);
+
+      /* draw background */
+      gtk_snapshot_append_color (
+        snapshot, &color, &graphene_rect);
+
+      /* TODO apply stretch ratio */
+      if (MW_TIMELINE->action ==
+            UI_OVERLAY_ACTION_STRETCHING_R)
+        {
+#if 0
+          cairo_scale (
+            cr, self->stretch_ratio, 1);
+#endif
+        }
 
       /* translate to the full rect */
-      cairo_translate (
-        cr,
-        (int) (full_rect.x - rect->x),
-        (int) (full_rect.y - rect->y));
-
-      /* draw background before caching so
-       * we don't need to implement caching
-       * for hover/select */
-      draw_background (
-        self, cr, rect, &full_rect,
-        &draw_rect, i);
-
-      /* switch cr to draw onto a new cache */
-      cairo_t * cr_to_use = cr;
-      cairo_surface_t * surface_to_use =
-        cairo_get_target (cr);
-      if (is_cacheable (self))
-        {
-          surface_to_use =
-            cairo_surface_create_similar (
-              cairo_get_target (cr),
-              CAIRO_CONTENT_COLOR_ALPHA,
-              draw_rect.width, full_rect.height);
-          cr_to_use =
-            cairo_create (surface_to_use);
-        }
-
-      /* if cache is usable, apply it */
-      bool prev_cache_used = false;
-      if (is_cache_usable (
-            self, &full_rect, &draw_rect,
-            i))
-        {
-          int last_draw_offset = 0;
-          int cur_draw_offset =
-            draw_rect.x - full_rect.x;
-          last_draw_offset =
-            last_draw_rect.x - last_full_rect.x;
-
-          /* apply the cache */
-          if (MW_TIMELINE->action ==
-                UI_OVERLAY_ACTION_STRETCHING_R)
-            {
-              cairo_scale (
-                cr, self->stretch_ratio, 1);
-            }
-
-          /* the offset to place the previous cached
-           * surface when painting */
-          int cached_surface_offset =
-            last_draw_offset - cur_draw_offset;
-
-          /* apply surface */
-          if (DEBUGGING)
-            {
-              /* mask surface in red */
-              cairo_set_source_rgba (
-                cr_to_use, 1, 0, 0, 1);
-              cairo_mask_surface (
-                cr_to_use, obj->cached_surface[i],
-                cached_surface_offset, 0.0);
-            }
-          else
-            {
-              /* paint surface normally */
-              cairo_set_source_surface (
-                cr_to_use, obj->cached_surface[i],
-                cached_surface_offset, 0.0);
-              cairo_paint (cr_to_use);
-            }
-#if 0
-          g_debug (
-            "painting prev cache on %d, width %d",
-            (int)
-            last_draw_rect.x - last_full_rect.x,
-            (int)
-            last_draw_rect.width);
-#endif
-
-          prev_cache_used = true;
-        }
-      else
-        {
-          /*g_debug ("ignoring cache");*/
-        }
+      gtk_snapshot_save (snapshot);
+      gtk_snapshot_translate (
+        snapshot,
+        &GRAPHENE_POINT_INIT (
+          full_rect.x, full_rect.y));
 
       /* draw any remaining parts */
       switch (self->id.type)
         {
         case REGION_TYPE_MIDI:
           draw_midi_region (
-            self, cr_to_use, rect, &full_rect,
-            &draw_rect, i);
+            self, snapshot, &full_rect,
+            &draw_rect);
           break;
         case REGION_TYPE_AUTOMATION:
           draw_automation_region (
-            self, cr_to_use, rect, &full_rect,
-            &draw_rect, i);
+            self, snapshot, &full_rect,
+            &draw_rect);
           break;
         case REGION_TYPE_CHORD:
           draw_chord_region (
-            self, cr_to_use, rect, &full_rect,
-            &draw_rect, i);
+            self, snapshot, &full_rect,
+            &draw_rect);
           break;
         case REGION_TYPE_AUDIO:
           draw_audio_region (
-            self, snapshot, cr_to_use, rect, &full_rect,
-            &draw_rect, prev_cache_used,
+            self, snapshot, &full_rect,
+            &draw_rect, false,
             (int)
-            last_draw_rect.x - last_full_rect.x,
+            draw_rect.x - last_full_rect.x,
             (int)
-            last_draw_rect.width, i);
+            draw_rect.width);
           break;
         default:
           break;
         }
+
+      /* ---- draw applicable icons ---- */
+
+#define DRAW_TEXTURE(name) \
+  gtk_snapshot_append_texture ( \
+    snapshot, arranger->name, \
+    &GRAPHENE_RECT_INIT ( \
+      full_rect.width - \
+        (size + paddingh) * (icons_drawn + 1),  \
+    paddingv, size, size)); \
+  icons_drawn++
+
+      const int size = 16;
+      const int paddingh = 2;
+      const int paddingv = 0;
+      int icons_drawn = 0;
+
+      /* draw link icon if has linked parent */
+      if (self->id.link_group >= 0)
+        {
+          DRAW_TEXTURE (symbolic_link_texture);
+        }
+
+      /* draw musical mode icon if region is in
+       * musical mode */
+      if (self->id.type == REGION_TYPE_AUDIO &&
+          region_get_musical_mode (self))
+        {
+          DRAW_TEXTURE (music_note_16th_texture);
+        }
+
+      /* if track is frozen, show frozen icon */
+      if (track->frozen)
+        {
+          DRAW_TEXTURE (
+            fork_awesome_snowflake_texture);
+        }
+
+      /* draw loop icon if region is looped */
+      if (region_is_looped (self))
+        {
+          DRAW_TEXTURE (
+            media_playlist_repeat_texture);
+        }
+
+#undef DRAW_TEXTURE
 
       /* remember rects */
       if (i == REGION_COUNTERPART_MAIN)
@@ -1868,54 +1725,39 @@ region_draw (
       self->last_cache_time =
         g_get_monotonic_time ();
 
-      /* replace the old cache with the new one
-       * and draw the new cache */
-      if (is_cacheable (self))
-        {
-          /* replace with new one */
-          if (obj->cached_surface[i])
-            {
-              cairo_surface_destroy (
-                obj->cached_surface[i]);
-            }
-          if (obj->cached_cr[i])
-            {
-              cairo_destroy (obj->cached_cr[i]);
-            }
-          obj->cached_cr[i] = cr_to_use;
-          obj->cached_surface[i] = surface_to_use;
-
-          /* draw new cache */
-          cairo_save (cr);
-          cairo_translate (
-            cr, draw_rect.x - full_rect.x, 0);
-          if (MW_TIMELINE->action ==
-                UI_OVERLAY_ACTION_STRETCHING_R)
-            {
-              cairo_scale (
-                cr, self->stretch_ratio, 1);
-            }
-          cairo_set_source_surface (
-            cr, obj->cached_surface[i], 0.0, 0.0);
-          cairo_paint (cr);
-          cairo_restore (cr);
-        }
-
       draw_loop_points (
-        self, cr, rect, &full_rect,
-        &draw_rect, i);
+        self, snapshot, &full_rect,
+        &draw_rect);
       /* TODO draw cut line */
       draw_name (
-        self, cr, rect, &full_rect,
-        &draw_rect, i);
+        self, snapshot, &full_rect,
+        &draw_rect);
 
       /* draw anything on the bottom right part
        * (eg, BPM) */
       draw_bottom_right_part (
-        self, cr, rect, &full_rect,
-        &draw_rect, i);
+        self, snapshot, &full_rect,
+        &draw_rect);
 
-      cairo_restore (cr);
+      /* restore translation */
+      gtk_snapshot_restore (snapshot);
+
+      /* draw border */
+      const float border_width = 1.f;
+      GdkRGBA border_color = {
+        0.5f, 0.5f, 0.5f, 0.4f };
+      float border_widths[] = {
+        border_width, border_width, border_width,
+        border_width };
+      GdkRGBA border_colors[] = {
+        border_color, border_color, border_color,
+        border_color };
+      gtk_snapshot_append_border (
+        snapshot, &rounded_rect, border_widths,
+        border_colors);
+
+      /* pop rounded clip */
+      gtk_snapshot_pop (snapshot);
     }
 
   self->last_positions_obj = *obj;

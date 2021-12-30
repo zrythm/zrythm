@@ -6893,6 +6893,7 @@ arranger_widget_setup (
   self->type = type;
   self->snap_grid = snap_grid;
 
+  const int icon_texture_size = 16;
   switch (type)
     {
     case TYPE (TIMELINE):
@@ -6900,6 +6901,24 @@ arranger_widget_setup (
       gtk_widget_add_css_class (
         GTK_WIDGET (self), "timeline-arranger");
       timeline_arranger_setup_drag_dest (self);
+
+      /* create common textures */
+      self->symbolic_link_texture =
+        z_gdk_texture_new_from_icon_name (
+          "emblem-symbolic-link",
+          icon_texture_size, icon_texture_size, 1);
+      self->music_note_16th_texture =
+        z_gdk_texture_new_from_icon_name (
+          "music-note-16th",
+          icon_texture_size, icon_texture_size, 1);
+      self->fork_awesome_snowflake_texture =
+        z_gdk_texture_new_from_icon_name (
+          "fork-awesome-snowflake-o",
+          icon_texture_size, icon_texture_size, 1);
+      self->media_playlist_repeat_texture =
+        z_gdk_texture_new_from_icon_name (
+          "media-playlist-repeat",
+          icon_texture_size, icon_texture_size, 1);
       break;
     case TYPE (AUTOMATION):
       gtk_widget_add_css_class (
@@ -7042,6 +7061,17 @@ finalize (
     g_object_unref, self->ap_layout);
   object_free_w_func_and_null (
     g_object_unref, self->audio_layout);
+
+  object_free_w_func_and_null (
+    g_object_unref, self->symbolic_link_texture);
+  object_free_w_func_and_null (
+    g_object_unref, self->music_note_16th_texture);
+  object_free_w_func_and_null (
+    g_object_unref,
+    self->fork_awesome_snowflake_texture);
+  object_free_w_func_and_null (
+    g_object_unref,
+    self->media_playlist_repeat_texture);
 
   G_OBJECT_CLASS (
     arranger_widget_parent_class)->

@@ -117,6 +117,13 @@ typedef struct UiColors
 } UiColors;
 
 /**
+ * Commonly used UI textures.
+ */
+typedef struct UiTextures
+{
+} UiTextures;
+
+/**
  * Specification for a cursor.
  *
  * Used for caching.
@@ -135,6 +142,7 @@ typedef struct UiCursor
 typedef struct UiCaches
 {
   UiColors      colors;
+  //UiTextures    textures;
   UiCursor      cursors[UI_MAX_CURSORS];
   int           num_cursors;
 } UiCaches;

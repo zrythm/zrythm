@@ -295,6 +295,12 @@ typedef struct _ArrangerWidget
   TrackLane *    hovered_lane;
   Track *        hovered_track;
 
+  /* textures used as region icons */
+  GdkTexture *   symbolic_link_texture;
+  GdkTexture *   music_note_16th_texture;
+  GdkTexture *   fork_awesome_snowflake_texture;
+  GdkTexture *   media_playlist_repeat_texture;
+
   /* ----- END TIMELINE ----- */
 
   /* ------ MIDI (PIANO ROLL) ---- */

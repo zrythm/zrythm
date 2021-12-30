@@ -137,7 +137,7 @@ velocity_draw (
         &GRAPHENE_POINT_INIT (
           text_start_x, text_start_y));
       PangoLayout * layout = arranger->vel_layout;
-      pango_layout_set_markup (layout, text, -1);
+      pango_layout_set_text (layout, text, -1);
       gtk_snapshot_append_layout (
         snapshot, layout,
         &Z_GDK_RGBA_INIT (1, 1, 1, 1));
