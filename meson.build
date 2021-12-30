@@ -365,7 +365,7 @@ illegal_char_test_args = [
 
 # GTK/GLIB versions
 pango_req = '1.50.0' # keep in sync with gtk4
-gtk_req = '4.5.1'
+gtk_req = '4.6.0'
 glib_req = '2.66.0'
 
 # --- Add extra languages ---
@@ -554,10 +554,12 @@ gtk_version_arr = gtk_req.split('.')
 gtk_major_version = gtk_version_arr[0]
 gtk_minor_version = gtk_version_arr[1]
 add_project_arguments([
-  '-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_@0@_@1@'.format(glib_major_version, glib_minor_version),
-  '-DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_@0@_@1@'.format(glib_major_version, glib_minor_version),
-  '-DGDK_VERSION_MIN_REQUIRED=GDK_VERSION_@0@_@1@'.format(gtk_major_version, 6), # FIXME use gtk_minor_version when 4.6.0 comes out
-  '-DGDK_VERSION_MAX_ALLOWED=GDK_VERSION_@0@_@1@'.format(gtk_major_version, 6), ], language: 'c')
+    '-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_@0@_@1@'.format(glib_major_version, glib_minor_version),
+    '-DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_@0@_@1@'.format(glib_major_version, glib_minor_version),
+    '-DGDK_VERSION_MIN_REQUIRED=GDK_VERSION_@0@_@1@'.format(gtk_major_version, gtk_minor_version),
+    '-DGDK_VERSION_MAX_ALLOWED=GDK_VERSION_@0@_@1@'.format(gtk_major_version, gtk_minor_version),
+  ],
+  language: 'c')
 
 foreach func : check_functions
   if cc.has_function(func[0], dependencies: func[1])
