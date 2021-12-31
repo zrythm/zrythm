@@ -1030,10 +1030,8 @@ arranger_snapshot (
     self->cached_cr, CAIRO_ANTIALIAS_FAST);
   cairo_set_tolerance (self->cached_cr, 1.5);
 
-  gtk_render_background (
-    context, self->cached_cr, 0, 0,
-    visible_rect.size.width,
-    visible_rect.size.height);
+  gtk_snapshot_render_background (
+    snapshot, context, 0, 0, width, height);
 
   /* draw loop background */
   if (TRANSPORT->loop)

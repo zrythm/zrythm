@@ -161,10 +161,13 @@ ports_expander_widget_setup_plugin (
   PortType      type,
   Plugin *      pl)
 {
-  self->plugin = pl;
   self->flow = flow;
   self->type = type;
   self->owner_type = PORT_OWNER_TYPE_PLUGIN;
+
+  /* if same plugin, do nothing (already set up) */
+  if (self->plugin == pl)
+    return;
 
   /* set name and icon */
   char fullstr[200];
@@ -340,6 +343,8 @@ ports_expander_widget_setup_plugin (
   g_array_sort (
     ports, port_identifier_port_group_cmp);
 
+  g_debug ("adding ports...");
+
 #define ADD_SINGLE(x) \
   ip = \
     inspector_port_widget_new (x); \
@@ -386,6 +391,10 @@ ports_expander_widget_setup_plugin (
     }
 
 #undef ADD_SINGLE
+
+  g_debug ("added ports");
+
+  self->plugin = pl;
 
   ports_expander_widget_refresh (self);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -70,6 +70,8 @@ inspector_plugin_widget_show (
   MixerSelections *       ms,
   bool                    set_notebook_page)
 {
+  g_debug ("showing plugin inspector contents...");
+
   if (set_notebook_page)
     {
       gtk_notebook_set_current_page (
