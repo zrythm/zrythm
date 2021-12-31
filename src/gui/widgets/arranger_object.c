@@ -1109,15 +1109,14 @@ arranger_object_draw (
       break;
     case TYPE (REGION):
       region_draw (
-        (ZRegion *) self, snapshot, cr, rect);
+        (ZRegion *) self, snapshot, rect);
       break;
     case TYPE (MIDI_NOTE):
       midi_note_draw (
         (MidiNote *) self, snapshot);
       break;
     case TYPE (MARKER):
-      marker_draw (
-        (Marker *) self, cr, rect);
+      marker_draw ((Marker *) self, snapshot);
       break;
     case TYPE (SCALE_OBJECT):
       scale_object_draw (

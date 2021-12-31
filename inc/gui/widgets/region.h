@@ -59,8 +59,6 @@ region_get_lane_full_rect (
  * Draws the ZRegion in the given cairo context in
  * relative coordinates.
  *
- * @param cr The cairo context in the region's
- *   drawable coordinates.
  * @param rect Arranger rectangle.
  */
 HOT
@@ -68,7 +66,6 @@ void
 region_draw (
   ZRegion *      self,
   GtkSnapshot *  snapshot,
-  cairo_t *      cr,
   GdkRectangle * rect);
 
 #endif

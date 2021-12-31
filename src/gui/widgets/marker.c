@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -65,15 +65,12 @@ marker_recreate_pango_layouts (
 }
 
 /**
- *
- * @param cr Cairo context of the arranger.
- * @param rect Rectangle in the arranger.
+ * Draws the given marker.
  */
 void
 marker_draw (
-  Marker *       self,
-  cairo_t *      cr,
-  GdkRectangle * rect)
+  Marker *      self,
+  GtkSnapshot * snapshot)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   ArrangerWidget * arranger =
@@ -85,9 +82,24 @@ marker_draw (
     &color,
     arranger->hovered_object == obj,
     marker_is_selected (self), false, false);
-  gdk_cairo_set_source_rgba (
-    cr, &color);
 
+  /* create clip */
+  GskRoundedRect rounded_rect;
+  graphene_rect_t graphene_rect =
+    GRAPHENE_RECT_INIT (
+      obj->full_rect.x, obj->full_rect.y,
+      obj->full_rect.width, obj->full_rect.height);
+  gsk_rounded_rect_init_from_rect (
+    &rounded_rect, &graphene_rect,
+    obj->full_rect.height / 6.0f);
+  gtk_snapshot_push_rounded_clip (
+    snapshot, &rounded_rect);
+
+  /* fill */
+  gtk_snapshot_append_color (
+    snapshot, &color, &graphene_rect);
+
+#if 0
   z_cairo_rounded_rectangle (
     cr,
     obj->full_rect.x - rect->x,
@@ -95,19 +107,25 @@ marker_draw (
     obj->full_rect.width,
     obj->full_rect.height, 1, 4);
   cairo_fill (cr);
+#endif
 
   g_return_if_fail (self->escaped_name);
 
   GdkRGBA c2;
   ui_get_contrast_color (&color, &c2);
-  gdk_cairo_set_source_rgba (cr, &c2);
-  cairo_move_to (
-    cr,
-    (obj->full_rect.x + MARKER_NAME_PADDING) -
-      rect->x,
-    (obj->full_rect.y + MARKER_NAME_PADDING) -
-      rect->y);
-  z_cairo_draw_text (
-    cr, GTK_WIDGET (arranger), self->layout,
-    self->escaped_name);
+
+  gtk_snapshot_save (snapshot);
+  gtk_snapshot_translate (
+    snapshot,
+    &GRAPHENE_POINT_INIT (
+      obj->full_rect.x + MARKER_NAME_PADDING,
+      obj->full_rect.y + MARKER_NAME_PADDING));
+  pango_layout_set_text (
+    self->layout, self->escaped_name, -1);
+  gtk_snapshot_append_layout (
+    snapshot, self->layout, &c2);
+  gtk_snapshot_restore (snapshot);
+
+  /* pop rounded rect */
+  gtk_snapshot_pop (snapshot);
 }

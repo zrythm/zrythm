@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -47,51 +47,12 @@ marker_recreate_pango_layouts (
   Marker * self);
 
 /**
- *
- * @param cr Cairo context of the arranger.
- * @param rect Rectangle in the arranger.
+ * Draws the given marker.
  */
 void
 marker_draw (
-  Marker *       self,
-  cairo_t *      cr,
-  GdkRectangle * rect);
-
-#if 0
-
-#define MARKER_WIDGET_TRIANGLE_W 10
-
-/**
- * Widget for markers inside the MarkerTrack.
- */
-typedef struct _MarkerWidget
-{
-  ArrangerObjectWidget parent_instance;
-  Marker *             marker;
-
-  /** For double click. */
-  GtkGestureClick * mp;
-
-  PangoLayout *        layout;
-
-  /** Cache text H extents and W extents for
-   * the widget. */
-  int                  textw;
-  int                  texth;
-} MarkerWidget;
-
-/**
- * Creates a marker widget.
- */
-MarkerWidget *
-marker_widget_new (
-  Marker * marker);
-
-void
-marker_widget_recreate_pango_layouts (
-  MarkerWidget * self);
-
-#endif
+  Marker *      self,
+  GtkSnapshot * snapshot);
 
 /**
  * @}

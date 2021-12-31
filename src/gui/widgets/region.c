@@ -1507,15 +1507,12 @@ draw_bottom_right_part (
  * Draws the ZRegion in the given cairo context in
  * relative coordinates.
  *
- * @param cr The cairo context in the region's
- *   drawable coordinates.
  * @param rect Arranger rectangle.
  */
 void
 region_draw (
   ZRegion *      self,
   GtkSnapshot *  snapshot,
-  cairo_t *      cr,
   GdkRectangle * rect)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
