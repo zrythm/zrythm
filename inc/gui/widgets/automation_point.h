@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -80,14 +80,13 @@ automation_point_is_curve_hit (
  * Draws the AutomationPoint in the given cairo
  * context in absolute coordinates.
  *
- * @param cr The cairo context of the arranger.
  * @param rect Arranger rectangle.
  * @param layout Pango layout to draw text with.
  */
 void
 automation_point_draw (
   AutomationPoint * ap,
-  cairo_t *         cr,
+  GtkSnapshot *     snapshot,
   GdkRectangle *    rect,
   PangoLayout *     layout);
 

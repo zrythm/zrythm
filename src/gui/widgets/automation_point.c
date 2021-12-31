@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -39,14 +39,13 @@
  * Draws the AutomationPoint in the given cairo
  * context in absolute coordinates.
  *
- * @param cr The cairo context of the arranger.
  * @param rect Arranger rectangle.
  * @param layout Pango layout to draw text with.
  */
 void
 automation_point_draw (
   AutomationPoint * ap,
-  cairo_t *         cr,
+  GtkSnapshot *     snapshot,
   GdkRectangle *    rect,
   PangoLayout *     layout)
 {
@@ -74,8 +73,15 @@ automation_point_draw (
     arranger->hovered_object == obj,
     automation_point_is_selected (ap), false,
     false);
-  gdk_cairo_set_source_rgba (
-    cr, &color);
+
+  cairo_t * cr =
+    gtk_snapshot_append_cairo (
+      snapshot,
+      &GRAPHENE_RECT_INIT (
+        obj->full_rect.x - 1, obj->full_rect.y - 1,
+        obj->full_rect.width + 2,
+        obj->full_rect.height + 2));
+  gdk_cairo_set_source_rgba (cr, &color);
 
   cairo_set_line_width (cr, 2);
 
@@ -123,11 +129,9 @@ automation_point_draw (
               cairo_move_to (
                 cr,
                 (l + AP_WIDGET_POINT_SIZE / 2 +
-                   obj->full_rect.x) -
-                     rect->x,
+                   obj->full_rect.x),
                 (this_y + AP_WIDGET_POINT_SIZE / 2 +
-                   obj->full_rect.y) -
-                     rect->y);
+                   obj->full_rect.y));
             }
           else
             {
@@ -135,10 +139,10 @@ automation_point_draw (
                 cr,
                 (l + step +
                  AP_WIDGET_POINT_SIZE / 2 +
-                 obj->full_rect.x) - rect->x,
+                 obj->full_rect.x),
                 (next_y +
                   AP_WIDGET_POINT_SIZE / 2 +
-                  obj->full_rect.y) - rect->y);
+                  obj->full_rect.y));
             }
           this_y = next_y;
         }
@@ -152,14 +156,12 @@ automation_point_draw (
   /* draw circle */
   cairo_arc (
     cr,
-    (obj->full_rect.x + AP_WIDGET_POINT_SIZE / 2) -
-      rect->x,
-    upslope ?
+    obj->full_rect.x + AP_WIDGET_POINT_SIZE / 2,
+    upslope
+    ?
       ((obj->full_rect.y + obj->full_rect.height) -
-       AP_WIDGET_POINT_SIZE / 2) -
-        rect->y :
-      (obj->full_rect.y + AP_WIDGET_POINT_SIZE / 2) -
-        rect->y,
+       AP_WIDGET_POINT_SIZE / 2)
+    : (obj->full_rect.y + AP_WIDGET_POINT_SIZE / 2),
     AP_WIDGET_POINT_SIZE / 2,
     0, 2 * G_PI);
   cairo_set_source_rgba (cr, 0, 0, 0, 1);
@@ -183,14 +185,11 @@ automation_point_draw (
       cairo_set_source_rgba (cr, 1, 1, 1, 1);
       cairo_move_to (
         cr,
-      (obj->full_rect.x + AP_WIDGET_POINT_SIZE / 2) -
-        rect->x,
+      (obj->full_rect.x + AP_WIDGET_POINT_SIZE / 2),
       upslope ?
         ((obj->full_rect.y + obj->full_rect.height) -
-         AP_WIDGET_POINT_SIZE / 2) -
-          rect->y :
-        (obj->full_rect.y + AP_WIDGET_POINT_SIZE / 2) -
-          rect->y);
+         AP_WIDGET_POINT_SIZE / 2) :
+        (obj->full_rect.y + AP_WIDGET_POINT_SIZE / 2));
       cairo_show_text (cr, text);
     }
   else if (g_settings_get_boolean (
@@ -206,15 +205,16 @@ automation_point_draw (
       z_cairo_draw_text_full (
         cr, GTK_WIDGET (arranger), layout, text,
         (obj->full_rect.x +
-           AP_WIDGET_POINT_SIZE / 2) - rect->x,
+           AP_WIDGET_POINT_SIZE / 2),
         upslope ?
           ((obj->full_rect.y +
               obj->full_rect.height) -
-                AP_WIDGET_POINT_SIZE / 2) -
-                  rect->y :
+                AP_WIDGET_POINT_SIZE / 2) :
           (obj->full_rect.y +
-             AP_WIDGET_POINT_SIZE / 2) - rect->y);
+             AP_WIDGET_POINT_SIZE / 2));
     }
+
+  cairo_destroy (cr);
 }
 
 /**

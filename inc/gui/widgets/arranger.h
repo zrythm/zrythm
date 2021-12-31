@@ -355,9 +355,9 @@ typedef struct _ArrangerWidget
   /** Set to 1 to redraw. */
   bool           redraw;
 
-  cairo_t *      cached_cr;
+  //cairo_t *      cached_cr;
 
-  cairo_surface_t * cached_surface;
+  //cairo_surface_t * cached_surface;
 
   /** Rectangle in the last call. */
   graphene_rect_t last_rect;

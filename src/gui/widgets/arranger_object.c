@@ -1079,7 +1079,6 @@ arranger_object_get_draw_rectangle (
  *
  * To be called from the arranger's draw callback.
  *
- * @param cr Cairo context of the arranger.
  * @param rect Rectangle in the arranger.
  */
 void
@@ -1087,7 +1086,6 @@ arranger_object_draw (
   ArrangerObject * self,
   ArrangerWidget * arranger,
   GtkSnapshot *  snapshot,
-  cairo_t *        cr,
   GdkRectangle *   rect)
 {
 #if 0
@@ -1104,7 +1102,7 @@ arranger_object_draw (
     {
     case TYPE (AUTOMATION_POINT):
       automation_point_draw (
-        (AutomationPoint *) self, cr, rect,
+        (AutomationPoint *) self, snapshot, rect,
         arranger->ap_layout);
       break;
     case TYPE (REGION):

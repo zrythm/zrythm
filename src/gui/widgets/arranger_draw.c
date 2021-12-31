@@ -79,7 +79,7 @@ draw_selections (
       (float) (offset_y));
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &graphene_rect, 0);
-  const float border_width = 1.f;
+  const float border_width = 2.f;
   GdkRGBA border_color = { 0.9, 0.9, 0.9, 0.9 };
   float border_widths[] = {
     border_width, border_width, border_width,
@@ -133,7 +133,7 @@ draw_selections (
 static void
 draw_highlight (
   ArrangerWidget * self,
-  cairo_t *        cr,
+  GtkSnapshot *    snapshot,
   GdkRectangle *   rect)
 {
   if (!self->is_highlighted)
@@ -141,12 +141,15 @@ draw_highlight (
       return;
     }
 
+  /* FIXME port to snapshot */
+#if 0
   z_cairo_draw_selection_with_color (
     cr, &UI_COLORS->bright_orange,
     (self->highlight_rect.x + 1) - rect->x,
     (self->highlight_rect.y + 1) - rect->y,
     self->highlight_rect.width - 1,
     self->highlight_rect.height - 1);
+#endif
 }
 
 /**
@@ -157,7 +160,6 @@ draw_arranger_object (
   ArrangerWidget * self,
   ArrangerObject * obj,
   GtkSnapshot *  snapshot,
-  cairo_t *        cr,
   GdkRectangle *   rect)
 {
   /* loop once or twice (2nd time for transient) */
@@ -199,7 +201,7 @@ draw_arranger_object (
       if (rect_hit_or_region && should_be_visible)
         {
           arranger_object_draw (
-            obj, self, snapshot, cr, rect);
+            obj, self, snapshot, rect);
         }
     }
 }
@@ -986,10 +988,6 @@ arranger_snapshot (
   if (ruler->px_per_bar < 2.0)
     return;
 
-  cairo_t * cr =
-    gtk_snapshot_append_cairo (
-      snapshot, &visible_rect);
-
   if (self->first_draw)
     {
       self->first_draw = false;
@@ -1030,7 +1028,6 @@ arranger_snapshot (
     {
       g_warning (
         "skipping draw - rectangle too large");
-      cairo_destroy (cr);
       return;
     }
 
@@ -1043,12 +1040,7 @@ arranger_snapshot (
   GtkStyleContext *context =
     gtk_widget_get_style_context (widget);
 
-  z_cairo_reset_caches (
-    &self->cached_cr,
-    &self->cached_surface,
-    visible_rect_gdk.width,
-    visible_rect_gdk.height, cr);
-
+#if 0
   cairo_antialias_t antialias =
     cairo_get_antialias (self->cached_cr);
   double tolerance =
@@ -1056,6 +1048,7 @@ arranger_snapshot (
   cairo_set_antialias (
     self->cached_cr, CAIRO_ANTIALIAS_FAST);
   cairo_set_tolerance (self->cached_cr, 1.5);
+#endif
 
   gtk_snapshot_render_background (
     snapshot, context, 0, 0, width, height);
@@ -1223,13 +1216,12 @@ arranger_snapshot (
   for (int j = 0; j < num_objs; j++)
     {
       draw_arranger_object (
-        self, objs[j], snapshot, self->cached_cr,
-        &visible_rect_gdk);
+        self, objs[j], snapshot, &visible_rect_gdk);
     }
 
   /* draw dnd highlight */
   draw_highlight (
-    self, self->cached_cr, &visible_rect_gdk);
+    self, snapshot, &visible_rect_gdk);
 
   /* draw selections */
   draw_selections (
@@ -1238,6 +1230,7 @@ arranger_snapshot (
   draw_playhead (
     self, snapshot, &visible_rect_gdk);
 
+#if 0
   cairo_set_antialias (
     self->cached_cr, antialias);
   cairo_set_tolerance (self->cached_cr, tolerance);
@@ -1246,6 +1239,7 @@ arranger_snapshot (
     cr, self->cached_surface,
     visible_rect_gdk.x, visible_rect_gdk.y);
   cairo_paint (cr);
+#endif
 
   gint64 end_time = g_get_monotonic_time ();
 
@@ -1260,7 +1254,6 @@ arranger_snapshot (
     arranger_widget_get_type_str (self));
 #endif
 
-  cairo_destroy (cr);
 }
 
 void *

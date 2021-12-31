@@ -198,7 +198,6 @@ arranger_object_get_draw_rectangle (
  *
  * To be called from the arranger's draw callback.
  *
- * @param cr Cairo context of the arranger.
  * @param rect Rectangle in the arranger.
  */
 void
@@ -206,7 +205,6 @@ arranger_object_draw (
   ArrangerObject * self,
   ArrangerWidget * arranger,
   GtkSnapshot *  snapshot,
-  cairo_t *        cr,
   GdkRectangle *   rect);
 
 /**
