@@ -31,37 +31,37 @@
   (meter_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   MeterWidget, meter_widget,
-  Z, METER_WIDGET, GtkDrawingArea)
+  Z, METER_WIDGET, GtkWidget)
 
 typedef struct Meter Meter;
 
 typedef struct _MeterWidget
 {
-  GtkDrawingArea         parent_instance;
+  GtkWidget          parent_instance;
 
   /** Associated meter. */
-  Meter *                meter;
+  Meter *            meter;
 
   /** Hovered or not. */
-  int                    hover;
+  int                hover;
 
   /** Padding size for the border. */
-  int                    padding;
+  int                padding;
 
-  GdkRGBA                start_color;
-  GdkRGBA                end_color;
+  GdkRGBA            start_color;
+  GdkRGBA            end_color;
 
-  float                  meter_val;
-  float                  meter_peak;
+  float              meter_val;
+  float              meter_peak;
 
   /** Caches of last drawn values so that meters
    * are redrawn only when there are changes. */
-  float                  last_meter_val;
-  float                  last_meter_peak;
+  float              last_meter_val;
+  float              last_meter_peak;
 
   /** ID of the source function. */
-  guint                  source_id;
-  GSource *              timeout_source;
+  guint              source_id;
+  GSource *          timeout_source;
 } MeterWidget;
 
 /**

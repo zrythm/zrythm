@@ -23,28 +23,30 @@
 #include "gui/widgets/meter.h"
 #include "gui/widgets/fader.h"
 #include "project.h"
+#include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 
 G_DEFINE_TYPE (
-  MeterWidget, meter_widget, GTK_TYPE_DRAWING_AREA)
+  MeterWidget, meter_widget, GTK_TYPE_WIDGET)
 
 static void
-meter_draw_cb (
-  GtkDrawingArea * drawing_area,
-  cairo_t *        cr,
-  int              width,
-  int              height,
-  gpointer         user_data)
+meter_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot)
 {
-  MeterWidget * self = Z_METER_WIDGET (user_data);
-  GtkWidget * widget = GTK_WIDGET (drawing_area);
+  MeterWidget * self = Z_METER_WIDGET (widget);
 
-  GtkStyleContext *context =
-  gtk_widget_get_style_context (widget);
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (widget);
 
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
+
+  gtk_snapshot_render_background (
+    snapshot, context, 0, 0, width, height);
 
   /* get values */
   float peak = self->meter_peak;
@@ -71,6 +73,13 @@ meter_draw_cb (
     intensity_inv * self->end_color.blue  +
     intensity * self->start_color.blue;
 
+  graphene_rect_t graphene_rect =
+    GRAPHENE_RECT_INIT (0, 0, width, height);
+
+  cairo_t * cr =
+    gtk_snapshot_append_cairo (
+      snapshot, &graphene_rect);
+
   gdk_cairo_set_source_rgba (cr, &bar_color);
 
   /* use gradient */
@@ -89,8 +98,7 @@ meter_draw_cb (
     pat, 0.75, 0, 1, 0, 1);
   cairo_pattern_add_color_stop_rgba (
     pat, 1, 0, 0.2, 1, 1);
-  cairo_set_source (
-    cr, pat);
+  cairo_set_source (cr, pat);
 
   float x = self->padding;
   cairo_rectangle (
@@ -102,55 +110,60 @@ meter_draw_cb (
 
   cairo_pattern_destroy (pat);
 
-  /* draw border line */
-  cairo_set_source_rgba (
-    cr, 0.1, 0.1, 0.1, 1.0);
-  cairo_set_line_width (cr, 1.7);
-  cairo_rectangle (
-    cr, x, 0,
-    x + width_without_padding, height);
-  cairo_stroke(cr);
-
   /* draw meter line */
-  cairo_set_source_rgba (cr, 0.4, 0.1, 0.05, 1);
-  cairo_set_line_width (cr, 1.0);
-  cairo_move_to (
-    cr, x, (float) height - value_px);
-  cairo_line_to (
-    cr, x * 2 + width_without_padding,
-    (float) height - value_px);
-  cairo_stroke (cr);
+  gtk_snapshot_append_color (
+    snapshot, &Z_GDK_RGBA_INIT (0.4, 0.1, 0.05, 1),
+    &GRAPHENE_RECT_INIT (
+      x, (float) height - value_px,
+      width - x * 2, 1));
 
   /* draw peak */
   float peak_amp =
     math_get_amp_val_from_fader (peak);
+  GdkRGBA color;
   if (peak_amp > 1.f)
     {
-      cairo_set_source_rgba (
-        /* make higher peak brighter */
-        cr, 0.6 + 0.4 * (double) peak, 0.1, 0.05, 1);
+      /* make higher peak brighter */
+      color.red = 0.6 + 0.4 * (float) peak;
+      color.green = 0.1;
+      color.blue = 0.05;
+      color.alpha = 1;
     }
   else
     {
-      cairo_set_source_rgba (
-        /* make higher peak brighter */
-        cr,
-        0.4 + 0.4 * (double) peak,
-        0.4 + 0.4 * (double) peak,
-        0.4 + 0.4 * (double) peak,
-        1);
+      /* make higher peak brighter */
+      color.red = 0.4 + 0.4 * (float) peak;
+      color.green = 0.4 + 0.4 * (float) peak;
+      color.blue = 0.4 + 0.4 * (float) peak;
+      color.alpha = 1;
     }
-  cairo_set_line_width (cr, 2.0);
-  double peak_px = (double) peak * height;
-  cairo_move_to (
-    cr, x, height - peak_px);
-  cairo_line_to (
-    cr, x * 2 + width_without_padding,
-    height - peak_px);
-  cairo_stroke (cr);
+  float peak_px = (float) peak * height;
+  gtk_snapshot_append_color (
+    snapshot, &color,
+    &GRAPHENE_RECT_INIT (
+      x, (float) height - peak_px,
+      width - x * 2, 2));
 
   self->last_meter_val = self->meter_val;
   self->last_meter_peak = self->meter_peak;
+
+  /* draw border line */
+  const float border_width = 1.f;
+  GdkRGBA border_color = { 0.1, 0.1, 0.1, 0.8 };
+  float border_widths[] = {
+    border_width, border_width, border_width,
+    border_width };
+  GdkRGBA border_colors[] = {
+    border_color, border_color, border_color,
+    border_color };
+  GskRoundedRect rounded_rect;
+  gsk_rounded_rect_init_from_rect (
+    &rounded_rect, &graphene_rect, 0);
+  gtk_snapshot_append_border (
+    snapshot, &rounded_rect, border_widths,
+    border_colors);
+
+  cairo_destroy (cr);
 }
 
 
@@ -262,9 +275,6 @@ meter_widget_setup (
     GTK_WIDGET (self), width, -1);
 
   /* connect signals */
-  gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self), meter_draw_cb,
-    self, NULL);
 #if 0
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
@@ -300,12 +310,6 @@ finalize (
   object_free_w_func_and_null (
     meter_free, self->meter);
 
-#if 0
-  if (self->timeout_source)
-    g_source_unref (self->timeout_source);
-  self->source_id = 0;
-#endif
-
   G_OBJECT_CLASS (
     meter_widget_parent_class)->
       finalize (G_OBJECT (self));
@@ -323,10 +327,10 @@ meter_widget_init (MeterWidget * self)
 static void
 meter_widget_class_init (MeterWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
+  GtkWidgetClass * wklass =
     GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "meter");
+  wklass->snapshot = meter_snapshot;
+  gtk_widget_class_set_css_name (wklass, "meter");
 
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;
