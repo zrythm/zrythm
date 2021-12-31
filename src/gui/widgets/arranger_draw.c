@@ -59,8 +59,7 @@
 static void
 draw_selections (
   ArrangerWidget * self,
-  cairo_t *        cr,
-  GdkRectangle *   rect)
+  GtkSnapshot *    snapshot)
 {
   double offset_x, offset_y;
   offset_x =
@@ -72,31 +71,59 @@ draw_selections (
     self->last_offset_y :
     1 - self->start_y;
 
+  GskRoundedRect rounded_rect;
+  graphene_rect_t graphene_rect =
+    GRAPHENE_RECT_INIT (
+      (float) self->start_x, (float) self->start_y,
+      (float) (offset_x),
+      (float) (offset_y));
+  gsk_rounded_rect_init_from_rect (
+    &rounded_rect, &graphene_rect, 0);
+  const float border_width = 1.f;
+  GdkRGBA border_color = { 0.9, 0.9, 0.9, 0.9 };
+  float border_widths[] = {
+    border_width, border_width, border_width,
+    border_width };
+  GdkRGBA border_colors[] = {
+    border_color, border_color, border_color,
+    border_color };
+  GdkRGBA inside_color = {
+    border_color.red / 3.0,
+    border_color.green / 3.0,
+    border_color.blue / 3.0,
+    border_color.alpha / 3.0, };
+
   /* if action is selecting and not selecting range
    * (in the case of timeline */
   switch (self->action)
     {
     case UI_OVERLAY_ACTION_SELECTING:
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
-      z_cairo_draw_selection (
-        cr, self->start_x - rect->x,
-        self->start_y - rect->y,
-        offset_x, offset_y);
+      {
+        gtk_snapshot_append_color (
+          snapshot, &inside_color, &graphene_rect);
+        gtk_snapshot_append_border (
+          snapshot, &rounded_rect, border_widths,
+          border_colors);
+      }
       break;
     case UI_OVERLAY_ACTION_RAMPING:
-      cairo_set_source_rgba (
-        cr, 0.9, 0.9, 0.9, 1.0);
-      cairo_set_line_width (cr, 2.0);
-      cairo_move_to (
-        cr, self->start_x -  rect->x,
-        self->start_y - rect->y);
-      cairo_line_to (
-        cr,
-        (self->start_x + self->last_offset_x) -
-          rect->x,
-        (self->start_y + self->last_offset_y) -
-          rect->y);
-      cairo_stroke (cr);
+      {
+        cairo_t * cr =
+          gtk_snapshot_append_cairo (
+            snapshot, &graphene_rect);
+        gdk_cairo_set_source_rgba (
+          cr, &border_color);
+        cairo_set_line_width (cr, 2.0);
+        cairo_move_to (
+          cr, self->start_x, self->start_y);
+        cairo_line_to (
+          cr,
+          self->start_x + offset_x,
+          self->start_y + offset_y);
+        cairo_stroke (cr);
+        cairo_destroy (cr);
+      }
       break;
     default:
       break;
@@ -1206,7 +1233,7 @@ arranger_snapshot (
 
   /* draw selections */
   draw_selections (
-    self, self->cached_cr, &visible_rect_gdk);
+    self, snapshot);
 
   draw_playhead (
     self, snapshot, &visible_rect_gdk);
