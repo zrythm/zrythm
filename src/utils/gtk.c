@@ -298,22 +298,12 @@ z_gtk_widget_remove_children_of_type (
   GtkWidget * widget,
   GType       type)
 {
-  GPtrArray * arr = g_ptr_array_new ();
   for (GtkWidget * child =
-         gtk_widget_get_first_child (widget);
-       child != NULL;
-       child =
-         gtk_widget_get_next_sibling (child))
+         gtk_widget_get_last_child (widget);
+       child != NULL;)
     {
-      /* don't delete here because it breaks the
-       * loop */
-      g_ptr_array_add (arr, child);
-    }
-
-  for (size_t i = 0; i < arr->len; i++)
-    {
-      GtkWidget * child =
-        g_ptr_array_index (arr, i);
+      GtkWidget * next_child =
+        gtk_widget_get_prev_sibling (child);
       if (G_TYPE_CHECK_INSTANCE_TYPE (child, type))
         {
           if (GTK_IS_BOX (widget))
@@ -329,8 +319,8 @@ z_gtk_widget_remove_children_of_type (
             }
           /*gtk_widget_unparent (child);*/
         }
+      child = next_child;
     }
-  g_ptr_array_unref (arr);
 }
 
 void
