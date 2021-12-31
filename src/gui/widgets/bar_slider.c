@@ -26,6 +26,7 @@
 #include "audio/port_connection.h"
 #include "gui/widgets/bar_slider.h"
 #include "utils/cairo.h"
+#include "utils/gtk.h"
 #include "utils/objects.h"
 
 #include <gtk/gtk.h>
@@ -33,7 +34,7 @@
 G_DEFINE_TYPE (
   BarSliderWidget,
   bar_slider_widget,
-  GTK_TYPE_DRAWING_AREA)
+  GTK_TYPE_WIDGET)
 
 /**
  * Get the real value.
@@ -97,27 +98,40 @@ set_real_val (
     }
 }
 
+static void
+recreate_pango_layouts (
+  BarSliderWidget * self)
+{
+  if (PANGO_IS_LAYOUT (self->layout))
+    g_object_unref (self->layout);
+
+  self->layout =
+    z_cairo_create_pango_layout_from_string (
+      (GtkWidget *) self, Z_CAIRO_FONT,
+      PANGO_ELLIPSIZE_NONE, -1);
+}
+
 /**
  * Draws the bar_slider.
  */
 static void
-bar_slider_draw_cb (
-  GtkDrawingArea * drawing_area,
-  cairo_t *        cr,
-  int              width,
-  int              height,
-  gpointer         user_data)
+bar_slider_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot)
 {
   BarSliderWidget * self =
-    Z_BAR_SLIDER_WIDGET (user_data);
-  GtkWidget * widget = GTK_WIDGET (drawing_area);
+    Z_BAR_SLIDER_WIDGET (widget);
 
   GtkStyleContext * context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (drawing_area));
+    gtk_widget_get_style_context (widget);
 
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
+
+  gtk_snapshot_render_background (
+    snapshot, context, 0, 0, width, height);
 
   const float real_min = self->min;
   const float real_max = self->max;
@@ -136,23 +150,27 @@ bar_slider_draw_cb (
      (real_max - real_min)) *
     (float) width;
 
-  cairo_set_source_rgba (cr, 1, 1, 1, 0.3);
+  GdkRGBA color = { 1, 1, 1, 0.3 };
 
   /* draw from val to zero */
   if (real_val < real_zero)
     {
-      cairo_rectangle (
-        cr, (double) val_px, 0,
-        (double) (zero_px - val_px), height);
+      gtk_snapshot_append_color (
+        snapshot, &color,
+        &GRAPHENE_RECT_INIT (
+          val_px, 0, zero_px - val_px, height));
     }
   /* draw from zero to val */
   else
     {
-      cairo_rectangle (
-        cr, (double) zero_px, 0,
-        (double) (val_px - zero_px), height);
+      gtk_snapshot_append_color (
+        snapshot, &color,
+        &GRAPHENE_RECT_INIT (
+          zero_px, 0, val_px - zero_px, height));
     }
-  cairo_fill (cr);
+
+  if (!self->layout)
+    recreate_pango_layouts (self);
 
   char str[3000];
   if (!self->show_value)
@@ -186,10 +204,9 @@ bar_slider_draw_cb (
     {
       g_warn_if_reached ();
     }
-  int we;
-  cairo_set_source_rgba (cr, 1, 1, 1, 1);
+  int we, he;
   z_cairo_get_text_extents_for_widget (
-    widget, self->layout, str, &we, NULL);
+    widget, self->layout, str, &we, &he);
   if (width < we)
     {
       gtk_widget_set_size_request (
@@ -197,16 +214,24 @@ bar_slider_draw_cb (
         we + Z_CAIRO_TEXT_PADDING * 2,
         height);
     }
-  z_cairo_draw_text_full (
-    cr, widget, self->layout, str,
-    width / 2 - we / 2,
-    Z_CAIRO_TEXT_PADDING);
+  gtk_snapshot_save (snapshot);
+  gtk_snapshot_translate (
+    snapshot,
+    &GRAPHENE_POINT_INIT (
+      width / 2 - we / 2, height / 2 - he / 2));
+  pango_layout_set_markup (
+    self->layout, str, -1);
+  gtk_snapshot_append_layout (
+    snapshot, self->layout,
+    &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+  gtk_snapshot_restore (snapshot);
 
   if (self->hover)
     {
-      cairo_set_source_rgba (cr, 1,1,1, 0.12 );
-      cairo_rectangle (cr, 0, 0, width, height);
-      cairo_fill (cr);
+      gtk_snapshot_append_color (
+        snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.12),
+        &GRAPHENE_RECT_INIT (
+          0, 0, width, height));
     }
 }
 
@@ -324,41 +349,6 @@ drag_end (
   self->start_x = 0;
 }
 
-static void
-recreate_pango_layouts (
-  BarSliderWidget * self)
-{
-  if (PANGO_IS_LAYOUT (self->layout))
-    g_object_unref (self->layout);
-
-  self->layout =
-    z_cairo_create_pango_layout_from_string (
-      (GtkWidget *) self, Z_CAIRO_FONT,
-      PANGO_ELLIPSIZE_NONE, -1); }
-
-static void
-bar_slider_widget_on_resize (
-  GtkDrawingArea * drawing_area,
-  gint             width,
-  gint             height,
-  gpointer         user_data)
-{
-  BarSliderWidget * self =
-    Z_BAR_SLIDER_WIDGET (user_data);
-  recreate_pango_layouts (self);
-}
-
-#if 0
-static void
-on_screen_changed (
-  GtkWidget *          widget,
-  GdkScreen *          previous_screen,
-  BarSliderWidget * self)
-{
-  recreate_pango_layouts (self);
-}
-#endif
-
 /**
  * Creates a bar slider widget for floats.
  */
@@ -407,10 +397,6 @@ _bar_slider_widget_new (
     GTK_WIDGET (self), 1);
   gtk_widget_set_vexpand (
     GTK_WIDGET (self), 1);
-
-  gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self), bar_slider_draw_cb,
-    self, NULL);
 
   GtkEventController * motion_controller =
     gtk_event_controller_motion_new ();
@@ -463,17 +449,8 @@ bar_slider_widget_init (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (self->drag));
 
-  gtk_widget_set_visible (
-    GTK_WIDGET (self), 1);
-
-#if 0
-  g_signal_connect (
-    G_OBJECT (self), "screen-changed",
-    G_CALLBACK (on_screen_changed),  self);
-#endif
-  g_signal_connect (
-    G_OBJECT (self), "resize",
-    G_CALLBACK (bar_slider_widget_on_resize), self);
+  gtk_widget_set_focusable (
+    GTK_WIDGET (self), true);
 }
 
 static void
@@ -484,4 +461,8 @@ bar_slider_widget_class_init (
     G_OBJECT_CLASS (_klass);
 
   klass->finalize = (GObjectFinalizeFunc) finalize;
+
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (_klass);
+  wklass->snapshot = bar_slider_snapshot;
 }

@@ -37,7 +37,7 @@ G_DECLARE_FINAL_TYPE (
   BarSliderWidget,
   bar_slider_widget,
   Z, BAR_SLIDER_WIDGET,
-  GtkDrawingArea)
+  GtkWidget)
 
 typedef struct Port Port;
 
@@ -69,7 +69,7 @@ typedef enum BarSliderType
  */
 typedef struct _BarSliderWidget
 {
-  GtkDrawingArea     parent_instance;
+  GtkWidget          parent_instance;
 
   /** Number of decimal points to show. */
   int                decimals;
