@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -62,15 +62,12 @@ chord_object_recreate_pango_layouts (
 }
 
 /**
- *
- * @param cr Cairo context of the arranger.
- * @param rect Rectangle in the arranger.
+ * Draws the given chord object.
  */
 void
 chord_object_draw (
-  ChordObject *  self,
-  cairo_t *      cr,
-  GdkRectangle * rect)
+  ChordObject * self,
+  GtkSnapshot * snapshot)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   ArrangerWidget * arranger =
@@ -84,15 +81,22 @@ chord_object_draw (
     chord_object_is_selected (self), false, false);
   ChordDescriptor * descr =
     chord_object_get_chord_descriptor (self);
-  gdk_cairo_set_source_rgba (cr, &color);
 
-  z_cairo_rounded_rectangle (
-    cr,
-    obj->full_rect.x - rect->x,
-    obj->full_rect.y - rect->y,
-    obj->full_rect.width,
-    obj->full_rect.height, 1, 4);
-  cairo_fill (cr);
+  /* create clip */
+  GskRoundedRect rounded_rect;
+  graphene_rect_t graphene_rect =
+    GRAPHENE_RECT_INIT (
+      obj->full_rect.x, obj->full_rect.y,
+      obj->full_rect.width, obj->full_rect.height);
+  gsk_rounded_rect_init_from_rect (
+    &rounded_rect, &graphene_rect,
+    obj->full_rect.height / 6.0f);
+  gtk_snapshot_push_rounded_clip (
+    snapshot, &rounded_rect);
+
+  /* fill */
+  gtk_snapshot_append_color (
+    snapshot, &color, &graphene_rect);
 
   char str[100];
   chord_descriptor_to_string (descr, str);
@@ -110,93 +114,19 @@ chord_object_draw (
 
   GdkRGBA c2;
   ui_get_contrast_color (&color, &c2);
-  gdk_cairo_set_source_rgba (cr, &c2);
-  cairo_move_to (
-    cr,
-    (obj->full_rect.x + CHORD_OBJECT_NAME_PADDING) -
-      rect->x,
-    (obj->full_rect.y + CHORD_OBJECT_NAME_PADDING) -
-      rect->y);
-  z_cairo_draw_text (
-    cr, GTK_WIDGET (arranger), self->layout,
-    display_str);
+
+  gtk_snapshot_save (snapshot);
+  gtk_snapshot_translate (
+    snapshot,
+    &GRAPHENE_POINT_INIT (
+      obj->full_rect.x + CHORD_OBJECT_NAME_PADDING,
+      obj->full_rect.y + CHORD_OBJECT_NAME_PADDING));
+  pango_layout_set_text (
+    self->layout, display_str, -1);
+  gtk_snapshot_append_layout (
+    snapshot, self->layout, &c2);
+  gtk_snapshot_restore (snapshot);
+
+  /* pop clip */
+  gtk_snapshot_pop (snapshot);
 }
-
-#if 0
-static void
-on_press (
-  GtkGestureClick *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
-  ChordObjectWidget *   self)
-{
-  if (n_press == 2)
-    {
-      ChordSelectorWindowWidget * chord_selector =
-        chord_selector_window_widget_new (
-          chord_object_get_chord_descriptor (
-            self->chord_object));
-
-      gtk_window_present (
-        GTK_WINDOW (chord_selector));
-    }
-}
-
-ChordObjectWidget *
-chord_object_widget_new (ChordObject * chord)
-{
-  ChordObjectWidget * self =
-    g_object_new (CHORD_OBJECT_WIDGET_TYPE, NULL);
-
-  arranger_object_widget_setup (
-    Z_ARRANGER_OBJECT_WIDGET (self),
-    (ArrangerObject *) chord);
-
-  self->chord_object = chord;
-
-  return self;
-}
-
-static void
-finalize (
-  ChordObjectWidget * self)
-{
-  if (self->mp)
-    g_object_unref (self->mp);
-
-  G_OBJECT_CLASS (
-    chord_object_widget_parent_class)->
-      finalize (G_OBJECT (self));
-}
-
-static void
-chord_object_widget_class_init (
-  ChordObjectWidgetClass * _klass)
-{
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  GObjectClass * oklass = G_OBJECT_CLASS (klass);
-  oklass->finalize =
-    (GObjectFinalizeFunc) finalize;
-}
-
-static void
-chord_object_widget_init (
-  ChordObjectWidget * self)
-{
-  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
-
-  self->mp =
-    GTK_GESTURE_CLICK (
-      gtk_gesture_click_new (
-        GTK_WIDGET (ao_prv->drawing_area)));
-
-  g_signal_connect (
-    G_OBJECT (ao_prv->drawing_area), "draw",
-    G_CALLBACK (chord_draw_cb), self);
-  g_signal_connect (
-    G_OBJECT (self->mp), "pressed",
-    G_CALLBACK (on_press), self);
-}
-#endif

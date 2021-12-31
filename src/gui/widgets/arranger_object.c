@@ -1120,11 +1120,11 @@ arranger_object_draw (
       break;
     case TYPE (SCALE_OBJECT):
       scale_object_draw (
-        (ScaleObject *) self, cr, rect);
+        (ScaleObject *) self, snapshot);
       break;
     case TYPE (CHORD_OBJECT):
       chord_object_draw (
-        (ChordObject *) self, cr, rect);
+        (ChordObject *) self, snapshot);
       break;
     case TYPE (VELOCITY):
       velocity_draw (

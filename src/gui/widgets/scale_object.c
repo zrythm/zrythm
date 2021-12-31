@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -59,15 +59,12 @@ scale_object_recreate_pango_layouts (
 }
 
 /**
- *
- * @param cr Cairo context of the arranger.
- * @param rect Rectangle in the arranger.
+ * Draws the given scale object.
  */
 void
 scale_object_draw (
-  ScaleObject *  self,
-  cairo_t *      cr,
-  GdkRectangle * rect)
+  ScaleObject * self,
+  GtkSnapshot * snapshot)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   ArrangerWidget * arranger =
@@ -79,95 +76,41 @@ scale_object_draw (
     &color,
     arranger->hovered_object == obj,
     scale_object_is_selected (self), false, false);
-  gdk_cairo_set_source_rgba (cr, &color);
 
-  z_cairo_rounded_rectangle (
-    cr,
-    obj->full_rect.x - rect->x,
-    obj->full_rect.y - rect->y,
-    obj->full_rect.width,
-    obj->full_rect.height, 1, 4);
-  cairo_fill (cr);
+  /* create clip */
+  GskRoundedRect rounded_rect;
+  graphene_rect_t graphene_rect =
+    GRAPHENE_RECT_INIT (
+      obj->full_rect.x, obj->full_rect.y,
+      obj->full_rect.width, obj->full_rect.height);
+  gsk_rounded_rect_init_from_rect (
+    &rounded_rect, &graphene_rect,
+    obj->full_rect.height / 6.0f);
+  gtk_snapshot_push_rounded_clip (
+    snapshot, &rounded_rect);
 
-  char * str =
-    musical_scale_to_string (self->scale);
+  /* fill */
+  gtk_snapshot_append_color (
+    snapshot, &color, &graphene_rect);
+
+  char * str = musical_scale_to_string (self->scale);
 
   GdkRGBA c2;
   ui_get_contrast_color (&color, &c2);
-  gdk_cairo_set_source_rgba (cr, &c2);
-  cairo_move_to (
-    cr,
-    (obj->full_rect.x + SCALE_OBJECT_NAME_PADDING) -
-      rect->x,
-    (obj->full_rect.y + SCALE_OBJECT_NAME_PADDING) -
-      rect->y);
-  z_cairo_draw_text (
-    cr, GTK_WIDGET (arranger), self->layout, str);
+
+  gtk_snapshot_save (snapshot);
+  gtk_snapshot_translate (
+    snapshot,
+    &GRAPHENE_POINT_INIT (
+      obj->full_rect.x + SCALE_OBJECT_NAME_PADDING,
+      obj->full_rect.y + SCALE_OBJECT_NAME_PADDING));
+  pango_layout_set_text (
+    self->layout, str, -1);
   g_free (str);
+  gtk_snapshot_append_layout (
+    snapshot, self->layout, &c2);
+  gtk_snapshot_restore (snapshot);
+
+  /* pop clip */
+  gtk_snapshot_pop (snapshot);
 }
-
-#if 0
-static void
-on_press (
-  GtkGestureClick *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
-  ScaleObjectWidget *   self)
-{
-  if (n_press == 2)
-    {
-      ScaleSelectorWindowWidget * scale_selector =
-        scale_selector_window_widget_new (
-          self);
-
-      gtk_window_present (
-        GTK_WINDOW (scale_selector));
-    }
-}
-
-ScaleObjectWidget *
-scale_object_widget_new (ScaleObject * scale)
-{
-  ScaleObjectWidget * self =
-    g_object_new (SCALE_OBJECT_WIDGET_TYPE, NULL);
-
-  arranger_object_widget_setup (
-    Z_ARRANGER_OBJECT_WIDGET (self),
-    (ArrangerObject *) scale);
-
-  self->scale_object = scale;
-
-  char scale_str[100];
-  musical_scale_strcpy (
-    scale->scale, scale_str);
-  PangoLayout * layout =
-    z_cairo_create_default_pango_layout (
-      (GtkWidget *) self);
-  z_cairo_get_text_extents_for_widget (
-    (GtkWidget *) self, layout,
-    scale_str, &self->textw, &self->texth);
-  g_object_unref (layout);
-
-  return self;
-}
-
-static void
-scale_object_widget_init (
-  ScaleObjectWidget * self)
-{
-  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
-
-  self->mp =
-    GTK_GESTURE_CLICK (
-      gtk_gesture_click_new (
-        GTK_WIDGET (ao_prv->drawing_area)));
-
-  g_signal_connect (
-    G_OBJECT (ao_prv->drawing_area), "draw",
-    G_CALLBACK (scale_draw_cb), self);
-  g_signal_connect (
-    G_OBJECT (self->mp), "pressed",
-    G_CALLBACK (on_press), self);
-}
-#endif

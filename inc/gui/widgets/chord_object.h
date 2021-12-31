@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -48,37 +48,12 @@ chord_object_recreate_pango_layouts (
   ChordObject * self);
 
 /**
- *
- * @param cr Cairo context of the arranger.
- * @param rect Rectangle in the arranger.
+ * Draws the given chord object.
  */
 void
 chord_object_draw (
-  ChordObject *  self,
-  cairo_t *      cr,
-  GdkRectangle * rect);
-
-#if 0
-
-/**
- * Widget for chords inside the ChordObjectTrack.
- */
-typedef struct _ChordObjectWidget
-{
-  ArrangerObjectWidget parent_instance;
-  ChordObject *    chord_object;
-
-  /** For double click. */
-  GtkGestureClick * mp;
-} ChordObjectWidget;
-
-/**
- * Creates a chord widget.
- */
-ChordObjectWidget *
-chord_object_widget_new (
-  ChordObject * chord);
-#endif
+  ChordObject * self,
+  GtkSnapshot * snapshot);
 
 /**
  * @}

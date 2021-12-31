@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -50,48 +50,12 @@ scale_object_recreate_pango_layouts (
   ScaleObject * self);
 
 /**
- *
- * @param cr Cairo context of the arranger.
- * @param rect Rectangle in the arranger.
+ * Draws the given scale object.
  */
 void
 scale_object_draw (
-  ScaleObject *  self,
-  cairo_t *      cr,
-  GdkRectangle * rect);
-
-#if 0
-
-#define SCALE_OBJECT_WIDGET_TRIANGLE_W 10
-
-/**
- * Widget for scales inside the ScaleObjectTrack.
- */
-typedef struct _ScaleObjectWidget
-{
-  ArrangerObjectWidget parent_instance;
-  ScaleObject *    scale_object;
-
-  /** For double click. */
-  GtkGestureClick * mp;
-
-  /** Cache pango layout TODO. */
-  PangoLayout *    layout;
-
-  /** Cache text H extents and W extents for
-   * the widget. */
-  int              textw;
-  int              texth;
-
-} ScaleObjectWidget;
-
-/**
- * Creates a scale widget.
- */
-ScaleObjectWidget *
-scale_object_widget_new (
-  ScaleObject * scale);
-#endif
+  ScaleObject * self,
+  GtkSnapshot * snapshot);
 
 /**
  * @}

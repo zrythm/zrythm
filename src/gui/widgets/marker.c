@@ -99,16 +99,6 @@ marker_draw (
   gtk_snapshot_append_color (
     snapshot, &color, &graphene_rect);
 
-#if 0
-  z_cairo_rounded_rectangle (
-    cr,
-    obj->full_rect.x - rect->x,
-    obj->full_rect.y - rect->y,
-    obj->full_rect.width,
-    obj->full_rect.height, 1, 4);
-  cairo_fill (cr);
-#endif
-
   g_return_if_fail (self->escaped_name);
 
   GdkRGBA c2;
