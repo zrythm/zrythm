@@ -253,7 +253,7 @@ channel_fields_schema[] =
     stereo_ports_fields_schema),
   YAML_FIELD_UINT (
     Channel, has_output),
-  YAML_FIELD_INT (
+  YAML_FIELD_UINT (
     Channel, output_name_hash),
   YAML_FIELD_INT (
     Channel, track_pos),
