@@ -76,7 +76,7 @@ port_connections_popover_widget_refresh (
         port_connections_manager_get_sources_or_dests (
           PORT_CONNECTIONS_MGR, srcs,
           &self->port->id, true);
-      for (int i = 0; num_srcs; i++)
+      for (int i = 0; i < num_srcs; i++)
         {
           PortConnection * conn =
             g_ptr_array_index (srcs, i);
