@@ -623,6 +623,8 @@ add_automation_events:
  * automation point and the current position (eg,
  * when in latch mode) if the position is after
  * the last recorded ap.
+ *
+ * @note Runs in GTK thread only.
  */
 static void
 delete_automation_points (
@@ -686,6 +688,8 @@ delete_automation_points (
  * Creates a new automation point and deletes
  * anything between the last recorded automation
  * point and this point.
+ *
+ * @note Runs in GTK thread only.
  */
 static AutomationPoint *
 create_automation_point (
@@ -726,6 +730,8 @@ create_automation_point (
 /**
  * This is called when recording is paused (eg,
  * when playhead is not in recordable area).
+ *
+ * @note Runs in GTK thread only.
  */
 static void
 handle_pause_event (
@@ -793,6 +799,8 @@ handle_pause_event (
  * Adds new regions if necessary, etc.
  *
  * @return Whether pause was handled.
+ *
+ * @note Runs in GTK thread only.
  */
 static bool
 handle_resume_event (
@@ -978,6 +986,9 @@ handle_resume_event (
   return true;
 }
 
+/**
+ * @note Runs in GTK thread only.
+ */
 static void
 handle_audio_event (
   RecordingManager * self,
@@ -1105,6 +1116,9 @@ handle_audio_event (
 #endif
 }
 
+/**
+ * @note Runs in GTK thread only.
+ */
 static void
 handle_midi_event (
   RecordingManager * self,
@@ -1237,6 +1251,9 @@ handle_midi_event (
     }
 }
 
+/**
+ * @note Runs in GTK thread only.
+ */
 static void
 handle_automation_event (
   RecordingManager * self,

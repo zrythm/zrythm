@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -2273,12 +2273,18 @@ multipress_released (
                 .height = cb->size,
                 .width = 0,
               };
+              gtk_widget_set_parent (
+                GTK_WIDGET (popover),
+                GTK_WIDGET (self));
               gtk_popover_set_pointing_to (
                 GTK_POPOVER (popover), &rect);
               /*gtk_popover_set_modal (*/
                 /*GTK_POPOVER (popover), 1);*/
-              gtk_popover_present (
+              gtk_popover_popup (
                 GTK_POPOVER (popover));
+              g_debug (
+                "popping up automatable selector "
+                "popover");
             }
         }
     }

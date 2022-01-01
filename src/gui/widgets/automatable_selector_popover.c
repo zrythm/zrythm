@@ -79,6 +79,8 @@ on_closed (
       g_message (
         "same automatable selected, doing nothing");
     }
+
+  gtk_widget_unparent (GTK_WIDGET (self));
 }
 
 /**

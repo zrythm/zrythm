@@ -1275,12 +1275,6 @@ draw_audio_part (
                 }
             }
         }
-#define DRAW_VLINE(cr,_x,from_y,_height) \
-  grect.origin.x = (float) _x; \
-  grect.origin.y = (float) from_y; \
-  grect.size.height = (float) _height; \
-  gtk_snapshot_append_color ( \
-    snapshot, &color, &grect)
 
       /* normalize */
       min = (min + 1.f) / 2.f;
@@ -1301,14 +1295,12 @@ draw_audio_part (
       /* only draw if non-silent */
       if (fabs (local_min_y - local_max_y) > 0.01)
         {
-          DRAW_VLINE (
-            cr,
-            /* x */
-            i,
-            /* from y */
-            local_min_y,
-            /* to y */
-            (local_max_y - local_min_y));
+          grect.origin.x = (float) i;
+          grect.origin.y = (float) local_min_y;
+          grect.size.height =
+            (float) (local_max_y - local_min_y);
+          gtk_snapshot_append_color (
+            snapshot, &color, &grect);
         }
 
       prev_frames = curr_frames;
