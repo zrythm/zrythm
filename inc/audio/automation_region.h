@@ -130,8 +130,7 @@ void
 automation_region_get_aps_since_last_recorded (
   ZRegion *          self,
   Position *         pos,
-  AutomationPoint ** aps,
-  int *              num_aps);
+  GPtrArray *        aps);
 
 /**
  * Returns an automation point found within +/-

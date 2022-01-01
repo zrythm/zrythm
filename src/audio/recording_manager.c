@@ -626,17 +626,18 @@ add_automation_events:
  */
 static void
 delete_automation_points (
-  AutomationTrack * at,
-  ZRegion *         region,
-  Position *        pos)
+  RecordingManager * self,
+  AutomationTrack *  at,
+  ZRegion *          region,
+  Position *         pos)
 {
-  AutomationPoint * aps[100];
-  int               num_aps = 0;
   automation_region_get_aps_since_last_recorded (
-    region, pos, aps, &num_aps);
-  for (int i = 0; i < num_aps; i++)
+    region, pos, self->pending_aps);
+  for (size_t i = 0; i < self->pending_aps->len;
+       i++)
     {
-      AutomationPoint * ap = aps[i];
+      AutomationPoint * ap =
+        g_ptr_array_index (self->pending_aps, i);
       automation_region_remove_ap (
         region, ap, false, true);
     }
@@ -688,19 +689,20 @@ delete_automation_points (
  */
 static AutomationPoint *
 create_automation_point (
-  AutomationTrack * at,
-  ZRegion *         region,
-  float             val,
-  float             normalized_val,
-  Position *        pos)
+  RecordingManager * self,
+  AutomationTrack *  at,
+  ZRegion *          region,
+  float              val,
+  float              normalized_val,
+  Position *         pos)
 {
-  AutomationPoint * aps[100];
-  int               num_aps = 0;
   automation_region_get_aps_since_last_recorded (
-    region, pos, aps, &num_aps);
-  for (int i = 0; i < num_aps; i++)
+    region, pos, self->pending_aps);
+  for (size_t i = 0; i < self->pending_aps->len;
+       i++)
     {
-      AutomationPoint * ap = aps[i];
+      AutomationPoint * ap =
+        g_ptr_array_index (self->pending_aps, i);
       automation_region_remove_ap (
         region, ap, false, true);
     }
@@ -968,8 +970,8 @@ handle_resume_event (
 
           /* create/replace ap at loop start */
           create_automation_point (
-            at, new_region, value, normalized_value,
-            &resume_pos);
+            self, at, new_region, value,
+            normalized_value, &resume_pos);
         }
     }
 
@@ -1354,7 +1356,7 @@ handle_automation_event (
   if (automation_value_changed)
     {
       create_automation_point (
-        at, region,
+        self, at, region,
         value, normalized_value,
         &start_pos);
       at->last_recorded_value = value;
@@ -1364,7 +1366,7 @@ handle_automation_event (
     {
       g_return_if_fail (region);
       delete_automation_points (
-        at, region, &start_pos);
+        self, at, region, &start_pos);
     }
 
   /* if we left touch mode, set last recorded ap
@@ -1700,6 +1702,8 @@ recording_manager_new (void)
   RecordingManager * self =
     object_new (RecordingManager);
 
+  self->pending_aps = g_ptr_array_new ();
+
   const size_t max_events = 10000;
   self->event_obj_pool =
     object_pool_new (
@@ -1741,6 +1745,9 @@ recording_manager_free (
     object_pool_free, self->event_obj_pool);
 
   free_temp_selections (self);
+
+  object_free_w_func_and_null (
+    g_ptr_array_unref, self->pending_aps);
 
   object_zero_and_free (self);
 

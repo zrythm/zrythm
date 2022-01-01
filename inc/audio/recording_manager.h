@@ -70,6 +70,9 @@ typedef struct RecordingManager
   RegionIdentifier   recorded_ids[8000];
   int                num_recorded_ids;
 
+  /** Pending recorded automation points. */
+  GPtrArray *        pending_aps;
+
   bool               currently_processing;
   ZixSem             processing_sem;
 

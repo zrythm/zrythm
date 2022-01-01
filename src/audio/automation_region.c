@@ -310,10 +310,9 @@ void
 automation_region_get_aps_since_last_recorded (
   ZRegion *          self,
   Position *         pos,
-  AutomationPoint ** aps,
-  int *              num_aps)
+  GPtrArray *        aps)
 {
-  *num_aps = 0;
+  g_ptr_array_remove_range (aps, 0, aps->len);
 
   ArrangerObject * last_recorded_obj =
     (ArrangerObject *) self->last_recorded_ap;
@@ -333,8 +332,7 @@ automation_region_get_aps_since_last_recorded (
           position_is_before_or_equal (
             &ap_obj->pos, pos))
         {
-          aps[*num_aps] = ap;
-          (*num_aps)++;
+          g_ptr_array_add (aps, ap);
         }
     }
 }
