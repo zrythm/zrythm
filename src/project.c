@@ -595,7 +595,7 @@ destroy_prev_main_window (
       g_message (
         "destroying previous main window...");
       main_window_widget_tear_down (mww);
-      g_object_unref (mww);
+      /*g_object_unref (mww);*/
     }
 }
 
@@ -1215,6 +1215,9 @@ load (
           g_message ("destroying prev window...");
           destroy_prev_main_window (mww);
         }
+
+      g_return_val_if_fail (
+        GTK_IS_WINDOW (MAIN_WINDOW), -1);
     }
 
   /* sanity check */
@@ -1336,6 +1339,8 @@ project_load (
     AUDIO_ENGINE, &state, true);
   router_recalc_graph (ROUTER, F_NOT_SOFT);
   engine_resume (AUDIO_ENGINE, &state);
+
+  g_debug ("project %p loaded", PROJECT);
 
   return 0;
 }
@@ -1656,6 +1661,7 @@ project_idle_saved_cb (
   if (data->is_backup)
     {
       g_message (_("Backup saved."));
+      ui_show_notification (_("Backup saved."));
     }
   else
     {
@@ -1945,16 +1951,21 @@ project_save (
         "serialize_project_thread",
         (GThreadFunc)
         serialize_project_thread, data);
-      g_idle_add (
-        (GSourceFunc) project_idle_saved_cb,
-        data);
 
-      if (ZRYTHM_HAVE_UI)
+      /* don't show progress dialog */
+      if (ZRYTHM_HAVE_UI && false)
         {
+          g_idle_add (
+            (GSourceFunc) project_idle_saved_cb,
+            data);
+
           /* show progress while saving */
           ProjectProgressDialogWidget * dialog =
             project_progress_dialog_widget_new (
               data);
+          g_return_val_if_fail (
+            Z_IS_MAIN_WINDOW_WIDGET (MAIN_WINDOW),
+            -1);
           gtk_window_set_transient_for (
             GTK_WINDOW (dialog),
             GTK_WINDOW (MAIN_WINDOW));
@@ -1965,10 +1976,11 @@ project_save (
         }
       else
         {
-          while (data->progress_info.progress < 1.0)
+          while (!data->finished)
             {
               g_usleep (1000);
             }
+          project_idle_saved_cb (data);
         }
     }
   else /* else if no async */

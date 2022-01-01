@@ -644,10 +644,7 @@ run_open_dialog (GtkDialog * dialog)
   return res;
 }
 
-void
-activate_open (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+DEFINE_SIMPLE (activate_open)
 {
 #ifdef TRIAL_VER
   ui_show_error_message (
@@ -666,10 +663,12 @@ activate_open (GSimpleAction *action,
       char *filename =
         z_gtk_file_chooser_get_filename (
           GTK_FILE_CHOOSER (dialog));
-      project_load (filename, 0);
+      project_load (filename, Z_F_NOT_TEMPLATE);
     }
 
   gtk_window_destroy (GTK_WINDOW (dialog));
+
+  g_debug ("project %p opened", PROJECT);
 }
 
 void

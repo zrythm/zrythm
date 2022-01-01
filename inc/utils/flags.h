@@ -352,4 +352,7 @@
 #define Z_F_RECHAIN 1
 #define Z_F_NO_RECHAIN 0
 
+#define Z_F_TEMPLATE 1
+#define Z_F_NOT_TEMPLATE 0
+
 #endif

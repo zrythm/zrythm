@@ -371,7 +371,6 @@ settings_get_range (
 
   g_settings_schema_key_unref (schema_key);
   g_settings_schema_unref (g_settings_schema);
-  g_settings_schema_source_unref (source);
 
   return range;
 }
@@ -395,7 +394,6 @@ settings_get_default_value (
 
   g_settings_schema_key_unref (schema_key);
   g_settings_schema_unref (g_settings_schema);
-  g_settings_schema_source_unref (source);
 
   return def_val;
 }

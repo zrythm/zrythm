@@ -91,11 +91,16 @@ on_main_window_destroy (
   MainWindowWidget * self,
   gpointer user_data)
 {
-  g_message ("main window destroy");
+  g_message ("main window destroy %p", self);
 
   event_manager_process_now (EVENT_MANAGER);
 
-  if (PROJECT->loaded)
+  /* if this is the current main window and a project
+   * is loaded, quit the application (check needed
+   * because this is also called right after loading
+   * a project) */
+  if (PROJECT->loaded
+      && zrythm_app->main_window == self)
     {
       event_manager_stop_events (EVENT_MANAGER);
 
@@ -431,7 +436,7 @@ void
 main_window_widget_tear_down (
   MainWindowWidget * self)
 {
-  g_message ("tearing down %p...", self);
+  g_message ("tearing down main window %p...", self);
 
   self->setup = false;
 
@@ -444,7 +449,7 @@ main_window_widget_tear_down (
   gtk_window_set_application (
     GTK_WINDOW (self), NULL);
 
-  g_message ("done");
+  g_message ("done tearing down main window");
 }
 
 static void
