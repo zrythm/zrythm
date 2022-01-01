@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,10 +34,8 @@
 #define PLUGIN_BROWSER_WIDGET_TYPE \
   (plugin_browser_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  PluginBrowserWidget,
-  plugin_browser_widget,
-  Z, PLUGIN_BROWSER_WIDGET,
-  GtkBox)
+  PluginBrowserWidget, plugin_browser_widget,
+  Z, PLUGIN_BROWSER_WIDGET, GtkBox)
 
 typedef struct _ExpanderBoxWidget ExpanderBoxWidget;
 typedef struct PluginCollection PluginCollection;
@@ -104,6 +102,7 @@ typedef struct _PluginBrowserWidget
   GtkTreeView *        category_tree_view;
   GtkTreeView *        protocol_tree_view;
 
+  GtkSearchEntry *     plugin_search_entry;
   GtkListView *        plugin_list_view;
 
   /** Browser bot. */

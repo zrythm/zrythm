@@ -1421,25 +1421,25 @@ zrythm_app_startup (
   INSTALL_ACCEL (
     "<Control>l", "app.loop-selection");
   INSTALL_ACCEL (
-    "1", "app.select-mode");
+    "<Control>1", "app.select-mode");
   INSTALL_ACCEL (
-    "2", "app.edit-mode");
+    "<Control>2", "app.edit-mode");
   INSTALL_ACCEL (
-    "3", "app.cut-mode");
+    "<Control>3", "app.cut-mode");
   INSTALL_ACCEL (
-    "4", "app.eraser-mode");
+    "<Control>4", "app.eraser-mode");
   INSTALL_ACCEL (
-    "5", "app.ramp-mode");
+    "<Control>5", "app.ramp-mode");
   INSTALL_ACCEL (
-    "6", "app.audition-mode");
+    "<Control>6", "app.audition-mode");
   INSTALL_ACCEL_WITH_SECONDARY (
-    "KP_4", "BackSpace", "app.goto-prev-marker");
+    "KP_4", "<Control>BackSpace", "app.goto-prev-marker");
   INSTALL_ACCEL (
     "KP_6", "app.goto-next-marker");
   INSTALL_ACCEL (
-    "space", "app.play-pause");
+    "<Control>space", "app.play-pause");
   INSTALL_ACCEL (
-    "Q", "app.quick-quantize::global");
+    "<Control>Q", "app.quick-quantize::global");
   INSTALL_ACCEL (
     "<Alt>Q", "app.quantize-options::global");
   INSTALL_ACCEL (

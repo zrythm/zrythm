@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -298,6 +298,18 @@ plugin_filter_func (
   midi_modifiers_active =
     gtk_toggle_button_get_active (
       self->toggle_midi_modifiers);
+
+  /* filter by name */
+  const char * text =
+    gtk_editable_get_text (
+      GTK_EDITABLE (self->plugin_search_entry));
+  if (text && strlen (text) > 0
+      &&
+      !string_contains_substr_case_insensitive (
+        descr->name, text))
+    {
+      return false;
+    }
 
   /* no filter, all visible */
   if (self->num_selected_categories == 0 &&
@@ -1448,6 +1460,16 @@ on_key_release (
 }
 
 static void
+on_plugin_search_changed (
+  GtkSearchEntry *      search_entry,
+  PluginBrowserWidget * self)
+{
+  gtk_filter_changed (
+    GTK_FILTER (self->plugin_filter),
+    GTK_FILTER_CHANGE_DIFFERENT);
+}
+
+static void
 finalize (
   PluginBrowserWidget * self)
 {
@@ -1550,6 +1572,22 @@ plugin_browser_widget_new ()
     G_OBJECT (self->plugin_list_view), "activate",
     G_CALLBACK (on_plugin_row_activated), self);
 
+  /* setup plugin search entry */
+  gtk_search_entry_set_key_capture_widget (
+    self->plugin_search_entry,
+    GTK_WIDGET (self->plugin_list_view));
+  GValue val = G_VALUE_INIT;
+  g_value_init (&val, G_TYPE_STRING);
+  g_value_set_string (&val, _("Search..."));
+  g_object_set_property (
+    G_OBJECT (self->plugin_search_entry),
+    "placeholder-text", &val);
+  g_value_unset (&val);
+  g_signal_connect (
+    G_OBJECT (self->plugin_search_entry),
+    "search-changed",
+    G_CALLBACK (on_plugin_search_changed), self);
+
   /* set the selected values */
   PluginBrowserTab tab =
     S_GET_ENUM (
@@ -1650,6 +1688,8 @@ plugin_browser_widget_class_init (
   resources_set_class_template (
     klass, "plugin_browser.ui");
 
+  /*gtk_widget_class_add_shortcut (*/
+
 #define BIND_CHILD(name) \
   gtk_widget_class_bind_template_child ( \
     klass, \
@@ -1666,6 +1706,7 @@ plugin_browser_widget_class_init (
   BIND_CHILD (protocol_tree_view);
   BIND_CHILD (category_tree_view);
   BIND_CHILD (author_tree_view);
+  BIND_CHILD (plugin_search_entry);
   BIND_CHILD (plugin_list_view);
   BIND_CHILD (browser_bot);
   BIND_CHILD (plugin_info);

@@ -120,6 +120,9 @@
               </object>
             </child>
             <child>
+              <object class="GtkSearchEntry" id="plugin_search_entry"/>
+            </child>
+            <child>
               <object class="GtkScrolledWindow" id="plugin_scroll">
                 <property name="vexpand">1</property>
                 <property name="child">
