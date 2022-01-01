@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1172,7 +1172,7 @@ timeline_arranger_widget_show_context_menu (
                       _(audio_function_type_to_string (i)),
                       NULL, tmp);
                   g_menu_item_set_action_and_target_value (
-                    menuitem, tmp,
+                    submenu_item, tmp,
                     g_variant_new_int32 (i));
                   g_menu_append_item (
                     region_functions_subsubmenu,
