@@ -1462,6 +1462,10 @@ graph_validate_with_connection (
 {
   g_return_val_if_fail (src && dest, 0);
 
+  EngineState state;
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, F_NO_FORCE);
+
   g_message (
     "validating for %s to %s",
     src->id.label, dest->id.label);
@@ -1484,6 +1488,8 @@ graph_validate_with_connection (
   bool valid = is_valid (self);
 
   g_message ("valid %d", valid);
+
+  engine_resume (AUDIO_ENGINE, &state);
 
   return valid;
 }

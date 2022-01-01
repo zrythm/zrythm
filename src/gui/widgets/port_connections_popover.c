@@ -38,6 +38,21 @@ G_DEFINE_TYPE (
   port_connections_popover_widget,
   GTK_TYPE_POPOVER)
 
+static void
+on_selector_popover_closed (
+  GtkPopover *                   popover,
+  PortConnectionsPopoverWidget * self)
+{
+  g_debug ("port selector popover closed");
+
+  /*g_object_ref_sink (self);*/
+  gtk_widget_set_visible (GTK_WIDGET (self), false);
+  gtk_popover_popup (GTK_POPOVER (self));
+  port_connections_popover_widget_refresh (
+    self, self->port);
+  /*g_object_unref (self);*/
+}
+
 #if 0
 static void
 on_add_clicked (
@@ -220,13 +235,22 @@ port_connections_popover_widget_init (
   gtk_popover_set_child (
     GTK_POPOVER (self),
     GTK_WIDGET (self->main_box));
-  /*g_object_ref (self);*/
+
+#if 0
+  /* temporary fix to this popover remaining hanging
+   * when the child popover closes */
+  gtk_popover_set_cascade_popdown (
+    GTK_POPOVER (self), true);
+#endif
 
   self->port_selector_popover =
     port_selector_popover_widget_new (self);
   gtk_popover_set_position (
     GTK_POPOVER (self->port_selector_popover),
     GTK_POS_RIGHT);
+  g_signal_connect (
+    G_OBJECT (self->port_selector_popover), "closed",
+    G_CALLBACK (on_selector_popover_closed), self);
   gtk_menu_button_set_popover (
     self->add,
     GTK_WIDGET (self->port_selector_popover));

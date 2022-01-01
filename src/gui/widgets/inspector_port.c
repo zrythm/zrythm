@@ -214,6 +214,10 @@ on_double_click (
 
   g_message ("double click");
 
+  /* need to ref here because gtk unrefs
+   * internally */
+  g_object_ref (self->connections_popover);
+
   port_connections_popover_widget_refresh (
     self->connections_popover, self->port);
   gtk_popover_popup (
@@ -600,7 +604,11 @@ dispose (
     GTK_WIDGET (self->popover_menu));
   gtk_widget_unparent (
     GTK_WIDGET (self->connections_popover));
-  g_object_unref (self->connections_popover);
+
+  while (G_IS_OBJECT (self->connections_popover))
+    {
+      g_object_unref (self->connections_popover);
+    }
 
   G_OBJECT_CLASS (
     inspector_port_widget_parent_class)->
@@ -645,7 +653,8 @@ inspector_port_widget_init (
   gtk_widget_set_parent (
     GTK_WIDGET (self->connections_popover),
     GTK_WIDGET (self));
-  g_object_ref (self->connections_popover);
+  /*g_object_ref_sink (self->connections_popover);*/
+  /*g_object_ref (self->connections_popover);*/
 
   ui_gdk_rgba_to_hex (
     &UI_COLORS->bright_orange, self->hex_color);
