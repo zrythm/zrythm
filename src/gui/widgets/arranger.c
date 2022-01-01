@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -467,13 +467,13 @@ add_object_if_overlap (
    * calculations for most objects --- */
 
   /* skip objects that end before the rect */
-  Position tmp;
   if (arranger_object_type_has_length (obj->type))
     {
+      Position g_obj_end_pos;
       if (arranger_object_type_has_global_pos (
             obj->type))
         {
-          tmp = obj->end_pos;
+          g_obj_end_pos = obj->end_pos;
         }
       else
         {
@@ -481,22 +481,23 @@ add_object_if_overlap (
             arranger_object_get_region (obj);
           g_return_val_if_fail (
             IS_REGION_AND_NONNULL (r), false);
-          tmp = r->base.pos;
+          g_obj_end_pos = r->base.pos;
           position_add_ticks (
-            &tmp, obj->end_pos.ticks);
+            &g_obj_end_pos, obj->end_pos.ticks);
         }
       if (position_is_before (
-            &tmp, &nfo->start_pos))
+            &g_obj_end_pos, &nfo->start_pos))
         {
           return false;
         }
     }
 
   /* skip objects that start after the end */
+  Position g_obj_start_pos;
   if (arranger_object_type_has_global_pos (
         obj->type))
     {
-      tmp = obj->pos;
+      g_obj_start_pos = obj->pos;
     }
   else
     {
@@ -504,12 +505,12 @@ add_object_if_overlap (
         arranger_object_get_region (obj);
       g_return_val_if_fail (
         IS_REGION_AND_NONNULL (r), false);
-      tmp = r->base.pos;
+      g_obj_start_pos = r->base.pos;
       position_add_ticks (
-        &tmp, obj->pos.ticks);
+        &g_obj_start_pos, obj->pos.ticks);
     }
   if (position_is_after (
-        &obj->pos, &nfo->end_pos))
+        &g_obj_start_pos, &nfo->end_pos))
     {
       return false;
     }
@@ -1089,6 +1090,8 @@ move_items_x (
 
   arranger_selections_add_ticks (
     sel, ticks_diff);
+  g_debug (
+    "adding %f ticks to selections", ticks_diff);
 
   if (sel->type ==
         ARRANGER_SELECTIONS_TYPE_AUTOMATION)

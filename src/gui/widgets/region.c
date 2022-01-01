@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1228,6 +1228,10 @@ draw_audio_part (
   /*position_from_frames (&tmp, curr_frames);*/
   /*position_print (&tmp);*/
 
+
+  GdkRGBA color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
+  graphene_rect_t grect =
+    GRAPHENE_RECT_INIT (0, 0, (float) width, 0);
   for (double i = local_start_x;
        i < (double) local_end_x; i += increment)
     {
@@ -1272,14 +1276,11 @@ draw_audio_part (
             }
         }
 #define DRAW_VLINE(cr,_x,from_y,_height) \
-  graphene_rect_t grect = \
-    GRAPHENE_RECT_INIT ( \
-       (float) _x, (float) from_y, \
-      (float) width, (float) _height); \
-  /*z_gtk_print_graphene_rect (&grect); \*/ \
+  grect.origin.x = (float) _x; \
+  grect.origin.y = (float) from_y; \
+  grect.size.height = (float) _height; \
   gtk_snapshot_append_color ( \
-    snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 1), \
-    &grect);
+    snapshot, &color, &grect)
 
       /* normalize */
       min = (min + 1.f) / 2.f;
