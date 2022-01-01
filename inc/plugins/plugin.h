@@ -253,10 +253,10 @@ typedef struct Plugin
    * deactivate before freeing the plugin. */
   gulong            destroy_window_id;
 
-  /** ID of the delete-event signal for \ref
+  /** ID of the close-request signal for \ref
    * Plugin.window so that we can
    * deactivate before freeing the plugin. */
-  gulong            delete_event_id;
+  gulong            close_request_id;
 
   int               magic;
 

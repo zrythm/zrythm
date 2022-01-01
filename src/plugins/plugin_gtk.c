@@ -671,10 +671,9 @@ on_window_destroy (
 }
 
 static gboolean
-on_delete_event (
-  GtkWidget *widget,
-  GdkEvent  *event,
-  Plugin * plugin)
+on_close_request (
+  GtkWindow * window,
+  Plugin *    plugin)
 {
   plugin->visible = 0;
   plugin->window = NULL;
@@ -687,7 +686,7 @@ on_delete_event (
     "%s: deleted plugin [%s] window",
     __func__, pl_str);
 
-  return FALSE;
+  return false;
 }
 
 /**
@@ -758,10 +757,10 @@ plugin_gtk_create_window (
     g_signal_connect (
       plugin->window, "destroy",
       G_CALLBACK (on_window_destroy), plugin);
-  plugin->delete_event_id =
+  plugin->close_request_id =
     g_signal_connect (
-      G_OBJECT (plugin->window), "delete-event",
-      G_CALLBACK (on_delete_event), plugin);
+      G_OBJECT (plugin->window), "close-request",
+      G_CALLBACK (on_close_request), plugin);
 }
 
 /**
@@ -1882,11 +1881,11 @@ plugin_gtk_close_ui (
             pl->window, pl->destroy_window_id);
           pl->destroy_window_id = 0;
         }
-      if (pl->delete_event_id)
+      if (pl->close_request_id)
         {
           g_signal_handler_disconnect (
-            pl->window, pl->delete_event_id);
-          pl->delete_event_id = 0;
+            pl->window, pl->close_request_id);
+          pl->close_request_id = 0;
         }
       gtk_widget_set_sensitive (
         GTK_WIDGET (pl->window), 0);

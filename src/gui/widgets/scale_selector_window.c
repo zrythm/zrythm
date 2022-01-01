@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -38,9 +38,8 @@ G_DEFINE_TYPE (
   GTK_TYPE_WINDOW)
 
 static gboolean
-on_delete_event (
-  GtkWidget *widget,
-  GdkEvent  *event,
+on_close_request (
+  GtkWindow *                 window,
   ScaleSelectorWindowWidget * self)
 {
   arranger_selections_clear (
@@ -77,7 +76,7 @@ on_delete_event (
   arranger_selections_free_full (before);
   arranger_selections_free_full (after);
 
-  return FALSE;
+  return false;
 }
 
 static void
@@ -303,7 +302,7 @@ scale_selector_window_widget_init (
 
   /* set signals */
   g_signal_connect (
-    G_OBJECT (self), "delete-event",
-    G_CALLBACK (on_delete_event), self);
+    G_OBJECT (self), "close-request",
+    G_CALLBACK (on_close_request), self);
 }
 
