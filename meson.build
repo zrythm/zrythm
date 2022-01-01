@@ -98,6 +98,7 @@ manpage_completions_run_sh = find_program (
 
 cc = meson.get_compiler ('c')
 is_gcc = cc.get_id() == 'gcc'
+is_clang = cc.get_id() == 'clang'
 
 meson_src_root = meson.current_source_dir ()
 meson_build_root = meson.current_build_dir ()
@@ -170,14 +171,6 @@ language_mappings = {
   'zh_TW': '繁體中文',
   }
 locales = language_mappings
-#locales_str = run_command ('cat', 'po/LINGUAS').stdout ().strip ()
-#locales = {}
-#foreach locale, mapping : language_mappings
-  #locales += { locale: language_mappings[locale] }
-  #if locale == 'de'
-    #locales += { 'en': language_mappings['en'], }
-  #endif
-#endforeach
 locales_str = ' '.join (locales.keys())
 
 # get host system and library suffix
@@ -596,6 +589,7 @@ test_cflags = [
   # use structured log
   '-DG_LOG_USE_STRUCTURED=1',
   '-DG_LOG_DOMAIN="' + prog_name_lowercase + '"',
+  '-DREALTIME=' + (is_clang ? '__attribute__((annotate("realtime")))' : ''),
   '-DDEPRECATED_MSG(x)=__attribute__((deprecated(x)))',
   '-DNONNULL_ARGS(...)=__attribute__((nonnull(__VA_ARGS__)))',
   '-DACCESS(...)=' + (is_gcc ? '__attribute__((access(__VA_ARGS__)))' : ''),
@@ -621,16 +615,6 @@ attributes = [
 foreach a : attributes
   test_cflags += '-D' + a.to_upper() + '=__attribute__((' + a + '))'
 endforeach
-
-if cc.get_id() == 'clang'
-  test_cflags += [
-    '-DREALTIME=__attribute__((annotate("realtime")))',
-    ]
-else
-  test_cflags += [
-    '-DREALTIME=',
-    ]
-endif
 
 if os_windows or get_option ('appimage')
   test_cflags += [
