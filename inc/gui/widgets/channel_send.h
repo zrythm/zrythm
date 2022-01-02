@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (
   ChannelSendWidget,
   channel_send_widget,
   Z, CHANNEL_SEND_WIDGET,
-  GtkDrawingArea)
+  GtkWidget)
 
 typedef struct ChannelSend ChannelSend;
 typedef struct _ChannelSendSelectorWidget
@@ -48,7 +48,7 @@ typedef struct _ChannelSendSelectorWidget
 
 typedef struct _ChannelSendWidget
 {
-  GtkDrawingArea      parent_instance;
+  GtkWidget           parent_instance;
 
   /** Owner. */
   ChannelSend *       send;

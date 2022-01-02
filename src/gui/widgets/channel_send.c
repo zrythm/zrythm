@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,29 +34,49 @@
 
 G_DEFINE_TYPE (
   ChannelSendWidget, channel_send_widget,
-  GTK_TYPE_DRAWING_AREA)
+  GTK_TYPE_WIDGET)
 
 #define ELLIPSIZE_PADDING 2
 
 static void
-channel_send_draw_cb (
-  GtkDrawingArea * drawing_area,
-  cairo_t *        cr,
-  int              width,
-  int              height,
-  gpointer         user_data)
+recreate_pango_layouts (
+  ChannelSendWidget * self)
+{
+  if (PANGO_IS_LAYOUT (self->empty_slot_layout))
+    g_object_unref (self->empty_slot_layout);
+  if (PANGO_IS_LAYOUT (self->name_layout))
+    g_object_unref (self->name_layout);
+
+  self->empty_slot_layout =
+    z_cairo_create_pango_layout_from_string (
+      (GtkWidget *) self, "Arial Italic 7.5",
+      PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+  self->name_layout =
+    z_cairo_create_pango_layout_from_string (
+      (GtkWidget *) self, "Arial Bold 7.5",
+      PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+}
+
+static void
+channel_send_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot)
 {
   ChannelSendWidget * self =
-    Z_CHANNEL_SEND_WIDGET (user_data);
-  GtkWidget * widget = GTK_WIDGET (drawing_area);
+    Z_CHANNEL_SEND_WIDGET (widget);
 
-  g_message ("draw %d %d", width, height);
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
 
-  GtkStyleContext *context =
+  GtkStyleContext * context =
   gtk_widget_get_style_context (widget);
 
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
+  gtk_snapshot_render_background (
+    snapshot, context, 0, 0, width, height);
+
+  recreate_pango_layouts (self);
 
   int padding = 2;
   ChannelSend * send = self->send;
@@ -65,24 +85,30 @@ channel_send_draw_cb (
   if (channel_send_is_empty (send))
     {
       /* fill background */
-      cairo_set_source_rgba (
-        cr, 0.1, 0.1, 0.1, 1.0);
-      cairo_rectangle (
-        cr, padding, padding,
-        width - padding * 2, height - padding * 2);
-      cairo_fill(cr);
+      gtk_snapshot_append_color (
+        snapshot,
+        &Z_GDK_RGBA_INIT (0.1, 0.1, 0.1, 1.0),
+        &GRAPHENE_RECT_INIT (
+          padding, padding,
+          width - padding * 2,
+          height - padding * 2));
 
       /* fill text */
-      cairo_set_source_rgba (
-        cr, 0.3, 0.3, 0.3, 1.0);
       int w, h;
-      z_cairo_get_text_extents_for_widget (
-        widget, self->empty_slot_layout, dest_name,
-        &w, &h);
-      z_cairo_draw_text_full (
-        cr, widget, self->empty_slot_layout,
-        dest_name, width / 2 - w / 2,
-        height / 2 - h / 2);
+      pango_layout_set_markup (
+        self->empty_slot_layout, dest_name, -1);
+      pango_layout_get_pixel_size (
+        self->empty_slot_layout, &w, &h);
+      gtk_snapshot_save (snapshot);
+      gtk_snapshot_translate (
+        snapshot,
+        &GRAPHENE_POINT_INIT (
+          width / 2.f - w / 2.f,
+          height / 2.f - h / 2.f));
+      gtk_snapshot_append_layout (
+        snapshot, self->empty_slot_layout,
+        &Z_GDK_RGBA_INIT (0.3, 0.3, 0.3, 1.0));
+      gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
       if (self->cache_tooltip)
@@ -103,36 +129,42 @@ channel_send_draw_cb (
         bg = UI_COLORS->postfader_send;
 
       /* fill background */
-      cairo_set_source_rgba (
-        cr, bg.red, bg.green, bg.blue, 0.4);
-      cairo_rectangle (
-        cr, padding, padding,
-        width - padding * 2, height - padding * 2);
-      cairo_fill(cr);
+      GdkRGBA bg_color = bg;
+      bg_color.alpha = 0.4;
+      gtk_snapshot_append_color (
+        snapshot, &bg_color,
+        &GRAPHENE_RECT_INIT (
+          padding, padding,
+          width - padding * 2,
+          height - padding * 2));
 
       /* fill amount */
+      bg_color.alpha = 1.0;
       float amount =
         channel_send_get_amount_for_widgets (
           self->send) * width;
-      cairo_set_source_rgba (
-        cr, bg.red, bg.green, bg.blue, 1.0);
-      cairo_rectangle (
-        cr, padding, padding,
-        amount - padding * 2, height - padding * 2);
-      cairo_fill(cr);
+      gtk_snapshot_append_color (
+        snapshot, &bg_color,
+        &GRAPHENE_RECT_INIT (
+          padding, padding,
+          amount - padding * 2,
+          height - padding * 2));
 
       /* fill text */
-      cairo_set_source_rgba (
-        cr, fg.red, fg.green, fg.blue, 1.0);
       int w, h;
-      z_cairo_get_text_extents_for_widget (
-        widget, self->name_layout,
-        dest_name, &w, &h);
-      z_cairo_draw_text_full (
-        cr, widget, self->name_layout,
-        dest_name,
-        width / 2 - w / 2,
-        height / 2 - h / 2);
+      pango_layout_set_markup (
+        self->name_layout, dest_name, -1);
+      pango_layout_get_pixel_size (
+        self->name_layout, &w, &h);
+      gtk_snapshot_save (snapshot);
+      gtk_snapshot_translate (
+        snapshot,
+        &GRAPHENE_POINT_INIT (
+          width / 2.f - w / 2.f,
+          height / 2.f - h / 2.f));
+      gtk_snapshot_append_layout (
+        snapshot, self->name_layout, &fg);
+      gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
       if (!self->cache_tooltip ||
@@ -277,29 +309,6 @@ on_right_click (
 }
 
 static void
-on_size_allocate (
-  GtkWidget * widget,
-  int         width,
-  int         height,
-  int         baseline)
-{
-  ChannelSendWidget * self =
-    Z_CHANNEL_SEND_WIDGET (widget);
-
-  /* no layout manager, so call this to allocate
-   * a size for the menu */
-  gtk_popover_present (
-    GTK_POPOVER (self->popover_menu));
-  gtk_popover_present (
-    GTK_POPOVER (self->selector_popover));
-
-  GTK_WIDGET_CLASS (
-    channel_send_widget_parent_class)->
-      size_allocate (
-        widget, width, height, baseline);
-}
-
-static void
 on_enter (
   GtkEventControllerMotion * motion_controller,
   gdouble                    x,
@@ -324,48 +333,6 @@ on_leave (
     GTK_WIDGET (self),
     GTK_STATE_FLAG_PRELIGHT);
 }
-
-static void
-recreate_pango_layouts (
-  ChannelSendWidget * self)
-{
-  if (PANGO_IS_LAYOUT (self->empty_slot_layout))
-    g_object_unref (self->empty_slot_layout);
-  if (PANGO_IS_LAYOUT (self->name_layout))
-    g_object_unref (self->name_layout);
-
-  self->empty_slot_layout =
-    z_cairo_create_pango_layout_from_string (
-      (GtkWidget *) self, "Arial Italic 7.5",
-      PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
-  self->name_layout =
-    z_cairo_create_pango_layout_from_string (
-      (GtkWidget *) self, "Arial Bold 7.5",
-      PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
-}
-
-static void
-channel_send_widget_on_resize (
-  GtkDrawingArea * drawing_area,
-  gint             width,
-  gint             height,
-  gpointer         user_data)
-{
-  ChannelSendWidget * self =
-    Z_CHANNEL_SEND_WIDGET (user_data);
-  recreate_pango_layouts (self);
-}
-
-#if 0
-static void
-on_screen_changed (
-  GtkWidget *          widget,
-  GdkScreen *          previous_screen,
-  ChannelSendWidget * self)
-{
-  recreate_pango_layouts (self);
-}
-#endif
 
 static void
 dispose (
@@ -424,6 +391,8 @@ channel_send_widget_init (
 
   gtk_widget_set_hexpand (
     GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (
+    GTK_WIDGET (self), true);
 
   self->selector_popover =
     channel_send_selector_widget_new (self);
@@ -475,10 +444,6 @@ channel_send_widget_init (
     GTK_EVENT_CONTROLLER (motion_controller));
 
   /* connect signals */
-  gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self),
-    channel_send_draw_cb,
-    self, NULL);
   g_signal_connect (
     G_OBJECT (motion_controller), "enter",
     G_CALLBACK (on_enter), self);
@@ -500,26 +465,20 @@ channel_send_widget_init (
   g_signal_connect (
     G_OBJECT (self->drag), "drag-end",
     G_CALLBACK (on_drag_end),  self);
-#if 0
-  g_signal_connect (
-    G_OBJECT (self), "screen-changed",
-    G_CALLBACK (on_screen_changed),  self);
-#endif
-  g_signal_connect (
-    G_OBJECT (self), "resize",
-    G_CALLBACK (channel_send_widget_on_resize),
-    self);
 }
 
 static void
 channel_send_widget_class_init (
-  ChannelSendWidgetClass * _klass)
+  ChannelSendWidgetClass * klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   gtk_widget_class_set_css_name (
-    klass, "channel-send");
-  klass->size_allocate = on_size_allocate;
+    wklass, "channel-send");
+  wklass->snapshot = channel_send_snapshot;
+
+  gtk_widget_class_set_layout_manager_type (
+    wklass, GTK_TYPE_BIN_LAYOUT);
 
   GObjectClass * oklass =
     G_OBJECT_CLASS (klass);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -42,11 +42,13 @@
  * @param cr Arranger's cairo context.
  * @param arr_rect Arranger's rectangle.
  */
+NONNULL
 void
 midi_note_draw (
   MidiNote *       self,
   GtkSnapshot *    snapshot);
 
+NONNULL
 void
 midi_note_get_adjusted_color (
   MidiNote * self,
