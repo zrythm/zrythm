@@ -594,7 +594,7 @@ static void
 on_plugins_removed (Track * tr)
 {
   /* redraw slots */
-  if (tr && tr->channel)
+  if (tr && tr->channel && tr->channel->widget)
     {
       plugin_strip_expander_widget_set_state_flags (
         tr->channel->widget->inserts, -1,
