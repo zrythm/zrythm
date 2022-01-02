@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,6 +25,7 @@
 #include "audio/engine_rtaudio.h"
 #include "settings/settings.h"
 #include "project.h"
+#include "utils/dsp.h"
 #include "utils/string.h"
 #include "zrythm.h"
 
@@ -100,9 +101,9 @@ audio_cb (
   nframes_t num_frames = (nframes_t) nframes;
   engine_process (self, num_frames);
 
-  memset (
-    out_buf, 0,
-    (size_t) (nframes * 2) * sizeof (float));
+  dsp_fill (
+    out_buf, DENORMAL_PREVENTION_VAL,
+    (size_t) (nframes * 2));
   for (nframes_t i = 0; i < num_frames; i++)
     {
 #ifdef TRIAL_VER

@@ -2357,6 +2357,8 @@ static void
 set_earliest_obj (
   ArrangerWidget * self)
 {
+  g_debug ("setting earliest object...");
+
   ArrangerSelections * sel =
     arranger_widget_get_selections (self);
   g_return_if_fail (sel);
@@ -2371,6 +2373,10 @@ set_earliest_obj (
     {
       self->earliest_obj_exists = 0;
     }
+
+  g_debug (
+    "earliest object exists: %d",
+    self->earliest_obj_exists);
 }
 
 /**

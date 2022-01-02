@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,6 +28,7 @@
 #include "audio/rtmidi_device.h"
 #include "audio/windows_mme_device.h"
 #include "project.h"
+#include "utils/dsp.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
@@ -117,7 +118,7 @@ ext_port_clear_buffer (
 
   g_message ("clearing buffer of %p", ext_port);
 
-  memset (buf, 0, nframes * sizeof (float));
+  dsp_fill (buf, DENORMAL_PREVENTION_VAL, nframes);
 }
 
 /**

@@ -277,7 +277,7 @@ ruler_widget_get_sec_interval (
 static void
 draw_other_region (
   RulerWidget *  self,
-  cairo_t *      cr,
+  GtkSnapshot *  snapshot,
   ZRegion *      region)
 {
   /*g_debug (
@@ -290,19 +290,19 @@ draw_other_region (
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
   Track * track = arranger_object_get_track (r_obj);
-  cairo_set_source_rgba (
-    cr, track->color.red, track->color.green,
-    track->color.blue, 0.5);
+  GdkRGBA color = track->color;
+  color.alpha = 0.5;
 
   int px_start, px_end;
   px_start =
     ui_pos_to_px_editor (&r_obj->pos, true);
   px_end =
     ui_pos_to_px_editor (&r_obj->end_pos, true);
-  cairo_rectangle (
-    cr, px_start, 0,
-    px_end - px_start, height / 4.0);
-  cairo_fill (cr);
+  gtk_snapshot_append_color (
+    snapshot, &color,
+    &GRAPHENE_RECT_INIT (
+      px_start, 0,
+      px_end - px_start, height / 4.f));
 }
 
 /**
@@ -311,10 +311,9 @@ draw_other_region (
 static void
 draw_regions (
   RulerWidget *  self,
+  GtkSnapshot *  snapshot,
   GdkRectangle * rect)
 {
-  cairo_t * cr = self->cached_cr;
-
   int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
@@ -342,17 +341,17 @@ draw_regions (
     MW_TIMELINE->hovered_object == region_obj,
     region_is_selected (region),
     false, arranger_object_get_muted (region_obj));
-  gdk_cairo_set_source_rgba (cr, &color);
   px_start =
     ui_pos_to_px_editor (
       &region_obj->pos, 1);
   px_end =
     ui_pos_to_px_editor (
       &region_obj->end_pos, 1);
-  cairo_rectangle (
-    cr, px_start - rect->x, - rect->y,
-    px_end - px_start, height / 4.0);
-  cairo_fill (cr);
+  gtk_snapshot_append_color (
+    snapshot, &color,
+    &GRAPHENE_RECT_INIT (
+      px_start, 0,
+      px_end - px_start, height / 4.f));
 
   /* draw its transient if copy-moving TODO */
   if (arranger_object_should_orig_be_visible (
@@ -364,10 +363,11 @@ draw_regions (
       px_end =
         ui_pos_to_px_editor (
           &region_obj->end_pos, 1);
-      cairo_rectangle (
-        cr, px_start - rect->x, - rect->y,
-        px_end - px_start, height / 4.0);
-      cairo_fill (cr);
+      gtk_snapshot_append_color (
+        snapshot, &color,
+        &GRAPHENE_RECT_INIT (
+          px_start, 0,
+          px_end - px_start, height / 4.f));
     }
 
   /* draw the other regions */
@@ -385,14 +385,8 @@ draw_regions (
           continue;
         }
 
-      cairo_save (cr);
-      cairo_translate (
-        cr, - rect->x, - rect->y);
-
       draw_other_region (
-        self, cr, other_region);
-
-      cairo_restore (cr);
+        self, snapshot, other_region);
     }
 }
 
@@ -441,12 +435,18 @@ get_loop_start_rect (
 static void
 draw_loop_start (
   RulerWidget *  self,
-  cairo_t *      cr,
+  GtkSnapshot *  snapshot,
   GdkRectangle * rect)
 {
   /* draw rect */
   GdkRectangle dr;
   get_loop_start_rect (self, &dr);
+
+  cairo_t * cr =
+    gtk_snapshot_append_cairo (
+      snapshot,
+      &GRAPHENE_RECT_INIT (
+        dr.x, dr.y, dr.width, dr.height));
 
   if (dr.x >=
         rect->x - dr.width &&
@@ -456,13 +456,15 @@ draw_loop_start (
       cairo_set_source_rgb (cr, 0, 0.9, 0.7);
       cairo_set_line_width (cr, 2);
       cairo_move_to (
-        cr, dr.x - rect->x, dr.y);
+        cr, dr.x, dr.y);
       cairo_line_to (
-        cr, dr.x - rect->x, dr.y + dr.height);
+        cr, dr.x, dr.y + dr.height);
       cairo_line_to (
-        cr, (dr.x + dr.width) - rect->x, dr.y);
+        cr, (dr.x + dr.width), dr.y);
       cairo_fill (cr);
     }
+
+  cairo_destroy (cr);
 }
 
 static void
@@ -513,12 +515,18 @@ get_loop_end_rect (
 static void
 draw_loop_end (
   RulerWidget *  self,
-  cairo_t *      cr,
+  GtkSnapshot *  snapshot,
   GdkRectangle * rect)
 {
   /* draw rect */
   GdkRectangle dr;
   get_loop_end_rect (self, &dr);
+
+  cairo_t * cr =
+    gtk_snapshot_append_cairo (
+      snapshot,
+      &GRAPHENE_RECT_INIT (
+        dr.x, dr.y, dr.width, dr.height));
 
   if (dr.x >=
         rect->x - dr.width &&
@@ -527,14 +535,16 @@ draw_loop_end (
     {
       cairo_set_source_rgb (cr, 0, 0.9, 0.7);
       cairo_set_line_width (cr, 2);
-      cairo_move_to (cr, dr.x - rect->x, dr.y);
+      cairo_move_to (cr, dr.x, dr.y);
       cairo_line_to (
-        cr, (dr.x + dr.width) - rect->x, dr.y);
+        cr, (dr.x + dr.width), dr.y);
       cairo_line_to (
-        cr, (dr.x + dr.width) - rect->x,
+        cr, (dr.x + dr.width),
         dr.y + dr.height);
       cairo_fill (cr);
     }
+
+  cairo_destroy (cr);
 }
 
 static void
@@ -553,12 +563,18 @@ get_punch_in_rect (
 static void
 draw_punch_in (
   RulerWidget *  self,
-  cairo_t *      cr,
+  GtkSnapshot *  snapshot,
   GdkRectangle * rect)
 {
   /* draw rect */
   GdkRectangle dr;
   get_punch_in_rect (self, &dr);
+
+  cairo_t * cr =
+    gtk_snapshot_append_cairo (
+      snapshot,
+      &GRAPHENE_RECT_INIT (
+        dr.x, dr.y, dr.width, dr.height));
 
   if (dr.x >=
         rect->x - dr.width &&
@@ -568,13 +584,15 @@ draw_punch_in (
       cairo_set_source_rgb (cr, 0.9, 0.1, 0.1);
       cairo_set_line_width (cr, 2);
       cairo_move_to (
-        cr, dr.x - rect->x, dr.y);
+        cr, dr.x, dr.y);
       cairo_line_to (
-        cr, dr.x - rect->x, dr.y + dr.height);
+        cr, dr.x, dr.y + dr.height);
       cairo_line_to (
-        cr, (dr.x + dr.width) - rect->x, dr.y);
+        cr, (dr.x + dr.width), dr.y);
       cairo_fill (cr);
     }
+
+  cairo_destroy (cr);
 }
 
 static void
@@ -594,12 +612,18 @@ get_punch_out_rect (
 static void
 draw_punch_out (
   RulerWidget *  self,
-  cairo_t *      cr,
+  GtkSnapshot *  snapshot,
   GdkRectangle * rect)
 {
   /* draw rect */
   GdkRectangle dr;
   get_punch_out_rect (self, &dr);
+
+  cairo_t * cr =
+    gtk_snapshot_append_cairo (
+      snapshot,
+      &GRAPHENE_RECT_INIT (
+        dr.x, dr.y, dr.width, dr.height));
 
   if (dr.x >=
         rect->x - dr.width &&
@@ -608,14 +632,16 @@ draw_punch_out (
     {
       cairo_set_source_rgb (cr, 0.9, 0.1, 0.1);
       cairo_set_line_width (cr, 2);
-      cairo_move_to (cr, dr.x - rect->x, dr.y);
+      cairo_move_to (cr, dr.x, dr.y);
       cairo_line_to (
-        cr, (dr.x + dr.width) - rect->x, dr.y);
+        cr, (dr.x + dr.width), dr.y);
       cairo_line_to (
-        cr, (dr.x + dr.width) - rect->x,
+        cr, (dr.x + dr.width),
         dr.y + dr.height);
       cairo_fill (cr);
     }
+
+  cairo_destroy (cr);
 }
 
 static void
@@ -670,12 +696,18 @@ get_clip_start_rect (
 static void
 draw_cue_point (
   RulerWidget *  self,
-  cairo_t *      cr,
+  GtkSnapshot *  snapshot,
   GdkRectangle * rect)
 {
   /* draw rect */
   GdkRectangle dr;
   get_clip_start_rect (self, &dr);
+
+  cairo_t * cr =
+    gtk_snapshot_append_cairo (
+      snapshot,
+      &GRAPHENE_RECT_INIT (
+        dr.x, dr.y, dr.width, dr.height));
 
   if (self->type == TYPE (TIMELINE))
     {
@@ -702,14 +734,16 @@ draw_cue_point (
         }
       cairo_set_line_width (cr, 2);
       cairo_move_to (
-        cr, dr.x - rect->x, dr.y);
+        cr, dr.x, dr.y);
       cairo_line_to (
-        cr, (dr.x + dr.width) - rect->x,
+        cr, (dr.x + dr.width),
         dr.y + dr.height / 2);
       cairo_line_to (
-        cr, dr.x - rect->x, dr.y + dr.height);
+        cr, dr.x, dr.y + dr.height);
       cairo_fill (cr);
     }
+
+  cairo_destroy (cr);
 }
 
 /**
@@ -736,7 +770,7 @@ get_playhead_px (
 static void
 draw_playhead (
   RulerWidget *  self,
-  cairo_t *      cr,
+  GtkSnapshot *  snapshot,
   GdkRectangle * rect)
 {
   int px = get_playhead_px (self);
@@ -761,15 +795,23 @@ draw_playhead (
       dr.width = RW_PLAYHEAD_TRIANGLE_WIDTH;
       dr.height = RW_PLAYHEAD_TRIANGLE_HEIGHT;
 
+      cairo_t * cr =
+        gtk_snapshot_append_cairo (
+          snapshot,
+          &GRAPHENE_RECT_INIT (
+            dr.x, dr.y, dr.width, dr.height));
+
       cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
       cairo_set_line_width (cr, 2);
-      cairo_move_to (cr, dr.x - rect->x, dr.y);
+      cairo_move_to (cr, dr.x, dr.y);
       cairo_line_to (
-        cr, (dr.x + dr.width / 2) - rect->x,
+        cr, (dr.x + dr.width / 2),
         dr.y + dr.height);
       cairo_line_to (
-        cr, (dr.x + dr.width) - rect->x, dr.y);
+        cr, (dr.x + dr.width), dr.y);
       cairo_fill (cr);
+
+      cairo_destroy (cr);
     }
 }
 
@@ -782,7 +824,6 @@ static void
 draw_lines_and_labels (
   RulerWidget *  self,
   GtkSnapshot *  snapshot,
-  cairo_t *      cr,
   GdkRectangle * rect)
 {
   /* draw lines */
@@ -796,6 +837,15 @@ draw_lines_and_labels (
   int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
+
+  GdkRGBA main_color = { 1, 1, 1, 1 };
+  GdkRGBA secondary_color = { 0.7, 0.7, 0.7, 0.4 };
+  GdkRGBA tertiary_color = { 0.5, 0.5, 0.5, 0.3 };
+  GdkRGBA main_text_color = { 0.8, 0.8, 0.8, 1 };
+  GdkRGBA secondary_text_color = {
+    0.5, 0.5, 0.5, 1 };
+  GdkRGBA tertiary_text_color =
+    secondary_text_color;
 
   /* if time display */
   if (g_settings_get_enum (
@@ -827,25 +877,27 @@ draw_lines_and_labels (
           if (curr_px + 20.0 < rect->x)
             continue;
 
-          cairo_set_source_rgb (cr, 1, 1, 1);
-          cairo_set_line_width (cr, 1);
-          double x = curr_px - rect->x;
-          cairo_move_to (cr, x, 0);
-          cairo_line_to (cr, x, height / 3);
-          cairo_stroke (cr);
-          cairo_set_source_rgb (cr, 0.8, 0.8, 0.8);
+          gtk_snapshot_append_color (
+            snapshot, &main_color,
+            &GRAPHENE_RECT_INIT (
+              (float) curr_px, 0,
+              1, height / 3.f));
+
           sprintf (text, "%d", i);
-          pango_layout_set_markup (
+          pango_layout_set_text (
             self->layout_normal, text, -1);
           pango_layout_get_pixel_size (
             self->layout_normal, &textw, &texth);
-          cairo_move_to (
-            cr,
-            x - textw / 2, height / 3 + 2);
-          pango_cairo_update_layout (
-            cr, self->layout_normal);
-          pango_cairo_show_layout (
-            cr, self->layout_normal);
+          gtk_snapshot_save (snapshot);
+          gtk_snapshot_translate (
+            snapshot,
+            &GRAPHENE_POINT_INIT (
+              (float) curr_px + 1 - textw / 2.f,
+              height / 3.f + 2));
+          gtk_snapshot_append_layout (
+            snapshot, self->layout_normal,
+            &main_text_color);
+          gtk_snapshot_restore (snapshot);
         }
       /* draw 10secs */
       i = 0;
@@ -860,38 +912,35 @@ draw_lines_and_labels (
               if (curr_px < rect->x)
                 continue;
 
-              cairo_set_source_rgb (
-                cr, 0.7, 0.7, 0.7);
-              cairo_set_line_width (
-                cr, 0.5);
-              double x = curr_px - rect->x;
-              cairo_move_to (
-                cr, x, 0);
-              cairo_line_to (
-                cr, x, height / 4);
-              cairo_stroke (cr);
+              gtk_snapshot_append_color (
+                snapshot, &secondary_color,
+                &GRAPHENE_RECT_INIT (
+                  (float) curr_px, 0,
+                  1, height / 4.f));
+
               if ((self->px_per_10sec >
                      RW_PX_TO_HIDE_BEATS * 2) &&
                   i % ten_secs_per_min != 0)
                 {
-                  cairo_set_source_rgb (
-                    cr,
-                    0.5, 0.5, 0.5);
                   sprintf (
                     text, "%d:%02d",
                     i / ten_secs_per_min,
                     (i % ten_secs_per_min) * 10);
-                  pango_layout_set_markup (
+                  pango_layout_set_text (
                     self->layout_small, text, -1);
                   pango_layout_get_pixel_size (
-                    self->layout_small, &textw, &texth);
-                  cairo_move_to (
-                    cr, x - textw / 2,
-                    height / 4 + 2);
-                  pango_cairo_update_layout (
-                    cr, self->layout_small);
-                  pango_cairo_show_layout (
-                    cr, self->layout_small);
+                    self->layout_small,
+                    &textw, &texth);
+                  gtk_snapshot_save (snapshot);
+                  gtk_snapshot_translate (
+                    snapshot,
+                    &GRAPHENE_POINT_INIT (
+                      (float) curr_px + 1 - textw / 2.f,
+                      height / 4.f + 2));
+                  gtk_snapshot_append_layout (
+                    snapshot, self->layout_small,
+                    &secondary_text_color);
+                  gtk_snapshot_restore (snapshot);
                 }
             }
         }
@@ -908,23 +957,16 @@ draw_lines_and_labels (
               if (curr_px < rect->x)
                 continue;
 
-              cairo_set_source_rgb (
-                cr, 0.6, 0.6, 0.6);
-              cairo_set_line_width (
-                cr, 0.3);
-              double x = curr_px - rect->x;
-              cairo_move_to (
-                cr, x, 0);
-              cairo_line_to (
-                cr, x, height / 6);
-              cairo_stroke (cr);
+              gtk_snapshot_append_color (
+                snapshot, &tertiary_color,
+                &GRAPHENE_RECT_INIT (
+                  (float) curr_px, 0,
+                  1, height / 6.f));
 
               if ((self->px_per_sec >
                      RW_PX_TO_HIDE_BEATS * 2) &&
                   i % secs_per_10_sec != 0)
                 {
-                  cairo_set_source_rgb (
-                    cr, 0.5, 0.5, 0.5);
                   int secs_per_min = 60;
                   sprintf (
                     text, "%d:%02d",
@@ -932,17 +974,21 @@ draw_lines_and_labels (
                     ((i / secs_per_10_sec) %
                       ten_secs_per_min) * 10 +
                     i % secs_per_10_sec);
-                  pango_layout_set_markup (
+                  pango_layout_set_text (
                     self->layout_small, text, -1);
                   pango_layout_get_pixel_size (
-                    self->layout_small, &textw, &texth);
-                  cairo_move_to (
-                    cr, x - textw / 2,
-                    height / 4 + 2);
-                  pango_cairo_update_layout (
-                    cr, self->layout_small);
-                  pango_cairo_show_layout (
-                    cr, self->layout_small);
+                    self->layout_small,
+                    &textw, &texth);
+                  gtk_snapshot_save (snapshot);
+                  gtk_snapshot_translate (
+                    snapshot,
+                    &GRAPHENE_POINT_INIT (
+                      (float) curr_px + 1 - textw / 2.f,
+                      height / 4.f + 2));
+                  gtk_snapshot_append_layout (
+                    snapshot, self->layout_small,
+                    &tertiary_text_color);
+                  gtk_snapshot_restore (snapshot);
                 }
             }
         }
@@ -974,32 +1020,27 @@ draw_lines_and_labels (
           if (curr_px + 20.0 < rect->x)
             continue;
 
-          cairo_set_source_rgb (cr, 1, 1, 1);
-          cairo_set_line_width (cr, 1);
-          double x = curr_px - rect->x;
           gtk_snapshot_append_color (
-            snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 1),
+            snapshot, &main_color,
             &GRAPHENE_RECT_INIT (
               (float) curr_px, 0,
               1, height / 3.f));
-#if 0
-          cairo_move_to (cr, x, 0);
-          cairo_line_to (cr, x, height / 3);
-          cairo_stroke (cr);
-#endif
-          cairo_set_source_rgb (cr, 0.8, 0.8, 0.8);
+
           sprintf (text, "%d", i + 1);
-          pango_layout_set_markup (
+          pango_layout_set_text (
             self->layout_normal, text, -1);
           pango_layout_get_pixel_size (
             self->layout_normal, &textw, &texth);
-          cairo_move_to (
-            cr,
-            x - textw / 2, height / 3 + 2);
-          pango_cairo_update_layout (
-            cr, self->layout_normal);
-          pango_cairo_show_layout (
-            cr, self->layout_normal);
+          gtk_snapshot_save (snapshot);
+          gtk_snapshot_translate (
+            snapshot,
+            &GRAPHENE_POINT_INIT (
+              (float) curr_px + 1 - textw / 2.f,
+              height / 3.f + 2));
+          gtk_snapshot_append_layout (
+            snapshot, self->layout_normal,
+            &main_text_color);
+          gtk_snapshot_restore (snapshot);
         }
       /* draw beats */
       i = 0;
@@ -1014,38 +1055,35 @@ draw_lines_and_labels (
               if (curr_px < rect->x)
                 continue;
 
-              cairo_set_source_rgb (
-                cr, 0.7, 0.7, 0.7);
-              cairo_set_line_width (
-                cr, 0.5);
-              double x = curr_px - rect->x;
-              cairo_move_to (
-                cr, x, 0);
-              cairo_line_to (
-                cr, x, height / 4);
-              cairo_stroke (cr);
+              gtk_snapshot_append_color (
+                snapshot, &secondary_color,
+                &GRAPHENE_RECT_INIT (
+                  (float) curr_px, 0,
+                  1, height / 4.f));
+
               if ((self->px_per_beat >
                      RW_PX_TO_HIDE_BEATS * 2) &&
                   i % beats_per_bar != 0)
                 {
-                  cairo_set_source_rgb (
-                    cr,
-                    0.5, 0.5, 0.5);
                   sprintf (
                     text, "%d.%d",
                     i / beats_per_bar + 1,
                     i % beats_per_bar + 1);
-                  pango_layout_set_markup (
+                  pango_layout_set_text (
                     self->layout_small, text, -1);
                   pango_layout_get_pixel_size (
-                    self->layout_small, &textw, &texth);
-                  cairo_move_to (
-                    cr, x - textw / 2,
-                    height / 4 + 2);
-                  pango_cairo_update_layout (
-                    cr, self->layout_small);
-                  pango_cairo_show_layout (
-                    cr, self->layout_small);
+                    self->layout_small,
+                    &textw, &texth);
+                  gtk_snapshot_save (snapshot);
+                  gtk_snapshot_translate (
+                    snapshot,
+                    &GRAPHENE_POINT_INIT (
+                      (float) curr_px + 1 - textw / 2.f,
+                      height / 4.f + 2));
+                  gtk_snapshot_append_layout (
+                    snapshot, self->layout_small,
+                    &secondary_text_color);
+                  gtk_snapshot_restore (snapshot);
                 }
             }
         }
@@ -1062,23 +1100,16 @@ draw_lines_and_labels (
               if (curr_px < rect->x)
                 continue;
 
-              cairo_set_source_rgb (
-                cr, 0.6, 0.6, 0.6);
-              cairo_set_line_width (
-                cr, 0.3);
-              double x = curr_px - rect->x;
-              cairo_move_to (
-                cr, x, 0);
-              cairo_line_to (
-                cr, x, height / 6);
-              cairo_stroke (cr);
+              gtk_snapshot_append_color (
+                snapshot, &tertiary_color,
+                &GRAPHENE_RECT_INIT (
+                  (float) curr_px, 0,
+                  1, height / 6.f));
 
               if ((self->px_per_sixteenth >
                      RW_PX_TO_HIDE_BEATS * 2) &&
                   i % sixteenths_per_beat != 0)
                 {
-                  cairo_set_source_rgb (
-                    cr, 0.5, 0.5, 0.5);
                   sprintf (
                     text, "%d.%d.%d",
                     i / TRANSPORT->
@@ -1086,17 +1117,21 @@ draw_lines_and_labels (
                     ((i / sixteenths_per_beat) %
                       beats_per_bar) + 1,
                     i % sixteenths_per_beat + 1);
-                  pango_layout_set_markup (
+                  pango_layout_set_text (
                     self->layout_small, text, -1);
                   pango_layout_get_pixel_size (
-                    self->layout_small, &textw, &texth);
-                  cairo_move_to (
-                    cr, x - textw / 2,
-                    height / 4 + 2);
-                  pango_cairo_update_layout (
-                    cr, self->layout_small);
-                  pango_cairo_show_layout (
-                    cr, self->layout_small);
+                    self->layout_small,
+                    &textw, &texth);
+                  gtk_snapshot_save (snapshot);
+                  gtk_snapshot_translate (
+                    snapshot,
+                    &GRAPHENE_POINT_INIT (
+                      (float) curr_px + 1 - textw / 2.f,
+                      height / 4.f + 2));
+                  gtk_snapshot_append_layout (
+                    snapshot, self->layout_small,
+                    &tertiary_text_color);
+                  gtk_snapshot_restore (snapshot);
                 }
             }
         }
@@ -1153,242 +1188,205 @@ ruler_snapshot (
     visible_rect.size.width,
     visible_rect.size.height);
 
-  cairo_t * cr =
-    gtk_snapshot_append_cairo (
-      snapshot, &visible_rect);
+  self->last_rect = visible_rect;
 
-  if (true || self->redraw ||
-      !graphene_rect_equal (
-         &visible_rect, &self->last_rect))
+  /* ----- ruler background ------- */
+
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+
+  /* if timeline, draw loop background */
+  /* FIXME use rect */
+  double start_px = 0, end_px = 0;
+  if (self->type == TYPE (TIMELINE))
     {
-      self->last_rect = visible_rect;
-
-      z_cairo_reset_caches (
-        &self->cached_cr,
-        &self->cached_surface, visible_rect_gdk.width,
-        visible_rect_gdk.height, cr);
-
-      cairo_t * cr_to_use = self->cached_cr;
-
-      /* ----- ruler background ------- */
-
-      int height =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (self));
-
-      /* if timeline, draw loop background */
-      /* FIXME use rect */
-      double start_px = 0, end_px = 0;
-      if (self->type == TYPE (TIMELINE))
-        {
-          start_px =
-            ui_pos_to_px_timeline (
-              &TRANSPORT->loop_start_pos, 1);
-          end_px =
-            ui_pos_to_px_timeline (
-              &TRANSPORT->loop_end_pos, 1);
-        }
-      else if (self->type == TYPE (EDITOR))
-        {
-          start_px =
-            ui_pos_to_px_editor (
-              &TRANSPORT->loop_start_pos, 1);
-          end_px =
-            ui_pos_to_px_editor (
-              &TRANSPORT->loop_end_pos, 1);
-        }
-
-      GdkRGBA color;
-      if (TRANSPORT->loop)
-        {
-          color.red = 0;
-          color.green = 0.9;
-          color.blue = 0.7;
-          color.alpha = 0.25;
-        }
-      else
-        {
-          color.red = 0.5;
-          color.green = 0.5;
-          color.blue = 0.5;
-          color.alpha = 0.25;
-        }
-      gdk_cairo_set_source_rgba (
-        cr_to_use, &color);
-      cairo_set_line_width (cr_to_use, 2);
-
-      /* if transport loop start is within the
-       * screen */
-      if (start_px + 2.0 > visible_rect_gdk.x &&
-          start_px <= visible_rect_gdk.x + visible_rect_gdk.width)
-        {
-          /* draw the loop start line */
-          gtk_snapshot_append_color (
-            snapshot, &color,
-            &GRAPHENE_RECT_INIT (
-              (float) start_px - visible_rect.origin.x,
-              0, 2, visible_rect.size.height));
-#if 0
-          double x =
-            (start_px - visible_rect_gdk.x);
-          cairo_move_to (
-            cr_to_use, x, 0);
-          cairo_line_to (
-            cr_to_use, x, visible_rect_gdk.height);
-          cairo_stroke (cr_to_use);
-#endif
-        }
-      /* if transport loop end is within the
-       * screen */
-      if (end_px + 2.0 > visible_rect_gdk.x &&
-          end_px <= visible_rect_gdk.x + visible_rect_gdk.width)
-        {
-          /* draw the loop end line */
-#if 0
-          double x =
-            (end_px - visible_rect_gdk.x);
-          cairo_move_to (
-            cr_to_use, x, 0);
-          cairo_line_to (
-            cr_to_use, x, visible_rect_gdk.height);
-          cairo_stroke (cr_to_use);
-#endif
-
-          gtk_snapshot_append_color (
-            snapshot, &color,
-            &GRAPHENE_RECT_INIT (
-              (float) end_px - visible_rect.origin.x,
-              0, 2, visible_rect.size.height));
-        }
-
-      /* create gradient for loop area */
-      cairo_pattern_t * pat =
-        cairo_pattern_create_linear (
-          0.0, 0.0, 0.0, (height * 3) / 4);
-      if (TRANSPORT->loop)
-        {
-          cairo_pattern_add_color_stop_rgba (
-            pat, 1, 0, 0.9, 0.7, 0.1);
-          cairo_pattern_add_color_stop_rgba (
-            pat, 0, 0, 0.9, 0.7, 0.2);
-        }
-      else
-        {
-          cairo_pattern_add_color_stop_rgba (
-            pat, 1, 0.5, 0.5, 0.5, 0.1);
-          cairo_pattern_add_color_stop_rgba (
-            pat, 0, 0.5, 0.5, 0.5, 0.2);
-        }
-
-      double loop_start_local_x =
-        MAX (0, start_px - visible_rect_gdk.x);
-      cairo_rectangle (
-        cr_to_use,
-        loop_start_local_x, 0,
-        end_px - MAX (visible_rect_gdk.x, start_px),
-        visible_rect_gdk.height);
-      cairo_set_source (cr_to_use, pat);
-      cairo_fill (cr_to_use);
-      cairo_pattern_destroy (pat);
-
-      draw_lines_and_labels (
-        self, snapshot, cr_to_use,
-        &visible_rect_gdk);
-
-      /* ----- draw range --------- */
-
-      if (TRANSPORT->has_range)
-        {
-          int range1_first =
-            position_is_before_or_equal (
-              &TRANSPORT->range_1,
-              &TRANSPORT->range_2);
-
-          GdkRectangle dr;
-          if (range1_first)
-            {
-              dr.x =
-                ui_pos_to_px_timeline (
-                  &TRANSPORT->range_1, true);
-              dr.width =
-                ui_pos_to_px_timeline (
-                  &TRANSPORT->range_2, true) - dr.x;
-            }
-          else
-            {
-              dr.x =
-                ui_pos_to_px_timeline (
-                  &TRANSPORT->range_2, true);
-              dr.width =
-                ui_pos_to_px_timeline (
-                  &TRANSPORT->range_1, true) - dr.x;
-            }
-          dr.y = 0;
-          dr.height =
-            gtk_widget_get_allocated_height (
-              GTK_WIDGET (self)) /
-            RW_RANGE_HEIGHT_DIVISOR;
-
-          dr.x -= visible_rect_gdk.x;
-
-          /* fill */
-          cairo_set_source_rgba (
-            cr_to_use, 1, 1, 1, 0.27);
-          cairo_rectangle (
-            cr_to_use, dr.x, dr.y,
-            dr.width, dr.height);
-          cairo_fill (cr_to_use);
-
-          /* draw edges */
-          cairo_set_source_rgba (
-            cr_to_use, 1, 1, 1, 0.7);
-          cairo_rectangle (
-            cr_to_use, dr.x, dr.y, 2, dr.height);
-          cairo_fill (cr_to_use);
-          cairo_rectangle (
-            cr_to_use, dr.x + dr.width, dr.y, 2,
-            dr.height - dr.y);
-          cairo_fill (cr_to_use);
-        }
-
-      /* ----- draw regions --------- */
-
-      if (self->type == TYPE (EDITOR))
-        {
-          draw_regions (self, &visible_rect_gdk);
-        }
-
-      /* ------ draw markers ------- */
-
-      draw_cue_point (
-        self, cr_to_use, &visible_rect_gdk);
-      draw_loop_start (
-        self, cr_to_use, &visible_rect_gdk);
-      draw_loop_end (
-        self, cr_to_use, &visible_rect_gdk);
-
-      if (self->type == TYPE (TIMELINE) &&
-          TRANSPORT->punch_mode)
-        {
-          draw_punch_in (
-            self, cr_to_use, &visible_rect_gdk);
-          draw_punch_out (
-            self, cr_to_use, &visible_rect_gdk);
-        }
-
-      /* --------- draw playhead ---------- */
-
-      draw_playhead (self, cr_to_use, &visible_rect_gdk);
-
-      self->redraw = 0;
+      start_px =
+        ui_pos_to_px_timeline (
+          &TRANSPORT->loop_start_pos, 1);
+      end_px =
+        ui_pos_to_px_timeline (
+          &TRANSPORT->loop_end_pos, 1);
+    }
+  else if (self->type == TYPE (EDITOR))
+    {
+      start_px =
+        ui_pos_to_px_editor (
+          &TRANSPORT->loop_start_pos, 1);
+      end_px =
+        ui_pos_to_px_editor (
+          &TRANSPORT->loop_end_pos, 1);
     }
 
-  cairo_set_source_surface (
-    cr, self->cached_surface,
-    visible_rect_gdk.x, visible_rect_gdk.y);
-  cairo_paint (cr);
+  GdkRGBA color;
+  if (TRANSPORT->loop)
+    {
+      color.red = 0;
+      color.green = 0.9;
+      color.blue = 0.7;
+      color.alpha = 0.25;
+    }
+  else
+    {
+      color.red = 0.5;
+      color.green = 0.5;
+      color.blue = 0.5;
+      color.alpha = 0.25;
+    }
+  const int line_width = 2;
 
-  cairo_destroy (cr);
+  /* if transport loop start is within the
+   * screen */
+  if (start_px + 2.0 > visible_rect_gdk.x &&
+      start_px <= visible_rect_gdk.x + visible_rect_gdk.width)
+    {
+      /* draw the loop start line */
+      gtk_snapshot_append_color (
+        snapshot, &color,
+        &GRAPHENE_RECT_INIT (
+          (float) start_px, 0,
+          line_width, visible_rect.size.height));
+    }
+  /* if transport loop end is within the
+   * screen */
+  if (end_px + 2.0 > visible_rect_gdk.x &&
+      end_px <= visible_rect_gdk.x + visible_rect_gdk.width)
+    {
+      /* draw the loop end line */
+      gtk_snapshot_append_color (
+        snapshot, &color,
+        &GRAPHENE_RECT_INIT (
+          (float) end_px, 0,
+          line_width, visible_rect.size.height));
+    }
+
+  /* create gradient for loop area */
+  GskColorStop stop1, stop2;
+  if (TRANSPORT->loop)
+    {
+      stop1.offset = 0;
+      stop1.color.red = 0;
+      stop1.color.green = 0.9;
+      stop1.color.blue = 0.7;
+      stop1.color.alpha = 0.2;
+      stop2.offset = 1;
+      stop2.color.red = 0;
+      stop2.color.green = 0.9;
+      stop2.color.blue = 0.7;
+      stop2.color.alpha = 0.1;
+    }
+  else
+    {
+      stop1.offset = 0;
+      stop1.color.red = 0.5;
+      stop1.color.green = 0.5;
+      stop1.color.blue = 0.5;
+      stop1.color.alpha = 0.2;
+      stop2.offset = 1;
+      stop2.color.red = 0.5;
+      stop2.color.green = 0.5;
+      stop2.color.blue = 0.5;
+      stop2.color.alpha = 0.1;
+    }
+  GskColorStop stops[] = { stop1, stop2 };
+
+  gtk_snapshot_append_linear_gradient (
+    snapshot,
+    &GRAPHENE_RECT_INIT (
+      (float) start_px, 0,
+      (float) (end_px - start_px), height),
+    &GRAPHENE_POINT_INIT (0, 0),
+    &GRAPHENE_POINT_INIT (
+      0, (float) (height * 3) / 4),
+    stops, 2);
+
+  draw_lines_and_labels (
+    self, snapshot, &visible_rect_gdk);
+
+  /* ----- draw range --------- */
+
+  if (TRANSPORT->has_range)
+    {
+      int range1_first =
+        position_is_before_or_equal (
+          &TRANSPORT->range_1,
+          &TRANSPORT->range_2);
+
+      GdkRectangle dr;
+      if (range1_first)
+        {
+          dr.x =
+            ui_pos_to_px_timeline (
+              &TRANSPORT->range_1, true);
+          dr.width =
+            ui_pos_to_px_timeline (
+              &TRANSPORT->range_2, true) - dr.x;
+        }
+      else
+        {
+          dr.x =
+            ui_pos_to_px_timeline (
+              &TRANSPORT->range_2, true);
+          dr.width =
+            ui_pos_to_px_timeline (
+              &TRANSPORT->range_1, true) - dr.x;
+        }
+      dr.y = 0;
+      dr.height =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (self)) /
+        RW_RANGE_HEIGHT_DIVISOR;
+
+      /* fill */
+      gtk_snapshot_append_color (
+        snapshot,
+        &Z_GDK_RGBA_INIT (1, 1, 1, 0.27),
+        &GRAPHENE_RECT_INIT (
+          dr.x, dr.y, dr.width, dr.height));
+
+      /* draw edges */
+      gtk_snapshot_append_color (
+        snapshot,
+        &Z_GDK_RGBA_INIT (1, 1, 1, 0.7),
+        &GRAPHENE_RECT_INIT (
+          dr.x, dr.y, 2, dr.height));
+      gtk_snapshot_append_color (
+        snapshot,
+        &Z_GDK_RGBA_INIT (1, 1, 1, 0.7),
+        &GRAPHENE_RECT_INIT (
+          dr.x + dr.width, dr.y,
+          2, dr.height - dr.y));
+    }
+
+  /* ----- draw regions --------- */
+
+  if (self->type == TYPE (EDITOR))
+    {
+      draw_regions (
+        self, snapshot, &visible_rect_gdk);
+    }
+
+  /* ------ draw markers ------- */
+
+  draw_cue_point (
+    self, snapshot, &visible_rect_gdk);
+  draw_loop_start (
+    self, snapshot, &visible_rect_gdk);
+  draw_loop_end (
+    self, snapshot, &visible_rect_gdk);
+
+  if (self->type == TYPE (TIMELINE) &&
+      TRANSPORT->punch_mode)
+    {
+      draw_punch_in (
+        self, snapshot, &visible_rect_gdk);
+      draw_punch_out (
+        self, snapshot, &visible_rect_gdk);
+    }
+
+  /* --------- draw playhead ---------- */
+
+  draw_playhead (self, snapshot, &visible_rect_gdk);
 }
 
 #undef beats_per_bar
@@ -1494,7 +1492,7 @@ get_range_rect (
         TRANSPORT, false, &tmp);
       double px =
         ui_pos_to_px_timeline (&tmp, true);
-      rect->width = (int) px - rect->x;
+      rect->width = (int) px;
     }
   else
     {

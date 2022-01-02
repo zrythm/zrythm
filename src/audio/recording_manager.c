@@ -385,12 +385,15 @@ recording_manager_handle_recording (
     {
       AutomationTrack * at = atl->ats[i];
 
+      bool at_should_be_recording =
+        automation_track_should_be_recording (
+          at, cur_time, false);
+
       /* if should stop automation recording */
       if (G_UNLIKELY (at->recording_started)
           &&
           (!TRANSPORT_IS_ROLLING ||
-           !automation_track_should_be_recording (
-             at, cur_time, false)))
+           !at_should_be_recording))
         {
           /* send stop automation recording event */
           RecordingEvent * re =
@@ -451,8 +454,7 @@ recording_manager_handle_recording (
 
       /* if automatmion should be recording */
       if (TRANSPORT_IS_ROLLING &&
-          automation_track_should_be_recording (
-            at, cur_time, false))
+          at_should_be_recording)
         {
           /* if recording hasn't started yet */
           if (!at->recording_started &&

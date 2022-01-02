@@ -201,7 +201,7 @@ channel_send_prepare_process (
       port_clear_buffer (self->midi_in);
       port_clear_buffer (self->midi_out);
     }
-  if (self->stereo_in)
+  else if (self->stereo_in)
     {
       port_clear_buffer (self->stereo_in->l);
       port_clear_buffer (self->stereo_in->r);

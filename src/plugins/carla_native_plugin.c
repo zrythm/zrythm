@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -39,6 +39,7 @@
 #include "plugins/carla_native_plugin.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/dsp.h"
 #include "utils/error.h"
 #include "utils/file.h"
 #include "utils/flags.h"
@@ -600,16 +601,16 @@ carla_native_plugin_process (
       /* set all ins/outs to zero bufs */
       for (size_t i = 0; i < num_inputs; i++)
         {
-          memset (
-            dummy_inbufs[i], 0,
-            nframes * sizeof (float));
+          dsp_fill (
+            dummy_inbufs[i],
+            DENORMAL_PREVENTION_VAL, nframes);
           inbuf[i] = dummy_inbufs[i];
         }
       for (size_t i = 0; i < num_outputs; i++)
         {
-          memset (
-            dummy_outbufs[i], 0,
-            nframes * sizeof (float));
+          dsp_fill (
+            dummy_outbufs[i],
+            DENORMAL_PREVENTION_VAL, nframes);
           outbuf[i] = dummy_outbufs[i];
         }
 

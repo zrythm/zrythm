@@ -341,9 +341,9 @@ HOT
 NONNULL
 bool
 automation_track_should_be_recording (
-  AutomationTrack * at,
-  gint64            cur_time,
-  bool              record_aps);
+  const AutomationTrack * at,
+  const gint64            cur_time,
+  const bool              record_aps);
 
 /**
  * Adds an automation ZRegion to the AutomationTrack.

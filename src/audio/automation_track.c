@@ -579,39 +579,41 @@ automation_track_should_read_automation (
  */
 bool
 automation_track_should_be_recording (
-  AutomationTrack * at,
-  gint64            cur_time,
-  bool              record_aps)
+  const AutomationTrack * at,
+  const gint64            cur_time,
+  const bool              record_aps)
 {
-  if (at->automation_mode == AUTOMATION_MODE_RECORD)
+  if (G_LIKELY (
+        at->automation_mode !=
+          AUTOMATION_MODE_RECORD))
+    return false;
+
+  if (at->record_mode ==
+        AUTOMATION_RECORD_MODE_LATCH)
     {
-      if (at->record_mode ==
-            AUTOMATION_RECORD_MODE_LATCH)
+      /* in latch mode, we are always recording,
+       * even if the value doesn't change
+       * (an automation point will be created
+       * as soon as latch mode is armed) and
+       * then only when changes are made) */
+      return true;
+    }
+  else if (
+    at->record_mode == AUTOMATION_RECORD_MODE_TOUCH)
+    {
+      Port * port = at->port;
+      g_return_val_if_fail (
+        IS_PORT_AND_NONNULL (port), false);
+      gint64 diff =
+        cur_time - port->last_change;
+      if (diff <
+            AUTOMATION_RECORDING_TOUCH_REL_MS * 1000)
         {
-          /* in latch mode, we are always recording,
-           * even if the value doesn't change
-           * (an automation point will be created
-           * as soon as latch mode is armed) and
-           * then only when changes are made) */
+          /* still recording */
           return true;
         }
-      if (at->record_mode ==
-            AUTOMATION_RECORD_MODE_TOUCH)
-        {
-          Port * port = at->port;
-          g_return_val_if_fail (
-            IS_PORT_AND_NONNULL (port), false);
-          gint64 diff =
-            cur_time - port->last_change;
-          if (diff <
-                AUTOMATION_RECORDING_TOUCH_REL_MS * 1000)
-            {
-              /* still recording */
-              return true;
-            }
-          else if (!record_aps)
-            return at->recording_started;
-        }
+      else if (!record_aps)
+        return at->recording_started;
     }
 
   return false;
