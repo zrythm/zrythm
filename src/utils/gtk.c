@@ -1026,6 +1026,15 @@ z_gtk_source_language_manager_get (void)
         after_paths_builder, language_specs_dir);
     }
   g_strfreev (tmp_dirs);
+  g_free (language_specs_dir);
+
+  /* add bundled dir for GNU/Linux packages */
+  language_specs_dir =
+    zrythm_get_dir (
+      ZRYTHM_DIR_SYSTEM_BUNDLED_SOURCEVIEW_LANGUAGE_SPECS_DIR);
+  strv_builder_add (
+    after_paths_builder, language_specs_dir);
+  g_free (language_specs_dir);
 
   char ** dirs =
     strv_builder_end (after_paths_builder);
@@ -1041,7 +1050,6 @@ z_gtk_source_language_manager_get (void)
   gtk_source_language_manager_set_search_path (
     manager, (const char * const*) dirs);
 
-  g_free (language_specs_dir);
   g_strfreev (dirs);
 
   already_set = true;

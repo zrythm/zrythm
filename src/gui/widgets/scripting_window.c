@@ -164,6 +164,7 @@ scripting_window_widget_init (
   GtkSourceLanguage * lang =
     gtk_source_language_manager_get_language (
       manager, "scheme");
+  g_return_if_fail (lang);
   self->buffer =
     gtk_source_buffer_new_with_language (lang);
   self->editor =
