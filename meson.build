@@ -357,7 +357,6 @@ illegal_char_test_args = [
   ]
 
 # GTK/GLIB versions
-pango_req = '1.50.0' # keep in sync with gtk4
 gtk_req = '4.6.0'
 glib_req = '2.66.0'
 
@@ -895,13 +894,6 @@ audec_dep = dependency(
   fallback: ['libaudec', 'libaudec_dep'],
   required: true, static: all_static)
 
-pango_dep = dependency (
-  'pango', version: '>=' + pango_req,
-  fallback: ['pango', 'libpango_dep'],
-  default_options: [
-    'default_library=static',
-    'introspection=disabled',])
-
 gtk_dep = dependency (
   'gtk4', version: '>=' + gtk_req,
   fallback: ['gtk4', 'libgtk_dep'],
@@ -1217,7 +1209,6 @@ vamp_deps = [ vamp_dep, vamp_host_sdk_dep ]
 
 zrythm_deps = [
   libadwaita_dep,
-  pango_dep,
   gtk_dep,
   sndfile_dep,
   samplerate_dep,
