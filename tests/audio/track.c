@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,7 +30,7 @@
 #include <locale.h>
 
 static void
-test_new_track ()
+test_new_track (void)
 {
   Track * track =
     track_new (
@@ -47,7 +47,7 @@ test_new_track ()
 }
 
 static void
-test_get_direct_folder_parent ()
+test_get_direct_folder_parent (void)
 {
   test_helper_zrythm_init ();
 

@@ -74,10 +74,6 @@ enum
 #define CATEGORIES_ICON "category"
 #define AUTHORS_ICON "user"
 
-void
-plugin_browser_widget_refresh_collections (
-  PluginBrowserWidget * self);
-
 static void
 update_stack_switcher_emblems (
   PluginBrowserWidget * self)
@@ -881,7 +877,7 @@ on_plugin_selection_changed (
 }
 
 static GtkTreeModel *
-create_model_for_favorites ()
+create_model_for_favorites (void)
 {
   /* list name, list index */
   GtkListStore * list_store =
@@ -912,7 +908,7 @@ create_model_for_favorites ()
 }
 
 static GtkTreeModel *
-create_model_for_categories ()
+create_model_for_categories (void)
 {
   /* plugin category */
   GtkListStore * list_store =
@@ -938,7 +934,7 @@ create_model_for_categories ()
 }
 
 static GtkTreeModel *
-create_model_for_authors ()
+create_model_for_authors (void)
 {
   /* plugin author */
   GtkListStore * list_store =
@@ -964,7 +960,7 @@ create_model_for_authors ()
 }
 
 static GtkTreeModel *
-create_model_for_protocols ()
+create_model_for_protocols (void)
 {
   /* protocol icon, string, enum */
   GtkListStore * list_store =

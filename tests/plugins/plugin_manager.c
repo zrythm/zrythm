@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,7 +25,7 @@
 #include "tests/helpers/zrythm.h"
 
 static void
-test_find_plugins ()
+test_find_plugins (void)
 {
   PluginSetting * setting;
   (void) setting;

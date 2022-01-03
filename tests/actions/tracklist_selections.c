@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1317,7 +1317,7 @@ static void __test_move_tracks (bool with_carla)
   test_helper_zrythm_cleanup ();
 }
 
-static void test_move_tracks ()
+static void test_move_tracks (void)
 {
   __test_move_tracks (false);
 #ifdef HAVE_CARLA
@@ -2525,7 +2525,7 @@ _test_move_inside (
 }
 
 static void
-test_move_inside ()
+test_move_inside (void)
 {
   (void) _test_move_inside;
 #ifdef HAVE_LSP_COMPRESSOR
@@ -2536,7 +2536,7 @@ test_move_inside ()
 }
 
 static void
-test_move_multiple_inside ()
+test_move_multiple_inside (void)
 {
   test_helper_zrythm_init ();
 
@@ -2708,7 +2708,7 @@ test_move_multiple_inside ()
 }
 
 static void
-test_copy_multiple_inside ()
+test_copy_multiple_inside (void)
 {
   test_helper_zrythm_init ();
 

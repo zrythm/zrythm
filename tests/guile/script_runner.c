@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,7 +34,7 @@ int num_args = 0;
 char ** args = NULL;
 
 static void
-test_run_script ()
+test_run_script (void)
 {
   test_helper_zrythm_init ();
 

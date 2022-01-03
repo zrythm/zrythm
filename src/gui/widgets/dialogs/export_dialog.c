@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -514,7 +514,7 @@ on_stems_toggled (
  * Creates the combo box model for bit depth.
  */
 static GtkTreeModel *
-create_bit_depth_store ()
+create_bit_depth_store (void)
 {
   GtkTreeIter iter;
   GtkTreeStore *store;
@@ -574,7 +574,7 @@ setup_bit_depth_combo_box (
  * Creates the combo box model for the pattern.
  */
 static GtkTreeModel *
-create_filename_pattern_store ()
+create_filename_pattern_store (void)
 {
   GtkTreeIter iter;
   GtkTreeStore *store;
@@ -641,7 +641,7 @@ setup_filename_pattern_combo_box (
  * formats.
  */
 static GtkTreeModel *
-create_formats_store ()
+create_formats_store (void)
 {
   GtkTreeIter iter;
   GtkTreeStore *store;

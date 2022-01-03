@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -42,7 +42,7 @@
 #include <glib/gi18n.h>
 
 static AudioClip *
-_create ()
+_create (void)
 {
   AudioClip * self = object_new (AudioClip);
   self->schema_version =

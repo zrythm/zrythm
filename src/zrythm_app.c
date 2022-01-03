@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -307,7 +307,7 @@ zrythm_app_check_for_updates (
  * Zrythm app.
  */
 static void
-init_recent_projects ()
+init_recent_projects (void)
 {
   g_message ("Initializing recent projects...");
 
@@ -887,7 +887,7 @@ lock_memory (void)
  * (libs/ardour/globals.cc).
  */
 static void
-raise_open_file_limit ()
+raise_open_file_limit (void)
 {
 #ifdef _WOE32
   /* this only affects stdio. 2048 is the maxium possible (512 the default).

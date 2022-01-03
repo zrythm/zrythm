@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -51,7 +51,7 @@ fixture_set_up (
 }
 
 static void
-test_region_is_hit_by_range ()
+test_region_is_hit_by_range (void)
 {
   Position pos, end_pos;
   position_set_to_bar (&pos, 4);
@@ -68,7 +68,7 @@ test_region_is_hit_by_range ()
 }
 
 static void
-test_region_is_hit ()
+test_region_is_hit (void)
 {
   RegionFixture _fixture;
   RegionFixture * fixture =
@@ -162,7 +162,7 @@ test_region_is_hit ()
 }
 
 static void
-test_new_region ()
+test_new_region (void)
 {
   RegionFixture _fixture;
   RegionFixture * fixture =

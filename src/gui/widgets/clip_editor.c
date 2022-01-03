@@ -60,7 +60,8 @@ clip_editor_widget_setup (
  * widths.
  */
 static int
-refresh_editor_ruler_and_arranger ()
+refresh_editor_ruler_and_arranger (
+  void * user_data)
 {
   if (!ui_is_widget_revealed (EDITOR_RULER))
     {

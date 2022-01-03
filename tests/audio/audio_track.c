@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -39,7 +39,7 @@
 #define LOOP_BAR 4
 
 static void
-test_fill_when_region_starts_on_loop_end ()
+test_fill_when_region_starts_on_loop_end (void)
 {
   test_helper_zrythm_init ();
 

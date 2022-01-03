@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -89,7 +89,7 @@ visibility_toggled (
 }
 
 static GtkTreeModel *
-create_model ()
+create_model (void)
 {
   gint i = 0;
   GtkListStore *store;

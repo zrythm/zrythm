@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,7 +28,7 @@
 #include "helpers/zrythm.h"
 
 static void
-test_get_int_after_last_space ()
+test_get_int_after_last_space (void)
 {
   const char * strs[] = {
     "helloЧитатьハロー・ワールド 1",
@@ -57,7 +57,7 @@ test_get_int_after_last_space ()
 }
 
 static void
-test_contains_substr ()
+test_contains_substr (void)
 {
   const char * strs[] = {
     "helloЧитатьハロー・ワールド 1",
@@ -80,7 +80,7 @@ test_contains_substr ()
 }
 
 static void
-test_is_equal ()
+test_is_equal (void)
 {
   g_assert_true (
     string_is_equal ("", ""));
@@ -194,7 +194,7 @@ test_is_equal ()
 }
 
 static void
-test_copy_w_realloc ()
+test_copy_w_realloc (void)
 {
   char * str = g_strdup ("aa");
   string_copy_w_realloc (&str, "");

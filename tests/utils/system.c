@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,7 +26,7 @@
 #include <glib.h>
 
 static void
-test_run_cmd_w_args ()
+test_run_cmd_w_args (void)
 {
   char * output;
   int ret;

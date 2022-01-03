@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,7 +29,7 @@
 #include "zrythm.h"
 
 static void
-test_midi_mappping ()
+test_midi_mappping (void)
 {
   MidiMappings * mappings =
     midi_mappings_new ();
@@ -79,5 +79,3 @@ main (int argc, char *argv[])
 
   return g_test_run ();
 }
-
-

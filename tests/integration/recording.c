@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -729,7 +729,7 @@ test_recording_takes (
 
 #ifdef HAVE_HELM
 static void
-test_recording ()
+test_recording (void)
 {
   test_helper_zrythm_init ();
 
@@ -758,7 +758,7 @@ test_recording ()
 }
 
 static void
-test_automation_touch_recording ()
+test_automation_touch_recording (void)
 {
   test_helper_zrythm_init ();
 

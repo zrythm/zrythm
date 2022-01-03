@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,7 +28,7 @@
 #include <glib.h>
 
 static void
-test_array_dynamic_swap ()
+test_array_dynamic_swap (void)
 {
   int ** arr1 =
     calloc (1, sizeof (int *));
@@ -100,7 +100,7 @@ test_array_dynamic_swap ()
 }
 
 static void
-test_double_size_if_full ()
+test_double_size_if_full (void)
 {
   size_t size = 3;
   int * arr = g_malloc0_n (size, sizeof (int));

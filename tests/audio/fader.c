@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -76,7 +76,7 @@ test_fader_process_with_instrument (
 }
 
 static void
-test_fader_process ()
+test_fader_process (void)
 {
   test_helper_zrythm_init ();
 
@@ -131,7 +131,7 @@ test_track_has_sound (
 }
 
 static void
-test_solo ()
+test_solo (void)
 {
   test_helper_zrythm_init ();
 

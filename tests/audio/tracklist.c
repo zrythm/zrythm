@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -69,7 +69,7 @@ create_automation_region (
 }
 
 static void
-test_swap_with_automation_regions ()
+test_swap_with_automation_regions (void)
 {
   test_helper_zrythm_init ();
 

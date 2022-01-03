@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -540,7 +540,7 @@ static void __test_edit_tracks (bool with_carla)
     }
 }
 
-static void test_edit_tracks ()
+static void test_edit_tracks (void)
 {
   __test_edit_tracks (false);
 #ifdef HAVE_CARLA

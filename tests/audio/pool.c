@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -33,7 +33,7 @@
 #include <locale.h>
 
 static void
-test_remove_unused ()
+test_remove_unused (void)
 {
   test_helper_zrythm_init ();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -49,7 +49,7 @@ print_progress_and_sleep (
 }
 
 static void
-test_export_wav ()
+test_export_wav (void)
 {
   test_helper_zrythm_init ();
 
@@ -243,13 +243,13 @@ bounce_region (
 }
 
 static void
-test_bounce_region ()
+test_bounce_region (void)
 {
   bounce_region (false);
 }
 
 static void
-test_bounce_with_bpm_automation ()
+test_bounce_with_bpm_automation (void)
 {
   bounce_region (true);
 }
@@ -259,7 +259,7 @@ test_bounce_with_bpm_automation ()
  * data is routed to an instrument track.
  */
 static void
-test_mixdown_midi_routed_to_instrument_track ()
+test_mixdown_midi_routed_to_instrument_track (void)
 {
 #ifdef HAVE_GEONKICK
   test_helper_zrythm_init ();

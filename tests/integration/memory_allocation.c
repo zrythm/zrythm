@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -40,7 +40,7 @@
  * by cleanup().
  */
 static void
-test_memory_allocation ()
+test_memory_allocation (void)
 {
   test_helper_zrythm_init ();
 

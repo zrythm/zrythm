@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,7 +31,7 @@
 #include <locale.h>
 
 static void
-test_queue_file ()
+test_queue_file (void)
 {
   test_helper_zrythm_init ();
 
@@ -53,7 +53,7 @@ test_queue_file ()
 }
 
 static void
-test_queue_midi_and_roll_transport ()
+test_queue_midi_and_roll_transport (void)
 {
 #ifdef HAVE_HELM
   test_helper_zrythm_init ();

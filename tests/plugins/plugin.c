@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -70,7 +70,7 @@ _test_loading_non_existing_plugin (
 }
 
 static void
-test_loading_non_existing_plugin ()
+test_loading_non_existing_plugin (void)
 {
   test_helper_zrythm_init ();
 

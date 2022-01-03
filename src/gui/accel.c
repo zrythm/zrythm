@@ -26,28 +26,6 @@
 #include <gtk/gtk.h>
 
 /**
- * Adds all global accelerators.
- *
- * Note: not used, doesn't work.
- */
-/*void*/
-/*accel_add_all ()*/
-/*{*/
-  /*gtk_accel_map_add_entry ("<MainWindow>/File/Save",*/
-                           /*GDK_KEY_s,*/
-                           /*GDK_CONTROL_MASK);*/
-  /*gtk_accel_map_add_entry ("<MainWindow>/File/Save As",*/
-                           /*GDK_KEY_s,*/
-                           /*GDK_CONTROL_MASK & GDK_SHIFT_MASK);*/
-  /*gtk_accel_map_add_entry ("<MainWindow>/File/Export As",*/
-                           /*GDK_KEY_e,*/
-                           /*GDK_CONTROL_MASK);*/
-  /*gtk_accel_map_add_entry ("<MainWindow>/File/Quit",*/
-                           /*GDK_KEY_q,*/
-                           /*GDK_CONTROL_MASK);*/
-/*}*/
-
-/**
  * Install accelerator for an action.
  */
 void

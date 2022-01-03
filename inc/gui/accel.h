@@ -24,12 +24,6 @@
 
 #include <gtk/gtk.h>
 
-/**
- * Adds all global accelerators.
- */
-void
-accel_add_all ();
-
 void
 accel_install_action_accelerator (
   const char *     primary,

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -80,9 +80,6 @@ typedef struct _HeaderWidget
    * clicked). */
   bool                log_has_pending_warnings;
 } HeaderWidget;
-
-HeaderWidget *
-header_widget_new ();
 
 void
 header_widget_refresh (

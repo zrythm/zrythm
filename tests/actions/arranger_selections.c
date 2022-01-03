@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -43,14 +43,14 @@ Position p1, p2;
  * Bootstraps the test with test data.
  */
 static void
-rebootstrap_timeline ()
+rebootstrap_timeline (void)
 {
   test_project_rebootstrap_timeline (
     &p1, &p2);
 }
 
 static void
-select_audio_and_midi_regions_only ()
+select_audio_and_midi_regions_only (void)
 {
   arranger_selections_clear (
     (ArrangerSelections *) TL_SELECTIONS,
@@ -86,7 +86,7 @@ select_audio_and_midi_regions_only ()
  * Check if the undo stack has a single element.
  */
 static void
-check_has_single_undo ()
+check_has_single_undo (void)
 {
   g_assert_cmpint (
     UNDO_MANAGER->undo_stack->stack->top, ==, 0);
@@ -106,7 +106,7 @@ check_has_single_undo ()
  * Check if the redo stack has a single element.
  */
 static void
-check_has_single_redo ()
+check_has_single_redo (void)
 {
   g_assert_cmpint (
     (int)
@@ -213,7 +213,7 @@ check_timeline_objects_deleted (
 }
 
 static void
-test_create_timeline ()
+test_create_timeline (void)
 {
   rebootstrap_timeline ();
 
@@ -250,7 +250,7 @@ test_create_timeline ()
 }
 
 static void
-test_delete_timeline ()
+test_delete_timeline (void)
 {
   rebootstrap_timeline ();
 
@@ -320,7 +320,7 @@ test_delete_timeline ()
 }
 
 static void
-test_delete_chords ()
+test_delete_chords (void)
 {
   rebootstrap_timeline ();
 
@@ -554,7 +554,7 @@ check_after_move_timeline (
  *   tracks or in the same track.
  */
 static void
-test_move_timeline ()
+test_move_timeline (void)
 {
   rebootstrap_timeline ();
 
@@ -942,7 +942,7 @@ check_after_duplicate_timeline (
 }
 
 static void
-test_duplicate_timeline ()
+test_duplicate_timeline (void)
 {
   rebootstrap_timeline ();
 
@@ -1008,7 +1008,7 @@ test_duplicate_timeline ()
 }
 
 static void
-test_duplicate_automation_region ()
+test_duplicate_automation_region (void)
 {
   rebootstrap_timeline ();
 
@@ -1107,7 +1107,7 @@ test_duplicate_automation_region ()
 }
 
 static void
-test_link_timeline ()
+test_link_timeline (void)
 {
   rebootstrap_timeline ();
 
@@ -1192,7 +1192,7 @@ test_link_timeline ()
 }
 
 static void
-test_link_then_duplicate ()
+test_link_then_duplicate (void)
 {
   rebootstrap_timeline ();
 
@@ -1450,7 +1450,7 @@ test_link_then_duplicate ()
 }
 
 static void
-test_edit_marker ()
+test_edit_marker (void)
 {
   rebootstrap_timeline ();
 
@@ -1504,7 +1504,7 @@ test_edit_marker ()
 }
 
 static void
-test_mute ()
+test_mute (void)
 {
   rebootstrap_timeline ();
 
@@ -1544,7 +1544,7 @@ test_mute ()
 }
 
 static void
-test_split ()
+test_split (void)
 {
   rebootstrap_timeline ();
 
@@ -1642,7 +1642,7 @@ test_split ()
 }
 
 static void
-test_quantize ()
+test_quantize (void)
 {
   rebootstrap_timeline ();
 
@@ -1694,7 +1694,7 @@ verify_audio_function (
 }
 
 static void
-test_audio_functions ()
+test_audio_functions (void)
 {
   rebootstrap_timeline ();
 
@@ -1768,7 +1768,7 @@ test_audio_functions ()
 }
 
 static void
-test_automation_fill ()
+test_automation_fill (void)
 {
   rebootstrap_timeline ();
 
@@ -1820,7 +1820,7 @@ test_automation_fill ()
 }
 
 static void
-test_duplicate_midi_regions_to_track_below ()
+test_duplicate_midi_regions_to_track_below (void)
 {
   rebootstrap_timeline ();
 
@@ -1922,7 +1922,7 @@ test_duplicate_midi_regions_to_track_below ()
 }
 
 static void
-test_midi_region_split ()
+test_midi_region_split (void)
 {
   rebootstrap_timeline ();
 
@@ -2243,7 +2243,7 @@ test_midi_region_split ()
 }
 
 static void
-test_pin_unpin ()
+test_pin_unpin (void)
 {
   rebootstrap_timeline ();
 
@@ -2265,7 +2265,7 @@ test_pin_unpin ()
 }
 
 static void
-test_delete_markers ()
+test_delete_markers (void)
 {
   rebootstrap_timeline ();
 
@@ -2319,7 +2319,7 @@ test_delete_markers ()
 }
 
 static void
-test_delete_scale_objects ()
+test_delete_scale_objects (void)
 {
   rebootstrap_timeline ();
 
@@ -2372,7 +2372,7 @@ test_delete_scale_objects ()
 }
 
 static void
-test_delete_chord_objects ()
+test_delete_chord_objects (void)
 {
   rebootstrap_timeline ();
 
@@ -2438,7 +2438,7 @@ test_delete_chord_objects ()
 }
 
 static void
-test_delete_automation_points ()
+test_delete_automation_points (void)
 {
   rebootstrap_timeline ();
 
@@ -2514,7 +2514,7 @@ test_delete_automation_points ()
 }
 
 static void
-test_duplicate_audio_regions ()
+test_duplicate_audio_regions (void)
 {
   test_helper_zrythm_init ();
 
@@ -2548,7 +2548,7 @@ test_duplicate_audio_regions ()
 }
 
 static void
-test_undo_moving_midi_region_to_other_lane ()
+test_undo_moving_midi_region_to_other_lane (void)
 {
   test_helper_zrythm_init ();
 
@@ -2602,7 +2602,7 @@ test_undo_moving_midi_region_to_other_lane ()
 }
 
 static void
-test_delete_multiple_regions ()
+test_delete_multiple_regions (void)
 {
   test_helper_zrythm_init ();
 
@@ -2677,7 +2677,7 @@ test_delete_multiple_regions ()
 }
 
 static void
-test_split_and_merge_midi_unlooped ()
+test_split_and_merge_midi_unlooped (void)
 {
   test_helper_zrythm_init ();
 
@@ -2935,7 +2935,7 @@ test_split_and_merge_midi_unlooped ()
 }
 
 static void
-test_split_and_merge_audio_unlooped ()
+test_split_and_merge_audio_unlooped (void)
 {
   test_helper_zrythm_init ();
 
@@ -3304,7 +3304,7 @@ test_resize_loop_l (void)
 }
 
 static void
-test_delete_midi_notes ()
+test_delete_midi_notes (void)
 {
   test_helper_zrythm_init ();
 

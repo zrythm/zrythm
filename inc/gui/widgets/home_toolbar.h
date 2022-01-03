@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -69,9 +69,6 @@ typedef struct _HomeToolbarWidget
   GtkButton *    loop_selection;
   ToolboxWidget *    toolbox;
 } HomeToolbarWidget;
-
-HomeToolbarWidget *
-home_toolbar_widget_new ();
 
 void
 home_toolbar_widget_refresh_undo_redo_buttons (

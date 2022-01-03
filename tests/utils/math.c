@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,7 +26,7 @@
 #include <glib.h>
 
 static void
-test_nans_in_conversions ()
+test_nans_in_conversions (void)
 {
   float ret;
   ret = math_get_fader_val_from_amp (1);

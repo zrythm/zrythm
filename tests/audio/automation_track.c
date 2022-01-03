@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,7 +34,7 @@
 #include <locale.h>
 
 static void
-test_set_at_index ()
+test_set_at_index (void)
 {
   test_helper_zrythm_init ();
 

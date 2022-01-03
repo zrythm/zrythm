@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -87,7 +87,7 @@ prepare_region_with_note_at_start_to_end (
 }
 
 static void
-test_fill_midi_events ()
+test_fill_midi_events (void)
 {
   test_helper_zrythm_init ();
 
@@ -871,7 +871,7 @@ test_fill_midi_events ()
 
 #ifdef HAVE_HELM
 static void
-test_fill_midi_events_from_engine ()
+test_fill_midi_events_from_engine (void)
 {
   test_helper_zrythm_init ();
 

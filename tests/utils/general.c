@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -27,7 +27,7 @@
 #include <glib.h>
 
 static void
-test_uint_from_bitfield ()
+test_uint_from_bitfield (void)
 {
   g_assert_cmpuint (
     0, ==,

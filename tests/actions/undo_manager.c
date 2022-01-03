@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -33,7 +33,7 @@
 #include <locale.h>
 
 static void
-perform_create_region_action ()
+perform_create_region_action (void)
 {
   Position p1, p2;
   position_set_to_bar (&p1, 1);
@@ -60,7 +60,7 @@ perform_create_region_action ()
 }
 
 static void
-test_perform_many_actions ()
+test_perform_many_actions (void)
 {
   test_helper_zrythm_init ();
 
@@ -122,7 +122,7 @@ test_perform_many_actions ()
 }
 
 static void
-test_multi_actions ()
+test_multi_actions (void)
 {
   test_helper_zrythm_init ();
 
@@ -186,7 +186,7 @@ test_multi_actions ()
 }
 
 static void
-test_fill_stack ()
+test_fill_stack (void)
 {
   test_helper_zrythm_init ();
 

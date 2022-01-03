@@ -799,6 +799,8 @@ test_strict_cflags += [
   #'-Werror=analyzer-too-complex',
   '-Werror=inline',
   '-Werror=duplicate-decl-specifier',
+  '-Werror=redundant-decls',
+  '-Werror=strict-prototypes',
   ]
 
 if is_gcc

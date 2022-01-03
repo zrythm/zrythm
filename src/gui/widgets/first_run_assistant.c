@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  * Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
  *
  * This file is part of Zrythm
@@ -107,7 +107,7 @@ on_first_run_assistant_apply (
 }
 
 static void
-on_first_run_assistant_cancel ()
+on_first_run_assistant_cancel (void)
 {
   g_message ("%s: cancel", __func__);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -171,7 +171,7 @@ _test_dsp_fill (
 }
 
 static void
-test_dsp_fill ()
+test_dsp_fill (void)
 {
   _test_dsp_fill (
     F_NOT_OPTIMIZED, F_LARGE_BUF);
@@ -238,7 +238,7 @@ _test_run_engine (
 }
 
 static void
-test_run_engine ()
+test_run_engine (void)
 {
 #ifdef HAVE_LSP_DSP
   _test_run_engine (F_OPTIMIZED);
@@ -247,7 +247,7 @@ test_run_engine ()
 }
 
 static void
-print_benchmark_results ()
+print_benchmark_results (void)
 {
   for (int i = 0; i < num_benchmarks; i++)
     {

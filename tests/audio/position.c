@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,7 +26,7 @@
 #include "tests/helpers/zrythm.h"
 
 static void
-test_conversions ()
+test_conversions (void)
 {
   test_helper_zrythm_init ();
 
@@ -43,7 +43,7 @@ test_conversions ()
 }
 
 static void
-test_get_totals ()
+test_get_totals (void)
 {
   test_helper_zrythm_init ();
 
@@ -127,7 +127,7 @@ test_get_totals ()
 }
 
 static void
-test_set_to ()
+test_set_to (void)
 {
   test_helper_zrythm_init ();
 
@@ -150,7 +150,7 @@ test_set_to ()
 }
 
 static void
-test_print_position ()
+test_print_position (void)
 {
   test_helper_zrythm_init ();
 
@@ -178,7 +178,7 @@ test_print_position ()
 }
 
 static void
-test_position_from_ticks ()
+test_position_from_ticks (void)
 {
   test_helper_zrythm_init ();
 
@@ -198,7 +198,7 @@ test_position_from_ticks ()
 }
 
 static void
-test_position_to_frames ()
+test_position_to_frames (void)
 {
   test_helper_zrythm_init ();
 
@@ -217,7 +217,7 @@ test_position_to_frames ()
 }
 
 static void
-test_get_total_beats ()
+test_get_total_beats (void)
 {
   test_helper_zrythm_init ();
 
@@ -252,7 +252,7 @@ test_get_total_beats ()
 }
 
 static void
-test_position_benchmarks ()
+test_position_benchmarks (void)
 {
   test_helper_zrythm_init ();
 
@@ -280,7 +280,7 @@ test_position_benchmarks ()
 }
 
 static void
-test_snap ()
+test_snap (void)
 {
   test_helper_zrythm_init ();
 

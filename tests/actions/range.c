@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -209,7 +209,7 @@ test_prepare_common (void)
 }
 
 static void
-check_start_end_markers ()
+check_start_end_markers (void)
 {
   /* check that start/end markers exist */
   Marker * start_m =
@@ -235,7 +235,7 @@ check_start_end_markers ()
 }
 
 static void
-check_before_insert ()
+check_before_insert (void)
 {
   Track * midi_track =
     TRACKLIST->tracks[midi_track_pos];

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -66,7 +66,7 @@ typedef struct ZitaResampler
 } ZitaResampler;
 
 ZitaResampler *
-zita_resampler_new ();
+zita_resampler_new (void);
 
 void
 zita_resampler_free (

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,14 +31,14 @@
 #include <locale.h>
 
 static void
-test_dummy ()
+test_dummy (void)
 {
   test_helper_zrythm_init ();
   test_helper_zrythm_cleanup ();
 }
 
 static void
-test_fetch_latest_release ()
+test_fetch_latest_release (void)
 {
 #ifdef CHECK_UPDATES
   char * ver =

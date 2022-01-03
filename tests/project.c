@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -33,7 +33,7 @@
 #include <locale.h>
 
 static void
-test_empty_save_load ()
+test_empty_save_load (void)
 {
   test_helper_zrythm_init ();
 
@@ -53,7 +53,7 @@ test_empty_save_load ()
 }
 
 static void
-test_save_load_with_data ()
+test_save_load_with_data (void)
 {
   test_helper_zrythm_init ();
 
@@ -108,7 +108,7 @@ test_save_load_with_data ()
 }
 
 static void
-test_new_from_template ()
+test_new_from_template (void)
 {
   test_helper_zrythm_init ();
 
@@ -143,7 +143,7 @@ test_new_from_template ()
 }
 
 static void
-test_save_as_load_w_pool ()
+test_save_as_load_w_pool (void)
 {
   test_helper_zrythm_init ();
 
@@ -178,7 +178,7 @@ test_save_as_load_w_pool ()
 }
 
 static void
-test_save_backup_w_pool ()
+test_save_backup_w_pool (void)
 {
   test_helper_zrythm_init ();
 

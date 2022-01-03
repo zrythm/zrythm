@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -216,7 +216,7 @@ redraw_arranger_for_selections (
 }
 
 static void
-redraw_all_arranger_bgs ()
+redraw_all_arranger_bgs (void)
 {
   arranger_widget_redraw_whole (MW_TIMELINE);
   arranger_widget_redraw_whole (MW_PINNED_TIMELINE);
@@ -451,7 +451,7 @@ on_track_state_changed (Track * track)
 }
 
 static void
-on_range_selection_changed ()
+on_range_selection_changed (void)
 {
   redraw_all_arranger_bgs ();
   /*gtk_widget_set_visible (*/
@@ -834,7 +834,7 @@ on_arranger_selections_removed (
 }
 
 static void
-on_mixer_selections_changed ()
+on_mixer_selections_changed (void)
 {
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
