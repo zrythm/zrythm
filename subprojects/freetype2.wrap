@@ -1,5 +1,0 @@
-[wrap-git]
-directory=freetype2
-url=https://github.com/centricular/freetype2.git
-push-url=git@github.com:centricular/freetype2.git
-revision=meson

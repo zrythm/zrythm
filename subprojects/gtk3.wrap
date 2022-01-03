@@ -1,6 +1,0 @@
-[wrap-file]
-directory = gtk+-3.24.30
-
-source_url = https://ftp.gnome.org/pub/GNOME/sources/gtk+/3.24/gtk+-3.24.30.tar.xz
-source_filename = gtk+-3.24.30.tar.xz
-source_hash = ba75bfff320ad1f4cfbee92ba813ec336322cc3c660d406aad014b07087a3ba9

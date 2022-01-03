@@ -1,5 +1,0 @@
-[wrap-git]
-directory=pixman
-url=https://github.com/centricular/pixman.git
-push-url=git@github.com:centricular/pixman.git
-revision=meson
