@@ -8,7 +8,7 @@ packages:
   - meson
   - ninja
   - chromaprint
-  - python36
+  - python
   - gtk-update-icon-cache
   - pkgconf
   - libX11
