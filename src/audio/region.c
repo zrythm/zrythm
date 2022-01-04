@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1116,9 +1116,9 @@ region_print (
  */
 ZRegion *
 region_at_position (
-  Track    *        track,
-  AutomationTrack * at,
-  Position *        pos)
+  const Track *           track,
+  const AutomationTrack * at,
+  const Position *        pos)
 {
   ZRegion * region;
   if (track)

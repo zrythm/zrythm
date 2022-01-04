@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -171,6 +171,7 @@ typedef struct PortScalePoint
   char * label;
 } PortScalePoint;
 
+PURE
 int
 port_scale_point_cmp (
   const void * _a,
@@ -970,6 +971,7 @@ port_set_expose_to_backend (
  * Returns if the port is exposed to the backend.
  */
 NONNULL
+PURE
 int
 port_is_exposed_to_backend (
   const Port * self);

@@ -456,10 +456,10 @@ audio_function_apply (
     case AUDIO_FUNCTION_NORMALIZE_PEAK:
       /* peak-normalize */
       {
-        float abs_peak = 0.f;
-        dsp_abs_max (
-          &frames[0], &abs_peak,
-          num_frames * channels);
+        float abs_peak =
+          dsp_abs_max (
+            &frames[0],
+            num_frames * channels);
         dsp_mul_k2 (
           &frames[0], 1.f / abs_peak,
           num_frames * channels);

@@ -90,6 +90,8 @@ arranger_object_is_fade (
  *
  * @param x X in local coordinates.
  */
+NONNULL
+PURE
 bool
 arranger_object_is_resize_l (
   ArrangerObject * self,
@@ -101,6 +103,7 @@ arranger_object_is_resize_l (
  *
  * @param x X in local coordinates.
  */
+NONNULL
 bool
 arranger_object_is_resize_r (
   ArrangerObject * self,
@@ -137,6 +140,7 @@ arranger_object_is_resize_loop (
  * @param x X in local coordinates.
  * @param y Y in local coordinates.
  */
+NONNULL
 bool
 arranger_object_is_rename (
   ArrangerObject * self,

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,11 +36,14 @@
 
 /**
  * Returns 1 if element exists in array, 0 if not.
+ *
+ * The element exists if the pointers are equal.
  */
 int
-_array_contains (void ** array,
-                 int size,
-                 void * element)
+_array_contains (
+  void ** array,
+  int     size,
+  void *  element)
 {
   for (int i = 0; i < size; i++)
     {

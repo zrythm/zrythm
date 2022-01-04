@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -146,6 +146,7 @@ typedef struct RecordingEvent
   re->lineno = __LINE__
 
 COLD
+MALLOC
 RecordingEvent *
 recording_event_new (void);
 

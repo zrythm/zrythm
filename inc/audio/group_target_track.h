@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -97,6 +97,8 @@ group_target_track_add_children (
  * Returns the index of the child matching the
  * given hash.
  */
+NONNULL
+PURE
 int
 group_target_track_find_child (
   Track *      self,

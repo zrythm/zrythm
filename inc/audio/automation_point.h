@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -174,6 +174,7 @@ AutomationTrack *
 automation_point_get_automation_track (
   const AutomationPoint * const self);
 
+PURE
 int
 automation_point_is_equal (
   AutomationPoint * a,

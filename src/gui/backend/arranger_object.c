@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -401,9 +401,9 @@ arranger_object_get_region (
  */
 bool
 arranger_object_is_hit (
-  ArrangerObject * self,
-  Position *       start,
-  Position *       end)
+  const ArrangerObject * self,
+  const Position *       start,
+  const Position *       end)
 {
   if (end)
     {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -124,6 +124,7 @@ port_connection_update (
   bool             enabled);
 
 NONNULL
+PURE
 bool
 port_connection_is_send (
   const PortConnection * self);

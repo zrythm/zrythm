@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1479,8 +1479,10 @@ graph_validate_with_connection (
   GraphNode * node, * node2;
   node =
     graph_find_node_from_port (self, src);
+  g_return_val_if_fail (node, NULL);
   node2 =
     graph_find_node_from_port (self, dest);
+  g_return_val_if_fail (node2, NULL);
   graph_node_connect (node, node2);
   g_return_val_if_fail (!node->terminal, false);
   g_return_val_if_fail (!node2->initial, false);

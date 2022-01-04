@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -119,6 +119,8 @@ string_convert_to_filename (
  * from \ref full_str and returns a newly allocated
  * string.
  */
+MALLOC
+NONNULL
 char *
 string_get_substr_before_suffix (
   const char * str,
@@ -230,6 +232,7 @@ string_symbolify (
 /**
  * Returns whether the string is NULL or empty.
  */
+PURE
 bool
 string_is_empty (
   const char * str);

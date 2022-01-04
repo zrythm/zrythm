@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -18,6 +18,7 @@
  */
 
 #include "audio/recording_event.h"
+#include "utils/objects.h"
 
 static const char *
 recording_event_type_strings[] =
@@ -36,7 +37,7 @@ recording_event_type_strings[] =
 RecordingEvent *
 recording_event_new (void)
 {
-  return calloc (1, sizeof (RecordingEvent));
+  return object_new (RecordingEvent);
 }
 
 void

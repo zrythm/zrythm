@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -275,10 +275,14 @@ void array_shuffle (
  *
  * The element exists if the pointers are equal.
  */
+NONNULL
+PURE
+WARN_UNUSED_RESULT
 int
-_array_contains (void ** array,
-                int size,
-                void * element);
+_array_contains (
+  void ** array,
+  int     size,
+  void *  element);
 
 /**
  * Returns if the array contains an element by

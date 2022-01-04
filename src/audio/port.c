@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -3252,10 +3252,10 @@ port_process (
               id->owner_type ==
                 PORT_OWNER_TYPE_FADER)
             {
-              float abs_peak = 0.f;
-              dsp_abs_max (
-                &port->buf[local_offset],
-                &abs_peak, nframes);
+              float abs_peak =
+                dsp_abs_max (
+                  &port->buf[local_offset],
+                  nframes);
               if (abs_peak > maxf)
                 {
                   /* this limiting wastes around
@@ -3331,7 +3331,7 @@ port_process (
                 port->peak = -1.f;
 
               bool changed =
-                dsp_abs_max (
+                dsp_abs_max_with_existing_peak (
                   &port->buf[local_offset],
                   &port->peak,
                   nframes);

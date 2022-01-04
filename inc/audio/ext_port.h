@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -243,6 +243,8 @@ ext_port_matches_backend (
  * Returns a unique identifier (full name prefixed
  * with backend type).
  */
+MALLOC
+NONNULL
 char *
 ext_port_get_id (
   ExtPort * ext_port);

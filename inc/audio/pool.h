@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -184,6 +184,7 @@ audio_pool_ensure_unique_clip_name (
 /**
  * Generates a name for a recording clip.
  */
+MALLOC
 char *
 audio_pool_gen_name_for_recording_clip (
   AudioPool * pool,

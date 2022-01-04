@@ -60,6 +60,7 @@ void
 automation_region_print_automation (
   ZRegion * self);
 
+PURE
 int
 automation_region_sort_func (
   const void * _a, const void * _b);
@@ -84,9 +85,11 @@ automation_region_add_ap (
  * Returns the AutomationPoint before the given
  * one.
  */
+NONNULL
+PURE
 AutomationPoint *
 automation_region_get_prev_ap (
-  ZRegion *          self,
+  ZRegion *         self,
   AutomationPoint * ap);
 
 /**

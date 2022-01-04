@@ -256,16 +256,6 @@ math_calculate_rms_amp (
   const nframes_t nframes);
 
 /**
- * Gets the digital peak of the given signal as
- * amplitude (0-2).
- */
-DEPRECATED_MSG ("use abs max")
-sample_t
-math_calculate_max_amp (
-  sample_t *      buf,
-  const nframes_t nframes);
-
-/**
  * Calculate db using RMS method.
  *
  * @param buf Buffer containing the samples.

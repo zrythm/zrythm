@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1218,9 +1218,14 @@ track_update_children (
 /**
  * Returns if the Track should have a piano roll.
  */
-bool
+CONST
+static inline bool
 track_type_has_piano_roll (
-  const TrackType type);
+  const TrackType type)
+{
+  return type == TRACK_TYPE_MIDI ||
+    type == TRACK_TYPE_INSTRUMENT;
+}
 
 /**
  * Returns if the Track should have an inputs

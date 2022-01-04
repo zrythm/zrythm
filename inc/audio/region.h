@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -615,6 +615,8 @@ region_copy (
  * @param inclusive Whether the last frame should
  *   be counted as part of the region.
  */
+NONNULL
+PURE
 int
 region_is_hit (
   const ZRegion * region,
@@ -643,11 +645,13 @@ region_is_hit_by_range (
  *   NULL.
  * @param pos The position.
  */
+NONNULL_ARGS (3)
+PURE
 ZRegion *
 region_at_position (
-  Track    *        track,
-  AutomationTrack * at,
-  Position *        pos);
+  const Track *           track,
+  const AutomationTrack * at,
+  const Position *        pos);
 
 /**
  * Generates the filename for this region.

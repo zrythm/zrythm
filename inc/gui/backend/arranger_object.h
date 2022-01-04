@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -553,11 +553,14 @@ arranger_object_select (
  * @param end End position, or NULL to only check
  *   for intersection with \ref start.
  */
+NONNULL_ARGS (1)
+PURE
+WARN_UNUSED_RESULT
 bool
 arranger_object_is_hit (
-  ArrangerObject * self,
-  Position *       start,
-  Position *       end);
+  const ArrangerObject * self,
+  const Position *       start,
+  const Position *       end);
 
 /**
  * Returns the number of loops in the ArrangerObject,

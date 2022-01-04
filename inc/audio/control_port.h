@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -127,6 +127,7 @@ control_port_get_int (
 /**
  * Gets the control value for an integer port.
  */
+PURE
 int
 control_port_get_int_from_val (
   float val);
@@ -153,6 +154,7 @@ control_port_get_snapped_val_from_val (
  *
  * TODO "normalize" parameter.
  */
+PURE
 float
 control_port_get_val (
   Port * self);
@@ -160,6 +162,7 @@ control_port_get_val (
 /**
  * Get the current normalized value of the control.
  */
+PURE
 float
 control_port_get_normalized_val (
   Port * self);
@@ -168,6 +171,7 @@ control_port_get_normalized_val (
  * Get the current real unsnapped value of the
  * control.
  */
+PURE
 float
 control_port_get_unsnapped_val (
   Port * self);
@@ -175,6 +179,7 @@ control_port_get_unsnapped_val (
 /**
  * Get the default real value of the control.
  */
+PURE
 float
 control_port_get_default_val (
   Port * self);

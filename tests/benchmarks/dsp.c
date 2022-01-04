@@ -135,9 +135,9 @@ _test_dsp_fill (
   dsp_add2 (buf, src, buf_size);
   LOOP_END ("add2", optimized);
 
-  float cur_peak = 0.3f;
   LOOP_START
-  dsp_abs_max (buf, &cur_peak, buf_size);
+  float abs_max = dsp_abs_max (buf, buf_size);
+  (void) abs_max;
   LOOP_END ("abs_max", optimized);
 
   LOOP_START

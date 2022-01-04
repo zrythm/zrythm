@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -498,6 +498,8 @@ project_autosave_cb (
  * @param backup Whether to get the path for the
  *   current backup instead of the main project.
  */
+MALLOC
+NONNULL
 char *
 project_get_path (
   Project *     self,

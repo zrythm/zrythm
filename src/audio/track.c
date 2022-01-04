@@ -2113,17 +2113,6 @@ track_remove_empty_last_lanes (
 }
 
 /**
- * Returns if the Track should have a piano roll.
- */
-bool
-track_type_has_piano_roll (
-  const TrackType type)
-{
-  return type == TRACK_TYPE_MIDI ||
-    type == TRACK_TYPE_INSTRUMENT;
-}
-
-/**
  * Updates the track's children.
  *
  * Used when changing track positions.

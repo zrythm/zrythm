@@ -162,7 +162,7 @@ automation_region_add_ap (
  */
 AutomationPoint *
 automation_region_get_prev_ap (
-  ZRegion *          self,
+  ZRegion *         self,
   AutomationPoint * ap)
 {
   if (ap->index > 0)

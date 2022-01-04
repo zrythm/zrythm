@@ -39,36 +39,10 @@
  * @{
  */
 
-typedef struct ArrangerDrawTaskData
-{
-  /** Rectangle to draw in. */
-  GdkRectangle      rect;
-
-  /** Initially NULL until the first draw. */
-  cairo_surface_t * surface;
-  cairo_t *         cr;
-} ArrangerDrawTaskData;
-
 void
 arranger_snapshot (
   GtkWidget *   widget,
   GtkSnapshot * snapshot);
-
-void *
-arranger_draw_task_data_new (void);
-
-void
-arranger_draw_task_data_free (
-  void * data);
-
-/**
- * Function to be executed for new tasks in the draw
- * thread pool.
- */
-void
-arranger_draw_thread_func (
-  gpointer task_data,
-  gpointer pool_data);
 
 /**
  * @}

@@ -164,6 +164,7 @@ typedef struct CurveFadePreset
   CurveOptions opts;
 } CurveFadePreset;
 
+NONNULL
 void
 curve_opts_init (
   CurveOptions * opts);
@@ -171,6 +172,7 @@ curve_opts_init (
 /**
  * Returns an array of CurveFadePreset.
  */
+RETURNS_NONNULL
 GPtrArray *
 curve_get_fade_presets (void);
 
@@ -192,12 +194,14 @@ curve_algorithm_get_localized_name (
  * @param start_higher Start at higher point.
  */
 HOT
+NONNULL
 double
 curve_get_normalized_y (
   double         x,
   CurveOptions * opts,
   int            start_higher);
 
+PURE
 bool
 curve_options_are_equal (
   CurveOptions * a,

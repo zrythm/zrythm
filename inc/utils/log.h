@@ -162,6 +162,8 @@ log_init_with_file (
 /**
  * Returns a pointer to the global zlog.
  */
+CONST
+WARN_UNUSED_RESULT
 Log **
 log_get (void);
 

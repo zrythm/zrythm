@@ -94,6 +94,39 @@ dsp_mul_k2 (
   size_t  size);
 
 /**
+ * Gets the maximum absolute value of the buffer (as
+ * amplitude).
+ */
+NONNULL
+WARN_UNUSED_RESULT
+static inline float
+dsp_abs_max (
+  float * buf,
+  size_t  size)
+{
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      return lsp_dsp_abs_max (buf, size);
+    }
+  else
+    {
+#endif
+      float ret = 1e-20f;
+      for (size_t i = 0; i < size; i++)
+        {
+          if (fabsf (buf[i]) > ret)
+            {
+              ret = fabsf (buf[i]);
+            }
+        }
+      return ret;
+#ifdef HAVE_LSP_DSP
+    }
+#endif
+}
+
+/**
  * Gets the absolute max of the buffer.
  *
  * @return Whether the peak changed.
@@ -101,7 +134,7 @@ dsp_mul_k2 (
 HOT
 NONNULL
 static inline bool
-dsp_abs_max (
+dsp_abs_max_with_existing_peak (
   float * buf,
   float * cur_peak,
   size_t  size)
