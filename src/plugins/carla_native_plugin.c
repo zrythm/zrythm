@@ -1202,6 +1202,16 @@ patchbay_port_info_free (
   free (nfo);
 }
 
+void
+carla_native_plugin_update_buffer_size_and_sample_rate (
+  CarlaNativePlugin * self)
+{
+  carla_set_engine_buffer_size_and_sample_rate (
+    self->host_handle,
+    AUDIO_ENGINE->block_length,
+    AUDIO_ENGINE->sample_rate);
+}
+
 /**
  * Instantiates the plugin.
  *
@@ -1329,6 +1339,8 @@ carla_native_plugin_instantiate (
        1000.f),
     NULL);
 
+  /* disable for now */
+#if 0
   if (!ZRYTHM_TESTING &&
       g_settings_get_boolean (
         S_P_PLUGINS_UIS, "stay-on-top"))
@@ -1338,6 +1350,10 @@ carla_native_plugin_instantiate (
         ENGINE_OPTION_UIS_ALWAYS_ON_TOP, true,
         NULL);
     }
+#endif
+
+  carla_native_plugin_update_buffer_size_and_sample_rate (
+    self);
 
   const PluginSetting * setting =
     self->plugin->setting;
@@ -1447,7 +1463,6 @@ carla_native_plugin_instantiate (
     self->host_handle, 0, \
     PLUGIN_OPTION_##x, true)
 
-  ENABLE_OPTION (FORCE_STEREO);
   ENABLE_OPTION (SEND_CONTROL_CHANGES);
   ENABLE_OPTION (SEND_CHANNEL_PRESSURE);
   ENABLE_OPTION (SEND_NOTE_AFTERTOUCH);

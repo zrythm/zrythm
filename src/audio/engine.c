@@ -75,6 +75,7 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
+#include "plugins/carla_native_plugin.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
@@ -1353,6 +1354,8 @@ engine_realloc_port_buffers (
     g_ptr_array_unref, ports);
 #endif
 
+  /* TODO make function that fetches all plugins
+   * in the project */
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Channel * ch = TRACKLIST->tracks[i]->channel;
@@ -1372,8 +1375,14 @@ engine_realloc_port_buffers (
 
           if (pl && !pl->instantiation_failed)
             {
-              if (pl->setting->descr->protocol == PROT_LV2 &&
-                  !pl->setting->open_with_carla)
+              if (pl->setting->open_with_carla)
+                {
+                  carla_native_plugin_update_buffer_size_and_sample_rate (
+                    pl->carla);
+                }
+              else if (
+                pl->setting->descr->protocol ==
+                  PROT_LV2)
                 {
                   lv2_plugin_allocate_port_buffers (
                     pl->lv2);
