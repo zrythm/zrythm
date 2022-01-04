@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -32,7 +32,7 @@
   (fader_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   FaderWidget, fader_widget,
-  Z, FADER_WIDGET, GtkDrawingArea)
+  Z, FADER_WIDGET, GtkWidget)
 
 typedef struct Fader Fader;
 
@@ -46,7 +46,7 @@ typedef struct Fader Fader;
  */
 typedef struct _FaderWidget
 {
-  GtkDrawingArea     parent_instance;
+  GtkWidget          parent_instance;
   GtkGestureDrag *   drag;
   Fader *            fader;
   double             last_x;

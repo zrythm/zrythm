@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -40,51 +40,37 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  FaderWidget, fader_widget, GTK_TYPE_DRAWING_AREA)
+  FaderWidget, fader_widget, GTK_TYPE_WIDGET)
 
 static void
-fader_draw_cb (
-  GtkDrawingArea * drawing_area,
-  cairo_t *        cr,
-  int              width,
-  int              height,
-  gpointer         user_data)
+fader_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot)
 {
-  FaderWidget * self = Z_FADER_WIDGET (user_data);
-  GtkWidget * widget = GTK_WIDGET (drawing_area);
+  FaderWidget * self = Z_FADER_WIDGET (widget);
 
-  GtkStyleContext *context =
-  gtk_widget_get_style_context (widget);
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
 
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (widget);
 
-  /* a custom shape that could be wrapped in a function */
-  double x         = 0,        /* parameters like cairo_rectangle */
-         y         = 0,
-         aspect        = 1.0,     /* aspect ratio */
-         corner_radius = height / 90.0;   /* and corner curvature radius */
+  gtk_snapshot_render_background (
+    snapshot, context, 0, 0, width, height);
 
-  double radius = corner_radius / aspect;
-  double degrees = G_PI / 180.0;
-  /* value in pixels = total pixels * val
-   * val is percentage */
-  double fader_val =
+  graphene_rect_t graphene_rect =
+    GRAPHENE_RECT_INIT (0, 0, width, height);
+
+  float fader_val =
     self->fader ? self->fader->fader_val : 1.f;
-  double value_px = height * fader_val;
+  float value_px = height * fader_val;
 
   /* draw background bar */
-  cairo_new_sub_path (cr);
-  cairo_arc (cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);
-  cairo_line_to (cr, x + width, y + height - value_px);
-  /*cairo_arc (cr, x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);*/
-  cairo_line_to (cr, x, y + height - value_px);
-  /*cairo_arc (cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);*/
-  cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);
-  cairo_close_path (cr);
-
-  cairo_set_source_rgba (cr, 0.4, 0.4, 0.4, 0.2);
-  cairo_fill(cr);
+  gtk_snapshot_append_color (
+    snapshot, &Z_GDK_RGBA_INIT (0.4, 0.4, 0.4, 0.2),
+    &graphene_rect);
 
   /* draw filled in bar */
   double intensity = fader_val;
@@ -98,76 +84,59 @@ fader_draw_cb (
   double a = intensity_inv * self->end_color.alpha  +
             intensity * self->start_color.alpha;
 
-  cairo_set_source_rgba (cr, r,g,b,a);
-  cairo_new_sub_path (cr);
-  cairo_line_to (
-    cr, x + width, y + (height - value_px));
-  cairo_arc (
-    cr, x + width - radius,
-    y + height - radius, radius,
-    0 * degrees, 90 * degrees);
-  cairo_arc (
-    cr, x + radius, y + height - radius,
-    radius, 90 * degrees, 180 * degrees);
-  cairo_line_to (cr, x, y + (height - value_px));
-  cairo_close_path (cr);
+  const int border_width = 1.f;
+  graphene_rect_t value_graphene_rect =
+    GRAPHENE_RECT_INIT (
+      border_width, border_width,
+      width - border_width * 2,
+      height - border_width * 2);
+  GskRoundedRect rounded_rect;
+  gsk_rounded_rect_init_from_rect (
+    &rounded_rect, &value_graphene_rect, 1.4f);
+  gtk_snapshot_push_rounded_clip (
+    snapshot, &rounded_rect);
+  gtk_snapshot_append_color (
+    snapshot,
+    &Z_GDK_RGBA_INIT (
+      (float) r, (float) g, (float) b, (float) a),
+    &GRAPHENE_RECT_INIT (
+      0, (float) (height - value_px),
+      width, value_px));
+  gtk_snapshot_pop (snapshot);
 
-  cairo_fill(cr);
+  /* draw fader thick line */
+  const int line_width = 12;
+  value_graphene_rect =
+    GRAPHENE_RECT_INIT (
+      0, (height - value_px) - line_width / 2,
+      width, line_width);
+  gsk_rounded_rect_init_from_rect (
+    &rounded_rect, &value_graphene_rect, 1.4f);
+  gtk_snapshot_push_rounded_clip (
+    snapshot, &rounded_rect);
+  gtk_snapshot_append_color (
+    snapshot,
+    &Z_GDK_RGBA_INIT (0, 0, 0, 1),
+    &value_graphene_rect);
+  gtk_snapshot_pop (snapshot);
 
-
-  /* draw border line */
-  cairo_set_source_rgba (cr, 0.2, 0.2, 0.2, 1);
-  cairo_new_sub_path (cr);
-  cairo_arc (
-    cr, x + width - radius, y + radius,
-    radius, -90 * degrees, 0 * degrees);
-  cairo_arc (
-    cr, x + width - radius,
-    y + height - radius, radius,
-    0 * degrees, 90 * degrees);
-  cairo_arc (
-    cr, x + radius, y + height - radius,
-    radius, 90 * degrees, 180 * degrees);
-  cairo_arc (
-    cr, x + radius, y + radius,
-    radius, 180 * degrees, 270 * degrees);
-  cairo_close_path (cr);
-
-  /*cairo_set_source_rgba (cr, 0.4, 0.2, 0.05, 0.2);*/
-  /*cairo_fill_preserve (cr);*/
-  cairo_set_line_width (cr, 1.7);
-  cairo_stroke(cr);
-
-  /* draw fader line */
-  cairo_set_source_rgba (cr, 0, 0, 0, 1);
-  cairo_set_line_width (cr, 12.0);
-  cairo_set_line_cap  (cr, CAIRO_LINE_CAP_SQUARE);
-  cairo_move_to (cr, x, y + (height - value_px));
-  cairo_line_to (cr, x+ width, y + (height - value_px));
-  cairo_stroke (cr);
-  /*cairo_set_source_rgba (cr, 0.4, 0.1, 0.05, 1);*/
-
+  /* draw fader thin line */
+  GdkRGBA color;
+  const float inner_line_width = 3.f;
   if (self->hover || self->dragging)
     {
-#if 0
-      GdkRGBA color;
-      gdk_rgba_parse (&color, "#9D3955");
-      gdk_cairo_set_source_rgba (cr, &color);
-#endif
-      cairo_set_source_rgba (
-        cr, 0.8, 0.8, 0.8, 1.0);
+      color = Z_GDK_RGBA_INIT (0.8, 0.8, 0.8, 1);
     }
   else
     {
-      cairo_set_source_rgba (
-        cr, 0.6, 0.6, 0.6, 1.0);
+      color = Z_GDK_RGBA_INIT (0.6, 0.6, 0.6, 1);
     }
-  cairo_set_line_width (cr, 3.0);
-  cairo_move_to (
-    cr, x, y + (height - value_px));
-  cairo_line_to (
-    cr, x+ width, y + (height - value_px));
-  cairo_stroke (cr);
+  gtk_snapshot_append_color (
+    snapshot, &color,
+    &GRAPHENE_RECT_INIT (
+      0,
+      (height - value_px) - inner_line_width / 2.f,
+      width, inner_line_width));
 }
 
 static void
@@ -394,26 +363,6 @@ on_scroll (
   return true;
 }
 
-static void
-on_size_allocate (
-  GtkWidget * widget,
-  int         width,
-  int         height,
-  int         baseline)
-{
-  FaderWidget * self = Z_FADER_WIDGET (widget);
-
-  /* no layout manager, so call this to allocate
-   * a size for the menu */
-  gtk_popover_present (
-    GTK_POPOVER (self->popover_menu));
-
-  GTK_WIDGET_CLASS (
-    fader_widget_parent_class)->
-      size_allocate (
-        widget, width, height, baseline);
-}
-
 /**
  * Creates a new Fader widget and binds it to the
  * given Fader.
@@ -529,19 +478,18 @@ fader_widget_init (FaderWidget * self)
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (scroll_controller));
-
-  gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self), fader_draw_cb,
-    self, NULL);
 }
 
 static void
-fader_widget_class_init (FaderWidgetClass * _klass)
+fader_widget_class_init (
+  FaderWidgetClass * klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "fader");
-  klass->size_allocate = on_size_allocate;
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  wklass->snapshot = fader_snapshot;
+  gtk_widget_class_set_css_name (wklass, "fader");
+
+  gtk_widget_class_set_layout_manager_type (
+    wklass, GTK_TYPE_BIN_LAYOUT);
 
   GObjectClass * oklass =
     G_OBJECT_CLASS (klass);

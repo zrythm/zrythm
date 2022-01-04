@@ -17,6 +17,14 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file
+ *
+ * Optimized DSP functions.
+ *
+ * @note More at https://github.com/DISTRHO/DPF-Max-Gen/blob/master/plugins/common/gen_dsp/genlib_ops.h#L313
+ */
+
 #ifndef __UTILS_DSP_H__
 #define __UTILS_DSP_H__
 
