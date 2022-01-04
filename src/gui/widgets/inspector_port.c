@@ -602,13 +602,27 @@ dispose (
   gtk_widget_unparent (GTK_WIDGET (self->overlay));
   gtk_widget_unparent (
     GTK_WIDGET (self->popover_menu));
+
+#define GET_REFCOUNT \
+  (((ZGObjectImpl *) self->connections_popover)->ref_count)
+
+  int refcount = (int) GET_REFCOUNT;
+  g_debug ("refcount: %d", refcount);
   gtk_widget_unparent (
     GTK_WIDGET (self->connections_popover));
+  refcount--;
 
-  while (G_IS_OBJECT (self->connections_popover))
+  /* note: this is a hack until GTK bug #4599 is
+   * resolved */
+  while (refcount > 0)
     {
+      refcount = (int) GET_REFCOUNT;
+      g_debug ("unrefing... refcount: %d", refcount);
       g_object_unref (self->connections_popover);
+      refcount--;
     }
+
+#undef GET_REFCOUNT
 
   G_OBJECT_CLASS (
     inspector_port_widget_parent_class)->

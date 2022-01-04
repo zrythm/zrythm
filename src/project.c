@@ -1321,6 +1321,11 @@ project_load (
 
   engine_activate (AUDIO_ENGINE, true);
 
+  /* pause engine */
+  EngineState state;
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, true);
+
   /* connect channel inputs to hardware. has to
    * be done after engine activation */
   Channel *ch;
@@ -1333,11 +1338,10 @@ project_load (
       channel_reconnect_ext_input_ports (ch);
     }
 
-  /* pause engine and reconnect graph */
-  EngineState state;
-  engine_wait_for_pause (
-    AUDIO_ENGINE, &state, true);
+  /* reconnect graph */
   router_recalc_graph (ROUTER, F_NOT_SOFT);
+
+  /* resume engine */
   engine_resume (AUDIO_ENGINE, &state);
 
   g_debug ("project %p loaded", PROJECT);

@@ -1041,7 +1041,10 @@ channel_widget_tear_down (
 
   if (self->setup)
     {
-      self->channel->widget = NULL;
+      if (IS_CHANNEL_AND_NONNULL (self->channel))
+        {
+          self->channel->widget = NULL;
+        }
       self->setup = false;
     }
 

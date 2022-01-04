@@ -117,6 +117,19 @@
 
 typedef enum IconType IconType;
 
+/**
+ * GObject struct (from GObject source code), used
+ * where hacks are needed.
+ */
+typedef struct _ZGObjectImpl
+{
+  GTypeInstance  g_type_instance;
+
+  /*< private >*/
+  guint          ref_count;  /* (atomic) */
+  GData         *qdata;
+} ZGObjectImpl;
+
 enum ZGtkResize
 {
   Z_GTK_NO_RESIZE,
