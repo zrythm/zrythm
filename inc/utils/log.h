@@ -160,6 +160,12 @@ log_init_with_file (
   const char * filepath);
 
 /**
+ * Returns a pointer to the global zlog.
+ */
+Log **
+log_get (void);
+
+/**
  * Creates the logger and sets the writer func.
  *
  * This can be called from any thread.

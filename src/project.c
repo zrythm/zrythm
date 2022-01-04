@@ -1666,7 +1666,10 @@ project_idle_saved_cb (
   if (data->is_backup)
     {
       g_message (_("Backup saved."));
-      ui_show_notification (_("Backup saved."));
+      if (ZRYTHM_HAVE_UI)
+        {
+          ui_show_notification (_("Backup saved."));
+        }
     }
   else
     {

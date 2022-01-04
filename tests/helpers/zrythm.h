@@ -134,7 +134,10 @@ _test_helper_zrythm_init (
   object_free_w_func_and_null (
     log_free, LOG);
 
-  LOG = log_new ();
+  Log ** log_ptr = log_get ();
+  Log * log_obj = log_new ();
+  *log_ptr = log_obj;
+  LOG = log_obj;
 
   ZRYTHM =
     zrythm_new (NULL, false, true, optimized);
@@ -146,8 +149,11 @@ _test_helper_zrythm_init (
   zrythm_init_templates (ZRYTHM);
 
   /* dummy ZrythmApp object for testing */
-  zrythm_app = object_new (ZrythmApp);
-  zrythm_app->gtk_thread = g_thread_self ();
+  ZrythmApp ** zapp_ptr = zrythm_app_get ();
+  ZrythmApp * zapp = object_new (ZrythmApp);
+  *zapp_ptr = zapp;
+  zapp->gtk_thread = g_thread_self ();
+  zrythm_app = zapp;
 
   /* init logging to custom file */
   char * tmp_log_dir =

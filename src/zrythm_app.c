@@ -1883,6 +1883,15 @@ add_option_entries (
 }
 
 /**
+ * Returns a pointer to the global zrythm_app.
+ */
+ZrythmApp **
+zrythm_app_get (void)
+{
+  return &zrythm_app;
+}
+
+/**
  * Creates the Zrythm GApplication.
  *
  * This also initializes the Zrythm struct.

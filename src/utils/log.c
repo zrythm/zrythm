@@ -1312,6 +1312,15 @@ log_generate_compressed_file (
 }
 
 /**
+ * Returns a pointer to the global zlog.
+ */
+Log **
+log_get (void)
+{
+  return &zlog;
+}
+
+/**
  * Creates the logger and sets the writer func.
  *
  * This can be called from any thread.
