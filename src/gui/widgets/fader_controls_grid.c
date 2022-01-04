@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -139,6 +139,7 @@ setup_balance_control (
   if (track_type_has_channel (self->track->type))
     {
       Channel * ch = track_get_channel (self->track);
+      g_return_if_fail (IS_CHANNEL_AND_NONNULL (ch));
       self->balance_control =
         balance_control_widget_new (
           channel_get_balance_control,
@@ -203,8 +204,8 @@ setup_fader (
 {
   if (track_type_has_channel (self->track->type))
     {
-      Channel * ch =
-        track_get_channel (self->track);
+      Channel * ch = track_get_channel (self->track);
+      g_return_if_fail (IS_CHANNEL_AND_NONNULL (ch));
       fader_widget_setup (
         self->fader, ch->fader, 36, 128);
       gtk_widget_set_margin_start (

@@ -69,6 +69,8 @@ ZixRing*
 zix_ring_new(uint32_t size)
 {
   ZixRing* ring    = (ZixRing*)malloc(sizeof(ZixRing));
+  if (!ring)
+    return NULL;
   ring->write_head = 0;
   ring->read_head  = 0;
   ring->size       = next_power_of_two(size);

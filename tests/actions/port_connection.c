@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -51,7 +51,7 @@ test_modulator_connection (
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       pl_bundle, pl_uri, with_carla);
-  g_assert_nonnull (setting);
+  g_return_if_fail (setting);
 
   /* fix the descriptor (for some reason lilv
    * reports it as Plugin instead of Instrument if
@@ -149,7 +149,7 @@ _test_port_connection (
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       pl_bundle, pl_uri, with_carla);
-  g_assert_nonnull (setting);
+  g_return_if_fail (setting);
 
   /* fix the descriptor (for some reason lilv
    * reports it as Plugin instead of Instrument if
@@ -223,8 +223,8 @@ _test_port_connection (
             }
         }
     }
-  g_assert_nonnull (src_port1);
-  g_assert_nonnull (src_port2);
+  g_return_if_fail (src_port1);
+  g_return_if_fail (src_port2);
   g_ptr_array_remove_range (ports, 0, ports->len);
 
   Port * dest_port = NULL;

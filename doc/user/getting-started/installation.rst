@@ -41,9 +41,9 @@ The installer supports the following
 distributions (and derivatives):
 
 - **Arch Linux** - x86_64
-- **Debian 10 && 11** - amd64
-- **Fedora 31 && 32** - x86_64
-- **Ubuntu 18.04, 20.04 & 20.10** - amd64
+- **Debian Stable & Testing** - amd64
+- **Latest 2 Fedora releases** - x86_64
+- **Ubuntu latest LTS & non-LTS** - amd64
 
 We also offer an AppImage build, which is currently
 experimental. If you find any issues, please report

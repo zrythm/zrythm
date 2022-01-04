@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -170,10 +170,12 @@ on_selection_changed (
             }
           if (is_empty
               ||
-              !port_identifier_is_equal (
+              (conn
+               &&
+               !port_identifier_is_equal (
                  conn->dest_id,
                  &dest_track->processor->midi_in->
-                   id))
+                   id)))
             {
               GError * err = NULL;
               bool ret =
@@ -202,10 +204,12 @@ on_selection_changed (
             }
           if (is_empty
               ||
-              !port_identifier_is_equal (
-                 conn->dest_id,
-                 &dest_track->processor->stereo_in->
-                   l->id))
+              (conn
+               &&
+               !port_identifier_is_equal (
+                  conn->dest_id,
+                  &dest_track->processor->stereo_in->
+                    l->id)))
             {
               GError * err = NULL;
               bool ret =
@@ -243,9 +247,11 @@ on_selection_changed (
             (is_empty
              || !send->is_sidechain
              ||
-             !port_identifier_is_equal (
+             (conn
+              &&
+              !port_identifier_is_equal (
                 conn->dest_id,
-                &dest_sidechain->l->id)))
+                &dest_sidechain->l->id))))
           {
             GError * err = NULL;
             bool ret =

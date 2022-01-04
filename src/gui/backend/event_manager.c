@@ -263,8 +263,6 @@ on_arranger_selections_in_transit (
 {
   g_return_if_fail (sel);
 
-  arranger_selections_redraw (sel);
-
   event_viewer_widget_refresh_for_selections (sel);
 
   switch (sel->type)
@@ -1658,9 +1656,6 @@ event_manager_process_event (
       {
         ArrangerWidget * arranger =
           Z_ARRANGER_WIDGET (ev->arg);
-        ArrangerSelections * sel =
-          arranger_widget_get_selections (arranger);
-        arranger_selections_redraw (sel);
         event_viewer_widget_refresh_for_arranger (
           arranger);
         timeline_toolbar_widget_refresh (

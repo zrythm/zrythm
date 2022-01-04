@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -271,7 +271,7 @@ _test_create_plugins (
       setting =
         test_plugin_manager_get_plugin_setting (
           pl_bundle, pl_uri, with_carla);
-      g_assert_nonnull (setting);
+      g_return_if_fail (setting);
       setting =
         plugin_setting_clone (
           setting, F_NO_VALIDATE);
@@ -292,6 +292,7 @@ _test_create_plugins (
     default:
       break;
     }
+  g_return_if_fail (setting);
 
   if (is_instrument)
     {
@@ -446,6 +447,7 @@ _test_port_and_plugin_track_pos_after_move (
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       pl_bundle, pl_uri, with_carla);
+  g_return_if_fail (setting);
 
   /* create an instrument track from helm */
   track_create_with_action (
@@ -656,6 +658,7 @@ test_move_two_plugins_one_slot_up (void)
     test_plugin_manager_get_plugin_setting (
       LSP_COMPRESSOR_BUNDLE,
       LSP_COMPRESSOR_URI, false);
+  g_return_if_fail (setting);
   track_create_for_plugin_at_idx_w_action (
     TRACK_TYPE_AUDIO_BUS, setting,
     TRACKLIST->num_tracks, NULL);
@@ -1064,6 +1067,7 @@ test_create_modulator (void)
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       AMS_LFO_BUNDLE, AMS_LFO_URI, false);
+  g_return_if_fail (setting);
   bool ret =
     mixer_selections_action_perform_create (
       PLUGIN_SLOT_MODULATOR,
@@ -1104,8 +1108,8 @@ test_create_modulator (void)
   Port * ctrl_in =
     plugin_get_port_by_symbol (
       p2, "freq");
-  g_assert_nonnull (cv_out);
-  g_assert_nonnull (ctrl_in);
+  g_return_if_fail (cv_out);
+  g_return_if_fail (ctrl_in);
   PortIdentifier cv_out_id = cv_out->id;
   PortIdentifier ctrl_in_id = ctrl_in->id;
 
@@ -1236,7 +1240,7 @@ test_move_plugin_from_inserts_to_midi_fx (void)
     test_plugin_manager_get_plugin_setting (
       MIDI_CC_MAP_BUNDLE,
       MIDI_CC_MAP_URI, false);
-  g_assert_nonnull (setting);
+  g_return_if_fail (setting);
   bool ret =
     mixer_selections_action_perform_create (
       PLUGIN_SLOT_INSERT,
@@ -1369,7 +1373,7 @@ _test_replace_instrument (
       setting =
         test_plugin_manager_get_plugin_setting (
           pl_bundle, pl_uri, with_carla);
-      g_assert_nonnull (setting);
+      g_return_if_fail (setting);
       setting =
         plugin_setting_clone (
           setting, F_NO_VALIDATE);
@@ -1441,7 +1445,7 @@ _test_replace_instrument (
           break;
         }
     }
-  g_assert_true (
+  g_return_if_fail (
     IS_PORT_AND_NONNULL (sidechain_port));
 
 /*#if 0*/
@@ -1709,6 +1713,7 @@ test_save_modulators (void)
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       GEONKICK_BUNDLE, GEONKICK_URI, false);
+  g_return_if_fail (setting);
   bool ret =
     mixer_selections_action_perform_create (
       PLUGIN_SLOT_MODULATOR,

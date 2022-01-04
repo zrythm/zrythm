@@ -1156,10 +1156,6 @@ move_items_y (
     arranger_widget_get_selections (self);
   g_return_if_fail (sel);
 
-  /* queue a redraw for the selections at their
-   * current position before the move */
-  arranger_selections_redraw (sel);
-
   switch (self->type)
     {
     case TYPE (AUTOMATION):
@@ -3439,8 +3435,7 @@ drag_update (
         arranger_selections_clear (
           sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
         self->sel_to_delete =
-          arranger_selections_clone (
-            arranger_widget_get_selections (self));
+          arranger_selections_clone (sel);
       }
       break;
     case UI_OVERLAY_ACTION_STARTING_ERASING:
@@ -3449,8 +3444,7 @@ drag_update (
         arranger_selections_clear (
           sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
         self->sel_to_delete =
-          arranger_selections_clone (
-            arranger_widget_get_selections (self));
+          arranger_selections_clone (sel);
       }
       break;
     case UI_OVERLAY_ACTION_STARTING_MOVING:
@@ -3516,9 +3510,6 @@ drag_update (
     /* if drawing a selection */
     case UI_OVERLAY_ACTION_SELECTING:
       {
-        /* redraw previous selections */
-        arranger_selections_redraw (sel);
-
         /* find and select objects inside selection */
         select_in_range (
           self, offset_x, offset_y, F_IN_RANGE,
@@ -3574,11 +3565,6 @@ drag_update (
     case UI_OVERLAY_ACTION_RESIZING_L:
     case UI_OVERLAY_ACTION_STRETCHING_L:
       {
-          /* queue a redraw for the selections at
-           * their current position before the
-           * resize */
-          arranger_selections_redraw (sel);
-
           /* snap selections based on new pos */
           if (self->type == TYPE (TIMELINE))
             {
@@ -3633,11 +3619,6 @@ drag_update (
     case UI_OVERLAY_ACTION_STRETCHING_R:
     case UI_OVERLAY_ACTION_CREATING_RESIZING_R:
       {
-          /* queue a redraw for the selections at
-           * their current position before the
-           * resize */
-          arranger_selections_redraw (sel);
-
         if (self->type == TYPE (TIMELINE))
           {
             if (self->resizing_range)
@@ -5241,12 +5222,13 @@ arranger_widget_get_selections (
       return
         (ArrangerSelections *) CHORD_SELECTIONS;
     case TYPE (AUDIO):
-      /* FIXME */
+      return
+        (ArrangerSelections *) AUDIO_SELECTIONS;
+    default:
+      g_critical ("should not be reached");
       return
         (ArrangerSelections *) TL_SELECTIONS;
     }
-
-  g_return_val_if_reached (NULL);
 }
 
 /**

@@ -295,6 +295,7 @@ arranger_selections_get_all_objects (
   ArrangerSelections * self,
   int *                size);
 
+#if 0
 /**
  * Redraws each object in the arranger selections.
  */
@@ -302,6 +303,7 @@ NONNULL
 void
 arranger_selections_redraw (
   ArrangerSelections * self);
+#endif
 
 /**
  * Adds each object in the selection to the given

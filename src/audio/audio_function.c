@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -268,6 +268,8 @@ apply_plugin (
     {
       for (size_t j = 0; j < step; j++)
         {
+          g_return_val_if_fail (l_in, -1);
+          g_return_val_if_fail (r_in, -1);
           l_in->buf[j] =
             frames[(i + j) * channels];
           r_in->buf[j] =
@@ -288,6 +290,8 @@ apply_plugin (
             actual_j,
             fabsf (l_out->buf[j]));
 #endif
+          g_return_val_if_fail (l_out, -1);
+          g_return_val_if_fail (r_out, -1);
           frames[actual_j * channels] =
             l_out->buf[j];
           frames[actual_j * channels + 1] =
@@ -310,6 +314,8 @@ apply_plugin (
     {
       for (size_t j = 0; j < step; j++)
         {
+          g_return_val_if_fail (l_in, -1);
+          g_return_val_if_fail (r_in, -1);
           l_in->buf[j] = 0.f;
           r_in->buf[j] = 0.f;
         }
@@ -328,6 +334,8 @@ apply_plugin (
             actual_j,
             fabsf (l_out->buf[j]));
 #endif
+          g_return_val_if_fail (l_out, -1);
+          g_return_val_if_fail (r_out, -1);
           frames[actual_j * channels] =
             l_out->buf[j];
           frames[actual_j * channels + 1] =

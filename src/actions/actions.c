@@ -3071,9 +3071,10 @@ handle_region_fade_algo_preset (
           break;
         }
     }
-  CurveOptions curve_opts = pset->opts;
   g_ptr_array_unref (arr);
   g_return_if_fail (pset);
+
+  CurveOptions curve_opts = pset->opts;
 
   z_return_if_fail_cmp (
     TL_SELECTIONS->num_regions, ==, 1);
@@ -3706,6 +3707,8 @@ handle_direct_out_change (
         }
 
       Channel * ch = track_get_channel (cur_track);
+      g_return_if_fail (
+        IS_CHANNEL_AND_NONNULL (ch));
       if (channel_get_output_track (ch) !=
             direct_out)
         {

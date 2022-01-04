@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -585,10 +585,11 @@ char *
 string_symbolify (
   const char * in)
 {
-  const size_t len = strlen(in);
-  char*        out = (char*)calloc(len + 1, 1);
+  const size_t len = strlen (in);
+  char * out =
+    (char*) object_new_n_sizeof (len + 1, 1);
   for (size_t i = 0; i < len; ++i) {
-    if (g_ascii_isalnum(in[i])) {
+    if (g_ascii_isalnum (in[i])) {
       out[i] = in[i];
     } else {
       out[i] = '_';

@@ -2847,6 +2847,7 @@ return_can_split:
   return can_split;
 }
 
+#if 0
 /**
  * Redraws each object in the arranger selections.
  */
@@ -2867,3 +2868,4 @@ arranger_selections_redraw (
 
   free (objs);
 }
+#endif

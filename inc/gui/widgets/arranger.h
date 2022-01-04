@@ -626,6 +626,7 @@ arranger_widget_is_in_moving_operation (
  * Returns the ArrangerSelections for this
  * ArrangerWidget.
  */
+RETURNS_NONNULL
 ArrangerSelections *
 arranger_widget_get_selections (
   ArrangerWidget * self);

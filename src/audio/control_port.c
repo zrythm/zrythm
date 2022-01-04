@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -371,6 +371,7 @@ control_port_set_val_from_normalized (
     {
       Track * track = port_get_track (self, 1);
       Channel * ch = track_get_channel (track);
+      g_return_if_fail (ch);
       if (!math_floats_equal (
             fader_get_fader_val (
               ch->fader), val))
@@ -387,6 +388,7 @@ control_port_set_val_from_normalized (
     {
       Track * track = port_get_track (self, true);
       Channel * ch = track_get_channel (track);
+      g_return_if_fail (ch);
       if (!math_floats_equal (
             channel_get_balance_control (ch), val))
         {

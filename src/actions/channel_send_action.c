@@ -261,6 +261,8 @@ channel_send_action_do (
 
   if (!successful)
     {
+      g_return_val_if_fail (err, -1);
+
       PROPAGATE_PREFIXED_ERROR (
         error, err,
         _("Failed to perform channel send action: %s"),
@@ -327,6 +329,8 @@ channel_send_action_undo (
 
   if (!successful)
     {
+      g_return_val_if_fail (err, -1);
+
       PROPAGATE_PREFIXED_ERROR (
         error, err,
         _("Failed to perform channel send action: %s"),

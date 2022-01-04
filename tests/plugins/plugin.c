@@ -114,7 +114,7 @@ test_loading_fully_bridged_plugin (void)
     1);
 
   Port * port = get_skew_duty_port ();
-  g_assert_nonnull (port);
+  g_return_if_fail (port);
   float val_before = port->control;
   float val_after = 1.f;
   g_assert_cmpfloat_with_epsilon (
@@ -129,7 +129,7 @@ test_loading_fully_bridged_plugin (void)
   test_project_save_and_reload ();
 
   port = get_skew_duty_port ();
-  g_assert_nonnull (port);
+  g_return_if_fail (port);
   g_assert_cmpfloat_with_epsilon (
     port->control, val_after, 0.0001f);
 #endif
@@ -149,6 +149,7 @@ test_loading_plugins_needing_bridging (void)
     test_plugin_manager_get_plugin_setting (
       CALF_MONOSYNTH_BUNDLE, CALF_MONOSYNTH_URI,
       false);
+  g_return_if_fail (setting);
   g_assert_true (
     setting->open_with_carla);
   g_assert_true (

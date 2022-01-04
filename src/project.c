@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1015,6 +1015,7 @@ load (
 
   char * yaml =
     project_get_existing_yaml (PROJECT, use_backup);
+  g_return_val_if_fail (yaml, -1);
 
   g_message ("project from yaml...");
   gint64 time_before = g_get_monotonic_time ();
@@ -1946,6 +1947,9 @@ project_save (
   data->show_notification = show_notification;
   data->is_backup = is_backup;
   data->project = project_clone (PROJECT);
+  g_return_val_if_fail (data->project, -1);
+  g_return_val_if_fail (
+    data->project->tracklist_selections, -1);
   data->project->tracklist_selections->free_tracks =
     true;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -2436,6 +2436,7 @@ track_set_automation_visible (
        * first one visible */
       AutomationTracklist * atl =
         track_get_automation_tracklist (self);
+      g_return_if_fail (atl);
       int num_visible =
         automation_tracklist_get_num_visible (atl);
 
