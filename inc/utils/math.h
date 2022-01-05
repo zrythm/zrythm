@@ -102,7 +102,7 @@
  * Rounds a double to an int.
  */
 #define math_round_double_to_type(x,type) \
-  ((type) ((x) + 0.5 - ((x) < 0.0)))
+  ((type) (lround (x)))
 
 /**
  * Rounds a double to an int.
@@ -123,13 +123,13 @@
  * Rounds a double to a long.
  */
 #define math_round_double_to_long(x) \
-  math_round_double_to_type (x,long)
+  (lround (x))
 
 /**
  * Rounds a float to a given type.
  */
 #define math_round_float_to_type(x,type) \
-  ((type) (x + 0.5f - (x < 0.f)))
+  ((type) (lroundf (x)))
 
 /**
  * Rounds a float to an int.
@@ -141,7 +141,7 @@
  * Rounds a float to a long.
  */
 #define math_round_float_to_long(x) \
-  math_round_float_to_type (x,long)
+  (lroundf (x))
 
 /**
  * Fast log calculation to be used where precision
