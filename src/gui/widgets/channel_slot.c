@@ -48,7 +48,7 @@
 
 G_DEFINE_TYPE (
   ChannelSlotWidget, channel_slot_widget,
-  GTK_TYPE_DRAWING_AREA)
+  GTK_TYPE_WIDGET)
 
 #define ELLIPSIZE_PADDING 2
 
@@ -90,28 +90,49 @@ get_plugin (
 }
 
 static void
-channel_slot_draw_cb (
-  GtkDrawingArea * drawing_area,
-  cairo_t *        cr,
-  int              width,
-  int              height,
-  gpointer         user_data)
+recreate_pango_layouts (
+  ChannelSlotWidget * self)
+{
+  if (PANGO_IS_LAYOUT (self->empty_slot_layout))
+    g_object_unref (self->empty_slot_layout);
+  if (PANGO_IS_LAYOUT (self->pl_name_layout))
+    g_object_unref (self->pl_name_layout);
+
+  self->empty_slot_layout =
+    z_cairo_create_pango_layout_from_string (
+      (GtkWidget *) self, "Arial Italic 7.5",
+      PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+
+  self->pl_name_layout =
+    z_cairo_create_pango_layout_from_string (
+      (GtkWidget *) self, "Arial Bold 7.5",
+      PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+}
+
+static void
+channel_slot_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot)
 {
   ChannelSlotWidget * self =
-    Z_CHANNEL_SLOT_WIDGET (user_data);
-  GtkWidget * widget = GTK_WIDGET (drawing_area);
+    Z_CHANNEL_SLOT_WIDGET (widget);
 
-  GtkStyleContext *context =
-  gtk_widget_get_style_context (widget);
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
 
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (widget);
+
+  gtk_snapshot_render_background (
+    snapshot, context, 0, 0, width, height);
 
   int padding = 2;
   Plugin * plugin = get_plugin (self);
+  GdkRGBA bg, fg;
   if (plugin)
     {
-      GdkRGBA bg, fg;
       fg = UI_COLOR_BLACK;
       if (!plugin_is_enabled (plugin, false))
         {
@@ -130,15 +151,29 @@ channel_slot_draw_cb (
         bg = UI_COLORS->bright_green;
       else
         bg = UI_COLORS->darkish_green;
+    }
+  else
+    {
+      bg = Z_GDK_RGBA_INIT (0.1, 0.1, 0.1, 1.0);
+      fg = Z_GDK_RGBA_INIT (0.3, 0.3, 0.3, 1);
+    }
 
-      /* fill background */
-      cairo_set_source_rgba (
-        cr, bg.red, bg.green, bg.blue, 1.0);
-      cairo_rectangle (
-        cr, padding, padding,
-        width - padding * 2, height - padding * 2);
-      cairo_fill(cr);
+  /* fill background */
+  gtk_snapshot_append_color (
+    snapshot, &bg,
+    &GRAPHENE_RECT_INIT (
+      padding, padding,
+      width - padding * 2,
+      height - padding * 2));
 
+  if (!self->empty_slot_layout
+      || !self->pl_name_layout)
+    {
+      recreate_pango_layouts (self);
+    }
+
+  if (plugin)
+    {
       const PluginDescriptor * descr =
         plugin->setting->descr;
 
@@ -153,17 +188,21 @@ channel_slot_draw_cb (
         {
           strcpy (txt, descr->name);
         }
-      cairo_set_source_rgba (
-        cr, fg.red, fg.green, fg.blue, 1.0);
       int w, h;
       z_cairo_get_text_extents_for_widget (
         widget, self->pl_name_layout,
         txt, &w, &h);
-      z_cairo_draw_text_full (
-        cr, widget, self->pl_name_layout,
-        txt,
-        width / 2 - w / 2,
-        height / 2 - h / 2);
+      pango_layout_set_markup (
+        self->pl_name_layout, txt, -1);
+      gtk_snapshot_save (snapshot);
+      gtk_snapshot_translate (
+        snapshot,
+        &GRAPHENE_POINT_INIT (
+          width / 2.f - w / 2.f,
+          height / 2.f - h / 2.f));
+      gtk_snapshot_append_layout (
+        snapshot, self->pl_name_layout, &fg);
+      gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
       if (!self->pl_name ||
@@ -180,17 +219,7 @@ channel_slot_draw_cb (
     }
   else
     {
-      /* fill background */
-      cairo_set_source_rgba (
-        cr, 0.1, 0.1, 0.1, 1.0);
-      cairo_rectangle (
-        cr, padding, padding,
-        width - padding * 2, height - padding * 2);
-      cairo_fill(cr);
-
       /* fill text */
-      cairo_set_source_rgba (
-        cr, 0.3, 0.3, 0.3, 1.0);
       int w, h;
       char text[400];
       if (self->type == PLUGIN_SLOT_INSTRUMENT)
@@ -206,10 +235,17 @@ channel_slot_draw_cb (
       z_cairo_get_text_extents_for_widget (
         widget, self->empty_slot_layout, text,
         &w, &h);
-      z_cairo_draw_text_full (
-        cr, widget, self->empty_slot_layout,
-        text, width / 2 - w / 2,
-        height / 2 - h / 2);
+      pango_layout_set_markup (
+        self->empty_slot_layout, text, -1);
+      gtk_snapshot_save (snapshot);
+      gtk_snapshot_translate (
+        snapshot,
+        &GRAPHENE_POINT_INIT (
+          width / 2.f - w / 2.f,
+          height / 2.f - h / 2.f));
+      gtk_snapshot_append_layout (
+        snapshot, self->empty_slot_layout, &fg);
+      gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
       if (self->pl_name)
@@ -220,19 +256,6 @@ channel_slot_draw_cb (
             widget, text);
         }
     }
-
-  //highlight if grabbed or if mouse is hovering over me
-  /*if (self->hover)*/
-    /*{*/
-      /*cairo_set_source_rgba (cr, 0.8, 0.8, 0.8, 0.12 );*/
-      /*cairo_new_sub_path (cr);*/
-      /*cairo_arc (cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);*/
-      /*cairo_arc (cr, x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);*/
-      /*cairo_arc (cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);*/
-      /*cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);*/
-      /*cairo_close_path (cr);*/
-      /*cairo_fill (cr);*/
-    /*}*/
 }
 
 static gboolean
@@ -853,49 +876,6 @@ on_motion_leave (
 }
 
 static void
-recreate_pango_layouts (
-  ChannelSlotWidget * self)
-{
-  if (PANGO_IS_LAYOUT (self->empty_slot_layout))
-    g_object_unref (self->empty_slot_layout);
-  if (PANGO_IS_LAYOUT (self->pl_name_layout))
-    g_object_unref (self->pl_name_layout);
-
-  self->empty_slot_layout =
-    z_cairo_create_pango_layout_from_string (
-      (GtkWidget *) self, "Arial Italic 7.5",
-      PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
-
-  self->pl_name_layout =
-    z_cairo_create_pango_layout_from_string (
-      (GtkWidget *) self, "Arial Bold 7.5",
-      PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
-}
-
-static void
-channel_slot_widget_on_resize (
-  GtkDrawingArea * drawing_area,
-  gint             width,
-  gint             height,
-  gpointer         user_data)
-{
-  ChannelSlotWidget * self =
-    Z_CHANNEL_SLOT_WIDGET (user_data);
-  recreate_pango_layouts (self);
-}
-
-#if 0
-static void
-on_screen_changed (
-  GtkWidget *          widget,
-  GdkScreen *          previous_screen,
-  ChannelSlotWidget * self)
-{
-  recreate_pango_layouts (self);
-}
-#endif
-
-static void
 finalize (
   ChannelSlotWidget * self)
 {
@@ -1015,27 +995,6 @@ setup_dnd (
     GTK_EVENT_CONTROLLER (drop_target));
 }
 
-static void
-on_size_allocate (
-  GtkWidget * widget,
-  int         width,
-  int         height,
-  int         baseline)
-{
-  ChannelSlotWidget * self =
-    Z_CHANNEL_SLOT_WIDGET (widget);
-
-  /* no layout manager, so call this to allocate
-   * a size for the menu */
-  gtk_popover_present (
-    GTK_POPOVER (self->popover_menu));
-
-  GTK_WIDGET_CLASS (
-    channel_slot_widget_parent_class)->
-      size_allocate (
-        widget, width, height, baseline);
-}
-
 /**
  * Creates a new ChannelSlot widget and binds it to
  * the given value.
@@ -1145,20 +1104,6 @@ channel_slot_widget_init (
   gtk_widget_add_controller (
     GTK_WIDGET (self), motion_controller);
 
-  gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self),
-    channel_slot_draw_cb,
-    self, NULL);
-#if 0
-  g_signal_connect (
-    G_OBJECT (self), "screen-changed",
-    G_CALLBACK (on_screen_changed),  self);
-#endif
-  g_signal_connect (
-    G_OBJECT (self), "resize",
-    G_CALLBACK (channel_slot_widget_on_resize),
-    self);
-
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), (GtkTickCallback) tick_cb,
     self, NULL);
@@ -1178,13 +1123,16 @@ dispose (
 
 static void
 channel_slot_widget_class_init (
-  ChannelSlotWidgetClass * _klass)
+  ChannelSlotWidgetClass * klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
+  wklass->snapshot = channel_slot_snapshot;
   gtk_widget_class_set_css_name (
-    klass, "channel-slot");
-  klass->size_allocate = on_size_allocate;
+    wklass, "channel-slot");
+
+  gtk_widget_class_set_layout_manager_type (
+    wklass, GTK_TYPE_BIN_LAYOUT);
 
   GObjectClass * oklass =
     G_OBJECT_CLASS (klass);

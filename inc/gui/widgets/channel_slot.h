@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (
   ChannelSlotWidget,
   channel_slot_widget,
   Z, CHANNEL_SLOT_WIDGET,
-  GtkDrawingArea)
+  GtkWidget)
 
 typedef struct Plugin Plugin;
 typedef struct Channel Channel;
@@ -47,7 +47,7 @@ typedef struct Channel Channel;
 
 typedef struct _ChannelSlotWidget
 {
-  GtkDrawingArea    parent_instance;
+  GtkWidget         parent_instance;
 
   PluginSlotType    type;
 
