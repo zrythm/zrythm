@@ -1392,6 +1392,8 @@ engine_realloc_port_buffers (
     }
   AUDIO_ENGINE->nframes = nframes;
 
+  router_recalc_graph (ROUTER, false);
+
   g_message ("done");
 }
 
