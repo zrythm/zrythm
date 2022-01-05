@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -259,7 +259,7 @@ bot_dock_edge_widget_init (
 
   /* set icons */
   gtk_button_set_icon_name (
-    GTK_BUTTON (self->mixer->channels_add), "plus");
+    GTK_BUTTON (self->mixer->channels_add), "add");
 }
 
 static void

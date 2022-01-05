@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -283,7 +283,7 @@ bot_bar_widget_refresh (BotBarWidget * self)
         gtk_icon_theme_get_for_display (display);
       GtkIconPaintable * icon_paintable =
         gtk_icon_theme_lookup_icon (
-          icon_theme, "jack_transport_client",
+          icon_theme, "jack-transport-client",
           NULL, size, 1, GTK_TEXT_DIR_NONE,
           GTK_ICON_LOOKUP_PRELOAD);
       GtkWidget * img =
@@ -302,7 +302,7 @@ bot_bar_widget_refresh (BotBarWidget * self)
       self->client_img = img;
       icon_paintable =
         gtk_icon_theme_lookup_icon (
-          icon_theme, "jack_timebase_master",
+          icon_theme, "jack-timebase-master",
           NULL, size, 1, GTK_TEXT_DIR_NONE,
           GTK_ICON_LOOKUP_PRELOAD);
       img =
