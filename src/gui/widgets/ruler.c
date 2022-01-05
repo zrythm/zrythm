@@ -1298,7 +1298,7 @@ ruler_snapshot (
     &GRAPHENE_POINT_INIT (0, 0),
     &GRAPHENE_POINT_INIT (
       0, (float) (height * 3) / 4),
-    stops, 2);
+    stops, G_N_ELEMENTS (stops));
 
   draw_lines_and_labels (
     self, snapshot, &visible_rect_gdk);

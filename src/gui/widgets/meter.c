@@ -76,39 +76,34 @@ meter_snapshot (
   graphene_rect_t graphene_rect =
     GRAPHENE_RECT_INIT (0, 0, width, height);
 
-  cairo_t * cr =
-    gtk_snapshot_append_cairo (
-      snapshot, &graphene_rect);
-
-  gdk_cairo_set_source_rgba (cr, &bar_color);
-
   /* use gradient */
-  cairo_pattern_t * pat =
-    cairo_pattern_create_linear (
-      0.0, 0.0, 0.0, height);
-  cairo_pattern_add_color_stop_rgba (
-    pat, 0,
-    bar_color.red, bar_color.green,
-    bar_color.blue, 1);
-  cairo_pattern_add_color_stop_rgba (
-    pat, 0.5,
-    bar_color.red, bar_color.green,
-    bar_color.blue, 1);
-  cairo_pattern_add_color_stop_rgba (
-    pat, 0.75, 0, 1, 0, 1);
-  cairo_pattern_add_color_stop_rgba (
-    pat, 1, 0, 0.2, 1, 1);
-  cairo_set_source (cr, pat);
+  GskColorStop stop1, stop2, stop3, stop4;
+  stop1.offset = 0;
+  stop1.color = bar_color;
+  stop2.offset = 0.5;
+  stop2.color = bar_color;
+  stop3.offset = 0.75;
+  stop3.color = Z_GDK_RGBA_INIT (0, 1, 0, 1);
+  stop4.offset = 1;
+  stop4.color = Z_GDK_RGBA_INIT (0, 0.2, 1, 1);
+  GskColorStop stops[] = {
+    stop1, stop2, stop3, stop4 };
+
+  /* used to stretch the gradient a little bit to
+   * make it look alive */
+  float value_px_for_gradient =
+    (1 - value_px) * 0.02f;
 
   float x = self->padding;
-  cairo_rectangle (
-    cr, x,
-    (float) height - value_px,
-    x + width_without_padding,
-    value_px);
-  cairo_fill (cr);
-
-  cairo_pattern_destroy (pat);
+  gtk_snapshot_append_linear_gradient (
+    snapshot,
+    &GRAPHENE_RECT_INIT (
+      x, (float) height - value_px,
+      x + width_without_padding, value_px),
+    &GRAPHENE_POINT_INIT (0, width),
+    &GRAPHENE_POINT_INIT (
+      0, (float) height - value_px_for_gradient),
+    stops, G_N_ELEMENTS (stops));
 
   /* draw meter line */
   gtk_snapshot_append_color (
@@ -162,8 +157,6 @@ meter_snapshot (
   gtk_snapshot_append_border (
     snapshot, &rounded_rect, border_widths,
     border_colors);
-
-  cairo_destroy (cr);
 }
 
 
