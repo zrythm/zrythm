@@ -414,6 +414,9 @@ cdata.set_quoted ('CONFIGURE_BINDIR', bindir)
 cdata.set_quoted ('LIB_SUFFIX', lib_suffix)
 cdata.set_quoted ('BIN_SUFFIX', bin_suffix)
 cdata.set_quoted ('GSCHEMAS_DIR', schemasdir)
+if get_option ('dseg_font')
+  cdata.set ('HAVE_BUNDLED_DSEG', 1)
+endif
 cdata.set_quoted (
   'BUILD_TYPE', get_option ('buildtype'))
 cdata.set_quoted (

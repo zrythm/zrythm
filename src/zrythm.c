@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -559,6 +559,12 @@ zrythm_get_dir (
             g_build_filename (
               prefix, "share", "zrythm",
               "lv2", NULL);
+          break;
+        case ZRYTHM_DIR_SYSTEM_FONTSDIR:
+          res =
+            g_build_filename (
+              prefix, "share", "fonts",
+              "zrythm", NULL);
           break;
         default:
           break;

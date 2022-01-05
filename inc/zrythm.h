@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -136,6 +136,9 @@ typedef enum ZrythmDirType
 
   /** Built-in plugins path. */
   ZRYTHM_DIR_SYSTEM_LV2_PLUGINS_DIR,
+
+  /** The directory fonts/zrythm under datadir. */
+  ZRYTHM_DIR_SYSTEM_FONTSDIR,
 
   /* ************************************ */
 

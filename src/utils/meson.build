@@ -43,6 +43,7 @@ util_srcs = [
   'object_utils.c',
   'object_pool.c',
   'objects.c',
+  'pango.c',
   'resources.c',
   #'smf.c',
   'sort.c',

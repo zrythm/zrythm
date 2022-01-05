@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -37,10 +37,8 @@
 #define DIGITAL_METER_WIDGET_TYPE \
   (digital_meter_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  DigitalMeterWidget,
-  digital_meter_widget,
-  Z, DIGITAL_METER_WIDGET,
-  GtkDrawingArea)
+  DigitalMeterWidget, digital_meter_widget,
+  Z, DIGITAL_METER_WIDGET, GtkWidget)
 
 typedef enum NoteLength NoteLength;
 typedef enum NoteType NoteType;
@@ -65,7 +63,7 @@ typedef struct SnapGrid SnapGrid;
 
 typedef struct _DigitalMeterWidget
 {
-  GtkDrawingArea   parent_instance;
+  GtkWidget        parent_instance;
 
   DigitalMeterType type;
 
@@ -177,6 +175,8 @@ typedef struct _DigitalMeterWidget
   PangoLayout *     caption_layout;
   PangoLayout *     seg7_layout;
   PangoLayout *     normal_layout;
+
+  bool              initialized;
 } DigitalMeterWidget;
 
 /**

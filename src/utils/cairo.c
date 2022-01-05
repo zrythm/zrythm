@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,10 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm-config.h"
+
 #include "utils/cairo.h"
 #include "utils/dictionary.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"
+#include "utils/pango.h"
 #include "utils/string.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -124,8 +127,8 @@ z_cairo_create_pango_layout_from_description (
   int          ellipsize_padding)
 {
   PangoLayout * layout =
-    gtk_widget_create_pango_layout (
-      widget, NULL);
+    z_pango_create_layout_from_description (
+      widget, descr);
 
   if (ellipsize_mode > PANGO_ELLIPSIZE_NONE)
     {
@@ -139,8 +142,6 @@ z_cairo_create_pango_layout_from_description (
       pango_layout_set_ellipsize (
         layout, ellipsize_mode);
     }
-  pango_layout_set_font_description (
-    layout, descr);
 
   return layout;
 }
