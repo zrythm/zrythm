@@ -520,8 +520,11 @@ on_track_color_changed (Track * track)
 {
   if (track_type_has_channel (track->type))
     {
-      channel_widget_refresh (
-        track->channel->widget);
+      if (track->channel->widget)
+        {
+          channel_widget_refresh (
+            track->channel->widget);
+        }
     }
   track_widget_force_redraw (track->widget);
   left_dock_edge_widget_refresh (

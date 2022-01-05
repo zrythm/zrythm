@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (
   ColorAreaWidget,
   color_area_widget,
   Z, COLOR_AREA_WIDGET,
-  GtkDrawingArea)
+  GtkWidget)
 
 /**
  * Type of ColorAreaWidget this is. */
@@ -56,7 +56,7 @@ typedef struct Track Track;
 
 typedef struct _ColorAreaWidget
 {
-  GtkDrawingArea    parent_instance;
+  GtkWidget         parent_instance;
 
   /** Color pointer to set/read value. */
   GdkRGBA           color;
@@ -67,14 +67,10 @@ typedef struct _ColorAreaWidget
   /** Track, if track. */
   Track *           track;
 
-  /** Set to 1 to redraw. */
-  int               redraw;
-
   bool              hovered;
 
-  cairo_t *         cached_cr;
-
-  cairo_surface_t * cached_surface;
+  /** Used during drawing. */
+  GPtrArray *       parents;
 } ColorAreaWidget;
 
 /**

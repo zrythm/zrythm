@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,6 +24,7 @@
 #include "gui/widgets/track.h"
 #include "utils/cairo.h"
 #include "utils/color.h"
+#include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -32,144 +33,100 @@
 
 G_DEFINE_TYPE (
   ColorAreaWidget, color_area_widget,
-  GTK_TYPE_DRAWING_AREA)
+  GTK_TYPE_WIDGET)
 
 /**
  * Draws the color picker.
  */
 static void
-color_area_draw_cb (
-  GtkDrawingArea * drawing_area,
-  cairo_t *        cr,
-  int              width,
-  int              height,
-  gpointer         user_data)
+color_area_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot)
 {
   ColorAreaWidget * self =
-    Z_COLOR_AREA_WIDGET (user_data);
-  GtkWidget * widget = GTK_WIDGET (drawing_area);
+    Z_COLOR_AREA_WIDGET (widget);
 
-  if (self->redraw)
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
+
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (widget);
+
+  gtk_snapshot_render_background (
+    snapshot, context, 0, 0, width, height);
+
+  GdkRGBA color;
+  color.alpha = 1.0;
+  if (self->type == COLOR_AREA_TYPE_TRACK)
     {
-      GtkStyleContext * context =
-        gtk_widget_get_style_context (widget);
-
-      self->cached_cr =
-        cairo_create (self->cached_surface);
-      z_cairo_reset_caches (
-        &self->cached_cr,
-        &self->cached_surface, width,
-        height, cr);
-
-      gtk_render_background (
-        context, self->cached_cr, 0, 0,
-        width, height);
-
-      GdkRGBA color;
-      if (self->type == COLOR_AREA_TYPE_TRACK)
+      Track * track = self->track;
+      if (track_is_enabled (track))
         {
-          Track * track = self->track;
-          if (track_is_enabled (track))
-            {
-              color = self->track->color;
-            }
-          else
-            {
-              color.red = 0.5;
-              color.green = 0.5;
-              color.blue = 0.5;
-            }
+          color = self->track->color;
         }
       else
-        color = self->color;
-
-      if (self->hovered)
         {
-          color_brighten_default (&color);
+          color.red = 0.5;
+          color.green = 0.5;
+          color.blue = 0.5;
         }
+    }
+  else
+    color = self->color;
 
-      cairo_rectangle (
-        self->cached_cr, 0, 0, width, height);
-      gdk_cairo_set_source_rgba (
-        self->cached_cr, &color);
-      cairo_fill (self->cached_cr);
-
-      /* show track icon */
-      if (self->type == COLOR_AREA_TYPE_TRACK)
-        {
-          Track * track = self->track;
-
-          /* draw each parent */
-          GPtrArray * parents =
-            g_ptr_array_sized_new (8);
-          track_add_folder_parents (
-            track, parents, false);
-
-          size_t len = parents->len + 1;
-          for (size_t i = 0; i < parents->len; i++)
-            {
-              Track * parent_track =
-                g_ptr_array_index (parents, i);
-
-              double start_y =
-                ((double) i /
-                 (double) len) *
-                (double) height;
-              double h =
-                (double) height /
-                (double) len;
-
-              cairo_rectangle (
-                self->cached_cr,
-                0, start_y, width, h);
-              color = parent_track->color;
-              if (self->hovered)
-                color_brighten_default (&color);
-              gdk_cairo_set_source_rgba (
-                self->cached_cr, &color);
-              cairo_fill (self->cached_cr);
-            }
-          g_ptr_array_unref (parents);
-
-          /*TRACK_WIDGET_GET_PRIVATE (*/
-            /*self->track->widget);*/
-
-          /*if (tw_prv->icon)*/
-            /*{*/
-              /*cairo_surface_t * surface =*/
-                /*gdk_cairo_surface_create_from_pixbuf (*/
-                  /*tw_prv->icon, 0, NULL);*/
-
-              /*GdkRGBA c2, c3;*/
-              /*ui_get_contrast_color (*/
-                /*color, &c2);*/
-              /*ui_get_contrast_color (*/
-                /*&c2, &c3);*/
-
-              /*[> add shadow in the back <]*/
-              /*cairo_set_source_rgba (*/
-                /*self->cached_cr, c3.red,*/
-                /*c3.green, c3.blue, 0.4);*/
-              /*cairo_mask_surface(*/
-                /*self->cached_cr, surface, 2, 2);*/
-              /*cairo_fill(self->cached_cr);*/
-
-              /*[> add main icon <]*/
-              /*cairo_set_source_rgba (*/
-                /*self->cached_cr, c2.red, c2.green, c2.blue, 1);*/
-              /*[>cairo_set_source_surface (<]*/
-                /*[>self->cached_cr, surface, 1, 1);<]*/
-              /*cairo_mask_surface(*/
-                /*self->cached_cr, surface, 1, 1);*/
-              /*cairo_fill (self->cached_cr);*/
-            /*}*/
-        }
-      self->redraw = 0;
+  if (self->hovered)
+    {
+      color_brighten_default (&color);
     }
 
-  cairo_set_source_surface (
-    cr, self->cached_surface, 0, 0);
-  cairo_paint (cr);
+  gtk_snapshot_append_color (
+    snapshot, &color,
+    &GRAPHENE_RECT_INIT (0, 0, width, height));
+
+  if (self->type == COLOR_AREA_TYPE_TRACK)
+    {
+      Track * track = self->track;
+
+      /* draw each parent */
+      if (self->parents)
+        {
+          g_ptr_array_remove_range (
+            self->parents, 0, self->parents->len);
+        }
+      else
+        {
+          self->parents =
+            g_ptr_array_sized_new (8);
+        }
+      track_add_folder_parents (
+        track, self->parents, false);
+
+      size_t len = self->parents->len + 1;
+      for (size_t i = 0; i < self->parents->len; i++)
+        {
+          Track * parent_track =
+            g_ptr_array_index (self->parents, i);
+
+          double start_y =
+            ((double) i /
+             (double) len) *
+            (double) height;
+          double h =
+            (double) height /
+            (double) len;
+
+          color = parent_track->color;
+          if (self->hovered)
+            color_brighten_default (&color);
+          gtk_snapshot_append_color (
+            snapshot, &color,
+            &GRAPHENE_RECT_INIT (
+              0, (float) start_y, width, (float) h));
+        }
+
+    }
 }
 
 static void
@@ -186,18 +143,7 @@ multipress_pressed (
         GTK_WINDOW (MAIN_WINDOW),
         self->track, NULL, NULL);
     }
-}
-
-static void
-color_area_widget_on_resize (
-  GtkDrawingArea * drawing_area,
-  gint             width,
-  gint             height,
-  gpointer         user_data)
-{
-  ColorAreaWidget * self =
-    Z_COLOR_AREA_WIDGET (user_data);
-  self->redraw = true;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 static void
@@ -211,7 +157,6 @@ on_enter (
     Z_COLOR_AREA_WIDGET (user_data);
   self->hovered = true;
   gtk_widget_queue_draw (GTK_WIDGET (self));
-  self->redraw = true;
 }
 
 static void
@@ -223,7 +168,6 @@ on_leave (
     Z_COLOR_AREA_WIDGET (user_data);
   self->hovered = false;
   gtk_widget_queue_draw (GTK_WIDGET (self));
-  self->redraw = true;
 }
 
 /**
@@ -236,6 +180,7 @@ color_area_widget_setup_generic (
   GdkRGBA * color)
 {
   self->color = *color;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 /**
@@ -249,10 +194,10 @@ color_area_widget_setup_track (
 {
   self->track = track;
   self->type = COLOR_AREA_TYPE_TRACK;
-  self->redraw = true;
 
   g_message (
     "setting up track %s for %p", track->name, self);
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 /**
@@ -269,16 +214,23 @@ color_area_widget_set_color (
   self->color = *color;
 
   gtk_widget_queue_draw (GTK_WIDGET (self));
-  self->redraw = true;
+}
+
+static void
+finalize (
+  ColorAreaWidget * self)
+{
+  object_free_w_func_and_null (
+    g_ptr_array_unref, self->parents);
+
+  G_OBJECT_CLASS (
+    color_area_widget_parent_class)->
+      finalize (G_OBJECT (self));
 }
 
 static void
 color_area_widget_init (ColorAreaWidget * self)
 {
-  gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self), color_area_draw_cb,
-    self, NULL);
-
   GtkGestureClick * mp =
     GTK_GESTURE_CLICK (
       gtk_gesture_click_new ());
@@ -288,11 +240,6 @@ color_area_widget_init (ColorAreaWidget * self)
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (mp));
-
-  g_signal_connect (
-    G_OBJECT (self), "resize",
-    G_CALLBACK (color_area_widget_on_resize),
-    self);
 
   GtkEventControllerMotion * motion_controller =
     GTK_EVENT_CONTROLLER_MOTION (
@@ -306,15 +253,19 @@ color_area_widget_init (ColorAreaWidget * self)
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (motion_controller));
-
-  self->redraw = true;
 }
 
 static void
 color_area_widget_class_init (
-  ColorAreaWidgetClass * _klass)
+  ColorAreaWidgetClass * klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  wklass->snapshot = color_area_snapshot;
   gtk_widget_class_set_css_name (
-    klass, "color-area");
+    wklass, "color-area");
+
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+  oklass->finalize =
+    (GObjectFinalizeFunc) finalize;
 }
