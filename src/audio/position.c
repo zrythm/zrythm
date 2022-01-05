@@ -635,6 +635,12 @@ position_from_ticks (
   pos->schema_version = POSITION_SCHEMA_VERSION;
   pos->ticks = ticks;
   position_update_frames_from_ticks (pos);
+
+  /* assert that no overflow occurred */
+  if (ticks >= 0)
+    g_return_if_fail (pos->frames >= 0);
+  else
+    g_return_if_fail (pos->frames <= 0);
 }
 
 void
@@ -780,7 +786,9 @@ position_print (
 {
   char buf[140];
   position_to_string (pos, buf);
-  g_message ("%s (%ld)", buf, pos->frames);
+  g_message (
+    "%s (%ld frames | %f ticks)",
+    buf, pos->frames, pos->ticks);
 }
 
 void
