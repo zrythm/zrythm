@@ -25,3 +25,6 @@ Sketches
    Sketch by `FanaticMoose`_ [`CC-BY-SA`_]
 
 `[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_
+
+.. _FanaticMoose: https://mastodon.online/@FanaticMoose
+.. _CC-BY-SA: https://creativecommons.org/licenses/by-sa/4.0/
