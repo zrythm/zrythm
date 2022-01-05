@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -250,7 +250,7 @@ foldable_notebook_widget_add_page (
     foldable_notebook_widget_get_notebook (self);
   GtkBox * box =
     GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4));
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (box), tooltip);
   GtkWidget * img =
