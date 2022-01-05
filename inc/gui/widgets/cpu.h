@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -40,21 +40,24 @@
   (cpu_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   CpuWidget, cpu_widget,
-  Z, CPU_WIDGET, GtkDrawingArea)
+  Z, CPU_WIDGET, GtkWidget)
 
 typedef struct _CpuWidget
 {
-  GtkDrawingArea         parent_instance;
+  GtkWidget       parent_instance;
 
   /** CPU load (0-100). */
-  int                    cpu;
+  int             cpu;
 
   /** DSP load (0-100). */
-  int                    dsp;
+  int             dsp;
 
   /** Source func IDs. */
-  guint                  cpu_source_id;
-  guint                  dsp_source_id;
+  guint           cpu_source_id;
+  guint           dsp_source_id;
+
+  GdkTexture *    cpu_texture;
+  GdkTexture *    dsp_texture;
 } CpuWidget;
 
 /**

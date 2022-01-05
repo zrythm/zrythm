@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,7 +29,9 @@
 #include "gui/widgets/cpu.h"
 #include "project.h"
 #include "utils/cpu_windows.h"
-#include "utils/cairo.h"
+#include "utils/gtk.h"
+#include "utils/objects.h"
+#include "utils/ui.h"
 
 #ifdef __APPLE__
 #include <mach/mach_init.h>
@@ -41,7 +43,7 @@
 #include "zrythm_app.h"
 
 G_DEFINE_TYPE (
-  CpuWidget, cpu_widget, GTK_TYPE_DRAWING_AREA)
+  CpuWidget, cpu_widget, GTK_TYPE_WIDGET)
 
 #define BAR_HEIGHT 12
 #define BAR_WIDTH 3
@@ -58,44 +60,57 @@ G_DEFINE_TYPE (
  * http://zetcode.com/gui/gtk2/customwidget/
  */
 static void
-cpu_draw_cb (
-  GtkDrawingArea * drawing_area,
-  cairo_t *        cr,
-  int              width,
-  int              height,
-  gpointer         user_data)
+cpu_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot)
 {
-  CpuWidget * self = Z_CPU_WIDGET (user_data);
-  GtkWidget * widget = GTK_WIDGET (drawing_area);
+  CpuWidget * self = Z_CPU_WIDGET (widget);
 
-  GtkStyleContext *context =
-  gtk_widget_get_style_context (widget);
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
 
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (widget);
 
-  /*GdkRGBA color;*/
-  /*gdk_rgba_parse (&color, "#00ccff");*/
-  /*cairo_set_source_rgba (*/
-    /*cr, color.red, color.green, color.blue, 1.0);*/
-  cairo_set_source_rgb(cr, 0.6, 1.0, 0);
+  gtk_snapshot_render_background (
+    snapshot, context, 0, 0, width, height);
 
-  cairo_surface_t * surface;
-  surface =
-    z_cairo_get_surface_from_icon_name (
-      "ext-iconfinder_cpu_2561419",
-      ICON_SIZE, 1);
-  cairo_mask_surface(
-    cr, surface, PADDING, PADDING);
-  cairo_fill(cr);
+  GdkRGBA active_color =
+    Z_GDK_RGBA_INIT (0.6, 1.0, 0.0, 1.0);
+  GdkRGBA inactive_color =
+    Z_GDK_RGBA_INIT (0.2, 0.4, 0.0, 1.0);
+  GdkRGBA color = active_color;
 
-  surface =
-    z_cairo_get_surface_from_icon_name (
-      "font-awesome-wave-square-solid",
-      ICON_SIZE, 1);
-  cairo_mask_surface(
-    cr, surface, PADDING, 2 * PADDING + ICON_SIZE);
-  cairo_fill(cr);
+  graphene_matrix_t color_matrix;
+  graphene_matrix_init_from_float (
+    &color_matrix,
+    (float[16]) {
+      1, 1, 1, 0,
+      1, 1, 1, 0,
+      1, 1, 1, 0,
+      0, 0, 0, color.alpha });
+  graphene_vec4_t color_offset;
+  graphene_vec4_init (
+    &color_offset,
+    color.red, color.green, color.blue, 0);
+
+  gtk_snapshot_push_color_matrix (
+    snapshot, &color_matrix, &color_offset);
+
+  gtk_snapshot_append_texture (
+    snapshot, self->cpu_texture,
+    &GRAPHENE_RECT_INIT (
+      PADDING, PADDING, ICON_SIZE, ICON_SIZE));
+
+  gtk_snapshot_append_texture (
+    snapshot, self->dsp_texture,
+    &GRAPHENE_RECT_INIT (
+      PADDING, PADDING * 2 + ICON_SIZE,
+      ICON_SIZE, ICON_SIZE));
+
+  gtk_snapshot_pop (snapshot);
 
   int limit, i;
 
@@ -106,17 +121,17 @@ cpu_draw_cb (
   for (i = 1; i <= NUM_BARS; i++)
     {
       if (i <= limit)
-        cairo_set_source_rgb(cr, 0.6, 1.0, 0);
+        color = active_color;
       else
-        cairo_set_source_rgb(cr, 0.2, 0.4, 0);
+        color = inactive_color;
 
-      cairo_rectangle(
-        cr,
-        ICON_SIZE + PADDING + i * PADDING * 2,
-        PADDING,
-        BAR_WIDTH,
-        BAR_HEIGHT);
-      cairo_fill(cr);
+      gtk_snapshot_append_color (
+        snapshot, &color,
+        &GRAPHENE_RECT_INIT (
+          ICON_SIZE + PADDING + i * PADDING * 2,
+          PADDING,
+          BAR_WIDTH,
+          BAR_HEIGHT));
     }
 
   /* DSP */
@@ -126,17 +141,17 @@ cpu_draw_cb (
   for (i = 1; i <= NUM_BARS; i++)
     {
       if (i <= limit)
-        cairo_set_source_rgb(cr, 0.6, 1.0, 0);
+        color = active_color;
       else
-        cairo_set_source_rgb(cr, 0.2, 0.4, 0);
+        color = inactive_color;
 
-      cairo_rectangle(
-        cr,
-        ICON_SIZE + PADDING + i * PADDING * 2,
-        PADDING * 2 + BAR_HEIGHT,
-        BAR_WIDTH,
-        BAR_HEIGHT);
-      cairo_fill(cr);
+      gtk_snapshot_append_color (
+        snapshot, &color,
+        &GRAPHENE_RECT_INIT (
+          ICON_SIZE + PADDING + i * PADDING * 2,
+          PADDING * 2 + BAR_HEIGHT,
+          BAR_WIDTH,
+          BAR_HEIGHT));
     }
 }
 
@@ -308,6 +323,11 @@ finalize (
   g_source_remove (
     self->dsp_source_id);
 
+  object_free_w_func_and_null (
+    g_object_unref, self->cpu_texture);
+  object_free_w_func_and_null (
+    g_object_unref, self->dsp_texture);
+
   G_OBJECT_CLASS (
     cpu_widget_parent_class)->
       finalize (G_OBJECT (self));
@@ -319,14 +339,19 @@ cpu_widget_init (CpuWidget * self)
   self->cpu = 0;
   self->dsp = 0;
 
+  self->cpu_texture =
+    z_gdk_texture_new_from_icon_name (
+      "ext-iconfinder_cpu_2561419",
+      ICON_SIZE, ICON_SIZE, 1);
+  self->dsp_texture =
+    z_gdk_texture_new_from_icon_name (
+      "font-awesome-wave-square-solid",
+      ICON_SIZE, ICON_SIZE, 1);
+
   gtk_widget_set_size_request (
     GTK_WIDGET (self), TOTAL_W, TOTAL_H);
 
   /* connect signals */
-  gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self), cpu_draw_cb,
-    self, NULL);
-
   GtkEventController * motion_controller =
     gtk_event_controller_motion_new ();
   g_signal_connect (
@@ -340,12 +365,12 @@ cpu_widget_init (CpuWidget * self)
 }
 
 static void
-cpu_widget_class_init (CpuWidgetClass * _klass)
+cpu_widget_class_init (
+  CpuWidgetClass * klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "cpu");
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  wklass->snapshot = cpu_snapshot;
+  gtk_widget_class_set_css_name (wklass, "cpu");
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize =
