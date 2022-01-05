@@ -899,6 +899,17 @@ audec_dep = dependency(
   fallback: ['libaudec', 'libaudec_dep'],
   required: true, static: all_static)
 
+# link to fontconfig/pangoft2 directly because
+# they are used in utils/pango.c
+fontconfig_dep = dependency (
+  'fontconfig', version: '>=2.13.0')
+pangoft2_dep = dependency (
+  'pangoft2', version: '>=1.50',
+  fallback: ['pango', 'libpangoft2_dep'],
+  default_options: [
+    'default_library=static',
+    'introspection=disabled',])
+
 gtk_dep = dependency (
   'gtk4', version: '>=' + gtk_req,
   fallback: ['gtk4', 'libgtk_dep'],
@@ -1214,6 +1225,8 @@ vamp_deps = [ vamp_dep, vamp_host_sdk_dep ]
 
 zrythm_deps = [
   libadwaita_dep,
+  fontconfig_dep,
+  pangoft2_dep,
   gtk_dep,
   sndfile_dep,
   samplerate_dep,
