@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, 2021 Alexandros Theodotou
+ * Copyright (C) 2019, 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -18,7 +18,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Timeline minimap selection.
  */
@@ -42,12 +42,12 @@ G_DECLARE_FINAL_TYPE (
   TimelineMinimapSelectionWidget,
   timeline_minimap_selection_widget,
   Z, TIMELINE_MINIMAP_SELECTION_WIDGET,
-  GtkBox)
+  GtkWidget)
 
 typedef struct _TimelineMinimapSelectionWidget
 {
-  GtkBox                 parent_instance;
-  GtkDrawingArea *       drawing_area;
+  GtkWidget              parent_instance;
+
   UiCursorState          cursor;
 
   /** Pointer back to parent. */

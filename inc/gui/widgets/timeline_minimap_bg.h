@@ -1,8 +1,5 @@
 /*
- * gui/widgets/timeline_minimap_bg.h - Minimap
- *   bg
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019, 2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,7 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file */
+/**
+ * @file
+ *
+ * Timeline minimap bg.
+ */
 
 #ifndef __GUI_WIDGETS_TIMELINE_MINIMAP_BG_H__
 #define __GUI_WIDGETS_TIMELINE_MINIMAP_BG_H__
@@ -29,15 +30,15 @@
 
 #define TIMELINE_MINIMAP_BG_WIDGET_TYPE \
   (timeline_minimap_bg_widget_get_type ())
-G_DECLARE_FINAL_TYPE (TimelineMinimapBgWidget,
-                      timeline_minimap_bg_widget,
-                      Z,
-                      TIMELINE_MINIMAP_BG_WIDGET,
-                      GtkDrawingArea)
+G_DECLARE_FINAL_TYPE (
+  TimelineMinimapBgWidget,
+  timeline_minimap_bg_widget,
+  Z, TIMELINE_MINIMAP_BG_WIDGET,
+  GtkWidget)
 
 typedef struct _TimelineMinimapBgWidget
 {
-  GtkDrawingArea             parent_instance;
+  GtkWidget        parent_instance;
 } TimelineMinimapBgWidget;
 
 TimelineMinimapBgWidget *

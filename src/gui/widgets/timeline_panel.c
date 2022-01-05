@@ -51,9 +51,6 @@ on_hadj_value_changed (
   GtkAdjustment *adjustment,
   gpointer       user_data)
 {
-  /*TimelinePanelWidget * self =*/
-    /*Z_TIMELINE_PANEL_WIDGET (user_data);*/
-
   EVENTS_PUSH (
     ET_RULER_VIEWPORT_CHANGED, MW_RULER);
 }

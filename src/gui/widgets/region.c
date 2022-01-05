@@ -1594,8 +1594,7 @@ region_draw (
           full_rect.x, full_rect.y, full_rect.width,
           full_rect.height);
       gsk_rounded_rect_init_from_rect (
-        &rounded_rect, &graphene_rect,
-            full_rect.height / 6.0f);
+        &rounded_rect, &graphene_rect, 6.f);
       gtk_snapshot_push_rounded_clip (
         snapshot, &rounded_rect);
 

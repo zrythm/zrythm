@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,30 +31,31 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (TimelineMinimapBgWidget,
-               timeline_minimap_bg_widget,
-               GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (
+  TimelineMinimapBgWidget,
+  timeline_minimap_bg_widget, GTK_TYPE_WIDGET)
 
 static void
-timeline_minimap_bg_draw_cb (
-  GtkDrawingArea * drawing_area,
-  cairo_t *        cr,
-  int              width,
-  int              height,
-  gpointer         user_data)
+timeline_minimap_bg_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot)
 {
-  TimelineMinimapBgWidget * self =
-    Z_TIMELINE_MINIMAP_BG_WIDGET (user_data);
-  GtkWidget * widget = GTK_WIDGET (self);
+  /*TimelineMinimapBgWidget * self =*/
+    /*Z_TIMELINE_MINIMAP_BG_WIDGET (widget);*/
 
-  if (!PROJECT->loaded)
-    return;
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
 
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
+  gtk_snapshot_render_background (
+    snapshot, context, 0, 0, width, height);
+
+  if (!PROJECT->loaded)
+    return;
 
   Marker * start =
     marker_track_get_start_marker (
@@ -68,9 +69,9 @@ timeline_minimap_bg_draw_cb (
     (ArrangerObject *) end;
   int song_px =
     ui_pos_to_px_timeline (
-      &start_obj->pos, 1) -
+      &end_obj->pos, 1) -
     ui_pos_to_px_timeline (
-      &end_obj->pos, 1);
+      &start_obj->pos, 1);
   /*int region_px;*/
 
   int total_track_height = 0;
@@ -89,25 +90,20 @@ timeline_minimap_bg_draw_cb (
     {
       track = TRACKLIST->tracks[i];
 
-      if (!(track->widget && track->visible))
+      if (!track->widget || !track->visible)
         continue;
 
-      double wx, wy;
+      double wy;
       gtk_widget_translate_coordinates(
         GTK_WIDGET (track->widget),
         GTK_WIDGET (MW_TIMELINE),
-        0, 0,
-        &wx, &wy);
+        0, 0, NULL, &wy);
       track_height =
         gtk_widget_get_allocated_height (
           GTK_WIDGET (track->widget));
 
-      GdkRGBA * color = &track->color;
-      cairo_set_source_rgba (cr,
-                             color->red,
-                             color->green,
-                             color->blue,
-                             0.2);
+      GdkRGBA color = track->color;
+      color.alpha = 0.6;
 
       TrackLane * lane;
       ArrangerObject * r_obj;
@@ -129,46 +125,59 @@ timeline_minimap_bg_draw_cb (
               int px_length =
                 px_end - px_start;
 
-              cairo_rectangle (
-                cr,
-                ((double) px_start /
-                 (double) song_px) * width,
-                ((double) wy /
-                   (double) total_track_height) * height,
-                ((double) px_length /
-                  (double) song_px) * width,
-                ((double) track_height /
-                  (double) total_track_height) * height);
-              cairo_fill (cr);
+              gtk_snapshot_append_color (
+                snapshot, &color,
+                &GRAPHENE_RECT_INIT (
+                  ((float) px_start /
+                   (float) song_px) * width,
+                  ((float) wy /
+                     (float) total_track_height) * height,
+                  ((float) px_length /
+                    (float) song_px) * width,
+                  ((float) track_height /
+                    (float) total_track_height) * height));
             }
         }
     }
+}
+
+static gboolean
+timeline_minimap_bg_tick_cb (
+  GtkWidget *     widget,
+  GdkFrameClock * frame_clock,
+  gpointer        user_data)
+{
+  gtk_widget_queue_draw (widget);
+
+  return G_SOURCE_CONTINUE;
 }
 
 TimelineMinimapBgWidget *
 timeline_minimap_bg_widget_new ()
 {
   TimelineMinimapBgWidget * self =
-    g_object_new (TIMELINE_MINIMAP_BG_WIDGET_TYPE,
-                  NULL);
+    g_object_new (
+      TIMELINE_MINIMAP_BG_WIDGET_TYPE, NULL);
 
   return self;
 }
 
 static void
 timeline_minimap_bg_widget_class_init (
-  TimelineMinimapBgWidgetClass * _klass)
+  TimelineMinimapBgWidgetClass * klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass,
-                                 "timeline-minimap-bg");
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  wklass->snapshot = timeline_minimap_bg_snapshot;
+  gtk_widget_class_set_css_name (
+    wklass, "timeline-minimap-bg");
 }
 
 static void
 timeline_minimap_bg_widget_init (
   TimelineMinimapBgWidget * self)
 {
-  gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self),
-    timeline_minimap_bg_draw_cb, self, NULL);
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self),
+    timeline_minimap_bg_tick_cb,
+    self, NULL);
 }

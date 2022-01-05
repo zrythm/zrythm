@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,20 +29,45 @@
 G_DEFINE_TYPE (
   TimelineMinimapSelectionWidget,
   timeline_minimap_selection_widget,
-  GTK_TYPE_BOX)
+  GTK_TYPE_WIDGET)
 
 #define PADDING 2
 
 static void
-tl_minimap_sel_draw_cb (
-  GtkDrawingArea * drawing_area,
-  cairo_t *        cr,
-  int              w,
-  int              h,
-  gpointer         data)
+timeline_minimap_selection_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot)
 {
-  z_cairo_draw_selection (
-    cr, 0, PADDING, w, h - PADDING * 2);
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
+
+  GskRoundedRect rounded_rect;
+  graphene_rect_t graphene_rect =
+    GRAPHENE_RECT_INIT (
+      0, PADDING, width, height - PADDING * 2);
+  gsk_rounded_rect_init_from_rect (
+    &rounded_rect, &graphene_rect, 0);
+  const float border_width = 2.f;
+  GdkRGBA border_color = { 0.9, 0.9, 0.9, 0.9 };
+  float border_widths[] = {
+    border_width, border_width, border_width,
+    border_width };
+  GdkRGBA border_colors[] = {
+    border_color, border_color, border_color,
+    border_color };
+  GdkRGBA inside_color = {
+    border_color.red / 3.0,
+    border_color.green / 3.0,
+    border_color.blue / 3.0,
+    border_color.alpha / 3.0, };
+
+  gtk_snapshot_append_color (
+    snapshot, &inside_color, &graphene_rect);
+  gtk_snapshot_append_border (
+    snapshot, &rounded_rect, border_widths,
+    border_colors);
 }
 
 static void
@@ -67,8 +92,7 @@ on_motion (
 {
   TimelineMinimapSelectionWidget * self =
     Z_TIMELINE_MINIMAP_SELECTION_WIDGET (user_data);
-  GtkWidget * widget =
-    GTK_WIDGET (self->drawing_area);
+  GtkWidget * widget = GTK_WIDGET (self);
   int width =
     gtk_widget_get_allocated_width (widget);
 
@@ -124,32 +148,26 @@ timeline_minimap_selection_widget_new (
 
 static void
 timeline_minimap_selection_widget_class_init (
-  TimelineMinimapSelectionWidgetClass * _klass)
+  TimelineMinimapSelectionWidgetClass * klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  wklass->snapshot =
+    timeline_minimap_selection_snapshot;
   gtk_widget_class_set_css_name (
-    klass, "timeline-minimap-selection");
+    wklass, "timeline-minimap-selection");
 }
 
 static void
 timeline_minimap_selection_widget_init (
   TimelineMinimapSelectionWidget * self)
 {
-  self->drawing_area =
-    GTK_DRAWING_AREA (gtk_drawing_area_new ());
-  gtk_widget_set_hexpand (
-    GTK_WIDGET (self->drawing_area), true);
+  gtk_widget_set_focusable (
+    GTK_WIDGET (self), true);
 
-  gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->drawing_area));
-
-  gtk_drawing_area_set_draw_func (
-    self->drawing_area, tl_minimap_sel_draw_cb,
-    self, NULL);
   GtkEventController * motion_controller =
     gtk_event_controller_motion_new ();
   gtk_widget_add_controller (
-    GTK_WIDGET (self->drawing_area),
+    GTK_WIDGET (self),
     motion_controller);
   g_signal_connect (
     G_OBJECT (motion_controller), "motion",

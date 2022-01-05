@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -70,7 +70,8 @@ move_selection_x (
   double                  offset_x)
 {
   double width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (self));
 
   double new_wx =
     self->selection_start_pos + offset_x;
@@ -237,10 +238,11 @@ get_child_position (
           allocation->width =
             (int) ((double) width * width_ratio);
           allocation->height = height;
-          return TRUE;
+
+          return true;
         }
     }
-  return FALSE;
+  return false;
 }
 
 static void
@@ -434,7 +436,6 @@ drag_end (GtkGestureDrag *gesture,
   self->last_offset_y = 0;
 
   self->action = TIMELINE_MINIMAP_ACTION_NONE;
-  gtk_widget_queue_draw (GTK_WIDGET (self->bg));
 }
 
 /**
@@ -445,6 +446,21 @@ timeline_minimap_widget_refresh (
   TimelineMinimapWidget * self)
 {
   /*gtk_widget_queue_allocate (GTK_WIDGET (self));*/
+}
+
+static gboolean
+timeline_minimap_tick_cb (
+  GtkWidget *     widget,
+  GdkFrameClock * frame_clock,
+  gpointer        user_data)
+{
+  TimelineMinimapWidget * self =
+    Z_TIMELINE_MINIMAP_WIDGET (widget);
+
+  gtk_widget_queue_allocate (
+    GTK_WIDGET (self->overlay));
+
+  return G_SOURCE_CONTINUE;
 }
 
 static void
@@ -535,4 +551,9 @@ timeline_minimap_widget_init (
   g_signal_connect (
     G_OBJECT (self->overlay), "get-child-position",
     G_CALLBACK (get_child_position), self);
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self),
+    timeline_minimap_tick_cb,
+    self, NULL);
 }

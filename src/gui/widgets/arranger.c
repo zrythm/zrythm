@@ -6632,21 +6632,13 @@ arranger_widget_get_min_possible_position (
     }
 }
 
-static guint
-arranger_tick_cb (
-  GtkWidget* widget,
-  GtkTickCallback callback,
-  gpointer user_data,
-  GDestroyNotify notify)
+static void
+handle_playhead_auto_scroll (
+  ArrangerWidget * self)
 {
-  ArrangerWidget * self =
-    Z_ARRANGER_WIDGET (widget);
-  self->queued_playhead_px =
-    arranger_widget_get_playhead_px (self);
+  if (!TRANSPORT_IS_ROLLING)
+    return;
 
-  gtk_widget_queue_draw (widget);
-
-  /* auto scroll */
   bool scroll_edges = false;
   bool follow = false;
   if (self->type == ARRANGER_WIDGET_TYPE_TIMELINE)
@@ -6674,12 +6666,6 @@ arranger_tick_cb (
   int buffer = 5;
   int playhead_x =
     arranger_widget_get_playhead_px (self);
-  int min_x =
-    MIN (self->last_playhead_px, playhead_x);
-  min_x = MAX (min_x - buffer, rect.x);
-  int max_x =
-    MAX (self->last_playhead_px, playhead_x);
-  max_x = MIN (max_x + buffer, rect.x + rect.width);
 
   GtkScrolledWindow * scroll =
     arranger_widget_get_scrolled_window (self);
@@ -6690,25 +6676,47 @@ arranger_tick_cb (
       /* scroll */
       gtk_adjustment_set_value (
         adj, playhead_x - rect.width / 2);
+      g_debug ("autoscrolling to follow playhead");
     }
   else if (scroll_edges)
     {
       buffer = 32;
+      /* if playhead is after the visible range +
+       * buffer or if before visible range - buffer,
+       * scroll */
       if (playhead_x >
             ((rect.x + rect.width) - buffer) ||
           playhead_x < rect.x + buffer)
         {
-          /* scroll */
           gtk_adjustment_set_value (
             adj,
             CLAMP (
               (double) playhead_x - buffer,
               gtk_adjustment_get_lower (adj),
               gtk_adjustment_get_upper (adj)));
+          g_debug (
+            "autoscrolling at playhead edges");
         }
     }
+}
 
-  return 5;
+static gboolean
+arranger_tick_cb (
+  GtkWidget *     widget,
+  GdkFrameClock * frame_clock,
+  gpointer        user_data)
+{
+  ArrangerWidget * self =
+    Z_ARRANGER_WIDGET (widget);
+  self->queued_playhead_px =
+    arranger_widget_get_playhead_px (self);
+
+  gtk_widget_queue_draw (widget);
+
+  /* auto scroll */
+  handle_playhead_auto_scroll (self);
+
+  return G_SOURCE_CONTINUE;
 }
 
 void
@@ -6851,8 +6859,7 @@ arranger_widget_setup (
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self),
-    (GtkTickCallback) arranger_tick_cb,
-    self, NULL);
+    arranger_tick_cb, self, NULL);
 
   gtk_widget_set_focus_on_click (
     GTK_WIDGET (self), true);

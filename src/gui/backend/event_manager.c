@@ -958,8 +958,6 @@ event_manager_process_event (
         Z_RULER_WIDGET (ev->arg));
       break;
     case ET_TRACK_STATE_CHANGED:
-      /*on_track_state_changed (*/
-        /*(Track *) ev->arg);*/
       for (int j = 0; j < TRACKLIST->num_tracks;
            j++)
         {
