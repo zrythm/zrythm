@@ -1339,11 +1339,8 @@ draw_audio_region (
   g_return_if_fail (cache_applied_width < 40000);
 
   /*g_message ("drawing audio region");*/
-  ArrangerObject * obj = (ArrangerObject *) self;
   if (self->stretching)
     {
-      arranger_object_queue_redraw (obj);
-      g_message ("%s: redraw later", __func__);
       return;
     }
 

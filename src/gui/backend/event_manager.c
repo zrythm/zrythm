@@ -186,127 +186,12 @@ on_project_selection_type_changed (void)
 }
 
 static void
-redraw_arranger_for_selections (
-  ArrangerSelections * sel)
-{
-  switch (sel->type)
-    {
-    case ARRANGER_SELECTIONS_TYPE_TIMELINE:
-      arranger_widget_redraw_whole (MW_TIMELINE);
-      arranger_widget_redraw_whole (
-        MW_PINNED_TIMELINE);
-      break;
-    case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
-      arranger_widget_redraw_whole (
-        MW_AUTOMATION_ARRANGER);
-      break;
-    case ARRANGER_SELECTIONS_TYPE_MIDI:
-      arranger_widget_redraw_whole (
-        MW_MIDI_ARRANGER);
-      arranger_widget_redraw_whole (
-        MW_MIDI_MODIFIER_ARRANGER);
-      break;
-    case ARRANGER_SELECTIONS_TYPE_CHORD:
-      arranger_widget_redraw_whole (
-        MW_CHORD_ARRANGER);
-      break;
-    default:
-      break;
-    }
-}
-
-static void
-redraw_all_arranger_bgs (void)
-{
-  arranger_widget_redraw_whole (MW_TIMELINE);
-  arranger_widget_redraw_whole (MW_PINNED_TIMELINE);
-  arranger_widget_redraw_whole (MW_MIDI_ARRANGER);
-  arranger_widget_redraw_whole (
-    MW_MIDI_MODIFIER_ARRANGER);
-  arranger_widget_redraw_whole (
-    MW_AUTOMATION_ARRANGER);
-  arranger_widget_redraw_whole (MW_CHORD_ARRANGER);
-  arranger_widget_redraw_whole (MW_AUDIO_ARRANGER);
-}
-
-static void
-redraw_regions_for_midi_selections (
-  MidiArrangerSelections * sel)
-{
-  for (int i = 0; i < sel->num_midi_notes;
-       i++)
-    {
-      MidiNote * mn = sel->midi_notes[i];
-      ZRegion * region =
-        midi_note_get_region (mn);
-      arranger_object_queue_redraw (
-        (ArrangerObject *) region);
-    }
-}
-
-static void
-redraw_velocities_for_midi_selections (
-  MidiArrangerSelections * sel)
-{
-  for (int i = 0; i < sel->num_midi_notes;
-       i++)
-    {
-      MidiNote * mn = sel->midi_notes[i];
-      arranger_object_queue_redraw (
-        (ArrangerObject *) mn->vel);
-    }
-}
-
-static void
 on_arranger_selections_in_transit (
   ArrangerSelections * sel)
 {
   g_return_if_fail (sel);
 
   event_viewer_widget_refresh_for_selections (sel);
-
-  switch (sel->type)
-  {
-  case ARRANGER_SELECTIONS_TYPE_TIMELINE:
-    if (TL_SELECTIONS->num_regions > 0)
-      {
-        ZRegion * r = TL_SELECTIONS->regions[0];
-        switch (r->id.type)
-          {
-          case REGION_TYPE_MIDI:
-            arranger_widget_redraw_whole (
-              MW_MIDI_ARRANGER);
-            arranger_widget_redraw_whole (
-              MW_MIDI_MODIFIER_ARRANGER);
-            break;
-          case REGION_TYPE_AUTOMATION:
-            arranger_widget_redraw_whole (
-              MW_AUTOMATION_ARRANGER);
-            break;
-          case REGION_TYPE_CHORD:
-            arranger_widget_redraw_whole (
-              MW_CHORD_ARRANGER);
-            break;
-          case REGION_TYPE_AUDIO:
-            arranger_widget_redraw_whole (
-              MW_AUDIO_ARRANGER);
-            break;
-          }
-        ruler_widget_redraw_whole (EDITOR_RULER);
-      }
-    break;
-  case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
-    clip_editor_redraw_region (CLIP_EDITOR);
-    break;
-  case ARRANGER_SELECTIONS_TYPE_MIDI:
-    redraw_regions_for_midi_selections (
-      (MidiArrangerSelections *) sel);
-    redraw_velocities_for_midi_selections (
-      (MidiArrangerSelections *) sel);
-    break;
-  default:
-    break;
-  }
 }
 
 /**
@@ -324,89 +209,10 @@ on_playhead_changed (
           gtk_widget_queue_draw (
             GTK_WIDGET (MW_DIGITAL_TRANSPORT));
         }
-      if (MW_RULER)
-        {
-          if (manually)
-            ruler_widget_redraw_whole (MW_RULER);
-          else
-            ruler_widget_redraw_playhead (MW_RULER);
-        }
-      if (EDITOR_RULER)
-        {
-          if (manually)
-            ruler_widget_redraw_whole (
-              EDITOR_RULER);
-          else
-            ruler_widget_redraw_playhead (
-              EDITOR_RULER);
-        }
       if (MW_MIDI_EDITOR_SPACE)
         {
-          if (MW_MIDI_ARRANGER)
-            {
-              if (manually)
-                arranger_widget_redraw_whole (
-                  MW_MIDI_ARRANGER);
-              else
-                arranger_widget_redraw_playhead (
-                  MW_MIDI_ARRANGER);
-            }
-          if (MW_MIDI_MODIFIER_ARRANGER)
-            {
-              if (manually)
-                arranger_widget_redraw_whole (
-                  MW_MIDI_MODIFIER_ARRANGER);
-              else
-                arranger_widget_redraw_playhead (
-                  MW_MIDI_MODIFIER_ARRANGER);
-            }
           piano_roll_keys_widget_refresh (
             MW_PIANO_ROLL_KEYS);
-        }
-      if (MW_TIMELINE)
-        {
-          if (manually)
-            arranger_widget_redraw_whole (
-              MW_TIMELINE);
-          else
-            arranger_widget_redraw_playhead (
-              MW_TIMELINE);
-        }
-      if (MW_PINNED_TIMELINE)
-        {
-          if (manually)
-            arranger_widget_redraw_whole (
-              MW_PINNED_TIMELINE);
-          else
-            arranger_widget_redraw_playhead (
-              MW_PINNED_TIMELINE);
-        }
-      if (MW_AUTOMATION_ARRANGER)
-        {
-          if (manually)
-            arranger_widget_redraw_whole (
-              MW_AUTOMATION_ARRANGER);
-          else
-            arranger_widget_redraw_playhead (
-              MW_AUTOMATION_ARRANGER);
-        }
-      if (MW_AUDIO_ARRANGER)
-        {
-          if (manually)
-            arranger_widget_redraw_whole (
-              MW_AUDIO_ARRANGER);
-          else
-            arranger_widget_redraw_playhead (
-              MW_AUDIO_ARRANGER);
-        }
-      if (MW_CHORD_ARRANGER)
-        {
-          if (manually)
-            arranger_widget_redraw_whole (
-              MW_CHORD_ARRANGER);
-          else
-            arranger_widget_redraw_playhead (
-              MW_CHORD_ARRANGER);
         }
     }
 }
@@ -449,21 +255,6 @@ on_track_state_changed (Track * track)
 }
 
 static void
-on_range_selection_changed (void)
-{
-  redraw_all_arranger_bgs ();
-  /*gtk_widget_set_visible (*/
-    /*GTK_WIDGET (MW_RULER->range),*/
-    /*PROJECT->has_range);*/
-  /*gtk_widget_queue_allocate (*/
-    /*GTK_WIDGET (MW_RULER));*/
-  ruler_widget_redraw_whole (
-    (RulerWidget *) MW_RULER);
-  ruler_widget_redraw_whole (
-    (RulerWidget *) EDITOR_RULER);
-}
-
-static void
 on_automation_track_added (
   AutomationTrack * at)
 {
@@ -482,11 +273,6 @@ on_automation_track_added (
         (TrackWidget *) track->widget;
       track_widget_update_size (tw);
     }
-
-  arranger_widget_redraw_whole (
-    MW_TIMELINE);
-  arranger_widget_redraw_whole (
-    MW_PINNED_TIMELINE);
 
   visibility_widget_refresh (MW_VISIBILITY);
 }
@@ -619,17 +405,14 @@ refresh_for_selections_type (
         MW_TIMELINE_EVENT_VIEWER);
       break;
     case ARRANGER_SELECTIONS_TYPE_MIDI:
-      clip_editor_redraw_region (CLIP_EDITOR);
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
       break;
     case ARRANGER_SELECTIONS_TYPE_CHORD:
-      clip_editor_redraw_region (CLIP_EDITOR);
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
       break;
     case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
-      clip_editor_redraw_region (CLIP_EDITOR);
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
       break;
@@ -642,46 +425,6 @@ static void
 on_arranger_selections_changed (
   ArrangerSelections * sel)
 {
-  int size = 0;
-  ArrangerObject ** objs =
-    arranger_selections_get_all_objects (
-      sel, &size);
-  bool redraw_editor_ruler = false;
-  bool redraw_midi_modifier = false;
-  for (int i = 0; i < size; i++)
-    {
-      ArrangerObject * obj = objs[i];
-      g_return_if_fail (IS_ARRANGER_OBJECT (obj));
-
-      if (obj->type == ARRANGER_OBJECT_TYPE_REGION)
-        redraw_editor_ruler = true;
-
-      arranger_object_queue_redraw (obj);
-
-      if (obj->type ==
-            ARRANGER_OBJECT_TYPE_MIDI_NOTE)
-        {
-          redraw_midi_modifier = true;
-
-          /* FIXME doesn't work for some reason */
-#if 0
-          MidiNote * mn = (MidiNote *) obj;
-          arranger_object_queue_redraw (
-            (ArrangerObject *) mn->vel);
-#endif
-        }
-    }
-
-  if (redraw_editor_ruler)
-    {
-      ruler_widget_redraw_whole (EDITOR_RULER);
-    }
-  if (redraw_midi_modifier)
-    {
-      arranger_widget_redraw_whole (
-        MW_MIDI_MODIFIER_ARRANGER);
-    }
-
   refresh_for_selections_type (sel->type);
   left_dock_edge_widget_refresh (
     MW_LEFT_DOCK_EDGE);
@@ -697,62 +440,24 @@ arranger_selections_change_redraw_everything (
   switch (sel->type)
     {
     case ARRANGER_SELECTIONS_TYPE_TIMELINE:
-      arranger_widget_redraw_whole (
-        MW_TIMELINE);
-      arranger_widget_redraw_whole (
-        MW_PINNED_TIMELINE);
       event_viewer_widget_refresh (
         MW_TIMELINE_EVENT_VIEWER);
-      arranger_widget_redraw_whole (
-        MW_MIDI_ARRANGER);
-      arranger_widget_redraw_whole (
-        MW_MIDI_MODIFIER_ARRANGER);
-      arranger_widget_redraw_whole (
-        MW_CHORD_ARRANGER);
-      arranger_widget_redraw_whole (
-        MW_AUTOMATION_ARRANGER);
-      ruler_widget_redraw_whole (MW_RULER);
-      ruler_widget_redraw_whole (EDITOR_RULER);
       break;
     case ARRANGER_SELECTIONS_TYPE_MIDI:
-      clip_editor_redraw_region (CLIP_EDITOR);
-      arranger_widget_redraw_whole (
-        MW_MIDI_ARRANGER);
-      arranger_widget_redraw_whole (
-        MW_MIDI_MODIFIER_ARRANGER);
-      {
-        MidiArrangerSelections * ma_sel =
-          (MidiArrangerSelections *) sel;
-        redraw_regions_for_midi_selections (
-          ma_sel);
-      }
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
-      ruler_widget_redraw_whole (EDITOR_RULER);
       break;
     case ARRANGER_SELECTIONS_TYPE_CHORD:
-      clip_editor_redraw_region (CLIP_EDITOR);
-      arranger_widget_redraw_whole (
-        MW_CHORD_ARRANGER);
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
-      ruler_widget_redraw_whole (EDITOR_RULER);
       break;
     case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
-      clip_editor_redraw_region (CLIP_EDITOR);
-      arranger_widget_redraw_whole (
-        MW_AUTOMATION_ARRANGER);
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
-      ruler_widget_redraw_whole (EDITOR_RULER);
       break;
     case ARRANGER_SELECTIONS_TYPE_AUDIO:
-      clip_editor_redraw_region (CLIP_EDITOR);
-      arranger_widget_redraw_whole (
-        MW_AUDIO_ARRANGER);
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
-      ruler_widget_redraw_whole (EDITOR_RULER);
       break;
     default:
       g_return_if_reached ();
@@ -786,47 +491,6 @@ on_arranger_selections_removed (
   MW_AUDIO_ARRANGER->hovered_object = NULL;
   MW_CHORD_ARRANGER->hovered_object = NULL;
 
-  arranger_selections_change_redraw_everything (
-    sel);
-
-#if 0
-  switch (type)
-    {
-    case ARRANGER_SELECTIONS_TYPE_TIMELINE:
-      arranger_widget_redraw_whole (
-        MW_TIMELINE);
-      arranger_widget_redraw_whole (
-        MW_PINNED_TIMELINE);
-      event_viewer_widget_refresh (
-        MW_TIMELINE_EVENT_VIEWER);
-      break;
-    case ARRANGER_SELECTIONS_TYPE_MIDI:
-      clip_editor_redraw_region (CLIP_EDITOR);
-      arranger_widget_redraw_whole (
-        MW_MIDI_ARRANGER);
-      arranger_widget_redraw_whole (
-        MW_MIDI_MODIFIER_ARRANGER);
-      event_viewer_widget_refresh (
-        MW_EDITOR_EVENT_VIEWER);
-      break;
-    case ARRANGER_SELECTIONS_TYPE_CHORD:
-      clip_editor_redraw_region (CLIP_EDITOR);
-      arranger_widget_redraw_whole (
-        MW_CHORD_ARRANGER);
-      event_viewer_widget_refresh (
-        MW_EDITOR_EVENT_VIEWER);
-      break;
-    case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
-      clip_editor_redraw_region (CLIP_EDITOR);
-      arranger_widget_redraw_whole (
-        MW_AUTOMATION_ARRANGER);
-      event_viewer_widget_refresh (
-        MW_EDITOR_EVENT_VIEWER);
-      break;
-    default:
-      g_return_if_reached ();
-    }
-#endif
   timeline_toolbar_widget_refresh (
     MW_TIMELINE_TOOLBAR);
 }
@@ -897,149 +561,14 @@ on_arranger_object_changed (
 
   switch (obj->type)
     {
-    case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
-      {
-        /*ArrangerObject * prev_ap_obj =*/
-          /*(ArrangerObject *)*/
-          /*automation_region_get_prev_ap (*/
-            /*((AutomationPoint *) obj)->region,*/
-            /*(AutomationPoint *) obj);*/
-
-        /* redraw this ap and also the previous one
-         * if any */
-        for (int i = 0; i < 2; i++)
-          {
-            /*ArrangerObject * _obj = NULL;*/
-            /*if (i == 0)*/
-              /*_obj = obj;*/
-            /*else if (prev_ap_obj)*/
-              /*_obj = prev_ap_obj;*/
-            /*else*/
-              /*break;*/
-
-            /*if (_obj &&*/
-                /*Z_IS_ARRANGER_OBJECT_WIDGET (*/
-                  /*_obj->widget))*/
-              /*{*/
-                /*arranger_object_widget_force_redraw (*/
-                  /*(ArrangerObjectWidget *)*/
-                  /*_obj->widget);*/
-              /*}*/
-          }
-      }
-      break;
-    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
-      {
-        /*MidiNote * mn =*/
-          /*(MidiNote *)*/
-          /*arranger_object_get_main (obj);*/
-        /*ArrangerObject * vel_obj =*/
-          /*(ArrangerObject *) mn->vel;*/
-        /*if (vel_obj->widget)*/
-          /*{*/
-            /*arranger_object_set_widget_visibility_and_state (*/
-              /*vel_obj, 1);*/
-          /*}*/
-        arranger_object_queue_redraw (
-          (ArrangerObject *) parent_r_obj);
-      }
-      break;
     case ARRANGER_OBJECT_TYPE_REGION:
       /* redraw editor ruler if region
        * positions were changed */
-      ruler_widget_redraw_whole (
-        EDITOR_RULER);
       timeline_toolbar_widget_refresh (
         MW_TIMELINE_TOOLBAR);
       break;
-    case ARRANGER_OBJECT_TYPE_MARKER:
-      {
-        /*MarkerWidget * mw =*/
-          /*(MarkerWidget *) obj->widget;*/
-        /*if (Z_IS_MARKER_WIDGET (mw))*/
-          /*{*/
-            /*marker_widget_recreate_pango_layouts (*/
-              /*mw);*/
-          /*}*/
-      }
-      break;
     default:
       break;
-    }
-
-  /* redraw parent region */
-  if (parent_r_obj)
-    {
-      /*ArrangerObjectWidget * obj_w =*/
-        /*(ArrangerObjectWidget *)*/
-        /*parent_r_obj->widget;*/
-      /*if (obj_w)*/
-        /*arranger_object_widget_force_redraw (*/
-          /*obj_w);*/
-    }
-
-  /* redraw this */
-  /*ArrangerObjectWidget * obj_w =*/
-    /*(ArrangerObjectWidget *) obj->widget;*/
-  /*if (obj_w)*/
-    /*arranger_object_widget_force_redraw (obj_w);*/
-
-  /* refresh arranger */
-  arranger_object_queue_redraw (obj);
-  /*ArrangerWidget * arranger =*/
-    /*arranger_object_get_arranger (obj);*/
-  /*arranger_widget_redraw_whole (arranger);*/
-}
-
-static void
-on_arranger_object_created (
-  ArrangerObject * obj)
-{
-  /* refresh arranger */
-  /*ArrangerWidget * arranger =*/
-    /*arranger_object_get_arranger (obj);*/
-  /*arranger_widget_redraw_whole (arranger);*/
-  arranger_object_queue_redraw (obj);
-
-  if (obj->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
-    {
-      arranger_widget_redraw_whole (
-        (ArrangerWidget *)
-        MW_MIDI_MODIFIER_ARRANGER);
-    }
-}
-
-static void
-on_arranger_object_removed (
-  ArrangerObjectType type)
-{
-  switch (type)
-    {
-    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
-    case ARRANGER_OBJECT_TYPE_VELOCITY:
-      arranger_widget_redraw_whole (
-        MW_MIDI_ARRANGER);
-      arranger_widget_redraw_whole (
-        MW_MIDI_MODIFIER_ARRANGER);
-      break;
-    case ARRANGER_OBJECT_TYPE_REGION:
-    case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
-    case ARRANGER_OBJECT_TYPE_MARKER:
-      arranger_widget_redraw_whole (
-        MW_TIMELINE);
-      arranger_widget_redraw_whole (
-        MW_PINNED_TIMELINE);
-      break;
-    case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
-      arranger_widget_redraw_whole (
-        MW_CHORD_ARRANGER);
-      break;
-    case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
-      arranger_widget_redraw_whole (
-        MW_AUTOMATION_ARRANGER);
-      break;
-    default:
-      g_return_if_reached ();
     }
 }
 
@@ -1244,16 +773,12 @@ event_manager_process_event (
         MW_MIXER);
       break;
     case ET_ARRANGER_OBJECT_CREATED:
-      on_arranger_object_created (
-        (ArrangerObject *) ev->arg);
       break;
     case ET_ARRANGER_OBJECT_CHANGED:
       on_arranger_object_changed (
         (ArrangerObject *) ev->arg);
       break;
     case ET_ARRANGER_OBJECT_REMOVED:
-      on_arranger_object_removed (
-        (ArrangerObjectType) ev->arg);
       break;
     case ET_ARRANGER_SELECTIONS_CHANGED:
       on_arranger_selections_changed (
@@ -1272,15 +797,8 @@ event_manager_process_event (
         ARRANGER_SELECTIONS (ev->arg));
       break;
     case ET_ARRANGER_SELECTIONS_QUANTIZED:
-      redraw_arranger_for_selections (
-        ARRANGER_SELECTIONS (ev->arg));
       break;
     case ET_ARRANGER_SELECTIONS_ACTION_FINISHED:
-      redraw_all_arranger_bgs ();
-      ruler_widget_redraw_whole (
-        (RulerWidget *) MW_RULER);
-      ruler_widget_redraw_whole (
-        (RulerWidget *) EDITOR_RULER);
       break;
     case ET_TRACKLIST_SELECTIONS_CHANGED:
       /* only refresh the inspector if the
@@ -1306,56 +824,14 @@ event_manager_process_event (
         gtk_widget_set_size_request (
           GTK_WIDGET (ruler),
           (int) ruler->total_px, -1);
-        ruler_widget_redraw_whole (ruler);
-        if (ev->arg == MW_RULER)
-          {
-            arranger_widget_redraw_whole (
-              Z_ARRANGER_WIDGET (
-                MW_TIMELINE));
-            arranger_widget_redraw_whole (
-              Z_ARRANGER_WIDGET (
-                MW_PINNED_TIMELINE));
-          }
-        else if (ev->arg == EDITOR_RULER)
-          {
-            if (gtk_widget_get_visible (
-                  GTK_WIDGET (MW_MIDI_ARRANGER)))
-              {
-                arranger_widget_redraw_whole (
-                  Z_ARRANGER_WIDGET (
-                    MW_MIDI_ARRANGER));
-                arranger_widget_redraw_whole (
-                  Z_ARRANGER_WIDGET (
-                    MW_MIDI_MODIFIER_ARRANGER));
-              }
-            if (gtk_widget_get_visible (
-                  GTK_WIDGET (MW_AUDIO_ARRANGER)))
-              {
-                arranger_widget_redraw_whole (
-                  Z_ARRANGER_WIDGET (
-                    MW_AUDIO_ARRANGER));
-              }
-          }
       }
       break;
     case ET_CLIP_MARKER_POS_CHANGED:
-      ruler_widget_redraw_whole (
-        EDITOR_RULER);
-      clip_editor_redraw_region (CLIP_EDITOR);
       break;
     case ET_TIMELINE_LOOP_MARKER_POS_CHANGED:
     case ET_TIMELINE_PUNCH_MARKER_POS_CHANGED:
-      ruler_widget_redraw_whole (
-        (RulerWidget *) MW_RULER);
-      ruler_widget_redraw_whole (
-        (RulerWidget *) EDITOR_RULER);
-      redraw_all_arranger_bgs ();
       break;
     case ET_TIMELINE_SONG_MARKER_POS_CHANGED:
-      /*gtk_widget_queue_allocate (*/
-        /*GTK_WIDGET (MW_RULER));*/
-      ruler_widget_redraw_whole (
-        (RulerWidget *) MW_RULER);
       break;
     case ET_PLUGIN_VISIBILITY_CHANGED:
       on_plugin_visibility_changed (
@@ -1392,7 +868,6 @@ event_manager_process_event (
         (Port *) ev->arg);
       break;
     case ET_RANGE_SELECTION_CHANGED:
-      on_range_selection_changed ();
       timeline_toolbar_widget_refresh (
         MW_TIMELINE_TOOLBAR);
       break;
@@ -1472,16 +947,6 @@ event_manager_process_event (
       on_track_name_changed ((Track *) ev->arg);
       break;
     case ET_REFRESH_ARRANGER:
-      /* remove the children of the pinned
-       * timeline first because one of them
-       * will be added to the unpinned
-       * tracklist when unpinning */
-      arranger_widget_redraw_whole (
-        MW_PINNED_TIMELINE);
-
-      if (MW_TIMELINE)
-        arranger_widget_redraw_whole (
-          MW_TIMELINE);
       break;
     case ET_RULER_VIEWPORT_CHANGED:
       timeline_minimap_widget_refresh (
@@ -1504,10 +969,6 @@ event_manager_process_event (
     case ET_TRACK_VISIBILITY_CHANGED:
       tracklist_widget_update_track_visibility (
         MW_TRACKLIST);
-      arranger_widget_redraw_whole (
-        MW_TIMELINE);
-      arranger_widget_redraw_whole (
-        MW_PINNED_TIMELINE);
       track_visibility_tree_widget_refresh (
         MW_TRACK_VISIBILITY_TREE);
       tracklist_header_widget_refresh_track_count (
@@ -1598,8 +1059,6 @@ event_manager_process_event (
     case ET_DRUM_MODE_CHANGED:
       midi_editor_space_widget_refresh (
         MW_MIDI_EDITOR_SPACE);
-      arranger_widget_redraw_whole (
-        MW_MIDI_ARRANGER);
       break;
     case ET_MODULATOR_ADDED:
       on_modulator_added ((Plugin *)ev->arg);
@@ -1621,11 +1080,6 @@ event_manager_process_event (
         /*(ArrangerWidget *) MW_TIMELINE);*/
       break;
     case ET_LOOP_TOGGLED:
-      redraw_all_arranger_bgs ();
-      ruler_widget_redraw_whole (
-        (RulerWidget *) EDITOR_RULER);
-      ruler_widget_redraw_whole (
-        (RulerWidget *) MW_RULER);
       transport_controls_widget_refresh (
         MW_TRANSPORT_CONTROLS);
       break;
@@ -1664,10 +1118,6 @@ event_manager_process_event (
       break;
     case ET_TRACKS_RESIZED:
       g_warn_if_fail (ev->arg);
-      arranger_widget_redraw_whole (
-        MW_TIMELINE);
-      arranger_widget_redraw_whole (
-        MW_PINNED_TIMELINE);
       break;
     case ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED:
       gtk_widget_set_visible (
@@ -1676,9 +1126,6 @@ event_manager_process_event (
           S_UI, "editor-event-viewer-visible"));
       break;
     case ET_PIANO_ROLL_MIDI_MODIFIER_CHANGED:
-      arranger_widget_redraw_whole (
-        (ArrangerWidget *)
-        MW_MIDI_MODIFIER_ARRANGER);
       break;
     case ET_BPM_CHANGED:
       ruler_widget_refresh (MW_RULER);
@@ -1696,7 +1143,6 @@ event_manager_process_event (
         QUANTIZE_OPTIONS_TIMELINE);
       quantize_options_update_quantize_points (
         QUANTIZE_OPTIONS_EDITOR);
-      redraw_all_arranger_bgs ();
       break;
     case ET_CHANNEL_FADER_VAL_CHANGED:
       channel_widget_redraw_fader (
@@ -1836,24 +1282,8 @@ event_manager_process_event (
       }
       break;
     case ET_RULER_DISPLAY_TYPE_CHANGED:
-      redraw_all_arranger_bgs ();
-      if (EDITOR_RULER)
-        {
-          ruler_widget_redraw_whole (
-            EDITOR_RULER);
-        }
-      if (MW_RULER)
-        {
-          ruler_widget_redraw_whole (MW_RULER);
-        }
       break;
     case ET_ARRANGER_HIGHLIGHT_CHANGED:
-      {
-        ArrangerWidget * arranger =
-          Z_ARRANGER_WIDGET (ev->arg);
-        arranger_widget_redraw_whole (
-          arranger);
-       }
       break;
     case ET_ENGINE_ACTIVATE_CHANGED:
     case ET_ENGINE_BUFFER_SIZE_CHANGED:
@@ -1862,8 +1292,6 @@ event_manager_process_event (
              GTK_WIDGET (MAIN_WINDOW)))
         {
           bot_bar_widget_refresh (MW_BOT_BAR);
-          ruler_widget_redraw_whole (EDITOR_RULER);
-          ruler_widget_redraw_whole (MW_RULER);
           inspector_track_widget_show_tracks (
             MW_TRACK_INSPECTOR,
             TRACKLIST_SELECTIONS, false);
@@ -1886,15 +1314,11 @@ event_manager_process_event (
         ARRANGER_SELECTIONS (ev->arg));
       break;
     case ET_AUTOMATION_VALUE_VISIBILITY_CHANGED:
-      arranger_widget_redraw_whole (
-        MW_AUTOMATION_ARRANGER);
       break;
     case ET_PROJECT_SELECTION_TYPE_CHANGED:
       on_project_selection_type_changed ();
       break;
     case ET_AUDIO_SELECTIONS_RANGE_CHANGED:
-      arranger_widget_redraw_whole (
-        MW_AUDIO_ARRANGER);
       break;
     case ET_PLUGIN_COLLETIONS_CHANGED:
       plugin_browser_widget_refresh_collections (
@@ -1957,20 +1381,12 @@ event_manager_process_event (
         MW_BOT_DOCK_EDGE, true);
       break;
     case ET_VELOCITIES_RAMPED:
-      arranger_widget_redraw_whole (
-        MW_MIDI_MODIFIER_ARRANGER);
       break;
     case ET_AUDIO_REGION_FADE_IN_CHANGED:
-      audio_arranger_widget_redraw_fade (
-        MW_AUDIO_ARRANGER, true);
       break;
     case ET_AUDIO_REGION_FADE_OUT_CHANGED:
-      audio_arranger_widget_redraw_fade (
-        MW_AUDIO_ARRANGER, false);
       break;
     case ET_AUDIO_REGION_GAIN_CHANGED:
-      audio_arranger_widget_redraw_gain (
-        MW_AUDIO_ARRANGER);
       break;
     case ET_FILE_BROWSER_BOOKMARK_ADDED:
     case ET_FILE_BROWSER_BOOKMARK_DELETED:

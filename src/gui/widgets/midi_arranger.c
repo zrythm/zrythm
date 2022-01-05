@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+* Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
 *
 * This file is part of Zrythm
 *
@@ -278,8 +278,6 @@ midi_arranger_widget_set_hovered_note (
                (127.0 - (double) self->hovered_note) -
              1.0);
           rect.height = (int) adj_px_per_key;
-          arranger_widget_redraw_rectangle (
-            self, &rect);
         }
       self->hovered_note = pitch;
 
@@ -291,8 +289,6 @@ midi_arranger_widget_set_hovered_note (
             (adj_px_per_key *
                (127.0 - (double) pitch) - 1);
           rect.height = (int) adj_px_per_key;
-          arranger_widget_redraw_rectangle (
-            self, &rect);
         }
     }
 }

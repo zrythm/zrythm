@@ -238,20 +238,6 @@ int
 ruler_widget_get_sec_interval (
   RulerWidget * self);
 
-/**
- * Queues a redraw of the whole visible ruler.
- */
-void
-ruler_widget_redraw_whole (
-  RulerWidget * self);
-
-/**
- * Only redraws the playhead part.
- */
-void
-ruler_widget_redraw_playhead (
-  RulerWidget * self);
-
 bool
 ruler_widget_is_range_hit (
   RulerWidget *        self,

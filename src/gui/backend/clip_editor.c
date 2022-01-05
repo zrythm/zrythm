@@ -124,23 +124,6 @@ clip_editor_set_region (
     }
 }
 
-/**
- * Causes the selected ZRegion to be redrawin in the
- * UI, if any.
- */
-void
-clip_editor_redraw_region (
-  ClipEditor * self)
-{
-  if (self->has_region)
-    {
-      ZRegion * region =
-        clip_editor_get_region (self);
-      arranger_object_queue_redraw (
-        (ArrangerObject *) region);
-    }
-}
-
 ZRegion *
 clip_editor_get_region (
   ClipEditor * self)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -210,14 +210,6 @@ arranger_object_draw (
   ArrangerWidget * arranger,
   GtkSnapshot *  snapshot,
   GdkRectangle *   rect);
-
-/**
- * Queues a redraw in the area covered by this
- * object.
- */
-void
-arranger_object_queue_redraw (
-  ArrangerObject * self);
 
 /**
  * @}

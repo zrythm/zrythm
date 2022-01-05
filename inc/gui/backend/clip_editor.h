@@ -166,14 +166,6 @@ clip_editor_get_track (
   ClipEditor * self);
 
 /**
- * Causes the selected ZRegion to be redrawin in the
- * UI, if any.
- */
-void
-clip_editor_redraw_region (
-  ClipEditor * self);
-
-/**
  * To be called when recalculating the graph.
  */
 void

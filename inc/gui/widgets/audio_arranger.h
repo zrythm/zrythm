@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -104,21 +104,6 @@ audio_arranger_widget_snap_fade (
   Position *       pos,
   bool             fade_in,
   bool             dry_run);
-
-/**
- * Queues a redraw on fade in or fade out.
- */
-void
-audio_arranger_widget_redraw_fade (
-  ArrangerWidget * self,
-  bool             fade_in);
-
-/**
- * Queues a redraw of the gain line.
- */
-void
-audio_arranger_widget_redraw_gain (
-  ArrangerWidget * self);
 
 /**
  * @}

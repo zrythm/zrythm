@@ -3090,8 +3090,6 @@ select_in_range (
   gdk_rectangle_union (
     &rect, &self->last_selection_rect,
     &union_rect);
-  arranger_widget_redraw_rectangle (
-    self, &union_rect);
   self->last_selection_rect = rect;
 
   switch (self->type)
@@ -3296,21 +3294,6 @@ select_in_range (
 
   if (prev_sel)
     {
-      /* redraw newly unselected objects */
-      int num_prev_objs;
-      ArrangerObject ** prev_objs =
-        arranger_selections_get_all_objects (
-          prev_sel, &num_prev_objs);
-      for (int i = 0; i < num_prev_objs; i++)
-        {
-          ArrangerObject * obj =
-            arranger_object_find (prev_objs[i]);
-          g_return_if_fail (obj);
-          if (!arranger_object_is_selected (obj))
-            arranger_object_queue_redraw (obj);
-        }
-      free (prev_objs);
-
       arranger_selections_free (prev_sel);
     }
 }
@@ -5033,7 +5016,6 @@ drag_end (
   /* queue redraw to hide the selection */
   /*gtk_widget_queue_draw (GTK_WIDGET (self->bg));*/
 
-  arranger_widget_redraw_whole (self);
   arranger_widget_refresh_cursor (self);
 
   g_debug ("arranger drag end done");
@@ -5383,24 +5365,6 @@ arranger_widget_get_visible_rect (
       GTK_WIDGET (scroll));
 }
 
-/**
- * Queues a redraw of the whole visible arranger.
- */
-void
-arranger_widget_redraw_whole (
-  ArrangerWidget * self)
-{
-  g_message (
-    "redraw whole %s arranger",
-    arranger_widget_get_type_str (self->type));
-
-  GdkRectangle rect;
-  arranger_widget_get_visible_rect (self, &rect);
-
-  /* redraw visible area */
-  arranger_widget_redraw_rectangle (self, &rect);
-}
-
 bool
 arranger_widget_is_playhead_visible (
   ArrangerWidget * self)
@@ -5420,179 +5384,6 @@ arranger_widget_is_playhead_visible (
   int width = max_x - min_x;
 
   return width >= 0;
-}
-
-/**
- * Only redraws the playhead part.
- */
-void
-arranger_widget_redraw_playhead (
-  ArrangerWidget * self)
-{
-  if (!gtk_widget_is_visible (GTK_WIDGET (self)) ||
-      !arranger_widget_is_playhead_visible (self))
-    return;
-
-  GdkRectangle rect;
-  arranger_widget_get_visible_rect (self, &rect);
-
-  int buffer = 5;
-  int playhead_x =
-    arranger_widget_get_playhead_px (self);
-  int min_x =
-    MIN (self->last_playhead_px, playhead_x);
-  min_x = MAX (min_x - buffer, rect.x);
-  int max_x =
-    MAX (self->last_playhead_px, playhead_x);
-  max_x = MIN (max_x + buffer, rect.x + rect.width);
-
-  /*g_message ("queueing redraw %d", playhead_x);*/
-  GdkRectangle draw_rect = {
-    .x = min_x, .y = rect.y,
-    .width = (max_x - min_x),
-    .height = rect.height };
-  arranger_widget_redraw_rectangle (
-    self, &draw_rect);
-
-  if (!gtk_widget_get_mapped (GTK_WIDGET (self)))
-    {
-#if 0
-      g_debug (
-        "%s arranger is unmapped, skipping "
-        "autoscroll in %s",
-        arranger_widget_get_type_str (self->type),
-        __func__);
-#endif
-      return;
-    }
-
-  /* auto scroll */
-  bool scroll_edges = false;
-  bool follow = false;
-  if (self->type == ARRANGER_WIDGET_TYPE_TIMELINE)
-    {
-      scroll_edges =
-        g_settings_get_boolean (
-          S_UI, "timeline-playhead-scroll-edges");
-      follow =
-        g_settings_get_boolean (
-          S_UI, "timeline-playhead-follow");
-    }
-  else
-    {
-      scroll_edges =
-        g_settings_get_boolean (
-          S_UI, "editor-playhead-scroll-edges");
-      follow =
-        g_settings_get_boolean (
-          S_UI, "editor-playhead-follow");
-    }
-
-  GtkScrolledWindow * scroll =
-    arranger_widget_get_scrolled_window (self);
-  GtkAdjustment * adj =
-    gtk_scrolled_window_get_hadjustment (scroll);
-  if (follow)
-    {
-      /* scroll */
-      gtk_adjustment_set_value (
-        adj, playhead_x - rect.width / 2);
-    }
-  else if (scroll_edges)
-    {
-      buffer = 32;
-      if (playhead_x >
-            ((rect.x + rect.width) - buffer) ||
-          playhead_x < rect.x + buffer)
-        {
-          /* scroll */
-          gtk_adjustment_set_value (
-            adj,
-            CLAMP (
-              (double) playhead_x - buffer,
-              gtk_adjustment_get_lower (adj),
-              gtk_adjustment_get_upper (adj)));
-        }
-    }
-
-  /* cache x to draw */
-  /*self->queued_playhead_px = playhead_x;*/
-}
-
-/**
- * Only redraws the given rectangle.
- */
-void
-arranger_widget_redraw_rectangle (
-  ArrangerWidget * self,
-  GdkRectangle *   rect)
-{
-  self->redraw = true;
-
-  self->ruler_display =
-    (TransportDisplay)
-    g_settings_get_enum (S_UI, "ruler-display");
-
-  /* add 1px padding */
-  GdkRectangle draw_rect = *rect;
-  if (draw_rect.x > 0)
-    draw_rect.x--;
-  if (draw_rect.y > 0)
-    draw_rect.y--;
-  draw_rect.width += 2;
-  draw_rect.height += 2;
-
-  /* queue draw in next cycle */
-  /*gtk_widget_queue_draw_area (*/
-    /*GTK_WIDGET (self), draw_rect.x, draw_rect.y,*/
-    /*draw_rect.width, draw_rect.height);*/
-  gtk_widget_queue_draw (GTK_WIDGET (self));
-
-#if 0
-  g_message (
-    "queue redraw rect x:%d y:%d w:%d h:%d for %s "
-    "arranger",
-    rect->x, rect->y, rect->width, rect->height,
-    arranger_widget_get_type_str (self->type));
-#endif
-
-#if 0
-  if (self->dummy_surface && false)
-    {
-      /* start drawing now in thread */
-      ArrangerDrawTaskData * task_data =
-        (ArrangerDrawTaskData *)
-        object_pool_get (self->draw_task_obj_pool);
-      task_data->rect = *rect;
-      if (task_data->surface)
-        {
-          cairo_surface_destroy (
-            task_data->surface);
-        }
-      if (task_data->cr)
-        {
-          cairo_destroy (task_data->cr);
-        }
-      task_data->surface =
-        cairo_surface_create_similar (
-          self->dummy_surface,
-          CAIRO_CONTENT_COLOR_ALPHA,
-          rect->width, rect->height);
-      task_data->cr =
-        cairo_create (task_data->surface);
-      GError * err = NULL;
-      bool ret =
-        g_thread_pool_push (
-          self->draw_thread_pool, task_data, &err);
-      if (!ret)
-        {
-          g_critical (
-            "failed to push task to arranger draw "
-            "thread: %s", err->message);
-          g_error_free (err);
-        }
-    }
-#endif
 }
 
 static gboolean
@@ -5763,18 +5554,7 @@ on_motion (
       g_return_if_fail (
         !self->hovered_object ||
         IS_ARRANGER_OBJECT (self->hovered_object));
-      ArrangerObject * prev_obj =
-        self->hovered_object;
       self->hovered_object = obj;
-
-      /* redraw previous hovered object to
-       * unhover it */
-      if (prev_obj)
-        arranger_object_queue_redraw (prev_obj);
-
-      /* redraw new hovered object */
-      if (obj)
-        arranger_object_queue_redraw (obj);
     }
 
   arranger_widget_refresh_cursor (self);
@@ -6865,6 +6645,68 @@ arranger_tick_cb (
     arranger_widget_get_playhead_px (self);
 
   gtk_widget_queue_draw (widget);
+
+  /* auto scroll */
+  bool scroll_edges = false;
+  bool follow = false;
+  if (self->type == ARRANGER_WIDGET_TYPE_TIMELINE)
+    {
+      scroll_edges =
+        g_settings_get_boolean (
+          S_UI, "timeline-playhead-scroll-edges");
+      follow =
+        g_settings_get_boolean (
+          S_UI, "timeline-playhead-follow");
+    }
+  else
+    {
+      scroll_edges =
+        g_settings_get_boolean (
+          S_UI, "editor-playhead-scroll-edges");
+      follow =
+        g_settings_get_boolean (
+          S_UI, "editor-playhead-follow");
+    }
+
+  GdkRectangle rect;
+  arranger_widget_get_visible_rect (self, &rect);
+
+  int buffer = 5;
+  int playhead_x =
+    arranger_widget_get_playhead_px (self);
+  int min_x =
+    MIN (self->last_playhead_px, playhead_x);
+  min_x = MAX (min_x - buffer, rect.x);
+  int max_x =
+    MAX (self->last_playhead_px, playhead_x);
+  max_x = MIN (max_x + buffer, rect.x + rect.width);
+
+  GtkScrolledWindow * scroll =
+    arranger_widget_get_scrolled_window (self);
+  GtkAdjustment * adj =
+    gtk_scrolled_window_get_hadjustment (scroll);
+  if (follow)
+    {
+      /* scroll */
+      gtk_adjustment_set_value (
+        adj, playhead_x - rect.width / 2);
+    }
+  else if (scroll_edges)
+    {
+      buffer = 32;
+      if (playhead_x >
+            ((rect.x + rect.width) - buffer) ||
+          playhead_x < rect.x + buffer)
+        {
+          /* scroll */
+          gtk_adjustment_set_value (
+            adj,
+            CLAMP (
+              (double) playhead_x - buffer,
+              gtk_adjustment_get_lower (adj),
+              gtk_adjustment_get_upper (adj)));
+        }
+    }
 
   return 5;
 }

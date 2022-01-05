@@ -632,26 +632,11 @@ arranger_widget_get_selections (
   ArrangerWidget * self);
 
 /**
- * Queues a redraw of the whole visible arranger.
- */
-void
-arranger_widget_redraw_whole (
-  ArrangerWidget * self);
-
-/**
  * Only redraws the playhead part.
  */
 void
 arranger_widget_redraw_playhead (
   ArrangerWidget * self);
-
-/**
- * Only redraws the given rectangle.
- */
-void
-arranger_widget_redraw_rectangle (
-  ArrangerWidget * self,
-  GdkRectangle *   rect);
 
 SnapGrid *
 arranger_widget_get_snap_grid (

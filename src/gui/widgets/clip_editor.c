@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -72,19 +72,6 @@ refresh_editor_ruler_and_arranger (
    * correct px when calling ui_* functions */
   ruler_widget_refresh (
     (RulerWidget *) EDITOR_RULER);
-
-  /* remove all previous children and add new */
-  arranger_widget_redraw_whole (
-    Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
-  arranger_widget_redraw_whole (
-    Z_ARRANGER_WIDGET (
-      MW_MIDI_MODIFIER_ARRANGER));
-  arranger_widget_redraw_whole (
-    Z_ARRANGER_WIDGET (
-      MW_AUTOMATION_ARRANGER));
-  arranger_widget_redraw_whole (
-    Z_ARRANGER_WIDGET (
-      MW_CHORD_ARRANGER));
 
   CLIP_EDITOR->region_changed = 0;
 

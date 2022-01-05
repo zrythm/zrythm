@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1139,12 +1139,20 @@ arranger_selections_get_first_object (
       cc * sc = (sel)->sc##s[i]; \
       ArrangerObject * obj = (ArrangerObject *) sc; \
       g_warn_if_fail (obj); \
+      g_debug ("checking obj %p", obj); \
+      position_print (&obj->pos); \
+      position_print (&pos); \
       if (position_is_before ( \
             &obj->pos, &pos)) \
         { \
+          g_debug ("position before"); \
           position_set_to_pos ( \
             &pos, &obj->pos); \
           ret_obj = obj; \
+        } \
+      else \
+        { \
+          g_debug ("position not before"); \
         } \
     }
 

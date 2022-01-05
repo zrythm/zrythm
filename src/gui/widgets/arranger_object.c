@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -56,109 +56,6 @@
 
 #define TYPE(x) \
   ARRANGER_OBJECT_TYPE_##x
-
-/**
- * Queues a redraw in the area covered by this
- * object.
- */
-void
-arranger_object_queue_redraw (
-  ArrangerObject * self)
-{
-  g_return_if_fail (IS_ARRANGER_OBJECT (self));
-
-  ArrangerWidget * arranger =
-    arranger_object_get_arranger (self);
-  g_return_if_fail (arranger);
-  GdkRectangle arranger_rect;
-  arranger_widget_get_visible_rect (
-    arranger, &arranger_rect);
-
-  /* if arranger is not visible ignore */
-  if (arranger_rect.width < 2 &&
-      arranger_rect.height < 2)
-    {
-#if 0
-      arranger_object_print (self);
-      g_message (
-        "%s: arranger not visible, ignoring",
-        __func__);
-#endif
-      return;
-    }
-
-  /* set rectangle if not initialized yet */
-  if (self->full_rect.width == 0 &&
-      self->full_rect.height == 0)
-    arranger_object_set_full_rectangle (
-      self, arranger);
-
-  GdkRectangle full_rect = self->full_rect;
-
-  /* add some padding to the full rect for any
-   * effects or things like automation points */
-  static const int padding = 6;
-  if (self->type == TYPE (AUTOMATION_POINT))
-    {
-      full_rect.x = MAX (full_rect.x - padding, 0);
-      full_rect.y = MAX (full_rect.y - padding, 0);
-      full_rect.width += padding * 2;
-      full_rect.height += padding * 2;
-    }
-
-  GdkRectangle draw_rect;
-  int draw_rect_visible =
-    arranger_object_get_draw_rectangle (
-      self, &arranger_rect, &full_rect,
-      &draw_rect);
-
-  /* add some padding to the resulting draw rect */
-  draw_rect.x = MAX (full_rect.x - padding, 0);
-  draw_rect.y = MAX (full_rect.y - padding, 0);
-  draw_rect.width += padding * 2;
-  draw_rect.height += padding * 2;
-
-  /* if velocity, add more padding for text */
-  if (self->type == ARRANGER_OBJECT_TYPE_VELOCITY)
-    {
-      draw_rect.width += 16;
-    }
-
-  /* if draw rect is not visible ignore */
-  if (!draw_rect_visible)
-    {
-#if 0
-      arranger_object_print (self);
-      g_message (
-        "%s: draw rect not visible, ignoring",
-        __func__);
-#endif
-      return;
-    }
-
-  arranger_widget_redraw_rectangle (
-    arranger, &draw_rect);
-
-  /* if region and lanes are visible, redraw
-   * lane too */
-  if (self->type == TYPE (REGION))
-    {
-      Track * track =
-        arranger_object_get_track (self);
-      if (track->lanes_visible &&
-          arranger_object_can_have_lanes (self))
-        {
-          ZRegion * r = (ZRegion *) self;
-          region_get_lane_full_rect (
-            r, &full_rect);
-          arranger_object_get_draw_rectangle (
-            self, &arranger_rect, &full_rect,
-            &draw_rect);
-          arranger_widget_redraw_rectangle (
-            arranger, &draw_rect);
-        }
-    }
-}
 
 /**
  * Returns if the current position is for resizing

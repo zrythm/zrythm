@@ -279,9 +279,6 @@ audio_arranger_widget_update_gain (
   ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (IS_REGION_AND_NONNULL (r));
 
-  /* redraw current gain */
-  audio_arranger_widget_redraw_gain (self);
-
   int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
@@ -396,80 +393,4 @@ audio_arranger_widget_snap_fade (
     }
 
   return 0;
-}
-
-/**
- * Queues a redraw on fade in or fade out.
- */
-void
-audio_arranger_widget_redraw_fade (
-  ArrangerWidget * self,
-  bool             fade_in)
-{
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
-  ArrangerObject * r_obj = (ArrangerObject *) r;
-  g_return_if_fail (IS_REGION_AND_NONNULL (r));
-
-  GdkRectangle rect;
-  rect.y = 0;
-  rect.height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
-
-  const int padding = 8;
-
-  const int start_px =
-    ui_pos_to_px_editor (&r_obj->pos, F_PADDING);
-  if (fade_in)
-    {
-      const int fade_in_px =
-        ui_pos_to_px_editor (
-          &r_obj->fade_in_pos, F_PADDING);
-      rect.x = start_px - padding;
-      rect.width = fade_in_px + padding;
-    }
-  else
-    {
-      const int end_px =
-        ui_pos_to_px_editor (
-          &r_obj->end_pos, F_PADDING);
-      const int fade_out_px =
-        start_px +
-        ui_pos_to_px_editor (
-          &r_obj->fade_out_pos, F_PADDING);
-      rect.x = fade_out_px - padding;
-      rect.width = end_px + padding;
-    }
-
-  arranger_widget_redraw_rectangle (self, &rect);
-}
-
-/**
- * Queues a redraw of the gain line.
- */
-void
-audio_arranger_widget_redraw_gain (
-  ArrangerWidget * self)
-{
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
-  ArrangerObject * r_obj = (ArrangerObject *) r;
-  g_return_if_fail (IS_REGION_AND_NONNULL (r));
-
-  const int padding = 4;
-  const int start_px =
-    ui_pos_to_px_editor (&r_obj->pos, F_PADDING);
-  const int end_px =
-    ui_pos_to_px_editor (
-      &r_obj->end_pos, F_PADDING);
-
-  double gain_y =
-    get_region_gain_y (self, r);
-
-  GdkRectangle rect = {
-    .x = start_px - padding,
-    .y = (int) gain_y - padding,
-    .width = (end_px - start_px) + padding * 2,
-    .height = 20 + padding * 2 };
-
-  arranger_widget_redraw_rectangle (self, &rect);
 }

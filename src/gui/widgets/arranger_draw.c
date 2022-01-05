@@ -508,7 +508,6 @@ draw_audio_bg (
     }
   if (ar->stretching)
     {
-      arranger_widget_redraw_whole (self);
       return;
     }
   ArrangerObject * obj = (ArrangerObject *) ar;
