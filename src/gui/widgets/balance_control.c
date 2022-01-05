@@ -40,9 +40,10 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (BalanceControlWidget,
-               balance_control_widget,
-               GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (
+  BalanceControlWidget,
+  balance_control_widget,
+  GTK_TYPE_WIDGET)
 
 #define GET_VAL ((*self->getter) (self->object))
 #define SET_VAL(real) ((*self->setter)(self->object, real))
@@ -52,129 +53,107 @@ G_DEFINE_TYPE (BalanceControlWidget,
 #define LINE_WIDTH 3.0
 
 static void
-balance_control_draw_cb (
-  GtkDrawingArea * drawing_area,
-  cairo_t *        cr,
-  int              width,
-  int              height,
-  gpointer         user_data)
+balance_control_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot)
 {
   BalanceControlWidget * self =
-    Z_BALANCE_CONTROL_WIDGET (user_data);
-  GtkWidget * widget = GTK_WIDGET (self);
+    Z_BALANCE_CONTROL_WIDGET (widget);
+
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
+
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (widget);
+
+  gtk_snapshot_render_background (
+    snapshot, context, 0, 0, width, height);
 
   if (!MAIN_WINDOW)
     return;
 
-  GtkStyleContext *context =
-    gtk_widget_get_style_context (widget);
-
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
-
   /* draw filled in bar */
   float pan_val = GET_VAL;
-  /*float intensity = pan_val;*/
-  double value_px =
-    (double) pan_val * (double) width;
-  double half_width = (double) width / 2.0;
-  /*const float intensity_inv = 1.0 - intensity;*/
-  /*float r = intensity_inv * self->end_color.red   +*/
-            /*intensity * self->start_color.red;*/
-  /*float g = intensity_inv * self->end_color.green +*/
-            /*intensity * self->start_color.green;*/
-  /*float b = intensity_inv * self->end_color.blue  +*/
-            /*intensity * self->start_color.blue;*/
-  /*float a = intensity_inv * self->end_color.alpha  +*/
-            /*intensity * self->start_color.alpha;*/
+  float value_px =
+    pan_val * (float) width;
+  float half_width = (float) width / 2.f;
 
-  gdk_cairo_set_source_rgba (
-    cr, &UI_COLORS->dark_text);
-  cairo_rectangle (
-    cr, 0,
-    height / 2.0 - LINE_WIDTH / 2.0,
-    width, LINE_WIDTH);
-  cairo_fill (cr);
+  gtk_snapshot_append_color (
+    snapshot, &UI_COLORS->dark_text,
+    &GRAPHENE_RECT_INIT (
+      0, height / 2.f - LINE_WIDTH / 2.f,
+      width, LINE_WIDTH));
 
-  double alpha = 0.7;
+  float alpha = 0.7f;
   if (self->hovered || self->dragged)
     {
       alpha = 1.0;
     }
-  cairo_set_source_rgba (
-    cr,
-    UI_COLORS->matcha.red,
-    UI_COLORS->matcha.green,
-    UI_COLORS->matcha.blue,
-    alpha);
+  GdkRGBA color =
+    Z_GDK_RGBA_INIT (
+      UI_COLORS->matcha.red,
+      UI_COLORS->matcha.green,
+      UI_COLORS->matcha.blue,
+      alpha);
   if (pan_val < 0.5f)
     {
-      cairo_rectangle (
-        cr, value_px,
-        height / 2.0 - LINE_WIDTH / 2.0,
-        half_width - value_px, LINE_WIDTH);
+      gtk_snapshot_append_color (
+        snapshot, &color,
+        &GRAPHENE_RECT_INIT (
+          value_px,
+          height / 2.f - LINE_WIDTH / 2.f,
+          half_width - value_px,
+          LINE_WIDTH));
     }
   else
     {
-      cairo_rectangle (
-        cr, half_width,
-        height / 2.0 - LINE_WIDTH / 2.0,
-        value_px - half_width, LINE_WIDTH);
+      gtk_snapshot_append_color (
+        snapshot, &color,
+        &GRAPHENE_RECT_INIT (
+          half_width,
+          height / 2.f - LINE_WIDTH / 2.f,
+          value_px - half_width,
+          LINE_WIDTH));
     }
-  cairo_fill (cr);
 
   /* draw text */
   PangoLayout * layout = self->layout;
   PangoRectangle pangorect;
-  cairo_set_source_rgba (
-    cr,
-    UI_COLORS->bright_text.red,
-    UI_COLORS->bright_text.green,
-    UI_COLORS->bright_text.blue,
-    alpha);
-#if 0
-  if (pan_val >= 0.495f &&
-      pan_val < 0.505f)
-    {
-      pango_layout_set_text (layout, "C", -1);
-      pango_layout_get_pixel_extents (
-        layout, NULL, &pangorect);
-      cairo_move_to (
-        cr,
-        width / 2.0 - pangorect.width / 2.0,
-        height / 2.0 - pangorect.height / 2.0);
-      pango_cairo_show_layout (cr, layout);
-    }
-  char str[40];
-  else if (pan_val > 0.5f)
-    {
-      int perc =
-        (int) ((pan_val - 0.5f) * 200.f);
-      sprintf (str, "R%d", perc);
-      pango_layout_set_text (layout, str, -1);
-    }
-  else if (pan_val < 0.5f)
-    {
-      int perc =
-        (int) ((0.5f - pan_val) * 200.f);
-      sprintf (str, "L%d", perc);
-      pango_layout_set_text (layout, str, -1);
-    }
-#endif
+  color =
+    Z_GDK_RGBA_INIT (
+      UI_COLORS->bright_text.red,
+      UI_COLORS->bright_text.green,
+      UI_COLORS->bright_text.blue,
+      alpha);
   pango_layout_set_text (layout, "L", -1);
   pango_layout_get_pixel_extents (
     layout, NULL, &pangorect);
-  cairo_move_to (
-    cr, TEXT_PADDING,
-    height / 2.0 - pangorect.height / 2.0);
-  pango_cairo_show_layout (cr, layout);
+
+  gtk_snapshot_save (snapshot);
+  gtk_snapshot_translate (
+    snapshot,
+    &GRAPHENE_POINT_INIT (
+      TEXT_PADDING,
+      height / 2.f - pangorect.height / 2.f));
+  gtk_snapshot_append_layout (
+    snapshot, layout, &color);
+  gtk_snapshot_restore (snapshot);
+
   pango_layout_set_text (layout, "R", -1);
   pango_layout_get_pixel_extents (
     layout, NULL, &pangorect);
-  cairo_move_to (
-    cr, width - (TEXT_PADDING + pangorect.width),
-    height / 2.0 - pangorect.height / 2.0);
-  pango_cairo_show_layout (cr, layout);
+
+  gtk_snapshot_save (snapshot);
+  gtk_snapshot_translate (
+    snapshot,
+    &GRAPHENE_POINT_INIT (
+      width - (TEXT_PADDING + pangorect.width),
+      height / 2.f - pangorect.height / 2.f));
+  gtk_snapshot_append_layout (
+    snapshot, layout, &color);
+  gtk_snapshot_restore (snapshot);
 }
 
 /**
@@ -392,10 +371,6 @@ balance_control_widget_new (
     GTK_GESTURE_SINGLE (right_mouse_mp),
     GDK_BUTTON_SECONDARY);
 
-  gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self),
-    balance_control_draw_cb, self, NULL);
-
   GtkEventController * motion_controller =
     gtk_event_controller_motion_new ();
   g_signal_connect (
@@ -455,30 +430,12 @@ dispose (
 }
 
 static void
-on_size_allocate (
-  GtkWidget * widget,
-  int         width,
-  int         height,
-  int         baseline)
-{
-  BalanceControlWidget * self =
-    Z_BALANCE_CONTROL_WIDGET (widget);
-
-  /* no layout manager, so call this to allocate
-   * a size for the menu */
-  gtk_popover_present (
-    GTK_POPOVER (self->popover_menu));
-
-  GTK_WIDGET_CLASS (
-    balance_control_widget_parent_class)->
-      size_allocate (
-        widget, width, height, baseline);
-}
-
-static void
 balance_control_widget_init (
   BalanceControlWidget * self)
 {
+  gtk_widget_set_focusable (
+    GTK_WIDGET (self), true);
+
   gdk_rgba_parse (
     &self->start_color, "rgba(0%,100%,0%,1.0)");
   gdk_rgba_parse (
@@ -533,13 +490,16 @@ balance_control_widget_init (
 }
 
 static void
-balance_control_widget_class_init (BalanceControlWidgetClass * _klass)
+balance_control_widget_class_init (
+  BalanceControlWidgetClass * klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  wklass->snapshot = balance_control_snapshot;
   gtk_widget_class_set_css_name (
-    klass, "balance-control");
-  klass->size_allocate = on_size_allocate;
+    wklass, "balance-control");
+
+  gtk_widget_class_set_layout_manager_type (
+    wklass, GTK_TYPE_BIN_LAYOUT);
 
   GObjectClass * oklass =
     G_OBJECT_CLASS (klass);

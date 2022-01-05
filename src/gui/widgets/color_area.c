@@ -231,6 +231,9 @@ finalize (
 static void
 color_area_widget_init (ColorAreaWidget * self)
 {
+  gtk_widget_set_focusable (
+    GTK_WIDGET (self), true);
+
   GtkGestureClick * mp =
     GTK_GESTURE_CLICK (
       gtk_gesture_click_new ());

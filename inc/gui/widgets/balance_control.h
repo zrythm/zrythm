@@ -31,12 +31,11 @@
   (balance_control_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   BalanceControlWidget, balance_control_widget,
-  Z, BALANCE_CONTROL_WIDGET,
-  GtkDrawingArea)
+  Z, BALANCE_CONTROL_WIDGET, GtkWidget)
 
 typedef struct _BalanceControlWidget
 {
-  GtkDrawingArea     parent_instance;
+  GtkWidget          parent_instance;
   GtkGestureDrag *   drag;
 
   /** Getter. */

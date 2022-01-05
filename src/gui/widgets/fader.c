@@ -401,6 +401,9 @@ fader_widget_init (FaderWidget * self)
   self->start_color =  UI_COLORS->fader_fill_start;
   self->end_color =  UI_COLORS->fader_fill_end;
 
+  gtk_widget_set_focusable (
+    GTK_WIDGET (self), true);
+
   self->popover_menu =
     GTK_POPOVER_MENU (
       gtk_popover_menu_new_from_model (NULL));
