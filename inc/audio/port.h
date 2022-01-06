@@ -43,11 +43,11 @@
 #endif
 
 #ifdef HAVE_RTMIDI
-#include <rtmidi/rtmidi_c.h>
+#include <rtmidi_c.h>
 #endif
 
 #ifdef HAVE_RTAUDIO
-#include <rtaudio/rtaudio_c.h>
+#include <rtaudio_c.h>
 #endif
 
 typedef struct Plugin Plugin;

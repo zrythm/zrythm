@@ -24,7 +24,7 @@
 
 #ifdef HAVE_RTAUDIO
 
-#include <rtaudio/rtaudio_c.h>
+#include <rtaudio_c.h>
 
 typedef struct AudioEngine AudioEngine;
 

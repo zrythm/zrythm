@@ -61,7 +61,7 @@
 #endif
 
 #ifdef HAVE_RTAUDIO
-#include <rtaudio/rtaudio_c.h>
+#include <rtaudio_c.h>
 #endif
 
 typedef struct StereoPorts StereoPorts;

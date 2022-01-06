@@ -31,7 +31,7 @@
 
 #include <gtk/gtk.h>
 
-#include <rtaudio/rtaudio_c.h>
+#include <rtaudio_c.h>
 
 static rtaudio_api_t
 get_api_from_audio_backend (

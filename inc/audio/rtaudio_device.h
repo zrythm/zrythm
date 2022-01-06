@@ -30,7 +30,7 @@
 
 #include "zix/ring.h"
 
-#include <rtaudio/rtaudio_c.h>
+#include <rtaudio_c.h>
 
 typedef struct Port Port;
 
