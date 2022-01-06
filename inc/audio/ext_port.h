@@ -41,7 +41,7 @@
 #endif
 
 #ifdef HAVE_RTMIDI
-#include <rtmidi/rtmidi_c.h>
+#include <rtmidi_c.h>
 #endif
 
 typedef struct WindowsMmeDevice WindowsMmeDevice;

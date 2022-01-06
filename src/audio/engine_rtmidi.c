@@ -41,7 +41,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-#include <rtmidi/rtmidi_c.h>
+#include <rtmidi_c.h>
 
 /**
  * Sets up the MIDI engine to use Rtmidi.

@@ -28,7 +28,7 @@
 
 #include "zix/ring.h"
 
-#include <rtmidi/rtmidi_c.h>
+#include <rtmidi_c.h>
 
 typedef struct Port Port;
 
