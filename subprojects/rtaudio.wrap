@@ -1,3 +1,9 @@
-[wrap-git]
-url = https://git.sr.ht/~alextee/zrythm-rtaudio
-revision = 16ea17d20e6cb6de57e88e80579d258f547b5e88
+[wrap-file]
+directory = rtaudio-5.2.0
+source_url = https://github.com/thestk/rtaudio/archive/refs/tags/5.2.0.tar.gz
+source_filename = 5.2.0.tar.gz
+source_hash = a8d9c738addffd485c3f0bab14cbba72600267e3113f274398c67829bbb49332
+
+[provide]
+dependency_names = rtaudio
+

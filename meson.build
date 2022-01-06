@@ -1154,26 +1154,21 @@ endif
 rtaudio_dep = dependency (
   'rtaudio', required: get_option ('rtaudio'),
   version: '>=5.1.0',
-  fallback: ['rtaudio', 'zrythm_rtaudio_dep'],
-  static: all_static)
+  fallback: ['rtaudio', 'rtaudio_dep'])
 if rtaudio_dep.found ()
   cdata.set('HAVE_RTAUDIO', 1)
 endif
 
 sdl_dep = dependency (
   'sdl2', required: get_option ('sdl'),
-  static: all_static)
+  fallback: ['sdl2', 'sdl2_dep'])
 if sdl_dep.found ()
   cdata.set('HAVE_SDL', 1)
 endif
 
 zstd_dep = dependency (
-  'libzstd', required: false,
-  static: all_static)
-if not zstd_dep.found ()
-  zstd_dep = cc.find_library (
-    'zstd', static: all_static)
-endif
+  'libzstd',
+  fallback: ['zstd', 'libzstd_dep'])
 
 reproc_dep = dependency (
   'reproc', version: '>=14.1.0', required: false,
@@ -1210,16 +1205,21 @@ endif
 cdata.set ('HAVE_LIBBACKTRACE', 1)
 
 xxhash_dep = dependency (
-  'libxxhash', required: false)
-if not xxhash_dep.found ()
-  xxhash_dep = cc.find_library ('xxhash')
-endif
+  'libxxhash',
+  fallback: ['xxhash', 'xxhash_dep'])
 
 vamp_static = get_option ('vamp_static')
 vamp_dep = dependency ('vamp', static: vamp_static)
 vamp_host_sdk_dep = dependency (
   'vamp-hostsdk', static: vamp_static)
 vamp_deps = [ vamp_dep, vamp_host_sdk_dep ]
+
+pcre_dep = dependency (
+  'libpcre',
+  fallback: ['pcre', 'pcre_dep'])
+pcre2_dep = dependency (
+  'libpcre2-8',
+  fallback: ['pcre2', 'libpcre2_8'])
 
 # TODO add Cantarell font as dependency
 
@@ -1251,9 +1251,9 @@ zrythm_deps = [
   sord_dep,
   sratom_dep,
   lilv_dep,
+  pcre_dep,
+  pcre2_dep,
   dependency ('rubberband'),
-  dependency ('libpcre'),
-  dependency ('libpcre2-8'),
   dependency ('epoxy'),
   cc.find_library ('dl', static: all_static),
   chromaprint_dep,
