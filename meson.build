@@ -1133,15 +1133,6 @@ if have_carla
   endforeach
 endif
 
-portaudio_dep = dependency (
-  # disable until it works
-  'portaudio-2.0-dont-use-yet',
-  required: get_option ('portaudio'),
-  static: all_static)
-if portaudio_dep.found ()
-  cdata.set('HAVE_PORT_AUDIO', 1)
-endif
-
 rtmidi_dep = dependency (
   'rtmidi', version: '>= 5.0.0',
   required: get_option ('rtmidi'),
@@ -1154,7 +1145,11 @@ endif
 rtaudio_dep = dependency (
   'rtaudio', required: get_option ('rtaudio'),
   version: '>=5.1.0',
-  fallback: ['rtaudio', 'rtaudio_dep'])
+  fallback: ['rtaudio', 'rtaudio_dep'],
+  default_options: [
+    'jack=' + (os_windows ? 'disabled' : 'auto'),
+    # ASIO disabled for legal reasons
+    'asio=disabled',])
 if rtaudio_dep.found ()
   cdata.set('HAVE_RTAUDIO', 1)
 endif
@@ -1239,7 +1234,6 @@ zrythm_deps = [
   libgvc_dep,
   guile_dep,
   carla_host_plugin_dep,
-  portaudio_dep,
   rtaudio_dep,
   rtmidi_dep,
   sdl_dep,
@@ -1420,7 +1414,6 @@ summary ({
   'JACK': have_jack,
   'SoundIO': have_libsoundio,
   'LSP DSP': have_lsp_dsp,
-  'PortAudio': portaudio_dep.found (),
   'PulseAudio': have_pulseaudio,
   'RtAudio': rtaudio_dep.found (),
   'RtMidi': rtmidi_dep.found (),
