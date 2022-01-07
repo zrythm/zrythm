@@ -49,7 +49,7 @@ towards a stable release.
 - GNU/Linux, FreeBSD, Windows, MacOS
 
 ## Building and Installation
-See [INSTALL.md](INSTALL.md) for build instructions.
+See [INSTALL.rst](INSTALL.rst) for build instructions.
 Prebuilt packages/installers available at
 <https://www.zrythm.org/en/download.html>.
 

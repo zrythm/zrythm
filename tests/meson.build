@@ -375,12 +375,12 @@ if get_option ('tests')
           common_cflags, strict_cflags,
           test_c_args,
           ],
-        dependencies : [
+        dependencies: [
           zrythm_deps,
           ],
-        export_dynamic : false,
+        export_dynamic: false,
         link_with: test_link_libs,
-        include_directories : all_inc,
+        include_directories: all_inc,
       )
       if is_benchmark
         benchmark (

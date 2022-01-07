@@ -1321,7 +1321,7 @@ root_doc_files = [
   'AUTHORS',
   'TRANSLATORS',
   'THANKS',
-  'INSTALL.md',
+  'INSTALL.rst',
   ]
 foreach f : root_doc_files
   configure_file (

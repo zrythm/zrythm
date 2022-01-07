@@ -28,7 +28,7 @@ Zrythm from source, either using
 a `source distribution tarball <https://www.zrythm.org/releases/>`_
 or `git <https://git.zrythm.org/zrythm/zrythm/>`_.
 
-See :download:`INSTALL.md <../../../INSTALL.md>` in
+See :download:`INSTALL.rst <../../../INSTALL.rst>` in
 the source distribution for installation
 instructions.
 

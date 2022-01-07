@@ -10,7 +10,7 @@ Hacking Zrythm
     ├── CONTRIBUTOR_CERTIFICATE_OF_ORIGIN # Certificate for contributing
     ├── COPYING                           # Main license
     ├── COPYING.*                         # Other licenses
-    ├── INSTALL.md                        # Installation instructions
+    ├── INSTALL.rst                       # Installation instructions
     ├── PACKAGING.md                      # Information for packagers
     ├── README.md                         # Main README file
     ├── THANKS                            # Thanks notice
