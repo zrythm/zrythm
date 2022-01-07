@@ -1137,7 +1137,8 @@ rtmidi_dep = dependency (
   'rtmidi', version: '>= 5.0.0',
   required: get_option ('rtmidi'),
   fallback: ['rtmidi', 'zrythm_rtmidi_dep'],
-  static: all_static)
+  default_options: [
+    'default_library=static'])
 if rtmidi_dep.found ()
   cdata.set('HAVE_RTMIDI', 1)
 endif
@@ -1148,6 +1149,9 @@ rtaudio_dep = dependency (
   fallback: ['rtaudio', 'rtaudio_dep'],
   default_options: [
     'jack=' + (os_windows ? 'disabled' : 'auto'),
+    # TODO use shared in the future so .dll can be
+    # replaced on windows
+    'default_library=static',
     # ASIO disabled for legal reasons
     'asio=disabled',])
 if rtaudio_dep.found ()
