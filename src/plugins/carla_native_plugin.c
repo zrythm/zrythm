@@ -54,6 +54,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
+#include <CarlaNative.h>
 #include <CarlaHost.h>
 
 #ifdef CARLA_HAVE_CV32_PATCHBAY_VARIANT
@@ -324,7 +325,7 @@ host_dispatcher (
 }
 
 static void
-engine_callback (
+carla_engine_callback (
   void *               ptr,
   EngineCallbackOpcode action,
   uint                 plugin_id,
@@ -339,6 +340,55 @@ engine_callback (
 
   switch (action)
     {
+    case ENGINE_CALLBACK_PLUGIN_ADDED:
+      g_message (
+        "Plugin added: %u - %s",
+        plugin_id, val_str);
+      break;
+    case ENGINE_CALLBACK_PLUGIN_REMOVED:
+      g_message (
+        "Plugin removed: %u", plugin_id);
+      break;
+    case ENGINE_CALLBACK_PLUGIN_RENAMED:
+      break;
+    case ENGINE_CALLBACK_PLUGIN_UNAVAILABLE:
+      g_warning (
+        "Plugin unavailable: %u - %s",
+        plugin_id, val_str);
+      break;
+    case ENGINE_CALLBACK_PARAMETER_VALUE_CHANGED:
+      /* if plugin was deactivated and we didn't
+       * explicitly tell it to deactivate */
+      if (val1 == PARAMETER_ACTIVE
+          && val2 == 0 && val3 == 0
+          && self->plugin->activated
+          && !self->plugin->deactivating
+          && !self->loading_state)
+        {
+          /* send crash signal */
+          EVENTS_PUSH (
+            ET_PLUGIN_CRASHED, self->plugin);
+        }
+      break;
+    case ENGINE_CALLBACK_PARAMETER_DEFAULT_CHANGED:
+    case ENGINE_CALLBACK_PARAMETER_MAPPED_CONTROL_INDEX_CHANGED:
+    case ENGINE_CALLBACK_PARAMETER_MIDI_CHANNEL_CHANGED:
+      break;
+    case ENGINE_CALLBACK_OPTION_CHANGED:
+      g_message (
+        "Option changed: plugin %u - opt %d: %d",
+        plugin_id, val1, val2);
+      break;
+    case ENGINE_CALLBACK_PROGRAM_CHANGED:
+      g_message (
+        "Program changed: plugin %u - %d",
+        plugin_id, val1);
+      break;
+    case ENGINE_CALLBACK_MIDI_PROGRAM_CHANGED:
+      g_message (
+        "MIDI program changed: plugin %u - %d",
+        plugin_id, val1);
+      break;
     case ENGINE_CALLBACK_UI_STATE_CHANGED:
       switch (val1)
         {
@@ -355,27 +405,46 @@ engine_callback (
         ET_PLUGIN_VISIBILITY_CHANGED,
         self->plugin);
       break;
-    case ENGINE_CALLBACK_PARAMETER_VALUE_CHANGED:
-      /* if plugin was deactivated and we didn't
-       * explicitly tell it to deactivate */
-      if (val1 == PARAMETER_ACTIVE
-          && val2 == 0 && val3 == 0
-          && self->plugin->activated
-          && !self->plugin->deactivating
-          && !self->loading_state)
-        {
-          /* send crash signal */
-          EVENTS_PUSH (
-            ET_PLUGIN_CRASHED, self->plugin);
-        }
+    case ENGINE_CALLBACK_NOTE_ON:
+    case ENGINE_CALLBACK_NOTE_OFF:
+      break;
+    case ENGINE_CALLBACK_UPDATE:
+      g_debug ("plugin %u needs update",
+        plugin_id);
+      break;
+    case ENGINE_CALLBACK_RELOAD_INFO:
+      g_debug ("plugin %u reload info",
+        plugin_id);
+      break;
+    case ENGINE_CALLBACK_RELOAD_PARAMETERS:
+      g_debug ("plugin %u reload parameters",
+        plugin_id);
+      break;
+    case ENGINE_CALLBACK_RELOAD_PROGRAMS:
+      g_debug ("plugin %u reload programs",
+        plugin_id);
+      break;
+    case ENGINE_CALLBACK_RELOAD_ALL:
+      g_debug ("plugin %u reload all",
+        plugin_id);
       break;
     case ENGINE_CALLBACK_PATCHBAY_CLIENT_ADDED:
       g_debug (
-        "CLIENT ADDED client %u plugin %d name %s",
+        "Patchbay client added: %u plugin %d name %s",
         plugin_id, val2, val_str);
       break;
     case ENGINE_CALLBACK_PATCHBAY_CLIENT_REMOVED:
-      g_debug ("CLIENT REMOVED");
+      g_debug ("Patchbay client removed: %u", plugin_id);
+      break;
+    case ENGINE_CALLBACK_PATCHBAY_CLIENT_RENAMED:
+      g_debug (
+        "Patchbay client renamed: %u - %s", plugin_id,
+        val_str);
+      break;
+    case ENGINE_CALLBACK_PATCHBAY_CLIENT_DATA_CHANGED:
+      g_debug (
+        "Patchbay client data changed: %u - %d %d",
+        plugin_id, val1, val2);
       break;
     case ENGINE_CALLBACK_PATCHBAY_PORT_ADDED:
       {
@@ -432,13 +501,113 @@ engine_callback (
       }
       break;
     case ENGINE_CALLBACK_PATCHBAY_PORT_REMOVED:
-      g_debug ("PORT REMOVED");
+      g_debug ("Patchbay port removed: %u - %d",
+        plugin_id, val1);
+      break;
+    case ENGINE_CALLBACK_PATCHBAY_PORT_CHANGED:
+      g_debug ("Patchbay port changed: %u - %d",
+        plugin_id, val1);
       break;
     case ENGINE_CALLBACK_PATCHBAY_CONNECTION_ADDED:
-      g_debug ("CONNECTION ADDED %s", val_str);
+      g_debug ("Connection added %s", val_str);
       break;
     case ENGINE_CALLBACK_PATCHBAY_CONNECTION_REMOVED:
-      g_debug ("CONNECTION REMOVED");
+      g_debug ("Connection removed");
+      break;
+    case ENGINE_CALLBACK_ENGINE_STARTED:
+      g_message ("Engine started");
+      break;
+    case ENGINE_CALLBACK_ENGINE_STOPPED:
+      g_message ("Engine stopped");
+      break;
+    case ENGINE_CALLBACK_PROCESS_MODE_CHANGED:
+      g_debug ("Process mode changed: %d", val1);
+      break;
+    case ENGINE_CALLBACK_TRANSPORT_MODE_CHANGED:
+      g_debug ("Transport mode changed: %d - %s",
+        val1, val_str);
+      break;
+    case ENGINE_CALLBACK_BUFFER_SIZE_CHANGED:
+      g_message ("Buffer size changed: %d",
+        val1);
+      break;
+    case ENGINE_CALLBACK_SAMPLE_RATE_CHANGED:
+      g_message ("Sample rate changed: %f",
+        (double) valf);
+      break;
+    case ENGINE_CALLBACK_CANCELABLE_ACTION:
+      g_debug (
+        "Cancelable action: plugin %u - %d - %s",
+        plugin_id, val1, val_str);
+      break;
+    case ENGINE_CALLBACK_PROJECT_LOAD_FINISHED :
+      g_message ("Project load finished");
+      break;
+    case ENGINE_CALLBACK_NSM :
+      break;
+    /*!
+     * Idle frontend.
+     * This is used by the engine during long operations that might block the frontend,
+     * giving it the possibility to idle while the operation is still in place.
+     */
+    case ENGINE_CALLBACK_IDLE :
+      /* TODO */
+      break;
+    case ENGINE_CALLBACK_INFO :
+      g_message ("Engine info: %s", val_str);
+      break;
+    case ENGINE_CALLBACK_ERROR :
+      g_warning ("Engine error: %s", val_str);
+      break;
+    case ENGINE_CALLBACK_QUIT :
+      g_warning (
+        "Engine quit: engine crashed or "
+        "malfunctioned and will no longer work");
+      break;
+    /*!
+     * A plugin requested for its inline display to be redrawn.
+     * @a pluginId Plugin Id to redraw
+     */
+    case ENGINE_CALLBACK_INLINE_DISPLAY_REDRAW :
+      /* TODO */
+      break;
+    /*!
+     * A patchbay port group has been added.
+     * @a pluginId Client Id
+     * @a value1   Group Id (unique value within this client)
+     * @a value2   Group hints
+     * @a valueStr Group name
+     * @see PatchbayPortGroupHints
+     */
+    case ENGINE_CALLBACK_PATCHBAY_PORT_GROUP_ADDED :
+      /* TODO */
+      break;
+    /*!
+     * A patchbay port group has been removed.
+     * @a pluginId Client Id
+     * @a value1   Group Id
+     */
+    case ENGINE_CALLBACK_PATCHBAY_PORT_GROUP_REMOVED :
+      /* TODO */
+      break;
+    case ENGINE_CALLBACK_PATCHBAY_PORT_GROUP_CHANGED :
+      g_debug (
+        "Patchbay port group changed: client %u - "
+        "group %d - hints %d - name %s",
+        plugin_id, val1, val2, val_str);
+      break;
+    case ENGINE_CALLBACK_PARAMETER_MAPPED_RANGE_CHANGED:
+      g_debug (
+        "Parameter mapped range changed: %u:%d "
+        "- %s",
+        plugin_id, val1, val_str);
+      break;
+    case ENGINE_CALLBACK_PATCHBAY_CLIENT_POSITION_CHANGED:
+      break;
+    case ENGINE_CALLBACK_EMBED_UI_RESIZED:
+      g_debug (
+        "Embed UI resized: %u - %dx%d",
+        plugin_id, val1, val2);
       break;
     default:
       break;
@@ -1206,10 +1375,37 @@ void
 carla_native_plugin_update_buffer_size_and_sample_rate (
   CarlaNativePlugin * self)
 {
+  g_debug (
+    "setting carla buffer size and sample rate: "
+    "%u %u",
+    AUDIO_ENGINE->block_length,
+    AUDIO_ENGINE->sample_rate);
   carla_set_engine_buffer_size_and_sample_rate (
     self->host_handle,
     AUDIO_ENGINE->block_length,
     AUDIO_ENGINE->sample_rate);
+  if (self->native_plugin_descriptor->dispatcher)
+    {
+      intptr_t ret =
+        self->native_plugin_descriptor->dispatcher (
+          self->native_plugin_handle,
+          NATIVE_PLUGIN_OPCODE_BUFFER_SIZE_CHANGED,
+          0, AUDIO_ENGINE->block_length, NULL, 0.f);
+      g_return_if_fail (ret == 0);
+      ret =
+        self->native_plugin_descriptor->dispatcher (
+          self->native_plugin_handle,
+          NATIVE_PLUGIN_OPCODE_SAMPLE_RATE_CHANGED,
+          0, 0, NULL,
+          (float) AUDIO_ENGINE->sample_rate);
+      g_return_if_fail (ret == 0);
+    }
+  else
+    {
+      g_warning (
+        "native plugin descriptor has no "
+        "dispatcher");
+    }
 }
 
 /**
@@ -1276,7 +1472,8 @@ carla_native_plugin_instantiate (
     NULL;
   self->native_host_descriptor.ui_save_file =
     NULL;
-  self->native_host_descriptor.dispatcher = host_dispatcher;
+  self->native_host_descriptor.dispatcher =
+    host_dispatcher;
 
   self->time_info.bbt.valid = 1;
 
@@ -1474,7 +1671,7 @@ carla_native_plugin_instantiate (
 
   /* add engine callback */
   carla_set_engine_callback (
-    self->host_handle, engine_callback, self);
+    self->host_handle, carla_engine_callback, self);
 
   self->patchbay_port_info =
     g_ptr_array_new_with_free_func (
