@@ -1280,6 +1280,10 @@ if all_static
 endif
 
 if os_windows
+  # Windows MME
+  zrythm_deps += cc.find_library (
+    'winmm', static: true)
+
   # TODO disable dbghelp and enable drmingw when
   # meson issue is fixed
   zrythm_deps += cc.find_library ('dbghelp')
