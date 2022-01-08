@@ -448,10 +448,10 @@ region_find_midi_note (
  */
 NONNULL
 HOT
-long
+signed_frame_t
 region_timeline_frames_to_local (
   const ZRegion * const self,
-  const long            timeline_frames,
+  const signed_frame_t  timeline_frames,
   const bool            normalize);
 
 /**
@@ -469,8 +469,8 @@ NONNULL
 void
 region_get_frames_till_next_loop_or_end (
   const ZRegion * const self,
-  const long            timeline_frames,
-  long *                ret_frames,
+  const signed_frame_t  timeline_frames,
+  signed_frame_t *      ret_frames,
   bool *                is_loop);
 
 /**
@@ -619,9 +619,9 @@ NONNULL
 PURE
 int
 region_is_hit (
-  const ZRegion * region,
-  const long     gframes,
-  const int      inclusive);
+  const ZRegion *      region,
+  const signed_frame_t gframes,
+  const bool           inclusive);
 
 /**
  * Returns if any part of the ZRegion is inside the
@@ -631,10 +631,10 @@ region_is_hit (
  */
 int
 region_is_hit_by_range (
-  const ZRegion * region,
-  const long      gframes_start,
-  const long      gframes_end,
-  const bool      end_inclusive);
+  const ZRegion *      region,
+  const signed_frame_t gframes_start,
+  const signed_frame_t gframes_end,
+  const bool           end_inclusive);
 
 /**
  * Returns the region at the given position in the

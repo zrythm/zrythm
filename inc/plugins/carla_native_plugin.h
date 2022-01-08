@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -224,10 +224,8 @@ HOT
 NONNULL
 void
 carla_native_plugin_process (
-  CarlaNativePlugin * self,
-  const long          g_start_frames,
-  const nframes_t  local_offset,
-  const nframes_t     nframes);
+  CarlaNativePlugin *                 self,
+  const EngineProcessTimeInfo * const time_nfo);
 
 /**
  * Shows or hides the UI.

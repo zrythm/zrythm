@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -350,8 +350,8 @@ midi_note_get_region (
  */
 int
 midi_note_hit (
-  MidiNote * self,
-  const long       gframes)
+  MidiNote *           self,
+  const signed_frame_t gframes)
 {
   ZRegion * region =
     arranger_object_get_region (
@@ -360,13 +360,13 @@ midi_note_hit (
     (ArrangerObject *) region;
 
   /* get local positions */
-  long local_pos =
+  signed_frame_t local_pos =
     region_timeline_frames_to_local (
       region, gframes, 1);
 
   /* add clip_start position to start from
    * there */
-  long clip_start_frames =
+  signed_frame_t clip_start_frames =
     region_obj->clip_start_pos.frames;
   local_pos += clip_start_frames;
 

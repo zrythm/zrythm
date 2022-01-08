@@ -30,6 +30,7 @@
 #include "plugins/plugin_gtk.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/error.h"
 #include "utils/flags.h"
@@ -419,11 +420,11 @@ audio_function_apply (
     &end, - r->base.pos.frames);
 
   /* create a copy of the frames to be replaced */
-  size_t num_frames =
-    (size_t) (end.frames - start.frames);
+  unsigned_frame_t num_frames =
+    (unsigned_frame_t) (end.frames - start.frames);
 
   /* interleaved frames */
-  size_t channels = orig_clip->channels;
+  channels_t channels = orig_clip->channels;
   float src_frames[num_frames * channels];
   float frames[num_frames * channels];
   dsp_copy (
@@ -435,17 +436,18 @@ audio_function_apply (
     &src_frames[0], &frames[0],
     num_frames * channels);
 
-  long nudge_frames =
+  unsigned_frame_t nudge_frames =
+    (unsigned_frame_t)
     position_get_frames_from_ticks (
       ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS);
-  size_t nudge_frames_all_channels =
-    channels * (size_t) nudge_frames;
-  size_t num_frames_excl_nudge;
+  unsigned_frame_t nudge_frames_all_channels =
+    channels * nudge_frames;
+  unsigned_frame_t num_frames_excl_nudge;
 
   g_debug (
-    "num frames %zu, nudge_frames %ld",
+    "num frames %lu, nudge_frames %lu",
     num_frames, nudge_frames);
-  g_return_val_if_fail (nudge_frames > 0, -1);
+  z_return_val_if_fail_cmp (nudge_frames, >, 0, -1);
 
   switch (type)
     {
@@ -481,7 +483,7 @@ audio_function_apply (
       break;
     case AUDIO_FUNCTION_NUDGE_LEFT:
       g_return_val_if_fail (
-        (long) num_frames > nudge_frames, -1);
+        num_frames > nudge_frames, -1);
       num_frames_excl_nudge =
         num_frames - (size_t) nudge_frames;
       dsp_copy (
@@ -496,7 +498,7 @@ audio_function_apply (
       break;
     case AUDIO_FUNCTION_NUDGE_RIGHT:
       g_return_val_if_fail (
-        (long) num_frames > nudge_frames, -1);
+        num_frames > nudge_frames, -1);
       num_frames_excl_nudge =
         num_frames - (size_t) nudge_frames;
       dsp_copy (
@@ -523,7 +525,7 @@ audio_function_apply (
       {
         AudioClip * tmp_clip =
           audio_clip_new_from_float_array (
-            src_frames, (long) num_frames, channels,
+            src_frames, num_frames, channels,
             BIT_DEPTH_32, "tmp-clip");
         tmp_clip =
           audio_clip_edit_in_ext_program (tmp_clip);
@@ -584,7 +586,7 @@ audio_function_apply (
 
   AudioClip * clip =
     audio_clip_new_from_float_array (
-      &frames[0], (long) num_frames,
+      &frames[0], num_frames,
       channels, BIT_DEPTH_32, orig_clip->name);
   audio_pool_add_clip (AUDIO_POOL, clip);
   g_message (

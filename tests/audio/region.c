@@ -224,7 +224,7 @@ test_timeline_frames_to_local (void)
     midi_region_new (
       &pos, &end_pos,
       track_get_name_hash (track), 0, 0);
-  long localp =
+  signed_frame_t localp =
     region_timeline_frames_to_local (
       region, 13000, true);
   g_assert_cmpint (localp, ==, 13000);

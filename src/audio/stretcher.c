@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -359,7 +359,7 @@ stretcher_stretch_interleaved (
   float * out_samples[channels];
   size_t out_samples_size =
     (size_t)
-    math_round_double_to_size_t (
+    math_round_double_to_signed_64 (
       rubberband_get_time_ratio (
         self->rubberband_state) * in_samples_size);
   for (unsigned int i = 0; i < channels; i++)

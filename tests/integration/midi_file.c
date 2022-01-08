@@ -120,7 +120,7 @@ test_midi_file_playback (void)
 
       /* start filling events to see if any
        * warnings occur */
-      for (long i = start_pos.frames;
+      for (signed_frame_t i = start_pos.frames;
            i < stop_pos.frames;
            i += BUFFER_SIZE)
         {
@@ -128,7 +128,8 @@ test_midi_file_playback (void)
           for (int j = 0; j < BUFFER_SIZE; j++)
             {
               EngineProcessTimeInfo time_nfo = {
-                .g_start_frames = i,
+                .g_start_frame =
+                  (unsigned_frame_t) i,
                 .local_offset = (nframes_t) j,
                 .nframes = BUFFER_SIZE, };
               track_fill_events (

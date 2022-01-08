@@ -134,7 +134,7 @@ int
 control_port_get_int_from_val (
   float val)
 {
-  return math_round_float_to_int (val);
+  return math_round_float_to_signed_32 (val);
 }
 
 /**

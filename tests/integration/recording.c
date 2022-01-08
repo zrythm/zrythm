@@ -174,7 +174,7 @@ do_takes_no_loop_no_punch (
   /* assert that audio is silent */
   AudioClip * clip =
     audio_region_get_clip (audio_r);
-  g_assert_cmpint (
+  g_assert_cmpuint (
     clip->num_frames, ==, CYCLE_SIZE);
   for (nframes_t i = 0; i < CYCLE_SIZE; i++)
     {
@@ -287,7 +287,7 @@ do_takes_no_loop_no_punch (
    * audio data */
   clip =
     audio_region_get_clip (audio_r);
-  g_assert_cmpint (
+  g_assert_cmpuint (
     clip->num_frames, ==, CYCLE_SIZE * 2);
   for (nframes_t i = CYCLE_SIZE;
        i < 2 * CYCLE_SIZE; i++)
@@ -364,7 +364,7 @@ do_takes_loop_no_punch (
   transport_set_punch_mode_enabled (
     TRANSPORT, false);
 
-  const int FRAMES_BEFORE_LOOP = 4;
+#define FRAMES_BEFORE_LOOP 4
 
   /* move playhead to 4 ticks before loop */
   Position pos;
@@ -480,7 +480,7 @@ do_takes_loop_no_punch (
   /* assert that audio is silent */
   AudioClip * clip =
     audio_region_get_clip (audio_r);
-  g_assert_cmpint (
+  g_assert_cmpuint (
     clip->num_frames, ==, FRAMES_BEFORE_LOOP);
   for (nframes_t i = 0;
        i < (nframes_t) FRAMES_BEFORE_LOOP; i++)
@@ -504,7 +504,7 @@ do_takes_loop_no_punch (
   /* assert that audio is silent */
   clip =
     audio_region_get_clip (audio_r);
-  g_assert_cmpint (
+  g_assert_cmpuint (
     clip->num_frames, ==,
     CYCLE_SIZE - FRAMES_BEFORE_LOOP);
   for (nframes_t i = 0;
@@ -697,6 +697,8 @@ do_takes_loop_no_punch (
     RECORDING_MANAGER);
 #endif
 
+#undef FRAMES_BEFORE_LOOP
+
   /* save and undo/redo */
   test_project_save_and_reload ();
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -788,7 +790,7 @@ test_automation_touch_recording (void)
   transport_set_punch_mode_enabled (
     TRANSPORT, false);
 
-  const int FRAMES_BEFORE_LOOP = 4;
+#define FRAMES_BEFORE_LOOP 4
 
   /* move playhead to 4 ticks before loop */
   Position pos;
@@ -869,6 +871,8 @@ test_automation_touch_recording (void)
   position_from_frames (
     &pos, CYCLE_SIZE - FRAMES_BEFORE_LOOP);
   g_assert_cmppos (&pos, &touch_r_obj->loop_end_pos);
+
+#undef FRAMES_BEFORE_LOOP
 
   /* assert that automation points are created */
   touch_r = touch_at->regions[0];
@@ -962,7 +966,7 @@ test_mono_recording (void)
   /* assert that audio is correct */
   AudioClip * clip =
     audio_region_get_clip (audio_r);
-  g_assert_cmpint (
+  g_assert_cmpuint (
     clip->num_frames, ==, CYCLE_SIZE);
   for (nframes_t i = 0; i < CYCLE_SIZE; i++)
     {
@@ -1027,25 +1031,25 @@ test_long_audio_recording (void)
 
   AudioClip * clip =
     audio_clip_new_from_file (TEST_WAV2);
-  long processed_ch_frames = 0;
+  unsigned_frame_t processed_ch_frames = 0;
 
   double total_secs_to_process =
     (double) clip->num_frames /
     (double)AUDIO_ENGINE->sample_rate;
 
   /* process almost whole clip */
-  long total_samples_to_process =
-    ((long) total_secs_to_process - 1) *
+  unsigned_frame_t total_samples_to_process =
+    ((unsigned_frame_t) total_secs_to_process - 1) *
     AUDIO_ENGINE->sample_rate;
 
-  long total_loops =
+  unsigned_frame_t total_loops =
     total_samples_to_process / CYCLE_SIZE;
 
   ZRegion * audio_r;
   ArrangerObject * audio_r_obj;
 
   /* run the engine for a few cycles */
-  for (long j = 0; j < total_loops; j++)
+  for (unsigned_frame_t j = 0; j < total_loops; j++)
     {
       for (nframes_t i = 0; i < CYCLE_SIZE; i++)
         {
@@ -1074,7 +1078,7 @@ test_long_audio_recording (void)
       /* assert that audio is correct */
       AudioClip * r_clip =
         audio_region_get_clip (audio_r);
-      g_assert_cmpint (
+      g_assert_cmpuint (
         r_clip->num_frames, ==,
         processed_ch_frames);
       for (nframes_t i = 0;
@@ -1208,25 +1212,25 @@ test_2nd_audio_recording (void)
 
   AudioClip * clip =
     audio_clip_new_from_file (TEST_WAV2);
-  long processed_ch_frames = 0;
+  unsigned_frame_t processed_ch_frames = 0;
 
   double total_secs_to_process =
     (double) clip->num_frames /
     (double)AUDIO_ENGINE->sample_rate;
 
   /* process almost whole clip */
-  long total_samples_to_process =
-    ((long) total_secs_to_process - 1) *
+  unsigned_frame_t total_samples_to_process =
+    ((unsigned_frame_t) total_secs_to_process - 1) *
     AUDIO_ENGINE->sample_rate;
 
-  long total_loops =
+  unsigned_frame_t total_loops =
     total_samples_to_process / CYCLE_SIZE;
 
   ZRegion * audio_r;
   ArrangerObject * audio_r_obj;
 
   /* run the engine for a few cycles */
-  for (long j = 0; j < total_loops; j++)
+  for (unsigned_frame_t j = 0; j < total_loops; j++)
     {
       /* clear audio input */
       for (nframes_t i = 0; i < CYCLE_SIZE; i++)
@@ -1256,7 +1260,7 @@ test_2nd_audio_recording (void)
       /* assert that audio is silent */
       AudioClip * r_clip =
         audio_region_get_clip (audio_r);
-      g_assert_cmpint (
+      g_assert_cmpuint (
         r_clip->num_frames, ==,
         processed_ch_frames);
       for (nframes_t i = 0;

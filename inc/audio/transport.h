@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -279,10 +279,10 @@ typedef struct Transport
   bool          metronome_enabled;
 
   /** Preroll frames remaining. */
-  long          preroll_frames_remaining;
+  signed_frame_t preroll_frames_remaining;
 
   /** Countin frames remaining. */
-  long          countin_frames_remaining;
+  signed_frame_t countin_frames_remaining;
 
   /** Whether to start playback on MIDI input. */
   bool          start_playback_on_midi_input;
@@ -492,8 +492,8 @@ transport_set_metronome_enabled (
  */
 void
 transport_add_to_playhead (
-  Transport *     self,
-  const long      nframes);
+  Transport *          self,
+  const signed_frame_t nframes);
 
 void
 transport_request_pause (
@@ -668,9 +668,9 @@ NONNULL
 WARN_UNUSED_RESULT
 static inline nframes_t
 transport_is_loop_point_met (
-  const Transport * self,
-  const long        g_start_frames,
-  const nframes_t   nframes)
+  const Transport *    self,
+  const signed_frame_t g_start_frames,
+  const nframes_t      nframes)
 {
   if (
     self->loop

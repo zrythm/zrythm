@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,6 +30,7 @@
 #include <stdbool.h>
 
 #include "utils/localization.h"
+#include "utils/types.h"
 
 #include <gtk/gtk.h>
 
@@ -603,7 +604,7 @@ ui_px_to_pos_timeline (
  * @param has_padding Whether then given px contains
  *   padding.
  */
-long
+signed_frame_t
 ui_px_to_frames_timeline (
   double px,
   int    has_padding);
@@ -616,7 +617,7 @@ ui_px_to_frames_timeline (
  * @param has_padding Whether then given px contains
  *   padding.
  */
-long
+signed_frame_t
 ui_px_to_frames_editor (
   double px,
   int    has_padding);

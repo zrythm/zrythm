@@ -2971,7 +2971,7 @@ test_split_and_merge_audio_unlooped (void)
 
   /* remember frames */
   AudioClip * clip = audio_region_get_clip (r);
-  long num_frames = clip->num_frames;
+  unsigned_frame_t num_frames = clip->num_frames;
   float l_frames[num_frames];
   dsp_copy (
     l_frames, clip->ch_frames[0],
@@ -3008,14 +3008,14 @@ test_split_and_merge_audio_unlooped (void)
   position_set_to_bar (&tmp, 2);
   g_assert_cmppos (&r1_obj->loop_end_pos, &tmp);
 
-  long frames_per_bar =
-    (long)
+  unsigned_frame_t frames_per_bar =
+    (unsigned_frame_t)
     (AUDIO_ENGINE->frames_per_tick *
        (double) TRANSPORT->ticks_per_bar);
 
   /* check r1 audio positions */
   AudioClip * r1_clip = audio_region_get_clip (r1);
-  g_assert_cmpint (
+  g_assert_cmpuint (
     r1_clip->num_frames, ==, frames_per_bar);
   g_assert_true (
     audio_frames_equal (
@@ -3031,20 +3031,22 @@ test_split_and_merge_audio_unlooped (void)
   g_assert_cmppos (&r2_obj->clip_start_pos, &tmp);
   position_set_to_bar (&tmp, 1);
   g_assert_cmppos (&r2_obj->loop_start_pos, &tmp);
-  g_assert_cmpint (
-    r2_obj->end_pos.frames, ==,
+  g_assert_cmpuint (
+    (unsigned_frame_t) r2_obj->end_pos.frames, ==,
     /* total previous frames + started at bar 2
      * (1 bar) */
     num_frames + frames_per_bar);
-  g_assert_cmpint (
+  g_assert_cmpuint (
+    (unsigned_frame_t)
     r2_obj->loop_end_pos.frames, ==,
     /* total previous frames - r1 frames */
     num_frames - r1_clip->num_frames);
 
   /* check r2 audio positions */
   AudioClip * r2_clip = audio_region_get_clip (r2);
-  g_assert_cmpint (
+  g_assert_cmpuint (
     r2_clip->num_frames, ==,
+    (unsigned_frame_t)
     r2_obj->loop_end_pos.frames);
   g_assert_true (
     audio_frames_equal (
@@ -3075,13 +3077,15 @@ test_split_and_merge_audio_unlooped (void)
   position_set_to_bar (&tmp, 2);
   g_assert_cmppos (&r_obj->pos, &tmp);
   position_set_to_bar (&tmp, 2);
-  position_add_frames (&tmp, num_frames);
+  position_add_frames (
+    &tmp, (signed_frame_t) num_frames);
   g_assert_cmppos (&r_obj->end_pos, &tmp);
   position_set_to_bar (&tmp, 1);
   g_assert_cmppos (&r_obj->loop_start_pos, &tmp);
   position_set_to_bar (&tmp, 1);
   g_assert_cmppos (&r_obj->clip_start_pos, &tmp);
-  position_from_frames (&tmp, num_frames);
+  position_from_frames (
+    &tmp, (signed_frame_t) num_frames);
   g_assert_cmppos (&r_obj->loop_end_pos, &tmp);
 
   clip_editor_get_region (CLIP_EDITOR);
@@ -3116,7 +3120,7 @@ test_split_and_merge_audio_unlooped (void)
 
   /* check r1 audio positions */
   r1_clip = audio_region_get_clip (r1);
-  g_assert_cmpint (
+  g_assert_cmpuint (
     r1_clip->num_frames, ==, frames_per_bar);
   g_assert_true (
     audio_frames_equal (
@@ -3132,12 +3136,14 @@ test_split_and_merge_audio_unlooped (void)
   g_assert_cmppos (&r2_obj->clip_start_pos, &tmp);
   position_set_to_bar (&tmp, 1);
   g_assert_cmppos (&r2_obj->loop_start_pos, &tmp);
-  g_assert_cmpint (
+  g_assert_cmpuint (
+    (unsigned_frame_t)
     r2_obj->end_pos.frames, ==,
     /* total previous frames + started at bar 2
      * (1 bar) */
     num_frames + frames_per_bar);
-  g_assert_cmpint (
+  g_assert_cmpuint (
+    (unsigned_frame_t)
     r2_obj->loop_end_pos.frames, ==,
     /* total previous frames - r1 frames */
     num_frames - r1_clip->num_frames);
@@ -3145,6 +3151,7 @@ test_split_and_merge_audio_unlooped (void)
   /* check r2 audio positions */
   r2_clip = audio_region_get_clip (r2);
   g_assert_cmpint (
+    (signed_frame_t)
     r2_clip->num_frames, ==,
     r2_obj->loop_end_pos.frames);
   g_assert_true (
@@ -3171,7 +3178,8 @@ test_split_and_merge_audio_unlooped (void)
   g_assert_cmppos (&r_obj->clip_start_pos, &tmp);
   position_set_to_bar (&tmp, 1);
   g_assert_cmppos (&r_obj->loop_start_pos, &tmp);
-  g_assert_cmpint (
+  g_assert_cmpuint (
+    (unsigned_frame_t)
     r_obj->end_pos.frames, ==,
     /* total previous frames + started at bar 2
      * (1 bar) */
@@ -3179,11 +3187,12 @@ test_split_and_merge_audio_unlooped (void)
   g_assert_cmpint (
     r_obj->loop_end_pos.frames, ==,
     /* total previous frames */
+    (signed_frame_t)
     num_frames);
 
   /* check frames */
   clip = audio_region_get_clip (r);
-  g_assert_cmpint (
+  g_assert_cmpuint (
     clip->num_frames, ==, num_frames);
   g_assert_true (
     audio_frames_equal (

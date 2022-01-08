@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -62,24 +62,25 @@ typedef struct StereoPorts StereoPorts;
  * @param frames Float array, if loading from
  *   float array, otherwise NULL.
  * @param nframes Number of frames per channel.
+ *   Only used if @ref frames is non-NULL.
  * @param clip_name Name of audio clip, if not
  *   loading from file.
  * @param bit_depth Bit depth, if using \ref frames.
  */
 ZRegion *
 audio_region_new (
-  const int        pool_id,
-  const char *     filename,
-  bool             read_from_pool,
-  const float *    frames,
-  const long       nframes,
-  const char *     clip_name,
-  const channels_t channels,
-  BitDepth         bit_depth,
-  const Position * start_pos,
-  unsigned int     track_name_hash,
-  int              lane_pos,
-  int              idx_inside_lane);
+  const int              pool_id,
+  const char *           filename,
+  bool                   read_from_pool,
+  const float *          frames,
+  const unsigned_frame_t nframes,
+  const char *           clip_name,
+  const channels_t       channels,
+  BitDepth               bit_depth,
+  const Position *       start_pos,
+  unsigned int           track_name_hash,
+  int                    lane_pos,
+  int                    idx_inside_lane);
 
 #if 0
 /**
@@ -128,11 +129,11 @@ audio_region_set_clip_id (
  */
 void
 audio_region_replace_frames (
-  ZRegion * self,
-  float *   frames,
-  size_t    start_frame,
-  size_t    num_frames,
-  bool      duplicate_clip);
+  ZRegion *        self,
+  float *          frames,
+  unsigned_frame_t start_frame,
+  unsigned_frame_t num_frames,
+  bool             duplicate_clip);
 
 /**
  * Fills audio data from the region.
@@ -141,11 +142,6 @@ audio_region_replace_frames (
  *   function at each sub-loop inside the region,
  *   so region loop related logic is not needed.
  *
- * @param g_start_frames Global start frame.
- * @param cycle_start_offset The start frame offset
- *   from 0 in this cycle.
- * @param nframes Number of frames at start
- *   Position.
  * @param stereo_ports StereoPorts to fill.
  */
 REALTIME
@@ -153,11 +149,9 @@ HOT
 NONNULL
 void
 audio_region_fill_stereo_ports (
-  ZRegion *     self,
-  long          g_start_frames,
-  nframes_t     cycle_start_offset,
-  nframes_t     nframes,
-  StereoPorts * stereo_ports);
+  ZRegion *                           self,
+  const EngineProcessTimeInfo * const time_nfo,
+  StereoPorts *                       stereo_ports);
 
 float
 audio_region_detect_bpm (

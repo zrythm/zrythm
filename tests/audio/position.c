@@ -189,7 +189,7 @@ test_position_from_ticks (void)
   position_from_ticks (&pos, ticks);
   g_assert_cmpint (
     position_get_bars (&pos, true), ==,
-    math_round_double_to_int (
+    math_round_double_to_signed_32 (
       ticks / TRANSPORT->ticks_per_bar + 1));
   g_assert_cmpint (
     position_get_bars (&pos, true), >, 0);
@@ -210,7 +210,7 @@ test_position_to_frames (void)
   long frames = position_to_frames (&pos);
   g_assert_cmpint (
     frames, ==,
-    math_round_double_to_long (
+    math_round_double_to_signed_64 (
       AUDIO_ENGINE->frames_per_tick * ticks));
 
   test_helper_zrythm_cleanup ();

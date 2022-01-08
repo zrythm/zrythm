@@ -48,60 +48,60 @@
  */
 typedef struct AudioClip
 {
-  int           schema_version;
+  int              schema_version;
 
   /** Name of the clip. */
-  char *        name;
+  char *           name;
 
   /** The audio frames, interleaved. */
-  sample_t *    frames;
+  sample_t *       frames;
 
   /** Number of frames per channel. */
-  long          num_frames;
+  unsigned_frame_t num_frames;
 
   /**
    * Per-channel frames for convenience.
    */
-  sample_t *    ch_frames[16];
+  sample_t *       ch_frames[16];
 
   /** Number of channels. */
-  channels_t    channels;
+  channels_t       channels;
 
   /**
    * BPM of the clip, or BPM of the project when
    * the clip was first loaded.
    */
-  bpm_t         bpm;
+  bpm_t            bpm;
 
   /**
    * Samplerate of the clip, or samplerate when
    * the clip was imported into the project.
    */
-  int           samplerate;
+  int              samplerate;
 
   /**
    * Bit depth of the clip when the clip was
    * imported into the project.
    */
-  BitDepth      bit_depth;
+  BitDepth         bit_depth;
 
   /** Whether the clip should use FLAC when being
    * serialized. */
-  bool          use_flac;
+  bool             use_flac;
 
   /** ID in the audio pool. */
-  int           pool_id;
+  int              pool_id;
 
   /** File hash, used for checking if a clip is
    * already written to the pool. */
-  char *        file_hash;
+  char *           file_hash;
 
   /**
    * Frames already written to the file, per channel.
    *
    * Used when writing in chunks/parts.
    */
-  long          frames_written;
+  unsigned_frame_t frames_written;
 
   /**
    * Time the last write took place.
@@ -111,7 +111,7 @@ typedef struct AudioClip
    *
    * @see AudioClip.frames_written.
    */
-  gint64        last_write;
+  gint64           last_write;
 } AudioClip;
 
 static const cyaml_schema_field_t
@@ -172,11 +172,11 @@ audio_clip_new_from_file (
  */
 AudioClip *
 audio_clip_new_from_float_array (
-  const float *    arr,
-  const long       nframes,
-  const channels_t channels,
-  BitDepth         bit_depth,
-  const char *     name);
+  const float *          arr,
+  const unsigned_frame_t nframes,
+  const channels_t       channels,
+  BitDepth               bit_depth,
+  const char *           name);
 
 /**
  * Create an audio clip while recording.
@@ -190,9 +190,9 @@ audio_clip_new_from_float_array (
  */
 AudioClip *
 audio_clip_new_recording (
-  const channels_t channels,
-  const long       nframes,
-  const char *     name);
+  const channels_t       channels,
+  const unsigned_frame_t nframes,
+  const char *           name);
 
 /**
  * Updates the channel caches.

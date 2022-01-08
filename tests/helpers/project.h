@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -509,8 +509,8 @@ test_project_rebootstrap_timeline (
       p1, track_name_hash, AUDIO_REGION_LANE, 0);
   AudioClip * clip =
     audio_region_get_clip (r);
-  g_assert_cmpint (clip->num_frames, >, 151000);
-  g_assert_cmpint (clip->num_frames, <, 152000);
+  g_assert_cmpuint (clip->num_frames, >, 151000);
+  g_assert_cmpuint (clip->num_frames, <, 152000);
   track_add_region (
     track, r, NULL, AUDIO_REGION_LANE, 1, 0);
   r_obj = (ArrangerObject *) r;

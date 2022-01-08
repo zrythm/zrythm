@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -163,7 +163,8 @@ editor_ruler_on_drag_update (
                 audio_region_get_clip (r);
               Position clip_frames;
               position_from_frames (
-                &clip_frames, clip->num_frames);
+                &clip_frames,
+                (signed_frame_t) clip->num_frames);
               if (position_is_after (
                     &region_local_pos, &clip_frames))
                 {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  * Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
  *
  * This file is part of Zrythm
@@ -387,31 +387,6 @@ jack_transport_type_strings[] =
 };
 
 /**
- * Common struct to pass around during processing
- * to avoid repeating the data in function
- * arguments.
- */
-typedef struct EngineProcessTimeInfo
-{
-  /** Global position at the start of the
-   * processing cycle. */
-  /* FIXME in some places this is adjusted to the
-   * local offset. it should be adjusted to the
-   * local offset everywhere */
-  long       g_start_frames;
-
-  /** Offset in the current processing cycle,
-   * between 0 and the number of frames in
-   * AudioEngine.block_length. */
-  nframes_t  local_offset;
-
-  /**
-   * Number of frames to process in this call.
-   */
-  nframes_t  nframes;
-} EngineProcessTimeInfo;
-
-/**
  * The audio engine.
  */
 typedef struct AudioEngine
@@ -423,7 +398,7 @@ typedef struct AudioEngine
    *
    * Useful for debugging.
    */
-  unsigned long     cycle;
+  uint_fast64_t     cycle;
 
 #ifdef HAVE_JACK
   /** JACK client. */

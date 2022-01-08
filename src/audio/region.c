@@ -343,8 +343,10 @@ region_stretch (
             stretcher, new_clip->frames,
             (size_t) new_clip->num_frames,
             &new_clip->frames);
-        g_warn_if_fail (returned_frames > 0);
-        new_clip->num_frames = returned_frames;
+        z_return_if_fail_cmp (
+          returned_frames, >, 0);
+        new_clip->num_frames =
+          (unsigned_frame_t) returned_frames;
         audio_clip_write_to_pool (
           new_clip, F_NO_PARTS, F_NOT_BACKUP);
         (void) obj;
@@ -1171,9 +1173,9 @@ region_at_position (
  */
 int
 region_is_hit (
-  const ZRegion * region,
-  const long     gframes,
-  const int      inclusive)
+  const ZRegion *      region,
+  const signed_frame_t gframes,
+  const bool           inclusive)
 {
   const ArrangerObject * r_obj =
     (const ArrangerObject *) region;
@@ -1257,10 +1259,10 @@ region_get_musical_mode (
  */
 int
 region_is_hit_by_range (
-  const ZRegion * region,
-  const long      gframes_start,
-  const long      gframes_end,
-  const bool      end_inclusive)
+  const ZRegion *      region,
+  const signed_frame_t gframes_start,
+  const signed_frame_t gframes_end,
+  const bool           end_inclusive)
 {
   const ArrangerObject * obj =
     (const ArrangerObject *) region;
@@ -1370,10 +1372,10 @@ region_add_arranger_object (
  *
  * @return The local frames.
  */
-long
+signed_frame_t
 region_timeline_frames_to_local (
   const ZRegion * const self,
-  const long            timeline_frames,
+  const signed_frame_t  timeline_frames,
   const bool            normalize)
 {
   g_return_val_if_fail (IS_REGION (self), 0);
@@ -1383,7 +1385,7 @@ region_timeline_frames_to_local (
 
   if (normalize)
     {
-      long diff_frames =
+      signed_frame_t diff_frames =
         timeline_frames -
         r_obj->pos.frames;
 
@@ -1392,11 +1394,11 @@ region_timeline_frames_to_local (
       if (timeline_frames == r_obj->end_pos.frames)
         return diff_frames;
 
-      const long loop_end_frames =
+      const signed_frame_t loop_end_frames =
         r_obj->loop_end_pos.frames;
-      const long clip_start_frames =
+      const signed_frame_t clip_start_frames =
         r_obj->clip_start_pos.frames;
-      const long loop_size =
+      const signed_frame_t loop_size =
         arranger_object_get_loop_length_in_frames (
           r_obj);
       z_return_val_if_fail_cmp (
@@ -1433,20 +1435,21 @@ region_timeline_frames_to_local (
 void
 region_get_frames_till_next_loop_or_end (
   const ZRegion * const self,
-  const long            timeline_frames,
-  long *                ret_frames,
+  const signed_frame_t  timeline_frames,
+  signed_frame_t *      ret_frames,
   bool *                is_loop)
 {
   g_return_if_fail (IS_REGION (self));
 
   ArrangerObject * r_obj = (ArrangerObject *) self;
 
-  long local_frames =
-    timeline_frames - r_obj->pos.frames;
-  long loop_size =
+  signed_frame_t loop_size =
     arranger_object_get_loop_length_in_frames (
       r_obj);
-  g_return_if_fail (loop_size > 0);
+  z_return_if_fail_cmp (loop_size, >, 0);
+
+  signed_frame_t local_frames =
+    timeline_frames - r_obj->pos.frames;
 
   local_frames += r_obj->clip_start_pos.frames;
 
@@ -1456,10 +1459,10 @@ region_get_frames_till_next_loop_or_end (
       local_frames -= loop_size;
     }
 
-  long frames_till_next_loop =
+  signed_frame_t frames_till_next_loop =
     r_obj->loop_end_pos.frames - local_frames;
 
-  long frames_till_end =
+  signed_frame_t frames_till_end =
     r_obj->end_pos.frames - timeline_frames;
 
   *is_loop =

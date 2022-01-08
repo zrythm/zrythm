@@ -48,10 +48,10 @@ typedef struct SamplePlayback
   channels_t     channels;
 
   /** The number of frames in the buffer. */
-  long           buf_size;
+  unsigned_frame_t buf_size;
 
   /** The current offset in the buffer. */
-  long           offset;
+  unsigned_frame_t offset;
 
   /** The volume to play the sample at (ratio from
    * 0.0 to 2.0, where 1.0 is the normal volume). */

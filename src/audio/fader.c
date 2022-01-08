@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -962,18 +962,11 @@ fader_update_track_pos (
 
 /**
  * Process the Fader.
- *
- * @param g_start_frames Global frames.
- * @param start_frame The local offset in this
- *   cycle.
- * @param nframes The number of frames to process.
  */
 void
 fader_process (
-  Fader *         self,
-  long            g_start_frames,
-  nframes_t       start_frame,
-  const nframes_t nframes)
+  Fader *                             self,
+  const EngineProcessTimeInfo * const time_nfo)
 {
   if (ZRYTHM_TESTING)
     {
@@ -981,8 +974,9 @@ fader_process (
       g_debug (
         "%s: g_start %ld, start frame %u, nframes "
         "%u",
-        __func__, g_start_frames, start_frame,
-        nframes);
+        __func__, time_nfo->g_start_frame,
+        time_nfo->local_offset,
+        time_nfo->nframes);
 #endif
     }
 
@@ -1047,13 +1041,13 @@ fader_process (
     {
       /* copy the input to output */
       dsp_copy (
-        &self->stereo_out->l->buf[start_frame],
-        &self->stereo_in->l->buf[start_frame],
-        nframes);
+        &self->stereo_out->l->buf[time_nfo->local_offset],
+        &self->stereo_in->l->buf[time_nfo->local_offset],
+        time_nfo->nframes);
       dsp_copy (
-        &self->stereo_out->r->buf[start_frame],
-        &self->stereo_in->r->buf[start_frame],
-        nframes);
+        &self->stereo_out->r->buf[time_nfo->local_offset],
+        &self->stereo_in->r->buf[time_nfo->local_offset],
+        time_nfo->nframes);
 
       /* if prefader */
       if (self->passthrough)
@@ -1064,14 +1058,20 @@ fader_process (
           if (track && track->frozen &&
              TRANSPORT_IS_ROLLING)
             {
+#if 0
               /* get audio from clip */
               AudioClip * clip =
                 audio_pool_get_clip (
                   AUDIO_POOL, track->pool_id);
+              /* FIXME this is wrong - need to
+               * also calculate the offset in the
+               * clip */
               stereo_ports_fill_from_clip (
                 self->stereo_out, clip,
-                g_start_frames, start_frame,
-                nframes);
+                time_nfo->g_start_frame,
+                time_nfo->local_offset,
+                time_nfo->nframes);
+#endif
             }
         }
       else /* not prefader */
@@ -1090,12 +1090,12 @@ fader_process (
                   /* dim signal */
                   dsp_mul_k2 (
                     &self->stereo_out->l->buf[
-                      start_frame],
-                    dim_amp, nframes);
+                      time_nfo->local_offset],
+                    dim_amp, time_nfo->nframes);
                   dsp_mul_k2 (
                     &self->stereo_out->r->buf[
-                      start_frame],
-                    dim_amp, nframes);
+                      time_nfo->local_offset],
+                    dim_amp, time_nfo->nframes);
 
                   /* add listened signal */
                   /* TODO add "listen" buffer
@@ -1124,18 +1124,18 @@ fader_process (
                               t, true);
                           dsp_mix2 (
                             &self->stereo_out->l->buf[
-                              start_frame],
+                              time_nfo->local_offset],
                             &f->stereo_out->l->buf[
-                              start_frame],
+                              time_nfo->local_offset],
                             1.f, listen_amp,
-                            nframes);
+                            time_nfo->nframes);
                           dsp_mix2 (
                             &self->stereo_out->r->buf[
-                              start_frame],
+                              time_nfo->local_offset],
                             &f->stereo_out->r->buf[
-                              start_frame],
+                              time_nfo->local_offset],
                             1.f, listen_amp,
-                            nframes);
+                            time_nfo->nframes);
                         }
                     }
                 }
@@ -1145,12 +1145,12 @@ fader_process (
                 {
                   dsp_mul_k2 (
                     &self->stereo_out->l->buf[
-                      start_frame],
-                    dim_amp, nframes);
+                      time_nfo->local_offset],
+                    dim_amp, time_nfo->nframes);
                   dsp_mul_k2 (
                     &self->stereo_out->r->buf[
-                      start_frame],
-                    dim_amp, nframes);
+                      time_nfo->local_offset],
+                    dim_amp, time_nfo->nframes);
                 }
             }
 
@@ -1162,12 +1162,12 @@ fader_process (
           /* apply fader and pan */
           dsp_mul_k2 (
             &self->stereo_out->l->buf[
-              start_frame],
-            amp * calc_l, nframes);
+              time_nfo->local_offset],
+            amp * calc_l, time_nfo->nframes);
           dsp_mul_k2 (
             &self->stereo_out->r->buf[
-              start_frame],
-            amp * calc_r, nframes);
+              time_nfo->local_offset],
+            amp * calc_r, time_nfo->nframes);
 
           /* make mono if mono compat
            * enabled. equal amplitude is
@@ -1183,9 +1183,9 @@ fader_process (
             {
               dsp_make_mono (
                 &self->stereo_out->l->buf[
-                  start_frame],
+                  time_nfo->local_offset],
                 &self->stereo_out->r->buf[
-                  start_frame], nframes,
+                  time_nfo->local_offset], time_nfo->nframes,
                   false);
             }
 
@@ -1199,27 +1199,27 @@ fader_process (
                 {
                   dsp_fill (
                     &self->stereo_out->l->buf[
-                      start_frame],
+                      time_nfo->local_offset],
                     AUDIO_ENGINE->
                       denormal_prevention_val,
-                    nframes);
+                    time_nfo->nframes);
                   dsp_fill (
                     &self->stereo_out->r->buf[
-                      start_frame],
+                      time_nfo->local_offset],
                     AUDIO_ENGINE->
                       denormal_prevention_val,
-                    nframes);
+                    time_nfo->nframes);
                 }
               else
                 {
                   dsp_mul_k2 (
                     &self->stereo_out->l->buf[
-                      start_frame],
-                    mute_amp, nframes);
+                      time_nfo->local_offset],
+                    mute_amp, time_nfo->nframes);
                   dsp_mul_k2 (
                     &self->stereo_out->r->buf[
-                      start_frame],
-                    mute_amp, nframes);
+                      time_nfo->local_offset],
+                    mute_amp, time_nfo->nframes);
                 }
             }
 
@@ -1235,12 +1235,12 @@ fader_process (
             {
               dsp_limit1 (
                 &self->stereo_out->l->buf[
-                  start_frame],
-                - 2.f, 2.f, nframes);
+                  time_nfo->local_offset],
+                - 2.f, 2.f, time_nfo->nframes);
               dsp_limit1 (
                 &self->stereo_out->r->buf[
-                  start_frame],
-                - 2.f, 2.f, nframes);
+                  time_nfo->local_offset],
+                - 2.f, 2.f, time_nfo->nframes);
             }
         } /* fi not prefader */
     } /* fi monitor/audio fader */
@@ -1251,7 +1251,7 @@ fader_process (
           midi_events_append (
             self->midi_in->midi_events,
             self->midi_out->midi_events,
-            start_frame, nframes, F_NOT_QUEUED);
+            time_nfo->local_offset, time_nfo->nframes, F_NOT_QUEUED);
 
           /* if not prefader, also apply volume
            * changes */

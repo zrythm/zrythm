@@ -58,6 +58,18 @@ typedef float bpm_t;
 
 typedef double curviness_t;
 
+/** Signed type for frame index. */
+typedef int_fast64_t signed_frame_t;
+
+/** Unsigned type for frame index. */
+typedef uint_fast64_t unsigned_frame_t;
+
+/** Signed millisecond index. */
+typedef signed_frame_t signed_ms_t;
+
+/** Signed second index. */
+typedef signed_frame_t signed_sec_t;
+
 /**
  * Getter prototype for float values.
  */
@@ -155,6 +167,31 @@ typedef enum AudioValueFormat
   /** 0 to 1, suitable for drawing. */
   AUDIO_VALUE_FADER,
 } AudioValueFormat;
+
+/**
+ * Common struct to pass around during processing
+ * to avoid repeating the data in function
+ * arguments.
+ */
+typedef struct EngineProcessTimeInfo
+{
+  /** Global position at the start of the
+   * processing cycle. */
+  /* FIXME in some places this is adjusted to the
+   * local offset. it should be adjusted to the
+   * local offset everywhere */
+  unsigned_frame_t g_start_frame;
+
+  /** Offset in the current processing cycle,
+   * between 0 and the number of frames in
+   * AudioEngine.block_length. */
+  nframes_t        local_offset;
+
+  /**
+   * Number of frames to process in this call.
+   */
+  nframes_t        nframes;
+} EngineProcessTimeInfo;
 
 /**
  * @}

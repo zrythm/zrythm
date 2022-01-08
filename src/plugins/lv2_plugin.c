@@ -1693,9 +1693,12 @@ lv2_plugin_get_latency (
 {
   if (reports_latency (self))
     {
+      const EngineProcessTimeInfo time_nfo = {
+        .g_start_frame =
+          (unsigned_frame_t) PLAYHEAD->frames,
+        .local_offset = 0, .nframes = 0 };
       lv2_plugin_process (
-        self, PLAYHEAD->frames, 0, 0);
-        /*AUDIO_ENGINE->block_length);*/
+        self, &time_nfo);
     }
 
   return self->plugin->latency;
@@ -3356,16 +3359,11 @@ lv2_plugin_cleanup (
 
 /**
  * Processes the plugin for this cycle.
- *
- * @param g_start_frames The global start frames.
- * @param nframes The number of frames to process.
  */
 void
 lv2_plugin_process (
-  Lv2Plugin *      self,
-  const long       g_start_frames,
-  const nframes_t  local_offset,
-  const nframes_t  nframes)
+  Lv2Plugin *                         self,
+  const EngineProcessTimeInfo * const time_nfo)
 {
   Plugin * pl = self->plugin;
   g_return_if_fail (
@@ -3384,7 +3382,7 @@ lv2_plugin_process (
    * something has changed */
   const bool xport_changed =
     self->rolling != (TRANSPORT_IS_ROLLING) ||
-    self->gframes != g_start_frames ||
+    self->gframes != time_nfo->g_start_frame ||
     !math_floats_equal (
       self->bpm,
       tempo_track_get_current_bpm (P_TEMPO_TRACK));
@@ -3396,7 +3394,7 @@ lv2_plugin_process (
         "self gframes vs g start frames %ld %ld, "
         "bpm %f %f",
         self->rolling,
-        self->gframes, g_start_frames,
+        self->gframes, g_start_frame,
         (double) self->bpm,
         (double)
           tempo_track_get_current_bpm (
@@ -3414,7 +3412,8 @@ lv2_plugin_process (
        * change to plugin */
       Position start_pos;
       position_from_frames (
-        &start_pos, g_start_frames);
+        &start_pos,
+        (signed_frame_t) time_nfo->g_start_frame);
       LV2_Atom_Forge * forge = &self->dsp_forge;
       lv2_atom_forge_set_buffer (
         forge, pos_buf, sizeof(pos_buf));
@@ -3425,7 +3424,8 @@ lv2_plugin_process (
       lv2_atom_forge_key (
         forge, PM_URIDS.time_frame);
       lv2_atom_forge_long (
-        forge, g_start_frames);
+        forge,
+        (long) time_nfo->g_start_frame);
       lv2_atom_forge_key (
         forge, PM_URIDS.time_speed);
       lv2_atom_forge_float (
@@ -3475,13 +3475,17 @@ lv2_plugin_process (
     {
       Position gpos;
       position_from_frames (
-        &gpos, g_start_frames + nframes);
-      self->gframes = gpos.frames;
+        &gpos,
+        (signed_frame_t)
+        (time_nfo->g_start_frame +
+          time_nfo->nframes));
+      self->gframes =
+        (unsigned_frame_t) gpos.frames;
       self->rolling = 1;
     }
   else
     {
-      self->gframes = g_start_frames;
+      self->gframes = time_nfo->g_start_frame;
       self->rolling = 0;
     }
   self->bpm =
@@ -3501,7 +3505,7 @@ lv2_plugin_process (
           /* connect buffer */
           lilv_instance_connect_port (
             self->instance,
-            (uint32_t) p, &port->buf[local_offset]);
+            (uint32_t) p, &port->buf[time_nfo->local_offset]);
         }
       else if (id->type == TYPE_EVENT
                && id->flow == FLOW_INPUT)
@@ -3556,9 +3560,9 @@ lv2_plugin_process (
                 {
                   MidiEvent * ev =
                     &port->midi_events->events[i];
-                  if (ev->time < local_offset ||
+                  if (ev->time < time_nfo->local_offset ||
                       ev->time >=
-                        local_offset + nframes)
+                        time_nfo->local_offset + time_nfo->nframes)
                     {
                       /* skip events scheduled
                        * for another split within
@@ -3574,8 +3578,8 @@ lv2_plugin_process (
                         "local frames %u nframes "
                         "%u",
                         num_events_written,
-                        ev->time - local_offset,
-                        local_offset, nframes);
+                        ev->time - time_nfo->local_offset,
+                        time_nfo->local_offset, time_nfo->nframes);
                       midi_event_print (ev);
                     }
 
@@ -3586,7 +3590,7 @@ lv2_plugin_process (
                      * cycle (not split). it
                      * needs to be made relative
                      * to the current split */
-                    ev->time - local_offset, 0,
+                    ev->time - time_nfo->local_offset, 0,
                     PM_URIDS.midi_MidiEvent,
                     3, ev->raw_buffer);
 
@@ -3615,7 +3619,7 @@ lv2_plugin_process (
 
   /* Run plugin for this cycle */
   const bool send_ui_updates =
-    run (self, nframes) &&
+    run (self, time_nfo->nframes) &&
     !AUDIO_ENGINE->exporting &&
     self->plugin->ui_instantiated;
 

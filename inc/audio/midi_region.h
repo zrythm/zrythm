@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -157,11 +157,6 @@ midi_region_pop_unended_note (
  *   function at each sub-loop inside the region,
  *   so region loop related logic is not needed.
  *
- * @param g_start_frames Global start frame.
- * @param local_start_frame The start frame offset
- *   from 0 in this cycle.
- * @param nframes Number of frames at start
- *   Position.
  * @param note_off_at_end Whether a note off should
  *   be added at the end frame (eg, when the caller
  *   knows there is a region loop or the region
@@ -172,12 +167,10 @@ midi_region_pop_unended_note (
 REALTIME
 void
 midi_region_fill_midi_events (
-  ZRegion *    self,
-  long         g_start_frames,
-  nframes_t    local_start_frame,
-  nframes_t    nframes,
-  bool         note_off_at_end,
-  MidiEvents * midi_events);
+  ZRegion *                           self,
+  const EngineProcessTimeInfo * const time_nfo,
+  bool                                note_off_at_end,
+  MidiEvents *                        midi_events);
 
 /**
  * Prints the MidiNotes in the Region.

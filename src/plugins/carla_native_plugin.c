@@ -706,16 +706,14 @@ carla_native_plugin_has_custom_ui (
  */
 void
 carla_native_plugin_process (
-  CarlaNativePlugin * self,
-  const long          g_start_frames,
-  const nframes_t  local_offset,
-  const nframes_t     nframes)
+  CarlaNativePlugin *                 self,
+  const EngineProcessTimeInfo * const time_nfo)
 {
 
   self->time_info.playing =
     TRANSPORT_IS_ROLLING;
   self->time_info.frame =
-    (uint64_t) g_start_frames;
+    (uint64_t) time_nfo->g_start_frame;
   self->time_info.bbt.bar =
     position_get_bars (PLAYHEAD, true);
   self->time_info.bbt.beat =
@@ -764,22 +762,22 @@ carla_native_plugin_process (
     {
       float * inbuf[num_inputs];
       float * outbuf[num_outputs];
-      float dummy_inbufs[num_inputs][nframes];
-      float dummy_outbufs[num_outputs][nframes];
+      float dummy_inbufs[num_inputs][time_nfo->nframes];
+      float dummy_outbufs[num_outputs][time_nfo->nframes];
 
       /* set all ins/outs to zero bufs */
       for (size_t i = 0; i < num_inputs; i++)
         {
           dsp_fill (
             dummy_inbufs[i],
-            DENORMAL_PREVENTION_VAL, nframes);
+            DENORMAL_PREVENTION_VAL, time_nfo->nframes);
           inbuf[i] = dummy_inbufs[i];
         }
       for (size_t i = 0; i < num_outputs; i++)
         {
           dsp_fill (
             dummy_outbufs[i],
-            DENORMAL_PREVENTION_VAL, nframes);
+            DENORMAL_PREVENTION_VAL, time_nfo->nframes);
           outbuf[i] = dummy_outbufs[i];
         }
 
@@ -793,7 +791,7 @@ carla_native_plugin_process (
             if (port->id.type == TYPE_AUDIO)
               {
                 inbuf[audio_ports++] =
-                  &port->buf[local_offset];
+                  &port->buf[time_nfo->local_offset];
               }
             if (audio_ports == MAX_VARIANT_AUDIO_INS)
               break;
@@ -810,7 +808,7 @@ carla_native_plugin_process (
             if (port->id.type == TYPE_CV)
               {
                 inbuf[MAX_VARIANT_AUDIO_INS + cv_ports++] =
-                  &port->buf[local_offset];
+                  &port->buf[time_nfo->local_offset];
               }
             if (cv_ports == MAX_VARIANT_CV_INS)
               break;
@@ -828,7 +826,7 @@ carla_native_plugin_process (
             if (port->id.type == TYPE_AUDIO)
               {
                 outbuf[audio_ports++] =
-                  &port->buf[local_offset];
+                  &port->buf[time_nfo->local_offset];
               }
             if (audio_ports == MAX_VARIANT_AUDIO_OUTS)
               break;
@@ -846,7 +844,7 @@ carla_native_plugin_process (
             if (port->id.type == TYPE_CV)
               {
                 outbuf[MAX_VARIANT_AUDIO_OUTS + cv_ports++] =
-                  &port->buf[local_offset];
+                  &port->buf[time_nfo->local_offset];
               }
             if (cv_ports == MAX_VARIANT_CV_OUTS)
               break;
@@ -878,8 +876,8 @@ carla_native_plugin_process (
         {
           MidiEvent * ev =
             &port->midi_events->events[i];
-          if (ev->time < local_offset ||
-              ev->time >= local_offset + nframes)
+          if (ev->time < time_nfo->local_offset ||
+              ev->time >= time_nfo->local_offset + time_nfo->nframes)
             {
               /* skip events scheduled
                * for another split within
@@ -893,8 +891,8 @@ carla_native_plugin_process (
             "at time %u - "
             "local frames %u nframes %u",
             num_events_written,
-            ev->time - local_offset,
-            local_offset, nframes);
+            ev->time - time_nfo->local_offset,
+            time_nfo->local_offset, time_nfo->nframes);
           midi_event_print (ev);
 #endif
 
@@ -903,7 +901,7 @@ carla_native_plugin_process (
            * needs to be made relative to the
            * current split */
           events[num_events_written].time =
-            ev->time - local_offset;
+            ev->time - time_nfo->local_offset;
           events[num_events_written].size = 3;
           events[num_events_written].data[0] =
             ev->raw_buffer[0];
@@ -932,7 +930,7 @@ carla_native_plugin_process (
 
       self->native_plugin_descriptor->process (
         self->native_plugin_handle, inbuf, outbuf,
-        nframes, events,
+        time_nfo->nframes, events,
         (uint32_t) num_events_written);
       }
       break;

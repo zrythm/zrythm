@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -706,18 +706,13 @@ plugin_set_track_name_hash (
 
 /**
  * Process plugin.
- *
- * @param g_start_frames The global start frames.
- * @param nframes The number of frames to process.
  */
 NONNULL
 HOT
 void
 plugin_process (
-  Plugin *    plugin,
-  const long  g_start_frames,
-  const nframes_t  local_offset,
-  const nframes_t   nframes);
+  Plugin *                            plugin,
+  const EngineProcessTimeInfo * const time_nfo);
 
 NONNULL
 MALLOC
@@ -784,10 +779,8 @@ HOT
 NONNULL
 void
 plugin_process_passthrough (
-  Plugin *        self,
-  const long      g_start_frames,
-  const nframes_t local_offset,
-  const nframes_t nframes);
+  Plugin *                            self,
+  const EngineProcessTimeInfo * const time_nfo);
 
 /**
  * Returns the event ports in the plugin.

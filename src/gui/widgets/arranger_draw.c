@@ -526,7 +526,7 @@ draw_audio_bg (
     (double) rect->width;
 
   /* frames in the clip to start drawing from */
-  long prev_frames =
+  signed_frame_t prev_frames =
     MAX (
       ui_px_to_frames_editor (local_start_x, 1) -
         obj->pos.frames,
@@ -568,7 +568,7 @@ draw_audio_bg (
     }
 
   /* draw fades */
-  long obj_length_frames =
+  signed_frame_t obj_length_frames =
     arranger_object_get_length_in_frames (obj);
   GdkRGBA base_color = {
       .red = 0.3, .green = 0.3, .blue = 0.3,
@@ -580,7 +580,7 @@ draw_audio_bg (
   for (double i = local_start_x;
        i < local_end_x; i += increment)
     {
-      long curr_frames =
+      signed_frame_t curr_frames =
         ui_px_to_frames_editor (i, 1) -
           obj->pos.frames;
       if (curr_frames < 0
@@ -636,7 +636,7 @@ draw_audio_bg (
           (float) i, (float) from_y,
           (float) width, (float) draw_height));
 
-      if (curr_frames >= clip->num_frames)
+      if (curr_frames >= (signed_frame_t) clip->num_frames)
         break;
     }
 
@@ -648,27 +648,27 @@ draw_audio_bg (
   for (double i = local_start_x;
        i < local_end_x; i += increment)
     {
-      long curr_frames =
+      signed_frame_t curr_frames =
         ui_px_to_frames_editor (i, 1) -
           obj->pos.frames;
       if (curr_frames < 0)
         continue;
 
       float min = 0.f, max = 0.f;
-      for (long j = prev_frames;
+      for (signed_frame_t j = prev_frames;
            j < curr_frames; j++)
         {
-          if (j >= (long) clip->num_frames)
+          if (j >= (signed_frame_t) clip->num_frames)
             break;
           for (unsigned int k = 0;
                k < clip->channels; k++)
             {
-              long index =
-                j * (long) clip->channels + (long) k;
+              signed_frame_t index =
+                j * (signed_frame_t) clip->channels + (signed_frame_t) k;
               g_return_if_fail (
                 index >= 0 &&
                 index <
-                  (long)
+                  (signed_frame_t)
                   (clip->num_frames *
                      clip->channels));
               float val = clip->frames[index];
@@ -706,7 +706,7 @@ draw_audio_bg (
         /* to y */
         draw_height);
 
-      if (curr_frames >= clip->num_frames)
+      if (curr_frames >= (signed_frame_t) clip->num_frames)
         break;
 
       prev_frames = curr_frames;

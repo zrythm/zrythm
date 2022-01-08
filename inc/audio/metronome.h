@@ -26,6 +26,8 @@
 #ifndef __AUDIO_METRONOME_H__
 #define __AUDIO_METRONOME_H__
 
+#include <stddef.h>
+
 #include "utils/types.h"
 
 typedef struct AudioEngine AudioEngine;
@@ -63,7 +65,7 @@ typedef struct Metronome
   float *    emphasis;
 
   /** Size per channel. */
-  long       emphasis_size;
+  size_t     emphasis_size;
 
   channels_t emphasis_channels;
 
@@ -71,7 +73,7 @@ typedef struct Metronome
   float *    normal;
 
   /** Size per channel. */
-  long       normal_size;
+  size_t     normal_size;
 
   channels_t normal_channels;
 

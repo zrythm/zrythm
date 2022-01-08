@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -134,18 +134,11 @@ modulator_macro_processor_get_track (
 
 /**
  * Process.
- *
- * @param g_start_frames Global frames.
- * @param start_frame The local offset in this
- *   cycle.
- * @param nframes The number of frames to process.
  */
 void
 modulator_macro_processor_process (
-  ModulatorMacroProcessor * self,
-  long                      g_start_frames,
-  nframes_t                 start_frame,
-  const nframes_t           nframes);
+  ModulatorMacroProcessor *           self,
+  const EngineProcessTimeInfo * const time_nfo);
 
 ModulatorMacroProcessor *
 modulator_macro_processor_new (

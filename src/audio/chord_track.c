@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -170,7 +170,8 @@ chord_track_get_chord_at_pos (
       return NULL;
     }
 
-  long local_frames =
+  signed_frame_t local_frames =
+    (signed_frame_t)
     region_timeline_frames_to_local (
       region, pos->frames, F_NORMALIZE);
 

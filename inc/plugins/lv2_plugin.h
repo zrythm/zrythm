@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -315,7 +315,7 @@ typedef struct Lv2Plugin
 
   /** Global (start) frames the plugin was last
    * processed at. */
-  long               gframes;
+  unsigned_frame_t   gframes;
 
   /** Last BPM known by the plugin. */
   float              bpm;
@@ -439,17 +439,12 @@ lv2_plugin_new (
 
 /**
  * Processes the plugin for this cycle.
- *
- * @param g_start_frames The global start frames.
- * @param nframes The number of frames to process.
  */
 NONNULL
 void
 lv2_plugin_process (
-  Lv2Plugin *      lv2_plugin,
-  const long       g_start_frames,
-  const nframes_t  local_offset,
-  const nframes_t  nframes);
+  Lv2Plugin *                         self,
+  const EngineProcessTimeInfo * const time_nfo);
 
 /**
  * Returns the plugin's latency in samples.

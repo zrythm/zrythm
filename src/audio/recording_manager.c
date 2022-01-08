@@ -262,7 +262,8 @@ recording_manager_handle_recording (
     {
       Position tmp;
       position_from_frames (
-        &tmp, time_nfo->g_start_frames);
+        &tmp,
+        (signed_frame_t) time_nfo->g_start_frame);
       inside_punch_range =
         transport_position_is_inside_punch_range (
           TRANSPORT, &tmp);
@@ -306,8 +307,8 @@ recording_manager_handle_recording (
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_STOP_TRACK_RECORDING;
-          re->g_start_frames =
-            time_nfo->g_start_frames;
+          re->g_start_frame =
+            time_nfo->g_start_frame;
           re->local_offset =
             time_nfo->local_offset;
           re->nframes =
@@ -333,8 +334,8 @@ recording_manager_handle_recording (
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING;
-          re->g_start_frames =
-            time_nfo->g_start_frames;
+          re->g_start_frame =
+            time_nfo->g_start_frame;
           re->local_offset =
             time_nfo->local_offset;
           re->nframes =
@@ -364,8 +365,8 @@ recording_manager_handle_recording (
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_START_TRACK_RECORDING;
-          re->g_start_frames =
-            time_nfo->g_start_frames;
+          re->g_start_frame =
+            time_nfo->g_start_frame;
           re->local_offset =
             time_nfo->local_offset;
           re->nframes =
@@ -403,8 +404,8 @@ recording_manager_handle_recording (
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_STOP_AUTOMATION_RECORDING;
-          re->g_start_frames =
-            time_nfo->g_start_frames;
+          re->g_start_frame =
+            time_nfo->g_start_frame;
           re->local_offset =
             time_nfo->local_offset;
           re->nframes =
@@ -419,14 +420,16 @@ recording_manager_handle_recording (
           skip_adding_automation_events = true;
         }
       /* if pausing (only at loop end) */
-      else if (G_UNLIKELY (
-                 at->recording_start_sent
-                 && time_nfo->nframes == 0)
-               &&
-               (long)
-               ((time_nfo->g_start_frames
-                 + time_nfo->local_offset)
-                == TRANSPORT->loop_end_pos.frames))
+      else if (
+        G_UNLIKELY (
+          at->recording_start_sent
+          && time_nfo->nframes == 0)
+        &&
+        ((time_nfo->g_start_frame
+          + time_nfo->local_offset)
+         ==
+         (unsigned_frame_t)
+         TRANSPORT->loop_end_pos.frames))
         {
           /* send pause event */
           RecordingEvent * re =
@@ -436,8 +439,8 @@ recording_manager_handle_recording (
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING;
-          re->g_start_frames =
-            time_nfo->g_start_frames;
+          re->g_start_frame =
+            time_nfo->g_start_frame;
           re->local_offset =
             time_nfo->local_offset;
           re->nframes =
@@ -470,8 +473,8 @@ recording_manager_handle_recording (
               recording_event_init (re);
               re->type =
                 RECORDING_EVENT_TYPE_START_AUTOMATION_RECORDING;
-              re->g_start_frames =
-                time_nfo->g_start_frames;
+              re->g_start_frame =
+                time_nfo->g_start_frame;
               re->local_offset =
                 time_nfo->local_offset;
               re->nframes =
@@ -513,8 +516,8 @@ recording_manager_handle_recording (
               self->event_obj_pool);
           recording_event_init (re);
           re->type = RECORDING_EVENT_TYPE_MIDI;
-          re->g_start_frames =
-            time_nfo->g_start_frames;
+          re->g_start_frame =
+            time_nfo->g_start_frame;
           re->local_offset =
             time_nfo->local_offset;
           re->nframes =
@@ -535,8 +538,8 @@ recording_manager_handle_recording (
               self->event_obj_pool);
           recording_event_init (re);
           re->type = RECORDING_EVENT_TYPE_MIDI;
-          re->g_start_frames =
-            time_nfo->g_start_frames;
+          re->g_start_frame =
+            time_nfo->g_start_frame;
           re->local_offset =
             time_nfo->local_offset;
           re->nframes =
@@ -555,7 +558,7 @@ recording_manager_handle_recording (
         object_pool_get (self->event_obj_pool);
       recording_event_init (re);
       re->type = RECORDING_EVENT_TYPE_AUDIO;
-      re->g_start_frames = time_nfo->g_start_frames;
+      re->g_start_frame = time_nfo->g_start_frame;
       re->local_offset = time_nfo->local_offset;
       re->nframes = time_nfo->nframes;
       dsp_copy (
@@ -605,8 +608,8 @@ add_automation_events:
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_AUTOMATION;
-          re->g_start_frames =
-            time_nfo->g_start_frames;
+          re->g_start_frame =
+            time_nfo->g_start_frame;
           re->local_offset =
             time_nfo->local_offset;
           re->nframes = time_nfo->nframes;
@@ -747,7 +750,7 @@ handle_pause_event (
   /* pausition to pause at */
   Position pause_pos;
   position_from_frames (
-    &pause_pos, ev->g_start_frames);
+    &pause_pos, (signed_frame_t) ev->g_start_frame);
 
   if (ev->type ==
         RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING)
@@ -818,13 +821,12 @@ handle_resume_event (
   Position resume_pos;
   position_from_frames (
     &resume_pos,
-    ev->g_start_frames + ev->local_offset);
+    (signed_frame_t)
+    (ev->g_start_frame + ev->local_offset));
 
   /* position 1 frame afterwards */
-  Position end_pos;
-  position_from_frames (
-    &end_pos,
-    ev->g_start_frames + ev->local_offset + 1);
+  Position end_pos = resume_pos;
+  position_add_frames (&end_pos, 1);
 
   if (ev->type == RECORDING_EVENT_TYPE_MIDI ||
       ev->type == RECORDING_EVENT_TYPE_AUDIO)
@@ -1000,7 +1002,8 @@ handle_audio_event (
     handle_resume_event (self, ev);
   g_debug ("handled resume %d", handled_resume);
 
-  long g_start_frames = ev->g_start_frames;
+  unsigned_frame_t g_start_frames =
+    ev->g_start_frame;
   nframes_t nframes = ev->nframes;
   nframes_t local_offset = ev->local_offset;
   Track * tr =
@@ -1008,16 +1011,16 @@ handle_audio_event (
       TRACKLIST, ev->track_name_hash);
 
   /* get end position */
-  long start_frames =
+  unsigned_frame_t start_frames =
     g_start_frames + ev->local_offset;
-  long end_frames =
+  unsigned_frame_t end_frames =
     start_frames + (long) nframes;
 
   Position start_pos, end_pos;
   position_from_frames (
-    &start_pos, start_frames);
+    &start_pos, (signed_frame_t) start_frames);
   position_from_frames (
-    &end_pos, end_frames);
+    &end_pos, (signed_frame_t) end_frames);
 
   /* get the recording region */
   ZRegion * region = tr->recording_region;
@@ -1035,9 +1038,12 @@ handle_audio_event (
     r_obj, &end_pos);
   /*r_obj->end_pos.frames = end_pos.frames;*/
 
+  signed_frame_t r_obj_len_frames =
+    (r_obj->end_pos.frames - r_obj->pos.frames);
+  z_return_if_fail_cmp (
+    r_obj_len_frames, >=, 0);
   clip->num_frames =
-    r_obj->end_pos.frames - r_obj->pos.frames;
-  g_return_if_fail (clip->num_frames >= 0);
+    (unsigned_frame_t) r_obj_len_frames;
   clip->frames =
     (sample_t *)
     realloc (
@@ -1068,12 +1074,15 @@ handle_audio_event (
 
   /* handle the samples normally */
   nframes_t cur_local_offset = 0;
-  for (long i = start_frames - r_obj->pos.frames;
-       i < end_frames - r_obj->pos.frames;
+  for (signed_frame_t i =
+         (signed_frame_t)
+         start_frames - r_obj->pos.frames;
+       i < (signed_frame_t) end_frames - r_obj->pos.frames;
        i++)
     {
-      g_return_if_fail (
-        i >= 0 && i < clip->num_frames);
+      z_return_if_fail_cmp (i, >=, 0);
+      z_return_if_fail_cmp (
+        i, <, (signed_frame_t) clip->num_frames);
       g_warn_if_fail (
         cur_local_offset >= local_offset &&
         cur_local_offset < local_offset + nframes);
@@ -1128,7 +1137,8 @@ handle_midi_event (
 {
   handle_resume_event (self, ev);
 
-  long g_start_frames = ev->g_start_frames;
+  unsigned_frame_t g_start_frames =
+    ev->g_start_frame;
   nframes_t nframes = ev->nframes;
   Track * tr =
     tracklist_find_track_by_name_hash (
@@ -1137,16 +1147,16 @@ handle_midi_event (
   g_return_if_fail (tr->recording_region);
 
   /* get end position */
-  long start_frames =
+  unsigned_frame_t start_frames =
     g_start_frames + ev->local_offset;
-  long end_frames =
-    start_frames + (long) nframes;
+  unsigned_frame_t end_frames =
+    start_frames + nframes;
 
   Position start_pos, end_pos;
   position_from_frames (
-    &start_pos, start_frames);
+    &start_pos, (signed_frame_t) start_frames);
   position_from_frames (
-    &end_pos, end_frames);
+    &end_pos, (signed_frame_t) end_frames);
 
   /* get the recording region */
   ZRegion * region = tr->recording_region;
@@ -1263,7 +1273,8 @@ handle_automation_event (
 {
   handle_resume_event (self, ev);
 
-  long g_start_frames = ev->g_start_frames;
+  unsigned_frame_t g_start_frames =
+    ev->g_start_frame;
   nframes_t nframes = ev->nframes;
   /*nframes_t local_offset = ev->local_offset;*/
   Track * tr =
@@ -1290,16 +1301,18 @@ handle_automation_event (
   gint64 cur_time = g_get_monotonic_time ();
 
   /* get end position */
-  long start_frames =
+  unsigned_frame_t start_frames =
     g_start_frames + ev->local_offset;
-  long end_frames =
-    start_frames + (long) nframes;
+  unsigned_frame_t end_frames =
+    start_frames + nframes;
 
   Position start_pos, end_pos;
   position_from_frames (
-    &start_pos, start_frames);
+    &start_pos,
+    (signed_frame_t) start_frames);
   position_from_frames (
-    &end_pos, end_frames);
+    &end_pos,
+    (signed_frame_t) end_frames);
 
   bool new_region_created = false;
 
@@ -1435,13 +1448,13 @@ handle_start_recording (
     }
 
   /* get end position */
-  long start_frames =
-    ev->g_start_frames + ev->local_offset;
-  long end_frames =
-    start_frames + (long) ev->nframes;
+  unsigned_frame_t start_frames =
+    ev->g_start_frame + ev->local_offset;
+  unsigned_frame_t end_frames =
+    start_frames + ev->nframes;
 
   g_message (
-    "start %ld, end %ld", start_frames, end_frames);
+    "start %lu, end %lu", start_frames, end_frames);
 
   /* this is not needed because the cycle is
    * already split */
@@ -1462,9 +1475,9 @@ handle_start_recording (
 
   Position start_pos, end_pos;
   position_from_frames (
-    &start_pos, start_frames);
+    &start_pos, (signed_frame_t) start_frames);
   position_from_frames (
-    &end_pos, end_frames);
+    &end_pos, (signed_frame_t) end_frames);
 
   if (is_automation)
     {

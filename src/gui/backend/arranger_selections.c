@@ -2277,8 +2277,8 @@ arranger_selections_merge (
 
   double ticks_length =
     arranger_selections_get_length_in_ticks (self);
-  long num_frames =
-    (long)
+  unsigned_frame_t num_frames =
+    (unsigned_frame_t)
     ceil (
       (double) AUDIO_ENGINE->frames_per_tick *
       ticks_length);
@@ -2370,7 +2370,8 @@ arranger_selections_merge (
           }
 
         /* interleave */
-        for (long i = 0; i < num_frames; i++)
+        for (unsigned_frame_t i = 0;
+             i < num_frames; i++)
           {
             frames[i * 2] = lframes[i];
             frames[i * 2 + 1] = rframes[i];

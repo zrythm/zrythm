@@ -194,17 +194,17 @@ audio_clip_new_from_file (
  */
 AudioClip *
 audio_clip_new_from_float_array (
-  const float *    arr,
-  const long       nframes,
-  const channels_t channels,
-  BitDepth         bit_depth,
-  const char *     name)
+  const float *          arr,
+  const unsigned_frame_t nframes,
+  const channels_t       channels,
+  BitDepth               bit_depth,
+  const char *           name)
 {
   AudioClip * self = _create ();
 
   self->frames =
     object_new_n (
-      (size_t) (nframes * (long) channels),
+      (size_t) (nframes * channels),
       sample_t);
   self->num_frames = nframes;
   self->channels = channels;
@@ -236,16 +236,16 @@ audio_clip_new_from_float_array (
  */
 AudioClip *
 audio_clip_new_recording (
-  const channels_t channels,
-  const long       nframes,
-  const char *     name)
+  const channels_t       channels,
+  const unsigned_frame_t nframes,
+  const char *           name)
 {
   AudioClip * self = _create ();
 
   self->channels = channels;
   self->frames =
     object_new_n (
-      (size_t) (nframes * (long) self->channels),
+      (size_t) (nframes * self->channels),
       sample_t);
   self->num_frames = nframes;
   self->name = g_strdup (name);
@@ -491,9 +491,9 @@ audio_clip_write_to_file (
   g_return_val_if_fail (self->samplerate > 0, -1);
   size_t before_frames =
     (size_t) self->frames_written;
-  long ch_offset =
+  unsigned_frame_t ch_offset =
     parts ? self->frames_written : 0;
-  long offset = ch_offset * self->channels;
+  unsigned_frame_t offset = ch_offset * self->channels;
   int ret =
     audio_write_raw_file (
       &self->frames[offset], ch_offset,

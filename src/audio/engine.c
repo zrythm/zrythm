@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  * Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
  *
  * This file is part of Zrythm
@@ -1146,7 +1146,8 @@ engine_wait_for_pause (
        * messages */
       engine_process_prepare (self, 1);
       EngineProcessTimeInfo time_nfo = {
-        .g_start_frames = PLAYHEAD->frames,
+        .g_start_frame =
+          (unsigned_frame_t) PLAYHEAD->frames,
         .local_offset = 0,
         .nframes = 1, };
       router_start_cycle (ROUTER, time_nfo);
@@ -1677,7 +1678,8 @@ engine_process (
   /* --- handle preroll --- */
 
   EngineProcessTimeInfo split_time_nfo = {
-    .g_start_frames = PLAYHEAD->frames,
+    .g_start_frame =
+      (unsigned_frame_t) PLAYHEAD->frames,
     .local_offset = 0,
     .nframes = 0, };
 

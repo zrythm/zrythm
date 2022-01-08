@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -266,45 +266,31 @@ process_node (
   const GraphNode *                   node,
   const EngineProcessTimeInfo * const time_nfo)
 {
-#define g_start_frames (time_nfo->g_start_frames)
-#define local_offset (time_nfo->local_offset)
-#define nframes (time_nfo->nframes)
-
   switch (node->type)
     {
     case ROUTE_NODE_TYPE_PLUGIN:
-      plugin_process (
-        node->pl, g_start_frames, local_offset,
-        nframes);
+      plugin_process (node->pl, time_nfo);
       break;
     case ROUTE_NODE_TYPE_FADER:
-      fader_process (
-        node->fader, g_start_frames,
-        local_offset, nframes);
+    case ROUTE_NODE_TYPE_MONITOR_FADER:
+      fader_process (node->fader, time_nfo);
       break;
     case ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
       modulator_macro_processor_process (
-        node->modulator_macro_processor,
-        g_start_frames, local_offset, nframes);
-      break;
-    case ROUTE_NODE_TYPE_MONITOR_FADER:
-      fader_process (
-        node->fader, g_start_frames,
-        local_offset, nframes);
+        node->modulator_macro_processor, time_nfo);
       break;
     case ROUTE_NODE_TYPE_PREFADER:
-      fader_process (
-        node->prefader, g_start_frames,
-        local_offset, nframes);
+      fader_process (node->prefader, time_nfo);
       break;
     case ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
       sample_processor_process (
-        node->sample_processor, local_offset,
-        nframes);
+        node->sample_processor,
+        time_nfo->local_offset, time_nfo->nframes);
       break;
     case ROUTE_NODE_TYPE_CHANNEL_SEND:
       channel_send_process (
-        node->send, local_offset, nframes);
+        node->send, time_nfo->local_offset,
+        time_nfo->nframes);
       break;
     case ROUTE_NODE_TYPE_TRACK:
       {
@@ -356,10 +342,6 @@ process_node (
     default:
       break;
     }
-
-#undef g_start_frames
-#undef local_offset
-#undef nframes
 }
 
 /**
@@ -431,8 +413,8 @@ graph_node_process (
         TRANSPORT, &playhead_copy,
         node->route_playback_latency -
           AUDIO_ENGINE->remaining_latency_preroll);
-      time_nfo.g_start_frames =
-        playhead_copy.frames;
+      time_nfo.g_start_frame =
+        (unsigned_frame_t) playhead_copy.frames;
     }
 
   /* split at loop points */
@@ -440,7 +422,9 @@ graph_node_process (
        (num_processable_frames =
           MIN (
             transport_is_loop_point_met (
-              TRANSPORT, time_nfo.g_start_frames,
+              TRANSPORT,
+              (signed_frame_t)
+              time_nfo.g_start_frame,
               time_nfo.nframes),
             time_nfo.nframes)) != 0;)
     {
@@ -465,11 +449,11 @@ graph_node_process (
         orig_nframes - num_processable_frames;
 
       /* loop back to loop start */
-      time_nfo.g_start_frames =
-        (time_nfo.g_start_frames
+      time_nfo.g_start_frame =
+        (time_nfo.g_start_frame
          + num_processable_frames
-         + TRANSPORT->loop_start_pos.frames)
-        - TRANSPORT->loop_end_pos.frames;
+         + (unsigned_frame_t) TRANSPORT->loop_start_pos.frames)
+        - (unsigned_frame_t) TRANSPORT->loop_end_pos.frames;
       time_nfo.local_offset +=
         num_processable_frames;
     }

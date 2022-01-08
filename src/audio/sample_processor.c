@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -327,7 +327,8 @@ sample_processor_process (
             track->processor);
 
           EngineProcessTimeInfo time_nfo = {
-            .g_start_frames =
+            .g_start_frame =
+              (unsigned_frame_t)
               self->playhead.frames + cycle_offset,
             .local_offset = cycle_offset,
             .nframes = nframes, };
@@ -369,8 +370,7 @@ sample_processor_process (
                 F_NOT_QUEUED);
               plugin_process (
                 track->channel->instrument,
-                self->playhead.frames + cycle_offset,
-                cycle_offset, nframes);
+                &time_nfo);
               audio_data_l =
                 track->channel->instrument->l_out->
                   buf;

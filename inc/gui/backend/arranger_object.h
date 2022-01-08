@@ -789,7 +789,7 @@ arranger_object_get_length_in_ticks (
  */
 NONNULL
 WARN_UNUSED_RESULT
-static inline long
+static inline signed_frame_t
 arranger_object_get_length_in_frames (
   const ArrangerObject * const self)
 {
@@ -822,7 +822,7 @@ arranger_object_get_loop_length_in_ticks (
  */
 NONNULL
 HOT
-static inline long
+static inline signed_frame_t
 arranger_object_get_loop_length_in_frames (
   const ArrangerObject * const self)
 {

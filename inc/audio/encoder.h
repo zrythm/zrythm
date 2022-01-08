@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,6 +29,8 @@
 #include <stdbool.h>
 
 #include "zrythm-config.h"
+#include "utils/types.h"
+
 #include <audec/audec.h>
 
 /**
@@ -44,19 +46,19 @@
 typedef struct AudioEncoder
 {
   /** Filename, if encoding from file. */
-  char *        file;
+  char *           file;
 
   /** Number of channels. */
-  unsigned int  channels;
+  channels_t       channels;
 
   /** The output frames interleaved. */
-  float *       out_frames;
+  float *          out_frames;
 
   /** Output number of frames per channel. */
-  ssize_t       num_out_frames;
+  unsigned_frame_t num_out_frames;
 
-  AudecInfo     nfo;
-  AudecHandle * audec_handle;
+  AudecInfo        nfo;
+  AudecHandle *    audec_handle;
 } AudioEncoder;
 
 /**

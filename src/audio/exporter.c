@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -405,7 +405,8 @@ export_audio (
       engine_process_prepare (
         AUDIO_ENGINE, nframes);
       EngineProcessTimeInfo time_nfo = {
-        .g_start_frames = PLAYHEAD->frames,
+        .g_start_frame =
+          (unsigned_frame_t) PLAYHEAD->frames,
         .local_offset = 0,
         .nframes = nframes, };
       router_start_cycle (ROUTER, time_nfo);
@@ -577,7 +578,7 @@ export_midi (
           P_TEMPO_TRACK);
       midiSongAddSimpleTimeSig (
         mf, 1, beats_per_bar,
-        math_round_double_to_int (
+        math_round_double_to_signed_32 (
           TRANSPORT->ticks_per_beat));
 
       Track * track;

@@ -100,7 +100,7 @@ typedef struct RecordingEvent
   char               region_name[200];
 
   /** Global start frames of the event. */
-  long               g_start_frames;
+  unsigned_frame_t   g_start_frame;
 
   /** Offset from \ref RecordingEvent.g_start_frames
    * that this event starts from. */

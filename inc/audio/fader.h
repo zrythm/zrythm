@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -510,20 +510,13 @@ fader_copy_values (
 
 /**
  * Process the Fader.
- *
- * @param g_start_frames Global frames.
- * @param start_frame The local offset in this
- *   cycle.
- * @param nframes The number of frames to process.
  */
 NONNULL
 HOT
 void
 fader_process (
-  Fader *         self,
-  long            g_start_frames,
-  nframes_t       start_frame,
-  const nframes_t nframes);
+  Fader *                             self,
+  const EngineProcessTimeInfo * const time_nfo);
 
 #if 0
 /**

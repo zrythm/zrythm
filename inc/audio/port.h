@@ -780,15 +780,6 @@ void
 stereo_ports_disconnect (
   StereoPorts * self);
 
-NONNULL
-void
-stereo_ports_fill_from_clip (
-  StereoPorts * self,
-  AudioClip *   clip,
-  long          g_start_frames,
-  nframes_t     start_frame,
-  nframes_t     nframes);
-
 StereoPorts *
 stereo_ports_clone (
   const StereoPorts * src);

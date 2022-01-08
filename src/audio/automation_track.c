@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -375,7 +375,8 @@ automation_track_get_ap_before_pos (
 
   /* if region ends before pos, assume pos is the
    * region's end pos */
-  long local_pos =
+  signed_frame_t local_pos =
+    (signed_frame_t)
     region_timeline_frames_to_local (
       r,
       !ends_after &&
@@ -757,7 +758,8 @@ automation_track_get_val_at_pos (
 
   /* if region ends before pos, assume pos is the
    * region's end pos */
-  long localp =
+  signed_frame_t localp =
+    (signed_frame_t)
     region_timeline_frames_to_local (
       region,
       !ends_after &&
@@ -794,9 +796,9 @@ automation_track_get_val_at_pos (
       ap->normalized_val - next_ap->normalized_val);
 
   /* ratio of how far in we are in the curve */
-  long ap_frames =
+  signed_frame_t ap_frames =
     position_to_frames (&ap_obj->pos);
-  long next_ap_frames =
+  signed_frame_t next_ap_frames =
     position_to_frames (&next_ap_obj->pos);
   double ratio =
     (double) (localp - ap_frames) /

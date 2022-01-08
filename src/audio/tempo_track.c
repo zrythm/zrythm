@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -364,7 +364,8 @@ tempo_track_get_beats_per_bar (
   Track * self)
 {
   return
-    math_round_float_to_int (
+    (int)
+    math_round_float_to_signed_32 (
       self->beats_per_bar_port->control);
 }
 
@@ -373,7 +374,8 @@ tempo_track_get_beat_unit (
   Track * self)
 {
   BeatUnit ebu =
-    math_round_float_to_int (
+    (BeatUnit)
+    math_round_float_to_signed_32 (
       self->beat_unit_port->control);
   return tempo_track_beat_unit_enum_to_int (ebu);
 }

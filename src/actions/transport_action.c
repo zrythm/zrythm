@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -189,7 +189,8 @@ do_or_undo (
   /* run engine to apply the change */
   engine_process_prepare (AUDIO_ENGINE, 1);
   EngineProcessTimeInfo time_nfo = {
-    .g_start_frames = PLAYHEAD->frames,
+    .g_start_frame =
+      (unsigned_frame_t) PLAYHEAD->frames,
     .local_offset = 0,
     .nframes = 1, };
   router_start_cycle (ROUTER, time_nfo);

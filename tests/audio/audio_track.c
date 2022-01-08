@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -87,7 +87,8 @@ test_fill_when_region_starts_on_loop_end (void)
   position_set_to_bar (&pos, LOOP_BAR);
   position_add_frames (&pos, - nframes);
   EngineProcessTimeInfo time_nfo = {
-    .g_start_frames = pos.frames,
+    .g_start_frame =
+      (unsigned_frame_t) pos.frames,
     .local_offset = 0,
     .nframes = (nframes_t) nframes, };
   track_fill_events (
@@ -103,7 +104,8 @@ test_fill_when_region_starts_on_loop_end (void)
   /* run after loop end and make sure sample is
    * played */
   position_set_to_bar (&pos, LOOP_BAR);
-  time_nfo.g_start_frames = pos.frames;
+  time_nfo.g_start_frame =
+    (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = (nframes_t) nframes;
   track_fill_events (

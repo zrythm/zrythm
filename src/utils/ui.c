@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  * Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
  *
  * This file is part of Zrythm
@@ -403,7 +403,7 @@ ui_pos_to_px_editor (
  * @param has_padding Whether the given px contains
  *   padding.
  */
-static long
+static signed_frame_t
 px_to_frames (
   double        px,
   int           has_padding,
@@ -419,7 +419,7 @@ px_to_frames (
     }
 
   return
-    (long)
+    (signed_frame_t)
     (((double) AUDIO_ENGINE->frames_per_tick * px) /
     ruler->px_per_tick);
 }
@@ -432,7 +432,7 @@ px_to_frames (
  * @param has_padding Whether then given px contains
  *   padding.
  */
-long
+signed_frame_t
 ui_px_to_frames_timeline (
   double px,
   int    has_padding)
@@ -454,7 +454,7 @@ ui_px_to_frames_timeline (
  * @param has_padding Whether then given px contains
  *   padding.
  */
-long
+signed_frame_t
 ui_px_to_frames_editor (
   double px,
   int    has_padding)

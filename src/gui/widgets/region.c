@@ -1203,26 +1203,26 @@ draw_audio_part (
     ui_detail_str[detail]);
 #endif
 
-  long loop_end_frames =
-    math_round_double_to_long (
+  signed_frame_t loop_end_frames =
+    math_round_double_to_signed_frame_t (
       obj->loop_end_pos.ticks *
       frames_per_tick);
-  long loop_frames =
-    math_round_double_to_long (
+  signed_frame_t loop_frames =
+    math_round_double_to_signed_frame_t (
       arranger_object_get_loop_length_in_ticks (
         obj) *
       frames_per_tick);
-  long clip_start_frames =
-    math_round_double_to_long (
+  signed_frame_t clip_start_frames =
+    math_round_double_to_signed_frame_t (
       obj->clip_start_pos.ticks *
       frames_per_tick);
 
   double local_start_x = (double) vis_offset_x;
   double local_end_x =
     local_start_x + (double) vis_width;
-  long prev_frames =
-    (long) (multiplier * local_start_x);
-  long curr_frames = prev_frames;
+  signed_frame_t prev_frames =
+    (signed_frame_t) (multiplier * local_start_x);
+  signed_frame_t curr_frames = prev_frames;
   /*g_message ("cur frames %ld", curr_frames);*/
   /*Position tmp;*/
   /*position_from_frames (&tmp, curr_frames);*/
@@ -1235,7 +1235,7 @@ draw_audio_part (
   for (double i = local_start_x;
        i < (double) local_end_x; i += increment)
     {
-      curr_frames = (long) (multiplier * i);
+      curr_frames = (signed_frame_t) (multiplier * i);
       /* current single channel frames */
       curr_frames += clip_start_frames;
       while (curr_frames >= loop_end_frames)
@@ -1243,23 +1243,23 @@ draw_audio_part (
           curr_frames -= loop_frames;
         }
       float min = 0.f, max = 0.f;
-      for (long j = prev_frames;
+      for (signed_frame_t j = prev_frames;
            j < curr_frames; j++)
         {
           for (unsigned int k = 0;
                k < clip->channels; k++)
             {
-              long index =
-                j * (long) clip->channels +
-                (long) k;
+              signed_frame_t index =
+                j * (signed_frame_t) clip->channels +
+                (signed_frame_t) k;
 
               /* if outside bounds */
               if (
                 index < 0 ||
                 index >=
-                (long)
+                (signed_frame_t)
                   clip->num_frames *
-                  (long) clip->channels)
+                  (signed_frame_t) clip->channels)
                 {
                   /* skip */
                   continue;

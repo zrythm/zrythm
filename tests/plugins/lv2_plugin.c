@@ -324,16 +324,19 @@ test_process (void)
   /* run plugin and check that output is filled */
   Port * out = pl->out_ports[0];
   nframes_t local_offset = 60;
-  lv2_plugin_process (
-    pl->lv2, 0,  0, local_offset);
+  EngineProcessTimeInfo time_nfo = {
+    .g_start_frame = 0,
+    .local_offset = 0, .nframes = local_offset };
+  lv2_plugin_process (pl->lv2, &time_nfo);
   for (nframes_t i = 1; i < local_offset; i++)
     {
       g_assert_true (fabsf (out->buf[i]) > 1e-10f);
     }
-  lv2_plugin_process (
-    pl->lv2, local_offset,
-    local_offset,
-    AUDIO_ENGINE->block_length - local_offset);
+  time_nfo.g_start_frame = local_offset;
+  time_nfo.local_offset = local_offset;
+  time_nfo.nframes =
+    AUDIO_ENGINE->block_length - local_offset;
+  lv2_plugin_process (pl->lv2, &time_nfo);
   for (nframes_t i = local_offset;
        i < AUDIO_ENGINE->block_length; i++)
     {

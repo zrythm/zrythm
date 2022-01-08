@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -84,14 +84,14 @@ position_update_ticks_from_frames (
 /**
  * Converts ticks to frames.
  */
-long
+signed_frame_t
 position_get_frames_from_ticks (
   double ticks)
 {
   g_return_val_if_fail (
     AUDIO_ENGINE->frames_per_tick > 0, -1);
   return
-    math_round_double_to_long (
+    math_round_double_to_signed_frame_t (
       (ticks * AUDIO_ENGINE->frames_per_tick));
 }
 
@@ -147,8 +147,8 @@ position_set_to_bar (
  */
 void
 position_add_frames (
-  Position * pos,
-  const long frames)
+  Position *           pos,
+  const signed_frame_t frames)
 {
   pos->frames += frames;
   position_update_ticks_from_frames (pos);
@@ -157,7 +157,7 @@ position_add_frames (
 /**
  * Returns the Position in milliseconds.
  */
-long
+signed_ms_t
 position_to_ms (
   const Position * pos)
 {
@@ -166,27 +166,28 @@ position_to_ms (
       return 0;
     }
   return
-    math_round_double_to_long (
+    math_round_double_to_signed_frame_t (
       (1000.0 * (double) position_to_frames (pos)) /
        ((double) AUDIO_ENGINE->sample_rate));
 }
 
-long
+signed_frame_t
 position_ms_to_frames (
-  const long ms)
+  const signed_ms_t ms)
 {
   return
-    math_round_double_to_long (
-      ((double) ms / 1000) *
+    math_round_double_to_signed_frame_t (
+      ((double) ms / 1000.0) *
         (double) AUDIO_ENGINE->sample_rate);
 }
 
 void
 position_add_ms (
-  Position * pos,
-  long       ms)
+  Position *        pos,
+  const signed_ms_t ms)
 {
-  long frames = position_ms_to_frames (ms);
+  signed_frame_t frames =
+    position_ms_to_frames (ms);
   position_add_frames (pos, frames);
 }
 
@@ -195,17 +196,17 @@ position_add_minutes (
   Position * pos,
   int        mins)
 {
-  long frames =
+  signed_frame_t frames =
     position_ms_to_frames (mins * 60 * 1000);
   position_add_frames (pos, frames);
 }
 
 void
 position_add_seconds (
-  Position * pos,
-  long       seconds)
+  Position *         pos,
+  const signed_sec_t seconds)
 {
-  long frames =
+  signed_frame_t frames =
     position_ms_to_frames (seconds * 1000);
   position_add_frames (pos, frames);
 }
@@ -645,8 +646,8 @@ position_from_ticks (
 
 void
 position_from_frames (
-  Position * pos,
-  long       frames)
+  Position *           pos,
+  const signed_frame_t frames)
 {
   pos->schema_version = POSITION_SCHEMA_VERSION;
   pos->frames = frames;
@@ -886,7 +887,8 @@ position_get_total_sixteenths (
   if (pos->ticks >= 0)
     {
       ret =
-        math_round_double_to_int (
+        (int)
+        math_round_double_to_signed_32 (
           floor (
             pos->ticks /
               TICKS_PER_SIXTEENTH_NOTE_DBL));
@@ -894,7 +896,8 @@ position_get_total_sixteenths (
   else
     {
       ret =
-        math_round_double_to_int (
+        (int)
+        math_round_double_to_signed_32 (
           ceil (
             pos->ticks /
               TICKS_PER_SIXTEENTH_NOTE_DBL));

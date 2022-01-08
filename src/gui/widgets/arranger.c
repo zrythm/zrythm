@@ -197,7 +197,8 @@ arranger_widget_get_playhead_px (
         {
           ArrangerObject * obj =
             (ArrangerObject *) r;
-          long region_local_frames =
+          signed_frame_t region_local_frames =
+            (signed_frame_t)
             region_timeline_frames_to_local (
               r, PLAYHEAD->frames, 1);
           region_local_frames +=

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1441,7 +1441,7 @@ tracklist_handle_file_drop (
                   region =
                     audio_region_new (
                       -1, file->abs_path, true, NULL,
-                      -1, NULL,
+                      0, NULL,
                       0, 0, pos,
                       track_get_name_hash (track),
                       lane_pos,

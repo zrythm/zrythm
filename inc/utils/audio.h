@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -101,20 +101,20 @@ audio_audec_log_func (
  */
 int
 audio_write_raw_file (
-  float *      buff,
-  long         frames_already_written,
-  long         nframes,
-  uint32_t     samplerate,
-  bool         flac,
-  BitDepth     bit_depth,
-  unsigned int channels,
-  const char * filename);
+  float *          buff,
+  size_t           frames_already_written,
+  size_t           nframes,
+  uint32_t         samplerate,
+  bool             flac,
+  BitDepth         bit_depth,
+  channels_t       channels,
+  const char *     filename);
 
 /**
  * Returns the number of frames in the given audio
  * file.
  */
-long
+unsigned_frame_t
 audio_get_num_frames (
   const char * filepath);
 

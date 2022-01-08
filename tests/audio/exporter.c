@@ -412,7 +412,8 @@ test_bounce_region_with_first_note (void)
   AudioClip * clip =
     audio_clip_new_from_file (settings.file_uri);
   bool has_audio = false;
-  for (long i = 0; i < clip->num_frames; i++)
+  for (unsigned_frame_t i = 0; i < clip->num_frames;
+       i++)
     {
       for (channels_t j = 0; j < clip->channels; j++)
         {

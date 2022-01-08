@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/engine.h"
 #include "audio/modulator_macro_processor.h"
 #include "audio/port.h"
 #include "utils/dsp.h"
@@ -54,21 +55,14 @@ modulator_macro_processor_set_name (
 
 /**
  * Process.
- *
- * @param g_start_frames Global frames.
- * @param start_frame The local offset in this
- *   cycle.
- * @param nframes The number of frames to process.
  */
 void
 modulator_macro_processor_process (
-  ModulatorMacroProcessor * self,
-  long                      g_start_frames,
-  nframes_t                 start_frame,
-  const nframes_t           nframes)
+  ModulatorMacroProcessor *           self,
+  const EngineProcessTimeInfo * const time_nfo)
 {
   z_return_if_fail_cmp (
-    start_frame + nframes, <=,
+    time_nfo->local_offset + time_nfo->nframes, <=,
     self->cv_out->last_buf_sz);
 
   /* if there are inputs, multiply by the knov
@@ -76,9 +70,9 @@ modulator_macro_processor_process (
   if (self->cv_in->num_srcs > 0)
     {
       dsp_mix2 (
-        &self->cv_out->buf[start_frame],
-        &self->cv_in->buf[start_frame],
-        0.f, self->macro->control, nframes);
+        &self->cv_out->buf[time_nfo->local_offset],
+        &self->cv_in->buf[time_nfo->local_offset],
+        0.f, self->macro->control, time_nfo->nframes);
     }
   /* else if there are no inputs, set the knob value
    * as the output */
@@ -87,11 +81,11 @@ modulator_macro_processor_process (
       Port * cv_out = self->cv_out;
       g_return_if_fail (IS_PORT (cv_out));
       dsp_fill (
-        &cv_out->buf[start_frame],
+        &cv_out->buf[time_nfo->local_offset],
         self->macro->control *
           (cv_out->maxf - cv_out->minf) +
           cv_out->minf,
-        nframes);
+        time_nfo->nframes);
     }
 }
 

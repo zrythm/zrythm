@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -99,49 +99,38 @@
    (b) - (a) < DBL_EPSILON)
 
 /**
- * Rounds a double to an int.
+ * Rounds a double to a (minimum) signed 32-bit
+ * integer.
  */
-#define math_round_double_to_type(x,type) \
-  ((type) (lround (x)))
-
-/**
- * Rounds a double to an int.
- */
-#define math_round_double_to_int(x) \
-  math_round_double_to_type (x, int)
-
-#define math_round_double_to_uint(x) \
-  math_round_double_to_type (x, unsigned int)
-
-/**
- * Rounds a double to a size_t.
- */
-#define math_round_double_to_size_t(x) \
-  math_round_double_to_type (x,size_t)
-
-/**
- * Rounds a double to a long.
- */
-#define math_round_double_to_long(x) \
+#define math_round_double_to_signed_32(x) \
   (lround (x))
 
 /**
- * Rounds a float to a given type.
+ * Rounds a double to a (minimum) signed 64-bit
+ * integer.
  */
-#define math_round_float_to_type(x,type) \
-  ((type) (lroundf (x)))
+#define math_round_double_to_signed_64(x) \
+  (llround (x))
+
+#define math_round_double_to_signed_frame_t(x) \
+  math_round_double_to_signed_64 (x)
 
 /**
- * Rounds a float to an int.
+ * Rounds a float to a (minimum) signed 32-bit
+ * integer.
  */
-#define math_round_float_to_int(x) \
-  math_round_float_to_type (x,int)
-
-/**
- * Rounds a float to a long.
- */
-#define math_round_float_to_long(x) \
+#define math_round_float_to_signed_32(x) \
   (lroundf (x))
+
+/**
+ * Rounds a float to a (minimum) signed 64-bit
+ * integer.
+ */
+#define math_round_float_to_signed_64(x) \
+  (llroundf (x))
+
+#define math_round_float_to_signed_frame_t(x) \
+  math_round_float_to_signed_64 (x)
 
 /**
  * Fast log calculation to be used where precision

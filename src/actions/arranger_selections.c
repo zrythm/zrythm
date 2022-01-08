@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -2379,11 +2379,11 @@ do_or_undo_edit (
             &start, - r->base.pos.frames);
           position_add_frames (
             &end, - r->base.pos.frames);
-          size_t num_frames =
-            (size_t) (end.frames - start.frames);
+          unsigned_frame_t num_frames =
+            (unsigned_frame_t)
+            (end.frames - start.frames);
           g_return_val_if_fail (
-            (long) num_frames ==
-              src_clip->num_frames, -1);
+            num_frames == src_clip->num_frames, -1);
 
           char * src_clip_path =
             audio_clip_get_path_in_pool (

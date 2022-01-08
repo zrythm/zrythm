@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -84,18 +84,20 @@ audio_encoder_decode (
   g_message ("--audio decoding start--");
 
   self->out_frames = NULL;
-  self->num_out_frames =
+  ssize_t num_out_frames =
     audec_read (
       self->audec_handle, &self->out_frames,
       samplerate);
-  if (self->num_out_frames < 0)
+  if (num_out_frames < 0)
     {
       g_critical (
         "An error has occurred during reading of "
         "the audio file %s", self->file);
     }
+  self->num_out_frames =
+    (unsigned_frame_t) num_out_frames;
   g_message (
-    "num out frames %zd",
+    "num out frames %lu",
     self->num_out_frames);
   self->channels = self->nfo.channels;
   audec_close (self->audec_handle);

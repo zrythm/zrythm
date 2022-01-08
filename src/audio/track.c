@@ -2843,16 +2843,12 @@ track_fill_events (
   MidiEvents *                        midi_events,
   StereoPorts *                       stereo_ports)
 {
-#define g_start_frames (time_nfo->g_start_frames)
-#define local_offset (time_nfo->local_offset)
-#define nframes (time_nfo->nframes)
-
   if (!track_is_auditioner (self)
       && !TRANSPORT_IS_ROLLING)
     return;
 
-  const long g_end_frames =
-    g_start_frames + nframes;
+  const unsigned_frame_t g_end_frames =
+    time_nfo->g_start_frame + time_nfo->nframes;
 
   if (midi_events)
     {
@@ -2915,33 +2911,41 @@ track_fill_events (
           /* skip if region is not hit
            * (inclusive of its last point) */
           if (!region_is_hit_by_range (
-                 r, g_start_frames,
-                 midi_events ?
-                   g_end_frames :
-                   (g_end_frames - 1),
+                 r,
+                 (signed_frame_t)
+                 time_nfo->g_start_frame,
+                 (signed_frame_t)
+                 (midi_events ?
+                    g_end_frames :
+                    (g_end_frames - 1)),
                  F_INCLUSIVE))
             {
               continue;
             }
 
-          long num_frames_to_process =
+          signed_frame_t num_frames_to_process =
             MIN (
               r_obj->end_pos.frames -
-                g_start_frames,
-              nframes);
+              (signed_frame_t)
+                time_nfo->g_start_frame,
+              (signed_frame_t)
+              time_nfo->nframes);
           nframes_t frames_processed = 0;
 
           while (num_frames_to_process > 0)
             {
-              long cur_g_start_frame =
-                g_start_frames + frames_processed;
+              unsigned_frame_t cur_g_start_frame =
+                time_nfo->g_start_frame +
+                  frames_processed;
               nframes_t cur_local_start_frame =
-                local_offset + frames_processed;
+                time_nfo->local_offset +
+                  frames_processed;
 
               bool is_end_loop;
-              long cur_num_frames_till_next_r_loop_or_end;
+              signed_frame_t cur_num_frames_till_next_r_loop_or_end;
               region_get_frames_till_next_loop_or_end (
-                r, cur_g_start_frame,
+                r,
+                (signed_frame_t) cur_g_start_frame,
                 &cur_num_frames_till_next_r_loop_or_end,
                 &is_end_loop);
 
@@ -2964,12 +2968,14 @@ track_fill_events (
                    num_frames_to_process &&
                  !is_end_loop) ||
                 /* region end */
-                (g_start_frames +
+                ((signed_frame_t)
+                 time_nfo->g_start_frame +
                    num_frames_to_process ==
                      r_obj->end_pos.frames) ||
                 /* transport end */
                 (TRANSPORT_IS_LOOPING &&
-                 g_start_frames +
+                 (signed_frame_t)
+                 time_nfo->g_start_frame +
                    num_frames_to_process ==
                      TRANSPORT->loop_end_pos.frames);
 
@@ -2980,20 +2986,23 @@ track_fill_events (
                   cur_num_frames_till_next_r_loop_or_end,
                   num_frames_to_process);
 
+              const EngineProcessTimeInfo nfo = {
+                .g_start_frame = cur_g_start_frame,
+                .local_offset =
+                  cur_local_start_frame,
+                .nframes =
+                  cur_num_frames_till_next_r_loop_or_end };
+
               if (midi_events)
                 {
                   midi_region_fill_midi_events (
-                    r, cur_g_start_frame,
-                    cur_local_start_frame,
-                    cur_num_frames_till_next_r_loop_or_end, need_note_off,
+                    r, &nfo, need_note_off,
                     midi_events);
                 }
               else if (stereo_ports)
                 {
                   audio_region_fill_stereo_ports (
-                    r, cur_g_start_frame,
-                    cur_local_start_frame,
-                    cur_num_frames_till_next_r_loop_or_end, stereo_ports);
+                    r, &nfo, stereo_ports);
                 }
 
               frames_processed += cur_num_frames_till_next_r_loop_or_end;
@@ -3017,10 +3026,6 @@ track_fill_events (
 
       zix_sem_post (&midi_events->access_sem);
     }
-
-#undef g_start_frames
-#undef local_offset
-#undef nframes
 }
 
 /**

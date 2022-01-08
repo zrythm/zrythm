@@ -534,7 +534,9 @@ arranger_object_is_position_valid (
                   audio_region_get_clip (r);
                 Position clip_frames;
                 position_from_frames (
-                  &clip_frames, clip->num_frames);
+                  &clip_frames,
+                  (signed_frame_t)
+                  clip->num_frames);
                 is_valid =
                   position_is_before_or_equal (
                     pos, &clip_frames);
@@ -827,7 +829,8 @@ arranger_object_print (
             g_return_if_fail (clip);
             Position pos;
             position_from_frames (
-              &pos, clip->num_frames);
+              &pos,
+              (signed_frame_t) clip->num_frames);
             char pos_str[100];
             position_to_string (&pos, pos_str);
             extra_info =
@@ -1214,20 +1217,18 @@ arranger_object_update_positions (
             }
           z_return_if_fail_cmp (
             self->loop_end_pos.frames, >=, 0);
-          long tl_frames =
+          signed_frame_t tl_frames =
             self->end_pos.frames - 1;
-          long local_frames;
+          signed_frame_t local_frames;
           AudioClip * clip;
           local_frames =
             region_timeline_frames_to_local (
               r, tl_frames, F_NORMALIZE);
           clip = audio_region_get_clip (r);
           g_return_if_fail (clip);
-          if (local_frames >= clip->num_frames)
-            {
-            }
-          g_return_if_fail (
-            local_frames < clip->num_frames);
+          z_return_if_fail_cmp (
+            local_frames, <,
+            (signed_frame_t) clip->num_frames);
         }
 
       for (int i = 0; i < r->num_midi_notes; i++)
@@ -2385,7 +2386,7 @@ clone_region (
       {
         ZRegion * ar =
           audio_region_new (
-            region->pool_id, NULL, true, NULL, -1,
+            region->pool_id, NULL, true, NULL, 0,
             NULL, 0, 0, &r_obj->pos,
             region->id.track_name_hash,
             region->id.lane_pos,
@@ -2911,9 +2912,12 @@ arranger_object_split (
             (size_t) localp.frames *
               prev_r1_clip->channels);
           g_return_if_fail (prev_r1->name);
+          z_return_if_fail_cmp (
+            localp.frames, >=, 0);
           ZRegion * new_r1 =
             audio_region_new (
-              -1, NULL, true, frames, localp.frames,
+              -1, NULL, true, frames,
+              (unsigned_frame_t) localp.frames,
               prev_r1->name, prev_r1_clip->channels,
               prev_r1_clip->bit_depth,
               &prev_r1->base.pos,
@@ -2999,9 +3003,12 @@ arranger_object_split (
                 prev_r2_clip->channels],
             num_frames);
           g_return_if_fail (prev_r2->name);
+          z_return_if_fail_cmp (
+            r2_local_end.frames, >=, 0);
           ZRegion * new_r2 =
             audio_region_new (
               -1, NULL, true, frames,
+              (unsigned_frame_t)
               r2_local_end.frames,
               prev_r2->name, prev_r2_clip->channels,
               prev_r2_clip->bit_depth,

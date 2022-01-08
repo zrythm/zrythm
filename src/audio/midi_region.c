@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -927,7 +927,7 @@ midi_region_export_to_midi_file (
           P_TEMPO_TRACK);
       midiSongAddSimpleTimeSig (
         mf, 1, beats_per_bar,
-        math_round_double_to_int (
+        math_round_double_to_signed_32 (
           TRANSPORT->ticks_per_beat));
 
       midi_region_write_to_midi_file (
@@ -1056,11 +1056,6 @@ send_notes_off_at (
  *   function at each sub-loop inside the region,
  *   so region loop related logic is not needed.
  *
- * @param g_start_frames Global start frame.
- * @param local_start_frame The start frame offset
- *   from 0 in this cycle.
- * @param nframes Number of frames at start
- *   Position.
  * @param note_off_at_end Whether a note off should
  *   be added at the end frame (eg, when the caller
  *   knows there is a region loop or the region
@@ -1071,12 +1066,10 @@ send_notes_off_at (
 REALTIME
 void
 midi_region_fill_midi_events (
-  ZRegion *    self,
-  long         g_start_frames,
-  nframes_t    local_start_frame,
-  nframes_t    nframes,
-  bool         note_off_at_end,
-  MidiEvents * midi_events)
+  ZRegion *                           self,
+  const EngineProcessTimeInfo * const time_nfo,
+  bool                                note_off_at_end,
+  MidiEvents *                        midi_events)
 {
   ArrangerObject * r_obj =
     (ArrangerObject *) self;
@@ -1091,23 +1084,25 @@ midi_region_fill_midi_events (
         (midi_time_t)
           /* -1 to send event 1 sample
            * before the end point */
-          ((local_start_frame + nframes) - 1));
+          ((time_nfo->local_offset + time_nfo->nframes) - 1));
     }
 
-  const long r_local_pos =
+  const signed_frame_t r_local_pos =
     region_timeline_frames_to_local (
-      self, g_start_frames, F_NORMALIZE);
+      self,
+      (signed_frame_t) time_nfo->g_start_frame,
+      F_NORMALIZE);
 
 #if 0
-  if (g_start_frames == 0)
+  if (time_nfo->g_start_frame == 0)
     {
       g_debug (
         "%s: fill midi events - g start %ld - "
-        "local start %"PRIu32" - nframes %"PRIu32" - "
+        "local start %"PRIu32" - time_nfo->nframes %"PRIu32" - "
         "notes off at end %u - "
         "r local pos %ld",
-        __func__, g_start_frames,
-        local_start_frame, nframes,
+        __func__, time_nfo->g_start_frame,
+        time_nfo->local_offset, time_nfo->nframes,
         note_off_at_end, r_local_pos);
     }
 #endif
@@ -1145,11 +1140,11 @@ midi_region_fill_midi_events (
       if (mn_obj->pos.frames >= 0 &&
           mn_obj->pos.frames >= r_local_pos &&
           mn_obj->pos.frames <
-            r_local_pos + (long) nframes)
+            r_local_pos + (signed_frame_t) time_nfo->nframes)
         {
           midi_time_t _time =
             (midi_time_t)
-            (local_start_frame +
+            (time_nfo->local_offset +
               (mn_obj->pos.frames - r_local_pos));
           /*g_message ("normal note on at %u", time);*/
 
@@ -1170,23 +1165,23 @@ midi_region_fill_midi_events (
             }
         }
 
-      long mn_obj_end_frames =
-        (track->type == TRACK_TYPE_CHORD ?
-          math_round_double_to_type (
-            mn_obj->pos.frames +
-              TRANSPORT->ticks_per_beat *
-              AUDIO_ENGINE->frames_per_tick,
-              long) :
-          mn_obj->end_pos.frames);
+      signed_frame_t mn_obj_end_frames =
+        (track->type == TRACK_TYPE_CHORD
+         ?
+         math_round_double_to_signed_frame_t (
+           mn_obj->pos.frames +
+             TRANSPORT->ticks_per_beat *
+             AUDIO_ENGINE->frames_per_tick)
+         : mn_obj->end_pos.frames);
 
       /* if note ends within the cycle */
       if (mn_obj_end_frames >= r_local_pos &&
           (mn_obj_end_frames <=
-            (r_local_pos + nframes)))
+            (r_local_pos + time_nfo->nframes)))
         {
           midi_time_t _time =
             (midi_time_t)
-            (local_start_frame +
+            (time_nfo->local_offset +
               (mn_obj_end_frames - r_local_pos));
 
           /* note actually ends 1 frame before
@@ -1198,7 +1193,7 @@ midi_region_fill_midi_events (
             }
 
 #if 0
-          if (g_start_frames == 0)
+          if (time_nfo->g_start_frame == 0)
             {
               g_debug (
                 "note ends within cycle (end "

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -44,8 +44,8 @@ z_chromaprint_fingerprint_free (
 
 ChromaprintFingerprint *
 z_chromaprint_get_fingerprint (
-  const char * file1,
-  long         max_frames)
+  const char *     file1,
+  unsigned_frame_t max_frames)
 {
   int ret;
 
@@ -113,7 +113,7 @@ z_chromaprint_check_fingerprint_similarity (
   int          perc,
   int          expected_size)
 {
-  const long max_frames =
+  const unsigned_frame_t max_frames =
     MIN (
       audio_get_num_frames (file1),
       audio_get_num_frames (file2));
@@ -136,7 +136,8 @@ z_chromaprint_check_fingerprint_similarity (
 
   double rated = (double) rate / (double) min;
   int rate_perc =
-    math_round_double_to_int (rated * 100.0);
+    (int)
+    math_round_double_to_signed_32 (rated * 100.0);
   g_message (
     "%d out of %d (%d%%)", rate, min, rate_perc);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -70,8 +70,12 @@ test_fill_stereo_ports (void)
     F_NO_PUBLISH_EVENTS);
   transport_add_to_playhead (
     TRANSPORT, -20);
+  const EngineProcessTimeInfo time_nfo = {
+    .g_start_frame =
+      (unsigned_frame_t) PLAYHEAD->frames,
+    .local_offset = 0, .nframes = 100 };
   audio_region_fill_stereo_ports (
-    r, PLAYHEAD->frames, 0, 100, ports);
+    r, &time_nfo, ports);
 
   g_assert_true (
     audio_frames_empty (

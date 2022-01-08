@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1801,23 +1801,16 @@ plugin_prepare_process (
 
 /**
  * Process plugin.
- *
- * @param g_start_frames The global start frames.
- * @param nframes The number of frames to process.
  */
 void
 plugin_process (
-  Plugin *        plugin,
-  const long      g_start_frames,
-  const nframes_t  local_offset,
-  const nframes_t nframes)
+  Plugin *                            plugin,
+  const EngineProcessTimeInfo * const time_nfo)
 {
   if (!plugin_is_enabled (plugin, true) &&
       !plugin->own_enabled_port)
     {
-      plugin_process_passthrough (
-        plugin, g_start_frames, local_offset,
-        nframes);
+      plugin_process_passthrough (plugin, time_nfo);
       return;
     }
 
@@ -1841,8 +1834,7 @@ plugin_process (
   if (plugin->setting->open_with_carla)
     {
       carla_native_plugin_process (
-        plugin->carla, g_start_frames,
-        local_offset, nframes);
+        plugin->carla, time_nfo);
     }
   else
     {
@@ -1851,8 +1843,7 @@ plugin_process (
         {
         case PROT_LV2:
           lv2_plugin_process (
-            plugin->lv2, g_start_frames,
-            local_offset, nframes);
+            plugin->lv2, time_nfo);
           break;
         default:
           break;
@@ -1892,16 +1883,17 @@ plugin_process (
                 0.00001f))
             {
               dsp_fill (
-                &port->buf[local_offset],
+                &port->buf[time_nfo->local_offset],
                 DENORMAL_PREVENTION_VAL,
-                nframes);
+                time_nfo->nframes);
             }
           /* otherwise just apply gain */
           else
             {
               dsp_mul_k2 (
-                &port->buf[local_offset],
-                plugin->gain->control, nframes);
+                &port->buf[time_nfo->local_offset],
+                plugin->gain->control,
+                time_nfo->nframes);
             }
         }
     }
@@ -2412,10 +2404,8 @@ plugin_set_enabled (
  */
 void
 plugin_process_passthrough (
-  Plugin *        self,
-  const long      g_start_frames,
-  const nframes_t local_offset,
-  const nframes_t nframes)
+  Plugin *                            self,
+  const EngineProcessTimeInfo * const time_nfo)
 {
   int last_audio_idx = 0;
   int last_midi_idx = 0;
@@ -2435,9 +2425,9 @@ plugin_process_passthrough (
                 {
                   /* copy */
                   dsp_copy (
-                    &out_port->buf[local_offset],
-                    &in_port->buf[local_offset],
-                    nframes);
+                    &out_port->buf[time_nfo->local_offset],
+                    &in_port->buf[time_nfo->local_offset],
+                    time_nfo->nframes);
 
                   last_audio_idx = j + 1;
                   goto_next = true;
@@ -2462,8 +2452,8 @@ plugin_process_passthrough (
                   midi_events_append (
                     in_port->midi_events,
                     out_port->midi_events,
-                    local_offset,
-                    nframes, false);
+                    time_nfo->local_offset,
+                    time_nfo->nframes, false);
 
                   last_midi_idx = j + 1;
                   goto_next = true;

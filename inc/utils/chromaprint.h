@@ -60,8 +60,8 @@ z_chromaprint_fingerprint_free (
 
 ChromaprintFingerprint *
 z_chromaprint_get_fingerprint (
-  const char * file1,
-  long         max_frames);
+  const char *     file1,
+  unsigned_frame_t max_frames);
 
 /**
  * @param perc Minimum percentage of equal

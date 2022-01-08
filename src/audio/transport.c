@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -587,11 +587,11 @@ transport_request_roll (
  */
 void
 transport_add_to_playhead (
-  Transport *     self,
-  const long      frames)
+  Transport *          self,
+  const signed_frame_t nframes)
 {
   transport_position_add_frames (
-    self, &TRANSPORT->playhead_pos, frames);
+    self, &TRANSPORT->playhead_pos, nframes);
   EVENTS_PUSH (ET_PLAYHEAD_POS_CHANGED, NULL);
 }
 

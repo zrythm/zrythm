@@ -28,6 +28,7 @@
 
 #include <stdbool.h>
 
+#include "utils/types.h"
 #include "utils/yaml.h"
 
 /**
@@ -146,13 +147,13 @@ typedef struct ZRegion ZRegion;
  */
 typedef struct Position
 {
-  int       schema_version;
+  int            schema_version;
 
   /** Precise total number of ticks. */
-  double    ticks;
+  double         ticks;
 
   /** Position in frames (samples). */
-  long      frames;
+  signed_frame_t frames;
 } Position;
 
 static const cyaml_schema_field_t
@@ -225,8 +226,8 @@ position_sort_array (
 HOT
 void
 position_add_frames (
-  Position * pos,
-  const long frames);
+  Position *           pos,
+  const signed_frame_t frames);
 
 /** Deprecated - added for compatibility. */
 #define position_to_frames(x) ((x)->frames)
@@ -245,8 +246,8 @@ HOT
 NONNULL
 void
 position_from_frames (
-  Position * pos,
-  long       frames);
+  Position *           pos,
+  const signed_frame_t frames);
 
 /**
  * Sets position to the given total tick count.
@@ -274,18 +275,18 @@ position_add_ticks (
 /**
  * Returns the Position in milliseconds.
  */
-long
+signed_ms_t
 position_to_ms (
   const Position * pos);
 
-long
+signed_frame_t
 position_ms_to_frames (
-  const long ms);
+  const signed_ms_t ms);
 
 void
 position_add_ms (
-  Position * pos,
-  long       ms);
+  Position *        pos,
+  const signed_ms_t ms);
 
 void
 position_add_minutes (
@@ -294,8 +295,8 @@ position_add_minutes (
 
 void
 position_add_seconds (
-  Position * pos,
-  long       seconds);
+  Position *         pos,
+  const signed_sec_t seconds);
 
 /**
  * Snaps position using given options.
@@ -352,7 +353,7 @@ position_update_ticks_from_frames (
 /**
  * Converts ticks to frames.
  */
-long
+signed_frame_t
 position_get_frames_from_ticks (
   double ticks);
 

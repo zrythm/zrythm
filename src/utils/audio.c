@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -81,18 +81,16 @@ audio_audec_log_func (
  */
 int
 audio_write_raw_file (
-  float *      buff,
-  long         frames_already_written,
-  long         nframes,
-  uint32_t     samplerate,
-  bool         flac,
-  BitDepth     bit_depth,
-  unsigned int channels,
-  const char * filename)
+  float *          buff,
+  size_t           frames_already_written,
+  size_t           nframes,
+  uint32_t         samplerate,
+  bool             flac,
+  BitDepth         bit_depth,
+  channels_t       channels,
+  const char *     filename)
 {
   g_return_val_if_fail (
-    samplerate > 0 &&
-    channels > 0 &&
     samplerate < 10000000, -1);
 
   g_debug (
@@ -105,7 +103,7 @@ audio_write_raw_file (
   SF_INFO info;
 
   memset (&info, 0, sizeof (info));
-  info.frames = nframes;
+  info.frames = (sf_count_t) nframes;
   info.channels = (int) channels;
   info.samplerate = (int) samplerate;
   info.format =
@@ -152,13 +150,14 @@ audio_write_raw_file (
 
   if (!flac)
     {
-      long seek_to =
+      size_t seek_to =
         write_chunk ? frames_already_written : 0;
-      g_debug ("seeking to %ld", seek_to);
+      g_debug ("seeking to %zu", seek_to);
       int ret =
         sf_seek (
-          sndfile, seek_to, SEEK_SET | SFM_WRITE);
-      if (ret == -1 || ret != seek_to)
+          sndfile, (sf_count_t) seek_to,
+          SEEK_SET | SFM_WRITE);
+      if (ret == -1 || ret != (int) seek_to)
         {
           g_critical (
             "seek error %d: %s", ret,
@@ -167,13 +166,15 @@ audio_write_raw_file (
     }
 
   sf_count_t count =
-    sf_writef_float (sndfile, buff, nframes);
-  if (count != nframes)
+    sf_writef_float (
+      sndfile, buff, (sf_count_t) nframes);
+  if (count != (sf_count_t) nframes)
     {
       g_critical (
         "mismatch: expected %ld frames, got %ld\n"
         "error: %s",
-        nframes, count, sf_strerror (sndfile));
+        (sf_count_t) nframes, count,
+        sf_strerror (sndfile));
     }
 
   sf_write_sync (sndfile);
@@ -190,7 +191,7 @@ audio_write_raw_file (
  * Returns the number of frames in the given audio
  * file.
  */
-long
+unsigned_frame_t
 audio_get_num_frames (
   const char * filepath)
 {
@@ -208,7 +209,8 @@ audio_get_num_frames (
       return 0;
     }
   g_return_val_if_fail (sfinfo.frames > 0, 0);
-  long frames = sfinfo.frames;
+  unsigned_frame_t frames =
+    (unsigned_frame_t) sfinfo.frames;
 
   int ret = sf_close (sndfile);
   g_return_val_if_fail (ret == 0, 0);

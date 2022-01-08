@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -213,8 +213,8 @@ midi_note_shift_pitch (
  */
 int
 midi_note_hit (
-  MidiNote * midi_note,
-  const long       gframes);
+  MidiNote *           self,
+  const signed_frame_t gframes);
 
 /**
  * Converts an array of MIDI notes to MidiEvents.
