@@ -118,7 +118,10 @@ Args:
                  (list resources-dir
                        gl-shaders-dir))
              (lambda (f)
-               (string-suffix? ".glsl" f)))))
+               (or
+                 (string-suffix? ".vert" f)
+                 (string-suffix? ".frag" f)
+                 (string-suffix? ".glsl" f))))))
 
          ;; Print UI files
          (for-each

@@ -6769,6 +6769,9 @@ arranger_widget_setup (
         z_cairo_create_pango_layout_from_string (
           GTK_WIDGET (self), "8",
           PANGO_ELLIPSIZE_NONE, 0);
+      self->ap_shader =
+        gsk_gl_shader_new_from_resource (
+          "/org/zrythm/Zrythm/app/gl/shaders/passthrough.frag");
       break;
     case TYPE (MIDI_MODIFIER):
       gtk_widget_add_css_class (

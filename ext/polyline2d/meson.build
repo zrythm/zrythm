@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2022 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -15,11 +15,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-subdir ('midilib')
-subdir ('nanovg')
-subdir ('polyline2d')
-subdir ('qm-dsp')
-subdir ('weakjack')
-subdir ('whereami')
-subdir ('zix')
-subdir ('zita-resampler')
+#polyline2d_lib = static_library (
+  #'polyline2d',
+  #'',
+  #c_args: [
+    #extra_optimizations_cflags,
+    #],
+  #)

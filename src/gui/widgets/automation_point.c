@@ -74,6 +74,53 @@ automation_point_draw (
     automation_point_is_selected (ap), false,
     false);
 
+  /* compile the shader */
+  if (arranger->ap_shader &&
+      !arranger->ap_shader_compiled)
+    {
+      GtkNative * native =
+        gtk_widget_get_native (
+          GTK_WIDGET (arranger));
+      GskRenderer * renderer =
+        gtk_native_get_renderer (native);
+      GError * err = NULL;
+      bool ret =
+        gsk_gl_shader_compile (
+          arranger->ap_shader, renderer,
+          &err);
+      if (!ret)
+        {
+          g_warning (
+            "failed to compile shader: %s",
+            err->message);
+          return;
+        }
+      arranger->ap_shader_compiled = true;
+    }
+
+  graphene_vec4_t color_vec4;
+  graphene_vec4_init (
+    &color_vec4, color.red, color.green,
+    color.blue, color.alpha);
+  float yvals[20] = {
+    1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 8.f, 9.f, 10.f,
+    11.f, 12.f, 13.f, 14.f, 15.f, 16.f, 18.f, 19.f, 20.f };
+  gtk_snapshot_push_gl_shader (
+    snapshot, arranger->ap_shader,
+    &GRAPHENE_RECT_INIT (
+      obj->full_rect.x - 1, obj->full_rect.y - 1,
+      obj->full_rect.width + 2,
+      obj->full_rect.height + 2),
+    gsk_gl_shader_format_args (
+      arranger->ap_shader,
+      "color", &color_vec4,
+      "yvals", yvals,
+      NULL));
+
+  gtk_snapshot_pop (snapshot);
+
+  return;
+
   cairo_t * cr =
     gtk_snapshot_append_cairo (
       snapshot,
