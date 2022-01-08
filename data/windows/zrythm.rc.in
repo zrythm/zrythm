@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) 2022 Alexandros Theodotou <alex at zrythm dot org>
+ *
+ * This file is part of Zrythm
+ *
+ * Zrythm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Zrythm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+//
+// Include the necessary resources
+//
+#include <winver.h>
+#include <ntdef.h>
+
+//
+// Set up debug information
+//
+#if DBG
+#define VER_DBG VS_FF_DEBUG
+#else
+#define VER_DBG 0
+#endif
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION             1,0,0,0
+PRODUCTVERSION          1,0,0,0
+FILEFLAGSMASK           VS_FFI_FILEFLAGSMASK
+FILEFLAGS               VER_DBG
+FILEOS                  VOS_NT
+FILETYPE                VFT_DRV
+FILESUBTYPE             VFT2_DRV_SYSTEM
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904b0"
+        BEGIN
+    VALUE "Comments",         "Zrythm DAW"
+    VALUE "CompanyName",      "Alexandros Theodotou"
+    VALUE "FileDescription",  "Zrythm"
+    VALUE "FileVersion",      "V1.0.0.0"
+    VALUE "InternalName",     "zrythm"
+    VALUE "LegalCopyright",   "(C) @COPYRIGHT_YEARS@ @COPYRIGHT_NAME@"
+    VALUE "LegalTrademarks",  "Zrythm and the Zrythm logo are registered trademarks of Alexandros Theodotou in the United Kingdom"
+    VALUE "OriginalFilename", "zrythm.exe"
+    VALUE "ProductName",      "Zrythm"
+    VALUE "ProductVersion",	  "@PRODUCT_VERSION@"
+        END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x0409,1200
+  END
+END
+
+MAINICON ICON "zrythm.ico"
+
+IDI_ICON1 ICON DISCARDABLE "zrythm.ico"
+IDI_APPICON ICON "zrythm.ico"
