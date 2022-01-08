@@ -496,8 +496,7 @@ on_button_send_automatically_clicked (
       const char * option_vals[] = {
         "30", NULL, };
       z_gtk_generate_screenshot_image (
-        GTK_WIDGET (MAIN_WINDOW->overlay),
-        GTK_WIDGET (MAIN_WINDOW->main_box),
+        GTK_WIDGET (MAIN_WINDOW),
         "jpeg",
         (char **) option_keys, (char **) option_vals,
         &screenshot_tmpdir,
@@ -510,6 +509,8 @@ on_button_send_automatically_clicked (
       GdkPixbuf * pixbuf =
         gdk_pixbuf_new_from_file_at_scale (
           screenshot_path, 580, 360, true, &err);
+      gtk_widget_set_size_request (
+        GTK_WIDGET (img), 580, 360);
       if (pixbuf)
         {
           gtk_image_set_from_pixbuf (

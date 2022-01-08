@@ -623,8 +623,7 @@ need_backtrace (
   const LogEvent * const ev)
 {
   return
-    (ev->log_level == G_LOG_LEVEL_CRITICAL
-     || ev->log_level == G_LOG_LEVEL_WARNING)
+    ev->log_level == G_LOG_LEVEL_CRITICAL
     &&
     !string_contains_substr (
       ev->message,
@@ -663,7 +662,11 @@ need_backtrace (
     &&
     !string_contains_substr (
       ev->message,
-      "you are running a non-free operating system");
+      "you are running a non-free operating system")
+    &&
+    !string_contains_substr (
+      ev->message,
+      "Allocation height too small");
 }
 
 /**
@@ -948,9 +951,9 @@ log_writer (
       if (need_backtrace (ev)
           && !RUNNING_ON_VALGRIND)
         {
-          /*ev->backtrace =*/
-            /*backtrace_get_with_lines (*/
-              /*"", 100, true);*/
+          ev->backtrace =
+            backtrace_get_with_lines (
+              "", 100, true);
         }
 
       int num_avail_objs =

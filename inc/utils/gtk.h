@@ -619,7 +619,6 @@ z_gtk_text_buffer_get_full_text (
 void
 z_gtk_generate_screenshot_image (
   GtkWidget *  widget,
-  GtkWidget *  child,
   const char * type,
   char **      option_keys,
   char **      option_values,

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -78,9 +78,9 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (MainWindowWidget,
-               main_window_widget,
-               GTK_TYPE_APPLICATION_WINDOW)
+G_DEFINE_TYPE (
+  MainWindowWidget, main_window_widget,
+  GTK_TYPE_APPLICATION_WINDOW)
 
 /**
  * This is called when the window closing is
@@ -467,19 +467,18 @@ main_window_finalize (
 
 static void
 main_window_widget_class_init (
-  MainWindowWidgetClass * _klass)
+  MainWindowWidgetClass * klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   resources_set_class_template (
-    klass, "main_window.ui");
-
+    wklass, "main_window.ui");
   gtk_widget_class_set_css_name (
-    klass, "main-window");
+    wklass, "main-window");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, MainWindowWidget, x)
+    wklass, MainWindowWidget, x)
 
   BIND_CHILD (overlay);
   BIND_CHILD (toast_overlay);

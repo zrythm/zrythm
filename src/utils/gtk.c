@@ -1566,7 +1566,6 @@ z_gtk_text_buffer_get_full_text (
 void
 z_gtk_generate_screenshot_image (
   GtkWidget *  widget,
-  GtkWidget *  child,
   const char * type,
   char **      option_keys,
   char **      option_values,
@@ -1577,16 +1576,23 @@ z_gtk_generate_screenshot_image (
   g_return_if_fail (
     *ret_dir == NULL && *ret_path == NULL);
 
+  GdkPaintable * paintable =
+    gtk_widget_paintable_new (widget);
   GtkSnapshot * snapshot = gtk_snapshot_new ();
-  gtk_widget_snapshot_child (
-    widget, child, snapshot);
+  gdk_paintable_snapshot (
+    paintable,
+    GDK_SNAPSHOT (snapshot),
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (widget)),
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (widget)));
+  GskRenderNode * node =
+    gtk_snapshot_free_to_node (snapshot);
   GskRenderer * renderer =
     gsk_renderer_new_for_surface (
       z_gtk_widget_get_surface (
         GTK_WIDGET (MAIN_WINDOW)));
-  GskRenderNode * node =
-    gtk_snapshot_free_to_node (snapshot);
-  gsk_renderer_realize (renderer, NULL, NULL);
+  g_return_if_fail (renderer);
   GdkTexture * texture =
     gsk_renderer_render_texture (
       renderer, node, NULL);
@@ -1603,7 +1609,7 @@ z_gtk_generate_screenshot_image (
     }
   char * abs_path =
     g_build_filename (
-      *ret_dir, "screenshot.jpeg", NULL);
+      *ret_dir, "screenshot.png", NULL);
 
   /* note: can also use
    * gdk_pixbuf_get_from_texture() for other
@@ -1612,21 +1618,20 @@ z_gtk_generate_screenshot_image (
     gdk_texture_save_to_png (texture, abs_path);
 
   g_object_unref (texture);
-  g_object_unref (node);
-  g_object_unref (renderer);
-  g_object_unref (snapshot);
+  gsk_render_node_unref (node);
+  /* GSK ERROR? */
+  /*g_object_unref (renderer);*/
+  /* SEGFAULT */
+  /*g_object_unref (snapshot);*/
+  g_object_unref (paintable);
 
-  if (ret)
-    {
-      *ret_path = abs_path;
-      return;
-    }
-  else
+  if (!ret)
     {
       g_warning ("screenshot save failed");
       return;
     }
 
+  *ret_path = abs_path;
   g_message (
     "saved widget screenshot to %s", *ret_path);
 }
