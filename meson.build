@@ -593,6 +593,11 @@ test_cflags = [
   '-DG_LOG_DOMAIN="' + prog_name_lowercase + '"',
   '-DREALTIME=' + (is_clang ? '__attribute__((annotate("realtime")))' : ''),
   '-DDEPRECATED_MSG(x)=__attribute__((deprecated(x)))',
+  '-DOPTIMIZE(x)=' + (is_gcc ? '__attribute__((optimize(#x)))' : ''),
+  '-DOPTIMIZE_O0=OPTIMIZE(00)',
+  '-DOPTIMIZE_O1=OPTIMIZE(01)',
+  '-DOPTIMIZE_O2=OPTIMIZE(02)',
+  '-DOPTIMIZE_O3=OPTIMIZE(03)',
   '-DNONNULL_ARGS(...)=__attribute__((nonnull(__VA_ARGS__)))',
   '-DACCESS(...)=' + (is_gcc ? '__attribute__((access(__VA_ARGS__)))' : ''),
   '-DACCESS_READ_ONLY(...)=' + (is_gcc ? 'ACCESS(read_only,__VA_ARGS__)' : ''),
@@ -654,6 +659,7 @@ if host_machine.cpu() == 'x86_64'
     '-msse2',
     '-mfpmath=sse',
     #'-fvisibility=hidden',
+    '-fno-math-errno',
     ]
 endif
 

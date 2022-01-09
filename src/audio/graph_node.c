@@ -348,6 +348,7 @@ process_node (
 /**
  * Processes the GraphNode.
  */
+OPTIMIZE_O3
 void
 graph_node_process (
   GraphNode *           node,

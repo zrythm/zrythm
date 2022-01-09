@@ -49,6 +49,7 @@
 /* uncomment to show debug messages */
 /*#define DEBUG_THREADS 1*/
 
+OPTIMIZE (O3)
 static void *
 worker_thread (void * arg)
 {
