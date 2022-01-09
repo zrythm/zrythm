@@ -1107,9 +1107,9 @@ HOT
 NONNULL
 void
 port_process (
-  Port *                              port,
-  const EngineProcessTimeInfo * const time_nfo,
-  const bool                          noroll);
+  Port *                      port,
+  const EngineProcessTimeInfo time_nfo,
+  const bool                  noroll);
 
 #define ports_connected(a,b) \
   (port_connections_manager_find_connection ( \

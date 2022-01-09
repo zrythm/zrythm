@@ -264,34 +264,34 @@ on_node_finish (
 HOT
 static void
 process_node (
-  const GraphNode *                   node,
-  const EngineProcessTimeInfo * const time_nfo)
+  const GraphNode *           node,
+  const EngineProcessTimeInfo time_nfo)
 {
   switch (node->type)
     {
     case ROUTE_NODE_TYPE_PLUGIN:
-      plugin_process (node->pl, time_nfo);
+      plugin_process (node->pl, &time_nfo);
       break;
     case ROUTE_NODE_TYPE_FADER:
     case ROUTE_NODE_TYPE_MONITOR_FADER:
-      fader_process (node->fader, time_nfo);
+      fader_process (node->fader, &time_nfo);
       break;
     case ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
       modulator_macro_processor_process (
-        node->modulator_macro_processor, time_nfo);
+        node->modulator_macro_processor, &time_nfo);
       break;
     case ROUTE_NODE_TYPE_PREFADER:
-      fader_process (node->prefader, time_nfo);
+      fader_process (node->prefader, &time_nfo);
       break;
     case ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
       sample_processor_process (
         node->sample_processor,
-        time_nfo->local_offset, time_nfo->nframes);
+        time_nfo.local_offset, time_nfo.nframes);
       break;
     case ROUTE_NODE_TYPE_CHANNEL_SEND:
       channel_send_process (
-        node->send, time_nfo->local_offset,
-        time_nfo->nframes);
+        node->send, time_nfo.local_offset,
+        time_nfo.nframes);
       break;
     case ROUTE_NODE_TYPE_TRACK:
       {
@@ -304,7 +304,7 @@ process_node (
             track->type != TRACK_TYPE_MARKER)
           {
             track_processor_process (
-              track->processor, time_nfo);
+              track->processor, &time_nfo);
           }
       }
       break;
@@ -443,7 +443,7 @@ graph_node_process (
       nframes_t orig_nframes = time_nfo.nframes;
       time_nfo.nframes =
         num_processable_frames;
-      process_node (node, &time_nfo);
+      process_node (node, time_nfo);
 
       /* calculate the remaining frames */
       time_nfo.nframes =
@@ -461,7 +461,7 @@ graph_node_process (
 
   if (time_nfo.nframes > 0)
     {
-      process_node (node, &time_nfo);
+      process_node (node, time_nfo);
     }
 
 node_process_finish:

@@ -2803,12 +2803,12 @@ stereo_ports_new_generic (
  */
 void
 port_process (
-  Port *                              port,
-  const EngineProcessTimeInfo * const time_nfo,
-  const bool                          noroll)
+  Port *                      port,
+  const EngineProcessTimeInfo time_nfo,
+  const bool                  noroll)
 {
-#define nframes (time_nfo->nframes)
-#define local_offset (time_nfo->local_offset)
+#define nframes (time_nfo.nframes)
+#define local_offset (time_nfo.local_offset)
 
   g_return_if_fail (IS_PORT (port));
 
@@ -3477,7 +3477,7 @@ port_process (
             position_from_frames (
               &pos,
               (signed_frame_t)
-              time_nfo->g_start_frame);
+              time_nfo.g_start_frame);
 
             /* if playhead pos changed manually
              * recently or transport is rolling,
