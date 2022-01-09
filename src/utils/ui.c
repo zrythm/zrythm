@@ -1373,10 +1373,16 @@ ui_get_normalized_draggable_value (
 UiDetail
 ui_get_detail_level (void)
 {
-  return
-    (UiDetail)
-    g_settings_get_enum (
-      S_P_UI_GENERAL, "graphic-detail");
+  if (!UI_CACHES->detail_level_set)
+    {
+      UI_CACHES->detail_level =
+        (UiDetail)
+        g_settings_get_enum (
+          S_P_UI_GENERAL, "graphic-detail");
+      UI_CACHES->detail_level_set = true;
+    }
+
+  return UI_CACHES->detail_level;
 }
 
 UiCaches *

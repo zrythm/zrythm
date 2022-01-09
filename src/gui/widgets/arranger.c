@@ -6914,6 +6914,12 @@ finalize (
     g_object_unref,
     self->media_playlist_repeat_texture);
 
+  object_free_w_func_and_null (
+    gsk_render_node_unref, self->loop_line_node);
+  object_free_w_func_and_null (
+    gsk_render_node_unref,
+    self->clip_start_line_node);
+
   G_OBJECT_CLASS (
     arranger_widget_parent_class)->
       finalize (G_OBJECT (self));

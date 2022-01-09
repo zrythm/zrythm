@@ -146,6 +146,9 @@ typedef struct UiCaches
   //UiTextures    textures;
   UiCursor      cursors[UI_MAX_CURSORS];
   int           num_cursors;
+
+  bool          detail_level_set;
+  UiDetail      detail_level;
 } UiCaches;
 
 /**

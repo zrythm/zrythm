@@ -142,6 +142,10 @@ draw_loop_points (
 
   ArrangerObject * obj =
     (ArrangerObject *) self;
+
+  ArrangerWidget * arranger =
+    arranger_object_get_arranger (obj);
+
   Position tmp;
   double loop_start_ticks =
     obj->loop_start_pos.ticks;
@@ -170,6 +174,54 @@ draw_loop_points (
   const int padding = 1;
   const int line_width = 1;
 
+  GskRenderNode * loop_line_node = NULL;
+  if (!arranger->loop_line_node)
+    {
+      arranger->loop_line_node =
+        gsk_cairo_node_new (
+          &GRAPHENE_RECT_INIT (
+            0, 0, 3, 800));
+      cairo_t * cr =
+        gsk_cairo_node_get_draw_context (
+          arranger->loop_line_node);
+
+      cairo_set_dash (
+        cr, dashes, 1, 0);
+      cairo_set_line_width (cr, line_width);
+      cairo_set_source_rgba (
+        cr, 0, 0, 0, 1.0);
+      cairo_move_to (cr, padding, 0);
+      cairo_line_to (cr, padding, 800);
+      cairo_stroke (cr);
+      cairo_destroy (cr);
+    }
+  loop_line_node = arranger->loop_line_node;
+
+  GskRenderNode * clip_start_line_node = NULL;
+  if (!arranger->clip_start_line_node)
+    {
+      arranger->clip_start_line_node =
+        gsk_cairo_node_new (
+          &GRAPHENE_RECT_INIT (
+            0, 0, 3, 800));
+
+      cairo_t * cr =
+        gsk_cairo_node_get_draw_context (
+          arranger->clip_start_line_node);
+      gdk_cairo_set_source_rgba (
+        cr, &UI_COLORS->bright_green);
+      cairo_set_dash (
+        cr, dashes, 1, 0);
+      cairo_set_line_width (cr, line_width);
+      cairo_move_to (cr, padding, 0);
+      cairo_line_to (cr, padding, 800);
+      cairo_stroke (cr);
+      cairo_destroy (cr);
+    }
+  clip_start_line_node =
+    arranger->clip_start_line_node;
+
+
   /* draw clip start point */
   if (x_px != 0 &&
       /* if px is inside region */
@@ -179,41 +231,35 @@ draw_loop_points (
       x_px >= vis_offset_x &&
       x_px < vis_offset_x + vis_width)
     {
-      cairo_t * cr =
-        gtk_snapshot_append_cairo (
-          snapshot,
-          &GRAPHENE_RECT_INIT (
-            x_px - padding, 0,
-            line_width + padding * 2,
-            full_height));
-      gdk_cairo_set_source_rgba (
-        cr, &UI_COLORS->bright_green);
-      cairo_set_dash (
-        cr, dashes, 1, 0);
-      cairo_set_line_width (cr, line_width);
-      cairo_move_to (cr, padding + x_px, 0);
-      cairo_line_to (
-        cr, padding + x_px, full_height);
-      cairo_stroke (cr);
-      cairo_destroy (cr);
+      gtk_snapshot_save (snapshot);
+      gtk_snapshot_translate (
+        snapshot,
+        &GRAPHENE_POINT_INIT (x_px - padding, 0));
+      gtk_snapshot_push_clip (
+        snapshot,
+        &GRAPHENE_RECT_INIT (
+          0, 0, line_width + padding * 2,
+          full_height));
+      gtk_snapshot_append_node (
+        snapshot, clip_start_line_node);
+      gtk_snapshot_pop (snapshot);
+      gtk_snapshot_restore (snapshot);
     }
 
   /* draw loop points */
-  GskRenderNode * cr_node =
-    gsk_cairo_node_new (
-      &GRAPHENE_RECT_INIT (
-        0, 0, padding * 2 + line_width,
-        full_height));
-  cairo_t * loop_cr =
-    gsk_cairo_node_get_draw_context (cr_node);
-  cairo_set_dash (
-    loop_cr, dashes, 1, 0);
-  cairo_set_line_width (loop_cr, line_width);
-  cairo_set_source_rgba (
-    loop_cr, 0, 0, 0, 1.0);
-  cairo_move_to (loop_cr, padding, 0);
-  cairo_line_to (loop_cr, padding, full_height);
-  cairo_stroke (loop_cr);
+  gtk_snapshot_save (snapshot);
+  gtk_snapshot_translate (
+    snapshot,
+    &GRAPHENE_POINT_INIT (- padding, 0));
+  gtk_snapshot_push_clip (
+    snapshot,
+    &GRAPHENE_RECT_INIT (
+      0, 0, line_width + padding * 2,
+      full_height));
+  gtk_snapshot_append_node (
+    snapshot, loop_line_node);
+  gtk_snapshot_pop (snapshot);
+  gtk_snapshot_restore (snapshot);
   int num_loops =
     arranger_object_get_num_loops (obj, 1);
   for (int i = 0; i < num_loops; i++)
@@ -239,12 +285,17 @@ draw_loop_points (
             snapshot,
             &GRAPHENE_POINT_INIT (
               x_px - padding, 0));
+          gtk_snapshot_push_clip (
+            snapshot,
+            &GRAPHENE_RECT_INIT (
+              0, 0, line_width + padding * 2,
+              full_height));
           gtk_snapshot_append_node (
-            snapshot, cr_node);
+            snapshot, loop_line_node);
+          gtk_snapshot_pop (snapshot);
           gtk_snapshot_restore (snapshot);
         }
     }
-  gsk_render_node_unref (cr_node);
 }
 
 /**
@@ -632,17 +683,6 @@ draw_automation_region (
 
   UiDetail detail = ui_get_detail_level ();
 
-  /* if > 40% CPU, force lower level of detail */
-  if (detail < UI_DETAIL_ULTRA_LOW)
-    {
-      if (MW_CPU->cpu > 60)
-        detail = UI_DETAIL_ULTRA_LOW;
-      else if (MW_CPU->cpu > 50)
-        detail = UI_DETAIL_LOW;
-      else if (MW_CPU->cpu > 40)
-        detail++;
-    }
-
   /* use cairo if normal detail or higher */
   bool use_cairo = false;
   if (detail < UI_DETAIL_LOW)
@@ -657,14 +697,6 @@ draw_automation_region (
     arranger_object_get_length_in_ticks (obj);
   double x_start, y_start, x_end, y_end;
 
-  /*int vis_offset_x =*/
-    /*draw_rect->x - full_rect->x;*/
-  /*int vis_offset_y =*/
-    /*draw_rect->y - full_rect->y;*/
-  /*int vis_width = draw_rect->width;*/
-  /*int vis_height = draw_rect->height;*/
-  /*int full_offset_x = full_rect->x;*/
-  /*int full_offset_y = full_rect->y;*/
   int full_width = full_rect->width;
   int full_height = full_rect->height;
 
@@ -929,17 +961,6 @@ draw_fade_part (
 
   UiDetail detail = ui_get_detail_level ();
 
-  /* if > 40% CPU, force lower level of detail */
-  if (detail < UI_DETAIL_ULTRA_LOW)
-    {
-      if (MW_CPU->cpu > 60)
-        detail = UI_DETAIL_ULTRA_LOW;
-      else if (MW_CPU->cpu > 50)
-        detail = UI_DETAIL_LOW;
-      else if (MW_CPU->cpu > 40)
-        detail++;
-    }
-
   /* use cairo if normal detail or higher */
   bool use_cairo = false;
   if (detail < UI_DETAIL_LOW)
@@ -1164,17 +1185,6 @@ draw_audio_part (
     frames_per_tick / MW_RULER->px_per_tick;
 
   UiDetail detail = ui_get_detail_level ();
-
-  /* if > 40% CPU, force lower level of detail */
-  if (detail < UI_DETAIL_ULTRA_LOW)
-    {
-      if (MW_CPU->cpu > 60)
-        detail = UI_DETAIL_ULTRA_LOW;
-      else if (MW_CPU->cpu > 50)
-        detail = UI_DETAIL_LOW;
-      else if (MW_CPU->cpu > 40)
-        detail++;
-    }
 
   double increment = 1;
   double width = 1;

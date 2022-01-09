@@ -463,6 +463,15 @@ tracklist_find_track_by_name (
   Tracklist *  self,
   const char * name)
 {
+  if (G_UNLIKELY (
+        ROUTER
+        && router_is_processing_thread (ROUTER)))
+    {
+      g_critical (
+        "attempted to call from DSP thread");
+      return NULL;
+    }
+
   for (int i = 0; i < self->num_tracks; i++)
     {
       Track * track = self->tracks[i];

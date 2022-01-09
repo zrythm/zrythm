@@ -26,5 +26,5 @@ export ZRYTHM_DSP_THREADS=1
 valgrind --tool=massif --num-callers=160 \
     --verbose --log-file=massif_log \
     --suppressions=tools/vg.sup build/src/zrythm \
-    --dummy --buf-size=4098
+    --dummy --buf-size=8194
 

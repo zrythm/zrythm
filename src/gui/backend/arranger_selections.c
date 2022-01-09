@@ -1583,6 +1583,13 @@ arranger_selections_clear (
       REMOVE_OBJS (
         cs, chord_object);
       break;
+    case TYPE (AUDIO):
+      {
+        AudioSelections * aus =
+          (AudioSelections *) self;
+        aus->has_selection = false;
+      }
+      break;
     default:
       g_return_if_reached ();
     }

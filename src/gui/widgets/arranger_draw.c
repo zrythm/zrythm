@@ -536,17 +536,6 @@ draw_audio_bg (
   double increment = 1;
   double width = 1;
 
-  /* if > 40% CPU, force lower level of detail */
-  if (detail < UI_DETAIL_ULTRA_LOW)
-    {
-      if (MW_CPU->cpu > 60)
-        detail = UI_DETAIL_ULTRA_LOW;
-      else if (MW_CPU->cpu > 50)
-        detail = UI_DETAIL_LOW;
-      else if (MW_CPU->cpu > 40)
-        detail++;
-    }
-
   switch (detail)
     {
     case UI_DETAIL_HIGH:

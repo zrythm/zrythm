@@ -319,6 +319,7 @@ automation_point_draw (
     }
 
   cairo_restore (cr);
+  cairo_destroy (cr);
 
   gtk_snapshot_save (snapshot);
   gtk_snapshot_translate (
