@@ -129,7 +129,7 @@ option (
   'installer_ver',
   type: 'boolean',
   value: false,
-  description: 'This is only used when making the installers')
+  description: 'This is only used by Zrythm maintainers when making installers')
 
 option (
   'trial_ver',

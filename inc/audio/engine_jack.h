@@ -145,6 +145,7 @@ engine_jack_activate (
 /**
  * Returns the JACK type string.
  */
+CONST
 const char *
 engine_jack_get_jack_type (
   PortType type);

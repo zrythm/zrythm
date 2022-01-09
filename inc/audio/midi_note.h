@@ -161,6 +161,8 @@ midi_note_set_cache_val (
 /**
  * Returns 1 if the MidiNotes match, 0 if not.
  */
+NONNULL
+PURE
 int
 midi_note_is_equal (
   MidiNote * src,

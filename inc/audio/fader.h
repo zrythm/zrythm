@@ -427,6 +427,8 @@ fader_set_soloed (
  * Gets the fader amplitude (not db)
  * FIXME is void * necessary? do it in the caller.
  */
+NONNULL
+PURE
 float
 fader_get_amp (
   void * self);

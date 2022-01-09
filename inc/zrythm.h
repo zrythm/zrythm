@@ -332,6 +332,7 @@ zrythm_remove_recent_project (
  *
  * @param with_v Include a starting "v".
  */
+MALLOC
 char *
 zrythm_get_version (
   bool with_v);

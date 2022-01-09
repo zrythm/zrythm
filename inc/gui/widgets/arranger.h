@@ -464,6 +464,7 @@ typedef struct _ArrangerWidget
   GtkPopoverMenu * popover_menu;
 } ArrangerWidget;
 
+PURE
 const char *
 arranger_widget_get_type_str (
   ArrangerWidgetType type);
@@ -516,6 +517,7 @@ arranger_widget_refresh_cursor (
 /**
  * Gets the corresponding scrolled window.
  */
+NONNULL
 GtkScrolledWindow *
 arranger_widget_get_scrolled_window (
   ArrangerWidget * self);
@@ -622,6 +624,8 @@ arranger_widget_select_all (
  * Useful to know if we need transient widgets or
  * not.
  */
+NONNULL
+PURE
 bool
 arranger_widget_is_in_moving_operation (
   ArrangerWidget * self);

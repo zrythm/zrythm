@@ -227,6 +227,7 @@ graph_node_print (
   g_message ("%s", str);
 }
 
+HOT
 static void
 on_node_finish (
   GraphNode * self)
