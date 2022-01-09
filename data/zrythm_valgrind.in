@@ -2,6 +2,9 @@
 
 set -xe
 
+jack_path=$(dirname $(ldconfig -p | grep 'libjack.so ' | head -n 1 | cut -d ' ' -f 4))
+export LD_LIBRARY_PATH="@ZRYTHM_CARLA_LIBDIR@:@ZRYTHM_LIBDIR@:$jack_path:@LIBDIR@:$LD_LIBRARY_PATH"
+
 export GSETTINGS_SCHEMA_DIR=@SCHEMAS_DIR@
 export G_MESSAGES_DEBUG=zrythm
 
