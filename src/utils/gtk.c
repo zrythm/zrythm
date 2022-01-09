@@ -2157,3 +2157,40 @@ z_gtk_widget_print_hierarchy (
   g_message ("%s", str);
   g_queue_free (queue);
 }
+
+const char *
+z_gtk_get_gsk_renderer_type (void)
+{
+  static const char * renderer_type = NULL;
+  if (renderer_type)
+    return renderer_type;
+
+  GdkSurface * surface =
+    gdk_surface_new_toplevel (
+      gdk_display_get_default ());
+  GskRenderer * renderer =
+    gsk_renderer_new_for_surface (surface);
+  if (string_is_equal (
+        G_OBJECT_TYPE_NAME (renderer),
+        "GskGLRenderer"))
+    {
+      renderer_type = "GL";
+    }
+  else if (string_is_equal (
+             G_OBJECT_TYPE_NAME (renderer),
+             "GskCairoRenderer"))
+    {
+      renderer_type = "Cairo";
+    }
+  else
+    {
+      g_warning ("unknown renderer");
+      renderer_type = "Unknown";
+    }
+
+  gsk_renderer_unrealize (renderer);
+  g_object_unref (renderer);
+  gdk_surface_destroy (surface);
+
+  return renderer_type;
+}

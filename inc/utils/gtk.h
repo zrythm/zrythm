@@ -761,6 +761,9 @@ void
 z_gtk_widget_print_hierarchy (
   GtkWidget * widget);
 
+const char *
+z_gtk_get_gsk_renderer_type (void);
+
 /**
  * @}
  */

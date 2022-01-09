@@ -130,14 +130,24 @@ carla_plugin_tick_cb (
   if (self->plugin->visible &&
       MAIN_WINDOW)
     {
-      GdkGLContext * context =
-        gdk_gl_context_get_current ();
-      g_object_ref (context);
-      gdk_gl_context_clear_current ();
+      GdkGLContext * context = NULL;
+      if (string_is_equal (
+            z_gtk_get_gsk_renderer_type (),
+            "GL"))
+        {
+          context =
+            gdk_gl_context_get_current ();
+          if (context)
+            g_object_ref (context);
+          gdk_gl_context_clear_current ();
+        }
       self->native_plugin_descriptor->ui_idle (
         self->native_plugin_handle);
-      gdk_gl_context_make_current (context);
-      g_object_unref (context);
+      if (context)
+        {
+          gdk_gl_context_make_current (context);
+          g_object_unref (context);
+        }
 
       return G_SOURCE_CONTINUE;
     }
@@ -1428,11 +1438,6 @@ carla_native_plugin_instantiate (
     "ports_created: %d",
     loading, use_state_file, self->ports_created);
 
-  GdkGLContext * context =
-    gdk_gl_context_get_current ();
-  g_object_ref (context);
-  gdk_gl_context_clear_current ();
-
   self->native_host_descriptor.handle = self;
   self->native_host_descriptor.uiName =
     g_strdup ("Zrythm");
@@ -1932,9 +1937,6 @@ carla_native_plugin_instantiate (
     {
       create_ports (self, true);
     }
-
-  gdk_gl_context_make_current (context);
-  g_object_unref (context);
 
   return 0;
 }
