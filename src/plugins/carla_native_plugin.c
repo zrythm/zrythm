@@ -1924,6 +1924,9 @@ carla_native_plugin_instantiate (
     self->native_plugin_handle);
   g_message ("carla plugin activated");
 
+  carla_native_plugin_update_buffer_size_and_sample_rate (
+    self);
+
   /* load data into existing ports */
   if (loading || use_state_file)
     {
