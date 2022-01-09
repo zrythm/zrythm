@@ -50,6 +50,7 @@ packages:
   - sherlock-lv2
   - sassc
   - vamp-plugin-sdk
+  - wayland-protocols
   - x42-plugins-lv2
   - xxhash
   - zstd
