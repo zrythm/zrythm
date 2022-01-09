@@ -44,6 +44,23 @@ typedef void * CarlaPluginHandle;
 
 #define CARLA_STATE_FILENAME "state.carla"
 
+#ifdef CARLA_HAVE_CV32_PATCHBAY_VARIANT
+#define MAX_VARIANT_AUDIO_INS 64
+#define MAX_VARIANT_AUDIO_OUTS 64
+#define MAX_VARIANT_CV_INS 32
+#define MAX_VARIANT_CV_OUTS 32
+#else
+#define MAX_VARIANT_AUDIO_INS 2
+#define MAX_VARIANT_AUDIO_OUTS 2
+#define MAX_VARIANT_CV_INS 5
+#define MAX_VARIANT_CV_OUTS 5
+#endif
+#define MAX_VARIANT_MIDI_INS 1
+#define MAX_VARIANT_MIDI_OUTS 1
+
+#define MAX_VARIANT_INS (MAX_VARIANT_AUDIO_INS + MAX_VARIANT_CV_INS)
+#define MAX_VARIANT_OUTS (MAX_VARIANT_AUDIO_OUTS + MAX_VARIANT_CV_OUTS)
+
 /**
  * The type of the Carla plugin.
  */
@@ -117,6 +134,14 @@ typedef struct CarlaNativePlugin
 
   /** GTK tick callback. */
   guint            tick_cb;
+
+  /**
+   * Used during processing.
+   *
+   * Must be resized on buffer size change.
+   */
+  float *          inbufs[MAX_VARIANT_INS];
+  float *          outbufs[MAX_VARIANT_OUTS];
 
 } CarlaNativePlugin;
 

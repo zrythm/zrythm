@@ -57,20 +57,6 @@
 #include <CarlaNative.h>
 #include <CarlaHost.h>
 
-#ifdef CARLA_HAVE_CV32_PATCHBAY_VARIANT
-#define MAX_VARIANT_AUDIO_INS 64
-#define MAX_VARIANT_AUDIO_OUTS 64
-#define MAX_VARIANT_CV_INS 32
-#define MAX_VARIANT_CV_OUTS 32
-#else
-#define MAX_VARIANT_AUDIO_INS 2
-#define MAX_VARIANT_AUDIO_OUTS 2
-#define MAX_VARIANT_CV_INS 5
-#define MAX_VARIANT_CV_OUTS 5
-#endif
-#define MAX_VARIANT_MIDI_INS 1
-#define MAX_VARIANT_MIDI_OUTS 1
-
 typedef enum
 {
   Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR_INSTANTIATION_FAILED,
@@ -772,23 +758,21 @@ carla_native_plugin_process (
     {
       float * inbuf[num_inputs];
       float * outbuf[num_outputs];
-      float dummy_inbufs[num_inputs][time_nfo->nframes];
-      float dummy_outbufs[num_outputs][time_nfo->nframes];
 
       /* set all ins/outs to zero bufs */
       for (size_t i = 0; i < num_inputs; i++)
         {
           dsp_fill (
-            dummy_inbufs[i],
+            self->inbufs[i],
             DENORMAL_PREVENTION_VAL, time_nfo->nframes);
-          inbuf[i] = dummy_inbufs[i];
+          inbuf[i] = self->inbufs[i];
         }
       for (size_t i = 0; i < num_outputs; i++)
         {
           dsp_fill (
-            dummy_outbufs[i],
+            self->outbufs[i],
             DENORMAL_PREVENTION_VAL, time_nfo->nframes);
-          outbuf[i] = dummy_outbufs[i];
+          outbuf[i] = self->outbufs[i];
         }
 
       /* set actual audio in bufs */
@@ -1392,6 +1376,25 @@ carla_native_plugin_update_buffer_size_and_sample_rate (
     self->host_handle,
     AUDIO_ENGINE->block_length,
     AUDIO_ENGINE->sample_rate);
+
+  /* update processing buffers */
+  for (size_t i = 0; i < MAX_VARIANT_INS; i++)
+    {
+      self->inbufs[i] =
+        g_realloc_n (
+          self->inbufs[i],
+          AUDIO_ENGINE->block_length,
+          sizeof (float));
+    }
+  for (size_t i = 0; i < MAX_VARIANT_OUTS; i++)
+    {
+      self->outbufs[i] =
+        g_realloc_n (
+          self->outbufs[i],
+          AUDIO_ENGINE->block_length,
+          sizeof (float));
+    }
+
   if (self->native_plugin_descriptor->dispatcher)
     {
       intptr_t ret =
@@ -2355,6 +2358,17 @@ carla_native_plugin_free (
   CarlaNativePlugin * self)
 {
   carla_native_plugin_close (self);
+
+  for (size_t i = 0; i < MAX_VARIANT_INS; i++)
+    {
+      object_free_w_func_and_null (
+        free, self->inbufs[i]);
+    }
+  for (size_t i = 0; i < MAX_VARIANT_OUTS; i++)
+    {
+      object_free_w_func_and_null (
+        free, self->outbufs[i]);
+    }
 
   object_free_w_func_and_null (
     g_ptr_array_unref, self->patchbay_port_info);
