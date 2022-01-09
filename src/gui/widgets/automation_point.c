@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,6 +24,7 @@
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/arranger_object.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/automation_point.h"
@@ -32,8 +33,34 @@
 #include "settings/settings.h"
 #include "utils/cairo.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
+
+/**
+ * Returns whether the cached render node for @ref
+ * needs to be invalidated.
+ */
+static bool
+settings_changed (
+  const AutomationPoint * self,
+  const GdkRectangle *    draw_rect)
+{
+  /*ArrangerObject * obj = (ArrangerObject *) self;*/
+  bool same =
+    gdk_rectangle_equal (
+      &self->last_settings.draw_rect,
+      draw_rect)
+    &&
+    curve_options_are_equal (
+      &self->last_settings.curve_opts,
+      &self->curve_opts)
+    &&
+    math_floats_equal (
+      self->last_settings.fvalue, self->fvalue);
+
+  return !same;
+}
 
 /**
  * Draws the AutomationPoint in the given cairo
@@ -74,15 +101,48 @@ automation_point_draw (
     automation_point_is_selected (ap), false,
     false);
 
-  cairo_t * cr =
-    gtk_snapshot_append_cairo (
-      snapshot,
-      &GRAPHENE_RECT_INIT (
-        obj->full_rect.x - 1, obj->full_rect.y - 1,
-        obj->full_rect.width + 2,
-        obj->full_rect.height + 2));
-  gdk_cairo_set_source_rgba (cr, &color);
+  GdkRectangle draw_rect;
+  arranger_object_get_draw_rectangle (
+    obj, rect, &obj->full_rect, &draw_rect);
 
+  GskRenderNode * cr_node = NULL;
+  if (settings_changed (ap, &draw_rect))
+    {
+      cr_node =
+        gsk_cairo_node_new (
+          &GRAPHENE_RECT_INIT (
+            0, 0,
+            draw_rect.width + 3,
+            draw_rect.height + 3));
+
+      object_free_w_func_and_null (
+        gsk_render_node_unref, ap->cairo_node);
+    }
+  else
+    {
+      cr_node = ap->cairo_node;
+      gtk_snapshot_save (snapshot);
+      gtk_snapshot_translate (
+        snapshot,
+        &GRAPHENE_POINT_INIT (
+          draw_rect.x - 1,
+          draw_rect.y - 1));
+      gtk_snapshot_append_node (
+        snapshot, cr_node);
+      gtk_snapshot_restore (snapshot);
+
+      return;
+    }
+
+  cairo_t * cr =
+    gsk_cairo_node_get_draw_context (cr_node);
+  cairo_save (cr);
+  cairo_translate (
+    cr,
+    - (draw_rect.x - 1),
+    - (draw_rect.y - 1));
+
+  gdk_cairo_set_source_rgba (cr, &color);
   cairo_set_line_width (cr, 2);
 
   int upslope =
@@ -103,10 +163,24 @@ automation_point_draw (
         obj->full_rect.height -
           AP_WIDGET_POINT_SIZE;
 
+      double draw_offset =
+        draw_rect.x - obj->full_rect.x;
+      g_return_if_fail (draw_offset >= 0.0);
+
       double step = 0.1;
       double this_y = 0;
-      for (double l = 0.0;
-           l <= width_for_curve - step / 2.0;
+      double draw_until =
+       /* FIXME this will draw all the way
+        * until the end of the automation point,
+        * even if it is off-screen by many
+        * pixels
+        * TODO only draw up to where needed
+        *
+        * it is possible that cairo is smart about
+        * it and doesn't exceed the surface size */
+       width_for_curve - step / 2.0;
+      bool has_drawing = false;
+      for (double l = draw_offset; l <= draw_until;
            l += step)
         {
           double next_y =
@@ -118,7 +192,8 @@ automation_point_draw (
                 (l + step) / width_for_curve, 0.0, 1.0));
           next_y *= height_for_curve;
 
-          if (math_doubles_equal (l, 0.0))
+          if (G_UNLIKELY (
+                math_doubles_equal (l, 0.0)))
             {
               this_y =
                 /* in pixels, higher values are lower */
@@ -145,13 +220,42 @@ automation_point_draw (
                   obj->full_rect.y));
             }
           this_y = next_y;
+
+          has_drawing = true;
+        }
+
+      /* nothing drawn - just a vertical line
+       * needed */
+      if (G_UNLIKELY (!has_drawing))
+        {
+          this_y =
+            1.0 -
+            automation_point_get_normalized_value_in_curve (
+              ap, 0.0);
+          this_y *= height_for_curve;
+          double next_y =
+            1.0 -
+            automation_point_get_normalized_value_in_curve (
+              ap, 1.0);
+          next_y *= height_for_curve;
+          cairo_move_to (
+            cr,
+            (draw_offset + AP_WIDGET_POINT_SIZE / 2 +
+               obj->full_rect.x),
+            (this_y + AP_WIDGET_POINT_SIZE / 2 +
+               obj->full_rect.y));
+          cairo_line_to (
+            cr,
+            (draw_offset + step +
+             AP_WIDGET_POINT_SIZE / 2 +
+             obj->full_rect.x),
+            (next_y +
+              AP_WIDGET_POINT_SIZE / 2 +
+              obj->full_rect.y));
         }
 
       cairo_stroke (cr);
-    }
-  else /* no next ap */
-    {
-    }
+    } /* endif have next_ap */
 
   /* draw circle */
   cairo_arc (
@@ -214,7 +318,22 @@ automation_point_draw (
              AP_WIDGET_POINT_SIZE / 2));
     }
 
-  cairo_destroy (cr);
+  cairo_restore (cr);
+
+  gtk_snapshot_save (snapshot);
+  gtk_snapshot_translate (
+    snapshot,
+    &GRAPHENE_POINT_INIT (
+      draw_rect.x - 1,
+      draw_rect.y - 1));
+  gtk_snapshot_append_node (
+    snapshot, cr_node);
+  gtk_snapshot_restore (snapshot);
+
+  ap->last_settings.fvalue = ap->fvalue;
+  ap->last_settings.curve_opts = ap->curve_opts;
+  ap->last_settings.draw_rect = draw_rect;
+  ap->cairo_node = cr_node;
 }
 
 /**

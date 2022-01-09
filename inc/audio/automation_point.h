@@ -52,6 +52,15 @@ AutomationPointWidget;
     (ArrangerObject *) r)
 
 /**
+ * Used for caching.
+ */
+typedef struct AutomationPointDrawSettings {
+  float           fvalue;
+  CurveOptions    curve_opts;
+  GdkRectangle    draw_rect;
+} AutomationPointDrawSettings;
+
+/**
  * An automation point inside an AutomationTrack.
  */
 typedef struct AutomationPoint
@@ -71,6 +80,11 @@ typedef struct AutomationPoint
 
   /** Index in the region. */
   int             index;
+
+  AutomationPointDrawSettings last_settings;
+
+  /** Cached cairo node to reuse when drawing. */
+  GskRenderNode * cairo_node;
 } AutomationPoint;
 
 static const cyaml_schema_field_t

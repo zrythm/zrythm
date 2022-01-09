@@ -378,8 +378,8 @@ curve_get_fade_presets (void)
 
 bool
 curve_options_are_equal (
-  CurveOptions * a,
-  CurveOptions * b)
+  const CurveOptions * a,
+  const CurveOptions * b)
 {
   return
     a->algo == b->algo &&

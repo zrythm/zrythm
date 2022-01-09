@@ -204,8 +204,8 @@ curve_get_normalized_y (
 PURE
 bool
 curve_options_are_equal (
-  CurveOptions * a,
-  CurveOptions * b);
+  const CurveOptions * a,
+  const CurveOptions * b);
 
 /**
  * @}

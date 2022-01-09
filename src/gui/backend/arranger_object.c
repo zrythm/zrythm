@@ -3928,6 +3928,8 @@ arranger_object_free (
       {
         AutomationPoint * ap =
           (AutomationPoint *) self;
+        object_free_w_func_and_null (
+          gsk_render_node_unref, ap->cairo_node);
         object_zero_and_free (ap);
       }
       return;
