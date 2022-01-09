@@ -1641,6 +1641,9 @@ carla_native_plugin_instantiate (
       break;
     }
 
+  carla_native_plugin_update_buffer_size_and_sample_rate (
+    self);
+
   if (ret != 1)
     {
       g_set_error (
