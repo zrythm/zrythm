@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -75,17 +75,14 @@ piano_roll_keys_snapshot (
       return;
     }
 
-  cairo_t * cr =
-    gtk_snapshot_append_cairo (
-      snapshot, &visible_rect);
-
   GtkStyleContext *context =
     gtk_widget_get_style_context (widget);
   int width =
     gtk_widget_get_allocated_width (widget);
-  gtk_render_background (
-    context, cr, 0, 0, width,
-    visible_rect_gdk.height);
+  int height =
+    gtk_widget_get_allocated_width (widget);
+  gtk_snapshot_render_background (
+    snapshot, context, 0, 0, width, height);
 
   ChordObject * co =
     chord_track_get_chord_at_playhead (
@@ -96,25 +93,25 @@ piano_roll_keys_snapshot (
 
   bool drum_mode = tr->drum_mode;
 
-  double label_width =
-    (double) width * 0.55;
+  float label_width =
+    (float) width * 0.55;
   if (drum_mode)
     {
       label_width = width - 8;
     }
-  double key_width =
-    (double) width - label_width;
-  double px_per_key = self->px_per_key + 1.0;
+  float key_width =
+    (float) width - label_width;
+  float px_per_key = (float) self->px_per_key + 1.f;
 
   char str[400];
 
   for (int i = 0; i < 128; i++)
     {
       /* skip keys outside visible rectangle */
-      if ((double) visible_rect_gdk.y >
-            (double) ((127 - i) + 1) * px_per_key ||
-          (double) (visible_rect_gdk.y + visible_rect_gdk.height) <
-            (double) (127 - i) * px_per_key)
+      if ((float) visible_rect_gdk.y >
+            (float) ((127 - i) + 1) * px_per_key ||
+          (float) (visible_rect_gdk.y + visible_rect_gdk.height) <
+            (float) (127 - i) * px_per_key)
         continue;
 
       /* check if in scale and in chord */
@@ -162,22 +159,22 @@ piano_roll_keys_snapshot (
       else
         {
           /* ---- draw background ---- */
-          int has_color = 0;
+          bool has_color = false;
+          GdkRGBA color;
           if ((PIANO_ROLL->highlighting ==
                  PR_HIGHLIGHT_BOTH ||
                PIANO_ROLL->highlighting ==
                  PR_HIGHLIGHT_CHORD) &&
               is_bass)
             {
-              has_color = 1;
+              has_color = true;
+              color = UI_COLORS->highlight_bass_bg;
 
-              gdk_cairo_set_source_rgba (
-                cr, &UI_COLORS->highlight_bass_bg);
-              cairo_rectangle (
-                cr, 0,
-                (127 - i) * px_per_key,
-                label_width, px_per_key);
-              cairo_fill (cr);
+              gtk_snapshot_append_color (
+                snapshot, &color,
+                &GRAPHENE_RECT_INIT (
+                  0, (127 - i) * px_per_key,
+                  label_width, px_per_key));
 
               char hex[18];
               ui_gdk_rgba_to_hex (
@@ -191,15 +188,14 @@ piano_roll_keys_snapshot (
                 PR_HIGHLIGHT_BOTH && in_chord &&
                 in_scale)
             {
-              has_color = 1;
+              has_color = true;
+              color = UI_COLORS->highlight_both_bg;
 
-              gdk_cairo_set_source_rgba (
-                cr, &UI_COLORS->highlight_both_bg);
-              cairo_rectangle (
-                cr, 0,
-                (127 - i) * px_per_key,
-                label_width, px_per_key);
-              cairo_fill (cr);
+              gtk_snapshot_append_color (
+                snapshot, &color,
+                &GRAPHENE_RECT_INIT (
+                  0, (127 - i) * px_per_key,
+                  label_width, px_per_key));
 
               char hex[18];
               ui_gdk_rgba_to_hex (
@@ -214,10 +210,8 @@ piano_roll_keys_snapshot (
               PIANO_ROLL->highlighting ==
                 PR_HIGHLIGHT_BOTH) && in_scale)
             {
-              has_color = 1;
-
-              gdk_cairo_set_source_rgba (
-                cr, &UI_COLORS->highlight_scale_bg);
+              has_color = true;
+              color = UI_COLORS->highlight_scale_bg;
 
               char hex[18];
               ui_gdk_rgba_to_hex (
@@ -232,10 +226,8 @@ piano_roll_keys_snapshot (
               PIANO_ROLL->highlighting ==
                 PR_HIGHLIGHT_BOTH) && in_chord)
             {
-              has_color = 1;
-
-              gdk_cairo_set_source_rgba (
-                cr, &UI_COLORS->highlight_chord_bg);
+              has_color = true;
+              color = UI_COLORS->highlight_chord_bg;
 
               char hex[18];
               ui_gdk_rgba_to_hex (
@@ -253,11 +245,11 @@ piano_roll_keys_snapshot (
           /* draw the background color if any */
           if (has_color)
             {
-              cairo_rectangle (
-                cr, 0,
-                (127 - i) * px_per_key,
-                label_width, px_per_key);
-              cairo_fill (cr);
+              gtk_snapshot_append_color (
+                snapshot, &color,
+                &GRAPHENE_RECT_INIT (
+                  0, (127 - i) * px_per_key,
+                  label_width, px_per_key));
             }
         }
 
@@ -267,23 +259,26 @@ piano_roll_keys_snapshot (
       if (px_per_key > 16.0)
         {
           g_return_if_fail (self->layout);
-          cairo_set_source_rgba (
-            cr, 1, 1, 1, 1);
           pango_layout_set_markup (
             self->layout, str, -1);
           int ww, hh;
           pango_layout_get_pixel_size (
             self->layout, &ww, &hh);
-          double text_y_start =
+          float text_y_start =
             /* y start of the note */
             (127 - i) * px_per_key +
             /* half of the space remaining excluding
              * hh */
-            (px_per_key - (double) hh) / 2.0;
-          cairo_move_to (
-            cr, 4, text_y_start);
-          pango_cairo_show_layout (
-            cr, self->layout);
+            (px_per_key - (float) hh) / 2.0;
+          gtk_snapshot_save (snapshot);
+          gtk_snapshot_translate (
+            snapshot,
+            &GRAPHENE_POINT_INIT (
+              4, text_y_start));
+          gtk_snapshot_append_layout (
+            snapshot, self->layout,
+            &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+          gtk_snapshot_restore (snapshot);
         }
 
       /* ---- draw key ---- */
@@ -292,45 +287,46 @@ piano_roll_keys_snapshot (
       int black_note =
         piano_roll_is_key_black (i);
 
+      GdkRGBA color;
       if (black_note)
-        cairo_set_source_rgb (cr, 0, 0, 0);
+        color = Z_GDK_RGBA_INIT (0, 0, 0, 1);
       else
-        cairo_set_source_rgb (cr, 1, 1, 1);
-      cairo_rectangle (
-        cr, label_width, (127 - i) * px_per_key,
-        key_width, px_per_key);
-      cairo_fill (cr);
+        color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
+      gtk_snapshot_append_color (
+        snapshot, &color,
+        &GRAPHENE_RECT_INIT (
+          label_width, (127 - i) * px_per_key,
+          key_width, px_per_key));
 
       /* add shade if currently pressed note */
       if (piano_roll_contains_current_note (
             PIANO_ROLL, i))
         {
           /* orange */
-          cairo_set_source_rgba (
-            cr, 1, 0.462745, 0.101961, 1);
+          color =
+            Z_GDK_RGBA_INIT (
+              1, 0.462745, 0.101961, 1);
 #if 0
           /* sky blue */
           cairo_set_source_rgba (
             cr, 0.101961, 0.63922, 1, 1);
 #endif
-          cairo_rectangle (
-            cr,
-            label_width + 4, (127 - i) * px_per_key,
-            key_width - 4, px_per_key);
-          cairo_fill (cr);
+          gtk_snapshot_append_color (
+            snapshot, &color,
+            &GRAPHENE_RECT_INIT (
+              label_width + 4,
+              (127 - i) * px_per_key,
+              key_width - 4, px_per_key));
         }
 
       /* add border below */
-      double y = ((127 - i) + 1) * px_per_key;
-      cairo_set_source_rgba (
-        cr, 0.7, 0.7, 0.7, 1.0);
-      cairo_set_line_width (cr, 0.3);
-      cairo_move_to (cr, 0, y);
-      cairo_line_to (cr, width, y);
-      cairo_stroke (cr);
+      float y = ((127 - i) + 1) * px_per_key;
+      color = Z_GDK_RGBA_INIT (0.7, 0.7, 0.7, 0.3);
+      gtk_snapshot_append_color (
+        snapshot, &color,
+        &GRAPHENE_RECT_INIT (
+          0, y, width, 1));
     }
-
-  cairo_destroy (cr);
 }
 
 int
