@@ -114,6 +114,7 @@ tasks:
   - install-destdir: |
       cd zrythm
       DESTDIR=/tmp ninja -C build install
+      glib-compile-schemas /tmp/usr/local/share/glib-2.0/schemas
       /tmp/usr/local/bin/zrythm_launch --version | grep "built with"
   - install-sudo: |
       cd zrythm
