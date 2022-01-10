@@ -2006,13 +2006,12 @@ carla_native_plugin_open_ui (
             {
 #if defined (HAVE_X11) && \
   !defined (GDK_WINDOWING_WAYLAND)
-              g_debug (
-                "setting Carla plugin window "
-                "title to %s",
-                title);
               Window xid =
                 z_gtk_window_get_x11_xid (
                   GTK_WINDOW (MAIN_WINDOW));
+              g_debug (
+                "FRONTEND_WIN_ID: "
+                "setting X11 parent to %lx", xid);
               char xid_str[400];
               sprintf (xid_str, "%lx", xid);
               carla_set_engine_option (
@@ -2026,6 +2025,23 @@ carla_native_plugin_open_ui (
 #endif
             }
         }
+
+#if defined (_WOE32)
+      HWND hwnd =
+        z_gtk_window_get_windows_hwnd (
+          GTK_WINDOW (MAIN_WINDOW));
+      g_debug (
+        "FRONTEND_WIN_ID: "
+        "setting Windows parent to %"
+        PRIxPTR,
+        hwnd);
+      char hwnd_str[400];
+      sprintf (hwnd_str, "%" PRIxPTR, hwnd);
+      carla_set_engine_option (
+        self->host_handle,
+        ENGINE_OPTION_FRONTEND_WIN_ID, 0,
+        hwnd_str);
+#endif
 
       carla_show_custom_ui (
         self->host_handle, 0, show);

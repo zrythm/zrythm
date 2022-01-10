@@ -2031,6 +2031,20 @@ z_gtk_window_get_x11_xid (
 }
 #endif
 
+#ifdef _WOE32
+HWND
+z_gtk_window_get_windows_hwnd (
+  GtkWindow * window)
+{
+  GtkNative * native = GTK_NATIVE (window);
+  GdkSurface * surface =
+    gtk_native_get_surface (native);
+  HWND hwnd = GDK_SURFACE_HWND (surface);
+  g_return_val_if_fail (hwnd);
+  return hwnd;
+}
+#endif
+
 /**
  * Creates a new pixbuf for the given icon scaled
  * at the given width/height.

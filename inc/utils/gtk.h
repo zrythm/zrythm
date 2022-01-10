@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,6 +34,9 @@
 #ifdef HAVE_X11
 #include <gdk/x11/gdkx.h>
 #endif
+
+#ifdef _WOE32
+#include <gdk/win32/gdkwin32.h>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -719,6 +722,12 @@ z_gdk_clipboard_get_text (
 #ifdef HAVE_X11
 Window
 z_gtk_window_get_x11_xid (
+  GtkWindow * window);
+#endif
+
+#ifdef _WOE32
+HWND
+z_gtk_window_get_windows_hwnd (
   GtkWindow * window);
 #endif
 
