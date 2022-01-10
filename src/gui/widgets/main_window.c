@@ -171,6 +171,10 @@ on_close_request (
       bool show_diff = false;
       char * diff = NULL;
 
+      /* no need, usually diff is too large so this
+       * is a waste of time */
+#if 0
+#ifndef _WOE32
       /* get diff using `diff` */
       const size_t max_diff_len = 400;
       GError * err = NULL;
@@ -214,6 +218,8 @@ on_close_request (
       g_free (tmp_dir);
       g_free (tmp_live_fp);
       g_free (tmp_file_fp);
+#endif
+#endif
 
       GtkWidget * dialog =
         gtk_dialog_new_with_buttons (
