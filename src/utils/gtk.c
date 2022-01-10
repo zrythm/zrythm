@@ -2040,7 +2040,7 @@ z_gtk_window_get_windows_hwnd (
   GdkSurface * surface =
     gtk_native_get_surface (native);
   HWND hwnd = GDK_SURFACE_HWND (surface);
-  g_return_val_if_fail (hwnd);
+  g_return_val_if_fail (hwnd, NULL);
   return hwnd;
 }
 #endif

@@ -21,6 +21,7 @@
 
 #ifdef HAVE_CARLA
 
+#include <inttypes.h>
 #include <math.h>
 #include <stdlib.h>
 

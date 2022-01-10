@@ -603,7 +603,8 @@ test_cflags = [
   '-DACCESS_READ_ONLY(...)=' + (is_gcc ? 'ACCESS(read_only,__VA_ARGS__)' : ''),
   ]
 
-if is_gcc
+# not supported on windows
+if is_gcc and not os_windows
   test_cflags += [
     '-frecord-gcc-switches',
     ]
