@@ -119,6 +119,7 @@ z_carla_discovery_get_discovery_path (
   char * zrythm_libdir =
     zrythm_get_dir (
       ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
+  g_debug ("using zrythm_libdir: %s", zrythm_libdir);
   char * carla_discovery =
     g_build_filename (
       zrythm_libdir, "carla",

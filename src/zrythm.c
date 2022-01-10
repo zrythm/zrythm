@@ -499,12 +499,17 @@ zrythm_get_dir (
         case ZRYTHM_DIR_SYSTEM_PARENT_LIBDIR:
           res =
             g_build_filename (
-              prefix, "lib", NULL);
+              prefix, LIBDIR_NAME, NULL);
           break;
         case ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR:
-          res =
-            g_build_filename (
-              prefix, "lib", "zrythm", NULL);
+          {
+            char * parent_path =
+              zrythm_get_dir (
+                ZRYTHM_DIR_SYSTEM_PARENT_LIBDIR);
+            res =
+              g_build_filename (
+                parent_path, "zrythm", NULL);
+          }
           break;
         case ZRYTHM_DIR_SYSTEM_LOCALEDIR:
           res =
