@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-alpha.27.0.1] - 2022-01-10
+## [1.0.0-alpha.27.0.3] - 2022-01-10
 ### Added
 - New dependency libadwaita
 - New searchable preference dialog
