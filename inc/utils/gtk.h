@@ -37,6 +37,7 @@
 
 #ifdef _WOE32
 #include <gdk/win32/gdkwin32.h>
+#endif
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
