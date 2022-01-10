@@ -1,6 +1,58 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.27.0.1] - 2022-01-10
+### Added
+- New dependency libadwaita
+- New searchable preference dialog
+- Add plugin latency handling for plugins running through Carla
+- New Hebrew translation
+- Various drawing optimizations
+- Various DSP optimizations
+
+### Changed
+- Updated plugin browser filter section
+- Change UI toolkit from GTK3 to GTK4
+- Bump version requirements for some dependencies
+- Use `LD_LIBRARY_PATH` to override library paths in `zrythm_launch`
+- Run all plugins via Carla
+- Port most widget drawing from cairo (software rendering) to GTK snapshot API (OpenGL)
+- Show toast messages when backups are saved instead of showing a blocking popup
+- Use SCSS to compile CSS theme
+- Allow DSEG font loading directly from file
+- Update Indonesian, Ukrainian, Greek, Italian, Spanish, Slovenian, French, Turkish, Portuguese (Brazil), Portuguese, Chinese (Simplified), Russian translations
+- Use libdir option for Zrythm lib directory instead of 'lib'
+- Port some widgets to new GTK4 alternatives
+- Use meson dictionary to generate list of languages
+- Use Carla patchbay variant instead of rack for loading plugins to support CV ports
+- Change global single-key shortcuts to require Ctrl modifier
+- Make strict compilation flags stricter
+- Add additional gtksourceview5 language spec lookup path
+- Redraw rulers and arrangers on every frame
+- Recalculate DSP graph when reallocating engine ports
+- Use `int_fast64_t` and `uint_fast64_t` for large DSP numbers instead of `long` for better cross-platform compatibility
+- Set Carla plugin window parent on Windows so the plugin window stays on top of Zrythm
+- Do not attempt to run `diff` to check for changes when closing the project
+
+### Fixed
+- Fix issues with plugin search in plugin browser
+- Fix timeline minimap not drawing its contents
+- Meson: fix use of sse flags on non-`x86_64` systems
+- Fix modulators not being saved with the project
+- Only recreate plugin port list when selected plugin changes (fixes lag in unrelated actions)
+- Fix output track hash being saved as INT instead of UINT in channel leading to overflows and project corruption
+- Fix stack smashing in recording manager when recording automation (pre-create dynamic array)
+- Fix error when opening a project from a running instance
+- Fix incorrectly freeing memory owned by GLib (`g_settings_schema_source_get_default()`)
+- Fix various memory issues and possible NULL dereferences reported by GCC
+- Fix Carla not being notified of buffer size changes
+- Fix missing icons in mixer and transport display
+- Fix automation not being drawn when the line is vertical
+
+### Removed
+- Remove unused widgets/files
+- Remove unnecessary widget properties from UI files
+
 ## [1.0.0-alpha.26.0.13] - 2021-10-24
 ### Fixed
 - Fix occasional error when dragging objects to negative positions
