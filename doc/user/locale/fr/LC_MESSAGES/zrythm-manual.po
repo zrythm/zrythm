@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-12-21 11:28+0000\n"
+"POT-Creation-Date: 2022-01-11 21:06+0000\n"
 "PO-Revision-Date: 2021-12-05 13:50+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
@@ -3673,10 +3673,12 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/installation.rst:31
+#, fuzzy
 msgid ""
-"See :download:`INSTALL.md <../../../INSTALL.md>` in the source distribution "
-"for installation instructions."
+"See ``INSTALL.rst`` in the source distribution for installation instructions."
 msgstr ""
+"Consultez le fichier ``README.md``dans la distribution pour les instructions "
+"d'installation."
 
 #: ../../getting-started/installation.rst:36
 #: ../../getting-started/system-requirements.rst:53
@@ -3698,7 +3700,7 @@ msgstr "**Arch Linux** - x86_64"
 
 #: ../../getting-started/installation.rst:44
 #, fuzzy
-msgid "**Debian 10 && 11** - amd64"
+msgid "**Debian Stable & Testing** - amd64"
 msgstr ""
 "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
 "**Debian 9 & 10** - amd64\n"
@@ -3706,22 +3708,12 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../getting-started/installation.rst:45
-#, fuzzy
-msgid "**Fedora 31 && 32** - x86_64"
+msgid "**Latest 2 Fedora releases** - x86_64"
 msgstr ""
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"**Fedora 31** - x86_64\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../getting-started/installation.rst:46
-#, fuzzy
-msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
+msgid "**Ubuntu latest LTS & non-LTS** - amd64"
 msgstr ""
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"**Ubuntu 18.10 & 19.04** - amd64\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../getting-started/installation.rst:48
 msgid ""
@@ -8709,21 +8701,6 @@ msgstr ""
 msgid "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
 msgstr ""
 
-#: ../../user-media/intro.rst:30
-msgid "Video"
-msgstr "Vidéo"
-
-#: ../../user-media/intro.rst:33
-msgid "French Tutorials"
-msgstr ""
-
-#: ../../user-media/intro.rst:34
-msgid ""
-"Till Parisot has compiled a playlist of Zrythm tutorials in French on "
-"`PeerTube TeDomum <https://video.tedomum.net/video-channels/thil_riposta/"
-"videos>`_."
-msgstr ""
-
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
 msgstr ""
@@ -9331,6 +9308,23 @@ msgid ""
 "Information about the currently selected backend and options is visible in "
 "the bottom left corner."
 msgstr ""
+
+#~ msgid "**Fedora 31 && 32** - x86_64"
+#~ msgstr ""
+#~ "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "**Fedora 31** - x86_64\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+
+#~ msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
+#~ msgstr ""
+#~ "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "**Ubuntu 18.10 & 19.04** - amd64\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+
+#~ msgid "Video"
+#~ msgstr "Vidéo"
 
 #~ msgid "Example: ``NO_SCAN_PLUGINS=1``"
 #~ msgstr "Exemple : ``NO_SCAN_PLUGINS=1``"
@@ -10196,13 +10190,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Si vous êtes sous Arch Linux ou dérivés tels que Parabola, la dernière "
 #~ "branche maître peut être installée via le paquet ``zrythm-git'' dans AUR."
-
-#~ msgid ""
-#~ "See the ``README.md`` file in the distribution for installation "
-#~ "instructions."
-#~ msgstr ""
-#~ "Consultez le fichier ``README.md``dans la distribution pour les "
-#~ "instructions d'installation."
 
 #~ msgid "Writing Code"
 #~ msgstr "Écrire du code"

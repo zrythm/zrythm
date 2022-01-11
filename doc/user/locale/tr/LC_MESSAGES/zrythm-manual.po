@@ -1,4 +1,4 @@
-# Translations template for PROJECT.
+# Turkish translations for PROJECT.
 # Copyright (C) 2021 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-12-21 11:28+0000\n"
+"POT-Creation-Date: 2022-01-11 21:06+0000\n"
 "PO-Revision-Date: 2021-12-30 09:50+0000\n"
 "Last-Translator: Burak Hüseyin Ekseli <burakekseli@yandex.com>\n"
-"Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/tr/>\n"
 "Language: tr\n"
+"Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/tr/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10.1\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -2910,8 +2909,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:31
 msgid ""
-"See :download:`INSTALL.md <../../../INSTALL.md>` in the source distribution "
-"for installation instructions."
+"See ``INSTALL.rst`` in the source distribution for installation instructions."
 msgstr ""
 
 #: ../../getting-started/installation.rst:36
@@ -2932,15 +2930,15 @@ msgid "**Arch Linux** - x86_64"
 msgstr ""
 
 #: ../../getting-started/installation.rst:44
-msgid "**Debian 10 && 11** - amd64"
+msgid "**Debian Stable & Testing** - amd64"
 msgstr ""
 
 #: ../../getting-started/installation.rst:45
-msgid "**Fedora 31 && 32** - x86_64"
+msgid "**Latest 2 Fedora releases** - x86_64"
 msgstr ""
 
 #: ../../getting-started/installation.rst:46
-msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
+msgid "**Ubuntu latest LTS & non-LTS** - amd64"
 msgstr ""
 
 #: ../../getting-started/installation.rst:48
@@ -6865,21 +6863,6 @@ msgstr ""
 
 #: ../../user-media/intro.rst:27
 msgid "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
-msgstr ""
-
-#: ../../user-media/intro.rst:30
-msgid "Video"
-msgstr ""
-
-#: ../../user-media/intro.rst:33
-msgid "French Tutorials"
-msgstr ""
-
-#: ../../user-media/intro.rst:34
-msgid ""
-"Till Parisot has compiled a playlist of Zrythm tutorials in French on "
-"`PeerTube TeDomum <https://video.tedomum.net/video-channels/thil_riposta/"
-"videos>`_."
 msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:8

@@ -12,17 +12,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-12-21 11:28+0000\n"
+"POT-Creation-Date: 2022-01-11 21:06+0000\n"
 "PO-Revision-Date: 2022-01-11 09:55+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.10.1\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -99,7 +98,8 @@ msgstr "Ficheiros instalados"
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "When Zrythm is installed, it installs the following files by default."
-msgstr "Quando o Zrythm é instalado, instala os seguintes ficheiros por padrão."
+msgstr ""
+"Quando o Zrythm é instalado, instala os seguintes ficheiros por padrão."
 
 #: ../../appendix/files-and-directories.rst:20
 msgid "Desktop Entry"
@@ -130,8 +130,8 @@ msgid ""
 "xml`."
 msgstr ""
 "Este ficheiro contém o esquema para as configurações do utilizador. É "
-"normalmente instalado em :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm"
-".gschema.xml`."
+"normalmente instalado em :file:`/usr/share/glib-2.0/schemas/org.zrythm."
+"Zrythm.gschema.xml`."
 
 #: ../../appendix/files-and-directories.rst:34
 msgid "Desktop Icon"
@@ -203,8 +203,8 @@ msgid ""
 "Default themes (including icon themes) will normally be installed under :"
 "file:`/usr/share/zrythm/themes`."
 msgstr ""
-"Os temas padrão (incluindo temas de ícones) serão normalmente instalados em "
-":file:`/usr/share/zrythm/themes'."
+"Os temas padrão (incluindo temas de ícones) serão normalmente instalados em :"
+"file:`/usr/share/zrythm/themes'."
 
 #: ../../appendix/files-and-directories.rst:71
 msgid ""
@@ -241,8 +241,8 @@ msgid ""
 "This file contains your plugin collections. It is found at :file:"
 "`plugin_collections.yaml` under the :term:`Zrythm user path`."
 msgstr ""
-"Este ficheiro contém as suas coleções de suplementos. Encontra-se em "
-":file:`plugin_collections.yaml` sob o termo :term:`Zrythm user path`."
+"Este ficheiro contém as suas coleções de suplementos. Encontra-se em :file:"
+"`plugin_collections.yaml` sob o termo :term:`Zrythm user path`."
 
 #: ../../appendix/files-and-directories.rst:93
 msgid "Log File"
@@ -257,8 +257,8 @@ msgid ""
 msgstr ""
 "Zrythm irá escrever num ficheiro de log em cada execução dentro do "
 "subdiretório :file:`log` sob o termo :term:`Zrythm user path`. O nome do "
-"ficheiro conterá a data e hora atual, por exemplo "
-":file:`log_2020-06-26_15-34-19.log`."
+"ficheiro conterá a data e hora atual, por exemplo :file:"
+"`log_2020-06-26_15-34-19.log`."
 
 #: ../../appendix/files-and-directories.rst:100
 msgid "This log file is useful for debugging crashes and other problems."
@@ -3413,12 +3413,12 @@ msgstr ""
 "zrythm.org/releases/>`_ ou `git <https://git.zrythm.org/cgit/zrythm/>`_."
 
 #: ../../getting-started/installation.rst:31
+#, fuzzy
 msgid ""
-"See :download:`INSTALL.md <../../../INSTALL.md>` in the source distribution "
-"for installation instructions."
+"See ``INSTALL.rst`` in the source distribution for installation instructions."
 msgstr ""
-"Veja :download:`INSTALL.md <../../../INSTALL.md>` na distribuição da fonte "
-"para instruções de instalação."
+"Veja o ficheiro ``INSTALL.md``` na distribuição da fonte para instruções de "
+"instalação."
 
 #: ../../getting-started/installation.rst:36
 #: ../../getting-started/system-requirements.rst:53
@@ -3438,16 +3438,17 @@ msgid "**Arch Linux** - x86_64"
 msgstr "**Arch Linux** - x86_64"
 
 #: ../../getting-started/installation.rst:44
-msgid "**Debian 10 && 11** - amd64"
+#, fuzzy
+msgid "**Debian Stable & Testing** - amd64"
 msgstr "**Debian 10 && 11** - amd64"
 
 #: ../../getting-started/installation.rst:45
-msgid "**Fedora 31 && 32** - x86_64"
-msgstr "**Fedora 31 && 32** - x86_64"
+msgid "**Latest 2 Fedora releases** - x86_64"
+msgstr ""
 
 #: ../../getting-started/installation.rst:46
-msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
-msgstr "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
+msgid "**Ubuntu latest LTS & non-LTS** - amd64"
+msgstr ""
 
 #: ../../getting-started/installation.rst:48
 msgid ""
@@ -8111,25 +8112,6 @@ msgstr ""
 msgid "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
 msgstr ""
 
-#: ../../user-media/intro.rst:30
-msgid "Video"
-msgstr "Vídeo"
-
-#: ../../user-media/intro.rst:33
-msgid "French Tutorials"
-msgstr "Tutoriais franceses"
-
-#: ../../user-media/intro.rst:34
-#, fuzzy
-msgid ""
-"Till Parisot has compiled a playlist of Zrythm tutorials in French on "
-"`PeerTube TeDomum <https://video.tedomum.net/video-channels/thil_riposta/"
-"videos>`_."
-msgstr ""
-"Till Parisot compilou uma lista de reprodução de tutoriais do Zrythm em "
-"francês em `PeerTube TeDonum <https://video.tedomum.net/video-channels/"
-"thil_riposta/videos>`_."
-
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
 msgstr "Painel inferior"
@@ -8741,6 +8723,34 @@ msgid ""
 msgstr ""
 "As informações sobre o backend e as opções atualmente selecionadas são "
 "visíveis no canto inferior esquerdo."
+
+#~ msgid ""
+#~ "See :download:`INSTALL.md <../../../INSTALL.md>` in the source "
+#~ "distribution for installation instructions."
+#~ msgstr ""
+#~ "Veja :download:`INSTALL.md <../../../INSTALL.md>` na distribuição da "
+#~ "fonte para instruções de instalação."
+
+#~ msgid "**Fedora 31 && 32** - x86_64"
+#~ msgstr "**Fedora 31 && 32** - x86_64"
+
+#~ msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
+#~ msgstr "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
+
+#~ msgid "Video"
+#~ msgstr "Vídeo"
+
+#~ msgid "French Tutorials"
+#~ msgstr "Tutoriais franceses"
+
+#~ msgid ""
+#~ "Till Parisot has compiled a playlist of Zrythm tutorials in French on "
+#~ "`PeerTube TeDomum <https://video.tedomum.net/video-channels/thil_riposta/"
+#~ "videos>`_."
+#~ msgstr ""
+#~ "Till Parisot compilou uma lista de reprodução de tutoriais do Zrythm em "
+#~ "francês em `PeerTube TeDonum <https://video.tedomum.net/video-channels/"
+#~ "thil_riposta/videos>`_."
 
 #~ msgid "Example: ``NO_SCAN_PLUGINS=1``"
 #~ msgstr "Exemplo: ``NO_SCAN_PLUGINS=1``"
@@ -10281,13 +10291,6 @@ msgstr ""
 #~ "Iniciantes para começar com JACK <https://libremusicproduction.com/"
 #~ "articles/desmistificando-jack-%E2%80%93-iniciantes-guia-getting-start-"
 #~ "jack.html>'_, então vamos pular essa parte."
-
-#~ msgid ""
-#~ "See the :file:`INSTALL.md` file in the source distribution for "
-#~ "installation instructions."
-#~ msgstr ""
-#~ "Veja o ficheiro ``INSTALL.md``` na distribuição da fonte para instruções "
-#~ "de instalação."
 
 #~ msgid ""
 #~ "A Region (Clip) is a container for MIDI Notes, audio or other events. "

@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-12-21 11:28+0000\n"
+"POT-Creation-Date: 2022-01-11 21:06+0000\n"
 "PO-Revision-Date: 2021-09-11 15:43+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -3386,12 +3386,12 @@ msgstr ""
 "を使用して、ソースから Zrythm をビルドすることもできます。"
 
 #: ../../getting-started/installation.rst:31
+#, fuzzy
 msgid ""
-"See :download:`INSTALL.md <../../../INSTALL.md>` in the source distribution "
-"for installation instructions."
+"See ``INSTALL.rst`` in the source distribution for installation instructions."
 msgstr ""
-"インストール方法については、ソース配布物の :download:`INSTALL.md <../../../"
-"INSTALL.md>` を参照してください。"
+"インストール方法については、ソース配布物の ``INSTALL.md`` ファイルを参照して"
+"ください。"
 
 #: ../../getting-started/installation.rst:36
 #: ../../getting-started/system-requirements.rst:53
@@ -3413,16 +3413,17 @@ msgid "**Arch Linux** - x86_64"
 msgstr "**Arch Linux** - x86_64"
 
 #: ../../getting-started/installation.rst:44
-msgid "**Debian 10 && 11** - amd64"
+#, fuzzy
+msgid "**Debian Stable & Testing** - amd64"
 msgstr "**Debian 10 & 11** - amd64"
 
 #: ../../getting-started/installation.rst:45
-msgid "**Fedora 31 && 32** - x86_64"
-msgstr "**Fedora 31 && 32** - x86_64"
+msgid "**Latest 2 Fedora releases** - x86_64"
+msgstr ""
 
 #: ../../getting-started/installation.rst:46
-msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
-msgstr "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
+msgid "**Ubuntu latest LTS & non-LTS** - amd64"
+msgstr ""
 
 #: ../../getting-started/installation.rst:48
 msgid ""
@@ -7997,24 +7998,6 @@ msgid "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
 msgstr ""
 "`[weoxmによるスケッチ] <https://koyu.space/@weoxm/106672723040062331>`_"
 
-#: ../../user-media/intro.rst:30
-msgid "Video"
-msgstr "動画"
-
-#: ../../user-media/intro.rst:33
-msgid "French Tutorials"
-msgstr "フランス語でのチュートリアル"
-
-#: ../../user-media/intro.rst:34
-msgid ""
-"Till Parisot has compiled a playlist of Zrythm tutorials in French on "
-"`PeerTube TeDomum <https://video.tedomum.net/video-channels/thil_riposta/"
-"videos>`_."
-msgstr ""
-"Till Parisot氏は、フランス語によるZrythmチュートリアルのプレイリストを "
-"`PeerTube TeDomum <https://video.tedomum.net/video-channels/thil_riposta/"
-"videos>`_ にまとめてくれました。"
-
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
 msgstr "下部パネル"
@@ -8626,6 +8609,34 @@ msgid ""
 msgstr ""
 "現在選択されているバックエンドとオプションに関する情報は、左下に表示されま"
 "す。"
+
+#~ msgid ""
+#~ "See :download:`INSTALL.md <../../../INSTALL.md>` in the source "
+#~ "distribution for installation instructions."
+#~ msgstr ""
+#~ "インストール方法については、ソース配布物の :download:`INSTALL.md "
+#~ "<../../../INSTALL.md>` を参照してください。"
+
+#~ msgid "**Fedora 31 && 32** - x86_64"
+#~ msgstr "**Fedora 31 && 32** - x86_64"
+
+#~ msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
+#~ msgstr "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
+
+#~ msgid "Video"
+#~ msgstr "動画"
+
+#~ msgid "French Tutorials"
+#~ msgstr "フランス語でのチュートリアル"
+
+#~ msgid ""
+#~ "Till Parisot has compiled a playlist of Zrythm tutorials in French on "
+#~ "`PeerTube TeDomum <https://video.tedomum.net/video-channels/thil_riposta/"
+#~ "videos>`_."
+#~ msgstr ""
+#~ "Till Parisot氏は、フランス語によるZrythmチュートリアルのプレイリストを "
+#~ "`PeerTube TeDomum <https://video.tedomum.net/video-channels/thil_riposta/"
+#~ "videos>`_ にまとめてくれました。"
 
 #~ msgid "Example: ``NO_SCAN_PLUGINS=1``"
 #~ msgstr "例: ``NO_SCAN_PLUGINS=1``"
@@ -9923,13 +9934,6 @@ msgstr ""
 #~ msgstr ""
 #~ "また、 `freshports <https://www.freshports.org/audio/zrythm/>`_ からZrythm"
 #~ "をインストールすることもできます。"
-
-#~ msgid ""
-#~ "See the :file:`INSTALL.md` file in the source distribution for "
-#~ "installation instructions."
-#~ msgstr ""
-#~ "インストール方法については、ソース配布物の ``INSTALL.md`` ファイルを参照し"
-#~ "てください。"
 
 #~ msgid "MIDI Note"
 #~ msgstr "MIDIノート"

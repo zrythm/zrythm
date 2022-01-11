@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-12-21 11:28+0000\n"
+"POT-Creation-Date: 2022-01-11 21:06+0000\n"
 "PO-Revision-Date: 2021-08-09 23:33+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language: nb_NO\n"
@@ -3130,10 +3130,10 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/installation.rst:31
+#, fuzzy
 msgid ""
-"See :download:`INSTALL.md <../../../INSTALL.md>` in the source distribution "
-"for installation instructions."
-msgstr ""
+"See ``INSTALL.rst`` in the source distribution for installation instructions."
+msgstr "Sjekk ``README.md``-filen i distribusjonen for installasjonsinstruks."
 
 #: ../../getting-started/installation.rst:36
 #: ../../getting-started/system-requirements.rst:53
@@ -3153,15 +3153,15 @@ msgid "**Arch Linux** - x86_64"
 msgstr ""
 
 #: ../../getting-started/installation.rst:44
-msgid "**Debian 10 && 11** - amd64"
+msgid "**Debian Stable & Testing** - amd64"
 msgstr ""
 
 #: ../../getting-started/installation.rst:45
-msgid "**Fedora 31 && 32** - x86_64"
+msgid "**Latest 2 Fedora releases** - x86_64"
 msgstr ""
 
 #: ../../getting-started/installation.rst:46
-msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
+msgid "**Ubuntu latest LTS & non-LTS** - amd64"
 msgstr ""
 
 #: ../../getting-started/installation.rst:48
@@ -7286,21 +7286,6 @@ msgstr ""
 msgid "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
 msgstr ""
 
-#: ../../user-media/intro.rst:30
-msgid "Video"
-msgstr ""
-
-#: ../../user-media/intro.rst:33
-msgid "French Tutorials"
-msgstr ""
-
-#: ../../user-media/intro.rst:34
-msgid ""
-"Till Parisot has compiled a playlist of Zrythm tutorials in French on "
-"`PeerTube TeDomum <https://video.tedomum.net/video-channels/thil_riposta/"
-"videos>`_."
-msgstr ""
-
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
 msgstr ""
@@ -7971,12 +7956,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Hvis du bruker Arch Linux, eller en avart derav, som Parabola, kan siste "
 #~ "hovedforgrening installeres via ``zrythm-git``-pakken i AUR."
-
-#~ msgid ""
-#~ "See the ``README.md`` file in the distribution for installation "
-#~ "instructions."
-#~ msgstr ""
-#~ "Sjekk ``README.md``-filen i distribusjonen for installasjonsinstruks."
 
 #~ msgid "Writing Code"
 #~ msgstr "Kodeskriving"

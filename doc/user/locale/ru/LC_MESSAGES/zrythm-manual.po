@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-12-21 11:28+0000\n"
+"POT-Creation-Date: 2022-01-11 21:06+0000\n"
 "PO-Revision-Date: 2021-09-06 18:34+0000\n"
 "Last-Translator: Nikita Saschenko <neketa777@gmail.com>\n"
 "Language: ru\n"
@@ -3722,12 +3722,12 @@ msgstr ""
 "org/releases/>`_ или на нашем `git <https://git.zrythm.org/cgit/zrythm/>`_."
 
 #: ../../getting-started/installation.rst:31
+#, fuzzy
 msgid ""
-"See :download:`INSTALL.md <../../../INSTALL.md>` in the source distribution "
-"for installation instructions."
+"See ``INSTALL.rst`` in the source distribution for installation instructions."
 msgstr ""
-"Инструкции по установке смотрите в :download:`INSTALL.md <../../../INSTALL."
-"md>` , который находится в папке с исходным кодом."
+"Смотрите файл ``INSTALL.md`` в исходном коде для получения инструкции по "
+"сборке и установке."
 
 #: ../../getting-started/installation.rst:36
 #: ../../getting-started/system-requirements.rst:53
@@ -3749,16 +3749,17 @@ msgid "**Arch Linux** - x86_64"
 msgstr "**Arch Linux** - x86_64"
 
 #: ../../getting-started/installation.rst:44
-msgid "**Debian 10 && 11** - amd64"
+#, fuzzy
+msgid "**Debian Stable & Testing** - amd64"
 msgstr "**Debian 10 && 11** - amd64"
 
 #: ../../getting-started/installation.rst:45
-msgid "**Fedora 31 && 32** - x86_64"
-msgstr "**Fedora 31 && 32** - x86_64"
+msgid "**Latest 2 Fedora releases** - x86_64"
+msgstr ""
 
 #: ../../getting-started/installation.rst:46
-msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
-msgstr "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
+msgid "**Ubuntu latest LTS & non-LTS** - amd64"
+msgstr ""
 
 #: ../../getting-started/installation.rst:48
 msgid ""
@@ -8510,21 +8511,6 @@ msgstr ""
 msgid "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
 msgstr ""
 
-#: ../../user-media/intro.rst:30
-msgid "Video"
-msgstr "Видео"
-
-#: ../../user-media/intro.rst:33
-msgid "French Tutorials"
-msgstr ""
-
-#: ../../user-media/intro.rst:34
-msgid ""
-"Till Parisot has compiled a playlist of Zrythm tutorials in French on "
-"`PeerTube TeDomum <https://video.tedomum.net/video-channels/thil_riposta/"
-"videos>`_."
-msgstr ""
-
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
 msgstr "Нижняя Панель"
@@ -9142,6 +9128,22 @@ msgstr ""
 "Информация о текущем выбранном сервере и параметрах отображается в нижнем "
 "левом углу."
 
+#~ msgid ""
+#~ "See :download:`INSTALL.md <../../../INSTALL.md>` in the source "
+#~ "distribution for installation instructions."
+#~ msgstr ""
+#~ "Инструкции по установке смотрите в :download:`INSTALL.md <../../../"
+#~ "INSTALL.md>` , который находится в папке с исходным кодом."
+
+#~ msgid "**Fedora 31 && 32** - x86_64"
+#~ msgstr "**Fedora 31 && 32** - x86_64"
+
+#~ msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
+#~ msgstr "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
+
+#~ msgid "Video"
+#~ msgstr "Видео"
+
 #~ msgid "Example: ``NO_SCAN_PLUGINS=1``"
 #~ msgstr "Пример: ``NO_SCAN_PLUGINS=1``"
 
@@ -9731,13 +9733,6 @@ msgstr ""
 #~ "html>`_ . Имеется руководство на русском языке: `JACK в Linux: настройка "
 #~ "<http://nerohelp.info/3569-ljack-stn.html>`_ . Поэтому мы пропустим эту "
 #~ "часть."
-
-#~ msgid ""
-#~ "See the :file:`INSTALL.md` file in the source distribution for "
-#~ "installation instructions."
-#~ msgstr ""
-#~ "Смотрите файл ``INSTALL.md`` в исходном коде для получения инструкции по "
-#~ "сборке и установке."
 
 #~ msgid "This feature is not available at the moment."
 #~ msgstr "На данный момент эта функция недоступна."

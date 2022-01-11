@@ -118,6 +118,7 @@ inc/gui/widgets/slider_bar.h
 inc/gui/widgets/channel_sends_expander.h
 inc/gui/widgets/timeline_panel.h
 inc/gui/widgets/fader_controls_expander.h
+inc/gui/widgets/gtk_flipper.h
 inc/gui/widgets/route_target_selector.h
 inc/gui/widgets/marker.h
 inc/gui/widgets/snap_grid_popover.h
@@ -297,6 +298,7 @@ inc/utils/curl.h
 inc/utils/system.h
 inc/utils/flags.h
 inc/utils/file.h
+inc/utils/pango.h
 inc/utils/dir.h
 inc/utils/audio.h
 inc/utils/terminal.h
@@ -544,6 +546,7 @@ src/gui/widgets/bot_dock_edge.c
 src/gui/widgets/digital_meter.c
 src/gui/widgets/drag_dest_box.c
 src/gui/widgets/modulator.c
+src/gui/widgets/gtk_flipper.c
 src/gui/widgets/channel_slot.c
 src/gui/widgets/arranger.c
 src/gui/widgets/piano_roll_keys.c
@@ -694,6 +697,7 @@ src/utils/pcg_rand.c
 src/utils/smf.c
 src/utils/system.c
 src/utils/env.c
+src/utils/pango.c
 src/utils/objects.c
 src/utils/strv_builder.c
 src/utils/localization.c
