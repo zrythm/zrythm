@@ -5,13 +5,14 @@
 #
 # xunil-cloud <freed602om@gmail.com>, 2020.
 # sonata-chen <sonatachen39@gmail.com>, 2020, 2021.
+# tommyliu313 <liuchaktin@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-12-20 16:53+0000\n"
-"PO-Revision-Date: 2021-03-27 08:11+0000\n"
-"Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
+"PO-Revision-Date: 2022-01-04 10:52+0000\n"
+"Last-Translator: tommyliu313 <liuchaktin@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.6-dev\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -3087,7 +3088,7 @@ msgstr ""
 #. TRANSLATORS: Home directory
 #: src/gui/backend/file_manager.c:57
 msgid "Home"
-msgstr ""
+msgstr "主頁"
 
 #. TRANSLATORS: Desktop directory
 #: src/gui/backend/file_manager.c:68

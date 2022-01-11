@@ -9,13 +9,14 @@
 # Eric <spice2wolf@gmail.com>, 2021.
 # UnluckyNinja <unluckyninja1994@gmail.com>, 2021.
 # Liu Tao <lyuutau@outlook.com>, 2021.
+# poi <erbaotao@outlook.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-12-20 16:53+0000\n"
-"PO-Revision-Date: 2021-12-21 11:53+0000\n"
-"Last-Translator: Eric <spice2wolf@gmail.com>\n"
+"PO-Revision-Date: 2022-01-11 09:55+0000\n"
+"Last-Translator: poi <erbaotao@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -23,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -6507,9 +6508,8 @@ msgid "Default algorithm to use for automation curves."
 msgstr "用于自动化曲线的默认算法。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1085
-#, fuzzy
 msgid "Undo stack length"
-msgstr "撤销堆栈长度"
+msgstr "撤销次数限制"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1086
 msgid "Maximum undo history stack length. Set to -1 for unlimited."

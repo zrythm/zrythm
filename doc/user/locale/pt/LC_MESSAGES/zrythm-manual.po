@@ -13,15 +13,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-12-21 11:28+0000\n"
-"PO-Revision-Date: 2021-12-19 07:51+0000\n"
+"PO-Revision-Date: 2022-01-11 09:55+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.10.1\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -60,11 +61,11 @@ msgstr "Exemplo: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
 
 #: ../../appendix/environment.rst:37
 msgid "Set this to the locations to scan for :term:`VST2` plugins."
-msgstr ""
+msgstr "Define isto aos locais para procurar por suplementos de :term:`LV2`."
 
 #: ../../appendix/environment.rst:42
 msgid "Set this to the locations to scan for :term:`VST3` plugins."
-msgstr ""
+msgstr "Define isto aos locais para procurar por suplementos de :term:`VST3`."
 
 #: ../../appendix/environment.rst:47
 msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."
@@ -72,15 +73,15 @@ msgstr ""
 
 #: ../../appendix/environment.rst:52
 msgid "Set to 1 to show extra information useful for developers."
-msgstr ""
+msgstr "Define a 1 para mostrar mais informações úteis para programadores."
 
 #: ../../appendix/files-and-directories.rst:6
 msgid "Files and Directories"
-msgstr ""
+msgstr "Ficheiros e Diretórios"
 
 #: ../../appendix/files-and-directories.rst:9
 msgid "User path"
-msgstr ""
+msgstr "Caminho do utilizador"
 
 #: ../../appendix/files-and-directories.rst:10
 msgid ""
@@ -88,18 +89,21 @@ msgid ""
 "directory for saving your user data. See :term:`Zrythm user path` for "
 "details."
 msgstr ""
+"Quando o Zrythm for lançado pela primeira vez, também o pedirá que selecione "
+"um diretório para gravar os seus dados de utilizador. Veja :term:`Zrythm "
+"user path` para detalhes."
 
 #: ../../appendix/files-and-directories.rst:15
 msgid "Installed Files"
-msgstr ""
+msgstr "Ficheiros instalados"
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "When Zrythm is installed, it installs the following files by default."
-msgstr ""
+msgstr "Quando o Zrythm é instalado, instala os seguintes ficheiros por padrão."
 
 #: ../../appendix/files-and-directories.rst:20
 msgid "Desktop Entry"
-msgstr ""
+msgstr "Entrada na área de trabalho"
 
 #: ../../appendix/files-and-directories.rst:21
 msgid ""
@@ -109,10 +113,15 @@ msgid ""
 "menus, etc. This is normally installed at :file:`/usr/share/applications/"
 "zrythm.desktop`."
 msgstr ""
+"Um `ficheiro de configuração freedesktop-complicant <https://specifications."
+"freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html>`_ que "
+"descreve como um determinado programa deve ser iniciado, como aparece nos "
+"menus, etc. Isto é normalmente instalado em :file:`/usr/share/applications/"
+"zrythm.desktop`."
 
 #: ../../appendix/files-and-directories.rst:28
 msgid "GLib Schema"
-msgstr ""
+msgstr "Esquema GLib"
 
 #: ../../appendix/files-and-directories.rst:29
 msgid ""
@@ -120,26 +129,33 @@ msgid ""
 "installed at :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema."
 "xml`."
 msgstr ""
+"Este ficheiro contém o esquema para as configurações do utilizador. É "
+"normalmente instalado em :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm"
+".gschema.xml`."
 
 #: ../../appendix/files-and-directories.rst:34
 msgid "Desktop Icon"
-msgstr ""
+msgstr "Ícone da área de trabalho"
 
 #: ../../appendix/files-and-directories.rst:35
 msgid ""
 "This is used by the desktop environment. Normally installed at :file:`/usr/"
 "share/icons/hicolor/scalable/apps/zrythm.svg`."
 msgstr ""
+"Isto é usado pelo ambiente de trabalho. Normalmente instalado em :file:`/usr/"
+"share/icons/hicolor/scalable/apps/zrythm.svg`."
 
 #: ../../appendix/files-and-directories.rst:40
 msgid "Localization Files"
-msgstr ""
+msgstr "Ficheiros de Localização"
 
 #: ../../appendix/files-and-directories.rst:41
 msgid ""
 "Localization files are installed under :file:`/usr/share/locale`. For "
 "example, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` for Korean."
 msgstr ""
+"Os ficheiros de localização são instalados em :file:`/usr/share/locale`. Por "
+"exemplo, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` para o coreano."
 
 #: ../../appendix/files-and-directories.rst:47
 #: ../../getting-started/getting-plugins.rst:100
@@ -154,7 +170,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:53
 msgid "Fonts"
-msgstr ""
+msgstr "Fontes"
 
 #: ../../appendix/files-and-directories.rst:54
 msgid ""
@@ -162,6 +178,9 @@ msgid ""
 "required by Zrythm will normally be installed under :file:`/usr/share/fonts/"
 "zrythm`."
 msgstr ""
+"A menos que sua distribuição forneça pacotes para as fontes requeridas, as "
+"fontes requeridas pela Zrythm serão normalmente instaladas em :file:`/usr/"
+"share/fonts/zrythm`."
 
 #: ../../appendix/files-and-directories.rst:60
 msgid "GtkSourceView Stylesheets"
@@ -172,16 +191,20 @@ msgid ""
 "Zrythm will install CSS stylesheets to be used by some text input widgets "
 "under :file:`/usr/share/zrythm/sourceview-styles`."
 msgstr ""
+"Zrythm irá instalar stylesheets CSS para serem utilizadas por alguns widgets "
+"de entrada de texto em :file:`/usr/share/zrythm/sourceview-styles'."
 
 #: ../../appendix/files-and-directories.rst:66
 msgid "Themes"
-msgstr ""
+msgstr "Temas"
 
 #: ../../appendix/files-and-directories.rst:67
 msgid ""
 "Default themes (including icon themes) will normally be installed under :"
 "file:`/usr/share/zrythm/themes`."
 msgstr ""
+"Os temas padrão (incluindo temas de ícones) serão normalmente instalados em "
+":file:`/usr/share/zrythm/themes'."
 
 #: ../../appendix/files-and-directories.rst:71
 msgid ""
@@ -189,49 +212,58 @@ msgid ""
 "files in the :term:`Zrythm user path`. See :doc:`../theming/intro` for "
 "details."
 msgstr ""
+"Zrythm fornece maneiras de sobrepor alguns desses ficheiros com ficheiros "
+"especificados pelo utilizador no :term:`Zrythm user path`. Veja :doc:`.../"
+"theming/intro` para detalhes."
 
 #: ../../appendix/files-and-directories.rst:77
 msgid "User Files"
-msgstr ""
+msgstr "Ficheiros de utilizador"
 
 #: ../../appendix/files-and-directories.rst:79
 msgid "Cached Plugin Descriptors"
-msgstr ""
+msgstr "Descritores de suplementos em cache"
 
 #: ../../appendix/files-and-directories.rst:80
-#, fuzzy
 msgid ""
 "Plugin descriptor cache for faster scanning. This is found at :file:"
 "`cached_plugin_descriptors.yaml` under the :term:`Zrythm user path`."
 msgstr ""
-"Zrythm lembrará-se dos suplementos VST analizados e gravará esta informação "
+"Zrythm lembrar-se-á dos suplementos VST analisados e gravará esta informação "
 "em :file:`cached_plugin_descriptors.yaml` no :term:`Zrythm user path`."
 
 #: ../../appendix/files-and-directories.rst:86
-#, fuzzy
 msgid "Plugin Collections"
-msgstr "Coleções"
+msgstr "Coleções de suplementos"
 
 #: ../../appendix/files-and-directories.rst:87
 msgid ""
 "This file contains your plugin collections. It is found at :file:"
 "`plugin_collections.yaml` under the :term:`Zrythm user path`."
 msgstr ""
+"Este ficheiro contém as suas coleções de suplementos. Encontra-se em "
+":file:`plugin_collections.yaml` sob o termo :term:`Zrythm user path`."
 
 #: ../../appendix/files-and-directories.rst:93
 msgid "Log File"
-msgstr ""
+msgstr "Ficheiro de registo"
 
 #: ../../appendix/files-and-directories.rst:94
+#, fuzzy
 msgid ""
 "Zrythm will write to a log file on each run inside the :file:`log` "
 "subdirectory under the :term:`Zrythm user path`. The filename will contain "
 "the current date and time, for example :file:`log_2020-06-26_15-34-19.log`."
 msgstr ""
+"Zrythm irá escrever num ficheiro de log em cada execução dentro do "
+"subdiretório :file:`log` sob o termo :term:`Zrythm user path`. O nome do "
+"ficheiro conterá a data e hora atual, por exemplo "
+":file:`log_2020-06-26_15-34-19.log`."
 
 #: ../../appendix/files-and-directories.rst:100
 msgid "This log file is useful for debugging crashes and other problems."
 msgstr ""
+"Este ficheiro de log é útil para a depuração de falhas e outros problemas."
 
 #: ../../appendix/gnu-free-documentation-license.rst:6
 msgid "GNU Free Documentation License"

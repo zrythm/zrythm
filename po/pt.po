@@ -2,15 +2,16 @@
 # Copyright (C) 2019 THE zrythm'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # alex <alex@zrythm.org>, 2019.
-# ssantos <ssantos@web.de>, 2020, 2021.
+# ssantos <ssantos@web.de>, 2020, 2021, 2022.
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
+# Malu CubeCraft <malucubecraft@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-12-20 16:53+0000\n"
-"PO-Revision-Date: 2021-12-19 07:51+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
+"PO-Revision-Date: 2022-01-11 09:55+0000\n"
+"Last-Translator: Malu CubeCraft <malucubecraft@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
 "Language: pt\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -726,11 +727,12 @@ msgid "Failed to load Carla state"
 msgstr "Falha ao carregar o estado de Carla"
 
 #: src/plugins/carla_native_plugin.c:1361
-#, fuzzy
 msgid ""
 "Failed to instantiate Carla plugin: handle/descriptor not initialized "
 "properly"
-msgstr "Falha ao instanciar o suplemento Carla"
+msgstr ""
+"Falha ao instanciar o suplemento Carla: o identificador/descritor não foi "
+"inicializado corretamente"
 
 #: src/plugins/carla_native_plugin.c:1746
 #, c-format
@@ -909,9 +911,9 @@ msgid "Failed to make temporary dir"
 msgstr "Falha ao criar um dir temporário"
 
 #: src/plugins/lv2_plugin.c:2682
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find preset with URI <%s>"
-msgstr "Falha ao encontrar o suplemento com o URI <%s>"
+msgstr "Falha ao encontrar a predefinição com URI <%s>"
 
 #: src/plugins/lv2_plugin.c:2703
 #, c-format
@@ -924,14 +926,14 @@ msgid "Failed to find plugin with URI <%s>"
 msgstr "Falha ao encontrar o suplemento com o URI <%s>"
 
 #: src/plugins/lv2_plugin.c:2761
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to dlopen %s: %s"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao dlopen %s: %s"
 
 #: src/plugins/lv2_plugin.c:2773
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get dlinfo for %s"
-msgstr "Falha ao criar um clone de suplemento para %s"
+msgstr "Falha ao obter dlinfo para %s"
 
 #: src/plugins/lv2_plugin.c:2796
 #, c-format
@@ -947,28 +949,26 @@ msgstr ""
 "%s <%s>"
 
 #: src/plugins/lv2_plugin.c:2831
-#, fuzzy
 msgid "Failed to create or init ports and parameters"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao criar ou iniciar portas e parâmetros"
 
 #: src/plugins/lv2_plugin.c:2861
-#, fuzzy, c-format
+#, c-format
 msgid "Required feature %s is not supported"
-msgstr "Formato para o qual exportar."
+msgstr "O recurso necessário %s não é suportado"
 
 #: src/plugins/lv2_plugin.c:2955
 msgid "Failed checking whether lv2 plugin UI is external"
 msgstr "Falha ao verificar se a interface do suplemento lv2 é externa"
 
 #: src/plugins/lv2_plugin.c:3125
-#, fuzzy, c-format
+#, c-format
 msgid "Required option %s is not supported"
-msgstr "Combinação backend não suportada"
+msgstr "A opção necessária %s não é suportada"
 
 #: src/plugins/lv2_plugin.c:3187
-#, fuzzy
 msgid "lilv_plugin_instantiate() failed"
-msgstr "A instanciação do suplemento Carla falhou"
+msgstr "lilv_plugin_instantiate() falhou"
 
 #: src/plugins/lv2_plugin.c:3796
 msgid "Unnamed bank"
@@ -1134,7 +1134,7 @@ msgstr "Ouvir"
 #: src/gui/widgets/track.c:1829
 #, fuzzy
 msgid "Unlisten"
-msgstr "Ouvir"
+msgstr "Não ouvir"
 
 #: src/gui/widgets/channel.c:757
 #: src/gui/widgets/automatable_selector_popover.c:434
@@ -1236,9 +1236,8 @@ msgid "JACK MIDI can only be used with JACK audio"
 msgstr "O JACK MIDI só pode ser usado com JACK audio"
 
 #: src/gui/widgets/first_run_assistant.c:412
-#, fuzzy
 msgid "Select a directory"
-msgstr "Selelcionar um projeto"
+msgstr "Selecione um diretório"
 
 #: src/gui/widgets/project_assistant.c:351
 #: src/gui/widgets/plugin_properties_expander.c:235
@@ -1279,9 +1278,8 @@ msgid "Inserts"
 msgstr "Inserções"
 
 #: src/gui/widgets/midi_arranger.c:549
-#, fuzzy
 msgid "Selection"
-msgstr "Seleções"
+msgstr "Seleção"
 
 #: src/gui/widgets/modulator_inner.c:101 src/actions/actions.c:1224
 msgid "Failed to delete plugins"
@@ -1331,9 +1329,8 @@ msgid "No object selected"
 msgstr "Nenhum objeto selecionado"
 
 #: src/gui/widgets/channel_send.c:219
-#, fuzzy
 msgid "Failed to change send amount"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao alterar o valor do envio"
 
 #: src/gui/widgets/bot_dock_edge.c:215 src/utils/gtk.c:1235
 msgid "Editor"
@@ -1365,9 +1362,8 @@ msgid "Chord pad"
 msgstr "Pad de acordes"
 
 #: src/gui/widgets/bot_dock_edge.c:239
-#, fuzzy
 msgid "Show/hide top panel"
-msgstr "Mostrar/ocultar a IU"
+msgstr "Mostrar/ocultar o painel superior"
 
 #: src/gui/widgets/digital_meter.c:410
 msgid "normal"
@@ -1479,9 +1475,8 @@ msgid "Edit"
 msgstr "Editar"
 
 #: src/gui/widgets/channel_slot.c:786
-#, fuzzy
 msgid "Select"
-msgstr "_Selecione"
+msgstr "Selecionar"
 
 #: src/gui/widgets/channel_slot.c:1090
 msgid "empty slot"
@@ -1548,24 +1543,20 @@ msgid "Failed to resize objects"
 msgstr "Falha ao redimensionar objetos"
 
 #: src/gui/widgets/arranger.c:4139 src/gui/widgets/arranger.c:4189
-#, fuzzy
 msgid "Failed to move MIDI notes"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao mover notas MIDI"
 
 #: src/gui/widgets/arranger.c:4215
-#, fuzzy
 msgid "Failed to duplicate MIDI notes"
-msgstr "Falha ao redefinir o esquema %s"
+msgstr "Falha ao duplicar notas MIDI"
 
 #: src/gui/widgets/arranger.c:4238
-#, fuzzy
 msgid "Failed to create MIDI notes"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao criar notas MIDI"
 
 #: src/gui/widgets/arranger.c:4327
-#, fuzzy
 msgid "Failed to duplicate chords"
-msgstr "Falha ao redefinir o esquema %s"
+msgstr "Falha ao duplicar acordes"
 
 #: src/gui/widgets/arranger.c:4425 src/gui/widgets/arranger.c:4716
 msgid "Failed resizing selection"
@@ -1598,9 +1589,8 @@ msgid "Failed to move objects"
 msgstr "Falha ao mover objetos"
 
 #: src/gui/widgets/arranger.c:4803
-#, fuzzy
 msgid "Failed to link or move selection"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao ligar ou mover a seleção"
 
 #: src/gui/widgets/arranger.c:4863
 msgid "Failed to split selection"
@@ -1613,7 +1603,7 @@ msgstr "%s nome"
 
 #: src/gui/widgets/piano_roll_keys.c:188
 msgid "bass"
-msgstr ""
+msgstr "baixos"
 
 #: src/gui/widgets/piano_roll_keys.c:210
 msgid "both"
@@ -1652,14 +1642,13 @@ msgid "Playhead [Jack Client]"
 msgstr "Cabeça de Reprodução [Cliente Jack]"
 
 #: src/gui/widgets/bot_bar.c:165
-#, fuzzy
 msgid "Input"
-msgstr "Entradas"
+msgstr "Entrada"
 
 #. TRANSLATORS: tap tempo
 #: src/gui/widgets/bot_bar.c:170
 msgid "Tap"
-msgstr ""
+msgstr "Toque"
 
 #: src/gui/widgets/bot_bar.c:200
 #, fuzzy
@@ -1691,14 +1680,12 @@ msgid "JACK Timebase master"
 msgstr "Máster Base de Tempo JACK"
 
 #: src/gui/widgets/bot_bar.c:394
-#, fuzzy
 msgid "New buffer size"
-msgstr "Tamanho do buffer"
+msgstr "Novo tamanho do buffer"
 
 #: src/gui/widgets/bot_bar.c:406
-#, fuzzy
 msgid "Failed reading value"
-msgstr "Falha ao recuperar o valor va_list: %s"
+msgstr "Falha ao ler o valor"
 
 #: src/gui/widgets/bot_bar.c:422
 msgid "This feature is not available at the moment"
@@ -1716,9 +1703,8 @@ msgstr "Tam buf"
 
 #. TRANSLATORS: verb - change buffer size
 #: src/gui/widgets/bot_bar.c:529
-#, fuzzy
 msgid "change"
-msgstr "Intervalo"
+msgstr "alterar"
 
 #. TRANSLATORS: sample rate
 #: src/gui/widgets/bot_bar.c:532
@@ -1730,9 +1716,8 @@ msgid "Metronome"
 msgstr "Metrónomo"
 
 #: src/gui/widgets/bot_bar.c:573
-#, fuzzy
 msgid "Metronome options"
-msgstr "Metrónomo"
+msgstr "Opções do metrónomo"
 
 #. volume
 #: src/gui/widgets/bot_bar.c:584 resources/ui/file_auditioner_controls.ui:28
