@@ -15,7 +15,7 @@ packages:
   - gdb
   - graphviz
   - graphene
-  - gtksourceview4
+  - gtksourceview5
   - helm-synth
   - help2man
   - jack
@@ -43,6 +43,7 @@ packages:
   - valgrind
   - vamp-plugin-sdk
   - vim
+  - wayland-protocols
   - x42-plugins
   - xdg-utils
   - xxhash
