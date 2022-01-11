@@ -4,13 +4,14 @@
 # alex <alex@zrythm.org>, 2019.
 # ssantos <ssantos@web.de>, 2020, 2021, 2022.
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
+# Malu CubeCraft <malucubecraft@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-12-20 16:53+0000\n"
 "PO-Revision-Date: 2022-01-11 09:55+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
+"Last-Translator: Malu CubeCraft <malucubecraft@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
 "Language: pt\n"
@@ -1641,9 +1642,8 @@ msgid "Playhead [Jack Client]"
 msgstr "Cabeça de Reprodução [Cliente Jack]"
 
 #: src/gui/widgets/bot_bar.c:165
-#, fuzzy
 msgid "Input"
-msgstr "Entradas"
+msgstr "Entrada"
 
 #. TRANSLATORS: tap tempo
 #: src/gui/widgets/bot_bar.c:170
