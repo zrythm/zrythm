@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -10,6 +10,8 @@ Name=Zrythm
 GenericName=Digital Audio Workstation
 Version=1.0
 Comment=highly automated and intuitive digital audio workstation
+# Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+Keywords=daw;audio;midi;music;
 Exec=@BIN_DIR@/zrythm_launch
 # Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 Icon=zrythm

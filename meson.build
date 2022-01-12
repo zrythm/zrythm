@@ -1159,7 +1159,9 @@ rtaudio_dep = dependency (
     # TODO use shared in the future so .dll can be
     # replaced on windows
     'default_library=static',
-    # ASIO disabled for legal reasons
+    # distribution of Zrythm with ASIO support is
+    # illegal. see the discussion in
+    # https://gitlab.com/gnu-clisp/clisp/blob/dd313099db351c90431c1c90332192edce2bb5c9/doc/Why-CLISP-is-under-GPL
     'asio=disabled',])
 if rtaudio_dep.found ()
   cdata.set('HAVE_RTAUDIO', 1)

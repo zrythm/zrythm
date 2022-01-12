@@ -103,35 +103,18 @@ To open the terminal hit `ctrl`+`` ` ``
 
 ### ASIO
 
-Because of licensing issues, you cannot distribute a build of ASIO. However, you can build one for yourself.
+Zrythm uses the RtAudio library on Windows, which
+can be built with ASIO support, however,
+ASIO is proprietary and Zrythm uses code under the
+GPL so distribution of Zrythm with ASIO support is
+illegal. For more information on why this is not
+allowed by the GPL, consider:
 
-## Building rtaudio with ASIO support
+<https://gitlab.com/gnu-clisp/clisp/blob/dd313099db351c90431c1c90332192edce2bb5c9/doc/Why-CLISP-is-under-GPL>
 
-Download and install visual studio community edition and cmake. Make sure cmake is available in your path.
-Start a windows cmd.
-
-```
-# Clone the rt audio repository
-git clone https://github.com/thestk/rtaudio.git --single-branch
-cd rtaudio
-mkdir build
-cd build
-# Configure with asio enabled, and point the prefix to your mingw64 install dir (no trailing slash!)
-cmake .. -DRTAUDIO_API_ASIO=ON -DCMAKE_INSTALL_PREFIX="C:/msys64/mingw64"
-# Build and install
-cmake --build . --config Release
-cmake --install .
-```
-
-## Activate rtaudio from meson
-Then from msys2 mingw64, you can build with:
-```
-# non empty output means install was successful
-pkg-config --list-all | grep rtaudio
-meson build -Denable_rtaudio=auto
-```
 ----
 
+Copyright (C) 2022 Alexandros Theodotou
 Copyright (C) 2020 Sidar Talei, Matthieu Talbot
 
 Copying and distribution of this file, with or without modification,

@@ -35,6 +35,7 @@ for path in ['inc', 'src', 'resources', 'data']:
       f for f in filenames if f.endswith('.c') or
       f.endswith('.h') or f.endswith('.ui') or
       f.endswith('.gschema.xml') or
+      f.endswith('.appdata.xml.in') or
       f.endswith('.desktop.in')]:
         str = os.path.join(dirpath, filename)
         potfiles.write (str + '\n')

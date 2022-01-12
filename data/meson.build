@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -15,12 +15,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-gschema_top = 'org.' + prog_name_lowercase + '.' + prog_name
+app_id = 'org.zrythm.Zrythm'
+
 gschema = configure_file (
   input: gen_gschema_wrap,
-  output: gschema_top + '.gschema.xml',
+  output: app_id + '.gschema.xml',
   command: [
-    '@INPUT0@', '@OUTPUT@', gschema_top,
+    '@INPUT0@', '@OUTPUT@', app_id,
     ],
   install: true,
   install_dir: schemasdir)
@@ -80,13 +81,14 @@ if os_gnu or os_freebsd
     install_dir: bindir,
     install_mode: 'r-xr-xr-x')
 
+  # desktop entry
   desktop_file = configure_file (
     input: 'zrythm.desktop.in',
     output: 'zrythm.desktop.in',
     configuration: zrythm_launcher_config)
   localized_desktop_file = i18n.merge_file (
     input: desktop_file,
-    output: gschema_top + '.desktop',
+    output: app_id + '.desktop',
     type: 'desktop',
     po_dir: '../po',
     install: true,
@@ -95,11 +97,52 @@ if os_gnu or os_freebsd
   desktop_utils = find_program (
     'desktop-file-validate', required: false)
   if desktop_utils.found()
-    test('Validate desktop file', desktop_utils,
+    test ('Validate desktop file', desktop_utils,
       args: [localized_desktop_file]
     )
   endif
-elif os_darwin
+
+  # appdata
+  # TODO generate <releases/> based on CHANGELOG.md
+  appdata_config = configuration_data ({
+    'HOMEPAGE_URL': 'https://www.zrythm.org/en/index.html',
+    'DONATION_URL': 'https://www.zrythm.org/en/community.html',
+    'BUG_REPORT_URL': 'https://todo.sr.ht/~alextee/zrythm-bug',
+    'USER_MANUAL_URL': 'https://manual.zrythm.org/en/index.html',
+    'PIANO_ROLL_SCREENSHOT_URL': 'https://www.zrythm.org/static/images/screenshots/Screenshot_20220110_152402.png',
+    'MIXER_SCREENSHOT_URL': 'https://www.zrythm.org/static/images/screenshots/Screenshot_20220110_152001.png',
+    'APP_ID': app_id,
+    })
+  appdata_file_in = configure_file (
+    input: '@0@.appdata.xml.in'.format (app_id),
+    output: '@0@.appdata.xml.in'.format (app_id),
+    configuration: appdata_config)
+  appdata_file = i18n.merge_file (
+    input: appdata_file_in,
+    output: '@0@.appdata.xml'.format (app_id),
+    type: 'xml',
+    po_dir: '../po',
+      install: true,
+      install_dir: datadir / 'metainfo',
+    )
+# Validate the appdata file
+  appstream_util = find_program (
+    'appstream-util', required: false)
+  if appstream_util.found ()
+    test ('validate-appdata', appstream_util,
+      suite: 'data',
+      args: [
+        'validate-relax', '--nonet',
+        appdata_file.full_path()
+      ],
+      depends: [
+        appdata_file,
+      ],
+    )
+  endif
+endif # gnu or freebsd
+
+if os_darwin
   zrythm_gdb = configure_file (
     input: 'zrythm_lldb.in',
     output: prog_name_lowercase + '_lldb',
