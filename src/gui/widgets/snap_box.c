@@ -45,6 +45,16 @@ snap_box_widget_refresh (
     self->snap_grid->snap_grid->snap_to_grid);
   g_message ("%d",
     self->snap_grid->snap_grid->snap_to_grid);
+
+  gtk_toggle_button_set_active (
+    self->snap_to_grid,
+    self->snap_grid->snap_grid->snap_to_grid);
+  gtk_toggle_button_set_active (
+    self->snap_to_grid_keep_offset,
+    self->snap_grid->snap_grid->snap_to_grid_keep_offset);
+  gtk_toggle_button_set_active (
+    self->snap_to_events,
+    self->snap_grid->snap_grid->snap_to_events);
 }
 
 void
@@ -62,6 +72,7 @@ snap_box_widget_setup (
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->snap_to_events), NULL);
 
+#if 0
   gtk_toggle_button_set_active (
     self->snap_to_grid,
     sg->snap_to_grid);
@@ -71,6 +82,9 @@ snap_box_widget_setup (
   gtk_toggle_button_set_active (
     self->snap_to_events,
     sg->snap_to_events);
+#endif
+
+  snap_box_widget_refresh (self);
 
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->snap_to_grid),
