@@ -74,8 +74,8 @@ tasks:
       cat build/meson-logs/coverage.txt
       ninja -C build coverage-html
       set +x
-      . ~/.ssh_home
-      scp -q -o StrictHostKeyChecking=no -r build/meson-logs/coveragereport "srht@www.zrythm.org:$SSH_HOME/coverage/${JOB_ID}-$(git rev-parse --short HEAD)-report" >/dev/null 2>&1
+      #. ~/.ssh_home
+      #scp -q -o StrictHostKeyChecking=no -r build/meson-logs/coveragereport "srht@www.zrythm.org:$SSH_HOME/coverage/${JOB_ID}-$(git rev-parse --short HEAD)-report" >/dev/null 2>&1
       set -x
   - test-no-jack: |
       cd zrythm
