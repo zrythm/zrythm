@@ -1619,8 +1619,8 @@ z_gtk_generate_screenshot_image (
 
   g_object_unref (texture);
   gsk_render_node_unref (node);
-  /* GSK ERROR? */
-  /*g_object_unref (renderer);*/
+  gsk_renderer_unrealize (renderer);
+  g_object_unref (renderer);
   /* SEGFAULT */
   /*g_object_unref (snapshot);*/
   g_object_unref (paintable);

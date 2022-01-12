@@ -103,7 +103,7 @@ on the project.
 
 ----
 
-Copyright (C) 2018-2021 Alexandros Theodotou
+Copyright (C) 2018-2022 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
