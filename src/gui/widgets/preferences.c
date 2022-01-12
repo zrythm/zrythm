@@ -966,9 +966,6 @@ on_window_closed (
       _("Some changes will only take "
       "effect after you restart %s"),
       PROGRAM_NAME);
-  gtk_window_set_transient_for (
-    GTK_WINDOW (dialog),
-    GTK_WINDOW (self));
   gtk_window_set_modal (GTK_WINDOW (dialog), true);
   z_gtk_dialog_run (GTK_DIALOG (dialog), true);
 
