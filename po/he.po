@@ -6,17 +6,17 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-11 21:55+0000\n"
-"PO-Revision-Date: 2021-11-24 13:38+0000\n"
-"Last-Translator: moshe <shinmem58@gmail.com>\n"
-"Language-Team: Hebrew <https://hosted.weblate.org/projects/zrythm/zrythm/he/"
-">\n"
+"PO-Revision-Date: 2022-01-12 23:44+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Hebrew <https://hosted.weblate.org/projects/zrythm/zrythm/he/>"
+"\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n == 1) ? 0 : ((n == 2) ? 1 : ((n > 10 && "
 "n % 10 == 0) ? 2 : 3));\n"
-"X-Generator: Weblate 4.10-dev\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -6393,7 +6393,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:987
 #: build/data/org.zrythm.Zrythm.gschema.xml:1018
 msgid "Plugins"
-msgstr ""
+msgstr "תוספים"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:988
 msgid "UIs"
@@ -6468,7 +6468,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:1060
 #: build/data/org.zrythm.Zrythm.gschema.xml:1074
 msgid "Editing"
-msgstr ""
+msgstr "עריכה"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1051
 msgid "Fade algorithm"

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-11 21:55+0000\n"
-"PO-Revision-Date: 2021-11-23 16:32+0000\n"
+"PO-Revision-Date: 2022-01-12 23:44+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "id/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10-dev\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -6376,7 +6376,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:987
 #: build/data/org.zrythm.Zrythm.gschema.xml:1018
 msgid "Plugins"
-msgstr ""
+msgstr "Plugin"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:988
 msgid "UIs"
@@ -6451,7 +6451,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:1060
 #: build/data/org.zrythm.Zrythm.gschema.xml:1074
 msgid "Editing"
-msgstr ""
+msgstr "Pengeditan"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1051
 msgid "Fade algorithm"

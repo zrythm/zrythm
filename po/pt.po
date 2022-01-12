@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-11 21:55+0000\n"
-"PO-Revision-Date: 2022-01-11 09:55+0000\n"
-"Last-Translator: Malu CubeCraft <malucubecraft@gmail.com>\n"
+"PO-Revision-Date: 2022-01-12 23:44+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
 "Language: pt\n"
@@ -2549,9 +2549,8 @@ msgid "Add Bookmark"
 msgstr ""
 
 #: src/gui/widgets/file_chooser_button.c:68
-#, fuzzy
 msgid "Select path"
-msgstr "Selecionar tudo"
+msgstr "Selecione o caminho"
 
 #: src/gui/widgets/editor_toolbar.c:157
 #, fuzzy
@@ -2592,9 +2591,9 @@ msgid "Highlight Both"
 msgstr "Destacar ambos"
 
 #: src/gui/widgets/file_browser.c:130
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create track for file '%s'"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao criar faixa para o ficheiro '%s'"
 
 #: src/gui/widgets/inspector_track.c:157
 msgid "Comment"
@@ -2669,19 +2668,16 @@ msgid "Bounce"
 msgstr "Converter para áudio"
 
 #: src/gui/widgets/track.c:1869
-#, fuzzy
 msgid "Direct out"
-msgstr "Saída Direta"
+msgstr "Saída direta"
 
 #: src/gui/widgets/track.c:1876
-#, fuzzy
 msgid "New direct out"
-msgstr "Alterar saída direta"
+msgstr "Nova saída direta"
 
 #: src/gui/widgets/track.c:1909
-#, fuzzy
 msgid "Rename lane..."
-msgstr "Renomear faixa"
+msgstr "Renomear pista..."
 
 #: src/gui/widgets/track.c:1927
 msgid "Passthrough input"
@@ -2693,36 +2689,32 @@ msgid "MIDI Channel %d"
 msgstr "Canal MIDI %d"
 
 #: src/gui/widgets/main_notebook.c:140 src/utils/gtk.c:1255
-#, fuzzy
 msgid "Timeline"
-msgstr "Intervalo de Tempo"
+msgstr "Cronologia"
 
 #: src/gui/widgets/main_notebook.c:144
-#, fuzzy
 msgid "Connections"
-msgstr "Coleção"
+msgstr "Conexões"
 
 #: src/gui/widgets/main_notebook.c:145
 msgid "Port connections"
 msgstr "Conexões de portas"
 
 #: src/gui/widgets/main_notebook.c:149
-#, fuzzy
 msgid "Bindings"
-msgstr "Vinculações CC"
+msgstr "Ligações"
 
 #: src/gui/widgets/main_notebook.c:150
-#, fuzzy
 msgid "MIDI CC bindings"
-msgstr "Vinculações CC"
+msgstr "Ligações MIDI CC"
 
 #: src/gui/widgets/main_notebook.c:154 src/utils/gtk.c:1264
 msgid "Scenes"
-msgstr ""
+msgstr "Cenas"
 
 #: src/gui/widgets/main_notebook.c:155
 msgid "Scenes (live view)"
-msgstr ""
+msgstr "Cenas (vista ao vivo)"
 
 #: src/gui/widgets/dialogs/arranger_object_info.c:109
 msgid "Arranger object info"
@@ -2741,14 +2733,12 @@ msgid "Select parent directory to save the project in"
 msgstr "Selecione a diretoria fonte para guardar o projeto lá"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:85
-#, fuzzy
 msgid "Failed to quantize editor selections"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao quantificar as seleções do editor"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:100
-#, fuzzy
 msgid "Failed to quantize timeline selections"
-msgstr "Mesclar seleções"
+msgstr "Falha ao quantificar seleções de cronologia"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:135
 msgid "note length"
@@ -2797,7 +2787,6 @@ msgid "Format 1"
 msgstr "Format 1"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:106
-#, fuzzy
 msgid "MIDI Format"
 msgstr "Formato MIDI"
 
@@ -2819,19 +2808,16 @@ msgid "Port info"
 msgstr "Informações sobre a porta"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:85
-#, fuzzy
 msgid "Enter group name"
-msgstr "Introduza o nome da região..."
+msgstr "Digite o nome do grupo"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:94
-#, fuzzy
 msgid "Group name"
-msgstr "Grupo"
+msgstr "Nome do grupo"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:97
-#, fuzzy
 msgid "New Group"
-msgstr "Grupo"
+msgstr "Novo grupo"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:103
 msgid "Move tracks under group"
@@ -2839,15 +2825,13 @@ msgstr "Mover faixas sob grupo"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:133
 #: src/actions/actions.c:1691
-#, fuzzy
 msgid "Failed to create audio group track"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao criar a faixa de grupo de áudio"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:148
 #: src/actions/actions.c:1705
-#, fuzzy
 msgid "Failed to create MIDI group track"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao criar a faixa de grupo MIDI"
 
 #: src/gui/widgets/dialogs/about_dialog.c:79
 msgid "a highly automated and intuitive digital audio workstation"
@@ -2879,13 +2863,12 @@ msgid "Opens the containing directory"
 msgstr "Abre o diretório acima"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:62
-#, fuzzy
 msgid "Please enter steps to reproduce"
-msgstr "Por favor, insira um valor"
+msgstr "Por favor, digite os passos para reproduzir"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:75
 msgid "Please fill in all fields"
-msgstr ""
+msgstr "Por favor, preencha todos os campos"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:162
 msgid "Send via Sourcehut"
@@ -2897,9 +2880,9 @@ msgid "Please copy the template below in a %snew issue%s."
 msgstr "Por favor, copie o modelo abaixo numa %snova edição%s."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:326
-#, fuzzy, c-format
+#, c-format
 msgid "error: %s"
-msgstr "Erro ALSA: %s"
+msgstr "erro: %s"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:331
 #: src/gui/widgets/dialogs/bug_report_dialog.c:549
@@ -2907,9 +2890,8 @@ msgid "Done"
 msgstr "Pronto"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:350
-#, fuzzy
 msgid "Send Automatically"
-msgstr "Automação"
+msgstr "Enviar automaticamente"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:375
 #, c-format
@@ -2922,51 +2904,49 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:392
 msgid "<b>Data</b>"
-msgstr ""
+msgstr "<b>Dados</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:446
 msgid "<b>Log file</b>"
-msgstr ""
+msgstr "<b>Ficheiro de registo</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:487
 msgid "<b>Screenshot</b>"
-msgstr ""
+msgstr "<b>Captura de ecrã</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:538
-#, fuzzy
 msgid "Sending"
-msgstr "Vinculações CC"
+msgstr "A enviar"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:547
 msgid "Sending data..."
-msgstr ""
+msgstr "A enviar dados..."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:550
 msgid "Failed"
-msgstr ""
+msgstr "Falhou"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:554
 msgid "Sending..."
-msgstr ""
+msgstr "A enviar..."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:582
-#, fuzzy
 msgid "Sent successfully"
-msgstr "Execução de script bem sucedida"
+msgstr "Enviado com sucesso"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:655
-#, fuzzy, c-format
+#, c-format
 msgid "%sPlease help us fix this by submitting a bug report."
-msgstr ""
-"%sPor favor, ajude-nos a corrigir isto %sa enviar um relatório de bug%s."
+msgstr "%sPor favor, ajude-nos a corrigir isto a enviar um relatório de bug."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:686
 msgid "Enter a list of steps to reproduce the error. Markdown is supported."
 msgstr ""
+"Digite uma lista de passos para reproduzir o erro. Markdown é suportado."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:691
 msgid "Enter more context, what distro you use, etc. Markdown is supported."
-msgstr ""
+msgstr "Digite mais contexto, qual distro usa, etc. O Markdown é suportado."
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:55
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:71
@@ -2975,14 +2955,12 @@ msgid "%s color"
 msgstr "%s cor"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:86
-#, fuzzy
 msgid "Track color"
-msgstr "Portas de Faixa"
+msgstr "Cor da faixa"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:143
-#, fuzzy
 msgid "Failed to change color"
-msgstr "Falha ao redefinir o esquema %s"
+msgstr "Falha ao mudar a cor"
 
 #: src/gui/widgets/dialogs/export_dialog.c:237
 msgid "none"
@@ -3035,9 +3013,8 @@ msgid "Saved"
 msgstr "Gravar"
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:71
-#, fuzzy
 msgid "Project Progress"
-msgstr "Progresso da Exportação"
+msgstr "Progresso do projeto"
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:158
 #, c-format
@@ -3061,7 +3038,7 @@ msgstr "Início"
 #. TRANSLATORS: Desktop directory
 #: src/gui/backend/file_manager.c:68
 msgid "Desktop"
-msgstr ""
+msgstr "Área de trabalho"
 
 #: src/gui/backend/arranger_selections.c:2662
 #, fuzzy
@@ -3387,17 +3364,17 @@ msgstr "Marcadores"
 #: src/audio/modulator_macro_processor.c:104
 #, c-format
 msgid "Macro %d"
-msgstr ""
+msgstr "Macro %d"
 
 #: src/audio/modulator_macro_processor.c:123
 #, c-format
 msgid "Macro CV In %d"
-msgstr ""
+msgstr "Macro CV Entrada %d"
 
 #: src/audio/modulator_macro_processor.c:134
 #, c-format
 msgid "Macro CV Out %d"
-msgstr ""
+msgstr "Macro CV Saída %d"
 
 #: src/audio/exporter.c:139
 #, fuzzy, c-format
@@ -3451,11 +3428,11 @@ msgstr "BPM"
 
 #: src/audio/tempo_track.c:72
 msgid "Beats per bar"
-msgstr ""
+msgstr "Batidas por barra"
 
 #: src/audio/tempo_track.c:93
 msgid "Beat unit"
-msgstr ""
+msgstr "Unidade de batidas"
 
 #: src/audio/tempo_track.c:227
 #, fuzzy
@@ -3478,6 +3455,8 @@ msgid ""
 "The JACK MIDI backend can only be used with the JACK audio backend (your "
 "current audio backend is %s). Will use the dummy MIDI backend instead."
 msgstr ""
+"O backend JACK MIDI só pode ser usado com o backend de áudio JACK (o seu "
+"backend de áudio atual é %s). Usará o backend MIDI fictício ao invés."
 
 #: src/audio/engine.c:628
 #, c-format
