@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-01-11 21:55+0000\n"
+"POT-Creation-Date: 2022-01-12 23:47+0000\n"
 "PO-Revision-Date: 2021-08-09 23:33+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
@@ -1383,7 +1383,7 @@ msgstr ""
 msgid "Mixer"
 msgstr "Mikser"
 
-#: src/gui/widgets/bot_dock_edge.c:219
+#: src/gui/widgets/bot_dock_edge.c:219 data/org.zrythm.Zrythm.appdata.xml.in:41
 msgid "Mixer view"
 msgstr "Mikser-visning"
 
@@ -1970,7 +1970,7 @@ msgstr "Om %s"
 msgid "About Zrythm"
 msgstr "Sett opp Zrythm"
 
-#: src/gui/widgets/header.c:142 src/gui/widgets/preferences.c:987
+#: src/gui/widgets/header.c:142 src/gui/widgets/preferences.c:984
 #: resources/gtk/menus.ui:40 resources/gtk/help-overlay.ui:39
 #: resources/ui/file_auditioner_controls.ui:33
 msgid "Preferences"
@@ -5799,6 +5799,39 @@ msgstr ""
 msgid "Vertical"
 msgstr ""
 
+#: data/org.zrythm.Zrythm.appdata.xml.in:10
+msgid "The Zrythm contributors"
+msgstr ""
+
+#: data/org.zrythm.Zrythm.appdata.xml.in:11
+#, fuzzy
+msgid "Zrythm DAW"
+msgstr "Zrythm"
+
+#: data/org.zrythm.Zrythm.appdata.xml.in:12
+#, fuzzy
+msgid "A highly automated and intuitive digital audio workstation"
+msgstr "inngående automasjon i intuitiv digital lyd-arbeidsstasjon"
+
+#: data/org.zrythm.Zrythm.appdata.xml.in:14
+msgid ""
+"Zrythm is a digital audio workstation designed to be featureful and easy to "
+"use. It allows limitless automation through curves, LFOs and envelopes, "
+"supports multiple plugin formats including LV2, VST2 and VST3, works with "
+"multiple backends including JACK, RtAudio/RtMidi and SDL2, assists with "
+"chord progressions via a special Chord Track and chord pads, and can be used "
+"in multiple languages including English, French, Portuguese, Japanese and "
+"German."
+msgstr ""
+
+#: data/org.zrythm.Zrythm.appdata.xml.in:26
+msgid "Zrythm can be extended using GNU Guile."
+msgstr ""
+
+#: data/org.zrythm.Zrythm.appdata.xml.in:37
+msgid "Composing MIDI in Zrythm"
+msgstr ""
+
 #: data/zrythm.desktop.in:10
 msgid "Zrythm"
 msgstr "Zrythm"
@@ -5810,6 +5843,11 @@ msgstr "Arbeidsstasjon for digital lyd"
 #: data/zrythm.desktop.in:13
 msgid "highly automated and intuitive digital audio workstation"
 msgstr "inngående automasjon og intuitiv digital lyd-arbeidsstasjon"
+
+#. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+#: data/zrythm.desktop.in:15
+msgid "daw;audio;midi;music;"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:243
 #, fuzzy
