@@ -10,13 +10,14 @@
 # UnluckyNinja <unluckyninja1994@gmail.com>, 2021.
 # Liu Tao <lyuutau@outlook.com>, 2021.
 # poi <erbaotao@outlook.com>, 2022.
+# Eric <alchemillatruth@purelymail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-11 21:55+0000\n"
-"PO-Revision-Date: 2022-01-11 09:55+0000\n"
-"Last-Translator: poi <erbaotao@outlook.com>\n"
+"PO-Revision-Date: 2022-01-12 23:44+0000\n"
+"Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -914,9 +915,9 @@ msgid "Failed to find plugin with URI <%s>"
 msgstr "无法通过 URI <%s>找到插件"
 
 #: src/plugins/lv2_plugin.c:2764
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to dlopen %s: %s"
-msgstr "无法打开文件:%s"
+msgstr "dlopen %s 失败：%s"
 
 #: src/plugins/lv2_plugin.c:2776
 #, c-format
@@ -3443,9 +3444,8 @@ msgid "Track record"
 msgstr "音轨录制"
 
 #: src/audio/track.c:523
-#, fuzzy
 msgid "Failed to clone modulator plugin"
-msgstr "未能克隆插件"
+msgstr "未能克隆调制器插件"
 
 #: src/audio/track.c:554
 msgid "Failed to clone channel"
