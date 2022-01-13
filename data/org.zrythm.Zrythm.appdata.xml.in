@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2022 Alexandros Theodotou -->
 <component type="desktop">
   <id>org.zrythm.Zrythm</id>
   <!--
@@ -58,6 +59,20 @@
     <binary>zrythm_launch</binary>
     <id>@APP_ID@</id>
   </provides>
+
+  <!--
+    TODO this should be auto-generated from
+    CHANGELOG.md
+  -->
+  <releases>
+    <release date="2022-01-10" version="1.0.0-alpha.27.0.3" type="development">
+      <description>
+        <p>
+          GTK3 -> GTK4 port.
+        </p>
+      </description>
+    </release>
+  </releases>
 
   <content_rating type="oars-1.1" />
 </component>
