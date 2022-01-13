@@ -247,3 +247,9 @@ option (
   type: 'boolean',
   value: false,
   description: 'Whether to use static vamp libs (if available).')
+
+option (
+  'for_flathub',
+  type: 'boolean',
+  value: false,
+  description: 'Whether building for Flathub.')
