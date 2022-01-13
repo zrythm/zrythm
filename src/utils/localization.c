@@ -357,13 +357,19 @@ localization_init (
 
   /* bind text domain */
 #if defined (_WOE32) && defined (INSTALLER_VER)
-  bindtextdomain (GETTEXT_PACKAGE, "share/locale");
+  const char * windows_localedir = "share/locale";
+  bindtextdomain (
+    GETTEXT_PACKAGE, windows_localedir);
+  bindtextdomain (
+    "libadwaita", windows_localedir);
 #else
   char * localedir =
     zrythm_get_dir (
       ZRYTHM_DIR_SYSTEM_LOCALEDIR);
   bindtextdomain (
     GETTEXT_PACKAGE, localedir);
+  bindtextdomain (
+    "libadwaita", localedir);
   g_debug ("setting textdomain: %s, %s",
     GETTEXT_PACKAGE, localedir);
   g_free (localedir);
@@ -373,7 +379,7 @@ localization_init (
   bind_textdomain_codeset (
     GETTEXT_PACKAGE, CODESET);
 
-  /* set domain */
+  /* set curent domain */
   textdomain (GETTEXT_PACKAGE);
 
   return match != NULL;
