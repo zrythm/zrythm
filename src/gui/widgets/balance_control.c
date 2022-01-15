@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -74,49 +74,46 @@ balance_control_snapshot (
   if (!MAIN_WINDOW)
     return;
 
-  /* draw filled in bar */
   float pan_val = GET_VAL;
   float value_px =
     pan_val * (float) width;
   float half_width = (float) width / 2.f;
 
-  gtk_snapshot_append_color (
-    snapshot, &UI_COLORS->dark_text,
-    &GRAPHENE_RECT_INIT (
-      0, height / 2.f - LINE_WIDTH / 2.f,
-      width, LINE_WIDTH));
-
-  float alpha = 0.7f;
+  /* draw filled bg */
+  GdkRGBA color = UI_COLORS->matcha;
+  color.alpha = 0.4;
   if (self->hovered || self->dragged)
     {
-      alpha = 1.0;
+      color.alpha = 0.7;
     }
-  GdkRGBA color =
-    Z_GDK_RGBA_INIT (
-      UI_COLORS->matcha.red,
-      UI_COLORS->matcha.green,
-      UI_COLORS->matcha.blue,
-      alpha);
   if (pan_val < 0.5f)
     {
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          value_px,
-          height / 2.f - LINE_WIDTH / 2.f,
-          half_width - value_px,
-          LINE_WIDTH));
+          value_px, 0,
+          half_width - value_px, height));
     }
   else
     {
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          half_width,
-          height / 2.f - LINE_WIDTH / 2.f,
-          value_px - half_width,
-          LINE_WIDTH));
+          half_width, 0,
+          value_px - half_width, height));
     }
+
+  /* draw vertical line at current val */
+  color.alpha = 0.7f;
+  if (self->hovered || self->dragged)
+    {
+      color.alpha = 1.0;
+    }
+  const int line_width = 2;
+  gtk_snapshot_append_color (
+    snapshot, &color,
+    &GRAPHENE_RECT_INIT (
+      value_px, 0, line_width, height));
 
   /* draw text */
   PangoLayout * layout = self->layout;
@@ -126,7 +123,7 @@ balance_control_snapshot (
       UI_COLORS->bright_text.red,
       UI_COLORS->bright_text.green,
       UI_COLORS->bright_text.blue,
-      alpha);
+      color.alpha);
   pango_layout_set_text (layout, "L", -1);
   pango_layout_get_pixel_extents (
     layout, NULL, &pangorect);
@@ -334,6 +331,22 @@ on_right_click (
     }
 }
 
+static gboolean
+balance_control_tick_cb (
+  GtkWidget *     widget,
+  GdkFrameClock * frame_clock,
+  gpointer        user_data)
+{
+  if (!gtk_widget_get_mapped (widget))
+    {
+      return G_SOURCE_CONTINUE;
+    }
+
+  gtk_widget_queue_draw (widget);
+
+  return G_SOURCE_CONTINUE;
+}
+
 /**
  * Creates a new BalanceControl widget and binds it
  * to the given value.
@@ -487,6 +500,10 @@ balance_control_widget_init (
   pango_layout_set_font_description (
     self->layout, desc);
   pango_font_description_free (desc);
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self), balance_control_tick_cb,
+    self, NULL);
 }
 
 static void
