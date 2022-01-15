@@ -93,6 +93,7 @@
                   <object class="GtkToggleButton" id="toggle_instruments">
                     <property name="icon-name">instrument</property>
                     <property name="tooltip-text" translatable="true">Instruments</property>
+                    <property name="hexpand">True</property>
                     <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
                   </object>
                 </child>
@@ -100,6 +101,7 @@
                   <object class="GtkToggleButton" id="toggle_effects">
                     <property name="icon-name">bars</property>
                     <property name="tooltip-text" translatable="true">Effects</property>
+                    <property name="hexpand">True</property>
                     <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
                   </object>
                 </child>
@@ -107,6 +109,7 @@
                   <object class="GtkToggleButton" id="toggle_modulators">
                     <property name="icon-name">modulator</property>
                     <property name="tooltip-text" translatable="true">Modulators</property>
+                    <property name="hexpand">True</property>
                     <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
                   </object>
                 </child>
@@ -114,6 +117,7 @@
                   <object class="GtkToggleButton" id="toggle_midi_modifiers">
                     <property name="icon-name">signal-midi</property>
                     <property name="tooltip-text" translatable="true">MIDI Modifiers</property>
+                    <property name="hexpand">True</property>
                     <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
                   </object>
                 </child>
