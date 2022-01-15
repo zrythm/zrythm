@@ -1096,7 +1096,7 @@ engine_wait_for_pause (
   state->looping = TRANSPORT->loop;
 
   /* send panic */
-  midi_panic_all (F_QUEUED);
+  midi_events_panic_all (F_QUEUED);
 
   if (state->playing)
     {

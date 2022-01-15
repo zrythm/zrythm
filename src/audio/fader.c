@@ -1268,17 +1268,18 @@ fader_process (
 
                   if (self->midi_mode ==
                         MIDI_FADER_MODE_VEL_MULTIPLIER &&
-                      ev->type ==
-                        MIDI_EVENT_TYPE_NOTE_ON)
+                      midi_is_note_on (
+                        ev->raw_buffer))
                     {
-                      int new_vel =
-                        (int)
-                        ((float) ev->velocity *
+                      midi_byte_t prev_vel =
+                        midi_get_velocity (
+                          ev->raw_buffer);
+                      midi_byte_t new_vel =
+                        (midi_byte_t)
+                        ((float) prev_vel *
                          self->amp->control);
                       midi_event_set_velocity (
-                        ev,
-                        (midi_byte_t)
-                          CLAMP (new_vel, 0, 127));
+                        ev, MIN (new_vel, 127));
                     }
                 }
 

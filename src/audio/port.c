@@ -2879,25 +2879,26 @@ port_process (
           for (int i = 0;
                i < events->num_events; i++)
             {
-              MidiEvent * ev = &events->events[i];
-              switch (ev->type)
+              midi_byte_t * buf =
+                events->events[i].raw_buffer;
+              if (midi_is_note_on (buf))
                 {
-                case MIDI_EVENT_TYPE_NOTE_ON:
                   piano_roll_add_current_note (
-                    PIANO_ROLL, ev->note_pitch);
+                    PIANO_ROLL,
+                    midi_get_note_number (buf));
                   events_processed = true;
-                  break;
-                case MIDI_EVENT_TYPE_NOTE_OFF:
+                }
+              else if (midi_is_note_off (buf))
+                {
                   piano_roll_remove_current_note (
-                    PIANO_ROLL, ev->note_pitch);
+                    PIANO_ROLL,
+                    midi_get_note_number (buf));
                   events_processed = true;
-                  break;
-                case MIDI_EVENT_TYPE_ALL_NOTES_OFF:
+                }
+              else if (midi_is_all_notes_off (buf))
+                {
                   PIANO_ROLL->num_current_notes = 0;
                   events_processed = true;
-                  break;
-                default:
-                  break;
                 }
             }
           if (events_processed)

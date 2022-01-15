@@ -29,7 +29,7 @@
 
 #include "audio/engine.h"
 #include "audio/engine_alsa.h"
-#include "audio/midi.h"
+#include "utils/midi.h"
 #include "audio/port.h"
 #include "project.h"
 #include "utils/ui.h"

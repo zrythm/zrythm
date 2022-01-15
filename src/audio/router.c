@@ -50,7 +50,7 @@
 #include "audio/graph.h"
 #include "audio/graph_thread.h"
 #include "audio/master_track.h"
-#include "audio/midi.h"
+#include "utils/midi.h"
 #include "audio/midi_track.h"
 #include "audio/pan.h"
 #include "audio/port.h"

@@ -27,7 +27,7 @@
 #define __AUDIO_MIDI_MAPPING_H__
 
 #include "audio/ext_port.h"
-#include "audio/midi.h"
+#include "utils/midi.h"
 #include "audio/port.h"
 
 typedef struct _WrappedObjectWithChangeSignal

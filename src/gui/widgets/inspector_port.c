@@ -23,7 +23,7 @@
 #include "audio/control_port.h"
 #include "audio/meter.h"
 #include "audio/engine.h"
-#include "audio/midi.h"
+#include "utils/midi.h"
 #include "audio/midi_mapping.h"
 #include "audio/port.h"
 #include "gui/widgets/bar_slider.h"

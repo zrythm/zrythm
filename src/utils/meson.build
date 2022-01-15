@@ -63,6 +63,7 @@ optimized_utils_lib = static_library (
   'zrythm-optimized-utils-lib',
   sources: [
     'dsp.c',
+    'midi.c',
     'mpmc_queue.c',
     'pcg_rand.c',
     ],

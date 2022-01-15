@@ -26,7 +26,7 @@
 #ifndef __AUDIO_TRACK_PROCESSOR_H__
 #define __AUDIO_TRACK_PROCESSOR_H__
 
-#include "audio/midi.h"
+#include "utils/midi.h"
 #include "audio/port.h"
 #include "utils/types.h"
 #include "utils/yaml.h"

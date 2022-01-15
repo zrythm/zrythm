@@ -38,7 +38,7 @@
 #include "audio/instrument_track.h"
 #include "audio/marker.h"
 #include "audio/marker_track.h"
-#include "audio/midi.h"
+#include "audio/midi_event.h"
 #include "audio/midi_function.h"
 #include "audio/router.h"
 #include "audio/tempo_track.h"
@@ -1758,7 +1758,7 @@ DEFINE_SIMPLE (activate_play_pause)
   if (TRANSPORT_IS_ROLLING)
     {
       transport_request_pause (TRANSPORT);
-      midi_panic_all (1);
+      midi_events_panic_all (F_QUEUED);
     }
   else if (TRANSPORT_IS_PAUSED)
     {

@@ -161,7 +161,7 @@ init_midi_cc_ports (
         {
           sprintf (
             name, "Ch%d %s", channel,
-            midi_get_cc_name (j));
+            midi_get_controller_name (j));
           Port * cc =
             port_new_with_type_and_owner (
               TYPE_CONTROL, FLOW_INPUT, name,

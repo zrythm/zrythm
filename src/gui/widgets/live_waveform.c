@@ -19,7 +19,7 @@
 
 #include "audio/engine.h"
 #include "audio/master_track.h"
-#include "audio/midi.h"
+#include "utils/midi.h"
 #include "audio/track.h"
 #include "gui/widgets/live_waveform.h"
 #include "gui/widgets/track.h"

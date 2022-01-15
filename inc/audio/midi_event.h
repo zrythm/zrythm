@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -52,50 +52,10 @@ typedef struct ChordDescriptor ChordDescriptor;
 #define MAX_MIDI_EVENTS 2560
 
 /**
- * Type of MIDI event.
- *
- * These are in order of precedence.
- */
-typedef enum MidiEventType
-{
-  MIDI_EVENT_TYPE_PITCHBEND,
-  MIDI_EVENT_TYPE_CONTROLLER,
-  MIDI_EVENT_TYPE_NOTE_OFF,
-  MIDI_EVENT_TYPE_NOTE_ON,
-  MIDI_EVENT_TYPE_ALL_NOTES_OFF,
-
-  /** Unknown type. */
-  MIDI_EVENT_TYPE_RAW,
-} MidiEventType;
-
-/**
- * Backend-agnostic MIDI event descriptor.
+ * Timed MIDI event.
  */
 typedef struct MidiEvent
 {
-  /** The values below will be filled in
-   * depending on what event this is. */
-  MidiEventType  type;
-
-  /** -8192 to 8191. */
-  int            pitchbend;
-
-  /** The controller, for control events. */
-  midi_byte_t    controller;
-
-  /** Control value (also used for modulation
-   * wheel (0 ~ 127). */
-  midi_byte_t    control;
-
-  /** MIDI channel, starting from 1. */
-  midi_byte_t    channel;
-
-  /** Note value (0 ~ 127). */
-  midi_byte_t    note_pitch;
-
-  /** Velocity (0 ~ 127). */
-  midi_byte_t    velocity;
-
   /** Time of the MIDI event, in frames from the
    * start of the current cycle. */
   midi_time_t    time;
@@ -187,17 +147,18 @@ void
 midi_event_print (
   const MidiEvent * ev);
 
-int
+PURE
+static inline bool
 midi_events_are_equal (
   const MidiEvent * src,
-  const MidiEvent * dest);
-
-/**
- * Sorts the MIDI events by time ascendingly.
- */
-void
-midi_events_sort_by_time (
-  MidiEvents * self);
+  const MidiEvent * dest)
+{
+  return
+    dest->time == src->time
+    && dest->raw_buffer[0] == src->raw_buffer[0]
+    && dest->raw_buffer[1] == src->raw_buffer[1]
+    && dest->raw_buffer[2] == src->raw_buffer[2];
+}
 
 void
 midi_events_print (
@@ -369,7 +330,7 @@ void
 midi_events_add_pitchbend (
   MidiEvents * self,
   midi_byte_t  channel,
-  int          pitchbend,
+  uint32_t     pitchbend,
   midi_time_t  time,
   int          queued);
 
@@ -469,6 +430,16 @@ midi_events_delete_event (
   MidiEvents *      events,
   const MidiEvent * ev,
   const bool        queued);
+
+/**
+ * Queues MIDI note off to event queues.
+ *
+ * @param queued Send the event to queues instead
+ *   of main events.
+ */
+void
+midi_events_panic_all (
+  const bool queued);
 
 /**
  * Frees the MIDI events.

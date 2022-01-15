@@ -21,10 +21,10 @@
 #include <string.h>
 
 #include "audio/chord_descriptor.h"
+#include "utils/midi.h"
 #include "utils/objects.h"
 
 /* see chord_desriptor.h */
-NOTE_LABELS;
 CHORD_TYPES;
 CHORD_ACCENTS;
 
@@ -187,10 +187,9 @@ chord_descriptor_clone (
  */
 const char *
 chord_descriptor_note_to_string (
-MusicalNote note)
+  MusicalNote note)
 {
-  (void) note_labels;
-  return note_labels[note];
+  return midi_get_note_name ((midi_byte_t) note);
 }
 
 /**

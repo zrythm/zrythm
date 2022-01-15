@@ -68,7 +68,6 @@ audio_srcs = files([
   'master_track.c',
   'meter.c',
   'metronome.c',
-  'midi.c',
   'midi_bus_track.c',
   'midi_event.c',
   'midi_file.c',
