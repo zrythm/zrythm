@@ -247,19 +247,6 @@ draw_loop_points (
     }
 
   /* draw loop points */
-  gtk_snapshot_save (snapshot);
-  gtk_snapshot_translate (
-    snapshot,
-    &GRAPHENE_POINT_INIT (- padding, 0));
-  gtk_snapshot_push_clip (
-    snapshot,
-    &GRAPHENE_RECT_INIT (
-      0, 0, line_width + padding * 2,
-      full_height));
-  gtk_snapshot_append_node (
-    snapshot, loop_line_node);
-  gtk_snapshot_pop (snapshot);
-  gtk_snapshot_restore (snapshot);
   int num_loops =
     arranger_object_get_num_loops (obj, 1);
   for (int i = 0; i < num_loops; i++)
