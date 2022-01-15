@@ -24,7 +24,7 @@
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/instrument_track.h"
-#include "audio/midi.h"
+#include "utils/midi.h"
 #include "audio/midi_note.h"
 #include "audio/position.h"
 #include "audio/region.h"

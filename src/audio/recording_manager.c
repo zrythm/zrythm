@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1236,30 +1236,33 @@ handle_midi_event (
   MidiNote * mn;
   ArrangerObject * mn_obj;
   MidiEvent * mev = &ev->midi_event;
-  switch (mev->type)
+  midi_byte_t * buf = mev->raw_buffer;
+  if (midi_is_note_on (buf))
     {
-      case MIDI_EVENT_TYPE_NOTE_ON:
-        g_return_if_fail (region);
-        midi_region_start_unended_note (
-          region, &local_pos, &local_end_pos,
-          mev->note_pitch, mev->velocity, 1);
-        break;
-      case MIDI_EVENT_TYPE_NOTE_OFF:
-        g_return_if_fail (region);
-        mn =
-          midi_region_pop_unended_note (
-            region, mev->note_pitch);
-        if (mn)
-          {
-            mn_obj =
-              (ArrangerObject *) mn;
-            arranger_object_end_pos_setter (
-              mn_obj, &local_end_pos);
-          }
-        break;
-      default:
-        /* TODO */
-        break;
+      g_return_if_fail (region);
+      midi_region_start_unended_note (
+        region, &local_pos, &local_end_pos,
+        midi_get_note_number (buf),
+        midi_get_velocity (buf), 1);
+    }
+  else if (midi_is_note_off (buf))
+    {
+      g_return_if_fail (region);
+      mn =
+        midi_region_pop_unended_note (
+          region,
+          midi_get_note_number (buf));
+      if (mn)
+        {
+          mn_obj =
+            (ArrangerObject *) mn;
+          arranger_object_end_pos_setter (
+            mn_obj, &local_end_pos);
+        }
+    }
+  else
+    {
+      /* TODO */
     }
 }
 

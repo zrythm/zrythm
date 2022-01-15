@@ -811,6 +811,7 @@ test_strict_cflags += [
   '-Werror=duplicate-decl-specifier',
   '-Werror=redundant-decls',
   '-Werror=strict-prototypes',
+  '-Werror=sizeof-array-argument',
   ]
 
 if is_gcc

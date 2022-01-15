@@ -36,18 +36,67 @@ G_DECLARE_FINAL_TYPE (
   TrackWidget, track_widget, Z, TRACK_WIDGET,
   GtkWidget)
 
-typedef struct Track Track;
-typedef struct CustomButtonWidget CustomButtonWidget;
 typedef struct _ArrangerWidget ArrangerWidget;
-typedef struct _MeterWidget MeterWidget;
 typedef struct AutomationModeWidget
   AutomationModeWidget;
+typedef struct CustomButtonWidget CustomButtonWidget;
+typedef struct _MeterWidget MeterWidget;
+typedef struct Track Track;
+typedef struct _TrackCanvasWidget TrackCanvasWidget;
 
 /**
  * @addtogroup widgets
  *
  * @{
  */
+
+#define TRACK_BUTTON_SIZE 18
+
+/** Padding between each button. */
+#define TRACK_BUTTON_PADDING 6
+
+/** Padding between the track edges and the
+ * buttons */
+#define TRACK_BUTTON_PADDING_FROM_EDGE 3
+
+#define TRACK_BOT_BUTTONS_SHOULD_BE_VISIBLE(height) \
+  (height >= \
+     (TRACK_BUTTON_SIZE + \
+        TRACK_BUTTON_PADDING_FROM_EDGE) * 2 + \
+     TRACK_BUTTON_PADDING)
+
+#define TRACK_COLOR_AREA_WIDTH 18
+
+#define TRACK_ICON_NAME_MONO_COMPAT "mono"
+#define TRACK_ICON_NAME_RECORD "media-record"
+#define TRACK_ICON_NAME_SOLO "solo"
+#define TRACK_ICON_NAME_MUTE "mute"
+#define TRACK_ICON_NAME_LISTEN "listen"
+#define TRACK_ICON_NAME_SHOW_UI "jam-icons-screen"
+#define TRACK_ICON_NAME_SHOW_AUTOMATION_LANES \
+  "node-type-cusp"
+#define TRACK_ICON_NAME_SHOW_TRACK_LANES \
+  "format-justify-fill"
+#define TRACK_ICON_NAME_LOCK "document-decrypt"
+#define TRACK_ICON_NAME_FREEZE "fork-awesome-snowflake-o"
+#define TRACK_ICON_NAME_PLUS "add"
+#define TRACK_ICON_NAME_MINUS "remove"
+#define TRACK_ICON_NAME_BUS "effect"
+#define TRACK_ICON_NAME_CHORDS "minuet-chords"
+#define TRACK_ICON_NAME_SHOW_MARKERS \
+  "kdenlive-show-markers"
+#define TRACK_ICON_NAME_MIDI "instrument"
+#define TRACK_ICON_NAME_TEMPO "filename-bpm-amarok"
+#define TRACK_ICON_NAME_MODULATOR "modulator"
+#define TRACK_ICON_NAME_FOLD "fluentui-folder-regular"
+#define TRACK_ICON_NAME_FOLD_OPEN "fluentui-folder-open-regular"
+#define TRACK_ICON_NAME_MONITOR_AUDIO "audition"
+
+#define TRACK_ICON_IS(x,name) \
+  (string_is_equal (x, TRACK_ICON_NAME_##name))
+
+#define TRACK_CB_ICON_IS(name) \
+  TRACK_ICON_IS (cb->icon_name, name)
 
 /**
  * Highlight location.
@@ -166,9 +215,6 @@ typedef struct _TrackWidget
    * drag_end. */
   int               selected_in_dnd;
 
-  /** Cache layout for drawing the name. */
-  PangoLayout *     layout;
-
   /** For drag actions. */
   double            start_x;
   double            start_y;
@@ -189,7 +235,7 @@ typedef struct _TrackWidget
   /** Currently clicked automation mode button. */
   AutomationModeWidget * clicked_am;
 
-  GtkDrawingArea *  drawing_area;
+  TrackCanvasWidget *  canvas;
 
   /**
    * Signal handler IDs for tracks that have them.
@@ -256,34 +302,6 @@ void
 track_widget_set_name (
   TrackWidget * self,
   const char * name);
-
-/**
- * Blocks all signal handlers.
- */
-//void
-//track_widget_block_all_signal_handlers (
-  //TrackWidget * self);
-
-/**
- * Unblocks all signal handlers.
- */
-//void
-//track_widget_unblock_all_signal_handlers (
-  //TrackWidget * self);
-
-/**
- * Wrapper.
- */
-void
-track_widget_force_redraw (
-  TrackWidget * self);
-
-/**
- * Wrapper to refresh mute button only.
- */
-//void
-//track_widget_refresh_buttons (
-  //TrackWidget * self);
 
 /**
  * Callback when automation button is toggled.
@@ -378,6 +396,18 @@ track_widget_redraw_meters (
 void
 track_widget_recreate_group_colors (
   TrackWidget * self);
+
+CustomButtonWidget *
+track_widget_get_hovered_button (
+  TrackWidget * self,
+  int           x,
+  int           y);
+
+AutomationModeWidget *
+track_widget_get_hovered_am_widget (
+  TrackWidget * self,
+  int           x,
+  int           y);
 
 /**
  * @}

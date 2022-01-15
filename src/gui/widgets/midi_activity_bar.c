@@ -18,7 +18,7 @@
  */
 
 #include "audio/engine.h"
-#include "audio/midi.h"
+#include "utils/midi.h"
 #include "audio/track.h"
 #include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/track.h"

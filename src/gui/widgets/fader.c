@@ -69,7 +69,9 @@ fader_snapshot (
 
   /* draw background bar */
   gtk_snapshot_append_color (
-    snapshot, &Z_GDK_RGBA_INIT (0.4, 0.4, 0.4, 0.2),
+    snapshot,
+    &Z_GDK_RGBA_INIT (
+      0.1, 0.1, 0.1, self->hover ? 0.8 : 0.6),
     &graphene_rect);
 
   /* draw filled in bar */
@@ -83,6 +85,9 @@ fader_snapshot (
             intensity * self->start_color.blue;
   double a = intensity_inv * self->end_color.alpha  +
             intensity * self->start_color.alpha;
+
+  if (!self->hover)
+    a = 0.9f;
 
   const int border_width = 1.f;
   graphene_rect_t value_graphene_rect =
@@ -147,12 +152,8 @@ on_enter (
   gpointer                   user_data)
 {
   FaderWidget * self = Z_FADER_WIDGET (user_data);
-#if 0
-  gtk_widget_set_state_flags (
-    GTK_WIDGET (self),
-    GTK_STATE_FLAG_PRELIGHT, 0);
-#endif
   self->hover = true;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 static void
@@ -161,12 +162,8 @@ on_leave (
   gpointer                   user_data)
 {
   FaderWidget * self = Z_FADER_WIDGET (user_data);
-#if 0
-  gtk_widget_unset_state_flags (
-    GTK_WIDGET (self),
-    GTK_STATE_FLAG_PRELIGHT);
-#endif
   self->hover = false;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 static void
@@ -363,6 +360,22 @@ on_scroll (
   return true;
 }
 
+static gboolean
+fader_tick_cb (
+  GtkWidget *     widget,
+  GdkFrameClock * frame_clock,
+  gpointer        user_data)
+{
+  if (!gtk_widget_get_mapped (widget))
+    {
+      return G_SOURCE_CONTINUE;
+    }
+
+  gtk_widget_queue_draw (widget);
+
+  return G_SOURCE_CONTINUE;
+}
+
 /**
  * Creates a new Fader widget and binds it to the
  * given Fader.
@@ -398,8 +411,8 @@ dispose (
 static void
 fader_widget_init (FaderWidget * self)
 {
-  self->start_color =  UI_COLORS->fader_fill_start;
-  self->end_color =  UI_COLORS->fader_fill_end;
+  self->start_color = UI_COLORS->fader_fill_start;
+  self->end_color = UI_COLORS->fader_fill_end;
 
   gtk_widget_set_focusable (
     GTK_WIDGET (self), true);
@@ -477,10 +490,14 @@ fader_widget_init (FaderWidget * self)
         GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES));
   g_signal_connect (
     G_OBJECT (scroll_controller), "scroll",
-    G_CALLBACK (on_scroll),  self);
+    G_CALLBACK (on_scroll), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (scroll_controller));
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self), fader_tick_cb,
+    self, NULL);
 }
 
 static void

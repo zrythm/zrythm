@@ -18,7 +18,7 @@
  */
 
 #include "audio/engine.h"
-#include "audio/midi.h"
+#include "utils/midi.h"
 #include "gui/widgets/dialogs/add_tracks_to_group_dialog.h"
 #include "project.h"
 #include "utils/error.h"

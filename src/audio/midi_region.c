@@ -1004,17 +1004,16 @@ midi_region_get_as_events (
         (midi_time_t)
         (position_to_ticks (&mn_obj->pos) +
           region_start),
-        0);
+        F_NOT_QUEUED);
       midi_events_add_note_off (
         events, 1, mn->val,
         (midi_time_t)
         (position_to_ticks (&mn_obj->end_pos) +
           region_start),
-        0);
+        F_NOT_QUEUED);
     }
 
-  midi_events_sort_by_time (
-    events);
+  midi_events_sort (events, F_NOT_QUEUED);
 
   return events;
 }
@@ -1043,7 +1042,6 @@ send_notes_off_at (
 
   midi_events_add_all_notes_off (
     midi_events, channel, time, F_QUEUED);
-
 }
 
 /**

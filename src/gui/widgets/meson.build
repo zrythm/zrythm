@@ -156,6 +156,7 @@ widget_srcs = files([
   'toolbox.c',
   'top_bar.c',
   'track.c',
+  'track_canvas.c',
   'track_input_expander.c',
   'track_properties_expander.c',
   'track_visibility_tree.c',

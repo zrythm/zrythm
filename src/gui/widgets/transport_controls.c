@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,7 +19,7 @@
 
 #include "project.h"
 #include "audio/transport.h"
-#include "audio/midi.h"
+#include "audio/midi_event.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/dialogs/bind_cc_dialog.h"
@@ -225,7 +225,7 @@ stop_clicked_cb (
   else
     transport_request_pause (TRANSPORT);
 
-  midi_panic_all (1);
+  midi_events_panic_all (F_QUEUED);
 }
 
 static void

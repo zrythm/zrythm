@@ -136,9 +136,13 @@ test_fill_midi_events (void)
   ev = &events->queued_events[0];
   g_assert_nonnull (ev);
   g_assert_cmpuint (
-    ev->channel, ==, midi_region_get_midi_ch (r));
-  g_assert_cmpuint (ev->note_pitch, ==, pitch1);
-  g_assert_cmpuint (ev->velocity, ==, vel1);
+    midi_get_channel_1_to_16 (ev->raw_buffer),
+    ==, midi_region_get_midi_ch (r));
+  g_assert_cmpuint (
+    midi_get_note_number (ev->raw_buffer), ==,
+    pitch1);
+  g_assert_cmpuint (
+    midi_get_velocity (ev->raw_buffer), ==, vel1);
   g_assert_cmpint (
     (long) ev->time, ==, pos.frames);
   midi_events_clear (events, F_QUEUED);
@@ -230,13 +234,13 @@ test_fill_midi_events (void)
   g_assert_cmpint (
     events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_NOTE_OFF);
+  g_assert_true (
+    midi_is_note_off (ev->raw_buffer));
   g_assert_cmpuint (
     ev->time, ==, BUFFER_SIZE - 1);
   ev = &events->queued_events[1];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_true (
+    midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (
     ev->time, ==, BUFFER_SIZE - 1);
   midi_events_clear (events, F_QUEUED);
@@ -319,13 +323,13 @@ test_fill_midi_events (void)
   g_assert_cmpint (
     events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_NOTE_OFF);
+  g_assert_true (
+    midi_is_note_off (ev->raw_buffer));
   g_assert_cmpuint (
     ev->time, ==, BUFFER_SIZE - 2);
   ev = &events->queued_events[1];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_true (
+    midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (
     ev->time, ==, BUFFER_SIZE - 2);
   midi_events_clear (events, F_QUEUED);
@@ -428,12 +432,12 @@ test_fill_midi_events (void)
   g_assert_cmpint (
     events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_true (
+    midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 364);
   ev = &events->queued_events[1];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
+  g_assert_true (
+    midi_is_note_on (ev->raw_buffer));
   g_assert_cmpuint (
     ev->time, ==, 365);
   midi_events_clear (events, F_QUEUED);
@@ -619,18 +623,18 @@ test_fill_midi_events (void)
   g_assert_cmpint (
     events->num_queued_events, ==, 3);
   ev = &events->queued_events[0];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_NOTE_OFF);
+  g_assert_true (
+    midi_is_note_off (ev->raw_buffer));
   g_assert_cmpuint (
     ev->time, ==, 9);
   ev = &events->queued_events[1];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_true (
+    midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (
     ev->time, ==, 9);
   ev = &events->queued_events[2];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
+  g_assert_true (
+    midi_is_note_on (ev->raw_buffer));
   g_assert_cmpuint (
     ev->time, ==, 10);
   midi_events_clear (events, F_QUEUED);
@@ -665,13 +669,13 @@ test_fill_midi_events (void)
   g_assert_cmpint (
     events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_NOTE_OFF);
+  g_assert_true (
+    midi_is_note_off (ev->raw_buffer));
   g_assert_cmpuint (
     ev->time, ==, 9);
   ev = &events->queued_events[1];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_true (
+    midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (
     ev->time, ==, 9);
   midi_events_clear (events, F_QUEUED);
@@ -712,8 +716,8 @@ test_fill_midi_events (void)
   g_assert_cmpint (
     events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
+  g_assert_true (
+    midi_is_note_on (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 0);
   midi_events_clear (events, F_QUEUED);
 
@@ -752,12 +756,12 @@ test_fill_midi_events (void)
   g_assert_cmpint (
     events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_NOTE_OFF);
+  g_assert_true (
+    midi_is_note_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 9);
   ev = &events->queued_events[1];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_true (
+    midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 29);
   midi_events_clear (events, F_QUEUED);
 
@@ -769,8 +773,8 @@ test_fill_midi_events (void)
   track_fill_events (
     track, &time_nfo, events, NULL);
   ev = &events->queued_events[0];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
+  g_assert_true (
+    midi_is_note_on (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 0);
   midi_events_clear (events, F_QUEUED);
 
@@ -810,12 +814,12 @@ test_fill_midi_events (void)
   g_assert_cmpint (
     events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
+  g_assert_true (
+    midi_is_note_on (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 10);
   ev = &events->queued_events[1];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_true (
+    midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 39);
   midi_events_clear (events, F_QUEUED);
 
@@ -854,16 +858,16 @@ test_fill_midi_events (void)
   g_assert_cmpint (
     events->num_queued_events, ==, 3);
   ev = &events->queued_events[0];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_true (
+    midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 4);
   ev = &events->queued_events[1];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
+  g_assert_true (
+    midi_is_note_on (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 5);
   ev = &events->queued_events[2];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_true (
+    midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 14);
   midi_events_clear (events, F_QUEUED);
 
@@ -921,20 +925,23 @@ test_fill_midi_events_from_engine (void)
   g_assert_cmpint (
     midi_events->num_events, ==, 3);
   MidiEvent * ev = &midi_events->events[0];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_NOTE_OFF);
+  g_assert_true (
+    midi_is_note_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 19);
-  g_assert_cmpuint (ev->note_pitch, ==, 35);
-  ev = &midi_events->events[1];
   g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+    midi_get_note_number (ev->raw_buffer), ==, 35);
+  ev = &midi_events->events[1];
+  g_assert_true (
+    midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 19);
   ev = &midi_events->events[2];
-  g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
+  g_assert_true (
+    midi_is_note_on (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 20);
-  g_assert_cmpuint (ev->note_pitch, ==, 35);
-  g_assert_cmpuint (ev->velocity, ==, 60);
+  g_assert_cmpuint (
+    midi_get_note_number (ev->raw_buffer), ==, 35);
+  g_assert_cmpuint (
+    midi_get_velocity (ev->raw_buffer), ==, 60);
 
   /* process again and check events are 0 */
   g_message ("--- processing engine...");

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -45,9 +45,10 @@ test_add_note_ons (void)
       MidiEvent * ev = &events->events[i];
 
       g_assert_cmpuint (ev->time, ==, _time);
-      g_assert_cmpuint (ev->velocity, ==, 121);
+      g_assert_true (
+        midi_is_note_on (ev->raw_buffer));
       g_assert_cmpuint (
-        ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
+        midi_get_velocity (ev->raw_buffer), ==, 121);
     }
 
   test_helper_zrythm_cleanup ();

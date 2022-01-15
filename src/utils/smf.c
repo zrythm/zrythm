@@ -21,7 +21,7 @@
 /*#include "project.h"*/
 /*#include "audio/channel.h"*/
 /*#include "audio/engine.h"*/
-/*#include "audio/midi.h"*/
+/*#include "utils/midi.h"*/
 /*#include "audio/midi_note.h"*/
 /*#include "audio/midi_region.h"*/
 /*#include "audio/region.h"*/

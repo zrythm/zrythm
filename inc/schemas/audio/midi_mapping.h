@@ -26,7 +26,7 @@
 #ifndef __SCHEMAS_AUDIO_MIDI_MAPPING_H__
 #define __SCHEMAS_AUDIO_MIDI_MAPPING_H__
 
-#include "audio/midi.h"
+#include "utils/midi.h"
 #include "schemas/audio/ext_port.h"
 #include "schemas/audio/port_identifier.h"
 

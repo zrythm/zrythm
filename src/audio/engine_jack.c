@@ -27,7 +27,7 @@
 #include "audio/engine.h"
 #include "audio/engine_jack.h"
 #include "audio/ext_port.h"
-#include "audio/midi.h"
+#include "utils/midi.h"
 #include "audio/router.h"
 #include "audio/port.h"
 #include "audio/tempo_track.h"

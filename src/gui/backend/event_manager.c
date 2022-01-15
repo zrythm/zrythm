@@ -231,15 +231,6 @@ on_channel_output_changed (
 static void
 on_track_state_changed (Track * track)
 {
-  if (track->widget)
-    {
-      /*track_widget_block_all_signal_handlers (*/
-        /*track->widget);*/
-      track_widget_force_redraw (track->widget);
-      /*track_widget_unblock_all_signal_handlers (*/
-        /*track->widget);*/
-    }
-
   Channel * chan = track_get_channel (track);
   if (chan && chan->widget)
     {
@@ -315,12 +306,8 @@ on_automation_value_changed (
 static void
 on_plugin_added (Plugin * plugin)
 {
-  Track * track =
-    plugin_get_track (plugin);
-  /*AutomationTracklist * automation_tracklist =*/
-    /*track_get_automation_tracklist (track);*/
-  if (track && track->widget)
-    track_widget_force_redraw (track->widget);
+  /*Track * track =*/
+    /*plugin_get_track (plugin);*/
 }
 
 static void
@@ -526,7 +513,6 @@ on_track_color_changed (Track * track)
             track->channel->widget);
         }
     }
-  track_widget_force_redraw (track->widget);
   left_dock_edge_widget_refresh (
     MW_LEFT_DOCK_EDGE);
 }
@@ -537,7 +523,6 @@ on_track_name_changed (Track * track)
   /* refresh all because tracks routed to/from are
    * also affected */
   mixer_widget_soft_refresh (MW_MIXER);
-  track_widget_force_redraw (track->widget);
   left_dock_edge_widget_refresh (
     MW_LEFT_DOCK_EDGE);
   visibility_widget_refresh (MW_VISIBILITY);
@@ -590,7 +575,6 @@ on_track_changed (
             GTK_WIDGET (track->widget),
             track->visible);
         }
-      track_widget_force_redraw (track->widget);
     }
 }
 
@@ -605,10 +589,6 @@ on_plugin_window_visibility_changed (
     }
 
   Track * track = plugin_get_track (pl);
-  if (track && track->type == TRACK_TYPE_INSTRUMENT
-      && track->widget
-      && Z_IS_TRACK_WIDGET (track->widget))
-    track_widget_force_redraw (track->widget);
 
   if (track && track->channel
       && track->channel->widget

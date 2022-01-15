@@ -20,7 +20,7 @@
 #include "audio/chord_descriptor.h"
 #include "audio/chord_object.h"
 #include "audio/chord_track.h"
-#include "audio/midi.h"
+#include "utils/midi.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"

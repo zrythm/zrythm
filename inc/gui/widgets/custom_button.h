@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -107,11 +107,7 @@ typedef struct CustomButtonWidget
   //void *       obj;
 
   /** The icon surface. */
-  cairo_surface_t * icon_surface;
-
-  /** Cairo caches. */
-  cairo_t *          cached_cr;
-  cairo_surface_t *  cached_surface;
+  GdkTexture *      icon_texture;
 
   /** Used to update caches if state changed. */
   CustomButtonWidgetState last_state;
@@ -166,7 +162,7 @@ custom_button_widget_new (
 void
 custom_button_widget_draw (
   CustomButtonWidget * self,
-  cairo_t *            cr,
+  GtkSnapshot *        snapshot,
   double               x,
   double               y,
   CustomButtonWidgetState    state);
@@ -177,7 +173,7 @@ custom_button_widget_draw (
 void
 custom_button_widget_draw_with_text (
   CustomButtonWidget * self,
-  cairo_t *            cr,
+  GtkSnapshot *        snapshot,
   double               x,
   double               y,
   double               width,

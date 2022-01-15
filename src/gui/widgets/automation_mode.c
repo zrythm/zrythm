@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,7 +21,7 @@
 #include <stdlib.h>
 
 #include "gui/widgets/automation_mode.h"
-#include "utils/cairo.h"
+#include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -174,20 +174,36 @@ get_color_for_state (
 static void
 draw_bg (
   AutomationModeWidget *  self,
-  cairo_t *               cr,
+  GtkSnapshot *           snapshot,
   double                  x,
   double                  y,
   int                     draw_frame)
 {
+  GskRoundedRect rounded_rect;
+  graphene_rect_t graphene_rect =
+    GRAPHENE_RECT_INIT (
+      (float) x, (float) y,
+      (float) self->width, (float) self->height);
+  gsk_rounded_rect_init_from_rect (
+    &rounded_rect, &graphene_rect,
+    (float) self->corner_radius);
+  gtk_snapshot_push_rounded_clip (
+    snapshot, &rounded_rect);
+
   if (draw_frame)
     {
-      cairo_set_source_rgba (
-        cr, 1, 1, 1, 0.4);
-      cairo_set_line_width (cr, 0.5);
-      z_cairo_rounded_rectangle (
-        cr, x, y, self->width, self->height,
-        self->aspect, self->corner_radius);
-      cairo_stroke (cr);
+      const float border_width = 1.f;
+      GdkRGBA border_color =
+        Z_GDK_RGBA_INIT (1, 1, 1, 0.3);
+      float border_widths[] = {
+        border_width, border_width, border_width,
+        border_width };
+      GdkRGBA border_colors[] = {
+        border_color, border_color, border_color,
+        border_color };
+      gtk_snapshot_append_border (
+        snapshot, &rounded_rect, border_widths,
+        border_colors);
     }
 
   /* draw bg with fade from last state */
@@ -222,14 +238,12 @@ draw_bg (
           if (i == NUM_AUTOMATION_MODES - 1)
             self->transition_frames--;
         }
-      gdk_cairo_set_source_rgba (cr, &c);
       self->last_colors[i] = c;
 
       double new_x = x;
       int new_width =
         self->text_widths[i] +
         2 * AUTOMATION_MODE_HPADDING;
-      int rounded = 1;
       switch (i)
         {
         case AUTOMATION_MODE_READ:
@@ -237,7 +251,6 @@ draw_bg (
             self->text_widths[i + 1];
           break;
         case AUTOMATION_MODE_RECORD:
-          rounded = 0;
           new_x +=
             self->text_widths[0] +
             2 * AUTOMATION_MODE_HPADDING;
@@ -251,29 +264,26 @@ draw_bg (
             ((int) x + self->width) - (int) new_x;
           break;
         }
-      if (rounded)
-        {
-          z_cairo_rounded_rectangle (
-            cr, new_x, y, new_width, self->height,
-            self->aspect, self->corner_radius);
-        }
-      else
-        {
-          cairo_rectangle (
-            cr, new_x, y, new_width, self->height);
-        }
-      cairo_fill (cr);
+
+      gtk_snapshot_append_color (
+        snapshot, &c,
+          &GRAPHENE_RECT_INIT (
+            (float) new_x, (float) y,
+            (float) new_width,
+            (float) self->height));
     }
+
+  gtk_snapshot_pop (snapshot);
 }
 
 void
 automation_mode_widget_draw (
-  AutomationModeWidget * self,
-  cairo_t *                 cr,
-  double                    x,
-  double                    y,
-  double                    x_cursor,
-  CustomButtonWidgetState   state)
+  AutomationModeWidget *  self,
+  GtkSnapshot *           snapshot,
+  double                   x,
+  double                   y,
+  double                   x_cursor,
+  CustomButtonWidgetState  state)
 {
   /* get hit button */
   self->has_hit_mode = 0;
@@ -315,7 +325,7 @@ automation_mode_widget_draw (
               CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
     }
 
-  draw_bg (self, cr, x, y, false);
+  draw_bg (self, snapshot, x, y, false);
 
   /*draw_icon_with_shadow (self, cr, x, y, state);*/
 
@@ -324,15 +334,17 @@ automation_mode_widget_draw (
   for (int i = 0; i < NUM_AUTOMATION_MODES; i++)
     {
       PangoLayout * layout = self->layout;
-      cairo_set_source_rgba (
-        cr, 1, 1, 1, 1);
-      cairo_move_to (
-        cr,
-        x + AUTOMATION_MODE_HPADDING +
-          i * (2 * AUTOMATION_MODE_HPADDING) +
-          total_text_widths,
-        (y + self->height / 2) -
-          self->text_heights[i] / 2);
+      gtk_snapshot_save (snapshot);
+      gtk_snapshot_translate (
+        snapshot,
+        &GRAPHENE_POINT_INIT (
+          (float)
+          (x + AUTOMATION_MODE_HPADDING +
+             i * (2 * AUTOMATION_MODE_HPADDING) +
+             total_text_widths),
+          (float)
+          ((y + self->height / 2) -
+             self->text_heights[i] / 2)));
       char mode_str[400];
       if (i == AUTOMATION_MODE_RECORD)
         {
@@ -348,7 +360,10 @@ automation_mode_widget_draw (
           pango_layout_set_text (
             layout, mode_str, -1);
         }
-      pango_cairo_show_layout (cr, layout);
+      gtk_snapshot_append_layout (
+        snapshot, layout,
+        &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+      gtk_snapshot_restore (snapshot);
 
       total_text_widths += self->text_widths[i];
 
@@ -362,4 +377,3 @@ automation_mode_widget_free (
 {
   free (self);
 }
-
