@@ -52,6 +52,9 @@ zrythm_launcher_config.set (
 zrythm_launcher_config.set (
   'ZRYTHM_CARLA_LIBDIR', zrythm_libdir / 'carla')
 zrythm_launcher_config.set ('LIBDIR', libdir)
+zrythm_launcher_config.set (
+  'LD_LIBRARY_PATH_ENV',
+  os_darwin ? 'DYLD_LIBRARY_PATH' : 'LD_LIBRARY_PATH')
 
 # install desktop file and launcher scripts
 if os_gnu or os_freebsd or os_darwin

@@ -732,6 +732,12 @@ z_gtk_window_get_windows_hwnd (
   GtkWindow * window);
 #endif
 
+#ifdef __APPLE__
+void *
+z_gtk_window_get_nsview (
+  GtkWindow * window);
+#endif
+
 /**
  * Creates a new pixbuf for the given icon scaled
  * at the given width/height.

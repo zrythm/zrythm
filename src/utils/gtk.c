@@ -2045,6 +2045,21 @@ z_gtk_window_get_windows_hwnd (
 }
 #endif
 
+#ifdef __APPLE__
+void *
+z_gtk_window_get_nsview (
+  GtkWindow * window)
+{
+  GtkNative * native = GTK_NATIVE (window);
+  GdkSurface * surface =
+    gtk_native_get_surface (native);
+  void * nsview =
+    gdk_macos_surface_get_view (surface);
+  g_return_val_if_fail (nsview, NULL);
+  return nsview;
+}
+#endif
+
 /**
  * Creates a new pixbuf for the given icon scaled
  * at the given width/height.
