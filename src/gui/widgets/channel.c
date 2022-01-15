@@ -61,8 +61,44 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  ChannelWidget, channel_widget,
-  GTK_TYPE_BOX)
+  ChannelWidget, channel_widget, GTK_TYPE_BOX)
+
+static void
+channel_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot)
+{
+#if 0
+  ChannelWidget * self = Z_CHANNEL_WIDGET (widget);
+
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
+
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (widget);
+
+  gtk_snapshot_render_background (
+    snapshot, context, 0, 0, width, height);
+
+  Track * track = channel_get_track (self->channel);
+  if (track)
+    {
+      /* tint background */
+      gtk_snapshot_append_color (
+        snapshot,
+        &Z_GDK_RGBA_INIT (
+          track->color.red, track->color.green,
+          track->color.blue, 0.1),
+        &GRAPHENE_RECT_INIT (0, 0, width, height));
+    }
+#endif
+
+  GTK_WIDGET_CLASS (
+    channel_widget_parent_class)->
+      snapshot (widget, snapshot);
+}
 
 /**
  * Tick function.
@@ -1061,6 +1097,7 @@ channel_widget_class_init (
     klass, "channel.ui");
   gtk_widget_class_set_css_name (
     klass, "channel");
+  klass->snapshot = channel_snapshot;
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

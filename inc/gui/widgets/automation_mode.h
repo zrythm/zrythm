@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -88,10 +88,6 @@ typedef struct AutomationModeWidget
    * rectangle. */
   double       corner_radius;
 
-  /** Cairo caches. */
-  cairo_t *          cached_cr;
-  cairo_surface_t *  cached_surface;
-
   /** Used to update caches if state changed. */
   CustomButtonWidgetState last_states[
     NUM_AUTOMATION_MODES];
@@ -129,12 +125,12 @@ automation_mode_widget_init (
 
 void
 automation_mode_widget_draw (
-  AutomationModeWidget * self,
-  cairo_t *                 cr,
-  double                    x,
-  double                    y,
-  double                    x_cursor,
-  CustomButtonWidgetState   state);
+  AutomationModeWidget *  self,
+  GtkSnapshot *           snapshot,
+  double                  x,
+  double                  y,
+  double                  x_cursor,
+  CustomButtonWidgetState state);
 
 void
 automation_mode_widget_free (

@@ -18,7 +18,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkDrawingArea" id="drawing_area">
+          <object class="TrackCanvasWidget" id="canvas">
             <property name="hexpand">1</property>
             <property name="vexpand">1</property>
           </object>

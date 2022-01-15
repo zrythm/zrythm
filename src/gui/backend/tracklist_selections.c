@@ -216,8 +216,6 @@ tracklist_selections_clear (
               gtk_widget_set_visible (
                 GTK_WIDGET (track->widget),
                 track->visible);
-              track_widget_force_redraw (
-                track->widget);
             }
         }
     }
