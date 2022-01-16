@@ -18,10 +18,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-12 23:47+0000\n"
-"PO-Revision-Date: 2022-01-12 23:44+0000\n"
+"PO-Revision-Date: 2022-01-14 15:54+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -5646,7 +5646,7 @@ msgstr "Vertical"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:10
 msgid "The Zrythm contributors"
-msgstr ""
+msgstr "Les contributeurs à Zrythm"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:11
 #, fuzzy
@@ -5670,14 +5670,22 @@ msgid ""
 "in multiple languages including English, French, Portuguese, Japanese and "
 "German."
 msgstr ""
+"Zrythm est une station de travail audio numérique conçue pour être riche en "
+"fonctionnalités et facile à utiliser. Elle permet une automatisation sans "
+"limite à l'aide de courbes, de LFO et d'enveloppes, prend en charge "
+"plusieurs formats de greffon, notamment LV2, VST2 et VST3, fonctionne avec "
+"de nombreux dorsaux, notamment JACK, RtAudio/RtMidi et SDL2, aide à la "
+"progression des accords grâce à une piste d'accords spéciale et à des pads "
+"d'accords, et peut être utilisée dans plusieurs langues, notamment "
+"l'anglais, le français, le portugais, le japonais et l'allemand."
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:26
 msgid "Zrythm can be extended using GNU Guile."
-msgstr ""
+msgstr "Zrythm peut être étendu à l'aide de GNU Guile."
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:37
 msgid "Composing MIDI in Zrythm"
-msgstr ""
+msgstr "Composer du MIDI dans Zrythm"
 
 #: data/zrythm.desktop.in:10
 msgid "Zrythm"
@@ -5696,7 +5704,7 @@ msgstr ""
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: data/zrythm.desktop.in:15
 msgid "daw;audio;midi;music;"
-msgstr ""
+msgstr "stan;daw;audio;midi;musique ;"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:243
 msgid "Recent project list"
