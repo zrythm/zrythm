@@ -12,14 +12,14 @@
 # J. Lavoie <j.lavoie@net-c.ca>, 2021.
 # Panos Alevropoulos <panosalevropoulos@protonmail.com>, 2021.
 # sub26nico10b0a294e11e4b4b <faurenicolas5595@neuf.fr>, 2021.
-# Maxime Leroy <lisacintosh@gmail.com>, 2021.
+# Maxime Leroy <lisacintosh@gmail.com>, 2021, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-12 23:47+0000\n"
-"PO-Revision-Date: 2022-01-14 15:54+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2022-01-16 08:09+0000\n"
+"Last-Translator: Maxime Leroy <lisacintosh@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -1860,7 +1860,7 @@ msgstr "Mode enregistrement"
 
 #: src/gui/widgets/transport_controls.c:449
 msgid "Preroll"
-msgstr ""
+msgstr "Préchargement"
 
 #: src/gui/widgets/transport_controls.c:488 resources/ui/fader_buttons.ui:22
 msgid "Record"
@@ -3233,6 +3233,9 @@ msgid ""
 "---Backtrace---\n"
 "%s"
 msgstr ""
+"%s\n"
+"---Backtrace---\n"
+"%s"
 
 #: src/settings/settings.c:163
 #, c-format
@@ -6622,7 +6625,7 @@ msgstr "Mappage CC MIDI"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:783
 msgid "CC bindings panel size when detached."
-msgstr ""
+msgstr "Les reliures CC ont la taille d'un panneau lorsqu'elles sont détachées."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:787
 #, fuzzy
@@ -6779,8 +6782,9 @@ msgid "Recording Pre-Roll"
 msgstr "Mode enregistrement"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:902
+#, fuzzy
 msgid "Number of bars to pre-roll when recording."
-msgstr ""
+msgstr "Nombre de barres à faire défiler lors de l'enregistrement."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:911
 msgid "Engine"
