@@ -651,7 +651,6 @@ need_backtrace (
       ev->message,
       "gsk_render_node_unref: assertion 'GSK_IS_RENDER_NODE (node)' failed")
     &&
-    /* FIXME already fixed upstream, remove on gtk 4.6 */
     !string_contains_substr (
       ev->message,
       "A floating object GtkAdjustment")
@@ -666,7 +665,11 @@ need_backtrace (
     &&
     !string_contains_substr (
       ev->message,
-      "Allocation height too small");
+      "Allocation height too small")
+    &&
+    !string_contains_substr (
+      ev->message,
+      "Allocation width too small");
 }
 
 /**
