@@ -34,7 +34,8 @@ midi_bus_track_init (
   Track * self)
 {
   self->type = TRACK_TYPE_MIDI_BUS;
-  gdk_rgba_parse (&self->color, "#F9CA1B");
+  /* GTK color picker color */
+  gdk_rgba_parse (&self->color, "#F5C211");
   self->icon_name = g_strdup ("signal-midi");
 }
 

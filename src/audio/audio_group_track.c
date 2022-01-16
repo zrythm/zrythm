@@ -35,7 +35,8 @@ audio_group_track_init (
   Track * self)
 {
   self->type = TRACK_TYPE_AUDIO_GROUP;
-  gdk_rgba_parse (&self->color, "#D9DADD");
+  /* GTK color picker color */
+  gdk_rgba_parse (&self->color, "#26A269");
   self->icon_name = g_strdup ("effect");
 }
 

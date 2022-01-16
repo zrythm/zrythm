@@ -34,7 +34,8 @@ audio_bus_track_init (
   Track * self)
 {
   self->type = TRACK_TYPE_AUDIO_BUS;
-  gdk_rgba_parse (&self->color, "#F9CA1B");
+  /* GTK color picker color */
+  gdk_rgba_parse (&self->color, "#33D17A");
   self->icon_name = g_strdup ("effect");
 }
 

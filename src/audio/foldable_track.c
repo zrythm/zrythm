@@ -37,7 +37,8 @@ foldable_track_init (
 {
   if (self->type == TRACK_TYPE_FOLDER)
     {
-      gdk_rgba_parse (&self->color, "#dddddd");
+      /* GTK color picker color */
+      gdk_rgba_parse (&self->color, "#865E3C");
       self->icon_name =
         g_strdup ("fluentui-folder-regular");
     }

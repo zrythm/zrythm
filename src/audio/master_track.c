@@ -30,7 +30,8 @@ master_track_init (
   Track * self)
 {
   self->type = TRACK_TYPE_MASTER;
-  gdk_rgba_parse (&self->color, "#f01010");
+  /* GTK color picker color */
+  gdk_rgba_parse (&self->color, "#C01C28");
   self->icon_name = g_strdup ("effect");
 }
 

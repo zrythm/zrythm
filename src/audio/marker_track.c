@@ -46,7 +46,8 @@ marker_track_init (
   self->main_height = TRACK_DEF_HEIGHT / 2;
   self->icon_name = g_strdup ("markers");
 
-  gdk_rgba_parse (&self->color, "#a328aa");
+  /* GTK color picker color */
+  gdk_rgba_parse (&self->color, "#813D9C");
 }
 
 /**
