@@ -60,19 +60,32 @@ fader_snapshot (
   gtk_snapshot_render_background (
     snapshot, context, 0, 0, width, height);
 
-  graphene_rect_t graphene_rect =
-    GRAPHENE_RECT_INIT (0, 0, width, height);
-
   float fader_val =
     self->fader ? self->fader->fader_val : 1.f;
   float value_px = height * fader_val;
 
+  const float fill_radius = 2.f;
+
   /* draw background bar */
+  GskRoundedRect rounded_rect;
+  gsk_rounded_rect_init_from_rect (
+    &rounded_rect,
+    &GRAPHENE_RECT_INIT (0, 0, width, height),
+    fill_radius);
+  gtk_snapshot_push_rounded_clip (
+    snapshot, &rounded_rect);
   gtk_snapshot_append_color (
     snapshot,
     &Z_GDK_RGBA_INIT (
       0.1, 0.1, 0.1, self->hover ? 0.8 : 0.6),
-    &graphene_rect);
+    &GRAPHENE_RECT_INIT (0, 0, width, height));
+  gtk_snapshot_pop (snapshot);
+
+  /*const int padding = 2;*/
+  /*graphene_rect_t graphene_rect =*/
+    /*GRAPHENE_RECT_INIT (*/
+      /*padding, padding, width - padding * 2,*/
+      /*height - padding * 2);*/
 
   /* draw filled in bar */
   double intensity = fader_val;
@@ -89,15 +102,17 @@ fader_snapshot (
   if (!self->hover)
     a = 0.9f;
 
-  const int border_width = 1.f;
+  const float inner_line_width = 2.f;
+
+  const int border_width = 3.f;
   graphene_rect_t value_graphene_rect =
     GRAPHENE_RECT_INIT (
       border_width, border_width,
       width - border_width * 2,
       height - border_width * 2);
-  GskRoundedRect rounded_rect;
   gsk_rounded_rect_init_from_rect (
-    &rounded_rect, &value_graphene_rect, 1.4f);
+    &rounded_rect, &value_graphene_rect,
+    fill_radius);
   gtk_snapshot_push_rounded_clip (
     snapshot, &rounded_rect);
   gtk_snapshot_append_color (
@@ -105,16 +120,19 @@ fader_snapshot (
     &Z_GDK_RGBA_INIT (
       (float) r, (float) g, (float) b, (float) a),
     &GRAPHENE_RECT_INIT (
-      0, (float) (height - value_px),
+      0,
+      (float) (height - value_px) + inner_line_width * 2,
       width, value_px));
   gtk_snapshot_pop (snapshot);
 
+#if 0
   /* draw fader thick line */
   const int line_width = 12;
   value_graphene_rect =
     GRAPHENE_RECT_INIT (
-      0, (height - value_px) - line_width / 2,
-      width, line_width);
+      border_width,
+      (height - value_px) - line_width / 2,
+      width - border_width * 2, line_width);
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &value_graphene_rect, 1.4f);
   gtk_snapshot_push_rounded_clip (
@@ -124,10 +142,10 @@ fader_snapshot (
     &Z_GDK_RGBA_INIT (0, 0, 0, 1),
     &value_graphene_rect);
   gtk_snapshot_pop (snapshot);
+#endif
 
   /* draw fader thin line */
   GdkRGBA color;
-  const float inner_line_width = 3.f;
   if (self->hover || self->dragging)
     {
       color = Z_GDK_RGBA_INIT (0.8, 0.8, 0.8, 1);
@@ -139,9 +157,9 @@ fader_snapshot (
   gtk_snapshot_append_color (
     snapshot, &color,
     &GRAPHENE_RECT_INIT (
-      0,
+      border_width,
       (height - value_px) - inner_line_width / 2.f,
-      width, inner_line_width));
+      width - border_width * 2, inner_line_width));
 }
 
 static void
