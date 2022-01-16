@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-12 23:47+0000\n"
-"PO-Revision-Date: 2022-01-12 23:44+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
+"PO-Revision-Date: 2022-01-17 09:53+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
 "Language: pt\n"
@@ -5587,7 +5587,7 @@ msgstr "Vertical"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:10
 msgid "The Zrythm contributors"
-msgstr ""
+msgstr "Os colaboradores da Zrythm"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:11
 #, fuzzy
