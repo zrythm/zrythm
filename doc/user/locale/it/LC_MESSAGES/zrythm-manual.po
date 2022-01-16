@@ -32,18 +32,21 @@
 # #-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-01-11 21:06+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2022-01-17 09:53+0000\n"
+"Last-Translator: Giovanni Mauri <info@thejoe.it>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/it/>\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.10.1\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -907,7 +910,7 @@ msgstr "Opzioni di modifica."
 #: ../../tracks/track-types.rst:43 ../../tracks/track-types.rst:52
 #: ../../tracks/track-types.rst:53
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: ../../configuration/preferences.rst:151
 msgid "Audio editing."
@@ -2682,7 +2685,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:225
 msgid "Linear"
-msgstr ""
+msgstr "Lineare"
 
 #: ../../editing/timeline/arranger.rst:230
 #, fuzzy
@@ -3717,7 +3720,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:67 ../../tracks/track-types.rst:68
 #: ../../tracks/track-types.rst:72 ../../tracks/track-types.rst:73
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../glossary/intro.rst:90
 msgid ""
@@ -3796,7 +3799,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:134
 msgid "Region"
-msgstr ""
+msgstr "Regione"
 
 #: ../../glossary/intro.rst:136
 msgid ""
@@ -5266,7 +5269,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:62
 msgid "Enabled"
-msgstr ""
+msgstr "Abilitato"
 
 #: ../../plugins-files/plugins/plugin-info.rst:62
 msgid "Controls whether the plugin is active or bypassed."
@@ -6301,7 +6304,7 @@ msgstr ""
 #: ../../tracks/midi-track.rst:31 ../../tracks/modulator-track.rst:31
 #: ../../tracks/tempo-track.rst:31
 msgid "Mute"
-msgstr ""
+msgstr "Muto"
 
 #: ../../tracks/audio-track.rst:22 ../../tracks/bus-track-audio.rst:22
 #: ../../tracks/bus-track-midi.rst:22 ../../tracks/group-track-audio.rst:26
@@ -7270,15 +7273,15 @@ msgstr ""
 #: ../../tracks/track-types.rst:77 ../../tracks/track-types.rst:78
 #: ../../tracks/track-types.rst:80
 msgid "None"
-msgstr ""
+msgstr "Nessuno"
 
 #: ../../tracks/track-types.rst:31
 msgid "Audio FX"
-msgstr ""
+msgstr "Effetti Audio"
 
 #: ../../tracks/track-types.rst:36
 msgid "Chord"
-msgstr ""
+msgstr "Accordo"
 
 #: ../../tracks/track-types.rst:40
 msgid "Chord regions, scales"
@@ -7294,7 +7297,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:51
 msgid "Master"
-msgstr ""
+msgstr "Master"
 
 #: ../../tracks/track-types.rst:66
 msgid "MIDI Group"
@@ -7302,11 +7305,11 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:71
 msgid "MIDI FX"
-msgstr ""
+msgstr "Effetti MIDI"
 
 #: ../../tracks/track-types.rst:76
 msgid "Tempo"
-msgstr ""
+msgstr "Tempo"
 
 #: ../../tracks/track-types.rst:82
 msgid ""
