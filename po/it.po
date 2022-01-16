@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-12 23:47+0000\n"
-"PO-Revision-Date: 2021-11-20 15:50+0000\n"
+"PO-Revision-Date: 2022-01-17 09:53+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/zrythm/it/"
 ">\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9.1\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -5591,7 +5591,7 @@ msgstr ""
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:10
 msgid "The Zrythm contributors"
-msgstr ""
+msgstr "I contributori di Zrythm"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:11
 #, fuzzy
