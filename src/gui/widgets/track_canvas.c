@@ -864,7 +864,7 @@ track_canvas_snapshot (
     snapshot,
     &Z_GDK_RGBA_INIT (
       track->color.red, track->color.green,
-      track->color.blue, 0.03),
+      track->color.blue, 0.1),
     &GRAPHENE_RECT_INIT (0, 0, width, height));
 
   if (tw->bg_hovered)
