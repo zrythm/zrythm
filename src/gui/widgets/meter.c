@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,9 +23,12 @@
 #include "gui/widgets/meter.h"
 #include "gui/widgets/fader.h"
 #include "project.h"
+#include "utils/color.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/ui.h"
+#include "zrythm_app.h"
 
 G_DEFINE_TYPE (
   MeterWidget, meter_widget, GTK_TYPE_WIDGET)
@@ -76,18 +79,26 @@ meter_snapshot (
   graphene_rect_t graphene_rect =
     GRAPHENE_RECT_INIT (0, 0, width, height);
 
+  GdkRGBA color4;
+  color_morph (
+    &UI_COLORS->bright_green, &bar_color,
+    0.5f, &color4);
+  color4.alpha = 1.f;
+
   /* use gradient */
-  GskColorStop stop1, stop2, stop3, stop4;
+  GskColorStop stop1, stop2, stop3, stop4, stop5;
   stop1.offset = 0;
-  stop1.color = bar_color;
-  stop2.offset = 0.5;
-  stop2.color = bar_color;
-  stop3.offset = 0.75;
-  stop3.color = Z_GDK_RGBA_INIT (0, 1, 0, 1);
-  stop4.offset = 1;
-  stop4.color = Z_GDK_RGBA_INIT (0, 0.2, 1, 1);
+  stop1.color = UI_COLORS->z_purple;
+  stop2.offset = 0.2;
+  stop2.color = self->start_color;
+  stop3.offset = 0.5;
+  stop3.color = bar_color;
+  stop4.offset = 0.8;
+  stop4.color = color4;
+  stop5.offset = 1;
+  stop5.color = UI_COLORS->darkish_green;
   GskColorStop stops[] = {
-    stop1, stop2, stop3, stop4 };
+    stop1, stop2, stop3, stop4, stop5 };
 
   /* used to stretch the gradient a little bit to
    * make it look alive */
@@ -311,10 +322,10 @@ finalize (
 static void
 meter_widget_init (MeterWidget * self)
 {
-  /*gdk_rgba_parse (&self->start_color, "#00FF66");*/
-  /*gdk_rgba_parse (&self->end_color, "#00FFCC");*/
-  gdk_rgba_parse (&self->start_color, "#F9CA1B");
-  gdk_rgba_parse (&self->end_color, "#1DDD6A");
+  /*gdk_rgba_parse (&self->start_color, "#F9CA1B");*/
+  /*gdk_rgba_parse (&self->end_color, "#1DDD6A");*/
+  self->start_color = UI_COLORS->z_yellow;
+  self->end_color = UI_COLORS->bright_green;
 }
 
 static void
