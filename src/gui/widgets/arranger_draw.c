@@ -293,6 +293,17 @@ draw_timeline_bg (
               width, 2));
         }
 
+      /* draw selection tint */
+      if (track_is_selected (track))
+        {
+          gtk_snapshot_append_color (
+            snapshot,
+            &Z_GDK_RGBA_INIT (1, 1, 1, 0.04),
+            &GRAPHENE_RECT_INIT (
+              0, (float) track_start_offset,
+              width, (float) full_track_height));
+        }
+
       double total_height = track->main_height;
 
 #define OFFSET_PLUS_TOTAL_HEIGHT \
