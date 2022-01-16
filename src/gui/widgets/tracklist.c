@@ -398,6 +398,8 @@ void
 tracklist_widget_hard_refresh (
   TracklistWidget * self)
 {
+  g_debug ("hard refreshing tracklist");
+
   g_object_ref (self->ddbox);
 
   /* remove all children */
@@ -434,6 +436,8 @@ tracklist_widget_hard_refresh (
     GTK_WIDGET (self->ddbox));
 
   g_object_unref (self->ddbox);
+
+  g_debug ("done hard refreshing tracklist");
 }
 
 /**

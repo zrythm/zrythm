@@ -2157,6 +2157,7 @@ on_destroy (
   TrackWidget * self)
 {
   Track * track = self->track;
+  g_debug ("destroying '%s' widget", track->name);
 
   CustomButtonWidget * cb = NULL;
   for (int i = 0; i < self->num_top_buttons; i++)
@@ -2170,7 +2171,7 @@ on_destroy (
       custom_button_widget_free (cb);
     }
 
-  track->widget = NULL;
+  /*track->widget = NULL;*/
 }
 
 static void
