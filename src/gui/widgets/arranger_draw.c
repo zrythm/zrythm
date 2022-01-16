@@ -228,7 +228,8 @@ draw_playhead (
   if (px >= rect->x && px <= rect->x + rect->width)
     {
       gtk_snapshot_append_color (
-        snapshot, &Z_GDK_RGBA_INIT (1, 0, 0, 1),
+        snapshot,
+        &UI_COLORS->prefader_send,
         &GRAPHENE_RECT_INIT (
           px - 1, 0, 2, height));
       self->last_playhead_px = px;

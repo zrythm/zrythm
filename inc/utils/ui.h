@@ -115,6 +115,8 @@ typedef struct UiColors
   GdkRGBA       highlight_chord_fg;
   GdkRGBA       highlight_bass_fg;
   GdkRGBA       highlight_both_fg;
+  GdkRGBA       z_yellow;
+  GdkRGBA       z_purple;
 } UiColors;
 
 /**
