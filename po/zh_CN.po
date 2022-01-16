@@ -16,8 +16,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-12 23:47+0000\n"
-"PO-Revision-Date: 2022-01-12 23:44+0000\n"
-"Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
+"PO-Revision-Date: 2022-01-17 09:53+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -5361,7 +5361,7 @@ msgstr "竖直"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:10
 msgid "The Zrythm contributors"
-msgstr ""
+msgstr "Zrythm 之贡献者"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:11
 #, fuzzy
