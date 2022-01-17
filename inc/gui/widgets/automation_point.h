@@ -77,6 +77,16 @@ automation_point_is_curve_hit (
   double            delta_from_curve);
 
 /**
+ * Returns whether the cached render node for @ref
+ * self needs to be invalidated.
+ */
+bool
+automation_point_settings_changed (
+  const AutomationPoint * self,
+  const GdkRectangle *    draw_rect,
+  bool                    timeline);
+
+/**
  * Draws the AutomationPoint in the given cairo
  * context in absolute coordinates.
  *

@@ -81,10 +81,19 @@ typedef struct AutomationPoint
   /** Index in the region. */
   int             index;
 
+  /** Last settings used for drawing in editor. */
   AutomationPointDrawSettings last_settings;
 
-  /** Cached cairo node to reuse when drawing. */
+  /** Last settings used for drawing in timeline. */
+  AutomationPointDrawSettings last_settings_tl;
+
+  /** Cached cairo node to reuse when drawing in the
+   * editor. */
   GskRenderNode * cairo_node;
+
+  /** Cached cairo node to reuse when drawing in the
+   * timeline. */
+  GskRenderNode * cairo_node_tl;
 } AutomationPoint;
 
 static const cyaml_schema_field_t

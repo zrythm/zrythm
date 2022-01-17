@@ -39,25 +39,29 @@
 
 /**
  * Returns whether the cached render node for @ref
- * needs to be invalidated.
+ * self needs to be invalidated.
  */
-static bool
-settings_changed (
+bool
+automation_point_settings_changed (
   const AutomationPoint * self,
-  const GdkRectangle *    draw_rect)
+  const GdkRectangle *    draw_rect,
+  bool                    timeline)
 {
-  /*ArrangerObject * obj = (ArrangerObject *) self;*/
+  const AutomationPointDrawSettings * last_settings =
+    timeline
+    ? &self->last_settings_tl
+    : &self->last_settings;
   bool same =
     gdk_rectangle_equal (
-      &self->last_settings.draw_rect,
+      &last_settings->draw_rect,
       draw_rect)
     &&
     curve_options_are_equal (
-      &self->last_settings.curve_opts,
+      &last_settings->curve_opts,
       &self->curve_opts)
     &&
     math_floats_equal (
-      self->last_settings.fvalue, self->fvalue);
+      last_settings->fvalue, self->fvalue);
 
   return !same;
 }
@@ -106,7 +110,8 @@ automation_point_draw (
     obj, rect, &obj->full_rect, &draw_rect);
 
   GskRenderNode * cr_node = NULL;
-  if (settings_changed (ap, &draw_rect))
+  if (automation_point_settings_changed (
+        ap, &draw_rect, false))
     {
       cr_node =
         gsk_cairo_node_new (

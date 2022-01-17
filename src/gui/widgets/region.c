@@ -31,6 +31,7 @@
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_object.h"
+#include "gui/widgets/automation_point.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/cpu.h"
@@ -49,6 +50,7 @@
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 #include "zrythm.h"
@@ -807,20 +809,59 @@ draw_automation_region (
                     fabs (x_end - x_start);
                   ac_width *= full_width;
 
+                  GskRenderNode * cr_node = NULL;
                   cairo_t * cr = NULL;
+                  GdkRectangle ap_draw_rect;
                   if (use_cairo)
                     {
+                      ap_draw_rect =
+                        Z_GDK_RECTANGLE_INIT (
+                          (int) MAX (x_start_real, 0.0),
+                          0,
+                          (int)
+                          (x_start_real + ac_width +
+                            0.1),
+                          full_height);
+                      if (automation_point_settings_changed (
+                            ap, &ap_draw_rect, true))
+                        {
+                          cr_node =
+                            gsk_cairo_node_new (
+                              &GRAPHENE_RECT_INIT (
+                                0, 0,
+                                ap_draw_rect.width,
+                                ap_draw_rect.height));
+
+                          object_free_w_func_and_null (
+                            gsk_render_node_unref,
+                            ap->cairo_node_tl);
+                        }
+                      else
+                        {
+                          cr_node =
+                            ap->cairo_node_tl;
+                          gtk_snapshot_save (
+                            snapshot);
+                          gtk_snapshot_translate (
+                            snapshot,
+                            &GRAPHENE_POINT_INIT (
+                              ap_draw_rect.x,
+                              ap_draw_rect.y));
+                          gtk_snapshot_append_node (
+                            snapshot, cr_node);
+                          gtk_snapshot_restore (
+                            snapshot);
+                          continue;
+                        }
+
                       cr =
-                        gtk_snapshot_append_cairo (
-                          snapshot,
-                          &GRAPHENE_RECT_INIT (
-                            (float)
-                            MAX (x_start_real, 0.0),
-                            0,
-                            (float)
-                            (x_start_real + ac_width +
-                              0.1),
-                            full_height));
+                        gsk_cairo_node_get_draw_context (
+                          cr_node);
+                      cairo_save (cr);
+                      cairo_translate (
+                        cr,
+                        - (ap_draw_rect.x),
+                        - (ap_draw_rect.y));
                       cairo_set_source_rgba (
                         cr, 1, 1, 1, 1);
                       cairo_set_line_width (cr, 2.0);
@@ -903,6 +944,24 @@ draw_automation_region (
                     {
                       cairo_stroke (cr);
                       cairo_destroy (cr);
+
+                      gtk_snapshot_save (snapshot);
+                      gtk_snapshot_translate (
+                        snapshot,
+                        &GRAPHENE_POINT_INIT (
+                          ap_draw_rect.x - 1,
+                          ap_draw_rect.y - 1));
+                      gtk_snapshot_append_node (
+                        snapshot, cr_node);
+                      gtk_snapshot_restore (snapshot);
+
+                      ap->last_settings_tl.fvalue =
+                        ap->fvalue;
+                      ap->last_settings_tl.curve_opts =
+                        ap->curve_opts;
+                      ap->last_settings_tl.draw_rect =
+                        ap_draw_rect;
+                      ap->cairo_node_tl = cr_node;
                     }
 
                 } /* endif have next ap */
