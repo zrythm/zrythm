@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -593,13 +593,13 @@ setup_dnd (
   gtk_drop_target_set_preload (
     drop_target, true);
   g_signal_connect (
-    GTK_WIDGET (self), "drop",
+    G_OBJECT (drop_target), "drop",
     G_CALLBACK (on_dnd_drop), self);
   g_signal_connect (
-    GTK_WIDGET (self), "motion",
+    G_OBJECT (drop_target), "motion",
     G_CALLBACK (on_dnd_motion), self);
   g_signal_connect (
-    GTK_WIDGET (self), "leave",
+    G_OBJECT (drop_target), "leave",
     G_CALLBACK (on_dnd_leave), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self),
