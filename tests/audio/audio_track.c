@@ -76,7 +76,8 @@ test_fill_when_region_starts_on_loop_end (void)
 
   StereoPorts * ports =
     stereo_ports_new_generic (
-      false, "ports", PORT_OWNER_TYPE_TRACK, track);
+      false, "ports", "ports",
+      PORT_OWNER_TYPE_TRACK, track);
   port_allocate_bufs (ports->l);
   port_allocate_bufs (ports->r);
 

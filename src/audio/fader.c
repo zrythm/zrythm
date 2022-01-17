@@ -140,6 +140,10 @@ fader_new (
       passthrough ?
         _("Prefader Volume") : _("Fader Volume"),
       PORT_OWNER_TYPE_FADER, self);
+  self->amp->id.sym =
+    passthrough
+    ? g_strdup ("prefader_volume")
+    : g_strdup ("fader_volume");
   self->amp->deff = amp;
   self->amp->minf = 0.f;
   self->amp->maxf = 2.f;
@@ -171,6 +175,10 @@ fader_new (
       passthrough ?
         _("Prefader Balance") : _("Fader Balance"),
       PORT_OWNER_TYPE_FADER, self);
+  self->balance->id.sym =
+    passthrough
+    ? g_strdup ("prefader_balance")
+    : g_strdup ("fader_balance");
   port_set_control_value (
     self->balance, balance, 0, 0);
   self->balance->id.flags |=
@@ -190,6 +198,10 @@ fader_new (
       passthrough ?
         _("Prefader Mute") : _("Fader Mute"),
       PORT_OWNER_TYPE_FADER, self);
+  self->mute->id.sym =
+    passthrough
+    ? g_strdup ("prefader_mute")
+    : g_strdup ("fader_mute");
   control_port_set_toggled (
     self->mute, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
   self->mute->id.flags |=
@@ -211,6 +223,10 @@ fader_new (
       passthrough ?
         _("Prefader Solo") : _("Fader Solo"),
       PORT_OWNER_TYPE_FADER, self);
+  self->solo->id.sym =
+    passthrough
+    ? g_strdup ("prefader_solo")
+    : g_strdup ("fader_solo");
   control_port_set_toggled (
     self->solo, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
   self->solo->id.flags2 |=
@@ -225,6 +241,10 @@ fader_new (
       passthrough ?
         _("Prefader Listen") : _("Fader Listen"),
       PORT_OWNER_TYPE_FADER, self);
+  self->listen->id.sym =
+    passthrough
+    ? g_strdup ("prefader_listen")
+    : g_strdup ("fader_listen");
   control_port_set_toggled (
     self->listen, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
   self->listen->id.flags2 |=
@@ -240,6 +260,10 @@ fader_new (
         _("Prefader Mono Compat") :
         _("Fader Mono Compat"),
       PORT_OWNER_TYPE_FADER, self);
+  self->mono_compat_enabled->id.sym =
+    passthrough
+    ? g_strdup ("prefader_mono_compat_enabled")
+    : g_strdup ("fader_mono_compat_enabled");
   control_port_set_toggled (
     self->mono_compat_enabled, F_NO_TOGGLE,
     F_NO_PUBLISH_EVENTS);
@@ -253,30 +277,36 @@ fader_new (
       type == FADER_TYPE_SAMPLE_PROCESSOR)
     {
       const char * name = NULL;
+      const char * sym = NULL;
       if (type == FADER_TYPE_AUDIO_CHANNEL)
         {
           if (passthrough)
             {
               name = _("Ch Pre-Fader in");
+              sym = "ch_prefader_in";
             }
           else
             {
               name = _("Ch Fader in");
+              sym = "ch_fader_in";
             }
         }
       else if (type == FADER_TYPE_SAMPLE_PROCESSOR)
         {
           name = _("Sample Processor Fader in");
+          sym = "sample_processor_fader_in";
         }
       else
         {
           name =  _("Monitor Fader in");
+          sym = "monitor_fader_in";
         }
 
       /* stereo in */
       self->stereo_in =
         stereo_ports_new_generic (
-        F_INPUT, name, PORT_OWNER_TYPE_FADER, self);
+          F_INPUT, name, sym, PORT_OWNER_TYPE_FADER,
+          self);
 
       /* set proper owner */
       port_set_owner (
@@ -291,26 +321,30 @@ fader_new (
           if (passthrough)
             {
               name = _("Ch Pre-Fader out");
+              sym = "ch_prefader_out";
             }
           else
             {
               name = _("Ch Fader out");
+              sym = "ch_fader_out";
             }
         }
       else if (type == FADER_TYPE_SAMPLE_PROCESSOR)
         {
           name = _("Sample Processor Fader out");
+          sym = "sample_processor_fader_out";
         }
       else
         {
           name =  _("Monitor Fader out");
+          sym = "monitor_fader_out";
         }
 
       /* stereo out */
       self->stereo_out =
         stereo_ports_new_generic (
-        F_NOT_INPUT, name, PORT_OWNER_TYPE_FADER,
-        self);
+        F_NOT_INPUT, name, sym,
+        PORT_OWNER_TYPE_FADER, self);
 
       /* set proper owner */
       port_set_owner (
@@ -325,18 +359,22 @@ fader_new (
     {
       /* MIDI in */
       const char * name = NULL;
+      const char * sym = NULL;
       if (passthrough)
         {
           name = _("Ch MIDI Pre-Fader in");
+          sym = "ch_midi_prefader_in";
         }
       else
         {
           name = _("Ch MIDI Fader in");
+          sym = "ch_midi_fader_in";
         }
       self->midi_in =
         port_new_with_type_and_owner (
           TYPE_EVENT, FLOW_INPUT, name,
           PORT_OWNER_TYPE_FADER, self);
+      self->midi_in->id.sym = g_strdup (sym);
       self->midi_in->midi_events =
         midi_events_new ();
 
@@ -344,15 +382,18 @@ fader_new (
       if (passthrough)
         {
           name = _("Ch MIDI Pre-Fader out");
+          sym = "ch_midi_prefader_out";
         }
       else
         {
           name = _("Ch MIDI Fader out");
+          sym = "ch_midi_fader_out";
         }
       self->midi_out =
         port_new_with_type_and_owner (
           TYPE_EVENT, FLOW_OUTPUT, name,
           PORT_OWNER_TYPE_FADER, self);
+      self->midi_out->id.sym = g_strdup (sym);
       self->midi_out->midi_events =
         midi_events_new ();
     }

@@ -60,8 +60,8 @@ test_fill_stereo_ports (void)
 
   StereoPorts * ports =
     stereo_ports_new_generic (
-      false, "ports", PORT_OWNER_TYPE_AUDIO_ENGINE,
-      NULL);
+      false, "ports", "ports",
+      PORT_OWNER_TYPE_AUDIO_ENGINE, NULL);
   port_allocate_bufs (ports->l);
   port_allocate_bufs (ports->r);
 

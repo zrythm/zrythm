@@ -298,6 +298,7 @@ plugin_init (
   Port * port =
     port_new_with_type (
       TYPE_CONTROL, FLOW_INPUT, _("Enabled"));
+  port->id.sym = g_strdup ("enabled");
   port->id.comment =
     g_strdup (_("Enables or disables the plugin"));
   port->id.port_group = g_strdup ("[Zrythm]");
@@ -323,6 +324,7 @@ plugin_init (
   port =
     port_new_with_type (
       TYPE_CONTROL, FLOW_INPUT, _("Gain"));
+  port->id.sym = g_strdup ("gain");
   port->id.comment = g_strdup (_("Plugin gain"));
   plugin_add_in_port (plugin, port);
   port->id.flags |=

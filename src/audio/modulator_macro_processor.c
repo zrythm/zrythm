@@ -108,6 +108,8 @@ modulator_macro_processor_new (
       TYPE_CONTROL, FLOW_INPUT, str,
       PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR,
       self);
+  self->macro->id.sym =
+    g_strdup_printf ("macro_%d", idx + 1);
   Port * port = self->macro;
   port->minf = 0.f;
   port->maxf = 1.f;
@@ -126,6 +128,8 @@ modulator_macro_processor_new (
       TYPE_CV, FLOW_INPUT, str,
       PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR,
       self);
+  self->cv_in->id.sym =
+    g_strdup_printf ("macro_cv_in_%d", idx + 1);
   port = self->cv_in;
   port->id.flags |=
     PORT_FLAG_MODULATOR_MACRO;
@@ -137,6 +141,8 @@ modulator_macro_processor_new (
       TYPE_CV, FLOW_OUTPUT, str,
       PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR,
       self);
+  self->cv_out->id.sym =
+    g_strdup_printf ("macro_cv_out_%d", idx + 1);
   port = self->cv_out;
   port->id.flags |=
     PORT_FLAG_MODULATOR_MACRO;

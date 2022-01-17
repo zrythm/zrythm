@@ -57,7 +57,7 @@ prepare (void)
   /* create dummy input for audio recording */
   AUDIO_ENGINE->dummy_input =
     stereo_ports_new_generic (
-      true, "Dummy input",
+      true, "Dummy input", "dummy_input",
       PORT_OWNER_TYPE_AUDIO_ENGINE,
       AUDIO_ENGINE);
   port_allocate_bufs (

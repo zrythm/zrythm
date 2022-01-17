@@ -1135,6 +1135,9 @@ create_ports (
           Port * port =
             port_new_with_type (
               TYPE_AUDIO, FLOW_INPUT, name);
+          port->id.sym =
+            g_strdup_printf (
+              "audio_in_%d", i);
           plugin_add_in_port (
             self->plugin, port);
         }
@@ -1145,6 +1148,9 @@ create_ports (
           Port * port =
             port_new_with_type (
               TYPE_AUDIO, FLOW_OUTPUT, name);
+          port->id.sym =
+            g_strdup_printf (
+              "audio_out_%d", i);
           plugin_add_out_port (
             self->plugin, port);
         }
@@ -1155,6 +1161,9 @@ create_ports (
           Port * port =
             port_new_with_type (
               TYPE_EVENT, FLOW_INPUT, name);
+          port->id.sym =
+            g_strdup_printf (
+              "midi_in_%d", i);
           port->id.flags2 |=
             PORT_FLAG2_SUPPORTS_MIDI;
           plugin_add_in_port (
@@ -1167,6 +1176,9 @@ create_ports (
           Port * port =
             port_new_with_type (
               TYPE_EVENT, FLOW_OUTPUT, name);
+          port->id.sym =
+            g_strdup_printf (
+              "midi_out_%d", i);
           port->id.flags2 |=
             PORT_FLAG2_SUPPORTS_MIDI;
           plugin_add_out_port (
@@ -1179,6 +1191,8 @@ create_ports (
           Port * port =
             port_new_with_type (
               TYPE_CV, FLOW_INPUT, name);
+          port->id.sym =
+            g_strdup_printf ("cv_in_%d", i);
           plugin_add_in_port (
             self->plugin, port);
         }
@@ -1189,6 +1203,8 @@ create_ports (
           Port * port =
             port_new_with_type (
               TYPE_CV, FLOW_OUTPUT, name);
+          port->id.sym =
+            g_strdup_printf ("cv_out_%d", i);
           plugin_add_out_port (
             self->plugin, port);
         }
@@ -1235,6 +1251,11 @@ create_ports (
             {
               port->id.sym =
                 g_strdup (param_info->symbol);
+            }
+          else
+            {
+              port->id.sym =
+                g_strdup_printf ("param_%u", i);
             }
           port->id.flags |=
             PORT_FLAG_PLUGIN_CONTROL;

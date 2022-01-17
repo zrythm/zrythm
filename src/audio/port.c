@@ -2760,6 +2760,7 @@ StereoPorts *
 stereo_ports_new_generic (
   int           in,
   const char *  name,
+  const char *  symbol,
   PortOwnerType owner_type,
   void *        owner)
 {
@@ -2782,8 +2783,12 @@ stereo_ports_new_generic (
         plr));
   ports->l->id.flags |=
     PORT_FLAG_STEREO_L;
+  ports->l->id.sym =
+    g_strdup_printf ("%s_l", symbol);
   ports->r->id.flags |=
     PORT_FLAG_STEREO_R;
+  ports->r->id.sym =
+    g_strdup_printf ("%s_r", symbol);
 
   port_set_owner (ports->l, owner_type, owner);
   port_set_owner (ports->r, owner_type, owner);

@@ -102,11 +102,15 @@ channel_send_new (
     self->x, PORT_OWNER_TYPE_CHANNEL_SEND, self)
 
   char name[600];
+  char sym[600];
   sprintf (
     name, _("Channel Send %d enabled"), slot + 1);
   self->enabled =
     port_new_with_type (
       TYPE_CONTROL, FLOW_INPUT, name);
+  self->enabled->id.sym =
+    g_strdup_printf (
+      "channel_send_%d_enabled", slot + 1);
   self->enabled->id.flags |= PORT_FLAG_TOGGLE;
   self->enabled->id.flags2 |=
     PORT_FLAG2_CHANNEL_SEND_ENABLED;
@@ -120,6 +124,9 @@ channel_send_new (
   self->amount =
     port_new_with_type (
       TYPE_CONTROL, FLOW_INPUT, name);
+  self->amount->id.sym =
+    g_strdup_printf (
+      "channel_send_%d_amount", slot + 1);
   self->amount->id.flags |= PORT_FLAG_AMPLITUDE;
   self->amount->id.flags |= PORT_FLAG_AUTOMATABLE;
   self->amount->id.flags2 |=
@@ -132,10 +139,13 @@ channel_send_new (
   sprintf (
     name,
     _("Channel Send %d audio in"), slot + 1);
+  sprintf (
+    sym,
+    "channel_send_%d_audio_in", slot + 1);
   self->stereo_in =
     stereo_ports_new_generic (
-      F_INPUT, name, PORT_OWNER_TYPE_CHANNEL_SEND,
-      self);
+      F_INPUT, name, sym,
+      PORT_OWNER_TYPE_CHANNEL_SEND, self);
   SET_PORT_OWNER (stereo_in->l);
   SET_PORT_OWNER (stereo_in->r);
 
@@ -145,14 +155,20 @@ channel_send_new (
   self->midi_in =
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT, name);
+  self->midi_in->id.sym =
+    g_strdup_printf (
+      "channel_send_%d_midi_in", slot + 1);
   SET_PORT_OWNER (midi_in);
 
   sprintf (
     name,
     _("Channel Send %d audio out"), slot + 1);
+  sprintf (
+    sym,
+    "channel_send_%d_audio_out", slot + 1);
   self->stereo_out =
     stereo_ports_new_generic (
-      F_NOT_INPUT, name,
+      F_NOT_INPUT, name, sym,
       PORT_OWNER_TYPE_CHANNEL_SEND, self);
   SET_PORT_OWNER (stereo_out->l);
   SET_PORT_OWNER (stereo_out->r);
@@ -163,6 +179,9 @@ channel_send_new (
   self->midi_out =
     port_new_with_type (
       TYPE_EVENT, FLOW_OUTPUT, name);
+  self->midi_out->id.sym =
+    g_strdup_printf (
+      "channel_send_%d_midi_out", slot + 1);
   SET_PORT_OWNER (midi_out);
 
 #undef SET_PORT_OWNER

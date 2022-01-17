@@ -757,6 +757,7 @@ StereoPorts *
 stereo_ports_new_generic (
   int           in,
   const char *  name,
+  const char *  symbol,
   PortOwnerType owner_type,
   void *        owner);
 

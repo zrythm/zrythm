@@ -1041,6 +1041,8 @@ engine_new (
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT,
       "MIDI Editor Manual Press");
+  self->midi_editor_manual_press->id.sym =
+    g_strdup ("midi_editor_manual_press");
   self->midi_editor_manual_press->id.flags |=
     PORT_FLAG_MANUAL_PRESS;
 
@@ -1048,6 +1050,7 @@ engine_new (
   self->midi_in =
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT, "MIDI in");
+  self->midi_in->id.sym = g_strdup ("midi_in");
 
   /* init MIDI queues */
   self->midi_editor_manual_press->midi_events =
@@ -1059,9 +1062,11 @@ engine_new (
   monitor_out_l =
     port_new_with_type (
       TYPE_AUDIO, FLOW_OUTPUT, "Monitor Out L");
+  monitor_out_l->id.sym = g_strdup ("monitor_out_l");
   monitor_out_r =
     port_new_with_type (
       TYPE_AUDIO, FLOW_OUTPUT, "Monitor Out R");
+  monitor_out_r->id.sym = g_strdup ("monitor_out_r");
   self->monitor_out =
     stereo_ports_new_from_existing (
       monitor_out_l, monitor_out_r);

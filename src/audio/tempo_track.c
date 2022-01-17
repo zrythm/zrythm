@@ -56,6 +56,7 @@ tempo_track_init (
     port_new_with_type_and_owner (
       TYPE_CONTROL, FLOW_INPUT, _("BPM"),
       PORT_OWNER_TYPE_TRACK, self);
+  self->bpm_port->id.sym = g_strdup ("bpm");
   self->bpm_port->minf = 60.f;
   self->bpm_port->maxf = 360.f;
   self->bpm_port->deff = 140.f;
@@ -71,6 +72,8 @@ tempo_track_init (
     port_new_with_type_and_owner (
       TYPE_CONTROL, FLOW_INPUT, _("Beats per bar"),
       PORT_OWNER_TYPE_TRACK, self);
+  self->beats_per_bar_port->id.sym =
+    g_strdup ("beats_per_bar");
   self->beats_per_bar_port->minf =
     TEMPO_TRACK_MIN_BEATS_PER_BAR;
   self->beats_per_bar_port->maxf =
@@ -92,6 +95,8 @@ tempo_track_init (
     port_new_with_type_and_owner (
       TYPE_CONTROL, FLOW_INPUT, _("Beat unit"),
       PORT_OWNER_TYPE_TRACK, self);
+  self->beat_unit_port->id.sym =
+    g_strdup ("beat_unit");
   self->beat_unit_port->minf =
     TEMPO_TRACK_MIN_BEAT_UNIT;
   self->beat_unit_port->maxf =

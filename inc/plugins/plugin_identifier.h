@@ -123,9 +123,9 @@ plugin_identifier_is_equal (
   const PluginIdentifier * b)
 {
   return
-    a->slot_type == b->slot_type &&
-    a->track_name_hash == b->track_name_hash &&
-    a->slot == b->slot;
+    a->slot_type == b->slot_type
+    && a->track_name_hash == b->track_name_hash
+    && a->slot == b->slot;
 }
 
 void

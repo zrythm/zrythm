@@ -127,6 +127,8 @@ init_midi_port (
         port_new_with_type_and_owner (
           TYPE_EVENT, FLOW_INPUT, "TP MIDI in",
           PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+      self->midi_in->id.sym =
+        g_strdup ("track_processor_midi_in");
       g_warn_if_fail (IS_PORT (self->midi_in));
       self->midi_in->id.flags |=
         PORT_FLAG_SEND_RECEIVABLE;
@@ -137,6 +139,8 @@ init_midi_port (
         port_new_with_type_and_owner (
           TYPE_EVENT, FLOW_OUTPUT, "TP MIDI out",
           PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+      self->midi_out->id.sym =
+        g_strdup ("track_processor_midi_out");
       g_warn_if_fail (IS_PORT (self->midi_out));
     }
 }
@@ -168,6 +172,10 @@ init_midi_cc_ports (
               PORT_OWNER_TYPE_TRACK_PROCESSOR,
               self);
           INIT_MIDI_PORT (cc, i * 128 + j);
+          cc->id.sym =
+            g_strdup_printf (
+              "midi_controller_ch%d_%d",
+              channel, j + 1);
           self->midi_cc[i * 128 + j] = cc;
         }
 
@@ -177,6 +185,8 @@ init_midi_cc_ports (
         port_new_with_type_and_owner (
           TYPE_CONTROL, FLOW_INPUT, name,
           PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+      cc->id.sym =
+        g_strdup_printf ("ch%d_pitch_bend", i + 1);
       INIT_MIDI_PORT (cc, i);
       cc->maxf = 8191.f;
       cc->minf = -8192.f;
@@ -191,6 +201,9 @@ init_midi_cc_ports (
         port_new_with_type_and_owner (
           TYPE_CONTROL, FLOW_INPUT, name,
           PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+      cc->id.sym =
+        g_strdup_printf (
+          "ch%d_poly_key_pressure", i + 1);
       INIT_MIDI_PORT (cc, i);
       cc->id.flags2 |=
         PORT_FLAG2_MIDI_POLY_KEY_PRESSURE;
@@ -202,6 +215,9 @@ init_midi_cc_ports (
         port_new_with_type_and_owner (
           TYPE_CONTROL, FLOW_INPUT, name,
           PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+      cc->id.sym =
+        g_strdup_printf (
+          "ch%d_channel_pressure", i + 1);
       INIT_MIDI_PORT (cc, i);
       cc->id.flags2 |=
         PORT_FLAG2_MIDI_CHANNEL_PRESSURE;
@@ -238,12 +254,16 @@ init_stereo_out_ports (
       TYPE_AUDIO, flow,
       in ? "TP Stereo in L" : "TP Stereo out L",
       PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+  l->id.sym =
+    g_strdup ("track_processor_stereo_out_l");
 
   r =
     port_new_with_type_and_owner (
       TYPE_AUDIO, flow,
       in ? "TP Stereo in R" : "TP Stereo out R",
       PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+  r->id.sym =
+    g_strdup ("track_processor_stereo_out_r");
 
   *sp = stereo_ports_new_from_existing (l, r);
 
@@ -288,6 +308,8 @@ track_processor_new (
               "TP Piano Roll",
               PORT_OWNER_TYPE_TRACK_PROCESSOR,
               self);
+          self->piano_roll->id.sym =
+            g_strdup ("track_processor_piano_roll");
           self->piano_roll->id.flags =
             PORT_FLAG_PIANO_ROLL;
           if (tr->type != TRACK_TYPE_CHORD)
@@ -307,6 +329,9 @@ track_processor_new (
               "TP Mono Toggle",
               PORT_OWNER_TYPE_TRACK_PROCESSOR,
               self);
+          self->mono->id.sym =
+            g_strdup (
+              "track_processor_mono_toggle");
           self->mono->id.flags |= PORT_FLAG_TOGGLE;
           self->mono->id.flags |= PORT_FLAG_TP_MONO;
           self->input_gain =
@@ -315,6 +340,9 @@ track_processor_new (
               "TP Input Gain",
               PORT_OWNER_TYPE_TRACK_PROCESSOR,
               self);
+          self->input_gain->id.sym =
+            g_strdup (
+              "track_processor_input_gain");
           self->input_gain->minf = 0.f;
           self->input_gain->maxf = 4.f;
           self->input_gain->zerof = 0.f;
@@ -337,6 +365,9 @@ track_processor_new (
           TYPE_CONTROL, FLOW_INPUT,
           "TP Output Gain",
           PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+      self->output_gain->id.sym =
+        g_strdup (
+          "track_processor_output_gain");
       self->output_gain->minf = 0.f;
       self->output_gain->maxf = 4.f;
       self->output_gain->zerof = 0.f;
@@ -352,6 +383,9 @@ track_processor_new (
           TYPE_CONTROL, FLOW_INPUT,
           "Monitor audio",
           PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+      self->monitor_audio->id.sym =
+        g_strdup (
+          "track_processor_monitor_audio");
       self->monitor_audio->id.flags |=
         PORT_FLAG_TOGGLE;
       self->monitor_audio->id.flags2 |=

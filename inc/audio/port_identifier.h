@@ -604,6 +604,9 @@ port_identifier_copy (
 
 /**
  * Returns if the 2 PortIdentifier's are equal.
+ *
+ * @note Does not check insignificant data like
+ *   comment.
  */
 WARN_UNUSED_RESULT
 HOT

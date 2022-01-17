@@ -202,6 +202,7 @@ transport_new (
   self->roll =
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT, "Roll");
+  self->roll->id.sym = g_strdup ("roll");
   port_set_owner (
     self->roll, PORT_OWNER_TYPE_TRANSPORT, self);
   self->roll->id.flags |= PORT_FLAG_TOGGLE;
@@ -211,6 +212,7 @@ transport_new (
   self->stop =
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT, "Stop");
+  self->stop->id.sym = g_strdup ("stop");
   port_set_owner (
     self->stop, PORT_OWNER_TYPE_TRANSPORT, self);
   self->stop->id.flags |= PORT_FLAG_TOGGLE;
@@ -220,6 +222,7 @@ transport_new (
   self->backward =
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT, "Backward");
+  self->backward->id.sym = g_strdup ("backward");
   port_set_owner (
     self->backward, PORT_OWNER_TYPE_TRANSPORT,
     self);
@@ -230,6 +233,7 @@ transport_new (
   self->forward =
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT, "Forward");
+  self->forward->id.sym = g_strdup ("forward");
   port_set_owner (
     self->forward, PORT_OWNER_TYPE_TRANSPORT,
     self);
@@ -240,6 +244,8 @@ transport_new (
   self->loop_toggle =
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT, "Loop toggle");
+  self->loop_toggle->id.sym =
+    g_strdup ("loop_toggle");
   port_set_owner (
     self->loop_toggle, PORT_OWNER_TYPE_TRANSPORT,
     self);
@@ -250,6 +256,8 @@ transport_new (
   self->rec_toggle =
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT, "Rec toggle");
+  self->rec_toggle->id.sym =
+    g_strdup ("rec_toggle");
   port_set_owner (
     self->rec_toggle, PORT_OWNER_TYPE_TRANSPORT,
     self);
