@@ -56,6 +56,9 @@
 
 #define TYPE(x) ARRANGER_WIDGET_TYPE_##x
 
+static const GdkRGBA thick_grid_line_color = {
+  0.3, 0.3, 0.3, 0.9 };
+
 static void
 draw_selections (
   ArrangerWidget * self,
@@ -287,7 +290,7 @@ draw_timeline_bg (
         {
           gtk_snapshot_append_color (
             snapshot,
-            &Z_GDK_RGBA_INIT (0.3, 0.3, 0.3, 1),
+            &thick_grid_line_color,
             &GRAPHENE_RECT_INIT (
               0, (float) (line_y - 1),
               width, 2));
@@ -757,8 +760,7 @@ draw_vertical_lines (
   GtkSnapshot *    snapshot,
   GdkRectangle *   rect)
 {
-  const GdkRGBA thick_color =
-    { 0.3, 0.3, 0.3, 1.0 };
+  const GdkRGBA thick_color = thick_grid_line_color;
   const GdkRGBA thinner_color =
     { 0.25, 0.25, 0.25, 0.5 };
   const GdkRGBA thinnest_color =
