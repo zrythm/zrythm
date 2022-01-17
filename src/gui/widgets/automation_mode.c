@@ -31,10 +31,15 @@ void
 automation_mode_widget_init (
   AutomationModeWidget * self)
 {
+#if 0
   gdk_rgba_parse (
     &self->def_color, UI_COLOR_BUTTON_NORMAL);
   gdk_rgba_parse (
     &self->hovered_color, UI_COLOR_BUTTON_HOVER);
+#endif
+  self->def_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.1);
+  self->hovered_color =
+    Z_GDK_RGBA_INIT (1, 1, 1, 0.2);
   self->toggled_colors[0] = UI_COLORS->solo_checked;
   self->held_colors[0] = UI_COLORS->solo_active;
   gdk_rgba_parse (
@@ -42,7 +47,7 @@ automation_mode_widget_init (
   gdk_rgba_parse (
     &self->held_colors[1], UI_COLOR_RECORD_ACTIVE);
   gdk_rgba_parse (
-    &self->toggled_colors[2], "#666666");
+    &self->toggled_colors[2], "#444444");
   gdk_rgba_parse (
     &self->held_colors[2], "#888888");
   self->aspect = 1.0;
@@ -177,7 +182,8 @@ draw_bg (
   GtkSnapshot *           snapshot,
   double                  x,
   double                  y,
-  int                     draw_frame)
+  int                     draw_frame,
+  bool                    keep_clip)
 {
   GskRoundedRect rounded_rect;
   graphene_rect_t graphene_rect =
@@ -240,26 +246,31 @@ draw_bg (
         }
       self->last_colors[i] = c;
 
-      double new_x = x;
-      int new_width =
-        self->text_widths[i] +
-        2 * AUTOMATION_MODE_HPADDING;
+      double new_x = 0;
+      int new_width = 0;
       switch (i)
         {
         case AUTOMATION_MODE_READ:
-          new_width +=
-            self->text_widths[i + 1];
+          new_x = x;
+          new_width =
+            self->text_widths[AUTOMATION_MODE_READ] +
+            2 * AUTOMATION_MODE_HPADDING;
           break;
         case AUTOMATION_MODE_RECORD:
-          new_x +=
-            self->text_widths[0] +
+          new_x =
+            x +
+            self->text_widths[AUTOMATION_MODE_READ] +
+            2 * AUTOMATION_MODE_HPADDING;
+          new_width =
+            self->text_widths[AUTOMATION_MODE_RECORD] +
             2 * AUTOMATION_MODE_HPADDING;
           break;
         case AUTOMATION_MODE_OFF:
-          new_x +=
-            self->text_widths[0] +
-            2 * AUTOMATION_MODE_HPADDING +
-            self->text_widths[1];
+          new_x =
+            x +
+            self->text_widths[AUTOMATION_MODE_READ] +
+            4 * AUTOMATION_MODE_HPADDING +
+            self->text_widths[AUTOMATION_MODE_RECORD];
           new_width =
             ((int) x + self->width) - (int) new_x;
           break;
@@ -273,7 +284,8 @@ draw_bg (
             (float) self->height));
     }
 
-  gtk_snapshot_pop (snapshot);
+  if (!keep_clip)
+    gtk_snapshot_pop (snapshot);
 }
 
 void
@@ -325,7 +337,7 @@ automation_mode_widget_draw (
               CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
     }
 
-  draw_bg (self, snapshot, x, y, false);
+  draw_bg (self, snapshot, x, y, false, true);
 
   /*draw_icon_with_shadow (self, cr, x, y, state);*/
 
@@ -369,6 +381,9 @@ automation_mode_widget_draw (
 
       self->last_states[i] = self->current_states[i];
     }
+
+  /* pop clip from draw_bg */
+  gtk_snapshot_pop (snapshot);
 }
 
 void

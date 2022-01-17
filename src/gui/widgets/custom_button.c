@@ -30,10 +30,15 @@
 static void
 init (CustomButtonWidget * self)
 {
+#if 0
   gdk_rgba_parse (
     &self->def_color, UI_COLOR_BUTTON_NORMAL);
   gdk_rgba_parse (
     &self->hovered_color, UI_COLOR_BUTTON_HOVER);
+#endif
+  self->def_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.1);
+  self->hovered_color =
+    Z_GDK_RGBA_INIT (1, 1, 1, 0.2);
   g_return_if_fail (UI_COLORS);
   self->toggled_color = UI_COLORS->bright_orange;
   self->held_color = UI_COLORS->bright_orange;
