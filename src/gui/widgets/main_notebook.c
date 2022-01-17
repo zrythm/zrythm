@@ -146,7 +146,7 @@ main_notebook_widget_init (
   foldable_notebook_widget_add_page (
     self->foldable_notebook,
     GTK_WIDGET (self->cc_bindings_box),
-    "midi-logo", _("Bindings"),
+    "signal-midi", _("Bindings"),
     _("MIDI CC bindings"));
   foldable_notebook_widget_add_page (
     self->foldable_notebook,

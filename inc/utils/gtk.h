@@ -56,7 +56,7 @@
 
 #define CREATE_MIDI_LEARN_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    _("MIDI learn"), "midi-logo", action)
+    _("MIDI learn"), "signal-midi", action)
 
 #define CREATE_CUT_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
