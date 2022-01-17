@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-01-11 21:06+0000\n"
-"PO-Revision-Date: 2022-01-17 09:53+0000\n"
+"PO-Revision-Date: 2022-01-18 18:55+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/pt/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.11-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -431,17 +431,16 @@ msgid "GSettings"
 msgstr "GSettings"
 
 #: ../../configuration/additional-settings.rst:10
-#, fuzzy
 msgid ""
 "Zrythm stores most of its configuration using the GSettings mechanism, which "
 "comes with the `gsettings <https://developer.gnome.org/gio/stable/gsettings-"
 "tool.html>`_ command for changing settings from the command line, or the "
 "optional GUI tool `dconf-editor <https://wiki.gnome.org/Apps/DconfEditor>`_."
 msgstr ""
-"A Zrythm armazena todas as suas configurações utilizando o mecanismo "
+"A Zrythm armazena todas as configurações dela através do mecanismo "
 "GSettings, que vem com o comando `gsettings <https://developer.gnome.org/gio/"
 "stable/gsettings-tool.html>`_ para alterar configurações da linha de comando "
-"ou a ferramenta opcional GUI `dconf-editor <https://wiki.gnome.org/Apps/"
+"ou a ferramenta de GUI opcional `dconf-editor <https://wiki.gnome.org/Apps/"
 "DconfEditor>`_."
 
 #: ../../configuration/additional-settings.rst:16
