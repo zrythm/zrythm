@@ -63,6 +63,42 @@ G_DEFINE_TYPE (
   FolderChannelWidget, folder_channel_widget,
   GTK_TYPE_BOX)
 
+static void
+folder_channel_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot)
+{
+  FolderChannelWidget * self =
+    Z_FOLDER_CHANNEL_WIDGET (widget);
+
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
+
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (widget);
+
+  gtk_snapshot_render_background (
+    snapshot, context, 0, 0, width, height);
+
+  Track * track = self->track;
+  if (track)
+    {
+      /* tint background */
+      gtk_snapshot_append_color (
+        snapshot,
+        &Z_GDK_RGBA_INIT (
+          track->color.red, track->color.green,
+          track->color.blue, 0.15),
+        &GRAPHENE_RECT_INIT (0, 0, width, height));
+    }
+
+  GTK_WIDGET_CLASS (
+    folder_channel_widget_parent_class)->
+      snapshot (widget, snapshot);
+}
+
 static gboolean
 on_dnd_drop (
   GtkDropTarget *       drop_target,
@@ -659,7 +695,8 @@ folder_channel_widget_class_init (
   resources_set_class_template (
     klass, "folder_channel.ui");
   gtk_widget_class_set_css_name (
-    klass, "folder_channel");
+    klass, "folder-channel");
+  klass->snapshot = folder_channel_snapshot;
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

@@ -121,7 +121,7 @@ meter_snapshot (
     snapshot, &Z_GDK_RGBA_INIT (0.4, 0.1, 0.05, 1),
     &GRAPHENE_RECT_INIT (
       x, (float) height - value_px,
-      width - x * 2, 1));
+      width_without_padding, 1));
 
   /* draw peak */
   float peak_amp =
@@ -148,7 +148,7 @@ meter_snapshot (
     snapshot, &color,
     &GRAPHENE_RECT_INIT (
       x, (float) height - peak_px,
-      width - x * 2, 2));
+      width_without_padding, 2));
 
   self->last_meter_val = self->meter_val;
   self->last_meter_peak = self->meter_peak;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -68,7 +68,6 @@ channel_snapshot (
   GtkWidget *   widget,
   GtkSnapshot * snapshot)
 {
-#if 0
   ChannelWidget * self = Z_CHANNEL_WIDGET (widget);
 
   int width =
@@ -90,10 +89,9 @@ channel_snapshot (
         snapshot,
         &Z_GDK_RGBA_INIT (
           track->color.red, track->color.green,
-          track->color.blue, 0.1),
+          track->color.blue, 0.15),
         &GRAPHENE_RECT_INIT (0, 0, width, height));
     }
-#endif
 
   GTK_WIDGET_CLASS (
     channel_widget_parent_class)->

@@ -632,3 +632,18 @@ preferencesgroup .header > box,
   background-color: transparent;
   border-color: transparent;
 }
+
+/* make channel tint look better */
+channel button:not(:checked),
+folder-channel button:not(:checked) {
+  background-color: transparent;
+}
+
+channel button:hover,
+channel menubutton:hover,
+channel button.toggle:hover,
+folder-channel button:hover,
+folder-channel menubutton:hover,
+folder-channel button.toggle:hover {
+  background-color: $hover_color;
+}

@@ -154,7 +154,7 @@ channel_slot_snapshot (
     }
   else
     {
-      bg = Z_GDK_RGBA_INIT (0.1, 0.1, 0.1, 1.0);
+      bg = Z_GDK_RGBA_INIT (0.1, 0.1, 0.1, 0.9);
       fg = Z_GDK_RGBA_INIT (0.3, 0.3, 0.3, 1);
     }
 
