@@ -49,7 +49,6 @@ z_pango_create_layout_from_description (
         fc_config, (const unsigned char *) fontdir);
       g_free (fontdir);
       FcConfigBuildFonts (fc_config);
-      FcConfigSetCurrent (fc_config);
 
       PangoFontMap * font_map =
         pango_cairo_font_map_new_for_font_type (
@@ -63,28 +62,33 @@ z_pango_create_layout_from_description (
       PangoLayout * pangoLayout =
         pango_layout_new (context);
 
-      FcPattern *p = FcPatternCreate ();
+      FcPattern * pattern = FcPatternCreate ();
       FcObjectSet *os =
         FcObjectSetBuild (FC_FAMILY, NULL);
-      FcFontSet *fs = FcFontList (fc_config, p, os);
-      FcPatternDestroy (p);
+      FcFontSet *fs =
+        FcFontList (fc_config, pattern, os);
+      FcPatternDestroy (pattern);
       FcObjectSetDestroy (os);
-      for (int i = 0; i < fs->nfont; ++i)
-      {
-          guchar * fontName =
+      for (int i = 0; i < fs->nfont; i++)
+        {
+          guchar * font_name =
             FcNameUnparse (fs->fonts[i]);
-          PangoFontDescription* fontDesc =
+          PangoFontDescription * desc =
             pango_font_description_from_string (
-              (gchar*)fontName );
+              (gchar*) font_name);
           pango_font_map_load_font (
             PANGO_FONT_MAP (font_map), context,
-            fontDesc );
-          pango_font_description_free( fontDesc );
-          g_debug ("fontname: %s", fontName);
-          g_free(fontName);
-      }
+            desc);
+          pango_font_description_free (desc);
+          g_debug ("fontname: %s", font_name);
+          g_free (font_name);
+        }
 
       layout = pangoLayout;
+
+      g_object_unref (context);
+      g_object_unref (font_map);
+      FcConfigDestroy (fc_config);
     }
   else
     {
