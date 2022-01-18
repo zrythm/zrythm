@@ -427,29 +427,6 @@ typedef struct _ArrangerWidget
    */
   PangoLayout *  audio_layout;
 
-#if 0
-  /**
-   * Dummy cairo surface to create new surfaces from.
-   */
-  cairo_surface_t * dummy_surface;
-
-  /**
-   * Thread pool for drawing in the background
-   * instead of in the UI thread.
-   *
-   * The result will be applied during draw in the
-   * UI thread.
-   */
-  GThreadPool *  draw_thread_pool;
-
-  /**
-   * Object pool for ArrangerDrawTaskData.
-   *
-   * Must only be accessed from the GTK thread.
-   */
-  ObjectPool *   draw_task_obj_pool;
-#endif
-
   /**
    * Cached playhead x to draw.
    *

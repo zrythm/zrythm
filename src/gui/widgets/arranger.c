@@ -6886,16 +6886,6 @@ static void
 finalize (
   ArrangerWidget * self)
 {
-#if 0
-  if (self->draw_thread_pool)
-    {
-      g_thread_pool_free (
-        self->draw_thread_pool, true, false);
-    }
-  object_free_w_func_and_null (
-    object_pool_free, self->draw_task_obj_pool);
-#endif
-
   object_free_w_func_and_null (
     g_object_unref, self->vel_layout);
   object_free_w_func_and_null (
@@ -7000,23 +6990,4 @@ arranger_widget_init (
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (
       self->right_click), GDK_BUTTON_SECONDARY);
-
-#if 0
-  self->draw_task_obj_pool =
-    object_pool_new (
-      arranger_draw_task_data_new,
-      arranger_draw_task_data_free, 8);
-
-  GError * err = NULL;
-  self->draw_thread_pool =
-    g_thread_pool_new (
-      arranger_draw_thread_func, self,
-      8, F_NOT_EXCLUSIVE, &err);
-  if (!self->draw_thread_pool)
-    {
-      HANDLE_ERROR (
-        err, "%s",
-        "Failed to create arranger thread pool");
-    }
-#endif
 }

@@ -17,14 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/engine.h"
-#include "audio/track.h"
-#include "gui/backend/event_manager.h"
-#include "gui/widgets/channel.h"
 #include "gui/widgets/editable_label.h"
-#include "project.h"
-#include "utils/ui.h"
-#include "zrythm.h"
 
 G_DEFINE_TYPE (
   EditableLabelWidget, editable_label_widget,
@@ -58,6 +51,16 @@ on_popover_closed (
     }
 }
 
+static gboolean
+select_region (
+  gpointer user_data)
+{
+  gtk_editable_select_region (
+    GTK_EDITABLE (user_data), 0, -1);
+
+  return G_SOURCE_REMOVE;
+}
+
 /**
  * Shows the popover.
  */
@@ -65,14 +68,14 @@ void
 editable_label_widget_show_popover (
   EditableLabelWidget * self)
 {
-  gtk_editable_set_text (
-    GTK_EDITABLE (self->entry),
-    (*self->getter) (self->object));
-
   gtk_popover_popup (self->popover);
   gtk_editable_set_text (
     GTK_EDITABLE (self->entry),
     (*self->getter) (self->object));
+
+  /* workaround because selecting a region doesn't
+   * work 100% of the time if done here */
+  g_idle_add (select_region, self->entry);
 }
 
 /**
@@ -108,8 +111,6 @@ editable_label_widget_show_popover_for_widget (
   GtkEntry * entry =
     GTK_ENTRY (gtk_entry_new ());
   self->entry = entry;
-  gtk_editable_set_text (
-    GTK_EDITABLE (self->entry), (*getter) (object));
 
   gtk_popover_set_child (
     popover, GTK_WIDGET (entry));
@@ -124,6 +125,10 @@ editable_label_widget_show_popover_for_widget (
   gtk_popover_popup (popover);
   gtk_editable_set_text (
     GTK_EDITABLE (self->entry), (*getter) (object));
+
+  /* workaround because selecting a region doesn't
+   * work 100% of the time if done here */
+  g_idle_add (select_region, self->entry);
 }
 
 /**
