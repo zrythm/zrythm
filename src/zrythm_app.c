@@ -1399,12 +1399,6 @@ zrythm_app_startup (
   INSTALL_ACCEL (
     "<Control>d", "app.duplicate");
   INSTALL_ACCEL (
-    "Delete", "app.delete");
-  INSTALL_ACCEL (
-    "<Control><Shift>a", "app.clear-selection");
-  INSTALL_ACCEL (
-    "<Control>a", "app.select-all");
-  INSTALL_ACCEL (
     "<Control><Shift>4", "app.toggle-left-panel");
   INSTALL_ACCEL (
     "<Control><Shift>6", "app.toggle-right-panel");
@@ -1420,18 +1414,6 @@ zrythm_app_startup (
     "<Control>bracketleft", "app.best-fit");
   INSTALL_ACCEL (
     "<Control>l", "app.loop-selection");
-  INSTALL_ACCEL (
-    "<Control>1", "app.select-mode");
-  INSTALL_ACCEL (
-    "<Control>2", "app.edit-mode");
-  INSTALL_ACCEL (
-    "<Control>3", "app.cut-mode");
-  INSTALL_ACCEL (
-    "<Control>4", "app.eraser-mode");
-  INSTALL_ACCEL (
-    "<Control>5", "app.ramp-mode");
-  INSTALL_ACCEL (
-    "<Control>6", "app.audition-mode");
   INSTALL_ACCEL_WITH_SECONDARY (
     "KP_4", "<Control>BackSpace", "app.goto-prev-marker");
   INSTALL_ACCEL (
@@ -1439,19 +1421,9 @@ zrythm_app_startup (
   INSTALL_ACCEL (
     "<Control>space", "app.play-pause");
   INSTALL_ACCEL (
-    "<Control>Q", "app.quick-quantize::global");
-  INSTALL_ACCEL (
     "<Alt>Q", "app.quantize-options::global");
   INSTALL_ACCEL (
-    "<Shift>M", "app.mute-selection::global");
-  INSTALL_ACCEL (
     "<Control>J", "app.merge-selection");
-  INSTALL_ACCEL (
-    "<Shift>less",
-    "app.nudge-selection::left");
-  INSTALL_ACCEL (
-    "<Shift>greater",
-    "app.nudge-selection::right");
   INSTALL_ACCEL (
     gdk_keyval_name (GDK_KEY_Home),
     "app.go-to-start");

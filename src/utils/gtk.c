@@ -2242,9 +2242,18 @@ z_gtk_simple_action_shortcut_func (
   gsize size;
   const char * action_name =
     g_variant_get_string (args, &size);
+  char ** strs =
+    g_strsplit (action_name, "::", -1);
+  char * param = strs[1];
+  GVariant * variant = NULL;
+  if (param)
+    variant = g_variant_new_string (param);
   g_action_group_activate_action (
-    G_ACTION_GROUP (zrythm_app), action_name,
-    NULL);
+    G_ACTION_GROUP (zrythm_app), strs[0],
+    variant);
+  g_message (
+    "activating %s::%s", action_name, param);
+  g_strfreev (strs);
 
   return true;
 }

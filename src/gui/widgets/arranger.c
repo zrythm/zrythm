@@ -1993,8 +1993,23 @@ arranger_widget_on_key_press (
   if (keyval == GDK_KEY_space
       ||
       (keyval >= GDK_KEY_1
-       && keyval <= GDK_KEY_6))
-    return false;
+       && keyval <= GDK_KEY_6)
+      || keyval == GDK_KEY_A
+      || keyval == GDK_KEY_a
+      || keyval == GDK_KEY_M
+      || keyval == GDK_KEY_m
+      || keyval == GDK_KEY_Q
+      || keyval == GDK_KEY_q
+      || keyval == GDK_KEY_less
+      || keyval == GDK_KEY_Delete
+      || keyval == GDK_KEY_greater)
+    {
+      g_debug (
+        "ignoring keyval used for shortcuts");
+      return false;
+    }
+  else
+    g_debug ("not ignoring keyval %hx", keyval);
 
   return true;
 }
@@ -6968,6 +6983,35 @@ arranger_widget_class_init (
     wklass, GDK_KEY_6, 0,
     z_gtk_simple_action_shortcut_func,
     "s", "audition-mode", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_M, GDK_SHIFT_MASK,
+    z_gtk_simple_action_shortcut_func,
+    "s", "mute-selection::global", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_less, GDK_SHIFT_MASK,
+    z_gtk_simple_action_shortcut_func,
+    "s", "nudge-selection::left", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_greater, GDK_SHIFT_MASK,
+    z_gtk_simple_action_shortcut_func,
+    "s", "nudge-selection::right", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_A, GDK_CONTROL_MASK,
+    z_gtk_simple_action_shortcut_func,
+    "s", "select-all", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_A,
+    GDK_CONTROL_MASK | GDK_SHIFT_MASK,
+    z_gtk_simple_action_shortcut_func,
+    "s", "clear-selection", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_Delete, 0,
+    z_gtk_simple_action_shortcut_func,
+    "s", "clear-selection", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_Q, 0,
+    z_gtk_simple_action_shortcut_func,
+    "s", "quick-quantize::global", NULL);
 }
 
 static void
