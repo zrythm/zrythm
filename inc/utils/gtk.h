@@ -781,6 +781,18 @@ const char *
 z_gtk_get_gsk_renderer_type (void);
 
 /**
+ * A shortcut callback to use for simple actions.
+ *
+ * A single parameter must be passed: action name
+ * under "app.".
+ */
+gboolean
+z_gtk_simple_action_shortcut_func (
+  GtkWidget * widget,
+  GVariant *  args,
+  gpointer    user_data);
+
+/**
  * @}
  */
 #endif

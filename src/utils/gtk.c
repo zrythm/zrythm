@@ -2226,3 +2226,25 @@ z_gtk_get_gsk_renderer_type (void)
 
   return renderer_type;
 }
+
+/**
+ * A shortcut callback to use for simple actions.
+ *
+ * A single parameter must be passed: action name
+ * under "app.".
+ */
+gboolean
+z_gtk_simple_action_shortcut_func (
+  GtkWidget * widget,
+  GVariant *  args,
+  gpointer    user_data)
+{
+  gsize size;
+  const char * action_name =
+    g_variant_get_string (args, &size);
+  g_action_group_activate_action (
+    G_ACTION_GROUP (zrythm_app), action_name,
+    NULL);
+
+  return true;
+}

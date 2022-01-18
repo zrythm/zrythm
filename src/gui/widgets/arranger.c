@@ -1984,12 +1984,17 @@ arranger_widget_on_key_press (
         self);
     }
 
-  /*arranger_widget_update_visibility (self);*/
-
   arranger_widget_refresh_cursor (self);
 
-  /*if (num > 0)*/
-    /*auto_scroll (self);*/
+  /* if space pressed, allow the shortcut func
+   * to be called */
+  /* FIXME this whole function should not check
+   * for keyvals and return false always */
+  if (keyval == GDK_KEY_space
+      ||
+      (keyval >= GDK_KEY_1
+       && keyval <= GDK_KEY_6))
+    return false;
 
   return true;
 }
@@ -6934,6 +6939,35 @@ arranger_widget_class_init (
     wklass, GTK_TYPE_BIN_LAYOUT);
   gtk_widget_class_set_css_name (
     wklass, "arranger");
+
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_space, 0,
+    z_gtk_simple_action_shortcut_func,
+    "s", "play-pause", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_1, 0,
+    z_gtk_simple_action_shortcut_func,
+    "s", "select-mode", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_2, 0,
+    z_gtk_simple_action_shortcut_func,
+    "s", "edit-mode", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_3, 0,
+    z_gtk_simple_action_shortcut_func,
+    "s", "cut-mode", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_4, 0,
+    z_gtk_simple_action_shortcut_func,
+    "s", "eraser-mode", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_5, 0,
+    z_gtk_simple_action_shortcut_func,
+    "s", "ramp-mode", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_6, 0,
+    z_gtk_simple_action_shortcut_func,
+    "s", "audition-mode", NULL);
 }
 
 static void
