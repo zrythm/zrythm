@@ -1563,6 +1563,7 @@ carla_native_plugin_instantiate (
       self->max_variant_cv_outs = 5;
       g_message ("using patchbay CV variant");
     }
+#ifdef CARLA_HAVE_CV8_PATCHBAY_VARIANT
   else if (
       descr->num_audio_ins <= 2
       && descr->num_audio_outs <= 2
@@ -1577,6 +1578,7 @@ carla_native_plugin_instantiate (
       self->max_variant_cv_outs = 8;
       g_message ("using patchbay CV8 variant");
     }
+#endif
 #ifdef CARLA_HAVE_CV32_PATCHBAY_VARIANT
   else if (
       descr->num_audio_ins <= 64

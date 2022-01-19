@@ -1139,6 +1139,10 @@ if have_carla
         install_dir: zrythm_libdir / 'carla')
     endif
   endforeach
+
+  if cc.has_function('carla_get_native_patchbay_cv8_plugin', dependencies: carla_host_plugin_dep)
+    cdata.set ('CARLA_HAVE_CV8_PATCHBAY_VARIANT', 1)
+  endif
 endif
 
 rtmidi_dep = dependency (
