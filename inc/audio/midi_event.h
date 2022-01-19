@@ -194,6 +194,7 @@ midi_events_append (
  *   in this cycle.
  * @param nframes Number of frames to process.
  */
+OPTIMIZE_O3
 void
 midi_events_append_w_filter (
   MidiEvents *    src,

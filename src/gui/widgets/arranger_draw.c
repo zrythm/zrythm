@@ -169,7 +169,7 @@ draw_arranger_object (
   for (int i = 0;
        i < 1 +
          (arranger_object_should_orig_be_visible (
-           obj) &&
+           obj, self) &&
           arranger_object_is_selected (obj));
        i++)
     {

@@ -537,6 +537,7 @@ license_info_dialog_response_cb (
   gint        response_id,
   ZrythmApp * self)
 {
+  g_message ("license info dialog closed");
   gtk_window_destroy (GTK_WINDOW (dialog));
   first_run_assistant_widget_present (
     GTK_WINDOW (self->splash));
@@ -554,7 +555,7 @@ static void on_prompt_for_project (
   GVariant *      parameter,
   gpointer        data)
 {
-  g_message ("prompting...");
+  g_message ("prompting for project...");
 
   ZrythmApp * self = zrythm_app;
 
@@ -605,6 +606,7 @@ PROGRAM_NAME " is distributed in the hope that it will be useful,\n"
             G_OBJECT (dialog), "response",
             G_CALLBACK (license_info_dialog_response_cb),
             self);
+          g_message ("showing license info dialog");
 
           return;
         }

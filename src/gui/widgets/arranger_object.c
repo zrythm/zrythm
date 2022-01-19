@@ -1030,3 +1030,54 @@ arranger_object_draw (
       break;
     }
 }
+
+/**
+ * Returns if the cached object should be visible,
+ * ie, while copy- moving (ctrl+drag) we want to
+ * show both the object at its original position
+ * and the current object.
+ *
+ * This refers to the object at its original
+ * position (called "transient").
+ *
+ * @param arranger Owner arranger. Should be passed
+ *   to speed up calculation.
+ */
+bool
+arranger_object_should_orig_be_visible (
+  ArrangerObject * self,
+  ArrangerWidget * arranger)
+{
+  if (!ZRYTHM_HAVE_UI)
+    {
+      return false;
+    }
+
+  if (!arranger)
+    {
+      arranger =
+        arranger_object_get_arranger (self);
+      g_return_val_if_fail (arranger, false);
+    }
+
+  /* check trans/non-trans visiblity */
+  if (ARRANGER_WIDGET_GET_ACTION (
+        arranger, MOVING) ||
+      ARRANGER_WIDGET_GET_ACTION (
+        arranger, CREATING_MOVING))
+    {
+      return false;
+    }
+  else if (
+    ARRANGER_WIDGET_GET_ACTION (
+      arranger, MOVING_COPY) ||
+    ARRANGER_WIDGET_GET_ACTION (
+      arranger, MOVING_LINK))
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}

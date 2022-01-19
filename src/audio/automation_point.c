@@ -33,6 +33,7 @@
 #include "audio/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/widgets/arranger_object.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/center_dock.h"
@@ -96,7 +97,8 @@ automation_point_set_region_and_index (
   /* set the info to the transient too */
   if ((ZRYTHM_HAVE_UI || ZRYTHM_TESTING) &&
       PROJECT->loaded && obj->transient &&
-      arranger_object_should_orig_be_visible (obj))
+      arranger_object_should_orig_be_visible (
+        obj, NULL))
     {
       ArrangerObject * trans_obj = obj->transient;
       AutomationPoint * trans_ap =

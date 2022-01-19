@@ -164,6 +164,7 @@ midi_region_pop_unended_note (
  * @param midi_events MidiEvents to fill (from
  *   Piano Roll Port for example).
  */
+OPTIMIZE_O3
 REALTIME
 void
 midi_region_fill_midi_events (

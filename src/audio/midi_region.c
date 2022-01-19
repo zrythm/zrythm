@@ -1061,7 +1061,6 @@ send_notes_off_at (
  * @param midi_events MidiEvents to fill (from
  *   Piano Roll Port for example).
  */
-REALTIME
 void
 midi_region_fill_midi_events (
   ZRegion *                           self,

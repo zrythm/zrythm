@@ -71,7 +71,7 @@
 /**
  * Return the name of the given cc (0-127).
  */
-PURE
+CONST
 const char *
 midi_get_controller_name (
   const midi_byte_t cc);
@@ -190,7 +190,7 @@ midi_get_velocity (
  * Returns the note name (eg, "C") for a value
  * between 0 and 127.
  */
-PURE
+CONST
 const char *
 midi_get_note_name (
   const midi_byte_t note);

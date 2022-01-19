@@ -1185,6 +1185,7 @@ port_restore_from_non_project (
  */
 HOT
 NONNULL
+OPTIMIZE_O3
 void
 port_clear_buffer (Port * port);
 

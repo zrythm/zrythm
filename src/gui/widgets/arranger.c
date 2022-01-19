@@ -531,7 +531,7 @@ add_object_if_overlap (
              &obj->full_rect, rect) ||
            /* also check original (transient) */
            (arranger_object_should_orig_be_visible (
-              obj) &&
+              obj, self) &&
             obj->transient &&
             ui_rectangle_overlap (
               &obj->transient->full_rect, rect))))
@@ -547,7 +547,7 @@ add_object_if_overlap (
        x, y, 0, 0) ||
     /* also check original (transient) */
     (arranger_object_should_orig_be_visible (
-       obj) &&
+       obj, self) &&
      obj->transient &&
      ui_is_point_in_rect_hit (
        &obj->transient->full_rect,
@@ -560,7 +560,7 @@ add_object_if_overlap (
        * transient) */
       ArrangerObject * obj_to_check =
         (arranger_object_should_orig_be_visible (
-          obj) && obj->transient &&
+          obj, self) && obj->transient &&
          ui_is_point_in_rect_hit (
            &obj->transient->full_rect,
            x >= 0 ? true : false,
@@ -608,6 +608,7 @@ add_object_if_overlap (
  * @param array The array to fill.
  * @param array_size The size of the array to fill.
  */
+OPTIMIZE_O3
 static void
 get_hit_objects (
   ArrangerWidget *   self,

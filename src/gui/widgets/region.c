@@ -57,6 +57,9 @@
 
 #include <glib/gi18n-lib.h>
 
+static const GdkRGBA object_fill_color = {
+  1, 1, 1, 1 };
+
 /** Background color for the name. */
 /*static GdkRGBA name_bg_color;*/
 
@@ -304,7 +307,7 @@ draw_midi_region (
     arranger_object_get_track (obj);
 
   /* set color */
-  GdkRGBA color = { 1, 1, 1, 1 };
+  GdkRGBA color = object_fill_color;
   if (track)
     {
       /* set to grey if track color is very
@@ -668,7 +671,7 @@ draw_automation_region (
 {
   ArrangerObject * obj = (ArrangerObject *) self;
 
-  GdkRGBA color = { 1, 1, 1, 1 };
+  GdkRGBA color = object_fill_color;
 
   UiDetail detail = ui_get_detail_level ();
 
@@ -862,8 +865,8 @@ draw_automation_region (
                         cr,
                         - (ap_draw_rect.x),
                         - (ap_draw_rect.y));
-                      cairo_set_source_rgba (
-                        cr, 1, 1, 1, 1);
+                      gdk_cairo_set_source_rgba (
+                        cr, &color);
                       cairo_set_line_width (cr, 2.0);
                     }
 
@@ -1237,7 +1240,9 @@ draw_audio_part (
   switch (detail)
     {
     case UI_DETAIL_HIGH:
-      increment = 0.5;
+      /* snapshot does not work with midpoints */
+      /*increment = 0.5;*/
+      increment = 1;
       width = 1;
       break;
     case UI_DETAIL_NORMAL:
@@ -1285,7 +1290,7 @@ draw_audio_part (
   /*position_print (&tmp);*/
 
 
-  GdkRGBA color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
+  GdkRGBA color = object_fill_color;
   graphene_rect_t grect =
     GRAPHENE_RECT_INIT (0, 0, (float) width, 0);
   for (double i = local_start_x;

@@ -71,10 +71,12 @@ on_first_run_assistant_apply (
   GtkAssistant * assistant,
   gpointer       user_data)
 {
-  g_message ("on apply...");
+  g_message ("on first run assistant apply...");
 
   g_settings_set_boolean (
-    S_GENERAL, "first-run", 0);
+    S_GENERAL, "first-run", false);
+
+  zrythm_app->init_finished = false;
 
   /* start plugin scanning in another thread */
   zrythm_app->init_thread =
@@ -86,7 +88,6 @@ on_first_run_assistant_apply (
 
   /* set a source func in the main GTK thread to
    * check when scanning finished */
-  zrythm_app->init_finished = false;
   g_idle_add (
     (GSourceFunc)
     zrythm_app_prompt_for_project_func, zrythm_app);
@@ -103,7 +104,7 @@ on_first_run_assistant_apply (
     }
 #endif
 
-  g_message ("done");
+  g_message ("done apply");
 }
 
 static void

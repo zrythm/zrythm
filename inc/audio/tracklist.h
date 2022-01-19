@@ -222,6 +222,7 @@ tracklist_find_track_by_name (
  * any.
  */
 NONNULL
+OPTIMIZE_O3
 Track *
 tracklist_find_track_by_name_hash (
   Tracklist *  self,

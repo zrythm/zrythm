@@ -27,6 +27,7 @@
 #include "gui/backend/event_manager.h"
 #include "gui/backend/timeline.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/arranger_object.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -355,7 +356,7 @@ draw_regions (
 
   /* draw its transient if copy-moving TODO */
   if (arranger_object_should_orig_be_visible (
-        region_obj))
+        region_obj, NULL))
     {
       px_start =
         ui_pos_to_px_editor (
