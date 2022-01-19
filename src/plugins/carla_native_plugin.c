@@ -449,6 +449,9 @@ carla_engine_callback (
           "PORT ADDED: client %u port %d "
           "group %d name %s", plugin_id, val1,
           val3, val_str);
+        bool is_cv_variant =
+          self->max_variant_cv_ins > 0
+          || self->max_variant_cv_outs > 0;
         unsigned int port_id =
           (unsigned int) val1;
         switch (plugin_id)
@@ -462,26 +465,53 @@ carla_engine_callback (
               self->audio_output_port_id = port_id;
             break;
           case 3:
-            if (self->cv_input_port_id == 0)
-              self->cv_input_port_id = port_id;
+            if (is_cv_variant
+                && self->cv_input_port_id == 0)
+              {
+                self->cv_input_port_id = port_id;
+              }
+            else if (
+              !is_cv_variant
+              && self->midi_input_port_id == 0)
+              {
+                self->midi_input_port_id = port_id;
+              }
             break;
           case 4:
-            if (self->cv_output_port_id == 0)
-              self->cv_output_port_id = port_id;
+            if (is_cv_variant
+                && self->cv_output_port_id == 0)
+              {
+                self->cv_output_port_id = port_id;
+              }
+            else if (
+                !is_cv_variant
+                &&self->midi_output_port_id == 0)
+              {
+                self->midi_output_port_id = port_id;
+              }
             break;
           case 5:
-            if (self->midi_input_port_id == 0)
-              self->midi_input_port_id = port_id;
+            if (is_cv_variant
+                && self->midi_input_port_id == 0)
+              {
+                self->midi_input_port_id = port_id;
+              }
             break;
           case 6:
-            if (self->midi_output_port_id == 0)
-              self->midi_output_port_id = port_id;
+            if (is_cv_variant
+                && self->midi_output_port_id == 0)
+              {
+                self->midi_output_port_id = port_id;
+              }
             break;
           default:
             break;
           }
 
-        if (plugin_id == 7)
+        /* if non-cv variant, there will be no CV
+         * clients */
+        if ((is_cv_variant && plugin_id == 7)
+            || plugin_id == 5)
           {
             unsigned int port_hints =
               (unsigned int) val2;
@@ -494,7 +524,6 @@ carla_engine_callback (
               self->patchbay_port_info,
               nfo);
           }
-
       }
       break;
     case ENGINE_CALLBACK_PATCHBAY_PORT_REMOVED:
@@ -706,7 +735,6 @@ carla_native_plugin_process (
   CarlaNativePlugin *                 self,
   const EngineProcessTimeInfo * const time_nfo)
 {
-
   self->time_info.playing =
     TRANSPORT_IS_ROLLING;
   self->time_info.frame =
@@ -738,200 +766,145 @@ carla_native_plugin_process (
   self->time_info.bbt.beatsPerMinute =
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
 
-  /* 16 audio and 16 CV */
-  const size_t num_inputs =
-    MAX_VARIANT_AUDIO_INS + MAX_VARIANT_CV_INS;
-  const size_t num_outputs =
-    MAX_VARIANT_AUDIO_OUTS + MAX_VARIANT_CV_OUTS;
-
-  const PluginDescriptor * descr =
-    self->plugin->setting->descr;
-  switch (descr->protocol)
-    {
-    case PROT_LV2:
-    case PROT_VST:
-    case PROT_VST3:
-    case PROT_DSSI:
-    case PROT_LADSPA:
-    case PROT_AU:
-    case PROT_SFZ:
-    case PROT_SF2:
-    {
-      float * inbuf[num_inputs];
-      float * outbuf[num_outputs];
-
-      /* set all ins/outs to zero bufs */
-      for (size_t i = 0; i < num_inputs; i++)
-        {
-          dsp_fill (
-            self->inbufs[i],
-            DENORMAL_PREVENTION_VAL, time_nfo->nframes);
-          inbuf[i] = self->inbufs[i];
-        }
-      for (size_t i = 0; i < num_outputs; i++)
-        {
-          dsp_fill (
-            self->outbufs[i],
-            DENORMAL_PREVENTION_VAL, time_nfo->nframes);
-          outbuf[i] = self->outbufs[i];
-        }
-
-      /* set actual audio in bufs */
+  /* set actual audio in bufs */
+  {
+    size_t audio_ports = 0;
+    for (int i = 0;
+         i < self->plugin->num_in_ports; i++)
       {
-        size_t audio_ports = 0;
-        for (int i = 0;
-             i < self->plugin->num_in_ports; i++)
+        Port * port = self->plugin->in_ports[i];
+        if (port->id.type == TYPE_AUDIO)
           {
-            Port * port = self->plugin->in_ports[i];
-            if (port->id.type == TYPE_AUDIO)
-              {
-                inbuf[audio_ports++] =
-                  &port->buf[time_nfo->local_offset];
-              }
-            if (audio_ports == MAX_VARIANT_AUDIO_INS)
-              break;
+            self->inbufs[audio_ports++] =
+              &port->buf[time_nfo->local_offset];
           }
+        if (audio_ports == self->max_variant_audio_ins)
+          break;
       }
+  }
 
-      /* set actual cv in bufs */
+  /* set actual cv in bufs */
+  {
+    size_t cv_ports = 0;
+    for (int i = 0;
+         i < self->plugin->num_in_ports; i++)
       {
-        size_t cv_ports = 0;
-        for (int i = 0;
-             i < self->plugin->num_in_ports; i++)
+        Port * port = self->plugin->in_ports[i];
+        if (port->id.type == TYPE_CV)
           {
-            Port * port = self->plugin->in_ports[i];
-            if (port->id.type == TYPE_CV)
-              {
-                inbuf[MAX_VARIANT_AUDIO_INS + cv_ports++] =
-                  &port->buf[time_nfo->local_offset];
-              }
-            if (cv_ports == MAX_VARIANT_CV_INS)
-              break;
+            self->inbufs[self->max_variant_audio_ins + cv_ports++] =
+              &port->buf[time_nfo->local_offset];
           }
+        if (cv_ports == self->max_variant_cv_ins)
+          break;
       }
+  }
 
-      /* set actual audio out bufs (carla will write
-       * to these) */
+  /* set actual audio out bufs (carla will write
+   * to these) */
+  {
+    size_t audio_ports = 0;
+    for (int i = 0;
+         i < self->plugin->num_out_ports; i++)
       {
-        size_t audio_ports = 0;
-        for (int i = 0;
-             i < self->plugin->num_out_ports; i++)
+        Port * port = self->plugin->out_ports[i];
+        if (port->id.type == TYPE_AUDIO)
           {
-            Port * port = self->plugin->out_ports[i];
-            if (port->id.type == TYPE_AUDIO)
-              {
-                outbuf[audio_ports++] =
-                  &port->buf[time_nfo->local_offset];
-              }
-            if (audio_ports == MAX_VARIANT_AUDIO_OUTS)
-              break;
+            self->outbufs[audio_ports++] =
+              &port->buf[time_nfo->local_offset];
           }
+        if (audio_ports == self->max_variant_audio_outs)
+          break;
       }
+  }
 
-      /* set actual cv out bufs (carla will write
-       * to these) */
+  /* set actual cv out bufs (carla will write
+   * to these) */
+  {
+    size_t cv_ports = 0;
+    for (int i = 0;
+         i < self->plugin->num_out_ports; i++)
       {
-        size_t cv_ports = 0;
-        for (int i = 0;
-             i < self->plugin->num_out_ports; i++)
+        Port * port = self->plugin->out_ports[i];
+        if (port->id.type == TYPE_CV)
           {
-            Port * port = self->plugin->out_ports[i];
-            if (port->id.type == TYPE_CV)
-              {
-                outbuf[MAX_VARIANT_AUDIO_OUTS + cv_ports++] =
-                  &port->buf[time_nfo->local_offset];
-              }
-            if (cv_ports == MAX_VARIANT_CV_OUTS)
-              break;
+            self->outbufs[self->max_variant_audio_outs + cv_ports++] =
+              &port->buf[time_nfo->local_offset];
           }
+        if (cv_ports == self->max_variant_cv_outs)
+          break;
       }
+  }
 
-      /* get main midi port */
-      Port * port = NULL;
-      for (int i = 0;
-           i < self->plugin->num_in_ports; i++)
-        {
-          port = self->plugin->in_ports[i];
-          if (port->id.type == TYPE_EVENT &&
-              port->id.flags2 &
-                PORT_FLAG2_SUPPORTS_MIDI)
-            {
-              break;
-            }
-          else
-            port = NULL;
-        }
+  /* get main midi port */
+  Port * port = self->plugin->midi_in_port;
 
-      int num_events =
-        port ? port->midi_events->num_events : 0;
+  int num_events =
+    port ? port->midi_events->num_events : 0;
 #define MAX_EVENTS 4000
-      NativeMidiEvent events[MAX_EVENTS];
-      int num_events_written = 0;
-      for (int i = 0; i < num_events; i++)
+  NativeMidiEvent events[MAX_EVENTS];
+  int num_events_written = 0;
+  for (int i = 0; i < num_events; i++)
+    {
+      MidiEvent * ev =
+        &port->midi_events->events[i];
+      if (ev->time < time_nfo->local_offset ||
+          ev->time >= time_nfo->local_offset + time_nfo->nframes)
         {
-          MidiEvent * ev =
-            &port->midi_events->events[i];
-          if (ev->time < time_nfo->local_offset ||
-              ev->time >= time_nfo->local_offset + time_nfo->nframes)
-            {
-              /* skip events scheduled
-               * for another split within
-               * the processing cycle */
-              continue;
-            }
-
-#if 0
-          g_message (
-            "writing plugin input event %d "
-            "at time %u - "
-            "local frames %u nframes %u",
-            num_events_written,
-            ev->time - time_nfo->local_offset,
-            time_nfo->local_offset, time_nfo->nframes);
-          midi_event_print (ev);
-#endif
-
-          /* event time is relative to the current
-           * zrythm full cycle (not split). it
-           * needs to be made relative to the
-           * current split */
-          events[num_events_written].time =
-            ev->time - time_nfo->local_offset;
-          events[num_events_written].size = 3;
-          events[num_events_written].data[0] =
-            ev->raw_buffer[0];
-          events[num_events_written].data[1] =
-            ev->raw_buffer[1];
-          events[num_events_written].data[2] =
-            ev->raw_buffer[2];
-          num_events_written++;
-
-          if (num_events_written == MAX_EVENTS)
-            {
-              g_warning (
-                "written %d events", MAX_EVENTS);
-              break;
-            }
-        }
-      if (num_events_written > 0)
-        {
-#if 0
-          g_message (
-            "Carla plugin %s has %d MIDI events",
-            self->plugin->descr->name,
-            num_events_written);
-#endif
+          /* skip events scheduled
+           * for another split within
+           * the processing cycle */
+          continue;
         }
 
-      self->native_plugin_descriptor->process (
-        self->native_plugin_handle, inbuf, outbuf,
-        time_nfo->nframes, events,
-        (uint32_t) num_events_written);
-      }
-      break;
-    default:
-      break;
+#if 0
+      g_message (
+        "writing plugin input event %d "
+        "at time %u - "
+        "local frames %u nframes %u",
+        num_events_written,
+        ev->time - time_nfo->local_offset,
+        time_nfo->local_offset, time_nfo->nframes);
+      midi_event_print (ev);
+#endif
+
+      /* event time is relative to the current
+       * zrythm full cycle (not split). it
+       * needs to be made relative to the
+       * current split */
+      events[num_events_written].time =
+        ev->time - time_nfo->local_offset;
+      events[num_events_written].size = 3;
+      events[num_events_written].data[0] =
+        ev->raw_buffer[0];
+      events[num_events_written].data[1] =
+        ev->raw_buffer[1];
+      events[num_events_written].data[2] =
+        ev->raw_buffer[2];
+      num_events_written++;
+
+      if (num_events_written == MAX_EVENTS)
+        {
+          g_warning (
+            "written %d events", MAX_EVENTS);
+          break;
+        }
     }
+  if (num_events_written > 0)
+    {
+#if 0
+      g_message (
+        "Carla plugin %s has %d MIDI events",
+        self->plugin->descr->name,
+        num_events_written);
+#endif
+    }
+
+  self->native_plugin_descriptor->process (
+    self->native_plugin_handle,
+    self->inbufs, self->outbufs,
+    time_nfo->nframes, events,
+    (uint32_t) num_events_written);
 
   /* update latency */
   self->plugin->latency =
@@ -1400,21 +1373,35 @@ carla_native_plugin_update_buffer_size_and_sample_rate (
     AUDIO_ENGINE->sample_rate);
 
   /* update processing buffers */
-  for (size_t i = 0; i < MAX_VARIANT_INS; i++)
+  unsigned int max_variant_ins =
+    self->max_variant_audio_ins
+    + self->max_variant_cv_ins;
+  for (size_t i = 0; i < max_variant_ins; i++)
     {
-      self->inbufs[i] =
+      self->zero_inbufs[i] =
         g_realloc_n (
-          self->inbufs[i],
+          self->zero_inbufs[i],
           AUDIO_ENGINE->block_length,
           sizeof (float));
+      dsp_fill (
+        self->zero_inbufs[i],
+        1e-20f, AUDIO_ENGINE->block_length);
+      self->inbufs[i] = self->zero_inbufs[i];
     }
-  for (size_t i = 0; i < MAX_VARIANT_OUTS; i++)
+  unsigned int max_variant_outs =
+    self->max_variant_audio_outs
+    + self->max_variant_cv_outs;
+  for (size_t i = 0; i < max_variant_outs; i++)
     {
-      self->outbufs[i] =
+      self->zero_outbufs[i] =
         g_realloc_n (
-          self->outbufs[i],
+          self->zero_outbufs[i],
           AUDIO_ENGINE->block_length,
           sizeof (float));
+      dsp_fill (
+        self->zero_outbufs[i],
+        1e-20f, AUDIO_ENGINE->block_length);
+      self->outbufs[i] = self->zero_outbufs[i];
     }
 
   if (self->native_plugin_descriptor->dispatcher)
@@ -1510,14 +1497,147 @@ carla_native_plugin_instantiate (
 
   self->time_info.bbt.valid = 1;
 
-  /* instantiate the plugin to get its info */
+  /* choose most appropriate patchbay variant */
+  self->max_variant_midi_ins = 1;
+  self->max_variant_midi_outs = 1;
+  const PluginDescriptor * descr =
+    self->plugin->setting->descr;
+  if (descr->num_audio_ins <= 2
+      && descr->num_audio_outs <= 2
+      && descr->num_cv_ins == 0
+      && descr->num_cv_outs == 0)
+    {
+      self->native_plugin_descriptor =
+        carla_get_native_patchbay_plugin ();
+      self->max_variant_audio_ins = 2;
+      self->max_variant_audio_outs = 2;
+      g_message ("using standard patchbay variant");
+    }
+  else if (
+      descr->num_audio_ins <= 16
+      && descr->num_audio_outs <= 16
+      && descr->num_cv_ins == 0
+      && descr->num_cv_outs == 0)
+    {
+      self->native_plugin_descriptor =
+        carla_get_native_patchbay16_plugin ();
+      self->max_variant_audio_ins = 16;
+      self->max_variant_audio_outs = 16;
+      g_message ("using patchbay 16 variant");
+    }
+  else if (
+      descr->num_audio_ins <= 32
+      && descr->num_audio_outs <= 32
+      && descr->num_cv_ins == 0
+      && descr->num_cv_outs == 0)
+    {
+      self->native_plugin_descriptor =
+        carla_get_native_patchbay32_plugin ();
+      self->max_variant_audio_ins = 32;
+      self->max_variant_audio_outs = 32;
+      g_message ("using patchbay 32 variant");
+    }
+  else if (
+      descr->num_audio_ins <= 64
+      && descr->num_audio_outs <= 64
+      && descr->num_cv_ins == 0
+      && descr->num_cv_outs == 0)
+    {
+      self->native_plugin_descriptor =
+        carla_get_native_patchbay64_plugin ();
+      self->max_variant_audio_ins = 64;
+      self->max_variant_audio_outs = 64;
+      g_message ("using patchbay 64 variant");
+    }
+  else if (
+      descr->num_audio_ins <= 2
+      && descr->num_audio_outs <= 2
+      && descr->num_cv_ins <= 5
+      && descr->num_cv_outs <= 5)
+    {
+      self->native_plugin_descriptor =
+        carla_get_native_patchbay_cv_plugin ();
+      self->max_variant_audio_ins = 2;
+      self->max_variant_audio_outs = 2;
+      self->max_variant_cv_ins = 5;
+      self->max_variant_cv_outs = 5;
+      g_message ("using patchbay CV variant");
+    }
+  else if (
+      descr->num_audio_ins <= 2
+      && descr->num_audio_outs <= 2
+      && descr->num_cv_ins <= 8
+      && descr->num_cv_outs <= 8)
+    {
+      self->native_plugin_descriptor =
+        carla_get_native_patchbay_cv8_plugin ();
+      self->max_variant_audio_ins = 2;
+      self->max_variant_audio_outs = 2;
+      self->max_variant_cv_ins = 8;
+      self->max_variant_cv_outs = 8;
+      g_message ("using patchbay CV8 variant");
+    }
 #ifdef CARLA_HAVE_CV32_PATCHBAY_VARIANT
-  self->native_plugin_descriptor =
-    carla_get_native_patchbay_cv32_plugin ();
-#else
-  self->native_plugin_descriptor =
-    carla_get_native_patchbay_cv_plugin ();
+  else if (
+      descr->num_audio_ins <= 64
+      && descr->num_audio_outs <= 64
+      && descr->num_cv_ins <= 32
+      && descr->num_cv_outs <= 32)
+    {
+      self->native_plugin_descriptor =
+        carla_get_native_patchbay_cv32_plugin ();
+      self->max_variant_audio_ins = 64;
+      self->max_variant_audio_outs = 64;
+      self->max_variant_cv_ins = 32;
+      self->max_variant_cv_outs = 32;
+      g_message ("using patchbay CV32 variant");
+    }
 #endif
+  else
+    {
+      g_warning (
+        "Plugin with %d audio ins, %d audio outs, "
+        "%d CV ins, %d CV outs not fully "
+        "supported. Using standard Carla Patchbay "
+        "variant",
+        descr->num_audio_ins,
+        descr->num_audio_outs,
+        descr->num_cv_ins,
+        descr->num_cv_outs);
+      self->native_plugin_descriptor =
+        carla_get_native_patchbay_plugin ();
+      self->max_variant_audio_ins = 2;
+      self->max_variant_audio_outs = 2;
+    }
+
+  unsigned int max_variant_ins =
+    self->max_variant_audio_ins
+    + self->max_variant_cv_ins;
+  self->zero_inbufs =
+    object_new_n (max_variant_ins, float *);
+  self->inbufs =
+    object_new_n (max_variant_ins, float *);
+  for (size_t i = 0; i < max_variant_ins; i++)
+    {
+      self->zero_inbufs[i] =
+        object_new_n (
+          AUDIO_ENGINE->block_length, float);
+    }
+  unsigned int max_variant_outs =
+    self->max_variant_audio_outs
+    + self->max_variant_cv_outs;
+  self->zero_outbufs =
+    object_new_n (max_variant_outs, float *);
+  self->outbufs =
+    object_new_n (max_variant_ins, float *);
+  for (size_t i = 0; i < max_variant_outs; i++)
+    {
+      self->zero_outbufs[i] =
+        object_new_n (
+          AUDIO_ENGINE->block_length, float);
+    }
+
+  /* instantiate the plugin to get its info */
   self->native_plugin_handle =
     self->native_plugin_descriptor->instantiate (
       &self->native_host_descriptor);
@@ -1589,7 +1709,6 @@ carla_native_plugin_instantiate (
     self->plugin->setting;
   g_return_val_if_fail (
     setting->open_with_carla, -1);
-  const PluginDescriptor * descr = setting->descr;
   g_message (
     "%s: using bridge mode %s", __func__,
     carla_bridge_mode_strings[
@@ -1725,6 +1844,12 @@ carla_native_plugin_instantiate (
   unsigned int num_cv_outs_connected = 0;
   unsigned int num_midi_ins_connected = 0;
   unsigned int num_midi_outs_connected = 0;
+  unsigned int plugin_client = 5;
+  bool is_cv_variant =
+    self->max_variant_cv_ins > 0
+    || self->max_variant_cv_outs > 0;
+  if (is_cv_variant)
+    plugin_client = 7;
   for (size_t i = 0;
        i < self->patchbay_port_info->len; i++)
     {
@@ -1743,7 +1868,7 @@ carla_native_plugin_instantiate (
                 PATCHBAY_PORT_TYPE_AUDIO
               &&
               num_audio_ins_connected <
-                MAX_VARIANT_AUDIO_INS)
+                self->max_variant_audio_ins)
             {
               g_debug (
                 "connecting out %u to in %u",
@@ -1757,7 +1882,7 @@ carla_native_plugin_instantiate (
                   1,
                   self->audio_input_port_id +
                     num_audio_ins_connected++,
-                  7, port_id);
+                  plugin_client, port_id);
               if (!ret)
                 {
                   g_critical (
@@ -1770,7 +1895,7 @@ carla_native_plugin_instantiate (
                      PATCHBAY_PORT_TYPE_CV
                    &&
                    num_audio_ins_connected <
-                     MAX_VARIANT_CV_INS)
+                     self->max_variant_cv_ins)
             {
               g_debug (
                 "connecting out %u to in %u",
@@ -1784,7 +1909,7 @@ carla_native_plugin_instantiate (
                   3,
                   self->cv_input_port_id +
                     num_cv_ins_connected++,
-                  7, port_id);
+                  plugin_client, port_id);
               if (!ret)
                 {
                   g_critical (
@@ -1797,7 +1922,7 @@ carla_native_plugin_instantiate (
                      PATCHBAY_PORT_TYPE_MIDI
                    &&
                    num_midi_ins_connected <
-                     MAX_VARIANT_MIDI_INS)
+                     self->max_variant_midi_ins)
             {
               g_debug (
                 "connecting out %u to in %u",
@@ -1808,10 +1933,10 @@ carla_native_plugin_instantiate (
                 carla_patchbay_connect (
                   self->host_handle,
                   false,
-                  5,
+                  is_cv_variant ? 5 : 3,
                   self->midi_input_port_id +
                     num_midi_ins_connected++,
-                  7, port_id);
+                  plugin_client, port_id);
               if (!ret)
                 {
                   g_critical (
@@ -1828,7 +1953,7 @@ carla_native_plugin_instantiate (
                 PATCHBAY_PORT_TYPE_AUDIO
               &&
               num_audio_outs_connected <
-                MAX_VARIANT_AUDIO_OUTS)
+                self->max_variant_audio_outs)
             {
               g_debug (
                 "connecting out %u to in %u",
@@ -1839,7 +1964,7 @@ carla_native_plugin_instantiate (
                 carla_patchbay_connect (
                   self->host_handle,
                   false,
-                  7, port_id,
+                  plugin_client, port_id,
                   2,
                   self->audio_output_port_id +
                     num_audio_outs_connected++);
@@ -1855,7 +1980,7 @@ carla_native_plugin_instantiate (
                      PATCHBAY_PORT_TYPE_CV
                    &&
                    num_cv_outs_connected <
-                     MAX_VARIANT_CV_OUTS)
+                     self->max_variant_cv_outs)
             {
               g_debug (
                 "connecting out %u to in %u",
@@ -1866,7 +1991,7 @@ carla_native_plugin_instantiate (
                 carla_patchbay_connect (
                   self->host_handle,
                   false,
-                  7, port_id,
+                  plugin_client, port_id,
                   4,
                   self->cv_output_port_id +
                     num_cv_outs_connected++);
@@ -1882,7 +2007,7 @@ carla_native_plugin_instantiate (
                      PATCHBAY_PORT_TYPE_MIDI
                    &&
                    num_midi_outs_connected <
-                     MAX_VARIANT_MIDI_OUTS)
+                     self->max_variant_midi_outs)
             {
               g_debug (
                 "connecting out %u to in %u",
@@ -1893,8 +2018,8 @@ carla_native_plugin_instantiate (
                 carla_patchbay_connect (
                   self->host_handle,
                   false,
-                  7, port_id,
-                  6,
+                  plugin_client, port_id,
+                  is_cv_variant ? 6 : 4,
                   self->midi_output_port_id +
                     num_midi_outs_connected++);
               if (!ret)
@@ -2397,16 +2522,30 @@ carla_native_plugin_free (
 {
   carla_native_plugin_close (self);
 
-  for (size_t i = 0; i < MAX_VARIANT_INS; i++)
+  unsigned int max_variant_ins =
+    self->max_variant_audio_ins
+    + self->max_variant_cv_ins;
+  for (size_t i = 0; i < max_variant_ins; i++)
     {
       object_free_w_func_and_null (
-        free, self->inbufs[i]);
+        free, self->zero_inbufs[i]);
     }
-  for (size_t i = 0; i < MAX_VARIANT_OUTS; i++)
+  object_free_w_func_and_null (
+    free, self->zero_inbufs);
+  object_free_w_func_and_null (
+    free, self->inbufs);
+  unsigned int max_variant_outs =
+    self->max_variant_audio_outs
+    + self->max_variant_cv_outs;
+  for (size_t i = 0; i < max_variant_outs; i++)
     {
       object_free_w_func_and_null (
-        free, self->outbufs[i]);
+        free, self->zero_outbufs[i]);
     }
+  object_free_w_func_and_null (
+    free, self->zero_outbufs);
+  object_free_w_func_and_null (
+    free, self->outbufs);
 
   object_free_w_func_and_null (
     g_ptr_array_unref, self->patchbay_port_info);
