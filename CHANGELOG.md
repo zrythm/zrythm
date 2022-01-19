@@ -1,6 +1,43 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.28.0.1] - 2022-01-19
+### Added
+- Add appdata
+- Optimize MIDI event processing
+- Port various MIDI util functions from Tracktion
+- Add tint to track and channel widgets
+- Cache automation region drawing in timeline
+- Optimize arranger drawing
+
+### Changed
+- Update Polish, Portuguese, Turkish, Chinese (Traditional), Chinese (Simplified), French, Hebrew, Indonesian translations
+- Update fader and panner appearance
+- Port track widget drawing to snapshot API
+- Use theme color for playhead
+- Use theme colors for meter gradient
+- Change default track colors to palette from GTK color picker
+- Make grid lines less prominent in the arranger
+- Use port symbols for all ports (fixes projects made in one locale showing errors in another locale)
+- Add Space, 1, 2, 3, 4, 5, 6 and other single-key shortcuts to arranger widget and remove some unnecessary global shortcuts
+- Use most appropriate (slimmest) Carla patchbay variant for each plugin
+
+### Fixed
+- Fix "please restart" dialog being transient for preferences window instead of main window
+- Fix snap to grid button not being togglable
+- Fix `zrythm_launch` on MacOS (use `DYLD_LIBRARY_PATH`)
+- Fix loop dashed line being incorrectly drawn at the start of regions
+- Fix spacing of plugin/file browser filter buttons
+- Add exception for bug report dialog for known GTK bug
+- Fix non-fatal error when opening folded tracks
+- Fix drop target not being set properly on folder channel widget
+- Fix incorrectly setting temporary font config as global current
+- Fix editable label popover not having its text selected
+- Fix audio send buffers not being cleared during processing
+
+### Removed
+- Stop using trademarked MIDI logo
+
 ## [1.0.0-alpha.27.0.3] - 2022-01-10
 ### Added
 - New dependency libadwaita
