@@ -669,7 +669,10 @@ need_backtrace (
     &&
     !string_contains_substr (
       ev->message,
-      "Allocation width too small");
+      "Allocation width too small")
+    &&
+    !string_contains_substr (
+      ev->message, "GDK_DROP_STATE_NONE");
 }
 
 /**
