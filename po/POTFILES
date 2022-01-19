@@ -151,6 +151,7 @@ inc/gui/widgets/meter.h
 inc/gui/widgets/button_with_menu.h
 inc/gui/widgets/tracklist_header.h
 inc/gui/widgets/bot_bar.h
+inc/gui/widgets/track_canvas.h
 inc/gui/widgets/transport_controls.h
 inc/gui/widgets/route_target_selector_popover.h
 inc/gui/widgets/monitor_section.h
@@ -295,6 +296,7 @@ inc/gui/backend/mixer_selections.h
 inc/utils/chromaprint.h
 inc/utils/lilv.h
 inc/utils/curl.h
+inc/utils/midi.h
 inc/utils/system.h
 inc/utils/flags.h
 inc/utils/file.h
@@ -344,7 +346,6 @@ inc/utils/gtk.h
 inc/settings/user_shortcuts.h
 inc/settings/plugin_settings.h
 inc/settings/settings.h
-inc/audio/midi.h
 inc/audio/modulator_macro_processor.h
 inc/audio/recording_manager.h
 inc/audio/encoder.h
@@ -631,6 +632,7 @@ src/gui/widgets/automation_editor_space.c
 src/gui/widgets/file_browser.c
 src/gui/widgets/inspector_track.c
 src/gui/widgets/timeline_minimap.c
+src/gui/widgets/track_canvas.c
 src/gui/widgets/track_visibility_tree.c
 src/gui/widgets/midi_activity_bar.c
 src/gui/widgets/track.c
@@ -712,6 +714,7 @@ src/utils/hash.c
 src/utils/stack.c
 src/utils/curl.c
 src/utils/log.c
+src/utils/midi.c
 src/utils/algorithms.c
 src/utils/arrays.c
 src/utils/gtk.c
@@ -791,7 +794,6 @@ src/audio/port_identifier.c
 src/audio/engine_rtmidi.c
 src/audio/position.c
 src/audio/rtaudio_device.c
-src/audio/midi.c
 src/audio/kmeter_dsp.c
 src/audio/velocity.c
 src/audio/audio_function.c
