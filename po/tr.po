@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-12 23:47+0000\n"
-"PO-Revision-Date: 2021-12-30 09:50+0000\n"
-"Last-Translator: Burak Hüseyin Ekseli <burakekseli@yandex.com>\n"
+"PO-Revision-Date: 2022-01-14 15:54+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/zrythm/tr/"
 ">\n"
 "Language: tr\n"
@@ -5411,7 +5411,7 @@ msgstr "Dikey"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:10
 msgid "The Zrythm contributors"
-msgstr ""
+msgstr "Zrythm'e katkıda bulunanlar"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:11
 #, fuzzy

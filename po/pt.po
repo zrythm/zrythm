@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-12 23:47+0000\n"
-"PO-Revision-Date: 2022-01-12 23:44+0000\n"
+"PO-Revision-Date: 2022-01-18 18:55+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -1631,7 +1631,7 @@ msgstr "Apagar"
 
 #: src/gui/widgets/plugin_browser.c:1577
 msgid "Search..."
-msgstr ""
+msgstr "Procurar..."
 
 #: src/gui/widgets/bot_bar.c:56 src/gui/widgets/ruler_marker.c:169
 msgid "Playhead"
@@ -1831,7 +1831,7 @@ msgstr "Modo musical"
 
 #: src/gui/widgets/timeline_arranger.c:1128
 msgid "Detect BPM"
-msgstr ""
+msgstr "Detetar BPM"
 
 #: src/gui/widgets/timeline_arranger.c:1183
 #, fuzzy
@@ -2546,7 +2546,7 @@ msgstr "Remover da coleção"
 
 #: src/gui/widgets/item_factory.c:398
 msgid "Add Bookmark"
-msgstr ""
+msgstr "Adicionar marcador"
 
 #: src/gui/widgets/file_chooser_button.c:68
 msgid "Select path"
@@ -3005,7 +3005,7 @@ msgstr "Nenhumas faixas a exportar"
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:65
 msgid "Saving..."
-msgstr ""
+msgstr "A gravar..."
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:68
 #, fuzzy
@@ -3058,7 +3058,7 @@ msgstr "Falha ao abrir o ficheiro: %s"
 #: src/gui/backend/event_manager.c:331
 #, c-format
 msgid "Plugin '%s' has crashed and has been disabled."
-msgstr ""
+msgstr "O suplemento '%s' travou e foi desativado."
 
 #: src/gui/backend/event_manager.c:1253
 #, c-format
@@ -3152,12 +3152,15 @@ msgstr ""
 "3. Reiniciar %s"
 
 #: src/utils/error.c:45
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "%s\n"
 "---Backtrace---\n"
 "%s"
 msgstr ""
+"%s\n"
+"---Backtrace---\n"
+"%s"
 
 #: src/settings/settings.c:163
 #, c-format
@@ -3238,6 +3241,7 @@ msgid ""
 "This MIDI file contains %d tracks. It cannot be dropped into an existing "
 "track"
 msgstr ""
+"Este ficheiro MIDI contém %d faixas. Não pode ser solto numa pista existente"
 
 #: src/audio/tracklist.c:1433
 msgid "Can only drop audio files on audio tracks"
@@ -3276,7 +3280,7 @@ msgstr "Fazer a Faixa Solo"
 
 #: src/audio/tracklist.c:1752
 msgid "Cannot drag folder into itself"
-msgstr ""
+msgstr "Não é possível arrastar a pasta para ela mesma"
 
 #: src/audio/tracklist.c:1771 src/audio/tracklist.c:1821
 #, fuzzy
@@ -3391,6 +3395,8 @@ msgid ""
 "Couldn't open SNDFILE %s:\n"
 "%d: %s"
 msgstr ""
+"Não consegui abrir o SNDFILE %s:\n"
+"%d: %s"
 
 #: src/audio/exporter.c:821 src/audio/exporter.c:830 src/actions/actions.c:1635
 #, fuzzy
@@ -3411,6 +3417,11 @@ msgid ""
 "Channel(s): %d | Bitrate: %'d.%d kb/s\n"
 "Bit depth: %d bits"
 msgstr ""
+"<b>%s</b>\n"
+"Taxa de amostra: %d\n"
+"Comprimento: %ld s %ld ms | BPM: %.1f\n"
+"Canal(is): %d | Bitrate: %'d. %d kb/s\n"
+"Profundidade de bits: %d bits"
 
 #: src/audio/engine_pa.c:242 src/audio/engine_pa.c:262
 #: src/audio/engine_pa.c:273
@@ -5587,7 +5598,7 @@ msgstr "Vertical"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:10
 msgid "The Zrythm contributors"
-msgstr ""
+msgstr "Os colaboradores da Zrythm"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:11
 #, fuzzy

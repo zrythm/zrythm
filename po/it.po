@@ -8,13 +8,14 @@
 # Alexandros Theodotou <alex@zrythm.org>, 2020.
 # Michal Čihař <michal@cihar.com>, 2020.
 # J. Lavoie <j.lavoie@net-c.ca>, 2021.
+# Giovanni Mauri <info@thejoe.it>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-12 23:47+0000\n"
-"PO-Revision-Date: 2021-11-20 15:50+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2022-01-17 09:53+0000\n"
+"Last-Translator: Giovanni Mauri <info@thejoe.it>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/zrythm/it/"
 ">\n"
 "Language: it\n"
@@ -22,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9.1\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -38,24 +39,24 @@ msgstr "di test"
 #: src/gui/widgets/route_target_selector.c:57
 #: src/gui/widgets/route_target_selector_popover.c:154
 msgid "None"
-msgstr ""
+msgstr "Nessuno"
 
 #: inc/schemas/gui/backend/arranger_object.h:54
 #: inc/gui/backend/arranger_object.h:101
 #: resources/ui/chord_selector_window.ui:489
 msgid "All"
-msgstr ""
+msgstr "Tutto"
 
 #: inc/schemas/gui/backend/arranger_object.h:56
 #: inc/gui/backend/arranger_object.h:103 resources/ui/inspector_master.ui:7
 #: resources/ui/inspector_ap.ui:7 resources/ui/inspector_midi.ui:7
 msgid "Region"
-msgstr ""
+msgstr "Regione"
 
 #: inc/schemas/gui/backend/arranger_object.h:58
 #: inc/gui/backend/arranger_object.h:105
 msgid "Midi Note"
-msgstr ""
+msgstr "Nota Midi"
 
 #: inc/schemas/gui/backend/arranger_object.h:60
 #: inc/gui/backend/arranger_object.h:107
@@ -65,7 +66,7 @@ msgstr ""
 #: inc/schemas/gui/backend/arranger_object.h:62
 #: inc/gui/backend/arranger_object.h:109
 msgid "Scale Object"
-msgstr ""
+msgstr "Scala Oggetto"
 
 #: inc/schemas/gui/backend/arranger_object.h:64
 #: inc/gui/backend/arranger_object.h:111 inc/audio/track.h:198
@@ -74,15 +75,14 @@ msgstr "Marcatore"
 
 #: inc/schemas/gui/backend/arranger_object.h:66
 #: inc/gui/backend/arranger_object.h:113
-#, fuzzy
 msgid "Automation Point"
-msgstr "Automazione"
+msgstr "Punto d'Automazione"
 
 #: inc/schemas/gui/backend/arranger_object.h:68
 #: inc/gui/backend/arranger_object.h:115 src/gui/widgets/event_viewer.c:675
 #: resources/ui/midi_editor_space.ui:82
 msgid "Velocity"
-msgstr ""
+msgstr "Velocità"
 
 #: inc/schemas/audio/curve.h:44 inc/audio/curve.h:112 src/audio/curve.c:70
 #, c-format
@@ -106,7 +106,7 @@ msgstr ""
 #: inc/schemas/audio/region.h:47 inc/audio/region.h:87
 #: src/gui/widgets/track.c:1954
 msgid "Inherit"
-msgstr ""
+msgstr "Ereditato"
 
 #: inc/schemas/audio/region.h:49 inc/audio/region.h:89
 #: src/gui/widgets/bot_bar.c:518 src/audio/automation_track.c:207
@@ -134,7 +134,7 @@ msgstr "Basso"
 
 #: inc/utils/ui.h:80
 msgid "Ultra Low"
-msgstr ""
+msgstr "Ultra basso"
 
 #: inc/utils/gtk.h:59
 #, fuzzy
@@ -143,28 +143,28 @@ msgstr "Backend MIDI"
 
 #: inc/utils/gtk.h:63
 msgid "Cu_t"
-msgstr ""
+msgstr "_Taglia"
 
 #: inc/utils/gtk.h:67
 msgid "_Copy"
-msgstr ""
+msgstr "_Copia"
 
 #: inc/utils/gtk.h:71
 msgid "_Paste"
-msgstr ""
+msgstr "_Incolla"
 
 #: inc/utils/gtk.h:75
 msgid "_Delete"
-msgstr ""
+msgstr "_Cancella"
 
 #. TRANSLATORS: deselects everything
 #: inc/utils/gtk.h:80
 msgid "Cle_ar Selection"
-msgstr ""
+msgstr "Deseleziona tutto"
 
 #: inc/utils/gtk.h:85
 msgid "Select A_ll"
-msgstr ""
+msgstr "Seleziona tutto"
 
 #: inc/utils/gtk.h:90 src/gui/widgets/home_toolbar.c:176
 msgid "Duplicate"
@@ -176,7 +176,7 @@ msgstr "Duplica"
 #: resources/ui/fader_buttons.ui:46
 #: build/data/org.zrythm.Zrythm.gschema.xml:316
 msgid "Mute"
-msgstr ""
+msgstr "Muto"
 
 #: inc/utils/gtk.h:98 src/gui/widgets/channel.c:729
 #: src/gui/widgets/track.c:1220 src/gui/widgets/track.c:1808
@@ -185,30 +185,27 @@ msgstr "Riattivare"
 
 #: inc/audio/audio_function.h:70
 msgid "Invert"
-msgstr ""
+msgstr "Inverti"
 
 #: inc/audio/audio_function.h:71
-#, fuzzy
 msgid "Normalize peak"
-msgstr "Normale"
+msgstr "Normalizza picco"
 
 #: inc/audio/audio_function.h:72
-#, fuzzy
 msgid "Normalize RMS"
-msgstr "Normale"
+msgstr "Mormalizza RMS"
 
 #: inc/audio/audio_function.h:73
-#, fuzzy
 msgid "Normalize LUFS"
-msgstr "Normale"
+msgstr "Normalizza LUFS"
 
 #: inc/audio/audio_function.h:74
 msgid "Linear fade in"
-msgstr ""
+msgstr "Fade-in lineare"
 
 #: inc/audio/audio_function.h:76
 msgid "Linear fade out"
-msgstr ""
+msgstr "Fade-out Lineare"
 
 #: inc/audio/audio_function.h:78 src/gui/widgets/home_toolbar.c:186
 msgid "Nudge left"
@@ -220,35 +217,35 @@ msgstr ""
 
 #: inc/audio/audio_function.h:80
 msgid "Reverse"
-msgstr ""
+msgstr "Inverti"
 
 #: inc/audio/audio_function.h:81
 msgid "External program"
-msgstr ""
+msgstr "Programma esterno"
 
 #: inc/audio/audio_function.h:82
 msgid "Guile script"
-msgstr ""
+msgstr "Script Guile"
 
 #: inc/audio/audio_function.h:83
 msgid "Custom plugin"
-msgstr ""
+msgstr "Plugin personalizzato"
 
 #: inc/audio/audio_function.h:84
 msgid "Invalid"
-msgstr ""
+msgstr "Invalido"
 
 #: inc/audio/transport.h:73
 msgid "1 bar"
-msgstr ""
+msgstr "1 misura"
 
 #: inc/audio/transport.h:74
 msgid "2 bars"
-msgstr ""
+msgstr "2 misure"
 
 #: inc/audio/transport.h:75
 msgid "4 bars"
-msgstr ""
+msgstr "4 misure"
 
 #: inc/audio/track.h:194 src/gui/widgets/track_properties_expander.c:132
 #: src/gui/widgets/route_target_selector_popover.c:188
@@ -260,22 +257,22 @@ msgstr "Strumento"
 #: resources/ui/file_browser_filters.ui:10
 #: build/data/org.zrythm.Zrythm.gschema.xml:1047
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: inc/audio/track.h:196 src/project.c:769
 #: src/gui/widgets/route_target_selector_popover.c:165
 msgid "Master"
-msgstr ""
+msgstr "Master"
 
 #: inc/audio/track.h:197 src/gui/widgets/event_viewer.c:724
 #: src/audio/region.c:517
 msgid "Chord"
-msgstr ""
+msgstr "Accordo"
 
 #: inc/audio/track.h:199 src/gui/widgets/automatable_selector_popover.c:396
 #: src/audio/tempo_track.c:124
 msgid "Tempo"
-msgstr ""
+msgstr "Tempo"
 
 #: inc/audio/track.h:200
 msgid "Modulator"
@@ -283,7 +280,7 @@ msgstr "Modulatore"
 
 #: inc/audio/track.h:201
 msgid "Audio FX"
-msgstr ""
+msgstr "Effetti Audio"
 
 #: inc/audio/track.h:202
 msgid "Audio Group"
@@ -292,11 +289,11 @@ msgstr "Gruppo Audio"
 #: inc/audio/track.h:203 src/audio/region.c:508
 #: resources/ui/file_browser_filters.ui:17
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: inc/audio/track.h:204
 msgid "MIDI FX"
-msgstr ""
+msgstr "Effetti MIDI"
 
 #: inc/audio/track.h:205
 msgid "MIDI Group"
@@ -304,27 +301,24 @@ msgstr "Gruppo MIDI"
 
 #: inc/audio/track.h:206
 msgid "Folder"
-msgstr ""
+msgstr "Cartella"
 
 #: inc/audio/curve.h:120 src/audio/curve.c:82 src/audio/curve.c:368
 #, c-format
 msgid "Logarithmic"
-msgstr ""
+msgstr "Logaritmico"
 
 #: inc/audio/engine.h:204
-#, fuzzy
 msgid "1,024"
-msgstr "1,024"
+msgstr "1.024"
 
 #: inc/audio/engine.h:205
-#, fuzzy
 msgid "2,048"
-msgstr "2,048"
+msgstr "2.048"
 
 #: inc/audio/engine.h:206
-#, fuzzy
 msgid "4,096"
-msgstr "4,096"
+msgstr "4.096"
 
 #: inc/audio/engine.h:233
 msgid "22,050"
@@ -335,85 +329,80 @@ msgid "32,000"
 msgstr "32,000"
 
 #: inc/audio/engine.h:235
-#, fuzzy
 msgid "44,100"
-msgstr "44,100"
+msgstr "44.100"
 
 #: inc/audio/engine.h:236
-#, fuzzy
 msgid "48,000"
-msgstr "48,000"
+msgstr "48.000"
 
 #: inc/audio/engine.h:237
-#, fuzzy
 msgid "88,200"
-msgstr "88,200"
+msgstr "88.200"
 
 #: inc/audio/engine.h:238
-#, fuzzy
 msgid "96,000"
-msgstr "96,000"
+msgstr "96.000"
 
 #: inc/audio/engine.h:239
-#, fuzzy
 msgid "192,000"
-msgstr "192,000"
+msgstr "192.000"
 
 #: inc/audio/engine.h:295
 msgid "Dummy (libsoundio)"
-msgstr ""
+msgstr "di test (libsoundio)"
 
 #: inc/audio/engine.h:362
 msgid "ALSA Sequencer (not working)"
-msgstr ""
+msgstr "Sequencer ALSA (non funzionante)"
 
 #: inc/audio/engine.h:363
 msgid "ALSA Sequencer (rtmidi)"
-msgstr ""
+msgstr "Sequencer ALSA (rtmidi)"
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:107
 msgid "Crescendo"
-msgstr ""
+msgstr "Crescendo"
 
 #: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:113
 msgid "Flam"
-msgstr ""
+msgstr "Flam"
 
 #: inc/audio/midi_function.h:58 inc/audio/automation_function.h:50
 msgid "Flip H"
-msgstr ""
+msgstr "Ruota orizzontalmente"
 
 #: inc/audio/midi_function.h:59 inc/audio/automation_function.h:51
 msgid "Flip V"
-msgstr ""
+msgstr "Ruota Verticalmente"
 
 #: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:134
 msgid "Legato"
-msgstr ""
+msgstr "Legato"
 
 #: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:140
 msgid "Portato"
-msgstr ""
+msgstr "Portato"
 
 #: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:146
 msgid "Staccato"
-msgstr ""
+msgstr "Staccato"
 
 #: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:152
 msgid "Strum"
-msgstr ""
+msgstr "Strimpello"
 
 #: inc/audio/exporter.h:90
 msgid "Before inserts"
-msgstr ""
+msgstr "Prima degli inserti"
 
 #: inc/audio/exporter.h:91
 msgid "Pre-fader"
-msgstr ""
+msgstr "Pre-fader"
 
 #: inc/audio/exporter.h:92
 msgid "Post fader"
-msgstr ""
+msgstr "Post fader"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
@@ -427,18 +416,17 @@ msgid "-3dB"
 msgstr "-3dB"
 
 #: inc/audio/pan.h:54
-#, fuzzy
 msgid "-6dB"
 msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/utils/ui.c:883 src/audio/curve.c:353
 msgid "Linear"
-msgstr ""
+msgstr "Lineare"
 
 #: inc/audio/pan.h:77 src/utils/ui.c:884
 msgid "Square Root"
-msgstr ""
+msgstr "Radice Quadrata"
 
 #: inc/audio/pan.h:78
 msgid "Sine"
@@ -450,9 +438,8 @@ msgid "Unable to read file: %s"
 msgstr "Impossibile leggere il file: %s"
 
 #: src/project.c:919
-#, fuzzy
 msgid "Failed to decompress project file"
-msgstr "Fallita la decompressione del file progetto: %s"
+msgstr "Decompressione del file progetto fallita"
 
 #: src/project.c:978
 #, c-format
@@ -461,6 +448,9 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
+"Trovato nuovo backup:\n"
+"  %s.\n"
+"Usare il backup più nuovo?"
 
 #: src/project.c:983
 msgid "Backup found"
@@ -486,9 +476,8 @@ msgid "Failed to load project. Will create a new one instead."
 msgstr "Fallito il caricamento del progetto. Ne verrà quindi creato uno nuovo."
 
 #: src/project.c:1622
-#, fuzzy
 msgid "Failed to compress project file"
-msgstr "Fallita la decompressione del file progetto: %s"
+msgstr "Decompressione del file progetto fallita"
 
 #: src/project.c:1668 src/project.c:1671
 msgid "Backup saved."
@@ -496,21 +485,21 @@ msgstr "Backup salvato."
 
 #: src/project.c:1682
 msgid "Project saved."
-msgstr ""
+msgstr "Progetto salvato."
 
 #: src/zrythm_app.c:139
 msgid "Error - Backtrace:\n"
-msgstr ""
+msgstr "Errore - Indietro:\n"
 
 #: src/zrythm_app.c:143
 #, c-format
 msgid "Error: %s - Backtrace:\n"
-msgstr ""
+msgstr "Errore: %s - indietro:\n"
 
 #: src/zrythm_app.c:159
 #, c-format
 msgid "%s has crashed. "
-msgstr ""
+msgstr "%s è andato in crash. "
 
 #: src/zrythm_app.c:203
 #, c-format
@@ -547,24 +536,21 @@ msgid "Initializing settings"
 msgstr "Inizializzazione delle impostazioni"
 
 #: src/zrythm_app.c:465
-#, fuzzy, c-format
+#, c-format
 msgid "Initializing %s directories"
-msgstr "Inizializzazione delle impostazioni"
+msgstr "Inizializzazione di %s cartelle"
 
 #: src/zrythm_app.c:475
-#, fuzzy
 msgid "Initializing logging system"
-msgstr "Inizializzazione delle impostazioni"
+msgstr "Inizializzazione del sistema di logging"
 
 #: src/zrythm_app.c:485
-#, fuzzy
 msgid "Initializing caches"
-msgstr "Inizializzazione del motore audio"
+msgstr "Inizializzazione delle cache"
 
 #: src/zrythm_app.c:489
-#, fuzzy
 msgid "Initializing file manager"
-msgstr "Inizializzazione del gestore di plugin"
+msgstr "Inizializzazione del file manager"
 
 #: src/zrythm_app.c:496
 msgid "Scanning plugins"
@@ -609,9 +595,8 @@ msgid "Project failed to decompress: %s\n"
 msgstr ""
 
 #: src/zrythm_app.c:1606
-#, fuzzy
 msgid "Unknown operation"
-msgstr "Errore sconosciuto"
+msgstr "Operazione sconosciuta"
 
 #: src/zrythm_app.c:1626
 #, c-format
@@ -619,9 +604,8 @@ msgid "libguile is required for this option\n"
 msgstr ""
 
 #: src/zrythm_app.c:1791
-#, fuzzy
 msgid "Print version information"
-msgstr "Informazioni sulla licenza"
+msgstr "Informazioni sulla versione stampabile"
 
 #: src/zrythm_app.c:1796
 msgid "Convert ZPJ-FILE to YAML"
@@ -637,7 +621,7 @@ msgstr ""
 
 #: src/zrythm_app.c:1810
 msgid "Print output in user-friendly way"
-msgstr ""
+msgstr "Stampa l'output in modo leggibile"
 
 #: src/zrythm_app.c:1814
 msgid "Print current settings"
@@ -686,7 +670,7 @@ msgstr ""
 
 #: src/plugins/carla_native_plugin.c:628 src/plugins/lv2_plugin.c:3761
 msgid "Init"
-msgstr ""
+msgstr "Inizializzazione"
 
 #: src/plugins/carla_native_plugin.c:1133
 msgid "Audio in"
@@ -709,11 +693,11 @@ msgstr ""
 
 #: src/plugins/carla_native_plugin.c:1177
 msgid "CV in"
-msgstr ""
+msgstr "Ingresso CV"
 
 #: src/plugins/carla_native_plugin.c:1187
 msgid "CV out"
-msgstr ""
+msgstr "Uscita CV"
 
 #: src/plugins/carla_native_plugin.c:1667
 #, c-format
@@ -721,9 +705,8 @@ msgid "Error adding carla plugin: %s"
 msgstr ""
 
 #: src/plugins/carla_native_plugin.c:1901
-#, fuzzy
 msgid "Failed to load Carla state"
-msgstr "Fallita l'apertura del file: %s"
+msgstr "Fallita il caricamento dello stato di Carla"
 
 #: src/plugins/carla_native_plugin.c:1916
 msgid ""
@@ -741,17 +724,17 @@ msgid "Error loading LV2 bundle dir: "
 msgstr ""
 
 #: src/plugins/plugin_manager.c:1096
-#, fuzzy, c-format
+#, c-format
 msgid "Scanned %s plugin: %s"
-msgstr "Plugin LV2 scansionato"
+msgstr "Plugin %s scansionato: %s"
 
 #. TRANSLATORS: first argument
 #. * is plugin protocol, 2nd
 #. * argument is path
 #: src/plugins/plugin_manager.c:1110
-#, fuzzy, c-format
+#, c-format
 msgid "Skipped %1$s plugin at %2$s"
-msgstr "Plugin LV2 scansionato"
+msgstr "Tralasciato il plugin %1$s al percorso %2$s"
 
 #: src/plugins/plugin_manager.c:1244
 msgid "Scanned LV2 plugin"
@@ -777,14 +760,12 @@ msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr ""
 
 #: src/plugins/plugin.c:300
-#, fuzzy
 msgid "Enabled"
-msgstr "Abilita"
+msgstr "Abilitato"
 
 #: src/plugins/plugin.c:302
-#, fuzzy
 msgid "Enables or disables the plugin"
-msgstr "Abilita/disabilita la connessione"
+msgstr "Abilita/disabilita la il plugin"
 
 #: src/plugins/plugin.c:325 src/gui/widgets/track_input_expander.c:728
 msgid "Gain"
@@ -796,36 +777,33 @@ msgstr ""
 
 #: src/plugins/plugin.c:528 src/plugins/plugin_gtk.c:177
 #: src/gui/widgets/plugin_properties_expander.c:163
-#, fuzzy
 msgid "Failed to apply preset"
-msgstr "Fallita l'apertura del file: %s"
+msgstr "Impossibile applicare il preset"
 
 #: src/plugins/plugin.c:603
 msgid "Failed to get Carla plugin"
 msgstr ""
 
 #: src/plugins/plugin.c:619
-#, fuzzy
 msgid "Failed to get LV2 plugin"
-msgstr "Plugin LV2 scansionato"
+msgstr "Impossibile ottenere il plugin LV2"
 
 #: src/plugins/plugin.c:1131
 #, c-format
 msgid " - bridge: %s"
-msgstr ""
+msgstr " - bridge: %s"
 
 #: src/plugins/plugin.c:1142
-#, fuzzy
 msgid "instrument"
 msgstr "Strumento"
 
 #: src/plugins/plugin.c:1710
 msgid "Carla plugin instantiation failed"
-msgstr ""
+msgstr "Avvio del plugin Carla fallito"
 
 #: src/plugins/plugin.c:1738
 msgid "LV2 plugin instantiation failed"
-msgstr ""
+msgstr "Avvio del plugin LV2 fallito"
 
 #: src/plugins/plugin.c:1968
 #, c-format
@@ -838,9 +816,9 @@ msgid ""
 msgstr ""
 
 #: src/plugins/plugin.c:2278
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create plugin clone for %s"
-msgstr "Impossibile scrivere il file: %s"
+msgstr "Fallita la creazione del clone del plugin %s"
 
 #: src/plugins/plugin_gtk.c:101 src/plugins/lv2/lv2_gtk.c:75
 msgid "Save State"
@@ -866,9 +844,8 @@ msgid "_Save"
 msgstr ""
 
 #: src/plugins/plugin_gtk.c:320
-#, fuzzy
 msgid "Save Preset"
-msgstr "Salva come"
+msgstr "Salva Preset"
 
 #: src/plugins/plugin_gtk.c:367
 msgid "_Prefix plugin name"
@@ -879,9 +856,8 @@ msgid "URI (Optional):"
 msgstr ""
 
 #: src/plugins/plugin_gtk.c:1362
-#, fuzzy
 msgid "Open File"
-msgstr "Apri cartella"
+msgstr "Apri File"
 
 #: src/plugins/plugin_gtk.c:1532
 msgid "Close"
@@ -896,9 +872,9 @@ msgid "Unknown widget type for value\n"
 msgstr ""
 
 #: src/plugins/lv2_plugin.c:1982
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get LV2 plugin from URI <%s>"
-msgstr "Fallita l'apertura del file: %s"
+msgstr "Impossibile ottenere il plugin LV2 da URI <%s>"
 
 #: src/plugins/lv2_plugin.c:2286
 #, c-format
@@ -910,9 +886,9 @@ msgid "Failed to make temporary dir"
 msgstr ""
 
 #: src/plugins/lv2_plugin.c:2685
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find preset with URI <%s>"
-msgstr "Fallita l'apertura del file: %s"
+msgstr "Impossibile trovare il preset con URI <%s>"
 
 #: src/plugins/lv2_plugin.c:2706
 #, fuzzy, c-format
@@ -5591,7 +5567,7 @@ msgstr ""
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:10
 msgid "The Zrythm contributors"
-msgstr ""
+msgstr "I contributori di Zrythm"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:11
 #, fuzzy
