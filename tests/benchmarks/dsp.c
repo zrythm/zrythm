@@ -48,10 +48,11 @@
 typedef struct DspBenchmark
 {
   /* function called */
-  const char * func_name;
+  char *       func_name;
   /* microseconds taken */
   long         unoptimized_usec;
   long         optimized_usec;
+  unsigned int max_split;
 } DspBenchmark;
 
 static DspBenchmark benchmarks[400];
@@ -104,7 +105,7 @@ _test_dsp_fill (
   for (int i = 0; i < NUM_ITERATIONS_MANY; i++) \
     {
 
-#define LOOP_END(fname,is_optimized) \
+#define LOOP_END(fname,is_optimized,_max_split) \
     } \
   end = g_get_monotonic_time (); \
   benchmark = benchmark_find (fname); \
@@ -113,7 +114,8 @@ _test_dsp_fill (
       benchmark = &benchmarks[num_benchmarks]; \
       num_benchmarks++; \
     } \
-  benchmark->func_name = fname; \
+  benchmark->func_name = g_strdup (fname); \
+  benchmark->max_split = _max_split; \
   if (is_optimized) \
     { \
       benchmark->optimized_usec = end - start; \
@@ -125,44 +127,44 @@ _test_dsp_fill (
 
   LOOP_START
   dsp_fill (buf, val, buf_size);
-  LOOP_END ("fill", optimized);
+  LOOP_END ("fill", optimized, 0);
 
   LOOP_START
   dsp_limit1 (buf, -1.0f, 1.1f, buf_size);
-  LOOP_END ("limit1", optimized);
+  LOOP_END ("limit1", optimized, 0);
 
   LOOP_START
   dsp_add2 (buf, src, buf_size);
-  LOOP_END ("add2", optimized);
+  LOOP_END ("add2", optimized, 0);
 
   LOOP_START
   float abs_max = dsp_abs_max (buf, buf_size);
   (void) abs_max;
-  LOOP_END ("abs_max", optimized);
+  LOOP_END ("abs_max", optimized, 0);
 
   LOOP_START
   dsp_min (buf, buf_size);
-  LOOP_END ("min", optimized);
+  LOOP_END ("min", optimized, 0);
 
   LOOP_START
   dsp_max (buf, buf_size);
-  LOOP_END ("max", optimized);
+  LOOP_END ("max", optimized, 0);
 
   LOOP_START
   dsp_mul_k2 (buf, 0.99f, buf_size);
-  LOOP_END ("mul_k2", optimized);
+  LOOP_END ("mul_k2", optimized, 0);
 
   LOOP_START
   dsp_copy (buf, src, buf_size);
-  LOOP_END ("copy", optimized);
+  LOOP_END ("copy", optimized, 0);
 
   LOOP_START
   dsp_mix2 (buf, src, 0.1f, 0.2f, buf_size);
-  LOOP_END ("mix2", optimized);
+  LOOP_END ("mix2", optimized, 0);
 
   LOOP_START
   dsp_mix_add2 (buf, src, src, 0.1f, 0.2f, buf_size);
-  LOOP_END ("mix_add2", optimized);
+  LOOP_END ("mix_add2", optimized, 0);
 
   free (buf);
   free (src);
@@ -183,7 +185,8 @@ test_dsp_fill (void)
 
 static void
 _test_run_engine (
-  bool optimized)
+  bool         optimized,
+  unsigned int max_split)
 {
   if (optimized)
     {
@@ -195,6 +198,7 @@ _test_run_engine (
     }
 
   AUDIO_ENGINE->stop_dummy_audio_thread = true;
+  AUDIO_ENGINE->max_split = max_split;
   g_usleep (20000);
 
 #ifdef HAVE_LSP_DSP
@@ -214,13 +218,18 @@ _test_run_engine (
 
   DspBenchmark * benchmark;
 
+  char prof_name[600];
+  sprintf (
+    prof_name, "engine cycles (max split %u)",
+    max_split);
+
   gint64 start, end;
   start = g_get_monotonic_time ();
   for (int i = 0; i < NUM_ITERATIONS_ENGINE; i++)
     {
       engine_process (
         AUDIO_ENGINE, AUDIO_ENGINE->block_length);
-  LOOP_END ("engine cycles", optimized);
+  LOOP_END (prof_name, optimized, max_split);
 
   g_message (
     "%soptimized time: %ld",
@@ -240,10 +249,17 @@ _test_run_engine (
 static void
 test_run_engine (void)
 {
+  const unsigned int split_szs[] = { 0, 32, 48, 64, 128, 256 };
+
+  for (size_t i = 0; i < G_N_ELEMENTS (split_szs);
+       i++)
+    {
 #ifdef HAVE_LSP_DSP
-  _test_run_engine (F_OPTIMIZED);
+      _test_run_engine (F_OPTIMIZED, split_szs[i]);
 #endif
-  _test_run_engine (F_NOT_OPTIMIZED);
+      _test_run_engine (
+        F_NOT_OPTIMIZED, split_szs[i]);
+    }
 }
 
 static void
@@ -256,10 +272,12 @@ print_benchmark_results (void)
         stderr,
         "---- %s ----\n"
         "unoptimized: %ldms\n"
-        "optimized: %ldms\n",
+        "optimized: %ldms\n"
+        "max split: %u frames\n",
         benchmark->func_name,
         benchmark->unoptimized_usec / 1000,
-        benchmark->optimized_usec / 1000);
+        benchmark->optimized_usec / 1000,
+        benchmark->max_split);
     }
 }
 

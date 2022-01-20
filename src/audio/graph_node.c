@@ -345,6 +345,43 @@ process_node (
     }
 }
 
+static inline void
+split_and_process_node (
+  const GraphNode *           node,
+  const EngineProcessTimeInfo time_nfo)
+{
+  if (AUDIO_ENGINE->max_split > 0
+      && time_nfo.nframes > AUDIO_ENGINE->max_split)
+    {
+      /* split further */
+      nframes_t nframes_remaining = time_nfo.nframes;
+      nframes_t nframes_processed = 0;
+      while (nframes_remaining > AUDIO_ENGINE->max_split)
+        {
+          nframes_t frames_to_process_now =
+            AUDIO_ENGINE->max_split;
+          EngineProcessTimeInfo new_time_nfo = {
+            time_nfo.g_start_frame,
+            time_nfo.local_offset + nframes_processed,
+            frames_to_process_now };
+          process_node (node, new_time_nfo);
+          nframes_processed +=
+            frames_to_process_now;
+          nframes_remaining -= frames_to_process_now;
+        }
+
+      EngineProcessTimeInfo new_time_nfo = {
+        time_nfo.g_start_frame,
+        time_nfo.local_offset + nframes_processed,
+        nframes_remaining };
+      process_node (node, new_time_nfo);
+    }
+  else
+    {
+      process_node (node, time_nfo);
+    }
+}
+
 /**
  * Processes the GraphNode.
  */
@@ -444,7 +481,7 @@ graph_node_process (
       nframes_t orig_nframes = time_nfo.nframes;
       time_nfo.nframes =
         num_processable_frames;
-      process_node (node, time_nfo);
+      split_and_process_node (node, time_nfo);
 
       /* calculate the remaining frames */
       time_nfo.nframes =
@@ -462,7 +499,7 @@ graph_node_process (
 
   if (time_nfo.nframes > 0)
     {
-      process_node (node, time_nfo);
+      split_and_process_node (node, time_nfo);
     }
 
 node_process_finish:

@@ -803,6 +803,17 @@ typedef struct AudioEngine
   /** Whether the engine is currently activated. */
   bool              activated;
 
+  /**
+   * Max frames to allow in each processing cycle
+   * split.
+   *
+   * This is used to recalculate automated values
+   * more often.
+   *
+   * If 0, no split will be made.
+   */
+  unsigned int      max_split;
+
   /** Pointer to owner project, if any. */
   Project *         project;
 } AudioEngine;
