@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,13 +23,14 @@
 #include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/track.h"
 #include "project.h"
+#include "utils/gtk.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (MidiActivityBarWidget,
-               midi_activity_bar_widget,
-               GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (
+  MidiActivityBarWidget, midi_activity_bar_widget,
+  GTK_TYPE_WIDGET)
 
 /** 250 ms */
 static const double MAX_TIME = 250000.0;
@@ -41,40 +42,50 @@ static int other_color_set = 0;
  * Draws the color picker.
  */
 static void
-midi_activity_bar_draw_cb (
-  GtkDrawingArea * drawing_area,
-  cairo_t *        cr,
-  int              width,
-  int              height,
-  gpointer         user_data)
+midi_activity_bar_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot)
 {
   MidiActivityBarWidget * self =
-    Z_MIDI_ACTIVITY_BAR_WIDGET (user_data);
-  GtkWidget * widget = GTK_WIDGET (drawing_area);
+    Z_MIDI_ACTIVITY_BAR_WIDGET (widget);
 
-  GdkRGBA color;
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
+
+  GtkStyleContext * context =
+  gtk_widget_get_style_context (widget);
+
+  gtk_snapshot_render_background (
+    snapshot, context, 0, 0, width, height);
 
   if (!PROJECT || !AUDIO_ENGINE)
     {
       return;
     }
 
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
-
   /* draw border */
   if (self->draw_border)
     {
-      color.red = 1.0;
-      color.green = 1.0;
-      color.blue = 1.0;
-      color.alpha = 0.2;
-      gdk_cairo_set_source_rgba (cr, &color);
-      cairo_rectangle (cr, 0, 0, width, height);
-      cairo_stroke (cr);
+      GskRoundedRect rounded_rect;
+      graphene_rect_t graphene_rect =
+        GRAPHENE_RECT_INIT (
+          0, 0, width, height);
+      gsk_rounded_rect_init_from_rect (
+        &rounded_rect, &graphene_rect, 0);
+      const float border_width = 1.f;
+      GdkRGBA border_color =
+        Z_GDK_RGBA_INIT (1, 1, 1, 0.2);
+      float border_widths[] = {
+        border_width, border_width, border_width,
+        border_width };
+      GdkRGBA border_colors[] = {
+        border_color, border_color, border_color,
+        border_color };
+      gtk_snapshot_append_border (
+        snapshot, &rounded_rect, border_widths,
+        border_colors);
     }
 
   /* get value */
@@ -94,11 +105,11 @@ midi_activity_bar_draw_cb (
       gdk_rgba_parse (&other_color, "#11FF44");
       other_color_set = 1;
     }
-  gdk_cairo_set_source_rgba (cr, &other_color);
   if (trigger)
     {
-      cairo_rectangle (cr, 0, 0, width, height);
-      cairo_fill (cr);
+      gtk_snapshot_append_color (
+        snapshot, &other_color,
+        &GRAPHENE_RECT_INIT (0, 0, width, height));
 
       switch (self->type)
         {
@@ -123,11 +134,13 @@ midi_activity_bar_draw_cb (
         {
           if (self->animation == MAB_ANIMATION_BAR)
             {
-              cairo_rectangle (
-                cr, 0,
-                (double) height *
-                ((double) time_diff / MAX_TIME),
-                width, height);
+              gtk_snapshot_append_color (
+                snapshot, &other_color,
+                &GRAPHENE_RECT_INIT (
+                  0,
+                  (float) height *
+                  ((float) time_diff / (float) MAX_TIME),
+                  width, height));
             }
           else if (self->animation ==
                      MAB_ANIMATION_FLASH)
@@ -135,12 +148,11 @@ midi_activity_bar_draw_cb (
               other_color.alpha =
                 1.f -
                 (float) time_diff / (float) MAX_TIME;
-              gdk_cairo_set_source_rgba (
-                cr, &other_color);
-              cairo_rectangle (
-                cr, 0, 0, width, height);
+              gtk_snapshot_append_color (
+                snapshot, &other_color,
+                &GRAPHENE_RECT_INIT (
+                  0, 0, width, height));
             }
-          cairo_fill (cr);
         }
     }
 }
@@ -178,12 +190,7 @@ midi_activity_bar_widget_setup_track (
 {
   self->track = track;
   self->type = MAB_TYPE_TRACK;
-  self->draw_border = 0;
-
-  gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self),
-    midi_activity_bar_draw_cb,
-    self, NULL);
+  self->draw_border = false;
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self),
@@ -200,12 +207,7 @@ midi_activity_bar_widget_setup_engine (
   MidiActivityBarWidget * self)
 {
   self->type = MAB_TYPE_ENGINE;
-  self->draw_border = 1;
-
-  gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self),
-    midi_activity_bar_draw_cb,
-    self, NULL);
+  self->draw_border = true;
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self),
@@ -223,10 +225,11 @@ midi_activity_bar_widget_init (
 
 static void
 midi_activity_bar_widget_class_init (
-  MidiActivityBarWidgetClass * _klass)
+  MidiActivityBarWidgetClass * klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   gtk_widget_class_set_css_name (
-    klass, "midi-activity-bar");
+    wklass, "midi-activity-bar");
+  wklass->snapshot = midi_activity_bar_snapshot;
 }
-

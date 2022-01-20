@@ -31,10 +31,8 @@
 #define MIDI_ACTIVITY_BAR_WIDGET_TYPE \
   (midi_activity_bar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  MidiActivityBarWidget,
-  midi_activity_bar_widget,
-  Z, MIDI_ACTIVITY_BAR_WIDGET,
-  GtkDrawingArea)
+  MidiActivityBarWidget, midi_activity_bar_widget,
+  Z, MIDI_ACTIVITY_BAR_WIDGET, GtkWidget)
 
 typedef struct Track Track;
 
@@ -60,7 +58,7 @@ typedef enum MidiActivityBarAnimation
 
 typedef struct _MidiActivityBarWidget
 {
-  GtkDrawingArea parent_instance;
+  GtkWidget      parent_instance;
 
   /** Track associated with this widget. */
   Track  *       track;
