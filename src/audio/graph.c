@@ -1527,7 +1527,7 @@ graph_start (
         graph_thread_new (i, 0, graph);
       if (!graph->threads[i])
         {
-          g_critical ("thread new failed");
+          g_error ("thread new failed");
           graph_terminate (graph);
           return 0;
         }
@@ -1538,7 +1538,7 @@ graph_start (
     graph_thread_new (-1, 1, graph);
   if (!graph->main_thread)
     {
-      g_critical ("thread new failed");
+      g_error ("thread new failed");
       graph_terminate (graph);
       return 0;
     }
