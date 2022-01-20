@@ -7047,7 +7047,7 @@ arranger_widget_class_init (
   gtk_widget_class_add_binding (
     wklass, GDK_KEY_Delete, 0,
     z_gtk_simple_action_shortcut_func,
-    "s", "clear-selection", NULL);
+    "s", "delete", NULL);
   gtk_widget_class_add_binding (
     wklass, GDK_KEY_Q, 0,
     z_gtk_simple_action_shortcut_func,
