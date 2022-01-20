@@ -334,6 +334,7 @@ static const char * ui_overlay_strings[] =
     "RESIZING_UP_FADE_OUT",
     "STRETCHING_L",
     "STRETCHING_R",
+    "STARTING_AUDITIONING",
     "AUDITIONING",
     "AUTOFILLING",
     "ERASING",
