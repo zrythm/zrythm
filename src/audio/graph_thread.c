@@ -17,9 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  *
  * This file incorporates work covered by the following copyright and
- * permission notice:
+ * permission notices:
  *
  * Copyright (C) 2017, 2019 Robin Gareus <robin@gareus.org>
+ * Copyright (C) 2002-2015 Paul Davis <paul@linuxaudiosystems.com>
+ * Copyright (C) 2007-2009 David Robillard <d@drobilla.net>
+ * Copyright (C) 2015-2018 Robin Gareus <robin@gareus.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,9 +36,35 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+Copyright (C) 2001 Paul Davis
+Copyright (C) 2004-2008 Grame
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
 #include "zrythm-config.h"
+
+#ifndef _WOE32
+#include <sys/resource.h>
+#endif
+
+#if !defined _WOE32 && defined __GLIBC__
+#include <limits.h>
+#include <dlfcn.h>
+#endif
 
 #include "audio/engine.h"
 #include "audio/graph.h"
@@ -45,6 +74,10 @@
 #include "project.h"
 #include "utils/mpmc_queue.h"
 #include "utils/objects.h"
+
+#ifdef HAVE_JACK
+#include "weak_libjack.h"
+#endif
 
 /* uncomment to show debug messages */
 /*#define DEBUG_THREADS 1*/
@@ -258,6 +291,80 @@ main_thread (void * arg)
   return worker_thread (thread);
 }
 
+static size_t
+get_stack_size (void)
+{
+  size_t rv = 0;
+#if !defined _WOE32 && defined __GLIBC__
+
+  size_t pt_min_stack = 16384;
+
+#ifdef PTHREAD_STACK_MIN
+  pt_min_stack = PTHREAD_STACK_MIN;
+#endif
+
+  void* handle = dlopen (NULL, RTLD_LAZY);
+
+  /* This function is internal (it has a GLIBC_PRIVATE) version, but
+   * available via weak symbol, or dlsym, and returns
+   *
+   * GLRO(dl_pagesize) + __static_tls_size + PTHREAD_STACK_MIN
+   */
+
+  size_t (*__pthread_get_minstack) (const pthread_attr_t* attr) =
+      (size_t (*) (const pthread_attr_t*))dlsym (handle, "__pthread_get_minstack");
+
+  if (__pthread_get_minstack != NULL) {
+    pthread_attr_t attr;
+    pthread_attr_init (&attr);
+    rv = __pthread_get_minstack (&attr);
+    assert (rv >= pt_min_stack);
+    rv -= pt_min_stack;
+    pthread_attr_destroy (&attr);
+  }
+  dlclose (handle);
+#endif
+  return rv;
+}
+
+static int
+get_absolute_rt_priority (
+  int priority)
+{
+  /* POSIX requires a spread of at least 32 steps
+   * between min..max */
+  const int p_min =
+    sched_get_priority_min (SCHED_FIFO); // Linux: 1
+  const int p_max =
+    sched_get_priority_max (SCHED_FIFO); // Linux: 99
+
+  if (priority == 0)
+    {
+      priority = (p_min + p_max) / 2;
+    }
+  else if (priority > 0)
+    {
+      /* value relative to minium */
+      priority += p_min - 1;
+    }
+  else
+    {
+      /* value relative maximum */
+      priority += p_max + 1;
+    }
+
+  if (priority > p_max)
+    {
+      priority = p_max;
+    }
+  if (priority < p_min)
+    {
+      priority = p_min;
+    }
+
+  return priority;
+}
+
 /**
  * Creates a thread.
  *
@@ -278,40 +385,150 @@ graph_thread_new (
   self->id = id;
   self->graph = graph;
 
+  pthread_attr_t attributes;
+  pthread_attr_init (&attributes);
+  int res;
+
+  res =
+    pthread_attr_setdetachstate (
+      &attributes, PTHREAD_CREATE_JOINABLE);
+  if (res)
+    {
+      g_critical (
+        "Cannot request joinable thread creation "
+        "for thread res = %d", res);
+      return NULL;
+    }
+
+  res =
+    pthread_attr_setscope (
+      &attributes, PTHREAD_SCOPE_SYSTEM);
+  if (res)
+    {
+      g_critical (
+        "Cannot set scheduling scope for thread "
+        "res = %d", res);
+      return NULL;
+    }
+
+  bool realtime = true;
+
+  int priority = -22; /* RT priority (from ardour) */
+  priority = get_absolute_rt_priority (priority);
 #ifdef HAVE_JACK
   if (AUDIO_ENGINE->audio_backend ==
         AUDIO_BACKEND_JACK)
     {
-      jack_client_create_thread (
-        AUDIO_ENGINE->client,
-        &self->jthread,
+      realtime =
+        jack_is_realtime (AUDIO_ENGINE->client);
+      priority =
         jack_client_real_time_priority (
-          AUDIO_ENGINE->client),
-        jack_is_realtime (
-          AUDIO_ENGINE->client),
-        is_main ?
-          main_thread :
-          worker_thread,
-        self);
-
-      g_return_val_if_fail (
-        (int) self->jthread != -1, NULL);
+          AUDIO_ENGINE->client) - 2;
     }
+#endif
+
+  if (realtime)
+    {
+      g_debug ("creating RT thread");
+      res =
+        pthread_attr_setinheritsched (
+          &attributes, PTHREAD_EXPLICIT_SCHED);
+      if (res)
+        {
+          g_critical (
+            "Cannot request explicit scheduling "
+            "for RT thread res = %d", res);
+          return NULL;
+        }
+
+      res =
+        pthread_attr_setschedpolicy (
+          &attributes, SCHED_FIFO);
+      if (res)
+        {
+          g_critical (
+            "Cannot set RR scheduling class for RT "
+            "thread res = %d", res);
+          return NULL;
+        }
+
+      struct sched_param rt_param;
+      memset (&rt_param, 0, sizeof (rt_param));
+      rt_param.sched_priority = priority;
+      g_debug ("priority: %d", priority);
+
+      res =
+        pthread_attr_setschedparam (
+          &attributes, &rt_param);
+      if (res)
+        {
+          g_critical (
+            "Cannot set scheduling priority for RT "
+            "thread res = %d", res);
+          return NULL;
+        }
+    }
+  /* else if not RT thread */
   else
     {
-#endif
-      if (pthread_create (
-          &self->pthread, NULL,
-          is_main ?
-            &main_thread :
-            &worker_thread,
-          self))
+      g_debug ("creating non RT thread");
+      res =
+        pthread_attr_setinheritsched (
+          &attributes, PTHREAD_EXPLICIT_SCHED);
+      if (res)
         {
-          g_return_val_if_reached (NULL);
+          g_critical (
+            "Cannot request explicit scheduling for "
+            "non RT thread res = %d", res);
+          return NULL;
         }
-#ifdef HAVE_JACK
     }
+
+#ifdef __APPLE__
+#define THREAD_STACK_SIZE 0x80000 // 512kB
+#else
+#define THREAD_STACK_SIZE 0x20000 // 128kB
 #endif
+
+  res =
+    pthread_attr_setstacksize (
+      &attributes,
+      THREAD_STACK_SIZE + get_stack_size ());
+  if (res)
+    {
+      g_critical (
+        "Cannot set thread stack size res = %d",
+        res);
+      return NULL;
+    }
+
+  res =
+    pthread_create (
+      &self->pthread, &attributes,
+      is_main ? &main_thread : &worker_thread,
+      self);
+  if (res)
+    {
+      switch (res)
+        {
+        case EAGAIN:
+          g_message ("EAGAIN");
+          break;
+        case EINVAL:
+          g_message ("EINVAL");
+          break;
+        case EPERM:
+          g_message ("EPERM");
+          break;
+        default:
+          break;
+        }
+      g_critical (
+        "Cannot create thread res = %d", res);
+      return NULL;
+    }
+
+  pthread_attr_destroy (&attributes);
 
   return self;
 }

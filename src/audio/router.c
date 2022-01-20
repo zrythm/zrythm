@@ -293,50 +293,18 @@ router_is_processing_thread (
   for (int j = 0;
        j < self->graph->num_threads; j++)
     {
-#ifdef HAVE_JACK
-      if (AUDIO_ENGINE->audio_backend ==
-            AUDIO_BACKEND_JACK)
-        {
-          if (pthread_equal (
-                pthread_self (),
-                self->graph->threads[j]->jthread))
-            return true;
-        }
-      else
-        {
-#endif
-          if (pthread_equal (
-                pthread_self (),
-                self->graph->threads[j]->pthread))
-            return true;
-#ifdef HAVE_JACK
-        }
-#endif
+      if (pthread_equal (
+            pthread_self (),
+            self->graph->threads[j]->pthread))
+        return true;
     }
 
-#ifdef HAVE_JACK
-  if (AUDIO_ENGINE->audio_backend ==
-        AUDIO_BACKEND_JACK)
-    {
-      if (self->graph->main_thread
-          &&
-          pthread_equal (
-            pthread_self (),
-            self->graph->main_thread->jthread))
-        return true;
-    }
-  else
-    {
-#endif
-      if (self->graph->main_thread
-          &&
-          pthread_equal (
-            pthread_self (),
-            self->graph->main_thread->pthread))
-        return true;
-#ifdef HAVE_JACK
-    }
-#endif
+  if (self->graph->main_thread
+      &&
+      pthread_equal (
+        pthread_self (),
+        self->graph->main_thread->pthread))
+    return true;
 
   return false;
 }

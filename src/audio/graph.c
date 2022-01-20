@@ -1639,52 +1639,19 @@ graph_terminate (
   zix_sem_post (&self->callback_start);
 
   /* join threads */
-#ifdef HAVE_JACK
-  if (AUDIO_ENGINE->audio_backend ==
-        AUDIO_BACKEND_JACK)
+  for (int i = 0; i < self->num_threads; i++)
     {
-      for (int i = 0; i < self->num_threads; i++)
-        {
-          g_return_if_fail (self->threads[i]);
-#ifdef HAVE_JACK_CLIENT_STOP_THREAD
-          jack_client_stop_thread (
-            AUDIO_ENGINE->client,
-            self->threads[i]->jthread);
-#else
-          pthread_join (
-            self->threads[i]->jthread, NULL);
-#endif // HAVE_JACK_CLIENT_STOP_THREAD
-          self->threads[i] = NULL;
-        }
-      g_return_if_fail (self->main_thread);
-#ifdef HAVE_JACK_CLIENT_STOP_THREAD
-      jack_client_stop_thread (
-        AUDIO_ENGINE->client,
-        self->main_thread->jthread);
-#else
+      g_return_if_fail (self->threads[i]);
+      void * status;
       pthread_join (
-        self->main_thread->jthread, NULL);
-#endif // HAVE_JACK_CLIENT_STOP_THREAD
-
-      self->main_thread = NULL;
+        self->threads[i]->pthread, &status);
+      self->threads[i] = NULL;
     }
-  else
-    {
-#endif // HAVE_JACK
-      for (int i = 0; i < self->num_threads; i++)
-        {
-          g_return_if_fail (self->threads[i]);
-          pthread_join (
-            self->threads[i]->pthread, NULL);
-          self->threads[i] = NULL;
-        }
-      g_return_if_fail (self->main_thread);
-      pthread_join (
-        self->main_thread->pthread, NULL);
-      self->main_thread = NULL;
-#ifdef HAVE_JACK
-    }
-#endif
+  g_return_if_fail (self->main_thread);
+  void * status;
+  pthread_join (
+    self->main_thread->pthread, &status);
+  self->main_thread = NULL;
 
   g_message ("graph terminated");
 }

@@ -53,10 +53,6 @@
 
 #include <gtk/gtk.h>
 
-#ifdef HAVE_JACK
-#include "weak_libjack.h"
-#endif
-
 #ifdef HAVE_LSP_DSP
 #include <lsp-plug.in/dsp/dsp.h>
 #endif
@@ -71,9 +67,6 @@ typedef struct Graph Graph;
 
 typedef struct GraphThread
 {
-#ifdef HAVE_JACK
-  jack_native_thread_t jthread;
-#endif
   pthread_t         pthread;
 
   /**
