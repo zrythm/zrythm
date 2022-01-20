@@ -106,11 +106,21 @@ snap_grid_get_ticks_from_length_and_type (
  */
 int
 snap_grid_get_snap_ticks (
-  SnapGrid * self)
+  const SnapGrid * self)
 {
   return
     snap_grid_get_ticks_from_length_and_type (
       self->snap_note_length, self->snap_note_type);
+}
+
+double
+snap_grid_get_snap_frames (
+  const SnapGrid * self)
+{
+  int snap_ticks = snap_grid_get_snap_ticks (self);
+  return
+    AUDIO_ENGINE->frames_per_tick
+    * (double) snap_ticks;
 }
 
 /**
@@ -151,52 +161,6 @@ snap_grid_get_default_ticks (
     }
 }
 
-static void
-add_snap_point (
-  SnapGrid * self,
-  Position * snap_point)
-{
-  array_double_size_if_full (
-    self->snap_points, self->num_snap_points,
-    self->snap_points_size, Position);
-  position_from_ticks (
-    &self->snap_points[self->num_snap_points++],
-    snap_point->ticks);
-  /*position_set_to_pos (*/
-    /*&self->snap_points[self->num_snap_points++],*/
-    /*snap_point);*/
-}
-
-/**
- * Updates snap points.
- */
-void
-snap_grid_update_snap_points (
-  SnapGrid * self,
-  int        max_bars)
-{
-  POSITION_INIT_ON_STACK (tmp);
-  Position end_pos;
-  position_set_to_bar (
-    &end_pos, max_bars);
-  self->num_snap_points = 0;
-  add_snap_point (self, &tmp);
-  long ticks = snap_grid_get_snap_ticks (self);
-  g_warn_if_fail (TRANSPORT->ticks_per_bar > 0);
-  while (tmp.ticks < end_pos.ticks)
-    {
-      tmp.ticks += ticks;
-      add_snap_point (self, &tmp);
-    }
-#if 0
-  while (position_is_before (&tmp, &end_pos))
-    {
-      position_add_ticks (&tmp, ticks);
-      add_snap_point (self, &tmp);
-    }
-#endif
-}
-
 void
 snap_grid_init (
   SnapGrid *   self,
@@ -205,17 +169,12 @@ snap_grid_init (
 {
   self->schema_version = SNAP_GRID_SCHEMA_VERSION;
   self->type = type;
-  self->num_snap_points = 0;
   self->snap_note_length = note_length;
   self->snap_note_type = NOTE_TYPE_NORMAL;
   self->default_note_length = note_length;
   self->default_note_type = NOTE_TYPE_NORMAL;
   self->snap_to_grid = true;
   self->length_type = NOTE_LENGTH_LINK;
-
-  self->snap_points_size = 128;
-  self->snap_points =
-    object_new_n (self->snap_points_size, Position);
 }
 
 static const char *
@@ -259,24 +218,35 @@ snap_grid_stringize (
  * @param return_prev 1 to return the previous
  * element or 0 to return the next.
  */
-Position *
+bool
 snap_grid_get_nearby_snap_point (
+  Position *             ret_pos,
   const SnapGrid * const self,
   const Position *       pos,
-  const int              return_prev)
+  const bool             return_prev)
 {
   g_return_val_if_fail (
-    pos->frames >= 0 && pos->ticks >= 0, NULL);
+    pos->frames >= 0 && pos->ticks >= 0, false);
 
-  Position * ret_pos =
-    (Position *)
-    algorithms_binary_search_nearby (
-      pos, self->snap_points,
-      (size_t) self->num_snap_points,
-      sizeof (Position), position_cmp_func,
-      return_prev, false);
+  position_set_to_pos (ret_pos, pos);
+  double snap_ticks =
+    snap_grid_get_snap_ticks (self);
+  double ticks_from_prev =
+    fmod (pos->ticks, snap_ticks);
+  if (return_prev)
+    {
+      position_add_ticks (
+        ret_pos, - ticks_from_prev);
+    }
+  else
+    {
+      double ticks_to_next =
+        snap_ticks - ticks_from_prev;
+      position_add_ticks (
+        ret_pos, ticks_to_next);
+    }
 
-  return ret_pos;
+  return true;
 }
 
 SnapGrid *

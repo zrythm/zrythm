@@ -151,17 +151,6 @@ typedef struct SnapGrid
    * See NoteLengthType.
    */
   NoteLengthType   length_type;
-
-  /**
-   * Snap points to be used by the grid and by
-   * position
-   * to calculate previous/next snap point.
-   *
-   * Cache.
-   */
-  Position *       snap_points;
-  int              num_snap_points;
-  size_t           snap_points_size;
 } SnapGrid;
 
 static const cyaml_strval_t
@@ -263,23 +252,17 @@ snap_grid_get_ticks_from_length_and_type (
   NoteType   type);
 
 /**
- * Updates snap points.
- */
-void
-snap_grid_update_snap_points (
-  SnapGrid * self,
-  int        max_bars);
-
-#define snap_grid_update_snap_points_default(sg) \
-  snap_grid_update_snap_points ( \
-    sg, SNAP_GRID_DEFAULT_MAX_BAR)
-
-/**
  * Gets a snap point's length in ticks.
  */
+NONNULL
 int
 snap_grid_get_snap_ticks (
-  SnapGrid * self);
+  const SnapGrid * self);
+
+NONNULL
+double
+snap_grid_get_snap_frames (
+  const SnapGrid * self);
 
 /**
  * Gets a the default length in ticks.
@@ -308,14 +291,16 @@ snap_grid_stringize (
  * @param pos Position to search for.
  * @param return_prev 1 to return the previous
  * element or 0 to return the next.
+ *
+ * @return Whether successful.
  */
-PURE
 NONNULL
-Position *
+bool
 snap_grid_get_nearby_snap_point (
+  Position *             ret_pos,
   const SnapGrid * const self,
   const Position *       pos,
-  const int              return_prev);
+  const bool             return_prev);
 
 SnapGrid *
 snap_grid_clone (

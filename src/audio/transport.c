@@ -1164,12 +1164,14 @@ void
 transport_move_backward (
   Transport * self)
 {
-  Position * pos =
+  Position pos;
+  bool ret =
     snap_grid_get_nearby_snap_point (
-      SNAP_GRID_TIMELINE,
+      &pos, SNAP_GRID_TIMELINE,
       &self->playhead_pos, true);
+  g_return_if_fail (ret);
   transport_move_playhead (
-    self, pos, F_PANIC, F_SET_CUE_POINT,
+    self, &pos, F_PANIC, F_SET_CUE_POINT,
     F_PUBLISH_EVENTS);
 }
 
@@ -1180,12 +1182,14 @@ void
 transport_move_forward (
   Transport * self)
 {
-  Position * pos =
+  Position pos;
+  bool ret =
     snap_grid_get_nearby_snap_point (
-      SNAP_GRID_TIMELINE,
+      &pos, SNAP_GRID_TIMELINE,
       &self->playhead_pos, false);
+  g_return_if_fail (ret);
   transport_move_playhead (
-    self, pos, F_PANIC, F_SET_CUE_POINT,
+    self, &pos, F_PANIC, F_SET_CUE_POINT,
     F_PUBLISH_EVENTS);
 }
 

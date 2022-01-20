@@ -46,8 +46,6 @@ test_update_snap_points (void)
 
 #define TEST_WITH_MAX_BARS(x) \
   before = g_get_monotonic_time (); \
-  snap_grid_update_snap_points ( \
-    &sg, x); \
   after = g_get_monotonic_time (); \
   g_message ("time %ld", after - before)
 

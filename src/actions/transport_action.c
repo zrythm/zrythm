@@ -206,11 +206,6 @@ do_or_undo (
     AUDIO_ENGINE->sample_rate, true,
     update_from_ticks);
 
-  snap_grid_update_snap_points_default (
-    SNAP_GRID_TIMELINE);
-  snap_grid_update_snap_points_default (
-    SNAP_GRID_EDITOR);
-
   if (self->type == TRANSPORT_ACTION_BPM_CHANGE)
     {
       /* get time ratio */
@@ -259,11 +254,6 @@ transport_action_do (
         AUDIO_ENGINE, beats_per_bar, bpm,
         AUDIO_ENGINE->sample_rate, true,
         update_from_ticks);
-
-      snap_grid_update_snap_points_default (
-        SNAP_GRID_TIMELINE);
-      snap_grid_update_snap_points_default (
-        SNAP_GRID_EDITOR);
     }
   else
     {

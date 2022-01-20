@@ -294,20 +294,17 @@ get_prev_snap_point (
     }
 
   bool snapped = false;
-  Position * snap_point = NULL;
+  Position snap_point;
+  position_set_to_pos (&snap_point, pos);
   if (sg->snap_to_grid)
     {
-      snap_point =
-        (Position *)
-        algorithms_binary_search_nearby (
-          pos, sg->snap_points,
-          (size_t) sg->num_snap_points,
-          sizeof (Position), position_cmp_func,
-          true, true);
-    }
-  if (snap_point)
-    {
-      position_set_to_pos (prev_sp, snap_point);
+      double snap_ticks =
+        snap_grid_get_snap_ticks (sg);
+      double ticks_from_prev =
+        fmod (pos->ticks, snap_ticks);
+      position_add_ticks (
+        &snap_point, - ticks_from_prev);
+      position_set_to_pos (prev_sp, &snap_point);
       snapped = true;
     }
 
@@ -322,24 +319,24 @@ get_prev_snap_point (
               ZRegion * r = lane->regions[j];
               ArrangerObject * r_obj =
                 (ArrangerObject *) r;
-              snap_point = &r_obj->pos;
+              snap_point = r_obj->pos;
               if (position_is_before_or_equal (
-                    snap_point, pos) &&
+                    &snap_point, pos) &&
                   position_is_after (
-                    snap_point, prev_sp))
+                    &snap_point, prev_sp))
                 {
                   position_set_to_pos (
-                    prev_sp, snap_point);
+                    prev_sp, &snap_point);
                   snapped = true;
                 }
-              snap_point = &r_obj->end_pos;
+              snap_point = r_obj->end_pos;
               if (position_is_before_or_equal (
-                    snap_point, pos) &&
+                    &snap_point, pos) &&
                   position_is_after (
-                    snap_point, prev_sp))
+                    &snap_point, prev_sp))
                 {
                   position_set_to_pos (
-                    prev_sp, snap_point);
+                    prev_sp, &snap_point);
                   snapped = true;
                 }
             }
@@ -396,19 +393,19 @@ get_next_snap_point (
     }
 
   bool snapped = false;
-  Position * snap_point = NULL;
+  Position snap_point;
+  position_set_to_pos (&snap_point, pos);
   if (sg->snap_to_grid)
     {
-      snap_point =
-        algorithms_binary_search_nearby (
-          pos, sg->snap_points,
-          (size_t) sg->num_snap_points,
-          sizeof (Position), position_cmp_func,
-          false, false);
-    }
-  if (snap_point)
-    {
-      position_set_to_pos (next_sp, snap_point);
+      double snap_ticks =
+        snap_grid_get_snap_ticks (sg);
+      double ticks_from_prev =
+        fmod (pos->ticks, snap_ticks);
+      double ticks_to_next =
+        snap_ticks - ticks_from_prev;
+      position_add_ticks (
+        &snap_point, ticks_to_next);
+      position_set_to_pos (next_sp, &snap_point);
       snapped = true;
     }
 
@@ -423,24 +420,24 @@ get_next_snap_point (
               ZRegion * r = lane->regions[j];
               ArrangerObject * r_obj =
                 (ArrangerObject *) r;
-              snap_point = &r_obj->pos;
+              snap_point = r_obj->pos;
               if (position_is_after (
-                    snap_point, pos) &&
+                    &snap_point, pos) &&
                   position_is_before (
-                    snap_point, next_sp))
+                    &snap_point, next_sp))
                 {
                   position_set_to_pos (
-                    next_sp, snap_point);
+                    next_sp, &snap_point);
                   snapped = true;
                 }
-              snap_point = &r_obj->end_pos;
+              snap_point = r_obj->end_pos;
               if (position_is_after (
-                    snap_point, pos) &&
+                    &snap_point, pos) &&
                   position_is_before (
-                    snap_point, next_sp))
+                    &snap_point, next_sp))
                 {
                   position_set_to_pos (
-                    next_sp, snap_point);
+                    next_sp, &snap_point);
                   snapped = true;
                 }
             }

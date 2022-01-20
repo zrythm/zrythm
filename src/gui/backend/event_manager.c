@@ -836,9 +836,6 @@ event_manager_process_event (
       }
       break;
     case ET_TRANSPORT_TOTAL_BARS_CHANGED:
-      snap_grid_update_snap_points_default (
-        SNAP_GRID_TIMELINE);
-
       ruler_widget_refresh (
         (RulerWidget *) MW_RULER);
       ruler_widget_refresh (
@@ -1116,10 +1113,6 @@ event_manager_process_event (
 
       /* these are only used in the UI so
        * no need to update them during DSP */
-      snap_grid_update_snap_points_default (
-        SNAP_GRID_TIMELINE);
-      snap_grid_update_snap_points_default (
-        SNAP_GRID_EDITOR);
       quantize_options_update_quantize_points (
         QUANTIZE_OPTIONS_TIMELINE);
       quantize_options_update_quantize_points (
