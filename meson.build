@@ -1085,7 +1085,7 @@ if not guile_dep.found ()
     required: get_option ('guile'),
     static: all_static)
 endif
-have_guile = guile_dep.found () and not get_option ('guile').disabled ()
+have_guile = guile_dep.found () and not get_option ('guile').disabled () and not os_windows
 if have_guile
   cdata.set('HAVE_GUILE', 1)
 endif
