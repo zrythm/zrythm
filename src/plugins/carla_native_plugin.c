@@ -511,7 +511,7 @@ carla_engine_callback (
         /* if non-cv variant, there will be no CV
          * clients */
         if ((is_cv_variant && plugin_id == 7)
-            || plugin_id == 5)
+            || (!is_cv_variant && plugin_id == 5))
           {
             unsigned int port_hints =
               (unsigned int) val2;
