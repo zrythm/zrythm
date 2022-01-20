@@ -94,7 +94,7 @@ piano_roll_keys_snapshot (
   bool drum_mode = tr->drum_mode;
 
   float label_width =
-    (float) width * 0.55;
+    (float) width * 0.55f;
   if (drum_mode)
     {
       label_width = width - 8;
@@ -266,10 +266,10 @@ piano_roll_keys_snapshot (
             self->layout, &ww, &hh);
           float text_y_start =
             /* y start of the note */
-            (127 - i) * px_per_key +
+            (127.f - i) * (float) px_per_key +
             /* half of the space remaining excluding
              * hh */
-            (px_per_key - (float) hh) / 2.0;
+            (px_per_key - (float) hh) / 2.f;
           gtk_snapshot_save (snapshot);
           gtk_snapshot_translate (
             snapshot,
@@ -305,7 +305,7 @@ piano_roll_keys_snapshot (
           /* orange */
           color =
             Z_GDK_RGBA_INIT (
-              1, 0.462745, 0.101961, 1);
+              1, 0.462745f, 0.101961f, 1);
 #if 0
           /* sky blue */
           cairo_set_source_rgba (
@@ -321,7 +321,7 @@ piano_roll_keys_snapshot (
 
       /* add border below */
       float y = ((127 - i) + 1) * px_per_key;
-      color = Z_GDK_RGBA_INIT (0.7, 0.7, 0.7, 0.3);
+      color = Z_GDK_RGBA_INIT (0.7f, 0.7f, 0.7f, 0.3f);
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (

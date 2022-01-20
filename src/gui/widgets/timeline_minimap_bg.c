@@ -103,7 +103,7 @@ timeline_minimap_bg_snapshot (
           GTK_WIDGET (track->widget));
 
       GdkRGBA color = track->color;
-      color.alpha = 0.6;
+      color.alpha = 0.6f;
 
       TrackLane * lane;
       ArrangerObject * r_obj;

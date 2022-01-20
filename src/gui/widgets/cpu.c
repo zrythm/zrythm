@@ -77,10 +77,11 @@ cpu_snapshot (
   gtk_snapshot_render_background (
     snapshot, context, 0, 0, width, height);
 
-  GdkRGBA active_color =
-    Z_GDK_RGBA_INIT (0.6, 1.0, 0.0, 1.0);
-  GdkRGBA inactive_color =
-    Z_GDK_RGBA_INIT (0.2, 0.4, 0.0, 1.0);
+  GdkRGBA active_color = UI_COLORS->matcha;
+    /*Z_GDK_RGBA_INIT (0.6, 1.0, 0.0, 1.0);*/
+  GdkRGBA inactive_color = UI_COLORS->matcha;
+  inactive_color.alpha = 0.4f;
+    /*Z_GDK_RGBA_INIT (0.2, 0.4, 0.0, 1.0);*/
   GdkRGBA color = active_color;
 
   graphene_matrix_t color_matrix;

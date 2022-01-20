@@ -136,15 +136,15 @@ channel_slot_snapshot (
       fg = UI_COLOR_BLACK;
       if (!plugin_is_enabled (plugin, false))
         {
-          bg.red = 0.6;
-          bg.green = 0.6;
-          bg.blue = 0.6;
-          bg.alpha = 1.0;
+          bg.red = 0.6f;
+          bg.green = 0.6f;
+          bg.blue = 0.6f;
+          bg.alpha = 1.f;
           if (plugin->visible)
             {
-              bg.red += 0.1;
-              bg.green += 0.1;
-              bg.blue += 0.1;
+              bg.red += 0.1f;
+              bg.green += 0.1f;
+              bg.blue += 0.1f;
             }
         }
       else if (plugin->visible)
@@ -154,8 +154,8 @@ channel_slot_snapshot (
     }
   else
     {
-      bg = Z_GDK_RGBA_INIT (0.1, 0.1, 0.1, 0.9);
-      fg = Z_GDK_RGBA_INIT (0.3, 0.3, 0.3, 1);
+      bg = Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, 0.9f);
+      fg = Z_GDK_RGBA_INIT (0.3f, 0.3f, 0.3f, 1);
     }
 
   /* fill background */

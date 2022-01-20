@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,10 +36,8 @@
 #define ARRANGER_WIDGET_TYPE ( \
   arranger_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  ArrangerWidget,
-  arranger_widget,
-  Z, ARRANGER_WIDGET,
-  GtkWidget)
+  ArrangerWidget, arranger_widget,
+  Z, ARRANGER_WIDGET, GtkWidget)
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
@@ -163,7 +161,7 @@ typedef struct _ArrangerWidget
 
   /** Whether an object exists, so we can use the
    * earliest_obj_start_pos. */
-  int            earliest_obj_exists;
+  bool           earliest_obj_exists;
 
   /** Start Position of the earliest object
    * at the start of the drag. */
@@ -220,6 +218,13 @@ typedef struct _ArrangerWidget
    * start of a drag, translated from start_x. */
   Position       start_pos;
 
+  /** Whether playback was paused during drag
+   * begin. */
+  bool           was_paused;
+
+  /** Playhead position at start of drag. */
+  Position       playhead_pos_at_start;
+
   /** The absolute (not snapped) current diff in
    * ticks from the curr_pos to the start_pos. */
   double         curr_ticks_diff_from_start;
@@ -242,6 +247,8 @@ typedef struct _ArrangerWidget
   /** Current hovering positions. */
   double         hover_x;
   double         hover_y;
+
+  bool           hovered;
 
   /** Number of clicks in current action. */
   int            n_press;

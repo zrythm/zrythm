@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -37,7 +37,7 @@
  * @{
  */
 
-#define COLOR_DEFAULT_BRIGHTEN_VAL 0.1
+#define COLOR_DEFAULT_BRIGHTEN_VAL 0.1f
 
 /**
  * Brightens the color by the given amount.

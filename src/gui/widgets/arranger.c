@@ -2987,6 +2987,17 @@ drag_begin (
               self->action =
                 UI_OVERLAY_ACTION_STARTING_RAMP;
               break;
+            case TOOL_AUDITION:
+              self->action =
+                UI_OVERLAY_ACTION_STARTING_AUDITIONING;
+              self->was_paused =
+                TRANSPORT_IS_PAUSED;
+              position_set_to_pos (
+                &self->playhead_pos_at_start,
+                PLAYHEAD);
+              transport_set_playhead_pos (
+                TRANSPORT, &self->start_pos);
+              transport_request_roll (TRANSPORT);
             default:
               break;
             }
@@ -3503,6 +3514,9 @@ drag_update (
         self->action =
           UI_OVERLAY_ACTION_MOVING_LINK;
       break;
+    case UI_OVERLAY_ACTION_STARTING_AUDITIONING:
+      self->action =
+        UI_OVERLAY_ACTION_AUDITIONING;
     default:
       break;
     }
@@ -3729,8 +3743,7 @@ drag_update (
         self->start_y + offset_y);
       break;
     case UI_OVERLAY_ACTION_AUDITIONING:
-      /* TODO */
-      g_message ("auditioning");
+      g_debug ("auditioning");
       break;
     case UI_OVERLAY_ACTION_RAMPING:
       /* find and select objects inside selection */
@@ -4963,6 +4976,20 @@ drag_end (
         F_IGNORE_FROZEN, F_DELETE);
     }
 
+  /* handle audition stop */
+  if (self->action ==
+        UI_OVERLAY_ACTION_STARTING_AUDITIONING
+      ||
+      self->action == UI_OVERLAY_ACTION_AUDITIONING)
+    {
+      if (self->was_paused)
+        {
+          transport_request_pause (TRANSPORT);
+        }
+      transport_set_playhead_pos (
+        TRANSPORT, &self->playhead_pos_at_start);
+    }
+
   switch (self->type)
     {
     case TYPE (TIMELINE):
@@ -5538,6 +5565,8 @@ on_leave (
     default:
       break;
     }
+
+  self->hovered = false;
 }
 
 /**
@@ -5604,6 +5633,8 @@ on_motion (
     default:
       break;
     }
+
+  self->hovered = true;
 }
 
 static void
@@ -6284,6 +6315,10 @@ get_timeline_cursor (
       break;
     case UI_OVERLAY_ACTION_CUTTING:
       ac = ARRANGER_CURSOR_CUT;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_AUDITIONING:
+    case UI_OVERLAY_ACTION_AUDITIONING:
+      ac = ARRANGER_CURSOR_AUDITION;
       break;
     default:
       g_warn_if_reached ();

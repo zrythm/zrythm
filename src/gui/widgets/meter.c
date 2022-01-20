@@ -89,11 +89,11 @@ meter_snapshot (
   GskColorStop stop1, stop2, stop3, stop4, stop5;
   stop1.offset = 0;
   stop1.color = UI_COLORS->z_purple;
-  stop2.offset = 0.2;
+  stop2.offset = 0.2f;
   stop2.color = self->start_color;
-  stop3.offset = 0.5;
+  stop3.offset = 0.5f;
   stop3.color = bar_color;
-  stop4.offset = 0.8;
+  stop4.offset = 0.8f;
   stop4.color = color4;
   stop5.offset = 1;
   stop5.color = UI_COLORS->darkish_green;
@@ -118,7 +118,8 @@ meter_snapshot (
 
   /* draw meter line */
   gtk_snapshot_append_color (
-    snapshot, &Z_GDK_RGBA_INIT (0.4, 0.1, 0.05, 1),
+    snapshot,
+    &Z_GDK_RGBA_INIT (0.4f, 0.1f, 0.05f, 1),
     &GRAPHENE_RECT_INIT (
       x, (float) height - value_px,
       width_without_padding, 1));
@@ -130,17 +131,17 @@ meter_snapshot (
   if (peak_amp > 1.f)
     {
       /* make higher peak brighter */
-      color.red = 0.6 + 0.4 * (float) peak;
-      color.green = 0.1;
-      color.blue = 0.05;
+      color.red = 0.6f + 0.4f * (float) peak;
+      color.green = 0.1f;
+      color.blue = 0.05f;
       color.alpha = 1;
     }
   else
     {
       /* make higher peak brighter */
-      color.red = 0.4 + 0.4 * (float) peak;
-      color.green = 0.4 + 0.4 * (float) peak;
-      color.blue = 0.4 + 0.4 * (float) peak;
+      color.red = 0.4f + 0.4f * (float) peak;
+      color.green = 0.4f + 0.4f * (float) peak;
+      color.blue = 0.4f + 0.4f * (float) peak;
       color.alpha = 1;
     }
   float peak_px = (float) peak * height;
@@ -155,7 +156,7 @@ meter_snapshot (
 
   /* draw border line */
   const float border_width = 1.f;
-  GdkRGBA border_color = { 0.1, 0.1, 0.1, 0.8 };
+  GdkRGBA border_color = { 0.1f, 0.1f, 0.1f, 0.8f };
   float border_widths[] = {
     border_width, border_width, border_width,
     border_width };

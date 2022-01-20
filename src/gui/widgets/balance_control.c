@@ -81,10 +81,10 @@ balance_control_snapshot (
 
   /* draw filled bg */
   GdkRGBA color = UI_COLORS->matcha;
-  color.alpha = 0.4;
+  color.alpha = 0.4f;
   if (self->hovered || self->dragged)
     {
-      color.alpha = 0.7;
+      color.alpha = 0.7f;
     }
   if (pan_val < 0.5f)
     {
@@ -146,7 +146,8 @@ balance_control_snapshot (
   gtk_snapshot_translate (
     snapshot,
     &GRAPHENE_POINT_INIT (
-      width - (TEXT_PADDING + pangorect.width),
+      (float)
+      (width - (TEXT_PADDING + pangorect.width)),
       height / 2.f - pangorect.height / 2.f));
   gtk_snapshot_append_layout (
     snapshot, layout, &color);

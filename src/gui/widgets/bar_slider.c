@@ -150,7 +150,7 @@ bar_slider_snapshot (
      (real_max - real_min)) *
     (float) width;
 
-  GdkRGBA color = { 1, 1, 1, 0.3 };
+  GdkRGBA color = { 1, 1, 1, 0.3f };
 
   /* draw from val to zero */
   if (real_val < real_zero)
@@ -229,7 +229,7 @@ bar_slider_snapshot (
   if (self->hover)
     {
       gtk_snapshot_append_color (
-        snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.12),
+        snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.12f),
         &GRAPHENE_RECT_INIT (
           0, 0, width, height));
     }

@@ -415,7 +415,7 @@ draw_lanes (
       /* draw separator */
       gtk_snapshot_append_color (
         snapshot,
-        &Z_GDK_RGBA_INIT (1, 1, 1, 0.3),
+        &Z_GDK_RGBA_INIT (1, 1, 1, 0.3f),
         &GRAPHENE_RECT_INIT (
           TRACK_COLOR_AREA_WIDTH, total_height,
           width - TRACK_COLOR_AREA_WIDTH, 1));

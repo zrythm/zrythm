@@ -840,11 +840,11 @@ draw_lines_and_labels (
       GTK_WIDGET (self));
 
   GdkRGBA main_color = { 1, 1, 1, 1 };
-  GdkRGBA secondary_color = { 0.7, 0.7, 0.7, 0.4 };
-  GdkRGBA tertiary_color = { 0.5, 0.5, 0.5, 0.3 };
-  GdkRGBA main_text_color = { 0.8, 0.8, 0.8, 1 };
+  GdkRGBA secondary_color = { 0.7f, 0.7f, 0.7f, 0.4f };
+  GdkRGBA tertiary_color = { 0.5f, 0.5f, 0.5f, 0.3f };
+  GdkRGBA main_text_color = { 0.8f, 0.8f, 0.8f, 1 };
   GdkRGBA secondary_text_color = {
-    0.5, 0.5, 0.5, 1 };
+    0.5f, 0.5f, 0.5f, 1 };
   GdkRGBA tertiary_text_color =
     secondary_text_color;
 
@@ -1223,16 +1223,16 @@ ruler_snapshot (
   if (TRANSPORT->loop)
     {
       color.red = 0;
-      color.green = 0.9;
-      color.blue = 0.7;
-      color.alpha = 0.25;
+      color.green = 0.9f;
+      color.blue = 0.7f;
+      color.alpha = 0.25f;
     }
   else
     {
-      color.red = 0.5;
-      color.green = 0.5;
-      color.blue = 0.5;
-      color.alpha = 0.25;
+      color.red = 0.5f;
+      color.green = 0.5f;
+      color.blue = 0.5f;
+      color.alpha = 0.25f;
     }
   const int line_width = 2;
 
@@ -1267,27 +1267,27 @@ ruler_snapshot (
     {
       stop1.offset = 0;
       stop1.color.red = 0;
-      stop1.color.green = 0.9;
-      stop1.color.blue = 0.7;
-      stop1.color.alpha = 0.2;
+      stop1.color.green = 0.9f;
+      stop1.color.blue = 0.7f;
+      stop1.color.alpha = 0.2f;
       stop2.offset = 1;
       stop2.color.red = 0;
-      stop2.color.green = 0.9;
-      stop2.color.blue = 0.7;
-      stop2.color.alpha = 0.1;
+      stop2.color.green = 0.9f;
+      stop2.color.blue = 0.7f;
+      stop2.color.alpha = 0.1f;
     }
   else
     {
       stop1.offset = 0;
-      stop1.color.red = 0.5;
-      stop1.color.green = 0.5;
-      stop1.color.blue = 0.5;
-      stop1.color.alpha = 0.2;
+      stop1.color.red = 0.5f;
+      stop1.color.green = 0.5f;
+      stop1.color.blue = 0.5f;
+      stop1.color.alpha = 0.2f;
       stop2.offset = 1;
-      stop2.color.red = 0.5;
-      stop2.color.green = 0.5;
-      stop2.color.blue = 0.5;
-      stop2.color.alpha = 0.1;
+      stop2.color.red = 0.5f;
+      stop2.color.green = 0.5f;
+      stop2.color.blue = 0.5f;
+      stop2.color.alpha = 0.1f;
     }
   GskColorStop stops[] = { stop1, stop2 };
 
@@ -1341,19 +1341,19 @@ ruler_snapshot (
       /* fill */
       gtk_snapshot_append_color (
         snapshot,
-        &Z_GDK_RGBA_INIT (1, 1, 1, 0.27),
+        &Z_GDK_RGBA_INIT (1, 1, 1, 0.27f),
         &GRAPHENE_RECT_INIT (
           dr.x, dr.y, dr.width, dr.height));
 
       /* draw edges */
       gtk_snapshot_append_color (
         snapshot,
-        &Z_GDK_RGBA_INIT (1, 1, 1, 0.7),
+        &Z_GDK_RGBA_INIT (1, 1, 1, 0.7f),
         &GRAPHENE_RECT_INIT (
           dr.x, dr.y, 2, dr.height));
       gtk_snapshot_append_color (
         snapshot,
-        &Z_GDK_RGBA_INIT (1, 1, 1, 0.7),
+        &Z_GDK_RGBA_INIT (1, 1, 1, 0.7f),
         &GRAPHENE_RECT_INIT (
           dr.x + dr.width, dr.y,
           2, dr.height - dr.y));

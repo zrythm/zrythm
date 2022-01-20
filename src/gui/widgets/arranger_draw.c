@@ -33,9 +33,11 @@
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/main_notebook.h"
 #include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/piano_roll_keys.h"
 #include "gui/widgets/ruler.h"
+#include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
@@ -57,7 +59,7 @@
 #define TYPE(x) ARRANGER_WIDGET_TYPE_##x
 
 static const GdkRGBA thick_grid_line_color = {
-  0.3, 0.3, 0.3, 0.9 };
+  0.3f, 0.3f, 0.3f, 0.9f };
 
 static void
 draw_selections (
@@ -83,7 +85,8 @@ draw_selections (
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &graphene_rect, 0);
   const float border_width = 2.f;
-  GdkRGBA border_color = { 0.9, 0.9, 0.9, 0.9 };
+  GdkRGBA border_color = {
+    0.9f, 0.9f, 0.9f, 0.9f };
   float border_widths[] = {
     border_width, border_width, border_width,
     border_width };
@@ -91,10 +94,10 @@ draw_selections (
     border_color, border_color, border_color,
     border_color };
   GdkRGBA inside_color = {
-    border_color.red / 3.0,
-    border_color.green / 3.0,
-    border_color.blue / 3.0,
-    border_color.alpha / 3.0, };
+    border_color.red / 3.f,
+    border_color.green / 3.f,
+    border_color.blue / 3.f,
+    border_color.alpha / 3.f, };
 
   /* if action is selecting and not selecting range
    * (in the case of timeline */
@@ -237,6 +240,58 @@ draw_playhead (
           px - 1, 0, 2, height));
       self->last_playhead_px = px;
     }
+
+  /* draw faded playhead if in audition mode */
+  if (P_TOOL == TOOL_AUDITION)
+    {
+      bool hovered = false;
+      double hover_x = 0.f;
+      switch (self->type)
+        {
+        case ARRANGER_WIDGET_TYPE_TIMELINE:
+          if (MW_TIMELINE->hovered)
+            {
+              hovered = true;
+              hover_x = MW_TIMELINE->hover_x;
+            }
+          if (MW_PINNED_TIMELINE->hovered)
+            {
+              hovered = true;
+              hover_x = MW_PINNED_TIMELINE->hover_x;
+            }
+          break;
+        case ARRANGER_WIDGET_TYPE_MIDI:
+        case ARRANGER_WIDGET_TYPE_MIDI_MODIFIER:
+          if (MW_MIDI_MODIFIER_ARRANGER->hovered)
+            {
+              hovered = true;
+              hover_x =
+                MW_MIDI_MODIFIER_ARRANGER->hover_x;
+            }
+          if (MW_MIDI_ARRANGER->hovered)
+            {
+              hovered = true;
+              hover_x =
+                MW_MIDI_ARRANGER->hover_x;
+            }
+          break;
+        default:
+          hovered = self->hovered;
+          hover_x = self->hover_x;
+          break;
+        }
+
+      if (hovered)
+        {
+          GdkRGBA color = UI_COLORS->prefader_send;
+          color.alpha = 0.6f;
+          gtk_snapshot_append_color (
+            snapshot, &color,
+            &GRAPHENE_RECT_INIT (
+              (float) hover_x - 1, 0,
+              2, height));
+        }
+    }
 }
 
 static void
@@ -301,7 +356,7 @@ draw_timeline_bg (
         {
           gtk_snapshot_append_color (
             snapshot,
-            &Z_GDK_RGBA_INIT (1, 1, 1, 0.04),
+            &Z_GDK_RGBA_INIT (1, 1, 1, 0.04f),
             &GRAPHENE_RECT_INIT (
               0, (float) track_start_offset,
               width, (float) full_track_height));
@@ -329,7 +384,7 @@ draw_timeline_bg (
                   gtk_snapshot_append_color (
                     snapshot,
                     &Z_GDK_RGBA_INIT (
-                      0.7, 0.7, 0.7, 0.4),
+                      0.7f, 0.7f, 0.7f, 0.4f),
                     &GRAPHENE_RECT_INIT (
                       0,
                       (float)
@@ -369,7 +424,7 @@ draw_timeline_bg (
                   gtk_snapshot_append_color (
                     snapshot,
                     &Z_GDK_RGBA_INIT (
-                      0.7, 0.7, 0.7, 0.2),
+                      0.7f, 0.7f, 0.7f, 0.2f),
                     &GRAPHENE_RECT_INIT (
                       0,
                       (float)
@@ -406,7 +461,7 @@ draw_timeline_bg (
                   track->color.red,
                   track->color.green,
                   track->color.blue,
-                  0.3),
+                  0.3f),
                 &GRAPHENE_RECT_INIT (
                   0,
                   (float)
@@ -444,7 +499,8 @@ draw_midi_bg (
         {
           gtk_snapshot_append_color (
             snapshot,
-            &Z_GDK_RGBA_INIT (0.7, 0.7, 0.7, 0.5),
+            &Z_GDK_RGBA_INIT (
+              0.7f, 0.7f, 0.7f, 0.5f),
             &GRAPHENE_RECT_INIT (
               0, (float) y_offset, width, 1));
           if (piano_roll_is_key_black (
@@ -453,7 +509,7 @@ draw_midi_bg (
             {
               gtk_snapshot_append_color (
                 snapshot,
-                &Z_GDK_RGBA_INIT (0, 0, 0, 0.2),
+                &Z_GDK_RGBA_INIT (0, 0, 0, 0.2f),
                 &GRAPHENE_RECT_INIT (
                   0,
                   /* + 1 since the border is
@@ -475,7 +531,7 @@ draw_midi_bg (
         {
           gtk_snapshot_append_color (
             snapshot,
-            &Z_GDK_RGBA_INIT (1, 1, 1, 0.06),
+            &Z_GDK_RGBA_INIT (1, 1, 1, 0.06f),
             &GRAPHENE_RECT_INIT (
               0,
               /* + 1 since the border is
@@ -499,7 +555,7 @@ draw_velocity_bg (
       double y_offset = height * (i / 4.0);
       gtk_snapshot_append_color (
         snapshot,
-        &Z_GDK_RGBA_INIT (1, 1, 1, 0.2),
+        &Z_GDK_RGBA_INIT (1, 1, 1, 0.2f),
         &GRAPHENE_RECT_INIT (
           0, (float) y_offset,
           width, 1));
@@ -575,12 +631,12 @@ draw_audio_bg (
   signed_frame_t obj_length_frames =
     arranger_object_get_length_in_frames (obj);
   GdkRGBA base_color = {
-      .red = 0.3, .green = 0.3, .blue = 0.3,
-      .alpha = 0.0 };
+      .red = 0.3f, .green = 0.3f, .blue = 0.3f,
+      .alpha = 0.f };
   GdkRGBA fade_color;
   color_morph (
     &base_color, &track->color, 0.5, &fade_color);
-  fade_color.alpha = 0.5;
+  fade_color.alpha = 0.5f;
   for (double i = local_start_x;
        i < local_end_x; i += increment)
     {
@@ -647,8 +703,8 @@ draw_audio_bg (
   /* draw audio part */
   GdkRGBA * color = &track->color;
   GdkRGBA audio_lines_color = {
-    color->red + 0.3, color->green + 0.3,
-    color->blue + 0.3, 0.9 };
+    color->red + 0.3f, color->green + 0.3f,
+    color->blue + 0.3f, 0.9f };
   for (double i = local_start_x;
        i < local_end_x; i += increment)
     {
@@ -762,9 +818,9 @@ draw_vertical_lines (
 {
   const GdkRGBA thick_color = thick_grid_line_color;
   const GdkRGBA thinner_color =
-    { 0.25, 0.25, 0.25, 0.5 };
+    { 0.25f, 0.25f, 0.25f, 0.5f };
   const GdkRGBA thinnest_color =
-    { 0.2, 0.2, 0.2, 0.5 };
+    { 0.2f, 0.2f, 0.2f, 0.5f };
 
   const int thick_width = 1;
   const int thinner_width = 1;
@@ -939,7 +995,7 @@ draw_range (
   /* draw range */
   gtk_snapshot_append_color (
     snapshot,
-    &Z_GDK_RGBA_INIT (0.3, 0.3, 0.3, 0.3),
+    &Z_GDK_RGBA_INIT (0.3f, 0.3f, 0.3f, 0.3f),
     &GRAPHENE_RECT_INIT (
       (float) MAX (0, range_first_px), 0,
       (float) (range_second_px - range_first_px),
@@ -947,7 +1003,7 @@ draw_range (
 
   /* draw start and end lines */
   const int line_width = 2;
-  const GdkRGBA color = { 0.8, 0.8, 0.8, 0.4 };
+  const GdkRGBA color = { 0.8f, 0.8f, 0.8f, 0.4f };
   gtk_snapshot_append_color (
     snapshot, &color,
     &GRAPHENE_RECT_INIT (
@@ -1077,7 +1133,8 @@ arranger_snapshot (
             ui_pos_to_px_editor (
               &TRANSPORT->loop_end_pos, 1);
         }
-      GdkRGBA loop_color = { 0, 0.9, 0.7, 0.08 };
+      GdkRGBA loop_color = {
+        0, 0.9f, 0.7f, 0.08f };
 
       /* draw the loop start line */
       gtk_snapshot_append_color (
@@ -1097,7 +1154,7 @@ arranger_snapshot (
       double loop_start_x = MAX (0, start_px);
       gtk_snapshot_append_color (
         snapshot,
-        &Z_GDK_RGBA_INIT (0, 0.9, 0.7, 0.02),
+        &Z_GDK_RGBA_INIT (0, 0.9f, 0.7f, 0.02f),
         &GRAPHENE_RECT_INIT (
           (float) loop_start_x, 0,
           (float) (end_px - start_px),

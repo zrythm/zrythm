@@ -61,6 +61,7 @@ typedef struct CairoCaches
  */
 #define Z_CAIRO_TEXT_PADDING 2
 
+#if 0
 void
 z_cairo_draw_selection_with_color (
   cairo_t * cr,
@@ -77,6 +78,7 @@ z_cairo_draw_selection (
   double    start_y,
   double    offset_x,
   double    offset_y);
+#endif
 
 void
 z_cairo_draw_horizontal_line (

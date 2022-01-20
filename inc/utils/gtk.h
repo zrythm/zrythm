@@ -109,7 +109,8 @@
 
 #define Z_GDK_RGBA_INIT(r,g,b,a) \
   (GdkRGBA) \
-  { .red = r, .green = g, .blue = b, .alpha = a  }
+  { .red = (float) r, .green = (float) g, \
+    .blue = (float) b, .alpha = (float) a  }
 
 #define Z_GDK_RECTANGLE_INIT(_x,_y,_w,_h) \
   (GdkRectangle) \

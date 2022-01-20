@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -292,13 +292,13 @@ midi_note_get_adjusted_color (
    * - if color is too bright, make it darker
    */
   if (color_is_very_very_dark (color))
-    color_brighten (color, 0.7);
+    color_brighten (color, 0.7f);
   else if (color_is_very_very_bright (color))
-    color_darken (color, 0.3);
+    color_darken (color, 0.3f);
   else if (color_is_very_dark (color))
-    color_brighten (color, 0.05);
+    color_brighten (color, 0.05f);
   else if (color_is_very_bright (color))
-    color_darken (color, 0.05);
+    color_darken (color, 0.05f);
 
   /* adjust color for velocity */
   GdkRGBA max_vel_color = *color;

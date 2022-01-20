@@ -1298,35 +1298,35 @@ ui_get_arranger_object_color (
   const bool   is_muted)
 {
   if (DEBUGGING)
-    color->alpha = 0.4;
+    color->alpha = 0.f;
   else
-    color->alpha = is_transient ? 0.7 : 1.0;
+    color->alpha = is_transient ? 0.7f : 1.f;
   if (is_muted)
     {
-      color->red = 0.6;
-      color->green = 0.6;
-      color->blue = 0.6;
+      color->red = 0.6f;
+      color->green = 0.6f;
+      color->blue = 0.6f;
     }
   if (is_selected)
     {
-      color->red += is_muted ? 0.2 : 0.4;
-      color->green += 0.2;
-      color->blue += 0.2;
-      color->alpha = DEBUGGING ? 0.5 : 1.0;
+      color->red += is_muted ? 0.2f : 0.4f;
+      color->green += 0.2f;
+      color->blue += 0.2f;
+      color->alpha = DEBUGGING ? 0.5f : 1.f;
     }
   else if (is_hovered)
     {
       if (color_is_very_bright (color))
         {
-          color->red -= 0.1;
-          color->green -= 0.1;
-          color->blue -= 0.1;
+          color->red -= 0.1f;
+          color->green -= 0.1f;
+          color->blue -= 0.1f;
         }
       else
         {
-          color->red += 0.1;
-          color->green += 0.1;
-          color->blue += 0.1;
+          color->red += 0.1f;
+          color->green += 0.1f;
+          color->blue += 0.1f;
         }
     }
 }

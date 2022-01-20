@@ -314,9 +314,9 @@ draw_midi_region (
        *  bright */
       if (color_is_very_very_bright (&track->color))
         {
-          color.red = 0.7;
-          color.green = 0.7;
-          color.blue = 0.7;
+          color.red = 0.7f;
+          color.green = 0.7f;
+          color.blue = 0.7f;
         }
     }
 
@@ -620,7 +620,7 @@ draw_chord_region (
               if (x_start < 0.0)
                 continue;
 
-              GdkRGBA color = { 1, 1, 1, 0.3 };
+              GdkRGBA color = { 1, 1, 1, 0.3f };
 
               /* get actual values using the
                * ratios */
@@ -993,7 +993,7 @@ draw_fade_part (
   g_return_if_fail (track);
 
   /* set color */
-  GdkRGBA color = { 0.2, 0.2, 0.2, 0.6 };
+  GdkRGBA color = { 0.2f, 0.2f, 0.2f, 0.6f };
 
   /* get fade in px */
   int fade_in_px =
@@ -1485,7 +1485,7 @@ draw_name (
   /* fill bg color */
   GdkRGBA name_bg_color;
   gdk_rgba_parse (&name_bg_color, "#323232");
-  name_bg_color.alpha = 0.8;
+  name_bg_color.alpha = 0.8f;
   gtk_snapshot_append_color (
     snapshot, &name_bg_color,
     &rounded_rect.bounds);

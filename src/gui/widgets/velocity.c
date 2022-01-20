@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -95,7 +95,7 @@ velocity_draw (
   gtk_snapshot_translate (
     snapshot,
     &GRAPHENE_POINT_INIT (- 0.5f, - 0.5f));
-  float circle_angle = 2 * M_PI;
+  float circle_angle = 2.f * (float) M_PI;
   GskRoundedRect rounded_rect;
   gsk_rounded_rect_init_from_rect (
     &rounded_rect,

@@ -22,7 +22,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_minimap_selection.h"
-#include "utils/cairo.h"
+#include "utils/gtk.h"
 
 #include <gtk/gtk.h>
 
@@ -50,7 +50,8 @@ timeline_minimap_selection_snapshot (
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &graphene_rect, 0);
   const float border_width = 2.f;
-  GdkRGBA border_color = { 0.9, 0.9, 0.9, 0.9 };
+  GdkRGBA border_color =
+    Z_GDK_RGBA_INIT (0.9, 0.9, 0.9, 0.9);
   float border_widths[] = {
     border_width, border_width, border_width,
     border_width };
@@ -58,10 +59,10 @@ timeline_minimap_selection_snapshot (
     border_color, border_color, border_color,
     border_color };
   GdkRGBA inside_color = {
-    border_color.red / 3.0,
-    border_color.green / 3.0,
-    border_color.blue / 3.0,
-    border_color.alpha / 3.0, };
+    border_color.red / 3.f,
+    border_color.green / 3.f,
+    border_color.blue / 3.f,
+    border_color.alpha / 3.f, };
 
   gtk_snapshot_append_color (
     snapshot, &inside_color, &graphene_rect);

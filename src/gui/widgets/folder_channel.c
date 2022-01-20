@@ -90,7 +90,7 @@ folder_channel_snapshot (
         snapshot,
         &Z_GDK_RGBA_INIT (
           track->color.red, track->color.green,
-          track->color.blue, 0.15),
+          track->color.blue, 0.15f),
         &GRAPHENE_RECT_INIT (0, 0, width, height));
     }
 

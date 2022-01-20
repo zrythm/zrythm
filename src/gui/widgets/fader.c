@@ -77,7 +77,7 @@ fader_snapshot (
   gtk_snapshot_append_color (
     snapshot,
     &Z_GDK_RGBA_INIT (
-      0.1, 0.1, 0.1, self->hover ? 0.8 : 0.6),
+      0.1f, 0.1f, 0.1f, self->hover ? 0.8f : 0.6f),
     &GRAPHENE_RECT_INIT (0, 0, width, height));
   gtk_snapshot_pop (snapshot);
 
@@ -148,11 +148,11 @@ fader_snapshot (
   GdkRGBA color;
   if (self->hover || self->dragging)
     {
-      color = Z_GDK_RGBA_INIT (0.8, 0.8, 0.8, 1);
+      color = Z_GDK_RGBA_INIT (0.8f, 0.8f, 0.8f, 1);
     }
   else
     {
-      color = Z_GDK_RGBA_INIT (0.6, 0.6, 0.6, 1);
+      color = Z_GDK_RGBA_INIT (0.6f, 0.6f, 0.6f, 1);
     }
   gtk_snapshot_append_color (
     snapshot, &color,

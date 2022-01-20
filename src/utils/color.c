@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -27,9 +27,9 @@ void
 color_brighten (
   GdkRGBA * src, float val)
 {
-  src->red = MIN (src->red + val, 1.0);
-  src->green = MIN (src->green + val, 1.0);
-  src->blue = MIN (src->blue + val, 1.0);
+  src->red = MIN (src->red + val, 1.f);
+  src->green = MIN (src->green + val, 1.f);
+  src->blue = MIN (src->blue + val, 1.f);
 }
 
 /**
@@ -49,9 +49,9 @@ void
 color_darken (
   GdkRGBA * src, float val)
 {
-  src->red = MAX (src->red - val, 0.0);
-  src->green = MAX (src->green - val, 0.0);
-  src->blue = MAX (src->blue - val, 0.0);
+  src->red = MAX (src->red - val, 0.f);
+  src->green = MAX (src->green - val, 0.f);
+  src->blue = MAX (src->blue - val, 0.f);
 }
 
 /**
@@ -153,9 +153,9 @@ color_get_opposite (
   GdkRGBA * src,
   GdkRGBA * dest)
 {
-  dest->red = 1.0 - src->red;
-  dest->blue = 1.0 - src->blue;
-  dest->green = 1.0 - src->green;
+  dest->red = 1.f - src->red;
+  dest->blue = 1.f - src->blue;
+  dest->green = 1.f - src->green;
 }
 
 /**
@@ -172,11 +172,11 @@ color_morph (
   float     amt,
   GdkRGBA * result)
 {
-  g_return_if_fail (amt >= 0.0);
-  g_return_if_fail (amt <= 1.0);
+  g_return_if_fail (amt >= 0.f);
+  g_return_if_fail (amt <= 1.f);
   g_return_if_fail (a && b && result);
 
-  float amt_inv = 1.0 - amt;
+  float amt_inv = 1.f - amt;
   result->red = amt_inv * a->red + amt * b->red;
   result->green = amt_inv * a->green + amt * b->green;
   result->blue = amt_inv * a->blue + amt * b->blue;

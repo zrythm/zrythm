@@ -28,6 +28,7 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#if 0
 void
 z_cairo_draw_selection_with_color (
   cairo_t * cr,
@@ -60,11 +61,13 @@ z_cairo_draw_selection (
   double    offset_x,
   double    offset_y)
 {
-  GdkRGBA color = { 0.9, 0.9, 0.9, 1.0 };
+  GdkRGBA color =
+    Z_GDK_RGBA_INIT (0.9, 0.9, 0.9, 1.0);
   z_cairo_draw_selection_with_color (
     cr, &color, start_x, start_y, offset_x,
     offset_y);
 }
+#endif
 
 void
 z_cairo_draw_horizontal_line (

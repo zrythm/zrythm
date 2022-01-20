@@ -217,7 +217,7 @@ digital_meter_snapshot (
     }
   else
     {
-      color = Z_GDK_RGBA_INIT (0.6, 0.6, 0.6, 1);
+      color = Z_GDK_RGBA_INIT (0.6f, 0.6f, 0.6f, 1);
     }
   z_cairo_get_text_extents_for_widget (
     self, self->caption_layout, self->caption,
@@ -249,11 +249,12 @@ digital_meter_snapshot (
   /*gdk_cairo_set_source_rgba (cr, &color);*/
   if (gtk_widget_is_sensitive (GTK_WIDGET (self)))
     {
-      color = Z_GDK_RGBA_INIT (0.0, 1.0, 0.1, 1.0);
+      color = Z_GDK_RGBA_INIT (0.f, 1.f, 0.1f, 1.f);
     }
   else
     {
-      color = Z_GDK_RGBA_INIT (0.0, 0.6, 0.06, 1.0);
+      color =
+        Z_GDK_RGBA_INIT (0.f, 0.6f, 0.06f, 1.f);
     }
   char text[20];
   char * heap_text = NULL;

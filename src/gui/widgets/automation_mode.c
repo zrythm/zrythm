@@ -37,9 +37,9 @@ automation_mode_widget_init (
   gdk_rgba_parse (
     &self->hovered_color, UI_COLOR_BUTTON_HOVER);
 #endif
-  self->def_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.1);
+  self->def_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.1f);
   self->hovered_color =
-    Z_GDK_RGBA_INIT (1, 1, 1, 0.2);
+    Z_GDK_RGBA_INIT (1, 1, 1, 0.2f);
   self->toggled_colors[0] = UI_COLORS->solo_checked;
   self->held_colors[0] = UI_COLORS->solo_active;
   gdk_rgba_parse (
@@ -200,7 +200,7 @@ draw_bg (
     {
       const float border_width = 1.f;
       GdkRGBA border_color =
-        Z_GDK_RGBA_INIT (1, 1, 1, 0.3);
+        Z_GDK_RGBA_INIT (1, 1, 1, 0.3f);
       float border_widths[] = {
         border_width, border_width, border_width,
         border_width };

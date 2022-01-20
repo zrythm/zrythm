@@ -409,8 +409,7 @@ _test_edit_tracks (
     case EDIT_TRACK_ACTION_TYPE_COLOR:
       {
         GdkRGBA new_color = {
-          .red = 0.8, .green = 0.7,
-          .blue = 0.2, .alpha = 1.0 };
+          0.8f, 0.7f, 0.2f, 1.f };
         GdkRGBA color_before = ins_track->color;
         track_set_color (
           ins_track, &new_color, F_UNDOABLE,

@@ -87,7 +87,7 @@ channel_send_snapshot (
       /* fill background */
       gtk_snapshot_append_color (
         snapshot,
-        &Z_GDK_RGBA_INIT (0.1, 0.1, 0.1, 1.0),
+        &Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, 1.f),
         &GRAPHENE_RECT_INIT (
           padding, padding,
           width - padding * 2,
@@ -107,7 +107,7 @@ channel_send_snapshot (
           height / 2.f - h / 2.f));
       gtk_snapshot_append_layout (
         snapshot, self->empty_slot_layout,
-        &Z_GDK_RGBA_INIT (0.3, 0.3, 0.3, 1.0));
+        &Z_GDK_RGBA_INIT (0.3f, 0.3f, 0.3f, 1.f));
       gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
@@ -130,7 +130,7 @@ channel_send_snapshot (
 
       /* fill background */
       GdkRGBA bg_color = bg;
-      bg_color.alpha = 0.4;
+      bg_color.alpha = 0.4f;
       gtk_snapshot_append_color (
         snapshot, &bg_color,
         &GRAPHENE_RECT_INIT (
@@ -139,7 +139,7 @@ channel_send_snapshot (
           height - padding * 2));
 
       /* fill amount */
-      bg_color.alpha = 1.0;
+      bg_color.alpha = 1.f;
       float amount =
         channel_send_get_amount_for_widgets (
           self->send) * width;

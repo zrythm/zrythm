@@ -120,7 +120,7 @@ live_waveform_draw_cb (
   /* draw border */
   if (self->draw_border)
     {
-      self->color_white.alpha = 0.2;
+      self->color_white.alpha = 0.2f;
       gdk_cairo_set_source_rgba (
         cr, &self->color_white);
       z_cairo_rounded_rectangle (

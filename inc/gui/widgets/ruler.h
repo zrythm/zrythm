@@ -194,7 +194,7 @@ typedef struct _RulerWidget
   PangoLayout *     layout_small;
 
   /** Popover to be reused for context menus. */
-  GtkPopoverMenu * popover_menu;
+  GtkPopoverMenu *  popover_menu;
 } RulerWidget;
 
 /**
