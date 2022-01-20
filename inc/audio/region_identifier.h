@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -145,6 +145,7 @@ region_identifier_is_equal (
     a->type == b->type;
 }
 
+NONNULL
 static inline void
 region_identifier_copy (
   RegionIdentifier * dest,

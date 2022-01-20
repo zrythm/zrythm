@@ -4474,6 +4474,10 @@ on_drag_end_audio (
             edit_type =
               ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE;
           }
+        else
+          {
+            g_return_if_reached ();
+          }
         arranger_selections_add_object (
           sel_before, clone_obj);
 

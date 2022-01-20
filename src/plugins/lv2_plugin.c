@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -316,6 +316,7 @@ create_port (
               TYPE_CONTROL, FLOW_INPUT,
               param->label);
         }
+      g_return_val_if_fail (port, NULL);
       PortIdentifier * pi = &port->id;
 
       pi->uri =

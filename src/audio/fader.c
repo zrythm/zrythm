@@ -1021,11 +1021,6 @@ fader_process (
 #endif
     }
 
-  float pan =
-    port_get_control_value (self->balance, 0);
-  float amp =
-    port_get_control_value (self->amp, 0);
-
   Track * track = NULL;
   if (self->type == FADER_TYPE_AUDIO_CHANNEL)
     {
@@ -1193,7 +1188,14 @@ fader_process (
                       time_nfo->local_offset],
                     dim_amp, time_nfo->nframes);
                 }
-            }
+            } /* endif monitor fader */
+
+          float pan =
+            port_get_control_value (
+              self->balance, 0);
+          float amp =
+            port_get_control_value (
+              self->amp, 0);
 
           float calc_l, calc_r;
           balance_control_get_calc_lr (

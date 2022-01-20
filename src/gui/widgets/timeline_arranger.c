@@ -267,6 +267,7 @@ timeline_arranger_widget_create_region (
           P_CHORD_TRACK->num_chord_regions);
       break;
     case REGION_TYPE_AUTOMATION:
+      g_return_if_fail (at);
       region =
         automation_region_new (
           pos, &end_pos,

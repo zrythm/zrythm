@@ -1873,10 +1873,11 @@ carla_native_plugin_instantiate (
                 self->max_variant_audio_ins)
             {
               g_debug (
-                "connecting out %u to in %u",
-                port_id,
+                "connecting %d:%u to %d:%u",
+                1,
                 self->audio_input_port_id +
-                  num_audio_ins_connected);
+                  num_audio_ins_connected,
+                plugin_client, port_id);
               ret =
                 carla_patchbay_connect (
                   self->host_handle,
@@ -1900,10 +1901,11 @@ carla_native_plugin_instantiate (
                      self->max_variant_cv_ins)
             {
               g_debug (
-                "connecting out %u to in %u",
-                port_id,
+                "connecting %d:%u to %d:%u",
+                3,
                 self->cv_input_port_id +
-                  num_cv_ins_connected);
+                  num_cv_ins_connected,
+                plugin_client, port_id);
               ret =
                 carla_patchbay_connect (
                   self->host_handle,
@@ -1927,10 +1929,11 @@ carla_native_plugin_instantiate (
                      self->max_variant_midi_ins)
             {
               g_debug (
-                "connecting out %u to in %u",
-                port_id,
+                "connecting %d:%u to %d:%u",
+                is_cv_variant ? 5 : 3,
                 self->midi_input_port_id +
-                  num_midi_ins_connected);
+                  num_midi_ins_connected,
+                plugin_client, port_id);
               ret =
                 carla_patchbay_connect (
                   self->host_handle,
@@ -1958,10 +1961,11 @@ carla_native_plugin_instantiate (
                 self->max_variant_audio_outs)
             {
               g_debug (
-                "connecting out %u to in %u",
+                "connecting %d:%u to %d:%u",
+                plugin_client, port_id,
+                2,
                 self->audio_output_port_id +
-                  num_audio_outs_connected,
-                port_id);
+                  num_audio_outs_connected);
               ret =
                 carla_patchbay_connect (
                   self->host_handle,
@@ -1985,10 +1989,11 @@ carla_native_plugin_instantiate (
                      self->max_variant_cv_outs)
             {
               g_debug (
-                "connecting out %u to in %u",
+                "connecting %d:%u to %d:%u",
+                plugin_client, port_id,
+                4,
                 self->cv_output_port_id +
-                  num_cv_outs_connected,
-                port_id);
+                  num_cv_outs_connected);
               ret =
                 carla_patchbay_connect (
                   self->host_handle,
@@ -2012,10 +2017,11 @@ carla_native_plugin_instantiate (
                      self->max_variant_midi_outs)
             {
               g_debug (
-                "connecting out %u to in %u",
+                "connecting %d:%u to %d:%u",
+                plugin_client, port_id,
+                is_cv_variant ? 6 : 4,
                 self->midi_output_port_id +
-                  num_midi_outs_connected,
-                port_id);
+                  num_midi_outs_connected);
               ret =
                 carla_patchbay_connect (
                   self->host_handle,

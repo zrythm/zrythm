@@ -1267,6 +1267,8 @@ tracklist_expose_ports_to_backend (
       if (track_type_has_channel (track->type))
         {
           Channel * ch = track_get_channel (track);
+          g_return_if_fail (
+            IS_CHANNEL_AND_NONNULL (ch));
           channel_expose_ports_to_backend (ch);
         }
     }

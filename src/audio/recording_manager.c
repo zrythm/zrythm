@@ -63,6 +63,7 @@ static int returned = 0;
  * identifiers (to be used for creating the undoable
  * action when recording stops.
  */
+NONNULL
 static void
 add_recorded_id (
   RecordingManager * self,
@@ -963,6 +964,7 @@ handle_resume_event (
             tr, new_region, at, -1,
             F_GEN_NAME, F_PUBLISH_EVENTS);
         }
+      g_return_val_if_fail (new_region, false);
       add_recorded_id (
         self, new_region);
 

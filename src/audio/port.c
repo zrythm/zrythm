@@ -2442,6 +2442,8 @@ port_forward_control_change_event (
              PORT_OWNER_TYPE_CHANNEL_SEND)
     {
       Track * track = port_get_track (self, 1);
+      g_return_if_fail (
+        IS_TRACK_AND_NONNULL (track));
       ChannelSend * send =
         track->channel->sends[self->id.port_index];
       EVENTS_PUSH (

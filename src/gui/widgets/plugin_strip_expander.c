@@ -110,6 +110,7 @@ plugin_strip_expander_widget_refresh (
           {
             Channel * ch =
               track_get_channel (self->track);
+            g_return_if_fail (ch);
             Plugin * pl = ch->inserts[i];
             plugin_strip_expander_widget_set_state_flags (
               self, i,
@@ -123,6 +124,7 @@ plugin_strip_expander_widget_refresh (
           {
             Channel * ch =
               track_get_channel (self->track);
+            g_return_if_fail (ch);
             Plugin * pl = ch->midi_fx[i];
             plugin_strip_expander_widget_set_state_flags (
               self, i,

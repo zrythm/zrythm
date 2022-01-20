@@ -797,6 +797,7 @@ exporter_create_audio_track_after_bounce (
       g_return_if_reached ();
     }
 
+  g_return_if_fail (last_track);
   GError * err = NULL;
   UndoableAction * ua =
     tracklist_selections_action_new_create (

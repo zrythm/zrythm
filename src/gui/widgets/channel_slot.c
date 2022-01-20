@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -567,6 +567,7 @@ select_plugin (
     pl = true;
 
   /* if same channel as selections */
+  g_return_if_fail (self->track);
   if (self->track->channel &&
       track_get_name_hash (self->track) ==
         MIXER_SELECTIONS->track_name_hash)
@@ -637,6 +638,8 @@ drag_end (
 
   if (pl)
     {
+      g_return_if_fail (
+        self->track->channel->widget);
       self->track->channel->widget->
         last_plugin_press =
           g_get_monotonic_time ();
