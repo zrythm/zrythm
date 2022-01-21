@@ -1343,7 +1343,7 @@ tracklist_handle_file_drop (
   if (file_arr->len == 0)
     {
       ui_show_error_message (
-        MAIN_WINDOW, _("No file was found"));
+        MAIN_WINDOW, true, _("No file was found"));
 
       goto free_file_array_and_return;
     }
@@ -1376,7 +1376,8 @@ tracklist_handle_file_drop (
               _("Unsupported file type %s"),
               descr);
           g_free (descr);
-          ui_show_error_message (MAIN_WINDOW, msg);
+          ui_show_error_message (
+            MAIN_WINDOW, true, msg);
           g_free (msg);
 
           goto free_file_array_and_return;
@@ -1391,7 +1392,7 @@ tracklist_handle_file_drop (
               if (file_arr->len > 1)
                 {
                   ui_show_error_message (
-                    MAIN_WINDOW,
+                    MAIN_WINDOW, true,
                     _("Can only drop 1 file at a "
                     "time on existing tracks"));
                   goto free_file_array_and_return;
@@ -1404,7 +1405,7 @@ tracklist_handle_file_drop (
                         TRACK_TYPE_INSTRUMENT)
                     {
                       ui_show_error_message (
-                        MAIN_WINDOW,
+                        MAIN_WINDOW, true,
                         _("Can only drop MIDI files on "
                         "MIDI/instrument tracks"));
                       goto free_file_array_and_return;
@@ -1423,7 +1424,7 @@ tracklist_handle_file_drop (
                         "into an existing track"),
                         num_nonempty_tracks);
                       ui_show_error_message (
-                        MAIN_WINDOW, msg);
+                        MAIN_WINDOW, true, msg);
                       goto free_file_array_and_return;
                     }
                 }
@@ -1431,7 +1432,7 @@ tracklist_handle_file_drop (
                   track->type != TRACK_TYPE_AUDIO)
                 {
                   ui_show_error_message (
-                    MAIN_WINDOW,
+                    MAIN_WINDOW, true,
                     _("Can only drop audio files on "
                     "audio tracks"));
                   goto free_file_array_and_return;
@@ -1750,7 +1751,7 @@ tracklist_handle_move_or_copy (
               if (!ZRYTHM_TESTING)
                 {
                   ui_show_error_message (
-                    MAIN_WINDOW,
+                    MAIN_WINDOW, true,
                     _("Cannot drag folder into "
                     "itself"));
                 }

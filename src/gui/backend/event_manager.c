@@ -318,7 +318,7 @@ on_plugin_crashed (Plugin * plugin)
       _("Plugin '%s' has crashed and has been "
       "disabled."),
       plugin->setting->descr->name);
-  ui_show_error_message (MAIN_WINDOW, str);
+  ui_show_error_message (MAIN_WINDOW, true, str);
   g_free (str);
 }
 
@@ -1228,7 +1228,7 @@ event_manager_process_event (
           PROGRAM_NAME);
         ui_show_message_full (
           GTK_WINDOW (MAIN_WINDOW),
-          GTK_MESSAGE_INFO, "%s", msg);
+          GTK_MESSAGE_INFO, true, "%s", msg);
       }
       break;
     case ET_CHANNEL_SEND_CHANGED:

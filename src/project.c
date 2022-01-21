@@ -890,7 +890,8 @@ project_get_existing_yaml (
       sprintf (
         str, _("Unable to read file: %s"),
         err->message);
-      ui_show_error_message (MAIN_WINDOW, str);
+      ui_show_error_message (
+        MAIN_WINDOW, true, str);
       g_error_free (err);
       return NULL;
     }
@@ -1044,7 +1045,7 @@ load (
         MAIN_WINDOW
         ? GTK_WINDOW (MAIN_WINDOW)
         : GTK_WINDOW (zrythm_app->splash),
-        GTK_MESSAGE_WARNING, "%s", str);
+        GTK_MESSAGE_WARNING, true, "%s", str);
       g_free (str);
     }
   g_free (version);
@@ -1052,7 +1053,7 @@ load (
   if (self == NULL)
     {
       ui_show_error_message (
-        MAIN_WINDOW,
+        MAIN_WINDOW, true,
         _("Failed to load project. Please check the "
         "logs for more information."));
       RETURN_ERROR;
@@ -1276,7 +1277,7 @@ project_load (
       if (ret)
         {
           ui_show_error_message (
-            NULL,
+            NULL, true,
             _("Failed to load project. Will create "
             "a new one instead."));
 

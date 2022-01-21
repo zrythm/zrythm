@@ -2808,7 +2808,7 @@ lv2_plugin_instantiate (
                 basename, descr->author,
                 descr->website);
               ui_show_error_message (
-                MAIN_WINDOW, msg);
+                MAIN_WINDOW, true, msg);
               g_free (basename);
             }
 

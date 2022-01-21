@@ -2559,7 +2559,7 @@ on_drag_begin_handle_hit_object (
       if (have_unresizable)
         {
           ui_show_message_printf (
-            MAIN_WINDOW, GTK_MESSAGE_WARNING,
+            MAIN_WINDOW, GTK_MESSAGE_WARNING, false,
             "%s",
             _("Cannot resize because the "
             "selection contains objects "
@@ -2588,6 +2588,7 @@ on_drag_begin_handle_hit_object (
                * selection */
               ui_show_message_printf (
                 MAIN_WINDOW, GTK_MESSAGE_WARNING,
+                false,
                 "%s",
                 _("Cannot resize because the "
                 "selection contains a mix of "

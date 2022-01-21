@@ -173,6 +173,7 @@ void
 ui_show_message_full (
   GtkWindow *    parent_window,
   GtkMessageType type,
+  bool           block,
   const char *   format,
   ...)
 {
@@ -201,7 +202,18 @@ ui_show_message_full (
           gtk_window_set_transient_for (
             GTK_WINDOW (dialog), parent_window);
         }
-      z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+      if (block)
+        {
+          z_gtk_dialog_run (
+            GTK_DIALOG (dialog), true);
+        }
+      else
+        {
+          gtk_window_present (GTK_WINDOW (dialog));
+          g_signal_connect (
+            GTK_DIALOG (dialog), "response",
+            G_CALLBACK (gtk_window_destroy), NULL);
+        }
     }
   else
     {

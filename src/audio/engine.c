@@ -540,7 +540,7 @@ engine_pre_setup (
           ui_show_message_printf (
             MAIN_WINDOW ?
               GTK_WINDOW (MAIN_WINDOW) : NULL,
-            GTK_MESSAGE_WARNING,
+            GTK_MESSAGE_WARNING, true,
             _("Failed to initialize the %s audio "
               "backend. Will use the dummy backend "
               "instead. Please check your backend "
@@ -585,7 +585,7 @@ setup_dummy_midi:
       else
         {
           ui_show_message_printf (
-            NULL, GTK_MESSAGE_ERROR,
+            NULL, GTK_MESSAGE_ERROR, true,
             _("The JACK MIDI backend can only be "
             "used with the JACK audio backend "
             "(your current audio backend is %s). "
@@ -624,7 +624,7 @@ setup_dummy_midi:
         {
           ui_show_message_printf (
             GTK_WINDOW (MAIN_WINDOW),
-            GTK_MESSAGE_WARNING,
+            GTK_MESSAGE_WARNING, true,
             _("Failed to initialize the %s MIDI "
               "backend. Will use the dummy backend "
               "instead. Please check your backend "
@@ -673,7 +673,7 @@ engine_setup (
     {
       ui_show_message_printf (
         GTK_WINDOW (MAIN_WINDOW),
-        GTK_MESSAGE_WARNING, "%s",
+        GTK_MESSAGE_WARNING, true, "%s",
         _("Your selected combination of backends "
         "may not work properly. If you want to "
         "use JACK, please select JACK as both "
@@ -885,7 +885,7 @@ init_common (
     {
       ui_show_message_printf (
         GTK_WINDOW (MAIN_WINDOW),
-        GTK_MESSAGE_WARNING,
+        GTK_MESSAGE_WARNING, true,
         _("The selected MIDI/audio backend was not "
           "found in the version of %s you have "
           "installed. The audio and MIDI backends "

@@ -148,7 +148,7 @@ on_close_request (
   if (!live_yaml)
     {
       ui_show_error_message (
-        self,
+        self, false,
         _("Failed to serialize current project"));
 
       /* restart engine */
@@ -358,7 +358,7 @@ show_startup_errors (
       char * msg =
         zrythm_app->startup_errors[k];
       ui_show_error_message (
-        self, msg);
+        self, true, msg);
       g_free (msg);
     }
   zrythm_app->num_startup_errors = 0;

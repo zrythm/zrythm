@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -458,7 +458,8 @@ shutdown_cb (void *arg)
   if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
     {
       char * msg = _("JACK has shut down");
-      ui_show_error_message (MAIN_WINDOW, msg);
+      ui_show_error_message (
+        MAIN_WINDOW, false, msg);
     }
 }
 
@@ -563,7 +564,7 @@ engine_jack_test (
       char full_msg[800];
       sprintf (
         full_msg, "JACK Error: %s", msg);
-      ui_show_error_message (win, full_msg);
+      ui_show_error_message (win, false, full_msg);
       return 1;
     }
 
@@ -597,7 +598,8 @@ engine_jack_setup (
       char full_msg[800];
       sprintf (
         full_msg, "JACK Error: %s", msg);
-      ui_show_error_message (NULL, full_msg);
+      ui_show_error_message (
+        NULL, false, full_msg);
 
       return -1;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -71,9 +71,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "audio/graph_node.h"
 #include "audio/graph_thread.h"
 #include "audio/router.h"
+#include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/mpmc_queue.h"
 #include "utils/objects.h"
+#include "utils/ui.h"
+#include "zrythm_app.h"
 
 #ifdef HAVE_JACK
 #include "weak_libjack.h"
@@ -327,6 +330,11 @@ get_stack_size (void)
   return rv;
 }
 
+#ifndef _WOE32
+/**
+ * Returns the priority to use for the thread or
+ * 0 if not enough permissions to set the priority.
+ */
 static int
 get_absolute_rt_priority (
   int priority)
@@ -337,20 +345,24 @@ get_absolute_rt_priority (
     sched_get_priority_min (SCHED_FIFO); // Linux: 1
   const int p_max =
     sched_get_priority_max (SCHED_FIFO); // Linux: 99
+  g_debug ("min %d max %d requested %d",
+    p_min, p_max, priority);
 
   if (priority == 0)
     {
-      priority = (p_min + p_max) / 2;
+      /* use default. this should be relative to
+       * audio (JACK) thread */
+      priority = 7;
     }
   else if (priority > 0)
     {
       /* value relative to minium */
-      priority += p_min - 1;
+      priority += p_min;
     }
   else
     {
       /* value relative maximum */
-      priority += p_max + 1;
+      priority += p_max;
     }
 
   if (priority > p_max)
@@ -362,8 +374,26 @@ get_absolute_rt_priority (
       priority = p_min;
     }
 
+  g_debug ("priority before: %d", priority);
+
+  /* clamp to allowed limits */
+  struct rlimit rl;
+  if (getrlimit (RLIMIT_RTPRIO, &rl) == 0)
+    {
+      g_debug (
+        "current rtprio limit: %lu", rl.rlim_cur);
+      int cur_limit = (int) rl.rlim_cur;
+      if (priority > cur_limit)
+        {
+          priority = cur_limit;
+        }
+    }
+
+  g_debug ("priority after: %d", priority);
+
   return priority;
 }
+#endif
 
 /**
  * Creates a thread.
@@ -420,12 +450,15 @@ graph_thread_new (
     {
       realtime =
         jack_is_realtime (AUDIO_ENGINE->client);
-      priority =
+      int jack_priority =
         jack_client_real_time_priority (
-          AUDIO_ENGINE->client) - 2;
+          AUDIO_ENGINE->client);
+      g_debug ("JACK thread priority: %d",
+        jack_priority);
+      priority = jack_priority - 2;
+      (void) priority;
     }
 #endif
-  priority = get_absolute_rt_priority (priority);
 
   if (realtime)
     {
@@ -442,33 +475,50 @@ graph_thread_new (
         }
 
 #ifndef _WOE32
-      /* this throws error on windows:
-       * res = 129 */
-      res =
-        pthread_attr_setschedpolicy (
-          &attributes, SCHED_FIFO);
-      if (res)
+      priority = get_absolute_rt_priority (priority);
+
+      if (priority > 0)
         {
-          g_critical (
-            "Cannot set RR scheduling class for RT "
-            "thread res = %d", res);
-          return NULL;
+          /* this throws error on windows:
+           * res = 129 */
+          res =
+            pthread_attr_setschedpolicy (
+              &attributes, SCHED_FIFO);
+          if (res)
+            {
+              g_critical (
+                "Cannot set RR scheduling class "
+                "for RT thread res = %d", res);
+              return NULL;
+            }
+          struct sched_param rt_param;
+          memset (&rt_param, 0, sizeof (rt_param));
+          rt_param.sched_priority = priority;
+          g_debug ("priority: %d", priority);
+
+          res =
+            pthread_attr_setschedparam (
+              &attributes, &rt_param);
+          if (res)
+            {
+              g_critical (
+                "Cannot set scheduling priority for RT "
+                "thread res = %d", res);
+              return NULL;
+            }
         }
-
-      struct sched_param rt_param;
-      memset (&rt_param, 0, sizeof (rt_param));
-      rt_param.sched_priority = priority;
-      g_debug ("priority: %d", priority);
-
-      res =
-        pthread_attr_setschedparam (
-          &attributes, &rt_param);
-      if (res)
+      else if (
+        is_main && ZRYTHM_HAVE_UI && !ZRYTHM_TESTING)
         {
-          g_critical (
-            "Cannot set scheduling priority for RT "
-            "thread res = %d", res);
-          return NULL;
+          ui_show_message_printf (
+            MAIN_WINDOW, GTK_MESSAGE_WARNING, false,
+            "Your user does not have enough "
+            "privileges to allow %s to set "
+            "the scheduling priority of threads. "
+            "Please refer to the 'Getting Started' "
+            "section in the "
+            "user manual for details.",
+            PROGRAM_NAME);
         }
 #endif
     }
@@ -501,8 +551,8 @@ graph_thread_new (
   if (res)
     {
       g_critical (
-        "Cannot set thread stack size res = %d",
-        res);
+        "Cannot set thread stack size res = %d (%s)",
+        res, strerror (res));
       return NULL;
     }
 
@@ -513,22 +563,9 @@ graph_thread_new (
       self);
   if (res)
     {
-      switch (res)
-        {
-        case EAGAIN:
-          g_message ("EAGAIN");
-          break;
-        case EINVAL:
-          g_message ("EINVAL");
-          break;
-        case EPERM:
-          g_message ("EPERM");
-          break;
-        default:
-          break;
-        }
       g_critical (
-        "Cannot create thread res = %d", res);
+        "Cannot create thread res = %d (%s)",
+        res, strerror (res));
       return NULL;
     }
 

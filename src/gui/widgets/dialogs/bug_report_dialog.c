@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -58,7 +58,7 @@ validate_input (
     {
       g_free_and_null (steps_to_reproduce);
       ui_show_error_message (
-        MAIN_WINDOW,
+        MAIN_WINDOW, false,
         _("Please enter steps to reproduce"));
       return false;
     }
@@ -71,7 +71,7 @@ validate_input (
     {
       g_free_and_null (other_info);
       ui_show_error_message (
-        MAIN_WINDOW,
+        MAIN_WINDOW, false,
         _("Please fill in all fields"));
       return false;
     }
@@ -578,7 +578,7 @@ on_button_send_automatically_clicked (
         false);
 
       ui_show_message_printf (
-        self, GTK_MESSAGE_INFO, "%s",
+        self, GTK_MESSAGE_INFO, false, "%s",
         _("Sent successfully"));
     }
 

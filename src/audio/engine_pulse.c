@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -116,7 +116,7 @@ engine_pulse_notify_underflow (
   if (MAIN_WINDOW)
     {
       ui_show_error_message (
-        MAIN_WINDOW,
+        MAIN_WINDOW, false,
         _("A buffer underflow has occurred."
           " Try increasing the buffer size in"
           " the settings to avoid audio"
@@ -522,7 +522,7 @@ engine_pulse_test (
         &mainloop, &context, &msg))
     {
       ui_show_error_message (
-        win, msg);
+        win, true, msg);
       g_free (msg);
       result = 1;
     }

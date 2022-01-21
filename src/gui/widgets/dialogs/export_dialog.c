@@ -850,7 +850,8 @@ on_export_clicked (
   if (!tracks)
     {
       ui_show_error_message (
-        MAIN_WINDOW, _("No tracks to export"));
+        MAIN_WINDOW, false,
+        _("No tracks to export"));
       return;
     }
 

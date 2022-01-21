@@ -3311,7 +3311,8 @@ arranger_object_set_name_with_action (
       char * msg =
         g_strdup_printf (
           _("Invalid object name %s"), name);
-      ui_show_error_message (MAIN_WINDOW, msg);
+      ui_show_error_message (
+        MAIN_WINDOW, false, msg);
       return;
     }
 

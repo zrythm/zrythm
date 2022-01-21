@@ -120,7 +120,7 @@ tick_cb (
             gtk_window_get_transient_for (
               GTK_WINDOW (self));
           ui_show_error_message (
-            transient_parent, info->error_str);
+            transient_parent, true, info->error_str);
         }
       return G_SOURCE_REMOVE;
     }

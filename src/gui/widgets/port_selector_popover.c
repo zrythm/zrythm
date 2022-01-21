@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -54,7 +54,7 @@ on_ok_clicked (
   if (!self->selected_port)
     {
       ui_show_error_message (
-        MAIN_WINDOW,
+        MAIN_WINDOW, false,
         _("No port selected"));
       return;
     }
@@ -96,7 +96,7 @@ on_ok_clicked (
   else
     {
       ui_show_error_message (
-        MAIN_WINDOW,
+        MAIN_WINDOW, false,
         _("These ports cannot be connected"));
     }
 

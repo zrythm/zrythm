@@ -224,13 +224,13 @@ audio_midi_backend_selection_validate (
       mb == MIDI_BACKEND_JACK)
     {
       ui_show_error_message (
-        GTK_WINDOW (assistant),
+        GTK_WINDOW (assistant), false,
         _("Backend combination not supported"));
       return;
     }
 
   ui_show_message_full (
-    GTK_WINDOW (assistant), GTK_MESSAGE_INFO,
+    GTK_WINDOW (assistant), GTK_MESSAGE_INFO, false,
     _("The selected backends are operational"));
   return;
 }
@@ -270,7 +270,7 @@ on_midi_backend_changed (
       mb == MIDI_BACKEND_JACK)
     {
       ui_show_error_message (
-        GTK_WINDOW (assistant),
+        GTK_WINDOW (assistant), false,
         _("JACK MIDI can only be used with JACK "
         "audio"));
       gtk_combo_box_set_active (widget, false);

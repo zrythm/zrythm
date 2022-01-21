@@ -436,7 +436,7 @@ static void on_load_project (
         "will now close."),
         PROGRAM_NAME);
       ui_show_error_message (
-        NULL, msg);
+        NULL, true, msg);
       exit (0);
     }
 
@@ -800,7 +800,8 @@ load_icon (
       g_critical ("%s", err_msg);
       fprintf (stderr, "%s\n", err_msg);
       ui_show_message_full (
-        NULL, GTK_MESSAGE_ERROR, "%s", err_msg);
+        NULL, GTK_MESSAGE_ERROR, false,
+        "%s", err_msg);
       g_error ("Failed to load icon");
     }
   g_message ("Icon found.");
@@ -835,7 +836,7 @@ lock_memory (void)
               else
                 {
                   ui_show_error_message (
-                    NULL,
+                    NULL, false,
                     "Could not set system memory "
                     "lock limit to 'unlimited'");
                 }
@@ -844,7 +845,7 @@ lock_memory (void)
       else
         {
           ui_show_message_printf (
-            NULL, GTK_MESSAGE_WARNING,
+            NULL, GTK_MESSAGE_WARNING, false,
             "Your user does not have enough "
             "privileges to allow %s to lock "
             "unlimited memory. This may cause "
@@ -857,7 +858,7 @@ lock_memory (void)
   else
     {
       ui_show_message_printf (
-        NULL, GTK_MESSAGE_WARNING,
+        NULL, GTK_MESSAGE_WARNING, false,
         "Could not get system memory lock limit "
         "(%s)",
         strerror (errno));
@@ -875,7 +876,7 @@ lock_memory (void)
             strerror (errno));
 #else
           ui_show_message_printf (
-            NULL, GTK_MESSAGE_WARNING,
+            NULL, GTK_MESSAGE_WARNING, false,
             "Cannot lock down memory: %s",
             strerror (errno));
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -571,7 +571,7 @@ lv2_gtk_open_ui (
   else
     {
       ui_show_message_printf (
-        MAIN_WINDOW, GTK_MESSAGE_ERROR,
+        MAIN_WINDOW, GTK_MESSAGE_ERROR, false,
         _("Failed to open LV2 UI for %s"),
         plugin->plugin->setting->descr->name);
       return -1;

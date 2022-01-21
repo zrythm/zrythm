@@ -49,6 +49,13 @@ data is not locked into memory, it can be swapped
 by the kernel, causing xruns when attempting to
 access the data.
 
+Realtime Scheduling
+-------------------
+Zrythm requires realtime scheduling privileges for
+reliable, dropout-free operation. Realtime (RT)
+scheduling is a feature that enables applications to
+meet timing deadlines more reliably.
+
 GNU/Linux
 +++++++++
 To set up these privileges for your user, see

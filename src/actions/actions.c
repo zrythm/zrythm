@@ -591,7 +591,7 @@ activate_new (GSimpleAction *action,
     "restart %s to start a new project"),
     PROGRAM_NAME);
   ui_show_error_message (
-    MAIN_WINDOW, msg);
+    MAIN_WINDOW, false, msg);
   return;
 #endif
 
@@ -648,7 +648,7 @@ DEFINE_SIMPLE (activate_open)
 {
 #ifdef TRIAL_VER
   ui_show_error_message (
-    MAIN_WINDOW,
+    MAIN_WINDOW, false,
     _("Loading is disabled in the trial version"));
   return;
 #endif
@@ -679,7 +679,7 @@ activate_save (
 {
 #ifdef TRIAL_VER
   ui_show_error_message (
-    MAIN_WINDOW,
+    MAIN_WINDOW, false,
     _("Saving is disabled in the trial version"));
   return;
 #endif
@@ -707,7 +707,7 @@ activate_save_as (
 {
 #ifdef TRIAL_VER
   ui_show_error_message (
-    MAIN_WINDOW,
+    MAIN_WINDOW, false,
     _("Saving is disabled in the trial version"));
   return;
 #endif
@@ -1778,7 +1778,7 @@ activate_delete_selected_tracks (
         TRACKLIST_SELECTIONS))
     {
       ui_show_message_printf (
-        MAIN_WINDOW, GTK_MESSAGE_INFO,
+        MAIN_WINDOW, GTK_MESSAGE_INFO, false,
         "%s",
         _("Cannot delete tracks: selection "
         "contains an undeletable track"));
@@ -2086,7 +2086,7 @@ do_quantize (
   else
     {
       ui_show_message_printf (
-        MAIN_WINDOW, GTK_MESSAGE_WARNING,
+        MAIN_WINDOW, GTK_MESSAGE_WARNING, false,
         _("Must select either the timeline or the "
         "editor first. The current selection is "
         "%s"),
@@ -2178,14 +2178,15 @@ DEFINE_SIMPLE (activate_merge_selection)
   if (TL_SELECTIONS->num_regions == 0)
     {
       ui_show_error_message (
-        MAIN_WINDOW, _("No regions selected"));
+        MAIN_WINDOW, false,
+        _("No regions selected"));
       return;
     }
   if (!arranger_selections_all_on_same_lane (
         (ArrangerSelections *) TL_SELECTIONS))
     {
       ui_show_error_message (
-        MAIN_WINDOW,
+        MAIN_WINDOW, false,
         _("Selections must be on the same lane"));
       return;
     }
@@ -2193,7 +2194,7 @@ DEFINE_SIMPLE (activate_merge_selection)
        (ArrangerSelections *) TL_SELECTIONS))
     {
       ui_show_error_message (
-        MAIN_WINDOW,
+        MAIN_WINDOW, false,
         _("Cannot merge looped regions"));
       return;
     }
@@ -2755,7 +2756,7 @@ DEFINE_SIMPLE (activate_input_bpm)
 DEFINE_SIMPLE (activate_tap_bpm)
 {
   ui_show_message_printf (
-    MAIN_WINDOW, GTK_MESSAGE_WARNING,
+    MAIN_WINDOW, GTK_MESSAGE_WARNING, false,
     "%s", "Not implemented yet");
 }
 
@@ -2855,7 +2856,7 @@ DEFINE_SIMPLE (activate_detect_bpm)
     }
   char * str = g_string_free (gstr, false);
   ui_show_message_printf (
-    MAIN_WINDOW, GTK_MESSAGE_INFO,
+    MAIN_WINDOW, GTK_MESSAGE_INFO, false,
     "%s", str);
   g_free (str);
 }
@@ -3283,7 +3284,7 @@ DEFINE_SIMPLE (
           FILE_MANAGER_NONE)
     {
       ui_show_error_message (
-        MAIN_WINDOW,
+        MAIN_WINDOW, false,
         _("Cannot delete standard bookmark"));
       return;
     }

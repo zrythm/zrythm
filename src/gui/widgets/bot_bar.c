@@ -402,7 +402,7 @@ activate_link (
                errno == ERANGE))
             {
               ui_show_error_message (
-                MAIN_WINDOW,
+                MAIN_WINDOW, false,
                 _("Failed reading value"));
             }
           else
@@ -418,7 +418,7 @@ activate_link (
 
 feature_unavailable:
   ui_show_error_message (
-    MAIN_WINDOW,
+    MAIN_WINDOW, false,
     _("This feature is not available at the "
     "moment"));
   return false;

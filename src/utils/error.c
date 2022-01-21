@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -46,7 +46,8 @@ error_handle_prv (
           tmp, err->message);
       g_free (tmp);
       ui_show_message_printf (
-        MAIN_WINDOW, GTK_MESSAGE_ERROR, "%s", str);
+        MAIN_WINDOW, GTK_MESSAGE_ERROR, true,
+        "%s", str);
       g_free (str);
       g_error_free (err);
     }

@@ -1978,7 +1978,7 @@ plugin_open_ui (
             deprecated_uri, descr->author,
             descr->website);
           ui_show_error_message (
-            MAIN_WINDOW, msg);
+            MAIN_WINDOW, true, msg);
           g_free (deprecated_uri);
         }
     }

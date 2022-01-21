@@ -395,7 +395,7 @@ on_dnd_drop (
         _("Plugin %s cannot be added to this slot"),
         descr->name);
       ui_show_error_message (
-        MAIN_WINDOW, msg);
+        MAIN_WINDOW, false, msg);
     }
 
   gtk_widget_queue_draw (GTK_WIDGET (self));
