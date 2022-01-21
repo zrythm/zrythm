@@ -672,7 +672,12 @@ need_backtrace (
       "Allocation width too small")
     &&
     !string_contains_substr (
-      ev->message, "GDK_DROP_STATE_NONE");
+      ev->message, "GDK_DROP_STATE_NONE")
+    &&
+    !string_contains_substr (
+      ev->message,
+      "assertion 'self->drop == "
+      "gdk_dnd_event_get_drop (event)'");
 }
 
 /**
