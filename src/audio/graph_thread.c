@@ -330,7 +330,7 @@ get_stack_size (void)
   return rv;
 }
 
-#ifndef _WOE32
+#ifdef __linux__
 /**
  * Returns the priority to use for the thread or
  * 0 if not enough permissions to set the priority.
@@ -393,7 +393,7 @@ get_absolute_rt_priority (
 
   return priority;
 }
-#endif
+#endif /* __linux__ */
 
 /**
  * Creates a thread.
@@ -460,21 +460,21 @@ graph_thread_new (
     }
 #endif
 
+  res =
+    pthread_attr_setinheritsched (
+      &attributes, PTHREAD_EXPLICIT_SCHED);
+  if (res)
+    {
+      g_critical (
+        "Cannot request explicit scheduling "
+        "res = %d", res);
+      return NULL;
+    }
+
+#ifdef __linux__
   if (realtime)
     {
       g_debug ("creating RT thread");
-      res =
-        pthread_attr_setinheritsched (
-          &attributes, PTHREAD_EXPLICIT_SCHED);
-      if (res)
-        {
-          g_critical (
-            "Cannot request explicit scheduling "
-            "for RT thread res = %d", res);
-          return NULL;
-        }
-
-#ifndef _WOE32
       priority = get_absolute_rt_priority (priority);
 
       if (priority > 0)
@@ -520,23 +520,8 @@ graph_thread_new (
             "user manual for details.",
             PROGRAM_NAME);
         }
-#endif
     }
-  /* else if not RT thread */
-  else
-    {
-      g_debug ("creating non RT thread");
-      res =
-        pthread_attr_setinheritsched (
-          &attributes, PTHREAD_EXPLICIT_SCHED);
-      if (res)
-        {
-          g_critical (
-            "Cannot request explicit scheduling for "
-            "non RT thread res = %d", res);
-          return NULL;
-        }
-    }
+#endif /* __linux__ */
 
 #ifdef __APPLE__
 #define THREAD_STACK_SIZE 0x80000 // 512kB
