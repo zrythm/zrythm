@@ -1302,6 +1302,8 @@ draw_audio_part (
       while (curr_frames >= loop_end_frames)
         {
           curr_frames -= loop_frames;
+          if (loop_frames == 0)
+            break;
         }
       float min = 0.f, max = 0.f;
       for (signed_frame_t j = prev_frames;

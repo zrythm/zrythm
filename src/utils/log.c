@@ -789,8 +789,12 @@ log_idle_cb (
                     GTK_WINDOW (MAIN_WINDOW) : NULL,
                   msg, ev->backtrace,
                   false);
-              z_gtk_dialog_run (
-                GTK_DIALOG (dialog), true);
+              gtk_window_present (
+                GTK_WINDOW (dialog));
+              g_signal_connect (
+                GTK_DIALOG (dialog), "response",
+                G_CALLBACK (gtk_window_destroy),
+                NULL);
             }
 
           /* write the backtrace to the log after
