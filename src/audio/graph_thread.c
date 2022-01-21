@@ -414,7 +414,6 @@ graph_thread_new (
   bool realtime = true;
 
   int priority = -22; /* RT priority (from ardour) */
-  priority = get_absolute_rt_priority (priority);
 #ifdef HAVE_JACK
   if (AUDIO_ENGINE->audio_backend ==
         AUDIO_BACKEND_JACK)
@@ -426,6 +425,7 @@ graph_thread_new (
           AUDIO_ENGINE->client) - 2;
     }
 #endif
+  priority = get_absolute_rt_priority (priority);
 
   if (realtime)
     {
@@ -441,6 +441,9 @@ graph_thread_new (
           return NULL;
         }
 
+#ifndef _WOE32
+      /* this throws error on windows:
+       * res = 129 */
       res =
         pthread_attr_setschedpolicy (
           &attributes, SCHED_FIFO);
@@ -467,6 +470,7 @@ graph_thread_new (
             "thread res = %d", res);
           return NULL;
         }
+#endif
     }
   /* else if not RT thread */
   else
