@@ -176,6 +176,7 @@ text_expander_widget_init (
   g_return_if_fail (lang);
   self->buffer =
     gtk_source_buffer_new_with_language (lang);
+  g_return_if_fail (self->buffer);
   self->editor =
     GTK_SOURCE_VIEW (
       gtk_source_view_new_with_buffer (
