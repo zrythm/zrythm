@@ -62,7 +62,7 @@ jobs:
       - name: Fetch repos and files
         run: |
           mkdir /c/src
-          mv zrythm /c/src/
+          MSYS=winsymlinks:native mv zrythm /c/src/
           cd /c/src
           pwd
           git clone https://git.sr.ht/~alextee/zrythm-builds
