@@ -142,6 +142,8 @@ struct _ZrythmApp
 
   /** AppImage runtime path, if AppImage build. */
   char *             appimage_runtime_path;
+
+  bool               rt_priority_message_shown;
 };
 
 /**

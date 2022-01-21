@@ -508,7 +508,8 @@ graph_thread_new (
             }
         }
       else if (
-        is_main && ZRYTHM_HAVE_UI && !ZRYTHM_TESTING)
+        is_main && ZRYTHM_HAVE_UI && !ZRYTHM_TESTING
+        && !zrythm_app->rt_priority_message_shown)
         {
           ui_show_message_printf (
             MAIN_WINDOW, GTK_MESSAGE_WARNING, false,
@@ -519,6 +520,8 @@ graph_thread_new (
             "section in the "
             "user manual for details.",
             PROGRAM_NAME);
+          zrythm_app->rt_priority_message_shown =
+            true;
         }
     }
 #endif /* __linux__ */
