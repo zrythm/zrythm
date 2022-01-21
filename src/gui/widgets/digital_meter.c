@@ -545,7 +545,7 @@ digital_meter_snapshot (
       break;
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
       heap_text =
-        snap_grid_stringize (
+        snap_grid_stringize_length_and_type (
           *self->note_length,
           *self->note_type);
       z_cairo_get_text_extents_for_widget (

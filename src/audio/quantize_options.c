@@ -150,7 +150,7 @@ quantize_options_stringize (
   NoteType   note_type)
 {
   return
-    snap_grid_stringize (
+    snap_grid_stringize_length_and_type (
       note_length, note_type);
 }
 

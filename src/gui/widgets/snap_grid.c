@@ -45,10 +45,7 @@ static void
 set_label (SnapGridWidget * self)
 {
   SnapGrid * sg = self->snap_grid;
-  char * snap_str =
-    snap_grid_stringize (
-      sg->snap_note_length,
-      sg->snap_note_type);
+  char * snap_str = snap_grid_stringize (sg);
 
   char new_str[600];
   if (sg->length_type == NOTE_LENGTH_LINK)
@@ -64,9 +61,7 @@ set_label (SnapGridWidget * self)
   else
     {
       char * default_str =
-        snap_grid_stringize (
-          sg->default_note_length,
-          sg->default_note_type);
+        snap_grid_stringize (sg);
       sprintf (
         new_str, "%s - %s", snap_str, default_str);
       g_free (default_str);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,14 +20,26 @@
 #include "audio/engine.h"
 #include "audio/snap_grid.h"
 #include "audio/transport.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/editor_ruler.h"
+#include "gui/widgets/main_notebook.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/ruler.h"
+#include "gui/widgets/timeline_panel.h"
+#include "gui/widgets/timeline_ruler.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/algorithms.h"
 #include "utils/arrays.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 int
 snap_grid_get_ticks_from_length_and_type (
@@ -108,9 +120,63 @@ int
 snap_grid_get_snap_ticks (
   const SnapGrid * self)
 {
-  return
-    snap_grid_get_ticks_from_length_and_type (
-      self->snap_note_length, self->snap_note_type);
+  if (self->snap_adaptive)
+    {
+      g_return_val_if_fail (
+        ZRYTHM_HAVE_UI & !ZRYTHM_TESTING, -1);
+
+      RulerWidget * ruler = NULL;
+      if (self->type == SNAP_GRID_TYPE_TIMELINE)
+        {
+          ruler = MW_RULER;
+        }
+      else
+        {
+          ruler = EDITOR_RULER;
+        }
+
+      /* get intervals used in drawing */
+      int sixteenth_interval =
+        ruler_widget_get_sixteenth_interval (
+          ruler);
+      int beat_interval =
+        ruler_widget_get_beat_interval (
+          ruler);
+      int bar_interval =
+        (int)
+        MAX ((RW_PX_TO_HIDE_BEATS) /
+             (double) ruler->px_per_bar, 1.0);
+
+      /* attempt to snap at smallest interval */
+      if (sixteenth_interval > 0)
+        {
+          return
+            sixteenth_interval *
+            snap_grid_get_ticks_from_length_and_type (
+              NOTE_LENGTH_1_16, self->snap_note_type);
+        }
+      else if (beat_interval > 0)
+        {
+          return
+            beat_interval *
+            snap_grid_get_ticks_from_length_and_type (
+              NOTE_LENGTH_BEAT, self->snap_note_type);
+        }
+      else
+        {
+          return
+            bar_interval *
+            snap_grid_get_ticks_from_length_and_type (
+              NOTE_LENGTH_BAR, self->snap_note_type);
+        }
+    }
+  else
+    {
+      return
+        snap_grid_get_ticks_from_length_and_type (
+          self->snap_note_length,
+          self->snap_note_type);
+    }
 }
 
 double
@@ -198,7 +264,7 @@ get_note_length_str (
  * Must be free'd.
  */
 char *
-snap_grid_stringize (
+snap_grid_stringize_length_and_type (
   NoteLength note_length,
   NoteType   note_type)
 {
@@ -207,7 +273,30 @@ snap_grid_stringize (
   const char * first_part =
     get_note_length_str (note_length);
 
-  return  g_strdup_printf ("%s%s", first_part, c);
+  return g_strdup_printf ("%s%s", first_part, c);
+}
+
+/**
+ * Returns the grid intensity as a human-readable
+ * string.
+ *
+ * Must be free'd.
+ */
+char *
+snap_grid_stringize (
+  SnapGrid * self)
+{
+  if (self->snap_adaptive)
+    {
+      return g_strdup (_("Adaptive"));
+    }
+  else
+    {
+      return
+        snap_grid_stringize_length_and_type (
+          self->snap_note_length,
+          self->snap_note_type);
+    }
 }
 
 /**

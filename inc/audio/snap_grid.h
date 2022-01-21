@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -106,8 +106,6 @@ typedef struct SnapGrid
    * zoom level.
    *
    * The snap note type still applies.
-   *
-   * TODO this will be done after v1.
    */
   bool             snap_adaptive;
 
@@ -278,9 +276,19 @@ snap_grid_get_default_ticks (
  * Must be free'd.
  */
 char *
-snap_grid_stringize (
+snap_grid_stringize_length_and_type (
   NoteLength note_length,
   NoteType   note_type);
+
+/**
+ * Returns the grid intensity as a human-readable
+ * string.
+ *
+ * Must be free'd.
+ */
+char *
+snap_grid_stringize (
+  SnapGrid * self);
 
 /**
  * Returns the next or previous SnapGrid point.
