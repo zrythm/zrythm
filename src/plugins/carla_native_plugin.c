@@ -105,6 +105,39 @@ carla_native_plugin_init_loaded (
 {
 }
 
+static GdkGLContext *
+clear_gl_context (void)
+{
+  if (string_is_equal (
+        z_gtk_get_gsk_renderer_type (),
+        "GL"))
+    {
+      GdkGLContext * context =
+        gdk_gl_context_get_current ();
+      if (context)
+        {
+          /*g_warning ("have GL context - clearing");*/
+          g_object_ref (context);
+          gdk_gl_context_clear_current ();
+        }
+      return context;
+    }
+
+  return NULL;
+}
+
+static void
+return_gl_context (
+  GdkGLContext * context)
+{
+  if (context)
+    {
+      /*g_debug ("returning context");*/
+      gdk_gl_context_make_current (context);
+      g_object_unref (context);
+    }
+}
+
 /**
  * Tick callback for the plugin UI.
  */
@@ -117,26 +150,12 @@ carla_plugin_tick_cb (
   if (self->plugin->visible &&
       MAIN_WINDOW)
     {
-      GdkGLContext * context = NULL;
-      if (string_is_equal (
-            z_gtk_get_gsk_renderer_type (),
-            "GL"))
-        {
-          context =
-            gdk_gl_context_get_current ();
-          if (context)
-            {
-              g_object_ref (context);
-              gdk_gl_context_clear_current ();
-            }
-        }
+      GdkGLContext * context = clear_gl_context ();
+      /*g_debug ("calling ui_idle()...");*/
       self->native_plugin_descriptor->ui_idle (
         self->native_plugin_handle);
-      if (context)
-        {
-          gdk_gl_context_make_current (context);
-          g_object_unref (context);
-        }
+      /*g_debug ("done calling ui_idle()");*/
+      return_gl_context (context);
 
       return G_SOURCE_CONTINUE;
     }
@@ -2244,9 +2263,20 @@ carla_native_plugin_open_ui (
         hwnd_str);
 #endif
 
-      carla_show_custom_ui (
-        self->host_handle, 0, show);
-      pl->visible = show;
+      {
+        g_message (
+          "Attempting to %s UI for %s",
+          show ? "show" : "hide",
+          pl->setting->descr->name);
+        GdkGLContext * context =
+          clear_gl_context ();
+        carla_show_custom_ui (
+          self->host_handle, 0, show);
+        return_gl_context (context);
+        g_message ("Completed %s UI",
+          show ? "show" : "hide");
+        pl->visible = show;
+      }
 
       if (self->tick_cb)
         {
