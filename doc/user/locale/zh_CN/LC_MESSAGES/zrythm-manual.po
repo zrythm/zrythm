@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-01-11 21:06+0000\n"
-"PO-Revision-Date: 2022-01-11 09:55+0000\n"
-"Last-Translator: poi <erbaotao@outlook.com>\n"
-"Language: zh_CN\n"
+"PO-Revision-Date: 2022-01-22 02:54+0000\n"
+"Last-Translator: 刘韬 <lyuutau@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.11-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -119,7 +120,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:34
 msgid "Desktop Icon"
-msgstr ""
+msgstr "桌面图标"
 
 #: ../../appendix/files-and-directories.rst:35
 msgid ""
@@ -572,7 +573,7 @@ msgstr "引擎"
 
 #: ../../configuration/preferences.rst:32
 msgid "Audio engine settings."
-msgstr ""
+msgstr "音频引擎设置。"
 
 #: ../../configuration/preferences.rst:36
 msgid "Audio backend"
@@ -583,6 +584,7 @@ msgid ""
 "The audio backend to use. The available backends are JACK, RtAudio and SDL2. "
 "We recommend using :term:`JACK` when possible, otherwise RtAudio."
 msgstr ""
+"要使用的音频后端。可用的后端是 JACK、RtAudio 和 SDL2。我们建议尽可能使用 :term:`JACK`，否则使用 RtAudio。"
 
 #: ../../configuration/preferences.rst:41
 msgid "MIDI backend"
@@ -594,6 +596,8 @@ msgid ""
 "WindowsMME (Windows only). We recommend using JACK MIDI when possible, "
 "otherwise RtMidi."
 msgstr ""
+"要使用的 MIDI 后端。可用的后端是 JACK MIDI、RtMidi 和 WindowsMME（仅Windows）。我们建议尽可能使用 JACK "
+"MIDI，否则就使用 RtMidi。"
 
 #: ../../configuration/preferences.rst:43
 msgid "MIDI controllers"
@@ -601,7 +605,7 @@ msgstr "MIDI 控制器"
 
 #: ../../configuration/preferences.rst:44
 msgid "A list of controllers to auto-connect to."
-msgstr ""
+msgstr "要自动连接的控制器的列表。"
 
 #: ../../configuration/preferences.rst:46
 msgid "Audio inputs"
@@ -609,7 +613,7 @@ msgstr "音频输入"
 
 #: ../../configuration/preferences.rst:46
 msgid "A list of audio inputs to auto-connect to."
-msgstr ""
+msgstr "要自动连接的音频输入的列表。"
 
 #: ../../configuration/preferences.rst:49
 msgid "Paths (Global)"
@@ -681,7 +685,7 @@ msgstr ""
 
 #: ../../configuration/preferences.rst:80
 msgid "This may lead to performance loss for some plugins."
-msgstr ""
+msgstr "这可能导致一些插件的性能损失。"
 
 #: ../../configuration/preferences.rst:84
 msgid "Refresh rate"
@@ -1406,8 +1410,9 @@ msgstr ""
 #: ../../editing/clip-editors/piano-roll.rst:8
 #: ../../editing/clip-editors/toolbar.rst:18
 #: ../../zrythm-interface/bottom-panel.rst:29
+#, fuzzy
 msgid "Piano Roll"
-msgstr ""
+msgstr "钢琴卷"
 
 #: ../../editing/clip-editors/piano-roll.rst:10
 msgid "The piano roll is the main editor for editing MIDI regions."

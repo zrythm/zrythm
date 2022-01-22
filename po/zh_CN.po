@@ -11,13 +11,14 @@
 # Liu Tao <lyuutau@outlook.com>, 2021.
 # poi <erbaotao@outlook.com>, 2022.
 # Eric <alchemillatruth@purelymail.com>, 2022.
+# 刘韬 <lyuutau@outlook.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-19 14:24+0000\n"
 "PO-Revision-Date: 2022-01-22 02:54+0000\n"
-"Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
+"Last-Translator: 刘韬 <lyuutau@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -2069,7 +2070,7 @@ msgstr "未能序列化当前项目"
 
 #: src/gui/widgets/main_window.c:226
 msgid "Unsaved changes"
-msgstr ""
+msgstr "未保存的更改"
 
 #: src/gui/widgets/main_window.c:230
 msgid "_Save & Quit"
