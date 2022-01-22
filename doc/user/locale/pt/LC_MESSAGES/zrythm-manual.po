@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-01-11 21:06+0000\n"
-"PO-Revision-Date: 2022-01-18 18:55+0000\n"
+"PO-Revision-Date: 2022-01-22 02:54+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/pt/>\n"
@@ -2875,7 +2875,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:225
 msgid "Linear"
-msgstr ""
+msgstr "Linear"
 
 #: ../../editing/timeline/arranger.rst:230
 msgid "Exponential"
@@ -2892,6 +2892,8 @@ msgstr ""
 #: ../../editing/timeline/event-viewer.rst:10
 msgid "The event viewer displays all events in the timeline as a list."
 msgstr ""
+"O visualizador de eventos exibe todos os eventos na cronologia como uma "
+"lista."
 
 #: ../../editing/timeline/intro.rst:8 ../../zrythm-interface/timeline.rst:8
 msgid "Timeline"
@@ -2903,6 +2905,9 @@ msgid ""
 "timeline section consists of the tracklist on the left and the ruler/"
 "arranger on the right side."
 msgstr ""
+"A edição na cronologia é o fluxo de trabalho mais comum dentro da Zrythm. A "
+"secção da cronologia consiste na lista de faixas à esquerda e a régua/"
+"arranjador ao lado direito."
 
 #: ../../editing/timeline/overview.rst:17
 msgid "Tracklist"
