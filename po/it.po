@@ -9,13 +9,14 @@
 # Michal Čihař <michal@cihar.com>, 2020.
 # J. Lavoie <j.lavoie@net-c.ca>, 2021.
 # Giovanni Mauri <info@thejoe.it>, 2022.
+# G R <gradaellig@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-19 14:24+0000\n"
-"PO-Revision-Date: 2022-01-17 09:53+0000\n"
-"Last-Translator: Giovanni Mauri <info@thejoe.it>\n"
+"PO-Revision-Date: 2022-01-22 17:40+0000\n"
+"Last-Translator: G R <gradaellig@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/zrythm/it/"
 ">\n"
 "Language: it\n"
@@ -23,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -51,7 +52,7 @@ msgstr "Tutto"
 #: inc/gui/backend/arranger_object.h:103 resources/ui/inspector_master.ui:7
 #: resources/ui/inspector_ap.ui:7 resources/ui/inspector_midi.ui:7
 msgid "Region"
-msgstr "Regione"
+msgstr "Area geografica"
 
 #: inc/schemas/gui/backend/arranger_object.h:58
 #: inc/gui/backend/arranger_object.h:105
@@ -61,7 +62,7 @@ msgstr "Nota Midi"
 #: inc/schemas/gui/backend/arranger_object.h:60
 #: inc/gui/backend/arranger_object.h:107
 msgid "Chord Object"
-msgstr ""
+msgstr "Oggetto Chord"
 
 #: inc/schemas/gui/backend/arranger_object.h:62
 #: inc/gui/backend/arranger_object.h:109
@@ -96,17 +97,17 @@ msgstr "Superellisse"
 
 #: inc/schemas/audio/curve.h:48 inc/audio/curve.h:116 src/audio/curve.c:373
 msgid "Vital"
-msgstr ""
+msgstr "Vitale"
 
 #: inc/schemas/audio/curve.h:50 inc/audio/curve.h:118 src/audio/curve.c:79
 #, c-format
 msgid "Pulse"
-msgstr ""
+msgstr "Impulso"
 
 #: inc/schemas/audio/region.h:47 inc/audio/region.h:87
 #: src/gui/widgets/track.c:1030
 msgid "Inherit"
-msgstr "Ereditato"
+msgstr "Eredita"
 
 #: inc/schemas/audio/region.h:49 inc/audio/region.h:89
 #: src/gui/widgets/bot_bar.c:518 src/audio/automation_track.c:207
@@ -155,12 +156,12 @@ msgstr "_Incolla"
 
 #: inc/utils/gtk.h:75
 msgid "_Delete"
-msgstr "_Cancella"
+msgstr "_Elimina"
 
 #. TRANSLATORS: deselects everything
 #: inc/utils/gtk.h:80
 msgid "Cle_ar Selection"
-msgstr "Deseleziona tutto"
+msgstr "Cancella selezione"
 
 #: inc/utils/gtk.h:85
 msgid "Select A_ll"
@@ -176,7 +177,7 @@ msgstr "Duplica"
 #: resources/ui/fader_buttons.ui:46
 #: build/data/org.zrythm.Zrythm.gschema.xml:316
 msgid "Mute"
-msgstr "Muto"
+msgstr "Silenzia"
 
 #: inc/utils/gtk.h:98 src/gui/widgets/channel.c:763 src/gui/widgets/track.c:352
 #: src/gui/widgets/track.c:884
@@ -201,11 +202,11 @@ msgstr "Normalizza LUFS"
 
 #: inc/audio/audio_function.h:74
 msgid "Linear fade in"
-msgstr "Fade-in lineare"
+msgstr "Dissolvenza lineare"
 
 #: inc/audio/audio_function.h:76
 msgid "Linear fade out"
-msgstr "Fade-out Lineare"
+msgstr "Dissolvenza lineare"
 
 #: inc/audio/audio_function.h:78 src/gui/widgets/home_toolbar.c:186
 msgid "Nudge left"
@@ -374,7 +375,7 @@ msgstr "Ruota orizzontalmente"
 
 #: inc/audio/midi_function.h:59 inc/audio/automation_function.h:51
 msgid "Flip V"
-msgstr "Ruota Verticalmente"
+msgstr "Capovolgi V"
 
 #: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:134
 msgid "Legato"
@@ -390,7 +391,7 @@ msgstr "Staccato"
 
 #: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:152
 msgid "Strum"
-msgstr "Strimpello"
+msgstr "Strimpellare"
 
 #: inc/audio/exporter.h:90
 msgid "Before inserts"
@@ -402,16 +403,14 @@ msgstr "Pre-fader"
 
 #: inc/audio/exporter.h:92
 msgid "Post fader"
-msgstr "Post fader"
+msgstr "Postfader"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
-#, fuzzy
 msgid "0dB"
 msgstr "0dB"
 
 #: inc/audio/pan.h:53
-#, fuzzy
 msgid "-3dB"
 msgstr "-3dB"
 
@@ -448,9 +447,9 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
-"Trovato nuovo backup:\n"
+"Backup più recente trovato:\n"
 "  %s.\n"
-"Usare il backup più nuovo?"
+"Utilizzare il backup più recente?"
 
 #: src/project.c:983
 msgid "Backup found"
@@ -489,7 +488,7 @@ msgstr "Progetto salvato."
 
 #: src/zrythm_app.c:139
 msgid "Error - Backtrace:\n"
-msgstr "Errore - Indietro:\n"
+msgstr "Errore - Backtrace:\n"
 
 #: src/zrythm_app.c:143
 #, c-format
@@ -791,7 +790,7 @@ msgstr "Impossibile ottenere il plugin LV2"
 #: src/plugins/plugin.c:1133
 #, c-format
 msgid " - bridge: %s"
-msgstr " - bridge: %s"
+msgstr " - ponte: %s"
 
 #: src/plugins/plugin.c:1144
 msgid "instrument"
@@ -901,9 +900,9 @@ msgid "Failed to find plugin with URI <%s>"
 msgstr "Fallita l'apertura del file: %s"
 
 #: src/plugins/lv2_plugin.c:2764
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to dlopen %s: %s"
-msgstr "Fallita l'apertura del file: %s"
+msgstr "Fallita l'apertura del file %s: %s"
 
 #: src/plugins/lv2_plugin.c:2776
 #, fuzzy, c-format
@@ -1006,9 +1005,9 @@ msgid "View info"
 msgstr "Visualizza informazioni"
 
 #: src/gui/widgets/inspector_port.c:332
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set control %s to %f"
-msgstr "Fallita l'apertura del file: %s"
+msgstr "Impossibile impostare il controllo %s su %f"
 
 #: src/gui/widgets/inspector_port.c:386
 msgid "Incoming signals"
@@ -1126,9 +1125,8 @@ msgid "Enable"
 msgstr "Abilita"
 
 #: src/gui/widgets/channel.c:816 src/gui/widgets/track.c:978
-#, fuzzy
 msgid "Change color..."
-msgstr "Cambia BPM"
+msgstr "Cambia colore..."
 
 #: src/gui/widgets/track_input_expander.c:294
 msgid "All MIDI Inputs"
@@ -1267,9 +1265,9 @@ msgid "No port selected"
 msgstr "Nessuna porta selezionata"
 
 #: src/gui/widgets/port_selector_popover.c:89
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to connect %s to %s"
-msgstr "Fallita l'apertura del file: %s"
+msgstr "Impossibile collegare %s a %s"
 
 #: src/gui/widgets/port_selector_popover.c:100
 msgid "These ports cannot be connected"
@@ -1462,9 +1460,8 @@ msgid "Edit"
 msgstr ""
 
 #: src/gui/widgets/channel_slot.c:809
-#, fuzzy
 msgid "Select"
-msgstr "Seleziona tutto"
+msgstr "Seleziona"
 
 #: src/gui/widgets/channel_slot.c:1049
 msgid "empty slot"
@@ -1850,9 +1847,8 @@ msgid "Region Functions"
 msgstr "Connetti le porte"
 
 #: src/gui/widgets/timeline_arranger.c:1187
-#, fuzzy
 msgid "Audio Regions"
-msgstr "Nessun input"
+msgstr "Regioni audio"
 
 #: src/gui/widgets/timeline_arranger.c:1217
 msgid "Export as MIDI file"
@@ -1882,9 +1878,9 @@ msgid "Curve algorithm"
 msgstr "Algoritmo della curva"
 
 #: src/gui/widgets/header.c:136
-#, fuzzy, c-format
+#, c-format
 msgid "About %s"
-msgstr "A proposito di Zrythm"
+msgstr "Info su %s"
 
 #: src/gui/widgets/header.c:141
 msgid "About Zrythm"
@@ -1930,9 +1926,9 @@ msgid "Report a Bug"
 msgstr "Riporta un bug"
 
 #: src/gui/widgets/port_connections_tree.c:97
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to enable connection from %s to %s"
-msgstr "Impossibile scrivere il file: %s"
+msgstr "Impossibile abilitare la connessione da %s a %s"
 
 #: src/gui/widgets/port_connections_tree.c:268
 msgid "Source"
@@ -1982,9 +1978,8 @@ msgid "Loop selection"
 msgstr ""
 
 #: src/gui/widgets/home_toolbar.c:209
-#, fuzzy
 msgid "Undo..."
-msgstr "Annulla"
+msgstr "Annulla..."
 
 #: src/gui/widgets/home_toolbar.c:212
 msgid "Redo..."
@@ -2698,9 +2693,8 @@ msgid "New direct out"
 msgstr "Nuovo progetto"
 
 #: src/gui/widgets/track.c:985
-#, fuzzy
 msgid "Rename lane..."
-msgstr "Rinomina traccia"
+msgstr "Rinomina traccia..."
 
 #: src/gui/widgets/track.c:1003
 msgid "Passthrough input"
@@ -3013,9 +3007,8 @@ msgid "The following files will be created:"
 msgstr ""
 
 #: src/gui/widgets/dialogs/export_dialog.c:430
-#, fuzzy
 msgid "in the directory:"
-msgstr "Inizializzazione delle impostazioni"
+msgstr "nella directory:"
 
 #: src/gui/widgets/dialogs/export_dialog.c:587
 msgid "<name>.<format>"
@@ -3327,9 +3320,9 @@ msgid "Channel Send %d enabled"
 msgstr ""
 
 #: src/audio/channel_send.c:123
-#, fuzzy, c-format
+#, c-format
 msgid "Channel Send %d amount"
-msgstr "Cambia BPM"
+msgstr "Importo di Invio canale %d"
 
 #: src/audio/channel_send.c:141
 #, fuzzy, c-format
@@ -3948,7 +3941,6 @@ msgid "Yes"
 msgstr "Sì"
 
 #: src/actions/actions.c:606
-#, fuzzy
 msgid "No"
 msgstr "No"
 
@@ -4200,9 +4192,9 @@ msgid "Failed to reset %s"
 msgstr "Fallita l'apertura del file: %s"
 
 #: src/actions/actions.c:3252
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to disconnect %s from %s"
-msgstr "Fallita l'apertura del file: %s"
+msgstr "Impossibile scollegare %s da %s"
 
 #: src/actions/actions.c:3287
 msgid "Cannot delete standard bookmark"
@@ -4364,9 +4356,9 @@ msgid "Copy %d Plugins"
 msgstr ""
 
 #: src/actions/mixer_selections_action.c:1418
-#, fuzzy, c-format
+#, c-format
 msgid "Paste %s"
-msgstr "Incolla"
+msgstr "Incolla %s"
 
 #: src/actions/mixer_selections_action.c:1425
 #, c-format
@@ -4415,9 +4407,9 @@ msgid "Failed saving file %s"
 msgstr "Fallita l'apertura del file: %s"
 
 #: src/actions/tracklist_selections.c:1016
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create track at %d"
-msgstr "Impossibile scrivere il file: %s"
+msgstr "Impossibile creare la traccia a %d"
 
 #: src/actions/tracklist_selections.c:1064
 #: src/actions/tracklist_selections.c:1591
@@ -4436,14 +4428,14 @@ msgid "Copy Track"
 msgstr "Nascondi traccia"
 
 #: src/actions/tracklist_selections.c:2204
-#, fuzzy, c-format
+#, c-format
 msgid "Copy %d Tracks inside"
-msgstr "Nascondi traccia"
+msgstr "Copia %d Tracce all'interno"
 
 #: src/actions/tracklist_selections.c:2208
-#, fuzzy, c-format
+#, c-format
 msgid "Copy %d Tracks"
-msgstr "Nascondi traccia"
+msgstr "Copia %d Tracce"
 
 #: src/actions/tracklist_selections.c:2219
 #, c-format
@@ -4554,54 +4546,54 @@ msgid "Change MIDI fader mode"
 msgstr ""
 
 #: src/actions/tracklist_selections.c:2321
-#, fuzzy, c-format
+#, c-format
 msgid "Solo %d Tracks"
-msgstr "Nascondi tracce"
+msgstr "Solo %d Tracce"
 
 #: src/actions/tracklist_selections.c:2325
-#, fuzzy, c-format
+#, c-format
 msgid "Unsolo %d Tracks"
-msgstr "Nascondi tracce"
+msgstr "Unsolo %d Tracce"
 
 #: src/actions/tracklist_selections.c:2330
-#, fuzzy, c-format
+#, c-format
 msgid "Mute %d Tracks"
-msgstr "Nascondi tracce"
+msgstr "Muta %d Tracce"
 
 #: src/actions/tracklist_selections.c:2334
-#, fuzzy, c-format
+#, c-format
 msgid "Unmute %d Tracks"
-msgstr "Nascondi tracce"
+msgstr "Riattiva l'audio delle tracce %d"
 
 #: src/actions/tracklist_selections.c:2339
-#, fuzzy, c-format
+#, c-format
 msgid "Listen %d Tracks"
-msgstr "Nascondi tracce"
+msgstr "Ascolta le tracce %d"
 
 #: src/actions/tracklist_selections.c:2343
-#, fuzzy, c-format
+#, c-format
 msgid "Unlisten %d Tracks"
-msgstr "Nascondi tracce"
+msgstr "Annulla l'ascolto delle tracce %d"
 
 #: src/actions/tracklist_selections.c:2348
-#, fuzzy, c-format
+#, c-format
 msgid "Enable %d Tracks"
-msgstr "Nascondi tracce"
+msgstr "Abilita tracce %d"
 
 #: src/actions/tracklist_selections.c:2352
-#, fuzzy, c-format
+#, c-format
 msgid "Disable %d Tracks"
-msgstr "Nascondi tracce"
+msgstr "Disabilita le tracce %d"
 
 #: src/actions/tracklist_selections.c:2357
-#, fuzzy, c-format
+#, c-format
 msgid "Fold %d Tracks"
-msgstr "Nascondi tracce"
+msgstr "Piega %d Tracce"
 
 #: src/actions/tracklist_selections.c:2361
-#, fuzzy, c-format
+#, c-format
 msgid "Unfold %d Tracks"
-msgstr "Nascondi tracce"
+msgstr "Spiega le tracce %d"
 
 #: src/actions/tracklist_selections.c:2384
 msgid "Move Track inside"
@@ -4612,9 +4604,9 @@ msgid "Move Track"
 msgstr ""
 
 #: src/actions/tracklist_selections.c:2398
-#, fuzzy, c-format
+#, c-format
 msgid "Move %d Tracks inside"
-msgstr "Nascondi tracce"
+msgstr "Spostare le tracce %d all'interno"
 
 #: src/actions/tracklist_selections.c:2405
 #, c-format
@@ -4627,9 +4619,9 @@ msgid "Pin Track"
 msgstr "Nascondi traccia"
 
 #: src/actions/tracklist_selections.c:2419
-#, fuzzy, c-format
+#, c-format
 msgid "Pin %d Tracks"
-msgstr "Nascondi tracce"
+msgstr "Appunta %d Tracce"
 
 #: src/actions/tracklist_selections.c:2426
 #, fuzzy
@@ -4637,9 +4629,9 @@ msgid "Unpin Track"
 msgstr "Nascondi traccia"
 
 #: src/actions/tracklist_selections.c:2431
-#, fuzzy, c-format
+#, c-format
 msgid "Unpin %d Tracks"
-msgstr "Nascondi tracce"
+msgstr "Sblocca le tracce %d"
 
 #: src/actions/undo_manager.c:328
 #, fuzzy
@@ -5604,7 +5596,6 @@ msgid "GTK3 -&gt; GTK4 port."
 msgstr ""
 
 #: data/zrythm.desktop.in:10
-#, fuzzy
 msgid "Zrythm"
 msgstr "Zrythm"
 
@@ -6813,9 +6804,8 @@ msgid "Default algorithm to use for automation curves."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1080
-#, fuzzy
 msgid "Undo stack length"
-msgstr "lunghezza della nota"
+msgstr "Annulla lunghezza pila"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1081
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
@@ -6855,9 +6845,8 @@ msgid "Font scale"
 msgstr "scala"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1116
-#, fuzzy
 msgid "Font scale."
-msgstr "scala"
+msgstr "Scala del carattere."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1120
 msgid "User interface language"
