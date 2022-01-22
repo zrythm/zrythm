@@ -1749,6 +1749,21 @@ carla_native_plugin_instantiate (
         8000, NULL);
     }
 
+  intptr_t uses_embed_ret =
+    self->native_plugin_descriptor->dispatcher (
+      self->native_plugin_handle,
+      NATIVE_PLUGIN_OPCODE_HOST_USES_EMBED,
+      0, 0, NULL, 0.f);
+  if (uses_embed_ret != 0)
+    {
+      g_set_error_literal (
+        error,
+        Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR,
+        Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR_INSTANTIATION_FAILED,
+        "Failed to set USES_EMBED");
+      return -1;
+    }
+
   const PluginType type =
     get_plugin_type_from_protocol (descr->protocol);
   int ret = 0;
