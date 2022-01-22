@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-01-19 14:24+0000\n"
+"POT-Creation-Date: 2022-01-22 17:45+0000\n"
 "PO-Revision-Date: 2022-01-17 09:53+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
@@ -421,11 +421,11 @@ msgid "-6dB"
 msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
-#: inc/audio/pan.h:76 src/utils/ui.c:883 src/audio/curve.c:353
+#: inc/audio/pan.h:76 src/utils/ui.c:895 src/audio/curve.c:353
 msgid "Linear"
 msgstr "Линейный"
 
-#: inc/audio/pan.h:77 src/utils/ui.c:884
+#: inc/audio/pan.h:77 src/utils/ui.c:896
 msgid "Square Root"
 msgstr "Квадратный корень"
 
@@ -433,16 +433,16 @@ msgstr "Квадратный корень"
 msgid "Sine"
 msgstr "Синус"
 
-#: src/project.c:895
+#: src/project.c:891
 #, c-format
 msgid "Unable to read file: %s"
 msgstr "Невозможно прочитать файл: %s"
 
-#: src/project.c:919
+#: src/project.c:916
 msgid "Failed to decompress project file"
 msgstr "Не удалось распаковать файл проекта"
 
-#: src/project.c:978
+#: src/project.c:975
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -453,11 +453,11 @@ msgstr ""
 "  %s.\n"
 "Использовать более новую резервную копию?"
 
-#: src/project.c:983
+#: src/project.c:980
 msgid "Backup found"
 msgstr "Найдена резервная копия"
 
-#: src/project.c:1043
+#: src/project.c:1040
 #, c-format
 msgid ""
 "This project was created with a different version of %s (%s). It may not "
@@ -466,25 +466,25 @@ msgstr ""
 "Этот проект был создан в другой версии %s (%s). Он может работать "
 "некорректно."
 
-#: src/project.c:1060
+#: src/project.c:1057
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 "Не удалось открыть проект. Пожалуйста, проверьте логи для получения "
 "дополнительной информации."
 
-#: src/project.c:1288
+#: src/project.c:1281
 msgid "Failed to load project. Will create a new one instead."
 msgstr "Не удалось открыть проект. Вместо него будет создан новый."
 
-#: src/project.c:1622
+#: src/project.c:1615
 msgid "Failed to compress project file"
 msgstr "Не удалось сжать файл проекта"
 
-#: src/project.c:1668 src/project.c:1671
+#: src/project.c:1661 src/project.c:1664
 msgid "Backup saved."
 msgstr "Резервная копия сохранена."
 
-#: src/project.c:1682
+#: src/project.c:1675
 msgid "Project saved."
 msgstr "Проект сохранен."
 
@@ -548,27 +548,27 @@ msgstr "Инициализация %s каталогов"
 msgid "Initializing logging system"
 msgstr "Инициализация системы протоколирования"
 
-#: src/zrythm_app.c:485
+#: src/zrythm_app.c:491
 msgid "Initializing caches"
 msgstr "Инициализация кэшей"
 
-#: src/zrythm_app.c:489
+#: src/zrythm_app.c:495
 msgid "Initializing file manager"
 msgstr "Инициализация файлового менеджера"
 
-#: src/zrythm_app.c:496
+#: src/zrythm_app.c:502
 msgid "Scanning plugins"
 msgstr "Сканирование плагинов"
 
-#: src/zrythm_app.c:601
+#: src/zrythm_app.c:607
 msgid "License Information"
 msgstr "Лицензионная информация"
 
-#: src/zrythm_app.c:615
+#: src/zrythm_app.c:621
 msgid "Waiting for project"
 msgstr "Ожидание проекта"
 
-#: src/zrythm_app.c:1018
+#: src/zrythm_app.c:1025
 #, c-format
 msgid ""
 "%s-%s\n"
@@ -595,76 +595,76 @@ msgstr ""
 "Поддержите этот проект на https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1474
+#: src/zrythm_app.c:1481
 #, c-format
 msgid "File %s not found."
 msgstr "Файл %s не найден."
 
-#: src/zrythm_app.c:1495
+#: src/zrythm_app.c:1502
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "Выходной файл не был указан. Пожалуйста, передайте его при помощи `--"
 "output=FILE`."
 
-#: src/zrythm_app.c:1561
+#: src/zrythm_app.c:1568
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "Проект не удалось распаковать: %s\n"
 
-#: src/zrythm_app.c:1580
+#: src/zrythm_app.c:1587
 msgid "Unknown operation"
 msgstr "Неизвестная операция"
 
-#: src/zrythm_app.c:1600
+#: src/zrythm_app.c:1607
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "Для этой опции требуется libguile\n"
 
-#: src/zrythm_app.c:1765
+#: src/zrythm_app.c:1772
 msgid "Print version information"
 msgstr "Отобразить информацию о версии"
 
-#: src/zrythm_app.c:1770
+#: src/zrythm_app.c:1777
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "Преобразование ZPJ-FILE в YAML"
 
-#: src/zrythm_app.c:1775
+#: src/zrythm_app.c:1782
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "Преобразование YAML-PROJECT-FILE в формат .zpj"
 
-#: src/zrythm_app.c:1780
+#: src/zrythm_app.c:1787
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "Создание проекта из SCRIPT-FILE"
 
-#: src/zrythm_app.c:1784
+#: src/zrythm_app.c:1791
 msgid "Print output in user-friendly way"
 msgstr "Отобразить вывод в удобным для пользователя формате"
 
-#: src/zrythm_app.c:1788
+#: src/zrythm_app.c:1795
 msgid "Print current settings"
 msgstr "Отобразить текущие настройки"
 
-#: src/zrythm_app.c:1792
+#: src/zrythm_app.c:1799
 msgid "Reset to factory settings"
 msgstr "Сброс до заводских настроек"
 
-#: src/zrythm_app.c:1795
+#: src/zrythm_app.c:1802
 msgid "Override the audio backend to use"
 msgstr "Переопределить используемый аудио бэкенд"
 
-#: src/zrythm_app.c:1799
+#: src/zrythm_app.c:1806
 msgid "Override the MIDI backend to use"
 msgstr "Переопределить используемый MIDI бэкенд"
 
-#: src/zrythm_app.c:1803
+#: src/zrythm_app.c:1810
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "Алиас для --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1835
+#: src/zrythm_app.c:1842
 msgid "[PROJECT-FILE]"
 msgstr "[ФАЙЛ ПРОЕКТА]"
 
-#: src/zrythm_app.c:1840
+#: src/zrythm_app.c:1847
 #, c-format
 msgid ""
 "Examples:\n"
@@ -684,56 +684,56 @@ msgstr ""
 "\n"
 "Пожалуйста, сообщайте о проблемах в %s\n"
 
-#: src/zrythm_app.c:1852
+#: src/zrythm_app.c:1859
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "Запустить %s, опционально передав файл проекта."
 
-#: src/plugins/carla_native_plugin.c:652 src/plugins/lv2_plugin.c:3756
+#: src/plugins/carla_native_plugin.c:681 src/plugins/lv2_plugin.c:3757
 msgid "Default bank"
 msgstr "Банк по умолчанию"
 
-#: src/plugins/carla_native_plugin.c:657 src/plugins/lv2_plugin.c:3761
+#: src/plugins/carla_native_plugin.c:686 src/plugins/lv2_plugin.c:3762
 msgid "Init"
 msgstr "Инициализация"
 
-#: src/plugins/carla_native_plugin.c:1106
+#: src/plugins/carla_native_plugin.c:1141
 msgid "Audio in"
 msgstr "Аудио вход"
 
-#: src/plugins/carla_native_plugin.c:1119
+#: src/plugins/carla_native_plugin.c:1169
 msgid "Audio out"
 msgstr "Аудио выход"
 
 #. TRANSLATORS: either leave this
 #. * untranslated or make sure the translated text
 #. * is max 7 characters
-#: src/plugins/carla_native_plugin.c:1132 src/gui/widgets/header.c:126
+#: src/plugins/carla_native_plugin.c:1182 src/gui/widgets/header.c:126
 msgid "MIDI in"
 msgstr "MIDI вход"
 
-#: src/plugins/carla_native_plugin.c:1147
+#: src/plugins/carla_native_plugin.c:1197
 msgid "MIDI out"
 msgstr "MIDI выход"
 
-#: src/plugins/carla_native_plugin.c:1162
+#: src/plugins/carla_native_plugin.c:1212
 msgid "CV in"
 msgstr "CV вход"
 
-#: src/plugins/carla_native_plugin.c:1174
+#: src/plugins/carla_native_plugin.c:1224
 msgid "CV out"
 msgstr "CV выход"
 
-#: src/plugins/carla_native_plugin.c:1809
+#: src/plugins/carla_native_plugin.c:1874
 #, c-format
 msgid "Error adding carla plugin: %s"
 msgstr "Ошибка при добавлении плагина carla: %s"
 
-#: src/plugins/carla_native_plugin.c:2049
+#: src/plugins/carla_native_plugin.c:2120
 msgid "Failed to load Carla state"
 msgstr "Не удалось загрузить состояние Carla"
 
-#: src/plugins/carla_native_plugin.c:2064
+#: src/plugins/carla_native_plugin.c:2135
 msgid ""
 "Failed to instantiate Carla plugin: handle/descriptor not initialized "
 "properly"
@@ -741,7 +741,7 @@ msgstr ""
 "Не удалось добавить плагин Carla: handle/дескриптор не инициализирован "
 "должным образом"
 
-#: src/plugins/carla_native_plugin.c:2468
+#: src/plugins/carla_native_plugin.c:2562
 #, c-format
 msgid "State file %s doesn't exist"
 msgstr "Файл состояния %s не существует"
@@ -903,46 +903,46 @@ msgstr "Неизвестный тип виджета для значения"
 msgid "Unknown widget type for value\n"
 msgstr "Неизвестный тип виджета для значения\n"
 
-#: src/plugins/lv2_plugin.c:1982
+#: src/plugins/lv2_plugin.c:1983
 #, c-format
 msgid "Failed to get LV2 plugin from URI <%s>"
 msgstr "Не удалось получить LV2 плагин из URI <%s>"
 
-#: src/plugins/lv2_plugin.c:2286
+#: src/plugins/lv2_plugin.c:2287
 #, c-format
 msgid "Could not find UI by URI <%s>"
 msgstr "Не удалось найти пользовательский интерфейс по URI <%s>"
 
-#: src/plugins/lv2_plugin.c:2639
+#: src/plugins/lv2_plugin.c:2640
 msgid "Failed to make temporary dir"
 msgstr "Не удалось создать временный каталог"
 
-#: src/plugins/lv2_plugin.c:2685
+#: src/plugins/lv2_plugin.c:2686
 #, c-format
 msgid "Failed to find preset with URI <%s>"
 msgstr "Не удалось найти пресет с URI <%s>"
 
-#: src/plugins/lv2_plugin.c:2706
+#: src/plugins/lv2_plugin.c:2707
 #, c-format
 msgid "Failed to load state from %s"
 msgstr "Не удалось загрузить состояние из %s"
 
-#: src/plugins/lv2_plugin.c:2740
+#: src/plugins/lv2_plugin.c:2741
 #, c-format
 msgid "Failed to find plugin with URI <%s>"
 msgstr "Не удалось найти плагин с URI <%s>"
 
-#: src/plugins/lv2_plugin.c:2764
+#: src/plugins/lv2_plugin.c:2765
 #, c-format
 msgid "Failed to dlopen %s: %s"
 msgstr "Не удалось открыть файл %s: %s"
 
-#: src/plugins/lv2_plugin.c:2776
+#: src/plugins/lv2_plugin.c:2777
 #, c-format
 msgid "Failed to get dlinfo for %s"
 msgstr "Не удалось выполнить dlinfo для %s"
 
-#: src/plugins/lv2_plugin.c:2799
+#: src/plugins/lv2_plugin.c:2800
 #, c-format
 msgid ""
 "%s <%s> contains a reference to %s, which may cause issues.\n"
@@ -955,33 +955,33 @@ msgstr ""
 "и сообщите об этом дистрибьютору и/или автору плагина:\n"
 "%s <%s>"
 
-#: src/plugins/lv2_plugin.c:2834
+#: src/plugins/lv2_plugin.c:2835
 #, fuzzy
 msgid "Failed to create or init ports and parameters"
 msgstr "Не удалось создать объекты аранжировщика"
 
-#: src/plugins/lv2_plugin.c:2864
+#: src/plugins/lv2_plugin.c:2865
 #, fuzzy, c-format
 msgid "Required feature %s is not supported"
 msgstr "Формат %s пока не поддерживается"
 
-#: src/plugins/lv2_plugin.c:2958
+#: src/plugins/lv2_plugin.c:2959
 msgid "Failed checking whether lv2 plugin UI is external"
 msgstr ""
 "Не удалось проверить, является ли пользовательский интерфейс lv2 плагина "
 "внешним"
 
-#: src/plugins/lv2_plugin.c:3128
+#: src/plugins/lv2_plugin.c:3129
 #, fuzzy, c-format
 msgid "Required option %s is not supported"
 msgstr "Комбинация бэкeнда не поддерживается"
 
-#: src/plugins/lv2_plugin.c:3190
+#: src/plugins/lv2_plugin.c:3191
 #, fuzzy
 msgid "lilv_plugin_instantiate() failed"
 msgstr "Не удалось добавить плагин Carla"
 
-#: src/plugins/lv2_plugin.c:3800
+#: src/plugins/lv2_plugin.c:3801
 msgid "Unnamed bank"
 msgstr "Безымянный банк"
 
@@ -1032,7 +1032,7 @@ msgstr "Добавить"
 
 #: src/gui/widgets/inspector_port.c:158 src/gui/widgets/modulator_inner.c:171
 #: src/gui/widgets/plugin_browser.c:577 src/gui/widgets/plugin_browser.c:627
-#: src/gui/widgets/balance_control.c:307 src/gui/widgets/modulator_macro.c:176
+#: src/gui/widgets/balance_control.c:308 src/gui/widgets/modulator_macro.c:176
 #: src/gui/widgets/fader.c:307 resources/ui/first_run_assistant.ui:77
 msgid "Reset"
 msgstr "Сброс"
@@ -1151,12 +1151,12 @@ msgid "Channel"
 msgstr "Канал"
 
 #: src/gui/widgets/channel.c:801 src/gui/widgets/bot_bar.c:539
-#: src/gui/widgets/track.c:963 src/gui/widgets/dialogs/export_dialog.c:1319
+#: src/gui/widgets/track.c:963 src/gui/widgets/dialogs/export_dialog.c:1320
 msgid "Disable"
 msgstr "Отключить"
 
 #: src/gui/widgets/channel.c:809 src/gui/widgets/bot_bar.c:539
-#: src/gui/widgets/track.c:971 src/gui/widgets/dialogs/export_dialog.c:1309
+#: src/gui/widgets/track.c:971 src/gui/widgets/dialogs/export_dialog.c:1310
 msgid "Enable"
 msgstr "Включить"
 
@@ -1282,7 +1282,7 @@ msgstr "Инспектор плагинов (Plugin Inspector)"
 msgid "Visibility"
 msgstr "Видимость"
 
-#: src/gui/widgets/plugin_strip_expander.c:189
+#: src/gui/widgets/plugin_strip_expander.c:191
 msgid "Inserts"
 msgstr "Возвраты"
 
@@ -1390,24 +1390,24 @@ msgstr "Позиция (Position)"
 msgid "Time Signature - Beats per bar / Beat unit"
 msgstr "Размер - Долей в такте / Длительность доли"
 
-#: src/gui/widgets/digital_meter.c:576
+#: src/gui/widgets/digital_meter.c:577
 msgid "normal"
 msgstr "обычный"
 
-#: src/gui/widgets/digital_meter.c:579
+#: src/gui/widgets/digital_meter.c:580
 msgid "dotted"
 msgstr "С точкой"
 
-#: src/gui/widgets/digital_meter.c:582
+#: src/gui/widgets/digital_meter.c:583
 msgid "triplet"
 msgstr "триоль"
 
-#: src/gui/widgets/digital_meter.c:877 src/gui/widgets/digital_meter.c:894
+#: src/gui/widgets/digital_meter.c:874 src/gui/widgets/digital_meter.c:891
 msgid "Failed to change time signature"
 msgstr "Не удалось изменить размер"
 
 #: src/gui/widgets/drag_dest_box.c:356 src/gui/widgets/panel_file_browser.c:421
-#: src/audio/tracklist.c:1517 src/audio/track.c:3848 src/actions/actions.c:3344
+#: src/audio/tracklist.c:1520 src/audio/track.c:3848 src/actions/actions.c:3345
 msgid "Failed to create track"
 msgstr "Не удалось создать трек"
 
@@ -1467,29 +1467,29 @@ msgstr "Не удалось создать плагин %s"
 msgid "Plugin %s cannot be added to this slot"
 msgstr "Плагин %s не может быть добавлен в этот слот"
 
-#: src/gui/widgets/channel_slot.c:747
+#: src/gui/widgets/channel_slot.c:750
 msgid "Bypass"
 msgstr "Обход"
 
-#: src/gui/widgets/channel_slot.c:754
+#: src/gui/widgets/channel_slot.c:757
 msgid "Inspect"
 msgstr "Изучить"
 
-#: src/gui/widgets/channel_slot.c:759 resources/ui/port_selector_popover.ui:60
+#: src/gui/widgets/channel_slot.c:762 resources/ui/port_selector_popover.ui:60
 msgid "Plugin"
 msgstr "Плагин (Plugin)"
 
-#: src/gui/widgets/channel_slot.c:790 src/gui/widgets/timeline_arranger.c:1108
+#: src/gui/widgets/channel_slot.c:793 src/gui/widgets/timeline_arranger.c:1114
 #: src/gui/widgets/track.c:814 resources/ui/header.ui:35
 msgid "Edit"
 msgstr "Правка"
 
-#: src/gui/widgets/channel_slot.c:809
+#: src/gui/widgets/channel_slot.c:812
 #, fuzzy
 msgid "Select"
 msgstr "Выбрать(_S)"
 
-#: src/gui/widgets/channel_slot.c:1049
+#: src/gui/widgets/channel_slot.c:1052
 msgid "empty slot"
 msgstr "пустой слот"
 
@@ -1499,7 +1499,7 @@ msgstr "пустой слот"
 msgid "Failed to move selection"
 msgstr "Не удалось переместить выделенное"
 
-#: src/gui/widgets/arranger.c:1896 src/gui/widgets/arranger.c:4300
+#: src/gui/widgets/arranger.c:1896 src/gui/widgets/arranger.c:4314
 msgid "Failed to move chords"
 msgstr "Не удалось переместить аккорды"
 
@@ -1513,7 +1513,7 @@ msgid "Cannot resize because the selection contains objects without length"
 msgstr ""
 "Невозможно изменить размер, поскольку выделение содержит объекты без длины"
 
-#: src/gui/widgets/arranger.c:2592
+#: src/gui/widgets/arranger.c:2593
 msgid ""
 "Cannot resize because the selection contains a mix of looped and unloopable "
 "objects"
@@ -1521,94 +1521,94 @@ msgstr ""
 "Невозможно изменить размер, поскольку выделение содержит смесь зацикленных и "
 "незацикляемых объектов"
 
-#: src/gui/widgets/arranger.c:3793
+#: src/gui/widgets/arranger.c:3807
 msgid "Failed to delete selection"
 msgstr "Не удалось удалить выделенное"
 
-#: src/gui/widgets/arranger.c:3822 src/gui/widgets/arranger.c:4491
+#: src/gui/widgets/arranger.c:3836 src/gui/widgets/arranger.c:4509
 msgid "Failed to edit selection"
 msgstr "Не удалось отредактировать выделенное"
 
-#: src/gui/widgets/arranger.c:3877
+#: src/gui/widgets/arranger.c:3891
 msgid "Failed to move automation"
 msgstr "Не удалось переместить автоматизацию"
 
-#: src/gui/widgets/arranger.c:3906
+#: src/gui/widgets/arranger.c:3920
 msgid "Failed to duplicate automation"
 msgstr "Не удалось дублировать автоматизацию"
 
-#: src/gui/widgets/arranger.c:3930 src/gui/widgets/arranger.c:4345
-#: src/gui/widgets/arranger.c:4822
+#: src/gui/widgets/arranger.c:3944 src/gui/widgets/arranger.c:4359
+#: src/gui/widgets/arranger.c:4840
 msgid "Failed to create objects"
 msgstr "Не удалось создать объекты"
 
-#: src/gui/widgets/arranger.c:3952
+#: src/gui/widgets/arranger.c:3966
 msgid "Failed to fill automation"
 msgstr "Не удалось заполнить автоматизацию"
 
-#: src/gui/widgets/arranger.c:3985 src/gui/widgets/arranger.c:4038
-#: src/gui/widgets/arranger.c:4061 src/gui/widgets/timeline_arranger.c:993
+#: src/gui/widgets/arranger.c:3999 src/gui/widgets/arranger.c:4052
+#: src/gui/widgets/arranger.c:4075 src/gui/widgets/timeline_arranger.c:999
 msgid "Failed to edit selections"
 msgstr "Не удалось отредактировать выделенное"
 
-#: src/gui/widgets/arranger.c:4096 src/gui/widgets/arranger.c:4122
+#: src/gui/widgets/arranger.c:4110 src/gui/widgets/arranger.c:4136
 msgid "Failed to resize objects"
 msgstr "Не удалось изменить размер объектов"
 
-#: src/gui/widgets/arranger.c:4134 src/gui/widgets/arranger.c:4184
+#: src/gui/widgets/arranger.c:4148 src/gui/widgets/arranger.c:4198
 msgid "Failed to move MIDI notes"
 msgstr "Не удалось переместить MIDI ноты"
 
-#: src/gui/widgets/arranger.c:4210
+#: src/gui/widgets/arranger.c:4224
 msgid "Failed to duplicate MIDI notes"
 msgstr "Не удалось дублировать MIDI ноты"
 
-#: src/gui/widgets/arranger.c:4233
+#: src/gui/widgets/arranger.c:4247
 msgid "Failed to create MIDI notes"
 msgstr "Не удалось создать MIDI ноты"
 
-#: src/gui/widgets/arranger.c:4322
+#: src/gui/widgets/arranger.c:4336
 msgid "Failed to duplicate chords"
 msgstr "Не удалось дублировать аккорды"
 
-#: src/gui/widgets/arranger.c:4420 src/gui/widgets/arranger.c:4711
+#: src/gui/widgets/arranger.c:4434 src/gui/widgets/arranger.c:4729
 msgid "Failed resizing selection"
 msgstr "Не удалось изменить размер выделенного"
 
-#: src/gui/widgets/arranger.c:4527
+#: src/gui/widgets/arranger.c:4545
 msgid "Failed to edit timeline objects"
 msgstr "Не удалось отредактировать объекты таймлайна"
 
-#: src/gui/widgets/arranger.c:4550 src/gui/widgets/arranger.c:4573
+#: src/gui/widgets/arranger.c:4568 src/gui/widgets/arranger.c:4591
 msgid "Failed to resize timeline objects"
 msgstr "Не удалось изменить размер объектов таймлайна"
 
-#: src/gui/widgets/arranger.c:4596
+#: src/gui/widgets/arranger.c:4614
 msgid "Failed to resize selection"
 msgstr "Не удалось изменить размер выделенного"
 
-#: src/gui/widgets/arranger.c:4618
+#: src/gui/widgets/arranger.c:4636
 msgid "Failed setting fade in position"
 msgstr "Не удалось установить фейд-ин в положение"
 
-#: src/gui/widgets/arranger.c:4642 src/gui/widgets/arranger.c:4667
-#: src/gui/widgets/arranger.c:4689
+#: src/gui/widgets/arranger.c:4660 src/gui/widgets/arranger.c:4685
+#: src/gui/widgets/arranger.c:4707
 msgid "Failed resizing selections"
 msgstr "Не удалось изменить размер выделенного"
 
-#: src/gui/widgets/arranger.c:4756
+#: src/gui/widgets/arranger.c:4774
 msgid "Failed to move objects"
 msgstr "Не удалось переместить объекты"
 
-#: src/gui/widgets/arranger.c:4798
+#: src/gui/widgets/arranger.c:4816
 msgid "Failed to link or move selection"
 msgstr "Не удалось связать или переместить выделенное"
 
-#: src/gui/widgets/arranger.c:4858
+#: src/gui/widgets/arranger.c:4876
 msgid "Failed to split selection"
 msgstr "Не удалось разделить выделение"
 
-#: src/gui/widgets/arranger.c:4870
+#: src/gui/widgets/arranger.c:4888
 #, c-format
 msgid "%s name"
 msgstr "%s имя"
@@ -1828,51 +1828,51 @@ msgstr "Запись (Record)"
 msgid "Record options"
 msgstr "Параметры записи (Record options)"
 
-#: src/gui/widgets/timeline_arranger.c:433
+#: src/gui/widgets/timeline_arranger.c:439
 msgid "Custom Marker"
 msgstr "Пользовательский маркер (Custom Marker)"
 
-#: src/gui/widgets/timeline_arranger.c:949
+#: src/gui/widgets/timeline_arranger.c:955
 #, fuzzy
 msgid "Fade Preset"
 msgstr "Пресет фейда"
 
-#: src/gui/widgets/timeline_arranger.c:1014
+#: src/gui/widgets/timeline_arranger.c:1020
 msgid "Musical Mode"
 msgstr "Музыкальный режим (Musical Mode)"
 
-#: src/gui/widgets/timeline_arranger.c:1128
+#: src/gui/widgets/timeline_arranger.c:1134
 msgid "Detect BPM"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1183
+#: src/gui/widgets/timeline_arranger.c:1189
 #, fuzzy
 msgid "Region Functions"
 msgstr "Содержимое области"
 
-#: src/gui/widgets/timeline_arranger.c:1187
+#: src/gui/widgets/timeline_arranger.c:1193
 #, fuzzy
 msgid "Audio Regions"
 msgstr "Добавить область"
 
-#: src/gui/widgets/timeline_arranger.c:1217
+#: src/gui/widgets/timeline_arranger.c:1223
 msgid "Export as MIDI file"
 msgstr "Экспортировать как MIDI файл"
 
-#: src/gui/widgets/timeline_arranger.c:1223
+#: src/gui/widgets/timeline_arranger.c:1229
 #, fuzzy
 msgid "MIDI Regions"
 msgstr "MIDI вход"
 
-#: src/gui/widgets/timeline_arranger.c:1230 src/gui/widgets/track.c:824
+#: src/gui/widgets/timeline_arranger.c:1236 src/gui/widgets/track.c:824
 msgid "Quick bounce"
 msgstr "Быстро отрендерить (Quick bounce)"
 
-#: src/gui/widgets/timeline_arranger.c:1236 src/gui/widgets/track.c:831
+#: src/gui/widgets/timeline_arranger.c:1242 src/gui/widgets/track.c:831
 msgid "Bounce..."
 msgstr "Отрендерить..."
 
-#: src/gui/widgets/timeline_arranger.c:1449
+#: src/gui/widgets/timeline_arranger.c:1455
 msgid "Failed to create selections"
 msgstr "Не удалось создать выделения"
 
@@ -2140,12 +2140,12 @@ msgstr ""
 "Изменения:\n"
 "%s"
 
-#: src/gui/widgets/snap_grid.c:62
+#: src/gui/widgets/snap_grid.c:59
 #, c-format
 msgid "%s - Last object"
 msgstr "%s - Последний объект"
 
-#: src/gui/widgets/snap_grid.c:126
+#: src/gui/widgets/snap_grid.c:121
 msgid "Snap/Grid options"
 msgstr "Параметры привязки/сетки"
 
@@ -2286,7 +2286,7 @@ msgstr "Вкл./Выкл соединение"
 msgid "Delete connection"
 msgstr "Удалить соединение"
 
-#: src/gui/widgets/balance_control.c:286
+#: src/gui/widgets/balance_control.c:287
 msgid "Failed to change balance"
 msgstr "Не удалось изменить баланс"
 
@@ -2999,7 +2999,7 @@ msgstr "<имя>.<формат>"
 msgid "<date>_<name>.<format>"
 msgstr "<дата>_<имя>.<формат>"
 
-#: src/gui/widgets/dialogs/export_dialog.c:853
+#: src/gui/widgets/dialogs/export_dialog.c:854
 msgid "No tracks to export"
 msgstr "Отсутствуют треки для экспорта"
 
@@ -3049,7 +3049,7 @@ msgstr "Не удалось вставить выделенное"
 msgid "Invalid object name %s"
 msgstr "Недопустимое имя объекта %s"
 
-#: src/gui/backend/arranger_object.c:3352
+#: src/gui/backend/arranger_object.c:3353
 msgid "Failed to rename object"
 msgstr "Не удалось переименовать объект"
 
@@ -3058,7 +3058,7 @@ msgstr "Не удалось переименовать объект"
 msgid "Plugin '%s' has crashed and has been disabled."
 msgstr "Плагин '%s' потерпел фатальный сбой и был отключен."
 
-#: src/gui/backend/event_manager.c:1233
+#: src/gui/backend/event_manager.c:1226
 #, c-format
 msgid "Trial limit has been reached. %s will now go silent"
 msgstr ""
@@ -3073,7 +3073,7 @@ msgstr "Не удалось клонировать трек '%s'"
 msgid "Failed to paste plugins"
 msgstr "Не удалось вставить плагины"
 
-#: src/utils/log.c:778
+#: src/utils/log.c:786
 #, c-format
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "
@@ -3116,11 +3116,11 @@ msgstr ""
 "Ошибка при добавлении плагина. Смотрите логи для получения дополнительной "
 "информации."
 
-#: src/utils/ui.c:885
+#: src/utils/ui.c:897
 msgid "Sine (Equal Power)"
 msgstr "Синусоида (Равная Сила)"
 
-#: src/utils/ui.c:1064
+#: src/utils/ui.c:1076
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
@@ -3129,7 +3129,7 @@ msgstr ""
 "Локаль для выбранного вами языка (%s) недоступна. Пожалуйста, установите её "
 "и перезапустите %s"
 
-#: src/utils/ui.c:1069
+#: src/utils/ui.c:1081
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -3211,24 +3211,24 @@ msgstr "Прерываем действие...\n"
 msgid "Reset to factory settings successful\n"
 msgstr "Сброс настроек до заводских прошёл успешно\n"
 
-#: src/audio/tracklist.c:1344
+#: src/audio/tracklist.c:1346
 msgid "No file was found"
 msgstr "Файлов не найдено"
 
-#: src/audio/tracklist.c:1374
+#: src/audio/tracklist.c:1376
 #, c-format
 msgid "Unsupported file type %s"
 msgstr "Неподдерживаемый тип файла %s"
 
-#: src/audio/tracklist.c:1393
+#: src/audio/tracklist.c:1396
 msgid "Can only drop 1 file at a time on existing tracks"
 msgstr "На существующие дорожки можно поместить только 1 файл за раз"
 
-#: src/audio/tracklist.c:1406
+#: src/audio/tracklist.c:1409
 msgid "Can only drop MIDI files on MIDI/instrument tracks"
 msgstr "MIDI-файлы можно помещать только на MIDI/инструментальные дорожки"
 
-#: src/audio/tracklist.c:1419
+#: src/audio/tracklist.c:1422
 #, c-format
 msgid ""
 "This MIDI file contains %d tracks. It cannot be dropped into an existing "
@@ -3237,47 +3237,47 @@ msgstr ""
 "Этот MIDI-файл содержит %d дорожки(ок). Он не может быть помещён на "
 "существующий трек"
 
-#: src/audio/tracklist.c:1433
+#: src/audio/tracklist.c:1436
 msgid "Can only drop audio files on audio tracks"
 msgstr "Аудиофайлы можно помещать только на аудио треки"
 
-#: src/audio/tracklist.c:1488
+#: src/audio/tracklist.c:1491
 msgid "Failed to create arranger objects"
 msgstr "Не удалось создать объекты аранжировщика"
 
-#: src/audio/tracklist.c:1558
+#: src/audio/tracklist.c:1561
 #, fuzzy
 msgid "Failed to move tracks after copying or moving inside folder"
 msgstr "Не удалось переместить или скопировать трек внутрь папки"
 
-#: src/audio/tracklist.c:1631
+#: src/audio/tracklist.c:1634
 #, fuzzy
 msgid "Failed to copy tracks inside"
 msgstr "Не удалось скопировать трек внутрь"
 
-#: src/audio/tracklist.c:1679
+#: src/audio/tracklist.c:1682
 msgid "Failed to copy track inside"
 msgstr "Не удалось скопировать трек внутрь"
 
-#: src/audio/tracklist.c:1700 src/audio/tracklist.c:1842
+#: src/audio/tracklist.c:1703 src/audio/tracklist.c:1845
 #: src/actions/tracklist_selections.c:374
 msgid "Failed to clone track"
 msgstr "Не удалось клонировать трек"
 
-#: src/audio/tracklist.c:1725
+#: src/audio/tracklist.c:1728
 #, fuzzy
 msgid "Failed to copy tracks"
 msgstr "Не удалось скопировать трек внутрь"
 
-#: src/audio/tracklist.c:1752
+#: src/audio/tracklist.c:1755
 msgid "Cannot drag folder into itself"
 msgstr "Невозможно поместить папку внутрь самой себя"
 
-#: src/audio/tracklist.c:1771 src/audio/tracklist.c:1821
+#: src/audio/tracklist.c:1774 src/audio/tracklist.c:1824
 msgid "Failed to move track inside folder"
 msgstr "Не удалось переместить трек внутрь папки"
 
-#: src/audio/tracklist.c:1867
+#: src/audio/tracklist.c:1870
 #, fuzzy
 msgid "Failed to move tracks"
 msgstr "Не удалось переместить трек"
@@ -3387,7 +3387,7 @@ msgstr ""
 "Не удалось открыть SNDFILE %s:\n"
 "%d: %s"
 
-#: src/audio/exporter.c:821 src/audio/exporter.c:830 src/actions/actions.c:1635
+#: src/audio/exporter.c:822 src/audio/exporter.c:831 src/actions/actions.c:1635
 msgid "Failed to create audio track"
 msgstr "Не удалось создать аудио трек"
 
@@ -3536,6 +3536,11 @@ msgstr "Недопустимые позиции - пропускаем функ�
 msgid "Failed to apply plugin"
 msgstr "Не удалось применить плагин"
 
+#: src/audio/snap_grid.c:291 resources/ui/snap_grid_popover.ui:116
+#: resources/ui/snap_grid_popover.ui:199
+msgid "Adaptive"
+msgstr "Адаптивный"
+
 #: src/audio/engine_alsa.c:344
 #, c-format
 msgid "ALSA Error: %s"
@@ -3546,7 +3551,7 @@ msgstr "Ошибка ALSA: %s"
 msgid "Failed to instantiate plugin %s"
 msgstr "Не удалось добавить плагин %s"
 
-#: src/audio/recording_manager.c:171
+#: src/audio/recording_manager.c:172
 msgid "Failed to create recorded regions"
 msgstr "Не удалось создать записанные области"
 
@@ -3733,51 +3738,51 @@ msgid "JACK has shut down"
 msgstr "JACK отключился"
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:653
+#: src/audio/engine_jack.c:655
 msgid "Overall operation failed"
 msgstr "Всеобщий сбой операции"
 
-#: src/audio/engine_jack.c:659
+#: src/audio/engine_jack.c:661
 msgid "The operation contained an invalid or unsupported option"
 msgstr "Операция содержала недопустимый или неподдерживаемый параметр"
 
-#: src/audio/engine_jack.c:666
+#: src/audio/engine_jack.c:668
 msgid "The desired client name was not unique"
 msgstr "Желаемое имя клиента оказалось не уникальным"
 
-#: src/audio/engine_jack.c:672
+#: src/audio/engine_jack.c:674
 msgid "Unable to connect to the JACK server"
 msgstr "Не удается подключиться к серверу JACK"
 
-#: src/audio/engine_jack.c:678
+#: src/audio/engine_jack.c:680
 msgid "Communication error with the JACK server"
 msgstr "Ошибка коммуникации с сервером JACK"
 
-#: src/audio/engine_jack.c:684
+#: src/audio/engine_jack.c:686
 msgid "Requested client does not exist"
 msgstr "Запрошенный клиент не существует"
 
-#: src/audio/engine_jack.c:690
+#: src/audio/engine_jack.c:692
 msgid "Unable to load internal client"
 msgstr "Не удается загрузить внутренний клиент"
 
-#: src/audio/engine_jack.c:696
+#: src/audio/engine_jack.c:698
 msgid "Unable to initialize client"
 msgstr "Не удается инициализировать клиент"
 
-#: src/audio/engine_jack.c:702
+#: src/audio/engine_jack.c:704
 msgid "Unable to access shared memory"
 msgstr "Не удается получить доступ к общей памяти"
 
-#: src/audio/engine_jack.c:708
+#: src/audio/engine_jack.c:710
 msgid "Client's protocol version does not match"
 msgstr "Версия протокола клиента не совпадает"
 
-#: src/audio/engine_jack.c:712
+#: src/audio/engine_jack.c:714
 msgid "Backend error"
 msgstr "Ошибка бэкенда"
 
-#: src/audio/engine_jack.c:716
+#: src/audio/engine_jack.c:718
 msgid "Client zombie"
 msgstr "Зомби клиент"
 
@@ -3789,17 +3794,17 @@ msgstr "Задать управляющее значение"
 msgid "Arranger selections contain an undeletable object"
 msgstr "Выделения в аранжировщике содержат не удаляемые объекты"
 
-#: src/actions/arranger_selections.c:533 src/actions/actions.c:2434
+#: src/actions/arranger_selections.c:533 src/actions/actions.c:2435
 msgid "Failed to apply MIDI function"
 msgstr "Не удалось применить MIDI функцию"
 
-#: src/actions/arranger_selections.c:571 src/actions/actions.c:2462
-#: src/actions/actions.c:2507
+#: src/actions/arranger_selections.c:571 src/actions/actions.c:2463
+#: src/actions/actions.c:2508
 msgid "Failed to apply automation function"
 msgstr "Не удалось применить функцию автоматизации"
 
 #: src/actions/arranger_selections.c:614 src/actions/arranger_selections.c:630
-#: src/actions/actions.c:2910
+#: src/actions/actions.c:2911
 msgid "Failed to apply audio function"
 msgstr "Не удалось применить аудио функцию"
 
@@ -4090,89 +4095,89 @@ msgstr ""
 msgid "Failed to mute selections"
 msgstr "Не удалось заглушить выделенное"
 
-#: src/actions/actions.c:2181
+#: src/actions/actions.c:2182
 msgid "No regions selected"
 msgstr "Не выбрано областей"
 
-#: src/actions/actions.c:2189
+#: src/actions/actions.c:2190
 msgid "Selections must be on the same lane"
 msgstr "Выделения должны быть на одной полосе"
 
-#: src/actions/actions.c:2197
+#: src/actions/actions.c:2198
 msgid "Cannot merge looped regions"
 msgstr ""
 
-#: src/actions/actions.c:2214
+#: src/actions/actions.c:2215
 msgid "Failed to merge selections"
 msgstr "Не удалось объединить выделенное"
 
-#: src/actions/actions.c:2331
+#: src/actions/actions.c:2332
 msgid "Failed to insert silence"
 msgstr "Не удалось вставить тишину"
 
-#: src/actions/actions.c:2354
+#: src/actions/actions.c:2355
 msgid "Failed to remove range"
 msgstr "Не удалось удалить область"
 
-#: src/actions/actions.c:2710
+#: src/actions/actions.c:2711
 msgid "Region name"
 msgstr "Имя области"
 
-#: src/actions/actions.c:2749
+#: src/actions/actions.c:2750
 #, fuzzy
 msgid "Please enter a BPM"
 msgstr "Пожалуйста, введите значение"
 
-#: src/actions/actions.c:2825
+#: src/actions/actions.c:2826
 msgid "Failed to move selections"
 msgstr "Не удалось переместить выделенное"
 
-#: src/actions/actions.c:2845
+#: src/actions/actions.c:2846
 #, c-format
 msgid "Detected BPM: %.2f"
 msgstr ""
 
-#: src/actions/actions.c:2848
+#: src/actions/actions.c:2849
 msgid "Candidates:"
 msgstr ""
 
-#: src/actions/actions.c:3050
+#: src/actions/actions.c:3051
 msgid "Failed to set curve algorithm"
 msgstr "Не удалось установить алгоритм кривой"
 
-#: src/actions/actions.c:3112
+#: src/actions/actions.c:3113
 msgid "Failed to edit fades"
 msgstr "Не удалось отредактировать фейды"
 
-#: src/actions/actions.c:3221
+#: src/actions/actions.c:3222
 #, c-format
 msgid "Failed to reset %s"
 msgstr "Не удалось сбросить %s"
 
-#: src/actions/actions.c:3252
+#: src/actions/actions.c:3253
 #, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "Не удалось отключить %s от %s"
 
-#: src/actions/actions.c:3287
+#: src/actions/actions.c:3288
 msgid "Cannot delete standard bookmark"
 msgstr "Невозможно удалить стандартную закладку"
 
-#: src/actions/actions.c:3299
+#: src/actions/actions.c:3300
 msgid "Are you sure you want to remove this bookmark?"
 msgstr "Вы действительно хотите удалить эту закладку?"
 
-#: src/actions/actions.c:3503 src/actions/actions.c:3534
+#: src/actions/actions.c:3504 src/actions/actions.c:3535
 msgid "Collection name"
 msgstr "Название коллекции (Collection name)"
 
-#: src/actions/actions.c:3562
+#: src/actions/actions.c:3563
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
 msgstr "Эта коллекция содержит %d плагинов. Вы уверены, что хотите удалить её?"
 
-#: src/actions/actions.c:3752
+#: src/actions/actions.c:3753
 msgid "Failed to change direct output"
 msgstr "Не удалось изменить прямой выход"
 
@@ -4196,15 +4201,15 @@ msgstr "Деактивировать портовое соединение"
 msgid "Change port connection"
 msgstr "Изменить портовое соединение"
 
-#: src/actions/transport_action.c:299
+#: src/actions/transport_action.c:289
 msgid "Change BPM"
 msgstr "Изменить темп"
 
-#: src/actions/transport_action.c:301
+#: src/actions/transport_action.c:291
 msgid "Beats per bar change"
 msgstr "Изменение долей в такте"
 
-#: src/actions/transport_action.c:303
+#: src/actions/transport_action.c:293
 msgid "Beat unit change"
 msgstr "Изменение длины долей"
 
@@ -5444,10 +5449,6 @@ msgstr "Триоль"
 #: resources/ui/snap_grid_popover.ui:97 resources/ui/snap_grid_popover.ui:180
 msgid "Dotted"
 msgstr "С точкой"
-
-#: resources/ui/snap_grid_popover.ui:116 resources/ui/snap_grid_popover.ui:199
-msgid "Adaptive"
-msgstr "Адаптивный"
 
 #: resources/ui/snap_grid_popover.ui:118 resources/ui/snap_grid_popover.ui:201
 msgid "Adaptive length"

@@ -122,8 +122,11 @@ snap_grid_get_snap_ticks (
 {
   if (self->snap_adaptive)
     {
-      g_return_val_if_fail (
-        ZRYTHM_HAVE_UI & !ZRYTHM_TESTING, -1);
+      if (!ZRYTHM_HAVE_UI || ZRYTHM_TESTING)
+        {
+          g_critical ("can only be used with UI");
+          return -1;
+        }
 
       RulerWidget * ruler = NULL;
       if (self->type == SNAP_GRID_TYPE_TIMELINE)

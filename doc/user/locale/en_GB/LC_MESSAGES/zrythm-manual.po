@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-01-11 21:06+0000\n"
+"POT-Creation-Date: 2022-01-22 17:46+0000\n"
 "PO-Revision-Date: 2021-03-08 01:16+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: en_GB\n"
@@ -2947,7 +2947,7 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/installation.rst:36
-#: ../../getting-started/system-requirements.rst:53
+#: ../../getting-started/system-requirements.rst:60
 msgid "GNU/Linux"
 msgstr ""
 
@@ -3000,7 +3000,7 @@ msgid "The installers above fully support Windows 64bit and MacOS."
 msgstr ""
 
 #: ../../getting-started/installation.rst:62
-#: ../../getting-started/system-requirements.rst:58
+#: ../../getting-started/system-requirements.rst:65
 msgid "FreeBSD"
 msgstr ""
 
@@ -3200,24 +3200,35 @@ msgid ""
 "the kernel, causing xruns when attempting to access the data."
 msgstr ""
 
+#: ../../getting-started/system-requirements.rst:53
+msgid "Realtime Scheduling"
+msgstr ""
+
 #: ../../getting-started/system-requirements.rst:54
+msgid ""
+"Zrythm requires realtime scheduling privileges for reliable, dropout-free "
+"operation. Realtime (RT) scheduling is a feature that enables applications "
+"to meet timing deadlines more reliably."
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:61
 msgid ""
 "To set up these privileges for your user, see `How do I configure my linux "
 "system to allow JACK to use realtime scheduling? <https://jackaudio.org/faq/"
 "linux_rt_config.html#systems-using-pam>`_."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:59
+#: ../../getting-started/system-requirements.rst:66
 msgid ""
 "To set up these privileges for your user, change the user class' "
 "``memorylocked`` value in :file:`/etc/login.conf`."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:64
+#: ../../getting-started/system-requirements.rst:71
 msgid "Open File Limit"
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:65
+#: ../../getting-started/system-requirements.rst:72
 msgid ""
 "On startup, Zrythm will attempt to increase the maximum limit of files it "
 "can open. You should give your user enough permissions to allow this."

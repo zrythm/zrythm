@@ -13,17 +13,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-01-11 21:06+0000\n"
+"POT-Creation-Date: 2022-01-22 17:46+0000\n"
 "PO-Revision-Date: 2022-01-22 02:54+0000\n"
 "Last-Translator: 刘韬 <lyuutau@outlook.com>\n"
+"Language: zh_CN\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
-"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.11-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -584,7 +583,8 @@ msgid ""
 "The audio backend to use. The available backends are JACK, RtAudio and SDL2. "
 "We recommend using :term:`JACK` when possible, otherwise RtAudio."
 msgstr ""
-"要使用的音频后端。可用的后端是 JACK、RtAudio 和 SDL2。我们建议尽可能使用 :term:`JACK`，否则使用 RtAudio。"
+"要使用的音频后端。可用的后端是 JACK、RtAudio 和 SDL2。我们建议尽可能使用 :"
+"term:`JACK`，否则使用 RtAudio。"
 
 #: ../../configuration/preferences.rst:41
 msgid "MIDI backend"
@@ -596,8 +596,8 @@ msgid ""
 "WindowsMME (Windows only). We recommend using JACK MIDI when possible, "
 "otherwise RtMidi."
 msgstr ""
-"要使用的 MIDI 后端。可用的后端是 JACK MIDI、RtMidi 和 WindowsMME（仅Windows）。我们建议尽可能使用 JACK "
-"MIDI，否则就使用 RtMidi。"
+"要使用的 MIDI 后端。可用的后端是 JACK MIDI、RtMidi 和 WindowsMME（仅"
+"Windows）。我们建议尽可能使用 JACK MIDI，否则就使用 RtMidi。"
 
 #: ../../configuration/preferences.rst:43
 msgid "MIDI controllers"
@@ -2924,7 +2924,7 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/installation.rst:36
-#: ../../getting-started/system-requirements.rst:53
+#: ../../getting-started/system-requirements.rst:60
 msgid "GNU/Linux"
 msgstr "GNU/Linux"
 
@@ -2977,7 +2977,7 @@ msgid "The installers above fully support Windows 64bit and MacOS."
 msgstr ""
 
 #: ../../getting-started/installation.rst:62
-#: ../../getting-started/system-requirements.rst:58
+#: ../../getting-started/system-requirements.rst:65
 msgid "FreeBSD"
 msgstr ""
 
@@ -3177,24 +3177,35 @@ msgid ""
 "the kernel, causing xruns when attempting to access the data."
 msgstr ""
 
+#: ../../getting-started/system-requirements.rst:53
+msgid "Realtime Scheduling"
+msgstr ""
+
 #: ../../getting-started/system-requirements.rst:54
+msgid ""
+"Zrythm requires realtime scheduling privileges for reliable, dropout-free "
+"operation. Realtime (RT) scheduling is a feature that enables applications "
+"to meet timing deadlines more reliably."
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:61
 msgid ""
 "To set up these privileges for your user, see `How do I configure my linux "
 "system to allow JACK to use realtime scheduling? <https://jackaudio.org/faq/"
 "linux_rt_config.html#systems-using-pam>`_."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:59
+#: ../../getting-started/system-requirements.rst:66
 msgid ""
 "To set up these privileges for your user, change the user class' "
 "``memorylocked`` value in :file:`/etc/login.conf`."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:64
+#: ../../getting-started/system-requirements.rst:71
 msgid "Open File Limit"
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:65
+#: ../../getting-started/system-requirements.rst:72
 msgid ""
 "On startup, Zrythm will attempt to increase the maximum limit of files it "
 "can open. You should give your user enough permissions to allow this."

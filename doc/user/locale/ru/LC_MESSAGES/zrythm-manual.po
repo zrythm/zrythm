@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-01-11 21:06+0000\n"
+"POT-Creation-Date: 2022-01-22 17:46+0000\n"
 "PO-Revision-Date: 2021-09-06 18:34+0000\n"
 "Last-Translator: Nikita Saschenko <neketa777@gmail.com>\n"
 "Language: ru\n"
@@ -3730,7 +3730,7 @@ msgstr ""
 "сборке и установке."
 
 #: ../../getting-started/installation.rst:36
-#: ../../getting-started/system-requirements.rst:53
+#: ../../getting-started/system-requirements.rst:60
 msgid "GNU/Linux"
 msgstr "GNU/Linux"
 
@@ -3791,7 +3791,7 @@ msgstr ""
 "Указанные выше установщики полностью поддерживают Windows 64bit и MacOS."
 
 #: ../../getting-started/installation.rst:62
-#: ../../getting-started/system-requirements.rst:58
+#: ../../getting-started/system-requirements.rst:65
 msgid "FreeBSD"
 msgstr "FreeBSD"
 
@@ -4030,7 +4030,18 @@ msgstr ""
 "заблокированы в памяти, они могут быть перемещены ядром, что будет вызывать "
 "рассинхронизацию (XRUN) при попытке доступа к ним."
 
+#: ../../getting-started/system-requirements.rst:53
+msgid "Realtime Scheduling"
+msgstr ""
+
 #: ../../getting-started/system-requirements.rst:54
+msgid ""
+"Zrythm requires realtime scheduling privileges for reliable, dropout-free "
+"operation. Realtime (RT) scheduling is a feature that enables applications "
+"to meet timing deadlines more reliably."
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:61
 msgid ""
 "To set up these privileges for your user, see `How do I configure my linux "
 "system to allow JACK to use realtime scheduling? <https://jackaudio.org/faq/"
@@ -4040,7 +4051,7 @@ msgstr ""
 "configure my linux system to allow JACK to use realtime scheduling? <https://"
 "jackaudio.org/faq/linux_rt_config.html#systems-using-pam>`_."
 
-#: ../../getting-started/system-requirements.rst:59
+#: ../../getting-started/system-requirements.rst:66
 msgid ""
 "To set up these privileges for your user, change the user class' "
 "``memorylocked`` value in :file:`/etc/login.conf`."
@@ -4048,11 +4059,11 @@ msgstr ""
 "Чтобы установить эти привилегии для пользователя, измените значение класса "
 "пользователя ``memorylocked`` в :file:`/etc/login.conf`."
 
-#: ../../getting-started/system-requirements.rst:64
+#: ../../getting-started/system-requirements.rst:71
 msgid "Open File Limit"
 msgstr "Ограничение на количество открытых файлов"
 
-#: ../../getting-started/system-requirements.rst:65
+#: ../../getting-started/system-requirements.rst:72
 msgid ""
 "On startup, Zrythm will attempt to increase the maximum limit of files it "
 "can open. You should give your user enough permissions to allow this."

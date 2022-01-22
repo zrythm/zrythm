@@ -12,17 +12,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-01-11 21:06+0000\n"
+"POT-Creation-Date: 2022-01-22 17:46+0000\n"
 "PO-Revision-Date: 2022-01-22 02:54+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.11-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -261,8 +260,8 @@ msgid ""
 msgstr ""
 "Zrythm irá escrever num ficheiro de log em cada execução dentro do "
 "subdiretório :file:`log` sob o termo :term:`Zrythm user path`. O nome do "
-"ficheiro conterá a data e hora atual, por exemplo "
-":file:`log_2020-06-26_15-34-19.log`."
+"ficheiro conterá a data e hora atual, por exemplo :file:"
+"`log_2020-06-26_15-34-19.log`."
 
 #: ../../appendix/files-and-directories.rst:100
 msgid "This log file is useful for debugging crashes and other problems."
@@ -533,10 +532,10 @@ msgid ""
 "preferences:Engine` and make these devices available in the :ref:`track "
 "inputs <tracks/inspector-page:Inputs>` (as below) and other places."
 msgstr ""
-"Zrythm conectará-se automaticamente aos aparelhos especificados em "
-":ref:`configuração/preferências:Motor' e disponibilizará esses aparelhos em "
-":ref:`entradas de faixa <tracks/inspector-page:Inputs>` (como abaixo) e "
-"outros lugares."
+"Zrythm conectará-se automaticamente aos aparelhos especificados em :ref:"
+"`configuração/preferências:Motor' e disponibilizará esses aparelhos em :ref:"
+"`entradas de faixa <tracks/inspector-page:Inputs>` (como abaixo) e outros "
+"lugares."
 
 #: ../../configuration/device-setup.rst:24
 #: ../../getting-started/system-requirements.rst:35 ../../glossary/intro.rst:73
@@ -582,8 +581,8 @@ msgid ""
 "clicking on eligible controls and selecting :guilabel:`MIDI learn`."
 msgstr ""
 "Os controles de aparelhos MIDI podem ser mapeados para controles dentro do "
-"Zrythm (em controles que o suportam). Após ativar um aparelho no :ref:`"
-"preferences <configuration/preferences:Engine>`, um mapeamento pode ser "
+"Zrythm (em controles que o suportam). Após ativar um aparelho no :ref:"
+"`preferences <configuration/preferences:Engine>`, um mapeamento pode ser "
 "criado a clicar com o botão direito do rato em controles elegíveis e a "
 "selecionar :guilabel:`MIDI learn`."
 
@@ -620,8 +619,8 @@ msgid ""
 "Device mappings (bindings) can be found under the :guilabel:`Bindings` tab "
 "in the main panel."
 msgstr ""
-"Os mapeamentos de aparelhos (vinculações) são encontrados no separador "
-":guilabel:`Bindings` no painel principal."
+"Os mapeamentos de aparelhos (vinculações) são encontrados no separador :"
+"guilabel:`Bindings` no painel principal."
 
 #: ../../configuration/device-setup.rst:80
 msgid "MIDI CC bindings"
@@ -1050,8 +1049,8 @@ msgid ""
 "Shortcuts (key bindings) can be previewed by pressing :kbd:`Control-?` or :"
 "kbd:`Control-F1`."
 msgstr ""
-"Os atalhos (vinculações de teclas) podem ser pré-visualizados a pressionar "
-":kbd:`Control-?` ou :kbd:`Control-F1`."
+"Os atalhos (vinculações de teclas) podem ser pré-visualizados a pressionar :"
+"kbd:`Control-?` ou :kbd:`Control-F1`."
 
 #: ../../configuration/shortcuts.rst:12
 msgid "Global Shortcuts"
@@ -1443,8 +1442,8 @@ msgid ""
 "and :ref:`common-operations`, with the added feature that curves can be "
 "dragged up or down to change their `curviness`."
 msgstr ""
-"A edição no arranjo de automação geralmente segue :ref:`edit-tools' e :ref"
-":`common-operations', com o recurso adicionado que as curvas podem ser "
+"A edição no arranjo de automação geralmente segue :ref:`edit-tools' e :ref:"
+"`common-operations', com o recurso adicionado que as curvas podem ser "
 "arrastadas para cima ou para baixo para alterar a `curvidade`."
 
 #: ../../editing/clip-editors/automation-editor.rst:40
@@ -1540,8 +1539,8 @@ msgid ""
 "Its ruler behaves similarly to the editor ruler explained in :ref:`editor-"
 "ruler`."
 msgstr ""
-"A régua comporta-se de forma semelhante à régua do editor explicada em :ref"
-":`editor-régua'."
+"A régua comporta-se de forma semelhante à régua do editor explicada em :ref:"
+"`editor-régua'."
 
 #: ../../editing/clip-editors/chord-editor.rst:18
 msgid ""
@@ -1744,8 +1743,8 @@ msgid ""
 "The zoom level can be changed by holding down :kbd:`Ctrl` and :kbd:`Shift` "
 "and scrolling."
 msgstr ""
-"O nível de ampliação pode ser alterado a manter pressionado:kbd:`Ctrl` e "
-":kbd:`Shift` e rolando."
+"O nível de ampliação pode ser alterado a manter pressionado:kbd:`Ctrl` e :"
+"kbd:`Shift` e rolando."
 
 #: ../../editing/clip-editors/piano-roll.rst:63
 msgid "MIDI Arranger"
@@ -1855,8 +1854,8 @@ msgid ""
 "The editor ruler is similar to the timeline ruler explained in :ref:"
 "`timeline-ruler`, with some differences."
 msgstr ""
-"A régua do editor é semelhante à régua da cronologia explicada em :ref"
-":`timeline-ruler`, com algumas diferenças."
+"A régua do editor é semelhante à régua da cronologia explicada em :ref:"
+"`timeline-ruler`, com algumas diferenças."
 
 #: ../../editing/clip-editors/ruler.rst:16
 msgid ""
@@ -2034,8 +2033,8 @@ msgid ""
 msgstr ""
 "Por exemplo, se criar uma nota MIDI e pressionar desfazer, a nota MIDI será "
 "excluída (Zrythm volta ao estado em que a nota MIDI não existia). Pressionar "
-"o botão :guilabel:`Redo` irá criar a nota novamente, e pode voltar entre "
-":guilabel:`Undo` e :guilabel:`Redo` quantas vezes quiser."
+"o botão :guilabel:`Redo` irá criar a nota novamente, e pode voltar entre :"
+"guilabel:`Undo` e :guilabel:`Redo` quantas vezes quiser."
 
 #: ../../editing/common-operations.rst:29
 msgid ""
@@ -2358,8 +2357,8 @@ msgid ""
 "objects`, with the exception that you can just click instead of :kbd:`Alt`-"
 "clicking."
 msgstr ""
-"A ferramenta Cortar comporta-se de forma semelhante ao que é mencionado em "
-":ref:`cutting-objects`, com a exceção de que pode simplesmente clicar em vez "
+"A ferramenta Cortar comporta-se de forma semelhante ao que é mencionado em :"
+"ref:`cutting-objects`, com a exceção de que pode simplesmente clicar em vez "
 "de :kbd:`Alt`-clicar."
 
 #: ../../editing/edit-tools.rst:121
@@ -2620,9 +2619,10 @@ msgid ""
 "MIDI notes and audio clips - see below) that can be edited in an :ref:"
 "`editor <editors>`. Regions can be repeated, like below."
 msgstr ""
-"Regiões (ou :term:`clips <Clip>`) são recipientes para eventos ou dados ("
-"tais como notas MIDI e clipes de áudio - veja abaixo) que podem ser editados "
-"num :ref:`editor <editores>`. Regiões podem ser repetidas, como abaixo."
+"Regiões (ou :term:`clips <Clip>`) são recipientes para eventos ou dados "
+"(tais como notas MIDI e clipes de áudio - veja abaixo) que podem ser "
+"editados num :ref:`editor <editores>`. Regiões podem ser repetidas, como "
+"abaixo."
 
 #: ../../editing/timeline/arranger.rst:42
 msgid "The following types of regions exist."
@@ -2667,8 +2667,8 @@ msgid ""
 "Double-clicking a MIDI region will bring up the :doc:`Piano Roll <../../"
 "editing/clip-editors/piano-roll>`."
 msgstr ""
-"Clicar duas vezes numa região MIDI abrirá os :doc:'Cilindros de piano <.. /"
-".. /edição/clip-editores/piano-roll>'."
+"Clicar duas vezes numa região MIDI abrirá os :doc:'Cilindros de piano "
+"<.. /.. /edição/clip-editores/piano-roll>'."
 
 #: ../../editing/timeline/arranger.rst:77
 msgid "Automation Regions"
@@ -3467,7 +3467,7 @@ msgstr ""
 "instalação."
 
 #: ../../getting-started/installation.rst:36
-#: ../../getting-started/system-requirements.rst:53
+#: ../../getting-started/system-requirements.rst:60
 msgid "GNU/Linux"
 msgstr "GNU/Linux"
 
@@ -3522,7 +3522,7 @@ msgid "The installers above fully support Windows 64bit and MacOS."
 msgstr "Os instaladores acima suportam totalmente o Windows 64bit e MacOS."
 
 #: ../../getting-started/installation.rst:62
-#: ../../getting-started/system-requirements.rst:58
+#: ../../getting-started/system-requirements.rst:65
 msgid "FreeBSD"
 msgstr "FreeBSD"
 
@@ -3754,24 +3754,35 @@ msgid ""
 "the kernel, causing xruns when attempting to access the data."
 msgstr ""
 
+#: ../../getting-started/system-requirements.rst:53
+msgid "Realtime Scheduling"
+msgstr ""
+
 #: ../../getting-started/system-requirements.rst:54
+msgid ""
+"Zrythm requires realtime scheduling privileges for reliable, dropout-free "
+"operation. Realtime (RT) scheduling is a feature that enables applications "
+"to meet timing deadlines more reliably."
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:61
 msgid ""
 "To set up these privileges for your user, see `How do I configure my linux "
 "system to allow JACK to use realtime scheduling? <https://jackaudio.org/faq/"
 "linux_rt_config.html#systems-using-pam>`_."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:59
+#: ../../getting-started/system-requirements.rst:66
 msgid ""
 "To set up these privileges for your user, change the user class' "
 "``memorylocked`` value in :file:`/etc/login.conf`."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:64
+#: ../../getting-started/system-requirements.rst:71
 msgid "Open File Limit"
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:65
+#: ../../getting-started/system-requirements.rst:72
 msgid ""
 "On startup, Zrythm will attempt to increase the maximum limit of files it "
 "can open. You should give your user enough permissions to allow this."

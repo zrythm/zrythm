@@ -36,17 +36,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-01-11 21:06+0000\n"
+"POT-Creation-Date: 2022-01-22 17:46+0000\n"
 "PO-Revision-Date: 2022-01-22 17:40+0000\n"
 "Last-Translator: G R <gradaellig@gmail.com>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/it/>\n"
 "Language: it\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/it/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.11-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -3220,7 +3219,7 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/installation.rst:36
-#: ../../getting-started/system-requirements.rst:53
+#: ../../getting-started/system-requirements.rst:60
 msgid "GNU/Linux"
 msgstr "GNU/Linux"
 
@@ -3285,7 +3284,7 @@ msgid "The installers above fully support Windows 64bit and MacOS."
 msgstr "L'installatore sopra supporta interamente Windows 64bit e MacOS."
 
 #: ../../getting-started/installation.rst:62
-#: ../../getting-started/system-requirements.rst:58
+#: ../../getting-started/system-requirements.rst:65
 msgid "FreeBSD"
 msgstr ""
 
@@ -3538,24 +3537,35 @@ msgid ""
 "the kernel, causing xruns when attempting to access the data."
 msgstr ""
 
+#: ../../getting-started/system-requirements.rst:53
+msgid "Realtime Scheduling"
+msgstr ""
+
 #: ../../getting-started/system-requirements.rst:54
+msgid ""
+"Zrythm requires realtime scheduling privileges for reliable, dropout-free "
+"operation. Realtime (RT) scheduling is a feature that enables applications "
+"to meet timing deadlines more reliably."
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:61
 msgid ""
 "To set up these privileges for your user, see `How do I configure my linux "
 "system to allow JACK to use realtime scheduling? <https://jackaudio.org/faq/"
 "linux_rt_config.html#systems-using-pam>`_."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:59
+#: ../../getting-started/system-requirements.rst:66
 msgid ""
 "To set up these privileges for your user, change the user class' "
 "``memorylocked`` value in :file:`/etc/login.conf`."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:64
+#: ../../getting-started/system-requirements.rst:71
 msgid "Open File Limit"
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:65
+#: ../../getting-started/system-requirements.rst:72
 msgid ""
 "On startup, Zrythm will attempt to increase the maximum limit of files it "
 "can open. You should give your user enough permissions to allow this."
