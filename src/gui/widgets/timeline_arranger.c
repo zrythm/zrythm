@@ -156,7 +156,12 @@ timeline_arranger_widget_get_track_at_y (
       if (!track_get_should_be_visible (track))
         continue;
 
-      g_return_val_if_fail (track->widget, NULL);
+      if (!track->widget)
+        {
+          g_message (
+            "no track widget for %s", track->name);
+          continue;
+        }
 
       if (ui_is_child_hit (
             GTK_WIDGET (self),

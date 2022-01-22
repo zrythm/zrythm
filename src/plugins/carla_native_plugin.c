@@ -108,12 +108,12 @@ carla_native_plugin_init_loaded (
 /**
  * Tick callback for the plugin UI.
  */
-static int
+static gboolean
 carla_plugin_tick_cb (
-  GtkWidget * widget,
-  GdkFrameClock * frame_clock,
-  CarlaNativePlugin * self)
+  gpointer user_data)
 {
+  CarlaNativePlugin * self =
+    (CarlaNativePlugin *) user_data;
   if (self->plugin->visible &&
       MAIN_WINDOW)
     {
@@ -125,8 +125,10 @@ carla_plugin_tick_cb (
           context =
             gdk_gl_context_get_current ();
           if (context)
-            g_object_ref (context);
-          gdk_gl_context_clear_current ();
+            {
+              g_object_ref (context);
+              gdk_gl_context_clear_current ();
+            }
         }
       self->native_plugin_descriptor->ui_idle (
         self->native_plugin_handle);
@@ -252,7 +254,15 @@ static void
 host_ui_closed (
   NativeHostHandle handle)
 {
+  CarlaNativePlugin * self =
+    (CarlaNativePlugin *) handle;
+
   g_message ("ui closed");
+  if (self->tick_cb)
+    {
+      g_source_remove (self->tick_cb);
+      self->tick_cb = 0;
+    }
 }
 
 static intptr_t
@@ -2243,9 +2253,7 @@ carla_native_plugin_open_ui (
           g_debug (
             "removing tick callback for %s",
             pl->setting->descr->name);
-          gtk_widget_remove_tick_callback (
-            GTK_WIDGET (MAIN_WINDOW),
-            self->tick_cb);
+          g_source_remove (self->tick_cb);
           self->tick_cb = 0;
         }
 
@@ -2255,10 +2263,24 @@ carla_native_plugin_open_ui (
           g_debug (
             "setting tick callback for %s",
             pl->setting->descr->name);
+          /* do not use tick callback: */
+          /* falktx: I am doing some checks on
+           * ildaeil/carla, and see there is a nice
+           * way without conflicts to avoid the GL
+           * context issues. it came from cardinal,
+           * where I cannot draw plugin UIs in the
+           * same function as the main stuff,
+           * because it is in between other opengl
+           * calls (before and after). the solution
+           * I found was to have a dedicated idle
+           * timer, and handle the plugin UI stuff
+           * there, outside of the main application
+           * draw function */
           self->tick_cb =
-            gtk_widget_add_tick_callback (
-              GTK_WIDGET (MAIN_WINDOW),
-              (GtkTickCallback)
+            g_timeout_add_full (
+              G_PRIORITY_DEFAULT,
+              /* 60 fps */
+              1000 / 60,
               carla_plugin_tick_cb,
               self,
               carla_plugin_tick_cb_destroy);
@@ -2536,6 +2558,12 @@ void
 carla_native_plugin_close (
   CarlaNativePlugin * self)
 {
+  if (self->tick_cb)
+    {
+      g_source_remove (self->tick_cb);
+      self->tick_cb = 0;
+    }
+
   PluginDescriptor * descr =
     self->plugin->setting->descr;
   if (self->native_plugin_descriptor)

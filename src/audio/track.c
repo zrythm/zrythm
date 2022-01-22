@@ -3920,6 +3920,11 @@ track_free (Track * self)
   g_debug ("freeing track '%s' (pos %d)...",
     self->name, self->pos);
 
+  if (Z_IS_TRACK_WIDGET (self->widget))
+    {
+      self->widget->track = NULL;
+    }
+
   /* remove regions */
   for (int i = 0; i < self->num_lanes; i++)
     {
