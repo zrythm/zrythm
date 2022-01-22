@@ -16,8 +16,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-19 14:24+0000\n"
-"PO-Revision-Date: 2022-01-17 09:53+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2022-01-22 02:54+0000\n"
+"Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -25,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -4095,7 +4095,6 @@ msgid "Failed to perform channel send action: %s"
 msgstr "未能执行通道发送操作：%s"
 
 #: src/actions/channel_send_action.c:365
-#, fuzzy
 msgid "Connect sidechain"
 msgstr "连接侧链"
 
@@ -5364,12 +5363,10 @@ msgid "The Zrythm contributors"
 msgstr "Zrythm 之贡献者"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:12
-#, fuzzy
 msgid "Zrythm DAW"
-msgstr "Zrythm"
+msgstr "Zrythm DAW"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:13
-#, fuzzy
 msgid "A highly automated and intuitive digital audio workstation"
 msgstr "一个高度自动化且直观的数字音频工作站"
 
