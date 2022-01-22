@@ -1,6 +1,27 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.28.1.1] - 2022-01-22
+### Added
+- Audition mode
+- Adaptive snap
+- Sidechain port detection for plugins running through Carla
+
+### Changed
+- Update French, Chinese (Simplified), Portuguese, Turkish, German, Italian translations
+- Port MIDI activity widget to snapshot API
+- Change CPU usage widget color
+- Calculate nearest snap point on the spot instead of using pre-cached snap points
+- Use custom pthreads with RT scheduling and low stack size for DSP on all backends
+- Don't block when running various dialogs
+- Carla: use timeout instead of tick callback for running UIs
+- Carla: clear GTK GL context before opening UIs
+
+### Fixed
+- Silence GTK DND error on X11 (known GTK bug)
+- Fix delete key not working in arrangers
+- Fix Carla port connection issue with CV variants
+
 ## [1.0.0-alpha.28.0.1] - 2022-01-19
 ### Added
 - Add appdata
