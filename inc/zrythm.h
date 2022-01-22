@@ -365,11 +365,13 @@ zrythm_is_latest_release (
   GError ** error);
 
 /**
- * Returns the veresion and the capabilities.
+ * Returns the version and the capabilities.
+ *
+ * @param buf Buffer to write the string to.
  */
 void
 zrythm_get_version_with_capabilities (
-  char * str);
+  char * buf);
 
 /**
  * Returns the default user "zrythm" dir.

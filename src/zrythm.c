@@ -181,16 +181,18 @@ zrythm_get_version (
 }
 
 /**
- * Returns the veresion and the capabilities.
+ * Returns the version and the capabilities.
+ *
+ * @param buf Buffer to write the string to.
  */
 void
 zrythm_get_version_with_capabilities (
-  char * str)
+  char * buf)
 {
   char * ver = zrythm_get_version (0);
 
   sprintf (
-    str,
+    buf,
     "%s %s%s (%s)\n"
     "  built with %s %s for %s%s\n"
 #ifdef HAVE_CARLA

@@ -475,6 +475,12 @@ init_thread (
     self, _("Initializing logging system"), 0.02);
   log_init_with_file (LOG, NULL);
 
+  {
+    char ver[2000];
+    zrythm_get_version_with_capabilities (ver);
+    g_message ("\n%s", ver);
+  }
+
 #if defined (_WOE32) || defined (__APPLE__)
   g_warning (
     "Warning, you are running a non-free operating "
