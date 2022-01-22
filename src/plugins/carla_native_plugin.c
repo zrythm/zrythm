@@ -1101,6 +1101,12 @@ create_ports (
     self->plugin->setting->descr;
   if (!loading)
     {
+      const CarlaPortCountInfo * audio_port_count_nfo =
+        carla_get_audio_port_count_info (
+          self->host_handle, 0);
+      g_return_if_fail (
+        (int) audio_port_count_nfo->ins ==
+          descr->num_audio_ins);
       for (int i = 0; i < descr->num_audio_ins; i++)
         {
           strcpy (tmp, _("Audio in"));
@@ -1111,6 +1117,21 @@ create_ports (
           port->id.sym =
             g_strdup_printf (
               "audio_in_%d", i);
+#ifdef CARLA_HAVE_AUDIO_PORT_HINTS
+          unsigned int audio_port_hints =
+            carla_get_audio_port_hints (
+              self->host_handle, 0, false,
+              (uint32_t) i);
+          g_debug ("audio port hints %d: %u",
+            i, audio_port_hints);
+          if (audio_port_hints
+              & AUDIO_PORT_IS_SIDECHAIN)
+            {
+              g_debug (
+                "%s is sidechain", port->id.sym);
+              port->id.flags |= PORT_FLAG_SIDECHAIN;
+            }
+#endif
           plugin_add_in_port (
             self->plugin, port);
         }

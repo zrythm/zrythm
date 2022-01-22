@@ -1143,6 +1143,9 @@ if have_carla
   if cc.has_function('carla_get_native_patchbay_cv8_plugin', dependencies: carla_host_plugin_dep)
     cdata.set ('CARLA_HAVE_CV8_PATCHBAY_VARIANT', 1)
   endif
+  if cc.has_function('carla_get_audio_port_hints', dependencies: carla_host_plugin_dep)
+    cdata.set ('CARLA_HAVE_AUDIO_PORT_HINTS', 1)
+  endif
 endif
 
 rtmidi_dep = dependency (
