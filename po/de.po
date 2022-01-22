@@ -6,27 +6,28 @@
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
 # Waui <wau-wau@tutanota.de>, 2020.
 # André Menrath <andre.menrath@posteo.de>, 2020.
+# Ulrich <drulli@airmail.cc>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-19 14:24+0000\n"
-"PO-Revision-Date: 2022-01-17 09:53+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"PO-Revision-Date: 2022-01-22 17:40+0000\n"
+"Last-Translator: Ulrich <drulli@airmail.cc>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
 #: inc/audio/engine.h:361
 msgid "Dummy"
-msgstr "Dummy"
+msgstr "Platzhalter"
 
 #: inc/schemas/gui/backend/arranger_object.h:52
 #: inc/gui/backend/arranger_object.h:99 inc/audio/transport.h:72
@@ -52,21 +53,18 @@ msgstr "Region"
 
 #: inc/schemas/gui/backend/arranger_object.h:58
 #: inc/gui/backend/arranger_object.h:105
-#, fuzzy
 msgid "Midi Note"
-msgstr "Note"
+msgstr "Midi-Note"
 
 #: inc/schemas/gui/backend/arranger_object.h:60
 #: inc/gui/backend/arranger_object.h:107
-#, fuzzy
 msgid "Chord Object"
-msgstr "Objekt(e) verschieben"
+msgstr "Akkord-Objekt"
 
 #: inc/schemas/gui/backend/arranger_object.h:62
 #: inc/gui/backend/arranger_object.h:109
-#, fuzzy
 msgid "Scale Object"
-msgstr "Projekt speichern"
+msgstr "Skalen-Objekt"
 
 #: inc/schemas/gui/backend/arranger_object.h:64
 #: inc/gui/backend/arranger_object.h:111 inc/audio/track.h:198
@@ -75,7 +73,6 @@ msgstr "Marker"
 
 #: inc/schemas/gui/backend/arranger_object.h:66
 #: inc/gui/backend/arranger_object.h:113
-#, fuzzy
 msgid "Automation Point"
 msgstr "Automatisierungspunkt"
 
@@ -97,18 +94,17 @@ msgstr "Superellipse"
 
 #: inc/schemas/audio/curve.h:48 inc/audio/curve.h:116 src/audio/curve.c:373
 msgid "Vital"
-msgstr ""
+msgstr "Vital"
 
 #: inc/schemas/audio/curve.h:50 inc/audio/curve.h:118 src/audio/curve.c:79
 #, c-format
 msgid "Pulse"
-msgstr ""
+msgstr "Impuls"
 
 #: inc/schemas/audio/region.h:47 inc/audio/region.h:87
 #: src/gui/widgets/track.c:1030
-#, fuzzy
 msgid "Inherit"
-msgstr "%sErben"
+msgstr "erben"
 
 #: inc/schemas/audio/region.h:49 inc/audio/region.h:89
 #: src/gui/widgets/bot_bar.c:518 src/audio/automation_track.c:207
@@ -136,41 +132,36 @@ msgstr "Niedrig"
 
 #: inc/utils/ui.h:80
 msgid "Ultra Low"
-msgstr ""
+msgstr "Extrem niedrig"
 
 #: inc/utils/gtk.h:59
-#, fuzzy
 msgid "MIDI learn"
-msgstr "MIDI-Eingang"
+msgstr "MIDI-Lernen"
 
 #: inc/utils/gtk.h:63
 msgid "Cu_t"
-msgstr ""
+msgstr "Ausscheiden _t"
 
 #: inc/utils/gtk.h:67
 msgid "_Copy"
 msgstr "_Kopieren"
 
 #: inc/utils/gtk.h:71
-#, fuzzy
 msgid "_Paste"
-msgstr "Einfügen"
+msgstr "Einfügen _P"
 
 #: inc/utils/gtk.h:75
-#, fuzzy
 msgid "_Delete"
-msgstr "Löschen"
+msgstr "Löschen _D"
 
 #. TRANSLATORS: deselects everything
 #: inc/utils/gtk.h:80
-#, fuzzy
 msgid "Cle_ar Selection"
-msgstr "Auswahl aufheben"
+msgstr "Auswahl _aufheben"
 
 #: inc/utils/gtk.h:85
-#, fuzzy
 msgid "Select A_ll"
-msgstr "Alles auswählen"
+msgstr "A_lles auswählen"
 
 #: inc/utils/gtk.h:90 src/gui/widgets/home_toolbar.c:176
 msgid "Duplicate"
@@ -191,73 +182,67 @@ msgstr "Nicht Stummschalten"
 
 #: inc/audio/audio_function.h:70
 msgid "Invert"
-msgstr ""
+msgstr "Umkehren"
 
 #: inc/audio/audio_function.h:71
-#, fuzzy
 msgid "Normalize peak"
-msgstr "Normal"
+msgstr "Normalisieren - Peak"
 
 #: inc/audio/audio_function.h:72
-#, fuzzy
 msgid "Normalize RMS"
-msgstr "Normal"
+msgstr "Normalisieren - RMS"
 
 #: inc/audio/audio_function.h:73
-#, fuzzy
 msgid "Normalize LUFS"
-msgstr "Normal"
+msgstr "Normalisieren - LUFS"
 
 #: inc/audio/audio_function.h:74
-#, fuzzy
 msgid "Linear fade in"
-msgstr "Linear"
+msgstr "Lineares Fade-in"
 
 #: inc/audio/audio_function.h:76
-#, fuzzy
 msgid "Linear fade out"
-msgstr "Monitor Ausgang"
+msgstr "Lineares Fade-out"
 
 #: inc/audio/audio_function.h:78 src/gui/widgets/home_toolbar.c:186
 msgid "Nudge left"
-msgstr ""
+msgstr "Kicker nach links"
 
 #: inc/audio/audio_function.h:79 src/gui/widgets/home_toolbar.c:188
 msgid "Nudge right"
-msgstr ""
+msgstr "Kicker nach rechts"
 
 #: inc/audio/audio_function.h:80
 msgid "Reverse"
-msgstr ""
+msgstr "Umdrehen"
 
 #: inc/audio/audio_function.h:81
 msgid "External program"
-msgstr ""
+msgstr "Externes Programm"
 
 #: inc/audio/audio_function.h:82
 msgid "Guile script"
-msgstr ""
+msgstr "Guile-Skript"
 
 #: inc/audio/audio_function.h:83
-#, fuzzy
 msgid "Custom plugin"
-msgstr "Persönlich"
+msgstr "Benutzerdefiniertes Plugin"
 
 #: inc/audio/audio_function.h:84
 msgid "Invalid"
-msgstr ""
+msgstr "Ungültig"
 
 #: inc/audio/transport.h:73
 msgid "1 bar"
-msgstr ""
+msgstr "1 Takt"
 
 #: inc/audio/transport.h:74
 msgid "2 bars"
-msgstr ""
+msgstr "2 Takte"
 
 #: inc/audio/transport.h:75
 msgid "4 bars"
-msgstr ""
+msgstr "4 Takte"
 
 #: inc/audio/track.h:194 src/gui/widgets/track_properties_expander.c:132
 #: src/gui/widgets/route_target_selector_popover.c:188
@@ -287,9 +272,8 @@ msgid "Tempo"
 msgstr "Tempo"
 
 #: inc/audio/track.h:200
-#, fuzzy
 msgid "Modulator"
-msgstr "Modulatoren"
+msgstr "Modulator"
 
 #: inc/audio/track.h:201
 msgid "Audio FX"
@@ -314,12 +298,12 @@ msgstr "MIDI-Gruppe"
 
 #: inc/audio/track.h:206
 msgid "Folder"
-msgstr ""
+msgstr "Ordner"
 
 #: inc/audio/curve.h:120 src/audio/curve.c:82 src/audio/curve.c:368
 #, c-format
 msgid "Logarithmic"
-msgstr ""
+msgstr "Logarithmisch"
 
 #: inc/audio/engine.h:204
 msgid "1,024"
@@ -363,63 +347,59 @@ msgstr "192.000"
 
 #: inc/audio/engine.h:295
 msgid "Dummy (libsoundio)"
-msgstr ""
+msgstr "Dummy (libsoundio)"
 
 #: inc/audio/engine.h:362
-#, fuzzy
 msgid "ALSA Sequencer (not working)"
-msgstr "ALSA-Sequenzer"
+msgstr "ALSA-Sequenzer (ohne Funktion)"
 
 #: inc/audio/engine.h:363
-#, fuzzy
 msgid "ALSA Sequencer (rtmidi)"
-msgstr "ALSA-Sequenzer"
+msgstr "ALSA-Sequenzer (rtmidi)"
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:107
 msgid "Crescendo"
-msgstr ""
+msgstr "Crescendo"
 
 #: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:113
 msgid "Flam"
-msgstr ""
+msgstr "Flam"
 
 #: inc/audio/midi_function.h:58 inc/audio/automation_function.h:50
 msgid "Flip H"
-msgstr ""
+msgstr "Horiz. wenden"
 
 #: inc/audio/midi_function.h:59 inc/audio/automation_function.h:51
 msgid "Flip V"
-msgstr ""
+msgstr "Vert. wenden"
 
 #: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:134
 msgid "Legato"
-msgstr ""
+msgstr "Legato"
 
 #: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:140
-#, fuzzy
 msgid "Portato"
-msgstr "Port"
+msgstr "Portato"
 
 #: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:146
 msgid "Staccato"
-msgstr ""
+msgstr "Stakkato"
 
 #: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:152
 msgid "Strum"
-msgstr ""
+msgstr "Zupfen"
 
 #: inc/audio/exporter.h:90
 msgid "Before inserts"
-msgstr ""
+msgstr "Vor Inserts"
 
 #: inc/audio/exporter.h:91
-#, fuzzy
 msgid "Pre-fader"
-msgstr "Pre-Fader Eingang"
+msgstr "Vor Fader"
 
 #: inc/audio/exporter.h:92
 msgid "Post fader"
-msgstr ""
+msgstr "Nach Fader"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
@@ -453,9 +433,8 @@ msgid "Unable to read file: %s"
 msgstr "Datei kann nicht gelesen werden: %s"
 
 #: src/project.c:919
-#, fuzzy
 msgid "Failed to decompress project file"
-msgstr "Fehler beim Dekomprimieren der Projektdatei: %s"
+msgstr "Fehler beim Dekomprimieren der Projektdatei"
 
 #: src/project.c:978
 #, c-format
@@ -492,9 +471,8 @@ msgid "Failed to load project. Will create a new one instead."
 msgstr "Fehler beim Laden des Projektes. Stattdessen wird ein neues erstellt."
 
 #: src/project.c:1622
-#, fuzzy
 msgid "Failed to compress project file"
-msgstr "Fehler beim Dekomprimieren der Projektdatei: %s"
+msgstr "Fehler beim Dekomprimieren der Projektdatei"
 
 #: src/project.c:1668 src/project.c:1671
 msgid "Backup saved."
@@ -522,11 +500,11 @@ msgstr "%s ist abgestürzt. "
 #: src/zrythm_app.c:203
 #, c-format
 msgid "Do you want %s to check for updates on startup?"
-msgstr ""
+msgstr "Wollen Sie, dass %s beim Starten nach Updates sucht?"
 
 #: src/zrythm_app.c:210
 msgid "Check for Updates"
-msgstr ""
+msgstr "Nach Updates suchen"
 
 #: src/zrythm_app.c:283
 #, c-format
@@ -535,6 +513,9 @@ msgid ""
 "\n"
 "Your current version is %s"
 msgstr ""
+"Eine neue Version von Zrythm ist verfügbar: <b>%s</b>\n"
+"\n"
+"Derzeit ist Version %s installiert"
 
 #: src/zrythm_app.c:372
 msgid "Setting up main window"
@@ -623,62 +604,57 @@ msgid "Project failed to decompress: %s\n"
 msgstr "Fehler beim dekomprimieren des Projektes: %s\n"
 
 #: src/zrythm_app.c:1580
-#, fuzzy
 msgid "Unknown operation"
-msgstr "Unbekannte Option\n"
+msgstr "Unbekannter Vorgang"
 
 #: src/zrythm_app.c:1600
 #, c-format
 msgid "libguile is required for this option\n"
-msgstr ""
+msgstr "Diese Option setzt libguile voraus\n"
 
 #: src/zrythm_app.c:1765
-#, fuzzy
 msgid "Print version information"
-msgstr "Lizenzinformationen"
+msgstr "Versionsinformationen drucken"
 
 #: src/zrythm_app.c:1770
 msgid "Convert ZPJ-FILE to YAML"
-msgstr ""
+msgstr "ZPJ-Datein zu YAML konvertieren"
 
 #: src/zrythm_app.c:1775
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
-msgstr ""
+msgstr "YAML-PROJEKT-DATEI in das .zpj-Format konvertieren"
 
 #: src/zrythm_app.c:1780
 msgid "Generate a project from SCRIPT-FILE"
-msgstr ""
+msgstr "Erzeugen eines Projekts aus SCRIPT-DATEI"
 
 #: src/zrythm_app.c:1784
 msgid "Print output in user-friendly way"
-msgstr ""
+msgstr "Druckausgabe auf benutzerfreundliche Weise"
 
 #: src/zrythm_app.c:1788
 msgid "Print current settings"
-msgstr ""
+msgstr "Aktuelle Einstellungen drucken"
 
 #: src/zrythm_app.c:1792
-#, fuzzy
 msgid "Reset to factory settings"
-msgstr "Erfolgreich auf die Fabrikeinstellungen zurückgesetzt\n"
+msgstr "Auf Werkseinstellungen zurücksetzen"
 
 #: src/zrythm_app.c:1795
-#, fuzzy
 msgid "Override the audio backend to use"
-msgstr "Das zu benutzende Audio-Backend."
+msgstr "Das zu nutzende Audio-Backend überschreiben"
 
 #: src/zrythm_app.c:1799
-#, fuzzy
 msgid "Override the MIDI backend to use"
-msgstr "Das zu benutzende MIDI-Backend."
+msgstr "Das zu nutzende MIDI-Backend überschreiben"
 
 #: src/zrythm_app.c:1803
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
-msgstr ""
+msgstr "Abkürzung für --midi-backend=none --audio-backend=none"
 
 #: src/zrythm_app.c:1835
 msgid "[PROJECT-FILE]"
-msgstr ""
+msgstr "[PROJEKT-DATEI]"
 
 #: src/zrythm_app.c:1840
 #, c-format

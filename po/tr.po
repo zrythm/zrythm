@@ -4,13 +4,14 @@
 # Tarık Yıldız <tariky113@gmail.com>, 2021.
 # Burak Hüseyin Ekseli <burakekseli@yandex.com>, 2021.
 # Oğuz Ersen <oguzersen@protonmail.com>, 2021.
+# benjamin <itsbenx@outlook.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-19 14:24+0000\n"
-"PO-Revision-Date: 2022-01-14 15:54+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2022-01-22 02:54+0000\n"
+"Last-Translator: benjamin <itsbenx@outlook.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/zrythm/tr/"
 ">\n"
 "Language: tr\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -497,7 +498,7 @@ msgstr ""
 #: src/zrythm_app.c:159
 #, c-format
 msgid "%s has crashed. "
-msgstr ""
+msgstr "%s çöktü. "
 
 #: src/zrythm_app.c:203
 #, c-format
@@ -5420,7 +5421,7 @@ msgstr "Zrythm"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:13
 msgid "A highly automated and intuitive digital audio workstation"
-msgstr ""
+msgstr "Yüksek seviyede otomatikleşmiş ve sezgisel dijital ses istasyonu"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:15
 msgid ""

@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-01-11 21:06+0000\n"
-"PO-Revision-Date: 2021-12-30 09:50+0000\n"
-"Last-Translator: Burak Hüseyin Ekseli <burakekseli@yandex.com>\n"
+"PO-Revision-Date: 2022-01-22 02:54+0000\n"
+"Last-Translator: benjamin <itsbenx@outlook.com>\n"
+"Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/tr/>\n"
 "Language: tr\n"
-"Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/tr/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.11-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -1835,7 +1836,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:20
 msgid "Select/Stretch Tool"
-msgstr ""
+msgstr "Seçme/Germe Aracı"
 
 #: ../../editing/edit-tools.rst:21
 msgid "This can be toggled to switch between Select and Stretch."
@@ -1950,7 +1951,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:102
 msgid "Edit Tool"
-msgstr ""
+msgstr "Düzenleme Aracı"
 
 #: ../../editing/edit-tools.rst:103
 msgid ""
@@ -1969,7 +1970,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:115
 msgid "Cut Tool"
-msgstr ""
+msgstr "Kesme Aracı"
 
 #: ../../editing/edit-tools.rst:116
 msgid ""
