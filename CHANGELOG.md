@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-alpha.28.1.1] - 2022-01-22
+## [1.0.0-alpha.28.1.3] - 2022-01-22
 ### Added
 - Audition mode
 - Adaptive snap
@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - Don't block when running various dialogs
 - Carla: use timeout instead of tick callback for running UIs
 - Carla: clear GTK GL context before opening UIs
+- `zrythm_launch`: Ignore `LD_LIBRARY_PATH` and `GSETTINGS_SCHEMA_DIR` exports when using flatpak
 
 ### Fixed
 - Silence GTK DND error on X11 (known GTK bug)
