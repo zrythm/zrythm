@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -71,13 +71,9 @@ typedef struct _ScaleSelectorWindowWidget
   GtkFlowBoxChild * creator_root_notes[12];
 
   GtkFlowBox *      creator_type_flowbox;
-  GtkFlowBoxChild * creator_type_chromatic;
-  GtkFlowBoxChild * creator_type_ionian;
-  GtkFlowBoxChild * creator_type_aeolian;
-  GtkFlowBoxChild * creator_type_harmonic_minor;
 
   /** All of the above in an array. */
-  GtkFlowBoxChild * creator_types[4];
+  GtkFlowBoxChild * creator_types[NUM_SCALES];
 
   /** The owner ScaleObjectWidget. */
   ScaleObject * scale;

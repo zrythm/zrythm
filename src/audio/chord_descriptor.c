@@ -24,10 +24,6 @@
 #include "utils/midi.h"
 #include "utils/objects.h"
 
-/* see chord_desriptor.h */
-CHORD_TYPES;
-CHORD_ACCENTS;
-
 /**
  * Updates the notes array based on the current
  * settings.
@@ -36,6 +32,9 @@ void
 chord_descriptor_update_notes (
   ChordDescriptor * self)
 {
+  if (self->type == CHORD_TYPE_CUSTOM)
+    return;
+
   int root = self->root_note;
   int bass = self->bass_note;
 
@@ -199,8 +198,7 @@ const char *
 chord_descriptor_chord_type_to_string (
   ChordType type)
 {
-  (void) chord_type_labels;
-  return chord_type_labels[type];
+  return chord_type_strings[type].str;
 }
 
 /**
@@ -210,8 +208,7 @@ const char *
 chord_descriptor_chord_accent_to_string (
   ChordAccent accent)
 {
-  (void) chord_accent_labels;
-  return chord_accent_labels[accent];
+  return chord_accent_strings[accent].str;
 }
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -38,233 +38,141 @@
  * @{
  */
 
-#define SCALE_SCHEMA_VERSION 1
+#define SCALE_SCHEMA_VERSION 2
 
 /**
  * Scale type (name) eg Aeolian.
  */
 typedef enum MusicalScaleType
 {
-  SCALE_CHROMATIC, ///< all keys
-  SCALE_IONIAN, ///< major
-  SCALE_AEOLIAN, ///< natural minor
+  /** All keys. */
+  SCALE_CHROMATIC,
+
+  /* --- popular scales --- */
+
+  SCALE_MAJOR,
+
+  /** Natural minor. */
+  SCALE_MINOR,
+
+  /** Major (same as SCALE_MAJOR). */
+  SCALE_IONIAN,
+
+  SCALE_DORIAN,
+  SCALE_PHRYGIAN,
+  SCALE_LYDIAN,
+  SCALE_MIXOLYDIAN,
+
+  /** Natural minor (same as SCALE_MINOR). */
+  SCALE_AEOLIAN,
+
+  SCALE_LOCRIAN,
+  SCALE_MELODIC_MINOR,
   SCALE_HARMONIC_MINOR,
 
-  /* rest TODO */
+  /* --- less known scales --- */
+
+  /** Lydian dominant. */
   SCALE_ACOUSTIC,
+
+  SCALE_HARMONIC_MAJOR,
+  SCALE_MAJOR_PENTATONIC,
+  SCALE_MINOR_PENTATONIC,
+  SCALE_PHRYGIAN_DOMINANT,
+  SCALE_MAJOR_LOCRIAN,
   SCALE_ALGERIAN,
-  SCALE_ALTERED,
   SCALE_AUGMENTED,
-  SCALE_BEBOP_DOMINANT,
-  SCALE_BLUES,
+  SCALE_DOUBLE_HARMONIC,
   SCALE_CHINESE,
   SCALE_DIMINISHED,
   SCALE_DOMINANT_DIMINISHED,
-  SCALE_DORIAN,
-  SCALE_DOUBLE_HARMONIC,
+  SCALE_EGYPTIAN,
   SCALE_EIGHT_TONE_SPANISH,
   SCALE_ENIGMATIC,
-  SCALE_EGYPTIAN,
-  SCALE_FLAMENCO,
   SCALE_GEEZ,
-  SCALE_GYPSY,
-  SCALE_HALF_DIMINISHED,
-  SCALE_HARMONIC_MAJOR,
   SCALE_HINDU,
   SCALE_HIRAJOSHI,
   SCALE_HUNGARIAN_GYPSY,
-  SCALE_HUNGARIAN_MINOR,
-  SCALE_IN,
   SCALE_INSEN,
-  SCALE_ISTRIAN,
-  SCALE_IWATO,
-  SCALE_LOCRIAN,
-  SCALE_LYDIAN_AUGMENTED,
-  SCALE_LYDIAN,
-  SCALE_MAJOR_LOCRIAN,
-  SCALE_MAJOR_PENTATONIC,
-  SCALE_MAQAM,
-  SCALE_MELODIC_MINOR,
-  SCALE_MINOR_PENTATONIC,
-  SCALE_MIXOLYDIAN,
   SCALE_NEAPOLITAN_MAJOR,
   SCALE_NEAPOLITAN_MINOR,
   SCALE_OCTATONIC_HALF_WHOLE,
   SCALE_OCTATONIC_WHOLE_HALF,
   SCALE_ORIENTAL,
-  SCALE_PERSIAN,
-  SCALE_PHRYGIAN_DOMINANT,
-  SCALE_PHRYGIAN,
-  SCALE_PROMETHEUS,
+  SCALE_WHOLE_TONE,
   SCALE_ROMANIAN_MINOR,
+  SCALE_ALTERED,
+  SCALE_MAQAM,
+  SCALE_YO,
+
+  /* --- TODO unimplemented --- */
+  SCALE_BEBOP_DOMINANT,
+  SCALE_BLUES,
+  SCALE_FLAMENCO,
+  SCALE_GYPSY,
+  SCALE_HALF_DIMINISHED,
+  SCALE_HUNGARIAN_MINOR,
+  SCALE_IN,
+  SCALE_ISTRIAN,
+  SCALE_IWATO,
+  SCALE_LYDIAN_AUGMENTED,
+  SCALE_PERSIAN,
+  SCALE_PROMETHEUS,
   SCALE_TRITONE,
   SCALE_UKRANIAN_DORIAN,
-  SCALE_WHOLE_TONE,
-  SCALE_YO
+
+  NUM_SCALES,
 } MusicalScaleType;
 
-//const unsigned char scale_lydian[12] =
-//{
-  //1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1
-//};
-
-//const unsigned char scale_chromatic[12] =
-//{
-  //1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-//};
-
-//const unsigned char scale_dorian[12] =
-//{
-  //1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0
-//};
-
-//const unsigned char scale_harmonic_major[12] =
-//{
-  //1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1
-//};
-
-//const unsigned char scale_major_pentatonic[12] =
-//{
-  //1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0
-//};
-
-//const unsigned char scale_minor_pentatonic[12] =
-//{
-  //1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0
-//};
-
-//const unsigned char scale_algerian[12] =
-//{
-  //1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1
-//};
-
-//const unsigned char scale_major_locrian[12] =
-//{
-  //1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0
-//};
-
-//const unsigned char scale_augmented[12] =
-//{
-  //1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1
-//};
-
-//const unsigned char scale_double_harmonic[12] =
-//{
-  //1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1
-//};
-
-//const unsigned char scale_chinese[12] =
-//{
-  //1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1
-//};
-
-//const unsigned char scale_diminished[12] =
-//{
-  //1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1
-//};
-
-//const unsigned char scale_dominant_diminished[12] =
-//{
-  //1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0
-//};
-
-//const unsigned char scale_egyptian[12] =
-//{
-  //1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0
-//};
-
-//const unsigned char scale_eight_tone_spanish[12] =
-//{
-  //1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0
-//};
-
-//const unsigned char scale_enigmatic[12] =
-//{
-  //1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1
-//};
-
-//const unsigned char scale_geez[12] =
-//{
-  //1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0
-//};
-
-//const unsigned char scale_hindu[12] =
-//{
-  //1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0
-//};
-
-//const unsigned char scale_hirajoshi[12] =
-//{
-  //1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0
-//};
-
-//const unsigned char scale_hungarian_gypsy[12] =
-//{
-  //1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1
-//};
-
-//const unsigned char scale_insen[12] =
-//{
-  //1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0
-//};
-
-//const unsigned char scale_neapolitan_minor[12] =
-//{
-  //1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1
-//};
-
-//const unsigned char scale_neapolitan_major[12] =
-//{
-  //1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1
-//};
-
-//const unsigned char scale_octatonic_half_whole[12] =
-//{
-  //1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0
-//};
-
-//const unsigned char scale_octatonic_whole_half[12] =
-//{
-  //1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1
-//};
-
-//const unsigned char scale_oriental[12] =
-//{
-  //1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0
-//};
-
-//const unsigned char scale_whole_tone[12] =
-//{
-  //1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0
-//};
-
-//const unsigned char scale_romanian_minor[12] =
-//{
-  //1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0
-//};
-
-//const unsigned char scale_phrygian_dominant[12] =
-//{
-  //1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0
-//};
-
-//const unsigned char scale_altered[12] =
-//{
-  //1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0
-//};
-
-//const unsigned char scale_maqam[12] =
-//{
-  //1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1
-//};
-
-//const unsigned char scale_yo[12] =
-//{
-  //1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0
-//};
+static const cyaml_strval_t
+  musical_scale_type_strings[] =
+{
+  { __("Chromatic"),      SCALE_CHROMATIC    },
+  { __("Major"),          SCALE_MAJOR        },
+  { __("Minor"),          SCALE_MINOR        },
+  { __("Ionian"),         SCALE_IONIAN       },
+  { __("Dorian"),         SCALE_DORIAN       },
+  { __("Phrygian"),       SCALE_PHRYGIAN     },
+  { __("Lydian"),         SCALE_LYDIAN       },
+  { __("Mixolydian"),     SCALE_MIXOLYDIAN   },
+  { __("Aeolian"),        SCALE_AEOLIAN      },
+  { __("Locrian"),        SCALE_LOCRIAN      },
+  { __("Melodic Minor"),  SCALE_MELODIC_MINOR },
+  { __("Harmonic Minor"), SCALE_HARMONIC_MINOR },
+  { __("Acoustic"),       SCALE_ACOUSTIC },
+  { __("Harmonic Major"), SCALE_HARMONIC_MAJOR },
+  { __("Major Pentatonic"), SCALE_MAJOR_PENTATONIC },
+  { __("Minor Pentatonic"), SCALE_MINOR_PENTATONIC },
+  { __("Phrygian Dominant"), SCALE_PHRYGIAN_DOMINANT },
+  { __("Major Locrian"), SCALE_MAJOR_LOCRIAN },
+  { __("Algerian"),       SCALE_ALGERIAN },
+  { __("Augmented"),       SCALE_AUGMENTED },
+  { __("Double Harmonic"),  SCALE_DOUBLE_HARMONIC },
+  { __("Chinese"),  SCALE_CHINESE },
+  { __("Diminished"),  SCALE_DIMINISHED },
+  { __("Dominant Diminished"),  SCALE_DOMINANT_DIMINISHED },
+  { __("Egyptian"),  SCALE_EGYPTIAN },
+  { __("Eigth Tone Spanish"),  SCALE_EIGHT_TONE_SPANISH },
+  { __("Enigmatic"),  SCALE_ENIGMATIC },
+  { __("Geez"),  SCALE_GEEZ },
+  { __("Hindu"),  SCALE_HINDU },
+  { __("Hirajoshi"),  SCALE_HIRAJOSHI },
+  { __("Hungarian Gypsy"),  SCALE_HUNGARIAN_GYPSY },
+  { __("Insen"),  SCALE_INSEN },
+  { __("Neapolitan Major"),  SCALE_NEAPOLITAN_MAJOR },
+  { __("Neapolitan Minor"),  SCALE_NEAPOLITAN_MINOR },
+  { __("Octatonic Half Whole"),  SCALE_OCTATONIC_HALF_WHOLE },
+  { __("Octatonic Whole Half"),  SCALE_OCTATONIC_WHOLE_HALF },
+  { __("Oriental"),  SCALE_ORIENTAL },
+  { __("Whole Tone"),  SCALE_WHOLE_TONE },
+  { __("Romanian Minor"),  SCALE_ROMANIAN_MINOR },
+  { __("Altered"),  SCALE_ALTERED },
+  { __("Maqam"),  SCALE_MAQAM },
+  { __("Yo"),  SCALE_YO },
+};
 
 /**
- * To be generated at the beginning, and then copied and reused.
+ * Musical scale descriptor.
  */
 typedef struct MusicalScale
 {
@@ -276,19 +184,20 @@ typedef struct MusicalScale
   /** Root key of the scale. */
   MusicalNote        root_key;
 
+#if 0
   /** Flag if scale has different notes when
    * ascending and descending. */
   int                has_asc_desc;
 
   /** Notes in the scale (if has_asc_desc is 0). */
-  int                notes[12];
+  bool               notes[12];
 
   /** Notes when ascending (if has_asc_desc is 1). */
-  int                notes_asc[12];
+  bool               notes_asc[12];
 
   /** Notes when descending (if has_asc_desc is
    * 0). */
-  int                notes_desc[12];
+  bool               notes_desc[12];
 
   /**
    * Default triad chords with base note, as many
@@ -297,20 +206,8 @@ typedef struct MusicalScale
    * Triads with base note.
    */
   ChordDescriptor *  default_chords[12];
-
-  /** Note count (1s). */
-  int                num_notes;
+#endif
 } MusicalScale;
-
-static const cyaml_strval_t
-  musical_scale_type_strings[] =
-{
-  { "Acoustic",     SCALE_ACOUSTIC    },
-  { "Aeolian",      SCALE_AEOLIAN   },
-  { "Algerian",     SCALE_ALGERIAN   },
-  { "Altered",      SCALE_ALTERED   },
-  { "Augmented",    SCALE_AUGMENTED   },
-};
 
 static const cyaml_schema_field_t
   musical_scale_fields_schema[] =
@@ -321,9 +218,6 @@ static const cyaml_schema_field_t
     MusicalScale, type, musical_scale_type_strings),
   YAML_FIELD_ENUM (
     MusicalScale, root_key, musical_note_strings),
-  CYAML_FIELD_SEQUENCE_FIXED (
-    "notes", CYAML_FLAG_OPTIONAL,
-    MusicalScale, notes, &int_schema, 12),
 
   CYAML_FIELD_END,
 };
@@ -343,11 +237,45 @@ musical_scale_new (
   MusicalNote      root);
 
 /**
+ * Returns the notes in the given scale.
+ *
+ * @param ascending Whether to get the notes when
+ *   ascending or descending (some scales have
+ *   different notes when rising/falling).
+ */
+RETURNS_NONNULL
+const bool *
+musical_scale_get_notes (
+  MusicalScaleType scale_type,
+  bool             ascending);
+
+/**
+ * Returns the triads in the given scale.
+ *
+ * There will be as many chords are enabled notes
+ * in the scale, and the rest of the array will be
+ * filled with CHORD_TYPE_NONE.
+ *
+ * @param ascending Whether to get the triads when
+ *   ascending or descending (some scales have
+ *   different triads when rising/falling).
+ */
+RETURNS_NONNULL
+const ChordType *
+musical_scale_get_triad_types (
+  MusicalScaleType scale_type,
+  bool             ascending);
+
+/**
  * Clones the scale.
  */
 MusicalScale *
 musical_scale_clone (
   MusicalScale * src);
+
+const char *
+musical_scale_type_to_string (
+  const MusicalScaleType type);
 
 /**
  * Prints the MusicalScale to a string.
@@ -356,7 +284,7 @@ musical_scale_clone (
  */
 char *
 musical_scale_to_string (
-  MusicalScale * scale);
+  const MusicalScale * const self);
 
 /**
  * Same as above but uses a buffer instead of
@@ -375,18 +303,19 @@ musical_scale_is_equal (
   MusicalScale * a,
   MusicalScale * b)
 {
-  /* TODO */
-  return a->type == b->type;
+  return
+    a->type == b->type
+    && a->root_key == b->root_key;
 }
 
 /**
  * Returns if all of the chord's notes are in
  * the scale.
  */
-int
-musical_scale_is_chord_in_scale (
-  MusicalScale * scale,
-  ChordDescriptor * chord);
+bool
+musical_scale_contains_chord (
+  const MusicalScale * const    scale,
+  const ChordDescriptor * const chord);
 
 /**
  * Returns if the accent is in the scale.
@@ -402,12 +331,12 @@ musical_scale_is_accent_in_scale (
  * Returns if the given key is in the given
  * MusicalScale.
  *
- * @param key A note inside a single octave (0-11).
+ * @param note A note inside a single octave (0-11).
  */
-int
-musical_scale_is_key_in_scale (
-  MusicalScale * scale,
-  MusicalNote    key);
+bool
+musical_scale_contains_note (
+  const MusicalScale * scale,
+  MusicalNote          note);
 
 /**
  * Returns the scale in human readable string.

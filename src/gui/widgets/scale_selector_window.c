@@ -106,7 +106,8 @@ creator_select_type (
   ScaleSelectorWindowWidget * self)
 {
   MusicalScale * clone;
-  for (int i = 0; i < 4; i++)
+  for (MusicalScaleType i = SCALE_CHROMATIC;
+       i <= SCALE_YO; i++)
     {
       if (self->creator_types[i] != child)
         continue;
@@ -155,36 +156,16 @@ setup_creator_tab (
     GTK_FLOW_BOX_CHILD (self->child))
 
   /* set root note */
-  SELECT_CHILD (
-    creator_root_note_flowbox,
-    creator_root_notes[descr->root_key]);
+  gtk_flow_box_select_child (
+    GTK_FLOW_BOX (self->creator_root_note_flowbox),
+    GTK_FLOW_BOX_CHILD (
+      self->creator_root_notes[descr->root_key]));
 
-#define SELECT_SCALE_TYPE(uppercase,lowercase) \
-  case SCALE_##uppercase: \
-    SELECT_CHILD ( \
-      creator_type_flowbox, \
-      creator_type_##lowercase); \
-    break
-
-  /* set scale type */
-  switch (descr->type)
-    {
-      SELECT_SCALE_TYPE (
-        CHROMATIC, chromatic);
-      SELECT_SCALE_TYPE (
-        IONIAN, ionian);
-      SELECT_SCALE_TYPE (
-        AEOLIAN, aeolian);
-      SELECT_SCALE_TYPE (
-        HARMONIC_MINOR, harmonic_minor);
-    default:
-      /* TODO */
-      break;
-    }
-
-#undef SELECT_SCALE_TYPE
-
-#undef SELECT_CHILD
+  /* select scale */
+  gtk_flow_box_select_child (
+    GTK_FLOW_BOX (self->creator_type_flowbox),
+    GTK_FLOW_BOX_CHILD (
+      self->creator_types[descr->type]));
 
   /* setup signals */
   g_signal_connect (
@@ -252,10 +233,6 @@ scale_selector_window_widget_class_init (
   BIND_CHILD (creator_root_note_as);
   BIND_CHILD (creator_root_note_b);
   BIND_CHILD (creator_type_flowbox);
-  BIND_CHILD (creator_type_chromatic);
-  BIND_CHILD (creator_type_ionian);
-  BIND_CHILD (creator_type_aeolian);
-  BIND_CHILD (creator_type_harmonic_minor);
 
 #undef BIND_CHILD
 }
@@ -291,18 +268,26 @@ scale_selector_window_widget_init (
   self->creator_root_notes[11] =
     self->creator_root_note_b;
 
-  self->creator_types[0] =
-    self->creator_type_chromatic;
-  self->creator_types[1] =
-    self->creator_type_ionian;
-  self->creator_types[2] =
-    self->creator_type_aeolian;
-  self->creator_types[3] =
-    self->creator_type_harmonic_minor;
+  for (MusicalScaleType i = SCALE_CHROMATIC;
+       i <= SCALE_YO; i++)
+    {
+      GtkFlowBoxChild * fb_child =
+        GTK_FLOW_BOX_CHILD (
+          gtk_flow_box_child_new ());
+      const char * str =
+        musical_scale_type_to_string (i);
+      GtkWidget * lbl = gtk_label_new (str);
+      gtk_flow_box_child_set_child (fb_child, lbl);
+      gtk_widget_set_focusable (
+        GTK_WIDGET (fb_child), true);
+      gtk_flow_box_append (
+        self->creator_type_flowbox,
+        GTK_WIDGET (fb_child));
+      self->creator_types[i] = fb_child;
+    }
 
   /* set signals */
   g_signal_connect (
     G_OBJECT (self), "close-request",
     G_CALLBACK (on_close_request), self);
 }
-

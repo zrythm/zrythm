@@ -455,7 +455,7 @@ creator_filter (
             continue;
 
           bool ret =
-            musical_scale_is_key_in_scale (
+            musical_scale_contains_note (
               self->scale->scale, i);
           return ret;
         }
@@ -467,7 +467,7 @@ creator_filter (
             continue;
 
           return
-            musical_scale_is_key_in_scale (
+            musical_scale_contains_note (
               self->scale->scale, i);
         }
 
@@ -507,7 +507,7 @@ creator_filter (
               note, 0, 0, i, CHORD_ACC_NONE, 0);
 
           int ret =
-            musical_scale_is_chord_in_scale (
+            musical_scale_contains_chord (
               self->scale->scale, chord);
           chord_descriptor_free (chord);
 

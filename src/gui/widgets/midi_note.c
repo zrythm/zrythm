@@ -234,7 +234,7 @@ midi_note_get_adjusted_color (
   int normalized_key = self->val % 12;
   bool in_scale =
     so &&
-    musical_scale_is_key_in_scale (
+    musical_scale_contains_note (
       so->scale, normalized_key);
   bool in_chord =
     co &&

@@ -170,65 +170,7 @@
                     <property name="homogeneous">1</property>
                     <property name="selection_mode">browse</property>
                     <property name="activate_on_single_click">0</property>
-                    <child>
-                      <object class="GtkFlowBoxChild" id="creator_type_chromatic">
-                        <property name="focusable">1</property>
-                        <property name="child">
-                          <object class="GtkLabel">
-                            <property name="label" translatable="yes">Chromatic</property>
-                          </object>
-                        </property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkFlowBoxChild" id="creator_type_ionian">
-                        <property name="focusable">1</property>
-                        <property name="child">
-                          <object class="GtkLabel">
-                            <property name="label" translatable="yes">Ionian (Major)</property>
-                          </object>
-                        </property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkFlowBoxChild" id="creator_type_aeolian">
-                        <property name="focusable">1</property>
-                        <property name="child">
-                          <object class="GtkLabel">
-                            <property name="label" translatable="yes">Aeolian (Natural Minor)</property>
-                          </object>
-                        </property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkFlowBoxChild" id="creator_type_harmonic_minor">
-                        <property name="focusable">1</property>
-                        <property name="child">
-                          <object class="GtkLabel">
-                            <property name="label" translatable="yes">Harmonic Minor</property>
-                          </object>
-                        </property>
-                      </object>
-                    </child>
                   </object>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
             </property>

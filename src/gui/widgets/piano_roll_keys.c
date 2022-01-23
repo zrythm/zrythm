@@ -118,7 +118,7 @@ piano_roll_keys_snapshot (
       int normalized_key = i % 12;
       bool in_scale =
         so &&
-        musical_scale_is_key_in_scale (
+        musical_scale_contains_note (
           so->scale, normalized_key);
       bool in_chord =
         co &&
