@@ -1724,7 +1724,8 @@ region_draw (
     paddingv, size, size)); \
   icons_drawn++
 
-      const int size = 16;
+      const int size =
+        arranger->region_icon_texture_size;
       const int paddingh = 2;
       const int paddingv = 0;
       int icons_drawn = 0;

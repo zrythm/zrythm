@@ -6796,7 +6796,9 @@ arranger_widget_setup (
   self->type = type;
   self->snap_grid = snap_grid;
 
-  const int icon_texture_size = 16;
+  int icon_texture_size = 12;
+  self->region_icon_texture_size =
+    icon_texture_size;
   switch (type)
     {
     case TYPE (TIMELINE):

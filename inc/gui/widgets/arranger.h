@@ -308,6 +308,9 @@ typedef struct _ArrangerWidget
   GdkTexture *   fork_awesome_snowflake_texture;
   GdkTexture *   media_playlist_repeat_texture;
 
+  /** Size of above textures. */
+  int            region_icon_texture_size;
+
   /** Cached nodes for region loop lines. */
   GskRenderNode * loop_line_node;
   GskRenderNode * clip_start_line_node;
