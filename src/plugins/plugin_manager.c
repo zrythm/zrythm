@@ -228,6 +228,14 @@ create_and_load_lilv_word (
     }
   else
     {
+#ifdef FLATPAK_BUILD
+      self->lv2_path =
+        g_strdup_printf (
+          "%s/.lv2:/app/lib/lv2:"
+          "/app/extensions/Plugins/lv2:%s",
+          g_get_home_dir (),
+          builtin_plugins_path);
+#else
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
           self->lv2_path =
@@ -249,7 +257,9 @@ create_and_load_lilv_word (
               g_get_home_dir (),
               builtin_plugins_path);
         }
+#endif /* flatpak build */
     }
+
   g_return_if_fail (self->lv2_path);
 
   /* add zrythm custom path for installer */
@@ -461,6 +471,10 @@ get_vst_paths (
     g_strdup (getenv ("VST_PATH"));
   if (!vst_path || (strlen (vst_path) == 0))
     {
+#ifdef FLATPAK_BUILD
+      vst_path =
+        g_strdup ("/app/extensions/Plugins/lxvst");
+#else
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
           vst_path =
@@ -481,6 +495,7 @@ get_vst_paths (
               "/usr/local/" LIBDIR_NAME "/vst",
               g_get_home_dir (), g_get_home_dir ());
         }
+#endif
 
       g_message (
         "Using standard VST paths: %s", vst_path);
@@ -523,6 +538,10 @@ get_vst3_paths (
     g_strdup (getenv ("VST3_PATH"));
   if (!vst_path || (strlen (vst_path) == 0))
     {
+#ifdef FLATPAK_BUILD
+      vst_path =
+        g_strdup ("/app/extensions/Plugins/vst3");
+#else
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
           vst_path =
@@ -543,6 +562,7 @@ get_vst3_paths (
               "/usr/local/" LIBDIR_NAME "/vst3",
               g_get_home_dir ());
         }
+#endif
 
       g_message (
         "Using standard VST3 paths: %s", vst_path);

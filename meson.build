@@ -130,6 +130,8 @@ sourceviewstylesdir = zrythmdatadir / 'sourceview-styles'
 resources_dir = meson_src_root / 'resources'
 data_dir = meson_src_root / 'data'
 
+flatpak_build = get_option ('for_flathub') or get_option ('flatpak')
+
 # Used for building manpages, manual, etc., using
 # foreach.
 # The actual languages to use are specified in
@@ -414,6 +416,12 @@ cdata.set_quoted ('CONFIGURE_BINDIR', bindir)
 cdata.set_quoted ('LIB_SUFFIX', lib_suffix)
 cdata.set_quoted ('BIN_SUFFIX', bin_suffix)
 cdata.set_quoted ('GSCHEMAS_DIR', schemasdir)
+if flatpak_build
+  cdata.set ('FLATPAK_BUILD', 1)
+endif
+if get_option ('for_flathub')
+  cdata.set ('FOR_FLATHUB', 1)
+endif
 if get_option ('dseg_font')
   cdata.set ('HAVE_BUNDLED_DSEG', 1)
 endif

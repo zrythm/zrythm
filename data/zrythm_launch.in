@@ -17,7 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-if [ "@FLATPAK_BUILD@" != "1" ]; then
+flatpak_build="@FLATPAK_BUILD@"
+if [ "$flatpak_build" != "1" ]; then
   jack_path=$(dirname $(ldconfig -p | grep 'libjack.so ' | head -n 1 | cut -d ' ' -f 4))
   export @LD_LIBRARY_PATH_ENV@="@ZRYTHM_CARLA_LIBDIR@:@ZRYTHM_LIBDIR@:$jack_path:@LIBDIR@:$@LD_LIBRARY_PATH_ENV@"
 

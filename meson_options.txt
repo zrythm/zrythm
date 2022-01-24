@@ -253,3 +253,9 @@ option (
   type: 'boolean',
   value: false,
   description: 'Whether building for Flathub.')
+
+option (
+  'flatpak',
+  type: 'boolean',
+  value: false,
+  description: 'Whether building a Flatpak package.')
