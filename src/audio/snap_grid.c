@@ -234,7 +234,8 @@ void
 snap_grid_init (
   SnapGrid *   self,
   SnapGridType type,
-  NoteLength   note_length)
+  NoteLength   note_length,
+  bool         adaptive)
 {
   self->schema_version = SNAP_GRID_SCHEMA_VERSION;
   self->type = type;
@@ -243,6 +244,7 @@ snap_grid_init (
   self->default_note_length = note_length;
   self->default_note_type = NOTE_TYPE_NORMAL;
   self->snap_to_grid = true;
+  self->snap_adaptive = adaptive;
   self->length_type = NOTE_LENGTH_LINK;
 }
 

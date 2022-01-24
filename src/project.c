@@ -814,14 +814,14 @@ project_create_default (
   snap_grid_init (
     self->snap_grid_timeline,
     SNAP_GRID_TYPE_TIMELINE,
-    NOTE_LENGTH_BAR);
+    NOTE_LENGTH_BAR, true);
   quantize_options_init (
     self->quantize_opts_timeline,
     NOTE_LENGTH_1_1);
   snap_grid_init (
     self->snap_grid_editor,
     SNAP_GRID_TYPE_EDITOR,
-    NOTE_LENGTH_1_8);
+    NOTE_LENGTH_1_8, true);
   quantize_options_init (
     self->quantize_opts_editor,
     NOTE_LENGTH_1_8);

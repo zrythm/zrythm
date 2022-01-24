@@ -242,7 +242,8 @@ void
 snap_grid_init (
   SnapGrid *   self,
   SnapGridType type,
-  NoteLength   note_length);
+  NoteLength   note_length,
+  bool         adaptive);
 
 int
 snap_grid_get_ticks_from_length_and_type (
