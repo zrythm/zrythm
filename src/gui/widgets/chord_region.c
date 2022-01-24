@@ -54,7 +54,7 @@ chord_region_recreate_pango_layouts (
           NULL);
       desc =
         pango_font_description_from_string (
-          REGION_NAME_FONT);
+          REGION_NAME_FONT_NO_SIZE " 6");
       pango_layout_set_font_description (
         self->chords_layout, desc);
       pango_font_description_free (desc);

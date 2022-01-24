@@ -620,7 +620,7 @@ draw_chord_region (
               if (x_start < 0.0)
                 continue;
 
-              GdkRGBA color = { 1, 1, 1, 0.3f };
+              GdkRGBA color = { 1, 1, 1, 1 };
 
               /* get actual values using the
                * ratios */
@@ -632,7 +632,7 @@ draw_chord_region (
                 snapshot, &color,
                 &GRAPHENE_RECT_INIT (
                   (float) x_start, 0,
-                  12.f, (float) full_height));
+                  2.f, (float) full_height));
 
               /* draw name */
               char desc_str[100];
@@ -642,17 +642,14 @@ draw_chord_region (
               gtk_snapshot_translate (
                 snapshot,
                 &GRAPHENE_POINT_INIT (
-                  (int)
-                  ((double) x_start *
-                    (double) full_width + 2.0),
-                  2));
+                  (float) x_start + 4.f,
+                  (float) full_height - 10.f));
               PangoLayout * layout =
                 self->chords_layout;
               pango_layout_set_markup (
                 layout, desc_str, -1);
               gtk_snapshot_append_layout (
-                snapshot, layout,
-                &Z_GDK_RGBA_INIT (0, 0, 0, 1));
+                snapshot, layout, &color);
               gtk_snapshot_restore (snapshot);
             }
         }
