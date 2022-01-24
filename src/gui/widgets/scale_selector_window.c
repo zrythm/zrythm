@@ -107,11 +107,10 @@ creator_select_type (
 {
   MusicalScale * clone;
   for (MusicalScaleType i = SCALE_CHROMATIC;
-       i <= SCALE_YO; i++)
+       i <= SCALE_PROMETHEUS_LISZT; i++)
     {
       if (self->creator_types[i] != child)
         continue;
-
       clone =
         musical_scale_new (
           i, self->descr->root_key);
@@ -137,6 +136,26 @@ on_creator_type_selected_children_changed (
   GtkFlowBox * flowbox,
   ScaleSelectorWindowWidget * self)
 {
+  GList * selected_children =
+    gtk_flow_box_get_selected_children (flowbox);
+  unsigned int list_len =
+    g_list_length (selected_children);
+  g_debug ("list len %u", list_len);
+  if (flowbox == self->creator_type_flowbox
+      && list_len > 0)
+    {
+      gtk_flow_box_unselect_all (
+        self->creator_type_other_flowbox);
+    }
+  else if (
+    flowbox == self->creator_type_other_flowbox
+    && list_len > 0)
+    {
+      gtk_flow_box_unselect_all (
+        self->creator_type_flowbox);
+    }
+  g_list_free (selected_children);
+
   gtk_flow_box_selected_foreach (
     flowbox,
     (GtkFlowBoxForeachFunc) creator_select_type,
@@ -174,6 +193,10 @@ setup_creator_tab (
     G_CALLBACK (on_creator_root_note_selected_children_changed), self);
   g_signal_connect (
     G_OBJECT (self->creator_type_flowbox),
+    "selected-children-changed",
+    G_CALLBACK (on_creator_type_selected_children_changed), self);
+  g_signal_connect (
+    G_OBJECT (self->creator_type_other_flowbox),
     "selected-children-changed",
     G_CALLBACK (on_creator_type_selected_children_changed), self);
 }
@@ -233,6 +256,7 @@ scale_selector_window_widget_class_init (
   BIND_CHILD (creator_root_note_as);
   BIND_CHILD (creator_root_note_b);
   BIND_CHILD (creator_type_flowbox);
+  BIND_CHILD (creator_type_other_flowbox);
 
 #undef BIND_CHILD
 }
@@ -268,8 +292,11 @@ scale_selector_window_widget_init (
   self->creator_root_notes[11] =
     self->creator_root_note_b;
 
+  gtk_flow_box_set_min_children_per_line (
+    self->creator_root_note_flowbox, 12);
+
   for (MusicalScaleType i = SCALE_CHROMATIC;
-       i <= SCALE_YO; i++)
+       i <= SCALE_PROMETHEUS_LISZT; i++)
     {
       GtkFlowBoxChild * fb_child =
         GTK_FLOW_BOX_CHILD (
@@ -280,11 +307,31 @@ scale_selector_window_widget_init (
       gtk_flow_box_child_set_child (fb_child, lbl);
       gtk_widget_set_focusable (
         GTK_WIDGET (fb_child), true);
-      gtk_flow_box_append (
-        self->creator_type_flowbox,
-        GTK_WIDGET (fb_child));
+      if (i <= SCALE_OCTATONIC_WHOLE_HALF)
+        {
+          gtk_flow_box_append (
+            self->creator_type_flowbox,
+            GTK_WIDGET (fb_child));
+        }
+      else
+        {
+          gtk_flow_box_append (
+            self->creator_type_other_flowbox,
+            GTK_WIDGET (fb_child));
+        }
       self->creator_types[i] = fb_child;
     }
+
+  gtk_flow_box_set_selection_mode (
+    self->creator_type_flowbox,
+    GTK_SELECTION_SINGLE);
+  gtk_flow_box_set_selection_mode (
+    self->creator_type_other_flowbox,
+    GTK_SELECTION_SINGLE);
+  gtk_flow_box_set_min_children_per_line (
+    self->creator_type_flowbox, 4);
+  gtk_flow_box_set_min_children_per_line (
+    self->creator_type_other_flowbox, 4);
 
   /* set signals */
   g_signal_connect (

@@ -348,6 +348,51 @@ musical_scale_get_notes (
     case SCALE_YO:
       SET_NOTES (1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0);
       break;
+    case SCALE_BEBOP_LOCRIAN:
+      SET_NOTES (1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1);
+      break;
+    case SCALE_BEBOP_DOMINANT:
+      SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1);
+      break;
+    case SCALE_BEBOP_MAJOR:
+      SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1);
+      break;
+    case SCALE_SUPER_LOCRIAN:
+      SET_NOTES (1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0);
+      break;
+    case SCALE_ENIGMATIC_MINOR:
+      SET_NOTES (1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1);
+      break;
+    case SCALE_COMPOSITE:
+      SET_NOTES (1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1);
+      break;
+    case SCALE_BHAIRAV:
+      SET_NOTES (1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1);
+      break;
+    case SCALE_HUNGARIAN_MINOR:
+      SET_NOTES (1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1);
+      break;
+    case SCALE_PERSIAN:
+      SET_NOTES (1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1);
+      break;
+    case SCALE_IWATO:
+      SET_NOTES (1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0);
+      break;
+    case SCALE_KUMOI:
+      SET_NOTES (1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0);
+      break;
+    case SCALE_PELOG:
+      SET_NOTES (1, 1, 0, 1, 4, 0, 0, 1, 1, 0, 0, 0);
+      break;
+    case SCALE_PROMETHEUS:
+      SET_NOTES (1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0);
+      break;
+    case SCALE_PROMETHEUS_NEAPOLITAN:
+      SET_NOTES (1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0);
+      break;
+    case SCALE_PROMETHEUS_LISZT:
+      SET_NOTES (1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0);
+      break;
     default:
       break;
     }

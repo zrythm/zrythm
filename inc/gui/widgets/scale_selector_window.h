@@ -71,6 +71,7 @@ typedef struct _ScaleSelectorWindowWidget
   GtkFlowBoxChild * creator_root_notes[12];
 
   GtkFlowBox *      creator_type_flowbox;
+  GtkFlowBox *      creator_type_other_flowbox;
 
   /** All of the above in an array. */
   GtkFlowBoxChild * creator_types[NUM_SCALES];

@@ -172,6 +172,23 @@
                     <property name="activate_on_single_click">0</property>
                   </object>
                 </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="margin-start">8</property>
+                    <property name="label" translatable="yes">Other Scale</property>
+                    <property name="xalign">0</property>
+                    <style>
+                      <class name="section_heading"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkFlowBox" id="creator_type_other_flowbox">
+                    <property name="homogeneous">1</property>
+                    <property name="selection_mode">browse</property>
+                    <property name="activate_on_single_click">0</property>
+                  </object>
+                </child>
               </object>
             </property>
             <property name="tab">
