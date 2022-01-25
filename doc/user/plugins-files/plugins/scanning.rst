@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. _scanning-plugins:
@@ -10,8 +10,8 @@ Scanning for Plugins
 Zrythm will scan for plugins on startup and will
 remember
 those plugins until it is closed. Zrythm supports
-:term:`LV2`, :term:`VST2`, :term:`VST3` and
-:term:`AU` plugins. LV2 is the recommended
+:term:`LV2`, :term:`VST2`, :term:`VST3`, LADSPA,
+DSSI and :term:`AU` plugins. LV2 is the recommended
 standard.
 
 :term:`SFZ` and :term:`SF2` instruments are also
@@ -26,6 +26,18 @@ LV2 Scan
 
 Zrythm will scan for LV2 plugins in the
 `standard paths specified here <https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_.
+You can bypass this behavior by passing
+:envvar:`LV2_PATH`.
+
+Flatpak
+~~~~~~~
+On Flatpak builds, Zrythm will scan for LV2 plugins
+in the following paths.
+
+- :file:`${HOME}/.lv2`
+- :file:`/app/lib/lv2`
+- :file:`/app/extensions/Plugins/lv2`
+
 You can bypass this behavior by passing
 :envvar:`LV2_PATH`.
 
@@ -49,11 +61,27 @@ and VST3 plugins in the following paths.
 - :file:`/usr/lib/vst3`
 
 You can bypass this behavior by passing
-:envvar:`VST_PATH` and :envvar:`VST3_PATH`.
+:envvar:`VST_PATH` and :envvar:`VST3_PATH`,
+respectively.
 
 .. note:: If your system uses a libdir other than
    ``lib`` (for example ``lib64``), Zrythm will scan
    for plugins in both locations.
+
+Flatpak
++++++++
+On Flatpak builds, Zrythm will scan for VST2 plugins
+in the following paths
+
+- :file:`/app/extensions/Plugins/lxvst`
+
+and VST3 plugins in the following paths.
+
+- :file:`/app/extensions/Plugins/vst3`
+
+You can bypass this behavior by passing
+:envvar:`VST_PATH` and :envvar:`VST3_PATH`,
+respectively.
 
 Windows
 ~~~~~~~
@@ -77,6 +105,56 @@ specified in `VST plug-in locations on Mac OS X and macOS <https://helpcenter.st
   New plugins will be scanned on each start-up, and
   you can delete or edit this file to force a
   re-scan of previously scanned plugins.
+
+DSSI Scan
+---------
+Zrythm will scan for DSSI plugins in the following
+paths,
+
+- :file:`/usr/local/lib/dssi`
+- :file:`/usr/lib/dssi`
+
+You can bypass this behavior by passing
+:envvar:`DSSI_PATH`.
+
+.. note:: If your system uses a libdir other than
+   ``lib`` (for example ``lib64``), Zrythm will scan
+   for plugins in both locations.
+
+Flatpak
+~~~~~~~
+On Flatpak builds, Zrythm will scan for DSSI plugins
+in the following paths.
+
+- :file:`/app/extensions/Plugins/dssi`
+
+You can bypass this behavior by passing
+:envvar:`DSSI_PATH`.
+
+LADSPA Scan
+-----------
+Zrythm will scan for LADSPA plugins in the following
+paths,
+
+- :file:`/usr/local/lib/ladspa`
+- :file:`/usr/lib/ladspa`
+
+You can bypass this behavior by passing
+:envvar:`LADSPA_PATH`.
+
+.. note:: If your system uses a libdir other than
+   ``lib`` (for example ``lib64``), Zrythm will scan
+   for plugins in both locations.
+
+Flatpak
+~~~~~~~
+On Flatpak builds, Zrythm will scan for LADSPA
+plugins in the following paths.
+
+- :file:`/app/extensions/Plugins/ladspa`
+
+You can bypass this behavior by passing
+:envvar:`LADSPA_PATH`.
 
 AU Scan
 -------
