@@ -209,6 +209,8 @@ on_drag_end (
 {
   g_debug ("drag end");
 
+  send_note_offs (self);
+
   self->drag_started = false;
   self->drag_start_x = 0;
   self->drag_start_y = 0;
