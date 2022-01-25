@@ -39,10 +39,6 @@ G_DEFINE_TYPE (
   chord_selector_window_widget,
   GTK_TYPE_WINDOW)
 
-#define IN_SCALE_TOGGLED \
-  (gtk_check_button_get_active ( \
-     self->creator_visibility_in_scale))
-
 static gboolean
 on_close_request (
   GtkWindow *                 window,
@@ -195,7 +191,8 @@ on_creator_root_note_selected_children_changed (
     flowbox,
     (GtkFlowBoxForeachFunc) creator_select_root_note,
     self);
-  if (IN_SCALE_TOGGLED)
+  if (gtk_check_button_get_active (
+        self->creator_visibility_in_scale))
     {
       gtk_flow_box_unselect_all (
         self->creator_type_flowbox);
@@ -222,7 +219,8 @@ on_creator_type_selected_children_changed (
     (GtkFlowBoxForeachFunc) creator_select_type,
     self);
 
-  if (IN_SCALE_TOGGLED)
+  if (gtk_check_button_get_active (
+        self->creator_visibility_in_scale))
     {
       gtk_flow_box_unselect_all (
         self->creator_accent_flowbox);
@@ -444,7 +442,16 @@ creator_filter (
   GtkFlowBoxChild * child,
   ChordSelectorWindowWidget * self)
 {
-  if (self->scale && IN_SCALE_TOGGLED)
+  g_debug (
+    "scale %p, in scale active %d",
+    self->scale,
+    gtk_check_button_get_active (
+      self->creator_visibility_in_scale));
+
+  if (self->scale
+      &&
+      gtk_check_button_get_active (
+        self->creator_visibility_in_scale))
     {
       int i;
 
@@ -485,10 +492,11 @@ creator_filter (
           if ((int) note == -1 || (int) type == -1)
             return 0;
 
-          return
+          bool ret =
             musical_scale_is_accent_in_scale (
               self->scale->scale, note,
               type, i + 1);
+          g_debug ("ret %d", ret);
         }
 
       /* type */
@@ -524,17 +532,21 @@ creator_filter (
 
 static void
 on_group_changed (
-  GtkWidget * widget,
+  GtkCheckButton *            check_btn,
   ChordSelectorWindowWidget * self)
 {
-  gtk_flow_box_invalidate_filter (
-    self->creator_root_note_flowbox);
-  gtk_flow_box_invalidate_filter (
-    self->creator_type_flowbox);
-  gtk_flow_box_invalidate_filter (
-    self->creator_accent_flowbox);
-  gtk_flow_box_invalidate_filter (
-    self->creator_bass_note_flowbox);
+  if (gtk_check_button_get_active (check_btn))
+    {
+      g_debug ("GROUP CHANGED");
+      gtk_flow_box_invalidate_filter (
+        self->creator_root_note_flowbox);
+      gtk_flow_box_invalidate_filter (
+        self->creator_type_flowbox);
+      gtk_flow_box_invalidate_filter (
+        self->creator_accent_flowbox);
+      gtk_flow_box_invalidate_filter (
+        self->creator_bass_note_flowbox);
+    }
 }
 
 /**
@@ -662,6 +674,12 @@ chord_selector_window_widget_init (
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  gtk_check_button_set_group (
+    self->creator_visibility_in_scale,
+    self->creator_visibility_all);
+  gtk_check_button_set_active (
+    self->creator_visibility_all, true);
+
   self->creator_root_notes[0] =
     self->creator_root_note_c;
   self->creator_root_notes[1] =
@@ -744,6 +762,15 @@ chord_selector_window_widget_init (
   self->creator_accents[8] =
     self->creator_accent_6_13;
 
+  gtk_flow_box_set_min_children_per_line (
+    self->creator_root_note_flowbox, 12);
+  gtk_flow_box_set_min_children_per_line (
+    self->creator_type_flowbox, 12);
+  gtk_flow_box_set_min_children_per_line (
+    self->creator_accent_flowbox, 12);
+  gtk_flow_box_set_min_children_per_line (
+    self->creator_bass_note_flowbox, 12);
+
   /* set filter functions */
   gtk_flow_box_set_filter_func (
     self->creator_root_note_flowbox,
@@ -765,6 +792,10 @@ chord_selector_window_widget_init (
   /* set signals */
   g_signal_connect (
     G_OBJECT (self->creator_visibility_all),
+    "toggled",
+    G_CALLBACK (on_group_changed), self);
+  g_signal_connect (
+    G_OBJECT (self->creator_visibility_in_scale),
     "toggled",
     G_CALLBACK (on_group_changed), self);
   g_signal_connect (

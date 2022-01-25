@@ -266,7 +266,8 @@ create_and_load_lilv_word (
   char * before_path = self->lv2_path;
   self->lv2_path =
     g_strdup_printf (
-      "%s:/usr/lib/zrythm/lib/lv2", before_path);
+      "%s:" PREFIX "/lib/zrythm/lib/lv2",
+      before_path);
   g_free (before_path);
 
   lv2_path =

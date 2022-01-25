@@ -487,15 +487,11 @@
                     <child>
                       <object class="GtkCheckButton" id="creator_visibility_all">
                         <property name="label" translatable="yes">All</property>
-                        <property name="active">1</property>
-                        <property name="group">creator_visibility_in_scale</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="creator_visibility_in_scale">
                         <property name="label" translatable="yes">In scale</property>
-                        <property name="active">1</property>
-                        <property name="group">creator_visibility_all</property>
                       </object>
                     </child>
                     <child>
