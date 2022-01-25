@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,8 @@
 #include "audio/chord_track.h"
 #include "utils/midi.h"
 #include "gui/backend/clip_editor.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_editor_space.h"
@@ -35,45 +37,12 @@
 #include "utils/cairo.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (ChordKeyWidget,
-               chord_key_widget,
-               GTK_TYPE_GRID)
-
-#if 0
-static gboolean
-chord_key_draw_cb (
-  GtkWidget * widget,
-  cairo_t *cr,
-  ChordKeyWidget * self)
-{
-  GtkStyleContext *context =
-    gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
-
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
-
-  char str[100];
-  chord_descriptor_to_string (self->descr, str);
-  cairo_set_source_rgba (
-    cr, 1,1,1,1);
-  PangoLayout * layout =
-    z_cairo_create_default_pango_layout (
-      widget);
-  z_cairo_draw_text (
-    cr, widget, layout, str);
-  g_object_unref (layout);
-
- return FALSE;
-}
-#endif
+G_DEFINE_TYPE (
+  ChordKeyWidget, chord_key_widget, GTK_TYPE_GRID)
 
 static void
 on_choose_chord_btn_clicked (
@@ -86,6 +55,37 @@ on_choose_chord_btn_clicked (
 
   gtk_window_present (
     GTK_WINDOW (chord_selector));
+}
+
+static void
+on_invert_btn_clicked (
+  GtkButton *      btn,
+  ChordKeyWidget * self)
+{
+  ChordDescriptor * descr = self->descr;
+
+  if (btn == self->invert_prev_btn)
+    {
+      if (chord_descriptor_get_min_inversion (
+            descr) != descr->inversion)
+        {
+          descr->inversion--;
+        }
+    }
+  else if (btn == self->invert_next_btn)
+    {
+      if (chord_descriptor_get_max_inversion (
+            descr) != descr->inversion)
+        {
+          descr->inversion++;
+        }
+    }
+
+  chord_descriptor_update_notes (descr);
+
+  chord_key_widget_refresh (self);
+
+  EVENTS_PUSH (ET_CHORD_KEY_CHANGED, descr);
 }
 
 void
@@ -163,8 +163,13 @@ chord_key_widget_init (
   gtk_widget_set_halign (
     GTK_WIDGET (self->btn_box), GTK_ALIGN_END);
 
-
   g_signal_connect (
     G_OBJECT (self->choose_chord_btn), "clicked",
     G_CALLBACK (on_choose_chord_btn_clicked),  self);
+  g_signal_connect (
+    G_OBJECT (self->invert_prev_btn), "clicked",
+    G_CALLBACK (on_invert_btn_clicked),  self);
+  g_signal_connect (
+    G_OBJECT (self->invert_next_btn), "clicked",
+    G_CALLBACK (on_invert_btn_clicked),  self);
 }

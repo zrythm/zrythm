@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,8 @@
 #include "audio/midi_event.h"
 #include "gui/backend/chord_editor.h"
 #include "gui/backend/clip_editor.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/chord.h"
 #include "gui/widgets/chord_selector_window.h"
@@ -31,6 +33,7 @@
 #include "utils/resources.h"
 #include "utils/symap.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 G_DEFINE_TYPE (
   ChordWidget, chord_widget, GTK_TYPE_WIDGET)
@@ -225,80 +228,55 @@ on_dnd_begin (
 }
 #endif
 
+static void
+on_invert_btn_clicked (
+  GtkButton *   btn,
+  ChordWidget * self)
+{
+  ChordDescriptor * descr =
+    get_chord_descriptor (self);
+  g_return_if_fail (descr);
+
+  if (btn == self->invert_prev_btn)
+    {
+      if (chord_descriptor_get_min_inversion (
+            descr) != descr->inversion)
+        {
+          descr->inversion--;
+        }
+    }
+  else if (btn == self->invert_next_btn)
+    {
+      if (chord_descriptor_get_max_inversion (
+            descr) != descr->inversion)
+        {
+          descr->inversion++;
+        }
+    }
+
+  chord_descriptor_update_notes (descr);
+
+  EVENTS_PUSH (ET_CHORD_KEY_CHANGED, descr);
+}
+
 /**
  * Sets the chord index on the chord widget.
  */
 void
-chord_widget_setup (
+chord_widget_refresh (
   ChordWidget * self,
   int           idx)
 {
   self->idx = idx;
 
-  z_gtk_widget_destroy_all_children (
-    GTK_WIDGET (self->overlay));
-
-  /* add main button */
   ChordDescriptor * descr =
     get_chord_descriptor (self);
   g_return_if_fail (descr);
+
   char * lbl =
     chord_descriptor_to_new_string (descr);
-  self->btn =
-    GTK_BUTTON (gtk_button_new_with_label (lbl));
-  gtk_widget_set_name (
-    GTK_WIDGET (self->btn), "chord-btn");
+  gtk_button_set_label (self->btn, lbl);
   g_free (lbl);
-  gtk_overlay_set_child (
-    self->overlay, GTK_WIDGET (self->btn));
-
-  GtkGestureClick * click_gesture =
-    GTK_GESTURE_CLICK (
-      gtk_gesture_click_new ());
-  g_signal_connect (
-    click_gesture, "pressed",
-    G_CALLBACK (on_chord_click_pressed), self);
-  g_signal_connect (
-    click_gesture, "released",
-    G_CALLBACK (on_chord_click_released), self);
-  gtk_widget_add_controller (
-    GTK_WIDGET (self->btn),
-    GTK_EVENT_CONTROLLER (click_gesture));
-
-  self->btn_drag =
-    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
-  g_signal_connect (
-    self->btn_drag, "drag-begin",
-    G_CALLBACK (on_drag_begin), self);
-  g_signal_connect (
-    self->btn_drag, "drag-update",
-    G_CALLBACK (on_drag_update), self);
-  g_signal_connect (
-    self->btn_drag, "drag-end",
-    G_CALLBACK (on_drag_end), self);
-  gtk_widget_add_controller (
-    GTK_WIDGET (self->btn),
-    GTK_EVENT_CONTROLLER (self->btn_drag));
-
-  /* add edit chord btn */
-  self->edit_chord_btn =
-    GTK_BUTTON (
-      gtk_button_new_from_icon_name (
-        "minuet-scales"));
-  gtk_widget_set_name (
-    GTK_WIDGET (self->edit_chord_btn), "chord-btn");
-  gtk_overlay_add_overlay (
-    self->overlay,
-    GTK_WIDGET (self->edit_chord_btn));
-  gtk_widget_set_halign (
-    GTK_WIDGET (self->edit_chord_btn),
-    GTK_ALIGN_END);
-  gtk_widget_set_valign (
-    GTK_WIDGET (self->edit_chord_btn),
-    GTK_ALIGN_START);
-  g_signal_connect (
-    self->edit_chord_btn, "clicked",
-    G_CALLBACK (on_edit_chord_pressed), self);
 }
 
 /**
@@ -339,6 +317,92 @@ chord_widget_init (
     GTK_WIDGET (self->overlay), GTK_WIDGET (self));
   gtk_widget_set_name (
     GTK_WIDGET (self->overlay), "chord-overlay");
+
+  /* add main button */
+  self->btn =
+    GTK_BUTTON (gtk_button_new_with_label (""));
+  gtk_widget_set_name (
+    GTK_WIDGET (self->btn), "chord-btn");
+  gtk_overlay_set_child (
+    self->overlay, GTK_WIDGET (self->btn));
+
+  GtkGestureClick * click_gesture =
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
+  g_signal_connect (
+    click_gesture, "pressed",
+    G_CALLBACK (on_chord_click_pressed), self);
+  g_signal_connect (
+    click_gesture, "released",
+    G_CALLBACK (on_chord_click_released), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->btn),
+    GTK_EVENT_CONTROLLER (click_gesture));
+
+  self->btn_drag =
+    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
+  g_signal_connect (
+    self->btn_drag, "drag-begin",
+    G_CALLBACK (on_drag_begin), self);
+  g_signal_connect (
+    self->btn_drag, "drag-update",
+    G_CALLBACK (on_drag_update), self);
+  g_signal_connect (
+    self->btn_drag, "drag-end",
+    G_CALLBACK (on_drag_end), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->btn),
+    GTK_EVENT_CONTROLLER (self->btn_drag));
+
+  self->btn_box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  gtk_widget_set_halign (
+    GTK_WIDGET (self->btn_box),
+    GTK_ALIGN_END);
+  gtk_widget_set_valign (
+    GTK_WIDGET (self->btn_box),
+    GTK_ALIGN_START);
+  gtk_overlay_add_overlay (
+    self->overlay, GTK_WIDGET (self->btn_box));
+
+  /* add edit chord btn */
+  self->edit_chord_btn =
+    GTK_BUTTON (
+      gtk_button_new_from_icon_name (
+        "minuet-scales"));
+  gtk_widget_set_name (
+    GTK_WIDGET (self->edit_chord_btn),
+    "chord-btn");
+  gtk_box_append (
+    self->btn_box,
+    GTK_WIDGET (self->edit_chord_btn));
+  g_signal_connect (
+    self->edit_chord_btn, "clicked",
+    G_CALLBACK (on_edit_chord_pressed), self);
+
+  /* add inversion buttons */
+  self->invert_prev_btn =
+    GTK_BUTTON (
+      gtk_button_new_from_icon_name (
+        "go-previous"));
+  gtk_box_append (
+    self->btn_box,
+    GTK_WIDGET (self->invert_prev_btn));
+  g_signal_connect (
+    self->invert_prev_btn, "clicked",
+    G_CALLBACK (on_invert_btn_clicked), self);
+
+  self->invert_next_btn =
+    GTK_BUTTON (
+      gtk_button_new_from_icon_name (
+      "go-next"));
+  gtk_box_append (
+    self->btn_box,
+    GTK_WIDGET (self->invert_next_btn));
+  g_signal_connect (
+    self->invert_next_btn, "clicked",
+    G_CALLBACK (on_invert_btn_clicked), self);
 }
 
 static void

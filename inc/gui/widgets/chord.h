@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -63,7 +63,10 @@ typedef struct _ChordWidget
   /** Whether the drag has started. */
   bool          drag_started;
 
+  GtkBox *      btn_box;
   GtkButton *   edit_chord_btn;
+  GtkButton *   invert_prev_btn;
+  GtkButton *   invert_next_btn;
 
   /** Index of the chord in the chord track. */
   int           idx;
@@ -79,7 +82,7 @@ chord_widget_new (void);
  * Sets the chord index on the chord widget.
  */
 void
-chord_widget_setup (
+chord_widget_refresh (
   ChordWidget * self,
   int           idx);
 

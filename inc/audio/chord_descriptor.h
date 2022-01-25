@@ -163,7 +163,11 @@ typedef struct ChordDescriptor
   /** Chord type. */
   ChordType      type;
 
-  /** Chord accent. */
+  /**
+   * Chord accent.
+   *
+   * Does not apply to custom chords.
+   */
   ChordAccent    accent;
 
   /**
@@ -179,9 +183,7 @@ typedef struct ChordDescriptor
   /**
    * 0 no inversion,
    * less than 0 highest note(s) drop an octave,
-   * greater than 0 lwest note(s) receive an octave.
-   *
-   * TODO
+   * greater than 0 lowest note(s) receive an octave.
    */
   int                   inversion;
 } ChordDescriptor;
@@ -232,6 +234,42 @@ chord_descriptor_new (
   ChordType              type,
   ChordAccent            accent,
   int                    inversion);
+
+static inline int
+chord_descriptor_get_max_inversion (
+  const ChordDescriptor * const self)
+{
+  int max_inv = 2;
+  switch (self->accent)
+    {
+    case CHORD_ACC_NONE:
+      break;
+    case CHORD_ACC_7:
+    case CHORD_ACC_j7:
+    case CHORD_ACC_b9:
+    case CHORD_ACC_9:
+    case CHORD_ACC_S9:
+    case CHORD_ACC_11:
+      max_inv = 3;
+      break;
+    case CHORD_ACC_b5_S11:
+    case CHORD_ACC_S5_b13:
+    case CHORD_ACC_6_13:
+      max_inv = 4;
+      break;
+    default:
+      break;
+    }
+
+  return max_inv;
+}
+
+static inline int
+chord_descriptor_get_min_inversion (
+  const ChordDescriptor * const self)
+{
+  return - chord_descriptor_get_max_inversion (self);
+}
 
 static inline int
 chord_descriptor_are_notes_equal (
@@ -324,6 +362,7 @@ chord_descriptor_to_new_string (
 /**
  * Returns the chord in human readable string.
  */
+NONNULL
 void
 chord_descriptor_to_string (
   const ChordDescriptor * chord,
@@ -333,6 +372,7 @@ chord_descriptor_to_string (
  * Updates the notes array based on the current
  * settings.
  */
+NONNULL
 void
 chord_descriptor_update_notes (
   ChordDescriptor * self);
@@ -340,6 +380,7 @@ chord_descriptor_update_notes (
 /**
  * Frees the ChordDescriptor.
  */
+NONNULL
 void
 chord_descriptor_free (
   ChordDescriptor * self);

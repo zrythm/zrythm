@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -33,7 +33,7 @@ chord_pad_widget_setup (
 {
   for (int i = 0; i < 12; i++)
     {
-      chord_widget_setup (self->chords[i], i);
+      chord_widget_refresh (self->chords[i], i);
     }
 }
 

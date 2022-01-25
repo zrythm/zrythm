@@ -25,6 +25,46 @@
 #include "utils/objects.h"
 
 /**
+ * @param notes 36 notes.
+ */
+static void
+invert_chord (
+  int * notes,
+  int   inversion)
+{
+  if (inversion > 0)
+    {
+      for (int i = 0; i < inversion; i++)
+        {
+          for (int j = 0; j < 36; j++)
+            {
+              if (notes[j])
+                {
+                  notes[j] = 0;
+                  notes[j + 12] = 1;
+                  break;
+                }
+            }
+        }
+    }
+  else if (inversion < 0)
+    {
+      for (int i = 0; i < - inversion; i++)
+        {
+          for (int j = 35; j >= 0; j--)
+            {
+              if (notes[j])
+                {
+                  notes[j] = 0;
+                  notes[j - 12] = 1;
+                  break;
+                }
+            }
+        }
+    }
+}
+
+/**
  * Updates the notes array based on the current
  * settings.
  */
@@ -132,7 +172,7 @@ chord_descriptor_update_notes (
         12 + self->root_note + min_seventh_sems] = 1;
     }
 
-  /* TODO invert */
+  invert_chord (&self->notes[12], self->inversion);
 }
 
 /**
@@ -303,6 +343,14 @@ chord_descriptor_to_string (
         str,
         chord_descriptor_note_to_string (
           chord->bass_note));
+    }
+
+  if (chord->inversion != 0)
+    {
+      strcat (str, " ");
+      char inv_str[6];
+      sprintf (inv_str, "i%d", chord->inversion);
+      strcat (str, inv_str);
     }
 }
 
