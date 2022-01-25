@@ -19,7 +19,8 @@ supported, and they are
 scanned as instrument plugins.
 
 .. tip:: Plugin scanning can be disabled by passing
-   :envvar:`NO_SCAN_PLUGINS` when running Zrythm.
+   :envvar:`ZRYTHM_SKIP_PLUGIN_SCAN` when running
+   Zrythm.
 
 LV2 Scan
 --------

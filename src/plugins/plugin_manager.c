@@ -725,6 +725,10 @@ get_dssi_paths (
     g_strdup (getenv ("DSSI_PATH"));
   if (!dssi_path || (strlen (dssi_path) == 0))
     {
+#ifdef FLATPAK_BUILD
+      dssi_path =
+        g_strdup ("/app/extensions/Plugins/dssi");
+#else
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
           dssi_path =
@@ -741,6 +745,7 @@ get_dssi_paths (
               "/usr/local/lib/dssi:"
               "/usr/local/" LIBDIR_NAME "/dssi");
         }
+#endif /* flatpak build */
 
       g_message (
         "Using standard DSSI paths: %s", dssi_path);
@@ -770,6 +775,10 @@ get_ladspa_paths (
     g_strdup (getenv ("LADSPA_PATH"));
   if (!ladspa_path || (strlen (ladspa_path) == 0))
     {
+#ifdef FLATPAK_BUILD
+      ladspa_path =
+        g_strdup ("/app/extensions/Plugins/ladspa");
+#else
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
           ladspa_path =
@@ -786,6 +795,7 @@ get_ladspa_paths (
               "/usr/local/lib/ladspa:"
               "/usr/local/" LIBDIR_NAME "/ladspa");
         }
+#endif /* flatpak build */
 
       g_message (
         "Using standard LADSPA paths: %s",
