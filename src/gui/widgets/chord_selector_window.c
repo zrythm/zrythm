@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -75,10 +75,14 @@ get_type_from_creator_types (
   ChordSelectorWindowWidget * self,
   GtkFlowBoxChild *           child)
 {
-  for (int i = 0; i < NUM_CHORD_TYPES; i++)
+  for (int i = CHORD_TYPE_MAJ;
+       i <= CHORD_TYPE_AUG; i++)
     {
-      if (self->creator_types[i] == child)
-        return (ChordType) i;
+      if (self->creator_types[
+            i - CHORD_TYPE_MAJ] == child)
+        {
+          return (ChordType) i;
+        }
     }
   g_return_val_if_reached (0);
 }
@@ -158,9 +162,11 @@ creator_select_type (
   GtkFlowBoxChild * child,
   ChordSelectorWindowWidget * self)
 {
-  for (int i = 0; i < NUM_CHORD_TYPES; i++)
+  for (int i = CHORD_TYPE_MAJ;
+       i <= CHORD_TYPE_AUG; i++)
     {
-      if (self->creator_types[i] != child)
+      if (self->creator_types[i - CHORD_TYPE_MAJ] !=
+            child)
         continue;
 
       self->descr->type = (ChordType) i;
@@ -442,21 +448,21 @@ creator_filter (
   GtkFlowBoxChild * child,
   ChordSelectorWindowWidget * self)
 {
+#if 0
   g_debug (
     "scale %p, in scale active %d",
     self->scale,
     gtk_check_button_get_active (
       self->creator_visibility_in_scale));
+#endif
 
   if (self->scale
       &&
       gtk_check_button_get_active (
         self->creator_visibility_in_scale))
     {
-      int i;
-
       /* root notes */
-      for (i = 0; i < 12; i++)
+      for (int i = 0; i < 12; i++)
         {
           if (child != self->creator_root_notes[i])
             continue;
@@ -468,7 +474,7 @@ creator_filter (
         }
 
       /* bass notes */
-      for (i = 0; i < 12; i++)
+      for (int i = 0; i < 12; i++)
         {
           if (child != self->creator_bass_notes[i])
             continue;
@@ -479,7 +485,7 @@ creator_filter (
         }
 
       /* accents */
-      for (i = 0; i < NUM_CHORD_ACCENTS - 1; i++)
+      for (int i = 0; i < NUM_CHORD_ACCENTS - 1; i++)
         {
           if (self->creator_accents[i] != child)
             continue;
@@ -496,13 +502,15 @@ creator_filter (
             musical_scale_is_accent_in_scale (
               self->scale->scale, note,
               type, i + 1);
-          g_debug ("ret %d", ret);
+          return ret;
         }
 
       /* type */
-      for (i = 0; i < NUM_CHORD_TYPES; i++)
+      for (int i = CHORD_TYPE_MAJ;
+           i <= CHORD_TYPE_AUG; i++)
         {
-          if (self->creator_types[i] != child)
+          if (self->creator_types[
+                i - CHORD_TYPE_MAJ] != child)
             continue;
 
           MusicalNote note =
