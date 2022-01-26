@@ -1,56 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="BotBarWidget" parent="GtkBox">
-    <property name="homogeneous">True</property>
+  <template class="BotBarWidget" parent="GtkWidget">
     <child>
-      <object class="GtkStatusbar" id="status_bar">
-        <property name="margin-start">1</property>
-        <property name="margin-end">1</property>
-        <property name="margin-top">1</property>
-        <property name="margin-bottom">1</property>
-        <property name="hexpand">True</property>
-      </object>
-    </child>
-    <child type="center">
-      <object class="GtkBox" id="mid_box_parent">
-        <property name="hexpand">False</property>
-        <property name="hexpand-set">True</property>
-        <property name="halign">center</property>
-        <child>
-          <object class="GtkBox" id="digital_meters"/>
+      <object class="GtkCenterBox" id="center_box">
+        <child type="start">
+          <object class="GtkStatusbar" id="status_bar">
+            <property name="margin-start">1</property>
+            <property name="margin-end">1</property>
+            <property name="margin-top">1</property>
+            <property name="margin-bottom">1</property>
+            <property name="hexpand">True</property>
+          </object>
         </child>
-        <child>
-          <object class="ButtonWithMenuWidget" id="metronome">
+        <child type="center">
+          <object class="GtkBox" id="mid_box_parent">
+            <property name="hexpand">False</property>
+            <property name="hexpand-set">True</property>
             <property name="halign">center</property>
-            <property name="receives-default">1</property>
+            <child>
+              <object class="GtkBox" id="digital_meters"/>
+            </child>
+            <child>
+              <object class="ButtonWithMenuWidget" id="metronome">
+                <property name="halign">center</property>
+                <property name="receives-default">1</property>
+              </object>
+            </child>
+            <child>
+              <object class="TransportControlsWidget" id="transport_controls">
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="playhead_box"/>
+            </child>
           </object>
         </child>
-        <child>
-          <object class="TransportControlsWidget" id="transport_controls">
+        <child type="end">
+          <object class="GtkBox" id="cpu_box">
+            <property name="hexpand">True</property>
+            <property name="halign">end</property>
+            <child>
+              <object class="CpuWidget" id="cpu_load">
+                <property name="visible">1</property>
+                <property name="valign">center</property>
+                <property name="margin-start">4</property>
+                <property name="margin-end">4</property>
+              </object>
+            </child>
           </object>
-        </child>
-        <child>
-          <object class="GtkBox" id="playhead_box"/>
         </child>
       </object>
-    </child>
-    <child>
-      <object class="GtkBox" id="cpu_box">
-        <property name="hexpand">True</property>
-        <property name="halign">end</property>
-        <child>
-          <object class="CpuWidget" id="cpu_load">
-            <property name="visible">1</property>
-            <property name="valign">center</property>
-            <property name="margin-start">4</property>
-            <property name="margin-end">4</property>
-          </object>
-        </child>
-      </object>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </template>
 </interface>

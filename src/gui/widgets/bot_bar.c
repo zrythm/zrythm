@@ -50,7 +50,7 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  BotBarWidget, bot_bar_widget, GTK_TYPE_BOX)
+  BotBarWidget, bot_bar_widget, GTK_TYPE_WIDGET)
 
 #define PLAYHEAD_CAPTION \
   _("Playhead")
@@ -665,6 +665,9 @@ bot_bar_widget_class_init (
   BIND_CHILD (playhead_box);
 
 #undef BIND_CHILD
+
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BIN_LAYOUT);
 }
 
 static void
@@ -680,9 +683,9 @@ bot_bar_widget_init (BotBarWidget * self)
   self->popover_menu =
     GTK_POPOVER_MENU (
       gtk_popover_menu_new_from_model (NULL));
-  gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->popover_menu));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu),
+    GTK_WIDGET (self));
 
   ui_gdk_rgba_to_hex (
     &UI_COLORS->bright_orange, self->hex_color);

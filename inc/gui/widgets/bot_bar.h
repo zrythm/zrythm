@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -46,7 +46,7 @@ typedef struct _ButtonWithMenuWidget
   (bot_bar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   BotBarWidget, bot_bar_widget,
-  Z, BOT_BAR_WIDGET, GtkBox)
+  Z, BOT_BAR_WIDGET, GtkWidget)
 
 #define MW_BOT_BAR MW->bot_bar
 #define MW_STATUS_BAR MW_BOT_BAR->status_bar
@@ -62,7 +62,7 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _BotBarWidget
 {
-  GtkBox                parent_instance;
+  GtkWidget             parent_instance;
   GtkStatusbar *        status_bar;
 
   /** New label replacing the original status
