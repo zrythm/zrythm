@@ -16,15 +16,46 @@
       </object>
     </child>
     <child>
-      <object class="GtkBox">
+      <object class="GtkBox" id="top_toolbar">
+        <property name="name">chord-pad-toolbar</property>
+        <style>
+          <class name="toolbar"/>
+        </style>
         <child>
-          <placeholder/>
+          <object class="GtkButton" id="save_preset_btn">
+          </object>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkMenuButton" id="load_preset_btn">
+          </object>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkSeparator">
+            <property name="orientation">vertical</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <style>
+              <class name="linked"/>
+            </style>
+            <child>
+              <object class="GtkLabel">
+                <property name="label" translatable="yes">Transpose</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="transpose_up_btn">
+                <property name="icon-name">arrow-up-small</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="transpose_down_btn">
+                <property name="icon-name">arrow-down-small</property>
+              </object>
+            </child>
+          </object>
         </child>
         <layout>
           <property name="column">1</property>

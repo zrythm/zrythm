@@ -210,7 +210,8 @@ help-toolbar separator
   margin: 4px;
 }
 
-.arranger-toolbar separator
+.arranger-toolbar separator,
+chord-pad .toolbar separator
 {
   background-color: gtkalpha(grey, 0.6);
   margin: 4px;

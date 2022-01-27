@@ -40,6 +40,7 @@
 #include "gui/widgets/splash.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
+#include "settings/chord_preset_pack_manager.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/cairo.h"
@@ -720,6 +721,9 @@ zrythm_free (
     event_manager_free, self->event_manager);
   object_free_w_func_and_null (
     file_manager_free, self->file_manager);
+  object_free_w_func_and_null (
+    chord_preset_pack_manager_free,
+    self->chord_preset_pack_manager);
 
   /* free object utils around last */
   object_free_w_func_and_null (
@@ -773,6 +777,9 @@ zrythm_new (
   self->symap = symap_new ();
   self->error_domain_symap = symap_new ();
   self->file_manager = file_manager_new ();
+  self->chord_preset_pack_manager =
+    chord_preset_pack_manager_new (
+      have_ui && !testing);
   self->cairo_caches = z_cairo_caches_new ();
 
   if (have_ui)

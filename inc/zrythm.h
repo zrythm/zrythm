@@ -39,6 +39,8 @@ typedef struct EventManager EventManager;
 typedef struct ObjectUtils ObjectUtils;
 typedef struct PluginManager PluginManager;
 typedef struct FileManager FileManager;
+typedef struct ChordPresetPackManager
+  ChordPresetPackManager;
 typedef struct Settings Settings;
 typedef struct Log Log;
 typedef struct CairoCaches CairoCaches;
@@ -248,6 +250,9 @@ typedef struct Zrythm
 
   /** File manager. */
   FileManager *       file_manager;
+
+  /** Chord preset pack manager. */
+  ChordPresetPackManager * chord_preset_pack_manager;
 
   /**
    * String interner for internal things.

@@ -1247,6 +1247,10 @@ on_create_window (
     MW_RIGHT_DOCK_EDGE->file_browser_box,
     _("File Browser"), "file-browser");
   SET_TITLE_AND_ROLE (
+    MW_RIGHT_DOCK_EDGE->chord_pack_browser_box,
+    _("Chord Preset Browser"),
+    "chord-pack-browser");
+  SET_TITLE_AND_ROLE (
     MW_RIGHT_DOCK_EDGE->monitor_section_box,
     _("Monitor"), "monitor");
   SET_TITLE_AND_ROLE (
@@ -1457,6 +1461,9 @@ z_gtk_notebook_make_detachable (
   ADD_PAIR (
     "monitor-section",
     MW_RIGHT_DOCK_EDGE->monitor_section_box);
+  ADD_PAIR (
+    "chord-pack-browser",
+    MW_RIGHT_DOCK_EDGE->chord_pack_browser_box);
   ADD_PAIR (
     "modulator-view",
     MW_BOT_DOCK_EDGE->modulator_view_box);

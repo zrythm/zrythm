@@ -739,6 +739,17 @@ sample_processor_queue_file (
 }
 
 /**
+ * Adds a chord preset to the queue.
+ */
+void
+sample_processor_queue_chord_preset (
+  SampleProcessor *   self,
+  const ChordPreset * chord_pset)
+{
+  /* TODO */
+}
+
+/**
  * Stops playback of files (auditioning).
  */
 void

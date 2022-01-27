@@ -6,7 +6,6 @@
     <property name="orientation">vertical</property>
     <child>
       <object class="TimelineToolbarWidget" id="timeline_toolbar">
-        <property name="visible">1</property>
       </object>
     </child>
     <child>

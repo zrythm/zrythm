@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,6 +36,7 @@ typedef struct SupportedFile SupportedFile;
 typedef struct Tracklist Tracklist;
 typedef struct PluginSetting PluginSetting;
 typedef struct MidiEvents MidiEvents;
+typedef struct ChordPreset ChordPreset;
 
 /**
  * @addtogroup audio
@@ -199,6 +200,14 @@ void
 sample_processor_queue_file (
   SampleProcessor *     self,
   const SupportedFile * file);
+
+/**
+ * Adds a chord preset to the queue.
+ */
+void
+sample_processor_queue_chord_preset (
+  SampleProcessor *   self,
+  const ChordPreset * chord_pset);
 
 /**
  * Stops playback of files (auditioning).

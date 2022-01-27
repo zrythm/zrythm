@@ -16,6 +16,9 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 settings_srcs = [
+  'chord_preset.c',
+  'chord_preset_pack.c',
+  'chord_preset_pack_manager.c',
   'plugin_settings.c',
   'settings.c',
   'user_shortcuts.c',

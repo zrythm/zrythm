@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,6 +19,7 @@
 
 #include "audio/control_room.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_pack_browser.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/monitor_section.h"
@@ -181,6 +182,27 @@ right_dock_edge_widget_init (
   gtk_notebook_set_tab_reorderable (
     notebook, GTK_WIDGET (box), true);
   self->monitor_section_box = box;
+
+  /* add chord preset browser */
+  self->chord_pack_browser =
+    chord_pack_browser_widget_new ();
+  img =
+    gtk_image_new_from_icon_name ("minuet-chords");
+  gtk_widget_set_tooltip_text (
+    img, _("Chord Preset Browser"));
+  box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  gtk_box_append (
+    GTK_BOX (box),
+    GTK_WIDGET (self->chord_pack_browser));
+  gtk_notebook_append_page (
+    notebook, GTK_WIDGET (box), img);
+  gtk_notebook_set_tab_detachable (
+    notebook, GTK_WIDGET (box), true);
+  gtk_notebook_set_tab_reorderable (
+    notebook, GTK_WIDGET (box), true);
+  self->chord_pack_browser_box = box;
 
   /* add file browser button */
   GtkButton * tb =

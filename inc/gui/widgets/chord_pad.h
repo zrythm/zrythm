@@ -63,6 +63,11 @@ typedef struct _ChordPadWidget
 
   GtkGrid *        chords_grid;
 
+  GtkButton *      save_preset_btn;
+  GtkMenuButton *  load_preset_btn;
+  GtkButton *      transpose_up_btn;
+  GtkButton *      transpose_down_btn;
+
   /** Chords inside the grid. */
   ChordWidget *    chords[12];
 } ChordPadWidget;

@@ -23,9 +23,8 @@
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
-G_DEFINE_TYPE (ChordPadWidget,
-               chord_pad_widget,
-               GTK_TYPE_GRID)
+G_DEFINE_TYPE (
+  ChordPadWidget, chord_pad_widget, GTK_TYPE_GRID)
 
 void
 chord_pad_widget_setup (
@@ -62,6 +61,22 @@ chord_pad_widget_init (
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  gtk_button_set_icon_name (
+    self->save_preset_btn, "document-save-as");
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (self->save_preset_btn),
+    "app.save-chord-preset");
+
+  gtk_menu_button_set_icon_name (
+    self->load_preset_btn, "document-open");
+
+  gtk_actionable_set_detailed_action_name (
+    GTK_ACTIONABLE (self->transpose_up_btn),
+    "app.transpose-chord-pad::up");
+  gtk_actionable_set_detailed_action_name (
+    GTK_ACTIONABLE (self->transpose_down_btn),
+    "app.transpose-chord-pad::down");
+
   for (int i = 0; i < 12; i++)
     {
       ChordWidget * chord = chord_widget_new ();
@@ -83,6 +98,15 @@ chord_pad_widget_class_init (
   gtk_widget_class_set_css_name (
     klass, "chord-pad");
 
-  gtk_widget_class_bind_template_child (
-    klass, ChordPadWidget, chords_grid);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, ChordPadWidget, x)
+
+  BIND_CHILD (chords_grid);
+  BIND_CHILD (save_preset_btn);
+  BIND_CHILD (load_preset_btn);
+  BIND_CHILD (transpose_up_btn);
+  BIND_CHILD (transpose_down_btn);
+
+#undef BIND_CHILD
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,10 +31,8 @@
 #define RIGHT_DOCK_EDGE_WIDGET_TYPE \
   (right_dock_edge_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  RightDockEdgeWidget,
-  right_dock_edge_widget,
-  Z, RIGHT_DOCK_EDGE_WIDGET,
-  GtkBox)
+  RightDockEdgeWidget, right_dock_edge_widget,
+  Z, RIGHT_DOCK_EDGE_WIDGET, GtkBox)
 
 /**
  * @addtogroup widgets
@@ -48,9 +46,14 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _PluginBrowserWidget
   PluginBrowserWidget;
 typedef struct _FileBrowserWidget FileBrowserWidget;
-typedef struct _MonitorSectionWidget MonitorSectionWidget;
-typedef struct _FoldableNotebookWidget FoldableNotebookWidget;
-typedef struct _PanelFileBrowserWidget PanelFileBrowserWidget;
+typedef struct _MonitorSectionWidget
+  MonitorSectionWidget;
+typedef struct _FoldableNotebookWidget
+  FoldableNotebookWidget;
+typedef struct _PanelFileBrowserWidget
+  PanelFileBrowserWidget;
+typedef struct _ChordPackBrowserWidget
+  ChordPackBrowserWidget;
 
 typedef struct _RightDockEdgeWidget
 {
@@ -65,6 +68,9 @@ typedef struct _RightDockEdgeWidget
 
   GtkBox *                 monitor_section_box;
   MonitorSectionWidget *   monitor_section;
+
+  GtkBox *                 chord_pack_browser_box;
+  ChordPackBrowserWidget * chord_pack_browser;
 } RightDockEdgeWidget;
 
 /**

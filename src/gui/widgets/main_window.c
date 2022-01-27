@@ -760,6 +760,12 @@ main_window_widget_init (MainWindowWidget * self)
     { "arranger-object-view-info",
       activate_arranger_object_view_info, "s" },
 
+    /* chord presets */
+    { "save-chord-preset",
+      activate_save_chord_preset, },
+    { "transpose-chord-pad",
+      activate_transpose_chord_pad, "s" },
+
     /* cc bindings */
     { "bind-midi-cc",
       activate_bind_midi_cc, "s" },

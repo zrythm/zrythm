@@ -444,6 +444,10 @@ DECLARE_SIMPLE (
   activate_set_region_fade_out_algorithm_preset);
 DECLARE_SIMPLE (activate_arranger_object_view_info);
 
+/* chord presets */
+DECLARE_SIMPLE (activate_save_chord_preset);
+DECLARE_SIMPLE (activate_transpose_chord_pad);
+
 /* port actions */
 DECLARE_SIMPLE (activate_reset_stereo_balance);
 DECLARE_SIMPLE (activate_reset_fader);

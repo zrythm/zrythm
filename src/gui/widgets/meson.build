@@ -47,6 +47,7 @@ widget_srcs = files([
   'chord_editor_space.c',
   'chord_key.c',
   'chord_object.c',
+  'chord_pack_browser.c',
   'chord_region.c',
   'chord_pad.c',
   'chord_selector_window.c',

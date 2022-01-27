@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -32,6 +32,7 @@ widget_srcs += files([
   'port_info.c',
   'project_progress_dialog.c',
   'quantize_dialog.c',
+  'save_chord_preset_dialog.c',
   'string_entry_dialog.c',
   'track_icon_chooser_dialog.c',
   ])

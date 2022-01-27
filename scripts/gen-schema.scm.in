@@ -805,6 +805,11 @@ Args:
                  "File browser detached"
                  "Whether the file browser panel is detached.")
                (make-schema-key
+                 "chord-pack-browser-detached" "b"
+                 "false"
+                 "Chord pack browser detached"
+                 "Whether the chord pack browser panel is detached.")
+               (make-schema-key
                  "file-browser-size"
                  "(ii)" "(128,128)"
                  "File browser size"

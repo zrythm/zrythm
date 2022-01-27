@@ -35,7 +35,7 @@
 #include "utils/yaml.h"
 
 /**
- * @addtogroup plugins
+ * @addtogroup settings
  *
  * @{
  */

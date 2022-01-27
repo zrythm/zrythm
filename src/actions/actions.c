@@ -73,6 +73,7 @@
 #include "gui/widgets/dialogs/object_color_chooser_dialog.h"
 #include "gui/widgets/dialogs/port_info.h"
 #include "gui/widgets/dialogs/quantize_dialog.h"
+#include "gui/widgets/dialogs/save_chord_preset_dialog.h"
 #include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/dialogs/export_dialog.h"
@@ -3147,6 +3148,25 @@ DEFINE_SIMPLE (activate_arranger_object_view_info)
   ArrangerObjectInfoDialogWidget * dialog =
     arranger_object_info_dialog_widget_new (obj);
   z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+}
+
+DEFINE_SIMPLE (activate_save_chord_preset)
+{
+  g_debug ("save chord preset");
+
+  SaveChordPresetDialogWidget * dialog =
+    save_chord_preset_dialog_widget_new (
+      GTK_WINDOW (MAIN_WINDOW));
+  gtk_window_present (GTK_WINDOW (dialog));
+}
+
+DEFINE_SIMPLE (activate_transpose_chord_pad)
+{
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+
+  g_debug ("transpose %s", str);
 }
 
 DEFINE_SIMPLE (activate_reset_stereo_balance)

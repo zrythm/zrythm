@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,6 +25,7 @@
 #include "plugins/collections.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
+#include "settings/chord_preset_pack.h"
 #include "utils/error.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"
@@ -184,7 +185,7 @@ item_factory_setup_cb (
         GtkBox * box =
           GTK_BOX (
             gtk_box_new (
-              GTK_ORIENTATION_HORIZONTAL, 4));
+              GTK_ORIENTATION_HORIZONTAL, 6));
         GtkImage * img =
           GTK_IMAGE (gtk_image_new ());
         GtkWidget * label = gtk_label_new ("");
@@ -404,6 +405,52 @@ add_supported_file_context_menu (
 }
 
 static void
+add_chord_pset_pack_context_menu (
+  PopoverMenuBinWidget * bin,
+  ChordPresetPack *      pack)
+{
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
+
+  char tmp[600];
+  sprintf (
+    tmp,
+    "app.chord-pack-browser-delete-pack::%p",
+    pack);
+  menuitem =
+    z_gtk_create_menu_item (
+      _("Delete"), "edit-delete", tmp);
+  g_menu_append_item (menu, menuitem);
+
+  popover_menu_bin_widget_set_menu_model (
+    bin, G_MENU_MODEL (menu));
+}
+
+static void
+add_chord_pset_context_menu (
+  PopoverMenuBinWidget * bin,
+  ChordPreset *          pack)
+{
+  GMenu * menu = g_menu_new ();
+
+#if 0
+  GMenuItem * menuitem;
+  char tmp[600];
+  sprintf (
+    tmp,
+    "app.chord-preset-pack-browser-delete::%p",
+    pack);
+  menuitem =
+    z_gtk_create_menu_item (
+      _("Delete"), "edit-delete", tmp);
+  g_menu_append_item (menu, menuitem);
+#endif
+
+  popover_menu_bin_widget_set_menu_model (
+    bin, G_MENU_MODEL (menu));
+}
+
+static void
 item_factory_bind_cb (
   GtkSignalListItemFactory * factory,
   GtkListItem *              listitem,
@@ -587,7 +634,6 @@ item_factory_bind_cb (
               SupportedFile * descr =
                 (SupportedFile *) obj->obj;
 
-
               gtk_image_set_from_icon_name (
                 img,
                 supported_file_get_icon_name (
@@ -619,6 +665,32 @@ item_factory_bind_cb (
 
               add_supported_file_context_menu (
                 bin, descr);
+            }
+            break;
+          case WRAPPED_OBJECT_TYPE_CHORD_PSET_PACK:
+            {
+              ChordPresetPack * pack =
+                (ChordPresetPack *) obj->obj;
+
+              gtk_image_set_from_icon_name (
+                img, "minuet-chords");
+              gtk_label_set_text (lbl, pack->name);
+
+              add_chord_pset_pack_context_menu (
+                bin, pack);
+            }
+            break;
+          case WRAPPED_OBJECT_TYPE_CHORD_PSET:
+            {
+              ChordPreset * pset =
+                (ChordPreset *) obj->obj;
+
+              gtk_image_set_from_icon_name (
+                img, "minuet-chords");
+              gtk_label_set_text (lbl, pset->name);
+
+              add_chord_pset_context_menu (
+                bin, pset);
             }
             break;
           default:
