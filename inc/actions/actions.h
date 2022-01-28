@@ -446,6 +446,8 @@ DECLARE_SIMPLE (activate_arranger_object_view_info);
 
 /* chord presets */
 DECLARE_SIMPLE (activate_save_chord_preset);
+DECLARE_SIMPLE (activate_load_chord_preset);
+DECLARE_SIMPLE (activate_load_chord_preset_from_scale);
 DECLARE_SIMPLE (activate_transpose_chord_pad);
 
 /* port actions */

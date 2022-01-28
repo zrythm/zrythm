@@ -329,6 +329,11 @@ ChordDescriptor *
 chord_descriptor_clone (
   ChordDescriptor * src);
 
+void
+chord_descriptor_copy (
+  ChordDescriptor *       dest,
+  const ChordDescriptor * src);
+
 /**
  * Returns the chord type as a string (eg. "aug").
  */

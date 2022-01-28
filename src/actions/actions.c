@@ -44,6 +44,7 @@
 #include "audio/tempo_track.h"
 #include "audio/track.h"
 #include "audio/transport.h"
+#include "gui/backend/chord_editor.h"
 #include "gui/backend/clipboard.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -112,6 +113,7 @@
 #include "plugins/collection.h"
 #include "plugins/collections.h"
 #include "project.h"
+#include "settings/chord_preset_pack_manager.h"
 #include "settings/settings.h"
 #include "utils/debug.h"
 #include "utils/dialogs.h"
@@ -3160,13 +3162,63 @@ DEFINE_SIMPLE (activate_save_chord_preset)
   gtk_window_present (GTK_WINDOW (dialog));
 }
 
+DEFINE_SIMPLE (activate_load_chord_preset)
+{
+  g_debug ("load chord preset");
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  int pack_idx, pset_idx;
+  sscanf (str, "%d,%d", &pack_idx, &pset_idx);
+
+  int num_packs =
+    chord_preset_pack_manager_get_num_packs (
+      CHORD_PRESET_PACK_MANAGER);
+  z_return_if_fail_cmp (pack_idx, <, num_packs);
+  ChordPresetPack * pack =
+    chord_preset_pack_manager_get_pack_at (
+      CHORD_PRESET_PACK_MANAGER, pack_idx);
+  z_return_if_fail_cmp (
+    pset_idx, <, pack->num_presets);
+  ChordPreset * pset = pack->presets[pset_idx];
+  chord_editor_apply_preset (CHORD_EDITOR, pset);
+}
+
+DEFINE_SIMPLE (activate_load_chord_preset_from_scale)
+{
+  g_debug ("load chord preset from scale");
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  int scale, root_note;
+  sscanf (str, "%d,%d", &scale, &root_note);
+
+  chord_editor_apply_preset_from_scale (
+    CHORD_EDITOR, (MusicalScaleType) scale,
+    (MusicalNote) root_note);
+}
+
 DEFINE_SIMPLE (activate_transpose_chord_pad)
 {
   gsize size;
   const char * str =
     g_variant_get_string (variant, &size);
+  g_debug ("transpose chord pad %s", str);
 
-  g_debug ("transpose %s", str);
+  if (string_is_equal (str, "up"))
+    {
+      chord_editor_transpose_chords (
+        CHORD_EDITOR, true);
+    }
+  else if (string_is_equal (str, "down"))
+    {
+      chord_editor_transpose_chords (
+        CHORD_EDITOR, false);
+    }
+  else
+    {
+      g_critical ("invalid parameter %s", str);
+    }
 }
 
 DEFINE_SIMPLE (activate_reset_stereo_balance)

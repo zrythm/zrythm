@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -48,7 +48,8 @@ typedef struct _ModulatorViewWidget
 typedef struct _FoldableNotebookWidget
   FoldableNotebookWidget;
 typedef struct _EventViewerWidget EventViewerWidget;
-typedef struct _ChordPadWidget ChordPadWidget;
+typedef struct _ChordPadPanelWidget
+  ChordPadPanelWidget;
 
 /**
  * @addtogroup widgets
@@ -82,8 +83,8 @@ typedef struct _BotDockEdgeWidget
   MixerWidget *       mixer;
 
   /** Chord pads. */
-  GtkBox *            chord_pad_box;
-  ChordPadWidget *    chord_pad;
+  GtkBox *            chord_pad_panel_box;
+  ChordPadPanelWidget * chord_pad_panel;
 
   GtkButton *         toggle_top_panel;
 } BotDockEdgeWidget;

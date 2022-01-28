@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="ChordPadWidget" parent="GtkGrid">
+  <template class="ChordPadPanelWidget" parent="GtkGrid">
     <child>
       <object class="GtkBox" id="left_toolbar">
         <style>

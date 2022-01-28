@@ -188,6 +188,13 @@ typedef enum EventType
   ET_CHORD_PRESET_ADDED,
 
   /**
+   * Chords updated in chord editor.
+   *
+   * Arg: None.
+   */
+  ET_CHORDS_UPDATED,
+
+  /**
    * Piano roll key zoom level changed.
    *
    * Arg: None.

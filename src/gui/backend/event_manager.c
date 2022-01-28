@@ -52,7 +52,7 @@
 #include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/chord_key.h"
 #include "gui/widgets/chord_pack_browser.h"
-#include "gui/widgets/chord_pad.h"
+#include "gui/widgets/chord_pad_panel.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/editor_toolbar.h"
@@ -1078,11 +1078,18 @@ event_manager_process_event (
                   chord_keys[j]);
             }
         }
-      chord_pad_widget_refresh (MW_CHORD_PAD);
+      chord_pad_panel_widget_refresh (
+        MW_CHORD_PAD_PANEL);
       break;
     case ET_CHORD_PRESET_ADDED:
       chord_pack_browser_widget_refresh_presets (
         MW_CHORD_PACK_BROWSER);
+      chord_pad_panel_widget_refresh_load_preset_menu (
+        MW_CHORD_PAD_PANEL);
+      break;
+    case ET_CHORDS_UPDATED:
+      chord_pad_panel_widget_refresh (
+        MW_CHORD_PAD_PANEL);
       break;
     case ET_JACK_TRANSPORT_TYPE_CHANGED:
       g_message ("doing");

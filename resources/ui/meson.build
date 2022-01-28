@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -29,7 +29,7 @@ resource_files += files ([
   'channel.ui',
   'chord_editor_space.ui',
   'chord_key.ui',
-  'chord_pad.ui',
+  'chord_pad_panel.ui',
   'chord_selector_window.ui',
   'clip_editor_inner.ui',
   'clip_editor.ui',

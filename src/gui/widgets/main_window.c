@@ -763,6 +763,10 @@ main_window_widget_init (MainWindowWidget * self)
     /* chord presets */
     { "save-chord-preset",
       activate_save_chord_preset, },
+    { "load-chord-preset",
+      activate_load_chord_preset, "s" },
+    { "load-chord-preset-from-scale",
+      activate_load_chord_preset_from_scale, "s" },
     { "transpose-chord-pad",
       activate_transpose_chord_pad, "s" },
 

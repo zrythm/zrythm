@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,8 +21,12 @@
 
 #include "audio/chord_descriptor.h"
 #include "gui/backend/chord_editor.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "project.h"
+#include "settings/chord_preset.h"
 #include "utils/objects.h"
+#include "zrythm_app.h"
 
 void
 chord_editor_init (
@@ -63,6 +67,104 @@ chord_editor_clone (
   self->editor_settings = src->editor_settings;
 
   return self;
+}
+
+void
+chord_editor_apply_preset (
+  ChordEditor * self,
+  ChordPreset * pset)
+{
+  for (int i = 0; i < 12; i++)
+    {
+      ChordDescriptor * descr = self->chords[i];
+      chord_descriptor_copy (
+        descr, pset->descr[i]);
+      chord_descriptor_update_notes (descr);
+    }
+
+  EVENTS_PUSH (ET_CHORDS_UPDATED, NULL);
+}
+
+void
+chord_editor_apply_preset_from_scale (
+  ChordEditor *     self,
+  MusicalScaleType  scale,
+  MusicalNote       root_note)
+{
+  g_debug (
+    "applying preset from scale %s, root note %s",
+    musical_scale_type_to_string (scale),
+    chord_descriptor_note_to_string (root_note));
+  const ChordType * triads =
+    musical_scale_get_triad_types (scale, true);
+  const bool * notes =
+    musical_scale_get_notes (scale, true);
+  int cur_chord = 0;
+  for (int i = 0; i < 12; i++)
+    {
+      /* skip notes not in scale */
+      if (!notes[i])
+        continue;
+
+      ChordDescriptor * descr =
+        self->chords[cur_chord];
+      descr->has_bass = false;
+      descr->root_note =
+        (MusicalNote)
+        ((int) root_note + i);
+      descr->bass_note =
+        (MusicalNote)
+        ((int) root_note + i);
+      descr->type = triads[cur_chord];
+      descr->accent = CHORD_ACC_NONE;
+      descr->inversion = 0;
+      chord_descriptor_update_notes (descr);
+
+      cur_chord++;
+    }
+
+  /* fill remaining chords with default data */
+  while (cur_chord < 12)
+    {
+      ChordDescriptor * descr =
+        self->chords[cur_chord];
+      descr->has_bass = false;
+      descr->root_note = NOTE_C;
+      descr->bass_note = NOTE_C;
+      descr->type = CHORD_TYPE_NONE;
+      descr->accent = CHORD_ACC_NONE;
+      descr->inversion = 0;
+      chord_descriptor_update_notes (descr);
+      cur_chord++;
+    }
+
+  EVENTS_PUSH (ET_CHORDS_UPDATED, NULL);
+}
+
+void
+chord_editor_transpose_chords (
+  ChordEditor * self,
+  bool          up)
+{
+  for (int i = 0; i < 12; i++)
+    {
+      ChordDescriptor * descr = self->chords[i];
+
+      int add = (up ? 1 : 11);
+      descr->root_note =
+        (MusicalNote)
+        ((int) descr->root_note + add);
+      descr->bass_note =
+        (MusicalNote)
+        ((int) descr->bass_note + add);
+
+      descr->root_note = descr->root_note % 12;
+      descr->bass_note = descr->bass_note % 12;
+
+      chord_descriptor_update_notes (descr);
+    }
+
+  EVENTS_PUSH (ET_CHORDS_UPDATED, NULL);
 }
 
 ChordEditor *

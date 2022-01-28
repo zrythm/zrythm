@@ -75,10 +75,13 @@ chord_descriptor_update_notes (
   if (self->type == CHORD_TYPE_CUSTOM)
     return;
 
+  memset (self->notes, 0, sizeof (self->notes));
+
+  if (self->type == CHORD_TYPE_NONE)
+    return;
+
   int root = self->root_note;
   int bass = self->bass_note;
-
-  memset (self->notes, 0, sizeof (self->notes));
 
   /* add bass note */
   if (self->has_bass)
@@ -219,6 +222,15 @@ chord_descriptor_clone (
       src->type, src->accent, src->inversion);
 
   return cd;
+}
+
+void
+chord_descriptor_copy (
+  ChordDescriptor *       dest,
+  const ChordDescriptor * src)
+{
+  /* no allocated memory so memcpy is enough */
+  memcpy (dest, src, sizeof (ChordDescriptor));
 }
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,15 +20,15 @@
 /**
  * \file
  *
- * Chord pad in the bottom panel.
+ * Single chord pad.
  */
 
 #ifndef __GUI_WIDGETS_CHORD_PAD_H__
 #define __GUI_WIDGETS_CHORD_PAD_H__
 
-#include <gtk/gtk.h>
+#include <stdbool.h>
 
-typedef struct _ChordWidget ChordWidget;
+#include <gtk/gtk.h>
 
 /**
  * @addtogroup widgets
@@ -39,49 +39,52 @@ typedef struct _ChordWidget ChordWidget;
 #define CHORD_PAD_WIDGET_TYPE \
   (chord_pad_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  ChordPadWidget,
-  chord_pad_widget,
-  Z, CHORD_PAD_WIDGET,
-  GtkGrid)
-
-#define MW_CHORD_PAD \
-  MW_BOT_DOCK_EDGE->chord_pad
+  ChordPadWidget, chord_pad_widget, Z, CHORD_PAD_WIDGET,
+  GtkWidget)
 
 /**
- * Brings up the ChordPadWidget in the notebook.
- */
-#define SHOW_CHORD_PAD \
-  gtk_notebook_set_current_page ( \
-    MW_CHORD_PAD->bot_notebook, 3)
-
-/**
- * Tab for chord pads.
+ * Single chord pad.
  */
 typedef struct _ChordPadWidget
 {
-  GtkGrid          parent_instance;
+  GtkWidget     parent_instance;
 
-  GtkGrid *        chords_grid;
+  /** Main child. */
+  GtkOverlay *  overlay;
 
-  GtkButton *      save_preset_btn;
-  GtkMenuButton *  load_preset_btn;
-  GtkButton *      transpose_up_btn;
-  GtkButton *      transpose_down_btn;
+  /** Button. */
+  GtkButton *   btn;
 
-  /** Chords inside the grid. */
-  ChordWidget *    chords[12];
+  GtkGestureDrag * btn_drag;
+
+  double        drag_start_x;
+  double        drag_start_y;
+
+  /** Whether the drag has started. */
+  bool          drag_started;
+
+  GtkBox *      btn_box;
+  GtkButton *   edit_chord_btn;
+  GtkButton *   invert_prev_btn;
+  GtkButton *   invert_next_btn;
+
+  /** Index of the chord in the chord track. */
+  int           idx;
 } ChordPadWidget;
 
-void
-chord_pad_widget_setup (
-  ChordPadWidget * self);
-
-void
-chord_pad_widget_refresh (
-  ChordPadWidget * self);
-
+/**
+ * Creates a chord widget.
+ */
 ChordPadWidget *
 chord_pad_widget_new (void);
+
+/**
+ * Sets the chord index on the chord widget.
+ */
+void
+chord_pad_widget_refresh (
+  ChordPadWidget * self,
+  int           idx);
 
 /**
  * @}

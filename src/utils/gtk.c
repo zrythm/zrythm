@@ -1226,7 +1226,7 @@ on_create_window (
     MW_BOT_DOCK_EDGE->modulator_view_box,
     _("Modulators"), "modulators");
   SET_TITLE_AND_ROLE (
-    MW_BOT_DOCK_EDGE->chord_pad_box,
+    MW_BOT_DOCK_EDGE->chord_pad_panel_box,
     _("Chord Pad"), "chord-pad");
   SET_TITLE_AND_ROLE (
     MW_BOT_DOCK_EDGE->clip_editor_box,
@@ -1475,7 +1475,7 @@ z_gtk_notebook_make_detachable (
     MW_BOT_DOCK_EDGE->clip_editor_box);
   ADD_PAIR (
     "chord-pad",
-    MW_BOT_DOCK_EDGE->chord_pad_box);
+    MW_BOT_DOCK_EDGE->chord_pad_panel_box);
   ADD_PAIR (
     "timeline",
     MW_MAIN_NOTEBOOK->

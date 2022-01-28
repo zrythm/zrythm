@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -42,7 +42,6 @@ widget_srcs = files([
   'channel_send_selector.c',
   'channel_sends_expander.c',
   'channel_slot.c',
-  'chord.c',
   'chord_arranger.c',
   'chord_editor_space.c',
   'chord_key.c',
@@ -50,6 +49,7 @@ widget_srcs = files([
   'chord_pack_browser.c',
   'chord_region.c',
   'chord_pad.c',
+  'chord_pad_panel.c',
   'chord_selector_window.c',
   'clip_editor.c',
   'clip_editor_inner.c',

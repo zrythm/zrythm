@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -27,11 +27,12 @@
 #define __GUI_BACKEND_CHORD_EDITOR_H__
 
 #include "audio/chord_descriptor.h"
+#include "audio/scale.h"
 #include "gui/backend/editor_settings.h"
-
-#include <cyaml/cyaml.h>
+#include "utils/yaml.h"
 
 typedef struct ChordDescriptor ChordDescriptor;
+typedef struct ChordPreset ChordPreset;
 
 /**
  * @addtogroup gui_backend
@@ -102,6 +103,22 @@ chord_editor_init (
 ChordEditor *
 chord_editor_clone (
   ChordEditor * src);
+
+void
+chord_editor_apply_preset (
+  ChordEditor * self,
+  ChordPreset * pset);
+
+void
+chord_editor_apply_preset_from_scale (
+  ChordEditor *     self,
+  MusicalScaleType  scale,
+  MusicalNote       root_note);
+
+void
+chord_editor_transpose_chords (
+  ChordEditor * self,
+  bool          up);
 
 ChordEditor *
 chord_editor_new (void);

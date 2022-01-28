@@ -20,7 +20,7 @@
 #include "gui/backend/clip_editor.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/chord_pad.h"
+#include "gui/widgets/chord_pad_panel.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/event_viewer.h"
@@ -68,7 +68,8 @@ bot_dock_edge_widget_setup (
     self->event_viewer,
     EVENT_VIEWER_TYPE_EDITOR);
 
-  chord_pad_widget_setup (self->chord_pad);
+  chord_pad_panel_widget_setup (
+    self->chord_pad_panel);
 
   /* set event viewer visibility */
   bool visibility = false;
@@ -200,13 +201,14 @@ generate_bot_notebook (
     self->modulator_view_box,
     GTK_WIDGET (self->modulator_view));
 
-  self->chord_pad_box =
+  self->chord_pad_panel_box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
-  self->chord_pad = chord_pad_widget_new ();
+  self->chord_pad_panel =
+    chord_pad_panel_widget_new ();
   gtk_box_append (
-    self->chord_pad_box,
-    GTK_WIDGET (self->chord_pad));
+    self->chord_pad_panel_box,
+    GTK_WIDGET (self->chord_pad_panel));
 
   /* add tabs */
   foldable_notebook_widget_add_page (
@@ -223,7 +225,7 @@ generate_bot_notebook (
     "modulator", _("Modulators"), _("Modulators"));
   foldable_notebook_widget_add_page (
     self->bot_notebook,
-    GTK_WIDGET (self->chord_pad_box),
+    GTK_WIDGET (self->chord_pad_panel_box),
     "chord-pad", _("Chord Pad"), _("Chord pad"));
 
   GtkNotebook * notebook =
