@@ -25,7 +25,7 @@
 #include "plugins/collections.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
-#include "settings/chord_preset_pack.h"
+#include "settings/chord_preset_pack_manager.h"
 #include "utils/error.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"
@@ -409,17 +409,29 @@ add_chord_pset_pack_context_menu (
   PopoverMenuBinWidget * bin,
   ChordPresetPack *      pack)
 {
+  if (pack->is_standard)
+    return;
+
   GMenu * menu = g_menu_new ();
   GMenuItem * menuitem;
+  char action[800];
 
-  char tmp[600];
+  /* rename */
   sprintf (
-    tmp,
-    "app.chord-pack-browser-delete-pack::%p",
+    action, "app.rename-chord-preset-pack::%p",
     pack);
   menuitem =
     z_gtk_create_menu_item (
-      _("Delete"), "edit-delete", tmp);
+      _("_Rename"), "edit-rename", action);
+  g_menu_append_item (menu, menuitem);
+
+  /* delete */
+  sprintf (
+    action, "app.delete-chord-preset-pack::%p",
+    pack);
+  menuitem =
+    z_gtk_create_menu_item (
+      _("_Delete"), "edit-delete", action);
   g_menu_append_item (menu, menuitem);
 
   popover_menu_bin_widget_set_menu_model (
@@ -429,22 +441,36 @@ add_chord_pset_pack_context_menu (
 static void
 add_chord_pset_context_menu (
   PopoverMenuBinWidget * bin,
-  ChordPreset *          pack)
+  ChordPreset *          pset)
 {
-  GMenu * menu = g_menu_new ();
+  ChordPresetPack * pack =
+    chord_preset_pack_manager_get_pack_for_preset (
+      CHORD_PRESET_PACK_MANAGER, pset);
+  g_return_if_fail (pack);
+  if (pack->is_standard)
+    return;
 
-#if 0
+  GMenu * menu = g_menu_new ();
   GMenuItem * menuitem;
-  char tmp[600];
+  char action[800];
+
+  /* rename */
   sprintf (
-    tmp,
-    "app.chord-preset-pack-browser-delete::%p",
-    pack);
+    action, "app.rename-chord-preset::%p",
+    pset);
   menuitem =
     z_gtk_create_menu_item (
-      _("Delete"), "edit-delete", tmp);
+      _("_Rename"), "edit-rename", action);
   g_menu_append_item (menu, menuitem);
-#endif
+
+  /* delete */
+  sprintf (
+    action, "app.delete-chord-preset::%p",
+    pset);
+  menuitem =
+    z_gtk_create_menu_item (
+      _("_Delete"), "edit-delete", action);
+  g_menu_append_item (menu, menuitem);
 
   popover_menu_bin_widget_set_menu_model (
     bin, G_MENU_MODEL (menu));

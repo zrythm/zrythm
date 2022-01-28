@@ -17,10 +17,15 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
+#include "project.h"
 #include "settings/chord_preset_pack.h"
 #include "utils/arrays.h"
+#include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+#include "zrythm_app.h"
 
 ChordPresetPack *
 chord_preset_pack_new (
@@ -72,6 +77,75 @@ chord_preset_pack_contains_name (
     }
 
   return false;
+}
+
+bool
+chord_preset_pack_contains_preset (
+  const ChordPresetPack * self,
+  const ChordPreset *     pset)
+{
+  for (int i = 0; i < self->num_presets; i++)
+    {
+      ChordPreset * cur_pset = self->presets[i];
+      if (pset == cur_pset)
+        return true;
+    }
+
+  return false;
+}
+
+void
+chord_preset_pack_delete_preset (
+  ChordPresetPack * self,
+  ChordPreset *     pset)
+{
+  array_delete (
+    self->presets, self->num_presets, pset);
+
+  chord_preset_free (pset);
+
+  EVENTS_PUSH (ET_CHORD_PRESET_REMOVED, NULL);
+}
+
+const char *
+chord_preset_pack_get_name (
+  const ChordPresetPack * self)
+{
+  return self->name;
+}
+
+void
+chord_preset_pack_set_name (
+  ChordPresetPack * self,
+  const char *      name)
+{
+  object_free_w_func_and_null (g_free, self->name);
+
+  self->name = g_strdup (name);
+
+  EVENTS_PUSH (ET_CHORD_PRESET_PACK_EDITED, NULL);
+}
+
+ChordPresetPack *
+chord_preset_pack_clone (
+  const ChordPresetPack * src)
+{
+  ChordPresetPack * self =
+    chord_preset_pack_new (
+      src->name, src->is_standard);
+
+  self->presets =
+    object_realloc_n (
+      self->presets, self->presets_size,
+      MAX (1, (size_t) src->num_presets),
+      ChordPreset *);
+  for (int i = 0; i < src->num_presets; i++)
+    {
+      self->presets[i] =
+        chord_preset_clone (src->presets[i]);
+    }
+
+  return self;
 }
 
 void

@@ -17,8 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
+#include "project.h"
 #include "settings/chord_preset.h"
 #include "utils/objects.h"
+#include "zrythm_app.h"
 
 ChordPreset *
 chord_preset_new (
@@ -56,6 +60,25 @@ chord_preset_get_info_text (
   const ChordPreset * self)
 {
   g_return_val_if_reached (NULL);
+}
+
+const char *
+chord_preset_get_name (
+  const ChordPreset * self)
+{
+  return self->name;
+}
+
+void
+chord_preset_set_name (
+  ChordPreset * self,
+  const char *  name)
+{
+  object_free_w_func_and_null (g_free, self->name);
+
+  self->name = g_strdup (name);
+
+  EVENTS_PUSH (ET_CHORD_PRESET_EDITED, NULL);
 }
 
 /**

@@ -71,6 +71,29 @@ chord_preset_pack_manager_get_pack_at (
   const ChordPresetPackManager * self,
   int                            idx);
 
+ChordPresetPack *
+chord_preset_pack_manager_get_pack_for_preset (
+  ChordPresetPackManager * self,
+  ChordPreset *            pset);
+
+/**
+ * Add a copy of the given pack.
+ */
+void
+chord_preset_pack_manager_add_pack (
+  ChordPresetPackManager * self,
+  const ChordPresetPack *  pack);
+
+void
+chord_preset_pack_manager_delete_pack (
+  ChordPresetPackManager * self,
+  ChordPresetPack *        pack);
+
+void
+chord_preset_pack_manager_delete_preset (
+  ChordPresetPackManager * self,
+  ChordPreset *            pset);
+
 void
 chord_preset_pack_manager_free (
   const ChordPresetPackManager * self);

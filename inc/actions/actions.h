@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -449,6 +449,11 @@ DECLARE_SIMPLE (activate_save_chord_preset);
 DECLARE_SIMPLE (activate_load_chord_preset);
 DECLARE_SIMPLE (activate_load_chord_preset_from_scale);
 DECLARE_SIMPLE (activate_transpose_chord_pad);
+DECLARE_SIMPLE (activate_add_chord_preset_pack);
+DECLARE_SIMPLE (activate_delete_chord_preset_pack);
+DECLARE_SIMPLE (activate_rename_chord_preset_pack);
+DECLARE_SIMPLE (activate_delete_chord_preset);
+DECLARE_SIMPLE (activate_rename_chord_preset);
 
 /* port actions */
 DECLARE_SIMPLE (activate_reset_stereo_balance);

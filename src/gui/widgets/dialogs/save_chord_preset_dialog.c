@@ -135,6 +135,8 @@ generate_packs_dropdown (void)
       ChordPresetPack * pack =
         chord_preset_pack_manager_get_pack_at (
           CHORD_PRESET_PACK_MANAGER, i);
+      if (pack->is_standard)
+        continue;
 
       WrappedObjectWithChangeSignal * wrapped_pack =
         wrapped_object_with_change_signal_new (

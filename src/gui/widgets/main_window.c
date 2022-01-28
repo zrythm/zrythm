@@ -769,6 +769,16 @@ main_window_widget_init (MainWindowWidget * self)
       activate_load_chord_preset_from_scale, "s" },
     { "transpose-chord-pad",
       activate_transpose_chord_pad, "s" },
+    { "add-chord-preset-pack",
+      activate_add_chord_preset_pack, },
+    { "delete-chord-preset-pack",
+      activate_delete_chord_preset_pack, "s" },
+    { "rename-chord-preset-pack",
+      activate_rename_chord_preset_pack, "s" },
+    { "delete-chord-preset",
+      activate_delete_chord_preset, "s" },
+    { "rename-chord-preset",
+      activate_rename_chord_preset, "s" },
 
     /* cc bindings */
     { "bind-midi-cc",

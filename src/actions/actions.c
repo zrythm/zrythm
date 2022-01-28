@@ -778,7 +778,7 @@ activate_export_as (GSimpleAction *action,
   gtk_window_set_transient_for (
     GTK_WINDOW (export),
     GTK_WINDOW (MAIN_WINDOW));
-  z_gtk_dialog_run (GTK_DIALOG (export), true);
+  gtk_window_present (GTK_WINDOW (export));
 }
 
 void
@@ -2753,7 +2753,7 @@ DEFINE_SIMPLE (activate_input_bpm)
       _("Please enter a BPM"), P_TEMPO_TRACK,
       tempo_track_get_current_bpm_as_str,
       tempo_track_set_bpm_from_str);
-  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+  gtk_window_present (GTK_WINDOW (dialog));
 }
 
 DEFINE_SIMPLE (activate_tap_bpm)
@@ -3156,10 +3156,37 @@ DEFINE_SIMPLE (activate_save_chord_preset)
 {
   g_debug ("save chord preset");
 
-  SaveChordPresetDialogWidget * dialog =
-    save_chord_preset_dialog_widget_new (
-      GTK_WINDOW (MAIN_WINDOW));
-  gtk_window_present (GTK_WINDOW (dialog));
+  int num_packs =
+    chord_preset_pack_manager_get_num_packs (
+      CHORD_PRESET_PACK_MANAGER);
+  bool have_custom = false;
+  for (int i = 0; i < num_packs; i++)
+    {
+      ChordPresetPack * pack =
+        chord_preset_pack_manager_get_pack_at (
+          CHORD_PRESET_PACK_MANAGER, i);
+      if (!pack->is_standard)
+        {
+          have_custom = true;
+          break;
+        }
+    }
+
+  if (have_custom)
+    {
+      SaveChordPresetDialogWidget * dialog =
+        save_chord_preset_dialog_widget_new (
+          GTK_WINDOW (MAIN_WINDOW));
+      gtk_window_present (GTK_WINDOW (dialog));
+    }
+  else
+    {
+      ui_show_error_message (
+        MAIN_WINDOW, false,
+        _("No custom preset packs found. Please "
+        "create a preset pack first from the "
+        "chord preset browser."));
+    }
 }
 
 DEFINE_SIMPLE (activate_load_chord_preset)
@@ -3219,6 +3246,142 @@ DEFINE_SIMPLE (activate_transpose_chord_pad)
     {
       g_critical ("invalid parameter %s", str);
     }
+}
+
+static void
+on_chord_preset_pack_add_response (
+  GtkDialog *       dialog,
+  gint              response,
+  ChordPresetPack * pack)
+{
+  if (response == GTK_RESPONSE_ACCEPT)
+    {
+      if (strlen (pack->name) > 0)
+        {
+          chord_preset_pack_manager_add_pack (
+            CHORD_PRESET_PACK_MANAGER, pack);
+        }
+      else
+        {
+          /* TODO show error message */
+        }
+    }
+
+  chord_preset_pack_free (pack);
+}
+
+DEFINE_SIMPLE (activate_add_chord_preset_pack)
+{
+  ChordPresetPack * pack =
+    chord_preset_pack_new ("", false);
+
+  StringEntryDialogWidget * dialog =
+    string_entry_dialog_widget_new (
+      _("Preset Pack Name"), pack,
+      (GenericStringGetter)
+        chord_preset_pack_get_name,
+      (GenericStringSetter)
+        chord_preset_pack_set_name);
+  g_signal_connect_after (
+    G_OBJECT (dialog), "response",
+    G_CALLBACK (
+      on_chord_preset_pack_add_response),
+    pack);
+  gtk_window_present (GTK_WINDOW (dialog));
+}
+
+DEFINE_SIMPLE (activate_delete_chord_preset_pack)
+{
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  ChordPresetPack * pack = NULL;
+  sscanf (str, "%p", &pack);
+  g_return_if_fail (pack);
+
+  GtkWidget * dialog =
+    gtk_message_dialog_new (
+      GTK_WINDOW (MAIN_WINDOW),
+      GTK_DIALOG_MODAL |
+        GTK_DIALOG_DESTROY_WITH_PARENT,
+      GTK_MESSAGE_QUESTION,
+      GTK_BUTTONS_YES_NO,
+      "%s",
+      _("Are you sure you want to remove this "
+      "chord preset pack?"));
+  int result =
+    z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+  if (result == GTK_RESPONSE_YES)
+    {
+      chord_preset_pack_manager_delete_pack (
+        CHORD_PRESET_PACK_MANAGER, pack);
+    }
+}
+
+DEFINE_SIMPLE (activate_rename_chord_preset_pack)
+{
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  ChordPresetPack * pack = NULL;
+  sscanf (str, "%p", &pack);
+  g_return_if_fail (pack);
+
+  StringEntryDialogWidget * dialog =
+    string_entry_dialog_widget_new (
+      _("Preset Pack Name"), pack,
+      (GenericStringGetter)
+        chord_preset_pack_get_name,
+      (GenericStringSetter)
+        chord_preset_pack_set_name);
+  gtk_window_present (GTK_WINDOW (dialog));
+}
+
+DEFINE_SIMPLE (activate_delete_chord_preset)
+{
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  ChordPreset * pset = NULL;
+  sscanf (str, "%p", &pset);
+  g_return_if_fail (pset);
+
+  GtkWidget * dialog =
+    gtk_message_dialog_new (
+      GTK_WINDOW (MAIN_WINDOW),
+      GTK_DIALOG_MODAL |
+        GTK_DIALOG_DESTROY_WITH_PARENT,
+      GTK_MESSAGE_QUESTION,
+      GTK_BUTTONS_YES_NO,
+      "%s",
+      _("Are you sure you want to remove this "
+      "chord preset pack?"));
+  int result =
+    z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+  if (result == GTK_RESPONSE_YES)
+    {
+      chord_preset_pack_manager_delete_preset (
+        CHORD_PRESET_PACK_MANAGER, pset);
+    }
+}
+
+DEFINE_SIMPLE (activate_rename_chord_preset)
+{
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  ChordPreset * pset = NULL;
+  sscanf (str, "%p", &pset);
+  g_return_if_fail (pset);
+
+  StringEntryDialogWidget * dialog =
+    string_entry_dialog_widget_new (
+      _("Preset Name"), pset,
+      (GenericStringGetter)
+        chord_preset_get_name,
+      (GenericStringSetter)
+        chord_preset_set_name);
+  gtk_window_present (GTK_WINDOW (dialog));
 }
 
 DEFINE_SIMPLE (activate_reset_stereo_balance)
@@ -3566,6 +3729,33 @@ DEFINE_SIMPLE (activate_plugin_browser_reset)
     }
 }
 
+static void
+on_plugin_collection_add_response (
+  GtkDialog *        dialog,
+  gint               response,
+  PluginCollection * collection)
+{
+  if (response == GTK_RESPONSE_ACCEPT)
+    {
+      if (strlen (collection->name) > 0)
+        {
+          g_debug ("accept collection");
+          plugin_collections_add (
+            PLUGIN_MANAGER->collections, collection,
+            F_SERIALIZE);
+          plugin_browser_widget_refresh_collections (
+            MW_PLUGIN_BROWSER);
+        }
+      else
+        {
+          g_message (
+            "invalid collection name (empty)");
+        }
+    }
+
+  plugin_collection_free (collection);
+}
+
 DEFINE_SIMPLE (activate_plugin_collection_add)
 {
   PluginCollection * collection =
@@ -3578,23 +3768,23 @@ DEFINE_SIMPLE (activate_plugin_collection_add)
         plugin_collection_get_name,
       (GenericStringSetter)
         plugin_collection_set_name);
-  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+  g_signal_connect_after (
+    G_OBJECT (dialog), "response",
+    G_CALLBACK (on_plugin_collection_add_response),
+    collection);
+  gtk_window_present (GTK_WINDOW (dialog));
+}
 
-  if (strlen (collection->name) > 0)
-    {
-      g_debug ("accept collection");
-      plugin_collections_add (
-        PLUGIN_MANAGER->collections, collection,
-        F_SERIALIZE);
-      plugin_browser_widget_refresh_collections (
-        MW_PLUGIN_BROWSER);
-    }
-  else
-    {
-      g_message ("invalid collection name (empty)");
-    }
+static void
+on_plugin_collection_rename_response (
+  GtkDialog *        dialog,
+  gint               response,
+  PluginCollection * collection)
+{
+  plugin_collections_serialize_to_file (
+    PLUGIN_MANAGER->collections);
 
-  plugin_collection_free (collection);
+  EVENTS_PUSH (ET_PLUGIN_COLLETIONS_CHANGED, NULL);
 }
 
 DEFINE_SIMPLE (activate_plugin_collection_rename)
@@ -3609,12 +3799,12 @@ DEFINE_SIMPLE (activate_plugin_collection_rename)
         plugin_collection_get_name,
       (GenericStringSetter)
         plugin_collection_set_name);
-  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
-
-  plugin_collections_serialize_to_file (
-    PLUGIN_MANAGER->collections);
-
-  EVENTS_PUSH (ET_PLUGIN_COLLETIONS_CHANGED, NULL);
+  g_signal_connect_after (
+    G_OBJECT (dialog), "response",
+    G_CALLBACK (
+      on_plugin_collection_rename_response),
+    collection);
+  gtk_window_present (GTK_WINDOW (dialog));
 }
 
 DEFINE_SIMPLE (activate_plugin_collection_remove)

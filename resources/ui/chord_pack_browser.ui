@@ -40,6 +40,19 @@
                 </property>
               </object>
             </child>
+            <child>
+              <object class="GtkBox">
+                <style>
+                  <class name="toolbar"/>
+                </style>
+                <child>
+                  <object class="GtkButton" id="add_pack">
+                    <property name="action-name">app.add-chord-preset-pack</property>
+                    <property name="icon-name">add</property>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
         </child>
         <child>

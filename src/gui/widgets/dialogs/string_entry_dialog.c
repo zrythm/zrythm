@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -55,6 +55,8 @@ on_response (
 
       self->setter (self->obj, text);
     }
+
+  gtk_window_destroy (GTK_WINDOW (self));
 }
 
 static void

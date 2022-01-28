@@ -73,6 +73,15 @@ enum
 static const char * dummy_text = "";
 
 static void
+on_response (
+  GtkDialog * dialog,
+  gint        response,
+  gpointer    user_data)
+{
+  gtk_window_destroy (GTK_WINDOW (dialog));
+}
+
+static void
 add_enabled_recursively (
   ExportDialogWidget * self,
   GtkTreeIter *        iter,
@@ -1477,6 +1486,9 @@ export_dialog_widget_new ()
   g_signal_connect (
     G_OBJECT (self->stems_toggle), "toggled",
     G_CALLBACK (on_stems_toggled), self);
+  g_signal_connect (
+    G_OBJECT (self), "response",
+    G_CALLBACK (on_response), self);
 
   return self;
 }

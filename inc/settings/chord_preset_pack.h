@@ -99,6 +99,29 @@ chord_preset_pack_contains_name (
   const ChordPresetPack * self,
   const char *            name);
 
+bool
+chord_preset_pack_contains_preset (
+  const ChordPresetPack * self,
+  const ChordPreset *     pset);
+
+void
+chord_preset_pack_delete_preset (
+  ChordPresetPack * self,
+  ChordPreset *     pset);
+
+const char *
+chord_preset_pack_get_name (
+  const ChordPresetPack * self);
+
+void
+chord_preset_pack_set_name (
+  ChordPresetPack * self,
+  const char *      name);
+
+ChordPresetPack *
+chord_preset_pack_clone (
+  const ChordPresetPack * src);
+
 void
 chord_preset_pack_free (
   ChordPresetPack * self);

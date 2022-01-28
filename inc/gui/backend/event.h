@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -186,6 +186,41 @@ typedef enum EventType
    * Arg: None.
    */
   ET_CHORD_PRESET_ADDED,
+
+  /**
+   * Chord preset edited.
+   *
+   * Arg: None.
+   */
+  ET_CHORD_PRESET_EDITED,
+
+  /**
+   * Chord preset removed.
+   *
+   * Arg: None.
+   */
+  ET_CHORD_PRESET_REMOVED,
+
+  /**
+   * Chord preset pack added.
+   *
+   * Arg: None.
+   */
+  ET_CHORD_PRESET_PACK_ADDED,
+
+  /**
+   * Chord preset pack edited.
+   *
+   * Arg: None.
+   */
+  ET_CHORD_PRESET_PACK_EDITED,
+
+  /**
+   * Chord preset pack removed.
+   *
+   * Arg: None.
+   */
+  ET_CHORD_PRESET_PACK_REMOVED,
 
   /**
    * Chords updated in chord editor.

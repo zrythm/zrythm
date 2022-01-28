@@ -1082,6 +1082,18 @@ event_manager_process_event (
         MW_CHORD_PAD_PANEL);
       break;
     case ET_CHORD_PRESET_ADDED:
+    case ET_CHORD_PRESET_EDITED:
+    case ET_CHORD_PRESET_REMOVED:
+      chord_pack_browser_widget_refresh_presets (
+        MW_CHORD_PACK_BROWSER);
+      chord_pad_panel_widget_refresh_load_preset_menu (
+        MW_CHORD_PAD_PANEL);
+      break;
+    case ET_CHORD_PRESET_PACK_ADDED:
+    case ET_CHORD_PRESET_PACK_EDITED:
+    case ET_CHORD_PRESET_PACK_REMOVED:
+      chord_pack_browser_widget_refresh_packs (
+        MW_CHORD_PACK_BROWSER);
       chord_pack_browser_widget_refresh_presets (
         MW_CHORD_PACK_BROWSER);
       chord_pad_panel_widget_refresh_load_preset_menu (

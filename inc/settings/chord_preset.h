@@ -92,6 +92,15 @@ char *
 chord_preset_get_info_text (
   const ChordPreset * self);
 
+const char *
+chord_preset_get_name (
+  const ChordPreset * self);
+
+void
+chord_preset_set_name (
+  ChordPreset * self,
+  const char *  name);
+
 /**
  * Frees the plugin setting.
  */

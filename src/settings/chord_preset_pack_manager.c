@@ -17,8 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
+#include "project.h"
 #include "settings/chord_preset_pack_manager.h"
 #include "utils/objects.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -83,6 +87,67 @@ chord_preset_pack_manager_get_pack_at (
   return
     (ChordPresetPack *)
     g_ptr_array_index (self->pset_packs, idx);
+}
+
+/**
+ * Add a copy of the given pack.
+ */
+void
+chord_preset_pack_manager_add_pack (
+  ChordPresetPackManager * self,
+  const ChordPresetPack *  pack)
+{
+  ChordPresetPack * new_pack =
+    chord_preset_pack_clone (pack);
+  g_ptr_array_add (self->pset_packs, new_pack);
+
+  EVENTS_PUSH (ET_CHORD_PRESET_PACK_ADDED, NULL);
+}
+
+void
+chord_preset_pack_manager_delete_pack (
+  ChordPresetPackManager * self,
+  ChordPresetPack *        pack)
+{
+  g_ptr_array_remove (self->pset_packs, pack);
+
+  EVENTS_PUSH (ET_CHORD_PRESET_PACK_REMOVED, NULL);
+}
+
+ChordPresetPack *
+chord_preset_pack_manager_get_pack_for_preset (
+  ChordPresetPackManager * self,
+  ChordPreset *            pset)
+{
+  for (size_t i = 0; i < self->pset_packs->len; i++)
+    {
+      ChordPresetPack * pack =
+        (ChordPresetPack *)
+        g_ptr_array_index (self->pset_packs, i);
+
+      if (chord_preset_pack_contains_preset (
+            pack, pset))
+        {
+          return pack;
+        }
+    }
+
+  g_return_val_if_reached (NULL);
+}
+
+void
+chord_preset_pack_manager_delete_preset (
+  ChordPresetPackManager * self,
+  ChordPreset *            pset)
+{
+  ChordPresetPack * pack =
+    chord_preset_pack_manager_get_pack_for_preset (
+      self, pset);
+  if (!pack)
+    return;
+
+  chord_preset_pack_delete_preset (
+    pack, pset);
 }
 
 void
