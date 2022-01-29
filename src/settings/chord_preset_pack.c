@@ -35,6 +35,8 @@ chord_preset_pack_new (
   ChordPresetPack * self =
     object_new (ChordPresetPack);
 
+  self->schema_version =
+    CHORD_PRESET_PACK_SCHEMA_VERSION;
   self->name = g_strdup (name);
   self->presets_size = 12;
   self->presets =
@@ -50,8 +52,8 @@ chord_preset_pack_new (
  */
 void
 chord_preset_pack_add_preset (
-  ChordPresetPack * self,
-  ChordPreset *     pset)
+  ChordPresetPack *   self,
+  const ChordPreset * pset)
 {
   array_double_size_if_full (
     self->presets, self->num_presets,

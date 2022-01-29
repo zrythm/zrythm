@@ -24,12 +24,15 @@
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
+#include <glib/gi18n.h>
+
 ChordPreset *
 chord_preset_new (
   const char * name)
 {
   ChordPreset * self = object_new (ChordPreset);
 
+  self->schema_version = CHORD_PRESET_SCHEMA_VERSION;
   self->name = g_strdup (name);
 
   return self;
@@ -59,7 +62,30 @@ char *
 chord_preset_get_info_text (
   const ChordPreset * self)
 {
-  g_return_val_if_reached (NULL);
+  GString * gstr = g_string_new (_("Chords"));
+  g_string_append (gstr, ":\n");
+  bool have_any = false;
+  for (int i = 0; i < 12; i++)
+    {
+      ChordDescriptor * descr = self->descr[i];
+      if (descr->type == CHORD_TYPE_NONE)
+        break;
+
+      char * lbl =
+        chord_descriptor_to_new_string (descr);
+      g_string_append (gstr, lbl);
+      g_free (lbl);
+      g_string_append (gstr, ", ");
+      have_any = true;
+    }
+
+  if (have_any)
+    {
+      g_string_erase (
+        gstr, (gssize) gstr->len - 2, 2);
+    }
+
+  return g_string_free (gstr, false);
 }
 
 const char *

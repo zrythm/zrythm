@@ -3259,7 +3259,7 @@ on_chord_preset_pack_add_response (
       if (strlen (pack->name) > 0)
         {
           chord_preset_pack_manager_add_pack (
-            CHORD_PRESET_PACK_MANAGER, pack);
+            CHORD_PRESET_PACK_MANAGER, pack, true);
         }
       else
         {
@@ -3314,7 +3314,7 @@ DEFINE_SIMPLE (activate_delete_chord_preset_pack)
   if (result == GTK_RESPONSE_YES)
     {
       chord_preset_pack_manager_delete_pack (
-        CHORD_PRESET_PACK_MANAGER, pack);
+        CHORD_PRESET_PACK_MANAGER, pack, true);
     }
 }
 
@@ -3361,7 +3361,7 @@ DEFINE_SIMPLE (activate_delete_chord_preset)
   if (result == GTK_RESPONSE_YES)
     {
       chord_preset_pack_manager_delete_preset (
-        CHORD_PRESET_PACK_MANAGER, pset);
+        CHORD_PRESET_PACK_MANAGER, pset, true);
     }
 }
 

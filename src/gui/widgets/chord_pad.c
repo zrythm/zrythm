@@ -267,7 +267,7 @@ on_invert_btn_clicked (
 void
 chord_pad_widget_refresh (
   ChordPadWidget * self,
-  int           idx)
+  int              idx)
 {
   self->idx = idx;
 

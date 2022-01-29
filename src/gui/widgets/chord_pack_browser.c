@@ -507,7 +507,10 @@ chord_pack_browser_widget_init (
   gtk_widget_set_hexpand (
     GTK_WIDGET (self->paned), true);
 
+  self->selected_packs = g_ptr_array_new ();
   self->selected_psets = g_ptr_array_new ();
+
+  gtk_label_set_wrap (self->pset_info, true);
 
   gtk_widget_add_css_class (
     GTK_WIDGET (self), "chord-pack-browser");

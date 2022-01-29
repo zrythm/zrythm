@@ -94,7 +94,9 @@ on_response (
               pset->descr[i] =
                 chord_descriptor_clone (descr);
             }
-          chord_preset_pack_add_preset (pack, pset);
+          chord_preset_pack_manager_add_preset (
+            CHORD_PRESET_PACK_MANAGER, pack, pset,
+            true);
           chord_preset_free (pset);
 
           EVENTS_PUSH (ET_CHORD_PRESET_ADDED, NULL);

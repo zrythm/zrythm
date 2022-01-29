@@ -85,15 +85,6 @@ chord_preset_pack_new (
   const char * name,
   bool         is_standard);
 
-/**
- * @note The given preset is cloned so the caller is
- *   still responsible for @ref pset.
- */
-void
-chord_preset_pack_add_preset (
-  ChordPresetPack * self,
-  ChordPreset *     pset);
-
 bool
 chord_preset_pack_contains_name (
   const ChordPresetPack * self,
@@ -103,6 +94,15 @@ bool
 chord_preset_pack_contains_preset (
   const ChordPresetPack * self,
   const ChordPreset *     pset);
+
+/**
+ * @note The given preset is cloned so the caller is
+ *   still responsible for @ref pset.
+ */
+void
+chord_preset_pack_add_preset (
+  ChordPresetPack *   self,
+  const ChordPreset * pset);
 
 void
 chord_preset_pack_delete_preset (
