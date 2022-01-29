@@ -184,8 +184,13 @@ creator_select_bass_note (
       if (self->creator_bass_notes[i] != child)
         continue;
 
+      self->descr->has_bass = true;
       self->descr->bass_note = i;
+      g_debug ("bass note %d", i);
+      return;
     }
+
+  g_return_if_reached ();
 }
 
 static void
@@ -268,10 +273,21 @@ on_creator_bass_note_selected_children_changed (
   GtkFlowBox * flowbox,
   ChordSelectorWindowWidget * self)
 {
-  gtk_flow_box_selected_foreach (
-    flowbox,
-    (GtkFlowBoxForeachFunc) creator_select_bass_note,
-    self);
+  GList * list =
+    gtk_flow_box_get_selected_children (flowbox);
+  if (list)
+    {
+      gtk_flow_box_selected_foreach (
+        flowbox,
+        (GtkFlowBoxForeachFunc) creator_select_bass_note,
+        self);
+      g_list_free (list);
+    }
+  else
+    {
+      g_debug ("removing bass");
+      self->descr->has_bass = false;
+    }
 }
 
 static void

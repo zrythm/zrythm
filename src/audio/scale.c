@@ -382,7 +382,7 @@ musical_scale_get_notes (
       SET_NOTES (1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0);
       break;
     case SCALE_PELOG:
-      SET_NOTES (1, 1, 0, 1, 4, 0, 0, 1, 1, 0, 0, 0);
+      SET_NOTES (1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0);
       break;
     case SCALE_PROMETHEUS:
       SET_NOTES (1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0);

@@ -319,8 +319,7 @@ chord_descriptor_to_new_string (
   const ChordDescriptor * chord)
 {
   char tmp[100];
-  chord_descriptor_to_string (
-    chord, tmp);
+  chord_descriptor_to_string (chord, tmp);
   return g_strdup (tmp);
 }
 
