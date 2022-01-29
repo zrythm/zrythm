@@ -63,10 +63,25 @@ psets_filter_func (
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
   ChordPreset * pset =
     (ChordPreset *) wrapped_obj->obj;
-  (void) pset;
-  (void) self;
 
-  return true;
+  GObject * pack_gobj =
+    gtk_single_selection_get_selected_item (
+      self->packs_selection_model);
+  if (!pack_gobj)
+    return true;
+
+  WrappedObjectWithChangeSignal * wrapped_pack =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (pack_gobj);
+  ChordPresetPack * pack =
+    (ChordPresetPack *) wrapped_pack->obj;
+
+  if (chord_preset_pack_contains_preset (
+        pack, pset))
+    {
+      return true;
+    }
+
+  return false;
 }
 
 static GListModel *
