@@ -31,6 +31,7 @@
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
+#include "settings/chord_preset.h"
 #include "settings/plugin_settings.h"
 #include "settings/settings.h"
 #include "utils/debug.h"
@@ -529,13 +530,11 @@ sample_processor_queue_sample_from_file (
   /* TODO */
 }
 
-/**
- * Adds a file (audio or MIDI) to the queue.
- */
-void
-sample_processor_queue_file (
+static void
+queue_file_or_chord_preset (
   SampleProcessor *     self,
-  const SupportedFile * file)
+  const SupportedFile * file,
+  const ChordPreset *   chord_pset)
 {
   EngineState state;
   engine_wait_for_pause (
@@ -582,7 +581,8 @@ sample_processor_queue_file (
     self->tracklist, track, track->pos,
     F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
 
-  if (supported_file_type_is_audio (file->type))
+  if (file
+      && supported_file_type_is_audio (file->type))
     {
       g_debug ("creating audio track...");
       track =
@@ -610,9 +610,12 @@ sample_processor_queue_file (
       position_set_to_pos (
         &self->file_end_pos, &obj->end_pos);
     }
-  else if (supported_file_type_is_midi (
-             file->type) &&
-           self->instrument_setting)
+  else if (
+    ((file
+      && supported_file_type_is_midi (file->type))
+     ||
+     chord_pset)
+    && self->instrument_setting)
     {
       /* create an instrument track */
       g_debug ("creating instrument track...");
@@ -662,9 +665,13 @@ sample_processor_queue_file (
         F_NOT_MOVING_PLUGIN, F_GEN_AUTOMATABLES,
         F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
 
-      int num_tracks =
-        midi_file_get_num_tracks (
-          file->abs_path, true);
+      int num_tracks = 1;
+      if (file)
+        {
+          num_tracks =
+            midi_file_get_num_tracks (
+              file->abs_path, true);
+        }
       g_debug (
         "creating %d MIDI tracks...", num_tracks);
       for (int i = 0; i < num_tracks; i++)
@@ -688,23 +695,99 @@ sample_processor_queue_file (
             F_CONNECT, F_NO_RECALC_GRAPH,
             F_NO_PUBLISH_EVENTS);
 
-          /* create a MIDI region from the MIDI
-           * file & add to track */
-          ZRegion * mr =
-            midi_region_new_from_midi_file (
-              &start_pos, file->abs_path,
-              track_get_name_hash (track), 0, 0, i);
-          if (mr)
+          if (file)
             {
-              track_add_region (
-                track, mr, NULL, 0,
-                /* name could already be generated
-                 * based
-                 * on the track name (if any) in
-                 * the MIDI file */
-                mr->name ?
-                  F_NO_GEN_NAME : F_GEN_NAME,
-                F_NO_PUBLISH_EVENTS);
+              /* create a MIDI region from the MIDI
+               * file & add to track */
+              ZRegion * mr =
+                midi_region_new_from_midi_file (
+                  &start_pos, file->abs_path,
+                  track_get_name_hash (track), 0, 0, i);
+              if (mr)
+                {
+                  track_add_region (
+                    track, mr, NULL, 0,
+                    /* name could already be generated
+                     * based
+                     * on the track name (if any) in
+                     * the MIDI file */
+                    mr->name ?
+                      F_NO_GEN_NAME : F_GEN_NAME,
+                    F_NO_PUBLISH_EVENTS);
+
+                  ArrangerObject * obj =
+                    (ArrangerObject *) mr;
+                  if (position_is_after (
+                        &obj->end_pos,
+                        &self->file_end_pos))
+                    {
+                      position_set_to_pos (
+                        &self->file_end_pos,
+                        &obj->end_pos);
+                    }
+                }
+              else
+                {
+                  g_message (
+                    "Failed to create MIDI region from "
+                    "file %s",
+                    file->abs_path);
+                }
+            }
+          else if (chord_pset)
+            {
+              /* create a MIDI region from the chord
+               * preset and add to track */
+              Position end_pos;
+              position_from_seconds (
+                &end_pos, 13.0);
+              ZRegion * mr =
+                midi_region_new (
+                  &start_pos, &end_pos,
+                  track_get_name_hash (track),
+                  0, 0);
+
+              /* add notes */
+              for (int j = 0; j < 12; j++)
+                {
+                  ChordDescriptor * descr =
+                    chord_descriptor_clone (
+                      chord_pset->descr[j]);
+                  chord_descriptor_update_notes (
+                    descr);
+                  if (descr->type == CHORD_TYPE_NONE)
+                    {
+                      chord_descriptor_free (descr);
+                      continue;
+                    }
+
+                  Position cur_pos;
+                  position_from_seconds (
+                    &cur_pos, j * 1.0);
+                  Position cur_end_pos;
+                  position_from_seconds (
+                    &cur_end_pos, j * 1.0 + 0.5);
+                  for (int k = 0;
+                       k < CHORD_DESCRIPTOR_MAX_NOTES;
+                       k++)
+                    {
+                      if (descr->notes[k])
+                        {
+                          MidiNote * mn =
+                            midi_note_new (
+                              &mr->id,
+                              &cur_pos,
+                              &cur_end_pos,
+                              k + 36,
+                              VELOCITY_DEFAULT);
+                          midi_region_add_midi_note (
+                            mr, mn,
+                            F_NO_PUBLISH_EVENTS);
+                        }
+                    } /* endforeach notes in chord */
+                  chord_descriptor_free (descr);
+
+                } /* endforeach chord descriptor */
 
               ArrangerObject * obj =
                 (ArrangerObject *) mr;
@@ -716,26 +799,43 @@ sample_processor_queue_file (
                     &self->file_end_pos,
                     &obj->end_pos);
                 }
-            }
-          else
-            {
-              g_message (
-                "Failed to create MIDI region from "
-                "file %s",
-                file->abs_path);
-            }
-        }
+
+              track_add_region (
+                track, mr, NULL, 0,
+                mr->name
+                ? F_NO_GEN_NAME : F_GEN_NAME,
+                F_NO_PUBLISH_EVENTS);
+
+            } /* endif chord preset */
+
+        } /* endforeach track */
+
     }
 
   self->roll = true;
   position_set_to_bar (&self->playhead, 1);
 
   /* add some room to end pos */
+  char file_end_pos_str[600];
+  position_to_string_full (
+    &self->file_end_pos, file_end_pos_str, 2);
+  g_message ("playing until %s", file_end_pos_str);
   position_add_bars (&self->file_end_pos, 1);
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   engine_resume (AUDIO_ENGINE, &state);
+}
+
+/**
+ * Adds a file (audio or MIDI) to the queue.
+ */
+void
+sample_processor_queue_file (
+  SampleProcessor *     self,
+  const SupportedFile * file)
+{
+  queue_file_or_chord_preset (self, file, NULL);
 }
 
 /**
@@ -746,7 +846,8 @@ sample_processor_queue_chord_preset (
   SampleProcessor *   self,
   const ChordPreset * chord_pset)
 {
-  /* TODO */
+  queue_file_or_chord_preset (
+    self, NULL, chord_pset);
 }
 
 /**
