@@ -393,6 +393,18 @@ musical_scale_get_notes (
     case SCALE_PROMETHEUS_LISZT:
       SET_NOTES (1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0);
       break;
+    case SCALE_BALINESE:
+      SET_NOTES (1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0);
+      break;
+    case SCALE_RAGATODI:
+      SET_NOTES (1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0);
+      break;
+    case SCALE_JAPANESE1:
+      SET_NOTES (1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0);
+      break;
+    case SCALE_JAPANESE2:
+      SET_NOTES (1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0);
+      break;
     default:
       break;
     }

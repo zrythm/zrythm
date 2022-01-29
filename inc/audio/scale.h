@@ -119,6 +119,10 @@ typedef enum MusicalScaleType
   SCALE_PROMETHEUS,
   SCALE_PROMETHEUS_NEAPOLITAN,
   SCALE_PROMETHEUS_LISZT,
+  SCALE_BALINESE,
+  SCALE_RAGATODI,
+  SCALE_JAPANESE1,
+  SCALE_JAPANESE2,
 
   /* --- TODO unimplemented --- */
 
@@ -195,6 +199,10 @@ static const cyaml_strval_t
   { __("Prometheus"),  SCALE_PROMETHEUS },
   { __("Prometheus Neapolitan"),  SCALE_PROMETHEUS_NEAPOLITAN },
   { __("Prometheus Liszt"),  SCALE_PROMETHEUS_LISZT },
+  { __("Balinese"),  SCALE_BALINESE },
+  { __("RagaTodi"),  SCALE_RAGATODI },
+  { __("Japanese 1"),  SCALE_JAPANESE1 },
+  { __("Japanese 2"),  SCALE_JAPANESE2 },
 };
 
 /**

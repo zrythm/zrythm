@@ -107,7 +107,7 @@ creator_select_type (
 {
   MusicalScale * clone;
   for (MusicalScaleType i = SCALE_CHROMATIC;
-       i <= SCALE_PROMETHEUS_LISZT; i++)
+       i <= SCALE_JAPANESE2; i++)
     {
       if (self->creator_types[i] != child)
         continue;
@@ -296,7 +296,7 @@ scale_selector_window_widget_init (
     self->creator_root_note_flowbox, 12);
 
   for (MusicalScaleType i = SCALE_CHROMATIC;
-       i <= SCALE_PROMETHEUS_LISZT; i++)
+       i <= SCALE_JAPANESE2; i++)
     {
       GtkFlowBoxChild * fb_child =
         GTK_FLOW_BOX_CHILD (
