@@ -104,22 +104,6 @@ on_response (
   gtk_window_destroy (GTK_WINDOW (dialog));
 }
 
-static char *
-get_chord_preset_pack_name (
-  gpointer * data)
-{
-  WrappedObjectWithChangeSignal * wrapped_pack =
-    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
-  g_return_val_if_fail (wrapped_pack, NULL);
-  g_return_val_if_fail (
-    wrapped_pack->type ==
-      WRAPPED_OBJECT_TYPE_CHORD_PSET_PACK, NULL);
-  ChordPresetPack * pack =
-    (ChordPresetPack *) wrapped_pack->obj;
-
-  return g_strdup (pack->name);
-}
-
 static GtkDropDown *
 generate_packs_dropdown (void)
 {
@@ -149,7 +133,8 @@ generate_packs_dropdown (void)
   GtkExpression * expr =
     gtk_cclosure_expression_new (
       G_TYPE_STRING, NULL, 0, NULL,
-      G_CALLBACK (get_chord_preset_pack_name),
+      G_CALLBACK (
+        wrapped_object_with_change_signal_get_display_name),
       NULL, NULL);
   GtkDropDown * dropdown =
     GTK_DROP_DOWN (

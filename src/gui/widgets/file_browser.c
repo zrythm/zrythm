@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,7 @@
 #include "actions/tracklist_selections.h"
 #include "audio/supported_file.h"
 #include "gui/backend/file_manager.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -143,8 +144,18 @@ on_file_chooser_selection_changed (
   GtkFileChooser *chooser,
   FileBrowserWidget * self)
 {
-  object_free_w_func_and_null (
-    supported_file_free, self->selected_file);
+  if (self->selected_file)
+    {
+      if (self->selected_file->obj)
+        {
+          supported_file_free (
+            (SupportedFile *)
+            self->selected_file->obj);
+          self->selected_file->obj = NULL;
+        }
+      object_free_w_func_and_null (
+        g_object_unref, self->selected_file);
+    }
 
   sample_processor_stop_file_playback (
     SAMPLE_PROCESSOR);
@@ -162,6 +173,10 @@ on_file_chooser_selection_changed (
 
   SupportedFile * file =
     supported_file_new_from_path (abs_path);
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    wrapped_object_with_change_signal_new (
+      file,
+      WRAPPED_OBJECT_TYPE_SUPPORTED_FILE);
 
   char * label =
     supported_file_get_info_text_for_label (file);
@@ -177,13 +192,16 @@ on_file_chooser_selection_changed (
         SAMPLE_PROCESSOR, file);
     }
 
-  self->selected_file = file;
+  self->selected_file = wrapped_obj;
 }
 
-static SupportedFile *
+static WrappedObjectWithChangeSignal *
 get_selected_file (
-  FileBrowserWidget * self)
+  GtkWidget * widget)
 {
+  FileBrowserWidget * self =
+    Z_FILE_BROWSER_WIDGET (widget);
+
   return self->selected_file;
 }
 
@@ -377,8 +395,8 @@ file_browser_widget_new ()
 
   file_auditioner_controls_widget_setup (
     self->auditioner_controls,
-    GTK_WIDGET (self),
-    (SelectedFileGetter) get_selected_file,
+    GTK_WIDGET (self), true,
+    get_selected_file,
     (GenericCallback) refilter_files);
   file_browser_filters_widget_setup (
     self->filters_toolbar,

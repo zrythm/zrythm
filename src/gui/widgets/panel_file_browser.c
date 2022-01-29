@@ -276,10 +276,12 @@ update_file_info_label (
   return G_SOURCE_REMOVE;
 }
 
-static SupportedFile *
+static WrappedObjectWithChangeSignal *
 get_selected_file (
-  PanelFileBrowserWidget * self)
+  GtkWidget * widget)
 {
+  PanelFileBrowserWidget * self =
+    Z_PANEL_FILE_BROWSER_WIDGET (widget);
   GObject * gobj =
     gtk_single_selection_get_selected_item (
       self->files_selection_model);
@@ -289,10 +291,8 @@ get_selected_file (
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  SupportedFile * descr =
-    (SupportedFile *) wrapped_obj->obj;
 
-  return descr;
+  return wrapped_obj;
 }
 
 static GListModel *
@@ -643,8 +643,8 @@ panel_file_browser_widget_new ()
 
   file_auditioner_controls_widget_setup (
     self->auditioner_controls,
-    GTK_WIDGET (self),
-    (SelectedFileGetter) get_selected_file,
+    GTK_WIDGET (self), true,
+    get_selected_file,
     (GenericCallback) refilter_files);
   file_browser_filters_widget_setup (
     self->filters_toolbar,

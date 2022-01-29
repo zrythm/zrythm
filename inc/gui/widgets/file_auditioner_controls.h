@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -41,6 +41,8 @@ G_DECLARE_FINAL_TYPE (
   GtkBox)
 
 typedef struct _VolumeWidget VolumeWidget;
+typedef struct _WrappedObjectWithChangeSignal
+  WrappedObjectWithChangeSignal;
 
 /**
  * @addtogroup widgets
@@ -48,7 +50,7 @@ typedef struct _VolumeWidget VolumeWidget;
  * @{
  */
 
-typedef SupportedFile * (*SelectedFileGetter) (
+typedef WrappedObjectWithChangeSignal * (*SelectedFileGetter) (
   GtkWidget * widget);
 
 /**
@@ -58,12 +60,20 @@ typedef struct _FileAuditionerControlsWidget
 {
   GtkBox               parent_instance;
 
-  GtkButton *      play_btn;
-  GtkButton *      stop_btn;
+  /**
+   * True if these controls are for files.
+   *
+   * This adds some more settings like the ability
+   * to show hidden files.
+   */
+  bool                 for_files;
+
+  GtkButton *          play_btn;
+  GtkButton *          stop_btn;
   GtkMenuButton *      file_settings_btn;
   VolumeWidget *       volume;
 
-  GtkComboBoxText *    instrument_cb;
+  GtkDropDown *        instrument_dropdown;
 
   /** Callbacks. */
   GtkWidget *          owner;
@@ -78,6 +88,7 @@ void
 file_auditioner_controls_widget_setup (
   FileAuditionerControlsWidget * self,
   GtkWidget *                    owner,
+  bool                           for_files,
   SelectedFileGetter             selected_file_getter,
   GenericCallback                refilter_files_cb);
 

@@ -1401,6 +1401,13 @@ event_manager_process_event (
           sel);
       }
       break;
+    case ET_FILE_BROWSER_INSTRUMENT_CHANGED:
+      /* TODO */
+#if 0
+      chord_pack_browser_widget_refresh_auditioner_controls (
+        MW_CHORD_PACK_BROWSER);
+#endif
+      break;
     default:
       g_warning (
         "event %d not implemented yet",

@@ -41,7 +41,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkComboBoxText" id="instrument_cb"/>
+      <object class="GtkDropDown" id="instrument_dropdown"/>
     </child>
   </template>
 </interface>

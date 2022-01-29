@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -18,6 +18,8 @@
  */
 
 #include "gui/backend/wrapped_object_with_change_signal.h"
+#include "plugins/plugin_descriptor.h"
+#include "settings/chord_preset_pack.h"
 #include "utils/error.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -49,6 +51,47 @@ wrapped_object_with_change_signal_fire (
   WrappedObjectWithChangeSignal * self)
 {
   g_signal_emit (self, obj_signals[SIGNAL_CHANGED], 0);
+}
+
+/**
+ * Returns a display name for the given object,
+ * intended to be used where the object should be
+ * displayed (eg, a dropdown).
+ *
+ * This can be used with GtkCclosureExpression.
+ */
+char *
+wrapped_object_with_change_signal_get_display_name (
+  void * data)
+{
+  g_return_val_if_fail (
+    Z_IS_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data),
+    NULL);
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
+
+  switch (wrapped_obj->type)
+    {
+    case WRAPPED_OBJECT_TYPE_CHORD_PSET_PACK:
+      {
+        ChordPresetPack * pack =
+          (ChordPresetPack *) wrapped_obj->obj;
+        return g_strdup (pack->name);
+      }
+      break;
+    case WRAPPED_OBJECT_TYPE_PLUGIN_DESCR:
+      {
+        PluginDescriptor * descr =
+          (PluginDescriptor *) wrapped_obj->obj;
+        return g_strdup (descr->name);
+      }
+      break;
+    default:
+      g_return_val_if_reached (NULL);
+      break;
+    }
+
+  g_return_val_if_reached (NULL);
 }
 
 WrappedObjectWithChangeSignal *

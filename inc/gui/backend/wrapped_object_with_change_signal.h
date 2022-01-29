@@ -70,6 +70,17 @@ wrapped_object_with_change_signal_fire (
   WrappedObjectWithChangeSignal * self);
 
 /**
+ * Returns a display name for the given object,
+ * intended to be used where the object should be
+ * displayed (eg, a dropdown).
+ *
+ * This can be used with GtkCclosureExpression.
+ */
+char *
+wrapped_object_with_change_signal_get_display_name (
+  void * data);
+
+/**
  * Instantiates a new WrappedObjectWithChangeSignal.
  */
 WrappedObjectWithChangeSignal *

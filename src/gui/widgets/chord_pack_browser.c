@@ -196,10 +196,12 @@ update_pset_info_label (
   return G_SOURCE_REMOVE;
 }
 
-static ChordPreset *
+static WrappedObjectWithChangeSignal *
 get_selected_preset (
-  ChordPackBrowserWidget * self)
+  GtkWidget * widget)
 {
+  ChordPackBrowserWidget * self =
+    Z_CHORD_PACK_BROWSER_WIDGET (widget);
   GObject * gobj =
     gtk_single_selection_get_selected_item (
       self->psets_selection_model);
@@ -209,10 +211,8 @@ get_selected_preset (
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  ChordPreset * pset =
-    (ChordPreset *) wrapped_obj->obj;
 
-  return pset;
+  return wrapped_obj;
 }
 
 static void
@@ -422,8 +422,8 @@ chord_pack_browser_widget_new ()
 
   file_auditioner_controls_widget_setup (
     self->auditioner_controls,
-    GTK_WIDGET (self),
-    (SelectedFileGetter) get_selected_preset,
+    GTK_WIDGET (self), false,
+    get_selected_preset,
     (GenericCallback) refilter_presets);
 
   /* populate packs */

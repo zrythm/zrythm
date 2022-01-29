@@ -414,6 +414,14 @@ typedef enum EventType
    * Arg: ArrangerWidget pointer
    */
   ET_ARRANGER_SCROLLED,
+
+  /**
+   * Auditioning instrument changed in file/chord
+   * pack browser.
+   *
+   * Arg: None.
+   */
+  ET_FILE_BROWSER_INSTRUMENT_CHANGED,
 } EventType;
 
 /**

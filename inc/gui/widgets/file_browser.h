@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -42,6 +42,8 @@ typedef struct _FileAuditionerControlsWidget
   FileAuditionerControlsWidget;
 typedef struct _FileBrowserFiltersWidget
   FileBrowserFiltersWidget;
+typedef struct _WrappedObjectWithChangeSignal
+  WrappedObjectWithChangeSignal;
 
 /**
  * @addtogroup widgets
@@ -72,7 +74,7 @@ typedef struct _FileBrowserWidget
   FileAuditionerControlsWidget * auditioner_controls;
 
   /** Currently selected file. */
-  SupportedFile *      selected_file;
+  WrappedObjectWithChangeSignal * selected_file;
 
   /**
    * A little hack to get the paned position to

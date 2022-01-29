@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,6 +25,9 @@
 
 #include "audio/engine.h"
 #include "audio/sample_processor.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/file_auditioner_controls.h"
 #include "gui/widgets/volume.h"
 #include "plugins/plugin_manager.h"
@@ -35,6 +38,7 @@
 #include "utils/objects.h"
 #include "utils/resources.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -48,13 +52,26 @@ on_play_clicked (
   GtkButton *          toolbutton,
   FileAuditionerControlsWidget * self)
 {
-  SupportedFile * descr =
+  WrappedObjectWithChangeSignal * wrapped_obj =
     self->selected_file_getter (self->owner);
-  if (!descr)
+  if (!wrapped_obj)
     return;
 
-  sample_processor_queue_file (
-    SAMPLE_PROCESSOR, descr);
+  switch (wrapped_obj->type)
+    {
+    case WRAPPED_OBJECT_TYPE_SUPPORTED_FILE:
+      sample_processor_queue_file (
+        SAMPLE_PROCESSOR,
+        (SupportedFile *) wrapped_obj->obj);
+      break;
+    case WRAPPED_OBJECT_TYPE_CHORD_PSET:
+      sample_processor_queue_chord_preset (
+        SAMPLE_PROCESSOR,
+        (ChordPreset *) wrapped_obj->obj);
+      break;
+    default:
+      break;
+    }
 }
 
 static void
@@ -79,18 +96,16 @@ on_settings_menu_items_changed (
 
 static void
 on_instrument_changed (
-  GtkComboBox *            cb,
-  FileAuditionerControlsWidget * self)
+  GObject    *   gobject,
+  GParamSpec *   pspec,
+  void *         data)
 {
-  const char * active_id =
-    gtk_combo_box_get_active_id (cb);
-
-  g_message ("changed: %s", active_id);
-
-  PluginDescriptor * descr =
-    (PluginDescriptor *)
-    yaml_deserialize (
-      active_id, &plugin_descriptor_schema);
+  GtkDropDown * dropdown = GTK_DROP_DOWN (gobject);
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
+      gtk_drop_down_get_selected_item (dropdown));
+  const PluginDescriptor * descr =
+    (PluginDescriptor *) wrapped_obj->obj;
 
   if (SAMPLE_PROCESSOR->instrument_setting &&
       plugin_descriptor_is_same_plugin (
@@ -138,16 +153,23 @@ on_instrument_changed (
     S_UI_FILE_BROWSER, "instrument", setting_yaml);
   g_free (setting_yaml);
 
-  plugin_descriptor_free (descr);
-
   engine_resume (AUDIO_ENGINE, &state);
+
+  EVENTS_PUSH (
+    ET_FILE_BROWSER_INSTRUMENT_CHANGED, NULL);
 }
 
 static void
-setup_instrument_cb (
+setup_instrument_dropdown (
   FileAuditionerControlsWidget * self)
 {
+  GListStore * store =
+    g_list_store_new (
+      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+
   /* populate instruments */
+  int selected = -1;
+  int num_added = 0;
   for (size_t i = 0;
        i < PLUGIN_MANAGER->plugin_descriptors->
          len;
@@ -158,31 +180,51 @@ setup_instrument_cb (
           PLUGIN_MANAGER->plugin_descriptors, i);
       if (plugin_descriptor_is_instrument (descr))
         {
-          char * id =
-            yaml_serialize (
-              descr, &plugin_descriptor_schema);
-          gtk_combo_box_text_append (
-            self->instrument_cb, id,
-            descr->name);
-          g_free (id);
+          WrappedObjectWithChangeSignal * wrapped_descr =
+            wrapped_object_with_change_signal_new (
+              descr,
+              WRAPPED_OBJECT_TYPE_PLUGIN_DESCR);
+          g_list_store_append (store, wrapped_descr);
+
+          /* set selected instrument */
+          if (SAMPLE_PROCESSOR->instrument_setting
+              &&
+              plugin_descriptor_is_same_plugin (
+                SAMPLE_PROCESSOR->
+                  instrument_setting->descr,
+                descr))
+            {
+              selected = num_added;
+            }
+
+          num_added++;
         }
     }
 
-  /* set selected instrument */
-  if (SAMPLE_PROCESSOR->instrument_setting)
+  gtk_drop_down_set_model (
+    self->instrument_dropdown,
+    G_LIST_MODEL (store));
+
+  GtkExpression * expr =
+    gtk_cclosure_expression_new (
+      G_TYPE_STRING, NULL, 0, NULL,
+      G_CALLBACK (
+        wrapped_object_with_change_signal_get_display_name),
+      NULL, NULL);
+  gtk_drop_down_set_expression (
+    self->instrument_dropdown, expr);
+
+  if (selected >= 0)
     {
-      char * id =
-        yaml_serialize (
-          SAMPLE_PROCESSOR->instrument_setting->
-            descr,
-          &plugin_descriptor_schema);
-      gtk_combo_box_set_active_id (
-        GTK_COMBO_BOX (self->instrument_cb), id);
+      gtk_drop_down_set_selected (
+        self->instrument_dropdown,
+        (unsigned int) selected);
     }
 
   /* add instrument signal handler */
   g_signal_connect (
-    G_OBJECT (self->instrument_cb), "changed",
+    G_OBJECT (self->instrument_dropdown),
+    "notify::selected-item",
     G_CALLBACK (on_instrument_changed), self);
 }
 
@@ -193,6 +235,7 @@ void
 file_auditioner_controls_widget_setup (
   FileAuditionerControlsWidget * self,
   GtkWidget *                    owner,
+  bool                           for_files,
   SelectedFileGetter             selected_file_getter,
   GenericCallback                refilter_files_cb)
 {
@@ -203,7 +246,28 @@ file_auditioner_controls_widget_setup (
   volume_widget_setup (
     self->volume, SAMPLE_PROCESSOR->fader->amp);
 
-  setup_instrument_cb (self);
+  self->for_files = for_files;
+  GMenu * menu = g_menu_new ();
+  g_menu_append (
+    menu, _("Autoplay"), "settings-btn.autoplay");
+  if (for_files)
+    {
+      g_menu_append (
+        menu, _("Show unsupported files"),
+        "settings-btn.show-unsupported-files");
+      g_menu_append (
+        menu, _("Show hidden files"),
+        "settings-btn.show-hidden-files");
+    }
+  gtk_menu_button_set_menu_model (
+    self->file_settings_btn,
+    G_MENU_MODEL (menu));
+  g_signal_connect (
+    menu, "items-changed",
+    G_CALLBACK (on_settings_menu_items_changed),
+    self);
+
+  setup_instrument_dropdown (self);
 }
 
 static void
@@ -222,7 +286,7 @@ file_auditioner_controls_widget_class_init (
   BIND_CHILD (play_btn);
   BIND_CHILD (stop_btn);
   BIND_CHILD (file_settings_btn);
-  BIND_CHILD (instrument_cb);
+  BIND_CHILD (instrument_dropdown);
 
 #undef BIND_CHILD
 
@@ -269,22 +333,4 @@ file_auditioner_controls_widget_init (
     GTK_WIDGET (self->file_settings_btn),
     "settings-btn",
     G_ACTION_GROUP (action_group));
-
-  GMenu * menu = g_menu_new ();
-  g_menu_append (
-    menu, _("Autoplay"), "settings-btn.autoplay");
-  g_menu_append (
-    menu, _("Show unsupported files"),
-    "settings-btn.show-unsupported-files");
-  g_menu_append (
-    menu, _("Show hidden files"),
-    "settings-btn.show-hidden-files");
-  gtk_menu_button_set_menu_model (
-    self->file_settings_btn,
-    G_MENU_MODEL (menu));
-
-  g_signal_connect (
-    menu, "items-changed",
-    G_CALLBACK (on_settings_menu_items_changed),
-    self);
 }
