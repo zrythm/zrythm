@@ -170,7 +170,7 @@ static const cyaml_strval_t
   { __("Diminished"),  SCALE_DIMINISHED },
   { __("Dominant Diminished"),  SCALE_DOMINANT_DIMINISHED },
   { __("Egyptian"),  SCALE_EGYPTIAN },
-  { __("Eigth Tone Spanish"),  SCALE_EIGHT_TONE_SPANISH },
+  { __("Eight Tone Spanish"),  SCALE_EIGHT_TONE_SPANISH },
   { __("Enigmatic"),  SCALE_ENIGMATIC },
   { __("Geez"),  SCALE_GEEZ },
   { __("Hindu"),  SCALE_HINDU },

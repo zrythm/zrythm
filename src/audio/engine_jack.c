@@ -375,7 +375,7 @@ process_cb (
 
 /**
  * Client-supplied function that is called whenever
- * an xrun has occured.
+ * an xrun has occurred.
  *
  * @see jack_get_xrun_delayed_usecs()
  *

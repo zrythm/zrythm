@@ -159,7 +159,7 @@ typedef struct TrackProcessor
   /* --- end MIDI controls --- */
 
   /**
-   * Current dBFS after procesing each output port.
+   * Current dBFS after processing each output port.
    *
    * Transient variables only used by the GUI.
    */

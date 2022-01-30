@@ -1993,7 +1993,7 @@ engine_fill_out_bufs (
 }
 
 /**
- * Returns the int value correesponding to the
+ * Returns the int value corresponding to the
  * given AudioEngineBufferSize.
  */
 int
@@ -2027,7 +2027,7 @@ engine_buffer_size_enum_to_int (
 }
 
 /**
- * Returns the int value correesponding to the
+ * Returns the int value corresponding to the
  * given AudioEngineSamplerate.
  */
 int

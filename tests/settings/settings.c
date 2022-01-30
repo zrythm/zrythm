@@ -43,7 +43,7 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/settings/settings/"
 
   g_test_add_func (
-    TEST_PREFIX "test apend to strv",
+    TEST_PREFIX "test append to strv",
     (GTestFunc) test_append_to_strv);
 
   return g_test_run ();

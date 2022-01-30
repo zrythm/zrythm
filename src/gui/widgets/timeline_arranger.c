@@ -653,7 +653,7 @@ timeline_arranger_widget_snap_regions_l (
         TL_SELECTIONS->regions[i];
       r_obj = (ArrangerObject *) region;
 
-      /* caclulate new start position */
+      /* calculate new start position */
       if (ACTION_IS (RESIZING_L_FADE))
         {
           position_set_to_pos (

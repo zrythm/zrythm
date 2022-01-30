@@ -398,7 +398,7 @@ arranger_selections_action_init_loaded (
  * Creates a new action for creating/deleting
  * objects.
  *
- * @param create 1 to create 0 to delte.
+ * @param create 1 to create 0 to delete.
  */
 WARN_UNUSED_RESULT
 UndoableAction *
@@ -653,7 +653,7 @@ arranger_selections_action_new_resize (
   GError **                          error);
 
 /**
- * Creates a new action fro quantizing
+ * Creates a new action for quantizing
  * ArrangerObject's.
  *
  * @param opts Quantize options.

@@ -484,7 +484,7 @@ typedef struct Port
    *
    * This should keep pushing MidiEvent's whenever
    * they occur and the reader should empty it
-   * after cheking if there are any events.
+   * after checking if there are any events.
    *
    * Currently there is only 1 reader for each port
    * so this wont be a problem for now, but we

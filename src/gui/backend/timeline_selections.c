@@ -389,7 +389,7 @@ timeline_selections_can_be_pasted (
                 tr->type, r->id.type))
             {
               g_message (
-                "track %s cant host region type %d",
+                "track %s can't host region type %d",
                 tr->name, r->id.type);
               return false;
             }

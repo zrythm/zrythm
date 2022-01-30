@@ -139,7 +139,7 @@ static const char * midi_cc_names[128] = {
   "Undefined 89",
   "Undefined 90",
   "Effect 1 Amount (Reverb)",
-  "Effect 2 Amount (Tremelo)",
+  "Effect 2 Amount (Tremolo)",
   "Effect 3 Amount (Chorus)",
   "Effect 4 Amount (Detuning)",
   "Effect 5 Amount (Phaser)",
@@ -430,7 +430,7 @@ midi_get_meta_event_type_name (
         strcpy (buf, "Sequencer specific");
         break;
       default:
-        sprintf (buf, "Uknown type %hhx", type);
+        sprintf (buf, "Unknown type %hhx", type);
         break;
     }
 }

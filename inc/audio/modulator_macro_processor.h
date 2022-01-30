@@ -75,7 +75,7 @@ typedef struct ModulatorMacroProcessor
    */
   Port *            cv_out;
 
-  /** Control port controling the amount. */
+  /** Control port controlling the amount. */
   Port *            macro;
 
   /** Pointer to owner track, if any. */

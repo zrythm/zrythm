@@ -44,7 +44,7 @@
 #define PLUGIN_SETTINGS_SCHEMA_VERSION 4
 
 /**
- * A setting for a a specific plugin descriptor.
+ * A setting for a specific plugin descriptor.
  */
 typedef struct PluginSetting
 {
@@ -54,7 +54,7 @@ typedef struct PluginSetting
    * for. */
   PluginDescriptor * descr;
 
-  /** Whether to instantiate this plugin wtih carla. */
+  /** Whether to instantiate this plugin with carla. */
   bool               open_with_carla;
 
   /** Whether to force a generic UI. */

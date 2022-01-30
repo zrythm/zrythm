@@ -24,7 +24,7 @@ lv2_srcs += files ([
 
 if os_darwin
   lv2_srcs += files ([
-    # doesnt build for now
+    # doesn't build for now
     #'cocoa_in_gtk3.mm',
     ])
 endif

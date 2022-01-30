@@ -62,7 +62,7 @@ engine_rtmidi_get_num_in_ports (
   AudioEngine * self);
 
 /**
- * Creates an input port, optinally opening it with
+ * Creates an input port, optionally opening it with
  * the given device ID (from rtmidi port count) and
  * label.
  */

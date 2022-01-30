@@ -81,7 +81,7 @@ typedef struct PluginIdentifier
   unsigned int     track_name_hash;
 
   /**
-   * The slot this plugin is in in the channel, or
+   * The slot this plugin is in the channel, or
    * the index if this is part of a modulator.
    *
    * If PluginIdentifier.slot_type is an instrument,

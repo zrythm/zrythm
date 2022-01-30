@@ -197,7 +197,7 @@ typedef struct Fader
   Port *           midi_out;
 
   /**
-   * Current dBFS after procesing each output port.
+   * Current dBFS after processing each output port.
    *
    * Transient variables only used by the GUI.
    */
@@ -219,7 +219,7 @@ typedef struct Fader
   /** Pointer to owner control room, if any. */
   ControlRoom *    control_room;
 
-  /** Pointer to owner sample procesor, if any. */
+  /** Pointer to owner sample processor, if any. */
   SampleProcessor * sample_processor;
 
   int              magic;

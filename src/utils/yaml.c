@@ -39,7 +39,7 @@ yaml_get_cyaml_config (
 {
   /** log level: DEBUG, WARNING, INFO... */
   config->log_level = _cyaml_log_level;
-  /* use the default loggin function */
+  /* use the default logging function */
   //.log_fn = cyaml_log,
   config->log_fn = yaml_cyaml_log_func;
   /* use the default memory allocator */

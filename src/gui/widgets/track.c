@@ -1631,7 +1631,7 @@ track_widget_do_highlight (
           /* highlight inside */
           self->highlight_inside = true;
 
-          /* unhilight top */
+          /* unhighlight top */
           /*gtk_drag_unhighlight (*/
             /*GTK_WIDGET (*/
               /*self->highlight_top_box));*/
@@ -1640,7 +1640,7 @@ track_widget_do_highlight (
               self->highlight_top_box),
             -1, -1);
 
-          /* unhilight bot */
+          /* unhighlight bot */
           /*gtk_drag_unhighlight (*/
             /*GTK_WIDGET (*/
               /*self->highlight_bot_box));*/
@@ -1661,7 +1661,7 @@ track_widget_do_highlight (
               self->highlight_top_box),
             -1, 2);
 
-          /* unhilight bot */
+          /* unhighlight bot */
           /*gtk_drag_unhighlight (*/
             /*GTK_WIDGET (*/
               /*self->highlight_bot_box));*/
@@ -1684,7 +1684,7 @@ track_widget_do_highlight (
               self->highlight_bot_box),
             -1, 2);
 
-          /* unhilight top */
+          /* unhighlight top */
           /*gtk_drag_unhighlight (*/
             /*GTK_WIDGET (*/
               /*self->highlight_top_box));*/

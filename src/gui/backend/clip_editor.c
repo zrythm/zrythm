@@ -52,11 +52,11 @@ void
 clip_editor_init_loaded (
   ClipEditor * self)
 {
-  g_message ("Intializing clip editor backend...");
+  g_message ("Initializing clip editor backend...");
 
   piano_roll_init_loaded (self->piano_roll);
 
-  g_message ("Done intializing clip editor backend");
+  g_message ("Done initializing clip editor backend");
 }
 
 /**

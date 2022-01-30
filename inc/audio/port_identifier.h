@@ -256,7 +256,7 @@ typedef enum PortFlags
   PORT_FLAG_MIDI_AUTOMATABLE = 1 << 20,
 
   /** Channels can send to this port (ie, this port
-   * is a track procesor midi/stereo in or a plugin
+   * is a track processor midi/stereo in or a plugin
    * sidechain in). */
   PORT_FLAG_SEND_RECEIVABLE = 1 << 21,
 

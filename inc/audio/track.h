@@ -212,7 +212,7 @@ track_type_strings[] =
  *
  * Each Track contains a Channel with Plugins.
  *
- * Tracks shall be identified by ther position
+ * Tracks shall be identified by their position
  * (index) in the Tracklist.
  */
 typedef struct Track
@@ -482,7 +482,7 @@ typedef struct Track
 
   /**
    * The output signal type (eg midi tracks have
-   * MIDI output singals).
+   * MIDI output signals).
    */
   PortType            out_signal_type;
 

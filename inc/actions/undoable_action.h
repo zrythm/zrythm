@@ -169,7 +169,7 @@ undoable_action_needs_pause (
  * Checks whether the action can contain an audio
  * clip.
  *
- * No attempt is made to remove unnused files from
+ * No attempt is made to remove unused files from
  * the pool for actions that can't contain audio
  * clips.
  */

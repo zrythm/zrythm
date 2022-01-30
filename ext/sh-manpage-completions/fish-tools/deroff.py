@@ -284,7 +284,7 @@ class Deroffer:
                                \S)          # Any printable character
                             """,  re.VERBOSE)
 
-    # This gets filled in in __init__ below
+    # This gets filled in __init__ below
     g_macro_dict = False
 
     def __init__(self):
@@ -377,7 +377,7 @@ class Deroffer:
         self.output.append(c)
         return c
 
-    # This gets swapped in in place of condputs the first time tr gets modified
+    # This gets swapped in place of condputs the first time tr gets modified
     def condputs_tr(self, str):
         special = self.pic or self.eqn or self.refer or self.macro or (self.skiplists and self.inlist) or (self.skipheaders and self.inheader)
         if not special:

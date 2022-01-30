@@ -899,7 +899,7 @@ static void
 raise_open_file_limit (void)
 {
 #ifdef _WOE32
-  /* this only affects stdio. 2048 is the maxium possible (512 the default).
+  /* this only affects stdio. 2048 is the maximum possible (512 the default).
    *
    * If we want more, we'll have to replaces the POSIX I/O interfaces with
    * Win32 API calls (CreateFile, WriteFile, etc) which allows for 16K.

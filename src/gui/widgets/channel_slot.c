@@ -451,7 +451,7 @@ static inline void
 select_no_ctrl_pl_ch (
   ChannelSlotWidget * self)
 {
-  /* if plugin is not selected, make it hte only
+  /* if plugin is not selected, make it the only
    * selection otherwise do nothing */
   if (!mixer_selections_contains_slot (
         MIXER_SELECTIONS,

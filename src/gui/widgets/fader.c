@@ -353,7 +353,7 @@ on_scroll (
     gtk_event_controller_get_current_event_state (
       GTK_EVENT_CONTROLLER (scroll_controller));
 
-  /* add/substract *inc* amount */
+  /* add/subtract *inc* amount */
   float inc = 0.04f;
   /* lower sensitivity if shift held */
   if (state & GDK_SHIFT_MASK)

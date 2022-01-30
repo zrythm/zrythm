@@ -289,7 +289,7 @@ do_highlight (
           self->highlight_left_box),
         2, -1);
 
-      /* unhilight right */
+      /* unhighlight right */
       /*gtk_drag_unhighlight (*/
         /*GTK_WIDGET (*/
           /*self->highlight_right_box));*/
@@ -309,7 +309,7 @@ do_highlight (
           self->highlight_right_box),
         2, -1);
 
-      /* unhilight left */
+      /* unhighlight left */
       /*gtk_drag_unhighlight (*/
         /*GTK_WIDGET (*/
           /*self->highlight_left_box));*/
@@ -486,7 +486,7 @@ refresh_name (FolderChannelWidget * self)
 /**
  * Updates everything on the widget.
  *
- * It is reduntant but keeps code organized. Should fix if it causes lags.
+ * It is redundant but keeps code organized. Should fix if it causes lags.
  */
 void
 folder_channel_widget_refresh (

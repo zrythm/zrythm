@@ -1252,7 +1252,7 @@ ui_update_vst_paths_from_entry (
  * dark enough or not.
  *
  * @param src The source color.
- * @param dest The desination color to write to.
+ * @param dest The destination color to write to.
  */
 void
 ui_get_contrast_color (

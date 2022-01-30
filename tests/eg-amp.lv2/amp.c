@@ -213,7 +213,7 @@ static const LV2_Descriptor descriptor = {
    The `lv2_descriptor()` function is the entry point to the plugin library.  The
    host will load the library and call this function repeatedly with increasing
    indices to find all the plugins defined in the library.  The index is not an
-   indentifier, the URI of the returned descriptor is used to determine the
+   identifier, the URI of the returned descriptor is used to determine the
    identify of the plugin.
 
    This method is in the ``discovery'' threading class, so no other functions
