@@ -388,7 +388,7 @@ def crawl_class(state: State, path: List[str], class_):
         for name, previous_entry in state.name_map.items():
             if id(previous_entry.object) == id(class_): break
         else: assert False, "%s marked as crawled but can't find it" % '.'.join(path)
-        logging.error("Class %s previously found in %s, only one occurrence will be chosen. Ensure each class is exposed only in a single module for generating correct documentation.", '.'.join(path), '.'.join(previous_entry.path))
+        logging.error("Class %s previously found in %s, only one occurence will be chosen. Ensure each class is exposed only in a single module for generating correct documentation.", '.'.join(path), '.'.join(previous_entry.path))
         state.name_map['.'.join(path)] = previous_entry
         return
 
@@ -424,7 +424,7 @@ def crawl_class(state: State, path: List[str], class_):
 
             crawl_class(state, subpath, object)
 
-        # Crawl enum values (they also add itself to the name_map)
+        # Crawl enum values (they also add itself ot the name_map)
         elif type_ == EntryType.ENUM:
             if is_underscored_and_undocumented(state, type_, subpath, object.__doc__): continue
 

@@ -122,7 +122,7 @@ together and it will create a ``*.compiled.css`` file in the same directory:
     cd css
     ./postprocess.py m-dark.css # Creates a m-dark.compiled.css file
 
-`Modifying the Pygments highlighting style`_
+`Modifying the Pygments higlighting style`_
 -------------------------------------------
 
 If you want to modify the Pygments style, it's a bit more involved. You need to

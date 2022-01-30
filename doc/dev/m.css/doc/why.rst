@@ -107,7 +107,7 @@ thought out, amazingly flexible and easily extensible to support
 .. note-warning::
 
     By all means, use Jekyll or Hugo, if you want --- but I can't promise that
-    all the :abbr:`reST <reStructuredText>` extensions I did are transferable
+    all the :abbr:`reST <reStructuredText>` extensions I did are transferrable
     elsewhere.
 
 Why the name?

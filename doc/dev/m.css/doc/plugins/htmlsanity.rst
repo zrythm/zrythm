@@ -124,7 +124,7 @@ Additionally, the following m.css-specific changes are done:
 -   Footnotes and footnote references have the :css:`.m-footnote`
     `styling classes <{filename}/css/typography.rst#footnotes-and-footnote-references>`_
     applied
--   Links that are just URLs have :css:`.m-link-wrap` applied `to better wrap on narrow screens <{filename}/css/typography.rst#footnotes-and-footnote-references>`_.
+-   Links that are just URLs have :css:`.m-link-wrap` appied `to better wrap on narrow screens <{filename}/css/typography.rst#footnotes-and-footnote-references>`_.
     Note that it's also possible to apply this and other CSS classes explicitly
     with the `m.link <{filename}/plugins/links.rst#stylable-links>`_ plugin.
 
@@ -179,7 +179,7 @@ included in the :py:`FORMATTED_FIELDS`. See for yourself:
     *"Autres temps, autres mœurs"*
 
 The default language is taken from the standard :py:`DEFAULT_LANG` option,
-which defaults to :py:`'en'`, and can be also overridden on per-page or
+which defaults to :py:`'en'`, and can be also overriden on per-page or
 per-article basis using the :rst:`:lang:` metadata option. This feature is
 controlled by the :py:`M_HTMLSANITY_SMART_QUOTES` option, which, similarly to
 the builtin :py:`TYPOGRIFY` option, defaults to :py:`False`.
@@ -380,7 +380,7 @@ pass language name to the ``lang`` argument. You can also take the value from
 
 Sometimes, on the other hand, you might want to de-hyphenate text that was
 already hyphenated, for example to avoid potential issues in :html:`<meta>`
-tags. The ``dehyphenate`` filter simply removes all occurrences of :html:`&shy;`
+tags. The ``dehyphenate`` filter simply removes all occurences of :html:`&shy;`
 from passed text. The ``enable`` argument works the same as with the
 ``hyphenate`` filter.
 

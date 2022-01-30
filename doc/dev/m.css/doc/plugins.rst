@@ -31,7 +31,7 @@ Plugins
 In addition to providing a theme for `Pelican <{filename}/themes/pelican.rst>`_
 or `Doxygen <{filename}/documentation/doxygen.rst>`_  that styles the overall
 page layout and basic typography, m.css also contains a collection of plugins,
-extending the capabilities further.
+extending the capabilities futher.
 
 `Usage`_
 ========

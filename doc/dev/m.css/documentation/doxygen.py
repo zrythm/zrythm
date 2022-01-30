@@ -1686,7 +1686,7 @@ def parse_desc_internal(state: State, element: ET.Element, immediate_parent: ET.
                 assert out.parsed.startswith('<p>') and out.parsed.endswith('</p>')
                 out.parsed = out.parsed[3:-4]
 
-    # Strip superfluous <p> for simple elements (list items, parameter and
+    # Strip superfluous <p> for simple elments (list items, parameter and
     # return value description, table cells), but only if there is just a
     # single paragraph
     elif (element.tag in ['listitem', 'parameterdescription', 'entry'] or (element.tag == 'simplesect' and element.attrib['kind'] == 'return')) and not has_block_elements and paragraph_count == 1 and out.parsed:
@@ -3359,7 +3359,7 @@ def parse_index_xml(state: State, xml):
     return parsed
 
 def parse_doxyfile(state: State, doxyfile, values = None):
-    # Use top-level Doxyfile path as base, don't let it get overridden by
+    # Use top-level Doxyfile path as base, don't let it get overriden by
     # subsequently @INCLUDE'd Doxyfile
     if not state.basedir:
         state.basedir = os.path.dirname(doxyfile)

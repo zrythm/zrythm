@@ -338,21 +338,21 @@ and `Twitter Card <https://developer.twitter.com/en/docs/tweets/optimize-with-ca
     / :py:`M_SOCIAL_TWITTER_SITE_ID``, if available
 -   Global ``og:title`` / ``twitter:title`` is set to :py:`M_BLOG_NAME` on
     index and archive pages and to category/author/tag name on particular
-    filtering pages. This is overridden by particular pages and articles.
+    filtering pages. This is overriden by particular pages and articles.
 -   Global ``og:url`` is set to :py:`M_BLOG_URL` on index and archive pages and
     to category/author/tag URL on particular filtering pages. Pagination is
-    *not* included in the URL. This is overridden by particular pages and
+    *not* included in the URL. This is overriden by particular pages and
     articles.
 -   Global ``og:image`` / ``twitter:image`` is set to the
     :py:`M_SOCIAL_IMAGE` setting, if available. The image is expected to be
     smaller and square; Pelican internal linking capabilities are *not*
-    supported in this setting. This can be overridden by particular pages and
+    supported in this setting. This can be overriden by particular pages and
     articles.
 -   Global ``twitter:card`` is set to ``summary``. This is further affected by
     metadata of particular pages and articles.
 -   Global ``og:description`` / ``twitter:description`` is set to
     :py:`M_SOCIAL_BLOG_SUMMARY` on index and archive pages.
--   Global ``og:type`` is set to ``website``. This is overridden by particular
+-   Global ``og:type`` is set to ``website``. This is overriden by particular
     pages and articles.
 
 See `(Social) meta tags for pages`_ and `(Social) meta tags for articles`_
@@ -382,7 +382,7 @@ Example configuration to give sane defaults to all social meta tags:
 
     The theme assumes that the global site image is smaller and square in order
     to appear just as a small thumbnail next to a link, not as large cover
-    image above it --- the reasoning behind is that there's no point in annoying
+    image above it --- the reasoning beind is that there's no point in annoying
     the users by decorating the global site links with the exact same large
     image.
 
@@ -500,7 +500,7 @@ present) is :py:`False`.
         FORMATTED_FIELDS += ['landing']
 
 Example of a fully custom index page that overrides the default theme index
-page (which would just list all the articles) is below. Note the overridden save
+page (which would just list all the articles) is below. Note the overriden save
 destination and URL.
 
 .. code:: rst

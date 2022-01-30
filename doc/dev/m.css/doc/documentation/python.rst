@@ -202,7 +202,7 @@ Variable                            Description
                                     put into the footer. If not set, a default
                                     generic text is used. If empty, no footer
                                     is rendered at all.
-:py:`FORMATTED_METADATA: List[str]` Which metadata fields should be formatted
+:py:`FORMATTED_METADATA: List[str]` Which meatadata fields should be formatted
                                     in documentation pages. By default only
                                     the ``summary`` field is.
 :py:`PLUGINS: List[str]`            List of `plugins <{filename}/plugins.rst>`_
@@ -471,7 +471,7 @@ In case the autodetection includes more than you want or, conversely, you need
 to include names that would otherwise be excluded (such as underscored names),
 you can temporarily override the :py:`__all__` attribute when generating the
 docs. For example, the following will list just the :py:`pow()` and :py:`log()`
-functions from the :py:`math` module, ignoring the rest:
+funtions from the :py:`math` module, ignoring the rest:
 
 .. code:: py
 
@@ -483,7 +483,7 @@ functions from the :py:`math` module, ignoring the rest:
 In other cases, especially when native modules are involved, the inspected name locations might not be what you want. By putting the names into :py:`__all__`
 you tell the script it should map the inspected location to the one provided.
 Note you should also hide the original location from the script to avoid
-duplicate definitions (unless it's underscored, in which case it'll get ignored
+duplicate definitons (unless it's underscored, in which case it'll get ignored
 automatically).
 
 .. code:: py
@@ -730,7 +730,7 @@ to :py:`OUTPUT` with the leading dirs stripped from the path.
 ==========
 
 The :abbr:`reST <reStructuredText>` content is not limited to just the builtin
-functionality and it's possible to extend it via plugins either
+functionality and it's possible to extend it via plugins eiter
 `from m.css itself <{filename}/plugins.rst>`_ or 3rd party ones. See
 documentation of each plugin to see its usage; the
 `m.htmlsanity <{filename}/plugins/htmlsanity.rst>`_ plugin is used
@@ -948,7 +948,7 @@ Keyword argument    Content
                     :py:`css_classes`   List of CSS classes to add to the
                                         :html:`<a>` tag. Internal entries
                                         usually have :py:`['m-doc']` while
-                                        external have :py:`['m-doc-external']`.
+                                        exteral have :py:`['m-doc-external']`.
                     =================== =======================================
 =================== ===========================================================
 

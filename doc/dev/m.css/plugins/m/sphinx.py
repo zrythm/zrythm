@@ -537,7 +537,7 @@ def merge_inventories(name_map, **kwargs):
             # py:attribute, so that's probably it
             type_string = 'py:attribute'
         elif entry.type == EntryType.ENUM:
-            type_string = 'py:enum' # this doesn't exist in Sphinx
+            type_string = 'py:enum' # this desn't exist in Sphinx
         elif entry.type == EntryType.ENUM_VALUE:
             type_string = 'py:enumvalue' # these don't exist in Sphinx
         elif entry.type == EntryType.DATA:

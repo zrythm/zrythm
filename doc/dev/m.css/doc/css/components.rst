@@ -1212,7 +1212,7 @@ with :css:`.m-line`, error bars with :css:`.m-error`. Use
 
 .. note-info::
 
-    Plot styling is designed to be used with external tools, for example Python
+    Plot styling is designed to be used with extenal tools, for example Python
     Matplotlib. If you use Pelican, m.css has a
     `m.plots <{filename}/plugins/plots-and-graphs.rst#plots>`__ plugin that
     allows you to produce plots using :rst:`.. plot::` directives directly in

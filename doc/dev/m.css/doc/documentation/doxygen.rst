@@ -72,7 +72,7 @@ switch.
 
 .. note-info::
 
-    The script requires at least Doxygen 1.8.14, but preferably version 1.8.15
+    The script requires at least Doxygen 1.8.14, but preferrably version 1.8.15
     and newer. Some features depend on newer versions, in that case the
     documentation mentions which version contains the support.
 
@@ -204,7 +204,7 @@ In addition to features `shared by all doc generators <{filename}/documentation.
 
     This list presents my opinions. Not everybody likes my opinions.
 
-Features that I don't see a point in because they just artificially inflate the
+Features that I don't see a point in because they just artifically inflate the
 amount of generated content for no added value.
 
 -   Class hierarchy graphs are ignored (it only inflates the documentation with
@@ -578,7 +578,7 @@ If the title is :py:`None`, it's taken implicitly from the page it links to.
 Empty :py:`LINKS_NAVBAR2` will cause the navigation appear in a single column,
 setting both empty will cause the navbar links to not be rendered at all.
 
-A menu item is highlighted if a compound with the same ID is the current page
+A menu item is higlighted if a compound with the same ID is the current page
 (and similarly for the special ``pages``, ... IDs).
 
 Alternatively, a link can be a plain HTML instead of the first pair of tuple
@@ -1228,7 +1228,7 @@ rendered HTML output:
 
 It's possible to combine ``@par`` with ``@parblock`` to create blocks, notes
 and other `m.css components <{filename}/css/components.rst>`_ with arbitrary
-contents. The ``@par`` command visuals can be fully overridden by putting ``@m_class`` in front, the ``@parblock`` after will ensure everything will
+contents. The ``@par`` command visuals can be fully overriden by putting ``@m_class`` in front, the ``@parblock`` after will ensure everything will
 belong inside. A bit recursive example:
 
 .. code-figure::
@@ -1333,7 +1333,7 @@ the page will be discoverable both using its primary title and using
 *TCB spline support*, in the second and third case the two overloads of the
 :cpp:`lerp()` function are discoverable also via :cpp:`mix()`, displaying
 either *GLSL mix()* or *GLSL mix(genType, genType, float)* in the search
-results. The last parameter is suffix length, needed to correctly highlight the
+results. The last parameter is suffix length, needed to correctly higlight the
 *mix* substring when there are additional characters at the end of the title.
 If not specified, it defaults to :cpp:`0`, meaning the search string is a
 suffix of the title.
@@ -1612,9 +1612,9 @@ Filename                Use
                         saved as ``*-example.html``
 ``file.html``           File documentation, read from ``*.xml`` and saved as
                         ``*.html``
-``namespace.html``      Namespace documentation, read from ``namespace*.xml``
+``namespace.html``      Namespace documentation, read fron ``namespace*.xml``
                         and saved as ``namespace*.html``
-``group.html``          Module documentation, read from ``group_*.xml``
+``group.html``          Module documentation, read fron ``group_*.xml``
                         and saved as ``group_*.html``
 ``page.html``           Page, read from ``*.xml``/``indexpage.xml`` and saved
                         as ``*.html``/``index.html``
