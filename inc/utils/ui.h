@@ -786,7 +786,7 @@ ui_get_locale_not_available_string (
  * dark enough or not.
  *
  * @param src The source color.
- * @param dest The desination color to write to.
+ * @param dest The destination color to write to.
  */
 void
 ui_get_contrast_color (

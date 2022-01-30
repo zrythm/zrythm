@@ -388,7 +388,7 @@ static const cyaml_schema_value_t
 };
 
 /**
- * Projet save data.
+ * Project save data.
  */
 typedef struct ProjectSaveData
 {
@@ -405,7 +405,7 @@ typedef struct ProjectSaveData
 
   bool      show_notification;
 
-  /** Whether an error occured during saving. */
+  /** Whether an error occurred during saving. */
   bool      has_error;
 
   GenericProgressInfo progress_info;

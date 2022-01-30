@@ -245,7 +245,7 @@ Use the following to get a stoat report.
     CC=stoat-compile CXX=stoat-compile++ meson build
     ninja -C build run_stoat
 
-Realtime functions can be annoted as REALTIME or
+Realtime functions can be annotated as REALTIME or
 specified in
 [tools/stoat_whitelist.txt](tools/stoat_whitelist.txt).
 Non-realtime functions or functions that should not

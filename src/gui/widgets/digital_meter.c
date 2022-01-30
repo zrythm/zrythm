@@ -817,7 +817,7 @@ on_change_finished (
   self->update_minutes = 0;
   self->update_seconds = 0;
   self->update_ms = 0;
-  /* FIXME super reduntant */
+  /* FIXME super redundant */
   if (self->update_note_length ||
       self->update_note_type)
     {

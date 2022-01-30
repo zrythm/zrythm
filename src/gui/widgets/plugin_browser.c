@@ -411,7 +411,7 @@ plugin_filter_func (
         return false;
     }
 
-  /* not visibile if plugin type doesn't match */
+  /* not visible if plugin type doesn't match */
   if (instruments_active &&
       !plugin_descriptor_is_instrument (descr))
     return false;

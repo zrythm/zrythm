@@ -471,7 +471,7 @@ channel_init_loaded (
         midi_events_new ();
       break;
     case TYPE_AUDIO:
-      /* make sure master is expoed to backend */
+      /* make sure master is exposed to backend */
       if (track->type == TRACK_TYPE_MASTER)
         {
           self->stereo_out->l->exposed_to_backend =

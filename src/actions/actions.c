@@ -291,7 +291,7 @@ activate_log (
   if (ret)
     {
       g_warning (
-        "an error occured running %s %s",
+        "an error occurred running %s %s",
         OPEN_DIR_CMD, LOG->log_filepath);
     }
 

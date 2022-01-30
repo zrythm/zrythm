@@ -784,7 +784,7 @@ test_fill_midi_events (void)
    *   outside it.
    *
    * Expected result:
-   * Note on inside region and note off at reigon
+   * Note on inside region and note off at region
    * end.
    */
   g_message ("-------------------");

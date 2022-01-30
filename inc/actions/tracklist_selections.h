@@ -374,7 +374,7 @@ tracklist_selections_action_init_loaded (
  * @param pl_setting Plugin setting, if any.
  * @param track Track, if single-track action. Used
  *   if @ref tls_before and @ref tls_after are NULL.
- * @param error To be filled in if an error occured.
+ * @param error To be filled in if an error occurred.
  */
 WARN_UNUSED_RESULT
 UndoableAction *

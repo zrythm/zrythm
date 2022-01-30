@@ -56,7 +56,7 @@ typedef struct AutomationModeWidget
 
 #define MAX_AUTOMATION_POINTS 1200
 
-/** Relase time in ms when in touch record mode. */
+/** Release time in ms when in touch record mode. */
 #define AUTOMATION_RECORDING_TOUCH_REL_MS 800
 
 typedef enum AutomationMode

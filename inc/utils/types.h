@@ -138,7 +138,7 @@ typedef struct GenericProgressInfo
   /** Action cancelled. */
   bool              cancelled;
 
-  /** Error occured. */
+  /** Error occurred. */
   bool              has_error;
 
   /** String to show in the label during the

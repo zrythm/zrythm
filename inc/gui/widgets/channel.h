@@ -183,7 +183,7 @@ channel_widget_update_meter_reading (
 /**
  * Updates everything on the widget.
  *
- * It is reduntant but keeps code organized. Should
+ * It is redundant but keeps code organized. Should
  * fix if it causes lags.
  */
 void

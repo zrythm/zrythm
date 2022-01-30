@@ -153,7 +153,7 @@ transport_new (
       engine->transport = self;
     }
 
-  // set inital total number of beats
+  // set initial total number of beats
   // this is applied to the ruler
   self->total_bars =
     TRANSPORT_DEFAULT_TOTAL_BARS;

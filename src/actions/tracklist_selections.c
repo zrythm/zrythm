@@ -166,7 +166,7 @@ validate (
  * @param pl_setting Plugin setting, if any.
  * @param track Track, if single-track action. Used
  *   if @ref tls_before and @ref tls_after are NULL.
- * @param error To be filled in if an error occured.
+ * @param error To be filled in if an error occurred.
  */
 UndoableAction *
 tracklist_selections_action_new (
@@ -426,7 +426,7 @@ tracklist_selections_action_new (
           (size_t) num_before_tracks,
           sizeof (unsigned int));
 
-      /* save the ouputs & incoming sends */
+      /* save the outputs & incoming sends */
       for (int k = 0; k < num_before_tracks; k++)
         {
           Track * clone_track =

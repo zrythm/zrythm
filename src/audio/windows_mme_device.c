@@ -276,7 +276,7 @@ enqueue_midi_msg (
     (uint64_t) g_get_monotonic_time ();
 
   g_message (
-    "Enqueing MIDI data device: %s "
+    "Enqueuing MIDI data device: %s "
     "with timestamp: %llu and size %lld",
     self->name, ts, data_size);
 

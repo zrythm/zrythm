@@ -213,7 +213,7 @@ worker_thread (void * arg)
           g_message (
             "[%d]: work found, decremented idle "
             "thread count (current count %d) and "
-            "dequeing node to process",
+            "dequeuing node to process",
             thread->id,
             g_atomic_int_get (
               &graph->idle_thread_cnt));
@@ -356,7 +356,7 @@ get_absolute_rt_priority (
     }
   else if (priority > 0)
     {
-      /* value relative to minium */
+      /* value relative to minimum */
       priority += p_min;
     }
   else

@@ -20,7 +20,7 @@
 /**
  * \file
  *
- * Audio pool schmea.
+ * Audio pool schema.
  */
 
 #ifndef __SCHEMAS_AUDIO_POOL_H__

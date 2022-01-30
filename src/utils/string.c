@@ -577,7 +577,7 @@ string_copy_w_realloc (
 
 /**
  * Returns a new string with only ASCII alphanumeric
- * characters and replaces ther est with underscore.
+ * characters and replaces the rest with underscore.
  */
 char *
 string_symbolify (

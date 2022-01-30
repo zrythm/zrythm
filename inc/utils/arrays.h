@@ -305,7 +305,7 @@ _array_contains_cmp (
   int     pointers);
 
 /**
- * Returns the index ofthe element exists in array,
+ * Returns the index of the element exists in array,
  * -1 if not.
  */
 int

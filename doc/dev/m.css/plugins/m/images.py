@@ -71,7 +71,7 @@ class Image(Directive):
                    'class': directives.class_option,
                    'target': directives.unchanged_required}
 
-    # Overriden by Figure
+    # Overridden by Figure
     image_class = 'm-image'
 
     def run(self):

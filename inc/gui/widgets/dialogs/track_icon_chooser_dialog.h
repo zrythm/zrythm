@@ -20,7 +20,7 @@
 /**
  * \file
  *
- * Objejct color chooser dialog.
+ * Object color chooser dialog.
  */
 
 #ifndef __GUI_WIDGETS_TRACK_ICON_CHOOSER_DIALOG_H__

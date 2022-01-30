@@ -394,7 +394,7 @@ arranger_selections_action_new_link (
 /**
  * Creates a new action for creating/deleting objects.
  *
- * @param create 1 to create 0 to delte.
+ * @param create 1 to create 0 to delete.
  */
 UndoableAction *
 arranger_selections_action_new_create_or_delete (
@@ -832,7 +832,7 @@ arranger_selections_action_new_resize (
 }
 
 /**
- * Creates a new action fro quantizing
+ * Creates a new action for quantizing
  * ArrangerObject's.
  *
  * @param opts Quantize options.

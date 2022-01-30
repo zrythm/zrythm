@@ -43,7 +43,7 @@ typedef struct ProjectInfo
 
 
 /* FIXME move this to ZrythmApp so it can be
- * accessed globaly */
+ * accessed globally */
 typedef struct ProjectAssistantData
 {
   GtkBuilder *   builder;

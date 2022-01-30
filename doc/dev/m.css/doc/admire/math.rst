@@ -96,7 +96,7 @@ m.css math
             .. button-warning:: {filename}/css/components.rst#math
                 :class: m-fullwidth
 
-                See the possibilites
+                See the possibilities
 
     .. container:: m-col-m-4
 

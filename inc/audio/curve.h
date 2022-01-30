@@ -186,7 +186,7 @@ curve_algorithm_get_localized_name (
   char *         buf);
 
 /**
- * Returns the Y value on a curve spcified by
+ * Returns the Y value on a curve specified by
  * \ref algo.
  *
  * @param x X-coordinate, normalized.

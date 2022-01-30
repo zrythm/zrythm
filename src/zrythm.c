@@ -329,7 +329,7 @@ zrythm_fetch_latest_release_ver (void)
 /**
  * Returns whether this is the latest release.
  *
- * @p error will be set if an error occured and the
+ * @p error will be set if an error occurred and the
  * return value should be ignored.
  */
 bool
@@ -402,7 +402,7 @@ zrythm_get_prefix (void)
  * @param force_default Ignore the settings and get
  *   the default dir.
  *
- * Must be free'd by caler.
+ * Must be free'd by caller.
  */
 char *
 zrythm_get_user_dir (

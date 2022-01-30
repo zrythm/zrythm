@@ -294,7 +294,7 @@ typedef struct Transport
    * if a new region should be created.
    *
    * It should be set to off after the first cycle it is
-   * processed in in the audio engine post process.
+   * processed in the audio engine post process.
    */
   //int               starting_recording;
 

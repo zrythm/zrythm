@@ -119,7 +119,7 @@ arranger_object_is_resize_r (
  *   is inside the fade handle. If this is false,
  *   \ref only_outer will be considered.
  * @param only_outer Whether to only check if this
- *   is inside the fade's outter (unplayed) region.
+ *   is inside the fade's outer (unplayed) region.
  *   If this is false, the whole fade area will
  *   be considered.
  * @param check_lane Whether to check the lane
@@ -1060,7 +1060,7 @@ arranger_object_should_orig_be_visible (
       g_return_val_if_fail (arranger, false);
     }
 
-  /* check trans/non-trans visiblity */
+  /* check trans/non-trans visibility */
   if (ARRANGER_WIDGET_GET_ACTION (
         arranger, MOVING) ||
       ARRANGER_WIDGET_GET_ACTION (

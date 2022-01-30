@@ -2544,7 +2544,7 @@ on_drag_begin_handle_hit_object (
     }
 
   /* check if all selected objects are fadeable or
-   * resizeable */
+   * resizable */
   if (is_resize_l || is_resize_r)
     {
       ArrangerSelections * sel =

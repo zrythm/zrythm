@@ -190,7 +190,7 @@ suil_ui_supported(const char* host_type_uri,
 /**
    Instantiate a UI for an LV2 plugin.
 
-   This funcion may load a suil module to adapt the UI to the desired toolkit.
+   This function may load a suil module to adapt the UI to the desired toolkit.
    Suil is configured at compile time to load modules from the appropriate
    place, but this can be changed at run-time via the environment variable
    SUIL_MODULE_DIR.  This makes it possible to bundle suil with an application.

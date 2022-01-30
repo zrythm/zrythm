@@ -382,7 +382,7 @@ markup together with 10-column grid setup around the main content:
       <div class="m-row">
         <article class="m-col-m-10 m-push-m-1">
           <h1>A page</h1>
-          <p>Some introductionary paragraph.</p>
+          <p>Some introductory paragraph.</p>
           <section>
             <h2>Features</h2>
             <p>Section providing feature overview.</p>
@@ -404,7 +404,7 @@ landing pages. The major component of a landing page is a cover image in the
 background, spanning the whole page width in a :css:`#m-landing-image` element.
 The image is covered by :css:`#m-landing-cover` element that blends the image
 into the background on the bottom. On top of it you have full freedom to put
-any layout you need, for example a logo, a short introductionary paragraph and
+any layout you need, for example a logo, a short introductory paragraph and
 a download button. Note that the grid setup has to only wrap the content "below
 the fold", *not* the cover image.
 
@@ -419,7 +419,7 @@ the fold", *not* the cover image.
         </div>
       </div>
       <div class="m-container">
-        <!-- content "below the fold" folows -->
+        <!-- content "below the fold" follows -->
       </div>
     </article></main>
 
@@ -513,7 +513,7 @@ Consider the following code snippet:
 
     <article>
       <h1>A page</h1>
-      <p>Some introductionary paragraph.</p>
+      <p>Some introductory paragraph.</p>
       <section id="features">
         <h2><a href="#features">Features</a></h2>
         <p>Section providing feature overview.</p>
@@ -525,7 +525,7 @@ Consider the following code snippet:
     </article>
 
 Clicking on either the "Features" or "Pricing" heading will give the user a
-direct link to given section and the section will be highlighed accordingly.
+direct link to given section and the section will be highlighted accordingly.
 This works for nested sections as well.
 
 .. note-success::

@@ -379,7 +379,7 @@ localization_init (
   bind_textdomain_codeset (
     GETTEXT_PACKAGE, CODESET);
 
-  /* set curent domain */
+  /* set current domain */
   textdomain (GETTEXT_PACKAGE);
 
   return match != NULL;
