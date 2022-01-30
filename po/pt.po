@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-22 17:45+0000\n"
-"PO-Revision-Date: 2022-01-18 18:55+0000\n"
+"PO-Revision-Date: 2022-01-30 22:48+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -3028,7 +3028,7 @@ msgstr "_Selecione"
 #: src/gui/widgets/dialogs/changelog_dialog.c:47
 #, c-format
 msgid "Running %s version <b>%s</b>%s%s"
-msgstr ""
+msgstr "A executar %s versão <b>%s</b>%s%s"
 
 #. TRANSLATORS: Home directory
 #: src/gui/backend/file_manager.c:57
@@ -3633,16 +3633,16 @@ msgstr "Não implementado"
 
 #: src/audio/clip.c:670
 msgid "Edit in external app"
-msgstr ""
+msgstr "Editar numa app externa"
 
 #: src/audio/clip.c:695
 #, c-format
 msgid "Edit the file at <u>%s</u>, then press OK"
-msgstr ""
+msgstr "Edite o ficheiro em <u>%s</u>, depois prima OK"
 
 #: src/audio/clip.c:711
 msgid "Launch"
-msgstr ""
+msgstr "Lançar"
 
 #: src/audio/fader.c:141
 msgid "Prefader Volume"
@@ -3841,7 +3841,7 @@ msgstr "Silenciar a faixa de automação"
 
 #: src/actions/arranger_selections.c:763
 msgid "Attempted to resize unresizable objects"
-msgstr ""
+msgstr "Tentativa de redimensionamento de objetos não redimensionáveis"
 
 #: src/actions/arranger_selections.c:790
 #, c-format
@@ -4052,7 +4052,7 @@ msgstr "Falha ao redefinir o esquema %s"
 
 #: src/actions/actions.c:1166
 msgid "Can't paste incompatible data"
-msgstr ""
+msgstr "Não é possível colar dados incompatíveis"
 
 #: src/actions/actions.c:1258
 #, fuzzy
@@ -4097,7 +4097,7 @@ msgstr "Falha ao redefinir o esquema %s"
 
 #: src/actions/actions.c:1783
 msgid "Cannot delete tracks: selection contains an undeletable track"
-msgstr ""
+msgstr "Não é possível apagar faixas: a seleção contém uma faixa não apagável"
 
 #: src/actions/actions.c:1797
 #, fuzzy
@@ -4154,7 +4154,7 @@ msgstr "Falha ao redefinir o esquema %s"
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
-msgstr ""
+msgstr "Deve selecionar primeiro a cronologia ou o editor. A seleção atual é %s"
 
 #: src/actions/actions.c:2167
 #, fuzzy
@@ -4205,11 +4205,11 @@ msgstr "Falha ao abrir o ficheiro: %s"
 #: src/actions/actions.c:2846
 #, c-format
 msgid "Detected BPM: %.2f"
-msgstr ""
+msgstr "BPM detetado: %.2f"
 
 #: src/actions/actions.c:2849
 msgid "Candidates:"
-msgstr ""
+msgstr "Candidatos:"
 
 #: src/actions/actions.c:3051
 #, fuzzy
@@ -4237,7 +4237,7 @@ msgstr ""
 
 #: src/actions/actions.c:3300
 msgid "Are you sure you want to remove this bookmark?"
-msgstr ""
+msgstr "Tem certeza que quer remover esse marcador?"
 
 #: src/actions/actions.c:3504 src/actions/actions.c:3535
 msgid "Collection name"
@@ -4284,7 +4284,7 @@ msgstr ""
 
 #: src/actions/transport_action.c:293
 msgid "Beat unit change"
-msgstr ""
+msgstr "Mudança de unidade de batida"
 
 #: src/actions/channel_send_action.c:173
 #, fuzzy
@@ -4342,7 +4342,7 @@ msgstr "Falha ao encontrar o suplemento com o URI: %s"
 
 #: src/actions/mixer_selections_action.c:614
 msgid "Could not create plugin"
-msgstr ""
+msgstr "Não foi possível criar o suplemento"
 
 #: src/actions/mixer_selections_action.c:838
 #: src/actions/mixer_selections_action.c:1248
@@ -4419,11 +4419,11 @@ msgstr "Nenhuma porta selecionada"
 
 #: src/actions/tracklist_selections.c:353
 msgid "Failed to clone tracklist selections"
-msgstr ""
+msgstr "Falha ao clonar seleções da lista de faixas"
 
 #: src/actions/tracklist_selections.c:404
 msgid "Failed to clone tracklist selections: "
-msgstr ""
+msgstr "Falha ao clonar seleções da lista de faixas: "
 
 #: src/actions/tracklist_selections.c:765
 #, c-format
@@ -5071,11 +5071,11 @@ msgstr "Selecione um modelo"
 
 #: resources/ui/bug_report_dialog.ui:6
 msgid "Error"
-msgstr ""
+msgstr "Erro"
 
 #: resources/ui/bug_report_dialog.ui:31
 msgid "What did you do?"
-msgstr ""
+msgstr "O que fez?"
 
 #: resources/ui/bug_report_dialog.ui:42
 #, fuzzy
@@ -5172,7 +5172,7 @@ msgstr "Aftertouch"
 
 #: resources/ui/playhead_scroll_buttons.ui:11
 msgid "Scroll when playhead reaches the edge"
-msgstr ""
+msgstr "Rolar quando a cabeça de reprodução atingir a borda"
 
 #: resources/ui/playhead_scroll_buttons.ui:24
 #, fuzzy
@@ -5273,7 +5273,7 @@ msgstr "Informações sobre a porta"
 
 #: resources/ui/panel_file_browser.ui:28
 msgid "Bookmarks"
-msgstr ""
+msgstr "Marcadores"
 
 #: resources/ui/port_selector_popover.ui:10
 msgid "Select a port..."
@@ -5285,7 +5285,7 @@ msgstr "Porta"
 
 #: resources/ui/file_auditioner_controls.ui:14
 msgid "Play/Pause"
-msgstr ""
+msgstr "Reproduzir/Pausar"
 
 #: resources/ui/file_auditioner_controls.ui:21
 #: resources/ui/transport_controls.ui:38
@@ -5479,7 +5479,7 @@ msgstr "Padrão de Nome de Ficheiro"
 #: resources/ui/export_dialog.ui:180
 #: build/data/org.zrythm.Zrythm.gschema.xml:821
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 #: resources/ui/export_dialog.ui:189
 #: build/data/org.zrythm.Zrythm.gschema.xml:816
@@ -5613,6 +5613,7 @@ msgstr ""
 "Uma estação de trabalho de áudio digital altamente automatizada e intuitiva"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:15
+#, fuzzy
 msgid ""
 "Zrythm is a digital audio workstation designed to be featureful and easy to "
 "use. It allows limitless automation through curves, LFOs and envelopes, "
@@ -5622,14 +5623,21 @@ msgid ""
 "in multiple languages including English, French, Portuguese, Japanese and "
 "German."
 msgstr ""
+"A Zrythm é uma estação de trabalho de áudio digital concebida para ser "
+"funcional e fácil de usar. Permite uma automação ilimitada através de "
+"curvas, LFOs e envelopes, suporta múltiplos formatos de suplementos "
+"incluindo LV2, VST2 e VST3, funciona com múltiplos backends incluindo JACK, "
+"RtAudio/RtMidi e SDL2, auxilia na progressão de acordes através de uma "
+"trilha especial de acordes e pads de acordes, e pode ser usada em vários "
+"idiomas, incluindo inglês, francês, português, japonês e alemão."
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:27
 msgid "Zrythm can be extended using GNU Guile."
-msgstr ""
+msgstr "Zrythm pode ser estendido a usar o GNU Guile."
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:38
 msgid "Composing MIDI in Zrythm"
-msgstr ""
+msgstr "Composição de MIDI no Zrythm"
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:70
 msgid "GTK3 -&gt; GTK4 port."
@@ -5690,7 +5698,7 @@ msgstr "O último diretório em que um projeto foi criado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:263
 msgid "List of all versions run at least once"
-msgstr ""
+msgstr "Listar todas as versões executadas pelo menos uma vez"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:264
 #, fuzzy
@@ -5698,18 +5706,20 @@ msgid "A list of versions run at least once."
 msgstr "Uma lista de controladores para conectar-los automaticamente."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:268
+#, fuzzy
 msgid "Last version that was notified of a new release"
-msgstr ""
+msgstr "Última versão notificada de um novo lançamento"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:269
 msgid ""
 "The last version that received a 'new version has been released' "
 "notification."
 msgstr ""
+"A última versão que recebeu uma notificação 'uma nova versão foi lançada'."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:273
 msgid "First check for updates"
-msgstr ""
+msgstr "Primeira verificação por atualizações"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:274
 #, fuzzy
@@ -5758,7 +5768,7 @@ msgstr "O volume de saída do monitor em amplitude (0 a 2)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:306
 msgid "Sum to mono"
-msgstr ""
+msgstr "Soma para mono"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:307
 #, fuzzy
@@ -5782,7 +5792,7 @@ msgstr "Se o metrónomo está ativado."
 #: build/data/org.zrythm.Zrythm.gschema.xml:321
 #: build/data/org.zrythm.Zrythm.gschema.xml:326
 msgid "Left output devices"
-msgstr ""
+msgstr "Aparelhos de saída à esquerda"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:322
 msgid "A list of output devices to route the left monitor output to."
@@ -5952,7 +5962,7 @@ msgstr "Mostrar pistas de automação"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:413
 msgid "Whether to show automation values in the automation editor."
-msgstr ""
+msgstr "Se mostrar os valores de automação no editor de automação."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:417
 msgid "Browser divider position"
@@ -6045,8 +6055,9 @@ msgid "JACK transport type"
 msgstr "Cliente de transporte de JACK"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:468
+#, fuzzy
 msgid "Selected JACK transport behavior (master/client/none)"
-msgstr ""
+msgstr "Comportamento de transporte JACK selecionado (mestre/cliente/nenhum)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:472
 #, fuzzy
@@ -6107,40 +6118,47 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:497
 msgid "Playhead scroll edges (timeline)"
-msgstr ""
+msgstr "Bordos de rolagem da cabeça de reprodução (cronologia)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:498
 msgid ""
 "Whether to scroll when the playhead reaches the visible edge (timeline)."
 msgstr ""
+"Se deve rolar quando a cabeça de reprodução atinge a borda visível "
+"(cronologia)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:502
 msgid "Follow playhead (timeline)"
-msgstr ""
+msgstr "Seguir a cabeça de reprodução (cronologia)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:503
 msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
 "centered on the playhead (timeline)."
 msgstr ""
+"Se seguir acabeça de reprodução. Quando estiver ligado, a área visível "
+"ficará centrada na cabeça de reprodução (cronologia)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:507
 msgid "Playhead scroll edges (editor)"
-msgstr ""
+msgstr "Bordas de rolagem da cabeça de reprodução (editor)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:508
 msgid "Whether to scroll when the playhead reaches the visible edge (editor)."
 msgstr ""
+"Se deve rolar quando a cabeça de reprodução atinge a borda visível (editor)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:512
 msgid "Follow playhead (editor)"
-msgstr ""
+msgstr "Seguir a cabeça de reprodução (editor)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:513
 msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
 "centered on the playhead (editor)."
 msgstr ""
+"Se seguir a cabeça de reprodução. Quando estiver ligado, a área visível "
+"ficará centrada na cabeça de reprodução (editor)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:521
 msgid "Plugin browser tab"
@@ -6206,10 +6224,11 @@ msgstr "Navegador de ficheiros"
 #: build/data/org.zrythm.Zrythm.gschema.xml:556
 msgid "Location bookmarks for file browser (absolute paths)."
 msgstr ""
+"Marcadores de localização para o navegador de ficheiros (caminhos absolutos)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:560
 msgid "File browser selected bookmark"
-msgstr ""
+msgstr "Marcador selecionado no navegador de ficheiros"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:561
 #, fuzzy
@@ -6223,7 +6242,7 @@ msgstr "Se o metrónomo está ativado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:571
 msgid "Whether to show unsupported files in the file browser."
-msgstr ""
+msgstr "Se deve mostrar ficheiros não suportados no navegador de ficheiros."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:576
 #, fuzzy
@@ -6252,7 +6271,7 @@ msgstr "Silenciar a faixa de automação"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:591
 msgid "Instrument plugin to use for MIDI auditioning."
-msgstr ""
+msgstr "Suplemento de instrumento para usar na audição MIDI."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:599
 #, fuzzy
@@ -6362,25 +6381,23 @@ msgstr "Se o comentário da faixa é expandido."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:667
 msgid "Track visibility detached"
-msgstr ""
+msgstr "Visibilidade da faixa destacada"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:668
-#, fuzzy
 msgid "Whether the track visibility panel is detached."
-msgstr "Se as inserções de faixas são expandidas."
+msgstr "Se o painel de visibilidade da faixa está destacado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:672
 msgid "Track visibility size"
-msgstr ""
+msgstr "Tamanho da visibilidade da faixa"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:673
 msgid "Track visibility panel size when detached."
-msgstr ""
+msgstr "Tamanho do painel de visibilidade da faixa enquanto destacado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:677
-#, fuzzy
 msgid "Track inspector detached"
-msgstr "Inspetor de faixas"
+msgstr "Inspetor de faixas destacado"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:678
 #, fuzzy
@@ -6394,12 +6411,11 @@ msgstr "Inspetor de faixas"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:683
 msgid "Track inspector panel size when detached."
-msgstr ""
+msgstr "Tamanho do painel do inspetor de faixas enquanto destacado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:687
-#, fuzzy
 msgid "Plugin inspector detached"
-msgstr "Inspetor de suplementos"
+msgstr "Inspetor de suplementos destacado"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:688
 #, fuzzy
@@ -6413,7 +6429,7 @@ msgstr "Inspetor de suplementos"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:693
 msgid "Plugin inspector panel size when detached."
-msgstr ""
+msgstr "Tamanho do painel do inspetor de suplementos enquanto destacado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:697
 #, fuzzy
@@ -6432,7 +6448,7 @@ msgstr "Filtro de navegador de suplemento"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:703
 msgid "Plugin browser panel size when detached."
-msgstr ""
+msgstr "Tamanho do painel do navegador de suplementos enquanto destacado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:707
 #, fuzzy
@@ -6451,7 +6467,7 @@ msgstr "Filtro de navegador de suplemento"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:713
 msgid "File browser panel size when detached."
-msgstr ""
+msgstr "Tamanho do painel do navegador de ficheiros quando destacado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:717
 #, fuzzy
@@ -6470,11 +6486,11 @@ msgstr "Entrada de fader monitor"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:723
 msgid "Monitor section panel size when detached."
-msgstr ""
+msgstr "Tamanho do painel da secção do monitor enquanto destacado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:727
 msgid "Modulator view detached"
-msgstr ""
+msgstr "Vista de moduladores destacada"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:728
 #, fuzzy
@@ -6488,11 +6504,11 @@ msgstr "Moduladores"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:733
 msgid "Modulator view panel size when detached."
-msgstr ""
+msgstr "Tamanho do painel de visualização do modulador enquanto destacado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:737
 msgid "Mixer detached"
-msgstr ""
+msgstr "Misturador destacado"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:738
 #, fuzzy
@@ -6506,11 +6522,11 @@ msgstr "Vista do misturador"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:743
 msgid "Mixer panel size when detached."
-msgstr ""
+msgstr "Tamanho do painel do misturador enquanto destacado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:747
 msgid "Clip editor detached"
-msgstr ""
+msgstr "Editor de clipes destacado"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:748
 #, fuzzy
@@ -6519,11 +6535,11 @@ msgstr "Se o metrónomo está ativado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:752
 msgid "Clip editor size"
-msgstr ""
+msgstr "Tamanho do editor de clipes"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:753
 msgid "Clip editor panel size when detached."
-msgstr ""
+msgstr "Tamanho do painel do editor de clipes enquanto destacado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:757
 #, fuzzy
@@ -6542,7 +6558,7 @@ msgstr "Pad de acordes"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:763
 msgid "Chord pad panel size when detached."
-msgstr ""
+msgstr "Tamanho do painel do acordes enquanto destacado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:767
 #, fuzzy
@@ -6561,7 +6577,7 @@ msgstr "Intervalo de Tempo"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:773
 msgid "Timeline panel size when detached."
-msgstr ""
+msgstr "Tamanho do painel da cronologia enquanto destacado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:777
 #, fuzzy
@@ -6580,7 +6596,7 @@ msgstr "Vinculações CC"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:783
 msgid "CC bindings panel size when detached."
-msgstr ""
+msgstr "Tamanho do painel de ligação CC enquanto destacado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:787
 #, fuzzy
@@ -6599,11 +6615,11 @@ msgstr "Conexões de portas"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:793
 msgid "Port connections panel size when detached."
-msgstr ""
+msgstr "Tamanho do painel de conexões de porta enquanto destacado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:797
 msgid "Scenes detached"
-msgstr ""
+msgstr "Cenas destacadas"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:798
 #, fuzzy
@@ -6612,11 +6628,11 @@ msgstr "Se o metrónomo está ativado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:802
 msgid "Scenes size"
-msgstr ""
+msgstr "Tamanho das cenas"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:803
 msgid "Scenes panel size when detached."
-msgstr ""
+msgstr "Tamanho do painel das cenas enquanto destacado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:812
 msgid "Genre to use when exporting, if the file type supports it."
@@ -6829,11 +6845,11 @@ msgstr "O diretório usado para gravar os dados do utilizador."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:974
 msgid "Updates"
-msgstr ""
+msgstr "Atualizações"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:978
 msgid "Check for updates"
-msgstr ""
+msgstr "Verificar por atualizações"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:979
 #, fuzzy
@@ -7002,7 +7018,7 @@ msgstr "O idioma a utilizar para a interface do utilizador."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1125
 msgid "CSS theme"
-msgstr ""
+msgstr "tema do CSS"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1126
 msgid "The CSS theme to use."
