@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-01-22 17:46+0000\n"
-"PO-Revision-Date: 2022-01-22 02:54+0000\n"
-"Last-Translator: 刘韬 <lyuutau@outlook.com>\n"
-"Language: zh_CN\n"
+"PO-Revision-Date: 2022-01-24 18:52+0000\n"
+"Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.11-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -1412,7 +1413,7 @@ msgstr ""
 #: ../../zrythm-interface/bottom-panel.rst:29
 #, fuzzy
 msgid "Piano Roll"
-msgstr "钢琴卷"
+msgstr "钢琴滚筒"
 
 #: ../../editing/clip-editors/piano-roll.rst:10
 msgid "The piano roll is the main editor for editing MIDI regions."
