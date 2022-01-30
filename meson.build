@@ -139,6 +139,7 @@ flatpak_build = get_option ('for_flathub') or get_option ('flatpak')
 language_mappings = {
   'af_ZA': 'Afrikaans',
   'ar': 'اَلْعَرَبِيَّةُ‎',
+  'ca': 'Català',
   #'cs': 'Czech',
   #'da': 'Dansk',
   'de': 'Deutsch',

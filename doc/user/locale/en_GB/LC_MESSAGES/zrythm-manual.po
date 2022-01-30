@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-01-22 17:46+0000\n"
+"POT-Creation-Date: 2022-01-30 23:05+0000\n"
 "PO-Revision-Date: 2021-03-08 01:16+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: en_GB\n"
@@ -4984,8 +4984,8 @@ msgstr ""
 #: ../../plugins-files/plugins/scanning.rst:10
 msgid ""
 "Zrythm will scan for plugins on startup and will remember those plugins "
-"until it is closed. Zrythm supports :term:`LV2`, :term:`VST2`, :term:`VST3` "
-"and :term:`AU` plugins. LV2 is the recommended standard."
+"until it is closed. Zrythm supports :term:`LV2`, :term:`VST2`, :term:`VST3`, "
+"LADSPA, DSSI and :term:`AU` plugins. LV2 is the recommended standard."
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:17
@@ -4996,104 +4996,166 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:21
 msgid ""
-"Plugin scanning can be disabled by passing :envvar:`NO_SCAN_PLUGINS` when "
-"running Zrythm."
+"Plugin scanning can be disabled by passing :envvar:`ZRYTHM_SKIP_PLUGIN_SCAN` "
+"when running Zrythm."
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:25
+#: ../../plugins-files/plugins/scanning.rst:26
 msgid "LV2 Scan"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:27
+#: ../../plugins-files/plugins/scanning.rst:28
 msgid ""
 "Zrythm will scan for LV2 plugins in the `standard paths specified here "
 "<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. You can "
 "bypass this behavior by passing :envvar:`LV2_PATH`."
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:33
+#: ../../plugins-files/plugins/scanning.rst:34
+#: ../../plugins-files/plugins/scanning.rst:73
+#: ../../plugins-files/plugins/scanning.rst:126
+#: ../../plugins-files/plugins/scanning.rst:151
+msgid "Flatpak"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:35
+msgid ""
+"On Flatpak builds, Zrythm will scan for LV2 plugins in the following paths."
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:42
+msgid "You can bypass this behavior by passing :envvar:`LV2_PATH`."
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:46
 msgid "VST2/VST3 Scan"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:36
+#: ../../plugins-files/plugins/scanning.rst:49
 msgid "GNU/Linux and FreeBSD"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:37
+#: ../../plugins-files/plugins/scanning.rst:50
 msgid "Zrythm will scan for VST2 plugins in the following paths,"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:45
+#: ../../plugins-files/plugins/scanning.rst:58
+#: ../../plugins-files/plugins/scanning.rst:79
 msgid "and VST3 plugins in the following paths."
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:51
+#: ../../plugins-files/plugins/scanning.rst:64
+#: ../../plugins-files/plugins/scanning.rst:83
 msgid ""
 "You can bypass this behavior by passing :envvar:`VST_PATH` and :envvar:"
-"`VST3_PATH`."
+"`VST3_PATH`, respectively."
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:54
+#: ../../plugins-files/plugins/scanning.rst:68
+#: ../../plugins-files/plugins/scanning.rst:121
+#: ../../plugins-files/plugins/scanning.rst:146
 msgid ""
 "If your system uses a libdir other than ``lib`` (for example ``lib64``), "
 "Zrythm will scan for plugins in both locations."
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:59
+#: ../../plugins-files/plugins/scanning.rst:74
+msgid ""
+"On Flatpak builds, Zrythm will scan for VST2 plugins in the following paths"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:88
 msgid "Windows"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:60
+#: ../../plugins-files/plugins/scanning.rst:89
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in :ref:`vst-paths`."
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:64
+#: ../../plugins-files/plugins/scanning.rst:93
 msgid "MacOS"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:65
+#: ../../plugins-files/plugins/scanning.rst:94
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in `VST plug-in "
 "locations on Mac OS X and macOS <https://helpcenter.steinberg.de/hc/en-us/"
 "articles/115000171310>`_."
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:68
+#: ../../plugins-files/plugins/scanning.rst:97
 msgid ":file:`/Library/Audio/Plug-Ins/VST` for VST2"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:69
+#: ../../plugins-files/plugins/scanning.rst:98
 msgid ":file:`/Library/Audio/Plug-Ins/VST3` for VST3"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:71
+#: ../../plugins-files/plugins/scanning.rst:100
 msgid ""
 "Zrythm will remember scanned VST plugins and save this information in :file:"
 "`cached_plugin_descriptors.yaml` in the :term:`Zrythm user path`."
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:77
+#: ../../plugins-files/plugins/scanning.rst:106
 msgid ""
 "New plugins will be scanned on each start-up, and you can delete or edit "
 "this file to force a re-scan of previously scanned plugins."
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:82
+#: ../../plugins-files/plugins/scanning.rst:111
+msgid "DSSI Scan"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:112
+msgid "Zrythm will scan for DSSI plugins in the following paths,"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:118
+#: ../../plugins-files/plugins/scanning.rst:132
+msgid "You can bypass this behavior by passing :envvar:`DSSI_PATH`."
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:127
+msgid ""
+"On Flatpak builds, Zrythm will scan for DSSI plugins in the following paths."
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:136
+msgid "LADSPA Scan"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:137
+msgid "Zrythm will scan for LADSPA plugins in the following paths,"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:143
+#: ../../plugins-files/plugins/scanning.rst:157
+msgid "You can bypass this behavior by passing :envvar:`LADSPA_PATH`."
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:152
+msgid ""
+"On Flatpak builds, Zrythm will scan for LADSPA plugins in the following "
+"paths."
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:161
 msgid "AU Scan"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:83
+#: ../../plugins-files/plugins/scanning.rst:162
 msgid ""
 "On MacOS, :term:`AU` plugins will be scanned at their standard location at :"
 "file:`/Library/Audio/Plug-Ins/Components`."
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:88
+#: ../../plugins-files/plugins/scanning.rst:167
 msgid "SFZ/SF2 Scan"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:89
+#: ../../plugins-files/plugins/scanning.rst:168
 msgid ""
 ":term:`SFZ` and :term:`SF2` instruments will be scanned in all  directories "
 "and subdirectories specified in :ref:`vst-paths`."

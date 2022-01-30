@@ -268,6 +268,10 @@ the PO files, use
 
     ninja -C build collect-translatables zrythm-pot zrythm-update-po
 
+# Adding New Languages
+
+    msginit -i ./build/doc/user/_build/gettext/zrythm-manual.pot -l 'ca_ES.UTF-8' -o ./doc/user/locale/ca/LC_MESSAGES/zrythm-manual.po
+
 # Creating Releases
 Releases are created using git hooks.
 See the [README](git-packaging-hooks/README.md) in

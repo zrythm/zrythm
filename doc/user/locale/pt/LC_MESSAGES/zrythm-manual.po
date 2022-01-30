@@ -12,17 +12,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-01-22 17:46+0000\n"
+"POT-Creation-Date: 2022-01-30 23:05+0000\n"
 "PO-Revision-Date: 2022-01-24 18:52+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.11-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -2980,7 +2979,8 @@ msgstr "Régua da cronologia"
 
 #: ../../editing/timeline/ruler.rst:10
 msgid "The ruler is mainly used to control looping and playback."
-msgstr "A régua é usada principalmente para controlar o looping e a reprodução."
+msgstr ""
+"A régua é usada principalmente para controlar o looping e a reprodução."
 
 #: ../../editing/timeline/ruler.rst:16
 msgid ""
@@ -2989,8 +2989,8 @@ msgid ""
 "in :ref:`loop-points-and-markers`."
 msgstr ""
 "A régua exibirá mais ou menos informação dependendo do nível de ampliação "
-"atual. Ela também exibirá os seguintes marcadores/indicadores discutidos em "
-":ref:`pontos-e-marcadores'."
+"atual. Ela também exibirá os seguintes marcadores/indicadores discutidos em :"
+"ref:`pontos-e-marcadores'."
 
 #: ../../editing/timeline/ruler.rst:21
 msgid "Cue point"
@@ -5829,10 +5829,11 @@ msgid "Scanning for Plugins"
 msgstr "Procurando suplementos"
 
 #: ../../plugins-files/plugins/scanning.rst:10
+#, fuzzy
 msgid ""
 "Zrythm will scan for plugins on startup and will remember those plugins "
-"until it is closed. Zrythm supports :term:`LV2`, :term:`VST2`, :term:`VST3` "
-"and :term:`AU` plugins. LV2 is the recommended standard."
+"until it is closed. Zrythm supports :term:`LV2`, :term:`VST2`, :term:`VST3`, "
+"LADSPA, DSSI and :term:`AU` plugins. LV2 is the recommended standard."
 msgstr ""
 "A Zrythm procurará suplementos na inicialização e lembrará-se desses "
 "suplementos até que seja fechado. O Zrythm suporta :term:`LV2`, :term:"
@@ -5847,18 +5848,19 @@ msgstr ""
 "digitalizados como suplementos de instrumentos."
 
 #: ../../plugins-files/plugins/scanning.rst:21
+#, fuzzy
 msgid ""
-"Plugin scanning can be disabled by passing :envvar:`NO_SCAN_PLUGINS` when "
-"running Zrythm."
+"Plugin scanning can be disabled by passing :envvar:`ZRYTHM_SKIP_PLUGIN_SCAN` "
+"when running Zrythm."
 msgstr ""
 "A procura por suplementos pode ser desativada a passar :envvar:"
 "`NO_SCAN_PLUGINS` ao executar o Zrythm."
 
-#: ../../plugins-files/plugins/scanning.rst:25
+#: ../../plugins-files/plugins/scanning.rst:26
 msgid "LV2 Scan"
 msgstr "Procurar LV2"
 
-#: ../../plugins-files/plugins/scanning.rst:27
+#: ../../plugins-files/plugins/scanning.rst:28
 msgid ""
 "Zrythm will scan for LV2 plugins in the `standard paths specified here "
 "<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. You can "
@@ -5870,31 +5872,56 @@ msgstr ""
 "envvar:`LV2_PATH` para especificar caminhos personalizados. Por exemplo, "
 "``LV2_PATH=$HOME/custom-lv2-dir zrythm``."
 
-#: ../../plugins-files/plugins/scanning.rst:33
-msgid "VST2/VST3 Scan"
-msgstr "Varredura de VST2/VST3"
+#: ../../plugins-files/plugins/scanning.rst:34
+#: ../../plugins-files/plugins/scanning.rst:73
+#: ../../plugins-files/plugins/scanning.rst:126
+#: ../../plugins-files/plugins/scanning.rst:151
+msgid "Flatpak"
+msgstr "Flatpak"
 
-#: ../../plugins-files/plugins/scanning.rst:36
-msgid "GNU/Linux and FreeBSD"
-msgstr "GNU/Linux e FreeBSD"
-
-#: ../../plugins-files/plugins/scanning.rst:37
-msgid "Zrythm will scan for VST2 plugins in the following paths,"
+#: ../../plugins-files/plugins/scanning.rst:35
+#, fuzzy
+msgid ""
+"On Flatpak builds, Zrythm will scan for LV2 plugins in the following paths."
 msgstr "O Zrythm procurará suplementos VST nos caminhos seguintes,"
 
-#: ../../plugins-files/plugins/scanning.rst:45
-msgid "and VST3 plugins in the following paths."
-msgstr "e suplementos de VST3 nos seguintes caminhos."
-
-#: ../../plugins-files/plugins/scanning.rst:51
-msgid ""
-"You can bypass this behavior by passing :envvar:`VST_PATH` and :envvar:"
-"`VST3_PATH`."
+#: ../../plugins-files/plugins/scanning.rst:42
+#, fuzzy
+msgid "You can bypass this behavior by passing :envvar:`LV2_PATH`."
 msgstr ""
 "Pode ignorar este comportamento a passar :envvar:`VST_PATH` e :envvar:"
 "`VST3_PATH`."
 
-#: ../../plugins-files/plugins/scanning.rst:54
+#: ../../plugins-files/plugins/scanning.rst:46
+msgid "VST2/VST3 Scan"
+msgstr "Varredura de VST2/VST3"
+
+#: ../../plugins-files/plugins/scanning.rst:49
+msgid "GNU/Linux and FreeBSD"
+msgstr "GNU/Linux e FreeBSD"
+
+#: ../../plugins-files/plugins/scanning.rst:50
+msgid "Zrythm will scan for VST2 plugins in the following paths,"
+msgstr "O Zrythm procurará suplementos VST nos caminhos seguintes,"
+
+#: ../../plugins-files/plugins/scanning.rst:58
+#: ../../plugins-files/plugins/scanning.rst:79
+msgid "and VST3 plugins in the following paths."
+msgstr "e suplementos de VST3 nos seguintes caminhos."
+
+#: ../../plugins-files/plugins/scanning.rst:64
+#: ../../plugins-files/plugins/scanning.rst:83
+#, fuzzy
+msgid ""
+"You can bypass this behavior by passing :envvar:`VST_PATH` and :envvar:"
+"`VST3_PATH`, respectively."
+msgstr ""
+"Pode ignorar este comportamento a passar :envvar:`VST_PATH` e :envvar:"
+"`VST3_PATH`."
+
+#: ../../plugins-files/plugins/scanning.rst:68
+#: ../../plugins-files/plugins/scanning.rst:121
+#: ../../plugins-files/plugins/scanning.rst:146
 msgid ""
 "If your system uses a libdir other than ``lib`` (for example ``lib64``), "
 "Zrythm will scan for plugins in both locations."
@@ -5902,22 +5929,28 @@ msgstr ""
 "Se o seu sistema utiliza uma libdir diferente de ``lib`` (por exemplo "
 "``lib64``), Zrythm irá procurar por suplementos em ambas as localizações."
 
-#: ../../plugins-files/plugins/scanning.rst:59
+#: ../../plugins-files/plugins/scanning.rst:74
+#, fuzzy
+msgid ""
+"On Flatpak builds, Zrythm will scan for VST2 plugins in the following paths"
+msgstr "O Zrythm procurará suplementos VST nos caminhos seguintes,"
+
+#: ../../plugins-files/plugins/scanning.rst:88
 msgid "Windows"
 msgstr "Windows"
 
-#: ../../plugins-files/plugins/scanning.rst:60
+#: ../../plugins-files/plugins/scanning.rst:89
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in :ref:`vst-paths`."
 msgstr ""
 "Zrythm irá procurar por suplementos VST nos caminhos especificados em :ref:"
 "`vst-paths`."
 
-#: ../../plugins-files/plugins/scanning.rst:64
+#: ../../plugins-files/plugins/scanning.rst:93
 msgid "MacOS"
 msgstr "MacOS"
 
-#: ../../plugins-files/plugins/scanning.rst:65
+#: ../../plugins-files/plugins/scanning.rst:94
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in `VST plug-in "
 "locations on Mac OS X and macOS <https://helpcenter.steinberg.de/hc/en-us/"
@@ -5927,15 +5960,15 @@ msgstr ""
 "plug-in locais no Mac OS X e macOS <https://helpcenter.steinberg.de/hc/en-us/"
 "articles/115000171310>`_."
 
-#: ../../plugins-files/plugins/scanning.rst:68
+#: ../../plugins-files/plugins/scanning.rst:97
 msgid ":file:`/Library/Audio/Plug-Ins/VST` for VST2"
 msgstr ":file:`/Library/Audio/Plug-Ins/VST` para VST2"
 
-#: ../../plugins-files/plugins/scanning.rst:69
+#: ../../plugins-files/plugins/scanning.rst:98
 msgid ":file:`/Library/Audio/Plug-Ins/VST3` for VST3"
 msgstr ":file:`/Library/Audio/Plug-Ins/VST3` para VST3"
 
-#: ../../plugins-files/plugins/scanning.rst:71
+#: ../../plugins-files/plugins/scanning.rst:100
 msgid ""
 "Zrythm will remember scanned VST plugins and save this information in :file:"
 "`cached_plugin_descriptors.yaml` in the :term:`Zrythm user path`."
@@ -5943,7 +5976,7 @@ msgstr ""
 "Zrythm lembrará-se dos suplementos VST analizados e gravará esta informação "
 "em :file:`cached_plugin_descriptors.yaml` no :term:`Zrythm user path`."
 
-#: ../../plugins-files/plugins/scanning.rst:77
+#: ../../plugins-files/plugins/scanning.rst:106
 msgid ""
 "New plugins will be scanned on each start-up, and you can delete or edit "
 "this file to force a re-scan of previously scanned plugins."
@@ -5952,11 +5985,58 @@ msgstr ""
 "editar este ficheiro para forçar uma nova procurar de suplementos "
 "previamente procurados."
 
-#: ../../plugins-files/plugins/scanning.rst:82
+#: ../../plugins-files/plugins/scanning.rst:111
+msgid "DSSI Scan"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:112
+#, fuzzy
+msgid "Zrythm will scan for DSSI plugins in the following paths,"
+msgstr "O Zrythm procurará suplementos VST nos caminhos seguintes,"
+
+#: ../../plugins-files/plugins/scanning.rst:118
+#: ../../plugins-files/plugins/scanning.rst:132
+#, fuzzy
+msgid "You can bypass this behavior by passing :envvar:`DSSI_PATH`."
+msgstr ""
+"Pode ignorar este comportamento a passar :envvar:`VST_PATH` e :envvar:"
+"`VST3_PATH`."
+
+#: ../../plugins-files/plugins/scanning.rst:127
+#, fuzzy
+msgid ""
+"On Flatpak builds, Zrythm will scan for DSSI plugins in the following paths."
+msgstr "O Zrythm procurará suplementos VST nos caminhos seguintes,"
+
+#: ../../plugins-files/plugins/scanning.rst:136
+msgid "LADSPA Scan"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:137
+#, fuzzy
+msgid "Zrythm will scan for LADSPA plugins in the following paths,"
+msgstr "O Zrythm procurará suplementos VST nos caminhos seguintes,"
+
+#: ../../plugins-files/plugins/scanning.rst:143
+#: ../../plugins-files/plugins/scanning.rst:157
+#, fuzzy
+msgid "You can bypass this behavior by passing :envvar:`LADSPA_PATH`."
+msgstr ""
+"Pode ignorar este comportamento a passar :envvar:`VST_PATH` e :envvar:"
+"`VST3_PATH`."
+
+#: ../../plugins-files/plugins/scanning.rst:152
+#, fuzzy
+msgid ""
+"On Flatpak builds, Zrythm will scan for LADSPA plugins in the following "
+"paths."
+msgstr "O Zrythm procurará suplementos VST nos caminhos seguintes,"
+
+#: ../../plugins-files/plugins/scanning.rst:161
 msgid "AU Scan"
 msgstr "Varredura AU"
 
-#: ../../plugins-files/plugins/scanning.rst:83
+#: ../../plugins-files/plugins/scanning.rst:162
 msgid ""
 "On MacOS, :term:`AU` plugins will be scanned at their standard location at :"
 "file:`/Library/Audio/Plug-Ins/Components`."
@@ -5964,11 +6044,11 @@ msgstr ""
 "Em MacOS, suplementos de :term:`AU` serão analisados na localização padrão "
 "deles em :file:`/Library/Audio/Plug-Ins/Components`."
 
-#: ../../plugins-files/plugins/scanning.rst:88
+#: ../../plugins-files/plugins/scanning.rst:167
 msgid "SFZ/SF2 Scan"
 msgstr "Varredura SFZ/SF2"
 
-#: ../../plugins-files/plugins/scanning.rst:89
+#: ../../plugins-files/plugins/scanning.rst:168
 msgid ""
 ":term:`SFZ` and :term:`SF2` instruments will be scanned in all  directories "
 "and subdirectories specified in :ref:`vst-paths`."
@@ -9081,9 +9161,6 @@ msgstr ""
 
 #~ msgid "You will be presented with the following"
 #~ msgstr "Ser-lhe-á apresentado o seguinte"
-
-#~ msgid "Flatpak"
-#~ msgstr "Flatpak"
 
 #~ msgid "Flatpak builds are coming soon."
 #~ msgstr "Compilações Flatpak estão chegando em breve."
