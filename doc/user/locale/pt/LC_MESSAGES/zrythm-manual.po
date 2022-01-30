@@ -13,15 +13,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-01-22 17:46+0000\n"
-"PO-Revision-Date: 2022-01-22 02:54+0000\n"
+"PO-Revision-Date: 2022-01-24 18:52+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.11-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -2781,6 +2782,8 @@ msgid ""
 "If the region is already repeated, it cannot be resized anymore until its "
 "loop points match exactly the region's start and end points."
 msgstr ""
+"Se a região já se repetir, já não pode ser redimensionada até que os pontos "
+"de loop correspondam exatamente aos pontos de início e fim da região."
 
 #: ../../editing/timeline/arranger.rst:161
 #, fuzzy
@@ -2794,17 +2797,20 @@ msgstr ""
 #: ../../editing/timeline/arranger.rst:162
 msgid "Linked regions can be created by holding down :kbd:`Alt` while moving."
 msgstr ""
+"Regiões interligadas podem ser criadas a segurar :kbd:`Alt` enquanto mover."
 
 #: ../../editing/timeline/arranger.rst:165
 #: ../../editing/timeline/arranger.rst:170
 msgid "Add pic to show this."
-msgstr ""
+msgstr "Adicionar uma foto para mostrar isto."
 
 #: ../../editing/timeline/arranger.rst:167
 msgid ""
 "You can verify that a link exists on a region by the link icon that shows in "
 "the top right."
 msgstr ""
+"Pode verificar que existe uma ligação numa região pelo ícone da ligação que "
+"aparece no canto superior direito."
 
 #: ../../editing/timeline/arranger.rst:173
 msgid "Renaming"
@@ -2816,7 +2822,7 @@ msgstr "Regiões podem ser renomeadas a selecioná-las e pressionar :kbd:`F2`."
 
 #: ../../editing/timeline/arranger.rst:180
 msgid "Renaming a region"
-msgstr ""
+msgstr "Renomear uma região"
 
 #: ../../editing/timeline/arranger.rst:183
 msgid "Adjusting Fades"
@@ -2845,7 +2851,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:206
 msgid "Adjusting curviness"
-msgstr ""
+msgstr "Ajustar da curvatura"
 
 #: ../../editing/timeline/arranger.rst:208
 #, fuzzy
@@ -2927,20 +2933,26 @@ msgid ""
 "total tracks is shown, as well as a search box for searching tracks by name "
 "(not operational at the moment)."
 msgstr ""
+"No topo da lista de faixas, é mostrado a quantidade de faixas visíveis sobre "
+"a quantidade total de faixas, e uma caixa de pesquisa para pesquisar faixas "
+"por nome (não operacional no momento)."
 
 #: ../../editing/timeline/overview.rst:31
 msgid ""
 "You can pin tracks to make them stick to the top, and this is useful for "
 "chord progressions and markers, so you can always see them."
 msgstr ""
+"Pode fixar faixas para fazê-los grudar no topo, o que é útil para a "
+"progressão de acordes e marcadores, para poder vê-los sempre."
 
 #: ../../editing/timeline/overview.rst:35
 msgid "The rest of the tracklist is briefly touched upon in :ref:`tracklist`."
-msgstr ""
+msgstr "O resto da lista de faixas é brevemente abordado em :ref:`tracklist`."
 
 #: ../../editing/timeline/overview.rst:38
 msgid "For more details about track operations, see the :ref:`tracks` section."
 msgstr ""
+"Para mais detalhes sobre operações de pista, veja na secção :ref:`tracks`."
 
 #: ../../editing/timeline/overview.rst:42
 msgid "Minimap"
@@ -2960,6 +2972,7 @@ msgstr ""
 msgid ""
 "The rest of the timeline elements are explained in the following sections."
 msgstr ""
+"O resto dos elementos da cronologia são explicados nas secções seguintes."
 
 #: ../../editing/timeline/ruler.rst:8
 msgid "Timeline Ruler"
@@ -2967,7 +2980,7 @@ msgstr "Régua da cronologia"
 
 #: ../../editing/timeline/ruler.rst:10
 msgid "The ruler is mainly used to control looping and playback."
-msgstr ""
+msgstr "A régua é usada principalmente para controlar o looping e a reprodução."
 
 #: ../../editing/timeline/ruler.rst:16
 msgid ""
@@ -2975,6 +2988,9 @@ msgid ""
 "zoom level. It will also display the following markers/indicators discussed "
 "in :ref:`loop-points-and-markers`."
 msgstr ""
+"A régua exibirá mais ou menos informação dependendo do nível de ampliação "
+"atual. Ela também exibirá os seguintes marcadores/indicadores discutidos em "
+":ref:`pontos-e-marcadores'."
 
 #: ../../editing/timeline/ruler.rst:21
 msgid "Cue point"
@@ -3011,10 +3027,14 @@ msgid ""
 "which is used for selecting ranges - see :term:`Range`) will allow you to "
 "reposition the playhead."
 msgstr ""
+"Clicar e arrastar em espaço vazio na régua (diferente da parte superior, "
+"utilizada para selecionar intervalos - veja :term:`Range`) irá permitir que "
+"reposicione a cabeça de reprodução."
 
 #: ../../editing/timeline/ruler.rst:35
+#, fuzzy
 msgid "Hold :guilabel:`Shift` to temporarily disable snapping"
-msgstr ""
+msgstr "Segure :guilabel:`Shift` para desativar temporariamente o snapping"
 
 #: ../../editing/timeline/ruler.rst:38
 #, fuzzy
@@ -3030,6 +3050,8 @@ msgid ""
 "Double click inside the ruler to set the cue point. This will be used to "
 "return to when playback is stopped."
 msgstr ""
+"Clique duas vezes na régua para definir o ponto de sinalização. Isto será "
+"usado para voltar aquando a reprodução for interrompida."
 
 #: ../../editing/timeline/toolbar.rst:6
 msgid "Toolbar"
@@ -3038,6 +3060,8 @@ msgstr "Barra de Ferramentas"
 #: ../../editing/timeline/toolbar.rst:8
 msgid "The timeline has its own toolbar for timeline-specific operations."
 msgstr ""
+"A cronologia tem uma própria barra de ferramentas para operações específicas "
+"de cronologia."
 
 #: ../../editing/timeline/toolbar.rst:16
 msgid ""
@@ -3060,6 +3084,10 @@ msgid ""
 "will cause audio regions to be repeated accordingly to match the new BPM "
 "without being time-stretched."
 msgstr ""
+"Quando isto estiver ligado, as regiões de áudio serão automaticamente "
+"esticadas no tempo para corresponder ao novo BPM, cada vez que o BPM mudar. "
+"Se estiver desligado, a alteração do BPM fará com que as regiões de áudio "
+"sejam repetidas conforme o novo BPM, sem que o BPM seja esticado no tempo."
 
 #: ../../exporting/audio-and-midi.rst:8
 msgid "Audio & MIDI"
@@ -3379,15 +3407,18 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:85
 #: ../../plugins-files/audio-midi-files/file-browser.rst:67
 msgid "Presets"
-msgstr ""
+msgstr "Predefinições"
 
 #: ../../getting-started/getting-plugins.rst:86
 msgid "`Freesound`_ has presets available to download for specific plugins."
 msgstr ""
+"'Freesound'_ tem predefinições disponíveis para descarregar para suplementos "
+"específicos."
 
 #: ../../getting-started/getting-plugins.rst:89
+#, fuzzy
 msgid "In the future, we will be offering preset packs for download."
-msgstr ""
+msgstr "No futuro, iremos oferecer pacotes de predefinições para descarregar."
 
 #: ../../getting-started/getting-plugins.rst:93
 msgid "SFZ/SF2 Instruments"
@@ -3410,7 +3441,7 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:105
 msgid "We will also be offering sample packs for download in the future."
-msgstr ""
+msgstr "Também iremos oferecer pacotes de amostras para descarregar no futuro."
 
 #: ../../getting-started/installation.rst:6
 msgid "Installation"
