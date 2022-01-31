@@ -18,7 +18,7 @@ files by default.
 
 Desktop Entry
 ~~~~~~~~~~~~~
-A `freedesktop-complicant configuration file <https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html>`_
+A `freedesktop-compliant configuration file <https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html>`_
 that describes how a particular program should be
 launched, how it appears in menus, etc. This is
 normally installed at
