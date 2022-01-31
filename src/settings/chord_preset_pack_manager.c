@@ -197,6 +197,90 @@ add_standard_packs (
 
   g_ptr_array_add (self->pset_packs, pack);
 
+  /* --- j/k pop --- */
+
+  pack =
+    chord_preset_pack_new (_("Eastern Pop"), true);
+
+  /* fight together */
+  pset =
+    chord_preset_new (_("Together"));
+  ADD_SIMPLE_CHORDS (
+    NOTE_G, CHORD_TYPE_MAJ,
+    NOTE_A, CHORD_TYPE_MAJ,
+    NOTE_D, CHORD_TYPE_MAJ,
+    NOTE_G, CHORD_TYPE_MAJ,
+    NOTE_A, CHORD_TYPE_MAJ,
+    NOTE_B, CHORD_TYPE_MIN,
+    NOTE_D, CHORD_TYPE_MAJ,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE);
+  chord_preset_pack_add_preset (pack, pset);
+  chord_preset_free (pset);
+
+  /* gee */
+  pset =
+    chord_preset_new (_("GG"));
+  ADD_SIMPLE_CHORDS (
+    NOTE_A, CHORD_TYPE_MAJ,
+    NOTE_FS, CHORD_TYPE_MIN,
+    NOTE_GS, CHORD_TYPE_MIN,
+    NOTE_GS, CHORD_TYPE_MIN,
+    NOTE_CS, CHORD_TYPE_MIN,
+    NOTE_CS, CHORD_TYPE_MIN,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE);
+  pset->descr[0]->accent = CHORD_ACC_7;
+  pset->descr[3]->accent = CHORD_ACC_7;
+  pset->descr[5]->accent = CHORD_ACC_7;
+  chord_preset_pack_add_preset (pack, pset);
+  chord_preset_free (pset);
+
+  /* yuriyurarararayuruyuri */
+  pset =
+    chord_preset_new (_("Daijiken"));
+  ADD_SIMPLE_CHORDS (
+    NOTE_DS, CHORD_TYPE_MAJ,
+    NOTE_AS, CHORD_TYPE_MIN,
+    NOTE_F, CHORD_TYPE_MAJ,
+    NOTE_AS, CHORD_TYPE_MIN,
+    NOTE_GS, CHORD_TYPE_MAJ,
+    NOTE_DS, CHORD_TYPE_MAJ,
+    NOTE_G, CHORD_TYPE_MIN,
+    NOTE_F, CHORD_TYPE_MIN,
+    NOTE_AS, CHORD_TYPE_MAJ,
+    NOTE_GS, CHORD_TYPE_MAJ,
+    NOTE_C, CHORD_TYPE_MIN,
+    NOTE_C, CHORD_TYPE_MAJ);
+  chord_preset_pack_add_preset (pack, pset);
+  chord_preset_free (pset);
+
+  g_ptr_array_add (self->pset_packs, pack);
+
+  /* --- dance --- */
+
+  pack =
+    chord_preset_pack_new (_("Dance"), true);
+
+  /* the idolm@ster 2 */
+  pset = chord_preset_new (_("Idol 1"));
+  ADD_SIMPLE_4CHORDS (
+    NOTE_C, CHORD_TYPE_MAJ,
+    NOTE_D, CHORD_TYPE_MAJ,
+    NOTE_B, CHORD_TYPE_MIN,
+    NOTE_E, CHORD_TYPE_MIN);
+  chord_preset_pack_add_preset (pack, pset);
+  chord_preset_free (pset);
+
+  g_ptr_array_add (self->pset_packs, pack);
+
   /* --- ballad --- */
 
   pack =
@@ -204,7 +288,7 @@ add_standard_packs (
 
   /* snow halation */
   pset =
-    chord_preset_new (_("Snow Halation"));
+    chord_preset_new ("Snow Halation");
   ADD_SIMPLE_CHORDS (
     NOTE_D, CHORD_TYPE_MAJ,
     NOTE_E, CHORD_TYPE_MAJ,
@@ -223,6 +307,47 @@ add_standard_packs (
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
+  /* connect */
+  pset =
+    chord_preset_new (_("Connection"));
+  ADD_SIMPLE_CHORDS (
+    NOTE_B, CHORD_TYPE_MAJ,
+    NOTE_CS, CHORD_TYPE_MAJ,
+    NOTE_AS, CHORD_TYPE_MIN,
+    NOTE_DS, CHORD_TYPE_MIN,
+    NOTE_GS, CHORD_TYPE_MIN,
+    NOTE_B, CHORD_TYPE_MAJ,
+    NOTE_CS, CHORD_TYPE_MAJ,
+    NOTE_DS, CHORD_TYPE_MAJ,
+    NOTE_GS, CHORD_TYPE_MAJ,
+    NOTE_AS, CHORD_TYPE_MAJ,
+    NOTE_G, CHORD_TYPE_MAJ,
+    NOTE_C, CHORD_TYPE_MIN);
+  pset->descr[8]->accent = CHORD_ACC_7;
+  pset->descr[10]->accent = CHORD_ACC_7;
+  chord_preset_pack_add_preset (pack, pset);
+  chord_preset_free (pset);
+
+  /* secret base */
+  pset =
+    chord_preset_new (_("Secret Base"));
+  ADD_SIMPLE_CHORDS (
+    NOTE_B, CHORD_TYPE_MAJ,
+    NOTE_CS, CHORD_TYPE_MAJ,
+    NOTE_DS, CHORD_TYPE_MIN,
+    NOTE_CS, CHORD_TYPE_MAJ,
+    NOTE_B, CHORD_TYPE_MAJ,
+    NOTE_CS, CHORD_TYPE_MAJ,
+    NOTE_FS, CHORD_TYPE_MAJ,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE);
+  pset->descr[2]->accent = CHORD_ACC_7;
+  chord_preset_pack_add_preset (pack, pset);
+  chord_preset_free (pset);
+
   g_ptr_array_add (self->pset_packs, pack);
 
   /* --- eurodance --- */
@@ -232,7 +357,7 @@ add_standard_packs (
 
   /* what is love */
   pset =
-    chord_preset_new (_("Meaning of Love"));
+    chord_preset_new ("What is Love");
   ADD_SIMPLE_4CHORDS (
     NOTE_G, CHORD_TYPE_MIN,
     NOTE_AS, CHORD_TYPE_MAJ,
@@ -244,7 +369,7 @@ add_standard_packs (
 
   /* blue */
   pset =
-    chord_preset_new (_("Blue"));
+    chord_preset_new ("Blue");
   ADD_SIMPLE_CHORDS (
     NOTE_G, CHORD_TYPE_MIN,
     NOTE_F, CHORD_TYPE_MAJ,
@@ -269,7 +394,7 @@ add_standard_packs (
     chord_preset_pack_new (_("Eurobeat"), true);
 
   pset =
-    chord_preset_new (_("Burning Night"));
+    chord_preset_new ("Burning Night");
   ADD_SIMPLE_CHORDS (
     NOTE_CS, CHORD_TYPE_MAJ,
     NOTE_DS, CHORD_TYPE_MAJ,
@@ -305,7 +430,7 @@ add_standard_packs (
   chord_preset_free (pset);
 
   /* get me power */
-  pset = chord_preset_new (_("Hi-Power"));
+  pset = chord_preset_new ("2 Power");
   ADD_SIMPLE_CHORDS (
     NOTE_B, CHORD_TYPE_MIN,
     NOTE_E, CHORD_TYPE_MIN,
@@ -319,6 +444,90 @@ add_standard_packs (
     NOTE_C, CHORD_TYPE_NONE,
     NOTE_C, CHORD_TYPE_NONE,
     NOTE_C, CHORD_TYPE_NONE);
+  chord_preset_pack_add_preset (pack, pset);
+  chord_preset_free (pset);
+
+  /* night of fire */
+  pset = chord_preset_new ("Night of Fire");
+  ADD_SIMPLE_CHORDS (
+    NOTE_DS, CHORD_TYPE_MIN,
+    NOTE_B, CHORD_TYPE_MAJ,
+    NOTE_CS, CHORD_TYPE_MAJ,
+    NOTE_FS, CHORD_TYPE_MAJ,
+    NOTE_CS, CHORD_TYPE_MAJ,
+    NOTE_DS, CHORD_TYPE_MIN,
+    NOTE_FS, CHORD_TYPE_MAJ,
+    NOTE_GS, CHORD_TYPE_MAJ,
+    NOTE_B, CHORD_TYPE_MAJ,
+    NOTE_GS, CHORD_TYPE_MIN,
+    NOTE_AS, CHORD_TYPE_MIN,
+    NOTE_CS, CHORD_TYPE_MAJ);
+  chord_preset_pack_add_preset (pack, pset);
+  chord_preset_free (pset);
+
+  /* super fever night */
+  pset = chord_preset_new ("Super Fever Night");
+  ADD_SIMPLE_CHORDS (
+    NOTE_B, CHORD_TYPE_MIN,
+    NOTE_G, CHORD_TYPE_MAJ,
+    NOTE_A, CHORD_TYPE_MAJ,
+    NOTE_B, CHORD_TYPE_MIN,
+    NOTE_G, CHORD_TYPE_MAJ,
+    NOTE_A, CHORD_TYPE_MAJ,
+    NOTE_D, CHORD_TYPE_MAJ,
+    NOTE_E, CHORD_TYPE_MAJ,
+    NOTE_FS, CHORD_TYPE_MIN,
+    NOTE_FS, CHORD_TYPE_MAJ,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE);
+  pset->descr[4]->accent = CHORD_ACC_7;
+  chord_preset_pack_add_preset (pack, pset);
+  chord_preset_free (pset);
+
+  /* break in2 the nite */
+  pset =
+    chord_preset_new ("Step in2 the Night");
+  ADD_SIMPLE_CHORDS (
+    NOTE_D, CHORD_TYPE_MIN,
+    NOTE_F, CHORD_TYPE_MAJ,
+    NOTE_C, CHORD_TYPE_MAJ,
+    NOTE_D, CHORD_TYPE_MIN,
+    NOTE_AS, CHORD_TYPE_MAJ,
+    NOTE_C, CHORD_TYPE_MAJ,
+    NOTE_D, CHORD_TYPE_MIN,
+    NOTE_G, CHORD_TYPE_MIN,
+    NOTE_F, CHORD_TYPE_MAJ,
+    NOTE_C, CHORD_TYPE_MAJ,
+    NOTE_A, CHORD_TYPE_MIN,
+    NOTE_C, CHORD_TYPE_NONE);
+  pset->descr[4]->inversion = -2;
+  chord_preset_pack_add_preset (pack, pset);
+  chord_preset_free (pset);
+
+  g_ptr_array_add (self->pset_packs, pack);
+
+  /* --- progressive trance --- */
+
+  pack =
+    chord_preset_pack_new (
+      _("Progressive Trance"), true);
+
+  pset = chord_preset_new (_("Sajek Valley"));
+  ADD_SIMPLE_CHORDS (
+    NOTE_A, CHORD_TYPE_MIN,
+    NOTE_D, CHORD_TYPE_MIN,
+    NOTE_F, CHORD_TYPE_MAJ,
+    NOTE_C, CHORD_TYPE_MAJ,
+    NOTE_G, CHORD_TYPE_MAJ,
+    NOTE_D, CHORD_TYPE_MIN,
+    NOTE_E, CHORD_TYPE_MIN,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE);
+  pset->descr[1]->accent = CHORD_ACC_7;
+  pset->descr[3]->inversion = 1;
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
@@ -381,6 +590,44 @@ add_standard_packs (
     NOTE_GS, CHORD_TYPE_MIN,
     NOTE_FS, CHORD_TYPE_MAJ,
     NOTE_E, CHORD_TYPE_MAJ);
+  chord_preset_pack_add_preset (pack, pset);
+  chord_preset_free (pset);
+
+  /* no thank you */
+  pset =
+    chord_preset_new (_("Thank You"));
+  ADD_SIMPLE_CHORDS (
+    NOTE_E, CHORD_TYPE_MIN,
+    NOTE_D, CHORD_TYPE_MAJ,
+    NOTE_A, CHORD_TYPE_MAJ,
+    NOTE_C, CHORD_TYPE_MAJ,
+    NOTE_G, CHORD_TYPE_MAJ,
+    NOTE_A, CHORD_TYPE_MIN,
+    NOTE_B, CHORD_TYPE_MIN,
+    NOTE_C, CHORD_TYPE_MAJ,
+    NOTE_D, CHORD_TYPE_MAJ,
+    NOTE_G, CHORD_TYPE_MAJ,
+    NOTE_B, CHORD_TYPE_MIN,
+    NOTE_E, CHORD_TYPE_MIN);
+  chord_preset_pack_add_preset (pack, pset);
+  chord_preset_free (pset);
+
+  /* boulevard of broken dreams */
+  pset =
+    chord_preset_new ("Broken Dreams");
+  ADD_SIMPLE_CHORDS (
+    NOTE_F, CHORD_TYPE_MIN,
+    NOTE_GS, CHORD_TYPE_MAJ,
+    NOTE_DS, CHORD_TYPE_MAJ,
+    NOTE_AS, CHORD_TYPE_MAJ,
+    NOTE_CS, CHORD_TYPE_MAJ,
+    NOTE_GS, CHORD_TYPE_MAJ,
+    NOTE_DS, CHORD_TYPE_MAJ,
+    NOTE_F, CHORD_TYPE_MIN,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
