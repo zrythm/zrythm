@@ -882,29 +882,24 @@ if os_windows
 endif
 
 # set config defines
-if not os_darwin
-  x11_dep = dependency (
-    'x11', required: false, static: all_static)
-  if (x11_dep.found ())
-    cdata.set('HAVE_X11', 1)
-  endif
+x11_dep = dependency (
+  'x11', required: get_option ('x11'), static: all_static)
+if (x11_dep.found ())
+  cdata.set('HAVE_X11', 1)
 endif
 alsa_dep = dependency (
-  'alsa', required: false, static: all_static)
-have_alsa = alsa_dep.found ()
-if (have_alsa)
+  'alsa', required: get_option ('alsa'), static: all_static)
+if (alsa_dep.found ())
   cdata.set('HAVE_ALSA', 1)
 endif
 pulseaudio_dep = dependency (
-  'libpulse', required: false, static: all_static)
-have_pulseaudio = pulseaudio_dep.found ()
-if (have_pulseaudio)
+  'libpulse', required: get_option ('pulse'), static: all_static)
+if (pulseaudio_dep.found ())
   cdata.set('HAVE_PULSEAUDIO', 1)
 endif
 libsoundio_dep = cc.find_library (
-  'soundio', required: false, static: all_static)
-have_libsoundio = libsoundio_dep.found ()
-if (have_libsoundio)
+  'soundio', required: get_option ('soundio'), static: all_static)
+if (libsoundio_dep.found ())
   cdata.set('HAVE_LIBSOUNDIO', 1)
 endif
 cyaml_dep = dependency(
@@ -914,7 +909,7 @@ cyaml_dep = dependency(
 audec_dep = dependency(
   'audec', version: '>=0.3.2',
   fallback: ['libaudec', 'libaudec_dep'],
-  required: true, static: all_static)
+  static: all_static)
 
 # link to fontconfig/pangoft2 directly because
 # they are used in utils/pango.c
@@ -1094,7 +1089,7 @@ if not guile_dep.found ()
     required: get_option ('guile'),
     static: all_static)
 endif
-have_guile = guile_dep.found () and not get_option ('guile').disabled () and not os_windows
+have_guile = guile_dep.found () and not get_option ('guile').disabled ()
 if have_guile
   cdata.set('HAVE_GUILE', 1)
 endif
@@ -1209,8 +1204,7 @@ lsp_dsp_dep = dependency (
   'lsp-dsp-lib', version: '>=0.5.5',
   static: all_static or get_option ('static_lsp_dsp'),
   required: get_option ('lsp_dsp'))
-have_lsp_dsp = lsp_dsp_dep.found () and not get_option ('lsp_dsp').disabled ()
-if have_lsp_dsp
+if lsp_dsp_dep.found ()
   cdata.set('HAVE_LSP_DSP', 1)
 endif
 
@@ -1262,7 +1256,7 @@ zrythm_deps = [
   audec_dep,
   libcgraph_dep,
   libgvc_dep,
-  guile_dep,
+  have_guile ? guile_dep : [],
   carla_host_plugin_dep,
   rtaudio_dep,
   rtmidi_dep,
@@ -1321,7 +1315,7 @@ if os_windows
   zrythm_deps += jack_dep.partial_dependency (
     link_args: false, links: false)
 else
-  zrythm_deps += jack_dep
+  zrythm_deps += have_jack ? jack_dep : []
 endif
 
 if os_gnu
@@ -1440,17 +1434,18 @@ summary ({
   }, section: 'General')
 
 summary ({
-  'ALSA': have_alsa,
+  'ALSA': alsa_dep.found (),
   'Carla': have_carla,
   'GraphViz': have_graphviz,
   'Guile': have_guile,
   'JACK': have_jack,
-  'SoundIO': have_libsoundio,
-  'LSP DSP': have_lsp_dsp,
-  'PulseAudio': have_pulseaudio,
+  'SoundIO': libsoundio_dep.found (),
+  'LSP DSP': lsp_dsp_dep.found (),
+  'PulseAudio': pulseaudio_dep.found (),
   'RtAudio': rtaudio_dep.found (),
   'RtMidi': rtmidi_dep.found (),
   'SDL': sdl_dep.found (),
+  'X11': x11_dep.found (),
   }, section: 'Features')
 
 if have_carla

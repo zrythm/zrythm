@@ -259,3 +259,27 @@ option (
   type: 'boolean',
   value: false,
   description: 'Whether building a Flatpak package.')
+
+option (
+  'x11',
+  type: 'feature',
+  value: 'auto',
+  description: 'Compile with X11 support.')
+
+option (
+  'alsa',
+  type: 'feature',
+  value: 'auto',
+  description: 'Compile with ALSA support.')
+
+option (
+  'pulse',
+  type: 'feature',
+  value: 'auto',
+  description: 'Compile with PulseAudio support.')
+
+option (
+  'soundio',
+  type: 'feature',
+  value: 'disabled',
+  description: 'Compile with libsoundio support (not operational).')
