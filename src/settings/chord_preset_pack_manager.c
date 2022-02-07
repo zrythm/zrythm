@@ -656,81 +656,84 @@ chord_preset_pack_manager_new (
   /* add standard preset packs */
   add_standard_packs (self);
 
-  /* add user preset packs */
-  char * main_path = get_user_packs_path ();
-  g_debug (
-    "Reading user chord packs from %s...",
-    main_path);
-
-  char ** pack_paths =
-    io_get_files_in_dir_ending_in (
-      main_path, true, ".yaml", false);
-  if (pack_paths)
+  if (!ZRYTHM_TESTING)
     {
-      char * pack_path = NULL;
-      int i = 0;
-      while ((pack_path = pack_paths[i++]))
+      /* add user preset packs */
+      char * main_path = get_user_packs_path ();
+      g_debug (
+        "Reading user chord packs from %s...",
+        main_path);
+
+      char ** pack_paths =
+        io_get_files_in_dir_ending_in (
+          main_path, true, ".yaml", false);
+      if (pack_paths)
         {
-          if (!g_file_test (
-                 pack_path, G_FILE_TEST_EXISTS)
-              ||
-              g_file_test (
-                 pack_path, G_FILE_TEST_IS_DIR))
+          char * pack_path = NULL;
+          int i = 0;
+          while ((pack_path = pack_paths[i++]))
             {
-              continue;
+              if (!g_file_test (
+                     pack_path, G_FILE_TEST_EXISTS)
+                  ||
+                  g_file_test (
+                     pack_path, G_FILE_TEST_IS_DIR))
+                {
+                  continue;
+                }
+
+              g_debug ("checking file %s", pack_path);
+
+              char * yaml = NULL;
+              GError * err = NULL;
+              g_file_get_contents (
+                pack_path, &yaml, NULL, &err);
+              if (err != NULL)
+                {
+                  g_warning (
+                    "Failed to read yaml "
+                    "from %s", pack_path);
+                  continue;
+                }
+
+              /* if not same version ignore */
+              if (!is_yaml_our_version (yaml))
+                {
+                  g_warning (
+                    "old chord preset version for %s, "
+                    "skipping",
+                    pack_path);
+                  continue;
+                }
+
+              ChordPresetPack * pack =
+                (ChordPresetPack *)
+                yaml_deserialize (
+                  yaml, &chord_preset_pack_schema);
+              g_return_val_if_fail (pack, NULL);
+              if (!pack->presets)
+                {
+                  pack->presets_size = 12;
+                  pack->presets =
+                    object_new_n (
+                      pack->presets_size, ChordPreset *);
+                }
+              else
+                {
+                  pack->presets_size =
+                    (size_t) pack->num_presets;
+                }
+              g_ptr_array_add (self->pset_packs, pack);
+
+              g_free (yaml);
             }
 
-          g_debug ("checking file %s", pack_path);
-
-          char * yaml = NULL;
-          GError * err = NULL;
-          g_file_get_contents (
-            pack_path, &yaml, NULL, &err);
-          if (err != NULL)
-            {
-              g_warning (
-                "Failed to read yaml "
-                "from %s", pack_path);
-              continue;
-            }
-
-          /* if not same version ignore */
-          if (!is_yaml_our_version (yaml))
-            {
-              g_warning (
-                "old chord preset version for %s, "
-                "skipping",
-                pack_path);
-              continue;
-            }
-
-          ChordPresetPack * pack =
-            (ChordPresetPack *)
-            yaml_deserialize (
-              yaml, &chord_preset_pack_schema);
-          g_return_val_if_fail (pack, NULL);
-          if (!pack->presets)
-            {
-              pack->presets_size = 12;
-              pack->presets =
-                object_new_n (
-                  pack->presets_size, ChordPreset *);
-            }
-          else
-            {
-              pack->presets_size =
-                (size_t) pack->num_presets;
-            }
-          g_ptr_array_add (self->pset_packs, pack);
-
-          g_free (yaml);
+          g_strfreev (pack_paths);
         }
-
-      g_strfreev (pack_paths);
-    }
-  else
-    {
-      g_message ("no user chord presets found");
+      else
+        {
+          g_message ("no user chord presets found");
+        }
     }
 
   return self;
