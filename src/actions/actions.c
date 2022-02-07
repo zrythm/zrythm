@@ -3208,7 +3208,8 @@ DEFINE_SIMPLE (activate_load_chord_preset)
   z_return_if_fail_cmp (
     pset_idx, <, pack->num_presets);
   ChordPreset * pset = pack->presets[pset_idx];
-  chord_editor_apply_preset (CHORD_EDITOR, pset);
+  chord_editor_apply_preset (
+    CHORD_EDITOR, pset, true);
 }
 
 DEFINE_SIMPLE (activate_load_chord_preset_from_scale)
@@ -3222,7 +3223,7 @@ DEFINE_SIMPLE (activate_load_chord_preset_from_scale)
 
   chord_editor_apply_preset_from_scale (
     CHORD_EDITOR, (MusicalScaleType) scale,
-    (MusicalNote) root_note);
+    (MusicalNote) root_note, true);
 }
 
 DEFINE_SIMPLE (activate_transpose_chord_pad)
@@ -3235,12 +3236,12 @@ DEFINE_SIMPLE (activate_transpose_chord_pad)
   if (string_is_equal (str, "up"))
     {
       chord_editor_transpose_chords (
-        CHORD_EDITOR, true);
+        CHORD_EDITOR, true, true);
     }
   else if (string_is_equal (str, "down"))
     {
       chord_editor_transpose_chords (
-        CHORD_EDITOR, false);
+        CHORD_EDITOR, false, true);
     }
   else
     {

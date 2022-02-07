@@ -34,6 +34,8 @@
 
 #include "utils/yaml.h"
 
+typedef struct ChordPresetPack ChordPresetPack;
+
 /**
  * @addtogroup settings
  *
@@ -54,6 +56,9 @@ typedef struct ChordPreset
 
   /** Chord descriptors. */
   ChordDescriptor * descr[12];
+
+  /** Pointer to owner pack. */
+  ChordPresetPack * pack;
 } ChordPreset;
 
 static const cyaml_schema_field_t

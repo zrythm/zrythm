@@ -76,6 +76,19 @@ chord_preset_pack_manager_get_pack_for_preset (
   ChordPresetPackManager * self,
   ChordPreset *            pset);
 
+int
+chord_preset_pack_manager_get_pack_index (
+  ChordPresetPackManager * self,
+  ChordPresetPack *        pack);
+
+/**
+ * Returns the preset index in its pack.
+ */
+int
+chord_preset_pack_manager_get_pset_index (
+  ChordPresetPackManager * self,
+  ChordPreset *            pset);
+
 /**
  * Add a copy of the given preset.
  */

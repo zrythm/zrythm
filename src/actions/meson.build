@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -19,6 +19,7 @@ action_srcs = [
   'actions.c',
   'arranger_selections.c',
   'channel_send_action.c',
+  'chord_action.c',
   'midi_mapping_action.c',
   'mixer_selections_action.c',
   'port_action.c',

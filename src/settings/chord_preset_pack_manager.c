@@ -807,6 +807,44 @@ chord_preset_pack_manager_get_pack_for_preset (
   g_return_val_if_reached (NULL);
 }
 
+int
+chord_preset_pack_manager_get_pack_index (
+  ChordPresetPackManager * self,
+  ChordPresetPack *        pack)
+{
+  for (size_t i = 0; i < self->pset_packs->len; i++)
+    {
+      ChordPresetPack * cur_pack =
+        (ChordPresetPack *)
+        g_ptr_array_index (self->pset_packs, i);
+      if (cur_pack == pack)
+        return i;
+    }
+  g_return_val_if_reached (-1);
+}
+
+/**
+ * Returns the preset index in its pack.
+ */
+int
+chord_preset_pack_manager_get_pset_index (
+  ChordPresetPackManager * self,
+  ChordPreset *            pset)
+{
+  ChordPresetPack * pack =
+    chord_preset_pack_manager_get_pack_for_preset (
+      self, pset);
+  g_return_val_if_fail (pack, -1);
+
+  for (int i = 0; i < pack->num_presets; i++)
+    {
+      ChordPreset * cur_pset = pack->presets[i];
+      if (cur_pset == pset)
+        return i;
+    }
+  g_return_val_if_reached (-1);
+}
+
 /**
  * Add a copy of the given preset.
  */

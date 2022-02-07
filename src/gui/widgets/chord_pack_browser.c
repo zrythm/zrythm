@@ -278,8 +278,24 @@ on_pset_activated (
   ChordPreset * pset =
     (ChordPreset *) wrapped_obj->obj;
 
-  /* TODO set preset to chord pads */
-  (void) pset;
+  ChordPresetPack * pack =
+    chord_preset_pack_manager_get_pack_for_preset (
+      CHORD_PRESET_PACK_MANAGER, pset);
+  g_return_if_fail (pack);
+
+  /* set preset to chord pads */
+  int pack_idx =
+    chord_preset_pack_manager_get_pack_index (
+      CHORD_PRESET_PACK_MANAGER, pack);
+  int pset_idx =
+    chord_preset_pack_manager_get_pset_index (
+      CHORD_PRESET_PACK_MANAGER, pset);
+  char params[800];
+  sprintf (
+    params, "%d,%d", pack_idx, pset_idx);
+  gtk_widget_activate_action (
+    GTK_WIDGET (self), "app.load-chord-preset",
+    "s", params);
 }
 
 static void

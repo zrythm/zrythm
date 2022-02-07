@@ -214,7 +214,7 @@ chord_descriptor_new (
  */
 ChordDescriptor *
 chord_descriptor_clone (
-  ChordDescriptor * src)
+  const ChordDescriptor * src)
 {
   ChordDescriptor * cd =
     chord_descriptor_new (

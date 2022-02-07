@@ -70,26 +70,51 @@ chord_editor_clone (
 }
 
 void
-chord_editor_apply_preset (
-  ChordEditor * self,
-  ChordPreset * pset)
+chord_editor_apply_chords (
+  ChordEditor *            self,
+  const ChordDescriptor ** chords,
+  bool                     undoable)
 {
-  for (int i = 0; i < 12; i++)
+  if (undoable)
     {
-      ChordDescriptor * descr = self->chords[i];
-      chord_descriptor_copy (
-        descr, pset->descr[i]);
-      chord_descriptor_update_notes (descr);
+      GError * err = NULL;
+      bool ret =
+        chord_action_perform (
+          (const ChordDescriptor **) self->chords,
+          chords, &err);
+      g_return_if_fail (ret);
+    }
+  else
+    {
+      for (int i = 0; i < CHORD_EDITOR_NUM_CHORDS;
+           i++)
+        {
+          ChordDescriptor * descr = self->chords[i];
+          chord_descriptor_copy (descr, chords[i]);
+          chord_descriptor_update_notes (descr);
+        }
     }
 
   EVENTS_PUSH (ET_CHORDS_UPDATED, NULL);
 }
 
 void
+chord_editor_apply_preset (
+  ChordEditor * self,
+  ChordPreset * pset,
+  bool          undoable)
+{
+  chord_editor_apply_chords (
+    self, (const ChordDescriptor **) pset->descr,
+    undoable);
+}
+
+void
 chord_editor_apply_preset_from_scale (
   ChordEditor *     self,
   MusicalScaleType  scale,
-  MusicalNote       root_note)
+  MusicalNote       root_note,
+  bool              undoable)
 {
   g_debug (
     "applying preset from scale %s, root note %s",
@@ -100,55 +125,55 @@ chord_editor_apply_preset_from_scale (
   const bool * notes =
     musical_scale_get_notes (scale, true);
   int cur_chord = 0;
+  ChordDescriptor * new_chords[CHORD_EDITOR_NUM_CHORDS];
   for (int i = 0; i < 12; i++)
     {
       /* skip notes not in scale */
       if (!notes[i])
         continue;
 
-      ChordDescriptor * descr =
-        self->chords[cur_chord];
-      descr->has_bass = false;
-      descr->root_note =
-        (MusicalNote)
-        ((int) root_note + i);
-      descr->bass_note =
-        (MusicalNote)
-        ((int) root_note + i);
-      descr->type = triads[cur_chord];
-      descr->accent = CHORD_ACC_NONE;
-      descr->inversion = 0;
-      chord_descriptor_update_notes (descr);
-
-      cur_chord++;
+      new_chords[cur_chord++] =
+        chord_descriptor_new (
+          (MusicalNote)
+          ((int) root_note + i),
+          false,
+          (MusicalNote)
+          ((int) root_note + i),
+          triads[cur_chord],
+          CHORD_ACC_NONE, 0);
     }
 
   /* fill remaining chords with default data */
-  while (cur_chord < 12)
+  while (cur_chord < CHORD_EDITOR_NUM_CHORDS)
     {
-      ChordDescriptor * descr =
-        self->chords[cur_chord];
-      descr->has_bass = false;
-      descr->root_note = NOTE_C;
-      descr->bass_note = NOTE_C;
-      descr->type = CHORD_TYPE_NONE;
-      descr->accent = CHORD_ACC_NONE;
-      descr->inversion = 0;
-      chord_descriptor_update_notes (descr);
-      cur_chord++;
+      new_chords[cur_chord++] =
+        chord_descriptor_new (
+          NOTE_C, false, NOTE_C, CHORD_TYPE_NONE,
+          CHORD_ACC_NONE, 0);
     }
 
-  EVENTS_PUSH (ET_CHORDS_UPDATED, NULL);
+  chord_editor_apply_chords (
+    self, (const ChordDescriptor **) new_chords,
+    undoable);
+
+  for (int i = 0; i < CHORD_EDITOR_NUM_CHORDS; i++)
+    {
+      chord_descriptor_free (new_chords[i]);
+    }
 }
 
 void
 chord_editor_transpose_chords (
   ChordEditor * self,
-  bool          up)
+  bool          up,
+  bool          undoable)
 {
+  ChordDescriptor * new_chords[CHORD_EDITOR_NUM_CHORDS];
   for (int i = 0; i < 12; i++)
     {
-      ChordDescriptor * descr = self->chords[i];
+      new_chords[i] =
+        chord_descriptor_clone (self->chords[i]);
+      ChordDescriptor * descr = new_chords[i];
 
       int add = (up ? 1 : 11);
       descr->root_note =
@@ -160,11 +185,16 @@ chord_editor_transpose_chords (
 
       descr->root_note = descr->root_note % 12;
       descr->bass_note = descr->bass_note % 12;
-
-      chord_descriptor_update_notes (descr);
     }
 
-  EVENTS_PUSH (ET_CHORDS_UPDATED, NULL);
+  chord_editor_apply_chords (
+    self, (const ChordDescriptor **) new_chords,
+    undoable);
+
+  for (int i = 0; i < CHORD_EDITOR_NUM_CHORDS; i++)
+    {
+      chord_descriptor_free (new_chords[i]);
+    }
 }
 
 ChordEditor *

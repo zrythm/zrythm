@@ -60,6 +60,7 @@ chord_preset_pack_add_preset (
     self->presets_size, ChordPreset *);
 
   ChordPreset * clone = chord_preset_clone (pset);
+  clone->pack = self;
 
   array_append (
     self->presets, self->num_presets, clone);
@@ -145,6 +146,7 @@ chord_preset_pack_clone (
     {
       self->presets[i] =
         chord_preset_clone (src->presets[i]);
+      self->presets[i]->pack = self;
     }
 
   return self;

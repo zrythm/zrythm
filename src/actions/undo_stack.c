@@ -40,7 +40,8 @@ undo_stack_get_total_cached_actions (
     self->num_port_actions +
     self->num_port_connection_actions +
     self->num_range_actions +
-    self->num_transport_actions;
+    self->num_transport_actions +
+    self->num_chord_actions;
 
   if ((int) total > self->stack->max_length)
     {
@@ -74,6 +75,7 @@ undo_stack_init_loaded (
   size_t midi_mapping_actions_idx = 0;
   size_t range_actions_idx = 0;
   size_t transport_actions_idx = 0;
+  size_t chord_actions_idx = 0;
 
   size_t total_actions =
     undo_stack_get_total_cached_actions (self);
@@ -105,6 +107,7 @@ undo_stack_init_loaded (
       DO_SIMPLE (MidiMapping, midi_mapping)
       DO_SIMPLE (Range, range)
       DO_SIMPLE (Transport, transport)
+      DO_SIMPLE (Chord, chord)
     }
 
   g_return_if_fail (
@@ -187,6 +190,8 @@ undo_stack_clone (
   CLONE_ACTIONS (
     transport_actions, transport_action,
     TransportAction);
+  CLONE_ACTIONS (
+    chord_actions, chord_action, ChordAction);
 
 #undef CLONE_ACTIONS
 
@@ -277,6 +282,8 @@ undo_stack_push (
     APPEND_ELEMENT (
       TRANSPORT, Transport, transport);
     APPEND_ELEMENT (
+      CHORD, Chord, chord);
+    APPEND_ELEMENT (
       ARRANGER_SELECTIONS, ArrangerSelections, as);
     }
 }
@@ -331,6 +338,7 @@ remove_action (
       RANGE, Range, range);
     REMOVE_ELEMENT (
       TRANSPORT, Transport, transport);
+    REMOVE_ELEMENT (CHORD, Chord, chord);
     case UA_ARRANGER_SELECTIONS:
       array_delete_confirm (
         self->as_actions,

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -62,8 +62,9 @@ undoable_action_init_loaded (
       PORT_CONNECTION, port_connection,
       PortConnection);
     INIT_LOADED (PORT, port, Port);
-    INIT_LOADED (TRANSPORT, transport, Transport);
     INIT_LOADED (RANGE, range, Range);
+    INIT_LOADED (TRANSPORT, transport, Transport);
+    INIT_LOADED (CHORD, chord, Chord);
     default:
       break;
     }
@@ -301,7 +302,7 @@ undoable_action_do (
     DO_ACTION (
       ARRANGER_SELECTIONS, arranger_selections,
       ArrangerSelections);
-    DO_ACTION (TRANSPORT, transport, Transport);
+    DO_ACTION (CHORD, chord, Chord);
     DO_ACTION (RANGE, range, Range);
     DO_ACTION (
       PORT_CONNECTION, port_connection,
@@ -404,8 +405,9 @@ undoable_action_undo (
       PORT_CONNECTION, port_connection,
       PortConnection);
     UNDO_ACTION (PORT, port, Port);
-    UNDO_ACTION (TRANSPORT, transport, Transport);
     UNDO_ACTION (RANGE, range, Range);
+    UNDO_ACTION (TRANSPORT, transport, Transport);
+    UNDO_ACTION (CHORD, chord, Chord);
     default:
       g_warn_if_reached ();
       ret = -1;
@@ -597,8 +599,9 @@ undoable_action_to_string (
       PORT_CONNECTION, PortConnection,
       port_connection);
     STRINGIZE_UA (PORT, Port, port);
-    STRINGIZE_UA (TRANSPORT, Transport, transport);
     STRINGIZE_UA (RANGE, Range, range);
+    STRINGIZE_UA (TRANSPORT, Transport, transport);
+    STRINGIZE_UA (CHORD, Chord, chord);
     default:
       g_return_val_if_reached (
         g_strdup (""));
@@ -637,8 +640,9 @@ undoable_action_free (UndoableAction * self)
       PORT_CONNECTION, port_connection,
       PortConnection);
     FREE_ACTION (PORT, port, Port);
-    FREE_ACTION (TRANSPORT, transport, Transport);
     FREE_ACTION (RANGE, range, Range);
+    FREE_ACTION (TRANSPORT, transport, Transport);
+    FREE_ACTION (CHORD, chord, Chord);
     default:
       g_warn_if_reached ();
       break;

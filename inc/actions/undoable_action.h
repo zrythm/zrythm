@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -73,6 +73,8 @@ typedef enum UndoableActionType
 
   UA_TRANSPORT,
 
+  UA_CHORD,
+
 } UndoableActionType;
 
 static const cyaml_strval_t
@@ -88,6 +90,7 @@ undoable_action_type_strings[] =
   { "Port", UA_PORT },
   { "Range", UA_RANGE },
   { "Transport", UA_TRANSPORT },
+  { "Chord", UA_CHORD },
 };
 
 /**
@@ -96,7 +99,7 @@ undoable_action_type_strings[] =
  */
 typedef struct UndoableAction
 {
-  int                schema_version;
+  int                 schema_version;
 
   /** Undoable action type. */
   UndoableActionType  type;

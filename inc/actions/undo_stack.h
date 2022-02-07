@@ -28,6 +28,7 @@
 
 #include "actions/arranger_selections.h"
 #include "actions/channel_send_action.h"
+#include "actions/chord_action.h"
 #include "actions/midi_mapping_action.h"
 #include "actions/mixer_selections_action.h"
 #include "actions/tracklist_selections.h"
@@ -99,6 +100,10 @@ typedef struct UndoStack
   size_t        num_transport_actions;
   size_t        transport_actions_size;
 
+  ChordAction ** chord_actions;
+  size_t        num_chord_actions;
+  size_t        chord_actions_size;
+
 } UndoStack;
 
 static const cyaml_schema_field_t
@@ -132,6 +137,9 @@ static const cyaml_schema_field_t
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, transport_actions,
     transport_action_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    UndoStack, chord_actions,
+    chord_action_schema),
   YAML_FIELD_MAPPING_PTR (
     UndoStack, stack, stack_fields_schema),
 

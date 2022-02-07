@@ -46,7 +46,6 @@ channel_send_action_init_loaded (
  * @param port_connections_mgr Port connections
  *   manager at the start of the action, if needed.
  */
-WARN_UNUSED_RESULT
 UndoableAction *
 channel_send_action_new (
   ChannelSend *         send,

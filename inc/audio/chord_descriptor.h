@@ -327,7 +327,7 @@ chord_descriptor_is_key_bass (
  */
 ChordDescriptor *
 chord_descriptor_clone (
-  ChordDescriptor * src);
+  const ChordDescriptor * src);
 
 void
 chord_descriptor_copy (

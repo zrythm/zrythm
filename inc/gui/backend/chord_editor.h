@@ -44,6 +44,8 @@ typedef struct ChordPreset ChordPreset;
 
 #define CHORD_EDITOR (CLIP_EDITOR->chord_editor)
 
+#define CHORD_EDITOR_NUM_CHORDS 12
+
 /**
  * Backend for the chord editor.
  */
@@ -105,20 +107,29 @@ chord_editor_clone (
   ChordEditor * src);
 
 void
+chord_editor_apply_chords (
+  ChordEditor *            self,
+  const ChordDescriptor ** chords,
+  bool                     undoable);
+
+void
 chord_editor_apply_preset (
   ChordEditor * self,
-  ChordPreset * pset);
+  ChordPreset * pset,
+  bool          undoable);
 
 void
 chord_editor_apply_preset_from_scale (
   ChordEditor *     self,
   MusicalScaleType  scale,
-  MusicalNote       root_note);
+  MusicalNote       root_note,
+  bool              undoable);
 
 void
 chord_editor_transpose_chords (
   ChordEditor * self,
-  bool          up);
+  bool          up,
+  bool          undoable);
 
 ChordEditor *
 chord_editor_new (void);
