@@ -1041,7 +1041,10 @@ zrythm_app_startup (
   guile_init (self->argc, self->argv);
 #endif
 
-  g_message ("GTK_THEME=%s", getenv ("GTK_THEME"));
+  g_message (
+    "GTK_THEME was '%s'. unsetting...",
+    getenv ("GTK_THEME"));
+  g_unsetenv ("GTK_THEME");
 
   /* install segfault handler */
   g_message ("Installing signal handlers...");
