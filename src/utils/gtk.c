@@ -2002,11 +2002,25 @@ z_gdk_clipboard_get_text (
   GdkContentProvider * provider =
     gdk_clipboard_get_content (clipboard);
 
+  /* if the clipboard data was not set by this
+   * process or clipboard is empty, return NULL */
+  if (!provider)
+    {
+      g_debug (
+        "clipboard content provider is NULL");
+      return NULL;
+    }
+
   /* if the content provider does not contain text,
    * we are not interested */
   if (!gdk_content_provider_get_value (
          provider, &value, NULL))
-    return NULL;
+    {
+      g_debug (
+        "clipboard content provider does not "
+        "contain text");
+      return NULL;
+    }
 
   char * str =
     g_strdup (g_value_get_string (&value));
