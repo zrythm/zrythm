@@ -61,7 +61,7 @@ typedef struct ArrangerSelections
 typedef struct _MainWindowWidget
 {
   GtkApplicationWindow     parent_instance;
-  GtkOverlay *             overlay;
+  //GtkOverlay *             overlay;
   GtkBox *                 main_box;
   HeaderWidget *           header;
   TopBarWidget *           top_bar;

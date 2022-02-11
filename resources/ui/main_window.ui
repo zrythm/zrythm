@@ -6,37 +6,37 @@
     <property name="icon_name">zrythm</property>
     <signal name="destroy" handler="on_main_window_destroy" swapped="no"/>
     <child>
-      <object class="AdwToastOverlay" id="toast_overlay">
-        <property name="name">main-window-overlay</property>
-        <property name="child">
-          <object class="GtkBox" id="main_box">
-            <property name="name">main-window-main-box</property>
-            <property name="orientation">vertical</property>
+      <object class="GtkBox" id="main_box">
+        <property name="name">main-window-main-box</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="AdwToastOverlay" id="toast_overlay">
+            <!--<property name="valign">start</property>-->
             <child>
               <object class="HeaderWidget" id="header">
               </object>
             </child>
+          </object>
+        </child>
+        <child>
+          <object class="TopBarWidget" id="top_bar">
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="center_box">
+            <property name="name">main-window-center-box</property>
+            <property name="vexpand">1</property>
             <child>
-              <object class="TopBarWidget" id="top_bar">
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="center_box">
-                <property name="name">main-window-center-box</property>
-                <property name="vexpand">1</property>
-                <child>
-                  <object class="CenterDockWidget" id="center_dock">
-                    <property name="hexpand">1</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="BotBarWidget" id="bot_bar">
+              <object class="CenterDockWidget" id="center_dock">
+                <property name="hexpand">1</property>
               </object>
             </child>
           </object>
-        </property>
+        </child>
+        <child>
+          <object class="BotBarWidget" id="bot_bar">
+          </object>
+        </child>
       </object>
     </child>
   </template>
