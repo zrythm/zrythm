@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-01-30 23:00+0000\n"
+"POT-Creation-Date: 2022-02-11 14:55+0000\n"
 "PO-Revision-Date: 2022-01-17 09:53+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/zrythm/zrythm/he/"
@@ -825,74 +825,74 @@ msgstr ""
 "תמכו בפרויקט זה בכתובת https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1481
+#: src/zrythm_app.c:1484
 #, c-format
 msgid "File %s not found."
 msgstr "הקובץ %s לא נמצא."
 
-#: src/zrythm_app.c:1502
+#: src/zrythm_app.c:1505
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr "לא צוין קובץ פלט. נא להעביר אחד עם `--output=FILE`."
 
-#: src/zrythm_app.c:1568
+#: src/zrythm_app.c:1571
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "הרחבת הפרוייקט נכשלה: %s\n"
 
-#: src/zrythm_app.c:1587
+#: src/zrythm_app.c:1590
 msgid "Unknown operation"
 msgstr "פעולה לא ידועה"
 
-#: src/zrythm_app.c:1607
+#: src/zrythm_app.c:1610
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "libguile נדרש עבור אפשרות זו\n"
 
-#: src/zrythm_app.c:1772
+#: src/zrythm_app.c:1775
 msgid "Print version information"
 msgstr "הדפס מידע על הגרסה"
 
-#: src/zrythm_app.c:1777
+#: src/zrythm_app.c:1780
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "המר ZPJ-FILE ל-YAML"
 
-#: src/zrythm_app.c:1782
+#: src/zrythm_app.c:1785
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "המר את YAML-PROJECT-FILE לפורמט .zpj"
 
-#: src/zrythm_app.c:1787
+#: src/zrythm_app.c:1790
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "צור פרויקט מ-SCRIPT-FILE"
 
-#: src/zrythm_app.c:1791
+#: src/zrythm_app.c:1794
 msgid "Print output in user-friendly way"
 msgstr "הדפס פלט בצורה ידידותית למשתמש"
 
-#: src/zrythm_app.c:1795
+#: src/zrythm_app.c:1798
 msgid "Print current settings"
 msgstr "הדפס את ההגדרות הנוכחיות"
 
-#: src/zrythm_app.c:1799
+#: src/zrythm_app.c:1802
 msgid "Reset to factory settings"
 msgstr "אפס להגדרות יצרן"
 
-#: src/zrythm_app.c:1802
+#: src/zrythm_app.c:1805
 msgid "Override the audio backend to use"
 msgstr "החלף את הקצה האחורי של האודיו לשימוש"
 
-#: src/zrythm_app.c:1806
+#: src/zrythm_app.c:1809
 msgid "Override the MIDI backend to use"
 msgstr "החלף את הקצה האחורי של MIDI לשימוש"
 
-#: src/zrythm_app.c:1810
+#: src/zrythm_app.c:1813
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "קיצור של --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1842
+#: src/zrythm_app.c:1845
 msgid "[PROJECT-FILE]"
 msgstr "[קובץ-פרויקט]"
 
-#: src/zrythm_app.c:1847
+#: src/zrythm_app.c:1850
 #, c-format
 msgid ""
 "Examples:\n"
@@ -904,7 +904,7 @@ msgid ""
 "Please report issues to %s\n"
 msgstr ""
 
-#: src/zrythm_app.c:1859
+#: src/zrythm_app.c:1862
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "הפעל את %s, עם אפשרות העברת קובץ פרויקט."
@@ -1614,7 +1614,7 @@ msgid "Failed to change time signature"
 msgstr ""
 
 #: src/gui/widgets/drag_dest_box.c:356 src/gui/widgets/panel_file_browser.c:421
-#: src/audio/tracklist.c:1520 src/audio/track.c:3848 src/actions/actions.c:3580
+#: src/audio/tracklist.c:1520 src/audio/track.c:3848 src/actions/actions.c:3581
 msgid "Failed to create track"
 msgstr ""
 
@@ -2949,7 +2949,7 @@ msgid "Pack"
 msgstr ""
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:193
-#: src/actions/actions.c:3379
+#: src/actions/actions.c:3380
 msgid "Preset Name"
 msgstr ""
 
@@ -3376,58 +3376,81 @@ msgid "Most Often Used Chords"
 msgstr ""
 
 #: src/settings/chord_preset_pack_manager.c:203
-msgid "Ballad"
+msgid "Eastern Pop"
 msgstr ""
 
 #: src/settings/chord_preset_pack_manager.c:207
-#, fuzzy
-msgid "Snow Halation"
-msgstr "פעולה לא ידועה"
-
-#: src/settings/chord_preset_pack_manager.c:231
-msgid "Eurodance"
+msgid "Together"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:235
-msgid "Meaning of Love"
+#: src/settings/chord_preset_pack_manager.c:226
+msgid "GG"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:247
-msgid "Blue"
+#: src/settings/chord_preset_pack_manager.c:248
+msgid "Daijiken"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:269
-msgid "Eurobeat"
+#: src/settings/chord_preset_pack_manager.c:270
+msgid "Dance"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:272
-msgid "Burning Night"
+#. the idolm@ster 2
+#: src/settings/chord_preset_pack_manager.c:273
+msgid "Idol 1"
 msgstr ""
 
-#. believe
-#: src/settings/chord_preset_pack_manager.c:290
-msgid "Future"
+#: src/settings/chord_preset_pack_manager.c:287
+msgid "Ballad"
 msgstr ""
 
-#. get me power
-#: src/settings/chord_preset_pack_manager.c:308
-msgid "Hi-Power"
-msgstr ""
-
-#: src/settings/chord_preset_pack_manager.c:330
-msgid "Rock"
+#: src/settings/chord_preset_pack_manager.c:312
+msgid "Connection"
 msgstr ""
 
 #: src/settings/chord_preset_pack_manager.c:333
+msgid "Secret Base"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:356
+msgid "Eurodance"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:394
+msgid "Eurobeat"
+msgstr ""
+
+#. believe
+#: src/settings/chord_preset_pack_manager.c:415
+msgid "Future"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:513
+msgid "Progressive Trance"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:515
+msgid "Sajek Valley"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:539
+msgid "Rock"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:542
 msgid "Overdrive"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:352
+#: src/settings/chord_preset_pack_manager.c:561
 msgid "Heart"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:370
+#: src/settings/chord_preset_pack_manager.c:579
 msgid "Pray"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:598
+msgid "Thank You"
 msgstr ""
 
 #: src/settings/chord_preset.c:65 src/audio/chord_track.c:60
@@ -4378,43 +4401,43 @@ msgid ""
 "chord preset browser."
 msgstr ""
 
-#: src/actions/actions.c:3280 src/actions/actions.c:3332
+#: src/actions/actions.c:3281 src/actions/actions.c:3333
 msgid "Preset Pack Name"
 msgstr ""
 
-#: src/actions/actions.c:3310 src/actions/actions.c:3357
+#: src/actions/actions.c:3311 src/actions/actions.c:3358
 msgid "Are you sure you want to remove this chord preset pack?"
 msgstr ""
 
-#: src/actions/actions.c:3457
+#: src/actions/actions.c:3458
 #, c-format
 msgid "Failed to reset %s"
 msgstr ""
 
-#: src/actions/actions.c:3488
+#: src/actions/actions.c:3489
 #, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr ""
 
-#: src/actions/actions.c:3523
+#: src/actions/actions.c:3524
 msgid "Cannot delete standard bookmark"
 msgstr ""
 
-#: src/actions/actions.c:3535
+#: src/actions/actions.c:3536
 msgid "Are you sure you want to remove this bookmark?"
 msgstr ""
 
-#: src/actions/actions.c:3766 src/actions/actions.c:3797
+#: src/actions/actions.c:3767 src/actions/actions.c:3798
 msgid "Collection name"
 msgstr ""
 
-#: src/actions/actions.c:3825
+#: src/actions/actions.c:3826
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
 msgstr ""
 
-#: src/actions/actions.c:4015
+#: src/actions/actions.c:4016
 msgid "Failed to change direct output"
 msgstr ""
 
@@ -4450,44 +4473,44 @@ msgstr ""
 msgid "Beat unit change"
 msgstr ""
 
-#: src/actions/channel_send_action.c:173
+#: src/actions/channel_send_action.c:172
 msgid "Failed to connect MIDI send"
 msgstr ""
 
-#: src/actions/channel_send_action.c:199
+#: src/actions/channel_send_action.c:198
 msgid "Failed to connect audio send"
 msgstr ""
 
-#: src/actions/channel_send_action.c:268 src/actions/channel_send_action.c:336
+#: src/actions/channel_send_action.c:267 src/actions/channel_send_action.c:335
 #, c-format
 msgid "Failed to perform channel send action: %s"
 msgstr ""
 
-#: src/actions/channel_send_action.c:365
+#: src/actions/channel_send_action.c:364
 msgid "Connect sidechain"
 msgstr ""
 
-#: src/actions/channel_send_action.c:367
+#: src/actions/channel_send_action.c:366
 msgid "Connect stereo"
 msgstr ""
 
-#: src/actions/channel_send_action.c:369
+#: src/actions/channel_send_action.c:368
 msgid "Connect MIDI"
 msgstr ""
 
-#: src/actions/channel_send_action.c:371
+#: src/actions/channel_send_action.c:370
 msgid "Disconnect"
 msgstr ""
 
-#: src/actions/channel_send_action.c:373
+#: src/actions/channel_send_action.c:372
 msgid "Change amount"
 msgstr ""
 
-#: src/actions/channel_send_action.c:375
+#: src/actions/channel_send_action.c:374
 msgid "Change ports"
 msgstr ""
 
-#: src/actions/channel_send_action.c:378
+#: src/actions/channel_send_action.c:377
 msgid "Channel send connection"
 msgstr ""
 
@@ -4804,6 +4827,10 @@ msgstr ""
 #: src/actions/tracklist_selections.c:2431
 #, c-format
 msgid "Unpin %d Tracks"
+msgstr ""
+
+#: src/actions/chord_action.c:133
+msgid "Change chords"
 msgstr ""
 
 #: src/actions/undo_manager.c:328
@@ -7021,3 +7048,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:1170
 msgid "The default script to use in the scripting window."
 msgstr ""
+
+#, fuzzy
+#~ msgid "Snow Halation"
+#~ msgstr "פעולה לא ידועה"

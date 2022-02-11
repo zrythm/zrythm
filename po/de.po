@@ -12,11 +12,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-01-30 23:00+0000\n"
+"POT-Creation-Date: 2022-02-11 14:55+0000\n"
 "PO-Revision-Date: 2022-02-08 09:06+0000\n"
 "Last-Translator: Ulrich <drulli@airmail.cc>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
-"\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
+">\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -842,76 +842,76 @@ msgstr ""
 "Unterstützen Sie dieses Projekt über https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1481
+#: src/zrythm_app.c:1484
 #, c-format
 msgid "File %s not found."
 msgstr "Datei %s nicht gefunden."
 
-#: src/zrythm_app.c:1502
+#: src/zrythm_app.c:1505
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "Es wurde kein Ausgabedatei angegeben. Bitte geben Sie eine an mittels `--"
 "output=FILE`."
 
-#: src/zrythm_app.c:1568
+#: src/zrythm_app.c:1571
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "Fehler beim dekomprimieren des Projektes: %s\n"
 
-#: src/zrythm_app.c:1587
+#: src/zrythm_app.c:1590
 msgid "Unknown operation"
 msgstr "Unbekannter Vorgang"
 
-#: src/zrythm_app.c:1607
+#: src/zrythm_app.c:1610
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "Diese Option setzt libguile voraus\n"
 
-#: src/zrythm_app.c:1772
+#: src/zrythm_app.c:1775
 msgid "Print version information"
 msgstr "Versionsinformationen drucken"
 
-#: src/zrythm_app.c:1777
+#: src/zrythm_app.c:1780
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "ZPJ-Datein zu YAML konvertieren"
 
-#: src/zrythm_app.c:1782
+#: src/zrythm_app.c:1785
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "YAML-PROJEKT-DATEI in das .zpj-Format konvertieren"
 
-#: src/zrythm_app.c:1787
+#: src/zrythm_app.c:1790
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "Erzeugen eines Projekts aus SCRIPT-DATEI"
 
-#: src/zrythm_app.c:1791
+#: src/zrythm_app.c:1794
 msgid "Print output in user-friendly way"
 msgstr "Druckausgabe auf benutzerfreundliche Weise"
 
-#: src/zrythm_app.c:1795
+#: src/zrythm_app.c:1798
 msgid "Print current settings"
 msgstr "Aktuelle Einstellungen drucken"
 
-#: src/zrythm_app.c:1799
+#: src/zrythm_app.c:1802
 msgid "Reset to factory settings"
 msgstr "Auf Werkseinstellungen zurücksetzen"
 
-#: src/zrythm_app.c:1802
+#: src/zrythm_app.c:1805
 msgid "Override the audio backend to use"
 msgstr "Das zu nutzende Audio-Backend überschreiben"
 
-#: src/zrythm_app.c:1806
+#: src/zrythm_app.c:1809
 msgid "Override the MIDI backend to use"
 msgstr "Das zu nutzende MIDI-Backend überschreiben"
 
-#: src/zrythm_app.c:1810
+#: src/zrythm_app.c:1813
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "Abkürzung für --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1842
+#: src/zrythm_app.c:1845
 msgid "[PROJECT-FILE]"
 msgstr "[PROJEKT-DATEI]"
 
-#: src/zrythm_app.c:1847
+#: src/zrythm_app.c:1850
 #, c-format
 msgid ""
 "Examples:\n"
@@ -931,7 +931,7 @@ msgstr ""
 "\n"
 "Bitte melden Sie Probleme an %s\n"
 
-#: src/zrythm_app.c:1859
+#: src/zrythm_app.c:1862
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "Führen Sie %s aus, optional mit Angabe einer Projektdatei."
@@ -1653,7 +1653,7 @@ msgid "Failed to change time signature"
 msgstr "Taktart konnte nicht geändert werden"
 
 #: src/gui/widgets/drag_dest_box.c:356 src/gui/widgets/panel_file_browser.c:421
-#: src/audio/tracklist.c:1520 src/audio/track.c:3848 src/actions/actions.c:3580
+#: src/audio/tracklist.c:1520 src/audio/track.c:3848 src/actions/actions.c:3581
 msgid "Failed to create track"
 msgstr "Spur konnte nicht erstellt werden"
 
@@ -3000,7 +3000,7 @@ msgid "Pack"
 msgstr "Paket"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:193
-#: src/actions/actions.c:3379
+#: src/actions/actions.c:3380
 msgid "Preset Name"
 msgstr "Preset-Name"
 
@@ -3458,58 +3458,86 @@ msgid "Most Often Used Chords"
 msgstr "Am häufigsten verwendete Akkorde"
 
 #: src/settings/chord_preset_pack_manager.c:203
+#, fuzzy
+msgid "Eastern Pop"
+msgstr "Euro-Pop"
+
+#: src/settings/chord_preset_pack_manager.c:207
+msgid "Together"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:226
+#, fuzzy
+msgid "GG"
+msgstr "G"
+
+#: src/settings/chord_preset_pack_manager.c:248
+msgid "Daijiken"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:270
+#, fuzzy
+msgid "Dance"
+msgstr "Abbrechen"
+
+#. the idolm@ster 2
+#: src/settings/chord_preset_pack_manager.c:273
+msgid "Idol 1"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:287
 msgid "Ballad"
 msgstr "Ballade"
 
-#: src/settings/chord_preset_pack_manager.c:207
-msgid "Snow Halation"
+#: src/settings/chord_preset_pack_manager.c:312
+#, fuzzy
+msgid "Connection"
+msgstr "Verbindungen"
+
+#: src/settings/chord_preset_pack_manager.c:333
+msgid "Secret Base"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:231
+#: src/settings/chord_preset_pack_manager.c:356
 msgid "Eurodance"
 msgstr "Eurodance"
 
-#: src/settings/chord_preset_pack_manager.c:235
-msgid "Meaning of Love"
-msgstr "Meaning of Love"
-
-#: src/settings/chord_preset_pack_manager.c:247
-msgid "Blue"
-msgstr "Blue"
-
-#: src/settings/chord_preset_pack_manager.c:269
+#: src/settings/chord_preset_pack_manager.c:394
 msgid "Eurobeat"
 msgstr "Eurobeat"
 
-#: src/settings/chord_preset_pack_manager.c:272
-msgid "Burning Night"
-msgstr "Brennende Nacht"
-
 #. believe
-#: src/settings/chord_preset_pack_manager.c:290
+#: src/settings/chord_preset_pack_manager.c:415
 msgid "Future"
 msgstr "Zukunft"
 
-#. get me power
-#: src/settings/chord_preset_pack_manager.c:308
-msgid "Hi-Power"
-msgstr "Hi-Power"
+#: src/settings/chord_preset_pack_manager.c:513
+msgid "Progressive Trance"
+msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:330
+#: src/settings/chord_preset_pack_manager.c:515
+msgid "Sajek Valley"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:539
 msgid "Rock"
 msgstr "Rock"
 
-#: src/settings/chord_preset_pack_manager.c:333
+#: src/settings/chord_preset_pack_manager.c:542
 msgid "Overdrive"
 msgstr "Overdrive"
 
-#: src/settings/chord_preset_pack_manager.c:352
+#: src/settings/chord_preset_pack_manager.c:561
 msgid "Heart"
 msgstr "Herz"
 
-#: src/settings/chord_preset_pack_manager.c:370
+#: src/settings/chord_preset_pack_manager.c:579
 msgid "Pray"
 msgstr "Beten"
+
+#: src/settings/chord_preset_pack_manager.c:598
+msgid "Thank You"
+msgstr ""
 
 #: src/settings/chord_preset.c:65 src/audio/chord_track.c:60
 #: resources/ui/inspector_chord.ui:7
@@ -4507,37 +4535,38 @@ msgid ""
 "chord preset browser."
 msgstr ""
 
-#: src/actions/actions.c:3280 src/actions/actions.c:3332
+#: src/actions/actions.c:3281 src/actions/actions.c:3333
 msgid "Preset Pack Name"
 msgstr "Preset-Paket-Name"
 
-#: src/actions/actions.c:3310 src/actions/actions.c:3357
+#: src/actions/actions.c:3311 src/actions/actions.c:3358
 msgid "Are you sure you want to remove this chord preset pack?"
-msgstr "Sind Sie sicher, dass Sie dieses Akkord-Preset-Paket entfernen möchten?"
+msgstr ""
+"Sind Sie sicher, dass Sie dieses Akkord-Preset-Paket entfernen möchten?"
 
-#: src/actions/actions.c:3457
+#: src/actions/actions.c:3458
 #, c-format
 msgid "Failed to reset %s"
 msgstr "%s konnte nicht zurückgesetzt werden"
 
-#: src/actions/actions.c:3488
+#: src/actions/actions.c:3489
 #, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "%s konnte nicht von %s getrennt werden"
 
-#: src/actions/actions.c:3523
+#: src/actions/actions.c:3524
 msgid "Cannot delete standard bookmark"
 msgstr "Standard-Lesezeichen kann nicht gelöscht werden"
 
-#: src/actions/actions.c:3535
+#: src/actions/actions.c:3536
 msgid "Are you sure you want to remove this bookmark?"
 msgstr "Sind Sie sicher, dass Sie dieses Lesezeichen entfernen möchten?"
 
-#: src/actions/actions.c:3766 src/actions/actions.c:3797
+#: src/actions/actions.c:3767 src/actions/actions.c:3798
 msgid "Collection name"
 msgstr "Sammlungsname"
 
-#: src/actions/actions.c:3825
+#: src/actions/actions.c:3826
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
@@ -4545,7 +4574,7 @@ msgstr ""
 "Diese Sammlung enthält %d Plugins. Sind Sie sicher, dass Sie sie entfernen "
 "möchten?"
 
-#: src/actions/actions.c:4015
+#: src/actions/actions.c:4016
 msgid "Failed to change direct output"
 msgstr "Direktausgang konnte nicht geändert werden"
 
@@ -4581,44 +4610,44 @@ msgstr "Schläge pro Taktwechsel"
 msgid "Beat unit change"
 msgstr "Änderung der Notenlänge des Grundschlags"
 
-#: src/actions/channel_send_action.c:173
+#: src/actions/channel_send_action.c:172
 msgid "Failed to connect MIDI send"
 msgstr "MIDI-Send konnte nicht verbunden werden"
 
-#: src/actions/channel_send_action.c:199
+#: src/actions/channel_send_action.c:198
 msgid "Failed to connect audio send"
 msgstr "Audio-Send konnte nicht verbunden werden"
 
-#: src/actions/channel_send_action.c:268 src/actions/channel_send_action.c:336
+#: src/actions/channel_send_action.c:267 src/actions/channel_send_action.c:335
 #, c-format
 msgid "Failed to perform channel send action: %s"
 msgstr "Kanal-Send-Vorgang %s konnte nicht durchgeführt werden"
 
-#: src/actions/channel_send_action.c:365
+#: src/actions/channel_send_action.c:364
 msgid "Connect sidechain"
 msgstr "Side-Chain verbinden"
 
-#: src/actions/channel_send_action.c:367
+#: src/actions/channel_send_action.c:366
 msgid "Connect stereo"
 msgstr "Stereo verbinden"
 
-#: src/actions/channel_send_action.c:369
+#: src/actions/channel_send_action.c:368
 msgid "Connect MIDI"
 msgstr "MIDI verbinden"
 
-#: src/actions/channel_send_action.c:371
+#: src/actions/channel_send_action.c:370
 msgid "Disconnect"
 msgstr "Trennen"
 
-#: src/actions/channel_send_action.c:373
+#: src/actions/channel_send_action.c:372
 msgid "Change amount"
 msgstr "Betrag ändern"
 
-#: src/actions/channel_send_action.c:375
+#: src/actions/channel_send_action.c:374
 msgid "Change ports"
 msgstr "Ports ändern"
 
-#: src/actions/channel_send_action.c:378
+#: src/actions/channel_send_action.c:377
 msgid "Channel send connection"
 msgstr "Kanal Send-Verbindung"
 
@@ -4939,6 +4968,11 @@ msgstr "Spur lösen"
 #, c-format
 msgid "Unpin %d Tracks"
 msgstr "%d Spuren lösen"
+
+#: src/actions/chord_action.c:133
+#, fuzzy
+msgid "Change chords"
+msgstr "Farbe ändern"
 
 #: src/actions/undo_manager.c:328
 msgid "Failed to perform action"
@@ -7269,6 +7303,18 @@ msgstr "Standard-Skript"
 #: build/data/org.zrythm.Zrythm.gschema.xml:1170
 msgid "The default script to use in the scripting window."
 msgstr "Das Standardskript, das im Skriptfenster verwendet werden soll."
+
+#~ msgid "Meaning of Love"
+#~ msgstr "Meaning of Love"
+
+#~ msgid "Blue"
+#~ msgstr "Blue"
+
+#~ msgid "Burning Night"
+#~ msgstr "Brennende Nacht"
+
+#~ msgid "Hi-Power"
+#~ msgstr "Hi-Power"
 
 #~ msgid "Show automation lanes"
 #~ msgstr "Automationsunterspuren anzeigen"

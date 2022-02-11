@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-01-30 23:00+0000\n"
+"POT-Creation-Date: 2022-02-11 14:55+0000\n"
 "PO-Revision-Date: 2022-01-17 09:53+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
@@ -852,76 +852,76 @@ msgstr ""
 "Поддержите этот проект на https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1481
+#: src/zrythm_app.c:1484
 #, c-format
 msgid "File %s not found."
 msgstr "Файл %s не найден."
 
-#: src/zrythm_app.c:1502
+#: src/zrythm_app.c:1505
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "Выходной файл не был указан. Пожалуйста, передайте его при помощи `--"
 "output=FILE`."
 
-#: src/zrythm_app.c:1568
+#: src/zrythm_app.c:1571
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "Проект не удалось распаковать: %s\n"
 
-#: src/zrythm_app.c:1587
+#: src/zrythm_app.c:1590
 msgid "Unknown operation"
 msgstr "Неизвестная операция"
 
-#: src/zrythm_app.c:1607
+#: src/zrythm_app.c:1610
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "Для этой опции требуется libguile\n"
 
-#: src/zrythm_app.c:1772
+#: src/zrythm_app.c:1775
 msgid "Print version information"
 msgstr "Отобразить информацию о версии"
 
-#: src/zrythm_app.c:1777
+#: src/zrythm_app.c:1780
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "Преобразование ZPJ-FILE в YAML"
 
-#: src/zrythm_app.c:1782
+#: src/zrythm_app.c:1785
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "Преобразование YAML-PROJECT-FILE в формат .zpj"
 
-#: src/zrythm_app.c:1787
+#: src/zrythm_app.c:1790
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "Создание проекта из SCRIPT-FILE"
 
-#: src/zrythm_app.c:1791
+#: src/zrythm_app.c:1794
 msgid "Print output in user-friendly way"
 msgstr "Отобразить вывод в удобным для пользователя формате"
 
-#: src/zrythm_app.c:1795
+#: src/zrythm_app.c:1798
 msgid "Print current settings"
 msgstr "Отобразить текущие настройки"
 
-#: src/zrythm_app.c:1799
+#: src/zrythm_app.c:1802
 msgid "Reset to factory settings"
 msgstr "Сброс до заводских настроек"
 
-#: src/zrythm_app.c:1802
+#: src/zrythm_app.c:1805
 msgid "Override the audio backend to use"
 msgstr "Переопределить используемый аудио бэкенд"
 
-#: src/zrythm_app.c:1806
+#: src/zrythm_app.c:1809
 msgid "Override the MIDI backend to use"
 msgstr "Переопределить используемый MIDI бэкенд"
 
-#: src/zrythm_app.c:1810
+#: src/zrythm_app.c:1813
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "Алиас для --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1842
+#: src/zrythm_app.c:1845
 msgid "[PROJECT-FILE]"
 msgstr "[ФАЙЛ ПРОЕКТА]"
 
-#: src/zrythm_app.c:1847
+#: src/zrythm_app.c:1850
 #, c-format
 msgid ""
 "Examples:\n"
@@ -941,7 +941,7 @@ msgstr ""
 "\n"
 "Пожалуйста, сообщайте о проблемах в %s\n"
 
-#: src/zrythm_app.c:1859
+#: src/zrythm_app.c:1862
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "Запустить %s, опционально передав файл проекта."
@@ -1667,7 +1667,7 @@ msgid "Failed to change time signature"
 msgstr "Не удалось изменить размер"
 
 #: src/gui/widgets/drag_dest_box.c:356 src/gui/widgets/panel_file_browser.c:421
-#: src/audio/tracklist.c:1520 src/audio/track.c:3848 src/actions/actions.c:3580
+#: src/audio/tracklist.c:1520 src/audio/track.c:3848 src/actions/actions.c:3581
 msgid "Failed to create track"
 msgstr "Не удалось создать трек"
 
@@ -3033,7 +3033,7 @@ msgid "Pack"
 msgstr ""
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:193
-#: src/actions/actions.c:3379
+#: src/actions/actions.c:3380
 #, fuzzy
 msgid "Preset Name"
 msgstr "Пресеты"
@@ -3497,59 +3497,85 @@ msgid "Most Often Used Chords"
 msgstr ""
 
 #: src/settings/chord_preset_pack_manager.c:203
-msgid "Ballad"
+msgid "Eastern Pop"
 msgstr ""
 
 #: src/settings/chord_preset_pack_manager.c:207
-#, fuzzy
-msgid "Snow Halation"
-msgstr "Показать автоматизацию"
+msgid "Together"
+msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:231
+#: src/settings/chord_preset_pack_manager.c:226
+#, fuzzy
+msgid "GG"
+msgstr "G"
+
+#: src/settings/chord_preset_pack_manager.c:248
+msgid "Daijiken"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:270
+#, fuzzy
+msgid "Dance"
+msgstr "Отмена (Cancel)"
+
+#. the idolm@ster 2
+#: src/settings/chord_preset_pack_manager.c:273
+msgid "Idol 1"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:287
+msgid "Ballad"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:312
+#, fuzzy
+msgid "Connection"
+msgstr "Соединения"
+
+#: src/settings/chord_preset_pack_manager.c:333
+msgid "Secret Base"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:356
 msgid "Eurodance"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:235
-msgid "Meaning of Love"
-msgstr ""
-
-#: src/settings/chord_preset_pack_manager.c:247
-msgid "Blue"
-msgstr ""
-
-#: src/settings/chord_preset_pack_manager.c:269
+#: src/settings/chord_preset_pack_manager.c:394
 msgid "Eurobeat"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:272
-msgid "Burning Night"
-msgstr ""
-
 #. believe
-#: src/settings/chord_preset_pack_manager.c:290
+#: src/settings/chord_preset_pack_manager.c:415
 msgid "Future"
 msgstr ""
 
-#. get me power
-#: src/settings/chord_preset_pack_manager.c:308
-msgid "Hi-Power"
+#: src/settings/chord_preset_pack_manager.c:513
+msgid "Progressive Trance"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:330
+#: src/settings/chord_preset_pack_manager.c:515
+msgid "Sajek Valley"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:539
 msgid "Rock"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:333
+#: src/settings/chord_preset_pack_manager.c:542
 #, fuzzy
 msgid "Overdrive"
 msgstr "Перезаписывать события (Overwrite events)"
 
-#: src/settings/chord_preset_pack_manager.c:352
+#: src/settings/chord_preset_pack_manager.c:561
 msgid "Heart"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:370
+#: src/settings/chord_preset_pack_manager.c:579
 msgid "Pray"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:598
+msgid "Thank You"
 msgstr ""
 
 #: src/settings/chord_preset.c:65 src/audio/chord_track.c:60
@@ -4551,45 +4577,45 @@ msgid ""
 "chord preset browser."
 msgstr ""
 
-#: src/actions/actions.c:3280 src/actions/actions.c:3332
+#: src/actions/actions.c:3281 src/actions/actions.c:3333
 #, fuzzy
 msgid "Preset Pack Name"
 msgstr "Название трека (Track Name)"
 
-#: src/actions/actions.c:3310 src/actions/actions.c:3357
+#: src/actions/actions.c:3311 src/actions/actions.c:3358
 #, fuzzy
 msgid "Are you sure you want to remove this chord preset pack?"
 msgstr "Вы действительно хотите удалить эту закладку?"
 
-#: src/actions/actions.c:3457
+#: src/actions/actions.c:3458
 #, c-format
 msgid "Failed to reset %s"
 msgstr "Не удалось сбросить %s"
 
-#: src/actions/actions.c:3488
+#: src/actions/actions.c:3489
 #, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "Не удалось отключить %s от %s"
 
-#: src/actions/actions.c:3523
+#: src/actions/actions.c:3524
 msgid "Cannot delete standard bookmark"
 msgstr "Невозможно удалить стандартную закладку"
 
-#: src/actions/actions.c:3535
+#: src/actions/actions.c:3536
 msgid "Are you sure you want to remove this bookmark?"
 msgstr "Вы действительно хотите удалить эту закладку?"
 
-#: src/actions/actions.c:3766 src/actions/actions.c:3797
+#: src/actions/actions.c:3767 src/actions/actions.c:3798
 msgid "Collection name"
 msgstr "Название коллекции (Collection name)"
 
-#: src/actions/actions.c:3825
+#: src/actions/actions.c:3826
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
 msgstr "Эта коллекция содержит %d плагинов. Вы уверены, что хотите удалить её?"
 
-#: src/actions/actions.c:4015
+#: src/actions/actions.c:4016
 msgid "Failed to change direct output"
 msgstr "Не удалось изменить прямой выход"
 
@@ -4625,46 +4651,46 @@ msgstr "Изменение долей в такте"
 msgid "Beat unit change"
 msgstr "Изменение длины долей"
 
-#: src/actions/channel_send_action.c:173
+#: src/actions/channel_send_action.c:172
 #, fuzzy
 msgid "Failed to connect MIDI send"
 msgstr "Не удалось подключить посыл"
 
-#: src/actions/channel_send_action.c:199
+#: src/actions/channel_send_action.c:198
 #, fuzzy
 msgid "Failed to connect audio send"
 msgstr "Не удалось подключить посыл"
 
-#: src/actions/channel_send_action.c:268 src/actions/channel_send_action.c:336
+#: src/actions/channel_send_action.c:267 src/actions/channel_send_action.c:335
 #, fuzzy, c-format
 msgid "Failed to perform channel send action: %s"
 msgstr "Не удалось выполнить действие"
 
-#: src/actions/channel_send_action.c:365
+#: src/actions/channel_send_action.c:364
 msgid "Connect sidechain"
 msgstr "Подключить сайдчейн"
 
-#: src/actions/channel_send_action.c:367
+#: src/actions/channel_send_action.c:366
 msgid "Connect stereo"
 msgstr "Подключить стерео"
 
-#: src/actions/channel_send_action.c:369
+#: src/actions/channel_send_action.c:368
 msgid "Connect MIDI"
 msgstr "Подключить MIDI"
 
-#: src/actions/channel_send_action.c:371
+#: src/actions/channel_send_action.c:370
 msgid "Disconnect"
 msgstr "Отключить"
 
-#: src/actions/channel_send_action.c:373
+#: src/actions/channel_send_action.c:372
 msgid "Change amount"
 msgstr "Изменить значение"
 
-#: src/actions/channel_send_action.c:375
+#: src/actions/channel_send_action.c:374
 msgid "Change ports"
 msgstr "Изменить порты"
 
-#: src/actions/channel_send_action.c:378
+#: src/actions/channel_send_action.c:377
 msgid "Channel send connection"
 msgstr "Соединение посыла канала"
 
@@ -4982,6 +5008,11 @@ msgstr "Открепить трек"
 #, c-format
 msgid "Unpin %d Tracks"
 msgstr "Открепить %d треков"
+
+#: src/actions/chord_action.c:133
+#, fuzzy
+msgid "Change chords"
+msgstr "Изменить цвет"
 
 #: src/actions/undo_manager.c:328
 msgid "Failed to perform action"
@@ -7274,6 +7305,10 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:1170
 msgid "The default script to use in the scripting window."
 msgstr ""
+
+#, fuzzy
+#~ msgid "Snow Halation"
+#~ msgstr "Показать автоматизацию"
 
 #~ msgid "Add to project (carla)"
 #~ msgstr "Добавить в проект (carla)"

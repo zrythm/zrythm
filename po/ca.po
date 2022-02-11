@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-01-30 23:00+0000\n"
+"POT-Creation-Date: 2022-02-11 14:55+0000\n"
 "PO-Revision-Date: 2022-02-11 14:52+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
@@ -829,74 +829,74 @@ msgstr ""
 "Dona suport a aquest projecte a https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1481
+#: src/zrythm_app.c:1484
 #, c-format
 msgid "File %s not found."
 msgstr "No s'ha trobat el fitxer %s."
 
-#: src/zrythm_app.c:1502
+#: src/zrythm_app.c:1505
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr "Cap fitxer de sortida especificat. Passa un amb `--output=FILE`."
 
-#: src/zrythm_app.c:1568
+#: src/zrythm_app.c:1571
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "No s'ha pogut descomprimir el projecte: %s\n"
 
-#: src/zrythm_app.c:1587
+#: src/zrythm_app.c:1590
 msgid "Unknown operation"
 msgstr "Operació desconeguda"
 
-#: src/zrythm_app.c:1607
+#: src/zrythm_app.c:1610
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "Es requereix libguile per a aquesta opció\n"
 
-#: src/zrythm_app.c:1772
+#: src/zrythm_app.c:1775
 msgid "Print version information"
 msgstr "Mostrar la informació de la versió"
 
-#: src/zrythm_app.c:1777
+#: src/zrythm_app.c:1780
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "Convertir ZPJ-FILE a YAML"
 
-#: src/zrythm_app.c:1782
+#: src/zrythm_app.c:1785
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "Convertir YAML-PROJECT-FILE al format .zpj"
 
-#: src/zrythm_app.c:1787
+#: src/zrythm_app.c:1790
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "Generar un projecte a partir de SCRIPT-FILE"
 
-#: src/zrythm_app.c:1791
+#: src/zrythm_app.c:1794
 msgid "Print output in user-friendly way"
 msgstr "Veure la sortida d'una manera més amigable"
 
-#: src/zrythm_app.c:1795
+#: src/zrythm_app.c:1798
 msgid "Print current settings"
 msgstr "Veure la configuració actual"
 
-#: src/zrythm_app.c:1799
+#: src/zrythm_app.c:1802
 msgid "Reset to factory settings"
 msgstr "Restabliment de la configuració de fàbrica"
 
-#: src/zrythm_app.c:1802
+#: src/zrythm_app.c:1805
 msgid "Override the audio backend to use"
 msgstr "Sobreescriure el backend d'àudio a utilitzar"
 
-#: src/zrythm_app.c:1806
+#: src/zrythm_app.c:1809
 msgid "Override the MIDI backend to use"
 msgstr "Sobreescriure el backend MIDI a utilitzar"
 
-#: src/zrythm_app.c:1810
+#: src/zrythm_app.c:1813
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "Transcripció per a --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1842
+#: src/zrythm_app.c:1845
 msgid "[PROJECT-FILE]"
 msgstr "[PROJECT-FILE]"
 
-#: src/zrythm_app.c:1847
+#: src/zrythm_app.c:1850
 #, c-format
 msgid ""
 "Examples:\n"
@@ -916,7 +916,7 @@ msgstr ""
 "\n"
 "Informa els problemes a %s\n"
 
-#: src/zrythm_app.c:1859
+#: src/zrythm_app.c:1862
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "Executeu %s, passant opcionalment un fitxer de projecte."
@@ -1635,7 +1635,7 @@ msgid "Failed to change time signature"
 msgstr "Error en canviar la signatura de temps"
 
 #: src/gui/widgets/drag_dest_box.c:356 src/gui/widgets/panel_file_browser.c:421
-#: src/audio/tracklist.c:1520 src/audio/track.c:3848 src/actions/actions.c:3580
+#: src/audio/tracklist.c:1520 src/audio/track.c:3848 src/actions/actions.c:3581
 msgid "Failed to create track"
 msgstr "Error en crear pista"
 
@@ -2979,7 +2979,7 @@ msgid "Pack"
 msgstr "Paquet"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:193
-#: src/actions/actions.c:3379
+#: src/actions/actions.c:3380
 msgid "Preset Name"
 msgstr "Nom predefinit"
 
@@ -3149,8 +3149,8 @@ msgid ""
 "you agree to our %sPrivacy Policy%s."
 msgstr ""
 "Fes clic a D'acord per enviar-lo. A continuació pots verificar el que "
-"s'enviarà. En fer clic a D'acord, acceptes la nostra política de privadesa "
-"%s%s."
+"s'enviarà. En fer clic a D'acord, acceptes la nostra política de privadesa %s"
+"%s."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:392
 msgid "<b>Data</b>"
@@ -3434,58 +3434,86 @@ msgid "Most Often Used Chords"
 msgstr "Acords més utilitzats"
 
 #: src/settings/chord_preset_pack_manager.c:203
+#, fuzzy
+msgid "Eastern Pop"
+msgstr "Euro Pop"
+
+#: src/settings/chord_preset_pack_manager.c:207
+msgid "Together"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:226
+#, fuzzy
+msgid "GG"
+msgstr "Sol"
+
+#: src/settings/chord_preset_pack_manager.c:248
+msgid "Daijiken"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:270
+#, fuzzy
+msgid "Dance"
+msgstr "Cancel·lar"
+
+#. the idolm@ster 2
+#: src/settings/chord_preset_pack_manager.c:273
+msgid "Idol 1"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:287
 msgid "Ballad"
 msgstr "Balada"
 
-#: src/settings/chord_preset_pack_manager.c:207
-msgid "Snow Halation"
-msgstr "Mostrar halo"
+#: src/settings/chord_preset_pack_manager.c:312
+#, fuzzy
+msgid "Connection"
+msgstr "Connexions"
 
-#: src/settings/chord_preset_pack_manager.c:231
+#: src/settings/chord_preset_pack_manager.c:333
+msgid "Secret Base"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:356
 msgid "Eurodance"
 msgstr "Eurodance"
 
-#: src/settings/chord_preset_pack_manager.c:235
-msgid "Meaning of Love"
-msgstr "El significat de l'amor"
-
-#: src/settings/chord_preset_pack_manager.c:247
-msgid "Blue"
-msgstr "Blau"
-
-#: src/settings/chord_preset_pack_manager.c:269
+#: src/settings/chord_preset_pack_manager.c:394
 msgid "Eurobeat"
 msgstr "Eurobeat"
 
-#: src/settings/chord_preset_pack_manager.c:272
-msgid "Burning Night"
-msgstr "Nit en flames"
-
 #. believe
-#: src/settings/chord_preset_pack_manager.c:290
+#: src/settings/chord_preset_pack_manager.c:415
 msgid "Future"
 msgstr "Futur"
 
-#. get me power
-#: src/settings/chord_preset_pack_manager.c:308
-msgid "Hi-Power"
-msgstr "Hi-power"
+#: src/settings/chord_preset_pack_manager.c:513
+msgid "Progressive Trance"
+msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:330
+#: src/settings/chord_preset_pack_manager.c:515
+msgid "Sajek Valley"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:539
 msgid "Rock"
 msgstr "Rock"
 
-#: src/settings/chord_preset_pack_manager.c:333
+#: src/settings/chord_preset_pack_manager.c:542
 msgid "Overdrive"
 msgstr "Saturació"
 
-#: src/settings/chord_preset_pack_manager.c:352
+#: src/settings/chord_preset_pack_manager.c:561
 msgid "Heart"
 msgstr "Cor"
 
-#: src/settings/chord_preset_pack_manager.c:370
+#: src/settings/chord_preset_pack_manager.c:579
 msgid "Pray"
 msgstr "Pregar"
+
+#: src/settings/chord_preset_pack_manager.c:598
+msgid "Thank You"
+msgstr ""
 
 #: src/settings/chord_preset.c:65 src/audio/chord_track.c:60
 #: resources/ui/inspector_chord.ui:7
@@ -4472,43 +4500,43 @@ msgstr ""
 "No s'ha trobat cap paquet predefinit personalitzat. Crea primer un paquet "
 "predefinit des de l'explorador predefinit d'acords."
 
-#: src/actions/actions.c:3280 src/actions/actions.c:3332
+#: src/actions/actions.c:3281 src/actions/actions.c:3333
 msgid "Preset Pack Name"
 msgstr "Nom del paquet predefinit"
 
-#: src/actions/actions.c:3310 src/actions/actions.c:3357
+#: src/actions/actions.c:3311 src/actions/actions.c:3358
 msgid "Are you sure you want to remove this chord preset pack?"
 msgstr "Segur que vols suprimir aquest paquet predefinit d'acords?"
 
-#: src/actions/actions.c:3457
+#: src/actions/actions.c:3458
 #, c-format
 msgid "Failed to reset %s"
 msgstr "Error en reiniciar %s"
 
-#: src/actions/actions.c:3488
+#: src/actions/actions.c:3489
 #, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "Error en desconnectar %s de %s"
 
-#: src/actions/actions.c:3523
+#: src/actions/actions.c:3524
 msgid "Cannot delete standard bookmark"
 msgstr "No es pot eliminar el marcador estàndar"
 
-#: src/actions/actions.c:3535
+#: src/actions/actions.c:3536
 msgid "Are you sure you want to remove this bookmark?"
 msgstr "Eliminar aquest marcador?"
 
-#: src/actions/actions.c:3766 src/actions/actions.c:3797
+#: src/actions/actions.c:3767 src/actions/actions.c:3798
 msgid "Collection name"
 msgstr "Nom de col·lecció"
 
-#: src/actions/actions.c:3825
+#: src/actions/actions.c:3826
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
 msgstr "Aquesta col·lecció conté %d complements. Segur que voleu suprimir-la?"
 
-#: src/actions/actions.c:4015
+#: src/actions/actions.c:4016
 msgid "Failed to change direct output"
 msgstr "Error en canviar la sortida directa"
 
@@ -4544,44 +4572,44 @@ msgstr "Canvi de beats per rastral"
 msgid "Beat unit change"
 msgstr "Canvi d'unitat de beat"
 
-#: src/actions/channel_send_action.c:173
+#: src/actions/channel_send_action.c:172
 msgid "Failed to connect MIDI send"
 msgstr "Error en connectar l'enviament MIDI"
 
-#: src/actions/channel_send_action.c:199
+#: src/actions/channel_send_action.c:198
 msgid "Failed to connect audio send"
 msgstr "Error en connectar l'enviament d'àudio"
 
-#: src/actions/channel_send_action.c:268 src/actions/channel_send_action.c:336
+#: src/actions/channel_send_action.c:267 src/actions/channel_send_action.c:335
 #, c-format
 msgid "Failed to perform channel send action: %s"
 msgstr "Error en dur a terme l'acció d'enviament del canal: %s"
 
-#: src/actions/channel_send_action.c:365
+#: src/actions/channel_send_action.c:364
 msgid "Connect sidechain"
 msgstr "Connectar la cadena lateral"
 
-#: src/actions/channel_send_action.c:367
+#: src/actions/channel_send_action.c:366
 msgid "Connect stereo"
 msgstr "Connectar estéreo"
 
-#: src/actions/channel_send_action.c:369
+#: src/actions/channel_send_action.c:368
 msgid "Connect MIDI"
 msgstr "Connectar MIDI"
 
-#: src/actions/channel_send_action.c:371
+#: src/actions/channel_send_action.c:370
 msgid "Disconnect"
 msgstr "Desconnectar"
 
-#: src/actions/channel_send_action.c:373
+#: src/actions/channel_send_action.c:372
 msgid "Change amount"
 msgstr "Canviar quantitat"
 
-#: src/actions/channel_send_action.c:375
+#: src/actions/channel_send_action.c:374
 msgid "Change ports"
 msgstr "Canviar ports"
 
-#: src/actions/channel_send_action.c:378
+#: src/actions/channel_send_action.c:377
 msgid "Channel send connection"
 msgstr "Connexió d’enviament de canal"
 
@@ -4899,6 +4927,11 @@ msgstr "Desancorar pista"
 #, c-format
 msgid "Unpin %d Tracks"
 msgstr "Desancorar %d pistes"
+
+#: src/actions/chord_action.c:133
+#, fuzzy
+msgid "Change chords"
+msgstr "Canviar color"
 
 #: src/actions/undo_manager.c:328
 msgid "Failed to perform action"
@@ -6080,8 +6113,8 @@ msgid ""
 "Default length type to use when creating editor objects (normal, dotted, "
 "triplet)."
 msgstr ""
-"Tipus de durada per defecte a utilitzar quan es creen objectes de l'editor ("
-"normal, amb punts, treset)."
+"Tipus de durada per defecte a utilitzar quan es creen objectes de l'editor "
+"(normal, amb punts, treset)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:383
 msgid "Last editor object's length"
@@ -6300,8 +6333,8 @@ msgstr "Vores de desplaçament del capçal de reproducció (línia de temps)"
 msgid ""
 "Whether to scroll when the playhead reaches the visible edge (timeline)."
 msgstr ""
-"Si s'ha de desplaçar quan el capçal de reproducció arriba a la vora visible ("
-"línia de temps)."
+"Si s'ha de desplaçar quan el capçal de reproducció arriba a la vora visible "
+"(línia de temps)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:503
 msgid "Follow playhead (timeline)"
@@ -7192,3 +7225,18 @@ msgstr "Script predeterminat"
 #: build/data/org.zrythm.Zrythm.gschema.xml:1170
 msgid "The default script to use in the scripting window."
 msgstr "El script per defecte que s'utilitzarà a la finestra de scripting."
+
+#~ msgid "Snow Halation"
+#~ msgstr "Mostrar halo"
+
+#~ msgid "Meaning of Love"
+#~ msgstr "El significat de l'amor"
+
+#~ msgid "Blue"
+#~ msgstr "Blau"
+
+#~ msgid "Burning Night"
+#~ msgstr "Nit en flames"
+
+#~ msgid "Hi-Power"
+#~ msgstr "Hi-power"

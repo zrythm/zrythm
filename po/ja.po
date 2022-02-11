@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-01-30 23:00+0000\n"
+"POT-Creation-Date: 2022-02-11 14:55+0000\n"
 "PO-Revision-Date: 2022-01-17 09:53+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -851,76 +851,76 @@ msgstr ""
 "プロジェクトの支援は https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1481
+#: src/zrythm_app.c:1484
 #, c-format
 msgid "File %s not found."
 msgstr "%sが見つかりません。"
 
-#: src/zrythm_app.c:1502
+#: src/zrythm_app.c:1505
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "出力ファイルが指定されていません。 `--output [ファイル]` で 1 つを指定してく"
 "ださい。"
 
-#: src/zrythm_app.c:1568
+#: src/zrythm_app.c:1571
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "プロジェクトの解凍に失敗しました: %s\n"
 
-#: src/zrythm_app.c:1587
+#: src/zrythm_app.c:1590
 msgid "Unknown operation"
 msgstr "オプションを認知できませんでした"
 
-#: src/zrythm_app.c:1607
+#: src/zrythm_app.c:1610
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "このオプションには libguile が必要です。\n"
 
-#: src/zrythm_app.c:1772
+#: src/zrythm_app.c:1775
 msgid "Print version information"
 msgstr "バージョン情報を表示"
 
-#: src/zrythm_app.c:1777
+#: src/zrythm_app.c:1780
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "ZPJ-FILEをYAMLに変換する"
 
-#: src/zrythm_app.c:1782
+#: src/zrythm_app.c:1785
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "YAML-PROJECT-FILEを.zpj形式に変換する"
 
-#: src/zrythm_app.c:1787
+#: src/zrythm_app.c:1790
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "SCRIPT-FILEからプロジェクトを生成"
 
-#: src/zrythm_app.c:1791
+#: src/zrythm_app.c:1794
 msgid "Print output in user-friendly way"
 msgstr "ユーザーフレンドリーな方法で出力"
 
-#: src/zrythm_app.c:1795
+#: src/zrythm_app.c:1798
 msgid "Print current settings"
 msgstr "現在の設定を出力"
 
-#: src/zrythm_app.c:1799
+#: src/zrythm_app.c:1802
 msgid "Reset to factory settings"
 msgstr "初期設定にリセット"
 
-#: src/zrythm_app.c:1802
+#: src/zrythm_app.c:1805
 msgid "Override the audio backend to use"
 msgstr "使用するオーディオバックエンドをオーバーライド"
 
-#: src/zrythm_app.c:1806
+#: src/zrythm_app.c:1809
 msgid "Override the MIDI backend to use"
 msgstr "使用するMIDIバックエンドをオーバーライド"
 
-#: src/zrythm_app.c:1810
+#: src/zrythm_app.c:1813
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "--midi-backend=none --audio-backend=none の省略形"
 
-#: src/zrythm_app.c:1842
+#: src/zrythm_app.c:1845
 msgid "[PROJECT-FILE]"
 msgstr "[プロジェクトファイル]"
 
-#: src/zrythm_app.c:1847
+#: src/zrythm_app.c:1850
 #, c-format
 msgid ""
 "Examples:\n"
@@ -938,7 +938,7 @@ msgstr ""
 "\n"
 "問題は%sに報告してください\n"
 
-#: src/zrythm_app.c:1859
+#: src/zrythm_app.c:1862
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "%sを実行し、オプションでプロジェクトファイルを渡します。"
@@ -1677,7 +1677,7 @@ msgid "Failed to change time signature"
 msgstr "拍子記号を変更"
 
 #: src/gui/widgets/drag_dest_box.c:356 src/gui/widgets/panel_file_browser.c:421
-#: src/audio/tracklist.c:1520 src/audio/track.c:3848 src/actions/actions.c:3580
+#: src/audio/tracklist.c:1520 src/audio/track.c:3848 src/actions/actions.c:3581
 #, fuzzy
 msgid "Failed to create track"
 msgstr "ファイルの書き込みに失敗しました: %s"
@@ -3088,7 +3088,7 @@ msgid "Pack"
 msgstr ""
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:193
-#: src/actions/actions.c:3379
+#: src/actions/actions.c:3380
 #, fuzzy
 msgid "Preset Name"
 msgstr "プリセット"
@@ -3558,59 +3558,85 @@ msgid "Most Often Used Chords"
 msgstr ""
 
 #: src/settings/chord_preset_pack_manager.c:203
-msgid "Ballad"
+msgid "Eastern Pop"
 msgstr ""
 
 #: src/settings/chord_preset_pack_manager.c:207
-#, fuzzy
-msgid "Snow Halation"
-msgstr "オートメーションを表示"
+msgid "Together"
+msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:231
+#: src/settings/chord_preset_pack_manager.c:226
+#, fuzzy
+msgid "GG"
+msgstr "G"
+
+#: src/settings/chord_preset_pack_manager.c:248
+msgid "Daijiken"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:270
+#, fuzzy
+msgid "Dance"
+msgstr "取り消し"
+
+#. the idolm@ster 2
+#: src/settings/chord_preset_pack_manager.c:273
+msgid "Idol 1"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:287
+msgid "Ballad"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:312
+#, fuzzy
+msgid "Connection"
+msgstr "コネクション"
+
+#: src/settings/chord_preset_pack_manager.c:333
+msgid "Secret Base"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:356
 msgid "Eurodance"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:235
-msgid "Meaning of Love"
-msgstr ""
-
-#: src/settings/chord_preset_pack_manager.c:247
-msgid "Blue"
-msgstr ""
-
-#: src/settings/chord_preset_pack_manager.c:269
+#: src/settings/chord_preset_pack_manager.c:394
 msgid "Eurobeat"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:272
-msgid "Burning Night"
-msgstr ""
-
 #. believe
-#: src/settings/chord_preset_pack_manager.c:290
+#: src/settings/chord_preset_pack_manager.c:415
 msgid "Future"
 msgstr ""
 
-#. get me power
-#: src/settings/chord_preset_pack_manager.c:308
-msgid "Hi-Power"
+#: src/settings/chord_preset_pack_manager.c:513
+msgid "Progressive Trance"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:330
+#: src/settings/chord_preset_pack_manager.c:515
+msgid "Sajek Valley"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:539
 msgid "Rock"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:333
+#: src/settings/chord_preset_pack_manager.c:542
 #, fuzzy
 msgid "Overdrive"
 msgstr "イベントを上書きする"
 
-#: src/settings/chord_preset_pack_manager.c:352
+#: src/settings/chord_preset_pack_manager.c:561
 msgid "Heart"
 msgstr ""
 
-#: src/settings/chord_preset_pack_manager.c:370
+#: src/settings/chord_preset_pack_manager.c:579
 msgid "Pray"
+msgstr ""
+
+#: src/settings/chord_preset_pack_manager.c:598
+msgid "Thank You"
 msgstr ""
 
 #: src/settings/chord_preset.c:65 src/audio/chord_track.c:60
@@ -4665,45 +4691,45 @@ msgid ""
 "chord preset browser."
 msgstr ""
 
-#: src/actions/actions.c:3280 src/actions/actions.c:3332
+#: src/actions/actions.c:3281 src/actions/actions.c:3333
 #, fuzzy
 msgid "Preset Pack Name"
 msgstr "トラック名"
 
-#: src/actions/actions.c:3310 src/actions/actions.c:3357
+#: src/actions/actions.c:3311 src/actions/actions.c:3358
 #, fuzzy
 msgid "Are you sure you want to remove this chord preset pack?"
 msgstr "このブックマークを削除してもよろしいですか？"
 
-#: src/actions/actions.c:3457
+#: src/actions/actions.c:3458
 #, fuzzy, c-format
 msgid "Failed to reset %s"
 msgstr "スキーマ %s をリセットできませんでした"
 
-#: src/actions/actions.c:3488
+#: src/actions/actions.c:3489
 #, fuzzy, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "ファイルを開けませんでした：%s"
 
-#: src/actions/actions.c:3523
+#: src/actions/actions.c:3524
 msgid "Cannot delete standard bookmark"
 msgstr "標準のブックマークを削除できない"
 
-#: src/actions/actions.c:3535
+#: src/actions/actions.c:3536
 msgid "Are you sure you want to remove this bookmark?"
 msgstr "このブックマークを削除してもよろしいですか？"
 
-#: src/actions/actions.c:3766 src/actions/actions.c:3797
+#: src/actions/actions.c:3767 src/actions/actions.c:3798
 msgid "Collection name"
 msgstr "コレクション名"
 
-#: src/actions/actions.c:3825
+#: src/actions/actions.c:3826
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
 msgstr "このコレクションには%dプラグインが含まれています。本当に削除しますか？"
 
-#: src/actions/actions.c:4015
+#: src/actions/actions.c:4016
 #, fuzzy
 msgid "Failed to change direct output"
 msgstr "スキーマ %s をリセットできませんでした"
@@ -4740,46 +4766,46 @@ msgstr "バーあたりのビート数変更"
 msgid "Beat unit change"
 msgstr "ビートユニットの変更"
 
-#: src/actions/channel_send_action.c:173
+#: src/actions/channel_send_action.c:172
 #, fuzzy
 msgid "Failed to connect MIDI send"
 msgstr "URI %s を持つプラグインの検索に失敗しました。"
 
-#: src/actions/channel_send_action.c:199
+#: src/actions/channel_send_action.c:198
 #, fuzzy
 msgid "Failed to connect audio send"
 msgstr "URI %s を持つプラグインの検索に失敗しました。"
 
-#: src/actions/channel_send_action.c:268 src/actions/channel_send_action.c:336
+#: src/actions/channel_send_action.c:267 src/actions/channel_send_action.c:335
 #, fuzzy, c-format
 msgid "Failed to perform channel send action: %s"
 msgstr "%s の LV2 UI を開くことができませんでした"
 
-#: src/actions/channel_send_action.c:365
+#: src/actions/channel_send_action.c:364
 msgid "Connect sidechain"
 msgstr "サイドチェーンを接続"
 
-#: src/actions/channel_send_action.c:367
+#: src/actions/channel_send_action.c:366
 msgid "Connect stereo"
 msgstr "ステレオを接続"
 
-#: src/actions/channel_send_action.c:369
+#: src/actions/channel_send_action.c:368
 msgid "Connect MIDI"
 msgstr "MIDI を接続"
 
-#: src/actions/channel_send_action.c:371
+#: src/actions/channel_send_action.c:370
 msgid "Disconnect"
 msgstr "切断する"
 
-#: src/actions/channel_send_action.c:373
+#: src/actions/channel_send_action.c:372
 msgid "Change amount"
 msgstr "値を変更"
 
-#: src/actions/channel_send_action.c:375
+#: src/actions/channel_send_action.c:374
 msgid "Change ports"
 msgstr "ポートを変更"
 
-#: src/actions/channel_send_action.c:378
+#: src/actions/channel_send_action.c:377
 msgid "Channel send connection"
 msgstr "チャンネルセンド接続"
 
@@ -5101,6 +5127,11 @@ msgstr "トラックの固定を解除 (Unpin)"
 #, c-format
 msgid "Unpin %d Tracks"
 msgstr "%dトラックの固定を解除 (Unpin)"
+
+#: src/actions/chord_action.c:133
+#, fuzzy
+msgid "Change chords"
+msgstr "色を変更する"
 
 #: src/actions/undo_manager.c:328
 #, fuzzy
@@ -7432,6 +7463,10 @@ msgstr "デフォルトのスクリプト"
 #: build/data/org.zrythm.Zrythm.gschema.xml:1170
 msgid "The default script to use in the scripting window."
 msgstr "スクリプトウィンドウで使用するデフォルトのスクリプト。"
+
+#, fuzzy
+#~ msgid "Snow Halation"
+#~ msgstr "オートメーションを表示"
 
 #~ msgid "Add to project (carla)"
 #~ msgstr "プロジェクトに追加（carla）"

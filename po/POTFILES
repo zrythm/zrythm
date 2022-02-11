@@ -465,6 +465,7 @@ inc/actions/range_action.h
 inc/actions/arranger_selections.h
 inc/actions/transport_action.h
 inc/actions/port_connection_action.h
+inc/actions/chord_action.h
 inc/actions/undo_stack.h
 inc/guile/modules.h
 inc/guile/guile.h
@@ -855,6 +856,7 @@ src/actions/mixer_selections_action.c
 src/actions/range_action.c
 src/actions/tracklist_selections.c
 src/actions/undo_stack.c
+src/actions/chord_action.c
 src/actions/undo_manager.c
 src/guile/zrythm.c
 src/guile/project.c
