@@ -520,7 +520,10 @@ arranger_object_is_position_valid (
     case ARRANGER_OBJECT_POSITION_TYPE_LOOP_END:
       {
         if (position_is_before (
-              pos, &self->clip_start_pos))
+              pos, &self->clip_start_pos)
+            ||
+            position_is_before_or_equal (
+              pos, &self->loop_start_pos))
           return false;
 
         is_valid = true;
