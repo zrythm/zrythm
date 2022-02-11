@@ -8,37 +8,40 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.28\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-22 17:46+0000\n"
-"PO-Revision-Date: 2022-01-30 22:58+0000\n"
-"Last-Translator:  <alex@zrythm.org>\n"
-"Language-Team: Catalan <ca@dodds.net>\n"
+"PO-Revision-Date: 2022-02-02 16:55+0000\n"
+"Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
+"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/"
+"user-manual-sphinx/ca/>\n"
+"Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ca\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #: ../../_templates/page.html:61
 msgid "Next"
-msgstr ""
+msgstr "Següent"
 
 #: ../../_templates/page.html:73
 msgid "Previous"
-msgstr ""
+msgstr "Anterior"
 
 #: ../../_templates/page.html:76
 msgid "Home"
-msgstr ""
+msgstr "Inici"
 
 #: ../../_templates/page.html:88
 msgid "<a href=\"%(path)s\">Copyright</a> &#169; %(copyright)s."
-msgstr ""
+msgstr "<a href=\"%(path)s\">Copyright</a> &#169; %(copyright)s."
 
 #: ../../_templates/page.html:92
 msgid "Copyright &#169; %(copyright)s"
-msgstr ""
+msgstr "Copyright &#169; %(copyright)s"
 
 #: ../../_templates/page.html:99
 msgid "Last updated on %(last_updated)s."
-msgstr ""
+msgstr "Última actualització el %(last_updated)s."
 
 #: ../../_templates/page.html:105
 msgid ""
@@ -48,11 +51,16 @@ msgid ""
 "\">@pradyunsg</a>'s\n"
 "              <a href=\"https://github.com/pradyunsg/furo\">Furo theme</a>."
 msgstr ""
+"Construït amb <a href=\"https://www.sphinx-doc.org/\">Sphinx</a>\n"
+"              i el\n"
+"              <a href=\"https://github.com/pradyunsg/furo\">tema Furo</a>\n"
+"              <a class=\"muted-link\" href=\"https://pradyunsg.me\""
+">@pradyunsg</a>."
 
 #: ../../_templates/page.html:116
 msgid "Show Source"
-msgstr ""
+msgstr "Mostrar font"
 
 #: ../../_templates/page.html:137
 msgid "Contents"
-msgstr ""
+msgstr "Contingut"
