@@ -7,15 +7,16 @@
 # Waui <wau-wau@tutanota.de>, 2020.
 # André Menrath <andre.menrath@posteo.de>, 2020.
 # Ulrich <drulli@airmail.cc>, 2022.
+# Johannes Maibaum <jmaibaum@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-01-30 23:00+0000\n"
-"PO-Revision-Date: 2022-01-30 22:48+0000\n"
-"Last-Translator: Ulrich <drulli@airmail.cc>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"PO-Revision-Date: 2022-02-02 23:24+0000\n"
+"Last-Translator: Johannes Maibaum <jmaibaum@gmail.com>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -104,7 +105,7 @@ msgstr "Impuls"
 #: inc/schemas/audio/region.h:47 inc/audio/region.h:87
 #: src/gui/widgets/track.c:1030
 msgid "Inherit"
-msgstr "erben"
+msgstr "Erben"
 
 #: inc/schemas/audio/region.h:49 inc/audio/region.h:89
 #: src/gui/widgets/bot_bar.c:518 src/audio/automation_track.c:207
@@ -179,7 +180,7 @@ msgstr "Stummschalten"
 #: inc/utils/gtk.h:98 src/gui/widgets/channel.c:763 src/gui/widgets/track.c:352
 #: src/gui/widgets/track.c:884
 msgid "Unmute"
-msgstr "Nicht Stummschalten"
+msgstr "Laut schalten"
 
 #: inc/audio/audio_function.h:70
 msgid "Invert"
@@ -396,11 +397,11 @@ msgstr "Chromatisch"
 
 #: inc/audio/scale.h:146
 msgid "Major"
-msgstr ""
+msgstr "Dur"
 
 #: inc/audio/scale.h:147
 msgid "Minor"
-msgstr ""
+msgstr "Moll"
 
 #: inc/audio/scale.h:148
 #, fuzzy
@@ -409,61 +410,59 @@ msgstr "Ionisch (Dur)"
 
 #: inc/audio/scale.h:149
 msgid "Dorian"
-msgstr ""
+msgstr "Dorisch"
 
 #: inc/audio/scale.h:150
 msgid "Phrygian"
-msgstr ""
+msgstr "Phrygisch"
 
 #: inc/audio/scale.h:151
 msgid "Lydian"
-msgstr ""
+msgstr "Lydisch"
 
 #: inc/audio/scale.h:152
 msgid "Mixolydian"
-msgstr ""
+msgstr "Mixolydisch"
 
 #: inc/audio/scale.h:153
 msgid "Aeolian"
-msgstr ""
+msgstr "Äolisch"
 
 #: inc/audio/scale.h:154
 msgid "Locrian"
-msgstr ""
+msgstr "Lokrisch"
 
 #: inc/audio/scale.h:155
-#, fuzzy
 msgid "Melodic Minor"
-msgstr "Harmonisches Moll"
+msgstr "Melodisches Moll"
 
 #: inc/audio/scale.h:156
 msgid "Harmonic Minor"
 msgstr "Harmonisches Moll"
 
 #: inc/audio/scale.h:157
-#, fuzzy
 msgid "Whole Tone"
-msgstr "Unteres Panel ein-/ausblenden"
+msgstr "Ganzton"
 
 #: inc/audio/scale.h:158
 msgid "Major Pentatonic"
-msgstr ""
+msgstr "Dur-Pentatonik"
 
 #: inc/audio/scale.h:159
 msgid "Minor Pentatonic"
-msgstr ""
+msgstr "Moll-Pentatonik"
 
 #: inc/audio/scale.h:160
 msgid "Octatonic Half Whole"
-msgstr ""
+msgstr "Oktatonisch Halbton-Ganzton"
 
 #: inc/audio/scale.h:161
 msgid "Octatonic Whole Half"
-msgstr ""
+msgstr "Oktatonisch Ganzton-Halbton"
 
 #: inc/audio/scale.h:162
 msgid "Acoustic"
-msgstr ""
+msgstr "Akustisch"
 
 #: inc/audio/scale.h:163
 #, fuzzy
@@ -472,19 +471,20 @@ msgstr "Harmonisches Moll"
 
 #: inc/audio/scale.h:164
 msgid "Phrygian Dominant"
-msgstr ""
+msgstr "Phrygisch-Dominant"
 
 #: inc/audio/scale.h:165
+#, fuzzy
 msgid "Major Locrian"
-msgstr ""
+msgstr "Dur-Lokrisch"
 
 #: inc/audio/scale.h:166
 msgid "Algerian"
-msgstr ""
+msgstr "Algerisch"
 
 #: inc/audio/scale.h:167
 msgid "Augmented"
-msgstr ""
+msgstr "Übermäßig"
 
 #: inc/audio/scale.h:168
 msgid "Double Harmonic"
@@ -497,7 +497,7 @@ msgstr "Chinesisch [zh]"
 
 #: inc/audio/scale.h:170
 msgid "Diminished"
-msgstr ""
+msgstr "Vermindert"
 
 #: inc/audio/scale.h:171
 msgid "Dominant Diminished"
@@ -505,11 +505,11 @@ msgstr ""
 
 #: inc/audio/scale.h:172
 msgid "Egyptian"
-msgstr ""
+msgstr "Ägyptisch"
 
 #: inc/audio/scale.h:173
 msgid "Eight Tone Spanish"
-msgstr ""
+msgstr "Achtton-Spanisch"
 
 #: inc/audio/scale.h:174
 msgid "Enigmatic"
@@ -521,7 +521,7 @@ msgstr ""
 
 #: inc/audio/scale.h:176
 msgid "Hindu"
-msgstr ""
+msgstr "Hindu"
 
 #: inc/audio/scale.h:177
 msgid "Hirajoshi"
@@ -537,19 +537,17 @@ msgid "Insen"
 msgstr "Inserts"
 
 #: inc/audio/scale.h:180
-#, fuzzy
 msgid "Neapolitan Major"
-msgstr "Ionisch (Dur)"
+msgstr "Neapolitanisches Dur"
 
 #: inc/audio/scale.h:181
 #, fuzzy
 msgid "Neapolitan Minor"
-msgstr "Äolisch (Natürliches Moll)"
+msgstr "Neapolitanisches Moll"
 
 #: inc/audio/scale.h:182
-#, fuzzy
 msgid "Oriental"
-msgstr "Horizontal"
+msgstr "Orientalisch"
 
 #: inc/audio/scale.h:183
 #, fuzzy
@@ -558,7 +556,7 @@ msgstr "Harmonisches Moll"
 
 #: inc/audio/scale.h:184
 msgid "Altered"
-msgstr ""
+msgstr "Alteriert"
 
 #: inc/audio/scale.h:185
 msgid "Maqam"
@@ -569,20 +567,23 @@ msgid "Yo"
 msgstr ""
 
 #: inc/audio/scale.h:187
+#, fuzzy
 msgid "Bebop Locrian"
-msgstr ""
+msgstr "Bebop-Lokrisch"
 
 #: inc/audio/scale.h:188
+#, fuzzy
 msgid "Bebop Dominant"
-msgstr ""
+msgstr "Bebop-Dominant"
 
 #: inc/audio/scale.h:189
+#, fuzzy
 msgid "Bebop Major"
-msgstr ""
+msgstr "Bebop-Dur"
 
 #: inc/audio/scale.h:190
 msgid "Super Locrian"
-msgstr ""
+msgstr "Superlokrisch"
 
 #: inc/audio/scale.h:191
 #, fuzzy
@@ -598,13 +599,12 @@ msgid "Bhairav"
 msgstr ""
 
 #: inc/audio/scale.h:194
-#, fuzzy
 msgid "Hungarian Minor"
-msgstr "Harmonisches Moll"
+msgstr "Ungarisches Moll"
 
 #: inc/audio/scale.h:195
 msgid "Persian"
-msgstr ""
+msgstr "Persisch"
 
 #: inc/audio/scale.h:196
 msgid "Iwato"
@@ -632,21 +632,19 @@ msgstr ""
 
 #: inc/audio/scale.h:202
 msgid "Balinese"
-msgstr ""
+msgstr "Balinesisch"
 
 #: inc/audio/scale.h:203
 msgid "RagaTodi"
 msgstr ""
 
 #: inc/audio/scale.h:204
-#, fuzzy
 msgid "Japanese 1"
-msgstr "Japanisch [ja]"
+msgstr "Japanisch 1"
 
 #: inc/audio/scale.h:205
-#, fuzzy
 msgid "Japanese 2"
-msgstr "Japanisch [ja]"
+msgstr "Japanisch 2"
 
 #: inc/audio/exporter.h:90
 msgid "Before inserts"
@@ -2246,8 +2244,9 @@ msgid "Monitor Section"
 msgstr "Monitor-Sektion"
 
 #: src/gui/widgets/right_dock_edge.c:192 src/utils/gtk.c:1251
+#, fuzzy
 msgid "Chord Preset Browser"
-msgstr ""
+msgstr "Akkord-Preset-Browser"
 
 #: src/gui/widgets/right_dock_edge.c:213
 msgid "Show file browser"
@@ -2352,13 +2351,12 @@ msgid "[Modulator %d] %s"
 msgstr "[Modulator %d] %s"
 
 #: src/gui/widgets/chord_pad_panel.c:87
-#, fuzzy
 msgid "From scale"
-msgstr "Im Maßstab"
+msgstr "Von Skala"
 
 #: src/gui/widgets/chord_pad_panel.c:90
 msgid "Predefined"
-msgstr ""
+msgstr "Vordefiniert"
 
 #: src/gui/widgets/chord_pad_panel.c:124
 #, fuzzy
@@ -2564,7 +2562,7 @@ msgstr "Anzeige"
 #: src/gui/widgets/chord_pack_browser.c:209
 #, fuzzy
 msgid "No preset selected"
-msgstr "Kein Port ausgewählt"
+msgstr "Kein Preset ausgewählt"
 
 #: src/gui/widgets/clip_editor_inner.c:334
 msgid "Select a region..."
@@ -2993,29 +2991,26 @@ msgstr ""
 "werden soll"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:70
-#, fuzzy
 msgid "Please enter a valid name."
-msgstr "Bitte geben Sie einen Wert ein"
+msgstr "Bitte geben Sie einen gültigen Namen ein."
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:78
 #, c-format
 msgid "Name '%s' is taken. Please enter a different name"
-msgstr ""
+msgstr "Name '%s' ist vergeben. Bitte einen anderen Namen eingeben"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:159
-#, fuzzy
 msgid "Save Chord Preset"
-msgstr "Preset speichern"
+msgstr "Akkord-Preset speichern"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:191
 msgid "Pack"
-msgstr ""
+msgstr "Paket"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:193
 #: src/actions/actions.c:3379
-#, fuzzy
 msgid "Preset Name"
-msgstr "Presets"
+msgstr "Preset-Name"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:85
 msgid "Failed to quantize editor selections"
@@ -3040,7 +3035,7 @@ msgstr "Mapping konnte nicht angebunden werden"
 #: src/gui/widgets/dialogs/bind_cc_dialog.c:121
 #, fuzzy
 msgid "Not a control change event"
-msgstr "Kein Ereignis des Steuerelements"
+msgstr "Kein Control-Change-Ereignis"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:56
 msgid "Select MIDI file"
@@ -3452,7 +3447,7 @@ msgstr ""
 
 #: src/settings/chord_preset_pack_manager.c:115
 msgid "4 Chord Song"
-msgstr ""
+msgstr "4-Akkorde-Song"
 
 #: src/settings/chord_preset_pack_manager.c:135
 msgid "Canon in D"
@@ -3464,22 +3459,20 @@ msgid "Love Progression"
 msgstr "Projektfortschritt"
 
 #: src/settings/chord_preset_pack_manager.c:163
-#, fuzzy
 msgid "Pop Chords 1"
-msgstr "Akkorde"
+msgstr "Pop-Akkorde 1"
 
 #: src/settings/chord_preset_pack_manager.c:181
 msgid "Most Often Used Chords"
-msgstr ""
+msgstr "Am häufigsten verwendete Akkorde"
 
 #: src/settings/chord_preset_pack_manager.c:203
 msgid "Ballad"
-msgstr ""
+msgstr "Ballade"
 
 #: src/settings/chord_preset_pack_manager.c:207
-#, fuzzy
 msgid "Snow Halation"
-msgstr "Automation anzeigen"
+msgstr ""
 
 #: src/settings/chord_preset_pack_manager.c:231
 msgid "Eurodance"
@@ -3513,12 +3506,11 @@ msgstr ""
 
 #: src/settings/chord_preset_pack_manager.c:330
 msgid "Rock"
-msgstr ""
+msgstr "Rock"
 
 #: src/settings/chord_preset_pack_manager.c:333
-#, fuzzy
 msgid "Overdrive"
-msgstr "Ereignisse überschreiben"
+msgstr ""
 
 #: src/settings/chord_preset_pack_manager.c:352
 msgid "Heart"
@@ -4318,16 +4310,15 @@ msgstr "Projekt speichern"
 #: src/actions/actions.c:802
 #, fuzzy
 msgid "Export routing graph"
-msgstr "Exportfortschritt"
+msgstr "Routing-Grahp exportieren"
 
 #: src/actions/actions.c:804
 msgid "Image (PNG)"
 msgstr "BILD (PNG)"
 
 #: src/actions/actions.c:805
-#, fuzzy
 msgid "Image (SVG)"
-msgstr "BILD (PNG)"
+msgstr "Bild (SVG)"
 
 #: src/actions/actions.c:806
 msgid "Dot graph"
@@ -4341,14 +4332,12 @@ msgid ""
 msgstr ""
 
 #: src/actions/actions.c:868
-#, fuzzy
 msgid "Graph exported"
-msgstr "Exportiert"
+msgstr "Graph exportiert"
 
 #: src/actions/actions.c:891 src/guile/actions/undo_manager.c:65
-#, fuzzy
 msgid "Failed to undo"
-msgstr "Fehler beim öffnen der Datei: %s"
+msgstr ""
 
 #: src/actions/actions.c:921 src/actions/undo_manager.c:276
 msgid "Failed to redo action"
@@ -4376,9 +4365,8 @@ msgid "Failed to duplicate selections"
 msgstr "Auswahl konnte nicht dupliziert werden"
 
 #: src/actions/actions.c:1508
-#, fuzzy
 msgid "Failed to unbind"
-msgstr "Fehler beim öffnen der Datei: %s"
+msgstr ""
 
 #: src/actions/actions.c:1553 src/actions/actions.c:2038
 #: src/actions/actions.c:2074
@@ -4416,9 +4404,8 @@ msgid "Failed to delete tracks"
 msgstr "Spuren konnten nicht gelöscht werden"
 
 #: src/actions/actions.c:1838
-#, fuzzy
 msgid "Failed to pin/unpin tracks"
-msgstr "Fehler beim öffnen der Datei: %s"
+msgstr ""
 
 #: src/actions/actions.c:1851
 msgid "Failed to solo tracks"
@@ -4526,14 +4513,12 @@ msgid ""
 msgstr ""
 
 #: src/actions/actions.c:3280 src/actions/actions.c:3332
-#, fuzzy
 msgid "Preset Pack Name"
-msgstr "Spurname"
+msgstr "Preset-Paket-Name"
 
 #: src/actions/actions.c:3310 src/actions/actions.c:3357
-#, fuzzy
 msgid "Are you sure you want to remove this chord preset pack?"
-msgstr "Sind Sie sicher, dass Sie dieses Lesezeichen entfernen möchten?"
+msgstr "Sind Sie sicher, dass Sie dieses Akkord-Preset-Paket entfernen möchten?"
 
 #: src/actions/actions.c:3457
 #, c-format
@@ -4735,27 +4720,25 @@ msgid "%s Track"
 msgstr "%s Spur"
 
 #: src/actions/tracklist_selections.c:835
-#, fuzzy, c-format
+#, c-format
 msgid "Error instantiating plugin %s"
-msgstr ""
-"Fehler beim Instanziieren der Erweiterung %s. Siehe für Details bitte in das "
-"Log."
+msgstr "Fehler beim Instanziieren des Plugins %s."
 
 #: src/actions/tracklist_selections.c:919
-#, fuzzy, c-format
+#, c-format
 msgid "Failed saving file %s"
-msgstr "Fehler beim öffnen der Datei: %s"
+msgstr "Fehler beim Speichern der Datei: %s"
 
 #: src/actions/tracklist_selections.c:1016
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create track at %d"
-msgstr "Fehler beim Schreiben der Datei: %s"
+msgstr "Spur an %d erzeugen fehlgeschlagen"
 
 #: src/actions/tracklist_selections.c:1064
 #: src/actions/tracklist_selections.c:1591
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to clone track: %s"
-msgstr "Fehler beim öffnen der Datei: %s"
+msgstr "Klonen der Spur fehlgeschlagen: %s"
 
 #: src/actions/tracklist_selections.c:2194
 #, fuzzy
@@ -4763,19 +4746,18 @@ msgid "Copy Track inside"
 msgstr "Track Vereinzeln"
 
 #: src/actions/tracklist_selections.c:2196
-#, fuzzy
 msgid "Copy Track"
-msgstr "Track Vereinzeln"
+msgstr "Spur kopieren"
 
 #: src/actions/tracklist_selections.c:2204
-#, fuzzy, c-format
+#, c-format
 msgid "Copy %d Tracks inside"
-msgstr "Track Vereinzeln"
+msgstr ""
 
 #: src/actions/tracklist_selections.c:2208
-#, fuzzy, c-format
+#, c-format
 msgid "Copy %d Tracks"
-msgstr "Track Vereinzeln"
+msgstr "%d Spuren kopieren"
 
 #: src/actions/tracklist_selections.c:2219
 #, c-format
@@ -4813,14 +4795,12 @@ msgid "Unmute Track"
 msgstr "Track laut schalten"
 
 #: src/actions/tracklist_selections.c:2264
-#, fuzzy
 msgid "Listen Track"
-msgstr "Spur fixieren/lösen"
+msgstr ""
 
 #: src/actions/tracklist_selections.c:2267
-#, fuzzy
 msgid "Unlisten Track"
-msgstr "Spur fixieren/lösen"
+msgstr ""
 
 #: src/actions/tracklist_selections.c:2271
 #, fuzzy
@@ -4828,19 +4808,16 @@ msgid "Enable Track"
 msgstr "Spur fixieren/lösen"
 
 #: src/actions/tracklist_selections.c:2274
-#, fuzzy
 msgid "Disable Track"
-msgstr "Spur löschen"
+msgstr "Spur deaktivieren"
 
 #: src/actions/tracklist_selections.c:2278
-#, fuzzy
 msgid "Fold Track"
-msgstr "Track Vereinzeln"
+msgstr "Spur einklappen"
 
 #: src/actions/tracklist_selections.c:2281
-#, fuzzy
 msgid "Unfold Track"
-msgstr "Track Vereinen"
+msgstr "Spur ausklappen"
 
 #: src/actions/tracklist_selections.c:2284
 msgid "Change Fader"
@@ -4852,14 +4829,12 @@ msgstr "Pan ändern"
 
 #: src/actions/tracklist_selections.c:2290
 #: src/actions/tracklist_selections.c:2371
-#, fuzzy
 msgid "Change direct out"
-msgstr "Anschlagstärke ändern"
+msgstr ""
 
 #: src/actions/tracklist_selections.c:2293
-#, fuzzy
 msgid "Rename track"
-msgstr "Spur einfrieren"
+msgstr "Spur umbenennen"
 
 #: src/actions/tracklist_selections.c:2296
 msgid "Rename lane"
@@ -4867,75 +4842,71 @@ msgstr "Bahn umbenennen"
 
 #: src/actions/tracklist_selections.c:2299
 #: src/actions/tracklist_selections.c:2365
-#, fuzzy
 msgid "Change color"
-msgstr "Akkord ändern"
+msgstr "Farbe ändern"
 
 #: src/actions/tracklist_selections.c:2302
-#, fuzzy
 msgid "Change icon"
-msgstr "Pan ändern"
+msgstr "Symbol ändern"
 
 #: src/actions/tracklist_selections.c:2305
-#, fuzzy
 msgid "Change comment"
-msgstr "Pan ändern"
+msgstr "Kommentar ändern"
 
 #: src/actions/tracklist_selections.c:2308
 #: src/actions/tracklist_selections.c:2368
-#, fuzzy
 msgid "Change MIDI fader mode"
-msgstr "MIDI-Fader Ausgang"
+msgstr "MIDI-Fader-Modus ändern"
 
 #: src/actions/tracklist_selections.c:2321
-#, fuzzy, c-format
+#, c-format
 msgid "Solo %d Tracks"
-msgstr "Track Vereinzeln"
+msgstr ""
 
 #: src/actions/tracklist_selections.c:2325
-#, fuzzy, c-format
+#, c-format
 msgid "Unsolo %d Tracks"
-msgstr "Track Vereinen"
+msgstr ""
 
 #: src/actions/tracklist_selections.c:2330
-#, fuzzy, c-format
+#, c-format
 msgid "Mute %d Tracks"
-msgstr "%d Spuren verschieben"
+msgstr "%d Spuren stummschalten"
 
 #: src/actions/tracklist_selections.c:2334
-#, fuzzy, c-format
+#, c-format
 msgid "Unmute %d Tracks"
-msgstr "Track laut schalten"
+msgstr "%d Spuren hörbar schalten"
 
 #: src/actions/tracklist_selections.c:2339
-#, fuzzy, c-format
+#, c-format
 msgid "Listen %d Tracks"
-msgstr "Spuren verstecken"
+msgstr "%d Spuren anhören"
 
 #: src/actions/tracklist_selections.c:2343
-#, fuzzy, c-format
+#, c-format
 msgid "Unlisten %d Tracks"
-msgstr "Spuren fixieren/lösen"
+msgstr ""
 
 #: src/actions/tracklist_selections.c:2348
-#, fuzzy, c-format
+#, c-format
 msgid "Enable %d Tracks"
-msgstr "Spuren fixieren/lösen"
+msgstr "%d Spuren aktivieren"
 
 #: src/actions/tracklist_selections.c:2352
-#, fuzzy, c-format
+#, c-format
 msgid "Disable %d Tracks"
-msgstr "Lösche %d Tracks"
+msgstr "%d Spuren deaktivieren"
 
 #: src/actions/tracklist_selections.c:2357
-#, fuzzy, c-format
+#, c-format
 msgid "Fold %d Tracks"
-msgstr "Track Vereinzeln"
+msgstr "%d Spuren einklappen"
 
 #: src/actions/tracklist_selections.c:2361
-#, fuzzy, c-format
+#, c-format
 msgid "Unfold %d Tracks"
-msgstr "Track Vereinen"
+msgstr "%d Spuren ausklappen"
 
 #: src/actions/tracklist_selections.c:2384
 #, fuzzy
@@ -4957,29 +4928,26 @@ msgid "Move %d Tracks"
 msgstr "%d Spuren verschieben"
 
 #: src/actions/tracklist_selections.c:2414
-#, fuzzy
 msgid "Pin Track"
-msgstr "Spur fixieren/lösen"
+msgstr "Spur fixieren"
 
 #: src/actions/tracklist_selections.c:2419
-#, fuzzy, c-format
+#, c-format
 msgid "Pin %d Tracks"
-msgstr "Spuren verstecken"
+msgstr "%d Spuren fixieren"
 
 #: src/actions/tracklist_selections.c:2426
-#, fuzzy
 msgid "Unpin Track"
-msgstr "Spur fixieren/lösen"
+msgstr "Spur lösen"
 
 #: src/actions/tracklist_selections.c:2431
-#, fuzzy, c-format
+#, c-format
 msgid "Unpin %d Tracks"
-msgstr "Spuren fixieren/lösen"
+msgstr "%d Spuren lösen"
 
 #: src/actions/undo_manager.c:328
-#, fuzzy
 msgid "Failed to perform action"
-msgstr "Fehler beim öffnen der Datei: %s"
+msgstr "Ausführen der Aktion fehlgeschlagen"
 
 #: src/guile/guile.c:40
 msgid "Script execution successful"
@@ -4990,14 +4958,12 @@ msgid "Script execution failed"
 msgstr "Scriptausführung gescheitert"
 
 #: src/guile/actions/port_connection_action.c:50
-#, fuzzy
 msgid "Failed to connect ports"
-msgstr "Fehler beim öffnen der Datei: %s"
+msgstr ""
 
 #: src/guile/actions/channel_send_action.c:46
-#, fuzzy
 msgid "Failed to create audio send"
-msgstr "Fehler beim Schreiben der Datei: %s"
+msgstr ""
 
 #: resources/gtk/help-overlay.ui:30
 msgid "Global Shortcuts"
@@ -5158,7 +5124,6 @@ msgid "Language"
 msgstr "Sprache"
 
 #: resources/ui/first_run_assistant.ui:28
-#, fuzzy
 msgid ""
 "<b><i>Note: Zrythm is currently in alpha</i></b>\n"
 "\n"
@@ -5166,12 +5131,13 @@ msgid ""
 "This will guide you through the basic setup of Zrythm. First, choose your "
 "language."
 msgstr ""
+"<b><i>Hinweis: Zrythm befindet sich in der Alpha-Phase</i></b>\n"
+"\n"
 "Wilkommen bei Zrythm\n"
 "Dieser Guide führt dich durch die Einrichtung von Zrythm. Wähle zuerst deine "
 "Sprache."
 
 #: resources/ui/first_run_assistant.ui:68
-#, fuzzy
 msgid ""
 "Next, choose the location to use for saving temporary files and projects (or "
 "accept the default)"
@@ -5208,18 +5174,16 @@ msgid "Tests the backends"
 msgstr "Testet die Backends"
 
 #: resources/ui/bind_cc_dialog.ui:5
-#, fuzzy
 msgid "Bind MIDI CC"
-msgstr "Unterspur %d MIDI-Kan"
+msgstr "MIDI CC zuweisen"
 
 #: resources/ui/bind_cc_dialog.ui:16
 msgid "Press a key or move a knob on your MIDI device"
 msgstr "Drücke eine Taste oder bewege einen Knopf auf deinem MIDI-Gerät"
 
 #: resources/ui/bind_cc_dialog.ui:23
-#, fuzzy
 msgid "Waiting for input..."
-msgstr "Warte auf das Projekt"
+msgstr "Warte auf Eingabe..."
 
 #: resources/ui/bind_cc_dialog.ui:36 resources/ui/create_project_dialog.ui:61
 #: resources/ui/generic_progress_dialog.ui:52 resources/ui/bounce_dialog.ui:94
@@ -5232,9 +5196,8 @@ msgid "Log Level"
 msgstr ""
 
 #: resources/ui/log_viewer.ui:40
-#, fuzzy
 msgid "Save As..."
-msgstr "Speichern Unter"
+msgstr "Speichern unter..."
 
 #: resources/ui/scale_selector_window.ui:22
 msgid "Root Key"
@@ -5317,9 +5280,8 @@ msgid "Scale"
 msgstr "Tonleiter"
 
 #: resources/ui/scale_selector_window.ui:178
-#, fuzzy
 msgid "Scale - Other"
-msgstr "Skalen-Objekt"
+msgstr "Skala – andere"
 
 #: resources/ui/scale_selector_window.ui:196
 #: resources/ui/chord_selector_window.ui:506
@@ -5346,9 +5308,8 @@ msgid "Musical mode"
 msgstr ""
 
 #: resources/ui/timeline_toolbar.ui:63
-#, fuzzy
 msgid "Merge selections"
-msgstr "Auswahl aufheben"
+msgstr "Auswahl zusammenführen"
 
 #: resources/ui/timeline_toolbar.ui:73 resources/ui/editor_toolbar.ui:100
 msgid "Toggle event viewer"
@@ -5381,7 +5342,7 @@ msgstr ""
 #: resources/ui/bug_report_dialog.ui:42
 #, fuzzy
 msgid "Other info"
-msgstr "Ansicht"
+msgstr "Andere Informationen"
 
 #: resources/ui/chord_selector_window.ui:20
 msgid "Root Note"
@@ -5519,9 +5480,8 @@ msgid "The result will be printed here"
 msgstr "Das Ergebnis wird hier ausgegeben"
 
 #: resources/ui/chord_pack_browser.ui:28
-#, fuzzy
 msgid "Packs"
-msgstr "Spuren"
+msgstr "Pakete"
 
 #: resources/ui/chord_key.ui:7
 msgid "Amin 7"
@@ -5589,9 +5549,8 @@ msgid "Port"
 msgstr "Port"
 
 #: resources/ui/chord_pad_panel.ui:45
-#, fuzzy
 msgid "Transpose"
-msgstr "Transportanzeige"
+msgstr "Transponieren"
 
 #: resources/ui/file_auditioner_controls.ui:14
 msgid "Play/Pause"
@@ -5865,7 +5824,7 @@ msgstr "Punktiert"
 #: resources/ui/snap_grid_popover.ui:118 resources/ui/snap_grid_popover.ui:201
 #, fuzzy
 msgid "Adaptive length"
-msgstr "Notenlänge"
+msgstr "Adaptive Länge"
 
 #: resources/ui/snap_grid_popover.ui:130
 msgid "Snap"
@@ -6019,9 +5978,8 @@ msgid "Whether this is the first time attempting to check for updates."
 msgstr "Ob zum ersten Mal versucht wird nach Aktualisierungen zu suchen."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:284
-#, fuzzy
 msgid "Monitor volume"
-msgstr "Monitor Ausgang"
+msgstr "Monitor-Lautstärke"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:285
 msgid "The monitor volume in amplitude (0 to 2)."
@@ -6030,16 +5988,15 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:290
 #, fuzzy
 msgid "Mute volume"
-msgstr "Metronom"
+msgstr "Stumm-Lautstärke"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:291
 msgid "The monitor mute volume in amplitude (0 to 2)."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:296
-#, fuzzy
 msgid "Listen volume"
-msgstr "Hör-Dimmpegel"
+msgstr "Abhörlautstärke"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:297
 msgid "The monitor listen volume in amplitude (0 to 2)."
@@ -6058,23 +6015,20 @@ msgid "Sum to mono"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:308
-#, fuzzy
 msgid "Whether to sum the monitor signal to mono."
-msgstr "Ob das der erste Start ist oder nicht."
+msgstr "Ob das Abhörsignal zu mono summiert werden soll."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:312
 msgid "Dim output"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:313
-#, fuzzy
 msgid "Whether to dim the the monitor signal."
-msgstr "Ob das der erste Start ist oder nicht."
+msgstr "Ob das Abhörsignal gedämpft werden soll."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:318
-#, fuzzy
 msgid "Whether to mute the monitor signal."
-msgstr "Metronom"
+msgstr "Ob das Abhörsignal stummgeschaltet werden soll."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:322
 #: build/data/org.zrythm.Zrythm.gschema.xml:327
@@ -6094,14 +6048,13 @@ msgid "Whether to bounce with parent tracks (direct outputs)."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:342
-#, fuzzy
 msgid "Disable track after bouncing."
-msgstr "Objekt(e) löschen"
+msgstr "Spur nach dem Bouncen deaktivieren."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:346
 #, fuzzy
 msgid "Bounce step"
-msgstr "Quantisierungsoptionen"
+msgstr "Bounce-Schritt"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:347
 msgid "Step in the processing chain to bounce at."
@@ -6110,7 +6063,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:351
 #, fuzzy
 msgid "Bounce tail"
-msgstr "Quantisierungsoptionen"
+msgstr "Bounce-Nachhall"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:352
 msgid ""
@@ -6119,15 +6072,13 @@ msgid ""
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:356
-#, fuzzy
 msgid "Timeline object length"
-msgstr "Notenlänge"
+msgstr "Zeitachsenobjektlänge"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:357
-#, fuzzy
 msgid "Default length to use when creating timeline objects."
 msgstr ""
-"Die Standardlänge, die beim Erstellen eines Zeitleistenobjektes z.B. im "
+"Die Standardlänge, die beim Erstellen eines Zeitachsenobjektes z.B. im "
 "Bearbeitungsmodus genutzt wird."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:361
@@ -6135,25 +6086,23 @@ msgid "Timeline object length type"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:362
-#, fuzzy
 msgid ""
 "Default length type to use when creating timeline objects (normal, dotted, "
 "triplet)."
 msgstr ""
-"Die Standardlänge, die beim Erstellen eines Zeitleistenobjektes z.B. im "
-"Bearbeitungsmodus genutzt wird."
+"Die Standardlänge, die beim Erstellen eines Zeitleistenobjektes genutzt wird "
+"(normal, punktiert, Triole)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:367
-#, fuzzy
 msgid "Last timeline object's length"
-msgstr "Notenlänge"
+msgstr "Länge des letzten Zeitleistenobjekts"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:368
 #, fuzzy
 msgid "The length of the last created timeline object (in ticks)."
 msgstr ""
-"Die Standardlänge, die beim Erstellen eines Zeitleistenobjektes z.B. im "
-"Bearbeitungsmodus genutzt wird."
+"Die Standardlänge, die beim Erstellen eines Zeitleistenobjektes genutzt wird "
+"(in Ticks)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:372
 #, fuzzy
