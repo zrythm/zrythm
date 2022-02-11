@@ -13,15 +13,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-01-30 23:05+0000\n"
-"PO-Revision-Date: 2022-01-24 18:52+0000\n"
+"PO-Revision-Date: 2022-02-02 23:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.11-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -443,7 +444,6 @@ msgstr ""
 "DconfEditor>`_."
 
 #: ../../configuration/additional-settings.rst:16
-#, fuzzy
 msgid ""
 "Normally, you shouldn't need to access any of these settings as most of them "
 "are found inside Zrythm's UI, and it is not recommended to edit them as "
@@ -452,9 +452,9 @@ msgid ""
 "reason."
 msgstr ""
 "Normalmente não deve precisar acessar nenhuma dessas configurações, pois a "
-"maioria delas encontra-se dentro da interface do Zrythm e não é recomendado "
-"editá-las, pois o Zrythm valida algumas configurações antes de gravá-las, "
-"mas em alguns casos pode querer alterá-las manualmente por algum motivo."
+"maioria delas encontra-se na interface do Zrythm e não é recomendado editá-"
+"las, pois o Zrythm valida algumas configurações antes de gravá-las, mas em "
+"alguns casos pode alterá-las manualmente por algum motivo."
 
 #: ../../configuration/additional-settings.rst:26
 msgid "Viewing the Current Settings"
@@ -514,9 +514,8 @@ msgstr ""
 "que os utilizadores o editem."
 
 #: ../../configuration/device-setup.rst:6
-#, fuzzy
 msgid "Devices"
-msgstr "Aparelhos MIDI"
+msgstr "Aparelhos"
 
 #: ../../configuration/device-setup.rst:9
 msgid "Device Setup"
@@ -553,12 +552,11 @@ msgstr ""
 "`Qjackctl <https://qjackctl.sourceforge.io/>`_."
 
 #: ../../configuration/device-setup.rst:34
-#, fuzzy
 msgid ""
 "ALSA MIDI devices might need to be bridged to JACK using :term:`a2jmidid`."
 msgstr ""
-"A depender da sua configuração, os aparelhos MIDI podem precisar ser ligados "
-"ao JACK a usar :term:`a2jmidid`."
+"Os aparelhos ALSA MIDI podem precisar ser ligados ao JACK a utilizar "
+":term:`a2jmid`."
 
 #: ../../configuration/device-setup.rst:37
 msgid "Zrythm will not remember connections made externally."
@@ -1040,9 +1038,8 @@ msgstr ""
 "efeito."
 
 #: ../../configuration/shortcuts.rst:6
-#, fuzzy
 msgid "Shortcuts"
-msgstr "Teclas de Atalho"
+msgstr "Atalhos"
 
 #: ../../configuration/shortcuts.rst:8
 msgid ""
@@ -1061,18 +1058,16 @@ msgid "Editor Shortcuts"
 msgstr "Atalhos do Editor"
 
 #: ../../configuration/shortcuts.rst:24
-#, fuzzy
 msgid "Custom Shortcuts"
-msgstr "Atalhos do Editor"
+msgstr "Atalhos personalizados"
 
 #: ../../configuration/shortcuts.rst:26
-#, fuzzy
 msgid ""
 "Shortcuts can be overridden by placing a file named :file:`shortcuts.yaml` "
 "under the :term:`Zrythm user path`."
 msgstr ""
-"Zrythm lembrará-se dos suplementos VST analizados e gravará esta informação "
-"em :file:`cached_plugin_descriptors.yaml` no :term:`Zrythm user path`."
+"Os atalhos podem ser substituídos a pôr um ficheiro chamado :file:`shortcuts."
+"yaml` no termo :term:`caminho de utilizador do Zrythm`."
 
 #: ../../configuration/shortcuts.rst:30
 msgid "An example is given below."
@@ -1111,13 +1106,12 @@ msgid "Web Design"
 msgstr "Desenho de Web"
 
 #: ../../contributing/intro.rst:19
-#, fuzzy
 msgid ""
 "You are welcome to help us improve the looks and usability of the Zrythm "
 "website. Please get in touch with us to discuss."
 msgstr ""
-"Pode ajudar-nos a melhorar a aparência e a usabilidade do site da Zrythm. "
-"Por favor, junte-se às nossas salas de chat e fale connosco."
+"É bem-vindo a ajudar-nos a melhorar a aparência e a usabilidade do site da "
+"Zrythm. Por favor, entre em contacto connosco para discutir."
 
 #: ../../contributing/intro.rst:24
 msgid "Artwork and Themes"

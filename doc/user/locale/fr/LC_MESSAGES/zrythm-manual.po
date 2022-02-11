@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-01-30 23:05+0000\n"
-"PO-Revision-Date: 2021-12-05 13:50+0000\n"
+"PO-Revision-Date: 2022-02-09 21:54+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/fr/>\n"
 "Language: fr\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.11-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -45,7 +46,7 @@ msgstr ""
 
 #: ../../appendix/environment.rst:22
 msgid "Set this to the locations to scan for :term:`LV2` plugins."
-msgstr ""
+msgstr "Indiquez ici les emplacements à analyser pour les greffons :term:`LV2`."
 
 #: ../../appendix/environment.rst:25
 msgid "Example: ``LV2_PATH=$HOME/custom-lv2-dir``"
@@ -53,7 +54,7 @@ msgstr "Exemple : ``LV2_PATH=$HOME/dossier-lv2-personnalisé``"
 
 #: ../../appendix/environment.rst:30
 msgid "Set to 1 to disable plugin scanning."
-msgstr ""
+msgstr "Mettre à la valeur 1 pour désactiver l'analyse des greffons."
 
 #: ../../appendix/environment.rst:32
 msgid "Example: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
@@ -68,6 +69,7 @@ msgstr ""
 #: ../../appendix/environment.rst:42
 msgid "Set this to the locations to scan for :term:`VST3` plugins."
 msgstr ""
+"Indiquez ici les emplacements à analyser pour les greffons :term:`VST3`."
 
 #: ../../appendix/environment.rst:47
 msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."
@@ -95,6 +97,9 @@ msgid ""
 "directory for saving your user data. See :term:`Zrythm user path` for "
 "details."
 msgstr ""
+"Lorsque Zrythm est lancé pour la première fois, il vous demandera également "
+"de sélectionner un répertoire pour sauvegarder vos données utilisateur. Voir "
+":term:`Chemin utilisateur Zrythm` pour plus de détails."
 
 #: ../../appendix/files-and-directories.rst:15
 msgid "Installed Files"
@@ -107,7 +112,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:20
 msgid "Desktop Entry"
-msgstr ""
+msgstr "Entrée du bureau"
 
 #: ../../appendix/files-and-directories.rst:21
 msgid ""
@@ -117,6 +122,11 @@ msgid ""
 "menus, etc. This is normally installed at :file:`/usr/share/applications/"
 "zrythm.desktop`."
 msgstr ""
+"Un `fichier de configuration freedesktop-complicant <https://specifications."
+"freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html>`_ qui "
+"décrit comment un programme donné doit être lancé, comment il apparaît dans "
+"les menus, etc. Ceci est normalement installé dans :file:`/usr/share/"
+"applications/zrythm.desktop`."
 
 #: ../../appendix/files-and-directories.rst:28
 msgid "GLib Schema"
@@ -128,26 +138,34 @@ msgid ""
 "installed at :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema."
 "xml`."
 msgstr ""
+"Ce fichier contient le schéma pour les configurations utilisateur. Il est "
+"normalement installé dans :file:`/usr/share/glib-2.0/schemas/org.zrythm."
+"Zrythm.gschema.xml`."
 
 #: ../../appendix/files-and-directories.rst:34
 msgid "Desktop Icon"
-msgstr ""
+msgstr "Icône de bureau"
 
 #: ../../appendix/files-and-directories.rst:35
 msgid ""
 "This is used by the desktop environment. Normally installed at :file:`/usr/"
 "share/icons/hicolor/scalable/apps/zrythm.svg`."
 msgstr ""
+"Ceci est utilisé par l'environnement de bureau. Normalement installé dans "
+":file:`/usr/share/icons/hicolor/scalable/apps/zrythm.svg`."
 
 #: ../../appendix/files-and-directories.rst:40
 msgid "Localization Files"
-msgstr ""
+msgstr "Fichiers de localisation"
 
 #: ../../appendix/files-and-directories.rst:41
 msgid ""
 "Localization files are installed under :file:`/usr/share/locale`. For "
 "example, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` for Korean."
 msgstr ""
+"Les fichiers de localisation sont installés sous :file:`/usr/share/locale`. "
+"Par exemple, :file:`/usr/share/locale/fr/LC_MESSAGES/zrythm.mo` pour le "
+"français."
 
 #: ../../appendix/files-and-directories.rst:47
 #: ../../getting-started/getting-plugins.rst:100
@@ -172,6 +190,9 @@ msgid ""
 "required by Zrythm will normally be installed under :file:`/usr/share/fonts/"
 "zrythm`."
 msgstr ""
+"À moins que votre distribution ne fournisse des paquets pour les polices "
+"d'écriture requises, les polices d'écriture requises par Zrythm seront "
+"normalement installées sous :file:`/usr/share/fonts/zrythm`."
 
 #: ../../appendix/files-and-directories.rst:60
 msgid "GtkSourceView Stylesheets"
@@ -182,16 +203,21 @@ msgid ""
 "Zrythm will install CSS stylesheets to be used by some text input widgets "
 "under :file:`/usr/share/zrythm/sourceview-styles`."
 msgstr ""
+"Zrythm installera les feuilles de style CSS qui seront utilisées par "
+"certains widgets de saisie de texte sous :file:`/usr/share/zrythm/sourceview-"
+"styles`."
 
 #: ../../appendix/files-and-directories.rst:66
 msgid "Themes"
-msgstr ""
+msgstr "Thèmes"
 
 #: ../../appendix/files-and-directories.rst:67
 msgid ""
 "Default themes (including icon themes) will normally be installed under :"
 "file:`/usr/share/zrythm/themes`."
 msgstr ""
+"Les thèmes par défaut (y compris les thèmes d'icônes) seront normalement "
+"installés sous :file:`/usr/share/zrythm/themes`."
 
 #: ../../appendix/files-and-directories.rst:71
 msgid ""
@@ -199,38 +225,30 @@ msgid ""
 "files in the :term:`Zrythm user path`. See :doc:`../theming/intro` for "
 "details."
 msgstr ""
+"Zrythm permet de remplacer certains de ces fichiers par des fichiers "
+"spécifiés par l'utilisateur dans le :term:`chemin utilisateur Zrythm`. Voir "
+":doc:`../theming/intro` pour plus de détails."
 
 #: ../../appendix/files-and-directories.rst:77
 msgid "User Files"
-msgstr ""
+msgstr "Fichiers utilisateur"
 
 #: ../../appendix/files-and-directories.rst:79
 msgid "Cached Plugin Descriptors"
-msgstr ""
+msgstr "Descripteurs de greffon en cache"
 
 #: ../../appendix/files-and-directories.rst:80
-#, fuzzy
 msgid ""
 "Plugin descriptor cache for faster scanning. This is found at :file:"
 "`cached_plugin_descriptors.yaml` under the :term:`Zrythm user path`."
 msgstr ""
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
-"Puisque le scan des greffons VST prend beaucoup de temps, Zrythm se "
-"souviendra des greffons VST scannés et sauvegardera cette information dans "
-"``<<ZRYTHM PATH>>/cached_vst_descriptors.yaml``. Les nouveaux greffons "
-"seront scannés à chaque démarrage, et vous pouvez supprimer ou modifier ce "
-"fichier pour forcer un nouveau scan des greffons précédemment scannés.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"Cache des descripteurs de greffon pour une analyse plus rapide. Ceci se "
+"trouve dans :file:`cached_plugin_descriptors.yaml` sous le :term:`chemin "
+"utilisateur de Zrythm`."
 
 #: ../../appendix/files-and-directories.rst:86
-#, fuzzy
 msgid "Plugin Collections"
-msgstr ""
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Collections"
+msgstr "Collections de greffon"
 
 #: ../../appendix/files-and-directories.rst:87
 msgid ""
