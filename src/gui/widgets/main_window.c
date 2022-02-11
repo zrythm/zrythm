@@ -493,9 +493,6 @@ main_window_widget_class_init (
   BIND_CHILD (center_box);
   BIND_CHILD (center_dock);
   BIND_CHILD (bot_bar);
-  /*BIND_CHILD (revealer);*/
-  /*BIND_CHILD (close_notification_button);*/
-  /*BIND_CHILD (notification_label);*/
   gtk_widget_class_bind_template_callback (
     klass,
     on_main_window_destroy);

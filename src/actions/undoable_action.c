@@ -293,9 +293,8 @@ undoable_action_do (
       TRACKLIST_SELECTIONS,
       tracklist_selections,
       TracklistSelections);
-    DO_ACTION (CHANNEL_SEND,
-               channel_send,
-               ChannelSend);
+    DO_ACTION (
+      CHANNEL_SEND, channel_send, ChannelSend);
     DO_ACTION (
       MIXER_SELECTIONS, mixer_selections,
       MixerSelections);
@@ -308,6 +307,7 @@ undoable_action_do (
       PORT_CONNECTION, port_connection,
       PortConnection);
     DO_ACTION (PORT, port, Port);
+    DO_ACTION (TRANSPORT, transport, Transport);
     DO_ACTION (
       MIDI_MAPPING, midi_mapping, MidiMapping);
     default:

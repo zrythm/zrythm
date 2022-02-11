@@ -178,6 +178,9 @@ _test_helper_zrythm_init (
       "zrythm_test_project_XXXXXX", NULL);
   project_load (NULL, false);
 
+  /* adaptive snap only supported with UI */
+  SNAP_GRID_TIMELINE->snap_adaptive = false;
+
   /* set a segv handler */
   signal (SIGSEGV, segv_handler);
 
