@@ -6,7 +6,7 @@
     <property name="icon_name">zrythm</property>
     <signal name="destroy" handler="on_main_window_destroy" swapped="no"/>
     <child>
-      <object class="GtkOverlay" id="overlay">
+      <object class="AdwToastOverlay" id="toast_overlay">
         <property name="name">main-window-overlay</property>
         <property name="child">
           <object class="GtkBox" id="main_box">
@@ -37,11 +37,6 @@
             </child>
           </object>
         </property>
-        <child type="overlay">
-          <object class="AdwToastOverlay" id="toast_overlay">
-            <property name="valign">start</property>
-          </object>
-        </child>
       </object>
     </child>
   </template>

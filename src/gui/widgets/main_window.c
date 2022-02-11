@@ -486,7 +486,6 @@ main_window_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     wklass, MainWindowWidget, x)
 
-  BIND_CHILD (overlay);
   BIND_CHILD (toast_overlay);
   BIND_CHILD (main_box);
   BIND_CHILD (header);
