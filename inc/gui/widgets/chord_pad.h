@@ -69,7 +69,7 @@ typedef struct _ChordPadWidget
   GtkButton *   invert_next_btn;
 
   /** Index of the chord in the chord track. */
-  int           idx;
+  int           chord_idx;
 } ChordPadWidget;
 
 /**
@@ -84,7 +84,7 @@ chord_pad_widget_new (void);
 void
 chord_pad_widget_refresh (
   ChordPadWidget * self,
-  int           idx);
+  int              idx);
 
 /**
  * @}

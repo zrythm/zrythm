@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,10 +29,8 @@
 #define CHORD_KEY_WIDGET_TYPE \
   (chord_key_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  ChordKeyWidget,
-  chord_key_widget,
-  Z, CHORD_KEY_WIDGET,
-  GtkGrid)
+  ChordKeyWidget, chord_key_widget,
+  Z, CHORD_KEY_WIDGET, GtkGrid)
 
 typedef struct _PianoKeyboardWidget
   PianoKeyboardWidget;
@@ -52,12 +50,12 @@ typedef struct _ChordKeyWidget
   GtkGrid           parent_instance;
 
   /** The chord this widget is for. */
-  ChordDescriptor * descr;
+  int               chord_idx;
 
   GtkLabel *        chord_lbl;
   GtkBox *          piano_box;
   PianoKeyboardWidget * piano;
-  GtkBox *    btn_box;
+  GtkBox *          btn_box;
   GtkButton *       choose_chord_btn;
   GtkButton *       invert_prev_btn;
   GtkButton *       invert_next_btn;
@@ -75,7 +73,7 @@ chord_key_widget_refresh (
  */
 ChordKeyWidget *
 chord_key_widget_new (
-  ChordDescriptor * descr);
+  int               idx);
 
 /**
  * @}

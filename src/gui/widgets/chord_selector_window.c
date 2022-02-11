@@ -28,6 +28,7 @@
 #include "gui/widgets/chord_selector_window.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
@@ -44,10 +45,27 @@ on_close_request (
   GtkWindow *                 window,
   ChordSelectorWindowWidget * self)
 {
-  /* update the keys */
-  chord_descriptor_update_notes (self->descr);
+  chord_descriptor_update_notes (self->descr_clone);
 
-  EVENTS_PUSH (ET_CHORD_KEY_CHANGED, self->descr);
+  /* if chord changed, perform undoable action */
+  if (chord_descriptor_is_equal (
+        self->descr_clone,
+        CHORD_EDITOR->chords[self->chord_idx]))
+    {
+      g_debug ("no chord change");
+    }
+  else
+    {
+      chord_editor_apply_single_chord (
+        CHORD_EDITOR, self->descr_clone,
+        self->chord_idx, F_UNDOABLE);
+
+      EVENTS_PUSH (
+        ET_CHORD_KEY_CHANGED,
+        CHORD_EDITOR->chords[self->chord_idx]);
+    }
+
+  chord_descriptor_free (self->descr_clone);
 
   return false;
 }
@@ -151,7 +169,7 @@ creator_select_root_note (
   GtkFlowBoxChild * child,
   ChordSelectorWindowWidget * self)
 {
-  self->descr->root_note =
+  self->descr_clone->root_note =
     get_note_from_creator_root_notes (
       self, child);
 }
@@ -169,7 +187,7 @@ creator_select_type (
             child)
         continue;
 
-      self->descr->type = (ChordType) i;
+      self->descr_clone->type = (ChordType) i;
     }
 }
 
@@ -184,8 +202,8 @@ creator_select_bass_note (
       if (self->creator_bass_notes[i] != child)
         continue;
 
-      self->descr->has_bass = true;
-      self->descr->bass_note = i;
+      self->descr_clone->has_bass = true;
+      self->descr_clone->bass_note = i;
       g_debug ("bass note %d", i);
       return;
     }
@@ -254,16 +272,16 @@ on_creator_accent_child_activated (
       ChordAccent accent = (ChordAccent) (i + 1);
 
       /* if selected, deselect it */
-      if (self->descr->accent == accent)
+      if (self->descr_clone->accent == accent)
         {
           gtk_flow_box_unselect_child (
             flowbox, child);
-          self->descr->accent = CHORD_ACC_NONE;
+          self->descr_clone->accent = CHORD_ACC_NONE;
         }
       /* else select it */
       else
         {
-          self->descr->accent = accent;
+          self->descr_clone->accent = accent;
         }
     }
 }
@@ -286,7 +304,7 @@ on_creator_bass_note_selected_children_changed (
   else
     {
       g_debug ("removing bass");
-      self->descr->has_bass = false;
+      self->descr_clone->has_bass = false;
     }
 }
 
@@ -295,7 +313,7 @@ setup_creator_tab (
   ChordSelectorWindowWidget * self)
 {
   ChordDescriptor * descr =
-    self->descr;
+    self->descr_clone;
 
 #define SELECT_CHILD(flowbox, child) \
   gtk_flow_box_select_child ( \
@@ -578,7 +596,7 @@ on_group_changed (
  */
 ChordSelectorWindowWidget *
 chord_selector_window_widget_new (
-  ChordDescriptor * descr)
+  const int chord_idx)
 {
   ChordSelectorWindowWidget * self =
     g_object_new (
@@ -586,7 +604,11 @@ chord_selector_window_widget_new (
       "icon-name", "zrythm",
       NULL);
 
-  self->descr = descr;
+  self->chord_idx = chord_idx;
+  const ChordDescriptor * descr =
+    CHORD_EDITOR->chords[chord_idx];
+  self->descr_clone =
+    chord_descriptor_clone (descr);
 
 #if 0
   ArrangerObject * region_obj =

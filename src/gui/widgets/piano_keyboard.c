@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,8 +20,11 @@
 #include <math.h>
 
 #include "audio/chord_descriptor.h"
+#include "gui/backend/chord_editor.h"
+#include "gui/backend/clip_editor.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/piano_keyboard.h"
+#include "project.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -45,10 +48,11 @@ draw_orange_circle (
     (double)
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
-  if (self->chord_descr)
+  if (self->for_chord)
     {
-      if (self->chord_descr->notes[
-            self->start_key + i])
+      ChordDescriptor * descr =
+        CHORD_EDITOR->chords[self->chord_idx];
+      if (descr->notes[self->start_key + i])
         {
           double circle_radius = key_width / 3.0;
           bool is_black =
@@ -168,13 +172,14 @@ piano_keyboard_widget_refresh (
  */
 PianoKeyboardWidget *
 piano_keyboard_widget_new_for_chord_key (
-  ChordDescriptor * descr)
+  const int chord_idx)
 {
   PianoKeyboardWidget * self =
     piano_keyboard_widget_new (
       GTK_ORIENTATION_HORIZONTAL);
 
-  self->chord_descr = descr;
+  self->chord_idx = chord_idx;
+  self->for_chord = true;
   self->editable = true;
   self->playable = false;
   self->scrollable = false;

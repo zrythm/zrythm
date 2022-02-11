@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -73,9 +73,11 @@ typedef struct _PianoKeyboardWidget
   /** Horizontal/vertical. */
   GtkOrientation       orientation;
 
-  /** Chord descriptor, if this widget is for
+  /** Chord index, if this widget is for
    * a chord key. */
-  ChordDescriptor *    chord_descr;
+  int                  chord_idx;
+
+  bool                 for_chord;
 
 } PianoKeyboardWidget;
 
@@ -95,7 +97,7 @@ piano_keyboard_widget_refresh (
  */
 PianoKeyboardWidget *
 piano_keyboard_widget_new_for_chord_key (
-  ChordDescriptor * descr);
+  const int chord_idx);
 
 /**
  * @}

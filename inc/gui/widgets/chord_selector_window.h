@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -133,11 +133,13 @@ typedef struct _ChordSelectorWindowWidget
   GtkCheckButton *  creator_visibility_in_scale;
 
   /** ScaleObject at the chord's position. */
-  ScaleObject *      scale;
+  ScaleObject *     scale;
 
-  /** The descriptor of the edited chord, so
-   * it can be used to save into the ChordObject. */
-  ChordDescriptor * descr;
+  /** Temporary copy of the chord descriptor. */
+  ChordDescriptor * descr_clone;
+
+  /** The index of the chord in the chord editor. */
+  int               chord_idx;
 
 } ChordSelectorWindowWidget;
 
@@ -146,7 +148,7 @@ typedef struct _ChordSelectorWindowWidget
  */
 ChordSelectorWindowWidget *
 chord_selector_window_widget_new (
-  ChordDescriptor * descr);
+  const int chord_idx);
 
 /**
  * @}

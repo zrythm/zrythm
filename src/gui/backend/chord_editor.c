@@ -70,6 +70,30 @@ chord_editor_clone (
 }
 
 void
+chord_editor_apply_single_chord (
+  ChordEditor *           self,
+  const ChordDescriptor * chord,
+  const int               idx,
+  bool                    undoable)
+{
+  if (undoable)
+    {
+      GError * err = NULL;
+      bool ret =
+        chord_action_perform (
+          NULL, NULL, chord, idx, &err);
+      g_return_if_fail (ret);
+    }
+  else
+    {
+      chord_descriptor_copy (
+        self->chords[idx], chord);
+      chord_descriptor_update_notes (
+        self->chords[idx]);
+    }
+}
+
+void
 chord_editor_apply_chords (
   ChordEditor *            self,
   const ChordDescriptor ** chords,
@@ -81,7 +105,7 @@ chord_editor_apply_chords (
       bool ret =
         chord_action_perform (
           (const ChordDescriptor **) self->chords,
-          chords, &err);
+          chords, NULL, -1, &err);
       g_return_if_fail (ret);
     }
   else

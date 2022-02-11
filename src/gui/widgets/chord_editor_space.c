@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -135,14 +135,11 @@ chord_editor_space_widget_setup (
 
   for (int i = 0; i < CHORD_EDITOR->num_chords; i++)
     {
-      self->chord_keys[i] =
-        chord_key_widget_new (CHORD_EDITOR->chords[i]);
+      self->chord_keys[i] = chord_key_widget_new (i);
       GtkBox * box =
         GTK_BOX (
-          gtk_box_new (GTK_ORIENTATION_HORIZONTAL,
-                       0));
-      gtk_widget_set_visible (
-        GTK_WIDGET (box), 1);
+          gtk_box_new (
+            GTK_ORIENTATION_HORIZONTAL, 0));
       gtk_box_append (
         box, GTK_WIDGET (self->chord_keys[i]));
       gtk_widget_add_css_class (

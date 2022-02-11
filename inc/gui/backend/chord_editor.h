@@ -107,6 +107,13 @@ chord_editor_clone (
   ChordEditor * src);
 
 void
+chord_editor_apply_single_chord (
+  ChordEditor *           self,
+  const ChordDescriptor * chord,
+  const int               idx,
+  bool                    undoable);
+
+void
 chord_editor_apply_chords (
   ChordEditor *            self,
   const ChordDescriptor ** chords,

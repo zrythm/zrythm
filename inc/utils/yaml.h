@@ -111,6 +111,20 @@
     &schema, 0, CYAML_UNLIMITED)
 
 /**
+ * Dynamic (allocated) array of pointers
+ * with fixed count.
+ *
+ * @code@
+ * AutomationTrack ** ats;
+ * @endcode@
+ */
+#define YAML_FIELD_DYN_FIXED_SIZE_PTR_ARRAY( \
+  owner,member,schema,fixed_size) \
+  CYAML_FIELD_SEQUENCE_FIXED ( \
+    #member, CYAML_FLAG_POINTER, \
+    owner, member, &schema, fixed_size)
+
+/**
  * Dynamic-width (reallocated) array of structs
  * with variable count.
  *
@@ -146,6 +160,21 @@
   owner,member,schema) \
   YAML_FIELD_DYN_ARRAY_VAR_COUNT (\
     owner,member,schema)
+
+/**
+ * Dynamic (allocated) array of pointers
+ * with fixed count.
+ *
+ * @code@
+ * AutomationTrack ** ats;
+ * @endcode@
+ */
+#define YAML_FIELD_DYN_FIXED_SIZE_PTR_ARRAY_OPT( \
+  owner,member,schema,fixed_size) \
+  CYAML_FIELD_SEQUENCE_FIXED ( \
+    #member, \
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL, \
+    owner, member, &schema, fixed_size)
 
 /**
  * Dynamic-width (reallocated) array of primitives

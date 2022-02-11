@@ -43,7 +43,7 @@ get_chord_descriptor (
   ChordPadWidget * self)
 {
   ChordDescriptor * descr =
-    CHORD_EDITOR->chords[self->idx];
+    CHORD_EDITOR->chords[self->chord_idx];
   g_return_val_if_fail (descr, NULL);
 
   return descr;
@@ -116,10 +116,8 @@ on_edit_chord_pressed (
 {
   ChordPadWidget * self = Z_CHORD_PAD_WIDGET (user_data);
 
-  ChordDescriptor * descr =
-    get_chord_descriptor (self);
   ChordSelectorWindowWidget * chord_selector =
-    chord_selector_window_widget_new (descr);
+    chord_selector_window_widget_new (self->chord_idx);
 
   g_debug ("presenting chord selector window");
   gtk_window_present (GTK_WINDOW (chord_selector));
@@ -235,16 +233,21 @@ on_invert_btn_clicked (
   GtkButton *   btn,
   ChordPadWidget * self)
 {
-  ChordDescriptor * descr =
+  const ChordDescriptor * descr =
     get_chord_descriptor (self);
   g_return_if_fail (descr);
+  ChordDescriptor * descr_clone =
+    chord_descriptor_clone (descr);
 
   if (btn == self->invert_prev_btn)
     {
       if (chord_descriptor_get_min_inversion (
             descr) != descr->inversion)
         {
-          descr->inversion--;
+          descr_clone->inversion--;
+          chord_editor_apply_single_chord (
+            CHORD_EDITOR, descr_clone,
+            self->chord_idx, F_UNDOABLE);
         }
     }
   else if (btn == self->invert_next_btn)
@@ -252,13 +255,12 @@ on_invert_btn_clicked (
       if (chord_descriptor_get_max_inversion (
             descr) != descr->inversion)
         {
-          descr->inversion++;
+          descr_clone->inversion++;
+          chord_editor_apply_single_chord (
+            CHORD_EDITOR, descr_clone,
+            self->chord_idx, F_UNDOABLE);
         }
     }
-
-  chord_descriptor_update_notes (descr);
-
-  EVENTS_PUSH (ET_CHORD_KEY_CHANGED, descr);
 }
 
 /**
@@ -269,7 +271,7 @@ chord_pad_widget_refresh (
   ChordPadWidget * self,
   int              idx)
 {
-  self->idx = idx;
+  self->chord_idx = idx;
 
   ChordDescriptor * descr =
     get_chord_descriptor (self);
