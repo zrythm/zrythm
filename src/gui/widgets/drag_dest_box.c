@@ -432,6 +432,14 @@ on_dnd_drop (
       bool ret;
       if (action == GDK_ACTION_COPY)
         {
+          if (tracklist_selections_contains_uncopyable_track (
+                TRACKLIST_SELECTIONS))
+            {
+              g_message (
+                "cannot copy - track selection "
+                "contains uncopyable track");
+              return false;
+            }
           ret =
             tracklist_selections_action_perform_copy (
               TRACKLIST_SELECTIONS,

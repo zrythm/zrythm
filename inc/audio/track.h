@@ -701,6 +701,18 @@ track_type_is_foldable (
     type == TRACK_TYPE_AUDIO_GROUP;
 }
 
+static inline bool
+track_type_is_copyable (
+  TrackType type)
+{
+  return
+    type != TRACK_TYPE_MASTER &&
+    type != TRACK_TYPE_TEMPO &&
+    type != TRACK_TYPE_CHORD &&
+    type != TRACK_TYPE_MODULATOR &&
+    type != TRACK_TYPE_MARKER;
+}
+
 /**
  * Sets magic on objects recursively.
  */

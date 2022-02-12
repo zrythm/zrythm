@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -203,12 +203,28 @@ tracklist_selections_action_new (
       num_tracks = 0;
     }
 
+  /* --- validation --- */
+
   if (type == TRACKLIST_SELECTIONS_ACTION_CREATE
       && num_tracks <= 0)
     {
       g_critical (
         "attempted to create %d tracks",
         num_tracks);
+      return NULL;
+    }
+
+  if ((type == TRACKLIST_SELECTIONS_ACTION_COPY
+       ||
+       type ==
+         TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE)
+      &&
+      tracklist_selections_contains_uncopyable_track (
+        tls_before))
+    {
+      g_critical (
+        "cannot copy - track selection "
+        "contains uncopyable track");
       return NULL;
     }
 
@@ -224,6 +240,8 @@ tracklist_selections_action_new (
         track_type_is_foldable (foldable_tr->type),
         NULL);
     }
+
+  /* --- end validation --- */
 
   if (tls_before == TRACKLIST_SELECTIONS &&
       (type != TRACKLIST_SELECTIONS_ACTION_EDIT ||

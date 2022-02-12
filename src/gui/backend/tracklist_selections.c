@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -407,13 +407,30 @@ tracklist_selections_remove_track (
 
 bool
 tracklist_selections_contains_undeletable_track (
-  TracklistSelections * self)
+  const TracklistSelections * self)
 {
   for (int i = 0; i < self->num_tracks; i++)
     {
       Track * track = self->tracks[i];
 
       if (!track_type_is_deletable (track->type))
+        {
+          return true;
+        }
+    }
+
+  return false;
+}
+
+bool
+tracklist_selections_contains_uncopyable_track (
+  const TracklistSelections * self)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+
+      if (!track_type_is_copyable (track->type))
         {
           return true;
         }

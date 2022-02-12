@@ -1619,6 +1619,15 @@ tracklist_handle_move_or_copy (
 
   if (action == GDK_ACTION_COPY)
     {
+      if (tracklist_selections_contains_uncopyable_track (
+            TRACKLIST_SELECTIONS))
+        {
+          g_message (
+            "cannot copy - track selection "
+            "contains uncopyable track");
+          return;
+        }
+
       if (location == TRACK_WIDGET_HIGHLIGHT_INSIDE)
         {
           GError * err = NULL;
@@ -1882,7 +1891,7 @@ tracklist_handle_move_or_copy (
                 diff_between_track_below_and_parent);
             }
         }
-    }
+    } /* endif action is MOVE */
 }
 
 /**
