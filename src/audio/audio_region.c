@@ -124,7 +124,8 @@ audio_region_new (
     {
       self->pool_id = pool_id;
       clip = AUDIO_POOL->clips[pool_id];
-      g_warn_if_fail (clip && clip->frames);
+      g_return_val_if_fail (
+        clip && clip->frames, NULL);
     }
 
   /* set end pos to sample end */
