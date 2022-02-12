@@ -638,6 +638,8 @@ drag_end (
 
   if (pl)
     {
+      g_return_if_fail (self->track);
+      g_return_if_fail (self->track->channel);
       g_return_if_fail (
         self->track->channel->widget);
       self->track->channel->widget->
