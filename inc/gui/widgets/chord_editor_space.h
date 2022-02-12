@@ -113,6 +113,10 @@ void
 chord_editor_space_widget_refresh (
   ChordEditorSpaceWidget * self);
 
+void
+chord_editor_space_widget_refresh_chords (
+  ChordEditorSpaceWidget * self);
+
 /**
  * @}
  */

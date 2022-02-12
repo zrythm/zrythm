@@ -122,6 +122,18 @@ chord_editor_space_widget_refresh (
 }
 
 void
+chord_editor_space_widget_refresh_chords (
+  ChordEditorSpaceWidget * self)
+{
+  for (int j = 0;
+       j < CHORD_EDITOR->num_chords; j++)
+    {
+      chord_key_widget_refresh (
+        self->chord_keys[j]);
+    }
+}
+
+void
 chord_editor_space_widget_setup (
   ChordEditorSpaceWidget * self)
 {

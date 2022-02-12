@@ -1102,6 +1102,8 @@ event_manager_process_event (
     case ET_CHORDS_UPDATED:
       chord_pad_panel_widget_refresh (
         MW_CHORD_PAD_PANEL);
+      chord_editor_space_widget_refresh_chords (
+        MW_CHORD_EDITOR_SPACE);
       break;
     case ET_JACK_TRANSPORT_TYPE_CHANGED:
       g_message ("doing");
