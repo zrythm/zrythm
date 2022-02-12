@@ -2097,7 +2097,7 @@ carla_native_plugin_instantiate (
                     num_midi_outs_connected++);
               if (!ret)
                 {
-                  g_critical (
+                  g_warning (
                     "Error: %s",
                     carla_get_last_error (
                       self->host_handle));
