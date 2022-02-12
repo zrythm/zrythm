@@ -149,16 +149,18 @@ port_connection_row_widget_new (
 
   /* bar slider */
   char designation[600];
-  Port * port = NULL;
-  if (is_input)
-    port_find_from_identifier (
-      connection->src_id);
-  else
-    port =
-      port_find_from_identifier (
-        connection->src_id);
-  g_return_val_if_fail (
-    IS_PORT_AND_NONNULL (port), NULL);
+  const PortIdentifier * port_id =
+    is_input
+    ? connection->dest_id : connection->src_id;
+  Port * port =
+    port_find_from_identifier (port_id);
+  if (!IS_PORT_AND_NONNULL (port))
+    {
+      g_critical (
+        "failed to find port for '%s'",
+        port_id->label);
+      return NULL;
+    }
   port_get_full_designation (port, designation);
   strcat (designation, " ");
   self->slider =
