@@ -165,6 +165,7 @@ audio_write_raw_file (
         }
     }
 
+  g_debug ("nframes = %zu", nframes);
   sf_count_t count =
     sf_writef_float (
       sndfile, buff, (sf_count_t) nframes);
