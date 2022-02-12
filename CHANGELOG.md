@@ -1,6 +1,39 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.29.0.1] - 2022-02-12
+### Added
+- Add more scales
+- User manual: add more info about DSSI/LADSPA and Flatpak plugin paths
+- Chord inversions
+- Chord presets and chord preset packs
+- Chord preset auditioning
+- Ability to transpose entire chord pad
+- Add meson options for optional dependencies
+- Make chord changes undoable
+
+### Changed
+- Change how scales/chords are handled
+- Use adaptive grid snap by default
+- Hardcode Flatpak plugin paths
+- Make region icon sizes smaller
+- Print chord names in chord regions in timeline
+- Use GtkCenterBox for bottom bar (makes Zrythm usable on small screen sizes)
+- Select listview items on right click
+- Port file auditioner instrument dropdown to GtkDropDown
+- Unset `GTK_THEME` on startup (only support Zrythm themes)
+- Update Catalan, French, Chinese (Simplified), Portuguese, German translations
+- Do not block buttons below toast widget
+- Do not allow setting loop end marker at or before loop start marker
+- Do not allow cloning unclonable tracks
+
+### Fixed
+- Fix various issues with chord selector window
+- Fix occasional stuck notes when clicking chords
+- Fix error when pasting when clipboard is empty
+- Fix error when showing port connections on input port
+- Fix incorrect MIDI channel being sent when auditioning MIDI notes
+
 ## [1.0.0-alpha.28.1.3] - 2022-01-22
 ### Added
 - Audition mode
