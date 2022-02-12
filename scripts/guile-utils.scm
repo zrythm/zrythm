@@ -29,7 +29,8 @@
             getenv-or-default
             get-cflags-from-pkgconf-name
             program-found?
-            string-replace-substring))
+            string-replace-substring
+            string-split-substring))
 
 ;; returns if a is an element of list l
 (define (elem? a l)
@@ -124,3 +125,29 @@
                              pieces))
                 (string-concatenate-reverse (cons (substring s start)
                                                   pieces))))))))
+
+;; by vijaymarupudi from #guile
+(define (string-split-substring string substr)
+
+  (define len (string-length substr))
+  (define strlen (string-length string))
+
+  (let ((substr-indices (let loop ((start-index 0))
+                             (if (>= start-index strlen)
+                                 '()
+                                 (let ((i (string-contains string substr start-index)))
+                                   (if (not i)
+                                       '()
+                                       (cons i (loop (+ i len)))))))))
+    (if (null? substr-indices)
+        (list string)
+        (let loop ((indices substr-indices)
+                   (start 0))
+          (cond
+           ((>= start strlen) '())
+           ((null? indices) (list (substring string start)))
+           (else
+            (let ((idx (car indices)))
+              (cons (substring string start idx)
+                    (loop (cdr indices)
+                          (+ idx len))))))))))

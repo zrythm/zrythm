@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -19,6 +19,14 @@ scripts_conf = {
   'SCRIPTS_DIR': meson.current_build_dir (),
   'MESON_BUILD_ROOT': meson_build_root,
   'MESON_SOURCE_ROOT': meson_src_root,
+  'HOMEPAGE_URL': 'https://www.zrythm.org/en/index.html',
+  'DONATION_URL': 'https://www.zrythm.org/en/community.html#donate',
+  'BUG_REPORT_URL': 'https://todo.sr.ht/~alextee/zrythm-bug',
+  'USER_MANUAL_URL': 'https://manual.zrythm.org/en/index.html',
+  'TRANSLATE_URL': 'https://hosted.weblate.org/engage/zrythm/',
+  'CONTACT_URL': 'https://www.zrythm.org/en/community.html#contact',
+  'PIANO_ROLL_SCREENSHOT_URL': 'https://www.zrythm.org/static/images/screenshots/Screenshot_20220110_152402.png',
+  'MIXER_SCREENSHOT_URL': 'https://www.zrythm.org/static/images/screenshots/Screenshot_20220110_152001.png',
   }
 if os_windows
   scripts_conf += { 'GUILE': 'guile' }
@@ -94,6 +102,13 @@ gen_gtk_resources_xml_wrap = configure_file (
   input: generic_guile_wrap_name,
   configuration: scripts_conf + {
     'SCRIPT_NAME': 'gen-gtk-resources-xml.scm'},
+  )
+
+gen_appdata_xml_wrap = configure_file (
+  output: 'gen-appdata-xml.sh',
+  input: generic_guile_wrap_name,
+  configuration: scripts_conf + {
+    'SCRIPT_NAME': 'gen-appdata-xml.scm'},
   )
 
 gen_completions_sh = configure_file (

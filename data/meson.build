@@ -107,20 +107,22 @@ if os_gnu or os_freebsd
   endif
 
   # appdata
-  # TODO generate <releases/> based on CHANGELOG.md
-  appdata_config = configuration_data ({
-    'HOMEPAGE_URL': 'https://www.zrythm.org/en/index.html',
-    'DONATION_URL': 'https://www.zrythm.org/en/community.html',
-    'BUG_REPORT_URL': 'https://todo.sr.ht/~alextee/zrythm-bug',
-    'USER_MANUAL_URL': 'https://manual.zrythm.org/en/index.html',
-    'PIANO_ROLL_SCREENSHOT_URL': 'https://www.zrythm.org/static/images/screenshots/Screenshot_20220110_152402.png',
-    'MIXER_SCREENSHOT_URL': 'https://www.zrythm.org/static/images/screenshots/Screenshot_20220110_152001.png',
-    'APP_ID': app_id,
-    })
-  appdata_file_in = configure_file (
-    input: '@0@.appdata.xml.in'.format (app_id),
+  appdata_file_in_unformatted = custom_target (
+    'appdata-xml-in-tmp',
+    input: gen_appdata_xml_wrap,
+    output: '@0@.appdata.xml.in.in'.format (app_id),
+    command: [
+      gen_appdata_xml_wrap,
+      meson_build_root / '@OUTPUT@', app_id,
+      ])
+  appdata_file_in = custom_target (
+    'appdata-xml-in',
+    input: appdata_file_in_unformatted,
     output: '@0@.appdata.xml.in'.format (app_id),
-    configuration: appdata_config)
+    command: [
+      xmllint, '--format', '--output', '@OUTPUT@',
+      '@INPUT@',
+      ])
   appdata_file = i18n.merge_file (
     input: appdata_file_in,
     output: '@0@.appdata.xml'.format (app_id),
@@ -129,7 +131,7 @@ if os_gnu or os_freebsd
       install: true,
       install_dir: datadir / 'metainfo',
     )
-# Validate the appdata file
+  # Validate the appdata file
   appstream_util = find_program (
     'appstream-util', required: false)
   if appstream_util.found ()

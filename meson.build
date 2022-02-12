@@ -93,6 +93,7 @@ get_vst_path_bin = find_program (
   'tools/get_vst_path.sh')
 manpage_completions_run_sh = find_program (
   'ext/sh-manpage-completions/run.sh')
+xmllint = find_program ('xmllint')
 
 # --- Set common variables ---
 
@@ -478,7 +479,9 @@ endif
 
 # if latest version in changelog is the project's
 # version, add the changelog to the config
-chlog = fs.read ('CHANGELOG.md').split('\n## [')[1].strip ()
+chlog_full = fs.read ('CHANGELOG.md')
+chlog_list = chlog_full.split('\n## [')
+chlog = chlog_list[1].strip ()
 if chlog.contains (meson.project_version () + '] -')
   chlog_date = chlog.split (' - ')[1].split ('\n')[0]
   chlog = chlog.split (chlog_date + '\n')[1]
