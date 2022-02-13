@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-alpha.29.0.5] - 2022-02-13
+## [1.0.0-alpha.29.0.7] - 2022-02-13
 ### Changed
 - Generate appdata XML using Guile script
 
