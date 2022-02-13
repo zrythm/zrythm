@@ -56,6 +56,8 @@ typedef struct _ArrangerObjectWidget
 #define IS_ARRANGER_OBJECT_AND_NONNULL(x) \
   (x && IS_ARRANGER_OBJECT (x))
 
+#define ARRANGER_OBJECT_MIN_FADE_FRAMES 10
+
 /**
  * Flag used in some functions.
  */
@@ -686,17 +688,20 @@ arranger_object_loop_end_pos_setter (
  * Returns if the given Position is valid.
  *
  * @param pos The position to set to.
- * @param pos_type The type of Position to set in the
- *   ArrangerObject.
+ * @param pos_type The type of Position to set in
+ *   the ArrangerObject.
  */
 HOT
 NONNULL
 WARN_UNUSED_RESULT
 bool
 arranger_object_is_position_valid (
-  ArrangerObject *           self,
-  const Position *           pos,
-  ArrangerObjectPositionType pos_type);
+  const ArrangerObject * const self,
+  const Position *             pos,
+  ArrangerObjectPositionType   pos_type);
+
+#define arranger_object_validate_pos \
+  arranger_object_is_position_valid
 
 /**
  * Sets the Position  all of the object's linked
@@ -917,17 +922,6 @@ arranger_object_get_type_as_string (
 void
 arranger_object_post_deserialize (
   ArrangerObject * self);
-
-/**
- * Validates the given Position.
- *
- * @return 1 if valid, 0 otherwise.
- */
-int
-arranger_object_validate_pos (
-  const ArrangerObject * const self,
-  const Position *             pos,
-  ArrangerObjectPositionType   type);
 
 /**
  * Validates the arranger object.
