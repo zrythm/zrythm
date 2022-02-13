@@ -135,10 +135,26 @@ if os_gnu or os_freebsd
   appstream_util = find_program (
     'appstream-util', required: false)
   if appstream_util.found ()
-    test ('validate-appdata', appstream_util,
+    test ('appstream-util-validate-appdata',
+      appstream_util,
       suite: 'data',
       args: [
         'validate-relax', '--nonet',
+        appdata_file.full_path()
+      ],
+      depends: [
+        appdata_file,
+      ],
+    )
+  endif
+  appstreamcli = find_program (
+    'appstreamcli', required: false)
+  if appstreamcli.found ()
+    test ('appstream-cli-validate-appdata',
+      appstreamcli,
+      suite: 'data',
+      args: [
+        'validate',
         appdata_file.full_path()
       ],
       depends: [
