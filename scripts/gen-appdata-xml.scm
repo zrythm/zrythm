@@ -158,8 +158,7 @@ Args:
                    (@ (type "gettext"))
                    "zrythm")
                  (provides
-                   (binary "zrythm_launch")
-                   (id ,app-id))
+                   (binary "zrythm_launch"))
 
                  (releases
                    ,@(get-releases))
