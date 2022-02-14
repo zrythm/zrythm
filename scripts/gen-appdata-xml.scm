@@ -90,6 +90,7 @@ Args:
                  "version=\"1.0\" encoding=\"UTF-8\"")
                ;; TODO insert: Copyright 2022 Alexandros Theodotou
                (component
+                 (@ (type "desktop"))
                  (id "org.zrythm.Zrythm")
                  ;; The tag 'metadata_license' means
                  ;; the licence of this file, not the
@@ -111,6 +112,9 @@ Args:
   used in multiple languages including English,
   French, Portuguese, Japanese and German.")
                    (p "Zrythm can be extended using GNU Guile."))
+                 (categories
+                   (category "AudioVideo")
+                   (category "Audio"))
                  (url
                    (@ (type "homepage"))
                    "@HOMEPAGE_URL@")
