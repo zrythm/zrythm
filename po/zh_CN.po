@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-02-11 14:55+0000\n"
-"PO-Revision-Date: 2022-02-04 17:58+0000\n"
+"PO-Revision-Date: 2022-02-13 08:53+0000\n"
 "Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -2317,7 +2317,6 @@ msgid "[Modulator %d] %s"
 msgstr "[调制器 %d] %s"
 
 #: src/gui/widgets/chord_pad_panel.c:87
-#, fuzzy
 msgid "From scale"
 msgstr "来自音阶"
 
@@ -3403,18 +3402,16 @@ msgid "Together"
 msgstr ""
 
 #: src/settings/chord_preset_pack_manager.c:226
-#, fuzzy
 msgid "GG"
-msgstr "G"
+msgstr "GG"
 
 #: src/settings/chord_preset_pack_manager.c:248
 msgid "Daijiken"
 msgstr ""
 
 #: src/settings/chord_preset_pack_manager.c:270
-#, fuzzy
 msgid "Dance"
-msgstr "取消"
+msgstr "舞蹈"
 
 #. the idolm@ster 2
 #: src/settings/chord_preset_pack_manager.c:273
@@ -3426,7 +3423,6 @@ msgid "Ballad"
 msgstr ""
 
 #: src/settings/chord_preset_pack_manager.c:312
-#, fuzzy
 msgid "Connection"
 msgstr "连接"
 
@@ -4859,9 +4855,8 @@ msgid "Unpin %d Tracks"
 msgstr "取消固定 %d 道音轨"
 
 #: src/actions/chord_action.c:133
-#, fuzzy
 msgid "Change chords"
-msgstr "修改颜色"
+msgstr "修改和弦"
 
 #: src/actions/undo_manager.c:328
 msgid "Failed to perform action"
