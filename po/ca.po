@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-02-11 14:55+0000\n"
-"PO-Revision-Date: 2022-02-11 14:52+0000\n"
+"PO-Revision-Date: 2022-02-14 21:55+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -123,11 +123,11 @@ msgstr "Normal"
 
 #: inc/utils/ui.h:79
 msgid "Low"
-msgstr "Baix"
+msgstr "Greu"
 
 #: inc/utils/ui.h:80
 msgid "Ultra Low"
-msgstr "Ultra baix"
+msgstr "Ultra greu"
 
 #: inc/utils/gtk.h:59
 msgid "MIDI learn"
@@ -182,7 +182,7 @@ msgstr "Invertir"
 
 #: inc/audio/audio_function.h:71
 msgid "Normalize peak"
-msgstr "Normalitzar el pic"
+msgstr "Normalitzar pic"
 
 #: inc/audio/audio_function.h:72
 msgid "Normalize RMS"
@@ -210,7 +210,7 @@ msgstr "Copet cap a la dreta"
 
 #: inc/audio/audio_function.h:80
 msgid "Reverse"
-msgstr "Invertir"
+msgstr "Revertir"
 
 #: inc/audio/audio_function.h:81
 msgid "External program"
@@ -230,15 +230,15 @@ msgstr "No vàlid"
 
 #: inc/audio/transport.h:73
 msgid "1 bar"
-msgstr "1 rastral"
+msgstr "1 barra"
 
 #: inc/audio/transport.h:74
 msgid "2 bars"
-msgstr "2 rastrals"
+msgstr "2 barres"
 
 #: inc/audio/transport.h:75
 msgid "4 bars"
-msgstr "4 rastrals"
+msgstr "4 barres"
 
 #: inc/audio/track.h:194 src/gui/widgets/track_properties_expander.c:132
 #: src/gui/widgets/route_target_selector_popover.c:188
@@ -487,11 +487,11 @@ msgstr "Xinès"
 
 #: inc/audio/scale.h:170
 msgid "Diminished"
-msgstr "Atenuat"
+msgstr "Disminuït"
 
 #: inc/audio/scale.h:171
 msgid "Dominant Diminished"
-msgstr "Atenuat dominant"
+msgstr "Disminuït dominant"
 
 #: inc/audio/scale.h:172
 msgid "Egyptian"
@@ -527,11 +527,11 @@ msgstr "Escala Insen"
 
 #: inc/audio/scale.h:180
 msgid "Neapolitan Major"
-msgstr "Major napolità"
+msgstr "Major napolitana"
 
 #: inc/audio/scale.h:181
 msgid "Neapolitan Minor"
-msgstr "Menor napolità"
+msgstr "Menor napolitana"
 
 #: inc/audio/scale.h:182
 msgid "Oriental"
@@ -670,11 +670,11 @@ msgstr "Sinusoïdal"
 #: src/project.c:891
 #, c-format
 msgid "Unable to read file: %s"
-msgstr "No s'ha pogut llegir el fitxer: %s"
+msgstr "Error en llegir el fitxer: %s"
 
 #: src/project.c:916
 msgid "Failed to decompress project file"
-msgstr "No s'ha pogut descomprimir l'arxiu del projecte"
+msgstr "Error en descomprimir el fitxer del projecte"
 
 #: src/project.c:975
 #, c-format
@@ -703,16 +703,16 @@ msgstr ""
 #: src/project.c:1057
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
-"No s'ha pogut carregar el projecte. Consulta els registres per a obtenir més "
+"Error en carregar el projecte. Consulta els registres per a obtenir més "
 "informació."
 
 #: src/project.c:1281
 msgid "Failed to load project. Will create a new one instead."
-msgstr "No s'ha pogut carregar el projecte. Se'n crearà un de nou."
+msgstr "Error en carregar el projecte. Se'n crearà un de nou."
 
 #: src/project.c:1615
 msgid "Failed to compress project file"
-msgstr "No s'ha pogut comprimir el fitxer del projecte"
+msgstr "Error en comprimir el fitxer del projecte"
 
 #: src/project.c:1661 src/project.c:1664
 msgid "Backup saved."
@@ -739,7 +739,7 @@ msgstr "%s ha fallat. "
 #: src/zrythm_app.c:203
 #, c-format
 msgid "Do you want %s to check for updates on startup?"
-msgstr "Voleu que %s comprovi si hi ha actualitzacions en iniciar?"
+msgstr "Vols que %s comprovi si hi ha actualitzacions en iniciar?"
 
 #: src/zrythm_app.c:210
 msgid "Check for Updates"
@@ -762,7 +762,7 @@ msgstr "Configuració de la finestra principal"
 
 #: src/zrythm_app.c:417
 msgid "Loading project"
-msgstr "S'està carregant el projecte"
+msgstr "Carregant el projecte"
 
 #: src/zrythm_app.c:435
 #, c-format
@@ -841,7 +841,7 @@ msgstr "Cap fitxer de sortida especificat. Passa un amb `--output=FILE`."
 #: src/zrythm_app.c:1571
 #, c-format
 msgid "Project failed to decompress: %s\n"
-msgstr "No s'ha pogut descomprimir el projecte: %s\n"
+msgstr "Error en descomprimir el projecte: %s\n"
 
 #: src/zrythm_app.c:1590
 msgid "Unknown operation"
@@ -862,7 +862,7 @@ msgstr "Convertir ZPJ-FILE a YAML"
 
 #: src/zrythm_app.c:1785
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
-msgstr "Convertir YAML-PROJECT-FILE al format .zpj"
+msgstr "Convertir YAML-PROJECT-FILE a .zpj"
 
 #: src/zrythm_app.c:1790
 msgid "Generate a project from SCRIPT-FILE"
@@ -894,7 +894,7 @@ msgstr "Transcripció per a --midi-backend=none --audio-backend=none"
 
 #: src/zrythm_app.c:1845
 msgid "[PROJECT-FILE]"
-msgstr "[PROJECT-FILE]"
+msgstr "[PROJECTE-FITXER]"
 
 #: src/zrythm_app.c:1850
 #, c-format
@@ -919,7 +919,7 @@ msgstr ""
 #: src/zrythm_app.c:1862
 #, c-format
 msgid "Run %s, optionally passing a project file."
-msgstr "Executeu %s, passant opcionalment un fitxer de projecte."
+msgstr "Executa %s, passant opcionalment un fitxer de projecte."
 
 #: src/plugins/carla_native_plugin.c:681 src/plugins/lv2_plugin.c:3757
 msgid "Default bank"
@@ -1146,7 +1146,7 @@ msgstr "Error en obtenir el complement LV2 de l'URI <%s>"
 #: src/plugins/lv2_plugin.c:2287
 #, c-format
 msgid "Could not find UI by URI <%s>"
-msgstr "No s'ha pogut trobar la IU de l'URI <%s>"
+msgstr "Error en trobar la IU de l'URI <%s>"
 
 #: src/plugins/lv2_plugin.c:2640
 msgid "Failed to make temporary dir"
@@ -1234,7 +1234,7 @@ msgstr "_D'acord"
 #: src/plugins/lv2/lv2_gtk.c:575
 #, c-format
 msgid "Failed to open LV2 UI for %s"
-msgstr "Error en obrir laIU LV2 per a %s"
+msgstr "Error en obrir la IU LV2 per a %s"
 
 #: src/gui/widgets/editor_ruler.c:289
 msgid "Failed to edit position"
@@ -1276,7 +1276,7 @@ msgstr "Veure informació"
 #: src/gui/widgets/inspector_port.c:332
 #, c-format
 msgid "Failed to set control %s to %f"
-msgstr "No s'ha pogut establir el control de %s a %f"
+msgstr "Error en establir el control de %s a %f"
 
 #: src/gui/widgets/inspector_port.c:386
 msgid "Incoming signals"
@@ -1362,7 +1362,7 @@ msgstr "Solo"
 
 #: src/gui/widgets/channel.c:742 src/gui/widgets/track.c:863
 msgid "Unsolo"
-msgstr "Eliminar el solo"
+msgstr "Treure el solo"
 
 #: src/gui/widgets/channel.c:774 src/gui/widgets/monitor_section.c:63
 #: src/gui/widgets/track.c:367 src/gui/widgets/track.c:895
@@ -1531,7 +1531,7 @@ msgstr "Cap port seleccionat"
 #: src/gui/widgets/port_selector_popover.c:89
 #, c-format
 msgid "Failed to connect %s to %s"
-msgstr "No s'ha pogut connectar %s a %s"
+msgstr "Error en connectar %s a %s"
 
 #: src/gui/widgets/port_selector_popover.c:100
 msgid "These ports cannot be connected"
@@ -1577,7 +1577,7 @@ msgstr "Editor"
 
 #: src/gui/widgets/bot_dock_edge.c:217
 msgid "Editor view"
-msgstr "Visualització d'editor"
+msgstr "Visualització de l'editor"
 
 #: src/gui/widgets/bot_dock_edge.c:221 src/utils/gtk.c:1224
 msgid "Mixer"
@@ -1616,7 +1616,7 @@ msgstr "Posició"
 
 #: src/gui/widgets/digital_meter.c:167
 msgid "Time Signature - Beats per bar / Beat unit"
-msgstr "Signatura temporal - Pulsacions per rastral / Unitat de beat"
+msgstr "Signatura temporal - Pulsacions per barra / Unitat de beat"
 
 #: src/gui/widgets/digital_meter.c:577
 msgid "normal"
@@ -1771,7 +1771,7 @@ msgstr "Error en crear objectes"
 
 #: src/gui/widgets/arranger.c:3965
 msgid "Failed to fill automation"
-msgstr "Error en omplir automatització"
+msgstr "Error en emplenar l'automatització"
 
 #: src/gui/widgets/arranger.c:3998 src/gui/widgets/arranger.c:4051
 #: src/gui/widgets/arranger.c:4074 src/gui/widgets/timeline_arranger.c:999
@@ -1842,7 +1842,7 @@ msgstr "nom %s"
 
 #: src/gui/widgets/piano_roll_keys.c:185
 msgid "bass"
-msgstr "baix"
+msgstr "baixa"
 
 #: src/gui/widgets/piano_roll_keys.c:206
 msgid "both"
@@ -1969,7 +1969,7 @@ msgstr "Volum"
 #. countin
 #: src/gui/widgets/bot_bar.c:606
 msgid "Count-in"
-msgstr "Comptatge:"
+msgstr "Comptatge"
 
 #: src/gui/widgets/bot_bar.c:702
 msgid "bpm"
@@ -1982,7 +1982,7 @@ msgstr "sig. temporal"
 #: src/gui/widgets/timeline_selection_info.c:265 src/audio/marker_track.c:79
 #: resources/ui/quantize_dialog.ui:62
 msgid "start"
-msgstr "inici"
+msgstr "iniciar"
 
 #: src/gui/widgets/timeline_selection_info.c:275 src/audio/marker_track.c:86
 #: resources/ui/quantize_dialog.ui:70
@@ -2014,7 +2014,7 @@ msgstr "Punch in/out"
 
 #: src/gui/widgets/transport_controls.c:412
 msgid "Start on MIDI input"
-msgstr "Començar a l'entrada MIDI"
+msgstr "Iniciar a l'entrada MIDI"
 
 #: src/gui/widgets/transport_controls.c:415
 msgid "Options"
@@ -2022,11 +2022,11 @@ msgstr "Opcions"
 
 #: src/gui/widgets/transport_controls.c:420
 msgid "Overwrite events"
-msgstr "Sobreescriure esdeveniments"
+msgstr "Sobreescriure els esdeveniments"
 
 #: src/gui/widgets/transport_controls.c:423
 msgid "Merge events"
-msgstr "Mesclar esdeveniments"
+msgstr "Combinar esdeveniments"
 
 #: src/gui/widgets/transport_controls.c:426
 msgid "Create takes"
@@ -2194,7 +2194,7 @@ msgstr "Netejar selecció"
 
 #: src/gui/widgets/home_toolbar.c:182 resources/gtk/help-overlay.ui:180
 msgid "Select all"
-msgstr "Seleccionar-ho tot"
+msgstr "Seleccionar tot"
 
 #: src/gui/widgets/home_toolbar.c:184 resources/gtk/help-overlay.ui:306
 msgid "Loop selection"
@@ -2219,7 +2219,7 @@ msgstr "Explorador de fitxers"
 
 #: src/gui/widgets/right_dock_edge.c:169
 msgid "Monitor Section"
-msgstr "Secció de monitors"
+msgstr "Secció de monitor"
 
 #: src/gui/widgets/right_dock_edge.c:192 src/utils/gtk.c:1251
 msgid "Chord Preset Browser"
@@ -2383,7 +2383,7 @@ msgstr "%s - Últim objecte"
 
 #: src/gui/widgets/snap_grid.c:121
 msgid "Snap/Grid options"
-msgstr "Ajustament / Opcions quadrícula"
+msgstr "Ajustar / Opcions quadrícula"
 
 #: src/gui/widgets/preferences.c:498
 msgid "Select a folder"
@@ -2405,7 +2405,7 @@ msgstr "Monitor"
 
 #: src/gui/widgets/monitor_section.c:70 src/gui/widgets/monitor_section.c:364
 msgid "Dim"
-msgstr "Atenuar"
+msgstr "Dism"
 
 #: src/gui/widgets/monitor_section.c:86
 #, c-format
@@ -2436,7 +2436,7 @@ msgstr "Pistes escoltades actualment"
 
 #: src/gui/widgets/monitor_section.c:147
 msgid "Failed to unsolo all tracks"
-msgstr "Error en eliminar el solo a totes les pistes"
+msgstr "Error en treure el solo a totes les pistes"
 
 #: src/gui/widgets/monitor_section.c:185
 msgid "Failed to unmute all tracks"
@@ -2448,7 +2448,7 @@ msgstr "Error en deixar d'escoltar totes les pistes"
 
 #: src/gui/widgets/monitor_section.c:416
 msgid "Unsolo all tracks"
-msgstr "Eliminar el solo a totes les pistes"
+msgstr "Treure el solo de totes les pistes"
 
 #: src/gui/widgets/monitor_section.c:419
 msgid "Unmute all tracks"
@@ -2472,7 +2472,7 @@ msgstr "Escoltant"
 
 #: src/gui/widgets/scripting_window.c:75
 msgid "Scripting Interface"
-msgstr "Interfície de script"
+msgstr "Interfície de creació de scripts"
 
 #: src/gui/widgets/active_hardware_mb.c:56
 #: src/gui/widgets/active_hardware_mb.c:158
@@ -2553,7 +2553,7 @@ msgstr "Error en editar l'escala"
 
 #: src/gui/widgets/event_viewer.c:571 src/gui/widgets/event_viewer.c:688
 msgid "Start"
-msgstr "Inici"
+msgstr "Iniciar"
 
 #: src/gui/widgets/event_viewer.c:585
 msgid "Clip start"
@@ -2637,7 +2637,7 @@ msgstr "Entrades CV"
 
 #: src/gui/widgets/ports_expander.c:198
 msgid "CV Outs"
-msgstr "Sortides de CV"
+msgstr "Sortides CV"
 
 #: src/gui/widgets/ports_expander.c:368
 msgid "Ungrouped"
@@ -2716,7 +2716,7 @@ msgstr "Mida original"
 
 #: src/gui/widgets/view_toolbar.c:43
 msgid "Best Fit"
-msgstr "Millor ajustament"
+msgstr "Millor ajust"
 
 #: src/gui/widgets/view_toolbar.c:44
 msgid "Fullscreen"
@@ -2772,7 +2772,7 @@ msgstr "Eliminar de la col·lecció"
 
 #: src/gui/widgets/item_factory.c:399
 msgid "Add Bookmark"
-msgstr "Afegir marcador"
+msgstr "Afegir favorit"
 
 #: src/gui/widgets/item_factory.c:425 src/gui/widgets/item_factory.c:463
 msgid "_Rename"
@@ -2850,7 +2850,7 @@ msgstr "Desarmar"
 
 #: src/gui/widgets/track.c:386
 msgid "Arm for recording"
-msgstr "Preparar-se per a la gravació"
+msgstr "Armar per a gravar"
 
 #: src/gui/widgets/track.c:393
 msgid "Hide lanes"
@@ -2906,7 +2906,7 @@ msgstr "Sortida directa nova"
 
 #: src/gui/widgets/track.c:985
 msgid "Rename lane..."
-msgstr "Canviar el nom al carril..."
+msgstr "Canviar el nom del carril..."
 
 #: src/gui/widgets/track.c:1003
 msgid "Passthrough input"
@@ -2963,7 +2963,7 @@ msgstr "Seleccionar el directori principal on desar el projecte"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:70
 msgid "Please enter a valid name."
-msgstr "Introduir un valor vàlid."
+msgstr "Introdueix un valor vàlid."
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:78
 #, c-format
@@ -3062,7 +3062,7 @@ msgstr "Introduir el nom del grup"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:94
 msgid "Group name"
-msgstr "Nom del grup"
+msgstr "Nom de grup"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:97
 msgid "New Group"
@@ -3113,20 +3113,20 @@ msgstr "Obrir el directori que el conté"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:62
 msgid "Please enter steps to reproduce"
-msgstr "Introduir els passos a reproduir"
+msgstr "Introdueix els passos a reproduir"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:75
 msgid "Please fill in all fields"
-msgstr "Omplir tots els camps"
+msgstr "Emplenar tots els camps"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:162
 msgid "Send via Sourcehut"
-msgstr "Envia-ho per Sourcehut"
+msgstr "Enviar per Sourcehut"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:171
 #, c-format
 msgid "Please copy the template below in a %snew issue%s."
-msgstr "Copiar la plantilla següent en un %stema nou%s."
+msgstr "Copiar la plantilla següent en un %sproblema nou%s."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:326
 #, c-format
@@ -3246,7 +3246,7 @@ msgstr "al directori:"
 
 #: src/gui/widgets/dialogs/export_dialog.c:596
 msgid "<name>.<format>"
-msgstr "<name>.<format>"
+msgstr "<nom>.<format>"
 
 #: src/gui/widgets/dialogs/export_dialog.c:601
 msgid "<date>_<name>.<format>"
@@ -3280,7 +3280,7 @@ msgstr "_Seleccionar"
 #: src/gui/widgets/dialogs/changelog_dialog.c:47
 #, c-format
 msgid "Running %s version <b>%s</b>%s%s"
-msgstr "S'està executant %s versió <b>%s</b>%s%s"
+msgstr "Executant %s versió <b>%s</b>%s%s"
 
 #. TRANSLATORS: Home directory
 #: src/gui/backend/file_manager.c:57
@@ -3360,7 +3360,7 @@ msgstr "Sobreescriure el complement"
 #: src/utils/dialogs.c:83
 msgid "A plugin already exists at the selected slot. Overwrite it?"
 msgstr ""
-"Ja existeix un complement a la ranura seleccionada. Voleu sobreescriure'l?"
+"Ja existeix un complement a la ranura seleccionada. Vols sobreescriure'l?"
 
 #: src/utils/dialogs.c:108
 msgid "Error instantiating plugin. Please see log for details."
@@ -3419,11 +3419,12 @@ msgstr "Cançó de 4 acords"
 
 #: src/settings/chord_preset_pack_manager.c:135
 msgid "Canon in D"
-msgstr "Cànon en D"
+msgstr "Cànon en Re"
 
 #: src/settings/chord_preset_pack_manager.c:153
+#, fuzzy
 msgid "Love Progression"
-msgstr "Progrés del preferit"
+msgstr "Love Progression"
 
 #: src/settings/chord_preset_pack_manager.c:163
 msgid "Pop Chords 1"
@@ -3434,45 +3435,41 @@ msgid "Most Often Used Chords"
 msgstr "Acords més utilitzats"
 
 #: src/settings/chord_preset_pack_manager.c:203
-#, fuzzy
 msgid "Eastern Pop"
-msgstr "Euro Pop"
+msgstr "Pop oriental"
 
 #: src/settings/chord_preset_pack_manager.c:207
 msgid "Together"
-msgstr ""
+msgstr "Junts"
 
 #: src/settings/chord_preset_pack_manager.c:226
-#, fuzzy
 msgid "GG"
-msgstr "Sol"
+msgstr "Sol1"
 
 #: src/settings/chord_preset_pack_manager.c:248
 msgid "Daijiken"
-msgstr ""
+msgstr "Daijiken"
 
 #: src/settings/chord_preset_pack_manager.c:270
-#, fuzzy
 msgid "Dance"
-msgstr "Cancel·lar"
+msgstr "Dansa"
 
 #. the idolm@ster 2
 #: src/settings/chord_preset_pack_manager.c:273
 msgid "Idol 1"
-msgstr ""
+msgstr "Ídol 1"
 
 #: src/settings/chord_preset_pack_manager.c:287
 msgid "Ballad"
 msgstr "Balada"
 
 #: src/settings/chord_preset_pack_manager.c:312
-#, fuzzy
 msgid "Connection"
-msgstr "Connexions"
+msgstr "Connexió"
 
 #: src/settings/chord_preset_pack_manager.c:333
 msgid "Secret Base"
-msgstr ""
+msgstr "Base secreta"
 
 #: src/settings/chord_preset_pack_manager.c:356
 msgid "Eurodance"
@@ -3489,11 +3486,11 @@ msgstr "Futur"
 
 #: src/settings/chord_preset_pack_manager.c:513
 msgid "Progressive Trance"
-msgstr ""
+msgstr "Trance progressiu"
 
 #: src/settings/chord_preset_pack_manager.c:515
 msgid "Sajek Valley"
-msgstr ""
+msgstr "Vall de Sajek"
 
 #: src/settings/chord_preset_pack_manager.c:539
 msgid "Rock"
@@ -3513,7 +3510,7 @@ msgstr "Pregar"
 
 #: src/settings/chord_preset_pack_manager.c:598
 msgid "Thank You"
-msgstr ""
+msgstr "Gràcies"
 
 #: src/settings/chord_preset.c:65 src/audio/chord_track.c:60
 #: resources/ui/inspector_chord.ui:7
@@ -3548,12 +3545,12 @@ msgstr "Error en trobar l'esquema %s. És probable que %s no estigui instal·lat
 #: src/settings/settings.c:284
 #, c-format
 msgid "Failed to view schema %s"
-msgstr "Error en veure l'esquema %s"
+msgstr "Error en visualitzar l'esquema %s"
 
 #: src/settings/settings.c:291
 #, c-format
 msgid "Failed to reset schema %s"
-msgstr "No s'ha pogut restablir l'esquema %s"
+msgstr "Error en restablir l'esquema %s"
 
 #: src/settings/settings.c:324
 #, c-format
@@ -3572,7 +3569,7 @@ msgstr "Interrompent...\n"
 #: src/settings/settings.c:342
 #, c-format
 msgid "Reset to factory settings successful\n"
-msgstr "Restabliment de la configuració de fàbrica correcte\n"
+msgstr "Configuració de fàbrica restablerta correctament\n"
 
 #: src/audio/tracklist.c:1346
 msgid "No file was found"
@@ -3589,7 +3586,7 @@ msgstr "Només deixar anar 1 fitxer alhora a les pistes existents"
 
 #: src/audio/tracklist.c:1409
 msgid "Can only drop MIDI files on MIDI/instrument tracks"
-msgstr "Només deixar fitxers MIDI a pistes MIDI/instrument"
+msgstr "Només deixar anar fitxers MIDI a pistes MIDI/instrument"
 
 #: src/audio/tracklist.c:1422
 #, c-format
@@ -3601,7 +3598,7 @@ msgstr ""
 
 #: src/audio/tracklist.c:1436
 msgid "Can only drop audio files on audio tracks"
-msgstr "Només es poden deixar fitxers d'àudio en pistes d'àudio"
+msgstr "Només es poden deixar anar fitxers d'àudio en pistes d'àudio"
 
 #: src/audio/tracklist.c:1491
 msgid "Failed to create arranger objects"
@@ -3609,7 +3606,8 @@ msgstr "Error en crear objectes de l'arranjador"
 
 #: src/audio/tracklist.c:1561
 msgid "Failed to move tracks after copying or moving inside folder"
-msgstr "Error en moure les pistes després de copiar o moure's dins la carpeta"
+msgstr ""
+"Error en moure les pistes després de copiar-les o moure-les dins la carpeta"
 
 #: src/audio/tracklist.c:1634
 msgid "Failed to copy tracks inside"
@@ -3674,17 +3672,17 @@ msgstr "Entrada d'àudio d'enviament del canal %d"
 #: src/audio/channel_send.c:154
 #, c-format
 msgid "Channel Send %d MIDI in"
-msgstr "El canal ha enviat %d MIDI"
+msgstr "El canal envia %d MIDI"
 
 #: src/audio/channel_send.c:165
 #, c-format
 msgid "Channel Send %d audio out"
-msgstr "El canal emet %d sortida àudio"
+msgstr "El canal envia %d sortides àudio"
 
 #: src/audio/channel_send.c:178
 #, c-format
 msgid "Channel Send %d MIDI out"
-msgstr "El canal emet %d sortida MIDI"
+msgstr "El canal envia %d sortides MIDI"
 
 #: src/audio/channel_send.c:516 src/audio/channel_send.c:578
 msgid "Ports cannot be connected"
@@ -3737,7 +3735,7 @@ msgid ""
 "Couldn't open SNDFILE %s:\n"
 "%d: %s"
 msgstr ""
-"No s'ha pogut obrir l'SNDFILE %s:\n"
+"Error en obrir l'SNDFILE %s:\n"
 "%d: %s"
 
 #: src/audio/exporter.c:822 src/audio/exporter.c:831 src/actions/actions.c:1638
@@ -3760,7 +3758,7 @@ msgstr ""
 "<b>%s</b>\n"
 "Freqüència de mostreig: %d\n"
 "Durada: %ld s %ld ms | BPM: %.1f\n"
-"Canals: %d | Taxa de bits: %'d.%d kb/s\n"
+"Canal(s): %d | Taxa de bits: %'d.%d kb/s\n"
 "Profunditat de bits: %d bits"
 
 #: src/audio/engine_pa.c:242 src/audio/engine_pa.c:262
@@ -3779,7 +3777,7 @@ msgstr "BPM"
 
 #: src/audio/tempo_track.c:73
 msgid "Beats per bar"
-msgstr "Beats per rastral"
+msgstr "Beats per barra"
 
 #: src/audio/tempo_track.c:96
 msgid "Beat unit"
@@ -3813,8 +3811,8 @@ msgid ""
 "Failed to initialize the %s MIDI backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
-"No s'ha pogut inicialitzar el backend MIDI %s. S'utilitzarà el backend "
-"fictici. Comprova la configuració de backend a Preferències."
+"Error en inicialitzar el backend MIDI %s. S'utilitzarà el backend fictici. "
+"Comprova la configuració de backend a Preferències."
 
 #: src/audio/engine.c:677
 msgid ""
@@ -3842,7 +3840,7 @@ msgid ""
 "settings to avoid audio glitches."
 msgstr ""
 "S'ha produït un desbordament de la memòria intermèdia. Intenta augmentar la "
-"mida de la memòria intermèdia a la configuració per evitar errors d'àudio."
+"mida de la memòria intermèdia a la configuració per a evitar errors d'àudio."
 
 #: src/audio/engine_pulse.c:242
 msgid "PulseAudio error: Failed to create main loop"
@@ -3920,7 +3918,7 @@ msgstr "Error en clonar el canal"
 
 #: src/audio/track.c:985
 msgid "Cannot set track muted"
-msgstr "No es pot configurar la pista silenciada"
+msgstr "Error en configurar la pista silenciada"
 
 #: src/audio/track.c:1034
 msgid "Cannot set track folded"
@@ -3928,11 +3926,11 @@ msgstr "No es pot configurar la pista plegada"
 
 #: src/audio/track.c:1576
 msgid "Cannot set track soloed"
-msgstr "No es pot configurar la pista en solo"
+msgstr "Error en configurar la pista en solo"
 
 #: src/audio/track.c:1628
 msgid "Cannot set track listened"
-msgstr "No es pot configurar la pista escoltada"
+msgstr "Error en configurar la pista escoltada"
 
 #: src/audio/track.c:3069
 msgid "Failed to rename track"
@@ -3944,7 +3942,7 @@ msgstr "No es pot establir el comentari de la pista"
 
 #: src/audio/track.c:3516
 msgid "Cannot set track icon"
-msgstr "No es pot definir la icona de la pista"
+msgstr "No es pot configurar la icona de la pista"
 
 #: src/audio/track.c:3751
 msgid "Cannot set track enabled"
@@ -3970,11 +3968,11 @@ msgstr "Llançar"
 
 #: src/audio/fader.c:141
 msgid "Prefader Volume"
-msgstr "Volum preatenuador"
+msgstr "Volum del preatenuador"
 
 #: src/audio/fader.c:141
 msgid "Fader Volume"
-msgstr "Volum atenuador"
+msgstr "Volum de l'atenuador"
 
 #: src/audio/fader.c:176
 msgid "Prefader Balance"
@@ -4018,11 +4016,11 @@ msgstr "Atenuador Mono Compat"
 
 #: src/audio/fader.c:285
 msgid "Ch Pre-Fader in"
-msgstr "Ch entrada preatenuador"
+msgstr "Entrada del preatenuador del canal"
 
 #: src/audio/fader.c:290
 msgid "Ch Fader in"
-msgstr "Ch entrada atenuador"
+msgstr "Entrada de l'atenuador del canal"
 
 #: src/audio/fader.c:296
 msgid "Sample Processor Fader in"
@@ -4034,11 +4032,11 @@ msgstr "Monitoritzar entrada atenuador"
 
 #: src/audio/fader.c:323
 msgid "Ch Pre-Fader out"
-msgstr "Ch sortida preatenuador"
+msgstr "Sortida del preatenuador del canal"
 
 #: src/audio/fader.c:328
 msgid "Ch Fader out"
-msgstr "Ch sortida atenuador"
+msgstr "Sortida de l'atenuador del canal"
 
 #: src/audio/fader.c:334
 msgid "Sample Processor Fader out"
@@ -4050,19 +4048,19 @@ msgstr "Monitoritzar sortida atenuador"
 
 #: src/audio/fader.c:365
 msgid "Ch MIDI Pre-Fader in"
-msgstr "Ch entrada preatenuador MIDI"
+msgstr "Entrada del preatenuador MIDI del canal"
 
 #: src/audio/fader.c:370
 msgid "Ch MIDI Fader in"
-msgstr "Ch entrada atenuador MIDI"
+msgstr "Entrada de l'atenuador MIDI del canal"
 
 #: src/audio/fader.c:384
 msgid "Ch MIDI Pre-Fader out"
-msgstr "Ch sortida preatenuador MIDI"
+msgstr "Sortida del preatenuador MIDI del canal"
 
 #: src/audio/fader.c:389
 msgid "Ch MIDI Fader out"
-msgstr "Ch sortida atenuador MIDI"
+msgstr "Sortida de l'atenuador MIDI del canal"
 
 #: src/audio/fader.c:652
 msgid "Failed to change volume"
@@ -4095,7 +4093,7 @@ msgstr "El nom de client desitjat no era únic"
 
 #: src/audio/engine_jack.c:674
 msgid "Unable to connect to the JACK server"
-msgstr "No s'ha pogut connectar al servidor JACK"
+msgstr "Error en connectar al servidor JACK"
 
 #: src/audio/engine_jack.c:680
 msgid "Communication error with the JACK server"
@@ -4107,15 +4105,15 @@ msgstr "El client sol·licitat no existeix"
 
 #: src/audio/engine_jack.c:692
 msgid "Unable to load internal client"
-msgstr "No s'ha pogut carregar el client intern"
+msgstr "Error en carregar el client intern"
 
 #: src/audio/engine_jack.c:698
 msgid "Unable to initialize client"
-msgstr "No s'ha pogut inicialitzar el client"
+msgstr "Error en inicialitzar el client"
 
 #: src/audio/engine_jack.c:704
 msgid "Unable to access shared memory"
-msgstr "No s'ha pogut accedir a la memòria compartida"
+msgstr "Error en accedir a la memòria compartida"
 
 #: src/audio/engine_jack.c:710
 msgid "Client's protocol version does not match"
@@ -4154,7 +4152,7 @@ msgstr "Error en aplicar la funció d'àudio"
 
 #: src/actions/arranger_selections.c:763
 msgid "Attempted to resize unresizable objects"
-msgstr "S'ha intentat canviar la mida dels objectes no redimensionables"
+msgstr "S'ha intentat canviar la mida d'objectes no redimensionables"
 
 #: src/actions/arranger_selections.c:790
 #, c-format
@@ -4215,7 +4213,7 @@ msgstr "Editar les seleccions d'arranjador"
 
 #: src/actions/arranger_selections.c:3180
 msgid "Automation fill"
-msgstr "Ompliment d'automatització"
+msgstr "Emplenament d'automatització"
 
 #: src/actions/arranger_selections.c:3183
 msgid "Split arranger selections"
@@ -4223,11 +4221,11 @@ msgstr "Dividir les seleccions d'arranjador"
 
 #: src/actions/arranger_selections.c:3186
 msgid "Merge arranger selections"
-msgstr "Mesclar les seleccions d'arranjador"
+msgstr "Combinar les seleccions d'arranjador"
 
 #: src/actions/arranger_selections.c:3189
 msgid "Resize arranger selections"
-msgstr "Canviar la mida de les seleccions d''arranjador"
+msgstr "Canviar la mida de les seleccions d'arranjador"
 
 #: src/actions/arranger_selections.c:3193
 msgid "Quantize arranger selections"
@@ -4401,7 +4399,7 @@ msgstr "Error en fer solo a pistes"
 
 #: src/actions/actions.c:1864
 msgid "Failed to unsolo tracks"
-msgstr "Error en eliminar el solo de pistes"
+msgstr "Error en treure el solo de pistes"
 
 #: src/actions/actions.c:1877
 msgid "Failed to mute tracks"
@@ -4449,11 +4447,11 @@ msgstr "Les seleccions han de ser al mateix carril"
 
 #: src/actions/actions.c:2201
 msgid "Cannot merge looped regions"
-msgstr "No es poden mesclar les regions repetides"
+msgstr "No es poden combinar les regions repetides"
 
 #: src/actions/actions.c:2218
 msgid "Failed to merge selections"
-msgstr "Error en mesclar seleccions"
+msgstr "Error en combinar seleccions"
 
 #: src/actions/actions.c:2335
 msgid "Failed to insert silence"
@@ -4465,11 +4463,11 @@ msgstr "Error en eliminar interval"
 
 #: src/actions/actions.c:2714
 msgid "Region name"
-msgstr "Nom de la regió"
+msgstr "Nom de regió"
 
 #: src/actions/actions.c:2753
 msgid "Please enter a BPM"
-msgstr "Introduir un bpm"
+msgstr "Introdueix un bpm"
 
 #: src/actions/actions.c:2829
 msgid "Failed to move selections"
@@ -4502,7 +4500,7 @@ msgstr ""
 
 #: src/actions/actions.c:3281 src/actions/actions.c:3333
 msgid "Preset Pack Name"
-msgstr "Nom del paquet predefinit"
+msgstr "Nom de paquet predefinit"
 
 #: src/actions/actions.c:3311 src/actions/actions.c:3358
 msgid "Are you sure you want to remove this chord preset pack?"
@@ -4520,11 +4518,11 @@ msgstr "Error en desconnectar %s de %s"
 
 #: src/actions/actions.c:3524
 msgid "Cannot delete standard bookmark"
-msgstr "No es pot eliminar el marcador estàndar"
+msgstr "No es pot eliminar el favorit estàndar"
 
 #: src/actions/actions.c:3536
 msgid "Are you sure you want to remove this bookmark?"
-msgstr "Eliminar aquest marcador?"
+msgstr "Eliminar aquest favorit?"
 
 #: src/actions/actions.c:3767 src/actions/actions.c:3798
 msgid "Collection name"
@@ -4566,7 +4564,7 @@ msgstr "Canviar BPM"
 
 #: src/actions/transport_action.c:291
 msgid "Beats per bar change"
-msgstr "Canvi de beats per rastral"
+msgstr "Canvi de beats per barra"
 
 #: src/actions/transport_action.c:293
 msgid "Beat unit change"
@@ -4619,12 +4617,12 @@ msgstr "Error en clonar les seleccions del mesclador"
 
 #: src/actions/mixer_selections_action.c:614
 msgid "Could not create plugin"
-msgstr "No s'ha pogut crear el complement"
+msgstr "Error en crear el complement"
 
 #: src/actions/mixer_selections_action.c:838
 #: src/actions/mixer_selections_action.c:1248
 msgid "Failed to revert deleted plugin"
-msgstr "Error en restablir el complement eliminat"
+msgstr "Error en revertir el complement eliminat"
 
 #: src/actions/mixer_selections_action.c:1364
 #, c-format
@@ -4769,7 +4767,7 @@ msgstr "Posar la pista en solo"
 
 #: src/actions/tracklist_selections.c:2253
 msgid "Unsolo Track"
-msgstr "Eliminar el solo de la pista"
+msgstr "Treure el solo de la pista"
 
 #: src/actions/tracklist_selections.c:2257
 msgid "Mute Track"
@@ -4818,7 +4816,7 @@ msgstr "Canviar la sortida directa"
 
 #: src/actions/tracklist_selections.c:2293
 msgid "Rename track"
-msgstr "Canviar el nom a la pista"
+msgstr "Canviar el nom de la pista"
 
 #: src/actions/tracklist_selections.c:2296
 msgid "Rename lane"
@@ -4850,7 +4848,7 @@ msgstr "Fer solo a %d pistes"
 #: src/actions/tracklist_selections.c:2325
 #, c-format
 msgid "Unsolo %d Tracks"
-msgstr "Eliminar solo de %d pistes"
+msgstr "Treure el solo de %d pistes"
 
 #: src/actions/tracklist_selections.c:2330
 #, c-format
@@ -4929,9 +4927,8 @@ msgid "Unpin %d Tracks"
 msgstr "Desancorar %d pistes"
 
 #: src/actions/chord_action.c:133
-#, fuzzy
 msgid "Change chords"
-msgstr "Canviar color"
+msgstr "Canviar acords"
 
 #: src/actions/undo_manager.c:328
 msgid "Failed to perform action"
@@ -5279,7 +5276,7 @@ msgstr "Creador"
 #: resources/ui/scale_selector_window.ui:209
 #: resources/ui/chord_selector_window.ui:609
 msgid "TODO keyboard"
-msgstr "Teclat TODO"
+msgstr "Teclat PENDENT"
 
 #: resources/ui/scale_selector_window.ui:214
 #: resources/ui/chord_selector_window.ui:614 resources/ui/export_dialog.ui:131
@@ -5297,7 +5294,7 @@ msgstr "Mode musical"
 
 #: resources/ui/timeline_toolbar.ui:63
 msgid "Merge selections"
-msgstr "Mescla seleccions"
+msgstr "Combinar seleccions"
 
 #: resources/ui/timeline_toolbar.ui:73 resources/ui/editor_toolbar.ui:100
 msgid "Toggle event viewer"
@@ -5345,7 +5342,7 @@ msgstr "mín"
 
 #: resources/ui/chord_selector_window.ui:193
 msgid "dim"
-msgstr "atenuar"
+msgstr "dism"
 
 #: resources/ui/chord_selector_window.ui:203
 msgid "sus4"
@@ -5357,7 +5354,7 @@ msgstr "sus2"
 
 #: resources/ui/chord_selector_window.ui:223
 msgid "aug"
-msgstr "ago"
+msgstr "augm"
 
 #: resources/ui/chord_selector_window.ui:233
 msgid "Accent"
@@ -5425,7 +5422,7 @@ msgstr "Desplaçar quan el capçal de reproducció arribi a la vora"
 
 #: resources/ui/playhead_scroll_buttons.ui:24
 msgid "Follow playhead"
-msgstr "Seguir al capçal de reproducció"
+msgstr "Seguir el capçal de reproducció"
 
 #: resources/ui/automatable_selector.ui:44
 #: resources/ui/arranger_object_info_dialog.ui:34
@@ -5525,7 +5522,7 @@ msgstr "Informació del port"
 
 #: resources/ui/panel_file_browser.ui:28
 msgid "Bookmarks"
-msgstr "Marcadors"
+msgstr "Favorits"
 
 #: resources/ui/port_selector_popover.ui:10
 msgid "Select a port..."
@@ -5558,7 +5555,7 @@ msgstr "Ajuda"
 
 #: resources/ui/header.ui:102
 msgid "Project name"
-msgstr "Nom del projecte"
+msgstr "Nom de projecte"
 
 #: resources/ui/header.ui:131
 msgid "MIDI in activity"
@@ -5814,7 +5811,7 @@ msgstr "Durada adaptable"
 
 #: resources/ui/snap_grid_popover.ui:130
 msgid "Snap"
-msgstr "Ajustament"
+msgstr "Ajustar"
 
 #: resources/ui/snap_grid_popover.ui:211
 msgid "Link"
@@ -5830,7 +5827,7 @@ msgstr "Últim objecte"
 
 #: resources/ui/snap_grid_popover.ui:225
 msgid "Use last created object's length"
-msgstr "Utilitzeu la duració de l'últim objecte creat"
+msgstr "Utilitzar la duració de l'últim objecte creat"
 
 #: resources/ui/range_action_buttons.ui:24
 msgid "Remove range"
@@ -5873,10 +5870,10 @@ msgid ""
 msgstr ""
 "Zrythm és una estació de treball d'àudio digital dissenyada per ser "
 "característica i fàcil d'utilitzar. Permet l'automatització il·limitada a "
-"través de corbes, LFOs i sobres, admet múltiples formats de complements, "
-"inclosos LV2, VST2 i VST3, treballa amb múltiples dorsals incloent JACK, "
+"través de corbes, LFO i envolupants, admet múltiples formats de complements, "
+"inclosos LV2, VST2 i VST3, treballa amb múltiples backends incloent JACK, "
 "RtAudio / RtMidi i SDL2, ajuda amb progressions d'acords a través d'una "
-"pista d'acords i coixinets d'acords especials i es pot utilitzar en diversos "
+"pista d'acords i pads d'acords especials i es pot utilitzar en diversos "
 "idiomes, inclosos l'anglès, francès, portuguès, japonès i alemany."
 
 #: data/org.zrythm.Zrythm.appdata.xml.in:27
@@ -5998,11 +5995,11 @@ msgstr "El volum d'escolta del monitor en amplitud (0 a 2)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:302
 msgid "Dim volume"
-msgstr "Atenuar el volum"
+msgstr "Dism volum"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:303
 msgid "The monitor dim volume in amplitude (0 to 2)."
-msgstr "El monitor atenua el volum en amplitud (0 a 2)."
+msgstr "El monitor disminueix el volum en amplitud (0 a 2)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:307
 msgid "Sum to mono"
@@ -6014,11 +6011,11 @@ msgstr "Si s'ha de sumar el senyal del monitor a mono."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:312
 msgid "Dim output"
-msgstr "Atenuar sortida"
+msgstr "Dism sortida"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:313
 msgid "Whether to dim the the monitor signal."
-msgstr "Si s'ha d'atenuar el senyal del monitor."
+msgstr "Si s'ha de disminuir el senyal del monitor."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:318
 msgid "Whether to mute the monitor signal."
@@ -6065,7 +6062,7 @@ msgid ""
 "Tail to allow when bouncing (for example to catch reverb tails), in "
 "milliseconds."
 msgstr ""
-"Cua per permetre quan rebota (per exemple, atrapar cues de reverberació), en "
+"Cua permessa durant el rebot (per exemple, atrapar cues de reverberació), en "
 "mil·lisegons."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:356
@@ -6102,7 +6099,7 @@ msgstr "Durada d'objecte editat"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:373
 msgid "Default length to use when creating editor objects."
-msgstr "Durada per defecte que s'utilitza quan es creen objectes d'editor."
+msgstr "Durada predeterminada que s'utilitza quan es creen objectes d'editor."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:377
 msgid "Editor object length type"
@@ -6118,7 +6115,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:383
 msgid "Last editor object's length"
-msgstr "Durada d'objecte editor"
+msgstr "Durada de l'últim objecte editat"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:384
 msgid "The length of the last created editor object (in ticks)."
@@ -6133,7 +6130,7 @@ msgid ""
 "The note notation used in the piano roll - MIDI pitch index or notes (C, C#, "
 "etc.)"
 msgstr ""
-"La notació de nota utilitzada al rotlle de pianola - índex d'altura MIDI o "
+"La notació de notes utilitzada al rotlle de pianola - índex d'altura MIDI o "
 "notes (Do, Do#, etc.)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:394
@@ -6152,8 +6149,7 @@ msgstr "Escoltar notes mentre es mouen"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:399
 msgid "Whether to listen to MIDI notes while dragging them in the piano roll."
-msgstr ""
-"Si voleu escoltar notes MIDI mentre les arrossegueu al rotlle de pianola."
+msgstr "Si escoltar notes MIDI mentre s'arrosseguen al rotlle de pianola."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:403
 msgid "Piano roll highlight"
@@ -6222,7 +6218,7 @@ msgstr "Índex de pestanya del quadre dret"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:439
 msgid "Index of the currently opened right panel tab."
-msgstr "Índex de la pestanya del quadre dret actualment oberta."
+msgstr "Índex de la pestanya del quadre dret actualment obert."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:443
 msgid "Bot panel divider position"
@@ -6338,7 +6334,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:503
 msgid "Follow playhead (timeline)"
-msgstr "Seguir el playhead (línia de temps)"
+msgstr "Seguir el capçal de reproducció (línia de temps)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:504
 msgid ""
@@ -6424,19 +6420,19 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:556
 msgid "File browser bookmarks"
-msgstr "Marcadors de l'explorador de fitxers"
+msgstr "Favorits de l'explorador de fitxers"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:557
 msgid "Location bookmarks for file browser (absolute paths)."
-msgstr "Marcadors d'ubicació per a l'explorador de fitxers (camins absoluts)."
+msgstr "Favorits d'ubicació per a l'explorador de fitxers (camins absoluts)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:561
 msgid "File browser selected bookmark"
-msgstr "Marcador seleccionat de l'explorador de fitxers"
+msgstr "Favorit seleccionat de l'explorador de fitxers"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:562
 msgid "Selected bookmark in file browser."
-msgstr "Marcador seleccionat a l'explorador de fitxers."
+msgstr "Favorit seleccionat a l'explorador de fitxers."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:567
 msgid "Whether to autoplay the selected file."
@@ -6484,7 +6480,7 @@ msgstr "MIDI FX expandit"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:606
 msgid "Whether MIDI FX are expanded."
-msgstr "Si s’expandeix MIDI FX."
+msgstr "Si MIDI FX s’expandeix."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:610
 msgid "Sends expanded"
@@ -6520,27 +6516,27 @@ msgstr "Si els enviaments de pista s'expandeixen."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:634
 msgid "Track inputs expanded"
-msgstr "Les entrades de pista s'han expandit"
+msgstr "Entrades de pista expandides"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:635
 msgid "Whether track inputs is expanded."
-msgstr "Si s’expandeixen les entrades de pista."
+msgstr "Si les entrades de pista s’expandeixen."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:639
 msgid "Track controls expanded"
-msgstr "Els controls de pista s'han expandit"
+msgstr "Controls de pista expandits"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:640
 msgid "Whether track controls is expanded."
-msgstr "Si s’expandeixen els controls de pista."
+msgstr "Si els controls de pista s’expandeixen."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:644
 msgid "Track inserts expanded"
-msgstr "Les insercions de pista s'han expandit"
+msgstr "Insercions de pista expandides"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:645
 msgid "Whether track inserts is expanded."
-msgstr "Si s’expandeixen les insercions de pista."
+msgstr "Si les insercions de pista s’expandeixen."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:649
 msgid "Track midi-fx expanded"
@@ -6548,7 +6544,7 @@ msgstr "Pista midi-fx expandida"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:650
 msgid "Whether track midi-fx is expanded."
-msgstr "Si s’expandeix la pista midi-fx."
+msgstr "Si la pista midi-fx s’expandeix."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:654
 msgid "Track fader expanded"
@@ -6560,7 +6556,7 @@ msgstr "Si l'atenuador de pista s’expandeix."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:659
 msgid "Track comment expanded"
-msgstr "El comentari de la pista s'ha expandit"
+msgstr "Comentari de pista expandit"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:660
 msgid "Whether track comment is expanded."
@@ -6720,7 +6716,7 @@ msgstr "Mida del quadre de l'editor de clips quan es desconnecta."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:763
 msgid "Chord pad detached"
-msgstr "El pad d'acords s'ha desconnectat"
+msgstr "Pad d'acords desconnectat"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:764
 msgid "Whether the chord pad panel is detached."
@@ -6856,11 +6852,11 @@ msgstr "Si la repetició està habilitada."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:871
 msgid "Return to cue"
-msgstr "Torna a la pista"
+msgstr "Tornar a la fita"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:872
 msgid "Whether return to cue on stop is enabled."
-msgstr "Si es tornar al senyal en aturar-se està habilitat."
+msgstr "Si tornar a la fita en aturar-se està habilitat."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:876
 msgid "Metronome enabled"
@@ -6884,7 +6880,7 @@ msgstr "Comptatge del metrònom"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:888
 msgid "Count-in bars for the metronome."
-msgstr "Rastrals de comptatge per al metrònom."
+msgstr "Barres de comptatge per al metrònom."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:892
 msgid "Punch mode enabled"
@@ -6912,7 +6908,7 @@ msgstr "Gravació pre-rotlle"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:908
 msgid "Number of bars to pre-roll when recording."
-msgstr "Nombre de rastrals a pre-rotlle quan es grava."
+msgstr "Nombre de barres a pre-rotlle quan es grava."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:917
 msgid "Engine"
@@ -6940,7 +6936,7 @@ msgstr "Dispositiu SDL"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:932
 msgid "The name of the SDL device to use."
-msgstr "El nom del dispositiu SDL que s'utilitzarà."
+msgstr "El nom del dispositiu SDL a utilitzar."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:936
 msgid "Samplerate"
@@ -6948,7 +6944,7 @@ msgstr "Freqüència de mostreig"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:937
 msgid "Samplerate to pass to the backend."
-msgstr "Mostreu per passar al fons."
+msgstr "Freqüència de mostreig per a passar al backend."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:941
 msgid "Buffer size"
@@ -6993,7 +6989,7 @@ msgstr "Camí a Zrythm"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:971
 msgid "The directory used to save user data in."
-msgstr "El directori que s'utilitza per desar les dades dels usuaris a."
+msgstr "El directori que s'utilitza per a desar les dades d'usuari."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:980
 msgid "Updates"
