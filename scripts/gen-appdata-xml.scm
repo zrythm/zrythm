@@ -98,6 +98,8 @@ Args:
                  (metadata_license "CC0-1.0")
                  (project_license  "AGPL-3.0-or-later")
                  (name "Zrythm")
+                 (developer_name
+                   "The Zrythm contributors")
                  (summary "Digital audio workstation")
                  (description
                    (p "Zrythm is a digital audio
@@ -142,11 +144,13 @@ Args:
                    (screenshot
                      (@ (type "default"))
                      (image
+                       (@ (type "source"))
                        "@PIANO_ROLL_SCREENSHOT_URL@")
                      (caption
                        "Composing MIDI"))
                    (screenshot
                      (image
+                       (@ (type "source"))
                        "@MIXER_SCREENSHOT_URL@")
                      (caption "Mixer view")))
                  (update_contact "alex_at_zrythm.org")
