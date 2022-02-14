@@ -144,9 +144,8 @@ Args:
                      (image
                        "@PIANO_ROLL_SCREENSHOT_URL@")
                      (caption
-                       "Composing MIDI in Zrythm"))
+                       "Composing MIDI"))
                    (screenshot
-                     (@ (type "default"))
                      (image
                        "@MIXER_SCREENSHOT_URL@")
                      (caption "Mixer view")))
