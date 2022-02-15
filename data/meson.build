@@ -94,10 +94,14 @@ if os_gnu or os_freebsd
     input: desktop_file,
     output: app_id + '.desktop',
     type: 'desktop',
-    po_dir: '../po',
+    po_dir: meson_build_root / 'po',
     install: true,
     install_dir: datadir / 'applications',
     )
+  run_target (
+    'gen-desktop-file',
+    command: [ 'echo', 'Generated desktop file' ],
+    depends: localized_desktop_file)
   desktop_utils = find_program (
     'desktop-file-validate', required: false)
   if desktop_utils.found()
@@ -127,10 +131,14 @@ if os_gnu or os_freebsd
     input: appdata_file_in,
     output: '@0@.appdata.xml'.format (app_id),
     type: 'xml',
-    po_dir: '../po',
-      install: true,
-      install_dir: datadir / 'metainfo',
+    po_dir: meson_build_root / 'po',
+    install: true,
+    install_dir: datadir / 'metainfo',
     )
+  run_target (
+    'gen-appdata-xml',
+    command: [ 'echo', 'Generated appdata.xml' ],
+    depends: appdata_file)
   # Validate the appdata file
   appstream_util = find_program (
     'appstream-util', required: false)

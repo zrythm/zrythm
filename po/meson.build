@@ -40,6 +40,19 @@ i18n.gettext (
     ],
   )
 
+# create same directory structure in build/po for use
+# with i18n.merge_file()
+foreach gettext_l : languages_for_gettext
+  configure_file (
+    copy: true, input: gettext_l + '.po',
+    output: '@PLAINNAME@')
+endforeach
+configure_file (
+  output: 'LINGUAS',
+  command: [
+    bash, '-c',
+    'echo "' + ' '.join (languages_for_gettext) + '" > @OUTPUT@'])
+
 collect_translatables = run_target (
   'collect-translatables',
   command: [

@@ -960,6 +960,6 @@ resources/ui/editor_toolbar.ui
 resources/ui/project_toolbar.ui
 resources/ui/clip_editor_inner.ui
 resources/ui/tracklist_header.ui
-data/org.zrythm.Zrythm.appdata.xml.in
 data/zrythm.desktop.in
 build/data/org.zrythm.Zrythm.gschema.xml
+build/data/org.zrythm.Zrythm.appdata.xml.in

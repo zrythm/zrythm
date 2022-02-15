@@ -464,16 +464,14 @@ get_position_ptr (
  * Returns if the given Position is valid.
  *
  * @param pos The position to set to.
- * @param pos_type The type of Position to set in the
- *   ArrangerObject.
- * @param validate Validate the Position before
- *   setting it.
+ * @param pos_type The type of Position to set in
+ *   the ArrangerObject.
  */
 bool
 arranger_object_is_position_valid (
-  ArrangerObject *           self,
-  const Position *           pos,
-  ArrangerObjectPositionType pos_type)
+  const ArrangerObject * const self,
+  const Position *             pos,
+  ArrangerObjectPositionType   pos_type)
 {
   bool is_valid = false;
   switch (pos_type)
@@ -573,6 +571,9 @@ arranger_object_is_position_valid (
           position_is_after_or_equal (
             pos, &POSITION_START)
           &&
+          pos->frames >=
+            ARRANGER_OBJECT_MIN_FADE_FRAMES
+          &&
           position_is_before (pos, &local_end_pos);
       }
       break;
@@ -585,6 +586,10 @@ arranger_object_is_position_valid (
         is_valid =
           position_is_after_or_equal (
             pos, &POSITION_START)
+          &&
+          local_end_pos.frames >=
+            pos->frames +
+              ARRANGER_OBJECT_MIN_FADE_FRAMES
           &&
           position_is_before (pos, &local_end_pos);
       }
@@ -1799,40 +1804,6 @@ arranger_object_loop_end_pos_setter (
     self, pos,
     ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
     F_VALIDATE);
-}
-
-/**
- * Validates the given Position.
- *
- * @return 1 if valid, 0 otherwise.
- */
-int
-arranger_object_validate_pos (
-  const ArrangerObject * const self,
-  const Position *             pos,
-  ArrangerObjectPositionType   type)
-{
-  switch (self->type)
-    {
-    case TYPE (REGION):
-      switch (type)
-        {
-        case POSITION_TYPE (START):
-          return
-            position_is_before (
-              pos, &self->end_pos) &&
-            position_is_after_or_equal (
-              pos, &POSITION_START);
-          break;
-        default:
-          break;
-        }
-      break;
-    default:
-      break;
-    }
-
-  return 1;
 }
 
 /**
