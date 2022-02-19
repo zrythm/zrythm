@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -97,7 +97,7 @@ left_dock_edge_widget_setup (
   foldable_notebook_widget_setup (
     self->inspector_notebook,
     MW_CENTER_DOCK->left_rest_paned,
-    GTK_POS_LEFT);
+    GTK_POS_LEFT, false);
 
   inspector_track_widget_setup (
     self->track_inspector, TRACKLIST_SELECTIONS);
@@ -185,22 +185,15 @@ left_dock_edge_widget_init (
     GTK_ORIENTATION_VERTICAL);
 
   const int min_width = 160;
-  GtkWidget * img;
   GtkBox * inspector_wrap;
   GtkScrolledWindow * scroll;
-
-  GtkNotebook * notebook =
-    foldable_notebook_widget_get_notebook (
-      self->inspector_notebook);
 
   /* setup track inspector */
   self->track_inspector =
     inspector_track_widget_new ();
-  img =
-    gtk_image_new_from_icon_name (
-      "track-inspector");
-  gtk_widget_set_tooltip_text (
-    img, _("Track inspector"));
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self->track_inspector),
+    min_width, -1);
   inspector_wrap =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
@@ -210,79 +203,49 @@ left_dock_edge_widget_init (
   scroll =
     wrap_inspector_in_scrolled_window (
       self, GTK_WIDGET (inspector_wrap));
-  gtk_notebook_prepend_page (
-    notebook, GTK_WIDGET (scroll), img);
-  gtk_notebook_set_tab_detachable (
-    notebook, GTK_WIDGET (scroll), true);
-  gtk_notebook_set_tab_reorderable (
-    notebook, GTK_WIDGET (scroll), true);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->track_inspector),
-    min_width, -1);
   self->track_inspector_scroll = scroll;
+  foldable_notebook_widget_add_page (
+    self->inspector_notebook, GTK_WIDGET (scroll),
+    "track-inspector", _("Track"),
+    _("Track inspector"));
 
   /* setup plugin inspector */
   self->plugin_inspector =
     inspector_plugin_widget_new ();
-  img =
-    gtk_image_new_from_icon_name (
-      "plug");
-  gtk_widget_set_tooltip_text (
-    img, _("Plugin inspector"));
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self->plugin_inspector),
+    min_width, -1);
   inspector_wrap =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_box_append (
     inspector_wrap,
     GTK_WIDGET (self->plugin_inspector));
-  gtk_widget_set_visible (
-    GTK_WIDGET (inspector_wrap), 1);
   scroll =
     wrap_inspector_in_scrolled_window (
       self, GTK_WIDGET (inspector_wrap));
-  gtk_notebook_append_page (
-    notebook, GTK_WIDGET (scroll), img);
-  gtk_notebook_set_tab_detachable (
-    notebook, GTK_WIDGET (scroll), true);
-  gtk_notebook_set_tab_reorderable (
-    notebook, GTK_WIDGET (scroll), true);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->plugin_inspector),
-    min_width, -1);
   self->plugin_inspector_scroll = scroll;
+  foldable_notebook_widget_add_page (
+    self->inspector_notebook, GTK_WIDGET (scroll),
+    "plug", _("Plugin"),
+    _("Plugin inspector"));
 
   /* setup visibility */
-  img =
-    gtk_image_new_from_icon_name (
-      "view-visible");
-  gtk_widget_set_tooltip_text (
-    img, _("Visibility"));
   self->visibility = visibility_widget_new ();
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->visibility), 1);
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self->visibility),
+    min_width, -1);
   self->visibility_box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_box_append (
     self->visibility_box,
     GTK_WIDGET (self->visibility));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->visibility_box), 1);
-  gtk_notebook_append_page (
-    notebook, GTK_WIDGET (self->visibility_box),
-    img);
-  gtk_notebook_set_tab_detachable (
-    notebook, GTK_WIDGET (self->visibility_box),
-    true);
-  gtk_notebook_set_tab_reorderable (
-    notebook, GTK_WIDGET (self->visibility_box),
-    true);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->visibility),
-    min_width, -1);
-
-  gtk_notebook_set_tab_pos (
-    notebook, GTK_POS_LEFT);
+  foldable_notebook_widget_add_page (
+    self->inspector_notebook,
+    GTK_WIDGET (self->visibility_box),
+    "view-visible", _("Visibility"),
+    _("Track visibility"));
 }
 
 static void

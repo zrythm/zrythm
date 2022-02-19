@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -78,6 +78,10 @@ typedef struct _FoldableNotebookWidget
   /** Revealer position before hiding. */
   int                 prev_pos;
 
+  /** Whether to add text to the tab labels
+   * (otherwise just icons). */
+  bool                with_text;
+
   /**
    * Current tab during a press action.
    *
@@ -93,7 +97,9 @@ typedef struct _FoldableNotebookWidget
  * Creates a FoldableNotebookWidget.
  */
 FoldableNotebookWidget *
-foldable_notebook_widget_new (void);
+foldable_notebook_widget_new (
+  GtkPositionType          pos_in_paned,
+  bool                     with_text);
 
 /**
  * Get the widget at the given page.
@@ -169,7 +175,8 @@ void
 foldable_notebook_widget_setup (
   FoldableNotebookWidget * self,
   GtkPaned *               paned,
-  GtkPositionType          pos_in_paned);
+  GtkPositionType          pos_in_paned,
+  bool                     with_text);
 
 /**
  * @}

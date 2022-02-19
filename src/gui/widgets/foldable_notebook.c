@@ -18,6 +18,7 @@
  */
 
 #include "gui/widgets/foldable_notebook.h"
+#include "gui/widgets/gtk_flipper.h"
 #include "gui/widgets/main_window.h"
 #include "utils/gtk.h"
 #include "utils/ui.h"
@@ -250,14 +251,70 @@ foldable_notebook_widget_add_page (
     foldable_notebook_widget_get_notebook (self);
   GtkBox * box =
     GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4));
+      gtk_box_new (
+        (self->pos_in_paned == GTK_POS_LEFT
+         || self->pos_in_paned == GTK_POS_RIGHT)
+        ? GTK_ORIENTATION_VERTICAL
+        : GTK_ORIENTATION_HORIZONTAL, 4));
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (box), tooltip);
   GtkWidget * img =
     gtk_image_new_from_icon_name (tab_icon_name);
-  GtkWidget * lbl = gtk_label_new (tab_label);
-  gtk_box_append (box, img);
-  gtk_box_append (box, lbl);
+  GtkWidget * img_flipper = gtk_flipper_new (img);
+  GtkWidget * lbl, * lbl_flipper;
+  if (self->with_text)
+    {
+      lbl = gtk_label_new (tab_label);
+      lbl_flipper = gtk_flipper_new (lbl);
+    }
+
+  switch (self->pos_in_paned)
+    {
+    case GTK_POS_LEFT:
+      if (self->with_text)
+        {
+          gtk_box_append (box, lbl_flipper);
+          gtk_box_append (box, img_flipper);
+          gtk_flipper_set_rotate (
+            GTK_FLIPPER (lbl_flipper), true);
+          gtk_flipper_set_flip_vertical (
+            GTK_FLIPPER (lbl_flipper), true);
+          gtk_flipper_set_flip_horizontal (
+            GTK_FLIPPER (lbl_flipper), true);
+          gtk_flipper_set_rotate (
+            GTK_FLIPPER (img_flipper), true);
+          gtk_flipper_set_flip_vertical (
+            GTK_FLIPPER (img_flipper), true);
+          gtk_flipper_set_flip_horizontal (
+            GTK_FLIPPER (img_flipper), true);
+        }
+      else
+        {
+          gtk_box_append (box, img_flipper);
+        }
+      break;
+    case GTK_POS_RIGHT:
+      if (self->with_text)
+        {
+          gtk_box_append (box, img_flipper);
+          gtk_box_append (box, lbl_flipper);
+          gtk_flipper_set_rotate (
+            GTK_FLIPPER (lbl_flipper), true);
+          gtk_flipper_set_rotate (
+            GTK_FLIPPER (img_flipper), true);
+        }
+      else
+        {
+          gtk_box_append (box, img_flipper);
+        }
+      break;
+    case GTK_POS_BOTTOM:
+    case GTK_POS_TOP:
+      gtk_box_append (box, img_flipper);
+      gtk_box_append (box, lbl_flipper);
+      break;
+    }
+
   gtk_notebook_append_page (
     notebook, child, GTK_WIDGET (box));
   gtk_notebook_set_tab_detachable (
@@ -267,11 +324,16 @@ foldable_notebook_widget_add_page (
 }
 
 FoldableNotebookWidget *
-foldable_notebook_widget_new ()
+foldable_notebook_widget_new (
+  GtkPositionType          pos_in_paned,
+  bool                     with_text)
 {
   FoldableNotebookWidget * self =
     g_object_new (
       FOLDABLE_NOTEBOOK_WIDGET_TYPE, NULL);
+
+  self->pos_in_paned = pos_in_paned;
+  self->with_text = with_text;
 
   return self;
 }
@@ -292,10 +354,12 @@ void
 foldable_notebook_widget_setup (
   FoldableNotebookWidget * self,
   GtkPaned *               paned,
-  GtkPositionType          pos_in_paned)
+  GtkPositionType          pos_in_paned,
+  bool                     with_text)
 {
   self->paned = paned;
   self->pos_in_paned = pos_in_paned;
+  self->with_text = with_text;
 
   /* make detachable */
   z_gtk_notebook_make_detachable (
@@ -317,6 +381,9 @@ foldable_notebook_widget_setup (
   gtk_widget_add_controller (
     GTK_WIDGET (self->notebook),
     GTK_EVENT_CONTROLLER (self->mp));
+
+  gtk_notebook_set_tab_pos (
+    self->notebook, pos_in_paned);
 
   g_return_if_fail (
     self->switch_page_handler_id == 0);

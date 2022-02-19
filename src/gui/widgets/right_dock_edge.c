@@ -58,7 +58,7 @@ right_dock_edge_widget_setup (
   foldable_notebook_widget_setup (
     self->right_notebook,
     MW_CENTER_DOCK->center_right_paned,
-    GTK_POS_RIGHT);
+    GTK_POS_RIGHT, false);
 
   monitor_section_widget_setup (
     self->monitor_section, CONTROL_ROOM);
@@ -84,7 +84,8 @@ right_dock_edge_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  GtkWidget * img;
+  self->right_notebook->pos_in_paned = GTK_POS_RIGHT;
+
   GtkBox * box;
   GtkNotebook * notebook =
     foldable_notebook_widget_get_notebook (
@@ -93,116 +94,62 @@ right_dock_edge_widget_init (
   /* add plugin browser */
   self->plugin_browser =
     plugin_browser_widget_new ();
-  img =
-    gtk_image_new_from_icon_name (
-      "plugin-solid");
-  gtk_widget_set_tooltip_text (
-    img, _("Plugin Browser"));
   box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  self->plugin_browser_box = box;
   gtk_box_append (
     GTK_BOX (box),
     GTK_WIDGET (self->plugin_browser));
-  gtk_notebook_prepend_page (
-    notebook, GTK_WIDGET (box), img);
-  gtk_notebook_set_tab_detachable (
-    notebook, GTK_WIDGET (box), true);
-  gtk_notebook_set_tab_reorderable (
-    notebook, GTK_WIDGET (box), true);
-  self->plugin_browser_box = box;
+  foldable_notebook_widget_add_page (
+    self->right_notebook, GTK_WIDGET (box),
+    "plugin-solid", _("Plugins"),
+    _("Plugin browser"));
 
   /* add file browser */
   self->file_browser =
     panel_file_browser_widget_new ();
-#if 0
-  GdkPixbuf * pixbuf =
-    gtk_icon_theme_load_icon_for_scale (
-      gtk_icon_theme_get_default (),
-      /* the scale only accepts integers and we want
-       * 24, but if we pass 24 and 1 a different
-       * icon is loaded, so load the 12 icon and
-       * scale it 2 times */
-      "folder-music-line",
-      12, 2,
-      GTK_ICON_LOOKUP_FORCE_SIZE, NULL);
-#endif
-  img =
-    gtk_image_new_from_icon_name (
-      "folder-music-line");
-  gtk_widget_set_tooltip_text (
-    img, _("File Browser"));
   box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  self->file_browser_box = box;
   gtk_box_append (
     GTK_BOX (box),
     GTK_WIDGET (self->file_browser));
-  gtk_widget_set_visible (
-    GTK_WIDGET (box), 1);
-  gtk_notebook_append_page (
-    notebook, GTK_WIDGET (box), img);
-  gtk_notebook_set_tab_detachable (
-    notebook, GTK_WIDGET (box), true);
-  gtk_notebook_set_tab_reorderable (
-    notebook, GTK_WIDGET (box), true);
-  self->file_browser_box = box;
+  foldable_notebook_widget_add_page (
+    self->right_notebook, GTK_WIDGET (box),
+    "folder-music-line", _("Files"),
+    _("File browser"));
 
   /* add control room */
   self->monitor_section =
     monitor_section_widget_new ();
-#if 0
-  pixbuf =
-    gtk_icon_theme_load_icon_for_scale (
-      gtk_icon_theme_get_default (),
-      /* the scale only accepts integers and we want
-       * 24, but if we pass 24 and 1 a different
-       * icon is loaded, so load the 12 icon and
-       * scale it 2 times */
-      "speaker",
-      12, 2,
-      GTK_ICON_LOOKUP_FORCE_SIZE, NULL);
-#endif
-  img =
-    gtk_image_new_from_icon_name ("speaker");
-  gtk_widget_set_tooltip_text (
-    img, _("Monitor Section"));
   box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  self->monitor_section_box = box;
   gtk_box_append (
     GTK_BOX (box),
     GTK_WIDGET (self->monitor_section));
-  gtk_widget_set_visible (
-    GTK_WIDGET (box), 1);
-  gtk_notebook_append_page (
-    notebook, GTK_WIDGET (box), img);
-  gtk_notebook_set_tab_detachable (
-    notebook, GTK_WIDGET (box), true);
-  gtk_notebook_set_tab_reorderable (
-    notebook, GTK_WIDGET (box), true);
-  self->monitor_section_box = box;
+  foldable_notebook_widget_add_page (
+    self->right_notebook, GTK_WIDGET (box),
+    "speaker", _("Monitor"),
+    _("Monitor section"));
 
   /* add chord preset browser */
   self->chord_pack_browser =
     chord_pack_browser_widget_new ();
-  img =
-    gtk_image_new_from_icon_name ("minuet-chords");
-  gtk_widget_set_tooltip_text (
-    img, _("Chord Preset Browser"));
   box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  self->chord_pack_browser_box = box;
   gtk_box_append (
     GTK_BOX (box),
     GTK_WIDGET (self->chord_pack_browser));
-  gtk_notebook_append_page (
-    notebook, GTK_WIDGET (box), img);
-  gtk_notebook_set_tab_detachable (
-    notebook, GTK_WIDGET (box), true);
-  gtk_notebook_set_tab_reorderable (
-    notebook, GTK_WIDGET (box), true);
-  self->chord_pack_browser_box = box;
+  foldable_notebook_widget_add_page (
+    self->right_notebook, GTK_WIDGET (box),
+    "minuet-chords", _("Chords"),
+    _("Chord preset browser"));
 
   /* add file browser button */
   GtkButton * tb =
@@ -218,10 +165,7 @@ right_dock_edge_widget_init (
     notebook, GTK_WIDGET (tb),
     GTK_PACK_END);
 
-  gtk_notebook_set_current_page (
-    notebook, 0);
-  gtk_notebook_set_tab_pos (
-    notebook, GTK_POS_RIGHT);
+  gtk_notebook_set_current_page (notebook, 0);
 }
 
 static void

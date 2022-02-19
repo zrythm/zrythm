@@ -88,7 +88,8 @@ main_notebook_widget_init (
   MainNotebookWidget * self)
 {
   self->foldable_notebook =
-    foldable_notebook_widget_new ();
+    foldable_notebook_widget_new (
+      GTK_POS_BOTTOM, true);
   gtk_box_append (
     GTK_BOX (self),
     GTK_WIDGET (self->foldable_notebook));

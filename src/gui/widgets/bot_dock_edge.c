@@ -103,7 +103,7 @@ bot_dock_edge_widget_setup (
   foldable_notebook_widget_setup (
     self->bot_notebook,
     MW_CENTER_DOCK->center_paned,
-    GTK_POS_BOTTOM);
+    GTK_POS_BOTTOM, true);
 
   event_viewer_widget_setup (
     self->event_viewer_midi,
@@ -211,7 +211,8 @@ generate_bot_notebook (
   BotDockEdgeWidget * self)
 {
   self->bot_notebook =
-    foldable_notebook_widget_new ();
+    foldable_notebook_widget_new (
+      GTK_POS_BOTTOM, true);
   gtk_box_append (
     GTK_BOX (self),
     GTK_WIDGET (self->bot_notebook));
