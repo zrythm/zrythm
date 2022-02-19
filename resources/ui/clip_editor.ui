@@ -5,8 +5,10 @@
     <child>
       <object class="GtkStack" id="stack">
         <child>
-          <object class="GtkLabel" id="no_selection_label">
-            <property name="label" translatable="yes">No clip selected</property>
+          <object class="AdwStatusPage" id="no_selection_page">
+            <property name="title" translatable="yes">No clip selected</property>
+            <property name="description" translatable="yes">Select a clip from the timeline</property>
+            <property name="icon-name">roadmap</property>
           </object>
         </child>
         <child>

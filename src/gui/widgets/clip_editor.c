@@ -51,7 +51,7 @@ clip_editor_widget_setup (
 
   gtk_stack_set_visible_child (
     GTK_STACK (self->stack),
-    GTK_WIDGET (self->no_selection_label));
+    GTK_WIDGET (self->no_selection_page));
 }
 
 /**
@@ -109,7 +109,7 @@ clip_editor_widget_on_region_changed (
     {
       gtk_stack_set_visible_child (
         GTK_STACK (self->stack),
-        GTK_WIDGET (self->no_selection_label));
+        GTK_WIDGET (self->no_selection_page));
     }
 }
 
@@ -128,6 +128,7 @@ clip_editor_widget_init (ClipEditorWidget * self)
 {
   g_type_ensure (CLIP_EDITOR_INNER_WIDGET_TYPE);
   g_type_ensure (EDITOR_TOOLBAR_WIDGET_TYPE);
+  g_type_ensure (ADW_TYPE_STATUS_PAGE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 }
@@ -151,7 +152,7 @@ clip_editor_widget_class_init (
   BIND_CHILD (main_box);
   BIND_CHILD (editor_toolbar);
   BIND_CHILD (clip_editor_inner);
-  BIND_CHILD (no_selection_label);
+  BIND_CHILD (no_selection_page);
 
 #undef BIND_CHILD
 }

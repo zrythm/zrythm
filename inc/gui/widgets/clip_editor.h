@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,15 +24,14 @@
 #ifndef __GUI_WIDGETS_CLIP_EDITOR_H__
 #define __GUI_WIDGETS_CLIP_EDITOR_H__
 
+#include <adwaita.h>
 #include <gtk/gtk.h>
 
 #define CLIP_EDITOR_WIDGET_TYPE \
   (clip_editor_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  ClipEditorWidget,
-  clip_editor_widget,
-  Z, CLIP_EDITOR_WIDGET,
-  GtkBox)
+  ClipEditorWidget, clip_editor_widget,
+  Z, CLIP_EDITOR_WIDGET, GtkBox)
 
 #define MW_CLIP_EDITOR MW_BOT_DOCK_EDGE->clip_editor
 
@@ -61,7 +60,9 @@ typedef struct _ClipEditorWidget
   //EditorSelectionInfoWidget * editor_selections;
   EditorToolbarWidget * editor_toolbar;
   ClipEditorInnerWidget * clip_editor_inner;
-  GtkLabel *         no_selection_label;
+
+  /** Page to show when no clip is selected. */
+  AdwStatusPage *    no_selection_page;
 } ClipEditorWidget;
 
 void
