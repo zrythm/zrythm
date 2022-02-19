@@ -437,6 +437,11 @@ plugin_descriptor_get_min_bridge_mode (
   const PluginDescriptor * self);
 
 NONNULL
+GMenuModel *
+plugin_descriptor_generate_context_menu (
+  const PluginDescriptor * self);
+
+NONNULL
 void
 plugin_descriptor_free (
   PluginDescriptor * self);

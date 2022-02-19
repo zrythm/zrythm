@@ -81,7 +81,8 @@ spinbutton button:focus
   border-left-color: $bright_orange;
 }
 
-entry selection
+entry selection,
+text selection
 {
   background-color: $z_yellow;
 }
@@ -647,4 +648,9 @@ folder-channel button:hover,
 folder-channel menubutton:hover,
 folder-channel button.toggle:hover {
   background-color: $hover_color;
+}
+
+viewswitcher stack,
+event-viewer stack {
+  background-color: transparent;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,15 +21,19 @@
 
 #include "audio/track.h"
 #include "plugins/carla_native_plugin.h"
+#include "plugins/collection.h"
+#include "plugins/collections.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/plugin.h"
+#include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #include <lv2/instance-access/instance-access.h>
 
@@ -552,6 +556,169 @@ plugin_descriptor_get_icon_name (
     {
       return "plug";
     }
+}
+
+GMenuModel *
+plugin_descriptor_generate_context_menu (
+  const PluginDescriptor * self)
+{
+  GMenu * menu = g_menu_new ();
+
+  GMenuItem * menuitem;
+  char tmp[600];
+
+  /* TODO */
+#if 0
+  /* add option for native generic LV2 UI */
+  if (self->protocol == PROT_LV2
+      &&
+      self->min_bridge_mode == CARLA_BRIDGE_NONE)
+    {
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Add to project (native generic UI)"),
+          NULL,
+          "app.plugin-browser-add-to-project");
+      g_menu_append_item (menu, menuitem);
+    }
+#endif
+
+#ifdef HAVE_CARLA
+  sprintf (
+    tmp,
+    "app.plugin-browser-add-to-project-carla::%p",
+    self);
+  menuitem =
+    z_gtk_create_menu_item (
+      _("Add to project"), NULL, tmp);
+  g_menu_append_item (menu, menuitem);
+
+  PluginSetting * new_setting =
+    plugin_setting_new_default (self);
+  if (self->has_custom_ui &&
+      self->min_bridge_mode ==
+        CARLA_BRIDGE_NONE &&
+      !new_setting->force_generic_ui)
+    {
+      sprintf (
+        tmp,
+        "app.plugin-browser-add-to-project-"
+        "bridged-ui::%p",
+        self);
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Add to project (bridged UI)"), NULL,
+          tmp);
+      g_menu_append_item (menu, menuitem);
+    }
+  plugin_setting_free (new_setting);
+
+  sprintf (
+    tmp,
+    "app.plugin-browser-add-to-project-bridged-"
+    "full::%p",
+    self);
+  menuitem =
+    z_gtk_create_menu_item (
+      _("Add to project (bridged full)"), NULL,
+      tmp);
+  g_menu_append_item (menu, menuitem);
+#endif
+
+#if 0
+  menuitem =
+    GTK_MENU_ITEM (
+      gtk_check_menu_item_new_with_mnemonic (
+        _("Use _Generic UI")));
+  APPEND;
+  gtk_check_menu_item_set_active (
+    GTK_CHECK_MENU_ITEM (menuitem),
+    new_setting->force_generic_ui);
+  g_signal_connect (
+    G_OBJECT (menuitem), "toggled",
+    G_CALLBACK (on_use_generic_ui_toggled), self);
+#endif
+
+  /* add to collection */
+  GMenu * add_collections_submenu = g_menu_new ();
+  int num_added = 0;
+  for (int i = 0;
+       i < PLUGIN_MANAGER->collections->
+         num_collections;
+       i++)
+    {
+      PluginCollection * coll =
+        PLUGIN_MANAGER->collections->collections[i];
+      if (plugin_collection_contains_descriptor (
+            coll, self, false))
+        {
+          continue;
+        }
+
+      sprintf (
+        tmp,
+        "app.plugin-browser-add-to-collection::%p",
+        coll);
+      menuitem =
+        z_gtk_create_menu_item (
+          coll->name, NULL, tmp);
+      g_menu_append_item (
+        add_collections_submenu, menuitem);
+      num_added++;
+    }
+  if (num_added > 0)
+    {
+      g_menu_append_section (
+        menu, _("Add to collection"),
+        G_MENU_MODEL (
+          add_collections_submenu));
+    }
+  else
+    {
+      g_object_unref (
+        add_collections_submenu);
+    }
+
+  /* remove from collection */
+  GMenu * remove_collections_submenu =
+    g_menu_new ();
+  num_added = 0;
+  for (int i = 0;
+       i < PLUGIN_MANAGER->collections->
+         num_collections;
+       i++)
+    {
+      PluginCollection * coll =
+        PLUGIN_MANAGER->collections->collections[i];
+      if (!plugin_collection_contains_descriptor (
+            coll, self, false))
+        {
+          continue;
+        }
+
+      sprintf (
+        tmp,
+        "app.plugin-browser-remove-from-collection::%p",
+        coll);
+      menuitem =
+        z_gtk_create_menu_item (
+          coll->name, NULL, tmp);
+      g_menu_append_item (
+        remove_collections_submenu, menuitem);
+      num_added++;
+    }
+  if (num_added > 0)
+    {
+      g_menu_append_section (
+        menu, _("Remove from collection"),
+        G_MENU_MODEL (remove_collections_submenu));
+    }
+  else
+    {
+      g_object_unref (remove_collections_submenu);
+    }
+
+  return G_MENU_MODEL (menu);
 }
 
 void

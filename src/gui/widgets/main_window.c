@@ -418,7 +418,7 @@ main_window_widget_setup (
   EVENTS_PUSH (
     ET_ARRANGER_SELECTIONS_CHANGED, TL_SELECTIONS);
   event_viewer_widget_refresh (
-    MW_TIMELINE_EVENT_VIEWER);
+    MW_TIMELINE_EVENT_VIEWER, false);
 
   EVENTS_PUSH (
     ET_MAIN_WINDOW_LOADED, NULL);

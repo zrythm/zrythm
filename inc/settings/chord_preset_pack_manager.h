@@ -71,10 +71,11 @@ chord_preset_pack_manager_get_pack_at (
   const ChordPresetPackManager * self,
   int                            idx);
 
+NONNULL
 ChordPresetPack *
 chord_preset_pack_manager_get_pack_for_preset (
   ChordPresetPackManager * self,
-  ChordPreset *            pset);
+  const ChordPreset *      pset);
 
 int
 chord_preset_pack_manager_get_pack_index (

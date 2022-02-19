@@ -177,9 +177,9 @@ midi_note_is_equal (
  */
 void
 midi_note_get_val_as_string (
-  MidiNote * self,
-  char *     buf,
-  const int  use_markup);
+  const MidiNote * self,
+  char *           buf,
+  const int        use_markup);
 
 /**
  * For debugging.

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,10 +31,8 @@
 #define POPOVER_MENU_BIN_WIDGET_TYPE \
   (popover_menu_bin_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  PopoverMenuBinWidget,
-  popover_menu_bin_widget,
-  Z, POPOVER_MENU_BIN_WIDGET,
-  GtkWidget)
+  PopoverMenuBinWidget, popover_menu_bin_widget,
+  Z, POPOVER_MENU_BIN_WIDGET, GtkWidget)
 
 /**
  * @addtogroup widgets
@@ -54,6 +52,7 @@ typedef struct _PopoverMenuBinWidget
 
   GMenuModel *     menu_model;
 
+  /** Context menu. */
   GtkPopoverMenu * popover_menu;
 } PopoverMenuBinWidget;
 

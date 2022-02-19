@@ -422,13 +422,9 @@ static void
 balance_control_finalize (
   BalanceControlWidget * self)
 {
-  g_debug ("finalizing...");
-
   G_OBJECT_CLASS (
     balance_control_widget_parent_class)->
       finalize (G_OBJECT (self));
-
-  g_debug ("done");
 }
 
 static void

@@ -132,18 +132,6 @@ on_right_click (
 #endif
 }
 
-static GListStore *
-get_list_store (
-  CcBindingsTreeWidget * self)
-{
-  GtkSelectionModel * sel_model =
-    gtk_column_view_get_model (self->column_view);
-  GListModel * model =
-    gtk_multi_selection_get_model (
-      GTK_MULTI_SELECTION (sel_model));
-  return G_LIST_STORE (model);
-}
-
 /**
  * Refreshes the tree model.
  */
@@ -151,7 +139,9 @@ void
 cc_bindings_tree_widget_refresh (
   CcBindingsTreeWidget * self)
 {
-  GListStore * store = get_list_store (self);
+  GListStore * store =
+    z_gtk_column_view_get_list_store (
+      self->column_view);
 
   g_list_store_remove_all (store);
 
@@ -260,9 +250,24 @@ cc_bindings_tree_widget_new ()
 }
 
 static void
-cc_bindings_tree_widget_class_init (
-  CcBindingsTreeWidgetClass * _klass)
+cc_bindings_tree_finalize (
+  CcBindingsTreeWidget * self)
 {
+  g_ptr_array_unref (self->item_factories);
+
+  G_OBJECT_CLASS (
+    cc_bindings_tree_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
+static void
+cc_bindings_tree_widget_class_init (
+  CcBindingsTreeWidgetClass * klass)
+{
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+  oklass->finalize =
+    (GObjectFinalizeFunc) cc_bindings_tree_finalize;
 }
 
 static void

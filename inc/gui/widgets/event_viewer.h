@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -33,10 +33,8 @@
 #define EVENT_VIEWER_WIDGET_TYPE \
   (event_viewer_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  EventViewerWidget,
-  event_viewer_widget,
-  Z, EVENT_VIEWER_WIDGET,
-  GtkBox)
+  EventViewerWidget, event_viewer_widget,
+  Z, EVENT_VIEWER_WIDGET, GtkBox)
 
 typedef struct _ArrangerWidget ArrangerWidget;
 typedef struct ArrangerSelections ArrangerSelections;
@@ -49,13 +47,24 @@ typedef struct ArrangerSelections ArrangerSelections;
 
 #define MW_TIMELINE_EVENT_VIEWER \
   MW_MAIN_NOTEBOOK->event_viewer
-#define MW_EDITOR_EVENT_VIEWER \
-  MW_BOT_DOCK_EDGE->event_viewer
+#define MW_EDITOR_EVENT_VIEWER_STACK \
+  MW_BOT_DOCK_EDGE->event_viewer_stack
+#define MW_MIDI_EVENT_VIEWER \
+  MW_BOT_DOCK_EDGE->event_viewer_midi
+#define MW_CHORD_EVENT_VIEWER \
+  MW_BOT_DOCK_EDGE->event_viewer_chord
+#define MW_AUDIO_EVENT_VIEWER \
+  MW_BOT_DOCK_EDGE->event_viewer_audio
+#define MW_AUTOMATION_EVENT_VIEWER \
+  MW_BOT_DOCK_EDGE->event_viewer_automation
 
 typedef enum EventViewerType
 {
   EVENT_VIEWER_TYPE_TIMELINE,
-  EVENT_VIEWER_TYPE_EDITOR,
+  EVENT_VIEWER_TYPE_CHORD,
+  EVENT_VIEWER_TYPE_MIDI,
+  EVENT_VIEWER_TYPE_AUDIO,
+  EVENT_VIEWER_TYPE_AUTOMATION,
 } EventViewerType;
 
 typedef struct _EventViewerWidget
@@ -63,8 +72,11 @@ typedef struct _EventViewerWidget
   GtkBox                 parent_instance;
 
   /** The tree view. */
-  GtkTreeModel *         model;
-  GtkTreeView *          treeview;
+  GtkColumnView *        column_view;
+
+  /** Array of ItemFactory pointers for each
+   * column. */
+  GPtrArray *            item_factories;
 
   /** Type. */
   EventViewerType        type;
@@ -73,16 +85,24 @@ typedef struct _EventViewerWidget
    * readd the columns. */
   RegionType             region_type;
 
+  /** Clone of last selections used. */
+  ArrangerSelections *   last_selections;
+
   /** Temporary flag. */
   bool                   marking_selected_objs;
 } EventViewerWidget;
 
 /**
- * Called to update the models.
+ * Called to update the models/selections.
+ *
+ * @param selections_only Only update the selection
+ *   status of each item without repopulating the
+ *   model.
  */
 void
 event_viewer_widget_refresh (
-  EventViewerWidget * self);
+  EventViewerWidget * self,
+  bool                selections_only);
 
 /**
  * Convenience function.
@@ -93,10 +113,15 @@ event_viewer_widget_refresh_for_selections (
 
 /**
  * Convenience function.
+ *
+ * @param selections_only Only update the selection
+ *   status of each item without repopulating the
+ *   model.
  */
 void
 event_viewer_widget_refresh_for_arranger (
-  ArrangerWidget *    arranger);
+  const ArrangerWidget * arranger,
+  bool                   selections_only);
 
 EventViewerWidget *
 event_viewer_widget_new (void);

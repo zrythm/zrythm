@@ -792,7 +792,7 @@ chord_preset_pack_manager_delete_pack (
 ChordPresetPack *
 chord_preset_pack_manager_get_pack_for_preset (
   ChordPresetPackManager * self,
-  ChordPreset *            pset)
+  const ChordPreset *      pset)
 {
   for (size_t i = 0; i < self->pset_packs->len; i++)
     {

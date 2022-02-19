@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -131,7 +131,7 @@ chord_object_set_region_and_index (
  */
 ChordDescriptor *
 chord_object_get_chord_descriptor (
-  ChordObject * self);
+  const ChordObject * self);
 
 /**
  * Finds the ChordObject in the project

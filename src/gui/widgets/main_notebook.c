@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -99,7 +99,7 @@ main_notebook_widget_init (
 
   self->timeline_plus_event_viewer_paned =
     GTK_PANED (
-      gtk_paned_new (GTK_ORIENTATION_VERTICAL));
+      gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
   gtk_paned_set_shrink_start_child (
     self->timeline_plus_event_viewer_paned, false);
   gtk_paned_set_shrink_end_child (

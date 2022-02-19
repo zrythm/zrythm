@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -354,5 +354,8 @@
 
 #define Z_F_TEMPLATE 1
 #define Z_F_NOT_TEMPLATE 0
+
+#define Z_F_EDITABLE 1
+#define Z_F_NOT_EDITABLE 0
 
 #endif

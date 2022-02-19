@@ -21,6 +21,8 @@
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "settings/chord_preset.h"
+#include "settings/chord_preset_pack_manager.h"
+#include "utils/gtk.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
@@ -105,6 +107,42 @@ chord_preset_set_name (
   self->name = g_strdup (name);
 
   EVENTS_PUSH (ET_CHORD_PRESET_EDITED, NULL);
+}
+
+GMenuModel *
+chord_preset_generate_context_menu (
+  const ChordPreset * self)
+{
+  ChordPresetPack * pack =
+    chord_preset_pack_manager_get_pack_for_preset (
+      CHORD_PRESET_PACK_MANAGER, self);
+  g_return_val_if_fail (pack, NULL);
+  if (pack->is_standard)
+    return NULL;
+
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
+  char action[800];
+
+  /* rename */
+  sprintf (
+    action, "app.rename-chord-preset::%p",
+    self);
+  menuitem =
+    z_gtk_create_menu_item (
+      _("_Rename"), "edit-rename", action);
+  g_menu_append_item (menu, menuitem);
+
+  /* delete */
+  sprintf (
+    action, "app.delete-chord-preset::%p",
+    self);
+  menuitem =
+    z_gtk_create_menu_item (
+      _("_Delete"), "edit-delete", action);
+  g_menu_append_item (menu, menuitem);
+
+  return G_MENU_MODEL (menu);
 }
 
 /**

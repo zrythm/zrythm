@@ -106,6 +106,10 @@ chord_preset_set_name (
   ChordPreset * self,
   const char *  name);
 
+GMenuModel *
+chord_preset_generate_context_menu (
+  const ChordPreset * self);
+
 /**
  * Frees the plugin setting.
  */

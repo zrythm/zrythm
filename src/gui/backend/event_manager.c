@@ -390,23 +390,29 @@ refresh_for_selections_type (
     {
     case ARRANGER_SELECTIONS_TYPE_TIMELINE:
       event_viewer_widget_refresh (
-        MW_TIMELINE_EVENT_VIEWER);
+        MW_TIMELINE_EVENT_VIEWER, false);
       break;
     case ARRANGER_SELECTIONS_TYPE_MIDI:
       event_viewer_widget_refresh (
-        MW_EDITOR_EVENT_VIEWER);
+        MW_MIDI_EVENT_VIEWER, false);
       break;
     case ARRANGER_SELECTIONS_TYPE_CHORD:
       event_viewer_widget_refresh (
-        MW_EDITOR_EVENT_VIEWER);
+        MW_CHORD_EVENT_VIEWER, false);
       break;
     case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
       event_viewer_widget_refresh (
-        MW_EDITOR_EVENT_VIEWER);
+        MW_AUTOMATION_EVENT_VIEWER, false);
+      break;
+    case ARRANGER_SELECTIONS_TYPE_AUDIO:
+      event_viewer_widget_refresh (
+        MW_AUDIO_EVENT_VIEWER, false);
       break;
     default:
       g_return_if_reached ();
     }
+  bot_dock_edge_widget_update_event_viewer_stack_page (
+    MW_BOT_DOCK_EDGE);
 }
 
 static void
@@ -429,27 +435,29 @@ arranger_selections_change_redraw_everything (
     {
     case ARRANGER_SELECTIONS_TYPE_TIMELINE:
       event_viewer_widget_refresh (
-        MW_TIMELINE_EVENT_VIEWER);
+        MW_TIMELINE_EVENT_VIEWER, false);
       break;
     case ARRANGER_SELECTIONS_TYPE_MIDI:
       event_viewer_widget_refresh (
-        MW_EDITOR_EVENT_VIEWER);
+        MW_MIDI_EVENT_VIEWER, false);
       break;
     case ARRANGER_SELECTIONS_TYPE_CHORD:
       event_viewer_widget_refresh (
-        MW_EDITOR_EVENT_VIEWER);
+        MW_CHORD_EVENT_VIEWER, false);
       break;
     case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
       event_viewer_widget_refresh (
-        MW_EDITOR_EVENT_VIEWER);
+        MW_AUTOMATION_EVENT_VIEWER, false);
       break;
     case ARRANGER_SELECTIONS_TYPE_AUDIO:
       event_viewer_widget_refresh (
-        MW_EDITOR_EVENT_VIEWER);
+        MW_AUDIO_EVENT_VIEWER, false);
       break;
     default:
       g_return_if_reached ();
     }
+  bot_dock_edge_widget_update_event_viewer_stack_page (
+    MW_BOT_DOCK_EDGE);
 }
 
 static void
@@ -535,18 +543,11 @@ on_arranger_object_changed (
 {
   g_return_if_fail (IS_ARRANGER_OBJECT (obj));
 
-  /* parent region, if any */
-  ArrangerObject * parent_r_obj =
-    (ArrangerObject *)
-    arranger_object_get_region (obj);
-
-  bool is_timeline = !parent_r_obj;
-  if (is_timeline)
-    event_viewer_widget_refresh (
-      MW_TIMELINE_EVENT_VIEWER);
-  else
-    event_viewer_widget_refresh (
-      MW_EDITOR_EVENT_VIEWER);
+  ArrangerSelections * sel =
+    arranger_object_get_selections_for_type (
+      obj->type);
+  event_viewer_widget_refresh_for_selections (
+    sel);
 
   switch (obj->type)
     {
@@ -883,12 +884,13 @@ event_manager_process_event (
       on_playhead_changed (true);
       break;
     case ET_CLIP_EDITOR_REGION_CHANGED:
-      /*on_clip_editor_region_changed ();*/
       clip_editor_widget_on_region_changed (
         MW_CLIP_EDITOR);
       PIANO_ROLL->num_current_notes = 0;
       piano_roll_keys_widget_redraw_full (
         MW_PIANO_ROLL_KEYS);
+      bot_dock_edge_widget_update_event_viewer_stack_page (
+        MW_BOT_DOCK_EDGE);
       break;
     case ET_TRACK_AUTOMATION_VISIBILITY_CHANGED:
       tracklist_widget_update_track_visibility (
@@ -1115,7 +1117,7 @@ event_manager_process_event (
         ArrangerWidget * arranger =
           Z_ARRANGER_WIDGET (ev->arg);
         event_viewer_widget_refresh_for_arranger (
-          arranger);
+          arranger, true);
         timeline_toolbar_widget_refresh (
           MW_TIMELINE_TOOLBAR);
       }
@@ -1125,9 +1127,11 @@ event_manager_process_event (
       break;
     case ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED:
       gtk_widget_set_visible (
-        GTK_WIDGET (MW_EDITOR_EVENT_VIEWER),
+        GTK_WIDGET (MW_EDITOR_EVENT_VIEWER_STACK),
         g_settings_get_boolean (
           S_UI, "editor-event-viewer-visible"));
+      bot_dock_edge_widget_update_event_viewer_stack_page (
+        MW_BOT_DOCK_EDGE);
       break;
     case ET_PIANO_ROLL_MIDI_MODIFIER_CHANGED:
       break;

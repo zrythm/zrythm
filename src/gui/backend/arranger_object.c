@@ -1983,7 +1983,7 @@ arranger_object_get_track (
  */
 ArrangerWidget *
 arranger_object_get_arranger (
-  ArrangerObject * self)
+  const ArrangerObject * self)
 {
   g_return_val_if_fail (
     IS_ARRANGER_OBJECT (self), NULL);
@@ -2267,7 +2267,7 @@ arranger_object_find (
 
 static ArrangerObject *
 clone_region (
-  ZRegion *               region)
+  const ZRegion * region)
 {
   g_return_val_if_fail (region->name, NULL);
 
@@ -2284,24 +2284,25 @@ clone_region (
             region->id.track_name_hash,
             region->id.lane_pos,
             region->id.idx);
-        ZRegion * mr_orig = region;
+        const ZRegion * mr_orig = region;
         for (int i = 0;
              i < mr_orig->num_midi_notes; i++)
           {
-            MidiNote * orig_mn =
+            const MidiNote * orig_mn =
               mr_orig->midi_notes[i];
-            ArrangerObject * orig_mn_obj =
-              (ArrangerObject *) orig_mn;
-            MidiNote * mn;
+            const ArrangerObject * orig_mn_obj =
+              (const ArrangerObject *) orig_mn;
 
+#if 0
+            /* FIXME why is this editing the
+             * original object? check and remove */
             region_identifier_copy (
               &orig_mn_obj->region_id,
               &mr_orig->id);
-            mn =
+#endif
+            MidiNote * mn =
               (MidiNote *)
-              arranger_object_clone (
-                (ArrangerObject *)
-                mr_orig->midi_notes[i]);
+              arranger_object_clone (orig_mn_obj);
 
             midi_region_add_midi_note (
               mr, mn, F_NO_PUBLISH_EVENTS);
@@ -2353,17 +2354,17 @@ clone_region (
             region->id.track_name_hash,
             region->id.at_idx,
             region->id.idx);
-        ZRegion * ar_orig = region;
+        const ZRegion * ar_orig = region;
 
         /* add automation points */
-        AutomationPoint * src_ap, * dest_ap;
         for (int j = 0; j < ar_orig->num_aps; j++)
           {
-            src_ap = ar_orig->aps[j];
-            ArrangerObject * src_ap_obj =
+            const AutomationPoint * src_ap =
+              ar_orig->aps[j];
+            const ArrangerObject * src_ap_obj =
               (ArrangerObject *) src_ap;
 
-            dest_ap =
+            AutomationPoint * dest_ap =
               automation_point_new_float (
                 src_ap->fvalue,
                 src_ap->normalized_val,
@@ -2383,15 +2384,15 @@ clone_region (
           chord_region_new (
             &r_obj->pos, &r_obj->end_pos,
             region->id.idx);
-        ZRegion * cr_orig = region;
-        ChordObject * src_co, * dest_co;
+        const ZRegion * cr_orig = region;
         for (int i = 0;
              i < cr_orig->num_chord_objects;
              i++)
           {
-            src_co = cr_orig->chord_objects[i];
+            const ChordObject * src_co =
+              cr_orig->chord_objects[i];
 
-            dest_co =
+            ChordObject * dest_co =
               (ChordObject *)
               arranger_object_clone (
                 (ArrangerObject *) src_co);
@@ -2431,19 +2432,19 @@ clone_region (
  */
 const char *
 arranger_object_get_name (
-  ArrangerObject * self)
+  const ArrangerObject * self)
 {
   switch (self->type)
     {
     case ARRANGER_OBJECT_TYPE_REGION:
       {
-        ZRegion * r = (ZRegion *) self;
+        const ZRegion * r = (const ZRegion *) self;
         return r->name;
       }
       break;
     case ARRANGER_OBJECT_TYPE_MARKER:
       {
-        Marker * m = (Marker *) self;
+        const Marker * m = (const Marker *) self;
         return m->name;
       }
       break;
@@ -2454,12 +2455,66 @@ arranger_object_get_name (
 }
 
 /**
+ * Generates a human readable name for the object.
+ *
+ * If the object has a name, this returns a copy
+ * of the name, otherwise generates something
+ * appropriate.
+ *
+ * Must be free'd by caller.
+ */
+char *
+arranger_object_gen_human_readable_name (
+  const ArrangerObject * self)
+{
+  switch (self->type)
+    {
+    case ARRANGER_OBJECT_TYPE_REGION:
+      {
+        const ZRegion * r = (const ZRegion *) self;
+        return g_strdup (r->name);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_MARKER:
+      {
+        const Marker * m = (const Marker *) self;
+        return g_strdup (m->name);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+      {
+        const MidiNote * mn =
+          (const MidiNote *) self;
+        char str[40];
+        midi_note_get_val_as_string (mn, str, 0);
+        return g_strdup (str);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
+      {
+        const ChordObject * co =
+          (const ChordObject *) self;
+        ChordDescriptor * descr =
+          chord_object_get_chord_descriptor (co);
+        char str[400];
+        chord_descriptor_to_string (descr, str);
+        return g_strdup (str);
+      }
+      break;
+    default:
+      break;
+    }
+
+  g_return_val_if_reached (NULL);
+}
+
+/**
  * Generates the escaped name for the object,
  * where applicable.
  */
 void
 arranger_object_gen_escaped_name (
-  ArrangerObject * self)
+  const ArrangerObject * self)
 {
   switch (self->type)
     {
@@ -2484,7 +2539,7 @@ arranger_object_gen_escaped_name (
 
 static ArrangerObject *
 clone_midi_note (
-  MidiNote *              src)
+  const  MidiNote * src)
 {
   ArrangerObject * src_obj =
     (ArrangerObject *) src;
@@ -2503,7 +2558,7 @@ clone_midi_note (
 
 static ArrangerObject *
 clone_chord_object (
-  ChordObject *           src)
+  const ChordObject * src)
 {
   ArrangerObject * src_obj =
     (ArrangerObject *) src;
@@ -2517,7 +2572,7 @@ clone_chord_object (
 
 static ArrangerObject *
 clone_scale_object (
-  ScaleObject * src)
+  const ScaleObject * src)
 {
   MusicalScale * musical_scale =
     musical_scale_clone (src->scale);
@@ -2530,7 +2585,7 @@ clone_scale_object (
 
 static ArrangerObject *
 clone_marker (
-  Marker *                src)
+  const Marker * src)
 {
   Marker * marker = marker_new (src->name);
   marker->index = src->index;
@@ -2542,7 +2597,7 @@ clone_marker (
 
 static ArrangerObject *
 clone_automation_point (
-  AutomationPoint *       src)
+  const AutomationPoint * src)
 {
   if (ZRYTHM_TESTING)
     {
@@ -2574,7 +2629,7 @@ clone_automation_point (
  */
 ArrangerObject *
 arranger_object_clone (
-  ArrangerObject * self)
+  const ArrangerObject * self)
 {
   g_return_val_if_fail (self, NULL);
 
@@ -2583,39 +2638,40 @@ arranger_object_clone (
     {
     case TYPE (REGION):
       new_obj =
-        clone_region ((ZRegion *) self);
+        clone_region ((const ZRegion *) self);
       break;
     case TYPE (MIDI_NOTE):
       new_obj =
-        clone_midi_note ((MidiNote *) self);
+        clone_midi_note ((const MidiNote *) self);
       break;
     case TYPE (CHORD_OBJECT):
       new_obj =
         clone_chord_object (
-          (ChordObject *) self);
+          (const ChordObject *) self);
       break;
     case TYPE (SCALE_OBJECT):
       new_obj =
         clone_scale_object (
-          (ScaleObject *) self);
+          (const ScaleObject *) self);
       break;
     case TYPE (AUTOMATION_POINT):
       new_obj =
         clone_automation_point (
-          (AutomationPoint *) self);
+          (const AutomationPoint *) self);
       break;
     case TYPE (MARKER):
       new_obj =
         clone_marker (
-          (Marker *) self);
+          (const Marker *) self);
       break;
     case TYPE (VELOCITY):
       {
-        Velocity * src = (Velocity *) self;
-        MidiNote * mn =
-          velocity_get_midi_note (src);
+        const Velocity * src =
+          (const Velocity *) self;
+        /*const MidiNote * mn =*/
+          /*velocity_get_midi_note (src);*/
         Velocity * new_vel =
-          velocity_new (mn, src->vel);
+          velocity_new (NULL, src->vel);
         new_obj =
           (ArrangerObject *) new_vel;
         new_vel->vel_at_start = src->vel_at_start;

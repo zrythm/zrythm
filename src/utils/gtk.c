@@ -345,6 +345,39 @@ z_gtk_tree_view_remove_all_columns (
   g_list_free (list);
 }
 
+void
+z_gtk_column_view_remove_all_columnes (
+  GtkColumnView * column_view)
+{
+  g_return_if_fail (
+    column_view
+    && GTK_IS_COLUMN_VIEW (column_view));
+
+  GListModel * list =
+    gtk_column_view_get_columns (column_view);
+  gpointer ptr;
+  while ((ptr =
+            g_list_model_get_item (list, 0)))
+    {
+      GtkColumnViewColumn * col =
+        GTK_COLUMN_VIEW_COLUMN (ptr);
+      gtk_column_view_remove_column (
+        column_view, col);
+    }
+}
+
+GListStore *
+z_gtk_column_view_get_list_store (
+  GtkColumnView * column_view)
+{
+  GtkSelectionModel * sel_model =
+    gtk_column_view_get_model (column_view);
+  GListModel * model =
+    gtk_multi_selection_get_model (
+      GTK_MULTI_SELECTION (sel_model));
+  return G_LIST_STORE (model);
+}
+
 /**
  * Configures a simple value-text combo box using
  * the given model.
@@ -2277,4 +2310,36 @@ z_gtk_simple_action_shortcut_func (
   g_strfreev (strs);
 
   return true;
+}
+
+/**
+ * Recursively searches the children of \ref widget
+ * for a child of type \ref type.
+ */
+GtkWidget *
+z_gtk_widget_find_child_of_type (
+  GtkWidget * widget,
+  GType       type)
+{
+  for (GtkWidget * child =
+         gtk_widget_get_first_child (widget);
+       child != NULL;
+       child =
+         gtk_widget_get_next_sibling (child))
+    {
+      if (G_OBJECT_TYPE (child) == type)
+        {
+          return child;
+        }
+      else
+        {
+          GtkWidget * inner_match =
+            z_gtk_widget_find_child_of_type (
+              child, type);
+          if (inner_match)
+            return inner_match;
+        }
+    }
+
+  return NULL;
 }

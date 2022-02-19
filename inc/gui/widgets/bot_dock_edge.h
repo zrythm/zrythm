@@ -71,8 +71,12 @@ typedef struct _BotDockEdgeWidget
 
   GtkPaned *          clip_editor_plus_event_viewer_paned;
 
-  /** Event viewer. */
-  EventViewerWidget * event_viewer;
+  /** Event viewers. */
+  GtkStack *          event_viewer_stack;
+  EventViewerWidget * event_viewer_midi;
+  EventViewerWidget * event_viewer_chord;
+  EventViewerWidget * event_viewer_automation;
+  EventViewerWidget * event_viewer_audio;
 
   /** Wrapper. */
   GtkBox *            clip_editor_box;
@@ -91,6 +95,13 @@ typedef struct _BotDockEdgeWidget
 
 void
 bot_dock_edge_widget_setup (
+  BotDockEdgeWidget * self);
+
+/**
+ * Sets the appropriate stack page.
+ */
+void
+bot_dock_edge_widget_update_event_viewer_stack_page (
   BotDockEdgeWidget * self);
 
 /**

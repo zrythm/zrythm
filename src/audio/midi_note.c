@@ -244,9 +244,9 @@ midi_note_get_global_start_pos (
  */
 void
 midi_note_get_val_as_string (
-  MidiNote * self,
-  char *     buf,
-  const int  use_markup)
+  const MidiNote * self,
+  char *           buf,
+  const int        use_markup)
 {
   const char * note_str =
     chord_descriptor_note_to_string (

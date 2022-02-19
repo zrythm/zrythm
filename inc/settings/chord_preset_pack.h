@@ -122,6 +122,10 @@ ChordPresetPack *
 chord_preset_pack_clone (
   const ChordPresetPack * src);
 
+GMenuModel *
+chord_preset_pack_generate_context_menu (
+  const ChordPresetPack * self);
+
 void
 chord_preset_pack_free (
   ChordPresetPack * self);

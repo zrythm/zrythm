@@ -19,6 +19,7 @@
 
 #include "audio/midi_mapping.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
+#include "gui/widgets/digital_meter.h"
 #include "gui/widgets/item_factory.h"
 #include "gui/widgets/popover_menu_bin.h"
 #include "plugins/collection.h"
@@ -165,23 +166,52 @@ item_factory_setup_cb (
       {
         GtkWidget * check_btn =
           gtk_check_button_new ();
+        if (!self->editable)
+          {
+            gtk_widget_set_sensitive (
+              GTK_WIDGET (check_btn), false);
+          }
         popover_menu_bin_widget_set_child (
           bin, check_btn);
-        gtk_list_item_set_child (
-          listitem, GTK_WIDGET (bin));
       }
       break;
     case ITEM_FACTORY_TEXT:
+    case ITEM_FACTORY_INTEGER:
+    case ITEM_FACTORY_POSITION:
       {
-        GtkWidget * label = gtk_label_new ("");
+        GtkWidget * label;
+        const int max_chars = 20;
+        if (self->editable)
+          {
+            label = gtk_editable_label_new ("");
+            gtk_editable_set_max_width_chars (
+              GTK_EDITABLE (label), max_chars);
+            GtkWidget * inner_label =
+              z_gtk_widget_find_child_of_type (
+                label, GTK_TYPE_LABEL);
+            g_return_if_fail (inner_label);
+            gtk_label_set_ellipsize (
+              GTK_LABEL (inner_label),
+              PANGO_ELLIPSIZE_END);
+            gtk_label_set_max_width_chars (
+              GTK_LABEL (inner_label), max_chars);
+          }
+        else
+          {
+            label = gtk_label_new ("");
+            gtk_label_set_ellipsize (
+              GTK_LABEL (label),
+              PANGO_ELLIPSIZE_END);
+            gtk_label_set_max_width_chars (
+              GTK_LABEL (label), max_chars);
+          }
         popover_menu_bin_widget_set_child (
           bin, label);
-        gtk_list_item_set_child (
-          listitem, GTK_WIDGET (bin));
       }
       break;
     case ITEM_FACTORY_ICON_AND_TEXT:
       {
+        g_return_if_fail (!self->editable);
         GtkBox * box =
           GTK_BOX (
             gtk_box_new (
@@ -194,13 +224,14 @@ item_factory_setup_cb (
         gtk_box_append (GTK_BOX (box), label);
         popover_menu_bin_widget_set_child (
           bin, GTK_WIDGET (box));
-        gtk_list_item_set_child (
-          listitem, GTK_WIDGET (bin));
       }
       break;
     default:
       break;
     }
+
+  gtk_list_item_set_child (
+    listitem, GTK_WIDGET (bin));
 
 #if 0
   g_signal_connect (
@@ -214,169 +245,14 @@ add_plugin_descr_context_menu (
   PopoverMenuBinWidget * bin,
   PluginDescriptor *     descr)
 {
-  GMenu * menu =
-    G_MENU (
-      popover_menu_bin_widget_get_menu_model (bin));
-  if (menu)
-    g_menu_remove_all (menu);
-  else
-    menu = g_menu_new ();
+  GMenuModel * model =
+    plugin_descriptor_generate_context_menu (descr);
 
-  GMenuItem * menuitem;
-  char tmp[600];
-
-  /* TODO */
-#if 0
-  /* add option for native generic LV2 UI */
-  if (descr->protocol == PROT_LV2
-      &&
-      descr->min_bridge_mode == CARLA_BRIDGE_NONE)
+  if (model)
     {
-      menuitem =
-        z_gtk_create_menu_item (
-          _("Add to project (native generic UI)"),
-          NULL,
-          "app.plugin-browser-add-to-project");
-      g_menu_append_item (menu, menuitem);
+      popover_menu_bin_widget_set_menu_model (
+        bin, G_MENU_MODEL (model));
     }
-#endif
-
-#ifdef HAVE_CARLA
-  sprintf (
-    tmp,
-    "app.plugin-browser-add-to-project-carla::%p",
-    descr);
-  menuitem =
-    z_gtk_create_menu_item (
-      _("Add to project"), NULL, tmp);
-  g_menu_append_item (menu, menuitem);
-
-  PluginSetting * new_setting =
-    plugin_setting_new_default (descr);
-  if (descr->has_custom_ui &&
-      descr->min_bridge_mode ==
-        CARLA_BRIDGE_NONE &&
-      !new_setting->force_generic_ui)
-    {
-      sprintf (
-        tmp,
-        "app.plugin-browser-add-to-project-"
-        "bridged-ui::%p",
-        descr);
-      menuitem =
-        z_gtk_create_menu_item (
-          _("Add to project (bridged UI)"), NULL,
-          tmp);
-      g_menu_append_item (menu, menuitem);
-    }
-  plugin_setting_free (new_setting);
-
-  sprintf (
-    tmp,
-    "app.plugin-browser-add-to-project-bridged-"
-    "full::%p",
-    descr);
-  menuitem =
-    z_gtk_create_menu_item (
-      _("Add to project (bridged full)"), NULL,
-      tmp);
-  g_menu_append_item (menu, menuitem);
-#endif
-
-#if 0
-  menuitem =
-    GTK_MENU_ITEM (
-      gtk_check_menu_item_new_with_mnemonic (
-        _("Use _Generic UI")));
-  APPEND;
-  gtk_check_menu_item_set_active (
-    GTK_CHECK_MENU_ITEM (menuitem),
-    new_setting->force_generic_ui);
-  g_signal_connect (
-    G_OBJECT (menuitem), "toggled",
-    G_CALLBACK (on_use_generic_ui_toggled), descr);
-#endif
-
-  /* add to collection */
-  GMenu * add_collections_submenu = g_menu_new ();
-  int num_added = 0;
-  for (int i = 0;
-       i < PLUGIN_MANAGER->collections->
-         num_collections;
-       i++)
-    {
-      PluginCollection * coll =
-        PLUGIN_MANAGER->collections->collections[i];
-      if (plugin_collection_contains_descriptor (
-            coll, descr, false))
-        {
-          continue;
-        }
-
-      sprintf (
-        tmp,
-        "app.plugin-browser-add-to-collection::%p",
-        coll);
-      menuitem =
-        z_gtk_create_menu_item (
-          coll->name, NULL, tmp);
-      g_menu_append_item (
-        add_collections_submenu, menuitem);
-      num_added++;
-    }
-  if (num_added > 0)
-    {
-      g_menu_append_section (
-        menu, _("Add to collection"),
-        G_MENU_MODEL (
-          add_collections_submenu));
-    }
-  else
-    {
-      g_object_unref (
-        add_collections_submenu);
-    }
-
-  /* remove from collection */
-  GMenu * remove_collections_submenu =
-    g_menu_new ();
-  num_added = 0;
-  for (int i = 0;
-       i < PLUGIN_MANAGER->collections->
-         num_collections;
-       i++)
-    {
-      PluginCollection * coll =
-        PLUGIN_MANAGER->collections->collections[i];
-      if (!plugin_collection_contains_descriptor (
-            coll, descr, false))
-        {
-          continue;
-        }
-
-      sprintf (
-        tmp,
-        "app.plugin-browser-remove-from-collection::%p",
-        coll);
-      menuitem =
-        z_gtk_create_menu_item (
-          coll->name, NULL, tmp);
-      g_menu_append_item (
-        remove_collections_submenu, menuitem);
-      num_added++;
-    }
-  if (num_added > 0)
-    {
-      g_menu_append_section (
-        menu, _("Remove from collection"),
-        G_MENU_MODEL (remove_collections_submenu));
-    }
-  else
-    {
-      g_object_unref (remove_collections_submenu);
-    }
-  popover_menu_bin_widget_set_menu_model (
-    bin, G_MENU_MODEL (menu));
 }
 
 static void
@@ -409,33 +285,14 @@ add_chord_pset_pack_context_menu (
   PopoverMenuBinWidget * bin,
   ChordPresetPack *      pack)
 {
-  if (pack->is_standard)
-    return;
+  GMenuModel * model =
+    chord_preset_pack_generate_context_menu (pack);
 
-  GMenu * menu = g_menu_new ();
-  GMenuItem * menuitem;
-  char action[800];
-
-  /* rename */
-  sprintf (
-    action, "app.rename-chord-preset-pack::%p",
-    pack);
-  menuitem =
-    z_gtk_create_menu_item (
-      _("_Rename"), "edit-rename", action);
-  g_menu_append_item (menu, menuitem);
-
-  /* delete */
-  sprintf (
-    action, "app.delete-chord-preset-pack::%p",
-    pack);
-  menuitem =
-    z_gtk_create_menu_item (
-      _("_Delete"), "edit-delete", action);
-  g_menu_append_item (menu, menuitem);
-
-  popover_menu_bin_widget_set_menu_model (
-    bin, G_MENU_MODEL (menu));
+  if (model)
+    {
+      popover_menu_bin_widget_set_menu_model (
+        bin, G_MENU_MODEL (model));
+    }
 }
 
 static void
@@ -443,37 +300,14 @@ add_chord_pset_context_menu (
   PopoverMenuBinWidget * bin,
   ChordPreset *          pset)
 {
-  ChordPresetPack * pack =
-    chord_preset_pack_manager_get_pack_for_preset (
-      CHORD_PRESET_PACK_MANAGER, pset);
-  g_return_if_fail (pack);
-  if (pack->is_standard)
-    return;
+  GMenuModel * model =
+    chord_preset_generate_context_menu (pset);
 
-  GMenu * menu = g_menu_new ();
-  GMenuItem * menuitem;
-  char action[800];
-
-  /* rename */
-  sprintf (
-    action, "app.rename-chord-preset::%p",
-    pset);
-  menuitem =
-    z_gtk_create_menu_item (
-      _("_Rename"), "edit-rename", action);
-  g_menu_append_item (menu, menuitem);
-
-  /* delete */
-  sprintf (
-    action, "app.delete-chord-preset::%p",
-    pset);
-  menuitem =
-    z_gtk_create_menu_item (
-      _("_Delete"), "edit-delete", action);
-  g_menu_append_item (menu, menuitem);
-
-  popover_menu_bin_widget_set_menu_model (
-    bin, G_MENU_MODEL (menu));
+  if (model)
+    {
+      popover_menu_bin_widget_set_menu_model (
+        bin, G_MENU_MODEL (model));
+    }
 }
 
 static void
@@ -530,15 +364,16 @@ item_factory_bind_cb (
       }
       break;
     case ITEM_FACTORY_TEXT:
+    case ITEM_FACTORY_INTEGER:
+    case ITEM_FACTORY_POSITION:
       {
         PopoverMenuBinWidget * bin =
           Z_POPOVER_MENU_BIN_WIDGET (
             gtk_list_item_get_child (listitem));
-        GtkLabel * label =
-          GTK_LABEL (
-            popover_menu_bin_widget_get_child (
-              bin));
+        GtkWidget * label =
+          popover_menu_bin_widget_get_child (bin);
 
+        char str[600];
         switch (obj->type)
           {
           case WRAPPED_OBJECT_TYPE_MIDI_MAPPING:
@@ -549,7 +384,6 @@ item_factory_bind_cb (
                     self->column_name,
                     _("Note/Control")))
                 {
-                  char ctrl_str[80];
                   char ctrl[60];
                   int ctrl_change_ch =
                     midi_ctrl_change_get_ch_and_description (
@@ -557,29 +391,25 @@ item_factory_bind_cb (
                   if (ctrl_change_ch > 0)
                     {
                       sprintf (
-                        ctrl_str, "%02X-%02X (%s)",
+                        str, "%02X-%02X (%s)",
                         mm->key[0], mm->key[1], ctrl);
                     }
                   else
                     {
                       sprintf (
-                        ctrl_str, "%02X-%02X",
+                        str, "%02X-%02X",
                         mm->key[0], mm->key[1]);
                     }
-
-                  gtk_label_set_text (
-                    GTK_LABEL (label), ctrl_str);
                 }
               if (string_is_equal (
                     self->column_name,
                     _("Destination")))
                 {
-                  char path[600];
                   Port * port =
                     port_find_from_identifier (
                       &mm->dest_id);
                   port_get_full_designation (
-                    port, path);
+                    port, str);
 
                   char min_str[40], max_str[40];
                   sprintf (
@@ -588,14 +418,171 @@ item_factory_bind_cb (
                   sprintf (
                     max_str, "%.4f",
                     (double) port->maxf);
+                }
+            }
+            break;
+          case WRAPPED_OBJECT_TYPE_ARRANGER_OBJECT:
+            {
+              ArrangerObject * arr_obj =
+                (ArrangerObject *) obj->obj;
 
-                  gtk_label_set_text (
-                    GTK_LABEL (label), path);
+              if (string_is_equal (
+                    self->column_name, _("Note")))
+                {
+                  MidiNote * mn =
+                    (MidiNote *) arr_obj;
+                  midi_note_get_val_as_string (
+                    mn, str, 0);
+                }
+              else if (
+                string_is_equal (
+                  self->column_name, _("Pitch")))
+                {
+                  MidiNote * mn =
+                    (MidiNote *) arr_obj;
+                  sprintf (str, "%u", mn->val);
+                }
+              else if (
+                string_is_equal (
+                  self->column_name, _("Start"))
+                ||
+                string_is_equal (
+                  self->column_name, _("Position")))
+                {
+                  position_to_string_full (
+                    &arr_obj->pos, str, 1);
+                }
+              else if (
+                string_is_equal (
+                  self->column_name, _("End")))
+                {
+                  position_to_string_full (
+                    &arr_obj->end_pos, str, 1);
+                }
+              else if (
+                string_is_equal (
+                  self->column_name,
+                  _("Loop start")))
+                {
+                  position_to_string_full (
+                    &arr_obj->loop_start_pos,
+                    str, 1);
+                }
+              else if (
+                string_is_equal (
+                  self->column_name,
+                  _("Loop end")))
+                {
+                  position_to_string_full (
+                    &arr_obj->loop_end_pos,
+                    str, 1);
+                }
+              else if (
+                string_is_equal (
+                  self->column_name,
+                  _("Clip start")))
+                {
+                  position_to_string_full (
+                    &arr_obj->clip_start_pos,
+                    str, 1);
+                }
+              else if (
+                string_is_equal (
+                  self->column_name,
+                  _("Fade in")))
+                {
+                  position_to_string_full (
+                    &arr_obj->fade_in_pos,
+                    str, 1);
+                }
+              else if (
+                string_is_equal (
+                  self->column_name,
+                  _("Fade out")))
+                {
+                  position_to_string_full (
+                    &arr_obj->fade_out_pos,
+                    str, 1);
+                }
+              else if (
+                string_is_equal (
+                  self->column_name, _("Name")))
+                {
+                  char * obj_name =
+                    arranger_object_gen_human_readable_name (
+                      arr_obj);
+                  g_return_if_fail (obj_name);
+                  strcpy (str, obj_name);
+                  g_free (obj_name);
+                }
+              else if (
+                string_is_equal (
+                  self->column_name, _("Type")))
+                {
+                  const char * untranslated_type =
+                    arranger_object_stringize_type (
+                      arr_obj->type);
+                  strcpy (str, _(untranslated_type));
+                }
+              else if (
+                string_is_equal (
+                  self->column_name, _("Velocity")))
+                {
+                  MidiNote * mn =
+                    (MidiNote *) arr_obj;
+                  sprintf (str, "%u", mn->vel->vel);
+                }
+              else if (
+                string_is_equal (
+                  self->column_name, _("Index")))
+                {
+                  AutomationPoint * ap =
+                    (AutomationPoint *) arr_obj;
+                  sprintf (str, "%d", ap->index);
+                }
+              else if (
+                string_is_equal (
+                  self->column_name, _("Value")))
+                {
+                  AutomationPoint * ap =
+                    (AutomationPoint *) arr_obj;
+                  sprintf (str, "%f", ap->fvalue);
+                }
+              else if (
+                string_is_equal (
+                  self->column_name,
+                  _("Curve type")))
+                {
+                  AutomationPoint * ap =
+                    (AutomationPoint *) arr_obj;
+                  curve_algorithm_get_localized_name (
+                    ap->curve_opts.algo, str);
+                }
+              else if (
+                string_is_equal (
+                  self->column_name, _("Curviness")))
+                {
+                  AutomationPoint * ap =
+                    (AutomationPoint *) arr_obj;
+                  sprintf (
+                    str, "%f",
+                    ap->curve_opts.curviness);
                 }
             }
             break;
           default:
             break;
+          }
+
+        if (self->editable)
+          {
+            gtk_editable_set_text (
+              GTK_EDITABLE (label), str);
+          }
+        else
+          {
+            gtk_label_set_text (
+              GTK_LABEL (label), str);
           }
       }
       break;
@@ -741,24 +728,23 @@ item_factory_unbind_cb (
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
       gtk_list_item_get_item (listitem));
 
+  PopoverMenuBinWidget * bin =
+    Z_POPOVER_MENU_BIN_WIDGET (
+      gtk_list_item_get_child (listitem));
+
   switch (self->type)
     {
     case ITEM_FACTORY_TOGGLE:
       {
-        GtkWidget * child =
-          gtk_list_item_get_child (listitem);
         gpointer data =
           g_object_get_data (
-            G_OBJECT (child), "item-factory-data");
+            G_OBJECT (bin), "item-factory-data");
         g_signal_handlers_disconnect_by_func (
-          child, on_toggled, data);
+          bin, on_toggled, data);
       }
       break;
     case ITEM_FACTORY_ICON_AND_TEXT:
       {
-        PopoverMenuBinWidget * bin =
-          Z_POPOVER_MENU_BIN_WIDGET (
-            gtk_list_item_get_child (listitem));
         GtkBox * box =
           GTK_BOX (
             popover_menu_bin_widget_get_child (bin));
@@ -848,8 +834,11 @@ item_factory_new (
 /**
  * Shorthand to generate and append a column to
  * a column view.
+ *
+ * @return The newly created ItemFactory, for
+ *   convenience.
  */
-void
+ItemFactory *
 item_factory_generate_and_append_column (
   GtkColumnView * column_view,
   GPtrArray *     item_factories,
@@ -868,6 +857,8 @@ item_factory_generate_and_append_column (
   gtk_column_view_append_column (
     column_view, column);
   g_ptr_array_add (item_factories, item_factory);
+
+  return item_factory;
 }
 
 void

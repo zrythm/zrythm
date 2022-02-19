@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -39,9 +39,15 @@ typedef enum ItemFactoryType
   ITEM_FACTORY_TOGGLE,
   ITEM_FACTORY_TEXT,
 
+  /** Integer display. */
+  ITEM_FACTORY_INTEGER,
+
   /** Composite type (eg, used in plugin
    * browser). */
   ITEM_FACTORY_ICON_AND_TEXT,
+
+  /** Position. */
+  ITEM_FACTORY_POSITION,
 } ItemFactoryType;
 
 /**
@@ -84,8 +90,11 @@ item_factory_new (
 /**
  * Shorthand to generate and append a column to
  * a column view.
+ *
+ * @return The newly created ItemFactory, for
+ *   convenience.
  */
-void
+ItemFactory *
 item_factory_generate_and_append_column (
   GtkColumnView * column_view,
   GPtrArray *     item_factories,

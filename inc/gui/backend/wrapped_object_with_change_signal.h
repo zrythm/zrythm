@@ -52,6 +52,7 @@ typedef enum WrappedObjectType
   WRAPPED_OBJECT_TYPE_CHORD_PSET_PACK,
   WRAPPED_OBJECT_TYPE_SUPPORTED_FILE,
   WRAPPED_OBJECT_TYPE_MIDI_MAPPING,
+  WRAPPED_OBJECT_TYPE_ARRANGER_OBJECT,
 } WrappedObjectType;
 
 typedef struct _WrappedObjectWithChangeSignal

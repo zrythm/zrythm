@@ -14,15 +14,14 @@
         <property name="hscrollbar-policy">never</property>
         <property name="vexpand">1</property>
         <property name="child">
-          <object class="GtkTreeView" id="treeview">
+          <object class="GtkColumnView" id="column_view">
+            <style>
+              <class name="data-table"/>
+            </style>
             <property name="focusable">1</property>
-            <property name="rubber-banding">1</property>
           </object>
         </property>
       </object>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </template>
 </interface>

@@ -55,6 +55,47 @@ on_notebook_switch_page (
     S_UI, "bot-panel-tab", (int) page_num);
 }
 
+/**
+ * Sets the appropriate stack page.
+ */
+void
+bot_dock_edge_widget_update_event_viewer_stack_page (
+  BotDockEdgeWidget * self)
+{
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
+  if (r)
+    {
+      switch (r->id.type)
+        {
+        case REGION_TYPE_MIDI:
+          gtk_stack_set_visible_child_name (
+            self->event_viewer_stack, "midi");
+          event_viewer_widget_refresh (
+            self->event_viewer_midi, false);
+          break;
+        case REGION_TYPE_AUDIO:
+          gtk_stack_set_visible_child_name (
+            self->event_viewer_stack, "audio");
+          event_viewer_widget_refresh (
+            self->event_viewer_audio, false);
+          break;
+        case REGION_TYPE_CHORD:
+          gtk_stack_set_visible_child_name (
+            self->event_viewer_stack, "chord");
+          event_viewer_widget_refresh (
+            self->event_viewer_chord, false);
+          break;
+        case REGION_TYPE_AUTOMATION:
+          gtk_stack_set_visible_child_name (
+            self->event_viewer_stack, "automation");
+          event_viewer_widget_refresh (
+            self->event_viewer_automation, false);
+          break;
+        }
+    }
+}
+
 void
 bot_dock_edge_widget_setup (
   BotDockEdgeWidget * self)
@@ -65,8 +106,19 @@ bot_dock_edge_widget_setup (
     GTK_POS_BOTTOM);
 
   event_viewer_widget_setup (
-    self->event_viewer,
-    EVENT_VIEWER_TYPE_EDITOR);
+    self->event_viewer_midi,
+    EVENT_VIEWER_TYPE_MIDI);
+  event_viewer_widget_setup (
+    self->event_viewer_audio,
+    EVENT_VIEWER_TYPE_AUDIO);
+  event_viewer_widget_setup (
+    self->event_viewer_chord,
+    EVENT_VIEWER_TYPE_CHORD);
+  event_viewer_widget_setup (
+    self->event_viewer_automation,
+    EVENT_VIEWER_TYPE_AUTOMATION);
+  bot_dock_edge_widget_update_event_viewer_stack_page (
+    self);
 
   chord_pad_panel_widget_setup (
     self->chord_pad_panel);
@@ -82,7 +134,8 @@ bot_dock_edge_widget_setup (
       visibility = true;
     }
   gtk_widget_set_visible (
-    GTK_WIDGET (self->event_viewer), visibility);
+    GTK_WIDGET (self->event_viewer_stack),
+    visibility);
 
   GtkNotebook * notebook =
     foldable_notebook_widget_get_notebook (
@@ -130,6 +183,9 @@ bot_dock_edge_widget_show_clip_editor (
           break;
         }
     }
+
+  bot_dock_edge_widget_update_event_viewer_stack_page (
+    self);
 
   if (navigate_to_region_start
       && CLIP_EDITOR->has_region)
@@ -180,10 +236,32 @@ generate_bot_notebook (
   gtk_paned_set_start_child (
     self->clip_editor_plus_event_viewer_paned,
     GTK_WIDGET (self->clip_editor));
-  self->event_viewer = event_viewer_widget_new ();
+  self->event_viewer_stack =
+    GTK_STACK (gtk_stack_new ());
+  self->event_viewer_midi =
+    event_viewer_widget_new ();
+  gtk_stack_add_named (
+    self->event_viewer_stack,
+    GTK_WIDGET (self->event_viewer_midi), "midi");
+  self->event_viewer_chord =
+    event_viewer_widget_new ();
+  gtk_stack_add_named (
+    self->event_viewer_stack,
+    GTK_WIDGET (self->event_viewer_chord), "chord");
+  self->event_viewer_automation =
+    event_viewer_widget_new ();
+  gtk_stack_add_named (
+    self->event_viewer_stack,
+    GTK_WIDGET (self->event_viewer_automation),
+    "automation");
+  self->event_viewer_audio =
+    event_viewer_widget_new ();
+  gtk_stack_add_named (
+    self->event_viewer_stack,
+    GTK_WIDGET (self->event_viewer_audio), "audio");
   gtk_paned_set_end_child (
     self->clip_editor_plus_event_viewer_paned,
-    GTK_WIDGET (self->event_viewer));
+    GTK_WIDGET (self->event_viewer_stack));
 
   self->mixer_box =
     GTK_BOX (

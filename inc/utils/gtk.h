@@ -184,6 +184,14 @@ void
 z_gtk_tree_view_remove_all_columns (
   GtkTreeView * treeview);
 
+void
+z_gtk_column_view_remove_all_columnes (
+  GtkColumnView * column_view);
+
+GListStore *
+z_gtk_column_view_get_list_store (
+  GtkColumnView * column_view);
+
 /**
  * @note Bumps reference, must be decremented after
  * calling.
@@ -792,6 +800,15 @@ z_gtk_simple_action_shortcut_func (
   GtkWidget * widget,
   GVariant *  args,
   gpointer    user_data);
+
+/**
+ * Recursively searches the children of \ref widget
+ * for a child of type \ref type.
+ */
+GtkWidget *
+z_gtk_widget_find_child_of_type (
+  GtkWidget * widget,
+  GType       type);
 
 /**
  * @}

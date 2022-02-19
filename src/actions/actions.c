@@ -2299,19 +2299,21 @@ activate_toggle_editor_event_viewer (
   GVariant *      variant,
   gpointer        user_data)
 {
-  if (!MW_EDITOR_EVENT_VIEWER)
+  if (!MW_EDITOR_EVENT_VIEWER_STACK)
     return;
 
   int new_visibility =
     !gtk_widget_get_visible (
-       GTK_WIDGET (MW_EDITOR_EVENT_VIEWER));
+       GTK_WIDGET (MW_EDITOR_EVENT_VIEWER_STACK));
 
   g_settings_set_boolean (
     S_UI, "editor-event-viewer-visible",
     new_visibility);
   gtk_widget_set_visible (
-    GTK_WIDGET (MW_EDITOR_EVENT_VIEWER),
+    GTK_WIDGET (MW_EDITOR_EVENT_VIEWER_STACK),
     new_visibility);
+  bot_dock_edge_widget_update_event_viewer_stack_page (
+    MW_BOT_DOCK_EDGE);
 }
 
 DEFINE_SIMPLE (activate_insert_silence)

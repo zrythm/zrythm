@@ -448,7 +448,7 @@ static const cyaml_schema_value_t
  */
 ArrangerWidget *
 arranger_object_get_arranger (
-  ArrangerObject * self);
+  const ArrangerObject * self);
 
 /**
  * Sets the magic on the arranger object.
@@ -472,7 +472,20 @@ arranger_object_get_region (
  */
 const char *
 arranger_object_get_name (
-  ArrangerObject * self);
+  const ArrangerObject * self);
+
+/**
+ * Generates a human readable name for the object.
+ *
+ * If the object has a name, this returns a copy
+ * of the name, otherwise generates something
+ * appropriate.
+ *
+ * Must be free'd by caller.
+ */
+char *
+arranger_object_gen_human_readable_name (
+  const ArrangerObject * self);
 
 /**
  * Generates the escaped name for the object,
@@ -480,7 +493,7 @@ arranger_object_get_name (
  */
 void
 arranger_object_gen_escaped_name (
-  ArrangerObject * self);
+  const ArrangerObject * self);
 
 /**
  * Sets the dest object's values to the main
@@ -958,7 +971,7 @@ arranger_object_find (
  */
 ArrangerObject *
 arranger_object_clone (
-  ArrangerObject * self);
+  const ArrangerObject * self);
 
 /**
  * Splits the given object at the given Position.

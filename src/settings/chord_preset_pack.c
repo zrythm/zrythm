@@ -22,10 +22,13 @@
 #include "project.h"
 #include "settings/chord_preset_pack.h"
 #include "utils/arrays.h"
+#include "utils/gtk.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 ChordPresetPack *
 chord_preset_pack_new (
@@ -127,6 +130,38 @@ chord_preset_pack_set_name (
   self->name = g_strdup (name);
 
   EVENTS_PUSH (ET_CHORD_PRESET_PACK_EDITED, NULL);
+}
+
+GMenuModel *
+chord_preset_pack_generate_context_menu (
+  const ChordPresetPack * self)
+{
+  if (self->is_standard)
+    return NULL;
+
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
+  char action[800];
+
+  /* rename */
+  sprintf (
+    action, "app.rename-chord-preset-pack::%p",
+    self);
+  menuitem =
+    z_gtk_create_menu_item (
+      _("_Rename"), "edit-rename", action);
+  g_menu_append_item (menu, menuitem);
+
+  /* delete */
+  sprintf (
+    action, "app.delete-chord-preset-pack::%p",
+    self);
+  menuitem =
+    z_gtk_create_menu_item (
+      _("_Delete"), "edit-delete", action);
+  g_menu_append_item (menu, menuitem);
+
+  return G_MENU_MODEL (menu);
 }
 
 ChordPresetPack *

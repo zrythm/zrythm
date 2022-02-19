@@ -53,7 +53,6 @@ typedef struct _CcBindingsTreeWidget
 
   /** Array of ItemFactory pointers for each
    * column. */
-  /* TODO destroy in finalize() */
   GPtrArray *          item_factories;
 } CcBindingsTreeWidget;
 

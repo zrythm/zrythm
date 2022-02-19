@@ -135,8 +135,6 @@ flatpak_build = get_option ('for_flathub') or get_option ('flatpak')
 
 # Used for building manpages, manual, etc., using
 # foreach.
-# The actual languages to use are specified in
-# po/LINGUAS.
 language_mappings = {
   'af_ZA': 'Afrikaans',
   'ar': 'اَلْعَرَبِيَّةُ‎',
