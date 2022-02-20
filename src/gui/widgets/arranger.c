@@ -2003,7 +2003,9 @@ arranger_widget_on_key_press (
       || keyval == GDK_KEY_q
       || keyval == GDK_KEY_less
       || keyval == GDK_KEY_Delete
-      || keyval == GDK_KEY_greater)
+      || keyval == GDK_KEY_greater
+      || keyval == GDK_KEY_KP_4
+      || keyval == GDK_KEY_KP_6)
     {
       g_debug (
         "ignoring keyval used for shortcuts");
@@ -7053,6 +7055,14 @@ arranger_widget_class_init (
     wklass, GDK_KEY_Q, 0,
     z_gtk_simple_action_shortcut_func,
     "s", "quick-quantize::global", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_KP_4, 0,
+    z_gtk_simple_action_shortcut_func,
+    "s", "goto-prev-marker", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_KP_6, 0,
+    z_gtk_simple_action_shortcut_func,
+    "s", "goto-next-marker", NULL);
 }
 
 static void

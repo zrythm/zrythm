@@ -1427,9 +1427,9 @@ zrythm_app_startup (
   INSTALL_ACCEL (
     "<Control>l", "app.loop-selection");
   INSTALL_ACCEL_WITH_SECONDARY (
-    "KP_4", "<Control>BackSpace", "app.goto-prev-marker");
+    "<Control>KP_4", "<Control>BackSpace", "app.goto-prev-marker");
   INSTALL_ACCEL (
-    "KP_6", "app.goto-next-marker");
+    "<Control>KP_6", "app.goto-next-marker");
   INSTALL_ACCEL (
     "<Control>space", "app.play-pause");
   INSTALL_ACCEL (
