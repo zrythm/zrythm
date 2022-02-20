@@ -785,53 +785,101 @@ item_factory_bind_cb (
                 string_is_equal (
                   self->column_name, _("End")))
                 {
-                  position_to_string_full (
-                    &arr_obj->end_pos, str, 1);
+                  if (arranger_object_type_has_length (
+                        arr_obj->type))
+                    {
+                      position_to_string_full (
+                        &arr_obj->end_pos, str, 1);
+                    }
+                  else
+                    {
+                      strcpy (str, _("N/A"));
+                    }
                 }
               else if (
                 string_is_equal (
                   self->column_name,
                   _("Loop start")))
                 {
-                  position_to_string_full (
-                    &arr_obj->loop_start_pos,
-                    str, 1);
+                  if (arranger_object_type_can_loop (
+                        arr_obj->type))
+                    {
+                      position_to_string_full (
+                        &arr_obj->loop_start_pos,
+                        str, 1);
+                    }
+                  else
+                    {
+                      strcpy (str, _("N/A"));
+                    }
                 }
               else if (
                 string_is_equal (
                   self->column_name,
                   _("Loop end")))
                 {
-                  position_to_string_full (
-                    &arr_obj->loop_end_pos,
-                    str, 1);
+                  if (arranger_object_type_can_loop (
+                        arr_obj->type))
+                    {
+                      position_to_string_full (
+                        &arr_obj->loop_end_pos,
+                        str, 1);
+                    }
+                  else
+                    {
+                      strcpy (str, _("N/A"));
+                    }
                 }
               else if (
                 string_is_equal (
                   self->column_name,
                   _("Clip start")))
                 {
-                  position_to_string_full (
-                    &arr_obj->clip_start_pos,
-                    str, 1);
+                  if (arranger_object_type_can_loop (
+                        arr_obj->type))
+                    {
+                      position_to_string_full (
+                        &arr_obj->clip_start_pos,
+                        str, 1);
+                    }
+                  else
+                    {
+                      strcpy (str, _("N/A"));
+                    }
                 }
               else if (
                 string_is_equal (
                   self->column_name,
                   _("Fade in")))
                 {
-                  position_to_string_full (
-                    &arr_obj->fade_in_pos,
-                    str, 1);
+                  if (arranger_object_can_fade (
+                        arr_obj))
+                    {
+                      position_to_string_full (
+                        &arr_obj->fade_in_pos,
+                        str, 1);
+                    }
+                  else
+                    {
+                      strcpy (str, _("N/A"));
+                    }
                 }
               else if (
                 string_is_equal (
                   self->column_name,
                   _("Fade out")))
                 {
-                  position_to_string_full (
-                    &arr_obj->fade_out_pos,
-                    str, 1);
+                  if (arranger_object_can_fade (
+                        arr_obj))
+                    {
+                      position_to_string_full (
+                        &arr_obj->fade_out_pos,
+                        str, 1);
+                    }
+                  else
+                    {
+                      strcpy (str, _("N/A"));
+                    }
                 }
               else if (
                 string_is_equal (
