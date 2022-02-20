@@ -105,12 +105,10 @@ region_init (
   obj->loop_end_pos.frames = length;
 
   /* set fade positions to start/end */
+  position_init (&obj->fade_in_pos);
+  position_init (&obj->fade_out_pos);
   position_from_frames (
-    &obj->fade_in_pos,
-    ARRANGER_OBJECT_MIN_FADE_FRAMES);
-  position_from_frames (
-    &obj->fade_out_pos, length -
-      ARRANGER_OBJECT_MIN_FADE_FRAMES);
+    &obj->fade_out_pos, length);
 
   self->magic = REGION_MAGIC;
 
