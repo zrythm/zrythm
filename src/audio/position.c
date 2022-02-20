@@ -766,13 +766,72 @@ position_to_string_full (
  * Creates a string in the form of "0.0.0.0" from
  * the given position.
  */
-NONNULL
 void
 position_to_string (
   const Position * pos,
   char *           buf)
 {
   position_to_string_full (pos, buf, 4);
+}
+
+/**
+ * Parses a position from the given string.
+ *
+ * @return Whether successful.
+ */
+bool
+position_parse (
+  Position *   pos,
+  const char * str)
+{
+  int bars, beats, sixteenths;
+  float ticksf;
+  int res =
+    sscanf (
+      str, "%d.%d.%d.%f", &bars, &beats,
+      &sixteenths, &ticksf);
+  if (res != 4 || res == EOF)
+    return false;
+
+  /* adjust for starting from 1 */
+  if (bars > 0)
+    bars--;
+  else if (bars < 0)
+    bars++;
+  else
+    return false;
+
+  if (beats > 0)
+    beats--;
+  else if (beats < 0)
+    beats++;
+  else
+    return false;
+
+  if (sixteenths > 0)
+    sixteenths--;
+  else if (sixteenths < 0)
+    sixteenths++;
+  else
+    return false;
+
+  double ticks = (double) ticksf;
+
+  int beats_per_bar =
+    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  int sixteenths_per_beat =
+    TRANSPORT->sixteenths_per_beat;
+  int total_sixteenths =
+    bars * beats_per_bar * sixteenths_per_beat +
+    beats * sixteenths_per_beat +
+    sixteenths;
+  double total_ticks =
+    (double) (total_sixteenths) *
+      TICKS_PER_SIXTEENTH_NOTE_DBL +
+        ticks;
+  position_from_ticks (pos, total_ticks);
+
+  return true;
 }
 
 /**

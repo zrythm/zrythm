@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -558,6 +558,15 @@ arranger_selections_action_new_edit (
   bool                             already_edited,
   GError **                        error);
 
+WARN_UNUSED_RESULT
+UndoableAction *
+arranger_selections_action_new_edit_single_obj (
+  const ArrangerObject *           obj_before,
+  const ArrangerObject *           obj_after,
+  ArrangerSelectionsActionEditType type,
+  bool                             already_edited,
+  GError **                        error);
+
 /**
  * Wrapper over
  * arranger_selections_action_new_edit() for MIDI
@@ -792,6 +801,14 @@ bool
 arranger_selections_action_perform_edit (
   ArrangerSelections *             sel_before,
   ArrangerSelections *             sel_after,
+  ArrangerSelectionsActionEditType type,
+  bool                             already_edited,
+  GError **                        error);
+
+bool
+arranger_selections_action_perform_edit_single_obj (
+  const ArrangerObject *           obj_before,
+  const ArrangerObject *           obj_after,
   ArrangerSelectionsActionEditType type,
   bool                             already_edited,
   GError **                        error);

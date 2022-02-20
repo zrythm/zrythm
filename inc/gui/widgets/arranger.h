@@ -180,6 +180,9 @@ typedef struct _ArrangerWidget
    *
    * This is the ArrangerObject that was clicked,
    * even though there could be more selected.
+   *
+   * This is also used when changing values via the
+   * event viewer.
    */
   ArrangerObject * start_object;
 

@@ -1000,6 +1000,64 @@ arranger_object_get_loop_end_pos (
     pos, &self->loop_end_pos);
 }
 
+/**
+ * Getter.
+ */
+void
+arranger_object_get_fade_in_pos (
+  const ArrangerObject * self,
+  Position *             pos)
+{
+  position_set_to_pos (
+    pos, &self->fade_in_pos);
+}
+
+/**
+ * Getter.
+ */
+void
+arranger_object_get_fade_out_pos (
+  const ArrangerObject * self,
+  Position *             pos)
+{
+  position_set_to_pos (
+    pos, &self->fade_out_pos);
+}
+
+void
+arranger_object_get_position_from_type (
+  const ArrangerObject *     self,
+  Position *                 pos,
+  ArrangerObjectPositionType type)
+{
+  switch (type)
+    {
+    case ARRANGER_OBJECT_POSITION_TYPE_START:
+      arranger_object_get_pos (self, pos);
+      break;
+    case ARRANGER_OBJECT_POSITION_TYPE_CLIP_START:
+      arranger_object_get_clip_start_pos (
+        self, pos);
+      break;
+    case ARRANGER_OBJECT_POSITION_TYPE_END:
+      arranger_object_get_end_pos (self, pos);
+      break;
+    case ARRANGER_OBJECT_POSITION_TYPE_LOOP_START:
+      arranger_object_get_loop_start_pos (
+        self, pos);
+      break;
+    case ARRANGER_OBJECT_POSITION_TYPE_LOOP_END:
+      arranger_object_get_loop_end_pos (self, pos);
+      break;
+    case ARRANGER_OBJECT_POSITION_TYPE_FADE_IN:
+      arranger_object_get_fade_in_pos (self, pos);
+      break;
+    case ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT:
+      arranger_object_get_fade_out_pos (self, pos);
+      break;
+    }
+}
+
 static void
 init_loaded_midi_note (
   MidiNote * self)
@@ -1724,6 +1782,60 @@ arranger_object_post_deserialize (
     }
 
   post_deserialize_children (self);
+}
+
+/**
+ * Callback when beginning to edit the object.
+ *
+ * This saves a clone of its current state to its
+ * arranger.
+ */
+void
+arranger_object_edit_begin (
+  const ArrangerObject * self)
+{
+  ArrangerWidget * arranger =
+    arranger_object_get_arranger (self);
+  g_return_if_fail (arranger);
+  arranger->start_object =
+    arranger_object_clone (self);
+}
+
+/**
+ * Callback when finishing editing the object.
+ *
+ * This performs an undoable action.
+ */
+void
+arranger_object_edit_finish (
+  const ArrangerObject *           self,
+  ArrangerSelectionsActionEditType type)
+{
+  ArrangerWidget * arranger =
+    arranger_object_get_arranger (self);
+  g_return_if_fail (arranger);
+  g_return_if_fail (arranger->start_object);
+  GError * err = NULL;
+  bool ret =
+    arranger_selections_action_perform_edit_single_obj (
+      arranger->start_object, self, type,
+      F_ALREADY_EDITED, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to edit object"));
+    }
+
+  object_free_w_func_and_null (
+    arranger_object_free, arranger->start_object);
+}
+
+void
+arranger_object_edit_position_finish (
+  const ArrangerObject * self)
+{
+  arranger_object_edit_finish (
+    self, ARRANGER_SELECTIONS_ACTION_EDIT_POS);
 }
 
 /**

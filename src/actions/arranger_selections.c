@@ -508,6 +508,45 @@ arranger_selections_action_new_edit (
   return ua;
 }
 
+UndoableAction *
+arranger_selections_action_new_edit_single_obj (
+  const ArrangerObject *           obj_before,
+  const ArrangerObject *           obj_after,
+  ArrangerSelectionsActionEditType type,
+  bool                             already_edited,
+  GError **                        error)
+{
+  g_return_val_if_fail (obj_before, NULL);
+  g_return_val_if_fail (obj_after, NULL);
+
+  ArrangerSelections * prj_sel =
+    arranger_object_get_selections_for_type (
+      obj_before->type);
+  ArrangerSelectionsType sel_type = prj_sel->type;
+  ArrangerSelections * sel_before =
+    arranger_selections_new (sel_type);
+  ArrangerObject * obj_before_clone =
+    arranger_object_clone (obj_before);
+  arranger_selections_add_object (
+    sel_before, obj_before_clone);
+  ArrangerSelections * sel_after =
+    arranger_selections_new (sel_type);
+  ArrangerObject * obj_after_clone =
+    arranger_object_clone (obj_after);
+  arranger_selections_add_object (
+    sel_after, obj_after_clone);
+
+  UndoableAction * ua =
+    arranger_selections_action_new_edit (
+      sel_before, sel_after, type,  already_edited,
+      error);
+
+  arranger_selections_free_full (sel_before);
+  arranger_selections_free_full (sel_after);
+
+  return ua;
+}
+
 /**
  * Wrapper over
  * arranger_selections_action_new_edit() for MIDI
@@ -1041,6 +1080,20 @@ arranger_selections_action_perform_edit (
     arranger_selections_action_new_edit, error,
     sel_before, sel_after, type, already_edited,
     error);
+}
+
+bool
+arranger_selections_action_perform_edit_single_obj (
+  const ArrangerObject *           obj_before,
+  const ArrangerObject *           obj_after,
+  ArrangerSelectionsActionEditType type,
+  bool                             already_edited,
+  GError **                        error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    arranger_selections_action_new_edit_single_obj,
+    error, obj_before, obj_after, type,
+    already_edited, error);
 }
 
 bool
@@ -2476,6 +2529,7 @@ do_or_undo_edit (
                     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
                       {
                         SET_PRIMITIVE (MidiNote, muted);
+                        SET_PRIMITIVE (MidiNote, val);
 
                         /* set velocity and cache vel */
                         MidiNote * mn =

@@ -19,6 +19,7 @@
 
 #include "audio/midi_mapping.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/item_factory.h"
 #include "gui/widgets/popover_menu_bin.h"
@@ -28,9 +29,13 @@
 #include "project.h"
 #include "settings/chord_preset_pack_manager.h"
 #include "utils/error.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+#include "utils/ui.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -145,6 +150,330 @@ on_dnd_drag_prepare (
     gdk_content_provider_new_union (
       content_providers,
       G_N_ELEMENTS (content_providers));
+}
+
+typedef struct EditableChangedInfo
+{
+  ArrangerObject * obj;
+  char *           column_name;
+  char *           text;
+} EditableChangedInfo;
+
+static void
+editable_changed_info_free (
+  gpointer data)
+{
+  EditableChangedInfo * self =
+    (EditableChangedInfo *) data;
+  g_free_and_null (self->column_name);
+  g_free_and_null (self->text);
+  object_zero_and_free (self);
+}
+
+static void
+handle_arranger_object_position_change (
+  ArrangerObject *           obj,
+  ArrangerObject *           prev_obj,
+  const char *               text,
+  ArrangerObjectPositionType type)
+{
+  Position pos;
+  bool ret = position_parse (&pos, text);
+  if (ret)
+    {
+      position_print (&pos);
+      Position prev_pos;
+      arranger_object_get_position_from_type (
+        obj, &prev_pos, type);
+      if (arranger_object_is_position_valid (
+            obj, &pos, type))
+        {
+          if (!position_is_equal (&pos, &prev_pos))
+            {
+              arranger_object_set_position (
+                obj, &pos, type,
+                F_NO_VALIDATE);
+              arranger_object_edit_position_finish (
+                obj);
+            }
+        }
+      else
+        {
+          ui_show_error_message (
+            MAIN_WINDOW, GTK_MESSAGE_ERROR,
+            _("Invalid position"));
+        }
+    }
+  else
+    {
+      ui_show_error_message (
+        MAIN_WINDOW, GTK_MESSAGE_ERROR,
+        _("Failed to parse position"));
+    }
+}
+
+/**
+ * Source function for performing changes
+ * later.
+ */
+static int
+editable_label_changed_source (
+  gpointer user_data)
+{
+  EditableChangedInfo * self =
+    (EditableChangedInfo *) user_data;
+  const char * column_name = self->column_name;
+  const char * text = self->text;
+  ArrangerObject * obj = self->obj;
+  ArrangerWidget * arranger =
+    arranger_object_get_arranger (obj);
+  ArrangerObject * prev_obj =
+    arranger->start_object;
+  if (string_is_equal (
+        column_name, _("Start"))
+      ||
+      string_is_equal (
+        column_name, _("Position")))
+    {
+      handle_arranger_object_position_change (
+        obj, prev_obj, text,
+        ARRANGER_OBJECT_POSITION_TYPE_START);
+    }
+  else if (
+    string_is_equal (column_name, _("End")))
+    {
+      handle_arranger_object_position_change (
+        obj, prev_obj, text,
+        ARRANGER_OBJECT_POSITION_TYPE_END);
+    }
+  else if (
+    string_is_equal (column_name, _("Clip start")))
+    {
+      handle_arranger_object_position_change (
+        obj, prev_obj, text,
+        ARRANGER_OBJECT_POSITION_TYPE_CLIP_START);
+    }
+  else if (
+    string_is_equal (column_name, _("Loop start")))
+    {
+      handle_arranger_object_position_change (
+        obj, prev_obj, text,
+        ARRANGER_OBJECT_POSITION_TYPE_LOOP_START);
+    }
+  else if (
+    string_is_equal (column_name, _("Loop end")))
+    {
+      handle_arranger_object_position_change (
+        obj, prev_obj, text,
+        ARRANGER_OBJECT_POSITION_TYPE_LOOP_END);
+    }
+  else if (
+    string_is_equal (column_name, _("Fade in")))
+    {
+      handle_arranger_object_position_change (
+        obj, prev_obj, text,
+        ARRANGER_OBJECT_POSITION_TYPE_FADE_IN);
+    }
+  else if (
+    string_is_equal (column_name, _("Fade out")))
+    {
+      handle_arranger_object_position_change (
+        obj, prev_obj, text,
+        ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT);
+    }
+  else if (
+    string_is_equal (column_name, _("Name")))
+    {
+      if (arranger_object_validate_name (
+            obj, text))
+        {
+          arranger_object_set_name (
+            obj, text, F_NO_PUBLISH_EVENTS);
+          arranger_object_edit_finish (
+            obj,
+            ARRANGER_SELECTIONS_ACTION_EDIT_NAME);
+        }
+      else
+        {
+          ui_show_error_message (
+            MAIN_WINDOW, GTK_MESSAGE_ERROR,
+            _("Invalid name"));
+        }
+    }
+  else if (
+    string_is_equal (column_name, _("Velocity")))
+    {
+      uint8_t val;
+      int res = sscanf (text, "%hhu", &val);
+      if (res != 1 || res == EOF || val < 1
+          || val > 127)
+        {
+          ui_show_error_message (
+            MAIN_WINDOW, GTK_MESSAGE_ERROR,
+            _("Invalid velocity"));
+        }
+      else
+        {
+          MidiNote * mn = (MidiNote *) obj;
+          if (mn->vel->vel != val)
+            {
+              mn->vel->vel = val;
+              arranger_object_edit_finish (
+                obj,
+                ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);
+            }
+        }
+    }
+  else if (
+    string_is_equal (column_name, _("Pitch")))
+    {
+      uint8_t val;
+      int res = sscanf (text, "%hhu", &val);
+      if (res != 1 || res == EOF || val < 1
+          || val > 127)
+        {
+          ui_show_error_message (
+            MAIN_WINDOW, GTK_MESSAGE_ERROR,
+            _("Invalid pitch"));
+        }
+      else
+        {
+          MidiNote * mn = (MidiNote *) obj;
+          if (mn->val != val)
+            {
+              midi_note_set_val (mn, val);
+              arranger_object_edit_finish (
+                obj,
+                ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);
+            }
+        }
+    }
+  else if (
+    string_is_equal (column_name, _("Value")))
+    {
+      AutomationPoint * ap =
+        (AutomationPoint *) obj;
+      Port * port =
+        automation_point_get_port (ap);
+
+      float val;
+      int res = sscanf (text, "%f", &val);
+      if (res != 1 || res == EOF
+          || val < port->minf
+          || val > port->maxf)
+        {
+          ui_show_error_message (
+            MAIN_WINDOW, GTK_MESSAGE_ERROR,
+            _("Invalid value"));
+        }
+      else
+        {
+          AutomationPoint * prev_ap =
+            (AutomationPoint *) prev_obj;
+          if (!math_floats_equal (
+                prev_ap->fvalue, val))
+            {
+              automation_point_set_fvalue (
+                ap, val, F_NOT_NORMALIZED,
+                F_NO_PUBLISH_EVENTS);
+              arranger_object_edit_finish (
+                obj,
+                ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);
+            }
+        }
+    }
+  else if (
+    string_is_equal (column_name, _("Curviness")))
+    {
+      float val;
+      int res = sscanf (text, "%f", &val);
+      if (res != 1 || res == EOF
+          || val < -1.f || val > 1.f)
+        {
+          ui_show_error_message (
+            MAIN_WINDOW, GTK_MESSAGE_ERROR,
+            _("Invalid value"));
+        }
+      else
+        {
+          AutomationPoint * prev_ap =
+            (AutomationPoint *) prev_obj;
+          AutomationPoint * ap =
+            (AutomationPoint *) obj;
+          ap->curve_opts.curviness = val;
+          if (!curve_options_are_equal (
+                &prev_ap->curve_opts,
+                &ap->curve_opts))
+            {
+              arranger_object_edit_finish (
+                obj,
+                ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);
+            }
+        }
+    }
+
+  /* make sure temp object is freed */
+  object_free_w_func_and_null (
+    arranger_object_free, arranger->start_object);
+
+  return G_SOURCE_REMOVE;
+}
+
+static void
+on_editable_label_editing_changed (
+  GObject *      gobject,
+  GParamSpec *   pspec,
+  gpointer       user_data)
+{
+  ItemFactoryData * data =
+    (ItemFactoryData *) user_data;
+
+  GtkEditableLabel * editable_lbl =
+    GTK_EDITABLE_LABEL (gobject);
+  const char * text =
+    gtk_editable_get_text (
+      GTK_EDITABLE (editable_lbl));
+
+  bool editing =
+    gtk_editable_label_get_editing (
+      editable_lbl);
+
+  g_debug ("editing changed: %d", editing);
+  g_debug ("text: %s", text);
+
+  /* perform change */
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    data->obj;
+  switch (wrapped_obj->type)
+    {
+    case WRAPPED_OBJECT_TYPE_ARRANGER_OBJECT:
+      {
+        ArrangerObject * obj =
+          (ArrangerObject *) wrapped_obj->obj;
+        if (editing)
+          {
+            arranger_object_edit_begin (obj);
+          }
+        else
+          {
+            EditableChangedInfo * nfo =
+              object_new (EditableChangedInfo);
+            nfo->column_name =
+              g_strdup (
+                data->factory->column_name);
+            nfo->text = g_strdup (text);
+            nfo->obj = obj;
+            g_idle_add_full (
+              G_PRIORITY_DEFAULT_IDLE,
+              editable_label_changed_source,
+              nfo,
+              editable_changed_info_free);
+          }
+      }
+      break;
+    default:
+      break;
+    }
 }
 
 static void
@@ -354,7 +683,7 @@ item_factory_bind_cb (
         ItemFactoryData * data =
           item_factory_data_new (self, obj);
         g_object_set_data (
-          G_OBJECT (check_btn), "item-factory-data",
+          G_OBJECT (bin), "item-factory-data",
           data);
         g_signal_connect_data (
           G_OBJECT (check_btn), "toggled",
@@ -578,6 +907,22 @@ item_factory_bind_cb (
           {
             gtk_editable_set_text (
               GTK_EDITABLE (label), str);
+            ItemFactoryData * data =
+              item_factory_data_new (self, obj);
+            g_object_set_data (
+              G_OBJECT (bin), "item-factory-data",
+              data);
+            g_signal_handlers_disconnect_by_func (
+              bin,
+              on_editable_label_editing_changed,
+              data);
+            g_signal_connect_data (
+              G_OBJECT (label), "notify::editing",
+              G_CALLBACK (
+                on_editable_label_editing_changed),
+              data,
+              item_factory_data_destroy_closure,
+              G_CONNECT_AFTER);
           }
         else
           {
@@ -731,6 +1076,8 @@ item_factory_unbind_cb (
   PopoverMenuBinWidget * bin =
     Z_POPOVER_MENU_BIN_WIDGET (
       gtk_list_item_get_child (listitem));
+  GtkWidget * widget =
+    popover_menu_bin_widget_get_child (bin);
 
   switch (self->type)
     {
@@ -740,7 +1087,19 @@ item_factory_unbind_cb (
           g_object_get_data (
             G_OBJECT (bin), "item-factory-data");
         g_signal_handlers_disconnect_by_func (
-          bin, on_toggled, data);
+          widget, on_toggled, data);
+      }
+      break;
+    case ITEM_FACTORY_TEXT:
+    case ITEM_FACTORY_POSITION:
+    case ITEM_FACTORY_INTEGER:
+      {
+        gpointer data =
+          g_object_get_data (
+            G_OBJECT (bin), "item-factory-data");
+        g_signal_handlers_disconnect_by_func (
+          widget, on_editable_label_editing_changed,
+          data);
       }
       break;
     case ITEM_FACTORY_ICON_AND_TEXT:

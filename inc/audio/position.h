@@ -441,6 +441,18 @@ position_to_string (
   char *           buf);
 
 /**
+ * Parses a position from the given string.
+ *
+ * @return Whether successful.
+ */
+NONNULL
+WARN_UNUSED_RESULT
+bool
+position_parse (
+  Position *   pos,
+  const char * str);
+
+/**
  * Prints the Position in the "0.0.0.0" form.
  */
 NONNULL

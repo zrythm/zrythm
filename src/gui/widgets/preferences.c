@@ -92,10 +92,11 @@ on_path_entry_changed (
 
 static void
 on_enum_drop_down_selection_changed (
-  GObject    *   gobject,
+  GObject *      gobject,
   GParamSpec *   pspec,
-  CallbackData * data)
+  gpointer       user_data)
 {
+  CallbackData * data = (CallbackData *) user_data;
   GtkDropDown * dropdown =
     GTK_DROP_DOWN (gobject);
   g_settings_set_enum (

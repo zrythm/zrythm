@@ -38,6 +38,8 @@ typedef struct ArrangerSelections ArrangerSelections;
 typedef struct _ArrangerWidget ArrangerWidget;
 typedef struct _ArrangerObjectWidget
   ArrangerObjectWidget;
+typedef enum ArrangerSelectionsActionEditType
+  ArrangerSelectionsActionEditType;
 
 /**
  * @addtogroup gui_backend
@@ -646,6 +648,52 @@ void
 arranger_object_get_loop_end_pos (
   const ArrangerObject * self,
   Position *             pos);
+
+/**
+ * Getter.
+ */
+void
+arranger_object_get_fade_in_pos (
+  const ArrangerObject * self,
+  Position *             pos);
+
+/**
+ * Getter.
+ */
+void
+arranger_object_get_fade_out_pos (
+  const ArrangerObject * self,
+  Position *             pos);
+
+void
+arranger_object_get_position_from_type (
+  const ArrangerObject *     self,
+  Position *                 pos,
+  ArrangerObjectPositionType type);
+
+/**
+ * Callback when beginning to edit the object.
+ *
+ * This saves a clone of its current state to its
+ * arranger.
+ */
+void
+arranger_object_edit_begin (
+  const ArrangerObject * self);
+
+/**
+ * Callback when finishing editing the object.
+ *
+ * This performs an undoable action.
+ */
+void
+arranger_object_edit_finish (
+  const ArrangerObject *           self,
+  ArrangerSelectionsActionEditType type);
+
+void
+arranger_object_edit_position_finish (
+  const ArrangerObject * self);
 
 /**
  * The setter is for use in e.g. the digital meters
