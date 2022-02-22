@@ -1251,6 +1251,8 @@ item_factory_generate_and_append_column (
   GPtrArray *     item_factories,
   ItemFactoryType type,
   bool            editable,
+  bool            resizable,
+  GtkSorter *     sorter,
   const char *    column_name)
 {
   ItemFactory * item_factory =
@@ -1261,6 +1263,13 @@ item_factory_generate_and_append_column (
   GtkColumnViewColumn * column =
     gtk_column_view_column_new (
       column_name, list_item_factory);
+  gtk_column_view_column_set_resizable (
+    column, true);
+  if (sorter)
+    {
+      gtk_column_view_column_set_sorter (
+        column, sorter);
+    }
   gtk_column_view_append_column (
     column_view, column);
   g_ptr_array_add (item_factories, item_factory);

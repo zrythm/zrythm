@@ -19,6 +19,7 @@
               <class name="data-table"/>
             </style>
             <property name="focusable">1</property>
+            <property name="reorderable">1</property>
           </object>
         </property>
       </object>

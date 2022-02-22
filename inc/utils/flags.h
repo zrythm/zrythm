@@ -358,4 +358,7 @@
 #define Z_F_EDITABLE 1
 #define Z_F_NOT_EDITABLE 0
 
+#define Z_F_RESIZABLE 1
+#define Z_F_NOT_RESIZABLE 0
+
 #endif

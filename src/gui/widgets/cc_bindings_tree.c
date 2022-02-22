@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,6 +23,7 @@
 #include "gui/widgets/item_factory.h"
 #include "project.h"
 #include "utils/error.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "utils/string.h"
@@ -179,7 +180,8 @@ generate_column_view (
   /* column for checkbox */
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
-    ITEM_FACTORY_TOGGLE, true, _("On"));
+    ITEM_FACTORY_TOGGLE, Z_F_EDITABLE,
+    Z_F_RESIZABLE, NULL, _("On"));
 
 #if 0
   /* column for device */
@@ -196,12 +198,14 @@ generate_column_view (
   /* column for control */
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
-    ITEM_FACTORY_TEXT, false, _("Note/Control"));
+    ITEM_FACTORY_TEXT, Z_F_NOT_EDITABLE,
+    Z_F_RESIZABLE, NULL, _("Note/Control"));
 
   /* column for path */
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
-    ITEM_FACTORY_TEXT, false, _("Destination"));
+    ITEM_FACTORY_TEXT, Z_F_NOT_EDITABLE,
+    Z_F_RESIZABLE, NULL, _("Destination"));
 
 #if 0
   /* column for min */

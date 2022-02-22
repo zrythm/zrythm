@@ -375,6 +375,12 @@ z_gtk_column_view_get_list_store (
   GListModel * model =
     gtk_multi_selection_get_model (
       GTK_MULTI_SELECTION (sel_model));
+  if (GTK_IS_SORT_LIST_MODEL (model))
+    {
+      model =
+        gtk_sort_list_model_get_model (
+          GTK_SORT_LIST_MODEL (model));
+    }
   return G_LIST_STORE (model);
 }
 

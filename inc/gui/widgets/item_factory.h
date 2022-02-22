@@ -100,6 +100,8 @@ item_factory_generate_and_append_column (
   GPtrArray *     item_factories,
   ItemFactoryType type,
   bool            editable,
+  bool            resizable,
+  GtkSorter *     sorter,
   const char *    column_name);
 
 void
