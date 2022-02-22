@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -517,39 +517,55 @@ timestretch_buf ( \
     &stereo_ports->r->buf[time_nfo->local_offset],
     &rbuf_after_ts[0], time_nfo->nframes);
 
+  /* number of frames for built-in fade (additional
+   * to object fades */
+#define BUILTIN_FADE_FRAMES 10
+
   /* apply fades */
-  signed_frame_t num_frames_in_fade_in_area =
+  const signed_frame_t num_frames_in_fade_in_area =
     r_obj->fade_in_pos.frames;
-  signed_frame_t num_frames_in_fade_out_area =
+  const signed_frame_t num_frames_in_fade_out_area =
     r_obj->end_pos.frames -
       (r_obj->fade_out_pos.frames +
        r_obj->pos.frames);
+  const signed_frame_t local_builtin_fade_out_start_frames =
+    r_obj->end_pos.frames -
+      (BUILTIN_FADE_FRAMES + r_obj->pos.frames);
   for (nframes_t j = 0; j < time_nfo->nframes; j++)
     {
-      unsigned_frame_t current_cycle_frame =
+      const unsigned_frame_t current_cycle_frame =
         time_nfo->local_offset + j;
-      signed_frame_t current_local_frame =
+
+      /* current frame local to region start */
+      const signed_frame_t current_local_frame =
         (signed_frame_t)
         (time_nfo->g_start_frame +
           current_cycle_frame) -
         r_obj->pos.frames;
 
-      /* skip to fade out if not in any fade area */
+      /* skip to fade out (or builtin fade out) if
+       * not in any fade area */
       if (G_LIKELY (
             current_local_frame >=
-              r_obj->fade_in_pos.frames
+              MAX (
+                r_obj->fade_in_pos.frames,
+                BUILTIN_FADE_FRAMES)
             &&
             current_local_frame <
-              r_obj->fade_out_pos.frames))
+              MIN (
+                r_obj->fade_out_pos.frames,
+                local_builtin_fade_out_start_frames)))
         {
           j +=
-            r_obj->fade_out_pos.frames -
+            MIN (
+              r_obj->fade_out_pos.frames,
+              local_builtin_fade_out_start_frames) -
             current_local_frame;
           j--;
           continue;
         }
 
-      /* if inside fade in */
+      /* if inside object fade in */
       if (current_local_frame >= 0 &&
           current_local_frame <
             r_obj->fade_in_pos.frames)
@@ -572,7 +588,7 @@ timestretch_buf ( \
           stereo_ports->r->buf[current_cycle_frame] *=
             fade_in;
         }
-      /* if inside fade out */
+      /* if inside object fade out */
       if (current_local_frame >=
             r_obj->fade_out_pos.frames)
         {
@@ -592,6 +608,41 @@ timestretch_buf ( \
               (double)
               num_frames_in_fade_out_area,
               &r_obj->fade_out_opts, 0);
+
+          stereo_ports->l->buf[current_cycle_frame] *=
+            fade_out;
+          stereo_ports->r->buf[current_cycle_frame] *=
+            fade_out;
+        }
+      /* if inside builtin fade in, apply builtin
+       * fade in */
+      if (current_local_frame >= 0 &&
+          current_local_frame < BUILTIN_FADE_FRAMES)
+        {
+          float fade_in =
+            (float) current_local_frame /
+            (float) BUILTIN_FADE_FRAMES;
+
+          stereo_ports->l->buf[current_cycle_frame] *=
+            fade_in;
+          stereo_ports->r->buf[current_cycle_frame] *=
+            fade_in;
+        }
+      /* if inside builtin fade out, apply builtin
+       * fade out */
+      if (current_local_frame >=
+            local_builtin_fade_out_start_frames)
+        {
+          signed_frame_t num_frames_from_fade_out_start =
+            current_local_frame -
+              local_builtin_fade_out_start_frames;
+          z_return_if_fail_cmp (
+            num_frames_from_fade_out_start, <=,
+            BUILTIN_FADE_FRAMES);
+          float fade_out =
+            1.f -
+            ((float) num_frames_from_fade_out_start /
+             (float) BUILTIN_FADE_FRAMES);
 
           stereo_ports->l->buf[current_cycle_frame] *=
             fade_out;
