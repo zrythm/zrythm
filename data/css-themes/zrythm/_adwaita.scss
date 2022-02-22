@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -182,6 +182,54 @@ indicatorbin {
     background: $z_purple;
 
     > label { color: white; }
+  }
+}
+
+/*****************
+ * AdwStatusPage *
+ *****************/
+
+statuspage {
+  > scrolledwindow > viewport > box {
+    margin: 36px 12px;
+    border-spacing: 36px;
+
+    > clamp > box {
+      border-spacing: 12px;
+
+      > .icon {
+        -gtk-icon-size: 128px;
+
+        color: gtkalpha(currentColor, $dim_label_opacity);
+
+        &:disabled {
+          opacity: $disabled_opacity;
+        }
+
+        &:not(:last-child) {
+          margin-bottom: 24px;
+        }
+      }
+    }
+  }
+
+  &.compact > scrolledwindow > viewport > box {
+    margin: 24px 12px;
+    border-spacing: 24px;
+
+    > clamp > box {
+      > .icon {
+        -gtk-icon-size: 96px;
+
+        &:not(:last-child) {
+          margin-bottom: 12px;
+        }
+      }
+
+      > .title {
+        font-size: 18pt;
+      }
+    }
   }
 }
 
