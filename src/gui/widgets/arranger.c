@@ -2652,6 +2652,7 @@ on_drag_begin_handle_hit_object (
           SET_ACTION (AUDITIONING);
           break;
         case TOOL_SELECT_NORMAL:
+        case TOOL_SELECT_STRETCH:
           if (is_fade_in_point)
             SET_ACTION (RESIZING_L_FADE);
           else if (is_fade_out_point)
@@ -2659,11 +2660,31 @@ on_drag_begin_handle_hit_object (
           else if (is_resize_l && is_resize_loop)
             SET_ACTION (RESIZING_L_LOOP);
           else if (is_resize_l)
-            SET_ACTION (RESIZING_L);
+            {
+              if (P_TOOL == TOOL_SELECT_NORMAL)
+                {
+                  SET_ACTION (RESIZING_L);
+                }
+              else if (P_TOOL ==
+                         TOOL_SELECT_STRETCH)
+                {
+                  SET_ACTION (STRETCHING_L);
+                }
+            }
           else if (is_resize_r && is_resize_loop)
             SET_ACTION (RESIZING_R_LOOP);
           else if (is_resize_r)
-            SET_ACTION (RESIZING_R);
+            {
+              if (P_TOOL == TOOL_SELECT_NORMAL)
+                {
+                  SET_ACTION (RESIZING_R);
+                }
+              else if (P_TOOL ==
+                         TOOL_SELECT_STRETCH)
+                {
+                  SET_ACTION (STRETCHING_R);
+                }
+            }
           else if (is_rename)
             SET_ACTION (RENAMING);
           else if (show_cut_lines)
@@ -2672,14 +2693,6 @@ on_drag_begin_handle_hit_object (
             SET_ACTION (RESIZING_UP_FADE_IN);
           else if (is_fade_out_outer)
             SET_ACTION (RESIZING_UP_FADE_OUT);
-          else
-            SET_ACTION (STARTING_MOVING);
-          break;
-        case TOOL_SELECT_STRETCH:
-          if (is_resize_l)
-            SET_ACTION (STRETCHING_L);
-          else if (is_resize_r)
-            SET_ACTION (STRETCHING_R);
           else
             SET_ACTION (STARTING_MOVING);
           break;
