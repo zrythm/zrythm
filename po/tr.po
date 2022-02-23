@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the zrythm package.
 # Tarık Yıldız <tariky113@gmail.com>, 2021.
 # Burak Hüseyin Ekseli <burakekseli@yandex.com>, 2021.
-# Oğuz Ersen <oguzersen@protonmail.com>, 2021.
+# Oğuz Ersen <oguzersen@protonmail.com>, 2021, 2022.
 # benjamin <itsbenx@outlook.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-02-15 17:23+0000\n"
-"PO-Revision-Date: 2022-01-22 02:54+0000\n"
-"Last-Translator: benjamin <itsbenx@outlook.com>\n"
+"PO-Revision-Date: 2022-02-18 17:36+0000\n"
+"Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/zrythm/tr/"
 ">\n"
 "Language: tr\n"
@@ -3283,7 +3283,7 @@ msgstr ""
 #. TRANSLATORS: Home directory
 #: src/gui/backend/file_manager.c:57
 msgid "Home"
-msgstr "Ev"
+msgstr "Ana sayfa"
 
 #. TRANSLATORS: Desktop directory
 #: src/gui/backend/file_manager.c:68
