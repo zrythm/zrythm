@@ -361,4 +361,10 @@
 #define Z_F_RESIZABLE 1
 #define Z_F_NOT_RESIZABLE 0
 
+#define Z_F_LEFT 1
+#define Z_F_NOT_LEFT 0
+
+#define Z_F_DURING_UI_ACTION 1
+#define Z_F_NOT_DURING_UI_ACTION 0
+
 #endif

@@ -287,6 +287,10 @@ region_stretch (
 {
   g_return_if_fail (IS_REGION (self));
 
+  g_debug (
+    "stretching region %p (ratio %f)",
+    self, ratio);
+
   self->stretching = true;
   ArrangerObject * obj = (ArrangerObject *) self;
 

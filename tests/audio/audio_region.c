@@ -25,6 +25,7 @@
 #include "audio/transport.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/math.h"
 #include "utils/io.h"
 #include "zrythm.h"
 
@@ -83,14 +84,27 @@ test_fill_stereo_ports (void)
   g_assert_true (
     audio_frames_empty (
       &ports->r->buf[0], 20));
-  g_assert_true (
-    audio_frames_equal (
-      &r_clip->ch_frames[0][0],
-      &ports->l->buf[20], 80, 0.00001f));
-  g_assert_true (
-    audio_frames_equal (
-      &r_clip->ch_frames[1][0],
-      &ports->r->buf[20], 80, 0.00001f));
+  for (int i = 0; i < 80; i++)
+    {
+      float adj_multiplier =
+        MIN (
+          1.f,
+          ((float) i /
+           (float)
+           AUDIO_REGION_BUILTIN_FADE_FRAMES));
+      float adj_clip_frame_l =
+        r_clip->ch_frames[0][i] * adj_multiplier;
+      float adj_clip_frame_r =
+        r_clip->ch_frames[1][i] * adj_multiplier;
+      g_assert_true (
+        math_floats_equal_epsilon (
+          adj_clip_frame_l,
+          ports->l->buf[20 + i], 0.00001f));
+      g_assert_true (
+        math_floats_equal_epsilon (
+          adj_clip_frame_r,
+          ports->l->buf[20 + i], 0.00001f));
+    }
 
   object_free_w_func_and_null (
     stereo_ports_free, ports);

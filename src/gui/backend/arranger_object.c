@@ -571,8 +571,7 @@ arranger_object_is_position_valid (
           position_is_after_or_equal (
             pos, &POSITION_START)
           &&
-          pos->frames >=
-            ARRANGER_OBJECT_MIN_FADE_FRAMES
+          pos->frames >= 0
           &&
           position_is_before (pos, &local_end_pos);
       }
@@ -587,11 +586,7 @@ arranger_object_is_position_valid (
           position_is_after_or_equal (
             pos, &POSITION_START)
           &&
-          local_end_pos.frames >=
-            pos->frames +
-              ARRANGER_OBJECT_MIN_FADE_FRAMES
-          &&
-          position_is_before (pos, &local_end_pos);
+          position_is_before_or_equal (pos, &local_end_pos);
       }
       break;
     default:
@@ -1685,8 +1680,6 @@ arranger_object_resize (
                       /* stretch contents */
                       double stretch_ratio =
                         new_length / before_length;
-                      g_message ("resizing with %f",
-                        stretch_ratio);
                       region_stretch (
                         region, stretch_ratio);
                     }
@@ -1930,40 +1923,82 @@ arranger_object_validate (
   if (!arranger_object_validate_pos (
          self, &self->pos,
          ARRANGER_OBJECT_POSITION_TYPE_START))
-    return false;
+    {
+      if (ZRYTHM_TESTING)
+        {
+          g_message ("invalid start pos");
+        }
+      return false;
+    }
 
   if (arranger_object_type_has_length (self->type))
     {
       if (!arranger_object_validate_pos (
              self, &self->end_pos,
              ARRANGER_OBJECT_POSITION_TYPE_END))
-        return false;
+        {
+          if (ZRYTHM_TESTING)
+            {
+              g_message ("invalid end pos");
+            }
+          return false;
+        }
     }
   if (arranger_object_type_can_loop (self->type))
     {
       if (!arranger_object_validate_pos (
              self, &self->loop_start_pos,
              ARRANGER_OBJECT_POSITION_TYPE_LOOP_START))
-        return false;
+        {
+          if (ZRYTHM_TESTING)
+            {
+              g_message ("invalid loop start pos");
+            }
+          return false;
+        }
       if (!arranger_object_validate_pos (
              self, &self->loop_end_pos,
              ARRANGER_OBJECT_POSITION_TYPE_LOOP_END))
-        return false;
+        {
+          if (ZRYTHM_TESTING)
+            {
+              g_message ("invalid loop end pos");
+            }
+          return false;
+        }
       if (!arranger_object_validate_pos (
              self, &self->clip_start_pos,
              ARRANGER_OBJECT_POSITION_TYPE_CLIP_START))
-        return false;
+        {
+          if (ZRYTHM_TESTING)
+            {
+              g_message ("invalid clip start pos");
+            }
+          return false;
+        }
     }
   if (arranger_object_can_fade (self))
     {
       if (!arranger_object_validate_pos (
              self, &self->fade_in_pos,
              ARRANGER_OBJECT_POSITION_TYPE_FADE_IN))
-        return false;
+        {
+          if (ZRYTHM_TESTING)
+            {
+              g_message ("invalid fade in pos");
+            }
+          return false;
+        }
       if (!arranger_object_validate_pos (
              self, &self->fade_out_pos,
              ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT))
-        return false;
+        {
+          if (ZRYTHM_TESTING)
+            {
+              g_message ("invalid fade out pos");
+            }
+          return false;
+        }
     }
 
   return true;

@@ -25,6 +25,7 @@
 #include "audio/audio_track.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/math.h"
 #include "zrythm.h"
 
 #include "tests/helpers/project.h"
@@ -113,10 +114,23 @@ test_fill_when_region_starts_on_loop_end (void)
     track, &time_nfo, NULL, ports);
   for (int j = 0; j < nframes; j++)
     {
-      g_assert_true (
-        fabsf (ports->l->buf[j]) > 0.0000001f);
-      g_assert_true (
-        fabsf (ports->r->buf[j]) > 0.0000001f);
+      /* take into account builtin fades */
+      if (j == 0)
+        {
+          g_assert_true (
+            math_floats_equal (
+              ports->l->buf[j], 0.f));
+          g_assert_true (
+            math_floats_equal (
+              ports->r->buf[j], 0.f));
+        }
+      else
+        {
+          g_assert_true (
+            fabsf (ports->l->buf[j]) > 0.0000001f);
+          g_assert_true (
+            fabsf (ports->r->buf[j]) > 0.0000001f);
+        }
     }
 
   object_free_w_func_and_null (

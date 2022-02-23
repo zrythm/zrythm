@@ -774,7 +774,8 @@ snap_region_r (
       if (is_valid)
         {
           arranger_object_resize (
-            r_obj, false, type, diff, true);
+            r_obj, Z_F_NOT_LEFT, type, diff,
+            Z_F_DURING_UI_ACTION);
 
           /* if creating also set the loop points
            * appropriately */

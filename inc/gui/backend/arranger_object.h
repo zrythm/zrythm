@@ -58,8 +58,6 @@ typedef enum ArrangerSelectionsActionEditType
 #define IS_ARRANGER_OBJECT_AND_NONNULL(x) \
   (x && IS_ARRANGER_OBJECT (x))
 
-#define ARRANGER_OBJECT_MIN_FADE_FRAMES 10
-
 /**
  * Flag used in some functions.
  */

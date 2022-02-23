@@ -517,10 +517,6 @@ timestretch_buf ( \
     &stereo_ports->r->buf[time_nfo->local_offset],
     &rbuf_after_ts[0], time_nfo->nframes);
 
-  /* number of frames for built-in fade (additional
-   * to object fades */
-#define BUILTIN_FADE_FRAMES 10
-
   /* apply fades */
   const signed_frame_t num_frames_in_fade_in_area =
     r_obj->fade_in_pos.frames;
@@ -530,7 +526,7 @@ timestretch_buf ( \
        r_obj->pos.frames);
   const signed_frame_t local_builtin_fade_out_start_frames =
     r_obj->end_pos.frames -
-      (BUILTIN_FADE_FRAMES + r_obj->pos.frames);
+      (AUDIO_REGION_BUILTIN_FADE_FRAMES + r_obj->pos.frames);
   for (nframes_t j = 0; j < time_nfo->nframes; j++)
     {
       const unsigned_frame_t current_cycle_frame =
@@ -549,7 +545,7 @@ timestretch_buf ( \
             current_local_frame >=
               MAX (
                 r_obj->fade_in_pos.frames,
-                BUILTIN_FADE_FRAMES)
+                AUDIO_REGION_BUILTIN_FADE_FRAMES)
             &&
             current_local_frame <
               MIN (
@@ -617,11 +613,11 @@ timestretch_buf ( \
       /* if inside builtin fade in, apply builtin
        * fade in */
       if (current_local_frame >= 0 &&
-          current_local_frame < BUILTIN_FADE_FRAMES)
+          current_local_frame < AUDIO_REGION_BUILTIN_FADE_FRAMES)
         {
           float fade_in =
             (float) current_local_frame /
-            (float) BUILTIN_FADE_FRAMES;
+            (float) AUDIO_REGION_BUILTIN_FADE_FRAMES;
 
           stereo_ports->l->buf[current_cycle_frame] *=
             fade_in;
@@ -638,11 +634,11 @@ timestretch_buf ( \
               local_builtin_fade_out_start_frames;
           z_return_if_fail_cmp (
             num_frames_from_fade_out_start, <=,
-            BUILTIN_FADE_FRAMES);
+            AUDIO_REGION_BUILTIN_FADE_FRAMES);
           float fade_out =
             1.f -
             ((float) num_frames_from_fade_out_start /
-             (float) BUILTIN_FADE_FRAMES);
+             (float) AUDIO_REGION_BUILTIN_FADE_FRAMES);
 
           stereo_ports->l->buf[current_cycle_frame] *=
             fade_out;

@@ -44,8 +44,16 @@ typedef struct StereoPorts StereoPorts;
  * @{
  */
 
+#if 0
 /** Default fade to inject when playing back. */
 #define AUDIO_REGION_DEFAULT_FADE_MS 1
+#endif
+
+/**
+ * Number of frames for built-in fade (additional
+ * to object fades).
+ */
+#define AUDIO_REGION_BUILTIN_FADE_FRAMES 10
 
 /**
  * Creates a region for audio data.
