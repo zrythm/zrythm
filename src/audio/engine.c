@@ -293,7 +293,7 @@ engine_process_events (
   if (self->activated && num_events > 0)
     {
       /* pause engine */
-      engine_wait_for_pause (self, &state, F_FORCE);
+      engine_wait_for_pause (self, &state, Z_F_FORCE);
     }
 
   /*g_debug ("waited");*/

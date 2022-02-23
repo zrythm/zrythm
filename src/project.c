@@ -1713,7 +1713,7 @@ project_save (
   if (AUDIO_ENGINE->activated)
     {
       engine_wait_for_pause (
-        AUDIO_ENGINE, &state, F_NO_FORCE);
+        AUDIO_ENGINE, &state, Z_F_NO_FORCE);
       engine_paused = true;
     }
 

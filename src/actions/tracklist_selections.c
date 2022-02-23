@@ -968,7 +968,7 @@ create_track (
 
           /* remove temporary data */
           io_remove (full_path);
-          io_rmdir (dir, F_NO_FORCE);
+          io_rmdir (dir, Z_F_NO_FORCE);
           g_free (dir);
           g_free (full_path);
           g_free (data);

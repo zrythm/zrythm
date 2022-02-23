@@ -396,7 +396,7 @@ lv2_state_apply_state (
         "plugin '%s' does not support safe "
         "restore, pausing engine", pl_str);
       engine_wait_for_pause (
-        AUDIO_ENGINE, &engine_state, F_NO_FORCE);
+        AUDIO_ENGINE, &engine_state, Z_F_NO_FORCE);
       g_return_if_fail (!AUDIO_ENGINE->run);
       engine_paused = true;
     }

@@ -27,6 +27,7 @@
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/flags.h"
 #include "utils/objects.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -225,8 +226,9 @@ do_or_undo (
           /* doesn't work */
           false)
         {
-          transport_stretch_audio_regions (
-            TRANSPORT, NULL, true, time_ratio);
+          transport_stretch_regions (
+            TRANSPORT, NULL, true, time_ratio,
+            Z_F_NO_FORCE);
         }
     }
 

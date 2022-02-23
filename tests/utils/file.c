@@ -45,7 +45,7 @@ test_symlink (void)
   g_assert_cmpint (
     file_symlink (filepath, target), ==, 0);
   io_remove (target);
-  io_rmdir (tmp_dir, F_NO_FORCE);
+  io_rmdir (tmp_dir, Z_F_NO_FORCE);
 }
 
 int

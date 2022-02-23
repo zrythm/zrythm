@@ -445,22 +445,25 @@ transport_prepare_audio_regions_for_stretch (
   TimelineSelections * sel);
 
 /**
- * Stretches audio regions.
+ * Stretches regions.
  *
- * @param selections If NULL, all audio regions
+ * @param selections If NULL, all regions
  *   are used. If non-NULL, only the regions in the
  *   selections are used.
  * @param with_fixed_ratio Stretch all regions with
  *   a fixed ratio. If this is off, the current
  *   region length and \ref ZRegion.before_length
  *   will be used to calculate the ratio.
+ * @param force Force stretching, regardless of
+ *   musical mode.
  */
 void
-transport_stretch_audio_regions (
+transport_stretch_regions (
   Transport *          self,
   TimelineSelections * sel,
   bool                 with_fixed_ratio,
-  double               time_ratio);
+  double               time_ratio,
+  bool                 force);
 
 void
 transport_set_punch_mode_enabled (

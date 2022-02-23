@@ -4670,8 +4670,9 @@ on_drag_end_timeline (
           obj->end_pos.ticks -
           obj->transient->end_pos.ticks;
         /* stretch now */
-        transport_stretch_audio_regions (
-          TRANSPORT, TL_SELECTIONS, false, 0.0);
+        transport_stretch_regions (
+          TRANSPORT, TL_SELECTIONS, false, 0.0,
+          Z_F_FORCE);
 
         GError * err = NULL;
         bool ret =

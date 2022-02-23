@@ -848,7 +848,7 @@ exporter_export (ExportSettings * info)
   /* pause engine */
   EngineState state;
   engine_wait_for_pause (
-    AUDIO_ENGINE, &state, F_NO_FORCE);
+    AUDIO_ENGINE, &state, Z_F_NO_FORCE);
 
   g_message ("engine paused");
 

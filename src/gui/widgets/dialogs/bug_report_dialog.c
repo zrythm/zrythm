@@ -589,7 +589,7 @@ on_button_send_automatically_clicked (
     }
   if (log_file_tmpdir)
     {
-      io_rmdir (log_file_tmpdir, F_NO_FORCE);
+      io_rmdir (log_file_tmpdir, Z_F_NO_FORCE);
       g_free_and_null (log_file_tmpdir);
     }
   if (screenshot_path)
@@ -599,7 +599,7 @@ on_button_send_automatically_clicked (
     }
   if (screenshot_tmpdir)
     {
-      io_rmdir (screenshot_tmpdir, F_NO_FORCE);
+      io_rmdir (screenshot_tmpdir, Z_F_NO_FORCE);
       g_free_and_null (screenshot_tmpdir);
     }
 

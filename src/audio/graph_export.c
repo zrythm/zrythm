@@ -498,7 +498,7 @@ graph_export_as_simple (
   /* pause engine */
   EngineState state;
   engine_wait_for_pause (
-    AUDIO_ENGINE, &state, F_FORCE);
+    AUDIO_ENGINE, &state, Z_F_FORCE);
 
   Graph * graph = graph_new (ROUTER);
   graph_setup (graph, false, false);

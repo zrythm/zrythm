@@ -258,7 +258,7 @@ undoable_action_do (
       /* stop engine and give it some time to stop
        * running */
       engine_wait_for_pause (
-        AUDIO_ENGINE, &state, F_NO_FORCE);
+        AUDIO_ENGINE, &state, Z_F_NO_FORCE);
     }
 
   int ret = 0;
@@ -357,7 +357,7 @@ undoable_action_undo (
       /* stop engine and give it some time to stop
        * running */
       engine_wait_for_pause (
-        AUDIO_ENGINE, &state, F_NO_FORCE);
+        AUDIO_ENGINE, &state, Z_F_NO_FORCE);
     }
 
   int ret = 0;

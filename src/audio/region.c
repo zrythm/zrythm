@@ -323,10 +323,42 @@ region_stretch (
             mn_obj, &tmp);
         }
       break;
+    case REGION_TYPE_AUTOMATION:
+      for (int i = 0; i < self->num_aps; i++)
+        {
+          AutomationPoint * ap =
+            self->aps[i];
+          ArrangerObject * ap_obj =
+            (ArrangerObject *) ap;
+
+          /* set pos */
+          double before_ticks = ap_obj->pos.ticks;
+          double new_ticks = before_ticks * ratio;
+          Position tmp;
+          position_from_ticks (&tmp, new_ticks);
+          arranger_object_pos_setter (
+            ap_obj, &tmp);
+        }
+      break;
+    case REGION_TYPE_CHORD:
+      for (int i = 0; i < self->num_chord_objects;
+           i++)
+        {
+          ChordObject * co = self->chord_objects[i];
+          ArrangerObject * co_obj =
+            (ArrangerObject *) co;
+
+          /* set pos */
+          double before_ticks = co_obj->pos.ticks;
+          double new_ticks = before_ticks * ratio;
+          Position tmp;
+          position_from_ticks (&tmp, new_ticks);
+          arranger_object_pos_setter (
+            co_obj, &tmp);
+        }
+      break;
     case REGION_TYPE_AUDIO:
       {
-        g_return_if_fail (
-          router_is_processing_thread (ROUTER));
         AudioClip * clip =
           audio_region_get_clip (self);
         int new_clip_id =

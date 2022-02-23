@@ -555,7 +555,7 @@ queue_file_or_chord_preset (
               F_NOT_BACKUP);
           if (state_dir)
             {
-              io_rmdir (state_dir, F_FORCE);
+              io_rmdir (state_dir, Z_F_FORCE);
               g_free (state_dir);
             }
         }

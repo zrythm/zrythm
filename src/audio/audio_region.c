@@ -25,8 +25,12 @@
 #include "audio/stretcher.h"
 #include "audio/tempo_track.h"
 #include "audio/track.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/main_notebook.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/region.h"
+#include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_panel.h"
 #include "project.h"
 #include "utils/audio.h"
 #include "utils/debug.h"
@@ -325,6 +329,27 @@ audio_region_fill_stereo_ports (
   g_return_if_fail (clip);
   Track * track =
     arranger_object_get_track (r_obj);
+
+  /* if timestretching in the timeline, skip
+   * processing */
+  if (G_UNLIKELY (
+        ZRYTHM_HAVE_UI && MW_TIMELINE
+        &&
+        MW_TIMELINE->action ==
+          UI_OVERLAY_ACTION_STRETCHING_R))
+    {
+      dsp_fill (
+        &stereo_ports->l->buf[
+          time_nfo->local_offset],
+        DENORMAL_PREVENTION_VAL,
+        time_nfo->nframes);
+      dsp_fill (
+        &stereo_ports->r->buf[
+          time_nfo->local_offset],
+        DENORMAL_PREVENTION_VAL,
+        time_nfo->nframes);
+      return;
+    }
 
   /* restretch if necessary */
   Position g_start_pos;
