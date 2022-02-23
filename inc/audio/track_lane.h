@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -214,6 +214,48 @@ void
 track_lane_rename_with_action (
   TrackLane *  self,
   const char * new_name);
+
+/**
+ * Sets track lane soloed, updates UI and optionally
+ * adds the action to the undo stack.
+ *
+ * @param trigger_undo Create and perform an
+ *   undoable action.
+ * @param fire_events Fire UI events.
+ */
+NONNULL
+void
+track_lane_set_soloed (
+  TrackLane * self,
+  bool        solo,
+  bool        trigger_undo,
+  bool        fire_events);
+
+NONNULL
+bool
+track_lane_get_soloed (
+  const TrackLane * const self);
+
+/**
+ * Sets track lane muted, updates UI and optionally
+ * adds the action to the undo stack.
+ *
+ * @param trigger_undo Create and perform an
+ *   undoable action.
+ * @param fire_events Fire UI events.
+ */
+NONNULL
+void
+track_lane_set_muted (
+  TrackLane * self,
+  bool        mute,
+  bool        trigger_undo,
+  bool        fire_events);
+
+NONNULL
+bool
+track_lane_get_muted (
+  const TrackLane * const self);
 
 const char *
 track_lane_get_name (

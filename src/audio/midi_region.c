@@ -1127,7 +1127,7 @@ midi_region_fill_midi_events (
           mn = self->midi_notes[i];
           mn_obj = (ArrangerObject *) mn;
         }
-      if (arranger_object_get_muted (mn_obj))
+      if (arranger_object_get_muted (mn_obj, false))
         {
           continue;
         }

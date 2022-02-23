@@ -179,6 +179,7 @@ tracklist_selections_action_new (
   PluginSetting *               pl_setting,
   SupportedFile *               file_descr,
   int                           track_pos,
+  int                           lane_pos,
   const Position *              pos,
   int                           num_tracks,
   EditTracksActionType          edit_type,
@@ -264,6 +265,7 @@ tracklist_selections_action_new (
     }
   self->track_type = track_type;
   self->track_pos = track_pos;
+  self->lane_pos = lane_pos;
   if (type == TRACKLIST_SELECTIONS_ACTION_PIN)
     {
       self->track_pos =
@@ -581,6 +583,7 @@ tracklist_selections_action_clone (
         src->pl_setting, F_NO_VALIDATE);
   self->is_empty = src->is_empty;
   self->track_pos = src->track_pos;
+  self->lane_pos = src->lane_pos;
   self->have_pos = src->have_pos;
   self->pos = src->pos;
 
@@ -707,6 +710,7 @@ tracklist_selections_action_perform (
   PluginSetting *               pl_setting,
   SupportedFile *               file_descr,
   int                           track_pos,
+  int                           lane_pos,
   const Position *              pos,
   int                           num_tracks,
   EditTracksActionType          edit_type,
@@ -722,10 +726,10 @@ tracklist_selections_action_perform (
     tracklist_selections_action_new, error,
     type, tls_before, tls_after,
     port_connections_mgr, track, track_type,
-    pl_setting, file_descr, track_pos, pos,
-    num_tracks, edit_type, ival_after, color_new,
-    val_before, val_after, new_txt, already_edited,
-    error);
+    pl_setting, file_descr, track_pos, lane_pos,
+    pos, num_tracks, edit_type, ival_after,
+    color_new, val_before, val_after, new_txt,
+    already_edited, error);
 }
 
 /**
@@ -1901,6 +1905,23 @@ do_or_undo_edit (
               self->ival_before[i] = soloed;
             }
           break;
+        case EDIT_TRACK_ACTION_TYPE_SOLO_LANE:
+          {
+            TrackLane * lane =
+              track->lanes[self->lane_pos];
+            int soloed =
+              track_lane_get_soloed (lane);
+            track_lane_set_soloed (
+              lane,
+              _do
+              ? self->ival_after
+              : self->ival_before[i],
+              F_NO_TRIGGER_UNDO,
+              F_NO_PUBLISH_EVENTS);
+
+              self->ival_before[i] = soloed;
+          }
+          break;
         case EDIT_TRACK_ACTION_TYPE_MUTE:
           if (track_type_has_channel (track->type))
             {
@@ -1916,6 +1937,23 @@ do_or_undo_edit (
 
               self->ival_before[i] = muted;
             }
+          break;
+        case EDIT_TRACK_ACTION_TYPE_MUTE_LANE:
+          {
+            TrackLane * lane =
+              track->lanes[self->lane_pos];
+            int muted =
+              track_lane_get_muted (lane);
+            track_lane_set_muted (
+              lane,
+              _do
+              ? self->ival_after
+              : self->ival_before[i],
+              F_NO_TRIGGER_UNDO,
+              F_NO_PUBLISH_EVENTS);
+
+              self->ival_before[i] = muted;
+          }
           break;
         case EDIT_TRACK_ACTION_TYPE_LISTEN:
           if (track_type_has_channel (track->type))
@@ -2067,7 +2105,7 @@ do_or_undo_edit (
         case EDIT_TRACK_ACTION_TYPE_RENAME_LANE:
           {
             TrackLane * lane =
-              track->lanes[self->ival_after];
+              track->lanes[self->lane_pos];
             char * cur_name =
               g_strdup (lane->name);
             track_lane_rename (
@@ -2269,6 +2307,13 @@ tracklist_selections_action_stringize (
               else
                 return g_strdup (
                   _("Unsolo Track"));
+            case EDIT_TRACK_ACTION_TYPE_SOLO_LANE:
+              if (self->ival_after)
+                return g_strdup (
+                  _("Solo Lane"));
+              else
+                return g_strdup (
+                  _("Unsolo Lane"));
             case EDIT_TRACK_ACTION_TYPE_MUTE:
               if (self->ival_after)
                 return g_strdup (
@@ -2276,6 +2321,13 @@ tracklist_selections_action_stringize (
               else
                 return g_strdup (
                   _("Unmute Track"));
+            case EDIT_TRACK_ACTION_TYPE_MUTE_LANE:
+              if (self->ival_after)
+                return g_strdup (
+                  _("Mute Lane"));
+              else
+                return g_strdup (
+                  _("Unmute Lane"));
             case EDIT_TRACK_ACTION_TYPE_LISTEN:
               if (self->ival_after)
                 return g_strdup (

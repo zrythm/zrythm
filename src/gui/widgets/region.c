@@ -370,7 +370,7 @@ draw_midi_region (
         (ArrangerObject *) mn;
 
       /* note muted */
-      if (arranger_object_get_muted (mn_obj))
+      if (arranger_object_get_muted (mn_obj, false))
         continue;
 
       /* note not playable */
@@ -1590,7 +1590,7 @@ region_draw (
     region_is_selected (self),
     /* FIXME */
     false,
-    arranger_object_get_muted (obj) ||
+    arranger_object_get_muted (obj, true) ||
       track->frozen);
 
   GdkRectangle draw_rect;

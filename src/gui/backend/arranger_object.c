@@ -259,6 +259,32 @@ set_to_midi_note_object (
 }
 
 /**
+ * Gets the mute status of the object.
+ *
+ * @param check_parent Whether to check parent
+ *   (parent region or parent track lane if region),
+ *   otherwise only whether this object itself is
+ *   muted is returned.
+ */
+bool
+arranger_object_get_muted (
+  ArrangerObject * self,
+  bool             check_parent)
+{
+  if (check_parent
+      && self->type == ARRANGER_OBJECT_TYPE_REGION)
+    {
+      ZRegion * region = (ZRegion *) self;
+      TrackLane * lane = region_get_lane (region);
+      g_return_val_if_fail (lane, true);
+      if (track_lane_get_muted (lane))
+        return true;
+    }
+
+  return self->muted;
+}
+
+/**
  * Sets the mute status of the object.
  */
 void

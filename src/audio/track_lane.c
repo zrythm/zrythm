@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -136,6 +136,110 @@ track_lane_rename_with_action (
   const char * new_name)
 {
   track_lane_rename (self, new_name, true);
+}
+
+/**
+ * Sets track lane soloed, updates UI and optionally
+ * adds the action to the undo stack.
+ *
+ * @param trigger_undo Create and perform an
+ *   undoable action.
+ * @param fire_events Fire UI events.
+ */
+void
+track_lane_set_soloed (
+  TrackLane * self,
+  bool        solo,
+  bool        trigger_undo,
+  bool        fire_events)
+{
+  if (trigger_undo)
+    {
+      GError * err = NULL;
+      bool ret =
+        tracklist_selections_action_perform_edit_solo_lane (
+          self, solo, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Cannot set track lane soloed"));
+          return;
+        }
+    }
+  else
+    {
+      g_debug (
+        "setting lane '%s' soloed to %d",
+        self->name, solo);
+      self->solo = solo;
+    }
+
+  if (fire_events)
+    {
+      /* TODO use more specific event */
+      EVENTS_PUSH (
+        ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
+    }
+}
+
+bool
+track_lane_get_soloed (
+  const TrackLane * const self)
+{
+  return self->solo;
+}
+
+/**
+ * Sets track lane muted, updates UI and optionally
+ * adds the action to the undo stack.
+ *
+ * @param trigger_undo Create and perform an
+ *   undoable action.
+ * @param fire_events Fire UI events.
+ */
+void
+track_lane_set_muted (
+  TrackLane * self,
+  bool        mute,
+  bool        trigger_undo,
+  bool        fire_events)
+{
+  if (trigger_undo)
+    {
+      GError * err = NULL;
+      bool ret =
+        tracklist_selections_action_perform_edit_mute_lane (
+          self, mute, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Cannot set track lane muted"));
+          return;
+        }
+    }
+  else
+    {
+      g_debug (
+        "setting lane '%s' muted to %d",
+        self->name, mute);
+      self->mute = mute;
+    }
+
+  if (fire_events)
+    {
+      /* TODO use more specific event */
+      EVENTS_PUSH (
+        ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
+    }
+}
+
+bool
+track_lane_get_muted (
+  const TrackLane * const self)
+{
+  return self->mute;
 }
 
 const char *

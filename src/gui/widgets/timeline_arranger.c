@@ -1196,7 +1196,8 @@ timeline_arranger_widget_show_context_menu (
                   audio_regions_submenu));
             }
 
-          if (arranger_object_get_muted (obj))
+          if (arranger_object_get_muted (
+                obj, false))
             {
               menuitem =
                 CREATE_UNMUTE_MENU_ITEM (

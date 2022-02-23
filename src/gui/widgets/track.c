@@ -1050,7 +1050,7 @@ show_context_menu (
 }
 
 static void
-on_right_click (
+on_right_click_pressed (
   GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
@@ -1113,7 +1113,7 @@ show_edit_name_popover (
 }
 
 static void
-multipress_pressed (
+click_pressed (
   GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
@@ -1165,7 +1165,7 @@ multipress_pressed (
 }
 
 static void
-multipress_released (
+click_released (
   GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
@@ -1275,10 +1275,25 @@ multipress_released (
       else if (cb->owner_type ==
                  CUSTOM_BUTTON_WIDGET_OWNER_LANE)
         {
-          /*TrackLane * lane =*/
-            /*(TrackLane *) cb->owner;*/
+          TrackLane * lane =
+            (TrackLane *) cb->owner;
 
-          /* TODO */
+          if (TRACK_CB_ICON_IS (SOLO))
+            {
+              track_lane_set_soloed (
+                lane,
+                !track_lane_get_soloed (lane),
+                F_TRIGGER_UNDO,
+                F_PUBLISH_EVENTS);
+            }
+          else if (TRACK_CB_ICON_IS (MUTE))
+            {
+              track_lane_set_muted (
+                lane,
+                !track_lane_get_muted (lane),
+                F_TRIGGER_UNDO,
+                F_PUBLISH_EVENTS);
+            }
         }
       else if (cb->owner_type ==
                  CUSTOM_BUTTON_WIDGET_OWNER_AT)
@@ -2247,19 +2262,19 @@ track_widget_init (TrackWidget * self)
     GTK_WIDGET (self->canvas),
     GTK_EVENT_CONTROLLER (self->drag));
 
-  self->multipress =
+  self->click =
     GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_widget_add_controller(
     GTK_WIDGET (self->canvas),
-    GTK_EVENT_CONTROLLER (self->multipress));
-  self->right_mouse_mp =
+    GTK_EVENT_CONTROLLER (self->click));
+  self->right_click =
     GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (self->right_mouse_mp),
+    GTK_GESTURE_SINGLE (self->right_click),
     GDK_BUTTON_SECONDARY);
   gtk_widget_add_controller(
     GTK_WIDGET (self->canvas),
-    GTK_EVENT_CONTROLLER (self->right_mouse_mp));
+    GTK_EVENT_CONTROLLER (self->right_click));
 
   GtkEventControllerMotion * motion_controller =
     GTK_EVENT_CONTROLLER_MOTION (
@@ -2278,14 +2293,14 @@ track_widget_init (TrackWidget * self)
     GTK_EVENT_CONTROLLER (motion_controller));
 
   g_signal_connect (
-    G_OBJECT (self->multipress), "pressed",
-    G_CALLBACK (multipress_pressed), self);
+    G_OBJECT (self->click), "pressed",
+    G_CALLBACK (click_pressed), self);
   g_signal_connect (
-    G_OBJECT (self->multipress), "released",
-    G_CALLBACK (multipress_released), self);
+    G_OBJECT (self->click), "released",
+    G_CALLBACK (click_released), self);
   g_signal_connect (
-    G_OBJECT (self->right_mouse_mp), "pressed",
-    G_CALLBACK (on_right_click), self);
+    G_OBJECT (self->right_click), "pressed",
+    G_CALLBACK (on_right_click_pressed), self);
   g_signal_connect (
     G_OBJECT (self->drag), "drag-begin",
     G_CALLBACK (on_drag_begin), self);

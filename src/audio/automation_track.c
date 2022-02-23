@@ -368,7 +368,8 @@ automation_track_get_ap_before_pos (
       self, pos, ends_after);
   ArrangerObject * r_obj = (ArrangerObject *) r;
 
-  if (!r || arranger_object_get_muted (r_obj))
+  if (!r ||
+      arranger_object_get_muted (r_obj, true))
     {
       return NULL;
     }

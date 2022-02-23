@@ -486,6 +486,7 @@ track_clone (
 
   COPY_MEMBER (type);
   COPY_MEMBER (automation_visible);
+  COPY_MEMBER (lanes_visible);
   COPY_MEMBER (visible);
   COPY_MEMBER (main_height);
   COPY_MEMBER (enabled);
@@ -2894,7 +2895,8 @@ track_fill_events (
           g_return_if_fail (IS_REGION (r));
 
           /* skip region if muted */
-          if (arranger_object_get_muted (r_obj))
+          if (arranger_object_get_muted (
+                r_obj, true))
             {
               continue;
             }

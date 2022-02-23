@@ -590,13 +590,17 @@ arranger_object_print (
 
 /**
  * Gets the mute status of the object.
+ *
+ * @param check_parent Whether to check parent
+ *   (parent region or parent track lane if region),
+ *   otherwise only whether this object itself is
+ *   muted is returned.
  */
-static inline bool
+NONNULL
+bool
 arranger_object_get_muted (
-  ArrangerObject * self)
-{
-  return self->muted;
-}
+  ArrangerObject * self,
+  bool             check_parent);
 
 /**
  * Sets the mute status of the object.

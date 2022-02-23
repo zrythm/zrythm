@@ -138,10 +138,10 @@ typedef struct _TrackWidget
   GtkBox *          group_colors_box;
 
   GtkGestureDrag *  drag;
-  GtkGestureClick * multipress;
+  GtkGestureClick * click;
 
   /** Right-click gesture. */
-  GtkGestureClick * right_mouse_mp;
+  GtkGestureClick * right_click;
 
   /** If drag update was called at least once. */
   int               dragged;

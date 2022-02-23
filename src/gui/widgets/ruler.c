@@ -341,7 +341,8 @@ draw_regions (
     &color,
     MW_TIMELINE->hovered_object == region_obj,
     region_is_selected (region),
-    false, arranger_object_get_muted (region_obj));
+    false,
+    arranger_object_get_muted (region_obj, true));
   px_start =
     ui_pos_to_px_editor (
       &region_obj->pos, 1);

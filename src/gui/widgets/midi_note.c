@@ -330,7 +330,8 @@ midi_note_get_adjusted_color (
         color,
         arranger->hovered_object == obj,
         midi_note_is_selected (self),
-        false, arranger_object_get_muted (obj));
+        false,
+        arranger_object_get_muted (obj, false));
     }
   /* draw other notes */
   else
@@ -341,7 +342,8 @@ midi_note_get_adjusted_color (
         arranger->hovered_object == obj,
         midi_note_is_selected (self),
         /* FIXME */
-        false, arranger_object_get_muted (obj));
+        false,
+        arranger_object_get_muted (obj, false));
       color->alpha = 0.5;
     }
 }
