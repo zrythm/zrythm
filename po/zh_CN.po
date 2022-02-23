@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-02-15 17:23+0000\n"
-"PO-Revision-Date: 2022-02-13 08:53+0000\n"
+"PO-Revision-Date: 2022-02-18 17:36+0000\n"
 "Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -2581,14 +2581,12 @@ msgid "Loop end"
 msgstr "循环结束"
 
 #: src/gui/widgets/event_viewer.c:542
-#, fuzzy
 msgid "Fade in"
-msgstr "Ch推子输入"
+msgstr "淡入"
 
 #: src/gui/widgets/event_viewer.c:548
-#, fuzzy
 msgid "Fade out"
-msgstr "Ch推子输出"
+msgstr "淡出"
 
 #: src/gui/widgets/event_viewer.c:554 src/gui/widgets/event_viewer.c:589
 #: src/gui/widgets/event_viewer.c:652 src/gui/widgets/item_factory.c:704
@@ -7058,7 +7056,6 @@ msgid "The Zrythm contributors"
 msgstr "Zrythm 之贡献者"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:8
-#, fuzzy
 msgid "Digital audio workstation"
 msgstr "数字音频工作站"
 
