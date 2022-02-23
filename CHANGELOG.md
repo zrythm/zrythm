@@ -1,6 +1,29 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.29.1.1] - 2022-02-23
+### Added
+- Add status page for "no clip selected" in the editor
+- Add 10 samples of builtin fade in/out on all audio regions
+- Add automation/chord region stretching
+
+### Changed
+- Add developer name to appdata XML
+- Update Catalan, Japanese, Chinese (Simplified), Turkish, French translations
+- Port event viewers to GtkColumnView
+- Use separate event viewer for each editor
+- Make all arranger objects editable in event viewers
+- Require Ctrl modifier for global keypad 4 and 6 shortcuts
+
+### Fixed
+- Add missing type="desktop" to appdata XML
+- Fix appdata XML having 2 default screenshots
+- Do not allow stretching when a selected region is looped
+- Fix clicking and dragging on bottom right of regions doing stretch instead of loop in stretch mode
+
+### Removed
+- Remove duplicate arranger object position validator
+
 ## [1.0.0-alpha.29.0.7] - 2022-02-13
 ### Changed
 - Generate appdata XML using Guile script
