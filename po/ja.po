@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the zrythm package.
 # Weblate Admin <weblate.admin@zrythm.org>, 2019.
 # Acid Chicken (硫酸鶏) <root@acid-chicken.com>, 2020.
-# Alexandros Theodotou <alex@zrythm.org>, 2019, 2020, 2021.
+# Alexandros Theodotou <alex@zrythm.org>, 2019, 2020, 2021, 2022.
 # Nikita Saschenko <neketa777@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-02-15 17:23+0000\n"
-"PO-Revision-Date: 2022-01-17 09:53+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2022-02-19 21:56+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
 "Language: ja\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -220,14 +220,12 @@ msgid "External program"
 msgstr "外部プログラム"
 
 #: inc/audio/audio_function.h:82
-#, fuzzy
 msgid "Guile script"
-msgstr "デフォルトのスクリプト"
+msgstr "Guileスクリプト"
 
 #: inc/audio/audio_function.h:83
-#, fuzzy
 msgid "Custom plugin"
-msgstr "カスタム"
+msgstr "カスタムプラグイン"
 
 #: inc/audio/audio_function.h:84
 msgid "Invalid"
@@ -395,11 +393,11 @@ msgstr "半音階"
 
 #: inc/audio/scale.h:146
 msgid "Major"
-msgstr ""
+msgstr "長音階"
 
 #: inc/audio/scale.h:147
 msgid "Minor"
-msgstr ""
+msgstr "短音階"
 
 #: inc/audio/scale.h:148
 #, fuzzy
@@ -408,27 +406,27 @@ msgstr "アイオニアン（長音階）"
 
 #: inc/audio/scale.h:149
 msgid "Dorian"
-msgstr ""
+msgstr "ドリアン"
 
 #: inc/audio/scale.h:150
 msgid "Phrygian"
-msgstr ""
+msgstr "フリジアン"
 
 #: inc/audio/scale.h:151
 msgid "Lydian"
-msgstr ""
+msgstr "リディアン"
 
 #: inc/audio/scale.h:152
 msgid "Mixolydian"
-msgstr ""
+msgstr "ミクソリディアン"
 
 #: inc/audio/scale.h:153
 msgid "Aeolian"
-msgstr ""
+msgstr "エオリアン"
 
 #: inc/audio/scale.h:154
 msgid "Locrian"
-msgstr ""
+msgstr "ロクリアン"
 
 #: inc/audio/scale.h:155
 #, fuzzy
@@ -446,23 +444,23 @@ msgstr "上部パネルの表示を切り替える"
 
 #: inc/audio/scale.h:158
 msgid "Major Pentatonic"
-msgstr ""
+msgstr "メジャー・ペンタトニック"
 
 #: inc/audio/scale.h:159
 msgid "Minor Pentatonic"
-msgstr ""
+msgstr "マイナー・ペンタトニック"
 
 #: inc/audio/scale.h:160
 msgid "Octatonic Half Whole"
-msgstr ""
+msgstr "八音（半音 全音）"
 
 #: inc/audio/scale.h:161
 msgid "Octatonic Whole Half"
-msgstr ""
+msgstr "八音（全音 半音）"
 
 #: inc/audio/scale.h:162
 msgid "Acoustic"
-msgstr ""
+msgstr "アコースティック"
 
 #: inc/audio/scale.h:163
 #, fuzzy
@@ -471,15 +469,15 @@ msgstr "和声的短音階"
 
 #: inc/audio/scale.h:164
 msgid "Phrygian Dominant"
-msgstr ""
+msgstr "フリジアン・ドミナント"
 
 #: inc/audio/scale.h:165
 msgid "Major Locrian"
-msgstr ""
+msgstr "メジャー・ロクリアン"
 
 #: inc/audio/scale.h:166
 msgid "Algerian"
-msgstr ""
+msgstr "アルジェリアン"
 
 #: inc/audio/scale.h:167
 msgid "Augmented"
@@ -1972,7 +1970,7 @@ msgstr "削除"
 
 #: src/gui/widgets/plugin_browser.c:1577
 msgid "Search..."
-msgstr ""
+msgstr "検索..."
 
 #: src/gui/widgets/bot_bar.c:56 src/gui/widgets/ruler_marker.c:169
 msgid "Playhead"
@@ -1994,7 +1992,7 @@ msgstr "入力"
 #. TRANSLATORS: tap tempo
 #: src/gui/widgets/bot_bar.c:170
 msgid "Tap"
-msgstr ""
+msgstr "タップ"
 
 #: src/gui/widgets/bot_bar.c:200
 #, fuzzy
@@ -2173,7 +2171,7 @@ msgstr "ミュージカルモード"
 
 #: src/gui/widgets/timeline_arranger.c:1134
 msgid "Detect BPM"
-msgstr ""
+msgstr "BPMを検出"
 
 #: src/gui/widgets/timeline_arranger.c:1189
 #, fuzzy
@@ -2334,7 +2332,7 @@ msgstr "モニターセクション"
 
 #: src/gui/widgets/right_dock_edge.c:192 src/utils/gtk.c:1284
 msgid "Chord Preset Browser"
-msgstr ""
+msgstr "コードプリセットブラウザ"
 
 #: src/gui/widgets/right_dock_edge.c:213
 msgid "Show file browser"
@@ -3075,7 +3073,7 @@ msgstr "値を入力してください"
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:78
 #, c-format
 msgid "Name '%s' is taken. Please enter a different name"
-msgstr ""
+msgstr "「%s」が使用中です。別の名前を入力してください"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:159
 #, fuzzy
@@ -3084,7 +3082,7 @@ msgstr "プリセットを保存"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:191
 msgid "Pack"
-msgstr ""
+msgstr "パック"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:193
 #: src/actions/actions.c:3380
@@ -3233,7 +3231,7 @@ msgstr "値を入力してください"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:75
 msgid "Please fill in all fields"
-msgstr ""
+msgstr "すべての項目を入力してください"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:162
 msgid "Send via Sourcehut"
@@ -3315,7 +3313,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:691
 msgid "Enter more context, what distro you use, etc. Markdown is supported."
-msgstr ""
+msgstr "より多くのコンテクスト、どのディストロを使っているかなどを入力してください。Markdownに対応しています。"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:55
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:71
@@ -3532,15 +3530,15 @@ msgstr ""
 
 #: src/settings/chord_preset_pack_manager.c:112
 msgid "Euro Pop"
-msgstr ""
+msgstr "ユーロポップ"
 
 #: src/settings/chord_preset_pack_manager.c:115
 msgid "4 Chord Song"
-msgstr ""
+msgstr "4コード曲"
 
 #: src/settings/chord_preset_pack_manager.c:135
 msgid "Canon in D"
-msgstr ""
+msgstr "カノン イン D"
 
 #: src/settings/chord_preset_pack_manager.c:153
 #, fuzzy
@@ -3554,15 +3552,15 @@ msgstr "コード"
 
 #: src/settings/chord_preset_pack_manager.c:181
 msgid "Most Often Used Chords"
-msgstr ""
+msgstr "最もよく使われるコード"
 
 #: src/settings/chord_preset_pack_manager.c:203
 msgid "Eastern Pop"
-msgstr ""
+msgstr "イースタン・ポップ"
 
 #: src/settings/chord_preset_pack_manager.c:207
 msgid "Together"
-msgstr ""
+msgstr "Together"
 
 #: src/settings/chord_preset_pack_manager.c:226
 #, fuzzy
@@ -3571,7 +3569,7 @@ msgstr "G"
 
 #: src/settings/chord_preset_pack_manager.c:248
 msgid "Daijiken"
-msgstr ""
+msgstr "大事件"
 
 #: src/settings/chord_preset_pack_manager.c:270
 #, fuzzy
@@ -3581,11 +3579,11 @@ msgstr "取り消し"
 #. the idolm@ster 2
 #: src/settings/chord_preset_pack_manager.c:273
 msgid "Idol 1"
-msgstr ""
+msgstr "アイドル1"
 
 #: src/settings/chord_preset_pack_manager.c:287
 msgid "Ballad"
-msgstr ""
+msgstr "バラード"
 
 #: src/settings/chord_preset_pack_manager.c:312
 #, fuzzy
@@ -3594,32 +3592,32 @@ msgstr "コネクション"
 
 #: src/settings/chord_preset_pack_manager.c:333
 msgid "Secret Base"
-msgstr ""
+msgstr "秘密基地"
 
 #: src/settings/chord_preset_pack_manager.c:356
 msgid "Eurodance"
-msgstr ""
+msgstr "Eurodance"
 
 #: src/settings/chord_preset_pack_manager.c:394
 msgid "Eurobeat"
-msgstr ""
+msgstr "ユーロビート"
 
 #. believe
 #: src/settings/chord_preset_pack_manager.c:415
 msgid "Future"
-msgstr ""
+msgstr "未来"
 
 #: src/settings/chord_preset_pack_manager.c:513
 msgid "Progressive Trance"
-msgstr ""
+msgstr "プログレッシブ・トランス"
 
 #: src/settings/chord_preset_pack_manager.c:515
 msgid "Sajek Valley"
-msgstr ""
+msgstr "Sajek Valley"
 
 #: src/settings/chord_preset_pack_manager.c:539
 msgid "Rock"
-msgstr ""
+msgstr "ロック"
 
 #: src/settings/chord_preset_pack_manager.c:542
 #, fuzzy
@@ -3628,15 +3626,15 @@ msgstr "イベントを上書きする"
 
 #: src/settings/chord_preset_pack_manager.c:561
 msgid "Heart"
-msgstr ""
+msgstr "ハート"
 
 #: src/settings/chord_preset_pack_manager.c:579
 msgid "Pray"
-msgstr ""
+msgstr "Pray"
 
 #: src/settings/chord_preset_pack_manager.c:598
 msgid "Thank You"
-msgstr ""
+msgstr "Thank You"
 
 #: src/settings/chord_preset_pack.c:152 src/settings/chord_preset.c:133
 #, fuzzy
@@ -4334,7 +4332,7 @@ msgstr ""
 #: src/actions/arranger_selections.c:812
 #, c-format
 msgid "Cannot perform %s resize - selections contain unloopable objects"
-msgstr ""
+msgstr "%s サイズ変更を実行できません - 選択にループ不可能なオブジェクトが含まれています"
 
 #: src/actions/arranger_selections.c:3139
 msgid "Create timeline selections"
@@ -4622,7 +4620,7 @@ msgstr "スキーマ %s をリセットできませんでした"
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
-msgstr ""
+msgstr "タイムラインとエディターのどちらかを先に選択する必要があります。現在の選択は%sです"
 
 #: src/actions/actions.c:2170
 #, fuzzy
@@ -4639,7 +4637,7 @@ msgstr "選択は同じレーン上にある必要があります"
 
 #: src/actions/actions.c:2201
 msgid "Cannot merge looped regions"
-msgstr ""
+msgstr "ループしたリージョンをマージできません"
 
 #: src/actions/actions.c:2218
 #, fuzzy
@@ -4673,11 +4671,11 @@ msgstr "%s の LV2 UI を開くことができませんでした"
 #: src/actions/actions.c:2849
 #, c-format
 msgid "Detected BPM: %.2f"
-msgstr ""
+msgstr "検出されたBPM：%.2f"
 
 #: src/actions/actions.c:2852
 msgid "Candidates:"
-msgstr ""
+msgstr "候補："
 
 #: src/actions/actions.c:3054
 #, fuzzy
@@ -4693,7 +4691,7 @@ msgstr "ファイルの書き込みに失敗しました: %s"
 msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
-msgstr ""
+msgstr "カスタムなプリセットパックが見つかりません。コードプリセットブラウザからプリセットパックを作成してください。"
 
 #: src/actions/actions.c:3281 src/actions/actions.c:3333
 #, fuzzy
@@ -6073,7 +6071,7 @@ msgstr "高度に自動化された直感的なデジタルオーディオワー
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: data/zrythm.desktop.in:15
 msgid "daw;audio;midi;music;"
-msgstr ""
+msgstr "daw;オーディオ;MIDI;音楽;"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:244
 msgid "Recent project list"
@@ -6807,7 +6805,7 @@ msgstr "プラグインブラウザのフィルタ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:704
 msgid "Plugin browser panel size when detached."
-msgstr ""
+msgstr "プラグインブラウザのパネルを取り外したときのサイズ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:708
 #, fuzzy
@@ -6836,7 +6834,7 @@ msgstr "ファイルブラウザフィルタ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:719
 msgid "File browser panel size when detached."
-msgstr ""
+msgstr "ファイルブラウザのパネルを取り外した時のサイズ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:723
 #, fuzzy
@@ -7450,10 +7448,13 @@ msgid ""
 "in multiple languages including English, French, Portuguese, Japanese and "
 "German."
 msgstr ""
+"Zrythmは、豊富な機能と使いやすさを追求したデジタルオーディオワークステーションです。カーブ、LFO、エンベロープによる無限のオートメーションが可能で"
+"、LV2、VST2、VST3を含む複数のプラグインフォーマットをサポートし、JACK、RtAudio/RtMidi、SDL2を含む複数のバックエンドで動作"
+"し、特別なコードトラックとコードパッドによってコード進行をアシストし、英語、フランス語、ポルトガル語、日本語、ドイツ語を含む複数の言語で使用できます。"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:21
 msgid "Zrythm can be extended using GNU Guile."
-msgstr ""
+msgstr "ZrythmはGNU Guileを使って拡張することができます。"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:37
 #, fuzzy
