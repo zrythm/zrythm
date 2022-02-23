@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-02-15 17:23+0000\n"
-"PO-Revision-Date: 2022-02-14 21:55+0000\n"
+"PO-Revision-Date: 2022-02-23 16:19+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -218,7 +218,7 @@ msgstr "Programa extern"
 
 #: inc/audio/audio_function.h:82
 msgid "Guile script"
-msgstr "script Guile"
+msgstr "Script Guile"
 
 #: inc/audio/audio_function.h:83
 msgid "Custom plugin"
@@ -849,7 +849,7 @@ msgstr "Operació desconeguda"
 #: src/zrythm_app.c:1610
 #, c-format
 msgid "libguile is required for this option\n"
-msgstr "Es requereix libguile per a aquesta opció\n"
+msgstr "es requereix libguile per a aquesta opció\n"
 
 #: src/zrythm_app.c:1775
 msgid "Print version information"
@@ -930,11 +930,11 @@ msgstr "Afegir al projecte"
 
 #: src/plugins/plugin_descriptor.c:610
 msgid "Add to project (bridged UI)"
-msgstr "Afegir-ho al projecte (IU en pont)"
+msgstr "Afegir-ho al projecte (IU pontada)"
 
 #: src/plugins/plugin_descriptor.c:623
 msgid "Add to project (bridged full)"
-msgstr "Afegir al projecte (completament amb pont)"
+msgstr "Afegir al projecte (pontat completament)"
 
 #: src/plugins/plugin_descriptor.c:632
 msgid "Use _Generic UI"
@@ -1102,8 +1102,8 @@ msgid ""
 msgstr ""
 "%s <%s> té un tipus d'IU obsolet:\n"
 "   %s\n"
-"Si la IU no es carrega, prova d'instanciar el complement en mode de pont "
-"complet i informa-ho a l'autor:\n"
+"Si la IU no es carrega, prova d'instanciar el complement en mode pontat "
+"completament i informa-ho a l'autor:\n"
 "   %s <%s>"
 
 #: src/plugins/plugin.c:2280
@@ -1213,8 +1213,8 @@ msgid ""
 "%s <%s>"
 msgstr ""
 "%s <%s> conté una referència a %s, que pot causar problemes.\n"
-"Si el complement no es carrega, prova d'instanciar el complement en mode de "
-"pont complet i informa-ho al distribuïdor i/o autor del complement:\n"
+"Si el complement no es carrega, prova d'instanciar el complement en mode "
+"pontat completament i informa-ho al distribuïdor i/o autor del complement:\n"
 "%s <%s>"
 
 #: src/plugins/lv2_plugin.c:2835
@@ -1224,7 +1224,7 @@ msgstr "Error en crear o iniciar ports i paràmetres"
 #: src/plugins/lv2_plugin.c:2865
 #, c-format
 msgid "Required feature %s is not supported"
-msgstr "La característica necessària %s no és compatible"
+msgstr "La funcionalitat necessària %s no és compatible"
 
 #: src/plugins/lv2_plugin.c:2959
 msgid "Failed checking whether lv2 plugin UI is external"
@@ -1871,7 +1871,7 @@ msgstr "nom %s"
 
 #: src/gui/widgets/piano_roll_keys.c:185
 msgid "bass"
-msgstr "baixa"
+msgstr "baix"
 
 #: src/gui/widgets/piano_roll_keys.c:206
 msgid "both"
@@ -1960,7 +1960,7 @@ msgstr "Error en llegir el valor"
 
 #: src/gui/widgets/bot_bar.c:422
 msgid "This feature is not available at the moment"
-msgstr "Ara aquesta característica no està disponible"
+msgstr "Ara aquesta funcionalitat no està disponible"
 
 #: src/gui/widgets/bot_bar.c:515
 msgid "Status"
@@ -1970,7 +1970,7 @@ msgstr "Estat"
 #. * translation short
 #: src/gui/widgets/bot_bar.c:522
 msgid "Buf sz"
-msgstr "mida mem"
+msgstr "Mida mem"
 
 #. TRANSLATORS: verb - change buffer size
 #: src/gui/widgets/bot_bar.c:529
@@ -2120,7 +2120,7 @@ msgstr "Rebot ràpid"
 
 #: src/gui/widgets/timeline_arranger.c:1242 src/gui/widgets/track.c:831
 msgid "Bounce..."
-msgstr "Rebot..."
+msgstr "Rebotar..."
 
 #: src/gui/widgets/timeline_arranger.c:1455
 msgid "Failed to create selections"
@@ -2227,7 +2227,7 @@ msgstr "Seleccionar tot"
 
 #: src/gui/widgets/home_toolbar.c:184 resources/gtk/help-overlay.ui:306
 msgid "Loop selection"
-msgstr "Repetir selecció"
+msgstr "Repetir la selecció"
 
 #: src/gui/widgets/home_toolbar.c:209
 msgid "Undo..."
@@ -2598,14 +2598,12 @@ msgid "Loop end"
 msgstr "Final de la repetició"
 
 #: src/gui/widgets/event_viewer.c:542
-#, fuzzy
 msgid "Fade in"
-msgstr "Entrada de l'atenuador del canal"
+msgstr "Entrada de l'atenuador"
 
 #: src/gui/widgets/event_viewer.c:548
-#, fuzzy
 msgid "Fade out"
-msgstr "Sortida de l'atenuador del canal"
+msgstr "Sortida de l'atenuador"
 
 #: src/gui/widgets/event_viewer.c:554 src/gui/widgets/event_viewer.c:589
 #: src/gui/widgets/event_viewer.c:652 src/gui/widgets/item_factory.c:704
@@ -2933,7 +2931,7 @@ msgstr "Connexions de port"
 
 #: src/gui/widgets/main_notebook.c:149
 msgid "Bindings"
-msgstr "vinculacions"
+msgstr "Vinculacions"
 
 #: src/gui/widgets/main_notebook.c:150
 msgid "MIDI CC bindings"
@@ -3150,9 +3148,8 @@ msgid ""
 "Click OK to submit. You can verify what will be sent below. By clicking OK, "
 "you agree to our %sPrivacy Policy%s."
 msgstr ""
-"Fes clic a D'acord per enviar-lo. A continuació pots verificar el que "
-"s'enviarà. En fer clic a D'acord, acceptes la nostra política de privadesa %s"
-"%s."
+"Clica a D'acord per a enviar-lo. A continuació pots verificar el que "
+"s'enviarà. En clicar a D'acord, acceptes la nostra %sPolítica de privadesa%s."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:392
 msgid "<b>Data</b>"
@@ -3424,7 +3421,6 @@ msgid "Canon in D"
 msgstr "Cànon en Re"
 
 #: src/settings/chord_preset_pack_manager.c:153
-#, fuzzy
 msgid "Love Progression"
 msgstr "Love Progression"
 
@@ -3613,7 +3609,7 @@ msgstr "Error en crear objectes de l'arranjador"
 #: src/audio/tracklist.c:1561
 msgid "Failed to move tracks after copying or moving inside folder"
 msgstr ""
-"Error en moure les pistes després de copiar-les o moure-les dins la carpeta"
+"Error en moure les pistes després de copiar-les o moure-les a la carpeta"
 
 #: src/audio/tracklist.c:1643
 msgid "Failed to copy tracks inside"
@@ -5052,23 +5048,23 @@ msgstr "Eina"
 
 #: resources/gtk/help-overlay.ui:207
 msgid "Select/Stretch tool"
-msgstr "Seleccionar / Eina d'estirament"
+msgstr "Eina Seleccionar / Estirar"
 
 #: resources/gtk/help-overlay.ui:214
 msgid "Pencil tool"
-msgstr "Eina llapis"
+msgstr "Eina Llapis"
 
 #: resources/gtk/help-overlay.ui:221
 msgid "Eraser tool"
-msgstr "Eina esborrar"
+msgstr "Eina Esborrar"
 
 #: resources/gtk/help-overlay.ui:228
 msgid "Ramp tool"
-msgstr "Eina rampa"
+msgstr "Eina Rampa"
 
 #: resources/gtk/help-overlay.ui:235
 msgid "Audition tool"
-msgstr "Eina d'audició"
+msgstr "Eina Audició"
 
 #: resources/gtk/help-overlay.ui:245
 msgid "Zooming"
@@ -5282,7 +5278,7 @@ msgstr "Creador"
 #: resources/ui/scale_selector_window.ui:209
 #: resources/ui/chord_selector_window.ui:609
 msgid "TODO keyboard"
-msgstr "Teclat PENDENT"
+msgstr "Teclat TO-DO"
 
 #: resources/ui/scale_selector_window.ui:214
 #: resources/ui/chord_selector_window.ui:614 resources/ui/export_dialog.ui:131
@@ -5388,7 +5384,7 @@ msgstr "Diatònic"
 
 #: resources/ui/chord_selector_window.ui:624
 msgid "TODO"
-msgstr "PENDENT"
+msgstr "TO-DO"
 
 #: resources/ui/chord_selector_window.ui:629
 msgid "Circle of Fifths"
@@ -5655,7 +5651,7 @@ msgstr "ms"
 #: resources/ui/bounce_dialog.ui:83
 #: build/data/org.zrythm.Zrythm.gschema.xml:341
 msgid "Disable after bounce"
-msgstr "Inhabilitar després del rebot"
+msgstr "Inhabilitar després de rebotar"
 
 #: resources/ui/snap_box.ui:13
 msgid "Snap to grid"
@@ -7175,7 +7171,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1164
 msgid "Scripting"
-msgstr "Script"
+msgstr "Llenguatge script"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1169
 msgid "Default script"
@@ -7190,7 +7186,6 @@ msgid "The Zrythm contributors"
 msgstr "Col·laboradors del Zrythm"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:8
-#, fuzzy
 msgid "Digital audio workstation"
 msgstr "Estació de treball d'àudio digital"
 
@@ -7205,8 +7200,8 @@ msgid ""
 "German."
 msgstr ""
 "Zrythm és una estació de treball d'àudio digital dissenyada per ser "
-"característica i fàcil d'utilitzar. Permet l'automatització il·limitada a "
-"través de corbes, LFO i envolupants, admet múltiples formats de complements, "
+"funcional i fàcil d'utilitzar. Permet l'automatització il·limitada a través "
+"de corbes, LFO i envolupants, admet múltiples formats de complements, "
 "inclosos LV2, VST2 i VST3, treballa amb múltiples backends incloent JACK, "
 "RtAudio / RtMidi i SDL2, ajuda amb progressions d'acords a través d'una "
 "pista d'acords i pads d'acords especials i es pot utilitzar en diversos "
@@ -7217,9 +7212,8 @@ msgid "Zrythm can be extended using GNU Guile."
 msgstr "El Zrythm es pot estendre usant GNU Guile."
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:37
-#, fuzzy
 msgid "Composing MIDI"
-msgstr "Composició MIDI en Zrythm"
+msgstr "Composició MIDI"
 
 #~ msgid "Selection start"
 #~ msgstr "Inici de la selecció"
