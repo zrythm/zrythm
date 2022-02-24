@@ -185,15 +185,20 @@ zrythm_get_version (
  * Returns the version and the capabilities.
  *
  * @param buf Buffer to write the string to.
+ * @param include_system_info Whether to include
+ *   additional system info (for bug reports).
  */
 void
 zrythm_get_version_with_capabilities (
-  char * buf)
+  char * buf,
+  bool   include_system_info)
 {
   char * ver = zrythm_get_version (0);
 
-  sprintf (
-    buf,
+  GString * gstr = g_string_new (NULL);
+
+  g_string_append_printf (
+    gstr,
     "%s %s%s (%s)\n"
     "  built with %s %s for %s%s\n"
 #ifdef HAVE_CARLA
@@ -262,6 +267,19 @@ zrythm_get_version_with_capabilities (
 
     );
 
+  if (include_system_info)
+    {
+      g_string_append (gstr, "\n");
+      g_string_append_printf (
+        gstr,
+        "XDG_SESSION_TYPE=%s",
+        g_getenv("XDG_SESSION_TYPE"));
+    }
+
+  char * str = g_string_free (gstr, false);
+  strcpy (buf, str);
+
+  g_free (str);
   g_free (ver);
 }
 

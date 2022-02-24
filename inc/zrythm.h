@@ -373,10 +373,13 @@ zrythm_is_latest_release (
  * Returns the version and the capabilities.
  *
  * @param buf Buffer to write the string to.
+ * @param include_system_info Whether to include
+ *   additional system info (for bug reports).
  */
 void
 zrythm_get_version_with_capabilities (
-  char * buf);
+  char * buf,
+  bool   include_system_info);
 
 /**
  * Returns the default user "zrythm" dir.

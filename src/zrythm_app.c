@@ -477,7 +477,8 @@ init_thread (
 
   {
     char ver[2000];
-    zrythm_get_version_with_capabilities (ver);
+    zrythm_get_version_with_capabilities (
+      ver, false);
     g_message ("\n%s", ver);
   }
 
@@ -1728,7 +1729,7 @@ print_version (
 {
   char ver_with_caps[2000];
   zrythm_get_version_with_capabilities (
-    ver_with_caps);
+    ver_with_caps, false);
   fprintf (
     stdout,
     "%s\n%s\n%s\n%s\n",

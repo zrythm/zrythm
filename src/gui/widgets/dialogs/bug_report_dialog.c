@@ -42,8 +42,7 @@
 #include <json-glib/json-glib.h>
 
 G_DEFINE_TYPE (
-  BugReportDialogWidget,
-  bug_report_dialog_widget,
+  BugReportDialogWidget, bug_report_dialog_widget,
   GTK_TYPE_DIALOG)
 
 static bool
@@ -96,7 +95,7 @@ get_report_template (
   /* %23 is hash, %0A is new line */
   char ver_with_caps[2000];
   zrythm_get_version_with_capabilities (
-    ver_with_caps);
+    ver_with_caps, true);
   char * report_template =
     g_strdup_printf (
       "# What did you do?\n"
@@ -274,7 +273,7 @@ get_json_string (
 
   char ver_with_caps[2000];
   zrythm_get_version_with_capabilities (
-    ver_with_caps);
+    ver_with_caps, true);
   json_builder_set_member_name (
     builder, "version");
   json_builder_add_string_value (

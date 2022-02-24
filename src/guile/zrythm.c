@@ -52,7 +52,7 @@ SCM_DEFINE (
 #define FUNC_NAME s_
 {
   char ver[1000];
-  zrythm_get_version_with_capabilities (ver);
+  zrythm_get_version_with_capabilities (ver, false);
   return
     scm_from_stringn (
       ver, strlen (ver), "UTF8",
