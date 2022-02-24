@@ -911,6 +911,14 @@ track_set_soloed (
   bool    fire_events);
 
 /**
+ * Returns whether the track has any soloed lanes.
+ */
+NONNULL
+bool
+track_has_soloed_lanes (
+  const Track * const self);
+
+/**
  * Returns if Track is in TracklistSelections.
  */
 NONNULL

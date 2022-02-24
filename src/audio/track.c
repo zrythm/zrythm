@@ -1048,6 +1048,23 @@ track_set_folded (
 }
 
 /**
+ * Returns whether the track has any soloed lanes.
+ */
+bool
+track_has_soloed_lanes (
+  const Track * const self)
+{
+  for (int i = 0; i < self->num_lanes; i++)
+    {
+      TrackLane * lane = self->lanes[i];
+      if (track_lane_get_soloed (lane))
+        return true;
+    }
+
+  return false;
+}
+
+/**
  * Returns the Track from the Project matching
  * \p name.
  *

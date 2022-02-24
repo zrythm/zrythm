@@ -264,7 +264,9 @@ set_to_midi_note_object (
  * @param check_parent Whether to check parent
  *   (parent region or parent track lane if region),
  *   otherwise only whether this object itself is
- *   muted is returned.
+ *   muted is returned. This will take the solo
+ *   status of other lanes if true and if @ref self
+ *   is a region that can have lanes.
  */
 bool
 arranger_object_get_muted (
@@ -278,6 +280,14 @@ arranger_object_get_muted (
       TrackLane * lane = region_get_lane (region);
       g_return_val_if_fail (lane, true);
       if (track_lane_get_muted (lane))
+        return true;
+
+      /* if lane is non-soloed while other soloed
+       * lanes exist, this should be muted */
+      Track * track = track_lane_get_track (lane);
+      g_return_val_if_fail (track, true);
+      if (track_has_soloed_lanes (track)
+          && !track_lane_get_soloed (lane))
         return true;
     }
 

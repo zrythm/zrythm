@@ -594,7 +594,9 @@ arranger_object_print (
  * @param check_parent Whether to check parent
  *   (parent region or parent track lane if region),
  *   otherwise only whether this object itself is
- *   muted is returned.
+ *   muted is returned. This will take the solo
+ *   status of other lanes if true and if @ref self
+ *   is a region that can have lanes.
  */
 NONNULL
 bool

@@ -1590,8 +1590,8 @@ region_draw (
     region_is_selected (self),
     /* FIXME */
     false,
-    arranger_object_get_muted (obj, true) ||
-      track->frozen);
+    arranger_object_get_muted (obj, true)
+    || track->frozen);
 
   GdkRectangle draw_rect;
   GdkRectangle last_draw_rect, last_full_rect;
