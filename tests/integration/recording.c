@@ -1324,9 +1324,8 @@ test_chord_track_recording (void)
   position_set_to_pos (&init_pos, &pos);
 
   /* enable recording for audio track */
-  if (track_type_can_record (P_CHORD_TRACK->type))
-    track_set_recording (
-      P_CHORD_TRACK, true, F_NO_PUBLISH_EVENTS);
+  track_set_recording (
+    P_CHORD_TRACK, true, F_NO_PUBLISH_EVENTS);
 
   /* run the engine for a few cycles */
   for (int i = 0; i < 4; i++)
@@ -1338,7 +1337,7 @@ test_chord_track_recording (void)
 
   /* assert that no events are created for now */
   g_assert_cmpint (
-    P_CHORD_TRACK->num_chord_regions, ==, 0);
+    P_CHORD_TRACK->num_chord_regions, ==, 1);
 
   /* stop recording */
   if (track_type_can_record (P_CHORD_TRACK->type))
