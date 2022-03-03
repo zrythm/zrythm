@@ -3861,10 +3861,18 @@ DEFINE_SIMPLE (activate_track_set_midi_channel)
   if (lane_idx >= 0)
     {
       TrackLane * lane = track->lanes[lane_idx];
+      g_message (
+        "setting lane '%s' (%d) midi channel to "
+        "%d",
+        lane->name, lane_idx, midi_ch);
       lane->midi_ch = (midi_byte_t) midi_ch;
     }
   else
     {
+      g_message (
+        "setting track '%s' (%d) midi channel to "
+        "%d",
+        track->name, track_idx, midi_ch);
       track->midi_ch = (midi_byte_t) midi_ch;
     }
 }
@@ -4048,6 +4056,10 @@ DEFINE_SIMPLE (
 {
   Track * track =
     TRACKLIST_SELECTIONS->tracks[0];
+  g_message (
+    "setting track '%s' passthrough MIDI input "
+    "to %d",
+    track->name, !track->passthrough_midi_input);
   track->passthrough_midi_input =
     !track->passthrough_midi_input;
 }

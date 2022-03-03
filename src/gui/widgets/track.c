@@ -993,16 +993,17 @@ show_context_menu (
   /* add midi channel selectors */
   if (track_type_has_piano_roll (track->type))
     {
-      /*menuitem =*/
-        /*z_gtk_create_menu_item (*/
-          /*_("Track MIDI Ch"), "signal-midi",*/
-          /*NULL);*/
+      GMenu * piano_roll_section = g_menu_new ();
+
+      GMenu * track_midi_ch_submenu =
+        g_menu_new ();
 
       menuitem =
         z_gtk_create_menu_item (
           _("Passthrough input"), NULL,
           "app.toggle-track-passthrough-input");
-      g_menu_append_item (menu, menuitem);
+      g_menu_append_item (
+        track_midi_ch_submenu, menuitem);
 
       /* add each MIDI ch */
       for (int i = 1; i <= 16; i++)
@@ -1018,11 +1019,19 @@ show_context_menu (
           menuitem =
             z_gtk_create_menu_item (
               lbl, NULL, action);
-          g_menu_append_item (menu, menuitem);
+          g_menu_append_item (
+            track_midi_ch_submenu, menuitem);
         }
+
+      g_menu_append_submenu (
+        piano_roll_section, _("Track MIDI Channel"),
+        G_MENU_MODEL (track_midi_ch_submenu));
 
       if (lane)
         {
+          GMenu * lane_midi_ch_submenu =
+            g_menu_new ();
+
           for (int i = 0; i <= 16; i++)
             {
               char lbl[600];
@@ -1040,9 +1049,19 @@ show_context_menu (
               menuitem =
                 z_gtk_create_menu_item (
                   lbl, NULL, action);
-              g_menu_append_item (menu, menuitem);
+              g_menu_append_item (
+                lane_midi_ch_submenu, menuitem);
             }
+
+          g_menu_append_submenu (
+            piano_roll_section,
+            _("Lane MIDI Channel"),
+            G_MENU_MODEL (lane_midi_ch_submenu));
         }
+
+      g_menu_append_section (
+        menu, _("Piano Roll"),
+        G_MENU_MODEL (piano_roll_section));
     }
 
   z_gtk_show_context_menu_from_g_menu (

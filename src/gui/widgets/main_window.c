@@ -680,7 +680,7 @@ main_window_widget_init (MainWindowWidget * self)
     { "change-track-color",
       activate_change_track_color },
     { "track-set-midi-channel",
-      activate_track_set_midi_channel },
+      activate_track_set_midi_channel, "s" },
     { "quick-bounce-selected-tracks",
       activate_quick_bounce_selected_tracks },
     { "bounce-selected-tracks",
