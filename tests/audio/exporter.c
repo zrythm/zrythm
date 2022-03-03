@@ -513,6 +513,9 @@ _test_bounce_midi_track_routed_to_instrument_track (
       g_assert_true (
         audio_file_is_silent (settings.file_uri));
     }
+  io_remove (settings.file_uri);
+
+  export_settings_free_members (&settings);
 
   test_helper_zrythm_cleanup ();
 #endif
@@ -740,6 +743,116 @@ test_bounce_instrument_track (void)
     BOUNCE_STEP_POST_FADER, false);
 }
 
+/**
+ * Export the audio mixdown when the chord track with
+ * data is routed to an instrument track.
+ */
+static void
+test_chord_routed_to_instrument (void)
+{
+#ifdef HAVE_GEONKICK
+  test_helper_zrythm_init ();
+
+  /* create the instrument track */
+  test_plugin_manager_create_tracks_from_plugin (
+    GEONKICK_BUNDLE, GEONKICK_URI, true, false, 1);
+  Track * ins_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (
+    ins_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+
+  /* create the chords */
+  Position start_pos, end_pos;
+  position_init (&start_pos);
+  position_set_to_bar (&end_pos, 3);
+  ZRegion * r =
+    chord_region_new (
+      &start_pos, &end_pos,
+      P_CHORD_TRACK->num_chord_regions);
+  track_add_region (
+    P_CHORD_TRACK, r, NULL, -1,
+    F_GEN_NAME, F_PUBLISH_EVENTS);
+  ChordObject * chord =
+    chord_object_new (
+      &r->id, 0, r->num_chord_objects);
+  ArrangerObject * chord_obj =
+    (ArrangerObject *) chord;
+  chord_region_add_chord_object (
+    r, chord, F_PUBLISH_EVENTS);
+  arranger_object_set_position (
+    chord_obj, &start_pos,
+    ARRANGER_OBJECT_POSITION_TYPE_START,
+    F_NO_VALIDATE);
+  chord =
+    chord_object_new (
+      &r->id, 0, r->num_chord_objects);
+  chord_obj =
+    (ArrangerObject *) chord;
+  chord_region_add_chord_object (
+    r, chord, F_PUBLISH_EVENTS);
+  position_set_to_bar (&start_pos, 2);
+  arranger_object_set_position (
+    chord_obj, &start_pos,
+    ARRANGER_OBJECT_POSITION_TYPE_START,
+    F_NO_VALIDATE);
+  track_select (
+    P_CHORD_TRACK, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+
+  /* route the MIDI track to the instrument track */
+  tracklist_selections_action_perform_set_direct_out (
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR, ins_track, NULL);
+
+  for (int i = 0; i < 2; i++)
+    {
+      /* bounce */
+      ExportSettings settings;
+      memset (&settings, 0, sizeof (ExportSettings));
+      settings.mode =
+        i == 0
+        ? EXPORT_MODE_FULL : EXPORT_MODE_TRACKS;
+      export_settings_set_bounce_defaults (
+        &settings, NULL, __func__);
+      settings.time_range = TIME_RANGE_LOOP;
+
+      if (i == 1)
+        {
+          tracklist_mark_all_tracks_for_bounce (
+            TRACKLIST, false);
+          for (int j = 0; j < TRACKLIST->num_tracks;
+               j++)
+            {
+              Track * track = TRACKLIST->tracks[j];
+              track_mark_for_bounce (
+                track, F_BOUNCE, F_MARK_REGIONS,
+                F_NO_MARK_CHILDREN, F_MARK_PARENTS);
+            }
+        }
+
+      /* start exporting in a new thread */
+      GThread * thread =
+        g_thread_new (
+          "bounce_thread",
+          (GThreadFunc) exporter_generic_export_thread,
+          &settings);
+
+      print_progress_and_sleep (
+        &settings.progress_info);
+
+      g_thread_join (thread);
+
+      g_assert_false (
+        audio_file_is_silent (settings.file_uri));
+
+      export_settings_free_members (&settings);
+    }
+
+  test_helper_zrythm_cleanup ();
+#endif
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -747,6 +860,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/audio/exporter/"
 
+  g_test_add_func (
+    TEST_PREFIX "test chord routed to instrument",
+    (GTestFunc) test_chord_routed_to_instrument);
   g_test_add_func (
     TEST_PREFIX "test export wav",
     (GTestFunc) test_export_wav);

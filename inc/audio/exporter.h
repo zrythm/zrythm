@@ -78,6 +78,18 @@ typedef enum ExportMode
   EXPORT_MODE_REGIONS,
 } ExportMode;
 
+static const char * export_mode_str[] =
+{
+  "Full", "Tracks", "Regions",
+};
+
+static inline const char *
+export_mode_to_str (
+  ExportMode export_mode)
+{
+  return export_mode_str[export_mode];
+}
+
 typedef enum BounceStep
 {
   BOUNCE_STEP_BEFORE_INSERTS,
@@ -180,6 +192,10 @@ export_settings_set_bounce_defaults (
   ExportSettings * self,
   const char *     filepath,
   const char *     bounce_name);
+
+void
+export_settings_print (
+  const ExportSettings * self);
 
 void
 export_settings_free_members (

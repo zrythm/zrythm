@@ -746,6 +746,37 @@ export_settings_free_members (
 }
 
 void
+export_settings_print (
+  const ExportSettings * self)
+{
+  g_message (
+    "~~~ Export Settings ~~~\n"
+    "format: %s\n"
+    "artist: %s\n"
+    "title: %s\n"
+    "genre: %s\n"
+    "bit depth: %d\n"
+    "time range: %s\n"
+    "export mode: %s\n"
+    "disable after bounce: %d\n"
+    "bounce with parents: %d\n"
+    "bounce step: %s\n"
+    "dither: %d\n"
+    "file: %s\n"
+    "num files: %d\n",
+    exporter_stringize_audio_format (
+      self->format, true),
+    self->artist, self->title, self->genre,
+    audio_bit_depth_enum_to_int (self->depth),
+    "TODO", export_mode_to_str (self->mode),
+    self->disable_after_bounce,
+    self->bounce_with_parents,
+    bounce_step_to_str (self->bounce_step),
+    self->dither, self->file_uri,
+    self->num_files);
+}
+
+void
 export_settings_free (
   ExportSettings * self)
 {
@@ -844,6 +875,8 @@ exporter_export (ExportSettings * info)
   g_return_val_if_fail (info && info->file_uri, -1);
 
   g_message ("exporting to %s", info->file_uri);
+
+  export_settings_print (info);
 
   /* pause engine */
   EngineState state;

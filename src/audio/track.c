@@ -3639,12 +3639,20 @@ track_mark_for_bounce (
                k++)
             {
               ZRegion * r = lane->regions[k];
-              if (r->id.type != REGION_TYPE_MIDI &&
+              if (r->id.type != REGION_TYPE_MIDI
+                  &&
                   r->id.type != REGION_TYPE_AUDIO)
                 continue;
 
               r->bounce = bounce;
             }
+        }
+
+      for (int i = 0; i < self->num_chord_regions;
+           i++)
+        {
+          ZRegion * r = self->chord_regions[i];
+          r->bounce = bounce;
         }
     }
 
