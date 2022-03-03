@@ -20,6 +20,7 @@
 #include "actions/arranger_selections.h"
 #include "audio/audio_region.h"
 #include "audio/automation_region.h"
+#include "audio/chord_region.h"
 #include "audio/clip.h"
 #include "audio/control_port.h"
 #include "audio/engine.h"
@@ -500,7 +501,8 @@ recording_manager_handle_recording (
 
   /* add recorded track material to event queue */
 
-  if (track_type_has_piano_roll (tr->type))
+  if (track_type_has_piano_roll (tr->type)
+      || tr->type == TRACK_TYPE_CHORD)
     {
       MidiEvents * midi_events =
         track_processor->midi_in->midi_events;
@@ -869,7 +871,14 @@ handle_resume_event (
               tr->lanes[new_lane_pos]->
                 num_regions : 0;
           ZRegion * new_region = NULL;
-          if (tr->in_signal_type == TYPE_EVENT)
+          if (tr->type == TRACK_TYPE_CHORD)
+            {
+              new_region =
+                chord_region_new (
+                  &resume_pos, &end_pos,
+                  tr->num_chord_regions);
+            }
+          else if (tr->in_signal_type == TYPE_EVENT)
             {
               new_region =
                 midi_region_new (
@@ -1535,8 +1544,21 @@ handle_start_recording (
             F_GEN_NAME, F_PUBLISH_EVENTS);
 
           tr->recording_region = region;
-          add_recorded_id (
-            self, region);
+          add_recorded_id (self, region);
+        }
+      else if (tr->type == TRACK_TYPE_CHORD)
+        {
+          ZRegion * region =
+            chord_region_new (
+              &start_pos, &end_pos,
+              tr->num_chord_regions);
+          g_return_if_fail (region);
+          track_add_region (
+            tr, region, NULL, -1,
+            F_GEN_NAME, F_PUBLISH_EVENTS);
+
+          tr->recording_region = region;
+          add_recorded_id (self, region);
         }
       else if (tr->type == TRACK_TYPE_AUDIO)
         {
@@ -1609,7 +1631,7 @@ recording_manager_process_events (
       switch (ev->type)
         {
         case RECORDING_EVENT_TYPE_MIDI:
-          /*g_message ("-------- RECORD MIDI");*/
+          g_message ("-------- RECORD MIDI");
           handle_midi_event (self, ev);
           break;
         case RECORDING_EVENT_TYPE_AUDIO:

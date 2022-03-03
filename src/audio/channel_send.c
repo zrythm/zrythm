@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -268,8 +268,8 @@ channel_send_process (
   else if (track->out_signal_type == TYPE_EVENT)
     {
       midi_events_append (
-        self->midi_in->midi_events,
         self->midi_out->midi_events,
+        self->midi_in->midi_events,
         local_offset,
         nframes, F_NOT_QUEUED);
     }

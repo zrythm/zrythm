@@ -3025,8 +3025,8 @@ port_process (
                      all_midi_channels)
                 {
                   midi_events_append_w_filter (
-                    src_port->midi_events,
                     port->midi_events,
+                    src_port->midi_events,
                     track->channel->
                       midi_channels,
                     local_offset,
@@ -3038,9 +3038,9 @@ port_process (
             }
 
           midi_events_append (
+            port->midi_events,
             src_port->midi_events,
-            port->midi_events, local_offset,
-            nframes, F_NOT_QUEUED);
+            local_offset, nframes, F_NOT_QUEUED);
         } /* foreach source */
 
       if (id->flow == FLOW_OUTPUT)

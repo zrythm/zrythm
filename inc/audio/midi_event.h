@@ -166,22 +166,35 @@ midi_events_print (
   const int    queued);
 
 /**
- * Appends the events from src to dest
+ * Appends the events from src to dest.
  *
  * @param queued Append queued events instead of
  *   main events.
- * @param start_frame The start frame offset from 0
- *   in this cycle.
+ * @param local_offset The start frame offset from
+ *   0 in this cycle.
  * @param nframes Number of frames to process.
  */
 void
 midi_events_append (
-  /* FIXME reverse dest/src */
-  MidiEvents * src,
-  MidiEvents * dest,
-  const nframes_t    start_frame,
-  const nframes_t    nframes,
-  bool          queued);
+  MidiEvents *    dest,
+  MidiEvents *    src,
+  const nframes_t local_offset,
+  const nframes_t nframes,
+  bool            queued);
+
+/**
+ * Transforms the given MIDI input to the MIDI
+ * notes of the corresponding chord.
+ *
+ * Only C0~B0 are considered.
+ */
+void
+midi_events_transform_chord_and_append (
+  MidiEvents *    dest,
+  MidiEvents *    src,
+  const nframes_t local_offset,
+  const nframes_t nframes,
+  bool            queued);
 
 /**
  * Appends the events from src to dest
@@ -197,8 +210,8 @@ midi_events_append (
 OPTIMIZE_O3
 void
 midi_events_append_w_filter (
-  MidiEvents *    src,
   MidiEvents *    dest,
+  MidiEvents *    src,
   int *           channels,
   const nframes_t start_frame,
   const nframes_t nframes,
@@ -224,23 +237,23 @@ midi_events_add_note_on (
  */
 void
 midi_events_add_note_ons_from_chord_descr (
-  MidiEvents *      self,
-  ChordDescriptor * descr,
-  midi_byte_t       channel,
-  midi_byte_t       velocity,
-  midi_time_t       time,
-  bool              queued);
+  MidiEvents *            self,
+  const ChordDescriptor * descr,
+  midi_byte_t             channel,
+  midi_byte_t             velocity,
+  midi_time_t             time,
+  bool                    queued);
 
 /**
  * Adds a note off for each note in the chord.
  */
 void
 midi_events_add_note_offs_from_chord_descr (
-  MidiEvents *      self,
-  ChordDescriptor * descr,
-  midi_byte_t       channel,
-  midi_time_t       time,
-  bool              queued);
+  MidiEvents *            self,
+  const ChordDescriptor * descr,
+  midi_byte_t             channel,
+  midi_time_t             time,
+  bool                    queued);
 
 /**
  * Add CC volume event.

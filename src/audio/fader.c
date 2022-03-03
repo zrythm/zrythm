@@ -1292,8 +1292,8 @@ fader_process (
       if (!effectively_muted)
         {
           midi_events_append (
-            self->midi_in->midi_events,
             self->midi_out->midi_events,
+            self->midi_in->midi_events,
             time_nfo->local_offset, time_nfo->nframes, F_NOT_QUEUED);
 
           /* if not prefader, also apply volume

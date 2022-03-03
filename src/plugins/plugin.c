@@ -2452,8 +2452,8 @@ plugin_process_passthrough (
                 {
                   /* copy */
                   midi_events_append (
-                    in_port->midi_events,
                     out_port->midi_events,
+                    in_port->midi_events,
                     time_nfo->local_offset,
                     time_nfo->nframes, false);
 

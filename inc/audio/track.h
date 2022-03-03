@@ -1171,8 +1171,8 @@ track_type_can_record (
   return
     type == TRACK_TYPE_AUDIO ||
     type == TRACK_TYPE_MIDI ||
+    type == TRACK_TYPE_CHORD ||
     type == TRACK_TYPE_INSTRUMENT;
-  /* TODO add chord when implemented */
 }
 
 /**

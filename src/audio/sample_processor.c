@@ -349,9 +349,9 @@ sample_processor_process (
               track_processor_process (
                 track->processor, &time_nfo);
               midi_events_append (
+                self->midi_events,
                 track->processor->midi_out->
                   midi_events,
-                self->midi_events,
                 cycle_offset, nframes,
                 F_NOT_QUEUED);
             }
@@ -364,9 +364,9 @@ sample_processor_process (
               plugin_prepare_process (
                 track->channel->instrument);
               midi_events_append (
-                self->midi_events,
                 track->channel->instrument->
                   midi_in_port->midi_events,
+                self->midi_events,
                 cycle_offset, nframes,
                 F_NOT_QUEUED);
               plugin_process (

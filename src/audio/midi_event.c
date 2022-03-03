@@ -76,24 +76,100 @@ static const char * midi_event_type_strings[] =
 };
 
 /**
- * Appends the events from src to dest
+ * Appends the events from src to dest.
  *
  * @param queued Append queued events instead of
  *   main events.
- * @param local_offset The start frame offset from 0
- *   in this cycle.
+ * @param local_offset The start frame offset from
+ *   0 in this cycle.
  * @param nframes Number of frames to process.
  */
 void
 midi_events_append (
-  MidiEvents *    src,
   MidiEvents *    dest,
+  MidiEvents *    src,
   const nframes_t local_offset,
   const nframes_t nframes,
   bool            queued)
 {
   midi_events_append_w_filter (
-    src, dest, NULL, local_offset, nframes, queued);
+    dest, src, NULL, local_offset, nframes, queued);
+}
+
+/**
+ * Transforms the given MIDI input to the MIDI
+ * notes of the corresponding chord.
+ *
+ * Only C0~B0 are considered.
+ */
+void
+midi_events_transform_chord_and_append (
+  MidiEvents *    dest,
+  MidiEvents *    src,
+  const nframes_t local_offset,
+  const nframes_t nframes,
+  bool            queued)
+{
+  g_return_if_fail (src);
+  g_return_if_fail (dest);
+
+  /* queued not implemented yet */
+  g_return_if_fail (!queued);
+
+  for (int i = 0; i < src->num_events; i++)
+    {
+      MidiEvent * src_ev = &src->events[i];
+
+      /* only copy events inside the current time
+       * range */
+      if (ZRYTHM_TESTING
+          &&
+          (src_ev->time < local_offset ||
+           src_ev->time >= local_offset + nframes))
+        {
+          g_debug (
+            "skipping event: time %" PRIu8
+            " (local offset %" PRIu32
+            " nframes %" PRIu32 ")",
+            src_ev->time, local_offset, nframes);
+          continue;
+        }
+
+      /* make sure there is enough space */
+      g_return_if_fail (
+        dest->num_events < MAX_MIDI_EVENTS - 6);
+
+      const uint8_t * buf = src_ev->raw_buffer;
+
+      if (!midi_is_note_on (buf)
+          && !midi_is_note_off (buf))
+        continue;
+
+      /* only use middle octave */
+      midi_byte_t note_number =
+        midi_get_note_number (buf);
+      if (note_number < 60
+          || note_number >= 72)
+        continue;
+
+      const ChordDescriptor * descr =
+        CHORD_EDITOR->chords[note_number - 60];
+
+      if (midi_is_note_on (buf))
+        {
+          midi_events_add_note_ons_from_chord_descr (
+            dest, descr, 1, VELOCITY_DEFAULT,
+            src_ev->time, queued);
+        }
+      else if (midi_is_note_off (buf))
+        {
+          midi_events_add_note_offs_from_chord_descr (
+            dest, descr, 1, src_ev->time, queued);
+        }
+    }
+
+  /* clear duplicates */
+  midi_events_clear_duplicates (dest, queued);
 }
 
 /**
@@ -109,8 +185,8 @@ midi_events_append (
  */
 void
 midi_events_append_w_filter (
-  MidiEvents *    src,
   MidiEvents *    dest,
+  MidiEvents *    src,
   int *           channels,
   const nframes_t local_offset,
   const nframes_t nframes,
@@ -786,12 +862,12 @@ midi_events_add_note_on (
  */
 void
 midi_events_add_note_ons_from_chord_descr (
-  MidiEvents *      self,
-  ChordDescriptor * descr,
-  midi_byte_t       channel,
-  midi_byte_t       velocity,
-  midi_time_t       _time,
-  bool              queued)
+  MidiEvents *            self,
+  const ChordDescriptor * descr,
+  midi_byte_t             channel,
+  midi_byte_t             velocity,
+  midi_time_t             time,
+  bool                    queued)
 {
 #if 0
   g_message (
@@ -806,7 +882,7 @@ midi_events_add_note_ons_from_chord_descr (
         {
           midi_events_add_note_on (
             self, channel, i + 36,
-            velocity, _time, queued);
+            velocity, time, queued);
         }
     }
 }
@@ -816,11 +892,11 @@ midi_events_add_note_ons_from_chord_descr (
  */
 void
 midi_events_add_note_offs_from_chord_descr (
-  MidiEvents *      self,
-  ChordDescriptor * descr,
-  midi_byte_t       channel,
-  midi_time_t       time,
-  bool              queued)
+  MidiEvents *            self,
+  const ChordDescriptor * descr,
+  midi_byte_t             channel,
+  midi_time_t             time,
+  bool                    queued)
 {
   for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES;
        i++)

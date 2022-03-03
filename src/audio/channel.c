@@ -598,8 +598,9 @@ channel_reconnect_ext_input_ports (
   g_return_if_fail (
     channel_is_in_active_project (self));
 
-  if (track->type == TRACK_TYPE_INSTRUMENT ||
-      track->type == TRACK_TYPE_MIDI)
+  if (track->type == TRACK_TYPE_INSTRUMENT
+      || track->type == TRACK_TYPE_MIDI
+      || track->type == TRACK_TYPE_CHORD)
     {
       Port * midi_in = track->processor->midi_in;
 

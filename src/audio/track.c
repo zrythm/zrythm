@@ -916,7 +916,7 @@ track_set_recording (
 
   if (!channel)
     {
-      g_message (
+      g_critical (
         "Recording not implemented yet for this "
         "track.");
       return;

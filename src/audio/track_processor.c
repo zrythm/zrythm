@@ -997,9 +997,9 @@ track_processor_process (
       /* append the midi events from piano roll to
        * MIDI out */
       midi_events_append (
+        self->midi_out->midi_events,
         pr->midi_events,
-        self->midi_out->midi_events, local_offset,
-        nframes, false);
+        local_offset, nframes, false);
 
 #if 0
       if (pr->midi_events->num_events > 0)
@@ -1034,10 +1034,10 @@ track_processor_process (
           if (!tr->channel->all_midi_channels)
             {
               midi_events_append_w_filter (
+                self->midi_in->midi_events,
                 AUDIO_ENGINE->
                   midi_editor_manual_press->
                     midi_events,
-                self->midi_in->midi_events,
                 tr->channel->midi_channels,
                 local_offset,
                 nframes, F_NOT_QUEUED);
@@ -1046,10 +1046,10 @@ track_processor_process (
           else
             {
               midi_events_append (
+                self->midi_in->midi_events,
                 AUDIO_ENGINE->
                   midi_editor_manual_press->
                     midi_events,
-                self->midi_in->midi_events,
                 local_offset, nframes,
                 F_NOT_QUEUED);
             }
@@ -1115,10 +1115,26 @@ track_processor_process (
             F_NOT_QUEUED);
         }
 
-      midi_events_append (
-        self->midi_in->midi_events,
-        self->midi_out->midi_events, local_offset,
-        nframes, F_NOT_QUEUED);
+      /* if chord track, transform MIDI input to
+       * appropriate MIDI notes */
+      if (tr->type == TRACK_TYPE_CHORD)
+        {
+          midi_events_transform_chord_and_append (
+            self->midi_out->midi_events,
+            self->midi_in->midi_events,
+            local_offset,
+            nframes, F_NOT_QUEUED);
+        }
+      /* else if not chord track, simply pass the
+       * input MIDI data to the output port */
+      else
+        {
+          midi_events_append (
+            self->midi_out->midi_events,
+            self->midi_in->midi_events,
+            local_offset,
+            nframes, F_NOT_QUEUED);
+        }
       break;
     default:
       break;
