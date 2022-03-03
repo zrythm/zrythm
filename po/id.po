@@ -2,13 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # Reza Almanda <rezaalmanda27@gmail.com>, 2021.
+# Narendra Utpala <naredra81@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-02-15 17:23+0000\n"
-"PO-Revision-Date: 2022-01-17 09:53+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2022-03-03 06:59+0000\n"
+"Last-Translator: Narendra Utpala <naredra81@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "id/>\n"
 "Language: id\n"
@@ -16,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.11.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -49,7 +50,7 @@ msgstr "Wilayah"
 #: inc/schemas/gui/backend/arranger_object.h:58
 #: inc/gui/backend/arranger_object.h:107
 msgid "Midi Note"
-msgstr "Catatan Midi"
+msgstr "Not Midi"
 
 #: inc/schemas/gui/backend/arranger_object.h:60
 #: inc/gui/backend/arranger_object.h:109
@@ -94,7 +95,7 @@ msgstr "Vital"
 #: inc/schemas/audio/curve.h:50 inc/audio/curve.h:118 src/audio/curve.c:79
 #, c-format
 msgid "Pulse"
-msgstr "Pulse"
+msgstr "Pulsa"
 
 #: inc/schemas/audio/region.h:47 inc/audio/region.h:87
 #: src/gui/widgets/track.c:1030
@@ -161,7 +162,7 @@ msgstr ""
 
 #: inc/utils/gtk.h:90 src/gui/widgets/home_toolbar.c:176
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplikat"
 
 #: inc/utils/gtk.h:94 src/gui/widgets/channel.c:753
 #: src/gui/widgets/monitor_section.c:56 src/gui/widgets/monitor_section.c:371
@@ -169,16 +170,16 @@ msgstr ""
 #: resources/ui/fader_buttons.ui:46
 #: build/data/org.zrythm.Zrythm.gschema.xml:317
 msgid "Mute"
-msgstr ""
+msgstr "Bisukan"
 
 #: inc/utils/gtk.h:98 src/gui/widgets/channel.c:763 src/gui/widgets/track.c:352
 #: src/gui/widgets/track.c:884
 msgid "Unmute"
-msgstr ""
+msgstr "Batal bisukan"
 
 #: inc/audio/audio_function.h:70
 msgid "Invert"
-msgstr ""
+msgstr "Balik"
 
 #: inc/audio/audio_function.h:71
 msgid "Normalize peak"
