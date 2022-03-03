@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -154,10 +154,10 @@ on_tail_value_changed (
 
 static void
 on_bounce_with_parents_toggled (
-  GtkToggleButton *    btn,
+  GtkCheckButton *     btn,
   BounceDialogWidget * self)
 {
-  bool toggled = gtk_toggle_button_get_active (btn);
+  bool toggled = gtk_check_button_get_active (btn);
   gtk_widget_set_visible (
     GTK_WIDGET (self->bounce_step_box), !toggled);
   g_settings_set_boolean (
@@ -166,10 +166,10 @@ on_bounce_with_parents_toggled (
 
 static void
 on_disable_after_bounce_toggled (
-  GtkToggleButton *    btn,
+  GtkCheckButton *     btn,
   BounceDialogWidget * self)
 {
-  bool toggled = gtk_toggle_button_get_active (btn);
+  bool toggled = gtk_check_button_get_active (btn);
   g_settings_set_boolean (
     S_UI, "disable-after-bounce", toggled);
 }
@@ -262,8 +262,8 @@ bounce_dialog_widget_init (
   bool bounce_with_parents =
     g_settings_get_boolean (
       S_UI, "bounce-with-parents");
-  gtk_toggle_button_set_active (
-    GTK_TOGGLE_BUTTON (self->bounce_with_parents),
+  gtk_check_button_set_active (
+    GTK_CHECK_BUTTON (self->bounce_with_parents),
     bounce_with_parents);
   gtk_widget_set_visible (
     GTK_WIDGET (self->bounce_step_box),
@@ -272,7 +272,7 @@ bounce_dialog_widget_init (
   bool disable_after_bounce =
     g_settings_get_boolean (
       S_UI, "disable-after-bounce");
-  gtk_toggle_button_set_active (
-    GTK_TOGGLE_BUTTON (self->disable_after_bounce),
+  gtk_check_button_set_active (
+    GTK_CHECK_BUTTON (self->disable_after_bounce),
     disable_after_bounce);
 }

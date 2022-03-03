@@ -12,7 +12,6 @@
     <property name="icon-name">zrythm</property>
     <child internal-child="content_area">
       <object class="GtkBox">
-        <property name="visible">0</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child>
