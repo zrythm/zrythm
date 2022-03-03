@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-02-15 17:23+0000\n"
-"PO-Revision-Date: 2022-02-23 16:19+0000\n"
+"PO-Revision-Date: 2022-02-28 15:54+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.11-dev\n"
+"X-Generator: Weblate 4.11.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -255,7 +255,7 @@ msgstr "Àudio"
 #: inc/audio/track.h:196 src/project.c:769
 #: src/gui/widgets/route_target_selector_popover.c:165
 msgid "Master"
-msgstr "Màster"
+msgstr "Mestra"
 
 #: inc/audio/track.h:197 src/audio/region.c:519
 msgid "Chord"
@@ -770,7 +770,7 @@ msgstr "No s'ha seleccionat cap projecte. %s es tancarà."
 
 #: src/zrythm_app.c:458
 msgid "Initializing settings"
-msgstr "Inicialitzant la configuració"
+msgstr "Inicialitzant els paràmetres"
 
 #: src/zrythm_app.c:465
 #, c-format
@@ -873,11 +873,11 @@ msgstr "Veure la sortida d'una manera més amigable"
 
 #: src/zrythm_app.c:1798
 msgid "Print current settings"
-msgstr "Veure la configuració actual"
+msgstr "Veure els paràmetres actuals"
 
 #: src/zrythm_app.c:1802
 msgid "Reset to factory settings"
-msgstr "Restabliment de la configuració de fàbrica"
+msgstr "Restabliment dels paràmetres de fàbrica"
 
 #: src/zrythm_app.c:1805
 msgid "Override the audio backend to use"
@@ -1047,7 +1047,7 @@ msgstr "Error en instanciar al complement «%s». Inhabilitant..."
 
 #: src/plugins/plugin.c:300
 msgid "Enabled"
-msgstr "Habilitat"
+msgstr "Habilitació"
 
 #: src/plugins/plugin.c:303
 msgid "Enables or disables the plugin"
@@ -1395,7 +1395,7 @@ msgstr "Treure el solo"
 #: src/gui/widgets/track.c:367 src/gui/widgets/track.c:895
 #: resources/ui/fader_buttons.ui:58
 msgid "Listen"
-msgstr "Escoltar"
+msgstr "Oir"
 
 #: src/gui/widgets/channel.c:784 src/gui/widgets/track.c:363
 #: src/gui/widgets/track.c:905
@@ -1645,7 +1645,7 @@ msgstr "Posició"
 
 #: src/gui/widgets/digital_meter.c:167
 msgid "Time Signature - Beats per bar / Beat unit"
-msgstr "Signatura temporal - Pulsacions per barra / Unitat de beat"
+msgstr "Indicació de compàs - Pulsacions per barra / Unitat de beat"
 
 #: src/gui/widgets/digital_meter.c:577
 msgid "normal"
@@ -1661,7 +1661,7 @@ msgstr "treset"
 
 #: src/gui/widgets/digital_meter.c:874 src/gui/widgets/digital_meter.c:891
 msgid "Failed to change time signature"
-msgstr "Error en canviar la signatura de temps"
+msgstr "Error en canviar la indicació de compàs"
 
 #: src/gui/widgets/drag_dest_box.c:356 src/gui/widgets/panel_file_browser.c:421
 #: src/audio/tracklist.c:1520 src/audio/track.c:3848 src/actions/actions.c:3581
@@ -1767,7 +1767,7 @@ msgstr "Nom marcador"
 #: src/gui/widgets/arranger.c:2563
 msgid "Cannot resize because the selection contains objects without length"
 msgstr ""
-"No es pot canviar la mida perquè la selecció conté objectes sense longitud"
+"No es pot canviar la mida perquè la selecció conté objectes sense durada"
 
 #: src/gui/widgets/arranger.c:2592
 msgid ""
@@ -1907,7 +1907,7 @@ msgstr "Capçal de reproducció"
 
 #: src/gui/widgets/bot_bar.c:58
 msgid "Playhead [Jack Timebase Master]"
-msgstr "Capçal de reproducció [Màster Timebase JACK]"
+msgstr "Capçal de reproducció [Jack Timebase Master]"
 
 #: src/gui/widgets/bot_bar.c:60
 msgid "Playhead [Jack Client]"
@@ -2006,7 +2006,7 @@ msgstr "bpm"
 
 #: src/gui/widgets/bot_bar.c:706
 msgid "time sig."
-msgstr "sig. temporal"
+msgstr "ind. compàs"
 
 #: src/gui/widgets/timeline_selection_info.c:265 src/audio/marker_track.c:79
 #: resources/ui/quantize_dialog.ui:62
@@ -2059,11 +2059,11 @@ msgstr "Combinar esdeveniments"
 
 #: src/gui/widgets/transport_controls.c:426
 msgid "Create takes"
-msgstr "Crear preses"
+msgstr "Crear captures"
 
 #: src/gui/widgets/transport_controls.c:429
 msgid "Create takes (mute previous)"
-msgstr "Crear preses (silenciar anteriors)"
+msgstr "Crear captures (silenciar anteriors)"
 
 #: src/gui/widgets/transport_controls.c:432
 #: build/data/org.zrythm.Zrythm.gschema.xml:902
@@ -2239,12 +2239,12 @@ msgstr "Refer..."
 
 #: src/gui/widgets/right_dock_edge.c:100 src/utils/gtk.c:1278
 msgid "Plugin Browser"
-msgstr "Explorador de complements"
+msgstr "Navegador de complements"
 
 #: src/gui/widgets/right_dock_edge.c:134
 #: src/gui/widgets/file_browser_window.c:38 src/utils/gtk.c:1281
 msgid "File Browser"
-msgstr "Explorador de fitxers"
+msgstr "Navegador de fitxers"
 
 #: src/gui/widgets/right_dock_edge.c:169
 msgid "Monitor Section"
@@ -2252,11 +2252,11 @@ msgstr "Secció de monitor"
 
 #: src/gui/widgets/right_dock_edge.c:192 src/utils/gtk.c:1284
 msgid "Chord Preset Browser"
-msgstr "Explorador predefinit d'acords"
+msgstr "Navegador predefinit d'acords"
 
 #: src/gui/widgets/right_dock_edge.c:213
 msgid "Show file browser"
-msgstr "Mostrar l'explorador de fitxers"
+msgstr "Mostrar el navegador de fitxers"
 
 #: src/gui/widgets/plugin_properties_expander.c:107
 msgid "Load Preset"
@@ -2284,7 +2284,7 @@ msgstr "Bancs"
 #: src/gui/widgets/plugin_properties_expander.c:286
 #: resources/ui/file_browser_filters.ui:26
 msgid "Presets"
-msgstr "Configuracions prestablertes"
+msgstr "Predefinits"
 
 #: src/gui/widgets/plugin_properties_expander.c:316
 #: src/gui/widgets/project_toolbar.c:40
@@ -2412,7 +2412,7 @@ msgstr "%s - Últim objecte"
 
 #: src/gui/widgets/snap_grid.c:121
 msgid "Snap/Grid options"
-msgstr "Ajustar / Opcions quadrícula"
+msgstr "Opcions ajust / quadrícula"
 
 #: src/gui/widgets/preferences.c:498
 msgid "Select a folder"
@@ -2434,7 +2434,7 @@ msgstr "Monitor"
 
 #: src/gui/widgets/monitor_section.c:70 src/gui/widgets/monitor_section.c:364
 msgid "Dim"
-msgstr "Dism"
+msgstr "Disminució"
 
 #: src/gui/widgets/monitor_section.c:86
 #, c-format
@@ -2553,7 +2553,7 @@ msgstr "Eliminar connexió"
 
 #: src/gui/widgets/balance_control.c:287
 msgid "Failed to change balance"
-msgstr "Error en canviar l'equilibri"
+msgstr "Error en canviar el balanç"
 
 #: src/gui/widgets/live_waveform.c:324
 msgid "Live waveform indicator"
@@ -2772,7 +2772,7 @@ msgstr "Commutar quadre dret"
 
 #: src/gui/widgets/item_factory.c:99
 msgid "Failed to enable binding"
-msgstr "Error en habilitar el vincle"
+msgstr "Error en habilitar la vinculació"
 
 #: src/gui/widgets/item_factory.c:287
 msgid "Add Bookmark"
@@ -2801,7 +2801,7 @@ msgstr "Aplicar %s"
 #: src/gui/widgets/editor_toolbar.c:308
 #, c-format
 msgid "Apply %s with previous settings"
-msgstr "Aplicar %s amb la configuració anterior"
+msgstr "Aplicar %s amb els paràmetres anteriors"
 
 #: src/gui/widgets/editor_toolbar.c:355
 msgid "No Highlight"
@@ -2878,7 +2878,7 @@ msgstr "Congelar / descongelar"
 
 #: src/gui/widgets/track.c:425
 msgid "Lock/unlock"
-msgstr "Blocar / desblocar"
+msgstr "Bloquejar / desbloquejar"
 
 #: src/gui/widgets/track.c:429
 msgid "Fold"
@@ -2935,7 +2935,7 @@ msgstr "Vinculacions"
 
 #: src/gui/widgets/main_notebook.c:150
 msgid "MIDI CC bindings"
-msgstr "Vinculacions MIDI CC"
+msgstr "Vinculacions CC MIDI"
 
 #: src/gui/widgets/main_notebook.c:154 src/utils/gtk.c:1301
 msgid "Scenes"
@@ -3342,7 +3342,7 @@ msgstr "Inspector de complements"
 
 #: src/utils/gtk.c:1295
 msgid "MIDI CC Bindings"
-msgstr "Vincles MIDI CC"
+msgstr "Vinculacions CC MIDI"
 
 #: src/utils/gtk.c:1298
 msgid "Port Connections"
@@ -3796,7 +3796,7 @@ msgid ""
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
 "Error en inicialitzar el backend d'àudio %s. S'utilitzarà el backend "
-"fictici. Comprova la configuració de backend a Preferències."
+"fictici. Comprova els paràmetres de backend a Preferències."
 
 #: src/audio/engine.c:589
 #, c-format
@@ -3814,7 +3814,7 @@ msgid ""
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
 "Error en inicialitzar el backend MIDI %s. S'utilitzarà el backend fictici. "
-"Comprova la configuració de backend a Preferències."
+"Comprova els paràmetres de backend a Preferències."
 
 #: src/audio/engine.c:677
 msgid ""
@@ -3998,7 +3998,7 @@ msgstr "Preatenuador Solo"
 
 #: src/audio/fader.c:224
 msgid "Fader Solo"
-msgstr "Atenuador Solo"
+msgstr "Atenuador en Solo"
 
 #: src/audio/fader.c:242
 msgid "Prefader Listen"
@@ -4066,7 +4066,7 @@ msgstr "Sortida de l'atenuador MIDI del canal"
 
 #: src/audio/fader.c:652
 msgid "Failed to change volume"
-msgstr "Error en canviar volum"
+msgstr "Error en canviar el volum"
 
 #: src/audio/fader.c:707
 msgid "Failed to set MIDI mode"
@@ -4457,7 +4457,7 @@ msgstr "Error en combinar seleccions"
 
 #: src/actions/actions.c:2335
 msgid "Failed to insert silence"
-msgstr "Error en insertar silenci"
+msgstr "Error en inserir el silenci"
 
 #: src/actions/actions.c:2358
 msgid "Failed to remove range"
@@ -4498,7 +4498,7 @@ msgid ""
 "chord preset browser."
 msgstr ""
 "No s'ha trobat cap paquet predefinit personalitzat. Crea primer un paquet "
-"predefinit des de l'explorador predefinit d'acords."
+"predefinit des del navegador predefinit d'acords."
 
 #: src/actions/actions.c:3281 src/actions/actions.c:3333
 msgid "Preset Pack Name"
@@ -4677,7 +4677,7 @@ msgstr "Enganxar %d complements"
 
 #: src/actions/range_action.c:718 resources/ui/range_action_buttons.ui:11
 msgid "Insert silence"
-msgstr "Insertar silenci"
+msgstr "Inserir silenci"
 
 #: src/actions/range_action.c:721
 msgid "Delete range"
@@ -5166,7 +5166,7 @@ msgstr "Vincular MIDI CC"
 
 #: resources/ui/bind_cc_dialog.ui:16
 msgid "Press a key or move a knob on your MIDI device"
-msgstr "Prem una tecla o mou un botó al dispositiu MIDI"
+msgstr "Prem una tecla o mou una rodeta al dispositiu MIDI"
 
 #: resources/ui/bind_cc_dialog.ui:23
 msgid "Waiting for input..."
@@ -5344,7 +5344,7 @@ msgstr "mín"
 
 #: resources/ui/chord_selector_window.ui:193
 msgid "dim"
-msgstr "dism"
+msgstr "disminució"
 
 #: resources/ui/chord_selector_window.ui:203
 msgid "sus4"
@@ -5384,7 +5384,7 @@ msgstr "Diatònic"
 
 #: resources/ui/chord_selector_window.ui:624
 msgid "TODO"
-msgstr "TO-DO"
+msgstr "PENDENT"
 
 #: resources/ui/chord_selector_window.ui:629
 msgid "Circle of Fifths"
@@ -5565,7 +5565,7 @@ msgstr "MIDI en activitat"
 
 #: resources/ui/fader_buttons.ui:70
 msgid "Channel settings"
-msgstr "Configuració de canal"
+msgstr "Paràmetres de canal"
 
 #: resources/ui/transport_controls.ui:9
 msgid "Return to cue point on stop"
@@ -5821,7 +5821,7 @@ msgstr "Enllaç"
 
 #: resources/ui/snap_grid_popover.ui:212
 msgid "Link length to snap setting"
-msgstr "Durada de l'enllaç per a ajustar la configuració"
+msgstr "Durada de l'enllaç per a configurar l'ajust"
 
 #: resources/ui/snap_grid_popover.ui:224
 msgid "Last object"
@@ -5938,11 +5938,11 @@ msgstr "El volum del monitor en amplitud (0 a 2)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:290
 msgid "Mute volume"
-msgstr "Silenciar el volum"
+msgstr "Volum del silenci"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:291
 msgid "The monitor mute volume in amplitude (0 to 2)."
-msgstr "El monitor silencia el volum en amplitud (0 a 2)."
+msgstr "El volum del silenci del monitor en amplitud (0 a 2)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:296
 msgid "Listen volume"
@@ -5954,11 +5954,11 @@ msgstr "El volum d'escolta del monitor en amplitud (0 a 2)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:302
 msgid "Dim volume"
-msgstr "Dism volum"
+msgstr "Volum disminuït"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:303
 msgid "The monitor dim volume in amplitude (0 to 2)."
-msgstr "El monitor disminueix el volum en amplitud (0 a 2)."
+msgstr "El volum disminuït del monitor en amplitud (0 a 2)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:307
 msgid "Sum to mono"
@@ -5970,7 +5970,7 @@ msgstr "Si s'ha de sumar el senyal del monitor a mono."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:312
 msgid "Dim output"
-msgstr "Dism sortida"
+msgstr "Sortida disminuïda"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:313
 msgid "Whether to dim the the monitor signal."
@@ -6141,11 +6141,11 @@ msgstr "Si es mostren els valors d'automatització a l'editor d'automatització.
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:418
 msgid "Browser divider position"
-msgstr "Posició del divisor de l'explorador"
+msgstr "Posició del divisor del navegador"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:419
 msgid "Height of the top part of the plugin/file browser."
-msgstr "Altura de la part superior de l'explorador de complements / fitxers."
+msgstr "Altura de la part superior del navegador de complements / fitxers."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:423
 msgid "Left panel divider position"
@@ -6197,7 +6197,7 @@ msgstr "Índex de la pestanya del quadre inferior oberta actualment."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:453
 msgid "Timeline event viewer visibility"
-msgstr "Visibilitat del visualitzador d'esdeveniments de la línia de temps"
+msgstr "Visibilitat del visor d'esdeveniments de la línia de temps"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:454
 msgid "Whether the timeline event viewer is visible or not."
@@ -6327,71 +6327,69 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:522
 msgid "Plugin browser tab"
-msgstr "Pestanya de l'explorador de complements"
+msgstr "Pestanya del navegador de complements"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:523
 msgid "Selected plugin browser tab."
-msgstr "Pestanya de l'explorador de complements seleccionada."
+msgstr "Pestanya del navegador de complements seleccionada."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:527
 msgid "Plugin browser filter"
-msgstr "Filtre de l'explorador de complements"
+msgstr "Filtre del navegador de complements"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:528
 msgid "Selected plugin browser filter"
-msgstr "Filtre de l'explorador de complements seleccionat"
+msgstr "Filtre del navegador de complements seleccionat"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:532
 msgid "Plugin browser collections"
-msgstr "Col·leccions d'explorador de complements"
+msgstr "Col·leccions de navegadors de complements"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:533
 msgid "Tree paths of the selected collections in the plugin browser."
 msgstr ""
-"Camins d'arbre de les col·leccions seleccionades a l'explorador de "
-"complements."
+"Camins d'arbre de les col·leccions seleccionades al navegador de complements."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:537
 msgid "Plugin browser authors"
-msgstr "Autor de l'explorador de complements"
+msgstr "Autor del navegador de complements"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:538
 msgid "Tree paths of the selected authors in the plugin browser."
-msgstr "Camins d'arbre dels autors seleccionats a l'explorador de complements."
+msgstr "Camins d'arbre dels autors seleccionats al navegador de complements."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:542
 msgid "Plugin browser categories"
-msgstr "Categories de l'explorador de complements"
+msgstr "Categories del navegador de complements"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:543
 msgid "Tree paths of the selected categories in the plugin browser."
 msgstr ""
-"Camins d'arbre de les categories seleccionades a l'explorador de complements."
+"Camins d'arbre de les categories seleccionades al navegador de complements."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:547
 msgid "Plugin browser protocols"
-msgstr "Protocols de l'explorador de complements"
+msgstr "Protocols del navegador de complements"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:548
 msgid "Tree paths of the selected protocols in the plugin browser."
-msgstr ""
-"Camins d'arbre dels protocols seleccionats a l'explorador de complements."
+msgstr "Camins d'arbre dels protocols seleccionats al navegador de complements."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:556
 msgid "File browser bookmarks"
-msgstr "Favorits de l'explorador de fitxers"
+msgstr "Favorits del navegador de fitxers"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:557
 msgid "Location bookmarks for file browser (absolute paths)."
-msgstr "Favorits d'ubicació per a l'explorador de fitxers (camins absoluts)."
+msgstr "Favorits d'ubicació per al navegador de fitxers (camins absoluts)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:561
 msgid "File browser selected bookmark"
-msgstr "Favorit seleccionat de l'explorador de fitxers"
+msgstr "Favorit seleccionat del navegador de fitxers"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:562
 msgid "Selected bookmark in file browser."
-msgstr "Favorit seleccionat a l'explorador de fitxers."
+msgstr "Favorit seleccionat al navegador de fitxers."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:567
 msgid "Whether to autoplay the selected file."
@@ -6399,19 +6397,19 @@ msgstr "Si s'ha de reproduir automàticament el fitxer seleccionat."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:572
 msgid "Whether to show unsupported files in the file browser."
-msgstr "Si s'han de mostrar fitxers no admesos a l'explorador de fitxers."
+msgstr "Si s'han de mostrar fitxers no admesos al navegador de fitxers."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:577
 msgid "Whether to show hidden files in the file browser."
-msgstr "Si s'han de mostrar els fitxers ocults a l'explorador de fitxers."
+msgstr "Si s'han de mostrar els fitxers ocults al navegador de fitxers."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:581
 msgid "File browser filter"
-msgstr "Filtre de l'explorador de fitxers"
+msgstr "Filtre del navegador de fitxers"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:582
 msgid "Selected file browser filter"
-msgstr "Filtre de l'explorador de fitxers seleccionat"
+msgstr "Filtre del navegador de fitxers seleccionat"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:586
 msgid "Last location"
@@ -6443,7 +6441,7 @@ msgstr "Si MIDI FX s’expandeix."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:610
 msgid "Sends expanded"
-msgstr "Enviaments expandits"
+msgstr "Envia expandits"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:611
 msgid "Whether sends are expanded."
@@ -6451,7 +6449,7 @@ msgstr "Si s'expandeixen els enviaments."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:619
 msgid "Track properties expanded"
-msgstr "Propietats de pista expandides"
+msgstr "Propietats de la pista expandides"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:620
 msgid "Whether track properties is expanded."
@@ -6571,43 +6569,43 @@ msgstr "Mida del quadre d'inspector de complements quan es desconnecta."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:698
 msgid "Plugin browser detached"
-msgstr "L'explorador de complements s'ha desconnectat"
+msgstr "El navegador de complements s'ha desconnectat"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:699
 msgid "Whether the plugin browser panel is detached."
-msgstr "Si el quadre de l'explorador de complements està desconnectat."
+msgstr "Si el quadre del navegador de complements està desconnectat."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:703
 msgid "Plugin browser size"
-msgstr "Mida de l'explorador de complements"
+msgstr "Mida del navegador de complements"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:704
 msgid "Plugin browser panel size when detached."
-msgstr "Mida del quadre de l'explorador de complements quan es desconnecta."
+msgstr "Mida del quadre del navegador de complements quan es desconnecta."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:708
 msgid "File browser detached"
-msgstr "Explorador de fitxers desconnectat"
+msgstr "Navegador de fitxers desconnectat"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:709
 msgid "Whether the file browser panel is detached."
-msgstr "Si el quadre de l'explorador de fitxers està desconnectat."
+msgstr "Si el quadre del navegador de fitxers està desconnectat."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:713
 msgid "Chord pack browser detached"
-msgstr "Explorador de paquets d'acords desconnectat"
+msgstr "Navegador de paquets d'acords desconnectat"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:714
 msgid "Whether the chord pack browser panel is detached."
-msgstr "Si el quadre de l'explorador de paquets d'acords està desconnectat."
+msgstr "Si el quadre del navegador de paquets d'acords està desconnectat."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:718
 msgid "File browser size"
-msgstr "Mida de l'explorador de fitxers"
+msgstr "Mida del navegador de fitxers"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:719
 msgid "File browser panel size when detached."
-msgstr "Mida del quadre de l'explorador de fitxers quan s'separa."
+msgstr "Mida del quadre del navegador de fitxers quan es separa."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:723
 msgid "Monitor section detached"
@@ -6707,7 +6705,7 @@ msgstr "Mida del quadre de la línia de temps quan es desconnecta."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:783
 msgid "CC bindings detached"
-msgstr "CC vincles desconnectats"
+msgstr "Vinculacions CC desconnectades"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:784
 msgid "Whether the CC bindings panel is detached."
@@ -6715,11 +6713,11 @@ msgstr "Si el quadre de vinculacions CC està desconnectat."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:788
 msgid "CC bindings size"
-msgstr "Mida dels vincles CC"
+msgstr "Mida de les vinculacions CC"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:789
 msgid "CC bindings panel size when detached."
-msgstr "Mida del quadre de vincles CC quan es desconnecta."
+msgstr "Mida del quadre de vinculacions CC quan es desconnecta."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:793
 msgid "Port connections detached"
@@ -6977,7 +6975,7 @@ msgstr "Obrir la IU en instanciar"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:999
 msgid "Open plugin UIs when they are instantiated."
-msgstr "Obrir les IU del complement en instanciar."
+msgstr "Obre les IU del complement en instanciar."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1003
 msgid "Keep window on top"
@@ -6986,7 +6984,7 @@ msgstr "Mantenir la finestra a la part superior"
 #: build/data/org.zrythm.Zrythm.gschema.xml:1004
 msgid "Always show plugin UIs on top of the main window."
 msgstr ""
-"Mostrar sempre les IU dels complements a la part superior de la finestra "
+"Mostra sempre les IU dels complements a la part superior de la finestra "
 "principal."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1009
@@ -7115,11 +7113,11 @@ msgstr "Escala de la font."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1126
 msgid "User interface language"
-msgstr "Idioma de la interfície"
+msgstr "Idioma de la interfície d'usuari"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1127
 msgid "The language to use for the user interface."
-msgstr "Especificar l'idioma a utilitzar a la interfície d'usuari."
+msgstr "L'idioma a utilitzar a la interfície d'usuari."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1131
 msgid "CSS theme"
@@ -7183,7 +7181,7 @@ msgstr "El script per defecte que s'utilitzarà a la finestra de scripting."
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:7
 msgid "The Zrythm contributors"
-msgstr "Col·laboradors del Zrythm"
+msgstr "Col·laboradors de Zrythm"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:8
 msgid "Digital audio workstation"

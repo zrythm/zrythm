@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.19\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-30 23:05+0000\n"
-"PO-Revision-Date: 2021-10-16 04:35+0000\n"
-"Last-Translator: Reza Almanda <rezaalmanda27@gmail.com>\n"
+"PO-Revision-Date: 2022-03-03 06:59+0000\n"
+"Last-Translator: Narendra Utpala <naredra81@gmail.com>\n"
+"Language-Team: Indonesian <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/id/>\n"
 "Language: id\n"
-"Language-Team: Indonesian <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/id/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.11.1-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -1258,7 +1259,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse"
-msgstr "Pulse"
+msgstr "Pulsa"
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse wave."
@@ -1768,7 +1769,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:65
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplikat"
 
 #: ../../editing/common-operations.rst:66
 msgid ""
@@ -5891,7 +5892,7 @@ msgstr ""
 #: ../../tracks/midi-track.rst:31 ../../tracks/modulator-track.rst:31
 #: ../../tracks/tempo-track.rst:31
 msgid "Mute"
-msgstr ""
+msgstr "Bisukan"
 
 #: ../../tracks/audio-track.rst:22 ../../tracks/bus-track-audio.rst:22
 #: ../../tracks/bus-track-midi.rst:22 ../../tracks/group-track-audio.rst:26
