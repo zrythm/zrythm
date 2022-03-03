@@ -3,46 +3,49 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.14\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-16 08:25+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2022-02-28 15:54+0000\n"
+"Last-Translator: 이정희 <daemul72@gmail.com>\n"
+"Language-Team: Korean <https://hosted.weblate.org/projects/zrythm/"
+"user-manual-sphinx/ko/>\n"
+"Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.11.1-dev\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../_templates/page.html:61
 msgid "Next"
-msgstr ""
+msgstr "다음"
 
 #: ../../_templates/page.html:73
 msgid "Previous"
-msgstr ""
+msgstr "이전"
 
 #: ../../_templates/page.html:76
 msgid "Home"
-msgstr ""
+msgstr "홈"
 
 #: ../../_templates/page.html:88
 #, python-format
 msgid "<a href=\"%(path)s\">Copyright</a> &#169; %(copyright)s."
-msgstr ""
+msgstr "<a href=\"%(path)s\">저작권</a> &#169; %(copyright)s."
 
 #: ../../_templates/page.html:92
 #, python-format
 msgid "Copyright &#169; %(copyright)s"
-msgstr ""
+msgstr "저작권 &#169; %(copyright)s"
 
 #: ../../_templates/page.html:99
 #, python-format
 msgid "Last updated on %(last_updated)s."
-msgstr ""
+msgstr "%(last_updated)s에 마지막으로 업데이트되었습니다."
 
 #: ../../_templates/page.html:105
 msgid ""
@@ -52,11 +55,16 @@ msgid ""
 "\">@pradyunsg</a>'s\n"
 "              <a href=\"https://github.com/pradyunsg/furo\">Furo theme</a>."
 msgstr ""
+"<a href=\"https://www.sphinx-doc.org/\">Sphinx</a>로 구축\n"
+"              및\n"
+"              <a class=\"muted-link\" href=\"https://pradyunsg.me\""
+">@pradyunsg</a>의\n"
+"              <a href=\"https://github.com/pradyunsg/furo\">Furo 테마</a>."
 
 #: ../../_templates/page.html:116
 msgid "Show Source"
-msgstr ""
+msgstr "소스 표시"
 
 #: ../../_templates/page.html:137
 msgid "Contents"
-msgstr ""
+msgstr "내용물"
