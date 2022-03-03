@@ -3615,8 +3615,16 @@ port_set_expose_to_backend (
   Port * self,
   int    expose)
 {
-  g_return_if_fail (
-    AUDIO_ENGINE && AUDIO_ENGINE->setup);
+  g_return_if_fail (AUDIO_ENGINE);
+
+  if (!AUDIO_ENGINE->setup)
+    {
+      g_message (
+        "audio engine not set up, skipping expose "
+        "to backend for %s",
+        self->id.sym);
+      return;
+    }
 
   if (self->id.type == TYPE_AUDIO)
     {

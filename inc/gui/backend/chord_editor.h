@@ -138,6 +138,23 @@ chord_editor_transpose_chords (
   bool          up,
   bool          undoable);
 
+/**
+ * Returns the ChordDescriptor for the given note
+ * number, otherwise NULL if the given note number
+ * is not in the proper range.
+ */
+NONNULL
+ChordDescriptor *
+chord_editor_get_chord_from_note_number (
+  const ChordEditor * self,
+  midi_byte_t   note_number);
+
+NONNULL
+int
+chord_editor_get_chord_index (
+  const ChordEditor *     self,
+  const ChordDescriptor * chord);
+
 ChordEditor *
 chord_editor_new (void);
 

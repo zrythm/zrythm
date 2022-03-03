@@ -479,7 +479,7 @@ typedef struct PortIdentifier
   /** Human readable label. */
   char *              label;
 
-  /** Symbol, if LV2. */
+  /** Unique symbol. */
   char *              sym;
 
   /** URI, if LV2 property. */

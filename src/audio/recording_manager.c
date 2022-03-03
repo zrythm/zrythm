@@ -1248,32 +1248,63 @@ handle_midi_event (
   ArrangerObject * mn_obj;
   MidiEvent * mev = &ev->midi_event;
   midi_byte_t * buf = mev->raw_buffer;
-  if (midi_is_note_on (buf))
+
+  if (tr->type == TRACK_TYPE_CHORD)
     {
-      g_return_if_fail (region);
-      midi_region_start_unended_note (
-        region, &local_pos, &local_end_pos,
-        midi_get_note_number (buf),
-        midi_get_velocity (buf), 1);
-    }
-  else if (midi_is_note_off (buf))
-    {
-      g_return_if_fail (region);
-      mn =
-        midi_region_pop_unended_note (
-          region,
-          midi_get_note_number (buf));
-      if (mn)
+      if (midi_is_note_on (buf))
         {
-          mn_obj =
-            (ArrangerObject *) mn;
-          arranger_object_end_pos_setter (
-            mn_obj, &local_end_pos);
+          midi_byte_t note_number =
+            midi_get_note_number (buf);
+          const ChordDescriptor * descr =
+            chord_editor_get_chord_from_note_number (
+              CHORD_EDITOR, note_number);
+          g_return_if_fail (descr);
+          int chord_idx =
+            chord_editor_get_chord_index (
+              CHORD_EDITOR, descr);
+          ChordObject * co =
+            chord_object_new (
+              &region->id, chord_idx,
+              region->num_chord_objects);
+          chord_region_add_chord_object (
+            region, co, F_PUBLISH_EVENTS);
+          arranger_object_set_position (
+            (ArrangerObject *) co, &local_pos,
+            ARRANGER_OBJECT_POSITION_TYPE_START,
+            F_NO_VALIDATE);
         }
     }
+  /* else if not chord track */
   else
     {
-      /* TODO */
+      if (midi_is_note_on (buf))
+        {
+          g_return_if_fail (region);
+          midi_region_start_unended_note (
+            region, &local_pos, &local_end_pos,
+            midi_get_note_number (buf),
+            midi_get_velocity (buf),
+            F_PUBLISH_EVENTS);
+        }
+      else if (midi_is_note_off (buf))
+        {
+          g_return_if_fail (region);
+          mn =
+            midi_region_pop_unended_note (
+              region,
+              midi_get_note_number (buf));
+          if (mn)
+            {
+              mn_obj =
+                (ArrangerObject *) mn;
+              arranger_object_end_pos_setter (
+                mn_obj, &local_end_pos);
+            }
+        }
+      else
+        {
+          /* TODO */
+        }
     }
 }
 

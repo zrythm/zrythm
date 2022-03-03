@@ -179,6 +179,9 @@ midi_region_insert_midi_note (
   int        idx,
   int        pub_events)
 {
+  g_return_if_fail (
+    self->id.type == REGION_TYPE_MIDI);
+
   array_double_size_if_full (
     self->midi_notes, self->num_midi_notes,
     self->midi_notes_size, MidiNote *);

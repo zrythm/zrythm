@@ -221,6 +221,36 @@ chord_editor_transpose_chords (
     }
 }
 
+/**
+ * Returns the ChordDescriptor for the given note
+ * number, otherwise NULL if the given note number
+ * is not in the proper range.
+ */
+ChordDescriptor *
+chord_editor_get_chord_from_note_number (
+  const ChordEditor * self,
+  midi_byte_t   note_number)
+{
+  if (note_number < 60 || note_number >= 72)
+    return NULL;
+
+  return self->chords[note_number - 60];
+}
+
+int
+chord_editor_get_chord_index (
+  const ChordEditor *     self,
+  const ChordDescriptor * chord)
+{
+  for (int i = 0; i < self->num_chords; i++)
+    {
+      if (self->chords[i] == chord)
+        return i;
+    }
+
+  g_return_val_if_reached (-1);
+}
+
 ChordEditor *
 chord_editor_new (void)
 {

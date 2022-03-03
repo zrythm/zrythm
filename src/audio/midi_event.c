@@ -148,12 +148,11 @@ midi_events_transform_chord_and_append (
       /* only use middle octave */
       midi_byte_t note_number =
         midi_get_note_number (buf);
-      if (note_number < 60
-          || note_number >= 72)
-        continue;
-
       const ChordDescriptor * descr =
-        CHORD_EDITOR->chords[note_number - 60];
+        chord_editor_get_chord_from_note_number (
+          CHORD_EDITOR, note_number);
+      if (!descr)
+        continue;
 
       if (midi_is_note_on (buf))
         {
