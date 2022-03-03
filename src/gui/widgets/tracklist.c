@@ -83,6 +83,9 @@ on_dnd_motion (
       if (!track_get_should_be_visible (track))
         continue;
 
+      if (!track->widget)
+        continue;
+
       if (ui_is_child_hit (
             GTK_WIDGET (self),
             GTK_WIDGET (track->widget),

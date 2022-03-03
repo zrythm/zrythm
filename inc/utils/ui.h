@@ -558,16 +558,17 @@ ui_is_point_in_rect_hit (
  *   The bigger the padding the more space the
  *   child will have to get hit.
  */
+NONNULL
 int
 ui_is_child_hit (
-  GtkWidget * parent,
-  GtkWidget *    child,
-  const int            check_x,
-  const int            check_y,
-  const double         x,
-  const double         y,
-  const double         x_padding,
-  const double         y_padding);
+  GtkWidget *   parent,
+  GtkWidget *   child,
+  const int     check_x,
+  const int     check_y,
+  const double  x,
+  const double  y,
+  const double  x_padding,
+  const double  y_padding);
 
 /**
  * Returns the matching hit child, or NULL.
