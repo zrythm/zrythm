@@ -165,6 +165,7 @@ engine_rtaudio_create_rtaudio (
       return NULL;
     }
 
+  g_message ("calling rtaudio_create...");
   rtaudio = rtaudio_create (api);
 
   if (rtaudio_error (rtaudio))
@@ -173,6 +174,8 @@ engine_rtaudio_create_rtaudio (
         "RtAudio: %s", rtaudio_error (rtaudio));
       return NULL;
     }
+
+  g_message ("rtaudio_create() successful");
 
   return rtaudio;
 }

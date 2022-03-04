@@ -104,6 +104,9 @@ Required
 `libbacktrace (3-Clause BSD) <https://github.com/ianlancetaylor/libbacktrace>`_
   Backtraces
 
+`libcurl (X11) <https://curl.se/libcurl/>`_
+  Network connections
+
 `libcyaml (ISC) <https://github.com/tlsa/libcyaml/>`_
   Serialization into YAML
 
@@ -115,6 +118,9 @@ Required
 
 `reproc (Expat) <https://github.com/DaanDeMeyer/reproc>`_
   Process launching
+
+`rubberband (GPLv2+) <https://breakfastquay.com/rubberband/>`_
+  Time-stretching and pitch-shifting
 
 `vamp-plugin-sdk (X11) <https://vamp-plugins.org/>`_
   Audio analysis
