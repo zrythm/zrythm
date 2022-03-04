@@ -795,10 +795,8 @@ arranger_object_set_magic (
  */
 void
 arranger_object_print (
-  ArrangerObject * self)
+  const ArrangerObject * self)
 {
-  g_return_if_fail (self);
-
   const char * type =
     arranger_object_stringize_type (self->type);
 

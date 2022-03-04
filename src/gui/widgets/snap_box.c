@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -42,8 +42,6 @@ snap_box_widget_refresh (
 {
   gtk_widget_set_sensitive (
     GTK_WIDGET (self->snap_to_grid_keep_offset),
-    self->snap_grid->snap_grid->snap_to_grid);
-  g_message ("%d",
     self->snap_grid->snap_grid->snap_to_grid);
 
   gtk_toggle_button_set_active (

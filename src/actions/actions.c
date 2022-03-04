@@ -2935,16 +2935,8 @@ DEFINE_SIMPLE (activate_export_midi_region)
   sscanf (str, "%p", &r);
   g_return_if_fail (IS_REGION_AND_NONNULL (r));
 
-  char * filename =
-    export_midi_file_dialog_widget_run_for_region (
-      GTK_WINDOW (MAIN_WINDOW), r);
-  if (filename)
-    {
-      g_message ("exporting to %s", filename);
-      midi_region_export_to_midi_file (
-        r, filename, 0, 0);
-      g_free (filename);
-    }
+  export_midi_file_dialog_widget_run (
+    GTK_WINDOW (MAIN_WINDOW), r);
 }
 
 DEFINE_SIMPLE (activate_quick_bounce_selections)

@@ -1005,6 +1005,8 @@ log_writer (
           g_free (datetime);
         }
       FILE * file = fopen (tmp_log_file, "a");
+      g_return_val_if_fail (
+        file, G_LOG_WRITER_UNHANDLED);
       fprintf (file, "%s\n", str);
       fclose (file);
     }
@@ -1032,7 +1034,7 @@ log_writer (
                 G_LOG_DOMAIN, log_level,
                 "%s", str);
             }
-          return 0;
+          return G_LOG_WRITER_HANDLED;
         }
     }
   else

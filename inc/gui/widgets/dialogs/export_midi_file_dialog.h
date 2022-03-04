@@ -20,31 +20,17 @@
 #ifndef __GUI_WIDGETS_EXPORT_MIDI_FILE_DIALOG_H__
 #define __GUI_WIDGETS_EXPORT_MIDI_FILE_DIALOG_H__
 
-#include "audio/channel.h"
-#include "gui/widgets/meter.h"
-
 #include <gtk/gtk.h>
 
-typedef struct _MidiControllerMbWidget
-  MidiControllerMbWidget;
-
-typedef struct _ExportMidiFileDialogWidget
-{
-  GtkFileChooserDialog * dialog;
-
-  /** Description to show for the region. */
-  GtkLabel *           description;
-
-  /** ZRegion, if exporting region. */
-  ZRegion *             region;
-} ExportMidiFileDialogWidget;
+typedef struct ZRegion ZRegion;
 
 /**
- * Runs a new dialog and returns the filepath if
- * selected or NULL if canceled.
+ * Runs the dialog asynchronously.
+ *
+ * @param region Region, if exporting region.
  */
-char *
-export_midi_file_dialog_widget_run_for_region (
+void
+export_midi_file_dialog_widget_run (
   GtkWindow * parent,
   ZRegion *   region);
 

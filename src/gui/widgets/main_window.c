@@ -755,6 +755,8 @@ main_window_widget_init (MainWindowWidget * self)
       "s", },
     { "arranger-object-view-info",
       activate_arranger_object_view_info, "s" },
+    { "export-midi-region",
+      activate_export_midi_region, "s" },
 
     /* chord presets */
     { "save-chord-preset",

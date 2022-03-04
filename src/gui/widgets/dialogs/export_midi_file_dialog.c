@@ -41,23 +41,71 @@
 
 #include <glib/gi18n.h>
 
+static void
+on_response (
+  GtkNativeDialog * native,
+  int               response)
+{
+  if (response == GTK_RESPONSE_ACCEPT)
+    {
+      GtkFileChooser * chooser =
+        GTK_FILE_CHOOSER (native);
+      GFile * gfile =
+        gtk_file_chooser_get_file (chooser);
+      char * filename = g_file_get_path (gfile);
+
+      g_message ("exporting to %s", filename);
+
+      const char * midi_format_str =
+        gtk_file_chooser_get_choice (
+          GTK_FILE_CHOOSER (native), "midi-format");
+      int midi_format = 0;
+      if (string_is_equal (midi_format_str, "zero"))
+        {
+          midi_format = 0;
+        }
+      else if (
+        string_is_equal (midi_format_str, "one"))
+        {
+          midi_format = 1;
+        }
+
+      ZRegion * r =
+        (ZRegion *)
+        g_object_get_data (
+          G_OBJECT (native), "region");
+      if (r)
+        {
+          midi_region_export_to_midi_file (
+            r, filename, midi_format, 0);
+
+          ui_show_notification (
+            _("MIDI region exported."));
+        }
+      g_free (filename);
+
+      g_object_unref (gfile);
+    }
+
+  g_object_unref (native);
+}
+
 /**
- * Runs a new dialog and returns the filepath if
- * selected or NULL if canceled.
+ * Runs the dialog asynchronously.
+ *
+ * @param region Region, if exporting region.
  */
-char *
-export_midi_file_dialog_widget_run_for_region (
+void
+export_midi_file_dialog_widget_run (
   GtkWindow * parent,
   ZRegion *   region)
 {
-  GtkFileChooserDialog * dialog =
-    GTK_FILE_CHOOSER_DIALOG (
-      gtk_file_chooser_dialog_new (
+  GtkFileChooserNative * fc_native =
+    GTK_FILE_CHOOSER_NATIVE (
+      gtk_file_chooser_native_new (
         _("Select MIDI file"), parent,
         GTK_FILE_CHOOSER_ACTION_SAVE,
-        _("_Cancel"), GTK_RESPONSE_CANCEL,
-        _("_Export"), GTK_RESPONSE_ACCEPT,
-        NULL));
+        _("_Export"), _("_Cancel")));
 
   /* add region content choice */
   StrvBuilder * region_content_ids_builder =
@@ -77,7 +125,7 @@ export_midi_file_dialog_widget_run_for_region (
   char ** region_content_labels =
     strv_builder_end (region_content_labels_builder);
   gtk_file_chooser_add_choice (
-    GTK_FILE_CHOOSER (dialog), "region-content",
+    GTK_FILE_CHOOSER (fc_native), "region-content",
     _("Region Content"),
     (const char **) region_content_ids,
     (const char **) region_content_labels);
@@ -102,7 +150,7 @@ export_midi_file_dialog_widget_run_for_region (
   char ** midi_format_labels =
     strv_builder_end (midi_format_labels_builder);
   gtk_file_chooser_add_choice (
-    GTK_FILE_CHOOSER (dialog), "midi-format",
+    GTK_FILE_CHOOSER (fc_native), "midi-format",
     _("MIDI Format"),
     (const char **) midi_format_ids,
     (const char **) midi_format_labels);
@@ -118,7 +166,7 @@ export_midi_file_dialog_widget_run_for_region (
   gtk_file_filter_add_suffix (
     filter, "midi");
   gtk_file_chooser_add_filter (
-    GTK_FILE_CHOOSER (dialog), filter);
+    GTK_FILE_CHOOSER (fc_native), filter);
 
   char * tmp =
     g_strdup_printf (
@@ -127,31 +175,16 @@ export_midi_file_dialog_widget_run_for_region (
     string_convert_to_filename (tmp);
   g_free (tmp);
   gtk_file_chooser_set_current_name (
-    GTK_FILE_CHOOSER (dialog), file);
+    GTK_FILE_CHOOSER (fc_native), file);
   g_free (file);
 
-  gtk_window_set_transient_for (
-    GTK_WINDOW (dialog), parent);
+  g_signal_connect (
+    fc_native, "response",
+    G_CALLBACK (on_response), NULL);
 
-  int res =
-    z_gtk_dialog_run (GTK_DIALOG (dialog), false);
-  char * filename  = NULL;
-  switch (res)
-    {
-    case GTK_RESPONSE_ACCEPT:
-      {
-        GFile * gfile = NULL;
-        gfile =
-          gtk_file_chooser_get_file (
-            GTK_FILE_CHOOSER (dialog));
-        filename = g_file_get_path (gfile);
-        g_object_unref (gfile);
-      }
-      break;
-    default:
-      break;
-    }
-  gtk_window_destroy (GTK_WINDOW (dialog));
+  g_object_set_data (
+    G_OBJECT (fc_native), "region", region);
 
-  return filename;
+  gtk_native_dialog_show (
+    GTK_NATIVE_DIALOG (fc_native));
 }

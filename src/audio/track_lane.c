@@ -528,13 +528,13 @@ track_lane_write_to_midi_file (
   TrackLane * self,
   MIDI_FILE * mf)
 {
-  /* All data is written out to _tracks_ not
+  /* All data is written out to tracks not
    * channels. We therefore
-  ** set the current channel before writing
-  data out. Channel assignments
-  ** can change any number of times during the
-  file, and affect all
-  ** tracks messages until it is changed. */
+   * set the current channel before writing
+   * data out. Channel assignments
+   * can change any number of times during the
+   * file, and affect all
+   * tracks messages until it is changed. */
   midiFileSetTracksDefaultChannel (
     mf, self->track->pos, MIDI_CHANNEL_1);
 

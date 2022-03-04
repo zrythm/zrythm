@@ -584,9 +584,10 @@ arranger_object_is_selected (
  * Prints debug information about the given
  * object.
  */
+NONNULL
 void
 arranger_object_print (
-  ArrangerObject * self);
+  const ArrangerObject * self);
 
 /**
  * Gets the mute status of the object.
@@ -1116,6 +1117,7 @@ arranger_object_set_end_pos_full_size (
  * into account its previous index (eg, before
  * deletion if undoing).
  */
+NONNULL
 void
 arranger_object_add_to_project (
   ArrangerObject * obj,

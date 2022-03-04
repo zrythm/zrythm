@@ -2568,6 +2568,7 @@ arranger_selections_paste_to_pos (
   /* clear current project selections */
   ArrangerSelections * project_sel =
     arranger_selections_get_for_type (self->type);
+  g_return_if_fail (project_sel);
   arranger_selections_clear (
     project_sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
