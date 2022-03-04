@@ -546,12 +546,11 @@ track_lane_write_to_midi_file (
     mf, self->track->pos, textTrackName,
     track->name);
 
-  ZRegion * region;
   for (int i = 0; i < self->num_regions; i++)
     {
-      region = self->regions[i];
+      const ZRegion * region = self->regions[i];
       midi_region_write_to_midi_file (
-        region, mf, 1, true, true);
+        region, mf, true, true, true);
     }
 }
 

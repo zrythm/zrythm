@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,7 +31,7 @@ typedef struct ZRegion ZRegion;
  */
 void
 export_midi_file_dialog_widget_run (
-  GtkWindow * parent,
-  ZRegion *   region);
+  GtkWindow *                parent,
+  const TimelineSelections * sel);
 
 #endif

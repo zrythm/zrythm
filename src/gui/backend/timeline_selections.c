@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,7 +22,9 @@
 #include "audio/chord_track.h"
 #include "audio/engine.h"
 #include "audio/marker_track.h"
+#include "audio/midi_file.h"
 #include "audio/position.h"
+#include "audio/tempo_track.h"
 #include "audio/track.h"
 #include "audio/transport.h"
 #include "gui/backend/event.h"
@@ -33,6 +35,7 @@
 #include "utils/arrays.h"
 #include "utils/audio.h"
 #include "utils/flags.h"
+#include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/yaml.h"
 #include "zrythm_app.h"
@@ -765,7 +768,7 @@ timeline_selections_set_index_in_prev_lane (
 
 bool
 timeline_selections_contains_only_regions (
-  TimelineSelections * self)
+  const TimelineSelections * self)
 {
   return
     self->num_regions > 0
@@ -775,8 +778,8 @@ timeline_selections_contains_only_regions (
 
 bool
 timeline_selections_contains_only_region_types (
-  TimelineSelections * self,
-  RegionType           types)
+  const TimelineSelections * self,
+  RegionType                 types)
 {
   if (!timeline_selections_contains_only_regions (self))
     return false;
@@ -787,5 +790,87 @@ timeline_selections_contains_only_region_types (
       if (!(types & r->id.type))
         return false;
     }
+  return true;
+}
+
+/**
+ * Exports the selections to the given MIDI file.
+ */
+bool
+timeline_selections_export_to_midi_file (
+  const TimelineSelections * self,
+  const char *               full_path,
+  int                        midi_version,
+  const bool                 export_full_regions)
+{
+  MIDI_FILE *mf;
+
+  if ((mf = midiFileCreate (full_path, TRUE)))
+    {
+      /* Write tempo information out to track 1 */
+      midiSongAddTempo (
+        mf, 1,
+        (int)
+        tempo_track_get_current_bpm (
+          P_TEMPO_TRACK));
+
+      /* All data is written out to tracks not
+       * channels. We therefore set the current
+       * channel before writing data out. Channel
+       * assignments can change any number of times
+       * during the file, and affect all tracks
+       * messages until it is changed. */
+      midiFileSetTracksDefaultChannel (
+        mf, 1, MIDI_CHANNEL_1);
+
+      midiFileSetPPQN (mf, TICKS_PER_QUARTER_NOTE);
+
+      G_BREAKPOINT ();
+      midiFileSetVersion (mf, midi_version);
+
+      /* common time: 4 crochet beats, per bar */
+      int beats_per_bar =
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
+      midiSongAddSimpleTimeSig (
+        mf, 1, beats_per_bar,
+        math_round_double_to_signed_32 (
+          TRANSPORT->ticks_per_beat));
+
+      TimelineSelections * sel_clone =
+        (TimelineSelections *)
+        arranger_selections_clone (
+          (ArrangerSelections *) self);
+      arranger_selections_sort_by_indices (
+        (ArrangerSelections *) sel_clone, false);
+
+      for (int i = 0; i < sel_clone->num_regions;
+           i++)
+        {
+          const ZRegion * r = sel_clone->regions[i];
+
+          if (midi_version > 0)
+            {
+              /* add track name */
+              Track * track =
+                arranger_object_get_track (
+                  (const ArrangerObject *) r);
+              g_return_val_if_fail (track, false);
+              midiTrackAddText (
+                mf, track->pos, textTrackName,
+                track->name);
+            }
+
+          midi_region_write_to_midi_file (
+            r, mf, true, export_full_regions,
+            midi_version == 0 ? false : true);
+        }
+
+      arranger_selections_free_full (
+        (ArrangerSelections *) sel_clone);
+
+      midiFileClose(mf);
+    }
+
   return true;
 }

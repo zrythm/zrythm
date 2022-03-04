@@ -469,16 +469,10 @@ arranger_selections_set_from_selections (
  */
 ArrangerSelections *
 arranger_selections_clone (
-  ArrangerSelections * self)
+  const ArrangerSelections * self)
 {
   g_return_val_if_fail (
     IS_ARRANGER_SELECTIONS (self), NULL);
-
-  TimelineSelections * src_ts, * new_ts;
-  ChordSelections * src_cs, * new_cs;
-  MidiArrangerSelections * src_mas, * new_mas;
-  AutomationSelections * src_as, * new_as;
-  AudioSelections * src_aus, * new_aus;
 
 #define CLONE_OBJS(src_sel,new_sel,cc,sc) \
   cc * sc, * new_##sc; \
@@ -502,68 +496,89 @@ arranger_selections_clone (
   switch (self->type)
     {
     case TYPE (TIMELINE):
-      src_ts = (TimelineSelections *) self;
-      new_ts = object_new (TimelineSelections);
-      new_ts->base = src_ts->base;
-      arranger_selections_init (
-        (ArrangerSelections *) new_ts,
-        ARRANGER_SELECTIONS_TYPE_TIMELINE);
-      CLONE_OBJS (
-        src_ts, new_ts, ZRegion, region);
-      CLONE_OBJS (
-        src_ts, new_ts, ScaleObject, scale_object);
-      CLONE_OBJS (
-        src_ts, new_ts, Marker, marker);
-      return ((ArrangerSelections *) new_ts);
+      {
+        const TimelineSelections * src_ts =
+          (const TimelineSelections *) self;
+        TimelineSelections * new_ts =
+          object_new (TimelineSelections);
+        new_ts->base = src_ts->base;
+        arranger_selections_init (
+          (ArrangerSelections *) new_ts,
+          ARRANGER_SELECTIONS_TYPE_TIMELINE);
+        CLONE_OBJS (
+          src_ts, new_ts, ZRegion, region);
+        CLONE_OBJS (
+          src_ts, new_ts, ScaleObject, scale_object);
+        CLONE_OBJS (
+          src_ts, new_ts, Marker, marker);
+        return ((ArrangerSelections *) new_ts);
+      }
+      break;
     case TYPE (MIDI):
-      src_mas = (MidiArrangerSelections *) self;
-      new_mas =
-        object_new (MidiArrangerSelections);
-      arranger_selections_init (
-        (ArrangerSelections *) new_mas,
-        ARRANGER_SELECTIONS_TYPE_MIDI);
-      new_mas->base = src_mas->base;
-      CLONE_OBJS (
-        src_mas, new_mas, MidiNote, midi_note);
-      return ((ArrangerSelections *) new_mas);
+      {
+        const MidiArrangerSelections * src_mas =
+          (const MidiArrangerSelections *) self;
+        MidiArrangerSelections * new_mas =
+          object_new (MidiArrangerSelections);
+        arranger_selections_init (
+          (ArrangerSelections *) new_mas,
+          ARRANGER_SELECTIONS_TYPE_MIDI);
+        new_mas->base = src_mas->base;
+        CLONE_OBJS (
+          src_mas, new_mas, MidiNote, midi_note);
+        return ((ArrangerSelections *) new_mas);
+      }
+      break;
     case TYPE (AUTOMATION):
-      src_as = (AutomationSelections *) self;
-      new_as =
-        object_new (AutomationSelections);
-      arranger_selections_init (
-        (ArrangerSelections *) new_as,
-        ARRANGER_SELECTIONS_TYPE_AUTOMATION);
-      new_as->base = src_as->base;
-      CLONE_OBJS (
-        src_as, new_as, AutomationPoint,
-        automation_point);
-      return ((ArrangerSelections *) new_as);
+      {
+        const AutomationSelections * src_as =
+          (const AutomationSelections *) self;
+        AutomationSelections * new_as =
+          object_new (AutomationSelections);
+        arranger_selections_init (
+          (ArrangerSelections *) new_as,
+          ARRANGER_SELECTIONS_TYPE_AUTOMATION);
+        new_as->base = src_as->base;
+        CLONE_OBJS (
+          src_as, new_as, AutomationPoint,
+          automation_point);
+        return ((ArrangerSelections *) new_as);
+      }
+      break;
     case TYPE (CHORD):
-      src_cs = (ChordSelections *) self;
-      new_cs =
-        object_new (ChordSelections);
-      arranger_selections_init (
-        (ArrangerSelections *) new_cs,
-        ARRANGER_SELECTIONS_TYPE_CHORD);
-      new_cs->base = src_cs->base;
-      CLONE_OBJS (
-        src_cs, new_cs, ChordObject, chord_object);
-      return ((ArrangerSelections *) new_cs);
+      {
+        const ChordSelections * src_cs =
+          (const ChordSelections *) self;
+        ChordSelections * new_cs =
+          object_new (ChordSelections);
+        arranger_selections_init (
+          (ArrangerSelections *) new_cs,
+          ARRANGER_SELECTIONS_TYPE_CHORD);
+        new_cs->base = src_cs->base;
+        CLONE_OBJS (
+          src_cs, new_cs, ChordObject, chord_object);
+        return ((ArrangerSelections *) new_cs);
+      }
+      break;
     case TYPE (AUDIO):
-      src_aus = (AudioSelections *) self;
-      new_aus =
-        object_new (AudioSelections);
-      arranger_selections_init (
-        (ArrangerSelections *) new_aus,
-        ARRANGER_SELECTIONS_TYPE_CHORD);
-      new_aus->base = src_aus->base;
-      new_aus->sel_start = src_aus->sel_start;
-      new_aus->sel_end = src_aus->sel_end;
-      new_aus->has_selection =
-        src_aus->has_selection;
-      new_aus->pool_id = src_aus->pool_id;
-      new_aus->region_id = src_aus->region_id;
-      return ((ArrangerSelections *) new_aus);
+      {
+        const AudioSelections * src_aus =
+          (const AudioSelections *) self;
+        AudioSelections * new_aus =
+          object_new (AudioSelections);
+        arranger_selections_init (
+          (ArrangerSelections *) new_aus,
+          ARRANGER_SELECTIONS_TYPE_CHORD);
+        new_aus->base = src_aus->base;
+        new_aus->sel_start = src_aus->sel_start;
+        new_aus->sel_end = src_aus->sel_end;
+        new_aus->has_selection =
+          src_aus->has_selection;
+        new_aus->pool_id = src_aus->pool_id;
+        new_aus->region_id = src_aus->region_id;
+        return ((ArrangerSelections *) new_aus);
+      }
+      break;
     default:
       g_return_val_if_reached (NULL);
     }
@@ -865,8 +880,8 @@ arranger_selections_has_any (
  */
 static void
 add_region_ticks (
-  ArrangerSelections * self,
-  Position *           pos)
+  const ArrangerSelections * self,
+  Position *                 pos)
 {
   ArrangerObject * obj =
     arranger_selections_get_first_object (self);
@@ -889,15 +904,11 @@ add_region_ticks (
  */
 void
 arranger_selections_get_start_pos (
-  ArrangerSelections * self,
-  Position *           pos,
-  bool                 global)
+  const ArrangerSelections * self,
+  Position *                 pos,
+  const bool                 global)
 {
   int i;
-  TimelineSelections * ts;
-  ChordSelections * cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections * as;
 
   position_set_to_bar (pos, 80000);
   g_return_if_fail (pos->ticks > 0);
@@ -920,40 +931,52 @@ arranger_selections_get_start_pos (
   switch (self->type)
     {
     case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      GET_START_POS (
-        ts, ZRegion, region);
-      GET_START_POS (
-        ts, ScaleObject, scale_object);
-      GET_START_POS (
-        ts, Marker, marker);
+      {
+        const TimelineSelections * ts =
+          (const TimelineSelections *) self;
+        GET_START_POS (
+          ts, ZRegion, region);
+        GET_START_POS (
+          ts, ScaleObject, scale_object);
+        GET_START_POS (
+          ts, Marker, marker);
+      }
       break;
     case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      GET_START_POS (
-        mas, MidiNote, midi_note);
-      if (global)
-        {
-          add_region_ticks (self, pos);
-        }
+      {
+        const MidiArrangerSelections * mas =
+          (const MidiArrangerSelections *) self;
+        GET_START_POS (
+          mas, MidiNote, midi_note);
+        if (global)
+          {
+            add_region_ticks (self, pos);
+          }
+      }
       break;
     case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      GET_START_POS (
-        as, AutomationPoint, automation_point);
-      if (global)
-        {
-          add_region_ticks (self, pos);
-        }
+      {
+        const AutomationSelections * as =
+          (const AutomationSelections *) self;
+        GET_START_POS (
+          as, AutomationPoint, automation_point);
+        if (global)
+          {
+            add_region_ticks (self, pos);
+          }
+      }
       break;
     case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      GET_START_POS (
-        cs, ChordObject, chord_object);
-      if (global)
-        {
-          add_region_ticks (self, pos);
-        }
+      {
+        const ChordSelections * cs =
+          (ChordSelections *) self;
+        GET_START_POS (
+          cs, ChordObject, chord_object);
+        if (global)
+          {
+            add_region_ticks (self, pos);
+          }
+      }
       break;
     default:
       g_return_if_reached ();
@@ -1121,13 +1144,9 @@ arranger_selections_add_to_region (
  */
 ArrangerObject *
 arranger_selections_get_first_object (
-  ArrangerSelections * self)
+  const ArrangerSelections * self)
 {
   int i;
-  TimelineSelections * ts;
-  ChordSelections * cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections * as;
 
   Position pos;
   position_set_to_bar (&pos, 80000);
@@ -1159,28 +1178,40 @@ arranger_selections_get_first_object (
   switch (self->type)
     {
     case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      GET_FIRST_OBJ (
-        ts, ZRegion, region);
-      GET_FIRST_OBJ (
-        ts, ScaleObject, scale_object);
-      GET_FIRST_OBJ (
-        ts, Marker, marker);
+      {
+        const TimelineSelections * ts =
+          (const TimelineSelections *) self;
+        GET_FIRST_OBJ (
+          ts, ZRegion, region);
+        GET_FIRST_OBJ (
+          ts, ScaleObject, scale_object);
+        GET_FIRST_OBJ (
+          ts, Marker, marker);
+      }
       break;
     case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      GET_FIRST_OBJ (
-        mas, MidiNote, midi_note);
+      {
+        const MidiArrangerSelections * mas =
+          (const MidiArrangerSelections *) self;
+        GET_FIRST_OBJ (
+          mas, MidiNote, midi_note);
+      }
       break;
     case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      GET_FIRST_OBJ (
-        as, AutomationPoint, automation_point);
+      {
+        const AutomationSelections * as =
+          (const AutomationSelections *) self;
+        GET_FIRST_OBJ (
+          as, AutomationPoint, automation_point);
+      }
       break;
     case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      GET_FIRST_OBJ (
-        cs, ChordObject, chord_object);
+      {
+        const ChordSelections * cs =
+          (const ChordSelections *) self;
+        GET_FIRST_OBJ (
+          cs, ChordObject, chord_object);
+      }
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -1196,13 +1227,9 @@ arranger_selections_get_first_object (
  */
 ArrangerObject *
 arranger_selections_get_last_object (
-  ArrangerSelections * self)
+  const ArrangerSelections * self)
 {
   int i;
-  TimelineSelections * ts;
-  ChordSelections * cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections * as;
 
   Position pos;
   position_set_to_bar (&pos, - POSITION_MAX_BAR);
@@ -1240,28 +1267,40 @@ arranger_selections_get_last_object (
   switch (self->type)
     {
     case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      GET_LAST_OBJ (
-        ts, ZRegion, region);
-      GET_LAST_OBJ (
-        ts, ScaleObject, scale_object);
-      GET_LAST_OBJ (
-        ts, Marker, marker);
+      {
+        const TimelineSelections * ts =
+          (const TimelineSelections *) self;
+        GET_LAST_OBJ (
+          ts, ZRegion, region);
+        GET_LAST_OBJ (
+          ts, ScaleObject, scale_object);
+        GET_LAST_OBJ (
+          ts, Marker, marker);
+      }
       break;
     case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      GET_LAST_OBJ (
-        mas, MidiNote, midi_note);
+      {
+        const MidiArrangerSelections * mas =
+          (const MidiArrangerSelections *) self;
+        GET_LAST_OBJ (
+          mas, MidiNote, midi_note);
+      }
       break;
     case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      GET_LAST_OBJ (
-        as, AutomationPoint, automation_point);
+      {
+        const AutomationSelections * as =
+          (const AutomationSelections *) self;
+        GET_LAST_OBJ (
+          as, AutomationPoint, automation_point);
+      }
       break;
     case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      GET_LAST_OBJ (
-        cs, ChordObject, chord_object);
+      {
+        const ChordSelections * cs =
+          (const ChordSelections *) self;
+        GET_LAST_OBJ (
+          cs, ChordObject, chord_object);
+      }
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -2564,6 +2603,7 @@ arranger_selections_paste_to_pos (
 
   ArrangerSelections * clone_sel =
     arranger_selections_clone (self);
+  g_return_if_fail (clone_sel);
 
   /* clear current project selections */
   ArrangerSelections * project_sel =

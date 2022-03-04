@@ -207,7 +207,7 @@ arranger_selections_sort_by_indices (
 NONNULL
 ArrangerSelections *
 arranger_selections_clone (
-  ArrangerSelections * self);
+  const ArrangerSelections * self);
 
 /**
  * Returns if there are any selections.
@@ -229,9 +229,9 @@ arranger_selections_has_any (
 NONNULL
 void
 arranger_selections_get_start_pos (
-  ArrangerSelections * self,
-  Position *           pos,
-  bool                 global);
+  const ArrangerSelections * self,
+  Position *                 pos,
+  const bool                 global);
 
 /**
  * Returns the end position of the rightmost object.
@@ -262,7 +262,7 @@ arranger_selections_get_num_objects (
 NONNULL
 ArrangerObject *
 arranger_selections_get_first_object (
-  ArrangerSelections * self);
+  const ArrangerSelections * self);
 
 /**
  * Gets last object.
@@ -270,7 +270,7 @@ arranger_selections_get_first_object (
 NONNULL
 ArrangerObject *
 arranger_selections_get_last_object (
-  ArrangerSelections * self);
+  const ArrangerSelections * self);
 
 /**
  * Pastes the given selections to the given

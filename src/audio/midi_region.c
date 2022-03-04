@@ -850,11 +850,11 @@ midi_region_start_unended_note (
  */
 void
 midi_region_write_to_midi_file (
-  ZRegion *   self,
-  MIDI_FILE * mf,
-  const int   add_region_start,
-  bool        export_full,
-  bool        use_track_pos)
+  const ZRegion * self,
+  MIDI_FILE *     mf,
+  const bool      add_region_start,
+  bool            export_full,
+  bool            use_track_pos)
 {
   MidiEvents * events =
     midi_region_get_as_events (
@@ -895,10 +895,10 @@ midi_region_write_to_midi_file (
  */
 void
 midi_region_export_to_midi_file (
-  ZRegion * self,
-  const char *   full_path,
-  int            midi_version,
-  const int      export_full)
+  const ZRegion * self,
+  const char *    full_path,
+  int             midi_version,
+  const bool      export_full)
 {
   MIDI_FILE *mf;
 
@@ -934,7 +934,7 @@ midi_region_export_to_midi_file (
           TRANSPORT->ticks_per_beat));
 
       midi_region_write_to_midi_file (
-        self, mf, 0, export_full, false);
+        self, mf, false, export_full, false);
 
       midiFileClose(mf);
     }
@@ -983,8 +983,8 @@ midi_region_get_midi_ch (
 MidiEvents *
 midi_region_get_as_events (
   const ZRegion * self,
-  const int       add_region_start,
-  const int       full)
+  const bool      add_region_start,
+  const bool      full)
 {
   MidiEvents * events = midi_events_new ();
 

@@ -258,13 +258,14 @@ midi_region_remove_all_midi_notes (
  *   position in the MIDI data. The track will be
  *   set to 1 if false.
  */
+NONNULL
 void
 midi_region_write_to_midi_file (
-  ZRegion *   self,
-  MIDI_FILE * mf,
-  const int   add_region_start,
-  bool        export_full,
-  bool        use_track_pos);
+  const ZRegion * self,
+  MIDI_FILE *     mf,
+  const bool      add_region_start,
+  bool            export_full,
+  bool            use_track_pos);
 
 /**
  * Exports the ZRegion to a specified MIDI file.
@@ -275,12 +276,13 @@ midi_region_write_to_midi_file (
  *   If this is 0, only the original region (from
  *   true start to true end) is exported.
  */
+NONNULL
 void
 midi_region_export_to_midi_file (
-  ZRegion * self,
-  const char * full_path,
-  int          midi_version,
-  const int    export_full);
+  const ZRegion * self,
+  const char *    full_path,
+  int             midi_version,
+  const bool      export_full);
 
 /**
  * Returns the MIDI channel that this region should
@@ -303,8 +305,8 @@ midi_region_get_midi_ch (
 MidiEvents *
 midi_region_get_as_events (
   const ZRegion * self,
-  const int       add_region_start,
-  const int       full);
+  const bool      add_region_start,
+  const bool      full);
 
 /**
  * Fills in the array with all the velocities in

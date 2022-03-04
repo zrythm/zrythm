@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,7 @@
 #include "audio/engine_alsa.h"
 #include "audio/engine_jack.h"
 #include "audio/engine_pa.h"
+#include "gui/backend/timeline_selections.h"
 #include "gui/widgets/dialogs/export_midi_file_dialog.h"
 #include "gui/widgets/active_hardware_mb.h"
 #include "utils/arrays.h"
@@ -56,32 +57,48 @@ on_response (
 
       g_message ("exporting to %s", filename);
 
+      int midi_format = 0;
       const char * midi_format_str =
         gtk_file_chooser_get_choice (
           GTK_FILE_CHOOSER (native), "midi-format");
-      int midi_format = 0;
-      if (string_is_equal (midi_format_str, "zero"))
-        {
-          midi_format = 0;
-        }
-      else if (
-        string_is_equal (midi_format_str, "one"))
+      if (string_is_equal (midi_format_str, "one"))
         {
           midi_format = 1;
         }
 
-      ZRegion * r =
-        (ZRegion *)
+      bool export_full = false;
+      const char * region_content_str =
+        gtk_file_chooser_get_choice (
+          GTK_FILE_CHOOSER (native),
+          "region-content");
+      if (string_is_equal (
+            region_content_str, "full"))
+        {
+          midi_format = true;
+        }
+
+      const TimelineSelections * sel =
+        (const TimelineSelections *)
         g_object_get_data (
-          G_OBJECT (native), "region");
-      if (r)
+          G_OBJECT (native), "sel");
+      if (sel->num_regions == 1)
         {
           midi_region_export_to_midi_file (
-            r, filename, midi_format, 0);
+            sel->regions[0], filename,
+            midi_format, export_full);
 
           ui_show_notification (
             _("MIDI region exported."));
         }
+      else
+        {
+          timeline_selections_export_to_midi_file (
+            sel, filename, midi_format, export_full);
+
+          ui_show_notification (
+            _("MIDI regions exported."));
+        }
+
       g_free (filename);
 
       g_object_unref (gfile);
@@ -97,9 +114,13 @@ on_response (
  */
 void
 export_midi_file_dialog_widget_run (
-  GtkWindow * parent,
-  ZRegion *   region)
+  GtkWindow *                parent,
+  const TimelineSelections * sel)
 {
+  g_return_if_fail (
+    timeline_selections_contains_only_region_types (
+      sel, REGION_TYPE_MIDI));
+
   GtkFileChooserNative * fc_native =
     GTK_FILE_CHOOSER_NATIVE (
       gtk_file_chooser_native_new (
@@ -168,9 +189,9 @@ export_midi_file_dialog_widget_run (
   gtk_file_chooser_add_filter (
     GTK_FILE_CHOOSER (fc_native), filter);
 
+  ZRegion * r = sel->regions[0];
   char * tmp =
-    g_strdup_printf (
-      "%s.mid", region->name);
+    g_strdup_printf ("%s.mid", r->name);
   char * file =
     string_convert_to_filename (tmp);
   g_free (tmp);
@@ -183,7 +204,7 @@ export_midi_file_dialog_widget_run (
     G_CALLBACK (on_response), NULL);
 
   g_object_set_data (
-    G_OBJECT (fc_native), "region", region);
+    G_OBJECT (fc_native), "sel", (void *) sel);
 
   gtk_native_dialog_show (
     GTK_NATIVE_DIALOG (fc_native));

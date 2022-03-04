@@ -2926,17 +2926,10 @@ DEFINE_SIMPLE (activate_timeline_function)
     }
 }
 
-DEFINE_SIMPLE (activate_export_midi_region)
+DEFINE_SIMPLE (activate_export_midi_regions)
 {
-  size_t size;
-  const char * str =
-    g_variant_get_string (variant, &size);
-  ZRegion * r = NULL;
-  sscanf (str, "%p", &r);
-  g_return_if_fail (IS_REGION_AND_NONNULL (r));
-
   export_midi_file_dialog_widget_run (
-    GTK_WINDOW (MAIN_WINDOW), r);
+    GTK_WINDOW (MAIN_WINDOW), TL_SELECTIONS);
 }
 
 DEFINE_SIMPLE (activate_quick_bounce_selections)

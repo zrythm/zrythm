@@ -1117,8 +1117,6 @@ timeline_arranger_widget_show_context_menu (
 
       if (timeline_selections_contains_only_regions (TL_SELECTIONS))
         {
-          ZRegion * r = (ZRegion *) obj;
-
           if (timeline_selections_contains_only_region_types (TL_SELECTIONS, REGION_TYPE_AUDIO))
             {
               GMenu * audio_regions_submenu =
@@ -1216,14 +1214,10 @@ timeline_arranger_widget_show_context_menu (
               GMenu * midi_regions_submenu =
                 g_menu_new ();
 
-              char tmp[500];
-              sprintf (
-                tmp, "app.export-midi-region::%p",
-                r);
               menuitem =
                 z_gtk_create_menu_item (
-                  _("Export as MIDI file"), NULL,
-                  tmp);
+                  _("Export as MIDI file..."), NULL,
+                  "app.export-midi-regions");
               g_menu_append_item (
                 midi_regions_submenu, menuitem);
 

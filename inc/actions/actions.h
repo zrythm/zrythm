@@ -434,7 +434,7 @@ DECLARE_SIMPLE (activate_tap_bpm);
 DECLARE_SIMPLE (activate_nudge_selection);
 DECLARE_SIMPLE (activate_detect_bpm);
 DECLARE_SIMPLE (activate_timeline_function);
-DECLARE_SIMPLE (activate_export_midi_region);
+DECLARE_SIMPLE (activate_export_midi_regions);
 DECLARE_SIMPLE (activate_quick_bounce_selections);
 DECLARE_SIMPLE (activate_bounce_selections);
 DECLARE_SIMPLE (activate_set_curve_algorithm);

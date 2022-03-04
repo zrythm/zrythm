@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -148,18 +148,6 @@ timeline_selections_set_vis_track_indices (
   TimelineSelections * ts);
 
 /**
- * Sorts the selections by their indices (eg, for
- * regions, their track indices, then the lane
- * indices, then the index in the lane).
- *
- * @param desc Descending or not.
- */
-void
-timeline_selections_sort_by_indices (
-  TimelineSelections * sel,
-  int                  desc);
-
-/**
  * Returns if the selections can be pasted.
  *
  * @param pos Position to paste to.
@@ -215,14 +203,27 @@ void
 timeline_selections_set_index_in_prev_lane (
   TimelineSelections * self);
 
+NONNULL
 bool
 timeline_selections_contains_only_regions (
-  TimelineSelections * self);
+  const TimelineSelections * self);
 
+NONNULL
 bool
 timeline_selections_contains_only_region_types (
-  TimelineSelections * self,
-  RegionType           types);
+  const TimelineSelections * self,
+  RegionType                 types);
+
+/**
+ * Exports the selections to the given MIDI file.
+ */
+NONNULL
+bool
+timeline_selections_export_to_midi_file (
+  const TimelineSelections * self,
+  const char *               full_path,
+  int                        midi_version,
+  const bool                 export_full_regions);
 
 #define \
 timeline_selections_move_w_action( \
