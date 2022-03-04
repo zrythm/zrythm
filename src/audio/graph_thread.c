@@ -321,7 +321,7 @@ get_stack_size (void)
     pthread_attr_t attr;
     pthread_attr_init (&attr);
     rv = __pthread_get_minstack (&attr);
-    assert (rv >= pt_min_stack);
+    g_return_val_if_fail (rv >= pt_min_stack, 0);
     rv -= pt_min_stack;
     pthread_attr_destroy (&attr);
   }
