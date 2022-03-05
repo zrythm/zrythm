@@ -589,13 +589,8 @@ timestretch_buf ( \
       /* if inside object fade in */
       if (current_local_frame >= 0 &&
           current_local_frame <
-            r_obj->fade_in_pos.frames)
+            num_frames_in_fade_in_area)
         {
-          z_return_if_fail_cmp (
-            num_frames_in_fade_in_area, >, 0);
-          z_return_if_fail_cmp (
-            current_local_frame, <=,
-            num_frames_in_fade_in_area);
           float fade_in =
             (float)
             fade_get_y_normalized (
