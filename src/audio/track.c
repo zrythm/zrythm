@@ -56,6 +56,8 @@
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/track.h"
+#include "midilib/src/midifile.h"
+#include "midilib/src/midiinfo.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/debug.h"
@@ -1659,8 +1661,9 @@ track_set_listened (
  */
 void
 track_write_to_midi_file (
-  Track *     self,
-  MIDI_FILE * mf)
+  const Track * self,
+  MIDI_FILE *   mf,
+  bool          lanes_as_tracks)
 {
   g_return_if_fail (
     track_type_has_piano_roll (self->type));
@@ -1670,8 +1673,15 @@ track_write_to_midi_file (
     {
       lane = self->lanes[i];
 
+      if (!lanes_as_tracks)
+        {
+          midiTrackAddText (
+            mf, self->pos, textTrackName,
+            self->name);
+        }
+
       track_lane_write_to_midi_file (
-        lane, mf);
+        lane, mf, lanes_as_tracks);
     }
 }
 

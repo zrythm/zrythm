@@ -28,7 +28,7 @@
 #include "audio/engine_pa.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/dialogs/export_midi_file_dialog.h"
-#include "gui/widgets/active_hardware_mb.h"
+#include "gui/widgets/main_window.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
@@ -39,6 +39,7 @@
 #include "utils/strv_builder.h"
 #include "utils/ui.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -77,6 +78,17 @@ on_response (
           midi_format = true;
         }
 
+      bool lanes_as_separate_tracks = false;
+      const char * lane_export_type_str =
+        gtk_file_chooser_get_choice (
+          GTK_FILE_CHOOSER (native),
+          "lane-export-type");
+      if (string_is_equal (
+            lane_export_type_str, "separate-tracks"))
+        {
+          lanes_as_separate_tracks = true;
+        }
+
       const TimelineSelections * sel =
         (const TimelineSelections *)
         g_object_get_data (
@@ -85,18 +97,29 @@ on_response (
         {
           midi_region_export_to_midi_file (
             sel->regions[0], filename,
-            midi_format, export_full);
+            midi_format, export_full,
+            lanes_as_separate_tracks);
 
           ui_show_notification (
             _("MIDI region exported."));
         }
       else
         {
-          timeline_selections_export_to_midi_file (
-            sel, filename, midi_format, export_full);
-
-          ui_show_notification (
-            _("MIDI regions exported."));
+          bool ret =
+            timeline_selections_export_to_midi_file (
+              sel, filename, midi_format,
+              export_full, lanes_as_separate_tracks);
+          if (ret)
+            {
+              ui_show_notification (
+                _("MIDI regions exported."));
+            }
+          else
+            {
+              ui_show_error_message (
+                MAIN_WINDOW, false,
+                _("Failed to export MIDI regions."));
+            }
         }
 
       g_free (filename);
@@ -177,6 +200,34 @@ export_midi_file_dialog_widget_run (
     (const char **) midi_format_labels);
   g_strfreev (midi_format_ids);
   g_strfreev (midi_format_labels);
+
+  /* add MIDI format choice */
+  StrvBuilder * lane_export_type_ids_builder =
+    strv_builder_new ();
+  StrvBuilder * lane_export_type_labels_builder =
+    strv_builder_new ();
+  strv_builder_add (
+    lane_export_type_ids_builder, "part-of-track");
+  strv_builder_add (
+    lane_export_type_labels_builder,
+    _("Part of parent track"));
+  strv_builder_add (
+    lane_export_type_ids_builder, "separate-tracks");
+  strv_builder_add (
+    lane_export_type_labels_builder,
+    _("Separate tracks"));
+  char ** lane_export_type_ids =
+    strv_builder_end (lane_export_type_ids_builder);
+  char ** lane_export_type_labels =
+    strv_builder_end (
+      lane_export_type_labels_builder);
+  gtk_file_chooser_add_choice (
+    GTK_FILE_CHOOSER (fc_native), "lane-export-type",
+    _("Export lanes as"),
+    (const char **) lane_export_type_ids,
+    (const char **) lane_export_type_labels);
+  g_strfreev (lane_export_type_ids);
+  g_strfreev (lane_export_type_labels);
 
   /* add MIDI file filter */
   GtkFileFilter * filter = gtk_file_filter_new ();

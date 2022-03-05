@@ -254,6 +254,10 @@ midi_region_remove_all_midi_notes (
  *   MIDI file as it would be played inside Zrythm.
  *   If this is 0, only the original region (from
  *   true start to true end) is exported.
+ * @param lanes_as_tracks Export lanes as separate
+ *   tracks (only possible with MIDI type 1). This
+ *   will calculate a unique MIDI track number for
+ *   the region's lane.
  * @param use_track_pos Whether to use the track
  *   position in the MIDI data. The track will be
  *   set to 1 if false.
@@ -265,6 +269,7 @@ midi_region_write_to_midi_file (
   MIDI_FILE *     mf,
   const bool      add_region_start,
   bool            export_full,
+  bool            lanes_as_tracks,
   bool            use_track_pos);
 
 /**
@@ -282,7 +287,8 @@ midi_region_export_to_midi_file (
   const ZRegion * self,
   const char *    full_path,
   int             midi_version,
-  const bool      export_full);
+  const bool      export_full,
+  const bool      lanes_as_tracks);
 
 /**
  * Returns the MIDI channel that this region should

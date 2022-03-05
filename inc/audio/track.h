@@ -989,8 +989,9 @@ track_insert_region (
 NONNULL
 void
 track_write_to_midi_file (
-  Track *     self,
-  MIDI_FILE * mf);
+  const Track * self,
+  MIDI_FILE *   mf,
+  bool          lanes_as_tracks);
 
 /**
  * Appends the Track to the selections.

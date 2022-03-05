@@ -801,7 +801,8 @@ timeline_selections_export_to_midi_file (
   const TimelineSelections * self,
   const char *               full_path,
   int                        midi_version,
-  const bool                 export_full_regions)
+  const bool                 export_full_regions,
+  const bool                 lanes_as_tracks)
 {
   MIDI_FILE *mf;
 
@@ -825,7 +826,6 @@ timeline_selections_export_to_midi_file (
 
       midiFileSetPPQN (mf, TICKS_PER_QUARTER_NOTE);
 
-      G_BREAKPOINT ();
       midiFileSetVersion (mf, midi_version);
 
       /* common time: 4 crochet beats, per bar */
@@ -855,14 +855,37 @@ timeline_selections_export_to_midi_file (
               Track * track =
                 arranger_object_get_track (
                   (const ArrangerObject *) r);
-              g_return_val_if_fail (track, false);
+              g_return_val_if_fail (
+                track, false);
+              char midi_track_name[1000];
+              int midi_track_pos;
+              if (lanes_as_tracks)
+                {
+                  TrackLane * lane =
+                    region_get_lane (r);
+                  g_return_val_if_fail (
+                    lane, false);
+                  sprintf (
+                    midi_track_name, "%s - %s",
+                    track->name, lane->name);
+                  midi_track_pos =
+                    track_lane_calculate_lane_idx (
+                      lane);
+                }
+              else
+                {
+                  strcpy (
+                    midi_track_name, track->name);
+                  midi_track_pos = track->pos;
+                }
               midiTrackAddText (
-                mf, track->pos, textTrackName,
-                track->name);
+                mf, midi_track_pos,
+                textTrackName, midi_track_name);
             }
 
           midi_region_write_to_midi_file (
             r, mf, true, export_full_regions,
+            lanes_as_tracks,
             midi_version == 0 ? false : true);
         }
 

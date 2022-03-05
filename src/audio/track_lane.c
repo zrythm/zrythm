@@ -504,7 +504,7 @@ track_lane_remove_region (
 
 Tracklist *
 track_lane_get_tracklist (
-  TrackLane * self)
+  const TrackLane * self)
 {
   if (track_lane_is_auditioner (self))
     return SAMPLE_PROCESSOR->tracklist;
@@ -514,10 +514,39 @@ track_lane_get_tracklist (
 
 Track *
 track_lane_get_track (
-  TrackLane * self)
+  const TrackLane * self)
 {
   g_return_val_if_fail (self->track, NULL);
   return self->track;
+}
+
+/**
+ * Calculates a unique index for this lane.
+ */
+int
+track_lane_calculate_lane_idx (
+  const TrackLane * self)
+{
+  Track * track =
+    track_lane_get_track (self);
+  Tracklist * tracklist =
+    track_lane_get_tracklist (self);
+  int pos = 1;
+  for (int i = 0; i < tracklist->num_tracks; i++)
+    {
+      Track * cur_track = tracklist->tracks[i];
+      if (cur_track == track)
+        {
+          pos += self->pos;
+          break;
+        }
+      else
+        {
+          pos += cur_track->num_lanes;
+        }
+    }
+
+  return pos;
 }
 
 /**
@@ -526,8 +555,18 @@ track_lane_get_track (
 void
 track_lane_write_to_midi_file (
   TrackLane * self,
-  MIDI_FILE * mf)
+  MIDI_FILE * mf,
+  bool        lanes_as_tracks)
 {
+  Track * track = track_lane_get_track (self);
+  g_return_if_fail (track);
+  int midi_track_pos = track->pos;
+  if (lanes_as_tracks)
+    {
+      midi_track_pos =
+        track_lane_calculate_lane_idx (self);
+    }
+
   /* All data is written out to tracks not
    * channels. We therefore
    * set the current channel before writing
@@ -536,21 +575,26 @@ track_lane_write_to_midi_file (
    * file, and affect all
    * tracks messages until it is changed. */
   midiFileSetTracksDefaultChannel (
-    mf, self->track->pos, MIDI_CHANNEL_1);
-
-  Track * track = track_lane_get_track (self);
-  g_return_if_fail (track);
+    mf, midi_track_pos, MIDI_CHANNEL_1);
 
   /* add track name */
-  midiTrackAddText (
-    mf, self->track->pos, textTrackName,
-    track->name);
+  if (lanes_as_tracks)
+    {
+      char midi_track_name[1000];
+      sprintf (
+        midi_track_name, "%s - %s",
+        track->name, self->name);
+      midiTrackAddText (
+        mf, midi_track_pos, textTrackName,
+        midi_track_name);
+    }
 
   for (int i = 0; i < self->num_regions; i++)
     {
       const ZRegion * region = self->regions[i];
       midi_region_write_to_midi_file (
-        region, mf, true, true, true);
+        region, mf, true, true, lanes_as_tracks,
+        true);
     }
 }
 

@@ -77,9 +77,9 @@ test_export (void)
 
       /* export the region again */
       midi_region_export_to_midi_file (
-        region, export_filepath, 0, false);
+        region, export_filepath, 0, false, false);
       midi_region_export_to_midi_file (
-        region, export_filepath, 0, true);
+        region, export_filepath, 0, true, false);
 
       g_assert_true (
         g_file_test (

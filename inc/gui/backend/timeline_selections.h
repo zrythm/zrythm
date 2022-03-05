@@ -223,7 +223,8 @@ timeline_selections_export_to_midi_file (
   const TimelineSelections * self,
   const char *               full_path,
   int                        midi_version,
-  const bool                 export_full_regions);
+  const bool                 export_full_regions,
+  const bool                 lanes_as_tracks);
 
 #define \
 timeline_selections_move_w_action( \

@@ -294,20 +294,30 @@ track_lane_clone (
 /**
  * Writes the lane to the given MIDI file.
  */
+NONNULL
 void
 track_lane_write_to_midi_file (
   TrackLane * self,
-  MIDI_FILE * mf);
+  MIDI_FILE * mf,
+  bool        lanes_as_tracks);
 
 NONNULL
 Tracklist *
 track_lane_get_tracklist (
-  TrackLane * self);
+  const TrackLane * self);
 
 NONNULL
 Track *
 track_lane_get_track (
-  TrackLane * self);
+  const TrackLane * self);
+
+/**
+ * Calculates a unique index for this lane.
+ */
+NONNULL
+int
+track_lane_calculate_lane_idx (
+  const TrackLane * self);
 
 /**
  * Frees the TrackLane.

@@ -591,7 +591,7 @@ export_midi (
             {
               /* write track to midi file */
               track_write_to_midi_file (
-                track, mf);
+                track, mf, false);
             }
           info->progress_info.progress =
             (double) i /
