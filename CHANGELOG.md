@@ -1,6 +1,27 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.30.0.1] - 2022-03-05
+### Added
+- Implement track lane mute/solo
+- Include whether X11 or Wayland in automatic bug reports
+- Allow recording in chord track
+- Allow playing chords with a MIDI keyboard
+- Allow exporting multiple MIDI regions to MIDI file
+- Allow exporting MIDI lanes as separate tracks in MIDI files
+
+### Changed
+- Move some MIDI track/lane context menu items under submenus
+- Update German, Catalan, Korean, Indonesian translations
+
+### Fixed
+- Fix occasional error when drag-n-dropping in tracklist
+- Fix chord track not being bounced
+- Fix bounce dialog being empty and throwing errors
+- Fix some MIDI track/lane context menu items not working
+- Fix MIDI region export
+- Fix compilation failure on some systems (missing `assert()`)
+
 ## [1.0.0-alpha.29.1.1] - 2022-02-23
 ### Added
 - Add status page for "no clip selected" in the editor
