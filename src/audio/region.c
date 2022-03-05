@@ -1055,6 +1055,23 @@ region_copy_children (
     }
 }
 
+bool
+region_is_looped (
+  const ZRegion * const self)
+{
+  const ArrangerObject * const obj =
+    (const ArrangerObject * const) self;
+  return
+    obj->loop_start_pos.ticks > 0
+    || obj->clip_start_pos.ticks > 0
+    ||
+    (obj->end_pos.ticks - obj->pos.ticks) >
+       (obj->loop_end_pos.ticks +
+         /* add some buffer because these are not
+          * accurate */
+          0.1);
+}
+
 /**
  * Returns the MidiNote matching the properties of
  * the given MidiNote.

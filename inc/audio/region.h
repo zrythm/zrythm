@@ -721,20 +721,9 @@ region_copy_children (
   ZRegion * src);
 
 NONNULL
-static inline bool
+bool
 region_is_looped (
-  const ZRegion * const self)
-{
-  ArrangerObject * obj = (ArrangerObject *) self;
-  return
-    obj->loop_start_pos.ticks > 0
-    ||
-    (obj->end_pos.ticks - obj->pos.ticks) >
-       (obj->loop_end_pos.ticks +
-         /* add some buffer because these are not
-          * accurate */
-          0.1);
-}
+  const ZRegion * const self);
 
 /**
  * Returns the ArrangerSelections based on the
