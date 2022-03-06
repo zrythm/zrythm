@@ -391,7 +391,8 @@ NONNULL
 void
 automation_track_update_positions (
   AutomationTrack * self,
-  bool              from_ticks);
+  bool              from_ticks,
+  bool              bpm_change);
 
 /**
  * Sets the index of the AutomationTrack in the

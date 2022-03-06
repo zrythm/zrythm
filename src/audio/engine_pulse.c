@@ -420,7 +420,7 @@ engine_pulse_setup (
       engine_update_frames_per_tick (
         self, beats_per_bar,
         tempo_track_get_current_bpm (P_TEMPO_TRACK),
-        self->sample_rate, true, true);
+        self->sample_rate, true, true, false);
     }
 
   const pa_buffer_attr * actual_attr =

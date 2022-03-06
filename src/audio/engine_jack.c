@@ -166,7 +166,7 @@ engine_jack_handle_sample_rate_change (
       engine_update_frames_per_tick (
         self, beats_per_bar,
         tempo_track_get_current_bpm (P_TEMPO_TRACK),
-        self->sample_rate, true, true);
+        self->sample_rate, true, true, false);
     }
 
   g_message (

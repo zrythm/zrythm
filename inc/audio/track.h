@@ -1374,7 +1374,8 @@ track_type_is_compatible_for_moving (
 void
 track_update_positions (
   Track * self,
-  bool    from_ticks);
+  bool    from_ticks,
+  bool    bpm_change);
 
 /**
  * Returns the Fader (if applicable).

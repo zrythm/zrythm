@@ -127,7 +127,9 @@ segv_handler (int sig)
 
 static void
 _test_helper_zrythm_init (
-  bool optimized)
+  bool optimized,
+  int  samplerate,
+  int  buf_size)
 {
   object_free_w_func_and_null (
     zrythm_free, ZRYTHM);
@@ -154,6 +156,8 @@ _test_helper_zrythm_init (
   *zapp_ptr = zapp;
   zapp->gtk_thread = g_thread_self ();
   zrythm_app = zapp;
+  zrythm_app->samplerate = samplerate;
+  zrythm_app->buf_size = buf_size;
 
   /* init logging to custom file */
   char * tmp_log_dir =
@@ -202,13 +206,13 @@ _test_helper_zrythm_init (
 void
 test_helper_zrythm_init ()
 {
-  _test_helper_zrythm_init (false);
+  _test_helper_zrythm_init (false, 0, 0);
 }
 
 void
 test_helper_zrythm_init_optimized ()
 {
-  _test_helper_zrythm_init (true);
+  _test_helper_zrythm_init (true, 0, 0);
 }
 
 /**

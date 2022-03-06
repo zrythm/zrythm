@@ -259,7 +259,8 @@ track_lane_get_name (
 void
 track_lane_update_positions (
   TrackLane * self,
-  bool        from_ticks)
+  bool        from_ticks,
+  bool        bpm_change)
 {
   for (int i = 0; i < self->num_regions; i++)
     {
@@ -273,7 +274,7 @@ track_lane_update_positions (
       g_return_if_fail (
         IS_REGION_AND_NONNULL (r_obj));
       arranger_object_update_positions (
-        r_obj, from_ticks);
+        r_obj, from_ticks, bpm_change);
     }
 }
 

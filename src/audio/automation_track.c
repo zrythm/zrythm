@@ -844,13 +844,14 @@ automation_track_get_val_at_pos (
 void
 automation_track_update_positions (
   AutomationTrack * self,
-  bool              from_ticks)
+  bool              from_ticks,
+  bool              bpm_change)
 {
   for (int i = 0; i < self->num_regions; i++)
     {
       arranger_object_update_positions (
         (ArrangerObject *) self->regions[i],
-        from_ticks);
+        from_ticks, bpm_change);
     }
 }
 

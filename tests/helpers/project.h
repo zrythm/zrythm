@@ -551,7 +551,7 @@ test_project_rebootstrap_timeline (
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
   engine_update_frames_per_tick (
     AUDIO_ENGINE, beats_per_bar, bpm,
-    AUDIO_ENGINE->sample_rate, true, true);
+    AUDIO_ENGINE->sample_rate, true, true, false);
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 

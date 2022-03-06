@@ -959,6 +959,7 @@ engine_activate (
  * @param update_from_ticks Whether to update the
  *   positions based on ticks (true) or frames
  *   (false).
+ * @param bpm_change Whether this is a BPM change.
  */
 void
 engine_update_frames_per_tick (
@@ -967,7 +968,8 @@ engine_update_frames_per_tick (
   const bpm_t         bpm,
   const sample_rate_t sample_rate,
   bool                thread_check,
-  bool                update_from_ticks);
+  bool                update_from_ticks,
+  bool                bpm_change);
 
 /**
  * GSourceFunc to be added using idle add.

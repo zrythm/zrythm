@@ -83,6 +83,10 @@ audio_encoder_decode (
 {
   g_message ("--audio decoding start--");
 
+  g_debug (
+    "source file samplerate: %u",
+    self->nfo.sample_rate);
+
   self->out_frames = NULL;
   ssize_t num_out_frames =
     audec_read (

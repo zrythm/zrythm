@@ -271,7 +271,8 @@ track_lane_get_name (
 void
 track_lane_update_positions (
   TrackLane * self,
-  bool        from_ticks);
+  bool        from_ticks,
+  bool        bpm_change);
 
 /**
  * Sets the new track name hash to all the lane's

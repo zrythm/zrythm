@@ -1244,10 +1244,13 @@ arranger_object_init_loaded (
 void
 arranger_object_update_positions (
   ArrangerObject * self,
-  bool             from_ticks)
+  bool             from_ticks,
+  bool             bpm_change)
 {
   long frames_len_before = 0;
-  if (arranger_object_type_has_length (self->type))
+  if (bpm_change
+      &&
+      arranger_object_type_has_length (self->type))
     {
       frames_len_before =
         arranger_object_get_length_in_frames (self);
@@ -1292,13 +1295,15 @@ arranger_object_update_positions (
       r = (ZRegion *) self;
 
       /* validate */
-      if (r->id.type == REGION_TYPE_AUDIO &&
-          !region_get_musical_mode (r))
+      if (r->id.type == REGION_TYPE_AUDIO
+          && !region_get_musical_mode (r))
         {
           long frames_len_after =
             arranger_object_get_length_in_frames (
               self);
-          if (frames_len_after !=
+          if (bpm_change
+              &&
+              frames_len_after !=
                 frames_len_before)
             {
               double ticks =
@@ -1321,6 +1326,29 @@ arranger_object_update_positions (
               r, tl_frames, F_NORMALIZE);
           clip = audio_region_get_clip (r);
           g_return_if_fail (clip);
+
+          /* sometimes due to rounding errors,
+           * the region frames are 1 frame more
+           * than the clip frames. this works
+           * around it by resizing the region
+           * by -1 frame*/
+          while (local_frames ==
+                (signed_frame_t) clip->num_frames)
+            {
+              g_debug (
+                "adjusting for rounding error");
+              double ticks =
+                - AUDIO_ENGINE->ticks_per_frame;
+              g_debug ("ticks %f", ticks);
+              arranger_object_resize (
+                self, false,
+                ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE,
+                ticks, false);
+              local_frames =
+                region_timeline_frames_to_local (
+                  r, tl_frames, F_NORMALIZE);
+            }
+
           z_return_if_fail_cmp (
             local_frames, <,
             (signed_frame_t) clip->num_frames);
@@ -1330,27 +1358,27 @@ arranger_object_update_positions (
         {
           arranger_object_update_positions (
             (ArrangerObject *) r->midi_notes[i],
-            from_ticks);
+            from_ticks, bpm_change);
         }
       for (int i = 0; i < r->num_unended_notes; i++)
         {
           arranger_object_update_positions (
             (ArrangerObject *) r->unended_notes[i],
-            from_ticks);
+            from_ticks, bpm_change);
         }
 
       for (int i = 0; i < r->num_aps; i++)
         {
           arranger_object_update_positions (
             (ArrangerObject *) r->aps[i],
-            from_ticks);
+            from_ticks, bpm_change);
         }
 
       for (int i = 0; i < r->num_chord_objects; i++)
         {
           arranger_object_update_positions (
             (ArrangerObject *) r->chord_objects[i],
-            from_ticks);
+            from_ticks, bpm_change);
         }
       break;
     default:

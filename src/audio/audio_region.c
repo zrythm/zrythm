@@ -687,19 +687,22 @@ bool
 audio_region_validate (
   ZRegion * self)
 {
-  signed_frame_t loop_len =
-    arranger_object_get_loop_length_in_frames (
-      (ArrangerObject *) self);
+  if (PROJECT->loaded)
+    {
+      AudioClip * clip =
+        audio_region_get_clip (self);
+      g_return_val_if_fail (clip, false);
 
-  AudioClip * clip =
-    audio_region_get_clip (self);
-  g_return_val_if_fail (clip, false);
+      signed_frame_t loop_len =
+        arranger_object_get_loop_length_in_frames (
+          (ArrangerObject *) self);
 
-  /* verify that the loop does not contain more
-   * frames than available in the clip */
-  z_return_val_if_fail_cmp (
-    loop_len, <=,
-    (signed_frame_t) clip->num_frames, false);
+      /* verify that the loop does not contain more
+       * frames than available in the clip */
+      z_return_val_if_fail_cmp (
+        loop_len, <=,
+        (signed_frame_t) clip->num_frames, false);
+    }
 
   return true;
 }

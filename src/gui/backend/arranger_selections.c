@@ -96,7 +96,7 @@ arranger_selections_init_loaded (
                 } \
             } \
           arranger_object_update_positions ( \
-            obj, true); \
+            obj, true, false); \
           sel->sc##s[i] = \
             (cc *) \
             arranger_object_find (obj); \
@@ -106,7 +106,7 @@ arranger_selections_init_loaded (
           arranger_object_init_loaded ( \
             (ArrangerObject *) sel->sc##s[i]); \
           arranger_object_update_positions ( \
-            obj, true); \
+            obj, true, false); \
         } \
     }
 
@@ -126,7 +126,7 @@ arranger_selections_init_loaded (
           ArrangerObject * mn_obj =
             (ArrangerObject *) mn;
           arranger_object_update_positions (
-            mn_obj, true);
+            mn_obj, true, false);
           if (project)
             {
               mas->midi_notes[i] =

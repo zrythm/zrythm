@@ -738,7 +738,8 @@ project_create_default (
     beat_unit);
   engine_update_frames_per_tick (
     self->audio_engine, beats_per_bar, bpm,
-    self->audio_engine->sample_rate, true, true);
+    self->audio_engine->sample_rate, true, true,
+    false);
 
   /* modulator */
   g_message ("adding modulator track...");
@@ -792,7 +793,8 @@ project_create_default (
   engine_update_frames_per_tick (
     AUDIO_ENGINE, beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    AUDIO_ENGINE->sample_rate, true, true);
+    AUDIO_ENGINE->sample_rate, true, true,
+    false);
 
   /* create untitled project */
   create_and_set_dir_and_title (self, prj_dir);
@@ -1165,7 +1167,8 @@ load (
   engine_update_frames_per_tick (
     AUDIO_ENGINE, beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    AUDIO_ENGINE->sample_rate, true, true);
+    AUDIO_ENGINE->sample_rate, true, true,
+    false);
 
   midi_mappings_init_loaded (
     self->midi_mappings);

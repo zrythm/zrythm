@@ -205,7 +205,7 @@ do_or_undo (
     AUDIO_ENGINE, beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate, true,
-    update_from_ticks);
+    update_from_ticks, false);
 
   if (self->type == TRANSPORT_ACTION_BPM_CHANGE)
     {
@@ -255,7 +255,7 @@ transport_action_do (
       engine_update_frames_per_tick (
         AUDIO_ENGINE, beats_per_bar, bpm,
         AUDIO_ENGINE->sample_rate, true,
-        update_from_ticks);
+        update_from_ticks, false);
     }
   else
     {

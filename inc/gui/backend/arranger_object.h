@@ -903,7 +903,8 @@ arranger_object_get_loop_length_in_frames (
 void
 arranger_object_update_positions (
   ArrangerObject * self,
-  bool             from_ticks);
+  bool             from_ticks,
+  bool             bpm_change);
 
 /**
  * Frees only this object.

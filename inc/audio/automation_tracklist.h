@@ -150,7 +150,8 @@ automation_tracklist_print_ats (
 void
 automation_tracklist_update_positions (
   AutomationTracklist * self,
-  bool                  from_ticks);
+  bool                  from_ticks,
+  bool                  bpm_change);
 
 /**
  * Gets the currently visible AutomationTrack's

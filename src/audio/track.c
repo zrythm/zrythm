@@ -2821,35 +2821,41 @@ track_type_get_prefader_type (
 void
 track_update_positions (
   Track * self,
-  bool    from_ticks)
+  bool    from_ticks,
+  bool    bpm_change)
 {
   int i;
   for (i = 0; i < self->num_lanes; i++)
     {
       track_lane_update_positions (
-        self->lanes[i], from_ticks);
+        self->lanes[i], from_ticks,
+        bpm_change);
     }
   for (i = 0; i < self->num_chord_regions; i++)
     {
       arranger_object_update_positions (
         (ArrangerObject *)
-        self->chord_regions[i], from_ticks);
+        self->chord_regions[i], from_ticks,
+        bpm_change);
     }
   for (i = 0; i < self->num_scales; i++)
     {
       arranger_object_update_positions (
         (ArrangerObject *)
-        self->scales[i], from_ticks);
+        self->scales[i], from_ticks,
+        bpm_change);
     }
   for (i = 0; i < self->num_markers; i++)
     {
       arranger_object_update_positions (
         (ArrangerObject *)
-        self->markers[i], from_ticks);
+        self->markers[i], from_ticks,
+        bpm_change);
     }
 
   automation_tracklist_update_positions (
-    &self->automation_tracklist, from_ticks);
+    &self->automation_tracklist, from_ticks,
+    bpm_change);
 }
 
 /**

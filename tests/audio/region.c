@@ -40,7 +40,7 @@ fixture_set_up (
 {
   /* needed to set TRANSPORT */
   engine_update_frames_per_tick (
-    AUDIO_ENGINE, 4, 140, 44000, true, true);
+    AUDIO_ENGINE, 4, 140, 44000, true, true, false);
 
   Position start_pos, end_pos;
   position_set_to_bar (&start_pos, 2);

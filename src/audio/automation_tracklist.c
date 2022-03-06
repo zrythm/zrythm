@@ -406,12 +406,13 @@ automation_tracklist_clone (
 void
 automation_tracklist_update_positions (
   AutomationTracklist * self,
-  bool                  from_ticks)
+  bool                  from_ticks,
+  bool                  bpm_change)
 {
   for (int i = 0; i < self->num_ats; i++)
     {
       automation_track_update_positions (
-        self->ats[i], from_ticks);
+        self->ats[i], from_ticks, bpm_change);
     }
 }
 

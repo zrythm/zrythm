@@ -205,6 +205,60 @@ test_load_project_with_selected_audio_region (void)
 }
 
 static void
+test_load_project_with_different_sample_rate (void)
+{
+  int samplerates[] = { 48000, 44100 };
+
+  for (int i = 0; i < 2; i++)
+    {
+      int samplerate_before = samplerates[i];
+
+      /* create project @ 48000 Hz */
+      _test_helper_zrythm_init (
+        false, samplerate_before, 0);
+
+      Position pos;
+      position_set_to_bar (&pos, 2);
+
+      /* create audio track with region */
+      char * filepath =
+        g_build_filename (
+          TESTS_SRCDIR,
+          "test_start_with_signal.mp3", NULL);
+      SupportedFile * file =
+        supported_file_new_from_path (filepath);
+      int num_tracks_before = TRACKLIST->num_tracks;
+      track_create_with_action (
+        TRACK_TYPE_AUDIO, NULL, file, &pos,
+        num_tracks_before, 1, NULL);
+
+      Track * audio_track =
+        TRACKLIST->tracks[num_tracks_before];
+      arranger_object_print (
+        (ArrangerObject *)
+        audio_track->lanes[0]->regions[0]);
+
+      /* reload project @ 44100 Hz */
+      zrythm_app->samplerate =
+        samplerates[i == 0 ? 1 : 0];
+      test_project_save_and_reload ();
+
+      /* play the region */
+      Position end;
+      position_set_to_bar (&end, 4);
+      transport_request_roll (TRANSPORT);
+      while (position_is_before (PLAYHEAD, &end))
+        {
+          engine_wait_n_cycles (AUDIO_ENGINE, 3);
+        }
+      transport_request_pause (TRANSPORT);
+      engine_wait_n_cycles (AUDIO_ENGINE, 1);
+    }
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
 test_detect_bpm (void)
 {
   test_helper_zrythm_init ();
@@ -247,6 +301,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/audio/audio_region/"
 
+  g_test_add_func (
+    TEST_PREFIX "test load project with lower sample rate",
+    (GTestFunc) test_load_project_with_different_sample_rate);
   g_test_add_func (
     TEST_PREFIX "test load project with selected audio region",
     (GTestFunc) test_load_project_with_selected_audio_region);

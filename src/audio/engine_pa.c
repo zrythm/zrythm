@@ -175,7 +175,7 @@ engine_pa_setup (
     self,
     TRANSPORT->beats_per_bar,
     TRANSPORT->bpm,
-    self->sample_rate);
+    self->sample_rate, false);
 
   self->pa_out_buf =
     calloc (self->block_length * 2,

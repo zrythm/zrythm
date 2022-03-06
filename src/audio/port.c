@@ -2529,7 +2529,8 @@ port_set_control_value (
           engine_update_frames_per_tick (
             AUDIO_ENGINE, beats_per_bar,
             self->control,
-            AUDIO_ENGINE->sample_rate, false, true);
+            AUDIO_ENGINE->sample_rate, false, true,
+            true);
           EVENTS_PUSH (ET_BPM_CHANGED, NULL);
         }
 
@@ -2563,7 +2564,7 @@ port_set_control_value (
           engine_update_frames_per_tick (
             AUDIO_ENGINE, beats_per_bar, bpm,
             AUDIO_ENGINE->sample_rate, false,
-            update_from_ticks);
+            update_from_ticks, false);
           EVENTS_PUSH (
             ET_TIME_SIGNATURE_CHANGED, NULL);
         }

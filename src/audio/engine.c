@@ -148,6 +148,7 @@ engine_set_buffer_size (
  * @param update_from_ticks Whether to update the
  *   positions based on ticks (true) or frames
  *   (false).
+ * @param bpm_change Whether this is a BPM change.
  */
 void
 engine_update_frames_per_tick (
@@ -156,7 +157,8 @@ engine_update_frames_per_tick (
   const bpm_t         bpm,
   const sample_rate_t sample_rate,
   bool                thread_check,
-  bool                update_from_ticks)
+  bool                update_from_ticks,
+  bool                bpm_change)
 {
   if (g_thread_self () == zrythm_app->gtk_thread)
     {
@@ -210,7 +212,8 @@ engine_update_frames_per_tick (
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track_update_positions (
-        TRACKLIST->tracks[i], update_from_ticks);
+        TRACKLIST->tracks[i], update_from_ticks,
+        bpm_change);
     }
 }
 
