@@ -720,6 +720,23 @@ arranger_widget_is_playhead_visible (
   ArrangerWidget * self);
 
 NONNULL
+void
+arranger_widget_handle_playhead_auto_scroll (
+  ArrangerWidget * self,
+  bool             force);
+
+typedef void (*ArrangerWidgetForeachFunc) (
+  ArrangerWidget * arranger);
+
+/**
+ * Runs the given function for each arranger.
+ */
+NONNULL
+void
+arranger_widget_foreach (
+  ArrangerWidgetForeachFunc func);
+
+NONNULL
 PURE
 RulerWidget *
 arranger_widget_get_ruler (

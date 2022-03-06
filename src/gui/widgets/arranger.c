@@ -6714,11 +6714,12 @@ arranger_widget_get_min_possible_position (
     }
 }
 
-static void
-handle_playhead_auto_scroll (
-  ArrangerWidget * self)
+void
+arranger_widget_handle_playhead_auto_scroll (
+  ArrangerWidget * self,
+  bool             force)
 {
-  if (!TRANSPORT_IS_ROLLING)
+  if (!TRANSPORT_IS_ROLLING && !force)
     return;
 
   bool scroll_edges = false;
@@ -6796,9 +6797,26 @@ arranger_tick_cb (
   gtk_widget_queue_draw (widget);
 
   /* auto scroll */
-  handle_playhead_auto_scroll (self);
+  arranger_widget_handle_playhead_auto_scroll (
+    self, false);
 
   return G_SOURCE_CONTINUE;
+}
+
+/**
+ * Runs the given function for each arranger.
+ */
+void
+arranger_widget_foreach (
+  ArrangerWidgetForeachFunc func)
+{
+  func (MW_TIMELINE);
+  func (MW_PINNED_TIMELINE);
+  func (MW_MIDI_ARRANGER);
+  func (MW_MIDI_MODIFIER_ARRANGER);
+  func (MW_CHORD_ARRANGER);
+  func (MW_AUTOMATION_ARRANGER);
+  func (MW_AUDIO_ARRANGER);
 }
 
 void
