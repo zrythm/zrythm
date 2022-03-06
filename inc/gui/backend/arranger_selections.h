@@ -284,16 +284,13 @@ arranger_selections_paste_to_pos (
   bool                 undoable);
 
 /**
- * Returns all objects in the selections in a
- * newly allocated array that should be free'd.
- *
- * @param size A pointer to save the size into.
+ * Appends all objects in the given array.
  */
 NONNULL
-ArrangerObject **
+void
 arranger_selections_get_all_objects (
-  ArrangerSelections * self,
-  int *                size);
+  const ArrangerSelections * self,
+  GPtrArray *                arr);
 
 #if 0
 /**

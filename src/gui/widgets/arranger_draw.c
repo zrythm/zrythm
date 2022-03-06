@@ -1262,20 +1262,31 @@ arranger_snapshot (
     }
 
   /* draw each arranger object */
-  ArrangerObject * objs[2000];
-  int num_objs;
+  if (!self->hit_objs_to_draw)
+    {
+      self->hit_objs_to_draw =
+        g_ptr_array_new_full (200, NULL);
+    }
+  g_ptr_array_remove_range (
+    self->hit_objs_to_draw, 0,
+    self->hit_objs_to_draw->len);
   arranger_widget_get_hit_objects_in_rect (
     self, ARRANGER_OBJECT_TYPE_ALL, &visible_rect_gdk,
-    objs, &num_objs);
+    self->hit_objs_to_draw);
 
   /*g_message (*/
     /*"objects found: %d (is pinned %d)",*/
     /*num_objs, self->is_pinned);*/
   /* note: these are only project objects */
-  for (int j = 0; j < num_objs; j++)
+  for (size_t j = 0;
+       j < self->hit_objs_to_draw->len; j++)
     {
+      ArrangerObject * obj =
+        (ArrangerObject *)
+        g_ptr_array_index (
+          self->hit_objs_to_draw, j);
       draw_arranger_object (
-        self, objs[j], snapshot, &visible_rect_gdk);
+        self, obj, snapshot, &visible_rect_gdk);
     }
 
   /* draw dnd highlight */

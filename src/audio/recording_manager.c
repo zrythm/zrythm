@@ -192,19 +192,23 @@ handle_stop_recording (
   arranger_selections_clear (
     (ArrangerSelections *) TL_SELECTIONS,
     F_NO_FREE, F_PUBLISH_EVENTS);
-  int num_objs;
-  ArrangerObject ** objs =
-    arranger_selections_get_all_objects (
-      prev_selections, &num_objs);
-  for (int i = 0; i < num_objs; i++)
+  GPtrArray * objs_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    prev_selections, objs_arr);
+  for (size_t i = 0; i < objs_arr->len; i++)
     {
+      ArrangerObject * sel_obj =
+        (ArrangerObject *)
+        g_ptr_array_index (objs_arr, i);
+      g_return_if_fail (sel_obj);
       ArrangerObject * obj =
-        arranger_object_find (objs[i]);
+        arranger_object_find (sel_obj);
       g_return_if_fail (obj);
       arranger_object_select (
         obj, F_SELECT, F_APPEND,
         F_NO_PUBLISH_EVENTS);
     }
+  g_ptr_array_unref (objs_arr);
 
   /* free the temporary selections */
   free_temp_selections (self);

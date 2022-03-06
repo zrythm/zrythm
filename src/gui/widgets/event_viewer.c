@@ -89,13 +89,19 @@ splice_list_store (
 }
 
 #define ADD_FOREACH_IN_ARRANGER(arranger) \
-  arranger_widget_get_all_objects ( \
-    arranger, objs, &num_objs); \
-  for (int i = 0; i < num_objs; i++) \
-    { \
-      ArrangerObject * obj = objs[i]; \
-      add_from_object (ptr_array, obj); \
-    }
+  { \
+    GPtrArray * objs_arr = \
+      g_ptr_array_new_full (200, NULL); \
+    arranger_widget_get_all_objects ( \
+      arranger, objs_arr); \
+    for (size_t i = 0; i < objs_arr->len; i++) \
+      { \
+        ArrangerObject * obj = \
+          (ArrangerObject *) \
+          g_ptr_array_index (objs_arr, i); \
+        add_from_object (ptr_array, obj); \
+      } \
+  }
 
 static void
 refresh_timeline_model (
@@ -106,11 +112,6 @@ refresh_timeline_model (
       self->column_view);
 
   GPtrArray * ptr_array = g_ptr_array_new ();
-
-  /* add data to the list store (cheat by using
-   * the timeline arranger children) */
-  ArrangerObject * objs[2000];
-  int              num_objs;
   ADD_FOREACH_IN_ARRANGER (MW_TIMELINE);
   ADD_FOREACH_IN_ARRANGER (MW_PINNED_TIMELINE);
 
@@ -126,12 +127,7 @@ refresh_midi_model (
       self->column_view);
 
   GPtrArray * ptr_array = g_ptr_array_new ();
-
-  /* add data to the list */
-  ArrangerObject * objs[2000];
-  int              num_objs;
-  ADD_FOREACH_IN_ARRANGER (
-    MW_MIDI_ARRANGER);
+  ADD_FOREACH_IN_ARRANGER (MW_MIDI_ARRANGER);
 
   splice_list_store (store, ptr_array);
 }
@@ -145,12 +141,7 @@ refresh_chord_model (
       self->column_view);
 
   GPtrArray * ptr_array = g_ptr_array_new ();
-
-  /* add data to the list */
-  ArrangerObject * objs[2000];
-  int              num_objs;
-  ADD_FOREACH_IN_ARRANGER (
-    MW_CHORD_ARRANGER);
+  ADD_FOREACH_IN_ARRANGER (MW_CHORD_ARRANGER);
 
   splice_list_store (store, ptr_array);
 }
@@ -164,15 +155,12 @@ refresh_automation_model (
       self->column_view);
 
   GPtrArray * ptr_array = g_ptr_array_new ();
-
-  /* add data to the list */
-  ArrangerObject * objs[2000];
-  int              num_objs;
-  ADD_FOREACH_IN_ARRANGER (
-    MW_AUTOMATION_ARRANGER);
+  ADD_FOREACH_IN_ARRANGER (MW_AUTOMATION_ARRANGER);
 
   splice_list_store (store, ptr_array);
 }
+
+#undef ADD_FOREACH_IN_ARRANGER
 
 static void
 refresh_audio_model (
@@ -209,8 +197,6 @@ refresh_editor_model (
       g_return_if_reached ();
     }
 }
-
-#undef ADD_FOREACH_IN_ARRANGER
 
 static ArrangerSelections *
 get_arranger_selections (
@@ -251,10 +237,9 @@ mark_selected_objects_as_selected (
   GtkSelectionModel * sel_model =
     gtk_column_view_get_model (self->column_view);
   gtk_selection_model_unselect_all (sel_model);
-  int num_objs = 0;
-  ArrangerObject ** objs =
-    arranger_selections_get_all_objects (
-      sel, &num_objs);
+  GPtrArray * objs_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    sel, objs_arr);
   GListModel * list = G_LIST_MODEL (sel_model);
   guint num_items =
     g_list_model_get_n_items (list);
@@ -266,9 +251,12 @@ mark_selected_objects_as_selected (
       ArrangerObject * iter_obj =
         (ArrangerObject *) wrapped_obj->obj;
 
-      for (int j = 0; j < num_objs; j++)
+      for (size_t j = 0; j < objs_arr->len; j++)
         {
-          ArrangerObject * obj = objs[j];
+          ArrangerObject * obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, j);
+
           if (obj != iter_obj)
             continue;
 
@@ -277,7 +265,7 @@ mark_selected_objects_as_selected (
           break;
         }
     }
-  free (objs);
+  g_ptr_array_unref (objs_arr);
 
   self->marking_selected_objs = false;
 }
@@ -327,15 +315,17 @@ event_viewer_widget_refresh (
             self->last_selections);
           self->last_selections =
             arranger_selections_new (sel->type);
-          int num_objs;
-          ArrangerObject ** objs =
-            arranger_selections_get_all_objects (
-              sel, &num_objs);
-          for (int i = 0; i < num_objs; i++)
+          GPtrArray * objs_arr = g_ptr_array_new ();
+          arranger_selections_get_all_objects (
+            sel, objs_arr);
+          for (size_t i = 0; i < objs_arr->len; i++)
             {
               arranger_selections_add_object (
-                self->last_selections, objs[i]);
+                self->last_selections,
+                (ArrangerObject *)
+                g_ptr_array_index (objs_arr, i));
             }
+          g_ptr_array_unref (objs_arr);
         }
     }
 
@@ -384,23 +374,30 @@ event_viewer_widget_refresh_for_selections (
         need_model_refresh = true;
       else
         {
-          ArrangerObject ** objs =
-            arranger_selections_get_all_objects (
-              sel, &num_objs);
-          ArrangerObject ** cached_objs =
-            arranger_selections_get_all_objects (
-              self->last_selections,
-              &num_cached_objs);
-          for (int i = 0; i < num_objs; i++)
+          GPtrArray * objs_arr = g_ptr_array_new ();
+          arranger_selections_get_all_objects (
+            sel, objs_arr);
+          GPtrArray * cached_objs_arr =
+            g_ptr_array_new ();
+          arranger_selections_get_all_objects (
+            self->last_selections, cached_objs_arr);
+          for (size_t i = 0; i < objs_arr->len; i++)
             {
-              ArrangerObject * a = objs[i];
-              ArrangerObject * b = cached_objs[i];
+              ArrangerObject * a =
+                (ArrangerObject *)
+                g_ptr_array_index (objs_arr, i);
+              ArrangerObject * b =
+                (ArrangerObject *)
+                g_ptr_array_index (
+                  cached_objs_arr, i);
               if (a != b)
                 {
                   need_model_refresh = true;
                   break;
                 }
             }
+          g_ptr_array_unref (objs_arr);
+          g_ptr_array_unref (cached_objs_arr);
         }
     }
   else

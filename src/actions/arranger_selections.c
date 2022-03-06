@@ -744,10 +744,12 @@ arranger_selections_action_new_split (
     _create_action (sel);
   self->type = AS_ACTION_SPLIT;
 
-  ArrangerObject ** objs =
-    arranger_selections_get_all_objects (
-      self->sel, &self->num_split_objs);
-  free (objs);
+  GPtrArray * split_objs_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    self->sel, split_objs_arr);
+  self->num_split_objs = (int) split_objs_arr->len;
+  g_ptr_array_unref (split_objs_arr);
+
   self->pos = *pos;
   position_update_frames_from_ticks (&self->pos);
 
@@ -1192,16 +1194,17 @@ arranger_selections_action_perform_quantize (
 
 static void
 update_region_link_groups (
-  ArrangerObject ** objs,
-  int               size)
+  GPtrArray * objs_arr)
 {
   /* handle children of linked regions */
-  for (int i = 0; i < size; i++)
+  for (size_t i = 0; i < objs_arr->len; i++)
     {
       /* get the actual object from the
        * project */
       ArrangerObject * obj =
-        arranger_object_find (objs[i]);
+        arranger_object_find (
+          (ArrangerObject *)
+          g_ptr_array_index (objs_arr, i));
       g_return_if_fail (obj);
 
       if (arranger_object_owned_by_region (obj))
@@ -1227,12 +1230,11 @@ do_or_undo_move (
   const bool                 _do,
   GError **                  error)
 {
-  int size = 0;
   arranger_selections_sort_by_indices (
     self->sel, !_do);
-  ArrangerObject ** objs =
-    arranger_selections_get_all_objects (
-      self->sel, &size);
+  GPtrArray * objs_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    self->sel, objs_arr);
 
   double ticks =
     _do ? self->ticks : - self->ticks;
@@ -1259,19 +1261,22 @@ do_or_undo_move (
 
   if (!self->first_run)
     {
-      for (int i = 0; i < size; i++)
+      for (size_t i = 0; i < objs_arr->len; i++)
         {
-          objs[i]->flags |=
+          ArrangerObject * own_obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
+          own_obj->flags |=
             ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
           /* get the actual object from the
            * project */
           ArrangerObject * obj =
-            arranger_object_find (objs[i]);
+            arranger_object_find (own_obj);
           g_return_val_if_fail (obj, -1);
 
           g_hash_table_insert (
-            ht, obj, objs[i]);
+            ht, obj, own_obj);
 
           if (!math_doubles_equal (ticks, 0.0))
             {
@@ -1281,7 +1286,7 @@ do_or_undo_move (
 
               /* also shift the copy */
               arranger_object_move (
-                objs[i], ticks);
+                own_obj, ticks);
             }
 
           if (delta_tracks != 0)
@@ -1306,7 +1311,7 @@ do_or_undo_move (
 
               /* remember info in identifier */
               ZRegion * r_clone =
-                (ZRegion *) objs[i];
+                (ZRegion *) own_obj;
               region_identifier_copy (
                 &r_clone->id, &r->id);
             }
@@ -1327,7 +1332,7 @@ do_or_undo_move (
               /* also shift the copy so they can
                * match */
               midi_note_shift_pitch (
-                (MidiNote *) objs[i],
+                (MidiNote *) own_obj,
                 delta_pitch);
             }
 
@@ -1357,7 +1362,7 @@ do_or_undo_move (
 
               /* remember info in identifier */
               ZRegion * r_own =
-                (ZRegion *) objs[i];
+                (ZRegion *) own_obj;
               region_identifier_copy (
                 &r_own->id, &r->id);
             }
@@ -1388,7 +1393,7 @@ do_or_undo_move (
                   /* also shift the copy so they
                    * can match */
                   AutomationPoint * copy_ap =
-                    (AutomationPoint *) objs[i];
+                    (AutomationPoint *) own_obj;
                   automation_point_set_fvalue (
                     copy_ap,
                     copy_ap->normalized_val +
@@ -1403,13 +1408,16 @@ do_or_undo_move (
       /* if moving automation points, re-sort
        * the region and remember the new
        * indices */
-      if (objs[0]->type ==
+      ArrangerObject * first_own_obj =
+        (ArrangerObject *)
+        g_ptr_array_index (objs_arr, 0);
+      if (first_own_obj->type ==
             ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
         {
           ArrangerObject * obj =
             /* get the actual object from the
              * project */
-            arranger_object_find (objs[0]);
+            arranger_object_find (first_own_obj);
           g_return_val_if_fail (obj, -1);
 
           ZRegion * region =
@@ -1434,9 +1442,9 @@ do_or_undo_move (
         }
     }
 
-  update_region_link_groups (objs, size);
+  update_region_link_groups (objs_arr);
 
-  free (objs);
+  g_ptr_array_unref (objs_arr);
   g_hash_table_destroy (ht);
 
   ArrangerSelections * sel =
@@ -1537,18 +1545,17 @@ do_or_undo_duplicate_or_link (
     self->sel, !_do);
   arranger_selections_sort_by_indices (
     self->sel_after, !_do);
-  int size = 0;
-  ArrangerObject ** objs =
-    arranger_selections_get_all_objects (
-      self->sel_after, &size);
+  GPtrArray * objs_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    self->sel_after, objs_arr);
   if (ZRYTHM_TESTING)
     {
       arranger_selections_verify (self->sel_after);
     }
   /* objects the duplication/link was based from */
-  ArrangerObject ** orig_objs =
-    arranger_selections_get_all_objects (
-      self->sel, &size);
+  GPtrArray * orig_objs_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    self->sel, orig_objs_arr);
   ArrangerSelections * sel =
     get_actual_arranger_selections (self);
   g_return_val_if_fail (sel, -1);
@@ -1577,40 +1584,46 @@ do_or_undo_duplicate_or_link (
    * the cached selections */
   GHashTable * ht = g_hash_table_new (NULL, NULL);
 
-  for (int i = size - 1; i >= 0; i--)
+  for (int i = (int) objs_arr->len - 1; i >= 0; i--)
     {
-      objs[i]->flags |=
+      ArrangerObject * own_obj =
+        (ArrangerObject *)
+        g_ptr_array_index (objs_arr, i);
+      ArrangerObject * own_orig_obj =
+        (ArrangerObject *)
+        g_ptr_array_index (orig_objs_arr, i);
+      own_obj->flags |=
         ARRANGER_OBJECT_FLAG_NON_PROJECT;
-      orig_objs[i]->flags |=
+      own_orig_obj->flags |=
         ARRANGER_OBJECT_FLAG_NON_PROJECT;
       g_warn_if_fail (
-        IS_ARRANGER_OBJECT (objs[i]));
+        IS_ARRANGER_OBJECT (own_obj));
 
       /* on first run, we need to first move
        * the original object backwards (the
        * project object too) */
       if (_do && self->first_run)
         {
-          if (objs[i]->type ==
+          if (own_obj->type ==
                 ARRANGER_OBJECT_TYPE_REGION)
             {
               g_debug ("our:");
               region_print (
-                (ZRegion *) objs[i]);
+                (ZRegion *) own_obj);
             }
           ZRegion * r_orig = NULL;
           ZRegion * r_our = NULL;
-          if (objs[i]->type ==
+          if (own_obj->type ==
                 ARRANGER_OBJECT_TYPE_REGION)
             {
-              r_orig = (ZRegion *) orig_objs[i];
-              r_our = (ZRegion *) objs[i];
+              r_orig = (ZRegion *) own_orig_obj;
+              r_our = (ZRegion *) own_obj;
               g_return_val_if_fail (
                 IS_REGION_AND_NONNULL (r_orig) &&
                 IS_REGION_AND_NONNULL (r_our), -1);
             }
           ArrangerObject * obj =
-            arranger_object_find (objs[i]);
+            arranger_object_find (own_obj);
           g_return_val_if_fail (
             IS_ARRANGER_OBJECT (obj), -1);
 
@@ -1625,7 +1638,7 @@ do_or_undo_duplicate_or_link (
               arranger_object_move (
                 obj, - self->ticks);
               arranger_object_move (
-                objs[i], - self->ticks);
+                own_obj, - self->ticks);
             }
 
           /* tracks & lanes */
@@ -1637,24 +1650,25 @@ do_or_undo_duplicate_or_link (
               move_obj_by_tracks_and_lanes (
                 obj, - delta_tracks,
                 - delta_lanes, true,
-                objs[i]->index_in_prev_lane);
+                own_obj->index_in_prev_lane);
 
               g_message ("moving own obj");
               RegionIdentifier own_id_before_move =
                 r_our->id;
               move_obj_by_tracks_and_lanes (
-                objs[i], - delta_tracks,
+                own_obj, - delta_tracks,
                 - delta_lanes, true,
-                objs[i]->index_in_prev_lane);
+                own_obj->index_in_prev_lane);
 
               /* since the object moved outside
                * of its lane, decrement the index
                * inside the lane for all of our
                * cached objects in the same lane */
-              for (int j = i + 1; j < size; j++)
+              for (int j = i + 1;
+                   j < (int) objs_arr->len; j++)
                 {
                   ZRegion * own_r =
-                    (ZRegion *) objs[j];
+                    (ZRegion *) own_obj;
                   if (own_id_before_move.
                         track_name_hash ==
                         own_r->id.track_name_hash &&
@@ -1680,7 +1694,7 @@ do_or_undo_duplicate_or_link (
                 (MidiNote *) obj,
                 - delta_pitch);
               midi_note_shift_pitch (
-                (MidiNote *) objs[i],
+                (MidiNote *) own_obj,
                 - delta_pitch);
             }
 
@@ -1691,7 +1705,7 @@ do_or_undo_duplicate_or_link (
               AutomationPoint * ap =
                 (AutomationPoint *) obj;
               AutomationPoint * cached_ap =
-                (AutomationPoint *) objs[i];
+                (AutomationPoint *) own_obj;
               automation_point_set_fvalue (
                 ap,
                 ap->normalized_val -
@@ -1710,13 +1724,20 @@ do_or_undo_duplicate_or_link (
 
   g_debug ("moved original objects back");
 
-  for (int i = 0; i < size; i++)
+  for (size_t i = 0; i < objs_arr->len; i++)
     {
+      ArrangerObject * own_obj =
+        (ArrangerObject *)
+        g_ptr_array_index (objs_arr, i);
+      ArrangerObject * own_orig_obj =
+        (ArrangerObject *)
+        g_ptr_array_index (orig_objs_arr, i);
+
       ArrangerObject * obj;
       if (_do)
         {
           /* clone the clone */
-          obj = arranger_object_clone (objs[i]);
+          obj = arranger_object_clone (own_obj);
 
           /* if region, clear the remembered index
            * so that the region gets appended
@@ -1736,7 +1757,7 @@ do_or_undo_duplicate_or_link (
       else /* if undo */
         {
           /* find the actual object */
-          obj = arranger_object_find (objs[i]);
+          obj = arranger_object_find (own_obj);
           g_return_val_if_fail (
             IS_ARRANGER_OBJECT_AND_NONNULL (obj),
             -1);
@@ -1761,9 +1782,9 @@ do_or_undo_duplicate_or_link (
                 region->id.link_group == -1);
 
               /* unlink remembered link groups */
-              region = (ZRegion *) orig_objs[i];
+              region = (ZRegion *) own_orig_obj;
               region_unlink (region);
-              region = (ZRegion *) objs[i];
+              region = (ZRegion *) own_obj;
               region_unlink (region);
             }
 
@@ -1784,7 +1805,7 @@ do_or_undo_duplicate_or_link (
 
           /* also shift the copy */
           arranger_object_move (
-            objs[i], ticks);
+            own_obj, ticks);
         }
 
       if (delta_tracks != 0)
@@ -1797,7 +1818,7 @@ do_or_undo_duplicate_or_link (
 
           /* also shift the copy */
           move_obj_by_tracks_and_lanes (
-            objs[i], delta_tracks, false, -1, 0);
+            own_obj, delta_tracks, false, -1, 0);
         }
 
       if (delta_pitch != 0)
@@ -1814,7 +1835,7 @@ do_or_undo_duplicate_or_link (
           /* also shift the copy so they can
            * match */
           midi_note_shift_pitch (
-            (MidiNote *) objs[i],
+            (MidiNote *) own_obj,
             delta_pitch);
         }
 
@@ -1828,7 +1849,7 @@ do_or_undo_duplicate_or_link (
 
           /* also shift the copy */
           move_obj_by_tracks_and_lanes (
-            objs[i], 0, delta_lanes, false, -1);
+            own_obj, 0, delta_lanes, false, -1);
         }
 
       if (delta_chords != 0)
@@ -1851,7 +1872,7 @@ do_or_undo_duplicate_or_link (
 
           /* also shift the copy */
           AutomationPoint * cached_ap =
-            (AutomationPoint *) objs[i];
+            (AutomationPoint *) own_obj;
           automation_point_set_fvalue (
             cached_ap,
             cached_ap->normalized_val +
@@ -1865,14 +1886,14 @@ do_or_undo_duplicate_or_link (
           /* if we are linking, create the
            * necessary links */
           if (link &&
-              orig_objs[i]->type ==
+              own_orig_obj->type ==
                 ARRANGER_OBJECT_TYPE_REGION)
             {
               /* add link group to original object
                * if necessary */
               ArrangerObject * orig_obj =
                 arranger_object_find (
-                  orig_objs[i]);
+                  own_orig_obj);
               ZRegion * orig_r =
                 (ZRegion *) orig_obj;
               g_return_val_if_fail (
@@ -1894,10 +1915,10 @@ do_or_undo_duplicate_or_link (
 
               /* remember link groups */
               ZRegion * r =
-                (ZRegion *) orig_objs[i];
+                (ZRegion *) own_orig_obj;
               region_set_link_group (
                 r, link_group, true);
-              r = (ZRegion *) objs[i];
+              r = (ZRegion *) own_obj;
               region_set_link_group (
                 r, link_group, true);
 
@@ -1942,7 +1963,7 @@ do_or_undo_duplicate_or_link (
         }
 
       /* add the mapping to the hashtable */
-      g_hash_table_insert (ht, obj, objs[i]);
+      g_hash_table_insert (ht, obj, own_obj);
 
       if (_do)
         {
@@ -1953,7 +1974,7 @@ do_or_undo_duplicate_or_link (
 
           /* remember the identifier */
           arranger_object_copy_identifier (
-            objs[i], obj);
+            own_obj, obj);
         }
 
       region_link_group_manager_validate (
@@ -1962,7 +1983,10 @@ do_or_undo_duplicate_or_link (
 
   /* if copy-moving automation points, re-sort
    * the region and remember the new indices */
-  if (objs[0]->type ==
+  ArrangerObject * first_own_obj =
+    (ArrangerObject *)
+    g_ptr_array_index (objs_arr, 0);
+  if (first_own_obj->type ==
         ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
     {
       /* get the actual object from the
@@ -1998,8 +2022,8 @@ do_or_undo_duplicate_or_link (
   region_link_group_manager_validate (
     REGION_LINK_GROUP_MANAGER);
 
-  free (objs);
-  free (orig_objs);
+  g_ptr_array_unref (objs_arr);
+  g_ptr_array_unref (orig_objs_arr);
   g_hash_table_destroy (ht);
 
   sel = get_actual_arranger_selections (self);
@@ -2036,7 +2060,6 @@ do_or_undo_create_or_delete (
   const int                  create,
   GError **                  error)
 {
-  int size = 0;
   if (create)
     {
       arranger_selections_sort_by_indices (
@@ -2049,9 +2072,9 @@ do_or_undo_create_or_delete (
         self->sel,
         _do ? F_DESCENDING : F_NOT_DESCENDING);
     }
-  ArrangerObject ** objs =
-    arranger_selections_get_all_objects (
-      self->sel, &size);
+  GPtrArray * objs_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    self->sel, objs_arr);
   ArrangerSelections * sel =
     get_actual_arranger_selections (self);
   g_return_val_if_fail (sel, -1);
@@ -2062,9 +2085,12 @@ do_or_undo_create_or_delete (
       arranger_selections_clear (
         sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
-      for (int i = 0; i < size; i++)
+      for (size_t i = 0; i < objs_arr->len; i++)
         {
-          objs[i]->flags |=
+          ArrangerObject * own_obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
+          own_obj->flags |=
             ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
           /* if doing in a create action or undoing
@@ -2074,7 +2100,7 @@ do_or_undo_create_or_delete (
             {
               /* clone the clone */
               ArrangerObject * obj =
-                arranger_object_clone (objs[i]);
+                arranger_object_clone (own_obj);
 
               /* add it to the project */
               if (create)
@@ -2095,7 +2121,7 @@ do_or_undo_create_or_delete (
 
               /* remember new info */
               arranger_object_copy_identifier (
-                objs[i], obj);
+                own_obj, obj);
             }
 
           /* if removing */
@@ -2104,7 +2130,7 @@ do_or_undo_create_or_delete (
               /* get the actual object from the
                * project */
               ArrangerObject * obj =
-                arranger_object_find (objs[i]);
+                arranger_object_find (own_obj);
               g_return_val_if_fail (obj, -1);
 
               /* if region, remove link */
@@ -2120,7 +2146,7 @@ do_or_undo_create_or_delete (
 
                       /* unlink remembered link
                        * groups */
-                      region = (ZRegion *) objs[i];
+                      region = (ZRegion *) own_obj;
                       region_unlink (region);
                     }
                 }
@@ -2135,9 +2161,11 @@ do_or_undo_create_or_delete (
   /* if first time creating the object, save the
    * length for use by SnapGrid */
   if (ZRYTHM_HAVE_UI && self->first_run &&
-      create && _do && size == 1)
+      create && _do && objs_arr->len == 1)
     {
-      ArrangerObject * obj = objs[0];
+      ArrangerObject * obj =
+        (ArrangerObject *)
+        g_ptr_array_index (objs_arr, 0);
       obj = arranger_object_find (obj);
       g_return_val_if_fail (obj, -1);
       if (arranger_object_type_has_length (
@@ -2167,7 +2195,7 @@ do_or_undo_create_or_delete (
   /* if creating */
   if ((_do && create) || (!_do && !create))
     {
-      update_region_link_groups (objs, size);
+      update_region_link_groups (objs_arr);
 
       transport_recalculate_total_bars (
         TRANSPORT, self->sel);
@@ -2187,7 +2215,7 @@ do_or_undo_create_or_delete (
   region_link_group_manager_validate (
     REGION_LINK_GROUP_MANAGER);
 
-  free (objs);
+  g_ptr_array_unref (objs_arr);
 
   self->first_run = 0;
 
@@ -2229,18 +2257,18 @@ do_or_undo_record (
   const bool                 _do,
   GError **                  error)
 {
-  int size_before = 0;
-  int size_after = 0;
   arranger_selections_sort_by_indices (
     self->sel, _do ? false : true);
   arranger_selections_sort_by_indices (
     self->sel_after, _do ? false : true);
-  ArrangerObject ** before_objs =
-    arranger_selections_get_all_objects (
-      self->sel, &size_before);
-  ArrangerObject ** after_objs =
-    arranger_selections_get_all_objects (
-      self->sel_after, &size_after);
+  GPtrArray * before_objs_arr =
+    g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    self->sel, before_objs_arr);
+  GPtrArray * after_objs_arr =
+    g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    self->sel_after, after_objs_arr);
   ArrangerSelections * sel =
     get_actual_arranger_selections (self);
   g_return_val_if_fail (sel, -1);
@@ -2255,15 +2283,20 @@ do_or_undo_record (
       if (_do)
         {
           /* create the newly recorded objects */
-          for (int i = 0; i < size_after; i++)
+          for (size_t i = 0;
+               i < after_objs_arr->len; i++)
             {
-              after_objs[i]->flags |=
+              ArrangerObject * own_after_obj =
+                (ArrangerObject *)
+                g_ptr_array_index (
+                  after_objs_arr, i);
+              own_after_obj->flags |=
                 ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
               /* clone the clone */
               ArrangerObject * obj =
                 arranger_object_clone (
-                  after_objs[i]);
+                  own_after_obj);
 
               /* add it to the project */
               arranger_object_add_to_project (
@@ -2276,20 +2309,25 @@ do_or_undo_record (
 
               /* remember new info */
               arranger_object_copy_identifier (
-                after_objs[i], obj);
+                own_after_obj, obj);
             }
 
           /* delete the previous objects */
-          for (int i = 0; i < size_before; i++)
+          for (size_t i = 0;
+               i < before_objs_arr->len; i++)
             {
-              before_objs[i]->flags |=
+              ArrangerObject * own_before_obj =
+                (ArrangerObject *)
+                g_ptr_array_index (
+                  before_objs_arr, i);
+              own_before_obj->flags |=
                 ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
               /* get the actual object from the
                * project */
               ArrangerObject * obj =
                 arranger_object_find (
-                  before_objs[i]);
+                  own_before_obj);
               g_return_val_if_fail (obj, -1);
 
               /* remove it */
@@ -2301,16 +2339,21 @@ do_or_undo_record (
       else
         {
           /* delete the newly recorded objects */
-          for (int i = 0; i < size_after; i++)
+          for (size_t i = 0;
+               i < after_objs_arr->len; i++)
             {
-              after_objs[i]->flags |=
+              ArrangerObject * own_after_obj =
+                (ArrangerObject *)
+                g_ptr_array_index (
+                  after_objs_arr, i);
+              own_after_obj->flags |=
                 ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
               /* get the actual object from the
                * project */
               ArrangerObject * obj =
                 arranger_object_find (
-                  after_objs[i]);
+                  own_after_obj);
               g_return_val_if_fail (obj, -1);
 
               /* remove it */
@@ -2318,15 +2361,20 @@ do_or_undo_record (
             }
 
           /* add the objects before the recording */
-          for (int i = 0; i < size_before; i++)
+          for (size_t i = 0;
+               i < before_objs_arr->len; i++)
             {
-              before_objs[i]->flags |=
+              ArrangerObject * own_before_obj =
+                (ArrangerObject *)
+                g_ptr_array_index (
+                  before_objs_arr, i);
+              own_before_obj->flags |=
                 ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
               /* clone the clone */
               ArrangerObject * obj =
                 arranger_object_clone (
-                  before_objs[i]);
+                  own_before_obj);
 
               /* add it to the project */
               arranger_object_add_to_project (
@@ -2339,13 +2387,13 @@ do_or_undo_record (
 
               /* remember new info */
               arranger_object_copy_identifier (
-                before_objs[i], obj);
+                own_before_obj, obj);
             }
         }
     }
 
-  free (before_objs);
-  free (after_objs);
+  g_ptr_array_unref (before_objs_arr);
+  g_ptr_array_unref (after_objs_arr);
 
   EVENTS_PUSH (
     ET_ARRANGER_SELECTIONS_CREATED, sel);
@@ -2392,18 +2440,17 @@ do_or_undo_edit (
   const int                  _do,
   GError **                  error)
 {
-  int size = 0;
-  ArrangerObject ** objs_before =
-    arranger_selections_get_all_objects (
-      self->sel, &size);
-  ArrangerObject ** objs_after =
-    arranger_selections_get_all_objects (
-      self->sel_after, &size);
+  GPtrArray * objs_before_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    self->sel, objs_before_arr);
+  GPtrArray * objs_after_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    self->sel_after, objs_after_arr);
 
-  ArrangerObject ** src_objs =
-    _do ? objs_before : objs_after;
-  ArrangerObject ** dest_objs =
-    _do ? objs_after : objs_before;
+  GPtrArray * src_objs_arr =
+    _do ? objs_before_arr : objs_after_arr;
+  GPtrArray * dest_objs_arr =
+    _do ? objs_after_arr : objs_before_arr;
 
   if (!self->first_run)
     {
@@ -2455,20 +2502,29 @@ do_or_undo_edit (
         }
       else /* not audio function */
         {
-          for (int i = 0; i < size; i++)
+          for (size_t i = 0;
+               i < src_objs_arr->len; i++)
             {
+              ArrangerObject * own_src_obj =
+                (ArrangerObject *)
+                g_ptr_array_index (
+                  src_objs_arr, i);
+              ArrangerObject * own_dest_obj =
+                (ArrangerObject *)
+                g_ptr_array_index (
+                  dest_objs_arr, i);
               g_return_val_if_fail (
-                src_objs[i], -1);
+                own_src_obj, -1);
               g_return_val_if_fail (
-                dest_objs[i], -1);
-              src_objs[i]->flags |=
+                own_dest_obj, -1);
+              own_src_obj->flags |=
                 ARRANGER_OBJECT_FLAG_NON_PROJECT;
-              dest_objs[i]->flags |=
+              own_dest_obj->flags |=
                 ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
               /* find the actual object */
               ArrangerObject * obj =
-                arranger_object_find (src_objs[i]);
+                arranger_object_find (own_src_obj);
               g_return_val_if_fail (obj, -1);
 
               /* change the parameter */
@@ -2481,7 +2537,7 @@ do_or_undo_edit (
                         obj->type), -1);
                     const char * name =
                       arranger_object_get_name (
-                        dest_objs[i]);
+                        own_dest_obj);
                     arranger_object_set_name (
                       obj, name,
                       F_NO_PUBLISH_EVENTS);
@@ -2489,29 +2545,29 @@ do_or_undo_edit (
                   break;
                 case ARRANGER_SELECTIONS_ACTION_EDIT_POS:
                   obj->pos =
-                    dest_objs[i]->pos;
+                    own_dest_obj->pos;
                   obj->end_pos =
-                    dest_objs[i]->end_pos;
+                    own_dest_obj->end_pos;
                   obj->clip_start_pos =
-                    dest_objs[i]->clip_start_pos;
+                    own_dest_obj->clip_start_pos;
                   obj->loop_start_pos =
-                    dest_objs[i]->loop_start_pos;
+                    own_dest_obj->loop_start_pos;
                   obj->loop_end_pos =
-                    dest_objs[i]->loop_end_pos;
+                    own_dest_obj->loop_end_pos;
                   break;
                 case ARRANGER_SELECTIONS_ACTION_EDIT_FADES:
                   obj->fade_in_pos =
-                    dest_objs[i]->fade_in_pos;
+                    own_dest_obj->fade_in_pos;
                   obj->fade_out_pos =
-                    dest_objs[i]->fade_out_pos;
+                    own_dest_obj->fade_out_pos;
                   obj->fade_in_opts =
-                    dest_objs[i]->fade_in_opts;
+                    own_dest_obj->fade_in_opts;
                   obj->fade_out_opts =
-                    dest_objs[i]->fade_out_opts;
+                    own_dest_obj->fade_out_opts;
                   break;
                 case ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE:
 #define SET_PRIMITIVE(cc,member) \
-        ((cc *) obj)->member = ((cc *) dest_objs[i])->member
+        ((cc *) obj)->member = ((cc *) own_dest_obj)->member
 
                   switch (obj->type)
                     {
@@ -2535,7 +2591,7 @@ do_or_undo_edit (
                         MidiNote * mn =
                           (MidiNote *) obj;
                         MidiNote * dest_mn =
-                          (MidiNote *) dest_objs[i];
+                          (MidiNote *) own_dest_obj;
                         velocity_set_val (
                           mn->vel, dest_mn->vel->vel);
                       }
@@ -2566,7 +2622,7 @@ do_or_undo_edit (
                         MidiNote * mn =
                           (MidiNote *) obj;
                         MidiNote * dest_mn =
-                          (MidiNote *) dest_objs[i];
+                          (MidiNote *) own_dest_obj;
                         velocity_set_val (
                           mn->vel, dest_mn->vel->vel);
                       }
@@ -2592,7 +2648,7 @@ do_or_undo_edit (
                     ScaleObject * scale =
                       (ScaleObject *) obj;
                     ScaleObject * dest_scale =
-                      (ScaleObject *) dest_objs[i];
+                      (ScaleObject *) own_dest_obj;
 
                     /* set the new scale */
                     MusicalScale * old = scale->scale;
@@ -2616,10 +2672,10 @@ do_or_undo_edit (
         } /* endif audio function */
     } /* endif not first run */
 
-  update_region_link_groups (dest_objs, size);
+  update_region_link_groups (dest_objs_arr);
 
-  free (src_objs);
-  free (dest_objs);
+  g_ptr_array_unref (src_objs_arr);
+  g_ptr_array_unref (dest_objs_arr);
 
   ArrangerSelections * sel =
     get_actual_arranger_selections (self);
@@ -2720,14 +2776,16 @@ do_or_undo_split (
   const int                  _do,
   GError **                  error)
 {
-  int size = 0;
-  ArrangerObject ** objs =
-    arranger_selections_get_all_objects (
-      self->sel, &size);
+  GPtrArray * objs_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    self->sel, objs_arr);
 
-  for (int i = 0; i < size; i++)
+  for (size_t i = 0; i < objs_arr->len; i++)
     {
-      objs[i]->flags |=
+      ArrangerObject * own_obj =
+        (ArrangerObject *)
+        g_ptr_array_index (objs_arr, i);
+      own_obj->flags |=
         ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
       ArrangerObject * obj, * r1, * r2;
@@ -2735,7 +2793,7 @@ do_or_undo_split (
         {
           /* find the actual object */
           obj =
-            arranger_object_find (objs[i]);
+            arranger_object_find (own_obj);
           g_return_val_if_fail (obj, -1);
 
           /* split */
@@ -2767,9 +2825,10 @@ do_or_undo_split (
           if (obj->type ==
                 ARRANGER_OBJECT_TYPE_REGION)
             {
+              ZRegion * own_region =
+                (ZRegion *) own_obj;
               arranger_object_set_name (
-                obj,
-                ((ZRegion *) objs[i])->name,
+                obj, own_region->name,
                 F_NO_PUBLISH_EVENTS);
             }
 
@@ -2778,7 +2837,7 @@ do_or_undo_split (
           arranger_object_remove_from_project (
             obj);
           obj =
-            arranger_object_clone (objs[i]);
+            arranger_object_clone (own_obj);
           arranger_object_insert_to_project (
             obj);
 
@@ -2786,12 +2845,13 @@ do_or_undo_split (
           free_split_objects (self, i);
         }
     }
-  free (objs);
 
   if (_do)
-    self->num_split_objs = size;
+    self->num_split_objs = (int) objs_arr->len;
   else
     self->num_split_objs = 0;
+
+  g_ptr_array_unref (objs_arr);
 
   ArrangerSelections * sel =
     get_actual_arranger_selections (self);
@@ -2827,26 +2887,29 @@ do_or_undo_merge (
   arranger_selections_sort_by_indices (
     self->sel_after, !_do);
 
-  int before_size = 0;
-  ArrangerObject ** before_objs =
-    arranger_selections_get_all_objects (
-      _do ? self->sel : self->sel_after,
-      &before_size);
-  int after_size = 0;
-  ArrangerObject ** after_objs =
-    arranger_selections_get_all_objects (
-      _do ? self->sel_after : self->sel,
-      &after_size);
+  GPtrArray * before_objs_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    _do ? self->sel : self->sel_after,
+    before_objs_arr);
+  GPtrArray * after_objs_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    _do ? self->sel_after : self->sel,
+    after_objs_arr);
 
   /* remove the before objects from the project */
-  for (int i = before_size - 1; i >= 0; i--)
+  for (int i = (int) before_objs_arr->len - 1;
+       i >= 0; i--)
     {
-      before_objs[i]->flags |=
+      ArrangerObject * own_before_obj =
+        (ArrangerObject *)
+        g_ptr_array_index (before_objs_arr, i);
+
+      own_before_obj->flags |=
         ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
       /* find the actual object */
       ArrangerObject * prj_obj =
-        arranger_object_find (before_objs[i]);
+        arranger_object_find (own_before_obj);
       g_return_val_if_fail (prj_obj, -1);
 
       /* remove */
@@ -2854,24 +2917,28 @@ do_or_undo_merge (
     }
 
   /* add the after objects to the project */
-  for (int i = after_size - 1; i >= 0; i--)
+  for (int i = (int) after_objs_arr->len - 1;
+       i >= 0; i--)
     {
-      after_objs[i]->flags |=
+      ArrangerObject * own_after_obj =
+        (ArrangerObject *)
+        g_ptr_array_index (after_objs_arr, i);
+      own_after_obj->flags |=
         ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
       ArrangerObject * clone_obj =
-        arranger_object_clone (after_objs[i]);
+        arranger_object_clone (own_after_obj);
 
       arranger_object_add_to_project (
         clone_obj, F_NO_PUBLISH_EVENTS);
 
       /* remember positions */
       arranger_object_copy_identifier (
-        after_objs[i], clone_obj);
+        own_after_obj, clone_obj);
     }
 
-  free (before_objs);
-  free (after_objs);
+  g_ptr_array_unref (before_objs_arr);
+  g_ptr_array_unref (after_objs_arr);
 
   ArrangerSelections * sel =
     get_actual_arranger_selections (self);
@@ -2894,24 +2961,26 @@ do_or_undo_resize (
   const int                  _do,
   GError **                  error)
 {
-  int size = 0;
-  ArrangerObject ** objs =
-    arranger_selections_get_all_objects (
-      self->sel, &size);
+  GPtrArray * objs_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    self->sel, objs_arr);
 
   double ticks =
     _do ? self->ticks : - self->ticks;
 
   if (!self->first_run)
     {
-      for (int i = 0; i < size; i++)
+      for (size_t i = 0; i < objs_arr->len; i++)
         {
-          objs[i]->flags |=
+          ArrangerObject * own_obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
+          own_obj->flags |=
             ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
           /* find the actual object */
           ArrangerObject * obj =
-            arranger_object_find (objs[i]);
+            arranger_object_find (own_obj);
           g_return_val_if_fail (obj, -1);
 
           /* resize */
@@ -2956,13 +3025,13 @@ do_or_undo_resize (
           /* also resize the clone so we can find
            * the actual object next time */
           arranger_object_resize (
-            objs[i], left, type, ticks, false);
+            own_obj, left, type, ticks, false);
         }
     }
 
-  update_region_link_groups (objs, size);
+  update_region_link_groups (objs_arr);
 
-  free (objs);
+  g_ptr_array_unref (objs_arr);
 
   ArrangerSelections * sel =
     get_actual_arranger_selections (self);
@@ -2987,19 +3056,26 @@ do_or_undo_quantize (
   const int                  _do,
   GError **                  error)
 {
-  int size = 0;
-  ArrangerObject ** objs =
-    arranger_selections_get_all_objects (
-      self->sel, &size);
-  ArrangerObject ** quantized_objs =
-    arranger_selections_get_all_objects (
-      self->sel_after, &size);
+  GPtrArray * objs_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    self->sel, objs_arr);
+  GPtrArray * quantized_objs_arr =
+    g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    self->sel_after, quantized_objs_arr);
 
-  for (int i = 0; i < size; i++)
+  for (size_t i = 0; i < objs_arr->len; i++)
     {
-      objs[i]->flags |=
+      ArrangerObject * own_obj =
+        (ArrangerObject *)
+        g_ptr_array_index (objs_arr, i);
+      ArrangerObject * own_quantized_obj =
+        (ArrangerObject *)
+        g_ptr_array_index (quantized_objs_arr, i);
+
+      own_obj->flags |=
         ARRANGER_OBJECT_FLAG_NON_PROJECT;
-      quantized_objs[i]->flags |=
+      own_quantized_obj->flags |=
         ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
       /* find the actual object */
@@ -3007,12 +3083,13 @@ do_or_undo_quantize (
       if (_do)
         {
           obj =
-            arranger_object_find (objs[i]);
+            arranger_object_find (own_obj);
         }
       else
         {
           obj =
-            arranger_object_find (quantized_objs[i]);
+            arranger_object_find (
+              own_quantized_obj);
         }
       g_return_val_if_fail (obj, -1);
 
@@ -3040,21 +3117,22 @@ do_or_undo_quantize (
           /* remember the quantized position so we
            * can find the object when undoing */
           position_set_to_pos (
-            &quantized_objs[i]->pos, &obj->pos);
+            &own_quantized_obj->pos, &obj->pos);
           position_set_to_pos (
-            &quantized_objs[i]->end_pos,
+            &own_quantized_obj->end_pos,
             &obj->end_pos);
         }
       else
         {
           /* unquantize it */
           arranger_object_pos_setter (
-            obj, &objs[i]->pos);
+            obj, &own_obj->pos);
           arranger_object_end_pos_setter (
-            obj, &objs[i]->end_pos);
+            obj, &own_obj->end_pos);
         }
     }
-  free (objs);
+  g_ptr_array_unref (objs_arr);
+  g_ptr_array_unref (quantized_objs_arr);
 
   ArrangerSelections * sel =
     get_actual_arranger_selections (self);

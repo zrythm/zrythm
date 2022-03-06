@@ -343,12 +343,11 @@ midi_modifier_arranger_set_hit_velocity_vals (
   double           y,
   bool             append_to_selections)
 {
-  ArrangerObject * objs[800];
-  int              num_objs;
+  GPtrArray * objs_arr = g_ptr_array_new ();
   arranger_widget_get_hit_objects_at_point (
     self, ARRANGER_OBJECT_TYPE_VELOCITY, x, -1,
-    objs, &num_objs);
-  g_message ("%d velocities hit", num_objs);
+    objs_arr);
+  g_message ("%u velocities hit", objs_arr->len);
 
   int height =
     gtk_widget_get_allocated_height (
@@ -356,9 +355,11 @@ midi_modifier_arranger_set_hit_velocity_vals (
   double ratio = 1.0 - y / (double) height;
   int val = CLAMP ((int) (ratio * 127.0), 1, 127);
 
-  for (int i = 0; i < num_objs; i++)
+  for (size_t i = 0; i < objs_arr->len; i++)
     {
-      ArrangerObject * obj = objs[i];
+      ArrangerObject * obj =
+        (ArrangerObject *)
+        g_ptr_array_index (objs_arr, i);
       Velocity * vel = (Velocity *) obj;
       MidiNote * mn = velocity_get_midi_note (vel);
       ArrangerObject * mn_obj =
@@ -388,4 +389,6 @@ midi_modifier_arranger_set_hit_velocity_vals (
 
       velocity_set_val (vel, val);
     }
+
+  g_ptr_array_unref (objs_arr);
 }

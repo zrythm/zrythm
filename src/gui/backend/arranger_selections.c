@@ -284,16 +284,18 @@ arranger_selections_verify (
 {
   /* verify that all objects are arranger
    * objects */
-  int size = 0;
-  ArrangerObject ** objs =
+  GPtrArray * objs_arr = g_ptr_array_new ();
     arranger_selections_get_all_objects (
-      self, &size);
-  for (int i = 0; i < size; i++)
+      self, objs_arr);
+  for (size_t i = 0; i < objs_arr->len; i++)
     {
+      ArrangerObject * obj =
+        (ArrangerObject *)
+        g_ptr_array_index (objs_arr, i);
       g_return_val_if_fail (
-        IS_ARRANGER_OBJECT (objs[i]), false);
+        IS_ARRANGER_OBJECT (obj), false);
     }
-  free (objs);
+  g_ptr_array_unref (objs_arr);
 
   return true;
 }
@@ -2076,18 +2078,19 @@ arranger_selections_contains_object_with_property (
   ArrangerSelectionsProperty property,
   bool                       value)
 {
-  int num_objs;
-  ArrangerObject ** objs =
-    arranger_selections_get_all_objects (
-      self, &num_objs);
+  GPtrArray * objs_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    self, objs_arr);
 
 #define CHECK_PROP(x) \
   (property == ARRANGER_SELECTIONS_PROPERTY_##x)
 
   bool ret = false;
-  for (int i = 0; i < num_objs; i++)
+  for (size_t i = 0; i < objs_arr->len; i++)
     {
-      ArrangerObject * cur_obj = objs[i];
+      ArrangerObject * cur_obj =
+        (ArrangerObject *)
+        g_ptr_array_index (objs_arr, i);
 
       if (CHECK_PROP (HAS_LENGTH)
           &&
@@ -2135,7 +2138,8 @@ arranger_selections_contains_object_with_property (
 
 #undef CHECK_PROP
 
-  free (objs);
+  g_ptr_array_unref (objs_arr);
+
   return ret;
 }
 
@@ -2230,19 +2234,20 @@ arranger_selections_all_on_same_lane (
   ArrangerSelections * self)
 {
   bool ret = true;
-  int size = 0;
-  ArrangerObject ** objs =
-    arranger_selections_get_all_objects (
-      self, &size);
+  GPtrArray * objs_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    self, objs_arr);
 
   /* return if not all regions on the same lane or
    * automation track */
   RegionIdentifier id;
   memset (&id, 0, sizeof (RegionIdentifier));
   id.type = -1;
-  for (int i = 0; i < size; i++)
+  for (size_t i = 0; i < objs_arr->len; i++)
     {
-      ArrangerObject * obj = objs[i];
+      ArrangerObject * obj =
+        (ArrangerObject *)
+        g_ptr_array_index (objs_arr, i);
       if (obj->type != ARRANGER_OBJECT_TYPE_REGION)
         {
           ret = false;
@@ -2292,7 +2297,7 @@ arranger_selections_all_on_same_lane (
     }
 
 free_objs_and_return:
-  free (objs);
+  g_ptr_array_unref (objs_arr);
 
   return ret;
 }
@@ -2316,10 +2321,9 @@ arranger_selections_merge (
       return;
     }
 
-  int size = 0;
-  ArrangerObject ** objs =
-    arranger_selections_get_all_objects (
-      self, &size);
+  GPtrArray * objs_arr = g_ptr_array_new ();
+  arranger_selections_get_all_objects (
+    self, objs_arr);
 
   double ticks_length =
     arranger_selections_get_length_in_ticks (self);
@@ -2350,9 +2354,11 @@ arranger_selections_merge (
           &pos, &end_pos,
           first_r->id.track_name_hash,
           first_r->id.lane_pos, first_r->id.idx);
-      for (int i = 0; i < size; i++)
+      for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * r_obj = objs[i];
+          ArrangerObject * r_obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
           ZRegion * r = (ZRegion *) r_obj;
           double ticks_diff =
             r_obj->pos.ticks -
@@ -2390,9 +2396,11 @@ arranger_selections_merge (
         BitDepth max_depth =
           first_r_clip->bit_depth;
         g_warn_if_fail (first_r_clip->name);
-        for (int i = 0; i < size; i++)
+        for (size_t i = 0; i < objs_arr->len; i++)
           {
-            ArrangerObject * r_obj = objs[i];
+            ArrangerObject * r_obj =
+              (ArrangerObject *)
+              g_ptr_array_index (objs_arr, i);
             ZRegion * r = (ZRegion *) r_obj;
             long frames_diff =
               r_obj->pos.frames -
@@ -2436,9 +2444,11 @@ arranger_selections_merge (
       new_r =
         chord_region_new (
           &pos, &end_pos, first_r->id.idx);
-      for (int i = 0; i < size; i++)
+      for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * r_obj = objs[i];
+          ArrangerObject * r_obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
           ZRegion * r = (ZRegion *) r_obj;
           double ticks_diff =
             r_obj->pos.ticks -
@@ -2471,9 +2481,11 @@ arranger_selections_merge (
           &pos, &end_pos,
           first_r->id.track_name_hash,
           first_r->id.at_idx, first_r->id.idx);
-      for (int i = 0; i < size; i++)
+      for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * r_obj = objs[i];
+          ArrangerObject * r_obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
           ZRegion * r = (ZRegion *) r_obj;
           double ticks_diff =
             r_obj->pos.ticks -
@@ -2511,7 +2523,7 @@ arranger_selections_merge (
   arranger_selections_add_object (
     self, (ArrangerObject *) new_r);
 
-  free (objs);
+  g_ptr_array_unref (objs_arr);
 }
 
 bool
@@ -2706,73 +2718,58 @@ arranger_selections_paste_to_pos (
 }
 
 /**
- * Returns all objects in the selections in a
- * newly allocated array that should be free'd.
- *
- * @param size A pointer to save the size into.
+ * Appends all objects in the given array.
  */
-ArrangerObject **
+NONNULL
+void
 arranger_selections_get_all_objects (
-  ArrangerSelections * self,
-  int *                size)
+  const ArrangerSelections * self,
+  GPtrArray *                arr)
 {
-  TimelineSelections * ts;
-  ChordSelections * cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections * as;
-
-  ArrangerObject ** objs =
-    object_new_n (1, ArrangerObject *);
-  *size = 0;
-
 #define ADD_OBJ(sel,sc) \
   for (int i = 0; i < sel->num_##sc##s; i++) \
     { \
-      ArrangerObject ** new_objs = \
-        g_realloc ( \
-          objs, \
-          (size_t) (*size + 1) * \
-            sizeof (ArrangerObject *)); \
-      objs = new_objs; \
-      objs[*size] = \
-        (ArrangerObject *) sel->sc##s[i]; \
-      (*size)++; \
+      g_ptr_array_add (arr, sel->sc##s[i]); \
     }
 
   switch (self->type)
     {
     case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      ADD_OBJ (
-        ts, region);
-      ADD_OBJ (
-        ts, scale_object);
-      ADD_OBJ (
-        ts, marker);
+      {
+        const TimelineSelections * ts =
+          (const TimelineSelections *) self;
+        ADD_OBJ (ts, region);
+        ADD_OBJ (ts, scale_object);
+        ADD_OBJ (ts, marker);
+      }
       break;
     case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      ADD_OBJ (
-        mas, midi_note);
+      {
+        const MidiArrangerSelections * mas =
+          (const MidiArrangerSelections *) self;
+        ADD_OBJ (mas, midi_note);
+      }
       break;
     case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      ADD_OBJ (
-        as, automation_point);
+      {
+        const AutomationSelections * as =
+          (const AutomationSelections *) self;
+        ADD_OBJ (as, automation_point);
+      }
       break;
     case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      ADD_OBJ (
-        cs, chord_object);
+      {
+        const ChordSelections * cs =
+          (const ChordSelections *) self;
+        ADD_OBJ (cs, chord_object);
+      }
       break;
     case TYPE (AUDIO):
-      return NULL;
+      return;
     default:
-      g_return_val_if_reached (NULL);
+      g_return_if_reached ();
     }
 #undef ADD_OBJ
-
-  return objs;
 }
 
 ArrangerSelections *

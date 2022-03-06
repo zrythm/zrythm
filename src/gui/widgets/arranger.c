@@ -427,8 +427,7 @@ typedef struct ObjectOverlapInfo
    */
   Position           end_pos;
 
-  ArrangerObject **  array;
-  int *              array_size;
+  GPtrArray *        arr;
   ArrangerObject *   obj;
 } ObjectOverlapInfo;
 
@@ -448,8 +447,6 @@ add_object_if_overlap (
   GdkRectangle * rect = nfo->rect;
   double x = nfo->x;
   double y = nfo->y;
-  ArrangerObject ** array = nfo->array;
-  int * array_size = nfo->array_size;
   ArrangerObject * obj = nfo->obj;
 
   g_return_val_if_fail (
@@ -587,8 +584,7 @@ add_object_if_overlap (
 
   if (add)
     {
-      array[*array_size] = obj;
-      (*array_size)++;
+      g_ptr_array_add (nfo->arr, obj);
     }
 
   return add;
@@ -605,8 +601,6 @@ add_object_if_overlap (
  *   or -1 to look for all objects.
  * @param x X, or -1 to not check x.
  * @param y Y, or -1 to not check y.
- * @param array The array to fill.
- * @param array_size The size of the array to fill.
  */
 OPTIMIZE_O3
 static void
@@ -616,12 +610,10 @@ get_hit_objects (
   GdkRectangle *     rect,
   double             x,
   double             y,
-  ArrangerObject **  array,
-  int *              array_size)
+  GPtrArray *        arr)
 {
-  g_return_if_fail (self && array);
+  g_return_if_fail (self && arr);
 
-  *array_size = 0;
   ArrangerObject * obj = NULL;
 
   /* skip if haven't drawn yet */
@@ -649,8 +641,7 @@ get_hit_objects (
     {
       nfo.end_pos = nfo.start_pos;
     }
-  nfo.array = array;
-  nfo.array_size = array_size;
+  nfo.arr = arr;
 
   switch (self->type)
     {
@@ -774,9 +765,8 @@ get_hit_objects (
                               arranger_object_get_arranger (obj) ==  self &&
                               !obj->deleted_temporarily)
                             {
-                              array[*array_size] =
-                                obj;
-                              (*array_size)++;
+                              g_ptr_array_add (
+                                arr, obj);
                             }
                         }
                     }
@@ -969,19 +959,16 @@ get_hit_objects (
  * @param rect The rectangle to search in.
  * @param type The type of arranger objects to find,
  *   or -1 to look for all objects.
- * @param array The array to fill.
- * @param array_size The size of the array to fill.
  */
 void
 arranger_widget_get_hit_objects_in_rect (
   ArrangerWidget *   self,
   ArrangerObjectType type,
   GdkRectangle *     rect,
-  ArrangerObject **  array,
-  int *              array_size)
+  GPtrArray *        arr)
 {
   get_hit_objects (
-    self, type, rect, 0, 0, array, array_size);
+    self, type, rect, 0, 0, arr);
 }
 
 /**
@@ -990,28 +977,26 @@ arranger_widget_get_hit_objects_in_rect (
 static void
 filter_out_frozen_objects (
   ArrangerWidget *   self,
-  ArrangerObject **  objs,
-  int *              num_objs)
+  GPtrArray *        objs_arr)
 {
   if (self->type != ARRANGER_WIDGET_TYPE_TIMELINE)
     {
       return;
     }
 
-  for (int i = *num_objs - 1; i >= 0; i--)
+  for (int i = (int) objs_arr->len - 1;
+       i >= 0; i--)
     {
-      ArrangerObject * obj = objs[i];
+      ArrangerObject * obj =
+        g_ptr_array_index (objs_arr, i);
       Track * track =
         arranger_object_get_track (obj);
       g_return_if_fail (track);
 
       if (track->frozen)
         {
-          for (int j = i; j < *num_objs - 1; j++)
-            {
-              objs[j] = objs[j + 1];
-            }
-          (*num_objs)--;
+          g_ptr_array_remove_index (
+            objs_arr, (guint) i);
         }
     }
 }
@@ -1025,8 +1010,6 @@ filter_out_frozen_objects (
  *   or -1 to look for all objects.
  * @param x X, or -1 to not check x.
  * @param y Y, or -1 to not check y.
- * @param array The array to fill.
- * @param array_size The size of the array to fill.
  */
 void
 arranger_widget_get_hit_objects_at_point (
@@ -1034,11 +1017,10 @@ arranger_widget_get_hit_objects_at_point (
   ArrangerObjectType type,
   double             x,
   double             y,
-  ArrangerObject **  array,
-  int *              array_size)
+  GPtrArray *        arr)
 {
   get_hit_objects (
-    self, type, NULL, x, y, array, array_size);
+    self, type, NULL, x, y, arr);
 }
 
 /**
@@ -1336,17 +1318,17 @@ arranger_widget_select_all (
 
   if (select)
     {
-      /* TODO move array to ArrangerWidget struct
-       * and allocate a large value dynamically
-       * during initialization */
-      ArrangerObject * objs[10000];
-      int num_objs = 0;
+      GPtrArray * objs_arr =
+        g_ptr_array_new_full (200, NULL);
       arranger_widget_get_all_objects (
-        self, objs, &num_objs);
-      for (int i = 0; i < num_objs; i++)
+        self, objs_arr);
+      for (size_t i = 0; i < objs_arr->len; i++)
         {
+          ArrangerObject * obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
           arranger_object_select (
-            objs[i], F_SELECT, F_APPEND,
+            obj, F_SELECT, F_APPEND,
             F_NO_PUBLISH_EVENTS);
         }
 
@@ -2415,7 +2397,7 @@ on_drag_begin_handle_hit_object (
     arranger_widget_get_hit_arranger_object (
       self, ARRANGER_OBJECT_TYPE_ALL, x, y);
 
-  (void) filter_out_frozen_objects;
+  /*(void) filter_out_frozen_objects;*/
   if (!obj || arranger_object_is_frozen (obj))
     {
       return false;
@@ -3077,23 +3059,26 @@ select_in_range (
 
   if (delete && in_range)
     {
-      int num_objs;
-      ArrangerObject ** objs =
-        arranger_selections_get_all_objects (
-          self->sel_to_delete, &num_objs);
+      GPtrArray * objs_arr =
+        g_ptr_array_new_full (200, NULL);
+      arranger_selections_get_all_objects (
+        self->sel_to_delete, objs_arr);
       if (ignore_frozen)
         {
           filter_out_frozen_objects (
-            self, objs, &num_objs);
+            self, objs_arr);
         }
-      for (int i = 0; i < num_objs; i++)
+      for (size_t i = 0; i < objs_arr->len; i++)
         {
-          objs[i]->deleted_temporarily = false;
+          ArrangerObject * obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
+          obj->deleted_temporarily = false;
         }
       arranger_selections_clear (
         self->sel_to_delete, F_NO_FREE,
         F_NO_PUBLISH_EVENTS);
-      free (objs);
+      g_ptr_array_unref (objs_arr);
     }
   else if (!delete)
     {
@@ -3105,8 +3090,8 @@ select_in_range (
         }
     }
 
-  ArrangerObject * objs[800];
-  int              num_objs = 0;
+  GPtrArray * objs_arr =
+    g_ptr_array_new_full (200, NULL);
   GdkRectangle rect;
   if (in_range)
     {
@@ -3145,15 +3130,17 @@ select_in_range (
     case TYPE (CHORD):
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_CHORD_OBJECT,
-        &rect, objs, &num_objs);
+        &rect, objs_arr);
       if (ignore_frozen)
         {
           filter_out_frozen_objects (
-            self, objs, &num_objs);
+            self, objs_arr);
         }
-      for (int i = 0; i < num_objs; i++)
+      for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = objs[i];
+          ArrangerObject * obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
           if (delete)
             {
               arranger_selections_add_object (
@@ -3171,15 +3158,17 @@ select_in_range (
     case TYPE (AUTOMATION):
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_AUTOMATION_POINT,
-        &rect, objs, &num_objs);
+        &rect, objs_arr);
       if (ignore_frozen)
         {
           filter_out_frozen_objects (
-            self, objs, &num_objs);
+            self, objs_arr);
         }
-      for (int i = 0; i < num_objs; i++)
+      for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = objs[i];
+          ArrangerObject * obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
           if (delete)
             {
               arranger_selections_add_object (
@@ -3197,15 +3186,17 @@ select_in_range (
     case TYPE (TIMELINE):
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_REGION,
-        &rect, objs, &num_objs);
+        &rect, objs_arr);
       if (ignore_frozen)
         {
           filter_out_frozen_objects (
-            self, objs, &num_objs);
+            self, objs_arr);
         }
-      for (int i = 0; i < num_objs; i++)
+      for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = objs[i];
+          ArrangerObject * obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
           if (delete)
             {
               arranger_selections_add_object (
@@ -3220,17 +3211,22 @@ select_in_range (
                 F_NO_PUBLISH_EVENTS);
             }
         }
+
+      g_ptr_array_remove_range (
+        objs_arr, 0, objs_arr->len);
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_SCALE_OBJECT,
-        &rect, objs, &num_objs);
+        &rect, objs_arr);
       if (ignore_frozen)
         {
           filter_out_frozen_objects (
-            self, objs, &num_objs);
+            self, objs_arr);
         }
-      for (int i = 0; i < num_objs; i++)
+      for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = objs[i];
+          ArrangerObject * obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
           if (delete)
             {
               arranger_selections_add_object (
@@ -3244,17 +3240,22 @@ select_in_range (
                 F_NO_PUBLISH_EVENTS);
             }
         }
+
+      g_ptr_array_remove_range (
+        objs_arr, 0, objs_arr->len);
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_MARKER,
-        &rect, objs, &num_objs);
+        &rect, objs_arr);
       if (ignore_frozen)
         {
           filter_out_frozen_objects (
-            self, objs, &num_objs);
+            self, objs_arr);
         }
-      for (int i = 0; i < num_objs; i++)
+      for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = objs[i];
+          ArrangerObject * obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
           if (delete)
             {
               if (arranger_object_is_deletable (
@@ -3276,15 +3277,17 @@ select_in_range (
     case TYPE (MIDI):
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_MIDI_NOTE,
-        &rect, objs, &num_objs);
+        &rect, objs_arr);
       if (ignore_frozen)
         {
           filter_out_frozen_objects (
-            self, objs, &num_objs);
+            self, objs_arr);
         }
-      for (int i = 0; i < num_objs; i++)
+      for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = objs[i];
+          ArrangerObject * obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
           if (delete)
             {
               arranger_selections_add_object (
@@ -3306,15 +3309,17 @@ select_in_range (
     case TYPE (MIDI_MODIFIER):
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_VELOCITY,
-        &rect, objs, &num_objs);
+        &rect, objs_arr);
       if (ignore_frozen)
         {
           filter_out_frozen_objects (
-            self, objs, &num_objs);
+            self, objs_arr);
         }
-      for (int i = 0; i < num_objs; i++)
+      for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = objs[i];
+          ArrangerObject * obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
           Velocity * vel =
             (Velocity *) obj;
           MidiNote * mn =
@@ -3339,6 +3344,8 @@ select_in_range (
     default:
       break;
     }
+
+  g_ptr_array_unref (objs_arr);
 
   if (prev_sel)
     {
@@ -5198,18 +5205,21 @@ arranger_widget_get_hit_arranger_object (
   double             x,
   double             y)
 {
-  ArrangerObject * objs[800];
-  int              num_objs;
+  GPtrArray * objs_arr = g_ptr_array_new ();
   arranger_widget_get_hit_objects_at_point (
-    self, type, x, y, objs, &num_objs);
-  if (num_objs > 0)
+    self, type, x, y, objs_arr);
+  ArrangerObject * obj = NULL;
+  if (objs_arr->len > 0)
     {
-      return objs[num_objs - 1];
+      obj =
+        (ArrangerObject *)
+        g_ptr_array_index (
+          objs_arr, objs_arr->len - 1);
     }
-  else
-    {
-      return NULL;
-    }
+
+  g_ptr_array_unref (objs_arr);
+
+  return obj;
 
   /*switch (self->type)*/
     /*{*/
@@ -5372,15 +5382,11 @@ arranger_widget_get_scrolled_window (
 /**
  * Get all objects currently present in the
  * arranger.
- *
- * @param objs Array to fill in.
- * @param size Array size to fill in.
  */
 void
 arranger_widget_get_all_objects (
-  ArrangerWidget *  self,
-  ArrangerObject ** objs,
-  int *             size)
+  ArrangerWidget * self,
+  GPtrArray *      objs_arr)
 {
   GdkRectangle rect = {
     0, 0,
@@ -5392,7 +5398,7 @@ arranger_widget_get_all_objects (
 
   arranger_widget_get_hit_objects_in_rect (
     self, ARRANGER_OBJECT_TYPE_ALL, &rect,
-    objs, size);
+    objs_arr);
 }
 
 RulerWidget *
@@ -6986,6 +6992,9 @@ finalize (
   object_free_w_func_and_null (
     gsk_render_node_unref,
     self->clip_start_line_node);
+
+  object_free_w_func_and_null (
+    g_ptr_array_unref, self->hit_objs_to_draw);
 
   G_OBJECT_CLASS (
     arranger_widget_parent_class)->

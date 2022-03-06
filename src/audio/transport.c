@@ -1093,13 +1093,14 @@ transport_recalculate_total_bars (
   int total_bars = self->total_bars;
   if (sel)
     {
-      int num_objs;
-      ArrangerObject ** objs =
-        arranger_selections_get_all_objects (
-          sel, &num_objs);
-      for (int i = 0; i < num_objs; i++)
+      GPtrArray * objs_arr = g_ptr_array_new ();
+      arranger_selections_get_all_objects (
+        sel, objs_arr);
+      for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = objs[i];
+          ArrangerObject * obj =
+            (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
           Position pos;
           if (arranger_object_type_has_length (
                 obj->type))
@@ -1119,6 +1120,7 @@ transport_recalculate_total_bars (
                 pos_bars + BARS_END_BUFFER;
             }
         }
+      g_ptr_array_unref (objs_arr);
     }
   /* else no selections, calculate total bars for
    * every object */

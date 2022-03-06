@@ -450,6 +450,13 @@ typedef struct _ArrangerWidget
    */
   int            queued_playhead_px;
 
+  /**
+   * Array of objects to draw.
+   *
+   * To be reused in snapshot().
+   */
+  GPtrArray *    hit_objs_to_draw;
+
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
 } ArrangerWidget;
@@ -513,16 +520,13 @@ arranger_widget_get_scrolled_window (
   ArrangerWidget * self);
 
 /**
- * Get all objects currently present in the arranger.
- *
- * @param objs Array to fill in.
- * @param size Array size to fill in.
+ * Get all objects currently present in the
+ * arranger.
  */
 void
 arranger_widget_get_all_objects (
-  ArrangerWidget *  self,
-  ArrangerObject ** objs,
-  int *             size);
+  ArrangerWidget * self,
+  GPtrArray *      objs_arr);
 
 /**
  * Wrapper for ui_px_to_pos depending on the
@@ -554,8 +558,6 @@ arranger_widget_get_visible_rect (
  *   or -1 to look for all objects.
  * @param x X, or -1 to not check x.
  * @param y Y, or -1 to not check y.
- * @param array The array to fill.
- * @param array_size The size of the array to fill.
  */
 void
 arranger_widget_get_hit_objects_at_point (
@@ -563,8 +565,7 @@ arranger_widget_get_hit_objects_at_point (
   ArrangerObjectType type,
   double             x,
   double             y,
-  ArrangerObject **  array,
-  int *              array_size);
+  GPtrArray *        arr);
 
 /**
  * Fills in the given array with the ArrangerObject's
@@ -574,16 +575,13 @@ arranger_widget_get_hit_objects_at_point (
  * @param rect The rectangle to search in.
  * @param type The type of arranger objects to find,
  *   or -1 to look for all objects.
- * @param array The array to fill.
- * @param array_size The size of the array to fill.
  */
 void
 arranger_widget_get_hit_objects_in_rect (
   ArrangerWidget *   self,
   ArrangerObjectType type,
   GdkRectangle *     rect,
-  ArrangerObject **  array,
-  int *              array_size);
+  GPtrArray *        arr);
 
 /**
  * Returns the ArrangerObject of the given type
