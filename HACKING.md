@@ -384,6 +384,10 @@ For a widget to receive keyboard input/focus, every
 single parent in the hierarchy must have
 can-focus=true (default).
 
+## Error building template class 'TimelineToolbarWidget'...:0:0 `<property>` is not a valid tag here
+The error is correct but line numbers are not
+available because the resource files are compressed.
+
 ----
 
 Copyright (C) 2018-2022 Alexandros Theodotou

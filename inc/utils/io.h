@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,6 +28,8 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+
+#include <glib.h>
 
 /**
  * @addtogroup utils
@@ -98,9 +100,18 @@ char *
 io_file_get_creation_datetime (
   const char * filename);
 
+/**
+ * Returns the number of seconds since the epoch, or
+ * -1 if failed.
+ */
+NONNULL
+gint64
+io_file_get_last_modified_datetime (
+  const char * filename);
+
 NONNULL
 char *
-io_file_get_last_modified_datetime (
+io_file_get_last_modified_datetime_as_str (
   const char * filename);
 
 /**

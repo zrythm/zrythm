@@ -193,6 +193,15 @@ z_gtk_column_view_get_list_store (
   GtkColumnView * column_view);
 
 /**
+ * Removes all items and re-populates the list
+ * store.
+ */
+void
+z_gtk_list_store_splice (
+  GListStore * store,
+  GPtrArray *  ptr_array);
+
+/**
  * @note Bumps reference, must be decremented after
  * calling.
  */

@@ -23,6 +23,7 @@
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/item_factory.h"
 #include "gui/widgets/popover_menu_bin.h"
+#include "gui/widgets/project_assistant.h"
 #include "plugins/collection.h"
 #include "plugins/collections.h"
 #include "plugins/plugin_manager.h"
@@ -947,6 +948,35 @@ item_factory_bind_cb (
                 }
             }
             break;
+          case WRAPPED_OBJECT_TYPE_PROJECT_INFO:
+            {
+              ProjectInfo * nfo =
+                (ProjectInfo *) obj->obj;
+
+              if (
+                string_is_equal (
+                  self->column_name, _("Name"))
+                ||
+                string_is_equal (
+                  self->column_name,
+                  _("Template Name")))
+                {
+                  strcpy (str, nfo->name);
+                }
+              else if (
+                string_is_equal (
+                  self->column_name, _("Path")))
+                {
+                  strcpy (str, nfo->filename);
+                }
+              else if (
+                string_is_equal (
+                  self->column_name,
+                  _("Last Modified")))
+                {
+                  strcpy (str, nfo->modified_str);
+                }
+            }
           default:
             break;
           }
@@ -1264,6 +1294,8 @@ item_factory_generate_and_append_column (
     gtk_column_view_column_new (
       column_name, list_item_factory);
   gtk_column_view_column_set_resizable (
+    column, true);
+  gtk_column_view_column_set_expand (
     column, true);
   if (sorter)
     {

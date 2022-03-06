@@ -68,26 +68,6 @@ add_from_object (
   g_ptr_array_add (arr, wrapped_obj);
 }
 
-/**
- * Removes all items and re-populates the list
- * store.
- */
-static void
-splice_list_store (
-  GListStore * store,
-  GPtrArray *  ptr_array)
-{
-  size_t num_objs;
-  gpointer * objs =
-    g_ptr_array_steal (ptr_array, &num_objs);
-  g_list_store_splice (
-    store, 0,
-    g_list_model_get_n_items (
-      G_LIST_MODEL (store)),
-    objs, num_objs);
-  g_free (objs);
-}
-
 #define ADD_FOREACH_IN_ARRANGER(arranger) \
   { \
     GPtrArray * objs_arr = \
@@ -115,7 +95,7 @@ refresh_timeline_model (
   ADD_FOREACH_IN_ARRANGER (MW_TIMELINE);
   ADD_FOREACH_IN_ARRANGER (MW_PINNED_TIMELINE);
 
-  splice_list_store (store, ptr_array);
+  z_gtk_list_store_splice (store, ptr_array);
 }
 
 static void
@@ -129,7 +109,7 @@ refresh_midi_model (
   GPtrArray * ptr_array = g_ptr_array_new ();
   ADD_FOREACH_IN_ARRANGER (MW_MIDI_ARRANGER);
 
-  splice_list_store (store, ptr_array);
+  z_gtk_list_store_splice (store, ptr_array);
 }
 
 static void
@@ -143,7 +123,7 @@ refresh_chord_model (
   GPtrArray * ptr_array = g_ptr_array_new ();
   ADD_FOREACH_IN_ARRANGER (MW_CHORD_ARRANGER);
 
-  splice_list_store (store, ptr_array);
+  z_gtk_list_store_splice (store, ptr_array);
 }
 
 static void
@@ -157,7 +137,7 @@ refresh_automation_model (
   GPtrArray * ptr_array = g_ptr_array_new ();
   ADD_FOREACH_IN_ARRANGER (MW_AUTOMATION_ARRANGER);
 
-  splice_list_store (store, ptr_array);
+  z_gtk_list_store_splice (store, ptr_array);
 }
 
 #undef ADD_FOREACH_IN_ARRANGER
@@ -172,7 +152,7 @@ refresh_audio_model (
 
   GPtrArray * ptr_array = g_ptr_array_new ();
 
-  splice_list_store (store, ptr_array);
+  z_gtk_list_store_splice (store, ptr_array);
 }
 
 static void

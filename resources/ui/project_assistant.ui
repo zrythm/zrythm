@@ -1,36 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <object class="GtkAssistant" id="assistant">
-    <property name="title" translatable="yes">Project Assistant</property>
-    <property name="resizable">0</property>
+  <template class="ProjectAssistantWidget" parent="GtkDialog">
+    <property name="title" translatable="yes">Select a Project</property>
+    <property name="resizable">1</property>
     <property name="icon_name">zrythm</property>
     <property name="modal">True</property>
     <property name="use_header_bar">0</property>
-    <child>
-      <object class="GtkAssistantPage">
-        <property name="page_type">confirm</property>
-        <property name="child">
-          <object class="GtkBox" id="select_project_box">
-            <property name="orientation">vertical</property>
-            <property name="spacing">4</property>
-            <child>
-              <object class="GtkLabel">
-                <property name="margin_top">2</property>
-                <property name="label" translatable="yes">Select a project</property>
+    <property name="height-request">280</property>
+    <property name="width-request">680</property>
+    <child internal-child="content_area">
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="AdwHeaderBar">
+            <property name="centering-policy">strict</property>
+            <child type="title">
+              <object class="AdwViewSwitcherTitle" id="title">
+                <property name="stack">stack</property>
               </object>
             </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwViewStack" id="stack">
+            <property name="vexpand">1</property>
             <child>
-              <object class="GtkScrolledWindow" id="projects_scroll">
-                <property name="focusable">1</property>
-                <property name="hscrollbar_policy">never</property>
-                <property name="min_content_height">128</property>
+              <object class="AdwViewStackPage">
+                <property name="name">open-recent</property>
+                <property name="title" translatable="yes">Open Recent</property>
+                <property name="icon-name">folder-recent</property>
                 <property name="child">
-                  <object class="GtkTreeView" id="projects">
-                    <property name="height_request">85</property>
-                    <property name="focusable">1</property>
-                    <child internal-child="selection">
-                      <object class="GtkTreeSelection" id="projects_selection">
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkScrolledWindow">
+                        <property name="hscrollbar-policy">never</property>
+                        <property name="vexpand">1</property>
+                        <property name="child">
+                          <object class="GtkColumnView" id="recent_projects_column_view">
+                            <style>
+                              <class name="data-table"/>
+                            </style>
+                          </object>
+                        </property>
                       </object>
                     </child>
                   </object>
@@ -38,62 +51,64 @@
               </object>
             </child>
             <child>
-              <object class="GtkBox">
-                <property name="margin-start">4</property>
-                <property name="margin-end">4</property>
-                <property name="margin_bottom">4</property>
-                <child>
-                  <object class="GtkCheckButton" id="create_new_project">
-                    <property name="label" translatable="yes">Create new project</property>
-                    <property name="focusable">1</property>
-                    <property name="hexpand">1</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="remove_btn">
-                    <property name="label" translatable="yes">Remove</property>
-                    <property name="focusable">1</property>
-                    <property name="receives_default">1</property>
-                    <property name="tooltip_text" translatable="yes">Removes selected project from the list</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="templates_box">
-                <property name="visible">0</property>
-                <property name="orientation">vertical</property>
-                <property name="spacing">2</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="label" translatable="yes">Select a template</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeView" id="templates">
-                    <property name="vexpand">1</property>
-                    <property name="height_request">85</property>
-                    <property name="focusable">1</property>
-                    <child internal-child="selection">
-                      <object class="GtkTreeSelection" id="templates_selection">
+              <object class="AdwViewStackPage">
+                <property name="name">create-new</property>
+                <property name="title" translatable="yes">Create New</property>
+                <property name="icon-name">document-new</property>
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkScrolledWindow">
+                        <property name="hscrollbar-policy">never</property>
+                        <property name="vexpand">1</property>
+                        <property name="child">
+                          <object class="GtkColumnView" id="templates_column_view">
+                            <style>
+                              <class name="data-table"/>
+                            </style>
+                          </object>
+                        </property>
                       </object>
                     </child>
                   </object>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
+                </property>
               </object>
             </child>
           </object>
-        </property>
+        </child>
+        <child>
+          <object class="AdwViewSwitcherBar">
+            <property name="stack">stack</property>
+            <binding name="reveal">
+              <lookup name="title-visible">title</lookup>
+            </binding>
+          </object>
+        </child>
       </object>
     </child>
-    <child type="titlebar">
-      <placeholder/>
+    <child type="action">
+      <object class="GtkButton" id="cancel_btn">
+        <property name="label" translatable="yes">_Cancel</property>
+        <property name="use-underline">1</property>
+      </object>
     </child>
-    <child>
-      <placeholder/>
+    <child type="action">
+      <object class="GtkButton" id="open_from_path_btn">
+        <property name="label" translatable="yes">Open from _Path</property>
+        <property name="use-underline">1</property>
+      </object>
     </child>
-  </object>
+    <child type="action">
+      <object class="GtkButton" id="ok_btn">
+        <property name="label" translatable="yes">_Open Selected</property>
+        <property name="use-underline">1</property>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel">cancel_btn</action-widget>
+      <action-widget response="256">open_from_path_btn</action-widget>
+      <action-widget response="ok" default="true">ok_btn</action-widget>
+    </action-widgets>
+  </template>
 </interface>

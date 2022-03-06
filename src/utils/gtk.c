@@ -372,9 +372,19 @@ z_gtk_column_view_get_list_store (
 {
   GtkSelectionModel * sel_model =
     gtk_column_view_get_model (column_view);
-  GListModel * model =
-    gtk_multi_selection_get_model (
-      GTK_MULTI_SELECTION (sel_model));
+  GListModel * model;
+  if (GTK_IS_MULTI_SELECTION (sel_model))
+    {
+      model =
+        gtk_multi_selection_get_model (
+          GTK_MULTI_SELECTION (sel_model));
+    }
+  else
+    {
+      model =
+        gtk_single_selection_get_model (
+          GTK_SINGLE_SELECTION (sel_model));
+    }
   if (GTK_IS_SORT_LIST_MODEL (model))
     {
       model =
@@ -382,6 +392,26 @@ z_gtk_column_view_get_list_store (
           GTK_SORT_LIST_MODEL (model));
     }
   return G_LIST_STORE (model);
+}
+
+/**
+ * Removes all items and re-populates the list
+ * store.
+ */
+void
+z_gtk_list_store_splice (
+  GListStore * store,
+  GPtrArray *  ptr_array)
+{
+  size_t num_objs;
+  gpointer * objs =
+    g_ptr_array_steal (ptr_array, &num_objs);
+  g_list_store_splice (
+    store, 0,
+    g_list_model_get_n_items (
+      G_LIST_MODEL (store)),
+    objs, num_objs);
+  g_free (objs);
 }
 
 /**

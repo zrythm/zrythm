@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -52,6 +52,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "utils/datetime.h"
 #include "utils/file.h"
 #include "utils/io.h"
 #include "utils/objects.h"
@@ -214,23 +215,37 @@ io_file_get_creation_datetime (const char * filename)
   return NULL;
 }
 
-char *
+/**
+ * Returns the number of seconds since the epoch, or
+ * -1 if failed.
+ */
+gint64
 io_file_get_last_modified_datetime (
   const char * filename)
 {
   struct stat result;
-  struct tm *nowtm;
-  char tmbuf[64];
   if (stat (filename, &result)==0)
     {
-      nowtm = localtime (&result.st_mtime);
-      strftime(tmbuf, sizeof (tmbuf), "%Y-%m-%d %H:%M:%S", nowtm);
-      char * mod = g_strdup (tmbuf);
-      return mod;
+      return result.st_mtime;
     }
-  g_message ("Failed to get last modified for %s",
-             filename);
-  return NULL;
+  g_message (
+    "Failed to get last modified for %s",
+    filename);
+  return -1;
+}
+
+char *
+io_file_get_last_modified_datetime_as_str (
+  const char * filename)
+{
+  gint64 secs =
+    io_file_get_last_modified_datetime (filename);
+  if (secs == -1)
+    return NULL;
+
+  return
+    datetime_epoch_to_str (
+      secs, "%Y-%m-%d %H:%M:%S");
 }
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2019, 2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -32,6 +32,7 @@
 #include "audio/channel.h"
 #include "gui/widgets/meter.h"
 
+#include <adwaita.h>
 #include <gtk/gtk.h>
 
 /**
@@ -40,43 +41,55 @@
  * @{
  */
 
-#if 0
+#define PROJECT_ASSISTANT_WIDGET_TYPE \
+  (project_assistant_widget_get_type ())
+G_DECLARE_FINAL_TYPE (
+  ProjectAssistantWidget,
+  project_assistant_widget,
+  Z, PROJECT_ASSISTANT_WIDGET, GtkDialog)
+
+/**
+ * Project file information.
+ */
+typedef struct ProjectInfo
+{
+  char *   name;
+  /** Full path. */
+  char *   filename;
+  gint64   modified;
+  char *   modified_str;
+} ProjectInfo;
+
 /**
  * A widget that allows selecting a project to
  * load or create.
  */
 typedef struct _ProjectAssistantWidget
 {
-  GtkWidget           parent_instance;
+  GtkDialog        parent_instance;
 
-  GtkAssistant *      assistant;
+  AdwViewStack *   stack;
 
-  GtkTreeView *       projects;
-  GtkTreeSelection *  projects_selection;
-  GtkTreeView *       templates;
-  GtkTreeSelection *  templates_selection;
-  GtkTreeModel *      project_model;
-  GtkTreeModel *      template_model;
-  GtkCheckButton *    create_new_project;
-  GtkBox *            templates_box;
+  /** Array of ItemFactory pointers for each
+   * column. */
+  GPtrArray *      recent_projects_item_factories;
+  GtkColumnView *  recent_projects_column_view;
+  GtkCheckButton * create_new_project_check_btn;
+  GPtrArray *      templates_item_factories;
+  GtkColumnView *  templates_column_view;
 
-  /** The project info label. */
-  //GtkLabel *          label;
+  /* action buttons */
+  GtkButton *      ok_btn;
+  GtkButton *      open_from_path_btn;
+  GtkButton *      cancel_btn;
 
-  GtkButton *         remove_btn;
-  ProjectInfo         project_infos[300];
-  int                 num_project_infos;
-  ProjectInfo         template_infos[300];
-  int                 num_template_infos;
+  GPtrArray *      project_infos_arr;
+  GPtrArray *      templates_arr;
 
-  /** 1 if a template should be loaded. */
-  int                 load_template;
+  GtkWindow *      parent;
 
-  /** The selected project/template. */
-  ProjectInfo         * project_selection;
-  ProjectInfo         * template_selection;
+  bool             zrythm_already_running;
 } ProjectAssistantWidget;
-#endif
 
 /**
  * Runs the project assistant.

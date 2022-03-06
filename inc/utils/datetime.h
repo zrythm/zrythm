@@ -26,6 +26,8 @@
 #ifndef __UTILS_DATETIME_H__
 #define __UTILS_DATETIME_H__
 
+#include <glib.h>
+
 /**
  * @addtogroup utils
  *
@@ -39,6 +41,11 @@
  */
 char *
 datetime_get_current_as_string (void);
+
+char *
+datetime_epoch_to_str (
+  gint64       epoch,
+  const char * format);
 
 /**
  * Get the current datetime to be used in filenames,
