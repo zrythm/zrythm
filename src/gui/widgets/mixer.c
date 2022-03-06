@@ -63,8 +63,35 @@ mixer_widget_soft_refresh (MixerWidget * self)
 void
 mixer_widget_hard_refresh (MixerWidget * self)
 {
-  g_object_ref (self->ddbox);
-  g_object_ref (self->channels_add);
+#define REF_AND_ADD_TO_ARRAY(x) \
+  g_object_ref (x); \
+  g_ptr_array_add (refed_widgets, x)
+
+  GPtrArray * refed_widgets = g_ptr_array_new ();
+
+  REF_AND_ADD_TO_ARRAY (self->ddbox);
+  REF_AND_ADD_TO_ARRAY (self->channels_add);
+
+  /* ref the channel widgets to make this faster */
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      Track * track = TRACKLIST->tracks[i];
+
+      if (track->folder_ch_widget)
+        {
+          REF_AND_ADD_TO_ARRAY (
+            track->folder_ch_widget);
+        }
+
+      if (track_type_has_channel (track->type))
+        {
+          if (track->channel->widget)
+            {
+              REF_AND_ADD_TO_ARRAY (
+                track->channel->widget);
+            }
+        }
+    }
 
   /* remove all things in the container */
   z_gtk_widget_remove_all_children (
@@ -74,16 +101,9 @@ mixer_widget_hard_refresh (MixerWidget * self)
       GTK_WIDGET (self->ddbox)) == NULL);
 
   /* add all channels */
-  Track * track;
-  Channel * ch;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      track = TRACKLIST->tracks[i];
-
-      /* widgets are already destroyed by now */
-      track->folder_ch_widget = NULL;
-      if (track_type_has_channel (track->type))
-        track->channel->widget = NULL;
+      Track * track = TRACKLIST->tracks[i];
 
       if (!track_get_should_be_visible (track))
         continue;
@@ -92,8 +112,10 @@ mixer_widget_hard_refresh (MixerWidget * self)
           track->type != TRACK_TYPE_MASTER)
         {
           if (!track->folder_ch_widget)
-            track->folder_ch_widget =
-              folder_channel_widget_new (track);
+            {
+              track->folder_ch_widget =
+                folder_channel_widget_new (track);
+            }
 
           folder_channel_widget_refresh (
             track->folder_ch_widget);
@@ -106,7 +128,7 @@ mixer_widget_hard_refresh (MixerWidget * self)
       if (!track_type_has_channel (track->type))
         continue;
 
-      ch = track->channel;
+      Channel * ch = track->channel;
       g_return_if_fail (ch);
 
       /* create chan widget if necessary */
@@ -134,8 +156,16 @@ mixer_widget_hard_refresh (MixerWidget * self)
   gtk_box_append (
     self->channels_box,
     GTK_WIDGET (self->ddbox));
-  g_object_unref (self->ddbox);
-  g_object_unref (self->channels_add);
+
+  /* unref refed widgets */
+  for (size_t i = 0; i < refed_widgets->len; i++)
+    {
+      g_object_unref (
+        g_ptr_array_index (refed_widgets, i));
+    }
+  g_ptr_array_unref (refed_widgets);
+
+#undef REF_AND_ADD_TO_ARRAY
 }
 
 void

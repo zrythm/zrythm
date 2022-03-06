@@ -2774,16 +2774,20 @@ stereo_ports_new_generic (
     g_strdup_printf (
       "%s R", name);
 
+  Port * l =
+    port_new_with_type (
+      TYPE_AUDIO,
+      in ? FLOW_INPUT : FLOW_OUTPUT,
+      pll);
+  g_return_val_if_fail (l, NULL);
+  Port * r =
+    port_new_with_type (
+      TYPE_AUDIO,
+      in ? FLOW_INPUT : FLOW_OUTPUT,
+      plr);
+  g_return_val_if_fail (r, NULL);
   StereoPorts * ports =
-    stereo_ports_new_from_existing (
-      port_new_with_type (
-        TYPE_AUDIO,
-        in ? FLOW_INPUT : FLOW_OUTPUT,
-        pll),
-      port_new_with_type (
-        TYPE_AUDIO,
-        in ? FLOW_INPUT : FLOW_OUTPUT,
-        plr));
+    stereo_ports_new_from_existing (l, r);
   ports->l->id.flags |=
     PORT_FLAG_STEREO_L;
   ports->l->id.sym =

@@ -347,8 +347,27 @@ plugin_setting_activate (
 
   if (autoroute_multiout)
     {
+      GtkWidget * dialog =
+        gtk_message_dialog_new (
+          GTK_WINDOW (MAIN_WINDOW),
+          GTK_DIALOG_MODAL |
+            GTK_DIALOG_DESTROY_WITH_PARENT,
+          GTK_MESSAGE_QUESTION,
+          GTK_BUTTONS_YES_NO,
+          "%s", _("Are the outputs stereo?"));
+      int result =
+        z_gtk_dialog_run (
+          GTK_DIALOG (dialog), true);
+      bool stereo = false;
+      if (result == GTK_RESPONSE_YES)
+        {
+          stereo = true;
+        }
+
       int num_pairs =
-        self->descr->num_audio_outs / 2;
+        self->descr->num_audio_outs;
+      if (stereo)
+        num_pairs = num_pairs / 2;
       int num_actions = 0;
 
       /* create group */
@@ -457,7 +476,8 @@ plugin_setting_activate (
           if (!ret)
             {
               HANDLE_ERROR (
-                err, "%s", _("Failed to create track"));
+                err, "%s",
+                _("Failed to create track"));
             }
           num_actions++;
 
@@ -534,9 +554,11 @@ plugin_setting_activate (
             }
           num_actions++;
 
+          int l_index =
+            stereo ? i * 2 : i;
           Port * port =
             g_ptr_array_index (
-              pl_audio_outs, i * 2);
+              pl_audio_outs, l_index);
 
           /* route left port to audio fx */
           err = NULL;
@@ -553,9 +575,11 @@ plugin_setting_activate (
             }
           num_actions++;
 
+          int r_index =
+            stereo ? i * 2 + 1 : i;
           port =
             g_ptr_array_index (
-              pl_audio_outs, i * 2 + 1);
+              pl_audio_outs, r_index);
 
           /* route right port to audio fx */
           err = NULL;

@@ -3431,6 +3431,7 @@ arranger_object_unsplit (
   ArrangerSelections * sel =
     arranger_object_get_selections_for_type (
       (*obj)->type);
+  g_return_if_fail (sel);
   arranger_selections_remove_object (
     sel, r1);
   arranger_selections_remove_object (
@@ -3443,13 +3444,16 @@ arranger_object_unsplit (
     {
     case ARRANGER_OBJECT_TYPE_REGION:
       {
+        Track * t1 =
+          arranger_object_get_track (r1);
+        g_return_if_fail (t1);
         track_remove_region (
-          arranger_object_get_track (r1),
-          (ZRegion *) r1, fire_events,
+          t1, (ZRegion *) r1, fire_events,
           F_FREE);
+        Track * t2 =
+          arranger_object_get_track (r2);
         track_remove_region (
-          arranger_object_get_track (r2),
-          (ZRegion *) r2, fire_events,
+          t2, (ZRegion *) r2, fire_events,
           F_FREE);
       }
       break;

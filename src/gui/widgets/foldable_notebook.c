@@ -261,7 +261,7 @@ foldable_notebook_widget_add_page (
   GtkWidget * img =
     gtk_image_new_from_icon_name (tab_icon_name);
   GtkWidget * img_flipper = gtk_flipper_new (img);
-  GtkWidget * lbl, * lbl_flipper;
+  GtkWidget * lbl = NULL, * lbl_flipper = NULL;
   if (self->with_text)
     {
       lbl = gtk_label_new (tab_label);
@@ -311,7 +311,10 @@ foldable_notebook_widget_add_page (
     case GTK_POS_BOTTOM:
     case GTK_POS_TOP:
       gtk_box_append (box, img_flipper);
-      gtk_box_append (box, lbl_flipper);
+      if (self->with_text)
+        {
+          gtk_box_append (box, lbl_flipper);
+        }
       break;
     }
 
