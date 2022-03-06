@@ -197,6 +197,15 @@ program ends, run
 
 and check the results file for the profiling results.
 
+[gprof2dot](https://github.com/jrfonseca/gprof2dot)
+along with
+[xdot.py](https://github.com/jrfonseca/xdot.py) can
+be used for a graphical representation of the
+results.
+
+gprof has the advantage of being fast (the program
+runs at normal speed).
+
 *If you are running Zrythm using `zrythm_launch`,
 use the path of the `zrythm` binary in the same
 directory.*
@@ -213,6 +222,9 @@ When you are finished, close Zrythm and run
 profiling info in the kcachegrind GUI.
 For more information, see
 <https://docs.kde.org/stable5/en/kdesdk/kcachegrind/using-kcachegrind.html>.
+
+*Note: callgrind can slow down the program
+considerably*
 
 # Memory usage
 To debug memory usage, the
