@@ -597,8 +597,10 @@ arranger_object_set_full_rectangle (
         Track * track =
           arranger_object_get_track (self);
 
+#if 0
         if (!track->widget)
           track->widget = track_widget_new (track);
+#endif
 
         self->full_rect.x =
           ui_pos_to_px_timeline (
@@ -616,15 +618,18 @@ arranger_object_set_full_rectangle (
             self->full_rect.width = 1;
           }
 
-        double wx, wy;
-        gtk_widget_translate_coordinates(
-          (GtkWidget *) (track->widget),
-          (GtkWidget *) (arranger),
-          0, 0, &wx, &wy);
-        /* for some reason it returns a few
-         * negatives at first */
-        if (wy < 0)
-          wy = 0;
+        double wx = 0, wy = 0;
+        if (track->widget)
+          {
+            gtk_widget_translate_coordinates(
+              (GtkWidget *) (track->widget),
+              (GtkWidget *) (arranger),
+              0, 0, &wx, &wy);
+            /* for some reason it returns a few
+             * negatives at first */
+            if (wy < 0)
+              wy = 0;
+          }
 
         if (region->id.type == REGION_TYPE_CHORD)
           {
@@ -652,14 +657,17 @@ arranger_object_set_full_rectangle (
                 !track->automation_visible)
               return;
 
-            gtk_widget_translate_coordinates(
-              (GtkWidget *) (track->widget),
-              (GtkWidget *) (arranger),
-              0, 0, &wx, &wy);
-            /* for some reason it returns a few
-             * negatives at first */
-            if (wy < 0)
-              wy = 0;
+            if (track->widget)
+              {
+                gtk_widget_translate_coordinates(
+                  (GtkWidget *) (track->widget),
+                  (GtkWidget *) (arranger),
+                  0, 0, &wx, &wy);
+                /* for some reason it returns a few
+                 * negatives at first */
+                if (wy < 0)
+                  wy = 0;
+              }
 
             self->full_rect.y =
               (int) wy + at->y;
@@ -742,16 +750,19 @@ arranger_object_set_full_rectangle (
       {
         Track * track = P_CHORD_TRACK;
 
-        double wx, wy;
-        gtk_widget_translate_coordinates(
-          (GtkWidget *) (track->widget),
-          (GtkWidget *) (arranger),
-          0, 0,
-          &wx, &wy);
-        /* for some reason it returns a few
-         * negatives at first */
-        if (wy < 0)
-          wy = 0;
+        double wx = 0, wy = 0;
+        if (track->widget)
+          {
+            gtk_widget_translate_coordinates(
+              (GtkWidget *) (track->widget),
+              (GtkWidget *) (arranger),
+              0, 0,
+              &wx, &wy);
+            /* for some reason it returns a few
+             * negatives at first */
+            if (wy < 0)
+              wy = 0;
+          }
 
         self->full_rect.x =
           ui_pos_to_px_timeline (
@@ -777,16 +788,19 @@ arranger_object_set_full_rectangle (
       {
         Track * track = P_MARKER_TRACK;
 
-        double wx, wy;
-        gtk_widget_translate_coordinates(
-          (GtkWidget *) (track->widget),
-          (GtkWidget *) (arranger),
-          0, 0,
-          &wx, &wy);
-        /* for some reason it returns a few
-         * negatives at first */
-        if (wy < 0)
-          wy = 0;
+        double wx = 0, wy = 0;
+        if (track->widget)
+          {
+            gtk_widget_translate_coordinates(
+              (GtkWidget *) (track->widget),
+              (GtkWidget *) (arranger),
+              0, 0,
+              &wx, &wy);
+            /* for some reason it returns a few
+             * negatives at first */
+            if (wy < 0)
+              wy = 0;
+          }
 
         self->full_rect.x =
           ui_pos_to_px_timeline (

@@ -2195,7 +2195,8 @@ on_destroy (
       g_debug (
         "destroying '%s' widget", track->name);
 
-      track->widget = NULL;
+      if (track->widget == self)
+        track->widget = NULL;
     }
 
   CustomButtonWidget * cb = NULL;
