@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,18 +17,27 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/port_connection_action.h"
+#include "actions/tracklist_selections.h"
+#include "audio/tracklist.h"
+#include "gui/widgets/main_window.h"
 #include "plugins/carla/carla_discovery.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_manager.h"
+#include "project.h"
 #include "settings/plugin_settings.h"
 #include "settings/settings.h"
+#include "utils/error.h"
 #include "utils/file.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 #define PLUGIN_SETTINGS_FILENAME "plugin-settings.yaml"
 
@@ -68,8 +77,8 @@ plugin_setting_new_default (
 
 PluginSetting *
 plugin_setting_clone (
-  PluginSetting * src,
-  bool            validate)
+  const PluginSetting * src,
+  bool                  validate)
 {
   PluginSetting * new_setting =
     object_new (PluginSetting);
@@ -296,6 +305,293 @@ plugin_setting_validate (
   g_debug (
     "plugin setting validated. new setting:");
   plugin_setting_print (self);
+}
+
+/**
+ * Creates necessary tracks at the end of the
+ * tracklist.
+ */
+void
+plugin_setting_activate (
+  const PluginSetting * self)
+{
+  TrackType type =
+    track_get_type_from_plugin_descriptor (
+      self->descr);
+
+  bool autoroute_multiout = false;
+  if (self->descr->num_audio_outs > 2
+      && type == TRACK_TYPE_INSTRUMENT)
+    {
+      GtkWidget * dialog =
+        gtk_message_dialog_new (
+          GTK_WINDOW (MAIN_WINDOW),
+          GTK_DIALOG_MODAL |
+            GTK_DIALOG_DESTROY_WITH_PARENT,
+          GTK_MESSAGE_QUESTION,
+          GTK_BUTTONS_YES_NO,
+          "%s",
+          _("This plugin contains multiple "
+          "audio outputs. "
+          "Would you like to auto-route each "
+          "output to a separate FX track?"));
+      int result =
+        z_gtk_dialog_run (
+          GTK_DIALOG (dialog), true);
+
+      if (result == GTK_RESPONSE_YES)
+        {
+          autoroute_multiout = true;
+        }
+    }
+
+  if (autoroute_multiout)
+    {
+      int num_pairs =
+        self->descr->num_audio_outs / 2;
+      int num_actions = 0;
+
+      /* create group */
+      GError * err = NULL;
+      bool ret =
+        track_create_empty_with_action (
+          TRACK_TYPE_AUDIO_GROUP, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s", _("Failed to create track"));
+        }
+      num_actions++;
+
+      Track * group =
+        TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+
+      /* create the plugin track */
+      err = NULL;
+      ret =
+        track_create_for_plugin_at_idx_w_action (
+          type, self, TRACKLIST->num_tracks,
+          &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s", _("Failed to create track"));
+        }
+      num_actions++;
+
+      Track * pl_track =
+        TRACKLIST->tracks[
+          TRACKLIST->num_tracks - 1];
+
+      Plugin * pl = pl_track->channel->instrument;
+
+      /* move the plugin track inside the group */
+      track_select (
+        pl_track,
+        F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+      err = NULL;
+      ret =
+        tracklist_selections_action_perform_move_inside (
+          TRACKLIST_SELECTIONS,
+          PORT_CONNECTIONS_MGR, group->pos, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s", _("Failed to move track"));
+        }
+      num_actions++;
+
+      /* route to nowhere */
+      track_select (
+        pl_track,
+        F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+      err = NULL;
+      ret =
+        tracklist_selections_action_perform_set_direct_out (
+          TRACKLIST_SELECTIONS,
+          PORT_CONNECTIONS_MGR, NULL, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to set direct out"));
+        }
+      num_actions++;
+
+      /* rename group */
+      char name[1200];
+      sprintf (
+        name, _("%s Output"), self->descr->name);
+      err = NULL;
+      ret =
+        tracklist_selections_action_perform_edit_rename (
+          group,
+          PORT_CONNECTIONS_MGR, name, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to rename track"));
+        }
+      num_actions++;
+
+      GPtrArray * pl_audio_outs =
+        g_ptr_array_new ();
+      for (int j = 0; j < pl->num_out_ports;
+           j++)
+        {
+          Port * cur_port = pl->out_ports[j];
+          if (cur_port->id.type != TYPE_AUDIO)
+            continue;
+
+          g_ptr_array_add (pl_audio_outs, cur_port);
+        }
+
+      for (int i = 0; i < num_pairs; i++)
+        {
+          /* create the audio fx track */
+          err = NULL;
+          ret =
+            track_create_empty_with_action (
+              TRACK_TYPE_AUDIO_BUS, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s", _("Failed to create track"));
+            }
+          num_actions++;
+
+          Track * fx_track =
+            TRACKLIST->tracks[
+              TRACKLIST->num_tracks - 1];
+
+          /* rename fx track */
+          sprintf (
+            name, _("%s %d"), self->descr->name,
+            i + 1);
+          err = NULL;
+          ret =
+            tracklist_selections_action_perform_edit_rename (
+              fx_track,
+              PORT_CONNECTIONS_MGR, name, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to rename track"));
+            }
+          num_actions++;
+
+          /* move the fx track inside the group */
+          track_select (
+            fx_track,
+            F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+          err = NULL;
+          ret =
+            tracklist_selections_action_perform_move_inside (
+              TRACKLIST_SELECTIONS,
+              PORT_CONNECTIONS_MGR, group->pos,
+              &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s", _("Failed to move track"));
+            }
+          num_actions++;
+
+          /* move the fx track to the end */
+          track_select (
+            fx_track,
+            F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+          err = NULL;
+          ret =
+            tracklist_selections_action_perform_move (
+              TRACKLIST_SELECTIONS,
+              PORT_CONNECTIONS_MGR,
+              TRACKLIST->num_tracks,
+              &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s", _("Failed to move track"));
+            }
+          num_actions++;
+
+          /* route to group */
+          track_select (
+            fx_track,
+            F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+          err = NULL;
+          ret =
+            tracklist_selections_action_perform_set_direct_out (
+              TRACKLIST_SELECTIONS,
+              PORT_CONNECTIONS_MGR, group, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to set direct out"));
+            }
+          num_actions++;
+
+          Port * port =
+            g_ptr_array_index (
+              pl_audio_outs, i * 2);
+
+          /* route left port to audio fx */
+          err = NULL;
+          ret =
+            port_connection_action_perform_connect (
+              &port->id,
+              &fx_track->processor->stereo_in->l->id,
+              &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to connect L port"));
+            }
+          num_actions++;
+
+          port =
+            g_ptr_array_index (
+              pl_audio_outs, i * 2 + 1);
+
+          /* route right port to audio fx */
+          err = NULL;
+          ret =
+            port_connection_action_perform_connect (
+              &port->id,
+              &fx_track->processor->stereo_in->r->id,
+              &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to connect R port"));
+            }
+          num_actions++;
+        }
+
+      g_ptr_array_unref (pl_audio_outs);
+
+      UndoableAction * ua =
+        undo_manager_get_last_action (UNDO_MANAGER);
+      ua->num_actions = num_actions;
+    }
+  else
+    {
+      GError * err = NULL;
+      bool ret =
+        track_create_for_plugin_at_idx_w_action (
+          type, self, TRACKLIST->num_tracks,
+          &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s", _("Failed to create track"));
+        }
+    }
 }
 
 /**

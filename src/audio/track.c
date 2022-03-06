@@ -3871,13 +3871,13 @@ track_get_total_bars (
 
 Track *
 track_create_with_action (
-  TrackType       type,
-  PluginSetting * pl_setting,
-  SupportedFile * file_descr,
-  Position *      pos,
-  int             index,
-  int             num_tracks,
-  GError **       error)
+  TrackType             type,
+  const PluginSetting * pl_setting,
+  const SupportedFile * file_descr,
+  Position *            pos,
+  int                   index,
+  int                   num_tracks,
+  GError **             error)
 {
   GError * err = NULL;
   bool ret =

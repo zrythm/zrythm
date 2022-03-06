@@ -337,24 +337,11 @@ on_dnd_drop (
           ||
           self->type == DRAG_DEST_BOX_TYPE_TRACKLIST)
         {
-          TrackType tt =
-            track_get_type_from_plugin_descriptor (
-              pd);
-
           PluginSetting * setting =
             plugin_setting_new_default (pd);
-          GError * err = NULL;
-          bool ret =
-            tracklist_selections_action_perform_create (
-              tt, setting, NULL,
-              TRACKLIST->num_tracks,
-              PLAYHEAD, 1, -1, &err);
-          if (!ret)
-            {
-              HANDLE_ERROR (
-                err, "%s",
-                _("Failed to create track"));
-            }
+
+          plugin_setting_activate (setting);
+
           plugin_setting_free (setting);
         }
       else

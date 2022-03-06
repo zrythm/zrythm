@@ -3554,19 +3554,7 @@ activate_plugin_setting (
       setting_created = true;
     }
 
-  TrackType type =
-    track_get_type_from_plugin_descriptor (
-      setting->descr);
-
-  GError * err = NULL;
-  bool ret =
-    track_create_for_plugin_at_idx_w_action (
-      type, setting, TRACKLIST->num_tracks, &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err, "%s", _("Failed to create track"));
-    }
+  plugin_setting_activate (setting);
 
   if (setting_created)
     {

@@ -137,8 +137,8 @@ plugin_setting_new_default (
 PluginSetting *
 NONNULL
 plugin_setting_clone (
-  PluginSetting * src,
-  bool            validate);
+  const PluginSetting * src,
+  bool                  validate);
 
 /**
  * Makes sure the setting is valid in the current
@@ -154,9 +154,18 @@ void
 plugin_setting_validate (
   PluginSetting * self);
 
-void
 NONNULL
+void
 plugin_setting_print (
+  const PluginSetting * self);
+
+/**
+ * Creates necessary tracks at the end of the
+ * tracklist.
+ */
+NONNULL
+void
+plugin_setting_activate (
   const PluginSetting * self);
 
 /**

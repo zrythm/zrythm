@@ -1631,13 +1631,13 @@ track_set_caches (
 
 Track *
 track_create_with_action (
-  TrackType       type,
-  PluginSetting * pl_setting,
-  SupportedFile * file_descr,
-  Position *      pos,
-  int             index,
-  int             num_tracks,
-  GError **       error);
+  TrackType             type,
+  const PluginSetting * pl_setting,
+  const SupportedFile * file_descr,
+  Position *            pos,
+  int                   index,
+  int                   num_tracks,
+  GError **             error);
 
 #define track_create_empty_at_idx_with_action( \
   type,idx,error) \
