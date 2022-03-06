@@ -1392,8 +1392,6 @@ zrythm_app_startup (
   INSTALL_ACCEL ("F11", "app.fullscreen");
   INSTALL_ACCEL (
     "<Control><Shift>p", "app.preferences");
-  INSTALL_ACCEL (
-    "F2", "app.rename-track-or-region");
   INSTALL_ACCEL ("<Control>n", "app.new");
   INSTALL_ACCEL ("<Control>o", "app.open");
   INSTALL_ACCEL ("<Control>s", "app.save");

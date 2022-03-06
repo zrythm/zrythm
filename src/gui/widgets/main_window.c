@@ -731,8 +731,9 @@ main_window_widget_init (MainWindowWidget * self)
       activate_editor_function_lv2, "s" },
 
     /* rename track/region */
-    { "rename-track-or-region",
-      activate_rename_track_or_region },
+    { "rename-track", activate_rename_track },
+    { "rename-arranger-object",
+      activate_rename_arranger_object },
 
     /* arranger selections */
     { "nudge-selection",

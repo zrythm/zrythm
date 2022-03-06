@@ -423,8 +423,8 @@ DECLARE_SIMPLE (activate_editor_function_lv2);
 COLD DECLARE_SIMPLE (
   activate_midi_editor_highlighting);
 
-DECLARE_SIMPLE (
-  activate_rename_track_or_region);
+DECLARE_SIMPLE (activate_rename_track);
+DECLARE_SIMPLE (activate_rename_arranger_object);
 
 DECLARE_SIMPLE (activate_add_region);
 DECLARE_SIMPLE (activate_go_to_start);

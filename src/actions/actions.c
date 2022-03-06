@@ -2693,12 +2693,19 @@ DEFINE_SIMPLE (
 }
 
 DEFINE_SIMPLE (
-  activate_rename_track_or_region)
+  activate_rename_track)
 {
+  g_message ("TODO - track");
+}
+
+DEFINE_SIMPLE (
+  activate_rename_arranger_object)
+{
+  g_debug ("rename arranger object");
+
   if (PROJECT->last_selection ==
         SELECTION_TYPE_TIMELINE)
     {
-      g_message ("timeline");
       ArrangerSelections * sel =
         arranger_widget_get_selections (
           MW_TIMELINE);
@@ -2708,25 +2715,32 @@ DEFINE_SIMPLE (
           ArrangerObject * obj =
             arranger_selections_get_first_object (
               sel);
-          if (obj->type ==
-                ARRANGER_OBJECT_TYPE_REGION)
+          switch (obj->type)
             {
-              StringEntryDialogWidget * dialog =
-                string_entry_dialog_widget_new (
-                  _("Region name"), obj,
-                  (GenericStringGetter)
-                  arranger_object_get_name,
-                  (GenericStringSetter)
-                  arranger_object_set_name_with_action);
-              gtk_window_present (
-                GTK_WINDOW (dialog));
+            case ARRANGER_OBJECT_TYPE_REGION:
+            case ARRANGER_OBJECT_TYPE_MARKER:
+              {
+                StringEntryDialogWidget * dialog =
+                  string_entry_dialog_widget_new (
+                    _("Object name"), obj,
+                    (GenericStringGetter)
+                    arranger_object_get_name,
+                    (GenericStringSetter)
+                    arranger_object_set_name_with_action);
+                gtk_window_present (
+                  GTK_WINDOW (dialog));
+              }
+              break;
+            default:
+              break;
             }
         }
     }
-  else if (PROJECT->last_selection ==
-             SELECTION_TYPE_TRACKLIST)
+  else if (
+    PROJECT->last_selection ==
+      SELECTION_TYPE_EDITOR)
     {
-      g_message ("TODO - track");
+      /* nothing can be renamed yet */
     }
 }
 
