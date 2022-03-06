@@ -99,7 +99,7 @@ port_connections_popover_widget_refresh (
             {
               PortConnectionRowWidget * pcr =
                 port_connection_row_widget_new (
-                  self, conn, true);
+                  self, conn, false);
               gtk_box_append (
                 GTK_BOX (self->ports_box),
                 GTK_WIDGET (pcr));
@@ -129,7 +129,7 @@ port_connections_popover_widget_refresh (
             {
               PortConnectionRowWidget * pcr =
                 port_connection_row_widget_new (
-                  self, conn, false);
+                  self, conn, true);
               gtk_box_append (
                 GTK_BOX (self->ports_box),
                 GTK_WIDGET (pcr));
