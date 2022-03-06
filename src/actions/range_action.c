@@ -540,13 +540,17 @@ range_action_do (
                 }
               /* object starts and ends inside range
                * and not marker start/end - delete */
-              else if (ends_inside_range &&
-                       !(prj_obj->type ==
-                           ARRANGER_OBJECT_TYPE_MARKER &&
-                         (((Marker *) prj_obj)->type ==
-                            MARKER_TYPE_START ||
-                         (((Marker *) prj_obj)->type ==
-                            MARKER_TYPE_END))))
+              else if (
+                ends_inside_range
+                &&
+                !(prj_obj->type ==
+                    ARRANGER_OBJECT_TYPE_MARKER
+                  &&
+                  (((Marker *) prj_obj)->type ==
+                     MARKER_TYPE_START
+                   ||
+                   (((Marker *) prj_obj)->type ==
+                     MARKER_TYPE_END))))
                 {
                   g_debug ("removing object:");
                   arranger_object_print (prj_obj);
@@ -693,8 +697,7 @@ range_action_undo (
       arranger_object_print (obj);
     }
   /* add all objects from sel_before */
-  for (int i = (int) before_objs_arr->len - 1;
-       i >= 0; i--)
+  for (size_t i = 0; i < before_objs_arr->len; i++)
     {
       ArrangerObject * obj =
         (ArrangerObject *)

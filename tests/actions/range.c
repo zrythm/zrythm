@@ -214,10 +214,12 @@ check_start_end_markers (void)
   /* check that start/end markers exist */
   Marker * start_m =
     marker_track_get_start_marker (P_MARKER_TRACK);
+  g_assert_true (start_m->type == MARKER_TYPE_START);
   ArrangerObject * start_obj =
     (ArrangerObject *) start_m;
   Marker * end_m =
     marker_track_get_end_marker (P_MARKER_TRACK);
+  g_assert_true (end_m->type == MARKER_TYPE_END);
   ArrangerObject * end_obj =
     (ArrangerObject *) end_m;
   g_assert_nonnull (start_m);
