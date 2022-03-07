@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -40,6 +40,7 @@ typedef enum TrackType_v1
   TRACK_TYPE_MIDI_v1,
   TRACK_TYPE_MIDI_BUS_v1,
   TRACK_TYPE_MIDI_GROUP_v1,
+  TRACK_TYPE_FOLDER_v1,
 } TrackType_v1;
 
 static const cyaml_strval_t
@@ -57,6 +58,7 @@ track_type_strings_v1[] =
   { "MIDI",         TRACK_TYPE_MIDI_v1   },
   { "MIDI FX",      TRACK_TYPE_MIDI_BUS_v1   },
   { "MIDI Group",   TRACK_TYPE_MIDI_GROUP_v1   },
+  { "Folder",       TRACK_TYPE_FOLDER_v1   },
 };
 
 typedef struct Track_v1
@@ -70,7 +72,7 @@ typedef struct Track_v1
   bool                lanes_visible;
   bool                visible;
   double              main_height;
-  bool                recording;
+  Port_v1 *           recording;
   bool                active;
   GdkRGBA             color;
   TrackLane_v1 **        lanes;
@@ -132,7 +134,9 @@ track_fields_schema_v1[] =
   YAML_FIELD_INT (Track_v1, visible),
   YAML_FIELD_FLOAT (Track_v1, main_height),
   YAML_FIELD_INT (Track_v1, passthrough_midi_input),
-  YAML_FIELD_INT (Track_v1, recording),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Track_v1, recording, port_fields_schema_v1),
+  YAML_FIELD_INT (Track_v1, enabled_v1),
   YAML_FIELD_MAPPING_EMBEDDED (
     Track_v1, color, gdk_rgba_fields_schema_v1),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (

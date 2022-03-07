@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,7 +29,7 @@
 typedef struct Tracklist_v1
 {
   int        schema_version;
-  Track_v1 * tracks[3000];
+  Track_v1 * tracks[MAX_TRACKS];
   int        num_tracks;
   int        pinned_tracks_cutoff;
 } Tracklist_v1;

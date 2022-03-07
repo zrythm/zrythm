@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -32,6 +32,8 @@ typedef enum SelectionType_v1
   SELECTION_TYPE_TIMELINE_v1,
   SELECTION_TYPE_INSERT_v1,
   SELECTION_TYPE_MIDI_FX_v1,
+  SELECTION_TYPE_INSTRUMENT_v1,
+  SELECTION_TYPE_MODULATOR_v1,
   SELECTION_TYPE_EDITOR_v1,
 } SelectionType_v1;
 
@@ -42,6 +44,8 @@ selection_type_strings_v1[] =
   { "Timeline", SELECTION_TYPE_TIMELINE_v1 },
   { "Insert", SELECTION_TYPE_INSERT_v1 },
   { "MIDI FX", SELECTION_TYPE_MIDI_FX_v1 },
+  { "Instrument", SELECTION_TYPE_INSTRUMENT_v1 },
+  { "Modulator", SELECTION_TYPE_MODULATOR_v1 },
   { "Editor", SELECTION_TYPE_EDITOR_v1 },
 };
 
@@ -50,7 +54,8 @@ typedef struct Project_v1
   int                  schema_version;
   char *               title;
   char *               datetime_str;
-  Tracklist_v1 *       tracklist;
+  char *               version;
+  Tracklist_v1 *       tracklist; /**/
   ClipEditor_v1 *      clip_editor;
   Timeline_v1 *        timeline;
   SnapGrid_v1          snap_grid_timeline;
@@ -68,7 +73,6 @@ typedef struct Project_v1
   AudioEngine_v1 *     audio_engine;
   MidiMappings_v1 *    midi_mappings;
   SelectionType_v1     last_selection;
-  char *               version;
 } Project_v1;
 
 static const cyaml_schema_field_t
