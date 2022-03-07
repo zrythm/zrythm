@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,10 +19,12 @@
 
 /**
  * \file
+ *
+ * Velocity settings buttons.
  */
 
-#ifndef __GUI_WIDGETS_PLAYHEAD_SCROLL_BUTTONS_H__
-#define __GUI_WIDGETS_PLAYHEAD_SCROLL_BUTTONS_H__
+#ifndef __GUI_WIDGETS_VELOCITY_SETTINGS_H__
+#define __GUI_WIDGETS_VELOCITY_SETTINGS_H__
 
 #include <gtk/gtk.h>
 
@@ -32,23 +34,21 @@
  * @{
  */
 
-#define PLAYHEAD_SCROLL_BUTTONS_WIDGET_TYPE \
-  (playhead_scroll_buttons_widget_get_type ())
+#define VELOCITY_SETTINGS_WIDGET_TYPE \
+  (velocity_settings_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  PlayheadScrollButtonsWidget,
-  playhead_scroll_buttons_widget,
-  Z, PLAYHEAD_SCROLL_BUTTONS_WIDGET,
-  GtkWidget)
+  VelocitySettingsWidget, velocity_settings_widget,
+  Z, VELOCITY_SETTINGS_WIDGET, GtkWidget)
 
-#define MW_PLAYHEAD_SCROLL_BUTTONS \
-  MW_HOME_TOOLBAR->snap_box
-
-typedef struct _PlayheadScrollButtonsWidget
+/**
+ * Velocity settings for toolbars.
+ */
+typedef struct _VelocitySettingsWidget
 {
-  GtkWidget         parent_instance;
-  GtkToggleButton * scroll_edges;
-  GtkToggleButton * follow;
-} PlayheadScrollButtonsWidget;
+  GtkWidget      parent_instance;
+
+  GtkDropDown *  default_velocity_dropdown;
+} VelocitySettingsWidget;
 
 /**
  * @}

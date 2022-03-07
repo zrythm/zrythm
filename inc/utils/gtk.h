@@ -201,10 +201,6 @@ z_gtk_list_store_splice (
   GListStore * store,
   GPtrArray *  ptr_array);
 
-/**
- * @note Bumps reference, must be decremented after
- * calling.
- */
 void
 z_gtk_widget_remove_all_children (
   GtkWidget * widget);

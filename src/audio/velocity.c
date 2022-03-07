@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,6 +24,7 @@
 #include "audio/velocity.h"
 #include "gui/widgets/velocity.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "utils/types.h"
 
 #include <gtk/gtk.h>
@@ -138,4 +139,50 @@ velocity_get_midi_note (
   g_return_val_if_fail (region, NULL);
   return region->midi_notes[self->note_pos];
 #endif
+}
+
+const char *
+velocity_setting_enum_to_str (
+  guint index)
+{
+  switch (index)
+    {
+    case 0:
+      return "last-note";
+    case 1:
+      return "40";
+    case 2:
+      return "90";
+    case 3:
+      return "120";
+    default:
+      break;
+    }
+
+  g_return_val_if_reached (NULL);
+}
+
+guint
+velocity_setting_str_to_enum (
+  const char * str)
+{
+  guint val;
+  if (string_is_equal (str, "40"))
+    {
+      val = 1;
+    }
+  else if (string_is_equal (str, "90"))
+    {
+      val = 2;
+    }
+  else if (string_is_equal (str, "120"))
+    {
+      val = 3;
+    }
+  else
+    {
+      val = 0;
+    }
+
+  return val;
 }

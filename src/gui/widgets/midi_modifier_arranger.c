@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,6 +36,7 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/velocity.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/objects.h"
 #include "utils/flags.h"
@@ -324,6 +325,18 @@ midi_modifier_arranger_widget_resize_velocities (
               vel_obj->widget), 1);
         }
 #endif
+    }
+
+  if (self->start_object)
+    {
+      g_return_if_fail (
+        self->start_object->type ==
+          ARRANGER_OBJECT_TYPE_VELOCITY);
+      Velocity * vel =
+        (Velocity *) self->start_object;
+      g_settings_set_int (
+        S_UI, "piano-roll-last-set-velocity",
+        vel->vel);
     }
 }
 

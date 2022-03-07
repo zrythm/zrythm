@@ -100,12 +100,37 @@ midi_arranger_widget_create_note (
           UI_OVERLAY_ACTION_CREATING_RESIZING_R;
     }
 
+  int default_velocity_type =
+    g_settings_get_enum (
+      S_UI, "piano-roll-default-velocity");
+  midi_byte_t velocity = VELOCITY_DEFAULT;
+  switch (default_velocity_type)
+    {
+    case 0:
+      velocity =
+        (midi_byte_t)
+        g_settings_get_int (
+          S_UI, "piano-roll-last-set-velocity");
+      break;
+    case 1:
+      velocity = 40;
+      break;
+    case 2:
+      velocity = 90;
+      break;
+    case 3:
+      velocity = 120;
+      break;
+    default:
+      break;
+    }
+
+
   /* create midi note */
   MidiNote * midi_note =
     midi_note_new (
       &region->id, &local_pos, &local_pos,
-      (midi_byte_t) note,
-      VELOCITY_DEFAULT);
+      (midi_byte_t) note, velocity);
   ArrangerObject * midi_note_obj =
     (ArrangerObject *) midi_note;
 

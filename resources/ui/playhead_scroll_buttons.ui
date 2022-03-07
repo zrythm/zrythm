@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="PlayheadScrollButtonsWidget" parent="GtkBox">
-    <property name="spacing">1</property>
+  <template class="PlayheadScrollButtonsWidget" parent="GtkWidget">
     <child>
       <object class="GtkToggleButton" id="scroll_edges">
         <property name="focusable">1</property>

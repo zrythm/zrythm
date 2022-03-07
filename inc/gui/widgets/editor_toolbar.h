@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,10 +29,8 @@
 #define EDITOR_TOOLBAR_WIDGET_TYPE \
   (editor_toolbar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  EditorToolbarWidget,
-  editor_toolbar_widget,
-  Z, EDITOR_TOOLBAR_WIDGET,
-  GtkBox)
+  EditorToolbarWidget, editor_toolbar_widget,
+  Z, EDITOR_TOOLBAR_WIDGET, GtkBox)
 
 #define MW_EDITOR_TOOLBAR \
   MW_CLIP_EDITOR->editor_toolbar
@@ -45,6 +43,8 @@ typedef struct _ButtonWithMenuWidget
   ButtonWithMenuWidget;
 typedef struct _PlayheadScrollButtonsWidget
   PlayheadScrollButtonsWidget;
+typedef struct _VelocitySettingsWidget
+  VelocitySettingsWidget;
 
 /**
  * The PianoRoll toolbar in the top.
@@ -66,6 +66,9 @@ typedef struct _EditorToolbarWidget
 
   GtkSeparator *      sep_after_chord_highlight;
   GtkBox *            chord_highlight_box;
+
+  VelocitySettingsWidget * velocity_settings;
+  GtkSeparator *      sep_after_velocity_settings;
 
   PlayheadScrollButtonsWidget * playhead_scroll;
 

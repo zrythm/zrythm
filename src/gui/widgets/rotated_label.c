@@ -146,10 +146,8 @@ static void
 on_dispose (
   GObject * object)
 {
-  RotatedLabelWidget * self =
-    Z_ROTATED_LABEL_WIDGET (object);
-
-  gtk_widget_unparent (GTK_WIDGET (self->lbl));
+  z_gtk_widget_remove_all_children (
+    GTK_WIDGET (object));
 
   G_OBJECT_CLASS (
     rotated_label_widget_parent_class)->

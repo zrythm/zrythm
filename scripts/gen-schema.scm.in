@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+;;; Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
 ;;; Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
 ;;;
 ;;; This file is part of Zrythm.
@@ -220,7 +220,7 @@ Args:
 "<?xml version=\"1.0\" encoding=\"utf-8\"?>
 <!--
 
-  Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+  Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
 
   This file is part of Zrythm
 
@@ -349,6 +349,9 @@ Args:
            "preroll-count"
            '("none" "one-bar" "two-bars"
              "four-bars"))
+         (print-enum
+           "default-velocity"
+           '("last-note" "40" "90" "120"))
          (newline)
 
          ;; -- print normal schemas --
@@ -492,6 +495,16 @@ Args:
                  "note-notation" "notes"
                  "Note notation"
                  "The note notation used in the piano roll - MIDI pitch index or notes (C, C#, etc.)")
+               (make-schema-key-with-enum
+                 "piano-roll-default-velocity"
+                 "default-velocity" "last-note"
+                 "Default velocity"
+                 "The default velocity to use when creating new MIDI notes.")
+               (make-schema-key
+                 "piano-roll-last-set-velocity"
+                 "i" "90"
+                 "Last set velocity"
+                 "Last set velocity on a MIDI note.")
                (make-schema-key
                  "musical-mode" "b" "false"
                  "Musical mode"

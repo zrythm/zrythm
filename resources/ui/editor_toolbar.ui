@@ -86,8 +86,16 @@
       </object>
     </child>
     <child>
+      <object class="VelocitySettingsWidget" id="velocity_settings">
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator" id="sep_after_velocity_settings">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
       <object class="PlayheadScrollButtonsWidget" id="playhead_scroll">
-        <property name="visible">True</property>
       </object>
     </child>
     <child>

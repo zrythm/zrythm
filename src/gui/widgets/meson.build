@@ -166,6 +166,7 @@ widget_srcs = files([
   'transport_controls.c',
   'two_col_expander_box.c',
   'velocity.c',
+  'velocity_settings.c',
   'view_toolbar.c',
   'visibility.c',
   'volume.c',

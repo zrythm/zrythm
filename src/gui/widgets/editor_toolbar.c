@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,6 +31,7 @@
 #include "gui/widgets/quantize_box.h"
 #include "gui/widgets/snap_box.h"
 #include "gui/widgets/snap_grid.h"
+#include "gui/widgets/velocity_settings.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -413,6 +414,7 @@ editor_toolbar_widget_init (
   g_type_ensure (
     PLAYHEAD_SCROLL_BUTTONS_WIDGET_TYPE);
   g_type_ensure (SNAP_BOX_WIDGET_TYPE);
+  g_type_ensure (VELOCITY_SETTINGS_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -486,6 +488,8 @@ editor_toolbar_widget_class_init (
   BIND_CHILD (audio_functions_btn);
   BIND_CHILD (midi_functions_btn);
   BIND_CHILD (automation_functions_btn);
+  BIND_CHILD (velocity_settings);
+  BIND_CHILD (sep_after_velocity_settings);
   BIND_CHILD (playhead_scroll);
 
 #undef BIND_CHILD
