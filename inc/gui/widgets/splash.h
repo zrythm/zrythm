@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -42,8 +42,9 @@ typedef struct _CustomImageWidget CustomImageWidget;
 typedef struct _SplashWindowWidget
 {
   GtkWindow           parent_instance;
-  GtkLabel        *   label;
-  GtkProgressBar  *   progress_bar;
+  GtkLabel *          status_label;
+  GtkLabel *          version_label;
+  GtkProgressBar *    progress_bar;
   CustomImageWidget * img;
 
   guint               tick_cb_id;

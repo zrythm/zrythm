@@ -2,10 +2,8 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="SplashWindowWidget" parent="GtkWindow">
-    <!--<property name="sensitive">0</property>-->
     <property name="resizable">0</property>
     <property name="default_width">580</property>
-    <!--<property name="default_height">300</property>-->
     <property name="decorated">0</property>
     <property name="deletable">0</property>
     <property name="icon_name">zrythm</property>
@@ -24,9 +22,15 @@
               </object>
             </property>
             <child type="overlay">
-              <object class="GtkLabel" id="label">
+              <object class="GtkLabel" id="status_label">
                 <property name="valign">end</property>
                 <property name="label" translatable="yes">Initializing...</property>
+              </object>
+            </child>
+            <child type="overlay">
+              <object class="GtkLabel" id="version_label">
+                <property name="valign">start</property>
+                <property name="halign">end</property>
               </object>
             </child>
           </object>

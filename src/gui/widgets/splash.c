@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,11 +30,11 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
-  SplashWindowWidget,
-  splash_window_widget,
+  SplashWindowWidget, splash_window_widget,
   GTK_TYPE_WINDOW)
 
 static gboolean
@@ -45,7 +45,7 @@ splash_tick_cb (
 {
   zix_sem_wait (&zrythm_app->progress_status_lock);
   gtk_label_set_text (
-    self->label, zrythm_app->status);
+    self->status_label, zrythm_app->status);
   gtk_progress_bar_set_fraction (
     self->progress_bar, ZRYTHM->progress);
   zix_sem_post (&zrythm_app->progress_status_lock);
@@ -121,7 +121,8 @@ splash_window_widget_class_init (
     klass, SplashWindowWidget, x)
 
   BIND_CHILD (img);
-  BIND_CHILD (label);
+  BIND_CHILD (status_label);
+  BIND_CHILD (version_label);
   BIND_CHILD (progress_bar);
 
 #undef BIND_CHILD
@@ -150,4 +151,11 @@ splash_window_widget_init (SplashWindowWidget * self)
       "zrythm-splash-png", 580, -1, 1);
   custom_image_widget_set_texture (
     self->img, texture);
+
+  char * ver = zrythm_get_version (true);
+  char ver_str[800];
+  sprintf (ver_str, "<small>%s</small>", ver);
+  g_free (ver);
+  gtk_label_set_markup (
+    self->version_label, ver_str);
 }
