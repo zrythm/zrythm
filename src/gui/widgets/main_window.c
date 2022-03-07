@@ -640,6 +640,7 @@ main_window_widget_init (MainWindowWidget * self)
     { "goto-next-marker",
       activate_goto_next_marker },
     { "play-pause", activate_play_pause },
+    { "record-play", activate_record_play },
     { "go-to-start", activate_go_to_start },
     { "input-bpm", activate_input_bpm },
     { "tap-bpm", activate_tap_bpm },

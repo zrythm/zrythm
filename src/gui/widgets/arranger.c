@@ -7045,6 +7045,10 @@ arranger_widget_class_init (
     z_gtk_simple_action_shortcut_func,
     "s", "play-pause", NULL);
   gtk_widget_class_add_binding (
+    wklass, GDK_KEY_space, GDK_SHIFT_MASK,
+    z_gtk_simple_action_shortcut_func,
+    "s", "record-play", NULL);
+  gtk_widget_class_add_binding (
     wklass, GDK_KEY_1, 0,
     z_gtk_simple_action_shortcut_func,
     "s", "select-mode", NULL);

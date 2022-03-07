@@ -308,11 +308,8 @@ activate_goto_next_marker (
   GVariant      *variant,
   gpointer       user_data);
 
-void
-activate_play_pause (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
+DECLARE_SIMPLE (activate_play_pause);
+DECLARE_SIMPLE (activate_record_play);
 
 void
 change_state_dim_output (
