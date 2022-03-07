@@ -1425,20 +1425,12 @@ activate_toggle_status_bar (GSimpleAction *action,
       GTK_WIDGET (MW_BOT_BAR)));
 }
 
-void
-change_state_piano_roll_drum_mode (
-  GSimpleAction * action,
-  GVariant *      value,
-  gpointer        user_data)
+DEFINE_SIMPLE (activate_toggle_drum_mode)
 {
-  int enabled = g_variant_get_boolean (value);
-
-  g_simple_action_set_state (action, value);
-
   Track * tr =
     clip_editor_get_track (CLIP_EDITOR);
   g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
-  tr->drum_mode = enabled;
+  tr->drum_mode = !tr->drum_mode;
 
   EVENTS_PUSH (ET_DRUM_MODE_CHANGED, tr);
 }

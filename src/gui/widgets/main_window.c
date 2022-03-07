@@ -693,8 +693,8 @@ main_window_widget_init (MainWindowWidget * self)
       activate_toggle_track_passthrough_input, },
 
     /* piano roll */
-    { "toggle-drum-mode", NULL, NULL, "false",
-      change_state_piano_roll_drum_mode },
+    { "toggle-drum-mode",
+      activate_toggle_drum_mode },
     { "toggle-listen-notes", NULL, NULL,
       g_settings_get_boolean (
         S_UI, "listen-notes") ?

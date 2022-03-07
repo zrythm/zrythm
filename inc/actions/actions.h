@@ -209,11 +209,7 @@ activate_toggle_top_panel (
   GVariant      *variant,
   gpointer       user_data);
 
-void
-change_state_piano_roll_drum_mode (
-  GSimpleAction * action,
-  GVariant *      value,
-  gpointer        user_data);
+DECLARE_SIMPLE (activate_toggle_drum_mode);
 
 void
 change_state_show_automation_values (
