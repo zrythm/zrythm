@@ -145,6 +145,12 @@ Args:
                      (@ (type "default"))
                      (image
                        (@ (type "source"))
+                       "@MAIN_SCREENSHOT_URL@")
+                     (caption
+                       "Main window"))
+                   (screenshot
+                     (image
+                       (@ (type "source"))
                        "@PIANO_ROLL_SCREENSHOT_URL@")
                      (caption
                        "Composing MIDI"))

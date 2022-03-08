@@ -31,7 +31,7 @@ Zrythm is currently in alpha. Most essential
 DAW features are implemented and we are working
 towards a stable release.
 
-![screenshot](https://www.zrythm.org/static/images/screenshots/Screenshot_20220110_152402.png)
+![screenshot](https://www.zrythm.org/static/images/screenshots/mar-8-2022.png)
 
 ### Supported plugins/instruments
 - Native support: [LV2](https://lv2plug.in/)
