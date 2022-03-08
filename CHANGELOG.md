@@ -1,6 +1,34 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.30.1.1] - 2022-03-08
+### Added
+- Add option to create pre-routed setup for multi-out instruments
+- Add new project loading dialog
+- Allow opening a project from a path in the project loading dialog
+- Allow renaming markers with F2
+- Show version in splash screen
+- Add Shift-Space shortcut to start transport in record mode
+- Add default velocity selector with option to use last edited velocity
+
+### Changed
+- Consider region as looped if clip start position is not 0
+- Expand track name in track properties
+- Apply auto-scrolling when playhead is moved manually
+- Update welcome dialog
+- Update main screenshot in appdata
+
+### Fixed
+- Fix crash when resizing audio regions with custom clip start points
+- Fix error when loading projects in different sample rates
+- Fix track regions being moved incorrectly when moving tracks
+- Fix port connection row displaying current port instead of connected port
+- Fix various memory leaks
+- Fix buffer overflow when operating on large numbers of objects
+
+### Removed
+- Remove reduntant checks during audio region processing
+
 ## [1.0.0-alpha.30.0.1] - 2022-03-05
 ### Added
 - Implement track lane mute/solo
