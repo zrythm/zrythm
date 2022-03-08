@@ -35,4 +35,5 @@ widget_srcs += files([
   'save_chord_preset_dialog.c',
   'string_entry_dialog.c',
   'track_icon_chooser_dialog.c',
+  'welcome_message_dialog.c',
   ])

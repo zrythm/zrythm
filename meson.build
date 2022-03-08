@@ -462,6 +462,15 @@ cdata.set_quoted (
   'PRIVACY_POLICY_URL',
   'https://www.zrythm.org/en/privacy.html')
 cdata.set_quoted (
+  'DONATION_URL',
+  'https://www.zrythm.org/en/community.html#donate')
+cdata.set_quoted (
+  'PURCHASE_URL',
+  'https://www.zrythm.org/en/download.html')
+cdata.set_quoted (
+  'LICENSE_URL',
+  'https://git.sr.ht/~alextee/zrythm/tree/master/item/COPYING')
+cdata.set_quoted (
   'BUG_REPORT_API_ENDPOINT',
   'https://accounts.zrythm.org/api/v1/error-reports/new')
 if get_option ('user_manual')

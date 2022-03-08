@@ -69,6 +69,7 @@
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/dialogs/bug_report_dialog.h"
 #include "gui/widgets/dialogs/changelog_dialog.h"
+#include "gui/widgets/dialogs/welcome_message_dialog.h"
 #include "gui/widgets/first_run_assistant.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/project_assistant.h"
@@ -577,41 +578,13 @@ static void on_prompt_for_project (
       if (g_settings_get_boolean (
             S_GENERAL, "first-run"))
         {
-          /* warranty disclaimer */
-          GtkDialogFlags flags =
-            GTK_DIALOG_DESTROY_WITH_PARENT;
-          GtkWidget * dialog =
-            gtk_message_dialog_new (
-              NULL, flags,
-              GTK_MESSAGE_INFO,
-              GTK_BUTTONS_OK,
-"Copyright © " COPYRIGHT_YEARS " " COPYRIGHT_NAME "\n"
-"\n"
-PROGRAM_NAME " is free software: you can redistribute it and/or modify\n"
-"it under the terms of the GNU Affero General Public License as published by\n"
-"the Free Software Foundation, either version 3 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-PROGRAM_NAME " is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU Affero General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU Affero General Public License\n"
-"along with " PROGRAM_NAME ".  If not, see <https://www.gnu.org/licenses/>."
-#if !defined(HAVE_CUSTOM_NAME) || !defined(HAVE_CUSTOM_LOGO_AND_SPLASH)
-"\n\nZrythm and the Zrythm logo are trademarks of Alexandros Theodotou"
-#endif
-);
-          gtk_window_set_title (
-            GTK_WINDOW (dialog),
-            _("License Information"));
-          gtk_window_set_icon_name (
-            GTK_WINDOW (dialog), "zrythm");
+          GtkDialog * dialog =
+            welcome_message_dialog_new (NULL);
           gtk_widget_show (GTK_WIDGET (dialog));
           g_signal_connect (
             G_OBJECT (dialog), "response",
-            G_CALLBACK (license_info_dialog_response_cb),
+            G_CALLBACK (
+              license_info_dialog_response_cb),
             self);
           g_message ("showing license info dialog");
 
