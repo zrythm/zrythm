@@ -815,6 +815,10 @@ z_gtk_widget_find_child_of_type (
   GtkWidget * widget,
   GType       type);
 
+void
+z_gtk_list_box_remove_all_children (
+  GtkListBox * list_box);
+
 /**
  * @}
  */

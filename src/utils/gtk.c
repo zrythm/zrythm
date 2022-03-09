@@ -2379,3 +2379,17 @@ z_gtk_widget_find_child_of_type (
 
   return NULL;
 }
+
+void
+z_gtk_list_box_remove_all_children (
+  GtkListBox * list_box)
+{
+  GtkListBoxRow * row = NULL;
+  while ((row =
+            gtk_list_box_get_row_at_index (
+              list_box, 0)) != NULL)
+    {
+      gtk_list_box_remove (
+        list_box, GTK_WIDGET (row));
+    }
+}

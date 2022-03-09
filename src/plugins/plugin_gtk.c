@@ -1963,8 +1963,7 @@ plugin_gtk_setup_plugin_presets_list_box (
 {
   g_debug ("%s: setting up...", __func__);
 
-  z_gtk_widget_destroy_all_children (
-    GTK_WIDGET (box));
+  z_gtk_list_box_remove_all_children (box);
 
   if (!plugin ||
       plugin->selected_bank.bank_idx == -1)
@@ -1997,7 +1996,6 @@ plugin_gtk_setup_plugin_presets_list_box (
         bank->presets[j];
       GtkWidget * label =
         gtk_label_new (preset->name);
-      gtk_widget_set_visible (label, true);
       gtk_list_box_insert (
         box, label, -1);
       ret = true;
