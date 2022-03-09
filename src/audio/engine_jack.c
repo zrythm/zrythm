@@ -734,34 +734,6 @@ engine_jack_tear_down (
 }
 
 /**
- * Fills the external out bufs.
- */
-void
-engine_jack_fill_out_bufs (
-  AudioEngine *   self,
-  const nframes_t nframes)
-{
-  /*g_message ("filling out bufs");*/
-  /*g_message ("%p", self->hw_stereo_outs[0]);*/
-  /*float * l_buf =*/
-    /*ext_port_get_buffer (*/
-      /*self->hw_stereo_outs[0], nframes);*/
-  /*float * r_buf =*/
-    /*ext_port_get_buffer (*/
-      /*self->hw_stereo_outs[1], nframes);*/
-
-  /*for (int i = 0; i < nframes; i++)*/
-    /*{*/
-      /*if (i == 50)*/
-        /*g_message ("before lbuf %f", l_buf[i]);*/
-      /*l_buf[i] = self->monitor_out->l->buf[i];*/
-      /*if (i == 50)*/
-        /*g_message ("after lbuf %f", l_buf[i]);*/
-      /*r_buf[i] = self->monitor_out->r->buf[i];*/
-    /*}*/
-}
-
-/**
  * Disconnects and reconnects the monitor output
  * port to the selected devices.
  */
