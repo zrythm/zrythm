@@ -2971,6 +2971,20 @@ port_process (
               AUDIO_ENGINE->trigger_midi_activity =
                 1;
 
+              /* queue playback if recording and
+               * we should record on MIDI input */
+              if (TRANSPORT_IS_RECORDING
+                  &&
+                  TRANSPORT_IS_PAUSED
+                  &&
+                  TRANSPORT->
+                    start_playback_on_midi_input)
+                {
+                  EVENTS_PUSH (
+                    ET_TRANSPORT_ROLL_REQUIRED,
+                    NULL);
+                }
+
               /* capture cc if capturing */
               if (AUDIO_ENGINE->capture_cc)
                 {
