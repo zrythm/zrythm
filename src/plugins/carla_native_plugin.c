@@ -697,10 +697,19 @@ carla_native_plugin_populate_banks (
       PluginPreset * pl_preset =
         plugin_preset_new ();
       pl_preset->carla_program = (int) i;
-      pl_preset->name =
-        g_strdup (
-          carla_get_program_name (
-            self->host_handle, 0, i));
+      const char * program_name =
+        carla_get_program_name (
+          self->host_handle, 0, i);
+      if (strlen (program_name) == 0)
+        {
+          pl_preset->name =
+            g_strdup_printf (
+              _("Preset %u"), i);
+        }
+      else
+        {
+          pl_preset->name = g_strdup (program_name);
+        }
       plugin_add_preset_to_bank (
         self->plugin, pl_def_bank, pl_preset);
 
