@@ -365,8 +365,8 @@ plugin_gtk_on_save_preset_activate (
     add_prefix =
       gtk_check_button_new_with_mnemonic (
         _("_Prefix plugin name"));
-  gtk_toggle_button_set_active (
-    GTK_TOGGLE_BUTTON (add_prefix), TRUE);
+  gtk_check_button_set_active (
+    GTK_CHECK_BUTTON (add_prefix), TRUE);
   GtkBox* box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 8));
@@ -403,8 +403,8 @@ plugin_gtk_on_save_preset_activate (
         z_gtk_file_chooser_get_filename (
           GTK_FILE_CHOOSER (dialog));
       bool add_prefix_active =
-        gtk_toggle_button_get_active (
-          GTK_TOGGLE_BUTTON (add_prefix));
+        gtk_check_button_get_active (
+          GTK_CHECK_BUTTON (add_prefix));
       if (open_with_carla)
         {
 #ifdef HAVE_CARLA
