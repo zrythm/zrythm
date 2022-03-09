@@ -1034,6 +1034,9 @@ load (
   self->backup_dir =
     g_strdup (PROJECT->backup_dir);
 
+  /* versions are now compatible, this is not
+   * applicable anymore */
+#if 0
   char * version = zrythm_get_version (0);
   if (!string_is_equal (self->version, version))
     {
@@ -1051,6 +1054,7 @@ load (
       g_free (str);
     }
   g_free (version);
+#endif
 
   if (self == NULL)
     {
