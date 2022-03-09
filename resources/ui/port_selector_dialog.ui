@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="PortSelectorPopoverWidget" parent="GtkPopover">
-    <property name="child">
+  <template class="PortSelectorDialogWidget" parent="GtkDialog">
+    <child internal-child="content_area">
       <object class="GtkBox">
         <property name="orientation">vertical</property>
         <child>
@@ -113,30 +113,23 @@
             </child>
           </object>
         </child>
-        <child>
-          <object class="GtkBox">
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <object class="GtkButton" id="cancel">
-                <property name="label" translatable="yes">_Cancel</property>
-                <property name="focusable">1</property>
-                <property name="receives_default">1</property>
-                <property name="use_underline">1</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="ok">
-                <property name="label" translatable="yes">_OK</property>
-                <property name="focusable">1</property>
-                <property name="receives_default">1</property>
-                <property name="use_underline">1</property>
-              </object>
-            </child>
-          </object>
-        </child>
       </object>
-    </property>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="cancel_btn">
+        <property name="label" translatable="yes">_Cancel</property>
+        <property name="use-underline">1</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="ok_btn">
+        <property name="label" translatable="yes">_OK</property>
+        <property name="use-underline">1</property>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel">cancel_btn</action-widget>
+      <action-widget response="ok" default="true">ok_btn</action-widget>
+    </action-widgets>
   </template>
 </interface>

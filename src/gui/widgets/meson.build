@@ -121,7 +121,6 @@ widget_srcs = files([
   'port_connections.c',
   'port_connections_popover.c',
   'port_connections_tree.c',
-  'port_selector_popover.c',
   'ports_expander.c',
   'preferences.c',
   'preroll_count_selector.c',

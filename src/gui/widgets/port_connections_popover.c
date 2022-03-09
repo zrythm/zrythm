@@ -20,10 +20,10 @@
 #include "audio/automation_track.h"
 #include "audio/channel_track.h"
 #include "audio/port_connections_manager.h"
+#include "gui/widgets/dialogs/port_selector_dialog.h"
 #include "gui/widgets/port_connection_row.h"
 #include "gui/widgets/inspector_port.h"
 #include "gui/widgets/port_connections_popover.h"
-#include "gui/widgets/port_selector_popover.h"
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/flags.h"
@@ -39,32 +39,26 @@ G_DEFINE_TYPE (
   GTK_TYPE_POPOVER)
 
 static void
-on_selector_popover_closed (
-  GtkPopover *                   popover,
-  PortConnectionsPopoverWidget * self)
-{
-  g_debug ("port selector popover closed");
-
-  /*g_object_ref_sink (self);*/
-  gtk_widget_set_visible (GTK_WIDGET (self), false);
-  gtk_popover_popup (GTK_POPOVER (self));
-  port_connections_popover_widget_refresh (
-    self, self->port);
-  /*g_object_unref (self);*/
-}
-
-#if 0
-static void
 on_add_clicked (
   GtkButton *                    btn,
   PortConnectionsPopoverWidget * self)
 {
-  port_selector_popover_widget_refresh (
-    self->port_selector_popover, self->port);
-  gtk_popover_popup (GTK_POPOVER (psp));
-}
-#endif
+  PortSelectorDialogWidget * dialog =
+    port_selector_dialog_widget_new (self);
+  port_selector_dialog_widget_refresh (
+    dialog, self->port);
 
+  gtk_widget_hide (GTK_WIDGET (self));
+
+  gtk_widget_show (GTK_WIDGET (dialog));
+}
+
+/**
+ * Refreshes the popover.
+ *
+ * Removes all children of ports_box and readds them
+ * based on the current connections.
+ */
 void
 port_connections_popover_widget_refresh (
   PortConnectionsPopoverWidget * self,
@@ -137,9 +131,6 @@ port_connections_popover_widget_refresh (
         }
       g_ptr_array_unref (dests);
     }
-
-  port_selector_popover_widget_refresh (
-    self->port_selector_popover, port);
 }
 
 /**
@@ -188,20 +179,14 @@ port_connections_popover_widget_init (
   self->main_box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 2));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->main_box), 1);
   self->title =
     GTK_LABEL (gtk_label_new (""));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->title), 1);
   self->ports_box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 1));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->ports_box), 1);
 
   self->add =
-    GTK_MENU_BUTTON (gtk_menu_button_new ());
+    GTK_BUTTON (gtk_button_new ());
   GtkWidget * btn_box =
     gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   GtkWidget * img =
@@ -209,17 +194,15 @@ port_connections_popover_widget_init (
   gtk_box_append (GTK_BOX (btn_box), img);
   GtkWidget * lbl =
     gtk_label_new (_("Add"));
-  gtk_widget_set_visible (lbl, 1);
   gtk_box_append (GTK_BOX (btn_box), lbl);
-  gtk_menu_button_set_child (
-    GTK_MENU_BUTTON (self->add), btn_box);
-  /*g_signal_connect (*/
-    /*G_OBJECT (self->add), "clicked",*/
-    /*G_CALLBACK (on_add_clicked), self);*/
+  gtk_button_set_child (
+    GTK_BUTTON (self->add), btn_box);
+  g_signal_connect (
+    G_OBJECT (self->add), "clicked",
+    G_CALLBACK (on_add_clicked), self);
 
   GtkWidget * separator =
     gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-  gtk_widget_set_visible (separator, 1);
 
   /* add to each other */
   gtk_box_append (
@@ -235,23 +218,4 @@ port_connections_popover_widget_init (
   gtk_popover_set_child (
     GTK_POPOVER (self),
     GTK_WIDGET (self->main_box));
-
-#if 0
-  /* temporary fix to this popover remaining hanging
-   * when the child popover closes */
-  gtk_popover_set_cascade_popdown (
-    GTK_POPOVER (self), true);
-#endif
-
-  self->port_selector_popover =
-    port_selector_popover_widget_new (self);
-  gtk_popover_set_position (
-    GTK_POPOVER (self->port_selector_popover),
-    GTK_POS_RIGHT);
-  g_signal_connect (
-    G_OBJECT (self->port_selector_popover), "closed",
-    G_CALLBACK (on_selector_popover_closed), self);
-  gtk_menu_button_set_popover (
-    self->add,
-    GTK_WIDGET (self->port_selector_popover));
 }

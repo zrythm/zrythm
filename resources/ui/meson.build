@@ -65,7 +65,7 @@ resource_files += files ([
   'panel_file_browser.ui',
   'plugin_browser.ui',
   'port_info_dialog.ui',
-  'port_selector_popover.ui',
+  'port_selector_dialog.ui',
   'project_assistant.ui',
   'project_scale_popover.ui',
   'project_toolbar.ui',

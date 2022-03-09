@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,21 +20,21 @@
 /**
  * \file
  *
- * Port selector popover.
+ * Port selector dialog.
  */
 
-#ifndef __GUI_WIDGETS_PORT_SELECTOR_POPOVER_H__
-#define __GUI_WIDGETS_PORT_SELECTOR_POPOVER_H__
+#ifndef __GUI_WIDGETS_PORT_SELECTOR_DIALOG_H__
+#define __GUI_WIDGETS_PORT_SELECTOR_DIALOG_H__
 
 #include <gtk/gtk.h>
 
-#define PORT_SELECTOR_POPOVER_WIDGET_TYPE \
-  (port_selector_popover_widget_get_type ())
+#define PORT_SELECTOR_DIALOG_WIDGET_TYPE \
+  (port_selector_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  PortSelectorPopoverWidget,
-  port_selector_popover_widget,
-  Z, PORT_SELECTOR_POPOVER_WIDGET,
-  GtkPopover)
+  PortSelectorDialogWidget,
+  port_selector_dialog_widget,
+  Z, PORT_SELECTOR_DIALOG_WIDGET,
+  GtkDialog)
 
 /**
  * @addtogroup widgets
@@ -43,37 +43,39 @@ G_DECLARE_FINAL_TYPE (
  */
 
 typedef struct Port Port;
+typedef struct _PortConnectionsPopoverWidget
+  PortConnectionsPopoverWidget;
 
 /**
  * A GtkPopover to select Port's.
  */
-typedef struct _PortSelectorPopoverWidget
+typedef struct _PortSelectorDialogWidget
 {
-  GtkPopover        parent_instance;
+  GtkDialog           parent_instance;
 
   /** The owner Port. */
-  Port            * port;
+  Port            *   port;
 
   GtkScrolledWindow * track_scroll;
-  GtkTreeView *     track_treeview;
-  GtkTreeModel *    track_model;
+  GtkTreeView *       track_treeview;
+  GtkTreeModel *      track_model;
   GtkScrolledWindow * plugin_scroll;
-  GtkTreeView *     plugin_treeview;
-  GtkTreeModel *    plugin_model;
-  GtkSeparator *    plugin_separator;
+  GtkTreeView *       plugin_treeview;
+  GtkTreeModel *      plugin_model;
+  GtkSeparator *      plugin_separator;
   GtkScrolledWindow * port_scroll;
-  GtkTreeView *     port_treeview;
-  GtkTreeModel *    port_model;
+  GtkTreeView *       port_treeview;
+  GtkTreeModel *      port_model;
 
   /** Track selected in the Track treeview. */
-  Track *           selected_track;
+  Track *             selected_track;
 
   /**
    * Plugin selected in the Plugin treeview.
    *
    * If this is NULL, see track_ports_selected.
    */
-  Plugin *          selected_plugin;
+  Plugin *            selected_plugin;
 
   /**
    * Used if selected_plugin is NULL.
@@ -82,30 +84,30 @@ typedef struct _PortSelectorPopoverWidget
    * otherwise if this is 0 then nothing is selected
    * in the Plugin treeview.
    */
-  int               track_ports_selected;
+  int                 track_ports_selected;
 
-  Port *            selected_port;
+  Port *              selected_port;
 
-  GtkButton *       ok;
-  GtkButton *       cancel;
+  GtkButton *         ok_btn;
+  GtkButton *         cancel_btn;
 
   /** Whether already set up (to avoid re-adding
    * existing widgets). */
-  bool              setup;
+  bool                setup;
 
   PortConnectionsPopoverWidget * owner;
-} PortSelectorPopoverWidget;
+} PortSelectorDialogWidget;
 
 void
-port_selector_popover_widget_refresh (
-  PortSelectorPopoverWidget * self,
+port_selector_dialog_widget_refresh (
+  PortSelectorDialogWidget * self,
   Port *                      port);
 
 /**
  * Creates the popover.
  */
-PortSelectorPopoverWidget *
-port_selector_popover_widget_new (
+PortSelectorDialogWidget *
+port_selector_dialog_widget_new (
   PortConnectionsPopoverWidget * owner);
 
 /**

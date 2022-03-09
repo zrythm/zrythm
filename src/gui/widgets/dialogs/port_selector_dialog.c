@@ -23,9 +23,9 @@
 #include "audio/router.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
+#include "gui/widgets/dialogs/port_selector_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/port_connections_popover.h"
-#include "gui/widgets/port_selector_popover.h"
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/error.h"
@@ -37,9 +37,9 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  PortSelectorPopoverWidget,
-  port_selector_popover_widget,
-  GTK_TYPE_POPOVER)
+  PortSelectorDialogWidget,
+  port_selector_dialog_widget,
+  GTK_TYPE_DIALOG)
 
 /** Used as the first row in the Plugin treeview to
  * indicate if "Track ports is selected or not. */
@@ -47,68 +47,62 @@ static const Plugin * dummy_plugin =
   (const Plugin *) 123;
 
 static void
-on_ok_clicked (
-  GtkButton * btn,
-  PortSelectorPopoverWidget * self)
+on_response (
+  GtkDialog *                dialog,
+  gint                       response_id,
+  PortSelectorDialogWidget * self)
 {
-  if (!self->selected_port)
+  if (response_id == GTK_RESPONSE_OK)
     {
-      ui_show_error_message (
-        MAIN_WINDOW, false,
-        _("No port selected"));
-      return;
-    }
-
-  Port * src = NULL, * dest = NULL;
-  if (self->port->id.flow == FLOW_INPUT)
-    {
-      src = self->selected_port;
-      dest = self->port;
-    }
-  else if (self->port->id.flow ==
-             FLOW_OUTPUT)
-    {
-      src = self->port;
-      dest = self->selected_port;
-    }
-
-  g_return_if_fail (src && dest);
-
-  if (ports_can_be_connected (src, dest))
-    {
-      g_object_unref (self->owner);
-
-      GError * err = NULL;
-      bool ret =
-        port_connection_action_perform_connect (
-          &src->id, &dest->id, &err);
-      if (!ret)
+      if (!self->selected_port)
         {
-          HANDLE_ERROR (
-            err,
-            _("Failed to connect %s to %s"),
-            src->id.label, dest->id.label);
+          ui_show_error_message (
+            MAIN_WINDOW, false,
+            _("No port selected"));
+          return;
         }
 
-      /*port_connections_popover_widget_refresh (*/
-        /*self->owner);*/
-    }
-  else
-    {
-      ui_show_error_message (
-        MAIN_WINDOW, false,
-        _("These ports cannot be connected"));
+      Port * src = NULL, * dest = NULL;
+      if (self->port->id.flow == FLOW_INPUT)
+        {
+          src = self->selected_port;
+          dest = self->port;
+        }
+      else if (self->port->id.flow ==
+                 FLOW_OUTPUT)
+        {
+          src = self->port;
+          dest = self->selected_port;
+        }
+
+      g_return_if_fail (src && dest);
+
+      if (ports_can_be_connected (src, dest))
+        {
+          GError * err = NULL;
+          bool ret =
+            port_connection_action_perform_connect (
+              &src->id, &dest->id, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err,
+                _("Failed to connect %s to %s"),
+                src->id.label, dest->id.label);
+            }
+
+          port_connections_popover_widget_refresh (
+            self->owner, self->port);
+        }
+      else
+        {
+          ui_show_error_message (
+            MAIN_WINDOW, false,
+            _("These ports cannot be connected"));
+        }
     }
 
-  gtk_widget_set_visible (GTK_WIDGET (self), 0);
-}
-
-static void
-on_cancel_clicked (
-  GtkButton * btn,
-  PortSelectorPopoverWidget * self)
-{
-  gtk_widget_set_visible (GTK_WIDGET (self), 0);
+  gtk_window_destroy (GTK_WINDOW (dialog));
 }
 
 /**
@@ -117,7 +111,7 @@ on_cancel_clicked (
  */
 static GtkTreeModel *
 create_model_for_ports (
-  PortSelectorPopoverWidget * self,
+  PortSelectorDialogWidget * self,
   Track *  track,
   Plugin * pl)
 {
@@ -270,7 +264,7 @@ create_model_for_ports (
 
 static GtkTreeModel *
 create_model_for_tracks (
-  PortSelectorPopoverWidget * self)
+  PortSelectorDialogWidget * self)
 {
   GtkListStore *list_store;
   GtkTreeIter iter;
@@ -307,7 +301,7 @@ create_model_for_tracks (
 
 static void
 add_plugin (
-  PortSelectorPopoverWidget * self,
+  PortSelectorDialogWidget * self,
   Plugin *                    pl,
   GtkListStore *              list_store,
   GtkTreeIter *               iter)
@@ -337,7 +331,7 @@ add_plugin (
 /* FIXME leaking if model already exists */
 static GtkTreeModel *
 create_model_for_plugins (
-  PortSelectorPopoverWidget * self,
+  PortSelectorDialogWidget * self,
   Track *                     track)
 {
   GtkListStore * list_store;
@@ -412,14 +406,14 @@ create_model_for_plugins (
 
 static void
 tree_view_setup (
-  PortSelectorPopoverWidget * self,
+  PortSelectorDialogWidget * self,
   GtkTreeModel * model,
   bool            init);
 
 static void
 on_selection_changed (
   GtkTreeSelection * ts,
-  PortSelectorPopoverWidget * self)
+  PortSelectorDialogWidget * self)
 {
   GtkTreeView * tv =
     gtk_tree_selection_get_tree_view (ts);
@@ -505,7 +499,7 @@ on_selection_changed (
  */
 static void
 tree_view_setup (
-  PortSelectorPopoverWidget * self,
+  PortSelectorDialogWidget * self,
   GtkTreeModel *              model,
   bool                        init)
 {
@@ -567,15 +561,12 @@ tree_view_setup (
         "changed",
          G_CALLBACK (on_selection_changed),
          self);
-
-      gtk_widget_set_visible (
-        GTK_WIDGET (tree_view), 1);
     }
 }
 
 void
-port_selector_popover_widget_refresh (
-  PortSelectorPopoverWidget * self,
+port_selector_dialog_widget_refresh (
+  PortSelectorDialogWidget * self,
   Port *                      port)
 {
   self->port = port;
@@ -601,13 +592,20 @@ port_selector_popover_widget_refresh (
 /**
  * Creates the popover.
  */
-PortSelectorPopoverWidget *
-port_selector_popover_widget_new (
+PortSelectorDialogWidget *
+port_selector_dialog_widget_new (
   PortConnectionsPopoverWidget * owner)
 {
-  PortSelectorPopoverWidget * self =
+  PortSelectorDialogWidget * self =
     g_object_new (
-      PORT_SELECTOR_POPOVER_WIDGET_TYPE, NULL);
+      PORT_SELECTOR_DIALOG_WIDGET_TYPE,
+      "modal", true,
+      NULL);
+
+  GtkRoot * root =
+    gtk_widget_get_root (GTK_WIDGET (owner));
+  gtk_window_set_transient_for (
+    GTK_WINDOW (self), GTK_WINDOW (root));
 
   self->owner = owner;
 
@@ -615,16 +613,16 @@ port_selector_popover_widget_new (
 }
 
 static void
-port_selector_popover_widget_class_init (
-  PortSelectorPopoverWidgetClass * _klass)
+port_selector_dialog_widget_class_init (
+  PortSelectorDialogWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
-    klass, "port_selector_popover.ui");
+    klass, "port_selector_dialog.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, PortSelectorPopoverWidget, x)
+    klass, PortSelectorDialogWidget, x)
 
   BIND_CHILD (track_scroll);
   BIND_CHILD (track_treeview);
@@ -633,15 +631,15 @@ port_selector_popover_widget_class_init (
   BIND_CHILD (plugin_separator);
   BIND_CHILD (port_scroll);
   BIND_CHILD (port_treeview);
-  BIND_CHILD (ok);
-  BIND_CHILD (cancel);
+  BIND_CHILD (ok_btn);
+  BIND_CHILD (cancel_btn);
 
 #undef BIND_CHILD
 }
 
 static void
-port_selector_popover_widget_init (
-  PortSelectorPopoverWidget * self)
+port_selector_dialog_widget_init (
+  PortSelectorDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -655,9 +653,6 @@ port_selector_popover_widget_init (
     self->port_scroll, max_height);
 
   g_signal_connect (
-    G_OBJECT (self->ok), "clicked",
-    G_CALLBACK (on_ok_clicked), self);
-  g_signal_connect (
-    G_OBJECT (self->cancel), "clicked",
-    G_CALLBACK (on_cancel_clicked), self);
+    G_OBJECT (self), "response",
+    G_CALLBACK (on_response), self);
 }

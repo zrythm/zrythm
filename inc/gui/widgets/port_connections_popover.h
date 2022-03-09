@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -63,9 +63,9 @@ typedef struct _PortConnectionsPopoverWidget
   GtkBox *         ports_box;
 
   /** Button to add connection. */
-  GtkMenuButton *  add;
+  GtkButton *      add;
 
-  PortSelectorPopoverWidget * port_selector_popover;
+  //PortSelectorPopoverWidget * port_selector_popover;
 } PortConnectionsPopoverWidget;
 
 /**
