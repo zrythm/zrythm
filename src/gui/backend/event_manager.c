@@ -1381,6 +1381,20 @@ event_manager_process_event (
             plugin_gtk_set_window_title (
               pl, pl->window);
           }
+
+        switch (ev->type)
+          {
+          case ET_PLUGIN_PRESET_SAVED:
+            ui_show_notification (
+              _("Plugin preset saved."));
+            break;
+          case ET_PLUGIN_PRESET_LOADED:
+            ui_show_notification (
+              _("Plugin preset loaded."));
+            break;
+          default:
+            break;
+          }
       }
       break;
     case ET_TRACK_FOLD_CHANGED:
