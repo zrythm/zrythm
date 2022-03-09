@@ -215,7 +215,7 @@ handle_stop_recording (
 
   /* disarm transport record button */
   transport_set_recording (
-    TRANSPORT, false, F_PUBLISH_EVENTS);
+    TRANSPORT, false, true, F_PUBLISH_EVENTS);
 
   self->num_active_recordings--;
   self->num_recorded_ids = 0;

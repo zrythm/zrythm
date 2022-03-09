@@ -193,7 +193,7 @@ test_save_state_w_files (void)
   g_usleep (1000000);
 
   /* test that plugin makes sound */
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
   engine_process (
     AUDIO_ENGINE, AUDIO_ENGINE->block_length);
   engine_process (
@@ -219,7 +219,7 @@ test_save_state_w_files (void)
 
   track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
   engine_process (
     AUDIO_ENGINE, AUDIO_ENGINE->block_length);
   engine_process (
@@ -261,7 +261,7 @@ test_reloading_project_with_instrument (
   g_usleep (1000000);
 
   /* test that plugin makes sound */
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
   engine_process (
     AUDIO_ENGINE, AUDIO_ENGINE->block_length);
   engine_process (

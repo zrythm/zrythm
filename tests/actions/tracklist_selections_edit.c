@@ -746,7 +746,7 @@ test_rename_midi_track_with_events (void)
   tracklist_validate (TRACKLIST);
 
   /* play and let engine run */
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -758,7 +758,7 @@ test_rename_midi_track_with_events (void)
     TRACKLIST->num_tracks, NULL);
 
   /* play and let engine run */
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
 
   test_helper_zrythm_cleanup ();
@@ -792,7 +792,7 @@ test_rename_track_with_send (void)
   tracklist_validate (TRACKLIST);
 
   /* play and let engine run */
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
 
   /* change the name of the group track */
@@ -803,7 +803,7 @@ test_rename_track_with_send (void)
   tracklist_validate (TRACKLIST);
 
   /* play and let engine run */
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
 
   undo_manager_undo (UNDO_MANAGER, NULL);

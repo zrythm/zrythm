@@ -53,7 +53,7 @@ play_clicked_cb (
     }
   else
     {
-      transport_request_roll (TRANSPORT);
+      transport_request_roll (TRANSPORT, true);
     }
 }
 
@@ -223,7 +223,7 @@ stop_clicked_cb (
         TRANSPORT, &TRANSPORT->cue_pos);
     }
   else
-    transport_request_pause (TRANSPORT);
+    transport_request_pause (TRANSPORT, true);
 
   midi_events_panic_all (F_QUEUED);
 }
@@ -235,6 +235,7 @@ record_toggled_cb (
 {
   transport_set_recording (
     TRANSPORT, gtk_toggle_button_get_active (tg),
+    true,
     F_PUBLISH_EVENTS);
 }
 
@@ -242,14 +243,14 @@ static void
 forward_clicked_cb (GtkButton * forward,
                     gpointer          user_data)
 {
-  transport_move_forward (TRANSPORT);
+  transport_move_forward (TRANSPORT, true);
 }
 
 static void
 backward_clicked_cb (GtkButton * backward,
                      gpointer    user_data)
 {
-  transport_move_backward (TRANSPORT);
+  transport_move_backward (TRANSPORT, true);
 }
 
 static void

@@ -1752,12 +1752,12 @@ DEFINE_SIMPLE (activate_play_pause)
 {
   if (TRANSPORT_IS_ROLLING)
     {
-      transport_request_pause (TRANSPORT);
+      transport_request_pause (TRANSPORT, true);
       midi_events_panic_all (F_QUEUED);
     }
   else if (TRANSPORT_IS_PAUSED)
     {
-      transport_request_roll (TRANSPORT);
+      transport_request_roll (TRANSPORT, true);
     }
 }
 
@@ -1765,14 +1765,14 @@ DEFINE_SIMPLE (activate_record_play)
 {
   if (TRANSPORT_IS_ROLLING)
     {
-      transport_request_pause (TRANSPORT);
+      transport_request_pause (TRANSPORT, true);
       midi_events_panic_all (F_QUEUED);
     }
   else if (TRANSPORT_IS_PAUSED)
     {
       transport_set_recording (
-        TRANSPORT, true, F_PUBLISH_EVENTS);
-      transport_request_roll (TRANSPORT);
+        TRANSPORT, true, true, F_PUBLISH_EVENTS);
+      transport_request_roll (TRANSPORT, true);
     }
 }
 
@@ -1973,7 +1973,7 @@ change_state_loop (
 
   g_simple_action_set_state (action, value);
 
-  transport_set_loop (TRANSPORT, enabled);
+  transport_set_loop (TRANSPORT, enabled, true);
 }
 
 void

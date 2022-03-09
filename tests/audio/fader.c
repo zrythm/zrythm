@@ -114,7 +114,7 @@ test_track_has_sound (
   Position pos;
   position_set_to_bar (&pos, 1);
   transport_set_playhead_pos (TRANSPORT, &pos);
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
 
   engine_process (
     AUDIO_ENGINE, AUDIO_ENGINE->block_length);
@@ -126,7 +126,7 @@ test_track_has_sound (
   g_assert_true (
     track_has_sound (track) == expect_sound);
 
-  transport_request_pause (TRANSPORT);
+  transport_request_pause (TRANSPORT, true);
   engine_process (
     AUDIO_ENGINE, AUDIO_ENGINE->block_length);
 }

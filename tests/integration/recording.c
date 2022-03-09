@@ -73,10 +73,10 @@ do_takes_no_loop_no_punch (
   Track * master_track)
 {
   TRANSPORT->recording = true;
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
 
   /* disable loop & punch */
-  transport_set_loop (TRANSPORT, false);
+  transport_set_loop (TRANSPORT, false, true);
   transport_set_punch_mode_enabled (
     TRANSPORT, false);
 
@@ -337,7 +337,7 @@ do_takes_no_loop_no_punch (
 
   /* run engine 1 more cycle to finalize recording */
   engine_process (AUDIO_ENGINE, CYCLE_SIZE);
-  transport_request_pause (TRANSPORT);
+  transport_request_pause (TRANSPORT, true);
   recording_manager_process_events (
     RECORDING_MANAGER);
 
@@ -355,10 +355,10 @@ do_takes_loop_no_punch (
   Track * master_track)
 {
   TRANSPORT->recording = true;
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
 
   /* enable loop & disable punch */
-  transport_set_loop (TRANSPORT, true);
+  transport_set_loop (TRANSPORT, true, true);
   position_set_to_bar (
     &TRANSPORT->loop_end_pos, 5);
   transport_set_punch_mode_enabled (
@@ -781,10 +781,10 @@ test_automation_touch_recording (void)
 
   prepare ();
   TRANSPORT->recording = true;
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
 
   /* enable loop & disable punch */
-  transport_set_loop (TRANSPORT, true);
+  transport_set_loop (TRANSPORT, true, true);
   position_set_to_bar (
     &TRANSPORT->loop_end_pos, 5);
   transport_set_punch_mode_enabled (
@@ -912,10 +912,10 @@ test_mono_recording (void)
 
   prepare ();
   TRANSPORT->recording = true;
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
 
   /* disable loop & punch */
-  transport_set_loop (TRANSPORT, false);
+  transport_set_loop (TRANSPORT, false, true);
   transport_set_punch_mode_enabled (
     TRANSPORT, false);
 
@@ -983,7 +983,7 @@ test_mono_recording (void)
 
   /* run engine 1 more cycle to finalize recording */
   engine_process (AUDIO_ENGINE, CYCLE_SIZE);
-  transport_request_pause (TRANSPORT);
+  transport_request_pause (TRANSPORT, true);
   recording_manager_process_events (
     RECORDING_MANAGER);
 
@@ -1013,10 +1013,10 @@ test_long_audio_recording (void)
 
   prepare ();
   TRANSPORT->recording = true;
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
 
   /* disable loop & punch */
-  transport_set_loop (TRANSPORT, false);
+  transport_set_loop (TRANSPORT, false, true);
   transport_set_punch_mode_enabled (
     TRANSPORT, false);
 
@@ -1131,7 +1131,7 @@ test_long_audio_recording (void)
 
   /* run engine 1 more cycle to finalize recording */
   engine_process (AUDIO_ENGINE, CYCLE_SIZE);
-  transport_request_pause (TRANSPORT);
+  transport_request_pause (TRANSPORT, true);
   recording_manager_process_events (
     RECORDING_MANAGER);
 
@@ -1194,10 +1194,10 @@ test_2nd_audio_recording (void)
 
   prepare ();
   TRANSPORT->recording = true;
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
 
   /* disable loop & punch */
-  transport_set_loop (TRANSPORT, false);
+  transport_set_loop (TRANSPORT, false, true);
   transport_set_punch_mode_enabled (
     TRANSPORT, false);
 
@@ -1280,7 +1280,7 @@ test_2nd_audio_recording (void)
 
   /* run engine 1 more cycle to finalize recording */
   engine_process (AUDIO_ENGINE, CYCLE_SIZE);
-  transport_request_pause (TRANSPORT);
+  transport_request_pause (TRANSPORT, true);
   recording_manager_process_events (
     RECORDING_MANAGER);
 
@@ -1309,10 +1309,10 @@ test_chord_track_recording (void)
 
   prepare ();
   TRANSPORT->recording = true;
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
 
   /* set loop */
-  transport_set_loop (TRANSPORT, true);
+  transport_set_loop (TRANSPORT, true, true);
 
   /* move playhead to a few ticks before loop
    * end */
@@ -1347,7 +1347,7 @@ test_chord_track_recording (void)
   /* run engine 1 more cycle to finalize
    * recording */
   engine_process (AUDIO_ENGINE, CYCLE_SIZE);
-  transport_request_pause (TRANSPORT);
+  transport_request_pause (TRANSPORT, true);
   recording_manager_process_events (
     RECORDING_MANAGER);
 

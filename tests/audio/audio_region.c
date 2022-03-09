@@ -162,7 +162,7 @@ test_change_samplerate (void)
   transport_move_playhead (
     TRANSPORT, &pos, F_NO_PANIC, false,
     F_NO_PUBLISH_EVENTS);
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
 
   /* process manually */
   engine_process (AUDIO_ENGINE, 256);
@@ -246,12 +246,12 @@ test_load_project_with_different_sample_rate (void)
       /* play the region */
       Position end;
       position_set_to_bar (&end, 4);
-      transport_request_roll (TRANSPORT);
+      transport_request_roll (TRANSPORT, true);
       while (position_is_before (PLAYHEAD, &end))
         {
           engine_wait_n_cycles (AUDIO_ENGINE, 3);
         }
-      transport_request_pause (TRANSPORT);
+      transport_request_pause (TRANSPORT, true);
       engine_wait_n_cycles (AUDIO_ENGINE, 1);
     }
 

@@ -1108,7 +1108,7 @@ engine_wait_for_pause (
 
   if (state->playing)
     {
-      transport_request_pause (TRANSPORT);
+      transport_request_pause (TRANSPORT, true);
 
       if (force_pause)
         {
@@ -1180,11 +1180,11 @@ engine_resume (
         TRANSPORT, &TRANSPORT->playhead_before_pause,
         F_NO_PANIC, F_NO_SET_CUE_POINT,
         F_NO_PUBLISH_EVENTS);
-      transport_request_roll (TRANSPORT);
+      transport_request_roll (TRANSPORT, true);
     }
   else
     {
-      transport_request_pause (TRANSPORT);
+      transport_request_pause (TRANSPORT, true);
     }
 
   g_atomic_int_set (

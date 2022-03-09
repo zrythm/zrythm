@@ -2995,7 +2995,8 @@ drag_begin (
                 PLAYHEAD);
               transport_set_playhead_pos (
                 TRANSPORT, &self->start_pos);
-              transport_request_roll (TRANSPORT);
+              transport_request_roll (
+                TRANSPORT, true);
             default:
               break;
             }
@@ -5007,7 +5008,8 @@ drag_end (
     {
       if (self->was_paused)
         {
-          transport_request_pause (TRANSPORT);
+          transport_request_pause (
+            TRANSPORT, true);
         }
       transport_set_playhead_pos (
         TRANSPORT, &self->playhead_pos_at_start);

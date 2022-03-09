@@ -514,6 +514,15 @@ typedef struct AudioEngine
    */
   int               trigger_midi_activity;
 
+#if 0
+  /**
+   * Timestamp of last MIDI activity.
+   *
+   * Used if record on MIDI input is enabled.
+   */
+  gint64            last_midi_activity;
+#endif
+
   /**
    * Manual note press events from the piano roll.
    *
@@ -543,8 +552,10 @@ typedef struct AudioEngine
    */
   nframes_t         nframes;
 
-  /** Semaphore for blocking DSP while a plugin and
-   * its ports are deleted. */
+  /**
+   * Semaphore for blocking DSP while a plugin and
+   * its ports are deleted.
+   */
   ZixSem            port_operation_lock;
 
   /** Ok to process or not. */

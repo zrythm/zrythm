@@ -49,7 +49,7 @@ test_fill_when_region_starts_on_loop_end (void)
   TRANSPORT->play_state = PLAYSTATE_ROLLING;
 
   /* prepare loop */
-  transport_set_loop (TRANSPORT, true);
+  transport_set_loop (TRANSPORT, true, true);
   position_set_to_bar (
     &TRANSPORT->loop_end_pos, LOOP_BAR);
   position_set_to_bar (
@@ -66,7 +66,7 @@ test_fill_when_region_starts_on_loop_end (void)
     supported_file_new_from_path (filepath);
   int num_tracks_before = TRACKLIST->num_tracks;
 
-  transport_request_pause (TRANSPORT);
+  transport_request_pause (TRANSPORT, true);
   Track * track =
     track_create_with_action (
       TRACK_TYPE_AUDIO, NULL, file,

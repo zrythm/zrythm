@@ -1425,6 +1425,27 @@ event_manager_process_event (
         MW_CHORD_PACK_BROWSER);
 #endif
       break;
+    case ET_TRANSPORT_ROLL_REQUIRED:
+      transport_request_roll (TRANSPORT, true);
+      break;
+    case ET_TRANSPORT_PAUSE_REQUIRED:
+      transport_request_pause (TRANSPORT, true);
+      break;
+    case ET_TRANSPORT_MOVE_BACKWARD_REQUIRED:
+      transport_move_backward (TRANSPORT, true);
+      break;
+    case ET_TRANSPORT_MOVE_FORWARD_REQUIRED:
+      transport_move_forward (TRANSPORT, true);
+      break;
+    case ET_TRANSPORT_TOGGLE_LOOP_REQUIRED:
+      transport_set_loop (
+        TRANSPORT, !TRANSPORT->loop, true);
+      break;
+    case ET_TRANSPORT_TOGGLE_RECORDING_REQUIRED:
+      transport_set_recording (
+        TRANSPORT, !TRANSPORT->recording, true,
+        F_PUBLISH_EVENTS);
+      break;
     default:
       g_warning (
         "event %d not implemented yet",

@@ -113,7 +113,7 @@ _test (
     latency, ==, node->route_playback_latency);
 
   /* 3. start playback */
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
 
   /* let the engine run */
   g_usleep (4000000);
@@ -167,7 +167,7 @@ _test (
     latency2, ==, node->route_playback_latency);
 
   /* 3. start playback */
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
 
   /* let the engine run */
   g_usleep (4000000);

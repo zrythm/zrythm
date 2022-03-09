@@ -519,10 +519,29 @@ transport_update_caches (
   g_warn_if_fail (self->ticks_per_beat > 0.0);
 }
 
+/**
+ * Request pause.
+ *
+ * Must only be called in-between engine processing
+ * calls.
+ *
+ * @param with_wait Wait for lock before requesting.
+ */
 void
 transport_request_pause (
-  Transport * self)
+  Transport * self,
+  bool        with_wait)
 {
+  /* can only be called from the gtk thread */
+  g_return_if_fail (
+    !AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
+
+  if (with_wait)
+    {
+      zix_sem_wait (
+        &AUDIO_ENGINE->port_operation_lock);
+    }
+
   self->play_state = PLAYSTATE_PAUSE_REQUESTED;
 
   TRANSPORT->playhead_before_pause =
@@ -535,12 +554,37 @@ transport_request_pause (
         self, &self->cue_pos, F_PANIC,
         F_NO_SET_CUE_POINT, F_PUBLISH_EVENTS);
     }
+
+  if (with_wait)
+    {
+      zix_sem_post (
+        &AUDIO_ENGINE->port_operation_lock);
+    }
 }
 
+/**
+ * Request playback.
+ *
+ * Must only be called in-between engine processing
+ * calls.
+ *
+ * @param with_wait Wait for lock before requesting.
+ */
 void
 transport_request_roll (
-  Transport * self)
+  Transport * self,
+  bool        with_wait)
 {
+  /* can only be called from the gtk thread */
+  g_return_if_fail (
+    !AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
+
+  if (with_wait)
+    {
+      zix_sem_wait (
+        &AUDIO_ENGINE->port_operation_lock);
+    }
+
   if (!ZRYTHM_TESTING)
     {
       /* handle countin */
@@ -589,6 +633,12 @@ transport_request_roll (
     }
 
   self->play_state = PLAYSTATE_ROLL_REQUESTED;
+
+  if (with_wait)
+    {
+      zix_sem_post (
+        &AUDIO_ENGINE->port_operation_lock);
+    }
 }
 
 
@@ -887,14 +937,31 @@ transport_goto_next_marker (
 void
 transport_set_loop (
   Transport * self,
-  bool        enabled)
+  bool        enabled,
+  bool        with_wait)
 {
+  /* can only be called from the gtk thread */
+  g_return_if_fail (
+    !AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
+
+  if (with_wait)
+    {
+      zix_sem_wait (
+        &AUDIO_ENGINE->port_operation_lock);
+    }
+
   self->loop = enabled;
 
   if (!ZRYTHM_TESTING)
     {
       g_settings_set_boolean (
         S_TRANSPORT, "loop", enabled);
+    }
+
+  if (with_wait)
+    {
+      zix_sem_post (
+        &AUDIO_ENGINE->port_operation_lock);
     }
 
   EVENTS_PUSH (ET_LOOP_TOGGLED, NULL);
@@ -1168,8 +1235,19 @@ transport_update_total_bars (
  */
 void
 transport_move_backward (
-  Transport * self)
+  Transport * self,
+  bool        with_wait)
 {
+  /* can only be called from the gtk thread */
+  g_return_if_fail (
+    !AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
+
+  if (with_wait)
+    {
+      zix_sem_wait (
+        &AUDIO_ENGINE->port_operation_lock);
+    }
+
   Position pos;
   bool ret =
     snap_grid_get_nearby_snap_point (
@@ -1179,6 +1257,12 @@ transport_move_backward (
   transport_move_playhead (
     self, &pos, F_PANIC, F_SET_CUE_POINT,
     F_PUBLISH_EVENTS);
+
+  if (with_wait)
+    {
+      zix_sem_post (
+        &AUDIO_ENGINE->port_operation_lock);
+    }
 }
 
 /**
@@ -1186,8 +1270,19 @@ transport_move_backward (
  */
 void
 transport_move_forward (
-  Transport * self)
+  Transport * self,
+  bool        with_wait)
 {
+  /* can only be called from the gtk thread */
+  g_return_if_fail (
+    !AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
+
+  if (with_wait)
+    {
+      zix_sem_wait (
+        &AUDIO_ENGINE->port_operation_lock);
+    }
+
   Position pos;
   bool ret =
     snap_grid_get_nearby_snap_point (
@@ -1197,6 +1292,12 @@ transport_move_forward (
   transport_move_playhead (
     self, &pos, F_PANIC, F_SET_CUE_POINT,
     F_PUBLISH_EVENTS);
+
+  if (with_wait)
+    {
+      zix_sem_post (
+        &AUDIO_ENGINE->port_operation_lock);
+    }
 }
 
 /**
@@ -1206,9 +1307,26 @@ void
 transport_set_recording (
   Transport * self,
   bool        record,
+  bool        with_wait,
   bool        fire_events)
 {
+  /* can only be called from the gtk thread */
+  g_return_if_fail (
+    !AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
+
+  if (with_wait)
+    {
+      zix_sem_wait (
+        &AUDIO_ENGINE->port_operation_lock);
+    }
+
   self->recording = record;
+
+  if (with_wait)
+    {
+      zix_sem_post (
+        &AUDIO_ENGINE->port_operation_lock);
+    }
 
   if (fire_events)
     {

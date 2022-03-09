@@ -250,7 +250,7 @@ test_change_bpm_twice_during_playback (void)
   g_assert_true (arranger_object_validate (r_obj));
 
   /* start playback */
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
 
   bpm_t bpm_before =
@@ -267,7 +267,7 @@ test_change_bpm_twice_during_playback (void)
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     40.f, 0.001f);
 
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
 
   /* change bpm to 140 */
@@ -281,7 +281,7 @@ test_change_bpm_twice_during_playback (void)
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     140.f, 0.001f);
 
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
 
   /* validate */

@@ -259,41 +259,48 @@ apply_mapping (
     }
   else if (dest->id.type == TYPE_EVENT)
     {
+      /* FIXME these are called during processing
+       * they should be queued as UI events
+       * instead */
       if (dest->id.flags2 &
             PORT_FLAG2_TRANSPORT_ROLL)
         {
-          transport_request_roll (TRANSPORT);
+          EVENTS_PUSH (
+            ET_TRANSPORT_ROLL_REQUIRED, NULL);
         }
       else if (dest->id.flags2 &
             PORT_FLAG2_TRANSPORT_STOP)
         {
-          transport_request_pause (
-            TRANSPORT);
+          EVENTS_PUSH (
+            ET_TRANSPORT_PAUSE_REQUIRED, NULL);
         }
       else if (dest->id.flags2 &
             PORT_FLAG2_TRANSPORT_BACKWARD)
         {
-          transport_move_backward (
-            TRANSPORT);
+          EVENTS_PUSH (
+            ET_TRANSPORT_MOVE_BACKWARD_REQUIRED,
+            NULL);
         }
       else if (dest->id.flags2 &
             PORT_FLAG2_TRANSPORT_FORWARD)
         {
-          transport_move_forward (TRANSPORT);
+          EVENTS_PUSH (
+            ET_TRANSPORT_MOVE_FORWARD_REQUIRED,
+            NULL);
         }
       else if (dest->id.flags2 &
             PORT_FLAG2_TRANSPORT_LOOP_TOGGLE)
         {
-          transport_set_loop (
-            TRANSPORT, !TRANSPORT->loop);
+          EVENTS_PUSH (
+            ET_TRANSPORT_TOGGLE_LOOP_REQUIRED,
+            NULL);
         }
       else if (dest->id.flags2 &
             PORT_FLAG2_TRANSPORT_REC_TOGGLE)
         {
-          transport_set_recording (
-            TRANSPORT,
-            !TRANSPORT->recording,
-            F_PUBLISH_EVENTS);
+          EVENTS_PUSH (
+            ET_TRANSPORT_TOGGLE_RECORDING_REQUIRED,
+            NULL);
         }
     }
 }

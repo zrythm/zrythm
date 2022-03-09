@@ -906,14 +906,14 @@ test_fill_midi_events_from_engine (void)
     (ArrangerObject *) mn;
 #endif
 
-  transport_set_loop (TRANSPORT, true);
+  transport_set_loop (TRANSPORT, true, true);
   position_set_to_pos (
     &TRANSPORT->loop_end_pos, &r_obj->end_pos);
   Position pos;
   position_set_to_pos (&pos, &r_obj->end_pos);
   position_add_frames (&pos, - 20);
   transport_set_playhead_pos (TRANSPORT, &pos);
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
 
   /* run the engine for 1 cycle */
   g_message ("--- processing engine...");

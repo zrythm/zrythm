@@ -73,7 +73,7 @@ test_queue_midi_and_roll_transport (void)
     supported_file_new_from_path (filepath);
   g_free (filepath);
 
-  transport_request_roll (TRANSPORT);
+  transport_request_roll (TRANSPORT, true);
 
   g_message (
     "=============== queueing file =============");

@@ -291,6 +291,52 @@ typedef enum EventType
   ET_TRANSPORT_RECORDING_ON_OFF_CHANGED,
 
   /**
+   * Transport roll is required on the GTK thread.
+   *
+   * Param: None.
+   */
+  ET_TRANSPORT_ROLL_REQUIRED,
+
+  /**
+   * Transport pause is required on the GTK thread.
+   *
+   * Param: None.
+   */
+  ET_TRANSPORT_PAUSE_REQUIRED,
+
+  /**
+   * Transport move backward is required on the GTK
+   * thread.
+   *
+   * Param: None.
+   */
+  ET_TRANSPORT_MOVE_BACKWARD_REQUIRED,
+
+  /**
+   * Transport move forward is required on the GTK
+   * thread.
+   *
+   * Param: None.
+   */
+  ET_TRANSPORT_MOVE_FORWARD_REQUIRED,
+
+  /**
+   * Transport toggle loop is required on the GTK
+   * thread.
+   *
+   * Param: None.
+   */
+  ET_TRANSPORT_TOGGLE_LOOP_REQUIRED,
+
+  /**
+   * Transport toggle recording is required on the
+   * GTK thread.
+   *
+   * Param: None.
+   */
+  ET_TRANSPORT_TOGGLE_RECORDING_REQUIRED,
+
+  /**
    * Track freeze status changed.
    *
    * Param: Track.

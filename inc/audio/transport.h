@@ -498,13 +498,31 @@ transport_add_to_playhead (
   Transport *          self,
   const signed_frame_t nframes);
 
+/**
+ * Request pause.
+ *
+ * Must only be called in-between engine processing
+ * calls.
+ *
+ * @param with_wait Wait for lock before requesting.
+ */
 void
 transport_request_pause (
-  Transport * self);
+  Transport * self,
+  bool        with_wait);
 
+/**
+ * Request playback.
+ *
+ * Must only be called in-between engine processing
+ * calls.
+ *
+ * @param with_wait Wait for lock before requesting.
+ */
 void
 transport_request_roll (
-  Transport * self);
+  Transport * self,
+  bool        with_wait);
 
 /**
  * Setter for playhead Position.
@@ -532,14 +550,16 @@ transport_get_playhead_pos (
  */
 void
 transport_move_backward (
-  Transport * self);
+  Transport * self,
+  bool        with_wait);
 
 /**
  * Move to the next snap point on the timeline.
  */
 void
 transport_move_forward (
-  Transport * self);
+  Transport * self,
+  bool        with_wait);
 
 /**
  * Moves playhead to given pos.
@@ -566,7 +586,8 @@ transport_move_playhead (
 void
 transport_set_loop (
   Transport * self,
-  bool        enabled);
+  bool        enabled,
+  bool        with_wait);
 
 /**
  * Moves the playhead to the prev Marker.
@@ -732,6 +753,7 @@ void
 transport_set_recording (
   Transport * self,
   bool        record,
+  bool        with_wait,
   bool        fire_events);
 
 void
