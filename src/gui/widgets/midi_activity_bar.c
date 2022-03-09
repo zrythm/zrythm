@@ -113,6 +113,8 @@ midi_activity_bar_snapshot (
 
       switch (self->type)
         {
+          /* FIXME these should be UI events
+           * instead of these flags */
         case MAB_TYPE_TRACK:
           self->track->trigger_midi_activity = 0;
           break;

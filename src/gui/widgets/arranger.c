@@ -2065,6 +2065,16 @@ click_pressed (
     ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
 }
 
+static void
+click_stopped (
+  GtkGestureClick * click,
+  ArrangerWidget *  self)
+{
+  g_debug ("arranger click stopped");
+
+  self->n_press = 0;
+}
+
 /**
  * Called when an item needs to be created at the
  * given position.
@@ -2907,6 +2917,8 @@ drag_begin (
   else
     {
       self->sel_at_start = NULL;
+
+      g_debug ("npress = %d", self->n_press);
 
       /* single click */
       if (self->n_press == 1)
@@ -6921,6 +6933,9 @@ arranger_widget_setup (
   g_signal_connect (
     G_OBJECT (self->click), "pressed",
     G_CALLBACK (click_pressed), self);
+  g_signal_connect (
+    G_OBJECT (self->click), "stopped",
+    G_CALLBACK (click_stopped), self);
   g_signal_connect (
     G_OBJECT (self->right_click), "released",
     G_CALLBACK (on_right_click), self);
