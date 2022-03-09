@@ -1239,14 +1239,12 @@ event_manager_process_event (
     case ET_SPLASH_CLOSED:
       break;
     case ET_PROJECT_SAVED:
-      header_widget_set_subtitle (
-        MW_HEADER,
-        ((Project *) ev->arg)->title);
+      main_window_widget_set_project_title (
+        MAIN_WINDOW, (Project *) ev->arg);
       break;
     case ET_PROJECT_LOADED:
-      header_widget_set_subtitle (
-        MW_HEADER,
-        ((Project *) ev->arg)->title);
+      main_window_widget_set_project_title (
+        MAIN_WINDOW, (Project *) ev->arg);
       home_toolbar_widget_refresh_undo_redo_buttons (
         MW_HOME_TOOLBAR);
       ruler_widget_set_zoom_level (

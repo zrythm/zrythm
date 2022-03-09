@@ -818,7 +818,7 @@ log_idle_cb (
           ZRYTHM_HAVE_UI &&
           MAIN_WINDOW && MW_HEADER)
         {
-          MW_HEADER->log_has_pending_warnings =
+          MAIN_WINDOW->log_has_pending_warnings =
             true;
           EVENTS_PUSH (
             ET_LOG_WARNING_STATE_CHANGED, NULL);

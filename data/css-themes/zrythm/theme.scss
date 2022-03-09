@@ -655,3 +655,15 @@ event-viewer stack,
 dropdown stack {
   background-color: transparent;
 }
+
+.main-toolbar-view-switcher button {
+  background-color: transparent;
+}
+
+.main-toolbar-view-switcher button:checked {
+  background-color: $bright_orange;
+}
+
+.main-toolbar-view-switcher button:hover {
+  background-color: $hover_color;
+}

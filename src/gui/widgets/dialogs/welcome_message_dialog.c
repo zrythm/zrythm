@@ -74,7 +74,7 @@ welcome_message_dialog_new (
     "that no MIDI backend is currently usable."));
 #endif
 
-#if !defined (INSTALLER_VER)
+#if !defined (INSTALLER_VER) || defined (TRIAL_VER)
   char * donations =
     g_strdup_printf (
       _("%sZrythm relies on donations and purchases "

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,10 +29,9 @@
 #define MAIN_WINDOW_WIDGET_TYPE \
   (main_window_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  MainWindowWidget,
-  main_window_widget,
+  MainWindowWidget, main_window_widget,
   Z, MAIN_WINDOW_WIDGET,
-  GtkApplicationWindow)
+  AdwApplicationWindow)
 
 typedef struct _HeaderWidget HeaderWidget;
 typedef struct _CenterDockWidget CenterDockWidget;
@@ -60,24 +59,41 @@ typedef struct ArrangerSelections
  */
 typedef struct _MainWindowWidget
 {
-  GtkApplicationWindow     parent_instance;
-  //GtkOverlay *             overlay;
-  GtkBox *                 main_box;
-  HeaderWidget *           header;
-  TopBarWidget *           top_bar;
-  GtkBox *                 center_box;
-  CenterDockWidget *       center_dock;
-  BotBarWidget *           bot_bar;
-  int                      is_fullscreen;
-  int                      height;
-  int                      width;
-  AdwToastOverlay *        toast_overlay;
+  AdwApplicationWindow  parent_instance;
+
+  GtkHeaderBar *        header_bar;
+  AdwWindowTitle *      window_title;
+
+  AdwViewSwitcher *     view_switcher;
+
+  GtkBox *              header_start_box;
+  GtkBox *              header_end_box;
+  GtkButton *           z_icon;
+  GtkButton *           preferences;
+  GtkButton *           log_viewer;
+  GtkButton *           scripting_interface;
+
+  GtkBox *              main_box;
+  HeaderWidget *        header;
+  TopBarWidget *        top_bar;
+  GtkBox *              center_box;
+  CenterDockWidget *    center_dock;
+  BotBarWidget *        bot_bar;
+  int                   is_fullscreen;
+  int                   height;
+  int                   width;
+  AdwToastOverlay *     toast_overlay;
 
   /** Whether preferences window is opened. */
-  bool                     preferences_opened;
+  bool                  preferences_opened;
+
+  /** Whether log has pending warnings (if true,
+   * the log viewer button will have an emblem until
+   * clicked). */
+  bool                  log_has_pending_warnings;
 
   /** Whether set up already or not. */
-  bool                     setup;
+  bool                  setup;
 } MainWindowWidget;
 
 /**
@@ -94,6 +110,11 @@ main_window_widget_new (
 void
 main_window_widget_setup (
   MainWindowWidget * self);
+
+void
+main_window_widget_set_project_title (
+  MainWindowWidget * self,
+  Project *          prj);
 
 /**
  * Prepare for finalization.

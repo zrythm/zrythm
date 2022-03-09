@@ -314,7 +314,7 @@ activate_log (
 
   if (ZRYTHM_HAVE_UI && MAIN_WINDOW && MW_HEADER)
     {
-      MW_HEADER->log_has_pending_warnings = false;
+      MAIN_WINDOW->log_has_pending_warnings = false;
       EVENTS_PUSH (
         ET_LOG_WARNING_STATE_CHANGED, NULL);
     }

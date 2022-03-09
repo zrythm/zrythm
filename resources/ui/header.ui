@@ -4,80 +4,48 @@
   <template class="HeaderWidget" parent="GtkBox">
     <property name="focusable">1</property>
     <child>
-      <object class="GtkNotebook" id="notebook">
+      <object class="AdwViewStack" id="stack">
         <property name="hexpand">1</property>
-        <child type="action-start">
-          <object class="GtkBox" id="start_box">
-            <child>
-              <object class="GtkBox" id="start_toolbar">
-                <style>
-                  <class name="toolbar"/>
-                </style>
-                <child>
-                  <object class="GtkButton" id="z_icon">
-                    <property name="action_name">app.about</property>
-                    <property name="icon_name">zrythm</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
         <child>
-          <object class="GtkNotebookPage">
+          <object class="AdwViewStackPage">
+            <property name="name">edit</property>
+            <property name="title" translatable="yes">Edit</property>
+            <property name="icon-name">edit-tool</property>
             <property name="child">
               <object class="HomeToolbarWidget" id="home_toolbar">
-                <property name="visible">1</property>
-              </object>
-            </property>
-            <property name="tab">
-              <object class="GtkLabel">
-                <property name="label" translatable="yes">Edit</property>
               </object>
             </property>
           </object>
         </child>
         <child>
-          <object class="GtkNotebookPage">
-            <property name="position">1</property>
+          <object class="AdwViewStackPage">
+            <property name="name">project</property>
+            <property name="title" translatable="yes">Project</property>
+            <property name="icon-name">project-open</property>
             <property name="child">
               <object class="ProjectToolbarWidget" id="project_toolbar">
-                <property name="visible">1</property>
-              </object>
-            </property>
-            <property name="tab">
-              <object class="GtkLabel">
-                <property name="label" translatable="yes">Project</property>
               </object>
             </property>
           </object>
         </child>
         <child>
-          <object class="GtkNotebookPage">
-            <property name="position">2</property>
+          <object class="AdwViewStackPage">
+            <property name="name">view</property>
+            <property name="title" translatable="yes">View</property>
+            <property name="icon-name">view-visible</property>
             <property name="child">
               <object class="ViewToolbarWidget" id="view_toolbar">
-                <property name="visible">1</property>
-              </object>
-            </property>
-            <property name="tab">
-              <object class="GtkLabel">
-                <property name="label" translatable="yes">View</property>
               </object>
             </property>
           </object>
         </child>
         <child>
-          <object class="GtkNotebookPage">
-            <property name="position">3</property>
+          <object class="AdwViewStackPage">
+            <property name="name">help</property>
+            <property name="title" translatable="yes">Help</property>
+            <property name="icon-name">help-hint</property>
             <property name="child">
               <object class="HelpToolbarWidget" id="help_toolbar">
-                <property name="visible">1</property>
-              </object>
-            </property>
-            <property name="tab">
-              <object class="GtkLabel">
-                <property name="label" translatable="yes">Help</property>
               </object>
             </property>
           </object>
@@ -86,82 +54,34 @@
     </child>
     <child>
       <object class="GtkBox" id="end_box">
-        <property name="orientation">vertical</property>
-            <style>
-              <class name="header-end-box"/>
-            </style>
+        <property name="halign">end</property>
         <child>
-          <object class="GtkBox" id="end_toolbar">
-            <style>
-              <class name="toolbar"/>
-              <class name="header-toolbar-corner"/>
-            </style>
-            <property name="hexpand">0</property>
+          <object class="GtkBox">
+            <property name="tooltip_text" translatable="yes">MIDI in activity</property>
+            <property name="margin_top">4</property>
+            <property name="margin_bottom">4</property>
             <child>
-              <object class="GtkLabel" id="prj_name_label">
-                <property name="label" translatable="yes">Project name</property>
-                <property name="xalign">0</property>
+              <object class="RotatedLabelWidget" id="midi_in_rotated_lbl">
               </object>
             </child>
             <child>
-              <object class="GtkButton" id="scripting_interface">
-                <property name="action_name">app.scripting-interface</property>
-                <property name="icon_name">amarok_scripts</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="log_viewer">
-                <property name="action_name">app.log</property>
-                <property name="icon_name">view-list-text</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="preferences">
-                <property name="action_name">app.preferences</property>
-                <property name="icon_name">fork-awesome-fa-cog</property>
+              <object class="MidiActivityBarWidget" id="midi_activity">
+                <property name="visible">1</property>
               </object>
             </child>
           </object>
         </child>
         <child>
-          <object class="GtkBox" id="end_box_bot">
-            <property name="halign">end</property>
-            <child>
-              <object class="GtkBox">
-                <property name="tooltip_text" translatable="yes">MIDI in activity</property>
-                <property name="margin_top">4</property>
-                <property name="margin_bottom">4</property>
-                <child>
-                  <object class="RotatedLabelWidget" id="midi_in_rotated_lbl">
-                  </object>
-                </child>
-                <child>
-                  <object class="MidiActivityBarWidget" id="midi_activity">
-                    <property name="visible">1</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="LiveWaveformWidget" id="live_waveform">
-                <property name="visible">True</property>
-                <property name="width-request">48</property>
-                <property name="margin_top">4</property>
-                <property name="margin_bottom">4</property>
-                <property name="margin_start">4</property>
-                <property name="margin_end">4</property>
-              </object>
-            </child>
+          <object class="LiveWaveformWidget" id="live_waveform">
+            <property name="visible">True</property>
+            <property name="width-request">48</property>
+            <property name="margin_top">4</property>
+            <property name="margin_bottom">4</property>
+            <property name="margin_start">4</property>
+            <property name="margin_end">4</property>
           </object>
         </child>
       </object>
     </child>
   </template>
-  <object class="GtkSizeGroup">
-    <property name="mode">GTK_SIZE_GROUP_VERTICAL</property>
-    <widgets>
-      <widget name="start_box"/>
-      <widget name="end_toolbar"/>
-    </widgets>
-  </object>
 </interface>

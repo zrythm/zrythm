@@ -23,6 +23,7 @@
 #include <stdbool.h>
 
 #include <gtk/gtk.h>
+#include <adwaita.h>
 
 #define HEADER_WIDGET_TYPE \
   (header_widget_get_type ())
@@ -56,29 +57,19 @@ typedef struct _RotatedLabelWidget
  */
 typedef struct _HeaderWidget
 {
-  GtkBox              parent_instance;
+  GtkBox                  parent_instance;
 
   /** Notebook toolbars. */
-  HomeToolbarWidget * home_toolbar;
-  ProjectToolbarWidget * project_toolbar;
-  ViewToolbarWidget * view_toolbar;
-  HelpToolbarWidget * help_toolbar;
+  HomeToolbarWidget *     home_toolbar;
+  ProjectToolbarWidget *  project_toolbar;
+  ViewToolbarWidget *     view_toolbar;
+  HelpToolbarWidget *     help_toolbar;
 
-  GtkButton *     preferences;
-  GtkButton *     log_viewer;
-  GtkButton *     scripting_interface;
-  GtkButton *     z_icon;
-  GtkLabel *          prj_name_label;
+  AdwViewStack *          stack;
 
-  GtkNotebook *       notebook;
-  LiveWaveformWidget *      live_waveform;
-  MidiActivityBarWidget *   midi_activity;
-  RotatedLabelWidget * midi_in_rotated_lbl;
-
-  /** Whether log has pending warnings (if true,
-   * the log viewer button will have an emblem until
-   * clicked). */
-  bool                log_has_pending_warnings;
+  LiveWaveformWidget *    live_waveform;
+  MidiActivityBarWidget * midi_activity;
+  RotatedLabelWidget *    midi_in_rotated_lbl;
 } HeaderWidget;
 
 void

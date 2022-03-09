@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -43,6 +43,8 @@ void
 header_widget_refresh (
   HeaderWidget * self)
 {
+  /* TODO move to main window */
+#if 0
   g_debug (
     "refreshing header widget: "
     "has pending warnings: %d",
@@ -52,6 +54,7 @@ header_widget_refresh (
     btn,
     self->log_has_pending_warnings ?
       "media-record" : NULL);
+#endif
 }
 
 void
@@ -59,24 +62,7 @@ header_widget_setup (
   HeaderWidget * self,
   const char * title)
 {
-  header_widget_set_subtitle (
-    self, title);
-
   home_toolbar_widget_setup (self->home_toolbar);
-}
-
-void
-header_widget_set_subtitle (
-  HeaderWidget * self,
-  const char * title)
-{
-  char title_w_spaces[600];
-  strcpy (title_w_spaces, title);
-  strcat (
-    title_w_spaces,
-    "   ");
-  gtk_label_set_text (
-    self->prj_name_label, title_w_spaces);
 }
 
 static void
@@ -134,16 +120,6 @@ header_widget_init (
   char about_tooltip[500];
   sprintf (
     about_tooltip, _("About %s"), PROGRAM_NAME);
-#define SET_TOOLTIP(x, tooltip) \
-  z_gtk_set_tooltip_for_actionable ( \
-    GTK_ACTIONABLE (self->x), \
-    tooltip)
-  SET_TOOLTIP (z_icon, _("About Zrythm"));
-  SET_TOOLTIP (preferences, _("Preferences"));
-  SET_TOOLTIP (log_viewer, _("Log viewer"));
-  SET_TOOLTIP (
-    scripting_interface, _("Scripting interface"));
-#undef SET_TOOLTIP
 }
 
 static void
@@ -158,20 +134,13 @@ header_widget_class_init (
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, \
-    HeaderWidget, \
-    x)
+    klass, HeaderWidget, x)
 
+  BIND_CHILD (stack);
   BIND_CHILD (home_toolbar);
   BIND_CHILD (project_toolbar);
   BIND_CHILD (view_toolbar);
   BIND_CHILD (help_toolbar);
-  BIND_CHILD (preferences);
-  BIND_CHILD (prj_name_label);
-  BIND_CHILD (z_icon);
-  BIND_CHILD (preferences);
-  BIND_CHILD (log_viewer);
-  BIND_CHILD (scripting_interface);
   BIND_CHILD (live_waveform);
   BIND_CHILD (midi_activity);
   BIND_CHILD (midi_in_rotated_lbl);

@@ -80,7 +80,7 @@
 
 G_DEFINE_TYPE (
   MainWindowWidget, main_window_widget,
-  GTK_TYPE_APPLICATION_WINDOW)
+  ADW_TYPE_APPLICATION_WINDOW)
 
 /**
  * This is called when the window closing is
@@ -435,6 +435,17 @@ main_window_widget_setup (
   g_message ("done");
 }
 
+void
+main_window_widget_set_project_title (
+  MainWindowWidget * self,
+  Project *          prj)
+{
+  adw_window_title_set_title (
+    self->window_title, prj->title);
+  adw_window_title_set_subtitle (
+    self->window_title, prj->dir);
+}
+
 /**
  * Prepare for finalization.
  */
@@ -488,11 +499,19 @@ main_window_widget_class_init (
 
   BIND_CHILD (toast_overlay);
   BIND_CHILD (main_box);
+  BIND_CHILD (header_bar);
+  BIND_CHILD (window_title);
+  BIND_CHILD (view_switcher);
+  BIND_CHILD (z_icon);
+  BIND_CHILD (preferences);
+  BIND_CHILD (log_viewer);
+  BIND_CHILD (scripting_interface);
   BIND_CHILD (header);
   BIND_CHILD (top_bar);
   BIND_CHILD (center_box);
   BIND_CHILD (center_dock);
   BIND_CHILD (bot_bar);
+
   gtk_widget_class_bind_template_callback (
     klass,
     on_main_window_destroy);
@@ -858,13 +877,21 @@ main_window_widget_init (MainWindowWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-#if 0
-  g_signal_connect (
-    G_OBJECT (self->close_notification_button),
-    "clicked",
-    G_CALLBACK (on_close_notification_clicked),
-    NULL);
-#endif
+#define SET_TOOLTIP(x, tooltip) \
+  z_gtk_set_tooltip_for_actionable ( \
+    GTK_ACTIONABLE (self->x), tooltip)
+  SET_TOOLTIP (z_icon, _("About Zrythm"));
+  SET_TOOLTIP (preferences, _("Preferences"));
+  SET_TOOLTIP (log_viewer, _("Log viewer"));
+  SET_TOOLTIP (
+    scripting_interface, _("Scripting interface"));
+#undef SET_TOOLTIP
+
+  adw_view_switcher_set_stack (
+    self->view_switcher, self->header->stack);
+  adw_view_switcher_set_policy (
+    self->view_switcher,
+    ADW_VIEW_SWITCHER_POLICY_WIDE);
 
   GtkEventControllerKey * key_controller =
     GTK_EVENT_CONTROLLER_KEY (
