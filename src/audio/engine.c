@@ -1545,6 +1545,11 @@ engine_process_prepare (
       break;
     }
 
+  /* clear monitor out before in case we need to
+   * return early */
+  port_clear_buffer (self->monitor_out->l);
+  port_clear_buffer (self->monitor_out->r);
+
   bool lock_acquired =
     zix_sem_try_wait (&self->port_operation_lock);
 
@@ -1562,8 +1567,6 @@ engine_process_prepare (
   port_clear_buffer (self->midi_in);
   port_clear_buffer (
     self->midi_editor_manual_press);
-  port_clear_buffer (self->monitor_out->l);
-  port_clear_buffer (self->monitor_out->r);
 
   sample_processor_prepare_process (
     self->sample_processor, nframes);
@@ -1611,7 +1614,6 @@ receive_midi_events (
     }
 }
 
-/*static long count = 0;*/
 /**
  * Processes current cycle.
  *
