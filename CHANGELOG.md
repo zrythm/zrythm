@@ -1,6 +1,29 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.30.2.1] - 2022-03-10
+### Added
+- Show project title/path in header bar
+- Implement record on MIDI input
+- Show toast message when loading/saving presets
+- Add standard preset names for presets without names
+
+### Changed
+- Switch to GtkHeaderBar as client side decoration
+- Make port selector a dialog instead of popover
+- Clear monitor output when returning early from engine processing
+- Lock port operation semaphore before changing transport states
+
+### Fixed
+- Fix crash when attempting to connect modulator outputs
+- Fix right clicking after creating an object creating another object
+- Fix plugin preset list not being cleared when inspecting a new plugin
+- Fix errors when saving carla plugin presets
+- Fix project assistant crash when no recent projects exist
+
+### Removed
+- Remove project version compatibility warning
+
 ## [1.0.0-alpha.30.1.1] - 2022-03-08
 ### Added
 - Add option to create pre-routed setup for multi-out instruments
