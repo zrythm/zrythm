@@ -1389,13 +1389,13 @@ zrythm_app_startup (
   INSTALL_ACCEL (
     "<Control><Shift>2", "app.toggle-bot-panel");
   INSTALL_ACCEL (
-    "<Control>equal", "app.zoom-in");
+    "<Control>equal", "app.zoom-in::global");
   INSTALL_ACCEL (
-    "<Control>minus", "app.zoom-out");
+    "<Control>minus", "app.zoom-out::global");
   INSTALL_ACCEL (
-    "<Control>plus", "app.original-size");
+    "<Control>plus", "app.original-size::global");
   INSTALL_ACCEL (
-    "<Control>bracketleft", "app.best-fit");
+    "<Control>bracketleft", "app.best-fit::global");
   INSTALL_ACCEL (
     "<Control>l", "app.loop-selection");
   INSTALL_ACCEL_WITH_SECONDARY (

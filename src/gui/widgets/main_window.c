@@ -568,10 +568,11 @@ main_window_widget_init (MainWindowWidget * self)
       activate_toggle_top_panel },
     { "toggle-status-bar",
       activate_toggle_status_bar },
-    { "zoom-in", activate_zoom_in },
-    { "zoom-out", activate_zoom_out },
-    { "original-size", activate_original_size },
-    { "best-fit", activate_best_fit },
+    { "zoom-in", activate_zoom_in, "s" },
+    { "zoom-out", activate_zoom_out, "s" },
+    { "original-size", activate_original_size,
+      "s" },
+    { "best-fit", activate_best_fit, "s" },
 
     /* snapping, quantize */
     { "snap-to-grid", activate_snap_to_grid, "s" },

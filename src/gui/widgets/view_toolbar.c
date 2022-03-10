@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -37,10 +37,6 @@ view_toolbar_widget_init (ViewToolbarWidget * self)
     GTK_ACTIONABLE (self->x), \
     tooltip)
   SET_TOOLTIP (status_bar, _("Toggle Status Bar"));
-  SET_TOOLTIP (zoom_in, _("Zoom In"));
-  SET_TOOLTIP (zoom_out, _("Zoom Out"));
-  SET_TOOLTIP (original_size, _("Original Size"));
-  SET_TOOLTIP (best_fit, _("Best Fit"));
   SET_TOOLTIP (fullscreen, _("Fullscreen"));
   SET_TOOLTIP (left_panel, _("Toggle Left Panel"));
   SET_TOOLTIP (bot_panel, _("Toggle Bottom Panel"));
@@ -90,10 +86,6 @@ view_toolbar_widget_class_init (ViewToolbarWidgetClass * _klass)
     x)
 
   BIND_CHILD (status_bar);
-  BIND_CHILD (zoom_in);
-  BIND_CHILD (zoom_out);
-  BIND_CHILD (original_size);
-  BIND_CHILD (best_fit);
   BIND_CHILD (fullscreen);
   BIND_CHILD (left_panel);
   BIND_CHILD (bot_panel);

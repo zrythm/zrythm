@@ -17,35 +17,6 @@
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="zoom_in">
-        <property name="icon-name">zoom-in</property>
-        <property name="action-name">app.zoom-in</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="zoom_out">
-        <property name="icon-name">zoom-out</property>
-        <property name="action-name">app.zoom-out</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="original_size">
-        <property name="icon-name">zoom-original</property>
-        <property name="action-name">app.original-size</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="best_fit">
-        <property name="icon-name">zoom-fit-best</property>
-        <property name="action-name">app.best-fit</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
       <object class="GtkButton" id="fullscreen">
         <property name="icon-name">view-fullscreen</property>
         <property name="action-name">app.fullscreen</property>

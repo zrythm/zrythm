@@ -99,7 +99,18 @@
       </object>
     </child>
     <child>
-      <object class="GtkBox"/>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="ZoomButtonsWidget" id="zoom_buttons">
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
     </child>
     <child>
       <object class="GtkButton" id="event_viewer_toggle">

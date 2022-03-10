@@ -169,6 +169,7 @@ widget_srcs = files([
   'view_toolbar.c',
   'visibility.c',
   'volume.c',
+  'zoom_buttons.c',
   ])
 
 subdir ('dialogs')

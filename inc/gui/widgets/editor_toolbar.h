@@ -45,6 +45,7 @@ typedef struct _PlayheadScrollButtonsWidget
   PlayheadScrollButtonsWidget;
 typedef struct _VelocitySettingsWidget
   VelocitySettingsWidget;
+typedef struct _ZoomButtonsWidget ZoomButtonsWidget;
 
 /**
  * The PianoRoll toolbar in the top.
@@ -71,6 +72,7 @@ typedef struct _EditorToolbarWidget
   GtkSeparator *      sep_after_velocity_settings;
 
   PlayheadScrollButtonsWidget * playhead_scroll;
+  ZoomButtonsWidget * zoom_buttons;
 
   GMenuModel *        midi_functions_menu;
   GMenuModel *        automation_functions_menu;

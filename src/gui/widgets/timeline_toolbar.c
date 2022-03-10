@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -27,6 +27,7 @@
 #include "gui/widgets/range_action_buttons.h"
 #include "gui/widgets/snap_box.h"
 #include "gui/widgets/snap_grid.h"
+#include "gui/widgets/zoom_buttons.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -73,6 +74,7 @@ timeline_toolbar_widget_init (
   g_type_ensure (SNAP_BOX_WIDGET_TYPE);
   g_type_ensure (
     PLAYHEAD_SCROLL_BUTTONS_WIDGET_TYPE);
+  g_type_ensure (ZOOM_BUTTONS_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -87,6 +89,9 @@ timeline_toolbar_widget_init (
   SET_TOOLTIP (merge_btn);
 
 #undef SET_TOOLTIP
+
+  zoom_buttons_widget_setup (
+    self->zoom_buttons, true);
 }
 
 static void
@@ -107,5 +112,8 @@ timeline_toolbar_widget_class_init (
   BIND_CHILD (event_viewer_toggle);
   BIND_CHILD (musical_mode_toggle);
   BIND_CHILD (range_action_buttons);
+  BIND_CHILD (zoom_buttons);
   BIND_CHILD (merge_btn);
+
+#undef BIND_CHILD
 }

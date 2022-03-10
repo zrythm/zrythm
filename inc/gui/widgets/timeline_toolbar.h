@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,16 +31,15 @@
 #define TIMELINE_TOOLBAR_WIDGET_TYPE \
   (timeline_toolbar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  TimelineToolbarWidget,
-  timeline_toolbar_widget,
-  Z, TIMELINE_TOOLBAR_WIDGET,
-  GtkBox)
+  TimelineToolbarWidget, timeline_toolbar_widget,
+  Z, TIMELINE_TOOLBAR_WIDGET, GtkBox)
 
 typedef struct _QuantizeMbWidget QuantizeMbWidget;
 typedef struct _QuantizeBoxWidget QuantizeBoxWidget;
 typedef struct _SnapBoxWidget SnapBoxWidget;
 typedef struct _RangeActionButtonsWidget
   RangeActionButtonsWidget;
+typedef struct _ZoomButtonsWidget ZoomButtonsWidget;
 
 /**
  * @addtogroup widgets
@@ -62,6 +61,7 @@ typedef struct _TimelineToolbarWidget
   GtkButton *  event_viewer_toggle;
   GtkToggleButton *  musical_mode_toggle;
   RangeActionButtonsWidget * range_action_buttons;
+  ZoomButtonsWidget * zoom_buttons;
   GtkButton *  merge_btn;
 } TimelineToolbarWidget;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,29 +21,32 @@
  * \file
  */
 
-#ifndef __GUI_WIDGETS_VIEW_TOOLBAR_H__
-#define __GUI_WIDGETS_VIEW_TOOLBAR_H__
+#ifndef __GUI_WIDGETS_ZOOM_BUTTONS_H__
+#define __GUI_WIDGETS_ZOOM_BUTTONS_H__
 
 #include <gtk/gtk.h>
 
-#define VIEW_TOOLBAR_WIDGET_TYPE \
-  (view_toolbar_widget_get_type ())
+#define ZOOM_BUTTONS_WIDGET_TYPE \
+  (zoom_buttons_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  ViewToolbarWidget, view_toolbar_widget,
-  Z, VIEW_TOOLBAR_WIDGET, GtkBox)
+  ZoomButtonsWidget, zoom_buttons_widget,
+  Z, ZOOM_BUTTONS_WIDGET, GtkBox)
 
-#define MW_VIEW_TOOLBAR \
-  MW_HEADER_NOTEBOOK->view_toolbar
-
-typedef struct _ViewToolbarWidget
+/**
+ * Zoom buttons for toolbars.
+ */
+typedef struct _ZoomButtonsWidget
 {
   GtkBox         parent_instance;
-  GtkButton * status_bar;
-  GtkButton *    fullscreen;
-  GtkButton * left_panel;
-  GtkButton * bot_panel;
-  GtkButton * top_panel;
-  GtkButton * right_panel;
-} ViewToolbarWidget;
+  GtkButton *    zoom_in;
+  GtkButton *    zoom_out;
+  GtkButton *    original_size;
+  GtkButton *    best_fit;
+} ZoomButtonsWidget;
+
+void
+zoom_buttons_widget_setup (
+  ZoomButtonsWidget * self,
+  bool                timeline);
 
 #endif

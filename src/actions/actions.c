@@ -435,17 +435,30 @@ activate_ramp_mode (GSimpleAction *action,
 
 DEFINE_SIMPLE (activate_zoom_in)
 {
+  size_t size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+
   RulerWidget * ruler = NULL;
-  switch (PROJECT->last_selection)
+  if (string_is_equal (str, "timeline"))
     {
-    case SELECTION_TYPE_TIMELINE:
       ruler = MW_RULER;
-      break;
-    case SELECTION_TYPE_EDITOR:
+    }
+  else if (string_is_equal (str, "editor"))
+    {
       ruler = EDITOR_RULER;
-      break;
-    default:
-      return;
+    }
+  else
+    {
+      switch (PROJECT->last_selection)
+        {
+          case SELECTION_TYPE_EDITOR:
+            ruler = EDITOR_RULER;
+            break;
+          default:
+            ruler = MW_RULER;
+            break;
+        }
     }
 
   ruler_widget_set_zoom_level (
@@ -458,17 +471,30 @@ DEFINE_SIMPLE (activate_zoom_in)
 
 DEFINE_SIMPLE (activate_zoom_out)
 {
+  size_t size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+
   RulerWidget * ruler = NULL;
-  switch (PROJECT->last_selection)
+  if (string_is_equal (str, "timeline"))
     {
-    case SELECTION_TYPE_TIMELINE:
       ruler = MW_RULER;
-      break;
-    case SELECTION_TYPE_EDITOR:
+    }
+  else if (string_is_equal (str, "editor"))
+    {
       ruler = EDITOR_RULER;
-      break;
-    default:
-      return;
+    }
+  else
+    {
+      switch (PROJECT->last_selection)
+        {
+          case SELECTION_TYPE_EDITOR:
+            ruler = EDITOR_RULER;
+            break;
+          default:
+            ruler = MW_RULER;
+            break;
+        }
     }
 
   double zoom_level =
@@ -482,26 +508,44 @@ DEFINE_SIMPLE (activate_zoom_out)
 
 DEFINE_SIMPLE (activate_best_fit)
 {
+  size_t size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+
   RulerWidget * ruler = NULL;
-  Position pos;
-  switch (PROJECT->last_selection)
+  if (string_is_equal (str, "timeline"))
     {
-    case SELECTION_TYPE_TIMELINE:
-      {
-        ruler = MW_RULER;
-        int total_bars = 0;
-        tracklist_get_total_bars (
-          TRACKLIST, &total_bars);
-        position_set_to_bar (
-          &pos, total_bars);
-      }
-      break;
-#if 0
-    case SELECTION_TYPE_EDITOR:
+      ruler = MW_RULER;
+    }
+  else if (string_is_equal (str, "editor"))
+    {
       ruler = EDITOR_RULER;
-      break;
-#endif
-    default:
+    }
+  else
+    {
+      switch (PROJECT->last_selection)
+        {
+          case SELECTION_TYPE_EDITOR:
+            ruler = EDITOR_RULER;
+            break;
+          default:
+            ruler = MW_RULER;
+            break;
+        }
+    }
+
+  Position pos;
+  if (ruler == MW_RULER)
+    {
+      int total_bars = 0;
+      tracklist_get_total_bars (
+        TRACKLIST, &total_bars);
+      position_set_to_bar (&pos, total_bars);
+    }
+  else if (ruler == EDITOR_RULER)
+    {
+      /* TODO */
+      g_warning ("unimplemented");
       return;
     }
 
@@ -525,22 +569,32 @@ DEFINE_SIMPLE (activate_best_fit)
   EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, ruler);
 }
 
-void
-activate_original_size (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+DEFINE_SIMPLE (activate_original_size)
 {
+  size_t size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+
   RulerWidget * ruler = NULL;
-  switch (PROJECT->last_selection)
+  if (string_is_equal (str, "timeline"))
     {
-    case SELECTION_TYPE_TIMELINE:
       ruler = MW_RULER;
-      break;
-    case SELECTION_TYPE_EDITOR:
+    }
+  else if (string_is_equal (str, "editor"))
+    {
       ruler = EDITOR_RULER;
-      break;
-    default:
-      return;
+    }
+  else
+    {
+      switch (PROJECT->last_selection)
+        {
+          case SELECTION_TYPE_EDITOR:
+            ruler = EDITOR_RULER;
+            break;
+          default:
+            ruler = MW_RULER;
+            break;
+        }
     }
 
   ruler_widget_set_zoom_level (ruler, 1.0);
