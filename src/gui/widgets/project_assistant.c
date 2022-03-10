@@ -30,6 +30,7 @@
 #include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
+#include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -103,10 +104,13 @@ get_selected_project (
     GTK_SINGLE_SELECTION (
       gtk_column_view_get_model (
         self->recent_projects_column_view));
+  GObject * gobj =
+    gtk_single_selection_get_selected_item (sel);
+  if (!gobj)
+    return NULL;
+
   WrappedObjectWithChangeSignal * wrapped_obj =
-    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
-      gtk_single_selection_get_selected_item (
-      sel));
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
   ProjectInfo * nfo =
     (ProjectInfo *) wrapped_obj->obj;
 
@@ -121,10 +125,13 @@ get_selected_template (
     GTK_SINGLE_SELECTION (
       gtk_column_view_get_model (
         self->templates_column_view));
+  GObject * gobj =
+    gtk_single_selection_get_selected_item (sel);
+  if (!gobj)
+    return NULL;
+
   WrappedObjectWithChangeSignal * wrapped_obj =
-    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
-      gtk_single_selection_get_selected_item (
-      sel));
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
   ProjectInfo * nfo =
     (ProjectInfo *) wrapped_obj->obj;
 
@@ -343,16 +350,19 @@ on_key_release (
 
       ProjectInfo * nfo =
         get_selected_project (self);
+      if (nfo)
+        {
+          /* remove from gsettings */
+          zrythm_remove_recent_project (
+            nfo->filename);
 
-      /* remove from gsettings */
-      zrythm_remove_recent_project (nfo->filename);
+          /* remove from ptr array */
+          g_ptr_array_remove (
+            self->project_infos_arr, nfo);
 
-      /* remove from ptr array */
-      g_ptr_array_remove (
-        self->project_infos_arr, nfo);
-
-      /* refresh column view */
-      refresh_projects (self);
+          /* refresh column view */
+          refresh_projects (self);
+        }
     }
 }
 
@@ -488,7 +498,13 @@ on_response (
       else if (
         string_is_equal (child_name, "open-recent"))
         {
-          g_return_if_fail (selected_project);
+          if (!selected_project)
+            {
+              ui_show_error_message (
+                self, false,
+                _("No project selected"));
+              return;
+            }
           ZRYTHM->open_filename =
             selected_project->filename;
           g_return_if_fail (ZRYTHM->open_filename);
