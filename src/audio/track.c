@@ -390,6 +390,8 @@ track_new (
           TYPE_CONTROL, FLOW_INPUT,
           _("Track record"),
           PORT_OWNER_TYPE_TRACK, self);
+      self->recording->id.sym =
+        g_strdup ("track_record");
       control_port_set_toggled (
         self->recording, F_NO_TOGGLE,
         F_NO_PUBLISH_EVENTS);

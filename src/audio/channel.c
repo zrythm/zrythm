@@ -1233,6 +1233,7 @@ init_stereo_out_ports (
     port_new_with_type_and_owner (
       TYPE_AUDIO, FLOW_OUTPUT, str,
       PORT_OWNER_TYPE_CHANNEL, self);
+  l->id.sym = g_strdup ("stereo_out_l");
 
   str[10] = '\0';
   strcat (str, " R");
@@ -1240,6 +1241,7 @@ init_stereo_out_ports (
     port_new_with_type_and_owner (
       TYPE_AUDIO, FLOW_OUTPUT, str,
       PORT_OWNER_TYPE_CHANNEL, self);
+  r->id.sym = g_strdup ("stereo_out_r");
 
   self->stereo_out =
     stereo_ports_new_from_existing (l, r);
@@ -1262,15 +1264,12 @@ init_midi_port (
   Channel * self,
   int       loading)
 {
-  const char * str = "MIDI out";
-  Port ** port =
-    &self->midi_out;
-  PortFlow flow = FLOW_OUTPUT;
-
-  *port =
+  Port * port =
     port_new_with_type_and_owner (
-      TYPE_EVENT, flow, str,
+      TYPE_EVENT, FLOW_OUTPUT, _("MIDI out"),
       PORT_OWNER_TYPE_CHANNEL, self);
+  port->id.sym = g_strdup ("midi_out");
+  self->midi_out = port;
 }
 
 /**
