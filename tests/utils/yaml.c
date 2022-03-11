@@ -70,8 +70,16 @@ test_load_precise_float (void)
     yaml_serialize (
       &my_struct, &float_struct_schema);
   g_message ("\n%s", ret);
-  g_assert_cmpstr (
-    ret, ==, "---\nfval: 1.55331e-40\n...\n");
+  bool eq =
+    string_is_equal (
+      ret, "---\nfval: 1.55331e-40\n...\n");
+  if (!eq)
+    {
+      eq =
+        string_is_equal (
+          ret, "---\nfval: 0\n...\n");
+    }
+  g_assert_true (eq);
 
   const char * str1 = "---\nfval: 1.55331e-40\n...\n";
   float_struct * ret2 =
