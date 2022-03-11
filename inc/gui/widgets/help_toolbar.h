@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -40,11 +40,12 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _HelpToolbarWidget
 {
   GtkBox         parent_instance;
+  GtkButton *    about;
   GtkButton *    chat;
   GtkButton *    manual;
   GtkButton *    shortcuts;
-  GtkButton *     donate_btn;
-  GtkButton *     report_a_bug_btn;
+  GtkButton *    donate_btn;
+  GtkButton *    report_a_bug_btn;
 } HelpToolbarWidget;
 
 #endif

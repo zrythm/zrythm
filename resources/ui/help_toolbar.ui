@@ -6,6 +6,12 @@
       <class name="toolbar"/>
     </style>
     <child>
+      <object class="GtkButton" id="about">
+        <property name="action_name">app.about</property>
+        <property name="icon_name">help-about</property>
+      </object>
+    </child>
+    <child>
       <object class="GtkButton" id="chat">
         <property name="action_name">app.chat</property>
         <property name="icon_name">dialog-messages</property>

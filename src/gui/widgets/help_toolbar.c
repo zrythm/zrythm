@@ -36,6 +36,7 @@ help_toolbar_widget_init (HelpToolbarWidget * self)
   z_gtk_set_tooltip_for_actionable ( \
     GTK_ACTIONABLE (self->x), \
     tooltip)
+  SET_TOOLTIP (about, _("About Zrythm"));
   SET_TOOLTIP (chat, _("Chat (Matrix)"));
   SET_TOOLTIP (manual, _("Manual"));
   SET_TOOLTIP (shortcuts, _("Keyboard Shortcuts"));
@@ -69,6 +70,7 @@ help_toolbar_widget_class_init (HelpToolbarWidgetClass * _klass)
     HelpToolbarWidget, \
     x)
 
+  BIND_CHILD (about);
   BIND_CHILD (chat);
   BIND_CHILD (manual);
   BIND_CHILD (shortcuts);

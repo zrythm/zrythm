@@ -14,12 +14,6 @@
             <child type="start">
               <object class="GtkBox" id="header_start_box">
                 <child>
-                  <object class="GtkButton" id="z_icon">
-                    <property name="action_name">app.about</property>
-                    <property name="icon_name">zrythm</property>
-                  </object>
-                </child>
-                <child>
                   <object class="AdwViewSwitcher" id="view_switcher">
                     <style>
                       <class name="main-toolbar-view-switcher"/>

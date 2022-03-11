@@ -502,7 +502,6 @@ main_window_widget_class_init (
   BIND_CHILD (header_bar);
   BIND_CHILD (window_title);
   BIND_CHILD (view_switcher);
-  BIND_CHILD (z_icon);
   BIND_CHILD (preferences);
   BIND_CHILD (log_viewer);
   BIND_CHILD (scripting_interface);
@@ -881,7 +880,6 @@ main_window_widget_init (MainWindowWidget * self)
 #define SET_TOOLTIP(x, tooltip) \
   z_gtk_set_tooltip_for_actionable ( \
     GTK_ACTIONABLE (self->x), tooltip)
-  SET_TOOLTIP (z_icon, _("About Zrythm"));
   SET_TOOLTIP (preferences, _("Preferences"));
   SET_TOOLTIP (log_viewer, _("Log viewer"));
   SET_TOOLTIP (
@@ -893,6 +891,24 @@ main_window_widget_init (MainWindowWidget * self)
   adw_view_switcher_set_policy (
     self->view_switcher,
     ADW_VIEW_SWITCHER_POLICY_WIDE);
+
+  /* make sure the header bar includes the app
+   * icon (if not, add it at the start) */
+  gchar * strval;
+  g_object_get (
+    G_OBJECT (zrythm_app->default_settings),
+    "gtk-decoration-layout", &strval,
+    NULL);
+  if (!string_contains_substr (strval, "icon"))
+    {
+      char * new_layout =
+        new_layout =
+          g_strdup_printf ("icon,%s", strval);
+      gtk_header_bar_set_decoration_layout (
+        self->header_bar, new_layout);
+      g_free (new_layout);
+    }
+  g_free (strval);
 
   GtkEventControllerKey * key_controller =
     GTK_EVENT_CONTROLLER_KEY (
