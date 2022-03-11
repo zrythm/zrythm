@@ -2447,7 +2447,7 @@ plugin_process_passthrough (
               Port * out_port = self->out_ports[j];
               if (out_port->id.type ==
                     TYPE_EVENT &&
-                  out_port->id.flags &
+                  out_port->id.flags2 &
                     PORT_FLAG2_SUPPORTS_MIDI)
                 {
                   /* copy */
