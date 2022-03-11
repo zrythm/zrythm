@@ -265,6 +265,7 @@ _test_create_plugins (
 {
   PluginSetting * setting = NULL;
 
+#ifdef HAVE_SHERLOCK_ATOM_INSPECTOR
   if (string_is_equal (
         pl_uri, SHERLOCK_ATOM_INSPECTOR_URI))
     {
@@ -279,6 +280,7 @@ _test_create_plugins (
             "*Failed from water*");
         }
     }
+#endif
 
   switch (prot)
     {
@@ -396,6 +398,7 @@ _test_create_plugins (
 
   test_project_save_and_reload ();
 
+#ifdef HAVE_SHERLOCK_ATOM_INSPECTOR
   if (string_is_equal (
         pl_uri, SHERLOCK_ATOM_INSPECTOR_URI))
     {
@@ -409,6 +412,7 @@ _test_create_plugins (
       undo_manager_undo (UNDO_MANAGER, NULL);
       undo_manager_undo (UNDO_MANAGER, NULL);
     }
+#endif
 
   g_message ("done");
 }
