@@ -3387,20 +3387,12 @@ track_activate_all_plugins (
   Channel * ch = track_get_channel (track);
   g_return_if_fail (ch);
 
-  for (int i = 0; i < STRIP_SIZE * 2 + 1; i++)
-    {
-      Plugin * pl = NULL;
-      if (i < STRIP_SIZE)
-        pl = track->channel->midi_fx[i];
-      else if (i == STRIP_SIZE)
-        pl = track->channel->instrument;
-      else
-        pl =
-          track->channel->inserts[
-            i - (STRIP_SIZE + 1)];
+  Plugin * pls[120];
+  int num_pls = channel_get_plugins (ch, pls);
 
-      if (!pl)
-        continue;
+  for (int i = 0; i < num_pls; i++)
+    {
+      Plugin * pl = pls[i];
 
       if (!pl->instantiated &&
           !pl->instantiation_failed)
