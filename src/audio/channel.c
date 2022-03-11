@@ -797,6 +797,8 @@ channel_connect_plugins (
   g_return_if_fail (
     channel_is_in_active_project (self));
 
+  /* loop through each slot in each of MIDI FX,
+   * instrument, inserts */
   for (int i = 0; i < 3; i++)
     {
       PluginSlotType slot_type;
@@ -887,7 +889,21 @@ channel_connect_plugins (
             }
 
           Plugin * prev_pl = NULL;
-          if (slot_type != PLUGIN_SLOT_INSTRUMENT)
+          /* if instrument, find previous MIDI FX
+           * (if any) */
+          if (slot_type == PLUGIN_SLOT_INSTRUMENT)
+            {
+              for (int k = STRIP_SIZE - 1;
+                   k >= 0; k--)
+                {
+                  prev_pl = prev_plugins[k];
+                  if (prev_pl)
+                    break;
+                }
+            }
+          /* else if not instrument, check previous
+           * plugins before this slot */
+          else
             {
               for (int k = slot - 1; k >= 0; k--)
                 {
@@ -896,6 +912,10 @@ channel_connect_plugins (
                     break;
                 }
             }
+
+          /* if still not found and slot is insert,
+           * check instrument or MIDI FX where
+           * applicable */
           if (!prev_pl &&
               slot_type == PLUGIN_SLOT_INSERT)
             {

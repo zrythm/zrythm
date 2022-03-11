@@ -32,6 +32,8 @@
 static void
 test_new_track (void)
 {
+  test_helper_zrythm_init ();
+
   Track * track =
     track_new (
       TRACK_TYPE_INSTRUMENT,
@@ -44,6 +46,8 @@ test_new_track (void)
 
   object_free_w_func_and_null (
     track_free, track);
+
+  test_helper_zrythm_cleanup ();
 }
 
 static void
@@ -97,8 +101,6 @@ int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
-
-  test_helper_zrythm_init ();
 
 #define TEST_PREFIX "/audio/track/"
 

@@ -1,0 +1,94 @@
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+<http://gareus.org/oss/lv2/plumbing#eat1>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#eat2>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#eat3>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#eat4>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#gen1>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#gen2>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#gen3>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#gen4>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#route_1_2>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#route_1_3>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#route_1_4>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#route_2_1>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#route_2_2>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#route_2_3>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#route_2_4>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#route_3_1>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#route_3_2>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#route_3_3>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#route_3_4>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#route_4_1>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#route_4_2>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#route_4_3>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .
+<http://gareus.org/oss/lv2/plumbing#route_4_4>
+  a lv2:Plugin ;
+  lv2:binary <plumbing.so>;
+  rdfs:seeAlso <plumbing.ttl> .

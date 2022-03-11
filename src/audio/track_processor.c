@@ -1285,11 +1285,10 @@ track_processor_disconnect_from_plugin (
   Track * tr = track_processor_get_track (self);
   g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
 
-  int i;
   Port * in_port;
   PortType type = tr->in_signal_type;
 
-  for (i = 0; i < pl->num_in_ports; i++)
+  for (int i = 0; i < pl->num_in_ports; i++)
     {
       in_port = pl->in_ports[i];
 

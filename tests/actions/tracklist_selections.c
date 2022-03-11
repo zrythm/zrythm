@@ -3240,6 +3240,11 @@ main (int argc, char *argv[])
 
   g_test_add_func (
     TEST_PREFIX
+    "test track deletion w mixer selections",
+    (GTestFunc)
+    test_track_deletion_w_mixer_selections);
+  g_test_add_func (
+    TEST_PREFIX
     "test port and plugin track pos after duplication",
     (GTestFunc)
     test_port_and_plugin_track_pos_after_duplication);
@@ -3297,11 +3302,6 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test create midi fx track",
     (GTestFunc) test_create_midi_fx_track);
-  g_test_add_func (
-    TEST_PREFIX
-    "test track deletion w mixer selections",
-    (GTestFunc)
-    test_track_deletion_w_mixer_selections);
   g_test_add_func (
     TEST_PREFIX
     "test target track deletion with sends",

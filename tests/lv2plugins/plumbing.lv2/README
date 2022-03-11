@@ -1,0 +1,11 @@
+This is not part of Zrythm but is used with Zrythm.
+
+Originally under the GNU GPLv2 or later,
+Copyright (C) 2015 Robin Gareus <robin@gareus.org>
+
+Taken from https://github.com/x42/plumbing.lv2/
+on 11 March 2022.
+
+Changes applied:
+* Meson build system
+* Add MIDI output ports in .ttl

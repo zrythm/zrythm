@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2022 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -15,29 +15,39 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-test_instrument_cdata = configuration_data ()
+plumbing_cdata = configuration_data ()
 if os_windows
-  test_instrument_cdata.set ('LIB_EXT', '.dll')
+  plumbing_cdata.set ('LIB_EXT', '.dll')
 else
-  test_instrument_cdata.set ('LIB_EXT', '.so')
+  plumbing_cdata.set ('LIB_EXT', '.so')
 endif
 manifest_ttl = configure_file (
-  input: 'manifest.ttl.in',
+  input: 'manifest.ttl',
   output: 'manifest.ttl',
-  configuration: test_instrument_cdata,
+  configuration: plumbing_cdata,
   )
-test_instrument_ttl = configure_file (
-  input: 'test-instrument.ttl',
-  output: 'test-instrument.ttl',
-  configuration: test_instrument_cdata,
+amp_ttl = configure_file (
+  input: 'plumbing.ttl',
+  output: 'plumbing.ttl',
+  configuration: plumbing_cdata,
   )
 
-test_instrument_lv2 = shared_library (
-  'test-instrument',
+plumbing_lv2 = shared_library (
+  'plumbing',
   name_prefix: '',
   sources: [
-    'test-instrument.c',
+    'midieat.c',
+    'plumbing.c',
+    'route.c',
     ],
   dependencies: [ lv2_dep, libm ],
   install: false,
   )
+
+test_lv2_plugin_libs += plumbing_lv2
+test_lv2_plugins += {
+  'name': 'plumbing',
+  'uri': 'http://lv2plug.in/plugins/plumbing',
+  'bundle': meson.current_build_dir (),
+  'lib': plumbing_lv2,
+  }

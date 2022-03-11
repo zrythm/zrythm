@@ -270,6 +270,21 @@ create_and_load_lilv_word (
       before_path);
   g_free (before_path);
 
+  /* add test plugins if testing */
+  if (ZRYTHM_TESTING)
+    {
+      const char * tests_builddir =
+        g_getenv ("G_TEST_BUILDDIR");
+      g_return_if_fail (tests_builddir);
+
+      before_path = self->lv2_path;
+      self->lv2_path =
+        g_strdup_printf (
+          "%s:%s/lv2plugins",
+          before_path, tests_builddir);
+      g_free (before_path);
+    }
+
   lv2_path =
     lilv_new_string (world, self->lv2_path);
 

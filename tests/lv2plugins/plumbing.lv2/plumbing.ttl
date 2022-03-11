@@ -1,0 +1,1273 @@
+@prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
+@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
+@prefix doap:  <http://usefulinc.com/ns/doap#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix urid:  <http://lv2plug.in/ns/ext/urid#> .
+
+<http://gareus.org/rgareus#me>
+	a foaf:Person ;
+	foaf:name "Robin Gareus" ;
+	foaf:mbox <mailto:robin@gareus.org> ;
+	foaf:homepage <http://gareus.org/> .
+
+<http://gareus.org/oss/lv2/plumbing#eat1>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Midi Remover (+1 audio)";
+ lv2:requiredFeature urid:map;
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a atom:AtomPort, lv2:InputPort;
+  atom:bufferType atom:Sequence;
+  lv2:designation lv2:control;
+  atom:supports <http://lv2plug.in/ns/ext/midi#MidiEvent>;
+  lv2:index 0;
+  lv2:symbol "midiin";
+  lv2:name "MIDI In";
+ ] , [
+  a atom:AtomPort, lv2:OutputPort;
+  atom:bufferType atom:Sequence;
+  lv2:designation lv2:control;
+  atom:supports <http://lv2plug.in/ns/ext/midi#MidiEvent>;
+  lv2:index 1;
+  lv2:symbol "midout";
+  lv2:name "MIDI Out"
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 3;
+  lv2:symbol "out_1";
+  lv2:name "out 1";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#eat2>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Midi Remover (+2 audio)";
+ lv2:requiredFeature urid:map;
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a atom:AtomPort, lv2:InputPort;
+  atom:bufferType atom:Sequence;
+  lv2:designation lv2:control;
+  atom:supports <http://lv2plug.in/ns/ext/midi#MidiEvent>;
+  lv2:index 0;
+  lv2:symbol "midiin";
+  lv2:name "MIDI In";
+ ] , [
+  a atom:AtomPort, lv2:OutputPort;
+  atom:bufferType atom:Sequence;
+  lv2:designation lv2:control;
+  atom:supports <http://lv2plug.in/ns/ext/midi#MidiEvent>;
+  lv2:index 1;
+  lv2:symbol "midout";
+  lv2:name "MIDI Out"
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 3;
+  lv2:symbol "out_1";
+  lv2:name "out 1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 4;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 5;
+  lv2:symbol "out_2";
+  lv2:name "out 2";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#eat3>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Midi Remover (+3 audio)";
+ lv2:requiredFeature urid:map;
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a atom:AtomPort, lv2:InputPort;
+  atom:bufferType atom:Sequence;
+  lv2:designation lv2:control;
+  atom:supports <http://lv2plug.in/ns/ext/midi#MidiEvent>;
+  lv2:index 0;
+  lv2:symbol "midiin";
+  lv2:name "MIDI In";
+ ] , [
+  a atom:AtomPort, lv2:OutputPort;
+  atom:bufferType atom:Sequence;
+  lv2:designation lv2:control;
+  atom:supports <http://lv2plug.in/ns/ext/midi#MidiEvent>;
+  lv2:index 1;
+  lv2:symbol "midout";
+  lv2:name "MIDI Out"
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 3;
+  lv2:symbol "out_1";
+  lv2:name "out 1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 4;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 5;
+  lv2:symbol "out_2";
+  lv2:name "out 2";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 6;
+  lv2:symbol "in_3";
+  lv2:name "in_3";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 7;
+  lv2:symbol "out_3";
+  lv2:name "out 3";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#eat4>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Midi Remover (+4 audio)";
+ lv2:requiredFeature urid:map;
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a atom:AtomPort, lv2:InputPort;
+  atom:bufferType atom:Sequence;
+  lv2:designation lv2:control;
+  atom:supports <http://lv2plug.in/ns/ext/midi#MidiEvent>;
+  lv2:index 0;
+  lv2:symbol "midiin";
+  lv2:name "MIDI In";
+ ] , [
+  a atom:AtomPort, lv2:OutputPort;
+  atom:bufferType atom:Sequence;
+  lv2:designation lv2:control;
+  atom:supports <http://lv2plug.in/ns/ext/midi#MidiEvent>;
+  lv2:index 1;
+  lv2:symbol "midout";
+  lv2:name "MIDI Out"
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 3;
+  lv2:symbol "out_1";
+  lv2:name "out 1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 4;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 5;
+  lv2:symbol "out_2";
+  lv2:name "out 2";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 6;
+  lv2:symbol "in_3";
+  lv2:name "in_3";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 7;
+  lv2:symbol "out_3";
+  lv2:name "out 3";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 8;
+  lv2:symbol "in_4";
+  lv2:name "in_4";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 9;
+  lv2:symbol "out_4";
+  lv2:name "out 4";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#gen1>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Silent Midi Port (+1 audio)";
+ lv2:requiredFeature urid:map;
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a atom:AtomPort, lv2:OutputPort;
+  atom:bufferType atom:Sequence;
+  lv2:designation lv2:control;
+  atom:supports <http://lv2plug.in/ns/ext/midi#MidiEvent>;
+  lv2:index 0;
+  lv2:symbol "midout";
+  lv2:name "MIDI Out"
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 2;
+  lv2:symbol "out_1";
+  lv2:name "out 1";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#gen2>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Silent Midi Port (+2 audio)";
+ lv2:requiredFeature urid:map;
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a atom:AtomPort, lv2:OutputPort;
+  atom:bufferType atom:Sequence;
+  lv2:designation lv2:control;
+  atom:supports <http://lv2plug.in/ns/ext/midi#MidiEvent>;
+  lv2:index 0;
+  lv2:symbol "midout";
+  lv2:name "MIDI Out"
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 2;
+  lv2:symbol "out_1";
+  lv2:name "out 1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 3;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 4;
+  lv2:symbol "out_2";
+  lv2:name "out 2";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#gen3>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Silent Midi Port (+3 audio)";
+ lv2:requiredFeature urid:map;
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a atom:AtomPort, lv2:OutputPort;
+  atom:bufferType atom:Sequence;
+  lv2:designation lv2:control;
+  atom:supports <http://lv2plug.in/ns/ext/midi#MidiEvent>;
+  lv2:index 0;
+  lv2:symbol "midout";
+  lv2:name "MIDI Out"
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 2;
+  lv2:symbol "out_1";
+  lv2:name "out 1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 3;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 4;
+  lv2:symbol "out_2";
+  lv2:name "out 2";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 5;
+  lv2:symbol "in_3";
+  lv2:name "in_3";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 6;
+  lv2:symbol "out_3";
+  lv2:name "out 3";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#gen4>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Silent Midi Port (+4 audio)";
+ lv2:requiredFeature urid:map;
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a atom:AtomPort, lv2:OutputPort;
+  atom:bufferType atom:Sequence;
+  lv2:designation lv2:control;
+  atom:supports <http://lv2plug.in/ns/ext/midi#MidiEvent>;
+  lv2:index 0;
+  lv2:symbol "midout";
+  lv2:name "MIDI Out"
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 2;
+  lv2:symbol "out_1";
+  lv2:name "out 1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 3;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 4;
+  lv2:symbol "out_2";
+  lv2:name "out 2";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 5;
+  lv2:symbol "in_3";
+  lv2:name "in_3";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 6;
+  lv2:symbol "out_3";
+  lv2:name "out 3";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 7;
+  lv2:symbol "in_4";
+  lv2:name "in_4";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 8;
+  lv2:symbol "out_4";
+  lv2:name "out 4";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#route_1_2>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Route 1 to 2";
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 0;
+  lv2:symbol "src_1";
+  lv2:name "Source for Output 1";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 1; lv2:default 1;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "src_2";
+  lv2:name "Source for Output 2";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 1; lv2:default 0;
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 3;
+  lv2:symbol "out_1";
+  lv2:name "out_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 4;
+  lv2:symbol "out_2";
+  lv2:name "out_2";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#route_1_3>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Route 1 to 3";
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 0;
+  lv2:symbol "src_1";
+  lv2:name "Source for Output 1";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 1; lv2:default 1;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "src_2";
+  lv2:name "Source for Output 2";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 1; lv2:default 0;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "src_3";
+  lv2:name "Source for Output 3";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 1; lv2:default 0;
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 3;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 4;
+  lv2:symbol "out_1";
+  lv2:name "out_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 5;
+  lv2:symbol "out_2";
+  lv2:name "out_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 6;
+  lv2:symbol "out_3";
+  lv2:name "out_3";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#route_1_4>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Route 1 to 4";
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 0;
+  lv2:symbol "src_1";
+  lv2:name "Source for Output 1";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 1; lv2:default 1;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "src_2";
+  lv2:name "Source for Output 2";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 1; lv2:default 0;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "src_3";
+  lv2:name "Source for Output 3";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 1; lv2:default 0;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 3;
+  lv2:symbol "src_4";
+  lv2:name "Source for Output 4";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 1; lv2:default 0;
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 4;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 5;
+  lv2:symbol "out_1";
+  lv2:name "out_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 6;
+  lv2:symbol "out_2";
+  lv2:name "out_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 7;
+  lv2:symbol "out_3";
+  lv2:name "out_3";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 8;
+  lv2:symbol "out_4";
+  lv2:name "out_4";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#route_2_1>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Route 2 to 1";
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 0;
+  lv2:symbol "src_1";
+  lv2:name "Source for Output 1";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 2; lv2:default 1;
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 3;
+  lv2:symbol "out_1";
+  lv2:name "out_1";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#route_2_2>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Route 2 to 2";
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 0;
+  lv2:symbol "src_1";
+  lv2:name "Source for Output 1";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 2; lv2:default 1;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "src_2";
+  lv2:name "Source for Output 2";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 2; lv2:default 2;
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 3;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 4;
+  lv2:symbol "out_1";
+  lv2:name "out_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 5;
+  lv2:symbol "out_2";
+  lv2:name "out_2";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#route_2_3>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Route 2 to 3";
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 0;
+  lv2:symbol "src_1";
+  lv2:name "Source for Output 1";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 2; lv2:default 1;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "src_2";
+  lv2:name "Source for Output 2";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 2; lv2:default 2;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "src_3";
+  lv2:name "Source for Output 3";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 2; lv2:default 0;
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 3;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 4;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 5;
+  lv2:symbol "out_1";
+  lv2:name "out_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 6;
+  lv2:symbol "out_2";
+  lv2:name "out_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 7;
+  lv2:symbol "out_3";
+  lv2:name "out_3";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#route_2_4>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Route 2 to 4";
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 0;
+  lv2:symbol "src_1";
+  lv2:name "Source for Output 1";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 2; lv2:default 1;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "src_2";
+  lv2:name "Source for Output 2";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 2; lv2:default 2;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "src_3";
+  lv2:name "Source for Output 3";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 2; lv2:default 0;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 3;
+  lv2:symbol "src_4";
+  lv2:name "Source for Output 4";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 2; lv2:default 0;
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 4;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 5;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 6;
+  lv2:symbol "out_1";
+  lv2:name "out_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 7;
+  lv2:symbol "out_2";
+  lv2:name "out_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 8;
+  lv2:symbol "out_3";
+  lv2:name "out_3";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 9;
+  lv2:symbol "out_4";
+  lv2:name "out_4";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#route_3_1>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Route 3 to 1";
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 0;
+  lv2:symbol "src_1";
+  lv2:name "Source for Output 1";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 3; lv2:default 1;
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 3;
+  lv2:symbol "in_3";
+  lv2:name "in_3";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 4;
+  lv2:symbol "out_1";
+  lv2:name "out_1";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#route_3_2>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Route 3 to 2";
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 0;
+  lv2:symbol "src_1";
+  lv2:name "Source for Output 1";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 3; lv2:default 1;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "src_2";
+  lv2:name "Source for Output 2";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 3; lv2:default 2;
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 3;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 4;
+  lv2:symbol "in_3";
+  lv2:name "in_3";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 5;
+  lv2:symbol "out_1";
+  lv2:name "out_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 6;
+  lv2:symbol "out_2";
+  lv2:name "out_2";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#route_3_3>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Route 3 to 3";
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 0;
+  lv2:symbol "src_1";
+  lv2:name "Source for Output 1";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 3; lv2:default 1;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "src_2";
+  lv2:name "Source for Output 2";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 3; lv2:default 2;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "src_3";
+  lv2:name "Source for Output 3";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 3; lv2:default 3;
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 3;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 4;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 5;
+  lv2:symbol "in_3";
+  lv2:name "in_3";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 6;
+  lv2:symbol "out_1";
+  lv2:name "out_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 7;
+  lv2:symbol "out_2";
+  lv2:name "out_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 8;
+  lv2:symbol "out_3";
+  lv2:name "out_3";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#route_3_4>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Route 3 to 4";
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 0;
+  lv2:symbol "src_1";
+  lv2:name "Source for Output 1";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 3; lv2:default 1;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "src_2";
+  lv2:name "Source for Output 2";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 3; lv2:default 2;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "src_3";
+  lv2:name "Source for Output 3";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 3; lv2:default 3;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 3;
+  lv2:symbol "src_4";
+  lv2:name "Source for Output 4";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 3; lv2:default 0;
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 4;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 5;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 6;
+  lv2:symbol "in_3";
+  lv2:name "in_3";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 7;
+  lv2:symbol "out_1";
+  lv2:name "out_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 8;
+  lv2:symbol "out_2";
+  lv2:name "out_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 9;
+  lv2:symbol "out_3";
+  lv2:name "out_3";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 10;
+  lv2:symbol "out_4";
+  lv2:name "out_4";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#route_4_1>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Route 4 to 1";
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 0;
+  lv2:symbol "src_1";
+  lv2:name "Source for Output 1";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 4; lv2:default 1;
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 3;
+  lv2:symbol "in_3";
+  lv2:name "in_3";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 4;
+  lv2:symbol "in_4";
+  lv2:name "in_4";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 5;
+  lv2:symbol "out_1";
+  lv2:name "out_1";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#route_4_2>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Route 4 to 2";
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 0;
+  lv2:symbol "src_1";
+  lv2:name "Source for Output 1";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 4; lv2:default 1;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "src_2";
+  lv2:name "Source for Output 2";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 4; lv2:default 2;
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 3;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 4;
+  lv2:symbol "in_3";
+  lv2:name "in_3";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 5;
+  lv2:symbol "in_4";
+  lv2:name "in_4";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 6;
+  lv2:symbol "out_1";
+  lv2:name "out_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 7;
+  lv2:symbol "out_2";
+  lv2:name "out_2";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#route_4_3>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Route 4 to 3";
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 0;
+  lv2:symbol "src_1";
+  lv2:name "Source for Output 1";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 4; lv2:default 1;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "src_2";
+  lv2:name "Source for Output 2";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 4; lv2:default 2;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "src_3";
+  lv2:name "Source for Output 3";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 4; lv2:default 3;
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 3;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 4;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 5;
+  lv2:symbol "in_3";
+  lv2:name "in_3";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 6;
+  lv2:symbol "in_4";
+  lv2:name "in_4";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 7;
+  lv2:symbol "out_1";
+  lv2:name "out_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 8;
+  lv2:symbol "out_2";
+  lv2:name "out_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 9;
+  lv2:symbol "out_3";
+  lv2:name "out_3";
+ ]
+ .
+
+<http://gareus.org/oss/lv2/plumbing#route_4_4>
+ a lv2:Plugin, lv2:MixerPlugin, doap:Project;
+ doap:license <http://usefulinc.com/doap/licenses/gpl>;
+ doap:maintainer <http://gareus.org/rgareus#me>;
+ doap:name "Route 4 to 4";
+ lv2:optionalFeature lv2:hardRTCapable;
+ lv2:microVersion 0; lv2:minorVersion 1;
+ lv2:port
+ [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 0;
+  lv2:symbol "src_1";
+  lv2:name "Source for Output 1";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 4; lv2:default 1;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 1;
+  lv2:symbol "src_2";
+  lv2:name "Source for Output 2";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 4; lv2:default 2;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 2;
+  lv2:symbol "src_3";
+  lv2:name "Source for Output 3";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 4; lv2:default 3;
+ ] , [
+  a lv2:ControlPort, lv2:InputPort;
+  lv2:index 3;
+  lv2:symbol "src_4";
+  lv2:name "Source for Output 4";
+  lv2:portProperty lv2:integer;
+  lv2:scalePoint [rdfs:label "off"; rdf:value 0;];
+  lv2:minimum 0; lv2:maximum 4; lv2:default 4;
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 4;
+  lv2:symbol "in_1";
+  lv2:name "in_1";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 5;
+  lv2:symbol "in_2";
+  lv2:name "in_2";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 6;
+  lv2:symbol "in_3";
+  lv2:name "in_3";
+ ] , [
+  a lv2:AudioPort, lv2:InputPort;
+  lv2:index 7;
+  lv2:symbol "in_4";
+  lv2:name "in_4";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 8;
+  lv2:symbol "out_1";
+  lv2:name "out_1";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 9;
+  lv2:symbol "out_2";
+  lv2:name "out_2";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 10;
+  lv2:symbol "out_3";
+  lv2:name "out_3";
+ ] , [
+  a lv2:AudioPort, lv2:OutputPort;
+  lv2:index 11;
+  lv2:symbol "out_4";
+  lv2:name "out_4";
+ ]
+ .
+

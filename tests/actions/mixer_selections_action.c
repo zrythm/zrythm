@@ -265,6 +265,21 @@ _test_create_plugins (
 {
   PluginSetting * setting = NULL;
 
+  if (string_is_equal (
+        pl_uri, SHERLOCK_ATOM_INSPECTOR_URI))
+    {
+      /* expect messages */
+      LOG->use_structured_for_console = false;
+      LOG->min_log_level_for_test_console =
+        G_LOG_LEVEL_WARNING;
+      for (int i = 0; i < 7; i++)
+        {
+          g_test_expect_message (
+            G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
+            "*Failed from water*");
+        }
+    }
+
   switch (prot)
     {
     case PROT_LV2:
@@ -381,6 +396,20 @@ _test_create_plugins (
 
   test_project_save_and_reload ();
 
+  if (string_is_equal (
+        pl_uri, SHERLOCK_ATOM_INSPECTOR_URI))
+    {
+      /* assert expected messages */
+      g_test_assert_expected_messages ();
+      LOG->use_structured_for_console = true;
+      LOG->min_log_level_for_test_console =
+        G_LOG_LEVEL_DEBUG;
+
+      /* remove to prevent further warnings */
+      undo_manager_undo (UNDO_MANAGER, NULL);
+      undo_manager_undo (UNDO_MANAGER, NULL);
+    }
+
   g_message ("done");
 }
 
@@ -405,6 +434,12 @@ test_create_plugins (void)
 #endif
         }
 
+#ifdef HAVE_SHERLOCK_ATOM_INSPECTOR
+      _test_create_plugins (
+        PROT_LV2, SHERLOCK_ATOM_INSPECTOR_BUNDLE,
+        SHERLOCK_ATOM_INSPECTOR_URI,
+        false, i);
+#endif
 #ifdef HAVE_HELM
       _test_create_plugins (
         PROT_LV2, HELM_BUNDLE, HELM_URI, true, i);
@@ -413,12 +448,6 @@ test_create_plugins (void)
       _test_create_plugins (
         PROT_LV2, LSP_COMPRESSOR_BUNDLE,
         LSP_COMPRESSOR_URI, false, i);
-#endif
-#ifdef HAVE_SHERLOCK_ATOM_INSPECTOR
-      _test_create_plugins (
-        PROT_LV2, SHERLOCK_ATOM_INSPECTOR_BUNDLE,
-        SHERLOCK_ATOM_INSPECTOR_URI,
-        false, i);
 #endif
 #ifdef HAVE_CARLA_RACK
       _test_create_plugins (
@@ -1738,6 +1767,9 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/mixer_selections_action/"
 
   g_test_add_func (
+    TEST_PREFIX "test create plugins",
+    (GTestFunc) test_create_plugins);
+  g_test_add_func (
     TEST_PREFIX "test save modulators",
     (GTestFunc) test_save_modulators);
 #if 0
@@ -1788,9 +1820,6 @@ main (int argc, char *argv[])
     (GTestFunc)
     test_port_and_plugin_track_pos_after_move_with_carla);
 #endif
-  g_test_add_func (
-    TEST_PREFIX "test create plugins",
-    (GTestFunc) test_create_plugins);
 
   (void) test_move_pl_after_duplicating_track;
   (void) test_replace_instrument;

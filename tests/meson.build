@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -19,10 +19,7 @@ if get_option ('tests')
 
   test_lv2_plugins = []
   test_lv2_plugin_libs = []
-  subdir('eg-amp.lv2')
-  subdir('eg-fifths.lv2')
-  subdir('sigabrt.lv2')
-  subdir('test-instrument.lv2')
+  subdir('lv2plugins')
 
   test_env = environment ()
   test_env.set (
@@ -82,7 +79,7 @@ if get_option ('tests')
       meson.current_build_dir () / 'test2.wav')
   endif
 
-  # LV2
+  # external LV2
   foreach name, info : ext_lv2_plugins
     uri = info[1]
     have_plugin = have_ext_lv2_plugins.get (
@@ -222,6 +219,7 @@ if get_option ('tests')
     'audio/audio_region': { 'parallel': true },
     'audio/audio_track': { 'parallel': true },
     'audio/automation_track': { 'parallel': true },
+    'audio/channel': { 'parallel': true },
     'audio/chord_track': { 'parallel': true },
     'audio/curve': { 'parallel': true },
     'audio/fader': { 'parallel': true },
