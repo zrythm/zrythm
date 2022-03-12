@@ -102,6 +102,8 @@ on_ext_input_changed (
   const char * id =
     gtk_combo_box_get_active_id (widget);
 
+  g_debug ("ext input: %s", id);
+
   if (!id)
     return;
 

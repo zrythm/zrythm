@@ -598,6 +598,9 @@ channel_reconnect_ext_input_ports (
   g_return_if_fail (
     channel_is_in_active_project (self));
 
+  g_debug (
+    "reconnecting ext inputs for %s", track->name);
+
   if (track->type == TRACK_TYPE_INSTRUMENT
       || track->type == TRACK_TYPE_MIDI
       || track->type == TRACK_TYPE_CHORD)
@@ -729,6 +732,8 @@ channel_reconnect_ext_input_ports (
             1.f, F_LOCKED, F_ENABLE);
         }
     }
+
+  router_recalc_graph (ROUTER, false);
 }
 
 /**
