@@ -547,6 +547,14 @@ channel_select_all (
   bool           select);
 
 /**
+ * Sets caches for processing.
+ */
+NONNULL
+void
+channel_set_caches (
+  Channel * self);
+
+/**
  * Clones the channel recursively.
  *
  * @note The given track is not cloned.

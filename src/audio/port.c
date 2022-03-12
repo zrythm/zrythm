@@ -3873,26 +3873,45 @@ port_print_full_designation (
 }
 
 /**
+ * Clears the audio/cv port buffer.
+ */
+void
+port_clear_audio_cv_buffer (
+  Port * port)
+{
+  if (port->buf)
+    {
+      dsp_fill (
+        port->buf, DENORMAL_PREVENTION_VAL,
+        AUDIO_ENGINE->block_length);
+    }
+}
+
+/**
+ * Clears the MIDI port buffer.
+ */
+void
+port_clear_midi_buffer (
+  Port * port)
+{
+  if (port->midi_events)
+    port->midi_events->num_events = 0;
+}
+
+/**
  * Clears the port buffer.
  */
 void
 port_clear_buffer (Port * port)
 {
   PortIdentifier * pi = &port->id;
-  if ((pi->type == TYPE_AUDIO ||
-       pi->type == TYPE_CV) && port->buf)
+  if (pi->type == TYPE_AUDIO || pi->type == TYPE_CV)
     {
-      dsp_fill (
-        port->buf, DENORMAL_PREVENTION_VAL,
-        AUDIO_ENGINE->block_length);
-
-      return;
+      port_clear_audio_cv_buffer (port);
     }
-  else if (
-    port->id.type == TYPE_EVENT
-    && port->midi_events)
+  else if (port->id.type == TYPE_EVENT)
     {
-      port->midi_events->num_events = 0;
+      port_clear_midi_buffer (port);
     }
 }
 

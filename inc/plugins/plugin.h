@@ -108,6 +108,12 @@ typedef struct Plugin
   int               num_in_ports;
   size_t            in_ports_size;
 
+  /* caches */
+  GPtrArray *       ctrl_in_ports;
+  GPtrArray *       audio_in_ports;
+  GPtrArray *       cv_in_ports;
+  GPtrArray *       midi_in_ports;
+
   /** Cache. */
   Port *            midi_in_port;
 
@@ -680,6 +686,7 @@ plugin_generate_automation_tracks (
  */
 HOT
 NONNULL
+OPTIMIZE_O3
 void
 plugin_prepare_process (
   Plugin * self);
@@ -841,6 +848,14 @@ void
 plugin_set_selected_preset_by_name (
   Plugin *     self,
   const char * name);
+
+/**
+ * Sets caches for processing.
+ */
+NONNULL
+void
+plugin_set_caches (
+  Plugin * self);
 
 /**
  * Connect the output Ports of the given source

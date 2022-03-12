@@ -3944,6 +3944,11 @@ track_set_caches (
   /* update name hash */
   self->name_hash = track_get_name_hash (self);
 
+  if (track_type_has_channel (self->type))
+    {
+      channel_set_caches (self->channel);
+    }
+
   if (atl)
     automation_tracklist_set_caches (atl);
 }

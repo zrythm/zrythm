@@ -1791,10 +1791,31 @@ void
 plugin_prepare_process (
   Plugin * self)
 {
-  for (int i = 0; i < self->num_in_ports; i++)
+  for (size_t i = 0; i < self->audio_in_ports->len;
+       i++)
     {
-      port_clear_buffer (self->in_ports[i]);
+      Port * port =
+        g_ptr_array_index (
+          self->audio_in_ports, i);
+      port_clear_audio_cv_buffer (port);
     }
+  for (size_t i = 0; i < self->cv_in_ports->len;
+       i++)
+    {
+      Port * port =
+        g_ptr_array_index (
+          self->cv_in_ports, i);
+      port_clear_audio_cv_buffer (port);
+    }
+  for (size_t i = 0; i < self->midi_in_ports->len;
+       i++)
+    {
+      Port * port =
+        g_ptr_array_index (
+          self->midi_in_ports, i);
+      port_clear_midi_buffer (port);
+    }
+
   for (int i = 0; i < self->num_out_ports; i++)
     {
       port_clear_buffer (self->out_ports[i]);
@@ -1855,11 +1876,13 @@ plugin_process (
 #endif
 
   /* turn off any trigger input controls */
-  for (int i = 0; i < plugin->num_in_ports; i++)
+  for (size_t i = 0;
+       i < plugin->ctrl_in_ports->len; i++)
     {
-      Port * port = plugin->in_ports[i];
-      if (port->id.type == TYPE_CONTROL &&
-          port->id.flags &
+      Port * port =
+        g_ptr_array_index (
+          plugin->ctrl_in_ports, i);
+      if (port->id.flags &
             PORT_FLAG_TRIGGER &&
           !math_floats_equal (port->control, 0.f))
         {
@@ -1924,6 +1947,59 @@ plugin_print (
         plugin_slot_type_strings[
           self->id.slot_type].str,
         self->id.slot, self->setting->descr->name);
+    }
+}
+
+/**
+ * Sets caches for processing.
+ */
+void
+plugin_set_caches (
+  Plugin * self)
+{
+  const size_t def_sz = 20;
+
+#define PREPARE_ARRAY(arr) \
+  if (arr) \
+    { \
+      g_ptr_array_remove_range (arr, 0, arr->len); \
+    } \
+  else \
+    { \
+      arr = g_ptr_array_new_full (def_sz, NULL); \
+    }
+
+  PREPARE_ARRAY (self->ctrl_in_ports);
+  PREPARE_ARRAY (self->audio_in_ports);
+  PREPARE_ARRAY (self->cv_in_ports);
+  PREPARE_ARRAY (self->midi_in_ports);
+
+#undef PREPARE_ARRAY
+
+  for (int i = 0; i < self->num_in_ports; i++)
+    {
+      Port * port = self->in_ports[i];
+      switch (port->id.type)
+        {
+        case TYPE_CONTROL:
+          g_ptr_array_add (
+            self->ctrl_in_ports, port);
+          break;
+        case TYPE_AUDIO:
+          g_ptr_array_add (
+            self->audio_in_ports, port);
+          break;
+        case TYPE_CV:
+          g_ptr_array_add (
+            self->cv_in_ports, port);
+          break;
+        case TYPE_EVENT:
+          g_ptr_array_add (
+            self->midi_in_ports, port);
+          break;
+        default:
+          break;
+        }
     }
 }
 
@@ -3239,6 +3315,15 @@ plugin_free (
     }
 
   object_zero_and_free (self->lilv_ports);
+
+  object_free_w_func_and_null (
+    g_ptr_array_unref, self->ctrl_in_ports);
+  object_free_w_func_and_null (
+    g_ptr_array_unref, self->audio_in_ports);
+  object_free_w_func_and_null (
+    g_ptr_array_unref, self->cv_in_ports);
+  object_free_w_func_and_null (
+    g_ptr_array_unref, self->midi_in_ports);
 
   object_zero_and_free (self);
 }

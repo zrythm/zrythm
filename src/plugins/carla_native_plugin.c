@@ -777,6 +777,8 @@ carla_native_plugin_process (
     TRANSPORT_IS_ROLLING;
   self->time_info.frame =
     (uint64_t) time_nfo->g_start_frame;
+  /* TODO pre-calculate these at the start of the
+   * processing cycle */
   self->time_info.bbt.bar =
     position_get_bars (PLAYHEAD, true);
   self->time_info.bbt.beat =
@@ -807,34 +809,34 @@ carla_native_plugin_process (
   /* set actual audio in bufs */
   {
     size_t audio_ports = 0;
-    for (int i = 0;
-         i < self->plugin->num_in_ports; i++)
+    for (size_t i = 0;
+         i < self->plugin->audio_in_ports->len
+         && i < self->max_variant_audio_ins;
+         i++)
       {
-        Port * port = self->plugin->in_ports[i];
-        if (port->id.type == TYPE_AUDIO)
-          {
-            self->inbufs[audio_ports++] =
-              &port->buf[time_nfo->local_offset];
-          }
-        if (audio_ports == self->max_variant_audio_ins)
-          break;
+        Port * port =
+          g_ptr_array_index (
+            self->plugin->audio_in_ports, i);
+        self->inbufs[audio_ports++] =
+          &port->buf[time_nfo->local_offset];
       }
   }
 
   /* set actual cv in bufs */
   {
     size_t cv_ports = 0;
-    for (int i = 0;
-         i < self->plugin->num_in_ports; i++)
+    for (size_t i = 0;
+         i < self->plugin->cv_in_ports->len
+         && i < self->max_variant_cv_ins;
+         i++)
       {
-        Port * port = self->plugin->in_ports[i];
-        if (port->id.type == TYPE_CV)
-          {
-            self->inbufs[self->max_variant_audio_ins + cv_ports++] =
+        Port * port =
+          g_ptr_array_index (
+            self->plugin->cv_in_ports, i);
+        self->inbufs[
+          self->max_variant_audio_ins +
+            cv_ports++] =
               &port->buf[time_nfo->local_offset];
-          }
-        if (cv_ports == self->max_variant_cv_ins)
-          break;
       }
   }
 

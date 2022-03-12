@@ -2065,6 +2065,23 @@ channel_select_all (
     }
 }
 
+/**
+ * Sets caches for processing.
+ */
+void
+channel_set_caches (
+  Channel * self)
+{
+  Plugin * pls[120];
+  int num_pls = channel_get_plugins (self, pls);
+
+  for (int i = 0; i < num_pls; i++)
+    {
+      Plugin * pl = pls[i];
+      plugin_set_caches (pl);
+    }
+}
+
 int
 channel_get_plugins (
   Channel * ch,
