@@ -1415,9 +1415,8 @@ click_released (
           automation_track_swap_record_mode (at);
           automation_mode_widget_init (am);
         }
-      at->automation_mode = am->hit_mode;
-      EVENTS_PUSH (
-        ET_AUTOMATION_TRACK_CHANGED, at);
+      automation_track_set_automation_mode (
+        at, am->hit_mode, F_PUBLISH_EVENTS);
     }
   else if (n_press == 2)
     {

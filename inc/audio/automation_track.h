@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -285,6 +285,12 @@ automation_track_find_from_port (
   Track * track,
   bool    basic_search);
 
+void
+automation_track_set_automation_mode (
+  AutomationTrack * self,
+  AutomationMode    mode,
+  bool              fire_events);
+
 NONNULL
 static inline void
 automation_track_swap_record_mode (
@@ -341,9 +347,9 @@ HOT
 NONNULL
 bool
 automation_track_should_be_recording (
-  const AutomationTrack * at,
-  const gint64            cur_time,
-  const bool              record_aps);
+  const AutomationTrack * const at,
+  const gint64                  cur_time,
+  const bool                    record_aps);
 
 /**
  * Adds an automation ZRegion to the AutomationTrack.

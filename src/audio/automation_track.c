@@ -25,6 +25,7 @@
 #include "audio/control_port.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
+#include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/center_dock.h"
@@ -97,6 +98,9 @@ automation_track_new (
 
   port->at = self;
 
+  self->automation_mode = AUTOMATION_MODE_READ;
+
+#if 0
   if (port->id.flags & PORT_FLAG_MIDI_AUTOMATABLE)
     {
       self->automation_mode =
@@ -104,8 +108,7 @@ automation_track_new (
       self->record_mode =
         AUTOMATION_RECORD_MODE_TOUCH;
     }
-  else
-    self->automation_mode = AUTOMATION_MODE_READ;
+#endif
 
   return self;
 }
@@ -535,6 +538,53 @@ automation_track_find_from_port_id (
       port, NULL, basic_search);
 }
 
+void
+automation_track_set_automation_mode (
+  AutomationTrack * self,
+  AutomationMode    mode,
+  bool              fire_events)
+{
+  g_return_if_fail (ZRYTHM_APP_IS_GTK_THREAD);
+
+  AutomationTracklist * atl =
+    automation_track_get_automation_tracklist (
+      self);
+  g_return_if_fail (atl);
+
+  /* add to atl cache if recording */
+  if (mode == AUTOMATION_MODE_RECORD)
+    {
+      bool already_added = false;
+      for (int i = 0;
+           i < atl->num_ats_in_record_mode;
+           i++)
+        {
+          AutomationTrack * cur_at =
+            atl->ats_in_record_mode[i];
+          if (self == cur_at)
+            {
+              already_added = true;
+              break;
+            }
+        }
+
+      if (!already_added)
+        {
+          array_append (
+            atl->ats_in_record_mode,
+            atl->num_ats_in_record_mode, self);
+        }
+    }
+
+  self->automation_mode = mode;
+
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_AUTOMATION_TRACK_CHANGED, self);
+    }
+}
+
 /**
  * Returns whether the automation in the automation
  * track should be read.
@@ -584,9 +634,9 @@ automation_track_should_read_automation (
  */
 bool
 automation_track_should_be_recording (
-  const AutomationTrack * at,
-  const gint64            cur_time,
-  const bool              record_aps)
+  const AutomationTrack * const at,
+  const gint64                  cur_time,
+  const bool                    record_aps)
 {
   if (G_LIKELY (
         at->automation_mode !=

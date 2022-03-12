@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -700,10 +700,25 @@ void
 automation_tracklist_set_caches (
   AutomationTracklist * self)
 {
+  self->ats_in_record_mode =
+    g_realloc_n (
+      self->ats_in_record_mode,
+      (size_t) self->num_ats,
+      sizeof (AutomationTrack *));
+  self->num_ats_in_record_mode = 0;
+
   for (int i = 0; i < self->num_ats; i++)
     {
       AutomationTrack * at = self->ats[i];
       automation_track_set_caches (at);
+
+      if (at->automation_mode ==
+            AUTOMATION_MODE_RECORD)
+        {
+          array_append (
+            self->ats_in_record_mode,
+            self->num_ats_in_record_mode, at);
+        }
     }
 }
 
@@ -750,4 +765,5 @@ automation_tracklist_free_members (
     }
 
   object_zero_and_free (self->ats);
+  object_zero_and_free (self->ats_in_record_mode);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -77,6 +77,17 @@ typedef struct AutomationTracklist
    * pointer array.
    */
   size_t            ats_size;
+
+  /**
+   * Cache of automation tracks in record mode,
+   * used in recording manager to avoid looping over
+   * all automation tracks.
+   *
+   * Its size should be as large as
+   * AutomationTracklist.num_ats.
+   */
+  AutomationTrack ** ats_in_record_mode;
+  int               num_ats_in_record_mode;
 
   /**
    * Pointer back to the track.

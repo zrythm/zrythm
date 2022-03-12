@@ -388,9 +388,12 @@ recording_manager_handle_recording (
       skip_adding_track_events = true;
     }
 
-  for (int i = 0; i < atl->num_ats; i++)
+  for (int i = 0;
+       /* use cache */
+       i < atl->num_ats_in_record_mode; i++)
     {
-      AutomationTrack * at = atl->ats[i];
+      AutomationTrack * at =
+        atl->ats_in_record_mode[i];
 
       bool at_should_be_recording =
         automation_track_should_be_recording (
