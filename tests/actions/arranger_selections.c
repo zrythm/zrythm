@@ -3407,6 +3407,66 @@ test_delete_midi_notes (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_cut_automation_region (void)
+{
+  test_helper_zrythm_init ();
+
+  /* create master fader automation region */
+  Position pos1, pos2;
+  position_set_to_bar (&pos1, 1);
+  position_set_to_bar (&pos2, 4);
+  AutomationTrack * at =
+    channel_get_automation_track (
+      P_MASTER_TRACK->channel,
+      PORT_FLAG_CHANNEL_FADER);
+  g_assert_nonnull (at);
+  ZRegion * r =
+    automation_region_new (
+      &pos1, &pos2,
+      track_get_name_hash (P_MASTER_TRACK),
+      at->index, 0);
+  track_add_region (
+    P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0);
+  arranger_selections_add_object (
+    (ArrangerSelections *) TL_SELECTIONS,
+    (ArrangerObject *) r);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
+
+  /* create 2 points spanning the split point */
+  for (int i = 0; i < 2; i++)
+    {
+      position_set_to_bar (&pos1, i == 0 ? 1 : 3);
+      AutomationPoint * ap =
+        automation_point_new_float (
+          1.f, 1.f, &pos1);
+      automation_region_add_ap (
+        r, ap, F_NO_PUBLISH_EVENTS);
+      arranger_object_select (
+        (ArrangerObject *) ap, F_SELECT,
+        F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+      arranger_selections_action_perform_create (
+        AUTOMATION_SELECTIONS, NULL);
+    }
+
+  /* split */
+  arranger_object_select (
+    (ArrangerObject *) r, F_SELECT,
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  position_set_to_bar (&pos1, 2);
+  arranger_selections_action_perform_split (
+    (ArrangerSelections *) TL_SELECTIONS, &pos1,
+    NULL);
+
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -3414,6 +3474,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test cut automation region",
+    (GTestFunc) test_cut_automation_region);
   g_test_add_func (
     TEST_PREFIX "test delete midi notes",
     (GTestFunc) test_delete_midi_notes);

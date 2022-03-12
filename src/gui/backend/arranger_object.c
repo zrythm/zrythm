@@ -3270,6 +3270,20 @@ arranger_object_split (
           track, region1, at,
           src_region->id.lane_pos,
           F_GEN_NAME, F_PUBLISH_EVENTS);
+
+        if (!region_is_looped (region2))
+          {
+            /* adjust indices before adding r2 */
+            for (int i = 0; i < region2->num_aps;
+                 i++)
+              {
+                AutomationPoint * ap =
+                  region2->aps[i];
+                ap->index -= region2->num_aps;
+                g_return_if_fail (ap->index >= 0);
+              }
+          }
+
         track_add_region (
           track, region2, at,
           src_region->id.lane_pos,
