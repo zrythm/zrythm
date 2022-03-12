@@ -67,11 +67,12 @@ welcome_message_dialog_new (
   g_string_append_printf (
     gstr, "<b>%s</b>: %s\n\n",
     _("Flatpak users"),
-    _("PipeWire support is currently disabled due to "
-    "a known bug and will be re-enabled after the "
-    "GNOME runtime is updated. For the time being, "
-    "please use the PulseAudio backend. Please note "
-    "that no MIDI backend is currently usable."));
+    _("The PipeWire version of this Flatpak "
+    "runtime has a known bug that may cause errors "
+    "when starting Zrythm. "
+    "We recommend setting a fixed buffer size "
+    "for Zrythm in your PipeWire config to avoid "
+    "this."));
 #endif
 
 #if !defined (INSTALLER_VER) || defined (TRIAL_VER)
