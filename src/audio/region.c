@@ -1069,6 +1069,12 @@ region_is_looped (
        (obj->loop_end_pos.ticks +
          /* add some buffer because these are not
           * accurate */
+          0.1)
+    ||
+    (obj->end_pos.ticks - obj->pos.ticks) <
+       (obj->loop_end_pos.ticks -
+         /* add some buffer because these are not
+          * accurate */
           0.1);
 }
 
