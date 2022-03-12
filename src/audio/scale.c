@@ -443,7 +443,9 @@ musical_scale_contains_note (
   const bool * notes =
     musical_scale_get_notes (scale->type, false);
 
-  return notes[note];
+  return
+    notes[
+      ((int) note - (int) scale->root_key + 12) % 12];
 }
 
 /**

@@ -236,6 +236,7 @@ if get_option ('tests')
     'audio/port': { 'parallel': true },
     'audio/region': { 'parallel': true },
     'audio/sample_processor': { 'parallel': true },
+    'audio/scale': { 'parallel': true },
     'audio/snap_grid': { 'parallel': true },
     'audio/tempo_track': { 'parallel': true },
     'audio/track': { 'parallel': true },
