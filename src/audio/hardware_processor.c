@@ -319,8 +319,9 @@ hardware_processor_rescan_ext_ports (
   for (int i = 0; i < self->num_ext_audio_ports;
        i++)
     {
-      char * id =
-        ext_port_get_id (self->ext_audio_ports[i]);
+      ExtPort * ext_port =
+        self->ext_audio_ports[i];
+      char * id = ext_port_get_id (ext_port);
       g_debug (
         "[%s] audio: %s",
         self->is_input ?
@@ -332,8 +333,9 @@ hardware_processor_rescan_ext_ports (
   for (int i = 0; i < self->num_ext_midi_ports;
        i++)
     {
-      char * id =
-        ext_port_get_id (self->ext_midi_ports[i]);
+      ExtPort * ext_port =
+        self->ext_midi_ports[i];
+      char * id = ext_port_get_id (ext_port);
       g_debug (
         "[%s] MIDI: %s",
         self->is_input ?
@@ -341,6 +343,21 @@ hardware_processor_rescan_ext_ports (
           "HW processor output",
         id);
       g_free (id);
+
+      /* attempt to reconnect the if the port
+       * needs reconnect (e.g. if disconnected
+       * earlier) */
+      if (ext_port->pending_reconnect)
+        {
+          Port * port = self->midi_ports[i];
+          int ret =
+            ext_port_activate (
+              ext_port, port, true);
+          if (ret == 0)
+            {
+              ext_port->pending_reconnect = false;
+            }
+        }
     }
 
   return G_SOURCE_CONTINUE;

@@ -83,74 +83,6 @@ engine_jack_rescan_ports (
   /* TODO clear unconnected remembered ports */
 }
 
-#if 0
-static void
-autoconnect_midi_controllers (
-  AudioEngine * self)
-{
-  /* get all output MIDI ports */
-  const char ** ports =
-    jack_get_ports (
-      self->client,
-      NULL, JACK_DEFAULT_MIDI_TYPE,
-      JackPortIsPhysical |
-        JackPortIsOutput);
-
-  if (!ports) return;
-
-  /* get selected MIDI devices */
-  char ** devices =
-    g_settings_get_strv (
-      S_P_GENERAL_ENGINE,
-      "midi-controllers");
-
-  if(!devices) return;
-
-  int i = 0;
-  int j;
-  char * device;
-  /*jack_port_t * port;*/
-  while (ports[i] != NULL)
-    {
-      /* if port matches one of the selected
-       * MIDI devices, connect it to Zrythm
-       * MIDI In */
-      j = 0;
-      while ((device = devices[j]) != NULL)
-        {
-          if (g_str_match_string (
-                device, ports[i], 1))
-            {
-              int ret =
-                jack_connect (
-                  self->client,
-                  ports[i],
-                  jack_port_name (
-                    JACK_PORT_T (
-                      self->midi_in->data)));
-              if (ret)
-                {
-                  char msg[600];
-                  engine_jack_get_error_message (
-                    ret, msg);
-                  g_warning (
-                    "Failed connecting %s to %s:\n"
-                    "%s",
-                    ports[i],
-                    self->midi_in->id.label,
-                    msg);
-                }
-              break;
-            }
-          j++;
-        }
-      i++;
-    }
-    jack_free(ports);
-    g_strfreev(devices);
-}
-#endif
-
 void
 engine_jack_handle_sample_rate_change (
   AudioEngine * self,
@@ -463,6 +395,77 @@ shutdown_cb (void *arg)
     }
 }
 
+static void
+freewheel_cb (
+  int    starting,
+  void * arg)
+{
+  if (starting)
+    {
+      g_message ("JACK: starting freewheel");
+    }
+  else
+    {
+      g_message ("JACK: stopping freewheel");
+    }
+}
+
+static void
+port_registration_cb (
+  jack_port_id_t port_id,
+  int            registered,
+  void *         arg)
+{
+  AudioEngine * self = (AudioEngine *) arg;
+
+  jack_port_t * jport =
+    jack_port_by_id (self->client, port_id);
+  g_message (
+    "JACK: port '%s' %sregistered",
+    jack_port_name (jport), registered ? "" : "un");
+}
+
+static void
+port_connect_cb (
+  jack_port_id_t a,
+  jack_port_id_t b,
+  int            connect,
+  void *         arg)
+{
+  AudioEngine * self = (AudioEngine *) arg;
+
+  jack_port_t * jport_a =
+    jack_port_by_id (self->client, a);
+  jack_port_t * jport_b =
+    jack_port_by_id (self->client, b);
+  g_message (
+    "JACK: port '%s' %sconnected %s '%s'",
+    jack_port_name (jport_a), connect ? "" : "dis",
+    connect ? "to" : "from",
+    jack_port_name (jport_b));
+
+  /* if port was disconnected from one of Zrythm's
+   * tracked hardware ports, set it as deactivated
+   * so it can be force-activated next scan */
+  if (!connect)
+    {
+      ExtPort * tmp =
+        ext_port_new_from_jack_port (jport_a);
+      char * id = ext_port_get_id (tmp);
+      ExtPort * ext_port =
+        hardware_processor_find_ext_port (
+          HW_IN_PROCESSOR, id);
+      if (ext_port)
+        {
+          g_message (
+            "setting '%s' to pending reconnect", id);
+          ext_port->pending_reconnect = true;
+        }
+      g_free (id);
+      ext_port_free (tmp);
+    }
+}
+
 /**
  * Sets up the MIDI engine to use jack.
  */
@@ -611,6 +614,7 @@ engine_jack_setup (
     jack_get_buffer_size (self->client);
 
   /* set jack callbacks */
+  int ret;
   jack_set_process_callback (
     self->client, process_cb, self);
   jack_set_buffer_size_callback (
@@ -622,6 +626,16 @@ engine_jack_setup (
     self);
   jack_set_xrun_callback (
     self->client, (JackXRunCallback) xrun_cb, self);
+  jack_set_freewheel_callback (
+    self->client, freewheel_cb, self);
+  ret =
+    jack_set_port_registration_callback (
+      self->client, port_registration_cb, self);
+  g_return_val_if_fail (ret == 0, -1);
+  ret =
+    jack_set_port_connect_callback (
+      self->client, port_connect_cb, self);
+  g_return_val_if_fail (ret == 0, -1);
   jack_on_shutdown (
     self->client, shutdown_cb, self);
   /*jack_set_latency_callback(client, &jack_latency_cb, arg);*/

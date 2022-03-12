@@ -175,6 +175,15 @@ typedef struct ExtPort
   bool             active;
 
   /**
+   * Set to true when a hardware port is
+   * disconnected.
+   *
+   * Hardware processor will then attempt to
+   * reconnect next scan.
+   */
+  bool             pending_reconnect;
+
+  /**
    * Temporary port to receive data.
    */
   Port *           port;
@@ -265,19 +274,30 @@ ext_port_clear_buffer (
   ExtPort * ext_port,
   nframes_t nframes);
 
+#if 0
 /**
  * Exposes the given Port if not exposed and makes
  * the connection from the Port to the ExtPort (eg in
  * JACK) or backwards.
  *
- * @param src 1 if the ext_port is the source, 0 if it
- *   is the destination.
+ * @param src 1 if the ext_port is the source, 0 if
+ *   it is the destination.
  */
 void
 ext_port_connect (
   ExtPort * ext_port,
   Port *    port,
   int       src);
+#endif
+
+#ifdef HAVE_JACK
+/**
+ * Creates an ExtPort from a JACK port.
+ */
+ExtPort *
+ext_port_new_from_jack_port (
+  jack_port_t * jport);
+#endif /* HAVE_JACK */
 
 /**
  * Disconnects the Port from the ExtPort.
@@ -296,8 +316,10 @@ ext_port_disconnect (
  * deactivates it.
  *
  * @param port Port to send the output to.
+ *
+ * @return Non-zero if fail.
  */
-void
+int
 ext_port_activate (
   ExtPort * self,
   Port *    port,

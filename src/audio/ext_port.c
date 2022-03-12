@@ -127,7 +127,7 @@ ext_port_clear_buffer (
  *
  * @param port Port to send the output to.
  */
-void
+int
 ext_port_activate (
   ExtPort * self,
   Port *    port,
@@ -153,7 +153,7 @@ ext_port_activate (
                   g_message (
                     "skipping %s (not JACK)",
                     self->full_name);
-                  return;
+                  return - 1;
                 }
 
               self->port = port;
@@ -173,14 +173,14 @@ ext_port_activate (
                     "Could not find external JACK "
                     "port '%s', skipping...",
                     self->full_name);
-                  return;
+                  return - 1;
                 }
               port_set_expose_to_backend (
                 self->port, true);
 
               g_message (
-                "connecting jack port %s to "
-                "jack port %s",
+                "attempting to connect jack port %s "
+                "to jack port %s",
                 jack_port_name (self->jport),
                 jack_port_name (
                   JACK_PORT_T (self->port->data)));
@@ -191,7 +191,7 @@ ext_port_activate (
                   jack_port_name (self->jport),
                   jack_port_name (
                     JACK_PORT_T (self->port->data)));
-              if (ret)
+              if (ret != 0 && ret != EEXIST)
                 {
                   char msg[600];
                   engine_jack_get_error_message (
@@ -204,7 +204,7 @@ ext_port_activate (
                         JACK_PORT_T (
                           self->port->data)),
                     msg);
-                  return;
+                  return ret;
                 }
               break;
 #endif
@@ -218,7 +218,7 @@ ext_port_activate (
                   g_message (
                     "skipping %s (not RtMidi)",
                     self->full_name);
-                  return;
+                  return -1;
                 }
               self->port = port;
               self->rtmidi_dev =
@@ -230,7 +230,7 @@ ext_port_activate (
                   g_warning (
                     "Failed creating RtMidi device "
                     "for %s", self->full_name);
-                  return;
+                  return -1;
                 }
               ret =
                 rtmidi_device_open (
@@ -245,6 +245,7 @@ ext_port_activate (
               break;
             }
         }
+      /* else if not midi */
       else
         {
           switch (AUDIO_ENGINE->audio_backend)
@@ -256,7 +257,7 @@ ext_port_activate (
                   g_message (
                     "skipping %s (not JACK)",
                     self->full_name);
-                  return;
+                  return - 1;
                 }
               self->port = port;
 
@@ -275,23 +276,26 @@ ext_port_activate (
                     "Could not find external JACK "
                     "port '%s', skipping...",
                     self->full_name);
-                  return;
+                  return -1;
                 }
               port_set_expose_to_backend (
                 self->port, true);
 
               g_message (
-                "connecting jack port %s to "
-                "jack port %s",
+                "attempting to connect jack port %s "
+                "to jack port %s",
                 jack_port_name (self->jport),
                 jack_port_name (
                   JACK_PORT_T (self->port->data)));
 
-              jack_connect (
-                AUDIO_ENGINE->client,
-                jack_port_name (self->jport),
-                jack_port_name (
-                  JACK_PORT_T (self->port->data)));
+              ret =
+                jack_connect (
+                  AUDIO_ENGINE->client,
+                  jack_port_name (self->jport),
+                  jack_port_name (
+                    JACK_PORT_T (self->port->data)));
+              if (ret != 0 && ret != EEXIST)
+                return ret;
               break;
 #endif
 #ifdef HAVE_RTAUDIO
@@ -306,7 +310,7 @@ ext_port_activate (
                   g_message (
                     "skipping %s (not RtAudio)",
                     self->full_name);
-                  return;
+                  return - 1;
                 }
               self->port = port;
               self->rtaudio_dev =
@@ -319,7 +323,7 @@ ext_port_activate (
                   self->rtaudio_dev, true);
               if (ret)
                 {
-                  return;
+                  return - 1;
                 }
               self->port->rtaudio_ins[0] =
                 self->rtaudio_dev;
@@ -333,15 +337,18 @@ ext_port_activate (
     }
 
   self->active = activate;
+
+  return 0;
 }
 
+#if 0
 /**
  * Exposes the given Port if not exposed and makes
  * the connection from the Port to the ExtPort (eg in
  * JACK) or backwards.
  *
- * @param src 1 if the ext_port is the source, 0 if it
- *   is the destination.
+ * @param src 1 if the ext_port is the source, 0 if
+ *   it is the destination.
  */
 void
 ext_port_connect (
@@ -351,6 +358,7 @@ ext_port_connect (
 {
   /* TODO */
 }
+#endif
 
 /**
  * Disconnects the Port from the ExtPort.
@@ -447,8 +455,8 @@ ext_port_matches_backend (
 /**
  * Creates an ExtPort from a JACK port.
  */
-static ExtPort *
-ext_port_from_jack_port (
+ExtPort *
+ext_port_new_from_jack_port (
   jack_port_t * jport)
 {
   ExtPort * self = _create ();
@@ -530,7 +538,7 @@ get_ext_ports_from_jack (
           AUDIO_ENGINE->client, jports[i]);
 
       ExtPort * ext_port =
-        ext_port_from_jack_port (jport);
+        ext_port_new_from_jack_port (jport);
       g_ptr_array_add (ports, ext_port);
 
       i++;
