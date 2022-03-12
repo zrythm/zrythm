@@ -642,6 +642,7 @@ channel_reconnect_ext_input_ports (
                 1.f, F_LOCKED, F_ENABLE);
             }
         }
+      /* else if not all stereo ins selected */
       else
         {
           for (int i = 0;
@@ -685,52 +686,119 @@ channel_reconnect_ext_input_ports (
       port_disconnect_hw_inputs (l);
       port_disconnect_hw_inputs (r);
 
-      for (int i = 0;
-           i < self->num_ext_stereo_l_ins; i++)
+      if (self->all_stereo_l_ins)
         {
-          char * port_id =
-            ext_port_get_id (
-              self->ext_stereo_l_ins[i]);
-          Port * source =
-            hardware_processor_find_port (
-              HW_IN_PROCESSOR, port_id);
-          if (!source)
+          for (int i = 0;
+               i <
+                 HW_IN_PROCESSOR->
+                   num_selected_audio_ports;
+               i++)
             {
-              g_warning (
-                "port for %s not found",
-                port_id);
-              g_free (port_id);
-              continue;
+              char * port_id =
+                HW_IN_PROCESSOR->
+                  selected_audio_ports[i];
+              Port * source =
+                hardware_processor_find_port (
+                  HW_IN_PROCESSOR, port_id);
+              if (!source)
+                {
+                  g_message (
+                    "port for %s not found",
+                    port_id);
+                  continue;
+                }
+              port_connections_manager_ensure_connect (
+                PORT_CONNECTIONS_MGR,
+                &source->id, &l->id,
+                1.f, F_LOCKED, F_ENABLE);
             }
-          g_free (port_id);
-          port_connections_manager_ensure_connect (
-            PORT_CONNECTIONS_MGR,
-            &source->id, &l->id,
-            1.f, F_LOCKED, F_ENABLE);
         }
-      for (int i = 0;
-           i < self->num_ext_stereo_r_ins; i++)
+      else
         {
-          char * port_id =
-            ext_port_get_id (
-              self->ext_stereo_r_ins[i]);
-          Port * source =
-            hardware_processor_find_port (
-              HW_IN_PROCESSOR, port_id);
-          if (!source)
+          g_debug (
+            "%d L HW ins",
+            self->num_ext_stereo_l_ins);
+          for (int i = 0;
+               i < self->num_ext_stereo_l_ins; i++)
             {
-              g_warning (
-                "port for %s not found",
-                port_id);
+              char * port_id =
+                ext_port_get_id (
+                  self->ext_stereo_l_ins[i]);
+              Port * source =
+                hardware_processor_find_port (
+                  HW_IN_PROCESSOR, port_id);
+              if (!source)
+                {
+                  g_warning (
+                    "port for %s not found",
+                    port_id);
+                  g_free (port_id);
+                  continue;
+                }
               g_free (port_id);
-              continue;
+              port_connections_manager_ensure_connect (
+                PORT_CONNECTIONS_MGR,
+                &source->id, &l->id,
+                1.f, F_LOCKED, F_ENABLE);
             }
-          g_free (port_id);
-          port_connections_manager_ensure_connect (
-            PORT_CONNECTIONS_MGR,
-            &source->id, &r->id,
-            1.f, F_LOCKED, F_ENABLE);
+        } /* endif all audio ins for L */
+
+      if (self->all_stereo_r_ins)
+        {
+          for (int i = 0;
+               i <
+                 HW_IN_PROCESSOR->
+                   num_selected_audio_ports;
+               i++)
+            {
+              char * port_id =
+                HW_IN_PROCESSOR->
+                  selected_audio_ports[i];
+              Port * source =
+                hardware_processor_find_port (
+                  HW_IN_PROCESSOR, port_id);
+              if (!source)
+                {
+                  g_message (
+                    "port for %s not found",
+                    port_id);
+                  continue;
+                }
+              port_connections_manager_ensure_connect (
+                PORT_CONNECTIONS_MGR,
+                &source->id, &r->id,
+                1.f, F_LOCKED, F_ENABLE);
+            }
         }
+      /* else if not all audio ins for R */
+      else
+        {
+          g_debug (
+            "%d R HW ins", self->num_ext_stereo_r_ins);
+          for (int i = 0;
+               i < self->num_ext_stereo_r_ins; i++)
+            {
+              char * port_id =
+                ext_port_get_id (
+                  self->ext_stereo_r_ins[i]);
+              Port * source =
+                hardware_processor_find_port (
+                  HW_IN_PROCESSOR, port_id);
+              if (!source)
+                {
+                  g_warning (
+                    "port for %s not found",
+                    port_id);
+                  g_free (port_id);
+                  continue;
+                }
+              g_free (port_id);
+              port_connections_manager_ensure_connect (
+                PORT_CONNECTIONS_MGR,
+                &source->id, &r->id,
+                1.f, F_LOCKED, F_ENABLE);
+            }
+        } /* endif all audio ins for R */
     }
 
   router_recalc_graph (ROUTER, false);
