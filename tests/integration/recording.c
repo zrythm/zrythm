@@ -104,9 +104,11 @@ do_takes_no_loop_no_punch (
     3);
   latch_at =
     master_track->automation_tracklist.ats[0];
-  latch_at->automation_mode = AUTOMATION_MODE_RECORD;
   latch_at->record_mode =
     AUTOMATION_RECORD_MODE_LATCH;
+  automation_track_set_automation_mode (
+    latch_at, AUTOMATION_MODE_RECORD,
+    F_NO_PUBLISH_EVENTS);
   latch_port =
     port_find_from_identifier (&latch_at->port_id);
   g_assert_nonnull (latch_port);
@@ -114,9 +116,11 @@ do_takes_no_loop_no_punch (
     latch_port->control;
   touch_at =
     master_track->automation_tracklist.ats[1];
-  touch_at->automation_mode = AUTOMATION_MODE_RECORD;
   touch_at->record_mode =
     AUTOMATION_RECORD_MODE_TOUCH;
+  automation_track_set_automation_mode (
+    touch_at, AUTOMATION_MODE_RECORD,
+    F_NO_PUBLISH_EVENTS);
   touch_port =
     port_find_from_identifier (&touch_at->port_id);
   g_assert_nonnull (touch_port);
@@ -393,9 +397,11 @@ do_takes_loop_no_punch (
     3);
   latch_at =
     master_track->automation_tracklist.ats[0];
-  latch_at->automation_mode = AUTOMATION_MODE_RECORD;
   latch_at->record_mode =
     AUTOMATION_RECORD_MODE_LATCH;
+  automation_track_set_automation_mode (
+    latch_at, AUTOMATION_MODE_RECORD,
+    F_NO_PUBLISH_EVENTS);
   latch_port =
     port_find_from_identifier (&latch_at->port_id);
   g_assert_nonnull (latch_port);
@@ -403,9 +409,11 @@ do_takes_loop_no_punch (
     latch_port->control;
   touch_at =
     master_track->automation_tracklist.ats[1];
-  touch_at->automation_mode = AUTOMATION_MODE_RECORD;
   touch_at->record_mode =
     AUTOMATION_RECORD_MODE_TOUCH;
+  automation_track_set_automation_mode (
+    touch_at, AUTOMATION_MODE_RECORD,
+    F_NO_PUBLISH_EVENTS);
   touch_port =
     port_find_from_identifier (&touch_at->port_id);
   g_assert_nonnull (touch_port);
@@ -810,10 +818,11 @@ test_automation_touch_recording (void)
     3);
   touch_at =
     ins_track->automation_tracklist.ats[1];
-  touch_at->automation_mode =
-    AUTOMATION_MODE_RECORD;
   touch_at->record_mode =
     AUTOMATION_RECORD_MODE_TOUCH;
+  automation_track_set_automation_mode (
+    touch_at, AUTOMATION_MODE_RECORD,
+    F_NO_PUBLISH_EVENTS);
   touch_port =
     port_find_from_identifier (&touch_at->port_id);
   g_assert_nonnull (touch_port);
