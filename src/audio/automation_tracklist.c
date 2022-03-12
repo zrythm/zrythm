@@ -700,6 +700,13 @@ void
 automation_tracklist_set_caches (
   AutomationTracklist * self)
 {
+  Track * track =
+    automation_tracklist_get_track (self);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
+
+  if (track_is_auditioner (track))
+    return;
+
   self->ats_in_record_mode =
     g_realloc_n (
       self->ats_in_record_mode,

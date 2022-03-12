@@ -358,26 +358,20 @@ sample_processor_process (
           else if (
             track->type == TRACK_TYPE_INSTRUMENT)
             {
-              if (!track->channel->instrument)
+              Plugin * const ins =
+                track->channel->instrument;
+              if (!ins)
                 return;
 
-              plugin_prepare_process (
-                track->channel->instrument);
+              plugin_prepare_process (ins);
               midi_events_append (
-                track->channel->instrument->
-                  midi_in_port->midi_events,
+                ins->midi_in_port->midi_events,
                 self->midi_events,
                 cycle_offset, nframes,
                 F_NOT_QUEUED);
-              plugin_process (
-                track->channel->instrument,
-                &time_nfo);
-              audio_data_l =
-                track->channel->instrument->l_out->
-                  buf;
-              audio_data_r =
-                track->channel->instrument->r_out->
-                  buf;
+              plugin_process (ins, &time_nfo);
+              audio_data_l = ins->l_out->buf;
+              audio_data_r = ins->r_out->buf;
             }
 
           if (audio_data_l && audio_data_r)

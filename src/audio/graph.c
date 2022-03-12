@@ -1432,6 +1432,8 @@ graph_setup (
 
   clip_editor_set_caches (CLIP_EDITOR);
   tracklist_set_caches (TRACKLIST);
+  tracklist_set_caches (
+    SAMPLE_PROCESSOR->tracklist);
 
   /*graph_print (self);*/
 
