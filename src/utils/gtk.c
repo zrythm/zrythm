@@ -834,12 +834,15 @@ z_gtk_get_tooltip_for_action (
       char * accel =
         g_markup_escape_text (tmp, -1);
       g_free (tmp);
+      char accel_color_hex[90];
+      ui_gdk_rgba_to_hex (
+        &UI_COLORS->bright_orange, accel_color_hex);
       char edited_tooltip[800];
       sprintf (
         edited_tooltip,
         "%s <span size=\"x-small\" "
-        "foreground=\"#F79616\">%s</span>",
-        tooltip, accel);
+        "foreground=\"%s\">%s</span>",
+        tooltip, accel_color_hex, accel);
       g_free (accel);
       return g_strdup (edited_tooltip);
     }

@@ -58,6 +58,8 @@ test_scale_contains_note (void)
     musical_scale_contains_note (scale, NOTE_AS));
   g_assert_false (
     musical_scale_contains_note (scale, NOTE_B));
+
+  musical_scale_free (scale);
 }
 
 int

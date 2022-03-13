@@ -667,3 +667,9 @@ dropdown stack {
 .main-toolbar-view-switcher button:hover {
   background-color: $hover_color;
 }
+
+/* context menu accelerators */
+popover accelerator {
+  font-size: small;
+  color: $bright_orange;
+}
