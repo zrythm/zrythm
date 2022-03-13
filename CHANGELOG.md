@@ -1,6 +1,31 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.30.3.1] - 2022-03-13
+### Added
+- Force an app icon in the header bar
+- Auto-reconnect to any hardware devices that get disconnected
+- Add some missing internal port symbols for channels/tracks
+
+### Changed
+- Move zoom buttons to timeline and editor toolbars
+- Move about button to Help toolbar
+- Make Edit icon lighter
+- MIDI CC recording must now be enabled manually via automation lanes (improves DSP performance of MIDI and instrument tracks)
+- Optimize plugin DSP processing
+- Consider region as looped if loop end point is beyond region end
+- Re-enable PipeWire support for Flatpak (add related message in welcome dialog)
+- Make accelerators in popover menus orange
+- Group various button groups together in toolbars
+
+### Fixed
+- Fix plugin passthrough ignoring MIDI events
+- Fix incorrect track routing when using MIDI FX plugins
+- Fix error when splitting unlooped automation regions
+- Fix hardware inputs not being routed properly to tracks
+- Fix "all audio inputs" in track inputs not behaving as intended
+- Fix incorrect logic when checking whether a note is in a scale
+
 ## [1.0.0-alpha.30.2.1] - 2022-03-10
 ### Added
 - Show project title/path in header bar
