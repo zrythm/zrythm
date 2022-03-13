@@ -2,6 +2,9 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="PlayheadScrollButtonsWidget" parent="GtkWidget">
+    <style>
+      <class name="linked"/>
+    </style>
     <child>
       <object class="GtkToggleButton" id="scroll_edges">
         <property name="focusable">1</property>

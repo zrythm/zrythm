@@ -12,40 +12,52 @@
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="chat">
-        <property name="action_name">app.chat</property>
-        <property name="icon_name">dialog-messages</property>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="manual">
-        <property name="action_name">app.manual</property>
-        <property name="icon_name">system-help</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="news">
-        <property name="action_name">app.news</property>
-        <property name="icon_name">news-subscribe</property>
-        <property name="tooltip-text" translatable="yes">News</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="shortcuts">
-        <property name="icon-name">input-keyboard</property>
-        <property name="action-name">win.show-help-overlay</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="donate_btn">
-        <property name="action_name">app.donate</property>
-        <property name="icon_name">taxes-finances</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="report_a_bug_btn">
-        <property name="action_name">app.bugreport</property>
-        <property name="icon_name">tools-report-bug</property>
+      <object class="GtkBox">
+        <style>
+          <class name="linked"/>
+        </style>
+        <child>
+          <object class="GtkButton" id="chat">
+            <property name="action_name">app.chat</property>
+            <property name="icon_name">dialog-messages</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="manual">
+            <property name="action_name">app.manual</property>
+            <property name="icon_name">system-help</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="news">
+            <property name="action_name">app.news</property>
+            <property name="icon_name">news-subscribe</property>
+            <property name="tooltip-text" translatable="yes">News</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="shortcuts">
+            <property name="icon-name">input-keyboard</property>
+            <property name="action-name">win.show-help-overlay</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="donate_btn">
+            <property name="action_name">app.donate</property>
+            <property name="icon_name">taxes-finances</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="report_a_bug_btn">
+            <property name="action_name">app.bugreport</property>
+            <property name="icon_name">tools-report-bug</property>
+          </object>
+        </child>
       </object>
     </child>
   </template>

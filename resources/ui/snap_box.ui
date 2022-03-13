@@ -2,7 +2,9 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="SnapBoxWidget" parent="GtkBox">
-    <property name="spacing">1</property>
+    <style>
+      <class name="linked"/>
+    </style>
     <property name="homogeneous">False</property>
     <child>
       <object class="GtkToggleButton" id="snap_to_grid">

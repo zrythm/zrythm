@@ -28,27 +28,34 @@
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="left_panel">
-        <property name="icon-name">gnome-builder-builder-view-left-pane-symbolic-light</property>
-        <property name="action_name">app.toggle-left-panel</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="bot_panel">
-        <property name="icon-name">gnome-builder-builder-view-bottom-pane-symbolic-light</property>
-        <property name="action_name">app.toggle-bot-panel</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="top_panel">
-        <property name="icon-name">gnome-builder-builder-view-top-pane-symbolic-light</property>
-        <property name="action_name">app.toggle-top-panel</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="right_panel">
-        <property name="icon-name">gnome-builder-builder-view-right-pane-symbolic-light</property>
-        <property name="action_name">app.toggle-right-panel</property>
+      <object class="GtkBox">
+        <style>
+          <class name="linked"/>
+        </style>
+        <child>
+          <object class="GtkButton" id="left_panel">
+            <property name="icon-name">gnome-builder-builder-view-left-pane-symbolic-light</property>
+            <property name="action_name">app.toggle-left-panel</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="bot_panel">
+            <property name="icon-name">gnome-builder-builder-view-bottom-pane-symbolic-light</property>
+            <property name="action_name">app.toggle-bot-panel</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="top_panel">
+            <property name="icon-name">gnome-builder-builder-view-top-pane-symbolic-light</property>
+            <property name="action_name">app.toggle-top-panel</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="right_panel">
+            <property name="icon-name">gnome-builder-builder-view-right-pane-symbolic-light</property>
+            <property name="action_name">app.toggle-right-panel</property>
+          </object>
+        </child>
       </object>
     </child>
   </template>

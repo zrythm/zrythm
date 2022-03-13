@@ -2,7 +2,9 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="QuantizeBoxWidget" parent="GtkBox">
-    <property name="spacing">1</property>
+    <style>
+      <class name="linked"/>
+    </style>
     <child>
       <object class="GtkButton" id="quick_quantize_btn">
         <property name="focusable">1</property>

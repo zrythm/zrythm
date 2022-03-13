@@ -19,52 +19,40 @@
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="cut">
-        <property name="icon-name">edit-cut</property>
-        <property name="action-name">app.cut</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="copy">
-        <property name="icon-name">edit-copy</property>
-        <property name="action-name">app.copy</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="paste">
-        <property name="icon-name">edit-paste</property>
-        <property name="action-name">app.paste</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="duplicate">
-        <property name="icon-name">edit-duplicate</property>
-        <property name="action-name">app.duplicate</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="delete">
-        <property name="icon-name">edit-delete</property>
-        <property name="action-name">app.delete</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="nudge_left">
-        <property name="icon-name">arrow-left</property>
-        <property name="action-name">app.nudge-selection</property>
-        <property name="action-target">&apos;left&apos;</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="nudge_right">
-        <property name="icon-name">arrow-right</property>
-        <property name="action-name">app.nudge-selection</property>
-        <property name="action-target">&apos;right&apos;</property>
+      <object class="GtkBox">
+        <style>
+          <class name="linked"/>
+        </style>
+        <child>
+          <object class="GtkButton" id="cut">
+            <property name="icon-name">edit-cut</property>
+            <property name="action-name">app.cut</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="copy">
+            <property name="icon-name">edit-copy</property>
+            <property name="action-name">app.copy</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="paste">
+            <property name="icon-name">edit-paste</property>
+            <property name="action-name">app.paste</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="duplicate">
+            <property name="icon-name">edit-duplicate</property>
+            <property name="action-name">app.duplicate</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="delete">
+            <property name="icon-name">edit-delete</property>
+            <property name="action-name">app.delete</property>
+          </object>
+        </child>
       </object>
     </child>
     <child>
@@ -73,21 +61,54 @@
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="clear_selection">
-        <property name="icon-name">edit-clear</property>
-        <property name="action-name">app.clear-selection</property>
+      <object class="GtkBox">
+        <style>
+          <class name="linked"/>
+        </style>
+        <child>
+          <object class="GtkButton" id="nudge_left">
+            <property name="icon-name">arrow-left</property>
+            <property name="action-name">app.nudge-selection</property>
+            <property name="action-target">&apos;left&apos;</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="nudge_right">
+            <property name="icon-name">arrow-right</property>
+            <property name="action-name">app.nudge-selection</property>
+            <property name="action-target">&apos;right&apos;</property>
+          </object>
+        </child>
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="select_all">
-        <property name="icon-name">edit-select-all</property>
-        <property name="action-name">app.select-all</property>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="loop_selection">
-        <property name="icon-name">media-playlist-repeat</property>
-        <property name="action-name">app.loop-selection</property>
+      <object class="GtkBox">
+        <style>
+          <class name="linked"/>
+        </style>
+        <child>
+          <object class="GtkButton" id="clear_selection">
+            <property name="icon-name">edit-clear</property>
+            <property name="action-name">app.clear-selection</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="select_all">
+            <property name="icon-name">edit-select-all</property>
+            <property name="action-name">app.select-all</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="loop_selection">
+            <property name="icon-name">media-playlist-repeat</property>
+            <property name="action-name">app.loop-selection</property>
+          </object>
+        </child>
       </object>
     </child>
     <child>
