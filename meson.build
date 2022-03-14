@@ -468,6 +468,9 @@ cdata.set_quoted (
   'PURCHASE_URL',
   'https://www.zrythm.org/en/download.html')
 cdata.set_quoted (
+  'USER_MANUAL_URL',
+  'https://manual.zrythm.org/en/index.html')
+cdata.set_quoted (
   'LICENSE_URL',
   'https://git.sr.ht/~alextee/zrythm/tree/master/item/COPYING')
 cdata.set_quoted (

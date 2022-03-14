@@ -39,41 +39,14 @@ welcome_message_dialog_new (
     gstr, "<big><b>%s</b></big>\n\n",
     _("Welcome to the Zrythm DAW"));
 
-  /* license info */
-  g_string_append_printf (
-    gstr,
-    _("%sZrythm is free software%s: you can "
-    "redistribute it and/or modify it under the "
-    "terms of the GNU Affero General Public License "
-    "as published by the Free Software Foundation, "
-    "either version 3 of the License, or (at your "
-    "option) any later version."),
-    "<b>", "</b>");
-  g_string_append (gstr, "\n");
-  char * see_license_txt =
+  char * getting_started_guide =
     g_strdup_printf (
-      _("Zrythm is distributed in the hope that it "
-      "will be useful, but WITHOUT ANY WARRANTY; "
-      "without even the implied warranty of "
-      "MERCHANTABILITY or FITNESS FOR A PARTICULAR "
-      "PURPOSE. See the %slicense%s for more "
-      "details."),
-      "<a href=\"" LICENSE_URL "\">", "</a>");
+      _("If this is your first time using Zrythm, "
+      "we suggest going through the 'Getting "
+      "Started' section in the %suser manual%s."),
+      "<a href=\"" USER_MANUAL_URL "\">", "</a>");
   g_string_append_printf (
-    gstr, "%s\n\n", see_license_txt);
-  g_free (see_license_txt);
-
-#ifdef FLATPAK_BUILD
-  g_string_append_printf (
-    gstr, "<b>%s</b>: %s\n\n",
-    _("Flatpak users"),
-    _("The PipeWire version of this Flatpak "
-    "runtime has a known bug that may cause errors "
-    "when starting Zrythm. "
-    "We recommend setting a fixed buffer size "
-    "for Zrythm in your PipeWire config to avoid "
-    "this."));
-#endif
+    gstr, "%s\n\n", getting_started_guide);
 
 #if !defined (INSTALLER_VER) || defined (TRIAL_VER)
   char * donations =
@@ -88,6 +61,18 @@ welcome_message_dialog_new (
   g_string_append_printf (
     gstr, "%s\n\n", donations);
   g_free (donations);
+#endif
+
+#ifdef FLATPAK_BUILD
+  g_string_append_printf (
+    gstr, "<b>%s</b>: %s\n\n",
+    _("Flatpak users"),
+    _("The PipeWire version of this Flatpak "
+    "runtime has a known bug that may cause errors "
+    "when starting Zrythm. "
+    "We recommend setting a fixed buffer size "
+    "for Zrythm in your PipeWire config to avoid "
+    "this."));
 #endif
 
   /* copyright line */
