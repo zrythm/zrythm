@@ -56,6 +56,24 @@ typedef struct UiCaches UiCaches;
  */
 
 /**
+ * UI message for the message queue.
+ */
+typedef struct ZrythmAppUiMessage
+{
+  GtkMessageType type;
+  char *         msg;
+} ZrythmAppUiMessage;
+
+ZrythmAppUiMessage *
+zrythm_app_ui_message_new (
+  GtkMessageType type,
+  const char *   msg);
+
+void
+zrythm_app_ui_message_free (
+  ZrythmAppUiMessage * self);
+
+/**
  * The global struct.
  *
  * Contains data that is only relevant to the GUI
@@ -143,7 +161,15 @@ struct _ZrythmApp
   /** AppImage runtime path, if AppImage build. */
   char *             appimage_runtime_path;
 
+  /** Flag used to only show the RT priority
+   * message once. */
   bool               rt_priority_message_shown;
+
+  /**
+   * Queue for messages to be shown when the project
+   * loads.
+   */
+  GAsyncQueue *      project_load_message_queue;
 };
 
 /**

@@ -183,6 +183,29 @@ sigterm_handler (int sig)
 
 #pragma GCC diagnostic pop
 
+ZrythmAppUiMessage *
+zrythm_app_ui_message_new (
+  GtkMessageType type,
+  const char *   msg)
+{
+  ZrythmAppUiMessage * self =
+    object_new (ZrythmAppUiMessage);
+
+  self->msg = g_strdup (msg);
+  self->type = type;
+
+  return self;
+}
+
+void
+zrythm_app_ui_message_free (
+  ZrythmAppUiMessage * self)
+{
+  g_free_and_null (self->msg);
+
+  object_zero_and_free (self);
+}
+
 /**
  * Handles the logic for checking for updates on
  * startup.
@@ -788,7 +811,8 @@ load_icon (
 }
 
 static void
-lock_memory (void)
+lock_memory (
+  ZrythmApp * self)
 {
 #ifdef _WOE32
   /* TODO */
@@ -815,33 +839,52 @@ lock_memory (void)
                 }
               else
                 {
-                  ui_show_error_message (
-                    NULL, false,
-                    "Could not set system memory "
-                    "lock limit to 'unlimited'");
+                  ZrythmAppUiMessage * ui_msg =
+                    zrythm_app_ui_message_new (
+                      GTK_MESSAGE_ERROR,
+                      "Could not set system memory "
+                      "lock limit to 'unlimited'");
+                  g_async_queue_push (
+                    self->
+                      project_load_message_queue,
+                    ui_msg);
                 }
             }
         }
       else
         {
-          ui_show_message_printf (
-            NULL, GTK_MESSAGE_WARNING, false,
-            "Your user does not have enough "
-            "privileges to allow %s to lock "
-            "unlimited memory. This may cause "
-            "audio dropouts. Please refer to "
-            "the 'Getting Started' section in the "
-            "user manual for details.",
-            PROGRAM_NAME);
+          char * str =
+            g_strdup_printf (
+              _("Your user does not have enough "
+              "privileges to allow %s to lock "
+              "unlimited memory. This may cause "
+              "audio dropouts. Please refer to "
+              "the 'Getting Started' section in "
+              "the user manual for details."),
+              PROGRAM_NAME);
+          ZrythmAppUiMessage * ui_msg =
+            zrythm_app_ui_message_new (
+              GTK_MESSAGE_WARNING, str);
+          g_async_queue_push (
+            self->project_load_message_queue,
+            ui_msg);
+          g_free (str);
         }
     }
   else
     {
-      ui_show_message_printf (
-        NULL, GTK_MESSAGE_WARNING, false,
-        "Could not get system memory lock limit "
-        "(%s)",
-        strerror (errno));
+      char * str =
+        g_strdup_printf (
+          _("Could not get system memory lock "
+          "limit (%s)"),
+          strerror (errno));
+      ZrythmAppUiMessage * ui_msg =
+        zrythm_app_ui_message_new (
+          GTK_MESSAGE_WARNING, str);
+      g_async_queue_push (
+        self->project_load_message_queue,
+        ui_msg);
+      g_free (str);
     }
 
   if (have_unlimited_mem)
@@ -855,10 +898,17 @@ lock_memory (void)
             "Cannot lock down memory: %s",
             strerror (errno));
 #else
-          ui_show_message_printf (
-            NULL, GTK_MESSAGE_WARNING, false,
-            "Cannot lock down memory: %s",
-            strerror (errno));
+          char * str =
+            g_strdup_printf (
+              _("Cannot lock down memory: %s"),
+              strerror (errno));
+          ZrythmAppUiMessage * ui_msg =
+            zrythm_app_ui_message_new (
+              GTK_MESSAGE_WARNING, str);
+          g_async_queue_push (
+            self->project_load_message_queue,
+            ui_msg);
+          g_free (str);
 #endif
         }
     }
@@ -1315,7 +1365,7 @@ zrythm_app_startup (
    * ardour) */
   raise_open_file_limit ();
 
-  lock_memory ();
+  lock_memory (self);
 
   /* print detected vamp plugins */
   vamp_print_all ();
@@ -1434,6 +1484,10 @@ zrythm_app_on_shutdown (
     {
       zrythm_free (ZRYTHM);
     }
+
+  object_free_w_func_and_null (
+    g_async_queue_unref,
+    self->project_load_message_queue);
 
   gtk_source_finalize ();
 
@@ -1870,6 +1924,9 @@ zrythm_app_new (
   zrythm_app = self;
 
   self->gtk_thread = g_thread_self ();
+
+  self->project_load_message_queue =
+    g_async_queue_new ();
 
   /* add option entries */
   add_option_entries (self);

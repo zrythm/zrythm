@@ -82,6 +82,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "weak_libjack.h"
 #endif
 
+#include <glib/gi18n.h>
+
 /* uncomment to show debug messages */
 /*#define DEBUG_THREADS 1*/
 
@@ -511,15 +513,23 @@ graph_thread_new (
         is_main && ZRYTHM_HAVE_UI && !ZRYTHM_TESTING
         && !zrythm_app->rt_priority_message_shown)
         {
-          ui_show_message_printf (
-            MAIN_WINDOW, GTK_MESSAGE_WARNING, false,
-            "Your user does not have enough "
-            "privileges to allow %s to set "
-            "the scheduling priority of threads. "
-            "Please refer to the 'Getting Started' "
-            "section in the "
-            "user manual for details.",
-            PROGRAM_NAME);
+          char * str =
+            g_strdup_printf (
+              _("Your user does not have "
+              "enough privileges to allow %s "
+              "to set the scheduling priority "
+              "of threads. Please refer to "
+              "the 'Getting Started' "
+              "section in the "
+              "user manual for details."),
+              PROGRAM_NAME);
+          ZrythmAppUiMessage * ui_msg =
+            zrythm_app_ui_message_new (
+              GTK_MESSAGE_WARNING, str);
+          g_async_queue_push (
+            zrythm_app->project_load_message_queue,
+            ui_msg);
+          g_free (str);
           zrythm_app->rt_priority_message_shown =
             true;
         }

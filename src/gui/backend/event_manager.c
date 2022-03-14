@@ -1235,6 +1235,24 @@ event_manager_process_event (
 #ifdef CHECK_UPDATES
       zrythm_app_check_for_updates (zrythm_app);
 #endif /* CHECK_UPDATES */
+
+      /* show any pending messages */
+      {
+        ZrythmAppUiMessage * ui_msg;
+        while (
+          (ui_msg =
+            (ZrythmAppUiMessage *)
+            g_async_queue_try_pop (
+              zrythm_app->
+                project_load_message_queue)) != NULL)
+          {
+            ui_show_message_full (
+              GTK_WINDOW (MAIN_WINDOW),
+              ui_msg->type, false, "%s",
+              ui_msg->msg);
+            zrythm_app_ui_message_free (ui_msg);
+          }
+      }
       break;
     case ET_SPLASH_CLOSED:
       break;
