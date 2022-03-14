@@ -215,6 +215,10 @@ midi_editor_space_widget_init (
   gtk_widget_set_visible (
     GTK_WIDGET (self->arranger_hscrollbar), false);
 
+  gtk_paned_set_resize_start_child (
+    self->midi_arranger_velocity_paned, true);
+  gtk_paned_set_resize_end_child (
+    self->midi_arranger_velocity_paned, true);
   gtk_paned_set_shrink_start_child (
     self->midi_arranger_velocity_paned, false);
   gtk_paned_set_shrink_end_child (
