@@ -675,8 +675,11 @@ popover {
     color: $bright_orange;
   }
 
-  modelbutton:hover {
-    background-color: $hover_color;
+  modelbutton {
+    &:hover,
+    &:selected {
+      background-color: $hover_color;
+    }
   }
 
   .title {
