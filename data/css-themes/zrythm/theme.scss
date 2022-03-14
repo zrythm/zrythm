@@ -668,8 +668,18 @@ dropdown stack {
   background-color: $hover_color;
 }
 
-/* context menu accelerators */
-popover accelerator {
-  font-size: small;
-  color: $bright_orange;
+/* context menus */
+popover {
+  accelerator {
+    font-size: small;
+    color: $bright_orange;
+  }
+
+  modelbutton:hover {
+    background-color: $hover_color;
+  }
+
+  .title {
+    color: white;
+  }
 }
