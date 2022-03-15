@@ -87,7 +87,7 @@ test_export_wav (void)
           ExportSettings settings;
           settings.progress_info.has_error = false;
           settings.progress_info.cancelled = false;
-          settings.format = AUDIO_FORMAT_WAV;
+          settings.format = EXPORT_FORMAT_WAV;
           settings.artist = g_strdup ("Test Artist");
           settings.title = g_strdup ("Test Title");
           settings.genre = g_strdup ("Test Genre");

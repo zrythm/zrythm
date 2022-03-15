@@ -258,9 +258,9 @@ midi_region_remove_all_midi_notes (
  *   tracks (only possible with MIDI type 1). This
  *   will calculate a unique MIDI track number for
  *   the region's lane.
- * @param use_track_pos Whether to use the track
- *   position in the MIDI data. The track will be
- *   set to 1 if false.
+ * @param use_track_or_lane_pos Whether to use the
+ *   track/lane position in the MIDI data. The
+ *   MIDI track will be set to 1 if false.
  */
 NONNULL
 void
@@ -270,7 +270,7 @@ midi_region_write_to_midi_file (
   const bool      add_region_start,
   bool            export_full,
   bool            lanes_as_tracks,
-  bool            use_track_pos);
+  bool            use_track_or_lane_pos);
 
 /**
  * Exports the ZRegion to a specified MIDI file.

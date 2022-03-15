@@ -294,13 +294,21 @@ track_lane_clone (
 
 /**
  * Writes the lane to the given MIDI file.
+ *
+ * @param lanes_as_tracks Export lanes as separate
+ *   MIDI tracks.
+ * @param use_track_or_lane_pos Whether to use the
+ *   track position (or lane position if @ref
+ *   lanes_as_tracks is true) in the MIDI data.
+ *   The MIDI track will be set to 1 if false.
  */
 NONNULL
 void
 track_lane_write_to_midi_file (
   TrackLane * self,
   MIDI_FILE * mf,
-  bool        lanes_as_tracks);
+  bool        lanes_as_tracks,
+  bool        use_track_or_lane_pos);
 
 NONNULL
 Tracklist *

@@ -264,13 +264,22 @@
                     <property name="focusable">1</property>
                     <layout>
                       <property name="column">2</property>
-                      <property name="row">3</property>
+                      <property name="row">4</property>
                       <property name="column-span">2</property>
                     </layout>
                   </object>
                 </child>
                 <child>
-                  <placeholder/>
+                  <object class="GtkCheckButton" id="lanes_as_tracks">
+                    <property name="label" translatable="yes">Lanes as separate tracks</property>
+                    <property name="focusable">1</property>
+                    <property name="tooltip-text" translatable="yes">Export track lanes as separate MIDI tracks</property>
+                    <layout>
+                      <property name="column">2</property>
+                      <property name="row">3</property>
+                      <property name="column-span">2</property>
+                    </layout>
+                  </object>
                 </child>
                 <child>
                   <placeholder/>
@@ -398,7 +407,6 @@
           <object class="GtkButton" id="export_button">
             <property name="label" translatable="yes">Export</property>
             <property name="focusable">1</property>
-            <property name="has-focus">1</property>
             <property name="receives-default">1</property>
           </object>
         </child>

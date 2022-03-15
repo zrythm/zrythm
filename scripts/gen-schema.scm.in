@@ -270,7 +270,7 @@ Args:
          (print-enum
            "export-format"
            '("flac" "ogg-vorbis" "ogg-opus" "wav"
-             "mp3" "mid" "raw"))
+             "mp3" "midi-0" "midi-1" "raw"))
          (print-enum
            "export-bit-depth"
            '("16" "24" "32"))
@@ -950,6 +950,10 @@ Args:
                  "append-format"
                  "Filename pattern"
                  "Filename pattern for exported files.")
+               (make-schema-key
+                 "lanes-as-tracks" "b" "false"
+                 "Lanes as tracks"
+                 "Export track lanes as separate MIDI tracks.")
                (make-schema-key
                  "dither" "b" "false"
                  "Dither"

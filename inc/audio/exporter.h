@@ -30,22 +30,27 @@
  */
 
 /**
- * Audio format.
+ * Export format.
  */
-typedef enum AudioFormat
+typedef enum ExportFormat
 {
-  AUDIO_FORMAT_FLAC,
-  AUDIO_FORMAT_OGG_VORBIS,
-  AUDIO_FORMAT_OGG_OPUS,
-  AUDIO_FORMAT_WAV,
-  AUDIO_FORMAT_MP3,
-  AUDIO_FORMAT_MIDI,
+  EXPORT_FORMAT_FLAC,
+  EXPORT_FORMAT_OGG_VORBIS,
+  EXPORT_FORMAT_OGG_OPUS,
+  EXPORT_FORMAT_WAV,
+  EXPORT_FORMAT_MP3,
+
+  /** MIDI type 0. */
+  EXPORT_FORMAT_MIDI0,
+
+  /** MIDI type 1. */
+  EXPORT_FORMAT_MIDI1,
 
   /** Raw audio data. */
-  AUDIO_FORMAT_RAW,
+  EXPORT_FORMAT_RAW,
 
-  NUM_AUDIO_FORMATS,
-} AudioFormat;
+  NUM_EXPORT_FORMATS,
+} ExportFormat;
 
 /**
  * Time range to export.
@@ -117,7 +122,7 @@ bounce_step_to_str (
  */
 typedef struct ExportSettings
 {
-  AudioFormat       format;
+  ExportFormat      format;
   char *            artist;
   char *            title;
   char *            genre;
@@ -150,6 +155,9 @@ typedef struct ExportSettings
   /** Positions in case of custom time range. */
   Position          custom_start;
   Position          custom_end;
+
+  /** Export track lanes as separate MIDI tracks. */
+  bool              lanes_as_tracks;
 
   /**
    * Dither or not.
@@ -235,9 +243,9 @@ exporter_create_audio_track_after_bounce (
  *   for this format, or a human friendly label.
  */
 const char *
-exporter_stringize_audio_format (
-  AudioFormat format,
-  bool        extension);
+exporter_stringize_export_format (
+  ExportFormat format,
+  bool         extension);
 
 /**
  * Exports an audio file based on the given

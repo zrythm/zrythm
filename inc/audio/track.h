@@ -985,13 +985,18 @@ track_insert_region (
 
 /**
  * Writes the track to the given MIDI file.
+ *
+ * @param use_track_pos Whether to use the track
+ *   position in the MIDI data. The track will be
+ *   set to 1 if false.
  */
 NONNULL
 void
 track_write_to_midi_file (
   const Track * self,
   MIDI_FILE *   mf,
-  bool          lanes_as_tracks);
+  bool          lanes_as_tracks,
+  bool          use_track_pos);
 
 /**
  * Appends the Track to the selections.

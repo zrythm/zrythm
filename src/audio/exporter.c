@@ -61,15 +61,15 @@
  *   for this format, or a human friendly label.
  */
 const char *
-exporter_stringize_audio_format (
-  AudioFormat format,
-  bool        extension)
+exporter_stringize_export_format (
+  ExportFormat format,
+  bool         extension)
 {
   switch (format)
     {
-    case AUDIO_FORMAT_FLAC:
+    case EXPORT_FORMAT_FLAC:
       return "FLAC";
-    case AUDIO_FORMAT_OGG_VORBIS:
+    case EXPORT_FORMAT_OGG_VORBIS:
       if (extension)
         {
           return "ogg";
@@ -78,7 +78,7 @@ exporter_stringize_audio_format (
         {
           return "ogg (Vorbis)";
         }
-    case AUDIO_FORMAT_OGG_OPUS:
+    case EXPORT_FORMAT_OGG_OPUS:
       if (extension)
         {
           return "ogg";
@@ -87,15 +87,31 @@ exporter_stringize_audio_format (
         {
           return "ogg (OPUS)";
         }
-    case AUDIO_FORMAT_WAV:
+    case EXPORT_FORMAT_WAV:
       return "wav";
-    case AUDIO_FORMAT_MP3:
+    case EXPORT_FORMAT_MP3:
       return "mp3";
-    case AUDIO_FORMAT_MIDI:
-      return "mid";
-    case AUDIO_FORMAT_RAW:
+    case EXPORT_FORMAT_MIDI0:
+      if (extension)
+        {
+          return "mid";
+        }
+      else
+        {
+          return "MIDI type 0";
+        }
+    case EXPORT_FORMAT_MIDI1:
+      if (extension)
+        {
+          return "mid";
+        }
+      else
+        {
+          return "MIDI type 1";
+        }
+    case EXPORT_FORMAT_RAW:
       return "raw";
-    case NUM_AUDIO_FORMATS:
+    case NUM_EXPORT_FORMATS:
       break;
     }
 
@@ -112,25 +128,25 @@ export_audio (
 
   switch (info->format)
     {
-    case AUDIO_FORMAT_FLAC:
+    case EXPORT_FORMAT_FLAC:
       sfinfo.format = SF_FORMAT_FLAC;
       break;
-    case AUDIO_FORMAT_RAW:
+    case EXPORT_FORMAT_RAW:
       sfinfo.format = SF_FORMAT_RAW;
       break;
-    case AUDIO_FORMAT_WAV:
+    case EXPORT_FORMAT_WAV:
       sfinfo.format = SF_FORMAT_WAV;
       break;
-    case AUDIO_FORMAT_OGG_VORBIS:
+    case EXPORT_FORMAT_OGG_VORBIS:
 #ifdef HAVE_OPUS
-    case AUDIO_FORMAT_OGG_OPUS:
+    case EXPORT_FORMAT_OGG_OPUS:
 #endif
       sfinfo.format = SF_FORMAT_OGG;
       break;
     default:
       {
         const char * format =
-          exporter_stringize_audio_format (
+          exporter_stringize_export_format (
             info->format, false);
 
         info->progress_info.has_error = true;
@@ -146,13 +162,13 @@ export_audio (
       break;
     }
 
-  if (info->format == AUDIO_FORMAT_OGG_VORBIS)
+  if (info->format == EXPORT_FORMAT_OGG_VORBIS)
     {
       sfinfo.format =
         sfinfo.format | SF_FORMAT_VORBIS;
     }
 #ifdef HAVE_OPUS
-  else if (info->format == AUDIO_FORMAT_OGG_OPUS)
+  else if (info->format == EXPORT_FORMAT_OGG_OPUS)
     {
       sfinfo.format =
         sfinfo.format | SF_FORMAT_OPUS;
@@ -213,7 +229,7 @@ export_audio (
     }
 
   /* set samplerate */
-  if (info->format == AUDIO_FORMAT_OGG_OPUS)
+  if (info->format == EXPORT_FORMAT_OGG_OPUS)
     {
       /* Opus only supports sample rates of 8000,
        * 12000, 16000, 24000 and 48000 */
@@ -442,8 +458,8 @@ export_audio (
               SEEK_SET | SFM_WRITE);
 
           /* wav is weird for some reason */
-          if (info->format == AUDIO_FORMAT_WAV ||
-              info->format == AUDIO_FORMAT_RAW)
+          if (info->format == EXPORT_FORMAT_WAV ||
+              info->format == EXPORT_FORMAT_RAW)
             {
               if (seek_cnt < 0)
                 {
@@ -570,7 +586,11 @@ export_midi (
 
       midiFileSetPPQN (mf, TICKS_PER_QUARTER_NOTE);
 
-      midiFileSetVersion (mf, 0);
+      int midi_version =
+        info->format == EXPORT_FORMAT_MIDI0 ? 0 : 1;
+      g_debug (
+        "setting MIDI version to %d", midi_version);
+      midiFileSetVersion (mf, midi_version);
 
       /* common time: 4 crochet beats, per bar */
       int beats_per_bar =
@@ -580,6 +600,13 @@ export_midi (
         mf, 1, beats_per_bar,
         math_round_double_to_signed_32 (
           TRANSPORT->ticks_per_beat));
+
+      /* add generic export name if version 0 */
+      if (midi_version == 0)
+        {
+          midiTrackAddText (
+            mf, 1, textTrackName, info->title);
+        }
 
       Track * track;
       for (i = 0; i < TRACKLIST->num_tracks; i++)
@@ -591,7 +618,10 @@ export_midi (
             {
               /* write track to midi file */
               track_write_to_midi_file (
-                track, mf, false);
+                track, mf,
+                midi_version == 0
+                  ? false : info->lanes_as_tracks,
+                midi_version == 0 ? false : true);
             }
           info->progress_info.progress =
             (double) i /
@@ -638,7 +668,7 @@ export_settings_set_bounce_defaults (
   const char *     filepath,
   const char *     bounce_name)
 {
-  self->format = AUDIO_FORMAT_WAV;
+  self->format = EXPORT_FORMAT_WAV;
   self->artist = g_strdup ("");
   self->title = g_strdup ("");
   self->genre = g_strdup ("");
@@ -764,7 +794,7 @@ export_settings_print (
     "dither: %d\n"
     "file: %s\n"
     "num files: %d\n",
-    exporter_stringize_audio_format (
+    exporter_stringize_export_format (
       self->format, true),
     self->artist, self->title, self->genre,
     audio_bit_depth_enum_to_int (self->depth),
@@ -904,7 +934,8 @@ exporter_export (ExportSettings * info)
     TRACKLIST, true);
 
   int ret = 0;
-  if (info->format == AUDIO_FORMAT_MIDI)
+  if (info->format == EXPORT_FORMAT_MIDI0
+      || info->format == EXPORT_FORMAT_MIDI1)
     {
       ret = export_midi (info);
     }

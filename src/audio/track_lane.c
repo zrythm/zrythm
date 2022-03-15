@@ -552,12 +552,21 @@ track_lane_calculate_lane_idx (
 
 /**
  * Writes the lane to the given MIDI file.
+ *
+ * @param lanes_as_tracks Export lanes as separate
+ *   MIDI tracks.
+ * @param use_track_or_lane_pos Whether to use the
+ *   track position (or lane position if @ref
+ *   lanes_as_tracks is true) in the MIDI data.
+ *   The MIDI track will be set to 1 if false.
  */
+NONNULL
 void
 track_lane_write_to_midi_file (
   TrackLane * self,
   MIDI_FILE * mf,
-  bool        lanes_as_tracks)
+  bool        lanes_as_tracks,
+  bool        use_track_or_lane_pos)
 {
   Track * track = track_lane_get_track (self);
   g_return_if_fail (track);
@@ -566,6 +575,10 @@ track_lane_write_to_midi_file (
     {
       midi_track_pos =
         track_lane_calculate_lane_idx (self);
+    }
+  if (!use_track_or_lane_pos)
+    {
+      midi_track_pos = 1;
     }
 
   /* All data is written out to tracks not
@@ -579,7 +592,7 @@ track_lane_write_to_midi_file (
     mf, midi_track_pos, MIDI_CHANNEL_1);
 
   /* add track name */
-  if (lanes_as_tracks)
+  if (lanes_as_tracks && use_track_or_lane_pos)
     {
       char midi_track_name[1000];
       sprintf (
@@ -595,7 +608,7 @@ track_lane_write_to_midi_file (
       const ZRegion * region = self->regions[i];
       midi_region_write_to_midi_file (
         region, mf, true, true, lanes_as_tracks,
-        true);
+        use_track_or_lane_pos);
     }
 }
 

@@ -1660,12 +1660,18 @@ track_set_listened (
 
 /**
  * Writes the track to the given MIDI file.
+ *
+ * @param use_track_pos Whether to use the track
+ *   position in the MIDI data. The track will be
+ *   set to 1 if false.
  */
+NONNULL
 void
 track_write_to_midi_file (
   const Track * self,
   MIDI_FILE *   mf,
-  bool          lanes_as_tracks)
+  bool          lanes_as_tracks,
+  bool          use_track_pos)
 {
   g_return_if_fail (
     track_type_has_piano_roll (self->type));
@@ -1675,7 +1681,7 @@ track_write_to_midi_file (
     {
       lane = self->lanes[i];
 
-      if (!lanes_as_tracks)
+      if (!lanes_as_tracks && use_track_pos)
         {
           midiTrackAddText (
             mf, self->pos, textTrackName,
@@ -1683,7 +1689,7 @@ track_write_to_midi_file (
         }
 
       track_lane_write_to_midi_file (
-        lane, mf, lanes_as_tracks);
+        lane, mf, lanes_as_tracks, use_track_pos);
     }
 }
 

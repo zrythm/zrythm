@@ -47,9 +47,9 @@ G_DEFINE_TYPE (
 
 enum
 {
-  COLUMN_AUDIO_FORMAT_LABEL,
-  COLUMN_AUDIO_FORMAT,
-  NUM_AUDIO_FORMAT_COLUMNS
+  COLUMN_EXPORT_FORMAT_LABEL,
+  COLUMN_EXPORT_FORMAT,
+  NUM_EXPORT_FORMAT_COLUMNS
 };
 
 enum
@@ -177,7 +177,7 @@ get_mixdown_export_filename (
 {
   const char * mixdown_str = "mixdown";
   const char * format =
-    exporter_stringize_audio_format (
+    exporter_stringize_export_format (
       gtk_combo_box_get_active (self->format),
       true);
   char * datetime_str =
@@ -247,7 +247,7 @@ get_stem_export_filenames (
     }
 
   const char * format =
-    exporter_stringize_audio_format (
+    exporter_stringize_export_format (
       gtk_combo_box_get_active (self->format),
       true);
   char * datetime_str =
@@ -656,19 +656,19 @@ create_formats_store (void)
   GtkTreeStore *store;
 
   store =
-    gtk_tree_store_new (NUM_AUDIO_FORMAT_COLUMNS,
+    gtk_tree_store_new (NUM_EXPORT_FORMAT_COLUMNS,
                         G_TYPE_STRING,
                         G_TYPE_INT);
 
-  for (int i = 0; i < NUM_AUDIO_FORMATS; i++)
+  for (int i = 0; i < NUM_EXPORT_FORMATS; i++)
     {
       gtk_tree_store_append (store, &iter, NULL);
       const char * str =
-        exporter_stringize_audio_format (i, false);
+        exporter_stringize_export_format (i, false);
       gtk_tree_store_set (
         store, &iter,
-        COLUMN_AUDIO_FORMAT_LABEL, str,
-        COLUMN_AUDIO_FORMAT, i,
+        COLUMN_EXPORT_FORMAT_LABEL, str,
+        COLUMN_EXPORT_FORMAT, i,
         -1);
     }
 
@@ -681,7 +681,7 @@ on_format_changed (
   ExportDialogWidget * self)
 {
   update_text (self);
-  AudioFormat format =
+  ExportFormat format =
     gtk_combo_box_get_active (widget);
 
   g_settings_set_enum (
@@ -699,14 +699,18 @@ on_format_changed (
   SET_UNSENSITIVE (export_artist);
   SET_UNSENSITIVE (export_title);
   SET_UNSENSITIVE (bit_depth);
+  SET_UNSENSITIVE (lanes_as_tracks);
   SET_UNSENSITIVE (dither);
 
   switch (format)
     {
-    case AUDIO_FORMAT_MIDI:
+    case EXPORT_FORMAT_MIDI0:
       break;
-    case AUDIO_FORMAT_OGG_VORBIS:
-    case AUDIO_FORMAT_OGG_OPUS:
+    case EXPORT_FORMAT_MIDI1:
+      SET_SENSITIVE (lanes_as_tracks);
+      break;
+    case EXPORT_FORMAT_OGG_VORBIS:
+    case EXPORT_FORMAT_OGG_OPUS:
       SET_SENSITIVE (export_genre);
       SET_SENSITIVE (export_artist);
       SET_SENSITIVE (export_title);
@@ -745,7 +749,7 @@ setup_formats_combo_box (
   gtk_cell_layout_set_attributes (
     GTK_CELL_LAYOUT (self->format),
     renderer,
-    "text", COLUMN_AUDIO_FORMAT_LABEL,
+    "text", COLUMN_EXPORT_FORMAT_LABEL,
     NULL);
 
   gtk_combo_box_set_active (
@@ -789,6 +793,12 @@ init_export_info (
     gtk_combo_box_get_active (self->bit_depth);
   g_settings_set_enum (
     S_EXPORT, "bit-depth", info->depth);
+  info->lanes_as_tracks =
+    gtk_check_button_get_active (
+      self->lanes_as_tracks);
+  g_settings_set_boolean (
+    S_EXPORT, "lanes-as-tracks",
+    info->lanes_as_tracks);
   info->dither =
     gtk_toggle_button_get_active (self->dither);
   g_settings_set_boolean (
@@ -1516,6 +1526,7 @@ export_dialog_widget_class_init (
   BIND_CHILD (time_range_loop);
   BIND_CHILD (time_range_custom);
   BIND_CHILD (format);
+  BIND_CHILD (lanes_as_tracks);
   BIND_CHILD (dither);
   BIND_CHILD (output_label);
   BIND_CHILD (tracks_treeview);
@@ -1572,6 +1583,11 @@ export_dialog_widget_init (
     self->mixdown_toggle, !export_stems);
   gtk_toggle_button_set_active (
     self->stems_toggle, export_stems);
+
+  gtk_check_button_set_active (
+    GTK_CHECK_BUTTON (self->lanes_as_tracks),
+    g_settings_get_boolean (
+      S_EXPORT, "lanes-as-tracks"));
 
   gtk_toggle_button_set_active (
     GTK_TOGGLE_BUTTON (self->dither),
