@@ -192,7 +192,7 @@ mixer_selections_get_lowest_slot (
  */
 Track *
 mixer_selections_get_track (
-  MixerSelections * self)
+  const MixerSelections * const self)
 {
   if (!self->has_any)
     return NULL;
@@ -390,6 +390,31 @@ mixer_selections_contains_plugin (
   return false;
 }
 
+bool
+mixer_selections_contains_uninstantiated_plugin (
+  const MixerSelections * const self)
+{
+  GPtrArray * arr = g_ptr_array_new ();
+
+  mixer_selections_get_plugins (self, arr);
+
+  bool ret = false;
+  for (size_t i = 0; i < arr->len; i++)
+    {
+      Plugin * pl = g_ptr_array_index (arr, i);
+
+      if (pl->instantiation_failed)
+        {
+          ret = true;
+          break;
+        }
+    }
+
+  g_ptr_array_unref (arr);
+
+  return ret;
+}
+
 /**
  * Returns the first selected plugin if any is
  * selected, otherwise NULL.
@@ -425,6 +450,58 @@ mixer_selections_get_first_plugin (
     }
 
   return NULL;
+}
+
+/**
+ * Fills in the array with the plugins in the
+ * selections.
+ */
+int
+mixer_selections_get_plugins (
+  const MixerSelections * const self,
+  GPtrArray *                   arr)
+{
+  if (!self->has_any)
+    return 0;
+
+  Track * track =
+    mixer_selections_get_track (self);
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (track), false);
+
+  for (int i = 0; i < self->num_slots; i++)
+    {
+      Plugin * pl = NULL;
+      switch (self->type)
+        {
+        case PLUGIN_SLOT_INSTRUMENT:
+          pl = track->channel->instrument;
+          break;
+        case PLUGIN_SLOT_INSERT:
+          pl =
+            track->channel->inserts[
+              self->slots[i]];
+          break;
+        case PLUGIN_SLOT_MIDI_FX:
+          pl =
+            track->channel->midi_fx[
+              self->slots[i]];
+          break;
+        case PLUGIN_SLOT_MODULATOR:
+          pl = track->modulators[self->slots[i]];
+          break;
+        default:
+          g_return_val_if_reached (false);
+          break;
+        }
+
+      g_return_val_if_fail (
+        IS_PLUGIN_AND_NONNULL (pl), 0);
+
+      g_ptr_array_add (arr, pl);
+    }
+
+  return self->num_slots;
 }
 
 bool

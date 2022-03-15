@@ -786,7 +786,8 @@ show_context_menu (
     {
       /* add delete item */
       menuitem =
-        CREATE_DELETE_MENU_ITEM ("app.delete");
+        CREATE_DELETE_MENU_ITEM (
+          "app.mixer-selections-delete");
       g_menu_append_item (
         edit_submenu, menuitem);
     }

@@ -822,6 +822,8 @@ main_window_widget_init (MainWindowWidget * self)
       activate_plugin_toggle_enabled, "s" },
     { "plugin-inspect",
       activate_plugin_inspect },
+    { "mixer-selections-delete",
+      activate_mixer_selections_delete },
 
     /* panel file browser actions */
     { "panel-file-browser-add-bookmark",

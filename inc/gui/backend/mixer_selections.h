@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -179,7 +179,7 @@ mixer_selections_paste_to_slot (
  */
 Track *
 mixer_selections_get_track (
-  MixerSelections * self);
+  const MixerSelections * const self);
 
 /**
  * Returns if the slot is selected or not.
@@ -197,6 +197,10 @@ bool
 mixer_selections_contains_plugin (
   MixerSelections * ms,
   Plugin *          pl);
+
+bool
+mixer_selections_contains_uninstantiated_plugin (
+  const MixerSelections * const self);
 
 /**
  * Adds a slot to the selections.
@@ -250,6 +254,15 @@ NONNULL
 Plugin *
 mixer_selections_get_first_plugin (
   MixerSelections * self);
+
+/**
+ * Fills in the array with the plugins in the
+ * selections.
+ */
+int
+mixer_selections_get_plugins (
+  const MixerSelections * const self,
+  GPtrArray *                   arr);
 
 NONNULL
 bool

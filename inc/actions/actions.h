@@ -458,6 +458,7 @@ DECLARE_SIMPLE (activate_port_connection_remove);
 /* plugin actions */
 DECLARE_SIMPLE (activate_plugin_toggle_enabled);
 DECLARE_SIMPLE (activate_plugin_inspect);
+DECLARE_SIMPLE (activate_mixer_selections_delete);
 
 /* panel file browser actions */
 DECLARE_SIMPLE (
