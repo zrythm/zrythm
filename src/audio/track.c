@@ -3376,6 +3376,33 @@ track_set_name (
     }
 }
 
+/**
+ * Fills in the given array (if non-NULL) with all
+ * plugins in the track and returns the number of
+ * plugins.
+ */
+int
+track_get_plugins (
+  const Track * const self,
+  GPtrArray *         arr)
+{
+  if (!track_type_has_channel (self->type))
+    return 0;
+
+  Plugin * pls[100];
+  int num_pls =
+    channel_get_plugins (self->channel, pls);
+
+  if (arr)
+    {
+      for (int i = 0; i < num_pls; i++)
+        {
+          g_ptr_array_add (arr, pls[i]);
+        }
+    }
+  return num_pls;
+}
+
 void
 track_activate_all_plugins (
   Track * track,

@@ -81,6 +81,27 @@ GQuark z_plugins_plugin_error_quark (void);
 G_DEFINE_QUARK (
   z-plugins-plugin-error-quark, z_plugins_plugin_error)
 
+/**
+ * To be called when struct is deserialized or
+ * when creating a new plugin.
+ */
+NONNULL
+static void
+init_port_arrays (
+  Plugin * self)
+{
+  /* create cache arrays */
+  const size_t def_sz = 20;
+  self->ctrl_in_ports =
+    g_ptr_array_new_full (def_sz, NULL);
+  self->audio_in_ports =
+    g_ptr_array_new_full (def_sz, NULL);
+  self->cv_in_ports =
+    g_ptr_array_new_full (def_sz, NULL);
+  self->midi_in_ports =
+    g_ptr_array_new_full (def_sz, NULL);
+}
+
 NONNULL
 static void
 set_stereo_outs_and_midi_in (
@@ -194,6 +215,8 @@ plugin_init_loaded (
   self->magic = PLUGIN_MAGIC;
   self->track = track;
   self->ms = ms;
+
+  init_port_arrays (self);
 
   GPtrArray * ports = g_ptr_array_new ();
   plugin_append_ports (self, ports);
@@ -574,6 +597,8 @@ plugin_new_from_setting (
 {
   Plugin * self = object_new (Plugin);
   self->schema_version = PLUGIN_SCHEMA_VERSION;
+
+  init_port_arrays (self);
 
   self->setting =
     plugin_setting_clone (setting, F_VALIDATE);
@@ -1957,17 +1982,9 @@ void
 plugin_set_caches (
   Plugin * self)
 {
-  const size_t def_sz = 20;
 
 #define PREPARE_ARRAY(arr) \
-  if (arr) \
-    { \
-      g_ptr_array_remove_range (arr, 0, arr->len); \
-    } \
-  else \
-    { \
-      arr = g_ptr_array_new_full (def_sz, NULL); \
-    }
+  g_ptr_array_remove_range (arr, 0, arr->len)
 
   PREPARE_ARRAY (self->ctrl_in_ports);
   PREPARE_ARRAY (self->audio_in_ports);
@@ -2285,6 +2302,8 @@ plugin_ensure_state_dir (
     }
   self->state_dir =
     g_path_get_basename (abs_state_dir);
+  g_debug (
+    "set plugin state dir to %s", self->state_dir);
   g_free (escaped_name);
   g_free (parent_dir);
   g_free (tmp);

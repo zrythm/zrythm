@@ -1208,6 +1208,27 @@ tracklist_get_num_listened_tracks (
 }
 
 /**
+ * Fills in the given array (if non-NULL) with all
+ * plugins in the tracklist and returns the number
+ * of plugins.
+ */
+int
+tracklist_get_plugins (
+  const Tracklist * const self,
+  GPtrArray *             arr)
+{
+  int total = 0;
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      total +=
+        track_get_plugins (
+          self->tracks[i], arr);
+    }
+
+  return total;
+}
+
+/**
  * Activate or deactivate all plugins.
  *
  * This is useful for exporting: deactivating and

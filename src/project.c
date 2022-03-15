@@ -1775,74 +1775,6 @@ project_save (
   MK_PROJECT_DIR (PLUGIN_EXT_COPIES);
   MK_PROJECT_DIR (PLUGIN_EXT_LINKS);
 
-#if 0
-  /* write plugin states, prepare channels for
-   * serialization, */
-  Track * track;
-  Channel * ch;
-  Plugin * pl;
-  for (i = 0; i < TRACKLIST->num_tracks; i++)
-    {
-      track = TRACKLIST->tracks[i];
-      if (track->type == TRACK_TYPE_CHORD)
-        continue;
-
-      ch = track->channel;
-      if (!ch)
-        continue;
-
-      for (j = 0; j < STRIP_SIZE * 2 + 1; j++)
-        {
-          if (j < STRIP_SIZE)
-            pl = ch->midi_fx[j];
-          else if (j == STRIP_SIZE)
-            pl = ch->instrument;
-          else
-            pl = ch->inserts[j - (STRIP_SIZE + 1)];
-
-          if (!pl)
-            continue;
-
-          if (!pl->instantiated)
-            {
-              g_warning (
-                "skipping uninstantiated plugin "
-                "%s...",
-                pl->setting->descr->name);
-              continue;
-            }
-
-          /* save state */
-#ifdef HAVE_CARLA
-          if (pl->setting->open_with_carla)
-            {
-              carla_native_plugin_save_state (
-                pl->carla, is_backup, NULL);
-            }
-          else
-            {
-#endif
-              switch (pl->setting->descr->protocol)
-                {
-                case PROT_LV2:
-                  {
-                    LilvState * tmp_state =
-                      lv2_state_save_to_file (
-                        pl->lv2, is_backup);
-                    lilv_state_free (tmp_state);
-                  }
-                  break;
-                default:
-                  g_warn_if_reached ();
-                  break;
-                }
-#ifdef HAVE_CARLA
-            }
-#endif
-        }
-    }
-#endif
-
   /* write the pool */
   audio_pool_remove_unused (AUDIO_POOL, is_backup);
   audio_pool_write_to_disk (AUDIO_POOL, is_backup);
@@ -1949,12 +1881,81 @@ project_save (
       self, PROJECT_PATH_PROJECT_FILE, is_backup);
   data->show_notification = show_notification;
   data->is_backup = is_backup;
-  data->project = project_clone (PROJECT);
+  data->project =
+    project_clone (PROJECT, is_backup);
   g_return_val_if_fail (data->project, -1);
   g_return_val_if_fail (
     data->project->tracklist_selections, -1);
   data->project->tracklist_selections->free_tracks =
     true;
+
+#if 0
+  /* write plugin states */
+  GPtrArray * plugins =
+    g_ptr_array_new_full (100, NULL);
+  tracklist_get_plugins (self->tracklist, plugins);
+  for (size_t i = 0; i < plugins->len; i++)
+    {
+      Plugin * pl = g_ptr_array_index (plugins, i);
+
+      if (!pl->instantiated)
+        {
+          g_debug (
+            "skipping uninstantiated plugin %s...",
+            pl->setting->descr->name);
+          continue;
+        }
+
+      /* save state */
+#ifdef HAVE_CARLA
+      if (pl->setting->open_with_carla)
+        {
+          carla_native_plugin_save_state (
+            pl->carla, is_backup, NULL);
+        }
+      else
+        {
+#endif
+          switch (pl->setting->descr->protocol)
+            {
+            case PROT_LV2:
+              {
+                LilvState * tmp_state =
+                  lv2_state_save_to_file (
+                    pl->lv2, is_backup);
+                lilv_state_free (tmp_state);
+              }
+              break;
+            default:
+              g_warn_if_reached ();
+              break;
+            }
+#ifdef HAVE_CARLA
+        }
+#endif
+    }
+#endif
+
+  if (is_backup)
+    {
+      /* copy plugin states */
+      char * prj_pl_states_dir =
+        project_get_path (
+          PROJECT, PROJECT_PATH_PLUGINS,
+          F_NOT_BACKUP);
+      char * prj_backup_pl_states_dir =
+        project_get_path (
+          PROJECT, PROJECT_PATH_PLUGINS,
+          F_BACKUP);
+      io_copy_dir (
+        prj_backup_pl_states_dir,
+        prj_pl_states_dir,
+        F_NO_FOLLOW_SYMLINKS, F_RECURSIVE);
+    }
+
+  /* TODO cleanup unused plugin states (or do it
+   * when executing mixer/tracklist selection
+   * actions) */
 
   if (async)
     {
@@ -2019,11 +2020,17 @@ project_save (
  * Deep-clones the given project.
  *
  * To be used during save on the main thread.
+ *
+ * @param for_backup Whether the resulting project
+ *   is for a backup.
  */
 Project *
 project_clone (
-  const Project * src)
+  const Project * src,
+  bool            for_backup)
 {
+  g_return_val_if_fail (
+    ZRYTHM_APP_IS_GTK_THREAD, NULL);
   g_message ("cloning project...");
 
   Project * self = object_new (Project);

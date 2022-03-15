@@ -555,6 +555,16 @@ tracklist_get_num_visible_tracks (
   int         visible);
 
 /**
+ * Fills in the given array (if non-NULL) with all
+ * plugins in the tracklist and returns the number
+ * of plugins.
+ */
+int
+tracklist_get_plugins (
+  const Tracklist * const self,
+  GPtrArray *             arr);
+
+/**
  * Activate or deactivate all plugins.
  *
  * This is useful for exporting: deactivating and

@@ -390,7 +390,12 @@ io_copy_dir (
   GError *error = NULL;
   const gchar *filename;
 
-   srcdir = g_dir_open (srcdir_str, 0, &error);
+  g_debug (
+    "attempting to copy dir '%s' to '%s' "
+    "(recursive: %d)",
+    srcdir_str, destdir_str, recursive);
+
+  srcdir = g_dir_open (srcdir_str, 0, &error);
   if (error)
     {
       if (ZRYTHM_TESTING)

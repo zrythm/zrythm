@@ -1434,6 +1434,16 @@ track_get_regions_in_range (
   Position * p2,
   ZRegion ** regions);
 
+/**
+ * Fills in the given array (if non-NULL) with all
+ * plugins in the track and returns the number of
+ * plugins.
+ */
+int
+track_get_plugins (
+  const Track * const self,
+  GPtrArray *         arr);
+
 void
 track_activate_all_plugins (
   Track * track,

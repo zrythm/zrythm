@@ -568,11 +568,15 @@ project_get_existing_yaml (
  * Deep-clones the given project.
  *
  * To be used during save on the main thread.
+ *
+ * @param for_backup Whether the resulting project
+ *   is for a backup.
  */
 NONNULL
 Project *
 project_clone (
-  const Project * src);
+  const Project * src,
+  bool            for_backup);
 
 /**
  * Creates an empty project object.

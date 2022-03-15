@@ -2502,8 +2502,18 @@ carla_native_plugin_save_state (
   char * state_file_abs_path =
     g_build_filename (
       dir_to_use, CARLA_STATE_FILENAME, NULL);
-  carla_save_plugin_state (
-    self->host_handle, 0, state_file_abs_path);
+  g_debug (
+    "saving carla plugin state to %s",
+    state_file_abs_path);
+  bool ret =
+    carla_save_plugin_state (
+      self->host_handle, 0, state_file_abs_path);
+  if (ret != true)
+    {
+      g_warning (
+        "failed to save plugin state: %s",
+        carla_get_last_error (self->host_handle));
+    }
   g_free (state_file_abs_path);
 
   g_warn_if_fail (self->plugin->state_dir);
