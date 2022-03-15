@@ -1830,6 +1830,47 @@ DEFINE_SIMPLE (activate_record_play)
     }
 }
 
+static void
+on_delete_tracks_response (
+  GtkDialog * dialog,
+  gint        response_id,
+  gpointer    user_data)
+{
+  switch (response_id)
+    {
+    case GTK_RESPONSE_YES:
+      {
+        GError * err = NULL;
+        bool ret =
+          tracklist_selections_action_perform_delete (
+            TRACKLIST_SELECTIONS,
+            PORT_CONNECTIONS_MGR,
+            &err);
+        if (ret)
+          {
+            undo_manager_clear_stacks (
+              UNDO_MANAGER, F_FREE);
+            EVENTS_PUSH (
+              ET_UNDO_REDO_ACTION_DONE, NULL);
+          }
+        else
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to delete tracks"));
+          }
+      }
+      break;
+    default:
+      break;
+    }
+
+  if (dialog)
+    {
+      gtk_window_destroy (GTK_WINDOW (dialog));
+    }
+}
+
 void
 activate_delete_selected_tracks (
   GSimpleAction *action,
@@ -1849,17 +1890,34 @@ activate_delete_selected_tracks (
       return;
     }
 
-  GError * err = NULL;
-  bool ret =
-    tracklist_selections_action_perform_delete (
-      TRACKLIST_SELECTIONS,
-      PORT_CONNECTIONS_MGR,
-      &err);
-  if (!ret)
+  if (tracklist_selections_contains_uninstantiated_plugin (
+        TRACKLIST_SELECTIONS))
     {
-      HANDLE_ERROR (
-        err, "%s", _("Failed to delete tracks"));
+      GtkWidget * dialog =
+        gtk_message_dialog_new (
+          GTK_WINDOW (MAIN_WINDOW),
+          GTK_DIALOG_DESTROY_WITH_PARENT
+          | GTK_DIALOG_MODAL,
+          GTK_MESSAGE_WARNING,
+          GTK_BUTTONS_YES_NO,
+          "%s",
+          _("The selected tracks contain "
+          "uninstantiated plugins. Deleting them "
+          "will not be undoable and the undo "
+          "history will be cleared. Continue "
+          "with deletion?"));
+
+      g_signal_connect (
+        dialog, "response",
+        G_CALLBACK (on_delete_tracks_response),
+        NULL);
+
+      gtk_window_present (GTK_WINDOW (dialog));
+      return;
     }
+
+  on_delete_tracks_response (
+    NULL, GTK_RESPONSE_YES, NULL);
 }
 
 DEFINE_SIMPLE (activate_hide_selected_tracks)

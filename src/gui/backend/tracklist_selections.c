@@ -406,6 +406,24 @@ tracklist_selections_remove_track (
 }
 
 bool
+tracklist_selections_contains_uninstantiated_plugin (
+  const TracklistSelections * self)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+
+      if (track_contains_uninstantiated_plugin (
+            track))
+        {
+          return true;
+        }
+    }
+
+  return false;
+}
+
+bool
 tracklist_selections_contains_undeletable_track (
   const TracklistSelections * self)
 {

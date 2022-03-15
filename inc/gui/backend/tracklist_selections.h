@@ -177,6 +177,10 @@ tracklist_selections_handle_click (
   bool    dragged);
 
 bool
+tracklist_selections_contains_uninstantiated_plugin (
+  const TracklistSelections * self);
+
+bool
 tracklist_selections_contains_undeletable_track (
   const TracklistSelections * self);
 

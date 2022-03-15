@@ -1016,6 +1016,11 @@ void
 track_unselect_all (
   Track * self);
 
+NONNULL
+bool
+track_contains_uninstantiated_plugin (
+  const Track * const self);
+
 /**
  * Removes all objects recursively from the track.
  */

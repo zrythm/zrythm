@@ -1700,6 +1700,30 @@ track_is_selected (Track * self)
   return 0;
 }
 
+bool
+track_contains_uninstantiated_plugin (
+  const Track * const self)
+{
+  GPtrArray * arr = g_ptr_array_new_full (20, NULL);
+  track_get_plugins (self, arr);
+
+  bool ret = false;
+  for (size_t i = 0; i < arr->len; i++)
+    {
+      Plugin * pl = g_ptr_array_index (arr, i);
+
+      if (pl->instantiation_failed)
+        {
+          ret = true;
+          break;
+        }
+    }
+
+  g_ptr_array_unref (arr);
+
+  return ret;
+}
+
 /**
  * Returns the last region in the track, or NULL.
  *
