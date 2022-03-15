@@ -34,13 +34,13 @@
 static void
 test_midi_fx_routing (void)
 {
-#ifdef HAVE_GEONKICK
   test_helper_zrythm_init ();
 
   /* create an instrument */
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
-      GEONKICK_BUNDLE, GEONKICK_URI, true);
+      TEST_INSTRUMENT_BUNDLE_URI,
+      TEST_INSTRUMENT_URI, true);
   g_assert_nonnull (setting);
   Track * track =
     track_create_for_plugin_at_idx_w_action (
@@ -123,8 +123,6 @@ test_midi_fx_routing (void)
   g_free (audio_file);
 
   test_helper_zrythm_cleanup ();
-
-#endif /* HAVE_GEONKICK */
 }
 
 int

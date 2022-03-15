@@ -186,10 +186,10 @@ test_save_backup_w_pool_and_plugins (void)
   test_project_rebootstrap_timeline (&p1, &p2);
 
   /* add a plugin and create a duplicate track */
-#if defined (HAVE_CARLA) && defined (HAVE_GEONKICK)
   int track_pos =
     test_plugin_manager_create_tracks_from_plugin (
-      GEONKICK_BUNDLE, GEONKICK_URI, true, true, 1);
+      TEST_INSTRUMENT_BUNDLE_URI,
+      TEST_INSTRUMENT_URI, true, true, 1);
   Track * track = TRACKLIST->tracks[track_pos];
   track_select (
     track, F_SELECT, F_EXCLUSIVE,
@@ -198,7 +198,6 @@ test_save_backup_w_pool_and_plugins (void)
     TRACKLIST_SELECTIONS,
     PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks,
     NULL);
-#endif
 
   /* save a project backup */
   int ret =
@@ -221,10 +220,8 @@ test_save_backup_w_pool_and_plugins (void)
   g_assert_cmpint (ret, ==, 0);
 
   /* test undo and redo cloning the track */
-#if defined (HAVE_CARLA) && defined (HAVE_GEONKICK)
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
-#endif
 
   test_helper_zrythm_cleanup ();
 }

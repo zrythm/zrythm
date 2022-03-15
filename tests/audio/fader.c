@@ -81,10 +81,9 @@ test_fader_process (void)
   test_helper_zrythm_init ();
 
   (void) test_fader_process_with_instrument;
-#if defined (HAVE_CARLA) && defined (HAVE_GEONKICK)
   test_fader_process_with_instrument (
-    GEONKICK_BUNDLE, GEONKICK_URI, true);
-#endif
+    TEST_INSTRUMENT_BUNDLE_URI,
+    TEST_INSTRUMENT_URI, true);
 
   test_helper_zrythm_cleanup ();
 }
