@@ -27,8 +27,7 @@ extended using
 
 # Current state
 
-Zrythm is currently in beta. All essential DAW
-features are implemented, the project format is
+Zrythm is currently in beta. The project format is
 stable and we are working towards a v1 release.
 
 ![screenshot](https://www.zrythm.org/static/images/screenshots/mar-16-2022.png)
