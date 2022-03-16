@@ -195,14 +195,6 @@ on_arranger_selections_in_transit (
   event_viewer_widget_refresh_for_selections (sel);
 }
 
-static void
-foreach_arranger_handle_playhead_auto_scroll (
-  ArrangerWidget * arranger)
-{
-  arranger_widget_handle_playhead_auto_scroll (
-    arranger, true);
-}
-
 /**
  * @param manually Whether the position was changed
  *   by the user.
@@ -223,11 +215,13 @@ on_playhead_changed (
           piano_roll_keys_widget_refresh (
             MW_PIANO_ROLL_KEYS);
         }
+#if 0
       if (manually)
         {
           arranger_widget_foreach (
             foreach_arranger_handle_playhead_auto_scroll);
         }
+#endif
     }
 }
 

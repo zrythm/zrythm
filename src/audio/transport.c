@@ -871,6 +871,14 @@ transport_update_positions (
   position_sort_array ( \
     markers, (size_t) num_markers)
 
+static void
+foreach_arranger_handle_playhead_auto_scroll (
+  ArrangerWidget * arranger)
+{
+  arranger_widget_handle_playhead_auto_scroll (
+    arranger, true);
+}
+
 /**
  * Moves the playhead to the prev Marker.
  */
@@ -907,6 +915,12 @@ transport_goto_prev_marker (
           break;
         }
     }
+
+  if (ZRYTHM_HAVE_UI)
+    {
+      arranger_widget_foreach (
+        foreach_arranger_handle_playhead_auto_scroll);
+    }
 }
 
 /**
@@ -928,6 +942,12 @@ transport_goto_next_marker (
             F_SET_CUE_POINT, F_PUBLISH_EVENTS);
           break;
         }
+    }
+
+  if (ZRYTHM_HAVE_UI)
+    {
+      arranger_widget_foreach (
+        foreach_arranger_handle_playhead_auto_scroll);
     }
 }
 
