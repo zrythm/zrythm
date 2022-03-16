@@ -147,18 +147,13 @@ Args:
                        (@ (type "source"))
                        "@MAIN_SCREENSHOT_URL@")
                      (caption
-                       "Main window"))
+                       "Main window with plugins"))
                    (screenshot
                      (image
                        (@ (type "source"))
-                       "@PIANO_ROLL_SCREENSHOT_URL@")
+                       "@MAIN_SCREENSHOT2_URL@")
                      (caption
-                       "Composing MIDI"))
-                   (screenshot
-                     (image
-                       (@ (type "source"))
-                       "@MIXER_SCREENSHOT_URL@")
-                     (caption "Mixer view")))
+                       "Main window with detached panels")))
                  (update_contact "alex_at_zrythm.org")
                  (keywords
                    (keyword "Zrythm")

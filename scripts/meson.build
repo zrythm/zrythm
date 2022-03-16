@@ -25,9 +25,8 @@ scripts_conf = {
   'USER_MANUAL_URL': 'https://manual.zrythm.org/en/index.html',
   'TRANSLATE_URL': 'https://hosted.weblate.org/engage/zrythm/',
   'CONTACT_URL': 'https://www.zrythm.org/en/community.html#contact',
-  'MAIN_SCREENSHOT_URL': 'https://www.zrythm.org/static/images/screenshots/mar-8-2022.png',
-  'PIANO_ROLL_SCREENSHOT_URL': 'https://www.zrythm.org/static/images/screenshots/Screenshot_20220110_152402.png',
-  'MIXER_SCREENSHOT_URL': 'https://www.zrythm.org/static/images/screenshots/Screenshot_20220110_152001.png',
+  'MAIN_SCREENSHOT_URL': 'https://www.zrythm.org/static/images/screenshots/mar-16-2022.png',
+  'MAIN_SCREENSHOT2_URL': 'https://www.zrythm.org/static/images/screenshots/mar-8-2022.png',
   }
 if os_windows
   scripts_conf += { 'GUILE': 'guile' }
