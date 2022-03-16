@@ -29,7 +29,7 @@
 #include <gtk/gtk.h>
 
 #define TRACK_CANVAS_WIDGET_TYPE \
-  (color_area_widget_get_type ())
+  (track_canvas_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   TrackCanvasWidget, track_canvas_widget,
   Z, TRACK_CANVAS_WIDGET, GtkWidget)
