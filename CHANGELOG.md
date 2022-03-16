@@ -1,6 +1,29 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.1.0.1] - 2022-03-16
+### Added
+- Add MIDI format selector in the export dialog
+- Add option to export track lanes as separate MIDI tracks in the export dialog
+- Cancel current arranger action on Escape press
+
+### Changed
+- Update copyright years in about dialog
+- Resize MIDI and velocity arrangers proportionally when resizing the editor
+- Queue some startup messages to be shown after main window loads
+- Improve context menu styling
+- Clear undo history when deleting channel slots or tracks with uninstantiated plugins
+- Use custom-built test instrument instead of Geonkick in some tests
+- Update default screenshot in appdata
+
+### Fixed
+- Fix plugin state dirs in backups being empty
+- Fix audio FX track stems being silent
+- Fix being unable to open main window on MacOS
+
+### Removed
+- Remove warranty disclaimer from welcome dialog (already mentioned in about dialog)
+
 ## [1.0.0-alpha.30.3.1] - 2022-03-13
 ### Added
 - Force an app icon in the header bar
