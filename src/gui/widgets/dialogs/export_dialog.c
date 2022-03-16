@@ -20,6 +20,7 @@
 #include "audio/engine.h"
 #include "audio/exporter.h"
 #include "audio/master_track.h"
+#include "audio/router.h"
 #include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/main_window.h"
@@ -884,17 +885,25 @@ on_export_clicked (
       /* export each track individually */
       for (int i = 0; i < num_tracks; i++)
         {
+          Track * track = tracks[i];
+          g_debug (
+            "~ bouncing stem for %s ~",
+            track->name);
+
           /* unmark all tracks for bounce */
           tracklist_mark_all_tracks_for_bounce (
             TRACKLIST, false);
 
-          Track * track = tracks[i];
           track_mark_for_bounce (
             track, F_BOUNCE, F_MARK_REGIONS,
             F_MARK_CHILDREN, F_MARK_PARENTS);
 
           ExportSettings info;
           init_export_info (self, &info, track);
+
+          GPtrArray * conns =
+            exporter_prepare_tracks_for_export (
+              &info);
 
           g_message ("exporting %s", info.file_uri);
 
@@ -922,13 +931,23 @@ on_export_clicked (
 
           g_thread_join (thread);
 
+          /* re-connect disconnected connections */
+          exporter_return_connections_post_export (
+            &info, conns);
+
           g_free (info.file_uri);
 
           track->bounce = false;
+
+          g_debug (
+            "~ finished bouncing stem for %s ~",
+            track->name);
         }
     }
   else /* if exporting mixdown */
     {
+      g_debug ("~ bouncing mixdown ~");
+
       ExportSettings info;
       init_export_info (self, &info, NULL);
 
@@ -970,6 +989,8 @@ on_export_clicked (
       g_thread_join (thread);
 
       g_free (info.file_uri);
+
+      g_debug ("~ finished bouncing mixdown ~");
     }
 }
 

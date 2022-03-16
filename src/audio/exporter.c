@@ -748,6 +748,134 @@ export_settings_set_bounce_defaults (
 }
 
 /**
+ * This must be called on the main thread after the
+ * intended tracks have been marked for bounce and
+ * before exporting.
+ */
+GPtrArray *
+exporter_prepare_tracks_for_export (
+  const ExportSettings * const settings)
+{
+  /* not needed when exporting full */
+  if (settings->mode == EXPORT_MODE_FULL)
+    return NULL;
+
+  EngineState state;
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, Z_F_NO_FORCE);
+
+  /* disconnect all track faders from
+   * their channel outputs so that
+   * sends and custom connections will
+   * work */
+  GPtrArray * conns =
+    g_ptr_array_new_full (
+      100,
+      (GDestroyNotify)
+      port_connection_free);
+  for (int j = 0; j < TRACKLIST->num_tracks;
+       j++)
+    {
+      Track * cur_tr = TRACKLIST->tracks[j];
+      if (cur_tr->bounce
+          ||
+          !track_type_has_channel (
+            cur_tr->type)
+          ||
+          cur_tr->out_signal_type !=
+            TYPE_AUDIO)
+        continue;
+
+      PortIdentifier * l_src_id =
+        &cur_tr->channel->fader->
+          stereo_out->l->id;
+      PortIdentifier * l_dest_id =
+        &cur_tr->channel->stereo_out->l->id;
+      PortConnection * l_conn =
+        port_connections_manager_find_connection (
+          PORT_CONNECTIONS_MGR,
+          l_src_id, l_dest_id);
+      g_return_val_if_fail (l_conn, NULL);
+      g_ptr_array_add (
+        conns,
+        port_connection_clone (l_conn));
+      port_connections_manager_ensure_disconnect (
+        PORT_CONNECTIONS_MGR,
+        l_src_id, l_dest_id);
+
+      PortIdentifier * r_src_id =
+        &cur_tr->channel->fader->
+          stereo_out->r->id;
+      PortIdentifier * r_dest_id =
+        &cur_tr->channel->stereo_out->r->id;
+      PortConnection * r_conn =
+        port_connections_manager_find_connection (
+          PORT_CONNECTIONS_MGR,
+          r_src_id, r_dest_id);
+      g_return_val_if_fail (r_conn, NULL);
+      g_ptr_array_add (
+        conns,
+        port_connection_clone (r_conn));
+      port_connections_manager_ensure_disconnect (
+        PORT_CONNECTIONS_MGR,
+        r_src_id, r_dest_id);
+    }
+
+  /* recalculate the graph to apply the
+   * changes */
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
+
+  /* remark all tracks for bounce */
+  tracklist_mark_all_tracks_for_bounce (
+    TRACKLIST, true);
+
+  engine_resume (AUDIO_ENGINE, &state);
+
+  return conns;
+}
+
+/**
+ * This must be called on the main thread after the
+ * export is completed.
+ *
+ * @param connections The array returned from
+ *   exporter_prepare_tracks_for_export(). This
+ *   function takes ownership of it and is
+ *   responsible for freeing it.
+ */
+void
+exporter_return_connections_post_export (
+  const ExportSettings * const settings,
+  GPtrArray *                  connections)
+{
+  /* not needed when exporting full */
+  if (settings->mode == EXPORT_MODE_FULL)
+    return;
+
+  g_return_if_fail (connections);
+
+  EngineState state;
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, Z_F_NO_FORCE);
+
+  /* re-connect disconnected connections */
+  for (size_t j = 0; j < connections->len; j++)
+    {
+      PortConnection * conn =
+        g_ptr_array_index (connections, j);
+      port_connections_manager_ensure_connect_from_connection (
+        PORT_CONNECTIONS_MGR, conn);
+    }
+  g_ptr_array_unref (connections);
+
+  /* recalculate the graph to apply the
+   * changes */
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
+
+  engine_resume (AUDIO_ENGINE, &state);
+}
+
+/**
  * Generic export thread to be used for simple
  * exporting.
  *

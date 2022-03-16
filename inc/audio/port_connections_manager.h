@@ -204,6 +204,11 @@ port_connections_manager_ensure_connect (
   bool                     locked,
   bool                     enabled);
 
+#define port_connections_manager_ensure_connect_from_connection(self,conn) \
+  port_connections_manager_ensure_connect ( \
+    self, conn->src_id, conn->dest_id, \
+    conn->multiplier, conn->locked, conn->enabled)
+
 /**
  * Removes the connection for the given ports if
  * it exists.

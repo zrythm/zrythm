@@ -214,6 +214,31 @@ export_settings_free (
   ExportSettings * self);
 
 /**
+ * This must be called on the main thread after the
+ * intended tracks have been marked for bounce and
+ * before exporting.
+ */
+NONNULL
+GPtrArray *
+exporter_prepare_tracks_for_export (
+  const ExportSettings * const settings);
+
+/**
+ * This must be called on the main thread after the
+ * export is completed.
+ *
+ * @param connections The array returned from
+ *   exporter_prepare_tracks_for_export(). This
+ *   function takes ownership of it and is
+ *   responsible for freeing it.
+ */
+NONNULL_ARGS (1)
+void
+exporter_return_connections_post_export (
+  const ExportSettings * const settings,
+  GPtrArray *                  connections);
+
+/**
  * Generic export thread to be used for simple
  * exporting.
  *

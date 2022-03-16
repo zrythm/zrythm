@@ -109,6 +109,9 @@ on_bounce_clicked (
       break;
     }
 
+  GPtrArray * conns =
+    exporter_prepare_tracks_for_export (&settings);
+
   /* start exporting in a new thread */
   GThread * thread =
     g_thread_new (
@@ -127,6 +130,9 @@ on_bounce_clicked (
     GTK_DIALOG (progress_dialog), true);
 
   g_thread_join (thread);
+
+  exporter_return_connections_post_export (
+    &settings, conns);
 
   if (!self->bounce_to_file &&
       !settings.progress_info.has_error &&
