@@ -108,6 +108,13 @@ G_DEFINE_TYPE (
 
 #define SCROLL_PADDING 8.0
 
+static void
+drag_end (
+  GtkGestureDrag * gesture,
+  gdouble          offset_x,
+  gdouble          offset_y,
+  ArrangerWidget * self);
+
 const char *
 arranger_widget_get_type_str (
   ArrangerWidgetType type)
@@ -1667,8 +1674,7 @@ arranger_widget_on_key_release (
 
   /*arranger_widget_update_visibility (self);*/
 
-  arranger_widget_refresh_cursor (
-    self);
+  arranger_widget_refresh_cursor (self);
 }
 
 /**
@@ -1996,6 +2002,29 @@ arranger_widget_on_key_press (
     }
   else
     g_debug ("not ignoring keyval %hx", keyval);
+
+  /* if key was Esc, cancel any drag and adjust
+   * the undo/redo stacks */
+  if (keyval == GDK_KEY_Escape &&
+      gtk_gesture_is_active (
+        GTK_GESTURE (self->drag)))
+    {
+      UNDO_MANAGER->redo_stack_locked = true;
+      UndoableAction * last_action =
+        undo_manager_get_last_action (
+          UNDO_MANAGER);
+      gtk_gesture_set_state (
+        GTK_GESTURE (self->drag),
+        GTK_EVENT_SEQUENCE_DENIED);
+      UndoableAction * new_last_action =
+        undo_manager_get_last_action (
+          UNDO_MANAGER);
+      if (new_last_action != last_action)
+        {
+          undo_manager_undo (UNDO_MANAGER, NULL);
+        }
+      UNDO_MANAGER->redo_stack_locked = false;
+    }
 
   return true;
 }
@@ -4948,9 +4977,9 @@ on_drag_end_timeline (
 
 static void
 drag_end (
-  GtkGestureDrag *gesture,
-  gdouble         offset_x,
-  gdouble         offset_y,
+  GtkGestureDrag * gesture,
+  gdouble          offset_x,
+  gdouble          offset_y,
   ArrangerWidget * self)
 {
   g_debug ("arranger drag end starting...");
@@ -5059,7 +5088,12 @@ drag_end (
     gtk_gesture_get_last_event (
       GTK_GESTURE (gesture), sequence);
   guint btn;
-  if (ev)
+  if (ev &&
+      (GDK_IS_EVENT_TYPE (
+         ev, GDK_BUTTON_PRESS)
+       ||
+       GDK_IS_EVENT_TYPE (
+         ev, GDK_BUTTON_RELEASE)))
     {
       btn =
         gdk_button_event_get_button (ev);

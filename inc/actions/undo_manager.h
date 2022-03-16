@@ -52,6 +52,14 @@ typedef struct UndoManager
   UndoStack *   undo_stack;
   UndoStack *   redo_stack;
 
+  /**
+   * Whether the redo stack is currently locked.
+   *
+   * This is used as a hack when cancelling arranger
+   * drags.
+   */
+  bool          redo_stack_locked;
+
   /** Semaphore for performing actions. */
   ZixSem        action_sem;
 } UndoManager;

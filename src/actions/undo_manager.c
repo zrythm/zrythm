@@ -148,6 +148,11 @@ do_or_undo_action (
       undo_stack_pop (main_stack);
     }
 
+  /* if redo stack is locked don't alter it */
+  if (self->redo_stack_locked
+      && opposite_stack == self->redo_stack)
+    return 0;
+
   /* if the redo stack is full, delete the last
    * element */
   if (undo_stack_is_full (opposite_stack))
@@ -330,7 +335,10 @@ undo_manager_perform (
       return ret;
     }
 
-  undo_stack_clear (self->redo_stack, true);
+  if (!self->redo_stack_locked)
+    {
+      undo_stack_clear (self->redo_stack, true);
+    }
 
   if (ZRYTHM_HAVE_UI)
     {
