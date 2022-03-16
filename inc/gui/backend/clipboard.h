@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,6 +31,7 @@
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/mixer_selections.h"
 #include "gui/backend/timeline_selections.h"
+#include "gui/backend/tracklist_selections.h"
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
@@ -49,6 +50,7 @@ typedef enum ClipboardType
   CLIPBOARD_TYPE_AUTOMATION_SELECTIONS,
   CLIPBOARD_TYPE_CHORD_SELECTIONS,
   CLIPBOARD_TYPE_MIXER_SELECTIONS,
+  CLIPBOARD_TYPE_TRACKLIST_SELECTIONS,
 } ClipboardType;
 
 static const cyaml_strval_t
@@ -64,6 +66,8 @@ clipboard_type_strings[] =
     CLIPBOARD_TYPE_CHORD_SELECTIONS },
   { "Mixer selections",
     CLIPBOARD_TYPE_MIXER_SELECTIONS },
+  { "Tracklist selections",
+    CLIPBOARD_TYPE_TRACKLIST_SELECTIONS },
 };
 
 /**
@@ -77,6 +81,7 @@ typedef struct Clipboard
   ChordSelections *        chord_sel;
   AutomationSelections *   automation_sel;
   MixerSelections *        mixer_sel;
+  TracklistSelections *    tracklist_sel;
 } Clipboard;
 
 static const cyaml_schema_field_t
@@ -99,6 +104,9 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Clipboard, mixer_sel,
     mixer_selections_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Clipboard, tracklist_sel,
+    tracklist_selections_fields_schema),
 
   CYAML_FIELD_END
 };
@@ -123,6 +131,11 @@ Clipboard *
 clipboard_new_for_mixer_selections (
   MixerSelections * sel,
   bool              clone);
+
+Clipboard *
+clipboard_new_for_tracklist_selections (
+  TracklistSelections * sel,
+  bool                  clone);
 
 /**
  * Gets the ArrangerSelections, if this clipboard

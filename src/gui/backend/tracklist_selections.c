@@ -745,14 +745,35 @@ tracklist_selections_clone (
   return self;
 }
 
+/**
+ * To be called after receiving tracklist selections
+ * from the clipboard.
+ */
+void
+tracklist_selections_post_deserialize (
+  TracklistSelections * self)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      track_set_magic (self->tracks[i]);
+    }
+}
+
 void
 tracklist_selections_paste_to_pos (
   TracklistSelections * ts,
-  int           pos)
+  int                   pos)
 {
-  /* TODO */
-  g_warn_if_reached ();
-  return;
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_copy (
+      ts, PORT_CONNECTIONS_MGR, pos, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to paste tracks"));
+    }
 }
 
 /**

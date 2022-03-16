@@ -134,11 +134,6 @@ tracklist_selections_get_lowest_track (
   TracklistSelections * self);
 
 void
-tracklist_selections_paste_at_pos (
-  TracklistSelections * self,
-  int                   pos);
-
-void
 tracklist_selections_add_track (
   TracklistSelections * self,
   Track *               track,
@@ -300,10 +295,18 @@ void
 tracklist_selections_print (
   TracklistSelections * self);
 
+/**
+ * To be called after receiving tracklist selections
+ * from the clipboard.
+ */
+void
+tracklist_selections_post_deserialize (
+  TracklistSelections * self);
+
 void
 tracklist_selections_paste_to_pos (
   TracklistSelections * ts,
-  int           pos);
+  int                   pos);
 
 /**
  * Sorts the tracks by position.

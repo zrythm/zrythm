@@ -1131,6 +1131,25 @@ activate_copy (
           g_free (serialized);
         }
       break;
+    case SELECTION_TYPE_TRACKLIST:
+      {
+        /* TODO doesn't work - GDK freezes on large
+         * YAML text */
+        break;
+
+        Clipboard * clipboard =
+          clipboard_new_for_tracklist_selections (
+            TRACKLIST_SELECTIONS, F_CLONE);
+        char * serialized =
+          yaml_serialize (
+            clipboard, &clipboard_schema);
+        g_return_if_fail (serialized);
+        gdk_clipboard_set_text (
+          DEFAULT_CLIPBOARD, serialized);
+        clipboard_free (clipboard);
+        g_free (serialized);
+      }
+      break;
     default:
       g_warning ("not implemented yet");
       break;
@@ -1163,6 +1182,7 @@ activate_paste (
 
   ArrangerSelections * sel = NULL;
   MixerSelections * mixer_sel = NULL;
+  TracklistSelections * tracklist_sel = NULL;
   switch (clipboard->type)
     {
     case CLIPBOARD_TYPE_TIMELINE_SELECTIONS:
@@ -1173,6 +1193,9 @@ activate_paste (
       break;
     case CLIPBOARD_TYPE_MIXER_SELECTIONS:
       mixer_sel = clipboard->mixer_sel;
+      break;
+    case CLIPBOARD_TYPE_TRACKLIST_SELECTIONS:
+      tracklist_sel = clipboard->tracklist_sel;
       break;
     default:
       g_warn_if_reached ();
@@ -1215,6 +1238,13 @@ activate_paste (
             text);
           incompatible = true;
         }
+    }
+  else if (tracklist_sel)
+    {
+      tracklist_selections_post_deserialize (
+        tracklist_sel);
+      tracklist_selections_paste_to_pos (
+        tracklist_sel, TRACKLIST->num_tracks);
     }
 
   if (incompatible)

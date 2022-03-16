@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -88,6 +88,36 @@ clipboard_new_for_mixer_selections (
   return self;
 }
 
+Clipboard *
+clipboard_new_for_tracklist_selections (
+  TracklistSelections * sel,
+  bool                  clone)
+{
+  Clipboard * self = object_new (Clipboard);
+
+  if (clone)
+    {
+      GError * err = NULL;
+      sel =
+        tracklist_selections_clone (sel, &err);
+      if (!sel)
+        {
+          clipboard_free (self);
+          g_warning (
+            "failed to clone tracklist selections: "
+            "%s",
+            err->message);
+          g_error_free_and_null (err);
+          return NULL;
+        }
+    }
+
+  self->tracklist_sel = sel;
+  self->type = CLIPBOARD_TYPE_TRACKLIST_SELECTIONS;
+
+  return self;
+}
+
 /**
  * Gets the ArrangerSelections, if this clipboard
  * contains arranger selections.
@@ -134,6 +164,10 @@ clipboard_free (
       break;
     case CLIPBOARD_TYPE_MIXER_SELECTIONS:
       mixer_selections_free (self->mixer_sel);
+      break;
+    case CLIPBOARD_TYPE_TRACKLIST_SELECTIONS:
+      tracklist_selections_free (
+        self->tracklist_sel);
       break;
     }
 
