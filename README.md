@@ -27,11 +27,11 @@ extended using
 
 # Current state
 
-Zrythm is currently in alpha. Most essential
-DAW features are implemented and we are working
-towards a stable release.
+Zrythm is currently in beta. All essential DAW
+features are implemented, the project format is
+stable and we are working towards a v1 release.
 
-![screenshot](https://www.zrythm.org/static/images/screenshots/mar-8-2022.png)
+![screenshot](https://www.zrythm.org/static/images/screenshots/mar-16-2022.png)
 
 ### Supported plugins/instruments
 - Native support: [LV2](https://lv2plug.in/)
