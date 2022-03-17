@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-17 22:33+0000\n"
+"POT-Creation-Date: 2022-03-17 22:58+0000\n"
 "PO-Revision-Date: 2022-03-06 09:46+0000\n"
 "Last-Translator: Anthony V. <batmanplayer123@gmail.com>\n"
 "Language: el\n"
@@ -272,8 +272,8 @@ msgstr "Επίλυση προβλημάτων"
 #: ../../routing/monitor-section.rst:31
 #: ../../scripting/scripting-interface.rst:8 ../../tracks/inspector-page.rst:95
 #: ../../tracks/inspector-page.rst:173 ../../tracks/modulator-track.rst:8
-#: ../../tracks/overview.rst:64 ../../tracks/tempo-track.rst:8
-#: ../../tracks/track-types.rst:85 ../../zrythm-interface/right-panel.rst:23
+#: ../../tracks/overview.rst:68 ../../tracks/tempo-track.rst:8
+#: ../../zrythm-interface/right-panel.rst:23
 msgid "Todo"
 msgstr "Ναγίνει"
 
@@ -1179,7 +1179,7 @@ msgstr "Παλμικό κύμα."
 #: ../../editing/clip-editors/automation-editor.rst:55
 #: ../../editing/clip-editors/chord-editor.rst:65
 #: ../../editing/clip-editors/piano-roll.rst:114
-#: ../../tracks/midi-track.rst:130 ../../tracks/overview.rst:74
+#: ../../tracks/midi-track.rst:130 ../../tracks/overview.rst:78
 msgid "Context Menu"
 msgstr "Μενού περιβάλλοντος"
 
@@ -7375,7 +7375,7 @@ msgstr ""
 "Αυτά είναι παρόμοια με το :ref:`audio-group-track`, με τη διαφορά ότι "
 "δουλεύουν με σήματα MIDI αντί για σήματα ήχου."
 
-#: ../../tracks/inspector-page.rst:8 ../../tracks/overview.rst:68
+#: ../../tracks/inspector-page.rst:8 ../../tracks/overview.rst:72
 msgid "Track Inspector"
 msgstr "Επιθεωρητής κομματιών"
 
@@ -7940,24 +7940,36 @@ msgid "Modulator Track"
 msgstr "Κομμάτι διαμορφωτών"
 
 #: ../../tracks/overview.rst:8
+#, fuzzy
 msgid ""
 "Tracks are the main building blocks of projects. Tracks appear in the "
-"tracklist and contain various events such as :ref:`regions`."
+"tracklist and contain various events such as :ref:`regions <regions>`."
 msgstr ""
 "Τα κομμάτια είναι οι κύριοι λίθοι των έργων. Τα κομμάτια εμφανίζονται στη "
 "λίστα κομματιών και περιέχουν διάφορα γεγονότα όπως τις :ref:`regions`."
 
 #: ../../tracks/overview.rst:15
+#, fuzzy
+msgid "Track in tracklist"
+msgstr "Διεπαφή κομματιών"
+
+#: ../../tracks/overview.rst:17
+#, fuzzy
 msgid ""
 "Most types of tracks have a corresponding channel that appears in the :ref:"
-"`mixer`. See :ref:`channels` for more info."
+"`Mixer <mixer>`. See :ref:`channels` for more info."
 msgstr ""
 "Οι περισσότεροι τύποι κομματιών έχουν ένα αντίστοιχο κανάλι που εμφανίζεται "
 "στον :ref:`mixer`. Βλέπε :ref:`channels` για περισσότερες πληροφορίες."
 
-#: ../../tracks/overview.rst:22
+#: ../../tracks/overview.rst:24
+msgid "Channel in mixer"
+msgstr ""
+
+#: ../../tracks/overview.rst:26
+#, fuzzy
 msgid ""
-"There are various kinds of Tracks suited for different purposes, explained "
+"There are various kinds of tracks suited for different purposes, explained "
 "in the following sections. Some tracks are special, like the :ref:`chord-"
 "track` and the :ref:`marker-track`, which contain chords and markers "
 "respectively."
@@ -7967,7 +7979,7 @@ msgstr ""
 "όπως το :ref:`chord-track` και το :ref:`marker-track`, τα οποία περιέχουν "
 "συγχορδίες και σημάδια αντίστοιχα."
 
-#: ../../tracks/overview.rst:28
+#: ../../tracks/overview.rst:32
 msgid ""
 "In Zrythm, group tracks are used for grouping signals (direct routing), FX/"
 "bus tracks are used for effects/sends, and folder tracks (coming soon) are  "
@@ -7980,7 +7992,7 @@ msgstr ""
 "τοποθέτηση κομματιών μέσα στον ίδιο φάκελο και την εκτέλεση κοινών "
 "διεργασιών."
 
-#: ../../tracks/overview.rst:35
+#: ../../tracks/overview.rst:39
 msgid ""
 "Moreover, Zrythm uses Instrument tracks for instrument plugins, such as "
 "synthesizers, and MIDI tracks for MIDI plugins, such as a MIDI arpegiator."
@@ -7989,7 +8001,7 @@ msgstr ""
 "όπως συνθεσάιζερς και κομμάτια MIDI για πρόσθετα MIDI, όπως ένας "
 "αρπετζιέιτορ MIDI."
 
-#: ../../tracks/overview.rst:40
+#: ../../tracks/overview.rst:44
 msgid ""
 "This is different from what many other :term:`DAWs <DAW>` do, so please keep "
 "this in mind."
@@ -7997,11 +8009,11 @@ msgstr ""
 "Αυτό είναι διαφορετικό απ' ό,τι κάνουν πολλοί άλλοι :term:`ψηφιακοί σταθμοί "
 "επεξεργασίας ήχου <DAW>`, οπότε κρατήστε το στον νου σας."
 
-#: ../../tracks/overview.rst:45
+#: ../../tracks/overview.rst:49
 msgid "Track Interface"
 msgstr "Διεπαφή κομματιών"
 
-#: ../../tracks/overview.rst:50
+#: ../../tracks/overview.rst:54
 msgid ""
 "Each track has a color, an icon (corresponding to its type) a name and "
 "various buttons. Tracks that can have lanes, like instrument tracks, will "
@@ -8014,7 +8026,7 @@ msgstr ""
 "λωρίδα όπως παραπάνω. Τα κομμάτια που έχουν αυτοματισμό θα έχουν μια ρύθμιση "
 "να προβάλουν κομμάτια αυτοματισμού όπως παραπάνω."
 
-#: ../../tracks/overview.rst:56
+#: ../../tracks/overview.rst:60
 msgid ""
 "If the track produces output, it will have a meter on its right-hand side "
 "showing the current level."
@@ -8022,22 +8034,22 @@ msgstr ""
 "Αν το κομμάτι παράγει εξαγόμενο, θα έχει έναν μετρητή στη δεξιά πλευρά "
 "δείχνοντας το τρέχον επίπεδο."
 
-#: ../../tracks/overview.rst:60
+#: ../../tracks/overview.rst:64
 msgid "Track Icon"
 msgstr "Εικονίδιο κομματιού"
 
-#: ../../tracks/overview.rst:61
+#: ../../tracks/overview.rst:65
 msgid "The icon can be changed by clicking on the icon in the tracklist."
 msgstr ""
 "Το εικονίδιο μπορεί να αλλάξει κάνοντας κλικ πάνω στο εικονίδιο στη λίστα "
 "κομματιών."
 
-#: ../../tracks/overview.rst:64
+#: ../../tracks/overview.rst:68
 msgid "Add pic and explain how to add custom icons."
 msgstr ""
 "Προσθήκη εικόνας και εξήγηση πώς να γίνει προσθήκη προσαρμοσμένων εικόνων."
 
-#: ../../tracks/overview.rst:70
+#: ../../tracks/overview.rst:74
 msgid ""
 "Each track will display its page in the inspector when selected. See :ref:"
 "`track-inspector` for more details."
@@ -8045,14 +8057,14 @@ msgstr ""
 "Κάθε κομμάτι θα προβάλει τη σελίδα του στον επιθεωρητή όταν επιλεγεί. Βλέπε :"
 "ref:`track-inspector` για περισσότερες πληροφορίες."
 
-#: ../../tracks/overview.rst:76
+#: ../../tracks/overview.rst:80
 msgid ""
 "Each tracks has a context menu with additional options depending on its type."
 msgstr ""
 "Κάθε κομμάτι έχει ένα μενού περιβάλλοντος με επιπρόσθετες ρυθμίσεις ανάλογα "
 "με τον τύπο του."
 
-#: ../../tracks/overview.rst:82
+#: ../../tracks/overview.rst:86
 msgid ""
 "The section :ref:`track-operations` explains the various track operations "
 "available."
@@ -8200,10 +8212,6 @@ msgid ""
 msgstr ""
 "Όλα τα κομμάτια εκτός από το :doc:`chord-track` έχουν διαθέσιμες λωρίδες "
 "αυτοματισμού."
-
-#: ../../tracks/track-types.rst:85
-msgid "Add page for Modulators and Tempo track."
-msgstr "Προσθήκη σελίδας για διαμορφωτές και κομμάτι τέμπο."
 
 #: ../../tracks/track-visibility.rst:8
 msgid "Track Visibility"
@@ -8826,6 +8834,9 @@ msgid ""
 "% usage at the bottom. If the DSP % exceeds 100 (all bars filled), audio "
 "will start clipping."
 msgstr ""
+
+#~ msgid "Add page for Modulators and Tempo track."
+#~ msgstr "Προσθήκη σελίδας για διαμορφωτές και κομμάτι τέμπο."
 
 #~ msgid "Changing Values"
 #~ msgstr "Αλλαγή τιμών"

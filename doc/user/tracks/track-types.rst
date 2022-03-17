@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 Track Types
@@ -81,5 +81,3 @@ they are explained further in their own sections.
 
 All tracks except the :doc:`chord-track` have
 automation lanes available.
-
-.. todo:: Add page for Modulators and Tempo track.

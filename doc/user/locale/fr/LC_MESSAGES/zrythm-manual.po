@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-17 22:33+0000\n"
+"POT-Creation-Date: 2022-03-17 22:58+0000\n"
 "PO-Revision-Date: 2022-03-14 09:57+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
@@ -318,8 +318,8 @@ msgstr "Résolution de problèmes"
 #: ../../routing/monitor-section.rst:31
 #: ../../scripting/scripting-interface.rst:8 ../../tracks/inspector-page.rst:95
 #: ../../tracks/inspector-page.rst:173 ../../tracks/modulator-track.rst:8
-#: ../../tracks/overview.rst:64 ../../tracks/tempo-track.rst:8
-#: ../../tracks/track-types.rst:85 ../../zrythm-interface/right-panel.rst:23
+#: ../../tracks/overview.rst:68 ../../tracks/tempo-track.rst:8
+#: ../../zrythm-interface/right-panel.rst:23
 msgid "Todo"
 msgstr "Àfaire"
 
@@ -1224,7 +1224,7 @@ msgstr ""
 #: ../../editing/clip-editors/automation-editor.rst:55
 #: ../../editing/clip-editors/chord-editor.rst:65
 #: ../../editing/clip-editors/piano-roll.rst:114
-#: ../../tracks/midi-track.rst:130 ../../tracks/overview.rst:74
+#: ../../tracks/midi-track.rst:130 ../../tracks/overview.rst:78
 msgid "Context Menu"
 msgstr "Menu contextuel"
 
@@ -7606,7 +7606,7 @@ msgstr ""
 "Ceux-ci sont similaires à :ref:`audio-group-track`, sauf qu'ils agissent sur "
 "les signaux MIDI au lieu des signaux audio."
 
-#: ../../tracks/inspector-page.rst:8 ../../tracks/overview.rst:68
+#: ../../tracks/inspector-page.rst:8 ../../tracks/overview.rst:72
 msgid "Track Inspector"
 msgstr "Inspecteur de piste"
 
@@ -8208,7 +8208,7 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Tracks are the main building blocks of projects. Tracks appear in the "
-"tracklist and contain various events such as :ref:`regions`."
+"tracklist and contain various events such as :ref:`regions <regions>`."
 msgstr ""
 "#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Les pistes sont les principaux éléments constitutifs des projets. Les pistes "
@@ -8224,9 +8224,14 @@ msgstr ""
 
 #: ../../tracks/overview.rst:15
 #, fuzzy
+msgid "Track in tracklist"
+msgstr "Interface de piste"
+
+#: ../../tracks/overview.rst:17
+#, fuzzy
 msgid ""
 "Most types of tracks have a corresponding channel that appears in the :ref:"
-"`mixer`. See :ref:`channels` for more info."
+"`Mixer <mixer>`. See :ref:`channels` for more info."
 msgstr ""
 "#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
 "La plupart des types de pistes ont un canal correspondant qui apparaît dans "
@@ -8238,15 +8243,19 @@ msgstr ""
 "le mixeur.\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
-#: ../../tracks/overview.rst:22
+#: ../../tracks/overview.rst:24
+msgid "Channel in mixer"
+msgstr ""
+
+#: ../../tracks/overview.rst:26
 msgid ""
-"There are various kinds of Tracks suited for different purposes, explained "
+"There are various kinds of tracks suited for different purposes, explained "
 "in the following sections. Some tracks are special, like the :ref:`chord-"
 "track` and the :ref:`marker-track`, which contain chords and markers "
 "respectively."
 msgstr ""
 
-#: ../../tracks/overview.rst:28
+#: ../../tracks/overview.rst:32
 #, fuzzy
 msgid ""
 "In Zrythm, group tracks are used for grouping signals (direct routing), FX/"
@@ -8270,23 +8279,23 @@ msgstr ""
 "de nombreux autres STAN, alors gardez bien cela à l'esprit.\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
-#: ../../tracks/overview.rst:35
+#: ../../tracks/overview.rst:39
 msgid ""
 "Moreover, Zrythm uses Instrument tracks for instrument plugins, such as "
 "synthesizers, and MIDI tracks for MIDI plugins, such as a MIDI arpegiator."
 msgstr ""
 
-#: ../../tracks/overview.rst:40
+#: ../../tracks/overview.rst:44
 msgid ""
 "This is different from what many other :term:`DAWs <DAW>` do, so please keep "
 "this in mind."
 msgstr ""
 
-#: ../../tracks/overview.rst:45
+#: ../../tracks/overview.rst:49
 msgid "Track Interface"
 msgstr "Interface de piste"
 
-#: ../../tracks/overview.rst:50
+#: ../../tracks/overview.rst:54
 msgid ""
 "Each track has a color, an icon (corresponding to its type) a name and "
 "various buttons. Tracks that can have lanes, like instrument tracks, will "
@@ -8299,7 +8308,7 @@ msgstr ""
 "comme ci-dessus. Les pistes qui peuvent avoir des automatisations auront une "
 "option pour afficher les pistes d'automatisation comme ci-dessus."
 
-#: ../../tracks/overview.rst:56
+#: ../../tracks/overview.rst:60
 msgid ""
 "If the track produces output, it will have a meter on its right-hand side "
 "showing the current level."
@@ -8307,7 +8316,7 @@ msgstr ""
 "Si la piste produit une sortie, elle aura un indicateur sur sa droite "
 "indiquant le niveau actuel."
 
-#: ../../tracks/overview.rst:60
+#: ../../tracks/overview.rst:64
 #, fuzzy
 msgid "Track Icon"
 msgstr ""
@@ -8319,7 +8328,7 @@ msgstr ""
 "Opérations de piste\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
-#: ../../tracks/overview.rst:61
+#: ../../tracks/overview.rst:65
 #, fuzzy
 msgid "The icon can be changed by clicking on the icon in the tracklist."
 msgstr ""
@@ -8333,11 +8342,11 @@ msgstr ""
 "dans l'interface de la piste.\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
-#: ../../tracks/overview.rst:64
+#: ../../tracks/overview.rst:68
 msgid "Add pic and explain how to add custom icons."
 msgstr ""
 
-#: ../../tracks/overview.rst:70
+#: ../../tracks/overview.rst:74
 #, fuzzy
 msgid ""
 "Each track will display its page in the inspector when selected. See :ref:"
@@ -8353,7 +8362,7 @@ msgstr ""
 "sélectionnée. Selon la piste, les propriétés affichées seront différentes.\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
-#: ../../tracks/overview.rst:76
+#: ../../tracks/overview.rst:80
 #, fuzzy
 msgid ""
 "Each tracks has a context menu with additional options depending on its type."
@@ -8368,7 +8377,7 @@ msgstr ""
 "selon son type.\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
-#: ../../tracks/overview.rst:82
+#: ../../tracks/overview.rst:86
 msgid ""
 "The section :ref:`track-operations` explains the various track operations "
 "available."
@@ -8543,10 +8552,6 @@ msgstr "Tempo"
 #: ../../tracks/track-types.rst:82
 msgid ""
 "All tracks except the :doc:`chord-track` have automation lanes available."
-msgstr ""
-
-#: ../../tracks/track-types.rst:85
-msgid "Add page for Modulators and Tempo track."
 msgstr ""
 
 #: ../../tracks/track-visibility.rst:8

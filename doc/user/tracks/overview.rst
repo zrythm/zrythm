@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019-2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 Overview
@@ -7,19 +7,23 @@ Overview
 
 Tracks are the main building blocks of projects.
 Tracks appear in the tracklist and contain various
-events such as :ref:`regions`.
+events such as :ref:`regions <regions>`.
 
-.. image:: /_static/img/track.png
+.. figure:: /_static/img/track.png
    :align: center
+
+   Track in tracklist
 
 Most types of tracks have a corresponding channel
-that appears in the :ref:`mixer`. See
+that appears in the :ref:`Mixer <mixer>`. See
 :ref:`channels` for more info.
 
-.. image:: /_static/img/channel.png
+.. figure:: /_static/img/channel.png
    :align: center
 
-There are various kinds of Tracks suited for
+   Channel in mixer
+
+There are various kinds of tracks suited for
 different purposes, explained in the following
 sections. Some tracks are special, like the
 :ref:`chord-track` and the :ref:`marker-track`,
