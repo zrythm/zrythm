@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 Devices
@@ -12,30 +12,34 @@ Connecting MIDI and Audio Devices
 ---------------------------------
 
 Zrythm will auto-connect to the devices specified in
-:ref:`configuration/preferences:Engine`
-and make these devices available in the
+the
+:ref:`Preferences <configuration/preferences:Preferences>`
+and make these devices available in
 :ref:`track inputs <tracks/inspector-page:Inputs>`
-(as below) and other places.
+and other places.
 
-.. image:: /_static/img/track_inputs.png
-   :align: center
+JACK/PipeWire
+-------------
 
-JACK
-----
-
-When using the JACK audio and MIDI backend
-Zrythm exposes ports to JACK, so devices can
-be attached there using a tool like
+Zrythm exposes ports to JACK (or PipeWire) when
+using the JACK audio and MIDI backend. These ports
+can be viewed using a tool like
 `Qjackctl <https://qjackctl.sourceforge.io/>`_.
 
-.. image:: /_static/img/midi-devices.png
+.. figure:: /_static/img/zrythm-in-qjackctl.png
    :align: center
 
-.. tip:: ALSA MIDI devices might need to be bridged
-   to JACK using :term:`a2jmidid`.
+   Device connections in Qjackctl
 
-.. warning:: Zrythm will not remember connections
-   made externally.
+Zrythm will manage hardware connections on its own,
+so users are not expected to have to use such a
+patchbay to route MIDI/audio devices, however such
+a tool can be used to route signals from other
+apps into Zrythm to record their output, or to
+route the output of Zrythm into other JACK apps.
+
+.. warning:: Any connections made externally will
+   not be remembered by Zrythm.
 
 MIDI Bindings
 +++++++++++++
@@ -46,7 +50,7 @@ Creating Bindings
 MIDI device controls can be mapped to controls
 inside Zrythm (on controls that support it). After
 enabling a device in the
-:ref:`preferences <configuration/preferences:Engine>`,
+:ref:`Preferences <configuration/preferences:Preferences>`,
 a mapping can be created by right-clicking on
 eligible controls and selecting
 :guilabel:`MIDI learn`.
@@ -72,7 +76,8 @@ Managing Bindings
 
 Device
 mappings (bindings) can be found under the
-:guilabel:`Bindings` tab in the main panel.
+:guilabel:`Bindings` tab in the
+:ref:`main panel <zrythm-interface/main-panel:Main Panel>`.
 
 .. figure:: /_static/img/midi-bindings.png
    :align: center

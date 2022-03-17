@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. _track-inspector:
@@ -164,10 +164,8 @@ Listen
 ~~~~~~
 Similar to solo, except it dims the volume of other
 tracks instead of muting them. The dim amount can
-be controlled in the control room described in
-:ref:`control-room`.
-
-.. todo:: Implement.
+be controlled in the
+:ref:`Monitor Section <routing/monitor-section:Monitor Section>`.
 
 Channel Settings
 ~~~~~~~~~~~~~~~~

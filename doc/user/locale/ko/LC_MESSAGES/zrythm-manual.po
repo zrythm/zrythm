@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-17 14:03+0000\n"
+"POT-Creation-Date: 2022-03-17 21:33+0000\n"
 "PO-Revision-Date: 2022-02-28 15:54+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language: ko\n"
@@ -236,7 +236,7 @@ msgid "Troubleshooting"
 msgstr ""
 
 #: ../../appendix/troubleshooting.rst:10
-#: ../../configuration/additional-settings.rst:35
+#: ../../configuration/additional-settings.rst:34
 #: ../../configuration/shortcuts.rst:46
 #: ../../editing/clip-editors/automation-editor.rst:56
 #: ../../editing/clip-editors/chord-editor.rst:66
@@ -264,10 +264,9 @@ msgstr ""
 #: ../../routing/managing-connections.rst:8
 #: ../../routing/monitor-section.rst:31
 #: ../../scripting/scripting-interface.rst:8 ../../tracks/inspector-page.rst:95
-#: ../../tracks/inspector-page.rst:170 ../../tracks/inspector-page.rst:175
-#: ../../tracks/modulator-track.rst:8 ../../tracks/overview.rst:64
-#: ../../tracks/tempo-track.rst:8 ../../tracks/track-types.rst:85
-#: ../../zrythm-interface/right-panel.rst:23
+#: ../../tracks/inspector-page.rst:173 ../../tracks/modulator-track.rst:8
+#: ../../tracks/overview.rst:64 ../../tracks/tempo-track.rst:8
+#: ../../tracks/track-types.rst:85 ../../zrythm-interface/right-panel.rst:23
 msgid "Todo"
 msgstr ""
 
@@ -372,45 +371,44 @@ msgstr ""
 #: ../../configuration/additional-settings.rst:10
 msgid ""
 "Zrythm stores most of its configuration using the GSettings mechanism, which "
-"comes with the `gsettings <https://developer.gnome.org/gio/stable/gsettings-"
-"tool.html>`_ command for changing settings from the command line, or the "
-"optional GUI tool `dconf-editor <https://wiki.gnome.org/Apps/DconfEditor>`_."
+"comes with the ``gsettings`` command for changing settings from the command "
+"line, or the optional GUI tool `dconf-editor <https://wiki.gnome.org/Apps/"
+"DconfEditor>`_."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:16
+#: ../../configuration/additional-settings.rst:17
 msgid ""
 "Normally, you shouldn't need to access any of these settings as most of them "
 "are found inside Zrythm's UI, and it is not recommended to edit them as "
 "Zrythm validates some settings before it saves them or uses some settings "
-"internally, but in some cases you may want to change them manually for some "
-"reason."
+"internally."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:26
+#: ../../configuration/additional-settings.rst:25
 msgid "Viewing the Current Settings"
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:28
+#: ../../configuration/additional-settings.rst:27
 msgid "See :option:`zrythm --print-settings`."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:31
+#: ../../configuration/additional-settings.rst:30
 msgid "Reset to Factory Settings"
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:33
+#: ../../configuration/additional-settings.rst:32
 msgid "See :option:`zrythm --reset-to-factory`."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:35
-msgid "This will be added to the UI soon."
+#: ../../configuration/additional-settings.rst:34
+msgid "Add this to the UI."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:38
+#: ../../configuration/additional-settings.rst:37
 msgid "Plugin Settings"
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:39
+#: ../../configuration/additional-settings.rst:38
 msgid ""
 "Located at :file:`plugin-settings.yaml` under the :term:`Zrythm user path`, "
 "this is a collection of per-plugin settings, such as whether to open the "
@@ -419,14 +417,14 @@ msgid ""
 "ref:`generic UI <plugins-files/plugins/plugin-window:Generic UIs>`."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:47
+#: ../../configuration/additional-settings.rst:46
 msgid ""
 "Zrythm will remember the last setting used for each plugin and automatically "
 "apply it when you choose to instantiate that plugin from the :doc:`plugin "
 "browser <../plugins-files/plugins/plugin-browser>`."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:52
+#: ../../configuration/additional-settings.rst:51
 msgid ""
 "This file is generated and maintained automatically by Zrythm and users are "
 "not expected to edit it."
@@ -446,89 +444,95 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:14
 msgid ""
-"Zrythm will auto-connect to the devices specified in :ref:`configuration/"
-"preferences:Engine` and make these devices available in the :ref:`track "
-"inputs <tracks/inspector-page:Inputs>` (as below) and other places."
+"Zrythm will auto-connect to the devices specified in the :ref:`Preferences "
+"<configuration/preferences:Preferences>` and make these devices available "
+"in :ref:`track inputs <tracks/inspector-page:Inputs>` and other places."
+msgstr ""
+
+#: ../../configuration/device-setup.rst:22
+msgid "JACK/PipeWire"
 msgstr ""
 
 #: ../../configuration/device-setup.rst:24
-#: ../../getting-started/system-requirements.rst:35 ../../glossary/intro.rst:73
-msgid "JACK"
+msgid ""
+"Zrythm exposes ports to JACK (or PipeWire) when using the JACK audio and "
+"MIDI backend. These ports can be viewed using a tool like `Qjackctl <https://"
+"qjackctl.sourceforge.io/>`_."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:26
-msgid ""
-"When using the JACK audio and MIDI backend Zrythm exposes ports to JACK, so "
-"devices can be attached there using a tool like `Qjackctl <https://qjackctl."
-"sourceforge.io/>`_."
+#: ../../configuration/device-setup.rst:32
+msgid "Device connections in Qjackctl"
 msgstr ""
 
 #: ../../configuration/device-setup.rst:34
 msgid ""
-"ALSA MIDI devices might need to be bridged to JACK using :term:`a2jmidid`."
-msgstr ""
-
-#: ../../configuration/device-setup.rst:37
-msgid "Zrythm will not remember connections made externally."
+"Zrythm will manage hardware connections on its own, so users are not "
+"expected to have to use such a patchbay to route MIDI/audio devices, however "
+"such a tool can be used to route signals from other apps into Zrythm to "
+"record their output, or to route the output of Zrythm into other JACK apps."
 msgstr ""
 
 #: ../../configuration/device-setup.rst:41
+msgid "Any connections made externally will not be remembered by Zrythm."
+msgstr ""
+
+#: ../../configuration/device-setup.rst:45
 msgid "MIDI Bindings"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:44
+#: ../../configuration/device-setup.rst:48
 msgid "Creating Bindings"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:46
+#: ../../configuration/device-setup.rst:50
 msgid ""
 "MIDI device controls can be mapped to controls inside Zrythm (on controls "
-"that support it). After enabling a device in the :ref:`preferences "
-"<configuration/preferences:Engine>`, a mapping can be created by right-"
+"that support it). After enabling a device in the :ref:`Preferences "
+"<configuration/preferences:Preferences>`, a mapping can be created by right-"
 "clicking on eligible controls and selecting :guilabel:`MIDI learn`."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:57
+#: ../../configuration/device-setup.rst:61
 msgid "MIDI learn on channel sends"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:59
+#: ../../configuration/device-setup.rst:63
 msgid ""
 "A window will show up asking you to press a key or move a knob on your MIDI "
 "device."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:65
+#: ../../configuration/device-setup.rst:69
 msgid "MIDI learn window"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:67
+#: ../../configuration/device-setup.rst:71
 msgid ""
 "When the mapping is confirmed, the selected control can be controlled using "
 "the MIDI device."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:71
+#: ../../configuration/device-setup.rst:75
 msgid "Managing Bindings"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:73
+#: ../../configuration/device-setup.rst:77
 msgid ""
 "Device mappings (bindings) can be found under the :guilabel:`Bindings` tab "
-"in the main panel."
+"in the :ref:`main panel <zrythm-interface/main-panel:Main Panel>`."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:80
+#: ../../configuration/device-setup.rst:85
 msgid "MIDI CC bindings"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:82
+#: ../../configuration/device-setup.rst:87
 msgid ""
 "Bindings can be deleted by right-clicking on a row and selecting :guilabel:"
 "`Delete`."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:88
+#: ../../configuration/device-setup.rst:93
 msgid "Deleting a binding"
 msgstr ""
 
@@ -538,7 +542,7 @@ msgstr ""
 
 #: ../../configuration/preferences.rst:10
 #: ../../plugins-files/audio-midi-files/file-browser.rst:116
-#: ../../zrythm-interface/main-toolbar.rst:114
+#: ../../zrythm-interface/main-toolbar.rst:110
 msgid "Preferences"
 msgstr ""
 
@@ -548,356 +552,115 @@ msgid ""
 "can be accessed by clicking the gear icon or with :kbd:`Control-Shift-p`"
 msgstr ""
 
-#: ../../configuration/preferences.rst:16
+#: ../../configuration/preferences.rst:19
+msgid "Preferences dialog"
+msgstr ""
+
+#: ../../configuration/preferences.rst:21
 msgid ""
-"Each section in the preferences dialog is explained in the following "
-"sections."
+"Preferences are grouped by sections, such as :guilabel:`General` and :"
+"guilabel:`Plugins`, and each item in the preferences contains a tooltip that "
+"explains what it does."
 msgstr ""
 
-#: ../../configuration/preferences.rst:20
-msgid "General"
-msgstr ""
-
-#: ../../configuration/preferences.rst:22
-msgid "General settings."
+#: ../../configuration/preferences.rst:26
+msgid "Zrythm must be restarted for changes to take effect."
 msgstr ""
 
 #: ../../configuration/preferences.rst:30
-msgid "Engine"
+msgid "Searching"
 msgstr ""
 
 #: ../../configuration/preferences.rst:32
-msgid "Audio engine settings."
-msgstr ""
-
-#: ../../configuration/preferences.rst:36
-msgid "Audio backend"
-msgstr ""
-
-#: ../../configuration/preferences.rst:35
 msgid ""
-"The audio backend to use. The available backends are JACK, RtAudio and SDL2. "
-"We recommend using :term:`JACK` when possible, otherwise RtAudio."
+"The preferences are searchable. You can simply start typing a keyword and "
+"results will appear automatically. Clicking on one of the results will "
+"navigate to the corresponding item in the preferences."
 msgstr ""
 
 #: ../../configuration/preferences.rst:41
-msgid "MIDI backend"
-msgstr ""
-
-#: ../../configuration/preferences.rst:39
-msgid ""
-"The MIDI backend to use. The available backends are JACK MIDI, RtMidi and "
-"WindowsMME (Windows only). We recommend using JACK MIDI when possible, "
-"otherwise RtMidi."
-msgstr ""
-
-#: ../../configuration/preferences.rst:43
-msgid "MIDI controllers"
+msgid "Searching the user preferences"
 msgstr ""
 
 #: ../../configuration/preferences.rst:44
-msgid "A list of controllers to auto-connect to."
+msgid "Notable Preferences"
 msgstr ""
 
 #: ../../configuration/preferences.rst:46
-msgid "Audio inputs"
+msgid ""
+"Below is a list of notable preference items with some comments about them."
 msgstr ""
 
-#: ../../configuration/preferences.rst:46
-msgid "A list of audio inputs to auto-connect to."
+#: ../../configuration/preferences.rst:50
+msgid "Backend Selection"
 msgstr ""
 
-#: ../../configuration/preferences.rst:49
-msgid "Paths (Global)"
+#: ../../configuration/preferences.rst:52
+msgid ""
+"The audio/MIDI backend in under :menuselection:`General --> Engine` controls "
+"which audio engine implementation Zrythm will use to receive input from and "
+"send output to devices. :term:`JACK`/JACK MIDI is the recommended backend "
+"combination on all systems."
 msgstr ""
 
-#: ../../configuration/preferences.rst:51
-msgid "Global paths."
+#: ../../configuration/preferences.rst:60
+msgid "Input Devices/Controllers"
 msgstr ""
 
-#: ../../configuration/preferences.rst:54
-msgid "Zrythm path"
-msgstr "Zrythm 경로"
-
-#: ../../configuration/preferences.rst:54
-msgid "The :term:`Zrythm user path`."
+#: ../../configuration/preferences.rst:62
+msgid ""
+"In order to be able to record input from MIDI/audio devices, the devices "
+"must be explicitly enabled using the :guilabel:`MIDI controllers` and :"
+"guilabel:`Audio inputs` settings under :menuselection:`General --> Engine`."
 msgstr ""
 
-#: ../../configuration/preferences.rst:57
-#: ../../getting-started/getting-plugins.rst:11
-#: ../../plugins-files/plugins/intro.rst:6
-msgid "Plugins"
-msgstr ""
-
-#: ../../configuration/preferences.rst:59
-msgid ":term:`Plugin` settings."
-msgstr ""
-
-#: ../../configuration/preferences.rst:65
-msgid "UIs"
-msgstr ""
-
-#: ../../configuration/preferences.rst:67
-msgid "Plugin UIs."
-msgstr ""
-
-#: ../../configuration/preferences.rst:70
-#: ../../plugins-files/plugins/plugin-window.rst:24
-msgid "Generic UIs"
-msgstr ""
-
-#: ../../configuration/preferences.rst:70
-msgid "Show generic plugin UIs generated by Zrythm instead of custom ones."
+#: ../../configuration/preferences.rst:68
+msgid "Zrythm will ignore input from any devices not explicitly enabled."
 msgstr ""
 
 #: ../../configuration/preferences.rst:72
-msgid "Open UI on instantiation"
-msgstr ""
-
-#: ../../configuration/preferences.rst:73
-msgid "Open plugin UIs when they are instantiated."
+msgid "Undo Stack Length"
 msgstr ""
 
 #: ../../configuration/preferences.rst:74
-msgid "Keep window on top"
-msgstr ""
-
-#: ../../configuration/preferences.rst:75
-msgid "Always show plugin UIs on top of the main window."
-msgstr ""
-
-#: ../../configuration/preferences.rst:80
-msgid "Bridge unsupported UIs"
-msgstr ""
-
-#: ../../configuration/preferences.rst:77
 msgid ""
-"Bridge unsupported UIs in another process instead of creating generic ones."
+"The size of the undo stack, found under :menuselection:`Editing --> Undo` "
+"controls how far back you can undo user actions in a given project. For "
+"example, if set to 128, you can go back 128 (undoable) user actions."
 msgstr ""
 
 #: ../../configuration/preferences.rst:80
-msgid "This may lead to performance loss for some plugins."
+msgid ""
+"The undo history is saved inside Zrythm projects, so you can still undo even "
+"after you load the project in a new instance of Zrythm."
 msgstr ""
 
 #: ../../configuration/preferences.rst:84
-msgid "Refresh rate"
-msgstr ""
-
-#: ../../configuration/preferences.rst:83
 msgid ""
-"Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
+"Setting this to a very large number will increase the size of project files "
+"and it may take longer to save/load projects. We recommend leaving it to the "
+"default value."
 msgstr ""
 
-#: ../../configuration/preferences.rst:89
-msgid "Paths"
-msgstr ""
-
-#: ../../configuration/preferences.rst:97
-msgid "VST plugins"
+#: ../../configuration/preferences.rst:90
+msgid "Backup Saving"
 msgstr ""
 
 #: ../../configuration/preferences.rst:92
-msgid "The search paths to scan for :term:`VST2` plugins in."
-msgstr ""
-
-#: ../../configuration/preferences.rst:95
 msgid ""
-"This option is only available on Windows. On GNU/Linux and MacOS the paths "
-"are fixed. See :ref:`scanning-plugins` for details."
+"Zrythm can save backups automatically while working on a project. You can "
+"specify the interval to do this, in minutes, under :menuselection:`Projects "
+"--> General`. To disable auto-save, set the interval to 0."
 msgstr ""
 
-#: ../../configuration/preferences.rst:100
-msgid "SFZ instruments"
+#: ../../configuration/preferences.rst:99
+msgid "User Interface Language"
 msgstr ""
 
-#: ../../configuration/preferences.rst:100
-msgid "The search paths to scan for :term:`SFZ` instruments in."
-msgstr ""
-
-#: ../../configuration/preferences.rst:104
-msgid "SF2 instruments"
-msgstr ""
-
-#: ../../configuration/preferences.rst:103
-msgid "The search paths to scan for :term:`SF2` instruments in."
-msgstr ""
-
-#: ../../configuration/preferences.rst:107 ../../glossary/intro.rst:63
-msgid "DSP"
-msgstr ""
-
-#: ../../configuration/preferences.rst:109
-msgid ":term:`DSP` settings."
-msgstr ""
-
-#: ../../configuration/preferences.rst:115
-msgid "Pan"
-msgstr ""
-
-#: ../../configuration/preferences.rst:117
+#: ../../configuration/preferences.rst:101
 msgid ""
-":term:`Panning` options for :term:`Mono` signals (not used at the moment)."
-msgstr ""
-
-#: ../../configuration/preferences.rst:134
-msgid "Pan algorithm"
-msgstr ""
-
-#: ../../configuration/preferences.rst:120
-msgid ""
-"The panning algorithm to use when applying pan on mono signals. See the "
-"graph below for the different curves as you move the pan from left to right. "
-"We recommend leaving it as the default (Sine). See https://www.cs.cmu.edu/"
-"~music/icm-online/readings/panlaws/index.html for more information."
-msgstr ""
-
-#: ../../configuration/preferences.rst:133
-msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
-msgstr ""
-
-#: ../../configuration/preferences.rst:138 ../../glossary/intro.rst:104
-msgid "Pan law"
-msgstr ""
-
-#: ../../configuration/preferences.rst:137
-msgid "The :term:`Pan law` to use when applying pan on mono signals."
-msgstr ""
-
-#: ../../configuration/preferences.rst:141 ../../editing/intro.rst:8
-msgid "Editing"
-msgstr ""
-
-#: ../../configuration/preferences.rst:143
-msgid "Editing options."
-msgstr ""
-
-#: ../../configuration/preferences.rst:149
-#: ../../plugins-files/audio-midi-files/file-browser.rst:62
-#: ../../plugins-files/audio-midi-files/overview.rst:18
-#: ../../routing/ports.rst:41 ../../tracks/track-types.rst:21
-#: ../../tracks/track-types.rst:22 ../../tracks/track-types.rst:23
-#: ../../tracks/track-types.rst:27 ../../tracks/track-types.rst:28
-#: ../../tracks/track-types.rst:32 ../../tracks/track-types.rst:33
-#: ../../tracks/track-types.rst:43 ../../tracks/track-types.rst:52
-#: ../../tracks/track-types.rst:53
-msgid "Audio"
-msgstr "오디오"
-
-#: ../../configuration/preferences.rst:151
-msgid "Audio editing."
-msgstr ""
-
-#: ../../configuration/preferences.rst:154
-msgid "Fade algorithm"
-msgstr ""
-
-#: ../../configuration/preferences.rst:154
-msgid "Default fade algorithm to use for fade in/outs."
-msgstr ""
-
-#: ../../configuration/preferences.rst:157 ../../tracks/automation.rst:8
-msgid "Automation"
-msgstr ""
-
-#: ../../configuration/preferences.rst:159
-msgid "Automation editing."
-msgstr ""
-
-#: ../../configuration/preferences.rst:163
-msgid "Curve algorithm"
-msgstr ""
-
-#: ../../configuration/preferences.rst:162
-msgid "Default curve algorithm to use for automation curves."
-msgstr ""
-
-#: ../../configuration/preferences.rst:166
-msgid "Undo"
-msgstr ""
-
-#: ../../configuration/preferences.rst:168
-msgid "Undo options."
-msgstr ""
-
-#: ../../configuration/preferences.rst:175
-msgid "Undo stack length"
-msgstr ""
-
-#: ../../configuration/preferences.rst:171
-msgid "Maximum undo history stack length. Set to -1 for unlimited."
-msgstr ""
-
-#: ../../configuration/preferences.rst:174
-msgid "We recommend leaving it at 128."
-msgstr ""
-
-#: ../../configuration/preferences.rst:178 ../../projects/intro.rst:8
-msgid "Projects"
-msgstr ""
-
-#: ../../configuration/preferences.rst:180
-msgid "Project settings."
-msgstr ""
-
-#: ../../configuration/preferences.rst:186
-msgid "General (Project)"
-msgstr ""
-
-#: ../../configuration/preferences.rst:188
-msgid "General project settings."
-msgstr ""
-
-#: ../../configuration/preferences.rst:195
-msgid "Autosave interval"
-msgstr ""
-
-#: ../../configuration/preferences.rst:191
-msgid ""
-"Interval to auto-save projects, in minutes. Auto-saving will be disabled if "
-"this is set to 0."
-msgstr ""
-
-#: ../../configuration/preferences.rst:194
-msgid ""
-"This refers to automatic back-ups. The main project will not be overwritten "
-"unless you explicitly save it."
-msgstr ""
-
-#: ../../configuration/preferences.rst:198
-msgid "UI"
-msgstr ""
-
-#: ../../configuration/preferences.rst:200
-msgid "User interface options."
-msgstr ""
-
-#: ../../configuration/preferences.rst:206
-msgid "General (UI)"
-msgstr ""
-
-#: ../../configuration/preferences.rst:208
-msgid "General user interface options."
-msgstr ""
-
-#: ../../configuration/preferences.rst:216
-msgid "User interface language"
-msgstr ""
-
-#: ../../configuration/preferences.rst:211
-msgid "The language to use for the user interface."
-msgstr ""
-
-#: ../../configuration/preferences.rst:213
-msgid ""
-"For a list of supported languages and their translation status, or to "
-"translate Zrythm into your language, see `Weblate <https://hosted.weblate."
-"org/projects/zrythm/>`_."
-msgstr ""
-"지원되는 언어 목록과 번역 상태를 보거나 Zrythm을 해당 언어로 번역하려면 "
-"`Weblate <https://hosted.weblate.org/projects/zrythm/>`_을 참조하십시오."
-
-#: ../../configuration/preferences.rst:218
-msgid "Some of these settings require a restart of Zrythm to take effect."
+"The language of the user interface can be changed under :menuselection:`UI --"
+"> General`."
 msgstr ""
 
 #: ../../configuration/shortcuts.rst:6
@@ -2082,6 +1845,10 @@ msgstr ""
 msgid "Where applicable, hold :kbd:`Shift` to bypass snapping."
 msgstr ""
 
+#: ../../editing/intro.rst:8
+msgid "Editing"
+msgstr ""
+
 #: ../../editing/overview.rst:8
 msgid ""
 "Editing refers to any work done in the timeline arranger and the editors."
@@ -2711,8 +2478,7 @@ msgstr ""
 msgid "Dither"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:38 ../../tracks/inspector-page.rst:170
-#: ../../tracks/inspector-page.rst:175
+#: ../../exporting/audio-and-midi.rst:38 ../../tracks/inspector-page.rst:173
 msgid "Implement."
 msgstr ""
 
@@ -2811,6 +2577,11 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:8
 msgid "Getting Plugins, Instruments and Samples"
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:11
+#: ../../plugins-files/plugins/intro.rst:6
+msgid "Plugins"
 msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:13
@@ -3187,6 +2958,10 @@ msgid ""
 "For quickly trying out melodies, recording and controlling knobs and buttons."
 msgstr ""
 
+#: ../../getting-started/system-requirements.rst:35 ../../glossary/intro.rst:73
+msgid "JACK"
+msgstr ""
+
 #: ../../getting-started/system-requirements.rst:36
 #, python-format
 msgid ""
@@ -3362,6 +3137,10 @@ msgid ""
 "record, edit, arrange, mix and master music."
 msgstr ""
 
+#: ../../glossary/intro.rst:63
+msgid "DSP"
+msgstr ""
+
 #: ../../glossary/intro.rst:65
 msgid ""
 "In the context of a :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
@@ -3428,6 +3207,10 @@ msgstr ""
 
 #: ../../glossary/intro.rst:102
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
+msgstr ""
+
+#: ../../glossary/intro.rst:104
+msgid "Pan law"
 msgstr ""
 
 #: ../../glossary/intro.rst:106 ../../tracks/audio-track.rst:55
@@ -4374,6 +4157,17 @@ msgstr ""
 msgid "The following toggles are available."
 msgstr ""
 
+#: ../../plugins-files/audio-midi-files/file-browser.rst:62
+#: ../../plugins-files/audio-midi-files/overview.rst:18
+#: ../../routing/ports.rst:41 ../../tracks/track-types.rst:21
+#: ../../tracks/track-types.rst:22 ../../tracks/track-types.rst:23
+#: ../../tracks/track-types.rst:27 ../../tracks/track-types.rst:28
+#: ../../tracks/track-types.rst:32 ../../tracks/track-types.rst:33
+#: ../../tracks/track-types.rst:43 ../../tracks/track-types.rst:52
+#: ../../tracks/track-types.rst:53
+msgid "Audio"
+msgstr "오디오"
+
 #: ../../plugins-files/audio-midi-files/file-browser.rst:63
 msgid "Only show audio files."
 msgstr ""
@@ -4974,6 +4768,10 @@ msgid ""
 "without additions like `File` or `Presets`."
 msgstr ""
 
+#: ../../plugins-files/plugins/plugin-window.rst:24
+msgid "Generic UIs"
+msgstr ""
+
 #: ../../plugins-files/plugins/plugin-window.rst:25
 msgid ""
 "If the plugin does not ship with its own UI, the following generic UI will "
@@ -5198,6 +4996,10 @@ msgstr ""
 msgid ""
 ":term:`SFZ` and :term:`SF2` instruments will be scanned in all  directories "
 "and subdirectories specified in :ref:`vst-paths`."
+msgstr ""
+
+#: ../../projects/intro.rst:8
+msgid "Projects"
 msgstr ""
 
 #: ../../projects/project-management-and-compatibility.rst:6
@@ -5799,7 +5601,7 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/scripting-interface.rst:6
-#: ../../zrythm-interface/main-toolbar.rst:106
+#: ../../zrythm-interface/main-toolbar.rst:105
 msgid "Scripting Interface"
 msgstr ""
 
@@ -6083,6 +5885,10 @@ msgstr ""
 #: ../../tracks/bus-track-midi.rst:52 ../../tracks/group-track-audio.rst:56
 #: ../../tracks/instrument-track.rst:84 ../../tracks/master-track.rst:54
 msgid "These are similar to :ref:`midi-track-automation-tracks`."
+msgstr ""
+
+#: ../../tracks/automation.rst:8
+msgid "Automation"
 msgstr ""
 
 #: ../../tracks/automation.rst:11
@@ -6508,23 +6314,23 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:165
 msgid ""
 "Similar to solo, except it dims the volume of other tracks instead of muting "
-"them. The dim amount can be controlled in the control room described in :ref:"
-"`control-room`."
+"them. The dim amount can be controlled in the :ref:`Monitor Section <routing/"
+"monitor-section:Monitor Section>`."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:173
+#: ../../tracks/inspector-page.rst:171
 msgid "Channel Settings"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:178
+#: ../../tracks/inspector-page.rst:176
 msgid "Comments"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:179
+#: ../../tracks/inspector-page.rst:177
 msgid "User comments. This feature is useful for keeping notes about tracks."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:185
+#: ../../tracks/inspector-page.rst:183
 msgid "Clicking the pencil button will bring up a popup to edit the comment."
 msgstr ""
 
@@ -7341,43 +7147,39 @@ msgstr ""
 msgid "Shows the :ref:`scripting interface <scripting>`."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:108
+#: ../../zrythm-interface/main-toolbar.rst:107
 msgid "Log Viewer"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:109
+#: ../../zrythm-interface/main-toolbar.rst:108
 msgid "Displays the log, which gets updated real-time."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:111
-msgid "Shows the preferences dialog."
+#: ../../zrythm-interface/main-toolbar.rst:110
+msgid "Shows the :ref:`preferences dialog <preferences>`."
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:113
-msgid "See the :ref:`preferences` section for more information."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:117
 msgid "Live Indicators"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:119
+#: ../../zrythm-interface/main-toolbar.rst:115
 msgid "The following live indicators are displayed on the right."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:123
+#: ../../zrythm-interface/main-toolbar.rst:119
 msgid "MIDI In"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:123
+#: ../../zrythm-interface/main-toolbar.rst:119
 msgid "Shows the :term:`MIDI` activity of auto-connected MIDI devices."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:125
+#: ../../zrythm-interface/main-toolbar.rst:121
 msgid "Oscilloscope"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:126
+#: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Shows the audio waveform from the master output."
 msgstr ""
 
@@ -7538,3 +7340,14 @@ msgid ""
 "% usage at the bottom. If the DSP % exceeds 100 (all bars filled), audio "
 "will start clipping."
 msgstr ""
+
+#~ msgid "Zrythm path"
+#~ msgstr "Zrythm 경로"
+
+#~ msgid ""
+#~ "For a list of supported languages and their translation status, or to "
+#~ "translate Zrythm into your language, see `Weblate <https://hosted.weblate."
+#~ "org/projects/zrythm/>`_."
+#~ msgstr ""
+#~ "지원되는 언어 목록과 번역 상태를 보거나 Zrythm을 해당 언어로 번역하려면 "
+#~ "`Weblate <https://hosted.weblate.org/projects/zrythm/>`_을 참조하십시오."
