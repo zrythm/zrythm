@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. _plugin-browser:
@@ -10,8 +10,10 @@ Plugin Browser
 The plugin browser makes it easy to browse and
 filter plugins installed on your computer.
 
-.. image:: /_static/img/plugin_browser.png
+.. figure:: /_static/img/plugin-browser.png
    :align: center
+
+   Plugin browser
 
 Filter Tabs
 -----------
@@ -33,7 +35,7 @@ Protocol
 .. tip:: You can mix filters from various tabs for
    a custom search.
 
-.. tip:: Where applicable, you can
+.. hint:: Where applicable, you can
    :kbd:`Control`-click to select multiple rows
    or deselect a row.
 
@@ -49,6 +51,12 @@ based on their type.
 
 See :ref:`plugin-types` for more information about
 the various types of plugins there are.
+
+Keyword Search
+--------------
+
+Plugins can also be searched by keywords using the
+provided search bar.
 
 .. _instantiating-plugins:
 

@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-17 22:09+0000\n"
+"POT-Creation-Date: 2022-03-17 22:33+0000\n"
 "PO-Revision-Date: 2022-02-02 16:54+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language: es\n"
@@ -5048,7 +5048,7 @@ msgid "Filtering"
 msgstr "Filtrado"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:50
-#: ../../plugins-files/plugins/plugin-browser.rst:41
+#: ../../plugins-files/plugins/plugin-browser.rst:43
 msgid "Filter Buttons"
 msgstr "Botones de filtro"
 
@@ -5372,20 +5372,22 @@ msgid "Inspector Page"
 msgstr "Página del inspector"
 
 #: ../../plugins-files/plugins/inspector-page.rst:10
+#, fuzzy
 msgid ""
-"When a plugin is selected in the Mixer, or when using right click -> Inspect "
-"on an instrument, its page will appear in the Inspector as follows."
+"When a plugin is selected in the Mixer, or when using :menuselection:`right "
+"click --> Inspect` on an instrument, its page will appear in the inspector "
+"as follows."
 msgstr ""
 "Cuando se selecciona un plugin en el Mezclador o se hace clic derecho -> "
 "Inspeccionar en un instrumento, la página aparecerá en el Inspector del modo "
 "siguiente."
 
-#: ../../plugins-files/plugins/inspector-page.rst:17
+#: ../../plugins-files/plugins/inspector-page.rst:18
 #, fuzzy
 msgid "Plugin inspector"
 msgstr "Inspector de plugins"
 
-#: ../../plugins-files/plugins/inspector-page.rst:19
+#: ../../plugins-files/plugins/inspector-page.rst:20
 msgid ""
 "This page will display information about the plugin and its ports and allow "
 "you to make changes."
@@ -5393,11 +5395,11 @@ msgstr ""
 "Esta página muestra información sobre el plugin y sus puertos y permite "
 "realizar cambios."
 
-#: ../../plugins-files/plugins/inspector-page.rst:24
+#: ../../plugins-files/plugins/inspector-page.rst:25
 msgid "Plugin Properties"
 msgstr "Propiedades de plugins"
 
-#: ../../plugins-files/plugins/inspector-page.rst:25
+#: ../../plugins-files/plugins/inspector-page.rst:26
 msgid ""
 "The plugin properties show the name and type of the plugin, as well as "
 "preset and bank selectors."
@@ -5405,16 +5407,16 @@ msgstr ""
 "Las propiedades de plugins muestran el nombre y el tipo de plugin, así como "
 "los selectores de preset y bancos."
 
-#: ../../plugins-files/plugins/inspector-page.rst:32
+#: ../../plugins-files/plugins/inspector-page.rst:33
 #: ../../plugins-files/plugins/plugin-info.rst:51
 msgid "Plugin Ports"
 msgstr "Puertos de plugins"
 
-#: ../../plugins-files/plugins/inspector-page.rst:33
+#: ../../plugins-files/plugins/inspector-page.rst:34
 msgid "These are the ports that the plugin has."
 msgstr "Estos son los puertos que tiene el plugin."
 
-#: ../../plugins-files/plugins/inspector-page.rst:38
+#: ../../plugins-files/plugins/inspector-page.rst:39
 #, fuzzy
 msgid ""
 "Control input ports can be changed by clicking and dragging, and can also be "
@@ -5425,17 +5427,17 @@ msgstr ""
 "automatización. Los puertos se pueden enrutar a otros puertos en cualquier "
 "lugar dentro de Zrythm haciendo doble clic en ellos."
 
-#: ../../plugins-files/plugins/inspector-page.rst:42
+#: ../../plugins-files/plugins/inspector-page.rst:43
 msgid ""
 "Ports can be routed to other ports anywhere within Zrythm by double clicking "
 "on them."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:45
+#: ../../plugins-files/plugins/inspector-page.rst:46
 msgid "Ports are explained in more detail in :ref:`ports`."
 msgstr "Los puertos se explican con más detalle en :ref:`ports`."
 
-#: ../../plugins-files/plugins/inspector-page.rst:47
+#: ../../plugins-files/plugins/inspector-page.rst:48
 msgid ""
 "Depending on the type of plugin, there may be different categories of ports "
 "being shown."
@@ -5443,11 +5445,11 @@ msgstr ""
 "Dependiendo del tipo de plugin, es posible que se muestren diferentes "
 "categorías de puertos."
 
-#: ../../plugins-files/plugins/inspector-page.rst:51
+#: ../../plugins-files/plugins/inspector-page.rst:52
 msgid "Display"
 msgstr "Visualización"
 
-#: ../../plugins-files/plugins/inspector-page.rst:52
+#: ../../plugins-files/plugins/inspector-page.rst:53
 msgid ""
 "The number in the top right of each port name will display the current "
 "number of connections to/from this port. See :doc:`../../routing/making-"
@@ -5458,18 +5460,6 @@ msgstr ""
 "routing/making-connections` para más detalles."
 
 #: ../../plugins-files/plugins/inspector-page.rst:58
-msgid "Changing Values"
-msgstr "Cambio de valores"
-
-#: ../../plugins-files/plugins/inspector-page.rst:59
-msgid ""
-"The values of control ports can be changed by clicking and dragging inside "
-"each bar."
-msgstr ""
-"Los valores de los puertos de control se pueden cambiar haciendo clic en "
-"ellos y arrastrándolos dentro de cada barra."
-
-#: ../../plugins-files/plugins/inspector-page.rst:62
 msgid ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
 msgstr ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
 
@@ -5486,22 +5476,27 @@ msgstr ""
 "El explorador de plugins facilita la búsqueda y el filtrado de plugins "
 "instalados en tu ordenador."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:17
+#: ../../plugins-files/plugins/plugin-browser.rst:16
+#, fuzzy
+msgid "Plugin browser"
+msgstr "Explorador de plugins"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:19
 #, fuzzy
 msgid "Filter Tabs"
 msgstr "Pestaña de filtros"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:18
+#: ../../plugins-files/plugins/plugin-browser.rst:20
 msgid ""
 "Plugins can be filtered based on various conditions using the filter tabs at "
 "the top. The following tabs are available:"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:24
+#: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid "Collection"
 msgstr "Recopilación"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:23
+#: ../../plugins-files/plugins/plugin-browser.rst:25
 #, fuzzy
 msgid ""
 "This tab contains your collections. You can create collections such as "
@@ -5510,7 +5505,7 @@ msgstr ""
 "En esta pestaña se encuentran tus colecciones. Puedes crear colecciones como "
 "\"MisSintetizadores\" y filtrar por las colecciones seleccionadas."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:26
+#: ../../plugins-files/plugins/plugin-browser.rst:28
 #, fuzzy
 msgid "Author"
 msgstr ""
@@ -5519,45 +5514,45 @@ msgstr ""
 "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
 "Ruta"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:27
+#: ../../plugins-files/plugins/plugin-browser.rst:29
 msgid "Filter by plugin manufacturer/author."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:28
+#: ../../plugins-files/plugins/plugin-browser.rst:30
 msgid "Category"
 msgstr "Categoría"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:29
+#: ../../plugins-files/plugins/plugin-browser.rst:31
 msgid "Filter by category (`Delay`, `Distortion`, etc.)."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:31
+#: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "Protocol"
 msgstr "Protocolo"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:31
+#: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "Filter by protocol (`LV2`, `SFZ`, etc.)."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:33
+#: ../../plugins-files/plugins/plugin-browser.rst:35
 msgid "You can mix filters from various tabs for a custom search."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:36
+#: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid ""
 "Where applicable, you can :kbd:`Control`-click to select multiple rows or "
 "deselect a row."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:42
+#: ../../plugins-files/plugins/plugin-browser.rst:44
 msgid "Additionally to the above, plugins can be filtered based on their type."
 msgstr "Además, los plugins se pueden filtrar según su tipo."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:48
+#: ../../plugins-files/plugins/plugin-browser.rst:50
 msgid "Filtering by modulator plugins"
 msgstr "Filtrado por plugins de modulador"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:50
+#: ../../plugins-files/plugins/plugin-browser.rst:52
 msgid ""
 "See :ref:`plugin-types` for more information about the various types of "
 "plugins there are."
@@ -5566,18 +5561,26 @@ msgstr ""
 "distintos tipos de plugins que existen."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:56
+msgid "Keyword Search"
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:58
+msgid "Plugins can also be searched by keywords using the provided search bar."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:64
 msgid "Instantiating Plugins"
 msgstr "Instancia de plugins"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:57
+#: ../../plugins-files/plugins/plugin-browser.rst:65
 msgid "There are a couple of ways to instantiate plugins:"
 msgstr "Existen dos formas de crear una instancia de plugins:"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:60
+#: ../../plugins-files/plugins/plugin-browser.rst:68
 msgid "Drag-n-Drop"
 msgstr "Arrastrar y soltar"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:62
+#: ../../plugins-files/plugins/plugin-browser.rst:70
 msgid ""
 "You can drag and drop the selected plugin into empty space in the Tracklist "
 "or into empty space in the Mixer to create a new track using that plugin."
@@ -5585,7 +5588,7 @@ msgstr ""
 "Puede arrastrar y soltar el plugin seleccionado en un espacio vacío en la "
 "lista de pistas o en el Mezclador para crear una nueva usando ese plugin."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:72
+#: ../../plugins-files/plugins/plugin-browser.rst:80
 msgid ""
 "Alternatively, you can drag the plugin on a mixer slot to add it there or "
 "replace the previous plugin."
@@ -5593,16 +5596,16 @@ msgstr ""
 "Como alternativa, puedes arrastrar el plugin y agregarlo a una ranura del "
 "mezclador o reemplazar el plugin anterior."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:78
+#: ../../plugins-files/plugins/plugin-browser.rst:86
 msgid "If the plugin is a modulator, you can drop it into the Modulators tab."
 msgstr ""
 "Si el plugin es un modulador, se puede colocar en la pestaña Moduladores."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:85
+#: ../../plugins-files/plugins/plugin-browser.rst:93
 msgid "Double Click/Enter"
 msgstr "Doble clic/Enter"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:87
+#: ../../plugins-files/plugins/plugin-browser.rst:95
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."
@@ -5749,28 +5752,21 @@ msgid "Custom UIs"
 msgstr "Interfaces de usuario personalizadas"
 
 #: ../../plugins-files/plugins/plugin-window.rst:10
+#, fuzzy
 msgid ""
 "When Plugin UIs are opened, a window such as the following will be "
-"displayed, if the plugin ships with its own UI. This window will contain "
-"additions by Zrythm (such as the `File` and `Presets` menus)."
+"displayed, if the plugin ships with its own UI. This window may contain "
+"additions by Zrythm (such as `File` and `Presets` menus)."
 msgstr ""
 "Cuando se abren las IU del plugin, se muestra una ventana como la siguiente "
 "si el plugin incluye su propia IU. Esta ventana contiene adiciones de Zrythm "
 "(como los menús `Archivo` y `Presets`)."
 
-#: ../../plugins-files/plugins/plugin-window.rst:19
-msgid ""
-"Some plugin UIs cannot be wrapped and will be opened in separate windows "
-"without additions like `File` or `Presets`."
-msgstr ""
-"Algunas IU de plugins no se pueden empaquetar y se abren en ventanas "
-"separadas sin adiciones como `Archivo` o `Presets`."
-
-#: ../../plugins-files/plugins/plugin-window.rst:24
+#: ../../plugins-files/plugins/plugin-window.rst:20
 msgid "Generic UIs"
 msgstr "UI genérico"
 
-#: ../../plugins-files/plugins/plugin-window.rst:25
+#: ../../plugins-files/plugins/plugin-window.rst:21
 msgid ""
 "If the plugin does not ship with its own UI, the following generic UI will "
 "be generated for it."
@@ -5778,21 +5774,11 @@ msgstr ""
 "Si el plugin no se incluye con su propia interfaz de usuario, se generará la "
 "siguiente interfaz de usuario genérica."
 
-#: ../../plugins-files/plugins/plugin-window.rst:32
-msgid ""
-"This only applies to :term:`LV2` plugins. For other types of plugins, you "
-"can edit their parameters in the plugin inspector page (see :ref:`plugin-"
-"inspector-page`)."
-msgstr ""
-"Esto solo se aplica a los plugins :term:`LV2`. Para otros tipos, puedes "
-"editar tus parámetros en la página del inspector de plugins (ver :ref:"
-"`plugin-inspector-page`)."
-
-#: ../../plugins-files/plugins/plugin-window.rst:38
+#: ../../plugins-files/plugins/plugin-window.rst:29
 msgid "Bridging"
 msgstr "Puente"
 
-#: ../../plugins-files/plugins/plugin-window.rst:39
+#: ../../plugins-files/plugins/plugin-window.rst:30
 msgid ""
 "Most plugins are instantiated in the same process as Zrythm. This has the "
 "advantage that :term:`DSP` is very fast, however, some plugin UIs are not "
@@ -5804,7 +5790,7 @@ msgstr ""
 "algunas IU de los plugins no son compatibles con Zrythm y se deben puentear "
 "(es decir, ejecutarse como procesos separados)."
 
-#: ../../plugins-files/plugins/plugin-window.rst:46
+#: ../../plugins-files/plugins/plugin-window.rst:37
 msgid ""
 "When it is possible to bridge only the UI, Zrythm will do so, and this will "
 "not have any performance implications on DSP. If bridging the whole plugin "
@@ -5816,18 +5802,18 @@ msgstr ""
 "necesario puentear todo el plugin, sí que se verá afectado el rendimiento ya "
 "que necesita comunicarse con el plugin en otro proceso."
 
-#: ../../plugins-files/plugins/plugin-window.rst:53
+#: ../../plugins-files/plugins/plugin-window.rst:44
 msgid ""
 "This process is transparent to the user and only mentioned for reference."
 msgstr ""
 "Este proceso es transparente para el usuario y solo se menciona como "
 "referencia."
 
-#: ../../plugins-files/plugins/plugin-window.rst:57
+#: ../../plugins-files/plugins/plugin-window.rst:48
 msgid "Opening Plugins in Bridged Mode"
 msgstr "Abrir plugins en modo puente"
 
-#: ../../plugins-files/plugins/plugin-window.rst:58
+#: ../../plugins-files/plugins/plugin-window.rst:49
 msgid ""
 "Sometimes, you may need to manually tell Zrythm to open plugins in a "
 "specific way. You can find the options available for each plugin by right "
@@ -5837,6 +5823,11 @@ msgstr ""
 "abra plugins de una manera específica. Puedes encontrar las opciones "
 "disponibles para cada plugin al hacer clic derecho en el plugin en el :ref:"
 "`plugin-browser`."
+
+#: ../../plugins-files/plugins/plugin-window.rst:57
+#, fuzzy
+msgid "Opening ZynAddSubFX in bridged mode"
+msgstr "Abrir plugins en modo puente"
 
 #: ../../plugins-files/plugins/scanning.rst:8
 msgid "Scanning for Plugins"
@@ -8597,6 +8588,32 @@ msgid ""
 "% usage at the bottom. If the DSP % exceeds 100 (all bars filled), audio "
 "will start clipping."
 msgstr ""
+
+#~ msgid "Changing Values"
+#~ msgstr "Cambio de valores"
+
+#~ msgid ""
+#~ "The values of control ports can be changed by clicking and dragging "
+#~ "inside each bar."
+#~ msgstr ""
+#~ "Los valores de los puertos de control se pueden cambiar haciendo clic en "
+#~ "ellos y arrastrándolos dentro de cada barra."
+
+#~ msgid ""
+#~ "Some plugin UIs cannot be wrapped and will be opened in separate windows "
+#~ "without additions like `File` or `Presets`."
+#~ msgstr ""
+#~ "Algunas IU de plugins no se pueden empaquetar y se abren en ventanas "
+#~ "separadas sin adiciones como `Archivo` o `Presets`."
+
+#~ msgid ""
+#~ "This only applies to :term:`LV2` plugins. For other types of plugins, you "
+#~ "can edit their parameters in the plugin inspector page (see :ref:`plugin-"
+#~ "inspector-page`)."
+#~ msgstr ""
+#~ "Esto solo se aplica a los plugins :term:`LV2`. Para otros tipos, puedes "
+#~ "editar tus parámetros en la página del inspector de plugins (ver :ref:"
+#~ "`plugin-inspector-page`)."
 
 #~ msgid ""
 #~ "Zrythm stores most of its configuration using the GSettings mechanism, "

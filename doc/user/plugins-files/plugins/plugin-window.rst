@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019-2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 Plugin Window
@@ -9,16 +9,12 @@ Custom UIs
 ----------
 When Plugin UIs are opened, a window such
 as the following will be displayed, if the
-plugin ships with its own UI. This window will
-contain additions by Zrythm (such as the
+plugin ships with its own UI. This window may
+contain additions by Zrythm (such as
 `File` and `Presets` menus).
 
 .. image:: /_static/img/della_plugin_window.png
    :align: center
-
-.. note:: Some plugin UIs cannot be wrapped and will
-   be opened in separate windows without additions
-   like `File` or `Presets`.
 
 Generic UIs
 -----------
@@ -28,11 +24,6 @@ for it.
 
 .. image:: /_static/img/haas_plugin_window.png
    :align: center
-
-.. note:: This only applies to :term:`LV2` plugins.
-   For other types of plugins, you can edit their
-   parameters in the plugin inspector page (see
-   :ref:`plugin-inspector-page`).
 
 Bridging
 --------
@@ -60,4 +51,7 @@ to open plugins in a specific way. You can find the
 options available for each plugin by right clicking
 on the plugin in the :ref:`plugin-browser`.
 
-.. image:: /_static/img/open-plugin-bridged.png
+.. figure:: /_static/img/open-plugin-bridged.png
+   :align: center
+
+   Opening ZynAddSubFX in bridged mode

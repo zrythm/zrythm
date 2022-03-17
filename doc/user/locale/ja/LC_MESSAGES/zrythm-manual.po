@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-17 22:09+0000\n"
+"POT-Creation-Date: 2022-03-17 22:33+0000\n"
 "PO-Revision-Date: 2022-02-19 21:56+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -4799,7 +4799,7 @@ msgid "Filtering"
 msgstr "フィルタリング"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:50
-#: ../../plugins-files/plugins/plugin-browser.rst:41
+#: ../../plugins-files/plugins/plugin-browser.rst:43
 msgid "Filter Buttons"
 msgstr "フィルター ボタン"
 
@@ -5116,18 +5116,19 @@ msgstr "インスペクターページ"
 #: ../../plugins-files/plugins/inspector-page.rst:10
 #, fuzzy
 msgid ""
-"When a plugin is selected in the Mixer, or when using right click -> Inspect "
-"on an instrument, its page will appear in the Inspector as follows."
+"When a plugin is selected in the Mixer, or when using :menuselection:`right "
+"click --> Inspect` on an instrument, its page will appear in the inspector "
+"as follows."
 msgstr ""
 "ミキサーでプラグインを選択すると、そのページがインスペクタに次のように表示さ"
 "れます。"
 
-#: ../../plugins-files/plugins/inspector-page.rst:17
+#: ../../plugins-files/plugins/inspector-page.rst:18
 #, fuzzy
 msgid "Plugin inspector"
 msgstr "プラグインインスペクター"
 
-#: ../../plugins-files/plugins/inspector-page.rst:19
+#: ../../plugins-files/plugins/inspector-page.rst:20
 #, fuzzy
 msgid ""
 "This page will display information about the plugin and its ports and allow "
@@ -5136,11 +5137,11 @@ msgstr ""
 "このページには、プラグインとそのポートに関する情報が表示され、変更を行うこと"
 "ができます。"
 
-#: ../../plugins-files/plugins/inspector-page.rst:24
+#: ../../plugins-files/plugins/inspector-page.rst:25
 msgid "Plugin Properties"
 msgstr "プラグインの属性"
 
-#: ../../plugins-files/plugins/inspector-page.rst:25
+#: ../../plugins-files/plugins/inspector-page.rst:26
 msgid ""
 "The plugin properties show the name and type of the plugin, as well as "
 "preset and bank selectors."
@@ -5148,16 +5149,16 @@ msgstr ""
 "プラグインのプロパティには、プラグインの名前と種類、プリセットとバンクセレク"
 "タが表示されます。"
 
-#: ../../plugins-files/plugins/inspector-page.rst:32
+#: ../../plugins-files/plugins/inspector-page.rst:33
 #: ../../plugins-files/plugins/plugin-info.rst:51
 msgid "Plugin Ports"
 msgstr "プラグインポート"
 
-#: ../../plugins-files/plugins/inspector-page.rst:33
+#: ../../plugins-files/plugins/inspector-page.rst:34
 msgid "These are the ports that the plugin has."
 msgstr "これらはプラグインが持っているポートです。"
 
-#: ../../plugins-files/plugins/inspector-page.rst:38
+#: ../../plugins-files/plugins/inspector-page.rst:39
 #, fuzzy
 msgid ""
 "Control input ports can be changed by clicking and dragging, and can also be "
@@ -5167,28 +5168,28 @@ msgstr ""
 "トラックを使用して自動化することもできます。ポートは、Zrythm 内の任意の場所に"
 "ある他のポートに、ダブルクリックすることでルーティングできます。"
 
-#: ../../plugins-files/plugins/inspector-page.rst:42
+#: ../../plugins-files/plugins/inspector-page.rst:43
 msgid ""
 "Ports can be routed to other ports anywhere within Zrythm by double clicking "
 "on them."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:45
+#: ../../plugins-files/plugins/inspector-page.rst:46
 msgid "Ports are explained in more detail in :ref:`ports`."
 msgstr "ポートについては :ref:`ports` で詳しく説明しています。"
 
-#: ../../plugins-files/plugins/inspector-page.rst:47
+#: ../../plugins-files/plugins/inspector-page.rst:48
 msgid ""
 "Depending on the type of plugin, there may be different categories of ports "
 "being shown."
 msgstr ""
 "プラグインの種類によって、表示されるポートのカテゴリが異なる場合があります。"
 
-#: ../../plugins-files/plugins/inspector-page.rst:51
+#: ../../plugins-files/plugins/inspector-page.rst:52
 msgid "Display"
 msgstr "表示"
 
-#: ../../plugins-files/plugins/inspector-page.rst:52
+#: ../../plugins-files/plugins/inspector-page.rst:53
 #, fuzzy
 msgid ""
 "The number in the top right of each port name will display the current "
@@ -5199,18 +5200,6 @@ msgstr ""
 "oc:'を参照してください。/../ルーティング/接続を作成する'詳細については。"
 
 #: ../../plugins-files/plugins/inspector-page.rst:58
-msgid "Changing Values"
-msgstr "値の変更"
-
-#: ../../plugins-files/plugins/inspector-page.rst:59
-msgid ""
-"The values of control ports can be changed by clicking and dragging inside "
-"each bar."
-msgstr ""
-"コントロールポートの値は、バー内をクリックしてドラッグすることで変更できま"
-"す。"
-
-#: ../../plugins-files/plugins/inspector-page.rst:62
 msgid ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
 msgstr ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
 
@@ -5227,21 +5216,26 @@ msgstr ""
 "プラグインブラウザを使用すると、コンピュータにインストールされているプラグイ"
 "ンを簡単に閲覧してフィルタリングできます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:17
+#: ../../plugins-files/plugins/plugin-browser.rst:16
+#, fuzzy
+msgid "Plugin browser"
+msgstr "プラグインブラウザ"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:19
 msgid "Filter Tabs"
 msgstr "フィルタ・タブ"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:18
+#: ../../plugins-files/plugins/plugin-browser.rst:20
 msgid ""
 "Plugins can be filtered based on various conditions using the filter tabs at "
 "the top. The following tabs are available:"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:24
+#: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid "Collection"
 msgstr "コレクション"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:23
+#: ../../plugins-files/plugins/plugin-browser.rst:25
 #, fuzzy
 msgid ""
 "This tab contains your collections. You can create collections such as "
@@ -5250,35 +5244,35 @@ msgstr ""
 "このタブには、コレクションが含まれています。\"MySynths\" などのコレクションを"
 "作成し、選択したコレクションでフィルター処理できます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:26
+#: ../../plugins-files/plugins/plugin-browser.rst:28
 msgid "Author"
 msgstr "作者"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:27
+#: ../../plugins-files/plugins/plugin-browser.rst:29
 msgid "Filter by plugin manufacturer/author."
 msgstr "プラグインのメーカー/作者で絞り込む。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:28
+#: ../../plugins-files/plugins/plugin-browser.rst:30
 msgid "Category"
 msgstr "カテゴリー"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:29
+#: ../../plugins-files/plugins/plugin-browser.rst:31
 msgid "Filter by category (`Delay`, `Distortion`, etc.)."
 msgstr "カテゴリ ( `Delay` 、 `Distortion` など) でフィルタリングする。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:31
+#: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "Protocol"
 msgstr "プロトコル"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:31
+#: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "Filter by protocol (`LV2`, `SFZ`, etc.)."
 msgstr "プロトコル ( `LV2` 、 `SFZ` など) でフィルタリングする。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:33
+#: ../../plugins-files/plugins/plugin-browser.rst:35
 msgid "You can mix filters from various tabs for a custom search."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:36
+#: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid ""
 "Where applicable, you can :kbd:`Control`-click to select multiple rows or "
 "deselect a row."
@@ -5286,15 +5280,15 @@ msgstr ""
 "該当する場合は、 :kbd:`Control` を押しながらクリックして、複数の行を選択した"
 "り、行の選択を解除したりすることができます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:42
+#: ../../plugins-files/plugins/plugin-browser.rst:44
 msgid "Additionally to the above, plugins can be filtered based on their type."
 msgstr "さらに、プラグインは種類に基づいてフィルタリングすることができます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:48
+#: ../../plugins-files/plugins/plugin-browser.rst:50
 msgid "Filtering by modulator plugins"
 msgstr "モジュレータープラグインによるフィルタリング"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:50
+#: ../../plugins-files/plugins/plugin-browser.rst:52
 msgid ""
 "See :ref:`plugin-types` for more information about the various types of "
 "plugins there are."
@@ -5303,18 +5297,26 @@ msgstr ""
 "い。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:56
+msgid "Keyword Search"
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:58
+msgid "Plugins can also be searched by keywords using the provided search bar."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:64
 msgid "Instantiating Plugins"
 msgstr "プラグインのインスタンス化"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:57
+#: ../../plugins-files/plugins/plugin-browser.rst:65
 msgid "There are a couple of ways to instantiate plugins:"
 msgstr "プラグインをインスタンス化する方法はいくつかあります。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:60
+#: ../../plugins-files/plugins/plugin-browser.rst:68
 msgid "Drag-n-Drop"
 msgstr "ドラッグアンドドロップ"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:62
+#: ../../plugins-files/plugins/plugin-browser.rst:70
 msgid ""
 "You can drag and drop the selected plugin into empty space in the Tracklist "
 "or into empty space in the Mixer to create a new track using that plugin."
@@ -5323,7 +5325,7 @@ msgstr ""
 "るか、ミキサーの空きスペースにドロップして、そのプラグインを使用して新しいト"
 "ラックを作成できます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:72
+#: ../../plugins-files/plugins/plugin-browser.rst:80
 msgid ""
 "Alternatively, you can drag the plugin on a mixer slot to add it there or "
 "replace the previous plugin."
@@ -5331,16 +5333,16 @@ msgstr ""
 "または、ミキサースロットにプラグインをドラッグして追加したり、前のプラグイン"
 "を置き換えたりすることもできます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:78
+#: ../../plugins-files/plugins/plugin-browser.rst:86
 msgid "If the plugin is a modulator, you can drop it into the Modulators tab."
 msgstr ""
 "プラグインがモジュレーターの場合は、モジュレータータブにドロップできます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:85
+#: ../../plugins-files/plugins/plugin-browser.rst:93
 msgid "Double Click/Enter"
 msgstr "ダブルクリック/リターン"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:87
+#: ../../plugins-files/plugins/plugin-browser.rst:95
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."
@@ -5487,44 +5489,27 @@ msgstr "カスタムUI"
 #, fuzzy
 msgid ""
 "When Plugin UIs are opened, a window such as the following will be "
-"displayed, if the plugin ships with its own UI. This window will contain "
-"additions by Zrythm (such as the `File` and `Presets` menus)."
+"displayed, if the plugin ships with its own UI. This window may contain "
+"additions by Zrythm (such as `File` and `Presets` menus)."
 msgstr ""
 "プラグイン UI が表示されると、プラグインが独自の UI がある場合、次のような"
 "ウィンドウが表示されます。"
 
-#: ../../plugins-files/plugins/plugin-window.rst:19
-#, fuzzy
-msgid ""
-"Some plugin UIs cannot be wrapped and will be opened in separate windows "
-"without additions like `File` or `Presets`."
-msgstr "一部のプラグインUIはラップできず、別のウィンドウで開かれます。"
-
-#: ../../plugins-files/plugins/plugin-window.rst:24
+#: ../../plugins-files/plugins/plugin-window.rst:20
 msgid "Generic UIs"
 msgstr "汎用UI"
 
-#: ../../plugins-files/plugins/plugin-window.rst:25
+#: ../../plugins-files/plugins/plugin-window.rst:21
 msgid ""
 "If the plugin does not ship with its own UI, the following generic UI will "
 "be generated for it."
 msgstr "プラグインが独自の UI を持たない場合は、次の汎用 UI が生成されます。"
 
-#: ../../plugins-files/plugins/plugin-window.rst:32
-msgid ""
-"This only applies to :term:`LV2` plugins. For other types of plugins, you "
-"can edit their parameters in the plugin inspector page (see :ref:`plugin-"
-"inspector-page`)."
-msgstr ""
-"これは :term:`LV2` プラグインにのみ適用されます。その他の種類のプラグインにつ"
-"いては、プラグインインスペクターページでパラメータを編集できます ( :ref:"
-"`plugin-inspector-page` を参照)。"
-
-#: ../../plugins-files/plugins/plugin-window.rst:38
+#: ../../plugins-files/plugins/plugin-window.rst:29
 msgid "Bridging"
 msgstr "ブリッジ"
 
-#: ../../plugins-files/plugins/plugin-window.rst:39
+#: ../../plugins-files/plugins/plugin-window.rst:30
 msgid ""
 "Most plugins are instantiated in the same process as Zrythm. This has the "
 "advantage that :term:`DSP` is very fast, however, some plugin UIs are not "
@@ -5536,7 +5521,7 @@ msgstr ""
 "グインのUIはZrythmと互換性がなく、ブリッジする必要があります(すなわち、別々の"
 "プロセスとして実行されます)。"
 
-#: ../../plugins-files/plugins/plugin-window.rst:46
+#: ../../plugins-files/plugins/plugin-window.rst:37
 #, fuzzy
 msgid ""
 "When it is possible to bridge only the UI, Zrythm will do so, and this will "
@@ -5549,17 +5534,17 @@ msgstr ""
 "別のプロセスでプラグインと通信する必要があるため、これはパフォーマンスに影響"
 "を与えます。"
 
-#: ../../plugins-files/plugins/plugin-window.rst:53
+#: ../../plugins-files/plugins/plugin-window.rst:44
 msgid ""
 "This process is transparent to the user and only mentioned for reference."
 msgstr ""
 "このプロセスはユーザーにとって透明であり、参考までにしか言及されていません。"
 
-#: ../../plugins-files/plugins/plugin-window.rst:57
+#: ../../plugins-files/plugins/plugin-window.rst:48
 msgid "Opening Plugins in Bridged Mode"
 msgstr "ブリッジモードでプラグインを開く"
 
-#: ../../plugins-files/plugins/plugin-window.rst:58
+#: ../../plugins-files/plugins/plugin-window.rst:49
 #, fuzzy
 msgid ""
 "Sometimes, you may need to manually tell Zrythm to open plugins in a "
@@ -5569,6 +5554,11 @@ msgstr ""
 "場合によっては、特定の方法でプラグインを開くように Zrythm に手動で指示する必"
 "要があります。各プラグインで利用可能なオプションは、 :ref:`plugin-browser` で"
 "プラグインを右クリックして見つけることができます。"
+
+#: ../../plugins-files/plugins/plugin-window.rst:57
+#, fuzzy
+msgid "Opening ZynAddSubFX in bridged mode"
+msgstr "ブリッジモードでプラグインを開く"
 
 #: ../../plugins-files/plugins/scanning.rst:8
 msgid "Scanning for Plugins"
@@ -8513,6 +8503,30 @@ msgid ""
 "% usage at the bottom. If the DSP % exceeds 100 (all bars filled), audio "
 "will start clipping."
 msgstr ""
+
+#~ msgid "Changing Values"
+#~ msgstr "値の変更"
+
+#~ msgid ""
+#~ "The values of control ports can be changed by clicking and dragging "
+#~ "inside each bar."
+#~ msgstr ""
+#~ "コントロールポートの値は、バー内をクリックしてドラッグすることで変更できま"
+#~ "す。"
+
+#~ msgid ""
+#~ "Some plugin UIs cannot be wrapped and will be opened in separate windows "
+#~ "without additions like `File` or `Presets`."
+#~ msgstr "一部のプラグインUIはラップできず、別のウィンドウで開かれます。"
+
+#~ msgid ""
+#~ "This only applies to :term:`LV2` plugins. For other types of plugins, you "
+#~ "can edit their parameters in the plugin inspector page (see :ref:`plugin-"
+#~ "inspector-page`)."
+#~ msgstr ""
+#~ "これは :term:`LV2` プラグインにのみ適用されます。その他の種類のプラグイン"
+#~ "については、プラグインインスペクターページでパラメータを編集できます ( :"
+#~ "ref:`plugin-inspector-page` を参照)。"
 
 #~ msgid ""
 #~ "For at least the time being, Zrythm follows a rolling release model and "

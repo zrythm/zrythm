@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.28\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-17 22:09+0000\n"
+"POT-Creation-Date: 2022-03-17 22:33+0000\n"
 "PO-Revision-Date: 2022-02-28 15:54+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language: ca\n"
@@ -4975,7 +4975,7 @@ msgid "Filtering"
 msgstr "Filtratge"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:50
-#: ../../plugins-files/plugins/plugin-browser.rst:41
+#: ../../plugins-files/plugins/plugin-browser.rst:43
 msgid "Filter Buttons"
 msgstr "Botons de filtre"
 
@@ -5335,20 +5335,22 @@ msgid "Inspector Page"
 msgstr "Pàgina de l'inspector"
 
 #: ../../plugins-files/plugins/inspector-page.rst:10
+#, fuzzy
 msgid ""
-"When a plugin is selected in the Mixer, or when using right click -> Inspect "
-"on an instrument, its page will appear in the Inspector as follows."
+"When a plugin is selected in the Mixer, or when using :menuselection:`right "
+"click --> Inspect` on an instrument, its page will appear in the inspector "
+"as follows."
 msgstr ""
 "Quan es selecciona un complement al Mesclador, o quan s'utilitza el clic "
 "dret -> Inspecciona en un instrument, la pàgina apareixerà a l'inspector de "
 "la manera següent."
 
-#: ../../plugins-files/plugins/inspector-page.rst:17
+#: ../../plugins-files/plugins/inspector-page.rst:18
 #, fuzzy
 msgid "Plugin inspector"
 msgstr "Inspector de complements"
 
-#: ../../plugins-files/plugins/inspector-page.rst:19
+#: ../../plugins-files/plugins/inspector-page.rst:20
 msgid ""
 "This page will display information about the plugin and its ports and allow "
 "you to make changes."
@@ -5356,11 +5358,11 @@ msgstr ""
 "Aquesta pàgina mostrarà informació sobre el complement i els seus ports i et "
 "permetrà fer canvis."
 
-#: ../../plugins-files/plugins/inspector-page.rst:24
+#: ../../plugins-files/plugins/inspector-page.rst:25
 msgid "Plugin Properties"
 msgstr "Propietats del complement"
 
-#: ../../plugins-files/plugins/inspector-page.rst:25
+#: ../../plugins-files/plugins/inspector-page.rst:26
 msgid ""
 "The plugin properties show the name and type of the plugin, as well as "
 "preset and bank selectors."
@@ -5368,16 +5370,16 @@ msgstr ""
 "Les propietats del complement mostren el nom i el tipus del complement, així "
 "com els selectors predefinits i de banc."
 
-#: ../../plugins-files/plugins/inspector-page.rst:32
+#: ../../plugins-files/plugins/inspector-page.rst:33
 #: ../../plugins-files/plugins/plugin-info.rst:51
 msgid "Plugin Ports"
 msgstr "Ports del complement"
 
-#: ../../plugins-files/plugins/inspector-page.rst:33
+#: ../../plugins-files/plugins/inspector-page.rst:34
 msgid "These are the ports that the plugin has."
 msgstr "Aquests són els ports que té el complement."
 
-#: ../../plugins-files/plugins/inspector-page.rst:38
+#: ../../plugins-files/plugins/inspector-page.rst:39
 #, fuzzy
 msgid ""
 "Control input ports can be changed by clicking and dragging, and can also be "
@@ -5387,17 +5389,17 @@ msgstr ""
 "també es poden automatitzar mitjançant pistes d'automatització. Els ports es "
 "poden encaminar a altres ports des de Zrythm fent-hi doble clic."
 
-#: ../../plugins-files/plugins/inspector-page.rst:42
+#: ../../plugins-files/plugins/inspector-page.rst:43
 msgid ""
 "Ports can be routed to other ports anywhere within Zrythm by double clicking "
 "on them."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:45
+#: ../../plugins-files/plugins/inspector-page.rst:46
 msgid "Ports are explained in more detail in :ref:`ports`."
 msgstr "Els ports s'expliquen amb més detall a :ref:`ports`."
 
-#: ../../plugins-files/plugins/inspector-page.rst:47
+#: ../../plugins-files/plugins/inspector-page.rst:48
 msgid ""
 "Depending on the type of plugin, there may be different categories of ports "
 "being shown."
@@ -5405,11 +5407,11 @@ msgstr ""
 "Depenent del tipus de complement, és possible que es mostrin diferents "
 "categories de ports."
 
-#: ../../plugins-files/plugins/inspector-page.rst:51
+#: ../../plugins-files/plugins/inspector-page.rst:52
 msgid "Display"
 msgstr "Mostrar"
 
-#: ../../plugins-files/plugins/inspector-page.rst:52
+#: ../../plugins-files/plugins/inspector-page.rst:53
 msgid ""
 "The number in the top right of each port name will display the current "
 "number of connections to/from this port. See :doc:`../../routing/making-"
@@ -5420,18 +5422,6 @@ msgstr ""
 "connections` per a més detalls."
 
 #: ../../plugins-files/plugins/inspector-page.rst:58
-msgid "Changing Values"
-msgstr "Canviant valors"
-
-#: ../../plugins-files/plugins/inspector-page.rst:59
-msgid ""
-"The values of control ports can be changed by clicking and dragging inside "
-"each bar."
-msgstr ""
-"Els valors dels ports de control es poden canviar clicant i arrossegant dins "
-"de cada barra."
-
-#: ../../plugins-files/plugins/inspector-page.rst:62
 msgid ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
 msgstr ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
 
@@ -5447,11 +5437,16 @@ msgstr ""
 "El navegador de complements facilita la navegació i el filtratge dels "
 "complements instal·lats a l'ordinador."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:17
+#: ../../plugins-files/plugins/plugin-browser.rst:16
+#, fuzzy
+msgid "Plugin browser"
+msgstr "Navegador de complements"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:19
 msgid "Filter Tabs"
 msgstr "Pestanyes de filtre"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:18
+#: ../../plugins-files/plugins/plugin-browser.rst:20
 msgid ""
 "Plugins can be filtered based on various conditions using the filter tabs at "
 "the top. The following tabs are available:"
@@ -5460,11 +5455,11 @@ msgstr ""
 "les pestanyes de filtre de la part superior. Hi ha disponibles les pestanyes "
 "següents:"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:24
+#: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid "Collection"
 msgstr "Col·lecció"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:23
+#: ../../plugins-files/plugins/plugin-browser.rst:25
 msgid ""
 "This tab contains your collections. You can create collections such as "
 "`MySynths` and filter by the selected collections."
@@ -5472,37 +5467,37 @@ msgstr ""
 "Aquesta pestanya conté les teves col·leccions. Pots crear col·leccions com "
 "ara `MySynths` i filtrar-les per les col·leccions seleccionades."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:26
+#: ../../plugins-files/plugins/plugin-browser.rst:28
 msgid "Author"
 msgstr "Autor"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:27
+#: ../../plugins-files/plugins/plugin-browser.rst:29
 msgid "Filter by plugin manufacturer/author."
 msgstr "Filtrar per complement fabricant/autor."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:28
+#: ../../plugins-files/plugins/plugin-browser.rst:30
 msgid "Category"
 msgstr "Categoria"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:29
+#: ../../plugins-files/plugins/plugin-browser.rst:31
 msgid "Filter by category (`Delay`, `Distortion`, etc.)."
 msgstr "Filtre per categoria (`Delay`, `Distortion`, etc.)."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:31
+#: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "Protocol"
 msgstr "Protocol"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:31
+#: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "Filter by protocol (`LV2`, `SFZ`, etc.)."
 msgstr "Filtre per protocol (`LV2`, `SFZ`, etc.)."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:33
+#: ../../plugins-files/plugins/plugin-browser.rst:35
 msgid "You can mix filters from various tabs for a custom search."
 msgstr ""
 "Pots mesclar filtres des de diverses pestanyes per a una cerca "
 "personalitzada."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:36
+#: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid ""
 "Where applicable, you can :kbd:`Control`-click to select multiple rows or "
 "deselect a row."
@@ -5510,15 +5505,15 @@ msgstr ""
 "Si escau, pots :kbd:`Control`-clic per a seleccionar diverses files o "
 "desmarcar-ne una."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:42
+#: ../../plugins-files/plugins/plugin-browser.rst:44
 msgid "Additionally to the above, plugins can be filtered based on their type."
 msgstr "A més, els complements es poden filtrar en funció del seu tipus."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:48
+#: ../../plugins-files/plugins/plugin-browser.rst:50
 msgid "Filtering by modulator plugins"
 msgstr "Filtratge per complements de modulador"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:50
+#: ../../plugins-files/plugins/plugin-browser.rst:52
 msgid ""
 "See :ref:`plugin-types` for more information about the various types of "
 "plugins there are."
@@ -5527,18 +5522,26 @@ msgstr ""
 "complements que hi ha."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:56
+msgid "Keyword Search"
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:58
+msgid "Plugins can also be searched by keywords using the provided search bar."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:64
 msgid "Instantiating Plugins"
 msgstr "Instanciant complements"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:57
+#: ../../plugins-files/plugins/plugin-browser.rst:65
 msgid "There are a couple of ways to instantiate plugins:"
 msgstr "Hi ha un parell de maneres d'instanciar els complements:"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:60
+#: ../../plugins-files/plugins/plugin-browser.rst:68
 msgid "Drag-n-Drop"
 msgstr "Arrossegar i Deixar anar"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:62
+#: ../../plugins-files/plugins/plugin-browser.rst:70
 msgid ""
 "You can drag and drop the selected plugin into empty space in the Tracklist "
 "or into empty space in the Mixer to create a new track using that plugin."
@@ -5547,7 +5550,7 @@ msgstr ""
 "llista de pistes o a l'espai buit del Mesclador per a crear una pista nova "
 "utilitzant aquest complement."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:72
+#: ../../plugins-files/plugins/plugin-browser.rst:80
 msgid ""
 "Alternatively, you can drag the plugin on a mixer slot to add it there or "
 "replace the previous plugin."
@@ -5555,17 +5558,17 @@ msgstr ""
 "Alternativament, pots arrossegar el complement a una ranura del mesclador "
 "per a afegir-lo allà o reemplaçar el complement anterior."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:78
+#: ../../plugins-files/plugins/plugin-browser.rst:86
 msgid "If the plugin is a modulator, you can drop it into the Modulators tab."
 msgstr ""
 "Si el complement és un modulador, pots deixar-lo anar a la pestanya "
 "Moduladors."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:85
+#: ../../plugins-files/plugins/plugin-browser.rst:93
 msgid "Double Click/Enter"
 msgstr "Doble clic / retorn"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:87
+#: ../../plugins-files/plugins/plugin-browser.rst:95
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."
@@ -5711,29 +5714,22 @@ msgid "Custom UIs"
 msgstr "IU personalitzades"
 
 #: ../../plugins-files/plugins/plugin-window.rst:10
+#, fuzzy
 msgid ""
 "When Plugin UIs are opened, a window such as the following will be "
-"displayed, if the plugin ships with its own UI. This window will contain "
-"additions by Zrythm (such as the `File` and `Presets` menus)."
+"displayed, if the plugin ships with its own UI. This window may contain "
+"additions by Zrythm (such as `File` and `Presets` menus)."
 msgstr ""
 "Quan s'obren els IU del complement, es mostrarà una finestra com la següent, "
 "si el complement s'envia amb la seva pròpia interfície d'usuari. Aquesta "
 "finestra contindrà addicions de Zrythm (com ara els menús `File` i "
 "`Presets`)."
 
-#: ../../plugins-files/plugins/plugin-window.rst:19
-msgid ""
-"Some plugin UIs cannot be wrapped and will be opened in separate windows "
-"without additions like `File` or `Presets`."
-msgstr ""
-"Algunes IU del complement no es poden ajustar i s'obriran en finestres "
-"separades sense addicions com ara `File` o `Presets`."
-
-#: ../../plugins-files/plugins/plugin-window.rst:24
+#: ../../plugins-files/plugins/plugin-window.rst:20
 msgid "Generic UIs"
 msgstr "IU genèriques"
 
-#: ../../plugins-files/plugins/plugin-window.rst:25
+#: ../../plugins-files/plugins/plugin-window.rst:21
 msgid ""
 "If the plugin does not ship with its own UI, the following generic UI will "
 "be generated for it."
@@ -5741,21 +5737,11 @@ msgstr ""
 "Si el complement no s'envia amb la seva pròpia IU, es generarà la següent IU "
 "genèrica."
 
-#: ../../plugins-files/plugins/plugin-window.rst:32
-msgid ""
-"This only applies to :term:`LV2` plugins. For other types of plugins, you "
-"can edit their parameters in the plugin inspector page (see :ref:`plugin-"
-"inspector-page`)."
-msgstr ""
-"Això només s'aplica als complements :term:`LV2`. Per a altres tipus de "
-"complements, pots editar els teus paràmetres a la pàgina de l'inspector de "
-"complements (veure :ref:`plugin-inspector-page`)."
-
-#: ../../plugins-files/plugins/plugin-window.rst:38
+#: ../../plugins-files/plugins/plugin-window.rst:29
 msgid "Bridging"
 msgstr "Pontar"
 
-#: ../../plugins-files/plugins/plugin-window.rst:39
+#: ../../plugins-files/plugins/plugin-window.rst:30
 msgid ""
 "Most plugins are instantiated in the same process as Zrythm. This has the "
 "advantage that :term:`DSP` is very fast, however, some plugin UIs are not "
@@ -5767,7 +5753,7 @@ msgstr ""
 "no són compatibles amb Zrythm i necessiten pontar (és a dir, executar-se com "
 "a processos separats)."
 
-#: ../../plugins-files/plugins/plugin-window.rst:46
+#: ../../plugins-files/plugins/plugin-window.rst:37
 msgid ""
 "When it is possible to bridge only the UI, Zrythm will do so, and this will "
 "not have any performance implications on DSP. If bridging the whole plugin "
@@ -5779,18 +5765,18 @@ msgstr ""
 "tot el complement, això tindrà algunes implicacions de rendiment, ja que es "
 "requereix comunicar-se amb el complement en un altre procés."
 
-#: ../../plugins-files/plugins/plugin-window.rst:53
+#: ../../plugins-files/plugins/plugin-window.rst:44
 msgid ""
 "This process is transparent to the user and only mentioned for reference."
 msgstr ""
 "Aquest procés és transparent per a l'usuari i només s'esmenta com a "
 "referència."
 
-#: ../../plugins-files/plugins/plugin-window.rst:57
+#: ../../plugins-files/plugins/plugin-window.rst:48
 msgid "Opening Plugins in Bridged Mode"
 msgstr "Obrint complements en mode pontat"
 
-#: ../../plugins-files/plugins/plugin-window.rst:58
+#: ../../plugins-files/plugins/plugin-window.rst:49
 msgid ""
 "Sometimes, you may need to manually tell Zrythm to open plugins in a "
 "specific way. You can find the options available for each plugin by right "
@@ -5800,6 +5786,11 @@ msgstr ""
 "els complements d'una manera específica. Pots trobar les opcions disponibles "
 "per a cada complement clicant el botó dret al complement al :ref:`plugin-"
 "browser`."
+
+#: ../../plugins-files/plugins/plugin-window.rst:57
+#, fuzzy
+msgid "Opening ZynAddSubFX in bridged mode"
+msgstr "Obrint complements en mode pontat"
 
 #: ../../plugins-files/plugins/scanning.rst:8
 msgid "Scanning for Plugins"
@@ -8760,6 +8751,32 @@ msgid ""
 "% usage at the bottom. If the DSP % exceeds 100 (all bars filled), audio "
 "will start clipping."
 msgstr ""
+
+#~ msgid "Changing Values"
+#~ msgstr "Canviant valors"
+
+#~ msgid ""
+#~ "The values of control ports can be changed by clicking and dragging "
+#~ "inside each bar."
+#~ msgstr ""
+#~ "Els valors dels ports de control es poden canviar clicant i arrossegant "
+#~ "dins de cada barra."
+
+#~ msgid ""
+#~ "Some plugin UIs cannot be wrapped and will be opened in separate windows "
+#~ "without additions like `File` or `Presets`."
+#~ msgstr ""
+#~ "Algunes IU del complement no es poden ajustar i s'obriran en finestres "
+#~ "separades sense addicions com ara `File` o `Presets`."
+
+#~ msgid ""
+#~ "This only applies to :term:`LV2` plugins. For other types of plugins, you "
+#~ "can edit their parameters in the plugin inspector page (see :ref:`plugin-"
+#~ "inspector-page`)."
+#~ msgstr ""
+#~ "Això només s'aplica als complements :term:`LV2`. Per a altres tipus de "
+#~ "complements, pots editar els teus paràmetres a la pàgina de l'inspector "
+#~ "de complements (veure :ref:`plugin-inspector-page`)."
 
 #~ msgid ""
 #~ "For at least the time being, Zrythm follows a rolling release model and "

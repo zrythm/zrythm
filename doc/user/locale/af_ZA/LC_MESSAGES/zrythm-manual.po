@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-17 22:09+0000\n"
+"POT-Creation-Date: 2022-03-17 22:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4146,7 +4146,7 @@ msgid "Filtering"
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:50
-#: ../../plugins-files/plugins/plugin-browser.rst:41
+#: ../../plugins-files/plugins/plugin-browser.rst:43
 msgid "Filter Buttons"
 msgstr ""
 
@@ -4454,66 +4454,67 @@ msgstr ""
 
 #: ../../plugins-files/plugins/inspector-page.rst:10
 msgid ""
-"When a plugin is selected in the Mixer, or when using right click -> Inspect "
-"on an instrument, its page will appear in the Inspector as follows."
+"When a plugin is selected in the Mixer, or when using :menuselection:`right "
+"click --> Inspect` on an instrument, its page will appear in the inspector "
+"as follows."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:17
+#: ../../plugins-files/plugins/inspector-page.rst:18
 msgid "Plugin inspector"
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:19
+#: ../../plugins-files/plugins/inspector-page.rst:20
 msgid ""
 "This page will display information about the plugin and its ports and allow "
 "you to make changes."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:24
+#: ../../plugins-files/plugins/inspector-page.rst:25
 msgid "Plugin Properties"
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:25
+#: ../../plugins-files/plugins/inspector-page.rst:26
 msgid ""
 "The plugin properties show the name and type of the plugin, as well as "
 "preset and bank selectors."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:32
+#: ../../plugins-files/plugins/inspector-page.rst:33
 #: ../../plugins-files/plugins/plugin-info.rst:51
 msgid "Plugin Ports"
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:33
+#: ../../plugins-files/plugins/inspector-page.rst:34
 msgid "These are the ports that the plugin has."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:38
+#: ../../plugins-files/plugins/inspector-page.rst:39
 msgid ""
 "Control input ports can be changed by clicking and dragging, and can also be "
 "automated using automation tracks."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:42
+#: ../../plugins-files/plugins/inspector-page.rst:43
 msgid ""
 "Ports can be routed to other ports anywhere within Zrythm by double clicking "
 "on them."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:45
+#: ../../plugins-files/plugins/inspector-page.rst:46
 msgid "Ports are explained in more detail in :ref:`ports`."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:47
+#: ../../plugins-files/plugins/inspector-page.rst:48
 msgid ""
 "Depending on the type of plugin, there may be different categories of ports "
 "being shown."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:51
+#: ../../plugins-files/plugins/inspector-page.rst:52
 msgid "Display"
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:52
+#: ../../plugins-files/plugins/inspector-page.rst:53
 msgid ""
 "The number in the top right of each port name will display the current "
 "number of connections to/from this port. See :doc:`../../routing/making-"
@@ -4521,16 +4522,6 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/plugins/inspector-page.rst:58
-msgid "Changing Values"
-msgstr ""
-
-#: ../../plugins-files/plugins/inspector-page.rst:59
-msgid ""
-"The values of control ports can be changed by clicking and dragging inside "
-"each bar."
-msgstr ""
-
-#: ../../plugins-files/plugins/inspector-page.rst:62
 msgid ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
 msgstr ""
 
@@ -4544,107 +4535,119 @@ msgid ""
 "your computer."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:17
+#: ../../plugins-files/plugins/plugin-browser.rst:16
+msgid "Plugin browser"
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:19
 msgid "Filter Tabs"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:18
+#: ../../plugins-files/plugins/plugin-browser.rst:20
 msgid ""
 "Plugins can be filtered based on various conditions using the filter tabs at "
 "the top. The following tabs are available:"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:24
+#: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid "Collection"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:23
+#: ../../plugins-files/plugins/plugin-browser.rst:25
 msgid ""
 "This tab contains your collections. You can create collections such as "
 "`MySynths` and filter by the selected collections."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:26
+#: ../../plugins-files/plugins/plugin-browser.rst:28
 msgid "Author"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:27
+#: ../../plugins-files/plugins/plugin-browser.rst:29
 msgid "Filter by plugin manufacturer/author."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:28
+#: ../../plugins-files/plugins/plugin-browser.rst:30
 msgid "Category"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:29
+#: ../../plugins-files/plugins/plugin-browser.rst:31
 msgid "Filter by category (`Delay`, `Distortion`, etc.)."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:31
+#: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "Protocol"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:31
+#: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "Filter by protocol (`LV2`, `SFZ`, etc.)."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:33
+#: ../../plugins-files/plugins/plugin-browser.rst:35
 msgid "You can mix filters from various tabs for a custom search."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:36
+#: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid ""
 "Where applicable, you can :kbd:`Control`-click to select multiple rows or "
 "deselect a row."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:42
+#: ../../plugins-files/plugins/plugin-browser.rst:44
 msgid "Additionally to the above, plugins can be filtered based on their type."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:48
+#: ../../plugins-files/plugins/plugin-browser.rst:50
 msgid "Filtering by modulator plugins"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:50
+#: ../../plugins-files/plugins/plugin-browser.rst:52
 msgid ""
 "See :ref:`plugin-types` for more information about the various types of "
 "plugins there are."
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:56
+msgid "Keyword Search"
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:58
+msgid "Plugins can also be searched by keywords using the provided search bar."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:64
 msgid "Instantiating Plugins"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:57
+#: ../../plugins-files/plugins/plugin-browser.rst:65
 msgid "There are a couple of ways to instantiate plugins:"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:60
+#: ../../plugins-files/plugins/plugin-browser.rst:68
 msgid "Drag-n-Drop"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:62
+#: ../../plugins-files/plugins/plugin-browser.rst:70
 msgid ""
 "You can drag and drop the selected plugin into empty space in the Tracklist "
 "or into empty space in the Mixer to create a new track using that plugin."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:72
+#: ../../plugins-files/plugins/plugin-browser.rst:80
 msgid ""
 "Alternatively, you can drag the plugin on a mixer slot to add it there or "
 "replace the previous plugin."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:78
+#: ../../plugins-files/plugins/plugin-browser.rst:86
 msgid "If the plugin is a modulator, you can drop it into the Modulators tab."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:85
+#: ../../plugins-files/plugins/plugin-browser.rst:93
 msgid "Double Click/Enter"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:87
+#: ../../plugins-files/plugins/plugin-browser.rst:95
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."
@@ -4766,38 +4769,25 @@ msgstr ""
 #: ../../plugins-files/plugins/plugin-window.rst:10
 msgid ""
 "When Plugin UIs are opened, a window such as the following will be "
-"displayed, if the plugin ships with its own UI. This window will contain "
-"additions by Zrythm (such as the `File` and `Presets` menus)."
+"displayed, if the plugin ships with its own UI. This window may contain "
+"additions by Zrythm (such as `File` and `Presets` menus)."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:19
-msgid ""
-"Some plugin UIs cannot be wrapped and will be opened in separate windows "
-"without additions like `File` or `Presets`."
-msgstr ""
-
-#: ../../plugins-files/plugins/plugin-window.rst:24
+#: ../../plugins-files/plugins/plugin-window.rst:20
 msgid "Generic UIs"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:25
+#: ../../plugins-files/plugins/plugin-window.rst:21
 msgid ""
 "If the plugin does not ship with its own UI, the following generic UI will "
 "be generated for it."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:32
-msgid ""
-"This only applies to :term:`LV2` plugins. For other types of plugins, you "
-"can edit their parameters in the plugin inspector page (see :ref:`plugin-"
-"inspector-page`)."
-msgstr ""
-
-#: ../../plugins-files/plugins/plugin-window.rst:38
+#: ../../plugins-files/plugins/plugin-window.rst:29
 msgid "Bridging"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:39
+#: ../../plugins-files/plugins/plugin-window.rst:30
 msgid ""
 "Most plugins are instantiated in the same process as Zrythm. This has the "
 "advantage that :term:`DSP` is very fast, however, some plugin UIs are not "
@@ -4805,7 +4795,7 @@ msgid ""
 "processes)."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:46
+#: ../../plugins-files/plugins/plugin-window.rst:37
 msgid ""
 "When it is possible to bridge only the UI, Zrythm will do so, and this will "
 "not have any performance implications on DSP. If bridging the whole plugin "
@@ -4813,20 +4803,24 @@ msgid ""
 "required to communicate with the plugin in another process."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:53
+#: ../../plugins-files/plugins/plugin-window.rst:44
 msgid ""
 "This process is transparent to the user and only mentioned for reference."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:57
+#: ../../plugins-files/plugins/plugin-window.rst:48
 msgid "Opening Plugins in Bridged Mode"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:58
+#: ../../plugins-files/plugins/plugin-window.rst:49
 msgid ""
 "Sometimes, you may need to manually tell Zrythm to open plugins in a "
 "specific way. You can find the options available for each plugin by right "
 "clicking on the plugin in the :ref:`plugin-browser`."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-window.rst:57
+msgid "Opening ZynAddSubFX in bridged mode"
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:8
