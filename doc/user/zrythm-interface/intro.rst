@@ -9,9 +9,9 @@ Interface
    :maxdepth: 4
 
    overview
-   main-panel
    main-toolbar
+   main-panel
    left-panel
    bottom-panel
-   transport-bar
    right-panel
+   transport-bar

@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. sectionauthor:: Alexandros Theodotou <alex@zrythm.org>
@@ -10,41 +10,51 @@ Saving & Loading
 Loading Projects
 ----------------
 
-When Zrythm launches, it will ask you to select a project to load from
-a list of recent projects,
-or to create a new one.
+When Zrythm launches, it will ask you to select a
+project to load from a list of recent projects or
+from a path, or to create a new one.
 
-.. image:: /_static/img/project_list.png
+.. figure:: /_static/img/project-list.png
    :align: center
 
-When you select a project and click :guilabel:`Apply`, Zrythm will
-load that project.
+   Project selection
+
+When you select a project and click
+:guilabel:`&Open Selected`, Zrythm will load that
+project.
+
+To load a project from a path, click
+:guilabel:`Open from Path`.
 
 Creating Projects
 -----------------
 
-In the menu above, if you select :guilabel:`Create new project`,
-Zrythm will ask you for a template to use for creating the new
-Project.
+To create a new project, select the
+:guilabel:`Create New` tab and choose a template
+for creating the new project, then click
+:guilabel:`Create`.
 
-.. image:: /_static/img/project_select_template.png
+.. figure:: /_static/img/project-select-template.png
    :align: center
+
+   Project template selection
 
 .. tip:: A blank template is available, and you can
   create your own templates by copying a project
   directory under :file:`templates` in the
   :term:`Zrythm user path`.
 
-Once a template (or blank) is selected and you click
-:guilabel:`Apply`, Zrythm will ask you for a parent
-directory to save the project in and a title for
-the project.
+After clicking :guilabel:`Create`, Zrythm will ask
+you for a parent directory to save the project in
+and a title for the project.
 
-.. image:: /_static/img/create_new_project.png
+.. figure:: /_static/img/create-new-project.png
    :align: center
 
-Once you accept, the new project will be set up and
-you will be ready to go.
+   New project creation
+
+Once you click :guilabel:`OK`, the new project will
+be set up and you will be ready to go.
 
 Saving Projects
 ---------------

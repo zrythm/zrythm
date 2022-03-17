@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-17 21:33+0000\n"
+"POT-Creation-Date: 2022-03-17 22:09+0000\n"
 "PO-Revision-Date: 2022-03-06 09:46+0000\n"
 "Last-Translator: Anthony V. <batmanplayer123@gmail.com>\n"
 "Language: el\n"
@@ -3518,6 +3518,7 @@ msgstr ""
 "zrythm-interface/zrythm-interface-overview>` θα εμφανιστεί."
 
 #: ../../getting-started/running-zrythm.rst:86
+#: ../../projects/saving-loading.rst:20
 msgid "Project selection"
 msgstr "Επιλογή έργου"
 
@@ -6073,36 +6074,10 @@ msgstr "Διαχείρηση και συμβατότητα έργου"
 
 #: ../../projects/project-management-and-compatibility.rst:8
 msgid ""
-"For at least the time being, Zrythm follows a rolling release model and "
-"project file structure is subject to change at each new release. No "
-"compatibility will be maintained between version changes in order to give "
-"more time to feature development and fixes."
+"Zrythm projects created after the beta release are expected to be compatible "
+"with later releases. If we discover an issue that requires changing the "
+"project format, Zrythm will offer an option to upgrade older projects."
 msgstr ""
-"Τουλάχιστον για την ώρα, το Zrythm ακολουθεί ένα μοντέλο συνεχούς ροής "
-"εκδόσεων και η δομή του αρχείου έργου ενδέχεται να αλλάξει σε κάθε καινούρια "
-"έκδοση. Καμία συμβατότητα δεν θα διατηρηθεί μεταξύ των αλλαγών των εκδόσεων, "
-"προκειμένου να δοθεί περισσότερος χρόνος στον προγραμματισμό χαρακτηριστικών "
-"και διορθώσεων."
-
-#: ../../projects/project-management-and-compatibility.rst:19
-msgid ""
-"It may be possible to open projects from previous versions if there was no "
-"change in the project file structure, but this is not guaranteed, so if you "
-"would like to open a project made using a previous version please install "
-"that version of Zrythm."
-msgstr ""
-"Είναι επίσης δυνατό να ανοίξει κανείς αρχεία από προηγούμενες εκδόσεις αν "
-"δεν υπήρξε καμία αλλαγή στη δομή του αρχείου έργου, αλλά δεν υπάρχει εγγύηση "
-"για αυτό, οπότε αν θα θέλατε να ανοίξετε ένα έργο που έγινε με προηγούμενη "
-"έκδοση, παρακαλούμε εγκαταστήστε εκείνη την έκδοση του Zrythm."
-
-#: ../../projects/project-management-and-compatibility.rst:28
-msgid ""
-"Each project file will mention the version of Zrythm it was made with and "
-"the date it was saved"
-msgstr ""
-"Κάθε αρχείο έργου θα αναφέρει την έκδοση του Zrythm με την οποία "
-"δημιουργήθηκε και την ημερομηνία που αποθηκεύτηκε"
 
 #: ../../projects/project-structure.rst:6
 msgid "Project Structure"
@@ -6185,34 +6160,43 @@ msgid "Loading Projects"
 msgstr "Φόρτωση έργων"
 
 #: ../../projects/saving-loading.rst:13
+#, fuzzy
 msgid ""
 "When Zrythm launches, it will ask you to select a project to load from a "
-"list of recent projects, or to create a new one."
+"list of recent projects or from a path, or to create a new one."
 msgstr ""
 "Όταν ανοίξει το Zrythm, θα σας ζητήσει να επιλέξετε το έργο προς φόρτωση από "
 "μια λίστα πρόσφατων έργων, ή να δημιουργήσετε καινούριο."
 
-#: ../../projects/saving-loading.rst:20
+#: ../../projects/saving-loading.rst:22
+#, fuzzy
 msgid ""
-"When you select a project and click :guilabel:`Apply`, Zrythm will load that "
-"project."
+"When you select a project and click :guilabel:`&Open Selected`, Zrythm will "
+"load that project."
 msgstr ""
 "Όταν επιλέξετε το έργο και κάνετε κλικ στην :guilabel:`Apply`, το Zrythm θα "
 "φορτώσει εκείνο το έργο."
 
-#: ../../projects/saving-loading.rst:24
+#: ../../projects/saving-loading.rst:26
+msgid "To load a project from a path, click :guilabel:`Open from Path`."
+msgstr ""
+
+#: ../../projects/saving-loading.rst:30
 msgid "Creating Projects"
 msgstr "Δημιουργία έργων"
 
-#: ../../projects/saving-loading.rst:26
+#: ../../projects/saving-loading.rst:32
 msgid ""
-"In the menu above, if you select :guilabel:`Create new project`, Zrythm will "
-"ask you for a template to use for creating the new Project."
+"To create a new project, select the :guilabel:`Create New` tab and choose a "
+"template for creating the new project, then click :guilabel:`Create`."
 msgstr ""
-"Στο παραπάνω μενού, αν επιλέξετε :guilabel:`Create new project`, το Zrythm "
-"θα σας ζητήσει ένα πρότυπο προς χρήση για τη δημιουργία του καινούριου έργου."
 
-#: ../../projects/saving-loading.rst:33
+#: ../../projects/saving-loading.rst:40
+#, fuzzy
+msgid "Project template selection"
+msgstr "Επιλογή έργου"
+
+#: ../../projects/saving-loading.rst:42
 msgid ""
 "A blank template is available, and you can create your own templates by "
 "copying a project directory under :file:`templates` in the :term:`Zrythm "
@@ -6222,26 +6206,33 @@ msgstr ""
 "πρότυπα αντιγράφοντας έναν κατάλογο έργου από τα :file:`templates` στο :term:"
 "`Zrythm user path`."
 
-#: ../../projects/saving-loading.rst:38
+#: ../../projects/saving-loading.rst:47
+#, fuzzy
 msgid ""
-"Once a template (or blank) is selected and you click :guilabel:`Apply`, "
-"Zrythm will ask you for a parent directory to save the project in and a "
-"title for the project."
+"After clicking :guilabel:`Create`, Zrythm will ask you for a parent "
+"directory to save the project in and a title for the project."
 msgstr ""
 "Όταν επιλεγεί ένα πρότυπο (ή κενό) και πατήσετε :guilabel:`Apply`, το Zrythm "
 "θα σας ζητήσει τον κατάλογο γονέα προς αποθήκευση του έργου και έναν τίτλο "
 "για το έργο."
 
-#: ../../projects/saving-loading.rst:46
+#: ../../projects/saving-loading.rst:54
+#, fuzzy
+msgid "New project creation"
+msgstr "Γενικές ρυθμίσεις έργου."
+
+#: ../../projects/saving-loading.rst:56
+#, fuzzy
 msgid ""
-"Once you accept, the new project will be set up and you will be ready to go."
+"Once you click :guilabel:`OK`, the new project will be set up and you will "
+"be ready to go."
 msgstr "Μόλις κάνετε αποδοχή, το νέο έργο θα στηθεί και θα είστε έτοιμοι."
 
-#: ../../projects/saving-loading.rst:50
+#: ../../projects/saving-loading.rst:60
 msgid "Saving Projects"
 msgstr "Αποθήκευση έργων"
 
-#: ../../projects/saving-loading.rst:52
+#: ../../projects/saving-loading.rst:62
 msgid ""
 "Saving works as you would expect: :guilabel:`Save As...` will save the "
 "Project in a new location and :guilabel:`Save` will save the Project in the "
@@ -6251,17 +6242,17 @@ msgstr ""
 "το έργο σε έναν νέο προορισμό και η :guilabel:`Save` θα αποθηκεύσει το έργο "
 "στον προηγούμενο προορισμό."
 
-#: ../../projects/saving-loading.rst:56
+#: ../../projects/saving-loading.rst:66
 msgid "When saving projects, Zrythm expects you to give it a directory"
 msgstr ""
 "Κατά την αποθήκευση έργων, το Zrythm αναμένει από εσάς να του δώσετε έναν "
 "κατάλογο"
 
-#: ../../projects/saving-loading.rst:60
+#: ../../projects/saving-loading.rst:70
 msgid "Automatic Backups"
 msgstr "Αυτόματα αντίγραφα ασφαλείας"
 
-#: ../../projects/saving-loading.rst:62
+#: ../../projects/saving-loading.rst:72
 msgid ""
 "Zrythm has an option to auto-save the current project as a back-up. When "
 "launching Zrythm and selecting to load your project, Zrythm will let you "
@@ -6274,7 +6265,7 @@ msgstr ""
 "ασφαλείας εκείνου του έργου και θα σας ρωτήσει αν θέλετε να φορτώσετε εκείνα "
 "αντί αυτού."
 
-#: ../../projects/saving-loading.rst:71
+#: ../../projects/saving-loading.rst:81
 msgid ""
 "See :ref:`projects/project-structure:Backups` for more information about "
 "backups."
@@ -8847,6 +8838,44 @@ msgid ""
 msgstr ""
 
 #~ msgid ""
+#~ "For at least the time being, Zrythm follows a rolling release model and "
+#~ "project file structure is subject to change at each new release. No "
+#~ "compatibility will be maintained between version changes in order to give "
+#~ "more time to feature development and fixes."
+#~ msgstr ""
+#~ "Τουλάχιστον για την ώρα, το Zrythm ακολουθεί ένα μοντέλο συνεχούς ροής "
+#~ "εκδόσεων και η δομή του αρχείου έργου ενδέχεται να αλλάξει σε κάθε "
+#~ "καινούρια έκδοση. Καμία συμβατότητα δεν θα διατηρηθεί μεταξύ των αλλαγών "
+#~ "των εκδόσεων, προκειμένου να δοθεί περισσότερος χρόνος στον "
+#~ "προγραμματισμό χαρακτηριστικών και διορθώσεων."
+
+#~ msgid ""
+#~ "It may be possible to open projects from previous versions if there was "
+#~ "no change in the project file structure, but this is not guaranteed, so "
+#~ "if you would like to open a project made using a previous version please "
+#~ "install that version of Zrythm."
+#~ msgstr ""
+#~ "Είναι επίσης δυνατό να ανοίξει κανείς αρχεία από προηγούμενες εκδόσεις αν "
+#~ "δεν υπήρξε καμία αλλαγή στη δομή του αρχείου έργου, αλλά δεν υπάρχει "
+#~ "εγγύηση για αυτό, οπότε αν θα θέλατε να ανοίξετε ένα έργο που έγινε με "
+#~ "προηγούμενη έκδοση, παρακαλούμε εγκαταστήστε εκείνη την έκδοση του Zrythm."
+
+#~ msgid ""
+#~ "Each project file will mention the version of Zrythm it was made with and "
+#~ "the date it was saved"
+#~ msgstr ""
+#~ "Κάθε αρχείο έργου θα αναφέρει την έκδοση του Zrythm με την οποία "
+#~ "δημιουργήθηκε και την ημερομηνία που αποθηκεύτηκε"
+
+#~ msgid ""
+#~ "In the menu above, if you select :guilabel:`Create new project`, Zrythm "
+#~ "will ask you for a template to use for creating the new Project."
+#~ msgstr ""
+#~ "Στο παραπάνω μενού, αν επιλέξετε :guilabel:`Create new project`, το "
+#~ "Zrythm θα σας ζητήσει ένα πρότυπο προς χρήση για τη δημιουργία του "
+#~ "καινούριου έργου."
+
+#~ msgid ""
 #~ "Zrythm stores most of its configuration using the GSettings mechanism, "
 #~ "which comes with the `gsettings <https://developer.gnome.org/gio/stable/"
 #~ "gsettings-tool.html>`_ command for changing settings from the command "
@@ -9095,9 +9124,6 @@ msgstr ""
 
 #~ msgid "General (Project)"
 #~ msgstr "Γενικά (Έργο)"
-
-#~ msgid "General project settings."
-#~ msgstr "Γενικές ρυθμίσεις έργου."
 
 #~ msgid "Autosave interval"
 #~ msgstr "Μεσοδιάστημα αυτόματης αποθήκευσης"

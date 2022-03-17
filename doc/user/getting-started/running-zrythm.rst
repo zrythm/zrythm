@@ -80,7 +80,7 @@ and then the
 :doc:`main interface <../zrythm-interface/overview>`
 will show up.
 
-.. figure:: /_static/img/project_list.png
+.. figure:: /_static/img/project-list.png
    :align: center
 
    Project selection

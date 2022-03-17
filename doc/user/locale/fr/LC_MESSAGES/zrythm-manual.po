@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-17 21:33+0000\n"
+"POT-Creation-Date: 2022-03-17 22:09+0000\n"
 "PO-Revision-Date: 2022-03-14 09:57+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
@@ -3622,6 +3622,7 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:86
+#: ../../projects/saving-loading.rst:20
 #, fuzzy
 msgid "Project selection"
 msgstr ""
@@ -6286,36 +6287,10 @@ msgstr "Gestion de projet et compatibilité"
 
 #: ../../projects/project-management-and-compatibility.rst:8
 msgid ""
-"For at least the time being, Zrythm follows a rolling release model and "
-"project file structure is subject to change at each new release. No "
-"compatibility will be maintained between version changes in order to give "
-"more time to feature development and fixes."
+"Zrythm projects created after the beta release are expected to be compatible "
+"with later releases. If we discover an issue that requires changing the "
+"project format, Zrythm will offer an option to upgrade older projects."
 msgstr ""
-"Pour le moment au moins, Zrythm suit un modèle de version continue et la "
-"structure des fichiers de projet est sujette à changement à chaque nouvelle "
-"version. Aucune compatibilité ne sera maintenue entre les changements de "
-"version afin de donner plus de temps pour le développement des "
-"fonctionnalités et les corrections."
-
-#: ../../projects/project-management-and-compatibility.rst:19
-msgid ""
-"It may be possible to open projects from previous versions if there was no "
-"change in the project file structure, but this is not guaranteed, so if you "
-"would like to open a project made using a previous version please install "
-"that version of Zrythm."
-msgstr ""
-"Il est possible d’ouvrir des projets à partir de versions précédentes si la "
-"structure du fichier de projet n’a pas changé, mais cela n’est pas garanti. "
-"Si vous souhaitez ouvrir un projet créé avec une version précédente, "
-"veuillez installer cette version de Zrythm."
-
-#: ../../projects/project-management-and-compatibility.rst:28
-msgid ""
-"Each project file will mention the version of Zrythm it was made with and "
-"the date it was saved"
-msgstr ""
-"Chaque fichier de projet mentionnera la version de Zrythm avec laquelle il a "
-"été réalisé et la date à laquelle il a été enregistré"
 
 #: ../../projects/project-structure.rst:6
 msgid "Project Structure"
@@ -6404,18 +6379,19 @@ msgid "Loading Projects"
 msgstr "Chargements de projets"
 
 #: ../../projects/saving-loading.rst:13
+#, fuzzy
 msgid ""
 "When Zrythm launches, it will ask you to select a project to load from a "
-"list of recent projects, or to create a new one."
+"list of recent projects or from a path, or to create a new one."
 msgstr ""
 "Lorsque Zrythm se lance, il vous demandera de sélectionner un projet à "
 "charger depuis une liste de projets récents, ou d'en créer un nouveau."
 
-#: ../../projects/saving-loading.rst:20
+#: ../../projects/saving-loading.rst:22
 #, fuzzy
 msgid ""
-"When you select a project and click :guilabel:`Apply`, Zrythm will load that "
-"project."
+"When you select a project and click :guilabel:`&Open Selected`, Zrythm will "
+"load that project."
 msgstr ""
 "#-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#\n"
 "Lorsque vous sélectionnez un projet et cliquez sur :zbutton:`Appliquer`, "
@@ -6427,29 +6403,32 @@ msgstr ""
 "Zrythm chargera ce projet.\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
-#: ../../projects/saving-loading.rst:24
+#: ../../projects/saving-loading.rst:26
+msgid "To load a project from a path, click :guilabel:`Open from Path`."
+msgstr ""
+
+#: ../../projects/saving-loading.rst:30
 msgid "Creating Projects"
 msgstr "Création de projets"
 
-#: ../../projects/saving-loading.rst:26
-#, fuzzy
+#: ../../projects/saving-loading.rst:32
 msgid ""
-"In the menu above, if you select :guilabel:`Create new project`, Zrythm will "
-"ask you for a template to use for creating the new Project."
+"To create a new project, select the :guilabel:`Create New` tab and choose a "
+"template for creating the new project, then click :guilabel:`Create`."
 msgstr ""
-"#-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Dans le menu ci-dessus, si vous sélectionnez :zbutton:`Créer un nouveau "
-"projet`, Zrythm vous demandera un modèle à utiliser pour créer le nouveau "
-"projet.\n"
+
+#: ../../projects/saving-loading.rst:40
+#, fuzzy
+msgid "Project template selection"
+msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Dans le menu ci-dessus, si vous sélectionnez :zbutton:`Créer un nouveau "
-"projet`, Zrythm vous demandera un modèle à utiliser pour créer le nouveau "
-"projet.\n"
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Projet\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
-#: ../../projects/saving-loading.rst:33
+#: ../../projects/saving-loading.rst:42
 #, fuzzy
 msgid ""
 "A blank template is available, and you can create your own templates by "
@@ -6468,12 +6447,11 @@ msgstr ""
 "d'installation de Zrythm.\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
-#: ../../projects/saving-loading.rst:38
+#: ../../projects/saving-loading.rst:47
 #, fuzzy
 msgid ""
-"Once a template (or blank) is selected and you click :guilabel:`Apply`, "
-"Zrythm will ask you for a parent directory to save the project in and a "
-"title for the project."
+"After clicking :guilabel:`Create`, Zrythm will ask you for a parent "
+"directory to save the project in and a title for the project."
 msgstr ""
 "#-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#\n"
 "Une fois qu'un modèle (ou vide) est sélectionné et que vous cliquez sur :"
@@ -6487,10 +6465,16 @@ msgstr ""
 "sauvegarder le projet et un titre pour le projet.\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
-#: ../../projects/saving-loading.rst:46
+#: ../../projects/saving-loading.rst:54
+#, fuzzy
+msgid "New project creation"
+msgstr "Paramètres généraux de projet."
+
+#: ../../projects/saving-loading.rst:56
 #, fuzzy
 msgid ""
-"Once you accept, the new project will be set up and you will be ready to go."
+"Once you click :guilabel:`OK`, the new project will be set up and you will "
+"be ready to go."
 msgstr ""
 "#-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#\n"
 "Une fois que vous aurez accepté, le nouveau projet sera mis en place et vous "
@@ -6502,11 +6486,11 @@ msgstr ""
 "serez prêt à commencer.\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
-#: ../../projects/saving-loading.rst:50
+#: ../../projects/saving-loading.rst:60
 msgid "Saving Projects"
 msgstr "Sauvegarde de projets"
 
-#: ../../projects/saving-loading.rst:52
+#: ../../projects/saving-loading.rst:62
 #, fuzzy
 msgid ""
 "Saving works as you would expect: :guilabel:`Save As...` will save the "
@@ -6525,17 +6509,17 @@ msgstr ""
 "zbutton:`Sauvegarder` sauvegardera le projet à l'emplacement précédent.\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
-#: ../../projects/saving-loading.rst:56
+#: ../../projects/saving-loading.rst:66
 msgid "When saving projects, Zrythm expects you to give it a directory"
 msgstr ""
 "Lors de la sauvegarde de projets, Zrythm s'attend à ce que vous lui donniez "
 "un répertoire"
 
-#: ../../projects/saving-loading.rst:60
+#: ../../projects/saving-loading.rst:70
 msgid "Automatic Backups"
 msgstr "Sauvegardes automatiques"
 
-#: ../../projects/saving-loading.rst:62
+#: ../../projects/saving-loading.rst:72
 msgid ""
 "Zrythm has an option to auto-save the current project as a back-up. When "
 "launching Zrythm and selecting to load your project, Zrythm will let you "
@@ -6547,7 +6531,7 @@ msgstr ""
 "charger votre projet, Zrythm vous indiquera s'il existe de nouvelles "
 "sauvegardes de ce projet et vous demandera si vous souhaitez les charger."
 
-#: ../../projects/saving-loading.rst:71
+#: ../../projects/saving-loading.rst:81
 msgid ""
 "See :ref:`projects/project-structure:Backups` for more information about "
 "backups."
@@ -9244,6 +9228,52 @@ msgid ""
 msgstr ""
 
 #~ msgid ""
+#~ "For at least the time being, Zrythm follows a rolling release model and "
+#~ "project file structure is subject to change at each new release. No "
+#~ "compatibility will be maintained between version changes in order to give "
+#~ "more time to feature development and fixes."
+#~ msgstr ""
+#~ "Pour le moment au moins, Zrythm suit un modèle de version continue et la "
+#~ "structure des fichiers de projet est sujette à changement à chaque "
+#~ "nouvelle version. Aucune compatibilité ne sera maintenue entre les "
+#~ "changements de version afin de donner plus de temps pour le développement "
+#~ "des fonctionnalités et les corrections."
+
+#~ msgid ""
+#~ "It may be possible to open projects from previous versions if there was "
+#~ "no change in the project file structure, but this is not guaranteed, so "
+#~ "if you would like to open a project made using a previous version please "
+#~ "install that version of Zrythm."
+#~ msgstr ""
+#~ "Il est possible d’ouvrir des projets à partir de versions précédentes si "
+#~ "la structure du fichier de projet n’a pas changé, mais cela n’est pas "
+#~ "garanti. Si vous souhaitez ouvrir un projet créé avec une version "
+#~ "précédente, veuillez installer cette version de Zrythm."
+
+#~ msgid ""
+#~ "Each project file will mention the version of Zrythm it was made with and "
+#~ "the date it was saved"
+#~ msgstr ""
+#~ "Chaque fichier de projet mentionnera la version de Zrythm avec laquelle "
+#~ "il a été réalisé et la date à laquelle il a été enregistré"
+
+#~ msgid ""
+#~ "In the menu above, if you select :guilabel:`Create new project`, Zrythm "
+#~ "will ask you for a template to use for creating the new Project."
+#~ msgstr ""
+#~ "#-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Dans le menu ci-dessus, si vous sélectionnez :zbutton:`Créer un nouveau "
+#~ "projet`, Zrythm vous demandera un modèle à utiliser pour créer le nouveau "
+#~ "projet.\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Dans le menu ci-dessus, si vous sélectionnez :zbutton:`Créer un nouveau "
+#~ "projet`, Zrythm vous demandera un modèle à utiliser pour créer le nouveau "
+#~ "projet.\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+
+#~ msgid ""
 #~ "Zrythm stores most of its configuration using the GSettings mechanism, "
 #~ "which comes with the `gsettings <https://developer.gnome.org/gio/stable/"
 #~ "gsettings-tool.html>`_ command for changing settings from the command "
@@ -9504,9 +9534,6 @@ msgstr ""
 
 #~ msgid "General (Project)"
 #~ msgstr "Général(Projet)"
-
-#~ msgid "General project settings."
-#~ msgstr "Paramètres généraux de projet."
 
 #~ msgid "Autosave interval"
 #~ msgstr "Intervalle de sauvegarde automatique"

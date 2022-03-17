@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-17 21:33+0000\n"
+"POT-Creation-Date: 2022-03-17 22:09+0000\n"
 "PO-Revision-Date: 2022-02-19 21:56+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -3352,6 +3352,7 @@ msgstr ""
 "zrythm-interface/zrythm-interface-overview>` が表示されます。"
 
 #: ../../getting-started/running-zrythm.rst:86
+#: ../../projects/saving-loading.rst:20
 msgid "Project selection"
 msgstr "プロジェクトの選択"
 
@@ -5810,34 +5811,10 @@ msgstr "プロジェクト管理と互換性"
 
 #: ../../projects/project-management-and-compatibility.rst:8
 msgid ""
-"For at least the time being, Zrythm follows a rolling release model and "
-"project file structure is subject to change at each new release. No "
-"compatibility will be maintained between version changes in order to give "
-"more time to feature development and fixes."
+"Zrythm projects created after the beta release are expected to be compatible "
+"with later releases. If we discover an issue that requires changing the "
+"project format, Zrythm will offer an option to upgrade older projects."
 msgstr ""
-"少なくとも当分の間、Zrythmはローリングリリースモデルに従い、プロジェクトファ"
-"イル構造は新しいリリースごとに変更される可能性があります。機能の開発と修正に"
-"時間を与えるために、バージョン変更間の互換性は維持されません。"
-
-#: ../../projects/project-management-and-compatibility.rst:19
-msgid ""
-"It may be possible to open projects from previous versions if there was no "
-"change in the project file structure, but this is not guaranteed, so if you "
-"would like to open a project made using a previous version please install "
-"that version of Zrythm."
-msgstr ""
-"プロジェクトファイル構造に変更がない場合は、以前のバージョンからのプロジェク"
-"トを開く可能性がありますが、これは保証されませんので、以前のバージョンを使用"
-"して作成されたプロジェクトを開きたい場合は、Zrythmのそのバージョンをインス"
-"トールしてください。"
-
-#: ../../projects/project-management-and-compatibility.rst:28
-msgid ""
-"Each project file will mention the version of Zrythm it was made with and "
-"the date it was saved"
-msgstr ""
-"各プロジェクトファイルには、それが作られたZrythmのバージョンとそれが保存され"
-"た日付が記載されます"
 
 #: ../../projects/project-structure.rst:6
 msgid "Project Structure"
@@ -5916,36 +5893,43 @@ msgid "Loading Projects"
 msgstr "プロジェクトの読み込み"
 
 #: ../../projects/saving-loading.rst:13
+#, fuzzy
 msgid ""
 "When Zrythm launches, it will ask you to select a project to load from a "
-"list of recent projects, or to create a new one."
+"list of recent projects or from a path, or to create a new one."
 msgstr ""
 "Zrythm が起動すると、最近のプロジェクトの一覧から読み込むプロジェクトを選択す"
 "るか、新しいプロジェクトを作成するかを選択するよう求めます。"
 
-#: ../../projects/saving-loading.rst:20
+#: ../../projects/saving-loading.rst:22
+#, fuzzy
 msgid ""
-"When you select a project and click :guilabel:`Apply`, Zrythm will load that "
-"project."
+"When you select a project and click :guilabel:`&Open Selected`, Zrythm will "
+"load that project."
 msgstr ""
 "プロジェクトを選択して :guilabel:`適用` をクリックすると、Zrythm はそのプロ"
 "ジェクトを読み込みます。"
 
-#: ../../projects/saving-loading.rst:24
+#: ../../projects/saving-loading.rst:26
+msgid "To load a project from a path, click :guilabel:`Open from Path`."
+msgstr ""
+
+#: ../../projects/saving-loading.rst:30
 msgid "Creating Projects"
 msgstr "プロジェクトの作成"
 
-#: ../../projects/saving-loading.rst:26
-#, fuzzy
+#: ../../projects/saving-loading.rst:32
 msgid ""
-"In the menu above, if you select :guilabel:`Create new project`, Zrythm will "
-"ask you for a template to use for creating the new Project."
+"To create a new project, select the :guilabel:`Create New` tab and choose a "
+"template for creating the new project, then click :guilabel:`Create`."
 msgstr ""
-"上記のメニューで、:zbutton:`新しいプロジェクトを作成する`を選択すると、Zrythm"
-"は新しいプロジェクトの作成に使用するテンプレートを求めるメッセージを表示しま"
-"す。"
 
-#: ../../projects/saving-loading.rst:33
+#: ../../projects/saving-loading.rst:40
+#, fuzzy
+msgid "Project template selection"
+msgstr "プロジェクトの選択"
+
+#: ../../projects/saving-loading.rst:42
 #, fuzzy
 msgid ""
 "A blank template is available, and you can create your own templates by "
@@ -5956,28 +5940,33 @@ msgstr ""
 "``ディレクトリにプロジェクト フォルダをコピーして、独自のテンプレートを作成で"
 "きます。"
 
-#: ../../projects/saving-loading.rst:38
+#: ../../projects/saving-loading.rst:47
 #, fuzzy
 msgid ""
-"Once a template (or blank) is selected and you click :guilabel:`Apply`, "
-"Zrythm will ask you for a parent directory to save the project in and a "
-"title for the project."
+"After clicking :guilabel:`Create`, Zrythm will ask you for a parent "
+"directory to save the project in and a title for the project."
 msgstr ""
 "テンプレート (または空白) が選択され、:zbutton:``適用``をクリックすると、"
 "Zrythm はプロジェクトを保存する親ディレクトリとプロジェクトのタイトルを求める"
 "メッセージを表示します。"
 
-#: ../../projects/saving-loading.rst:46
+#: ../../projects/saving-loading.rst:54
+#, fuzzy
+msgid "New project creation"
+msgstr "一般的なプロジェクト設定。"
+
+#: ../../projects/saving-loading.rst:56
 #, fuzzy
 msgid ""
-"Once you accept, the new project will be set up and you will be ready to go."
+"Once you click :guilabel:`OK`, the new project will be set up and you will "
+"be ready to go."
 msgstr "承認すると、新しいプロジェクトが初期化され、準備が整います。"
 
-#: ../../projects/saving-loading.rst:50
+#: ../../projects/saving-loading.rst:60
 msgid "Saving Projects"
 msgstr "プロジェクトの保存"
 
-#: ../../projects/saving-loading.rst:52
+#: ../../projects/saving-loading.rst:62
 #, fuzzy
 msgid ""
 "Saving works as you would expect: :guilabel:`Save As...` will save the "
@@ -5987,15 +5976,15 @@ msgstr ""
 "保存は期待どおりに機能します。:zbutton:``Save As ...``はプロジェクトを新しい"
 "場所に保存し、:zbutton:`Save`はプロジェクトを以前の場所に保存します。"
 
-#: ../../projects/saving-loading.rst:56
+#: ../../projects/saving-loading.rst:66
 msgid "When saving projects, Zrythm expects you to give it a directory"
 msgstr "プロジェクトを保存する際、Zrythm はディレクトリを求めます。"
 
-#: ../../projects/saving-loading.rst:60
+#: ../../projects/saving-loading.rst:70
 msgid "Automatic Backups"
 msgstr "自動バックアップ"
 
-#: ../../projects/saving-loading.rst:62
+#: ../../projects/saving-loading.rst:72
 msgid ""
 "Zrythm has an option to auto-save the current project as a back-up. When "
 "launching Zrythm and selecting to load your project, Zrythm will let you "
@@ -6007,7 +5996,7 @@ msgstr ""
 "ジェクトの新しいバックアップがあるかどうかを知らせ、代わりに読み込むかどうか"
 "の選択を求めます。"
 
-#: ../../projects/saving-loading.rst:71
+#: ../../projects/saving-loading.rst:81
 msgid ""
 "See :ref:`projects/project-structure:Backups` for more information about "
 "backups."
@@ -8526,6 +8515,42 @@ msgid ""
 msgstr ""
 
 #~ msgid ""
+#~ "For at least the time being, Zrythm follows a rolling release model and "
+#~ "project file structure is subject to change at each new release. No "
+#~ "compatibility will be maintained between version changes in order to give "
+#~ "more time to feature development and fixes."
+#~ msgstr ""
+#~ "少なくとも当分の間、Zrythmはローリングリリースモデルに従い、プロジェクト"
+#~ "ファイル構造は新しいリリースごとに変更される可能性があります。機能の開発と"
+#~ "修正に時間を与えるために、バージョン変更間の互換性は維持されません。"
+
+#~ msgid ""
+#~ "It may be possible to open projects from previous versions if there was "
+#~ "no change in the project file structure, but this is not guaranteed, so "
+#~ "if you would like to open a project made using a previous version please "
+#~ "install that version of Zrythm."
+#~ msgstr ""
+#~ "プロジェクトファイル構造に変更がない場合は、以前のバージョンからのプロジェ"
+#~ "クトを開く可能性がありますが、これは保証されませんので、以前のバージョンを"
+#~ "使用して作成されたプロジェクトを開きたい場合は、Zrythmのそのバージョンをイ"
+#~ "ンストールしてください。"
+
+#~ msgid ""
+#~ "Each project file will mention the version of Zrythm it was made with and "
+#~ "the date it was saved"
+#~ msgstr ""
+#~ "各プロジェクトファイルには、それが作られたZrythmのバージョンとそれが保存さ"
+#~ "れた日付が記載されます"
+
+#~ msgid ""
+#~ "In the menu above, if you select :guilabel:`Create new project`, Zrythm "
+#~ "will ask you for a template to use for creating the new Project."
+#~ msgstr ""
+#~ "上記のメニューで、:zbutton:`新しいプロジェクトを作成する`を選択すると、"
+#~ "Zrythmは新しいプロジェクトの作成に使用するテンプレートを求めるメッセージを"
+#~ "表示します。"
+
+#~ msgid ""
 #~ "Zrythm stores most of its configuration using the GSettings mechanism, "
 #~ "which comes with the `gsettings <https://developer.gnome.org/gio/stable/"
 #~ "gsettings-tool.html>`_ command for changing settings from the command "
@@ -8762,9 +8787,6 @@ msgstr ""
 
 #~ msgid "General (Project)"
 #~ msgstr "一般（プロジェクト）"
-
-#~ msgid "General project settings."
-#~ msgstr "一般的なプロジェクト設定。"
 
 #~ msgid "Autosave interval"
 #~ msgstr "自動保存間隔"
