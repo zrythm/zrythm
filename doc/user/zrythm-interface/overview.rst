@@ -12,10 +12,24 @@ sub-modules.
 
 Each sub-module is explained in its own section.
 
-* :ref:`timeline` (1)
-* :ref:`main-toolbar` (2)
+* :ref:`main-toolbar` (1)
+* :ref:`main-panel` (2)
 * :ref:`left-panel` (3)
 * :ref:`bottom-panel` (4)
-* :ref:`transport-bar` (5)
-* :ref:`right-panel` (6)
+* :ref:`right-panel` (5)
+* :ref:`transport-bar` (6)
 
+Panels contain multiple *views*, each of which is
+made visible by clicking on its corresponding tab.
+
+Detaching Views
+---------------
+Views in each panel are detachable. To
+detach a view into its own separate window,
+click and drag its tab outside the main window
+of Zrythm.
+
+.. figure:: /_static/img/timeline-detached.png
+   :align: center
+
+   Detached timeline view

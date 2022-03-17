@@ -13,17 +13,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-01-30 23:05+0000\n"
+"POT-Creation-Date: 2022-03-17 14:03+0000\n"
 "PO-Revision-Date: 2022-02-02 16:54+0000\n"
 "Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
+"Language: zh_CN\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
-"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.11-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -100,7 +99,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:21
 msgid ""
-"A `freedesktop-complicant configuration file <https://specifications."
+"A `freedesktop-compliant configuration file <https://specifications."
 "freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html>`_ that "
 "describes how a particular program should be launched, how it appears in "
 "menus, etc. This is normally installed at :file:`/usr/share/applications/"
@@ -267,12 +266,14 @@ msgstr ""
 #: ../../editing/timeline/toolbar.rst:11 ../../exporting/audio-and-midi.rst:38
 #: ../../mixing/overview.rst:62
 #: ../../plugins-files/audio-midi-files/file-browser.rst:69
-#: ../../routing/control-room.rst:31 ../../routing/making-connections.rst:30
+#: ../../routing/making-connections.rst:30
+#: ../../routing/managing-connections.rst:8
+#: ../../routing/monitor-section.rst:31
 #: ../../scripting/scripting-interface.rst:8 ../../tracks/inspector-page.rst:95
 #: ../../tracks/inspector-page.rst:170 ../../tracks/inspector-page.rst:175
 #: ../../tracks/modulator-track.rst:8 ../../tracks/overview.rst:64
 #: ../../tracks/tempo-track.rst:8 ../../tracks/track-types.rst:85
-#: ../../zrythm-interface/intro.rst:19
+#: ../../zrythm-interface/right-panel.rst:23
 msgid "Todo"
 msgstr ""
 
@@ -543,7 +544,7 @@ msgstr ""
 
 #: ../../configuration/preferences.rst:10
 #: ../../plugins-files/audio-midi-files/file-browser.rst:116
-#: ../../zrythm-interface/main-toolbar.rst:129
+#: ../../zrythm-interface/main-toolbar.rst:114
 msgid "Preferences"
 msgstr "首选项"
 
@@ -1167,8 +1168,7 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:8
-#: ../../editing/clip-editors/toolbar.rst:39
-#: ../../zrythm-interface/bottom-panel.rst:57
+#: ../../editing/clip-editors/toolbar.rst:55
 msgid "Audio Editor"
 msgstr "音频编辑器"
 
@@ -1192,8 +1192,7 @@ msgid "The audio arranger refers to the arranger section of the audio editor."
 msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:8
-#: ../../editing/clip-editors/toolbar.rst:35
-#: ../../zrythm-interface/bottom-panel.rst:43
+#: ../../editing/clip-editors/toolbar.rst:51
 msgid "Automation Editor"
 msgstr ""
 
@@ -1285,6 +1284,7 @@ msgstr ""
 #: ../../editing/clip-editors/automation-editor.rst:56
 #: ../../editing/clip-editors/chord-editor.rst:66
 #: ../../editing/clip-editors/piano-roll.rst:115
+#: ../../routing/managing-connections.rst:8
 msgid "Write this section."
 msgstr ""
 
@@ -1306,8 +1306,7 @@ msgid "It displays information about each automation point and its curve."
 msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:8
-#: ../../editing/clip-editors/toolbar.rst:43
-#: ../../zrythm-interface/bottom-panel.rst:70
+#: ../../editing/clip-editors/toolbar.rst:59
 msgid "Chord Editor"
 msgstr ""
 
@@ -1409,8 +1408,7 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:8
-#: ../../editing/clip-editors/toolbar.rst:18
-#: ../../zrythm-interface/bottom-panel.rst:29
+#: ../../editing/clip-editors/toolbar.rst:34
 msgid "Piano Roll"
 msgstr "钢琴滚筒"
 
@@ -1427,7 +1425,6 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:22
-#: ../../zrythm-interface/main-toolbar.rst:110
 msgid "Additional Controls"
 msgstr ""
 
@@ -1654,41 +1651,92 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:12
-#: ../../editing/timeline/toolbar.rst:11
 msgid "Update this section/pic."
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:19
-msgid "The piano roll toolbar consists of the following controls."
-msgstr ""
+#: ../../editing/clip-editors/toolbar.rst:18
+#, fuzzy
+msgid "Common Controls"
+msgstr "控件"
 
-#: ../../editing/clip-editors/toolbar.rst:22
-msgid "Grid/snap settings"
-msgstr ""
+#: ../../editing/clip-editors/toolbar.rst:21
+#, fuzzy
+msgid "Zoom Controls"
+msgstr "控件"
 
 #: ../../editing/clip-editors/toolbar.rst:23
-msgid "Snapping and grid options are covered in :ref:`snapping-grid-options`."
+#: ../../editing/timeline/toolbar.rst:23
+msgid "Zoom In"
+msgstr "放大"
+
+#: ../../editing/clip-editors/toolbar.rst:24
+#: ../../editing/timeline/toolbar.rst:24
+msgid "Zooms in."
+msgstr ""
+
+#: ../../editing/clip-editors/toolbar.rst:25
+#: ../../editing/timeline/toolbar.rst:25
+msgid "Zoom Out"
+msgstr "缩小"
+
+#: ../../editing/clip-editors/toolbar.rst:26
+#: ../../editing/timeline/toolbar.rst:26
+msgid "Zooms out."
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:27
-msgid "Highlight"
-msgstr ""
+#: ../../editing/timeline/toolbar.rst:27
+msgid "Original Size"
+msgstr "原始大小"
 
 #: ../../editing/clip-editors/toolbar.rst:28
-msgid "Chord highlighting is covered in :ref:`chords-scales`."
+#: ../../editing/timeline/toolbar.rst:28
+msgid "Zooms back to the default zoom level."
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:31
+#: ../../editing/timeline/toolbar.rst:31
+msgid "Best Fit"
+msgstr "最佳匹配"
+
+#: ../../editing/clip-editors/toolbar.rst:30
+#: ../../editing/timeline/toolbar.rst:30
+msgid ""
+"Zooms in or out as much as required to show all of the events in the "
+"timeline."
+msgstr ""
+
+#: ../../editing/clip-editors/toolbar.rst:35
+msgid "The piano roll toolbar consists of the following controls."
+msgstr ""
+
+#: ../../editing/clip-editors/toolbar.rst:38
+msgid "Grid/snap settings"
+msgstr ""
+
+#: ../../editing/clip-editors/toolbar.rst:39
+msgid "Snapping and grid options are covered in :ref:`snapping-grid-options`."
+msgstr ""
+
+#: ../../editing/clip-editors/toolbar.rst:43
+msgid "Highlight"
+msgstr ""
+
+#: ../../editing/clip-editors/toolbar.rst:44
+msgid "Chord highlighting is covered in :ref:`chords-scales`."
+msgstr ""
+
+#: ../../editing/clip-editors/toolbar.rst:47
 msgid "Quantize options"
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:32
+#: ../../editing/clip-editors/toolbar.rst:48
 msgid "Quantize options are covered in :ref:`quantization`."
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:36
-#: ../../editing/clip-editors/toolbar.rst:40
-#: ../../editing/clip-editors/toolbar.rst:44
+#: ../../editing/clip-editors/toolbar.rst:52
+#: ../../editing/clip-editors/toolbar.rst:56
+#: ../../editing/clip-editors/toolbar.rst:60
 msgid "No controls at the moment."
 msgstr ""
 
@@ -2448,7 +2496,7 @@ msgstr ""
 msgid "The event viewer displays all events in the timeline as a list."
 msgstr ""
 
-#: ../../editing/timeline/intro.rst:8 ../../zrythm-interface/timeline.rst:8
+#: ../../editing/timeline/intro.rst:8
 msgid "Timeline"
 msgstr "时间线"
 
@@ -2456,52 +2504,52 @@ msgstr "时间线"
 msgid ""
 "Editing in the timeline is the most common workflow inside Zrythm. The "
 "timeline section consists of the tracklist on the left and the ruler/"
-"arranger on the right side."
-msgstr ""
-
-#: ../../editing/timeline/overview.rst:17
-msgid "Tracklist"
+"arranger on the right, along with a timeline-specific toolbar at the top."
 msgstr ""
 
 #: ../../editing/timeline/overview.rst:19
+msgid "Tracklist"
+msgstr ""
+
+#: ../../editing/timeline/overview.rst:21
 msgid ""
 "The Tracklist contains all of the Tracks in the project. It is split into "
 "the top (pinned) Tracklist and the bottom (main) Tracklist."
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:26
+#: ../../editing/timeline/overview.rst:28
 msgid ""
 "At the top of the tracklist, the number of visible tracks over the number of "
 "total tracks is shown, as well as a search box for searching tracks by name "
 "(not operational at the moment)."
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:31
+#: ../../editing/timeline/overview.rst:33
 msgid ""
 "You can pin tracks to make them stick to the top, and this is useful for "
 "chord progressions and markers, so you can always see them."
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:35
+#: ../../editing/timeline/overview.rst:37
 msgid "The rest of the tracklist is briefly touched upon in :ref:`tracklist`."
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:38
+#: ../../editing/timeline/overview.rst:40
 msgid "For more details about track operations, see the :ref:`tracks` section."
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:42
+#: ../../editing/timeline/overview.rst:44
 msgid "Minimap"
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:43
+#: ../../editing/timeline/overview.rst:45
 msgid ""
 "The timeline minimap is a little box that represents the current visible "
 "area of the timeline. It can be moved around and resized to change the "
 "visible area."
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:50
+#: ../../editing/timeline/overview.rst:52
 msgid ""
 "The rest of the timeline elements are explained in the following sections."
 msgstr ""
@@ -2576,6 +2624,10 @@ msgstr ""
 msgid "The timeline has its own toolbar for timeline-specific operations."
 msgstr ""
 
+#: ../../editing/timeline/toolbar.rst:11
+msgid "Update this section."
+msgstr ""
+
 #: ../../editing/timeline/toolbar.rst:16
 msgid ""
 "It contains a snap section, a quantize section, and an audio region section. "
@@ -2583,14 +2635,19 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:21
+#, fuzzy
+msgid "Zoom Section"
+msgstr "循环选择"
+
+#: ../../editing/timeline/toolbar.rst:34
 msgid "Audio Region Section"
 msgstr ""
 
-#: ../../editing/timeline/toolbar.rst:24
+#: ../../editing/timeline/toolbar.rst:37
 msgid "Musical Mode"
 msgstr "音乐模式"
 
-#: ../../editing/timeline/toolbar.rst:25
+#: ../../editing/timeline/toolbar.rst:38
 msgid ""
 "When this is on, audio regions will be automatically time-stretched to match "
 "the new BPM, each time the BPM changes. If this is off, changing the BPM "
@@ -2882,107 +2939,67 @@ msgstr ""
 msgid "We will also be offering sample packs for download in the future."
 msgstr ""
 
-#: ../../getting-started/installation.rst:6
+#: ../../getting-started/installation.rst:8
 msgid "Installation"
 msgstr ""
 
-#: ../../getting-started/installation.rst:11
+#: ../../getting-started/installation.rst:13
 msgid "Installers"
 msgstr "安装文件"
 
-#: ../../getting-started/installation.rst:12
+#: ../../getting-started/installation.rst:14
 msgid ""
 "You can install the latest version of Zrythm for your distro or operating "
 "system using an installer from the `Download <https://www.zrythm.org/en/"
 "download.html>`_ page on our website."
 msgstr ""
 
-#: ../../getting-started/installation.rst:18
+#: ../../getting-started/installation.rst:20
 msgid ""
 "This is the easiest and recommended way to install the latest version for "
 "most users, and we provide support for it."
 msgstr ""
 
-#: ../../getting-started/installation.rst:22
+#: ../../getting-started/installation.rst:24
 msgid "The installers also include bundled plugins."
 msgstr ""
 
-#: ../../getting-started/installation.rst:25
-msgid "Manual Installation"
+#: ../../getting-started/installation.rst:27
+#: ../../plugins-files/plugins/scanning.rst:34
+#: ../../plugins-files/plugins/scanning.rst:73
+#: ../../plugins-files/plugins/scanning.rst:126
+#: ../../plugins-files/plugins/scanning.rst:151
+msgid "Flatpak"
 msgstr ""
 
-#: ../../getting-started/installation.rst:26
+#: ../../getting-started/installation.rst:28
+msgid "Zrythm is available on `Flathub`_ under the ID `org.zrythm.Zrythm`_."
+msgstr ""
+
+#: ../../getting-started/installation.rst:32
+msgid "Distribution Repositories"
+msgstr ""
+
+#: ../../getting-started/installation.rst:33
 msgid ""
-"If you are an advanced user, you can also build Zrythm from source, either "
-"using a `source distribution tarball <https://www.zrythm.org/releases/>`_ or "
-"`git <https://git.zrythm.org/zrythm/zrythm/>`_."
+"If Zrythm is available in your distro's repositories, you can also install "
+"it from there."
 msgstr ""
 
-#: ../../getting-started/installation.rst:31
+#: ../../getting-started/installation.rst:37
+msgid "Building from Source"
+msgstr ""
+
+#: ../../getting-started/installation.rst:38
+msgid ""
+"You can build Zrythm from source, either using a `source distribution "
+"tarball <https://www.zrythm.org/releases/>`_ or `git <https://git.zrythm.org/"
+"zrythm/zrythm/>`_."
+msgstr ""
+
+#: ../../getting-started/installation.rst:42
 msgid ""
 "See ``INSTALL.rst`` in the source distribution for installation instructions."
-msgstr ""
-
-#: ../../getting-started/installation.rst:36
-#: ../../getting-started/system-requirements.rst:60
-msgid "GNU/Linux"
-msgstr "GNU/Linux"
-
-#: ../../getting-started/installation.rst:39
-msgid "Installer"
-msgstr "安装程序"
-
-#: ../../getting-started/installation.rst:40
-msgid "The installer supports the following distributions (and derivatives):"
-msgstr ""
-
-#: ../../getting-started/installation.rst:43
-msgid "**Arch Linux** - x86_64"
-msgstr ""
-
-#: ../../getting-started/installation.rst:44
-msgid "**Debian Stable & Testing** - amd64"
-msgstr ""
-
-#: ../../getting-started/installation.rst:45
-msgid "**Latest 2 Fedora releases** - x86_64"
-msgstr ""
-
-#: ../../getting-started/installation.rst:46
-msgid "**Ubuntu latest LTS & non-LTS** - amd64"
-msgstr ""
-
-#: ../../getting-started/installation.rst:48
-msgid ""
-"We also offer an AppImage build, which is currently experimental. If you "
-"find any issues, please report them."
-msgstr ""
-
-#: ../../getting-started/installation.rst:53
-msgid "Distribution Package"
-msgstr ""
-
-#: ../../getting-started/installation.rst:54
-msgid ""
-"If your distribution provides a Zrythm package you can also install it from "
-"there."
-msgstr ""
-
-#: ../../getting-started/installation.rst:58
-msgid "Windows & MacOS"
-msgstr ""
-
-#: ../../getting-started/installation.rst:59
-msgid "The installers above fully support Windows 64bit and MacOS."
-msgstr ""
-
-#: ../../getting-started/installation.rst:62
-#: ../../getting-started/system-requirements.rst:65
-msgid "FreeBSD"
-msgstr ""
-
-#: ../../getting-started/installation.rst:63
-msgid "You can install the Zrythm port from the official repositories."
 msgstr ""
 
 #: ../../getting-started/intro.rst:8
@@ -3188,11 +3205,19 @@ msgid ""
 "to meet timing deadlines more reliably."
 msgstr ""
 
+#: ../../getting-started/system-requirements.rst:60
+msgid "GNU/Linux"
+msgstr "GNU/Linux"
+
 #: ../../getting-started/system-requirements.rst:61
 msgid ""
 "To set up these privileges for your user, see `How do I configure my linux "
 "system to allow JACK to use realtime scheduling? <https://jackaudio.org/faq/"
 "linux_rt_config.html#systems-using-pam>`_."
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:65
+msgid "FreeBSD"
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:66
@@ -3542,7 +3567,7 @@ msgid "Welcome to the Zrythm manual."
 msgstr ""
 
 #: ../../index.rst:16 ../../index.rst:60
-msgid "Copyright © 2019-2021 The Zrythm contributors"
+msgid "Copyright © 2018-2022 The Zrythm contributors"
 msgstr ""
 
 #: ../../index.rst:18 ../../index.rst:62
@@ -3645,7 +3670,7 @@ msgid ""
 "stereo balance."
 msgstr ""
 
-#: ../../mixing/overview.rst:22 ../../zrythm-interface/bottom-panel.rst:82
+#: ../../mixing/overview.rst:22
 msgid "Mixer"
 msgstr "混音器"
 
@@ -4127,7 +4152,7 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:8
-#: ../../zrythm-interface/transport-bar.rst:22
+#: ../../zrythm-interface/transport-bar.rst:24
 msgid "Transport Controls"
 msgstr ""
 
@@ -4266,7 +4291,6 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
-#: ../../zrythm-interface/right-panel.rst:21
 msgid "File Browser"
 msgstr "文件浏览器"
 
@@ -4618,38 +4642,83 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/plugins/inspector-page.rst:17
+#, fuzzy
+msgid "Plugin inspector"
+msgstr "插件检查器"
+
+#: ../../plugins-files/plugins/inspector-page.rst:19
 msgid ""
 "This page will display information about the plugin and its ports and allow "
 "you to make changes."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:22
+#: ../../plugins-files/plugins/inspector-page.rst:24
+msgid "Plugin Properties"
+msgstr "插件属性"
+
+#: ../../plugins-files/plugins/inspector-page.rst:25
+msgid ""
+"The plugin properties show the name and type of the plugin, as well as "
+"preset and bank selectors."
+msgstr ""
+
+#: ../../plugins-files/plugins/inspector-page.rst:32
+#: ../../plugins-files/plugins/plugin-info.rst:51
+msgid "Plugin Ports"
+msgstr ""
+
+#: ../../plugins-files/plugins/inspector-page.rst:33
+msgid "These are the ports that the plugin has."
+msgstr ""
+
+#: ../../plugins-files/plugins/inspector-page.rst:38
+msgid ""
+"Control input ports can be changed by clicking and dragging, and can also be "
+"automated using automation tracks."
+msgstr ""
+
+#: ../../plugins-files/plugins/inspector-page.rst:42
+msgid ""
+"Ports can be routed to other ports anywhere within Zrythm by double clicking "
+"on them."
+msgstr ""
+
+#: ../../plugins-files/plugins/inspector-page.rst:45
+msgid "Ports are explained in more detail in :ref:`ports`."
+msgstr ""
+
+#: ../../plugins-files/plugins/inspector-page.rst:47
+msgid ""
+"Depending on the type of plugin, there may be different categories of ports "
+"being shown."
+msgstr ""
+
+#: ../../plugins-files/plugins/inspector-page.rst:51
 msgid "Display"
 msgstr "显示"
 
-#: ../../plugins-files/plugins/inspector-page.rst:23
+#: ../../plugins-files/plugins/inspector-page.rst:52
 msgid ""
 "The number in the top right of each port name will display the current "
 "number of connections to/from this port. See :doc:`../../routing/making-"
 "connections` for details."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:29
+#: ../../plugins-files/plugins/inspector-page.rst:58
 msgid "Changing Values"
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:30
+#: ../../plugins-files/plugins/inspector-page.rst:59
 msgid ""
 "The values of control ports can be changed by clicking and dragging inside "
 "each bar."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:33
+#: ../../plugins-files/plugins/inspector-page.rst:62
 msgid ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:8
-#: ../../zrythm-interface/right-panel.rst:16
 msgid "Plugin Browser"
 msgstr "插件浏览器"
 
@@ -4836,11 +4905,6 @@ msgid ""
 "audio, MIDI, control and CV input and output ports a plugin has."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-info.rst:51
-#: ../../zrythm-interface/left-panel.rst:41
-msgid "Plugin Ports"
-msgstr ""
-
 #: ../../plugins-files/plugins/plugin-info.rst:52
 msgid ""
 "Plugins consist of controls (parameters) and a variety of audio, :term:"
@@ -4977,13 +5041,6 @@ msgid ""
 "Zrythm will scan for LV2 plugins in the `standard paths specified here "
 "<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. You can "
 "bypass this behavior by passing :envvar:`LV2_PATH`."
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:34
-#: ../../plugins-files/plugins/scanning.rst:73
-#: ../../plugins-files/plugins/scanning.rst:126
-#: ../../plugins-files/plugins/scanning.rst:151
-msgid "Flatpak"
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:35
@@ -5305,48 +5362,6 @@ msgid ""
 "backups."
 msgstr ""
 
-#: ../../routing/control-room.rst:8 ../../zrythm-interface/right-panel.rst:25
-msgid "Control Room"
-msgstr "控制室"
-
-#: ../../routing/control-room.rst:9
-msgid ""
-"The control room is used to edit global settings related to mixing and "
-"routing signals."
-msgstr ""
-
-#: ../../routing/control-room.rst:13
-msgid "Monitor Out"
-msgstr ""
-
-#: ../../routing/control-room.rst:14
-msgid ""
-"In Zrythm, what you actually hear through your speakers is not the output of "
-"the master track, but the monitor output."
-msgstr ""
-
-#: ../../routing/control-room.rst:18
-msgid ""
-"The master track routes its output to a special processor called `Monitor "
-"Out` that changes the volume before sending the output to the speakers."
-msgstr ""
-
-#: ../../routing/control-room.rst:25
-msgid "The `Monitor Out` knob controls this volume."
-msgstr ""
-
-#: ../../routing/control-room.rst:28
-msgid "Dim"
-msgstr "暗显"
-
-#: ../../routing/control-room.rst:29
-msgid "This is not operational at the moment."
-msgstr ""
-
-#: ../../routing/control-room.rst:31
-msgid "Move to another chapter."
-msgstr ""
-
 #: ../../routing/inserts-sends.rst:8
 msgid "Inserts & Sends"
 msgstr ""
@@ -5395,6 +5410,55 @@ msgstr ""
 
 #: ../../routing/making-connections.rst:41
 msgid "See :ref:`export-routing-graph` for details."
+msgstr ""
+
+#: ../../routing/managing-connections.rst:6
+#, fuzzy
+msgid "Managing Connections"
+msgstr "端口连接"
+
+#: ../../routing/monitor-section.rst:6
+#, fuzzy
+msgid "Monitor Section"
+msgstr "循环选择"
+
+#: ../../routing/monitor-section.rst:7
+msgid ""
+"The monitor section is used to edit global settings related to mixing and "
+"routing signals. It is found inside the :ref:`Right Panel <zrythm-interface/"
+"right-panel:Right Panel>`."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:13
+msgid "Monitor Out"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:14
+msgid ""
+"In Zrythm, what you actually hear through your speakers is not the output of "
+"the master track, but the monitor output."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:18
+msgid ""
+"The master track routes its output to a special processor called `Monitor "
+"Out` that changes the volume before sending the output to the speakers."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:25
+msgid "The `Monitor Out` knob controls this volume."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:28
+msgid "Dim"
+msgstr "暗显"
+
+#: ../../routing/monitor-section.rst:29
+msgid "This is not operational at the moment."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:31
+msgid "Move to another chapter."
 msgstr ""
 
 #: ../../routing/ports.rst:8
@@ -5723,7 +5787,7 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/scripting-interface.rst:6
-#: ../../zrythm-interface/main-toolbar.rst:122
+#: ../../zrythm-interface/main-toolbar.rst:106
 msgid "Scripting Interface"
 msgstr "脚本接口"
 
@@ -6220,7 +6284,6 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:8 ../../tracks/overview.rst:68
-#: ../../zrythm-interface/left-panel.rst:17
 msgid "Track Inspector"
 msgstr "音轨检查器"
 
@@ -6906,7 +6969,7 @@ msgstr ""
 msgid "Add page for Modulators and Tempo track."
 msgstr ""
 
-#: ../../tracks/track-visibility.rst:8 ../../zrythm-interface/left-panel.rst:58
+#: ../../tracks/track-visibility.rst:8
 msgid "Track Visibility"
 msgstr ""
 
@@ -6954,147 +7017,93 @@ msgstr ""
 msgid "Bottom Panel"
 msgstr ""
 
-#: ../../zrythm-interface/bottom-panel.rst:10
+#: ../../zrythm-interface/bottom-panel.rst:13
+msgid "Bottom panel"
+msgstr ""
+
+#: ../../zrythm-interface/bottom-panel.rst:15
 msgid ""
-"The bottom panel contains various editors (such as the piano roll and "
-"automation editor) as well as the mixer and chord pads."
+"The bottom panel consists of the following views, each explained in its own "
+"section."
 msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:18
-msgid "Editor"
-msgstr "编辑器"
+msgid ":ref:`Editor <editors>`"
+msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:19
-msgid ""
-"The Editor tab contains an arranger for editing regions, as well as various "
-"controls that vary depending on the type of region selected."
+msgid ":ref:`Mixer <mixing>`"
 msgstr ""
 
-#: ../../zrythm-interface/bottom-panel.rst:26
-msgid "Editing inside the Editor tab is covered in :ref:`editors`."
+#: ../../zrythm-interface/bottom-panel.rst:20
+msgid ":ref:`Modulators <modulators/intro:Modulators>`"
 msgstr ""
 
-#: ../../zrythm-interface/bottom-panel.rst:31
-msgid ""
-"The Piano Roll, or MIDI Arranger, is the most commonly used editor. It can "
-"be used to edit MIDI regions, which contain MIDI notes. When a MIDI Region "
-"is selected, the Editor tab will display the Piano Roll, allowing you to "
-"edit that region."
-msgstr ""
-
-#: ../../zrythm-interface/bottom-panel.rst:40
-msgid "The piano roll is covered in detail in :ref:`piano-roll`."
-msgstr ""
-
-#: ../../zrythm-interface/bottom-panel.rst:45
-msgid ""
-"In Zrythm, automation is also enclosed in regions (called Automation "
-"Regions). This allows automation to be repeated, much like MIDI Regions. The "
-"Automation Editor will appear in the Editor tab when an Automation Region is "
-"selected."
-msgstr ""
-
-#: ../../zrythm-interface/bottom-panel.rst:53
-msgid "The automation editor is covered in detail in :ref:`automation-editor`."
-msgstr ""
-
-#: ../../zrythm-interface/bottom-panel.rst:58
-msgid ""
-"The audio editor is used to view the contents of audio regions. The audio "
-"editor will appear in the Editor tab when an audio region is selected."
-msgstr ""
-
-#: ../../zrythm-interface/bottom-panel.rst:66
-msgid "The audio editor is covered in detail in :ref:`audio-editor`."
-msgstr ""
-
-#: ../../zrythm-interface/bottom-panel.rst:71
-msgid ""
-"The chord editor is used for editing chord regions. It will appear in the "
-"Editor tab when a chord region is selected in the chord track."
-msgstr ""
-
-#: ../../zrythm-interface/bottom-panel.rst:78
-msgid "The chord editor is covered in detail in :ref:`chord-editor`."
-msgstr ""
-
-#: ../../zrythm-interface/bottom-panel.rst:83
-msgid ""
-"The Mixer tab contains each channel and various controls for changing the "
-"signal as it passes through the channel."
-msgstr ""
-
-#: ../../zrythm-interface/bottom-panel.rst:89
-msgid "Mixing is covered in :ref:`mixing`."
+#: ../../zrythm-interface/bottom-panel.rst:21
+msgid ":ref:`Chord Pad <chords-and-scales/overview:Chord Pad>`"
 msgstr ""
 
 #: ../../zrythm-interface/intro.rst:6
 msgid "Interface"
 msgstr "接口"
 
-#: ../../zrythm-interface/intro.rst:19
-msgid "Add main panel section that contains the timeline."
-msgstr ""
-
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:10
-msgid "The left panel contains the inspectors and track visibility options."
+#: ../../zrythm-interface/left-panel.rst:13
+msgid "Left panel"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:15
+msgid ""
+"The left panel consists of the following views, each explained in its own "
+"section."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:18
+msgid ":ref:`Track Inspector <track-inspector>`"
 msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:19
 msgid ""
-"The first tab is the track inspector, which shows various options about the "
-"selected track."
+":ref:`Plugin Inspector <plugins-files/plugins/inspector-page:Inspector Page>`"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:22
-msgid "See :ref:`track-inspector` for more details."
+#: ../../zrythm-interface/left-panel.rst:20
+msgid ":ref:`Track Visibility <track-visibility>`"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:25
-msgid "Plugin Inspector"
-msgstr "插件检查器"
+#: ../../zrythm-interface/main-panel.rst:8
+#, fuzzy
+msgid "Main Panel"
+msgstr "时间线"
 
-#: ../../zrythm-interface/left-panel.rst:26
-msgid "The plugin inspector shows various options for the selected plugin."
-msgstr ""
+#: ../../zrythm-interface/main-panel.rst:13
+#, fuzzy
+msgid "Main panel"
+msgstr "时间线"
 
-#: ../../zrythm-interface/left-panel.rst:33
-msgid "Plugin Properties"
-msgstr "插件属性"
-
-#: ../../zrythm-interface/left-panel.rst:34
+#: ../../zrythm-interface/main-panel.rst:15
 msgid ""
-"The plugin properties show the name and type of the plugin, as well as "
-"preset and bank selectors."
+"The main panel consists of the following views, each explained in its own "
+"section."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:42
-msgid "These are the ports that the plugin has."
+#: ../../zrythm-interface/main-panel.rst:18
+msgid ":ref:`Timeline <editing-timeline>`"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:47
-msgid ""
-"Control input ports can be changed by clicking and dragging, and can also be "
-"automated using automation tracks. Ports can be routed to other ports "
-"anywhere within Zrythm by double clicking on them."
+#: ../../zrythm-interface/main-panel.rst:19
+msgid ":doc:`Connections <../routing/managing-connections>`"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:52
-msgid "Ports are explained in more detail in :ref:`ports`."
+#: ../../zrythm-interface/main-panel.rst:20
+msgid ":ref:`Bindings <configuration/device-setup:MIDI Bindings>`"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:54
-msgid ""
-"Depending on the type of plugin, there may be different categories of ports "
-"being shown."
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:60
-msgid "See :ref:`track-visibility`."
+#: ../../zrythm-interface/main-panel.rst:21
+msgid "Scenes *(not implemented yet)*"
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:8
@@ -7108,279 +7117,260 @@ msgid ""
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:17
-msgid "About Dialog"
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:19
 msgid ""
-"Clicking the Zrythm icon will show the About dialog, which contains "
-"information about authors and copyright."
+"The name of the project is displayed at the center, with the project path "
+"being shown below it."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:26
+#: ../../zrythm-interface/main-toolbar.rst:21
 msgid "Global Menus"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:27
-msgid "Zrythm has the following global menus at the top of its interface."
+#: ../../zrythm-interface/main-toolbar.rst:22
+msgid "The main toolbar contains the following global menus."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:31
+#: ../../zrythm-interface/main-toolbar.rst:25
 msgid "Edit Menu"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:32
+#: ../../zrythm-interface/main-toolbar.rst:26
 msgid ""
 "The Edit menu has various buttons and controls that are used often during "
 "editing and arranging."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:35
+#: ../../zrythm-interface/main-toolbar.rst:29
 msgid "The :ref:`editing` chapter explains these controls in detail."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:39
+#: ../../zrythm-interface/main-toolbar.rst:33
 msgid "Project Menu"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:40
+#: ../../zrythm-interface/main-toolbar.rst:34
 msgid ""
 "The Project menu contains various project-related actions such as saving, "
 "loading and exporting MIDI or audio."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:45
+#: ../../zrythm-interface/main-toolbar.rst:39
 msgid "Project Management"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:46
+#: ../../zrythm-interface/main-toolbar.rst:40
 msgid "New Project"
 msgstr "新项目"
 
-#: ../../zrythm-interface/main-toolbar.rst:47
+#: ../../zrythm-interface/main-toolbar.rst:41
 msgid "Create a new project."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:48
+#: ../../zrythm-interface/main-toolbar.rst:42
 msgid "Save"
 msgstr "保存"
 
-#: ../../zrythm-interface/main-toolbar.rst:49
+#: ../../zrythm-interface/main-toolbar.rst:43
 msgid "Save the current project at its current location."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:50
+#: ../../zrythm-interface/main-toolbar.rst:44
 msgid "Save As"
 msgstr "保存为"
 
-#: ../../zrythm-interface/main-toolbar.rst:51
+#: ../../zrythm-interface/main-toolbar.rst:45
 msgid "Save the current project at a new location."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:53
+#: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Load"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:53
+#: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Load a project."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:56
+#: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Export"
 msgstr "导出"
 
-#: ../../zrythm-interface/main-toolbar.rst:58
+#: ../../zrythm-interface/main-toolbar.rst:52
 msgid "Export As"
 msgstr "导出为"
 
-#: ../../zrythm-interface/main-toolbar.rst:58
+#: ../../zrythm-interface/main-toolbar.rst:52
 msgid ""
 "Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for "
 "more details."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:62
+#: ../../zrythm-interface/main-toolbar.rst:56
 msgid "Export Graph"
 msgstr "导出图"
 
-#: ../../zrythm-interface/main-toolbar.rst:61
+#: ../../zrythm-interface/main-toolbar.rst:55
 msgid ""
 "Export the routing graph as an image or .dot graph. See :ref:`export-routing-"
 "graph` for more details."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:64
+#: ../../zrythm-interface/main-toolbar.rst:58
 msgid "For more information about projects, see the :ref:`projects` chapter."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:68
+#: ../../zrythm-interface/main-toolbar.rst:62
 msgid "View Menu"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:69
+#: ../../zrythm-interface/main-toolbar.rst:63
 msgid ""
 "The View menu contains controls to change the appearance of Zrythm and its "
-"various areas, such as zooming."
+"various areas."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:73
-msgid "Zoom"
+#: ../../zrythm-interface/main-toolbar.rst:66
+msgid "Toggle Status Bar"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:67
+msgid "Toggles the visibility of the status bar."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:68
+msgid "Fullscreen"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:69
+msgid "Toggles fullscreen mode."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:71
+msgid "Toggle Left/Right/Bottom/Main Panels"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:71
+msgid "Toggles the visiblity of the selected panel."
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:74
-msgid "Zoom In"
-msgstr "放大"
-
-#: ../../zrythm-interface/main-toolbar.rst:75
-msgid "Zooms in."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:76
-msgid "Zoom Out"
-msgstr "缩小"
-
-#: ../../zrythm-interface/main-toolbar.rst:77
-msgid "Zooms out."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:78
-msgid "Original Size"
-msgstr "原始大小"
-
-#: ../../zrythm-interface/main-toolbar.rst:79
-msgid "Zooms back to the default zoom level."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:82
-msgid "Best Fit"
-msgstr "最佳匹配"
-
-#: ../../zrythm-interface/main-toolbar.rst:81
-msgid ""
-"Zooms in or out as much as required to show all of the events in the "
-"timeline."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:85
-msgid "Visibility Toggles"
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:86
-msgid "Toggle Left/Right/Bottom Panels"
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:87
-msgid "Toggles the panel's visibility."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:89
-msgid "Toggle Timeline Visibility"
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:89
-msgid "Toggles the timeline's visibility."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:92
 msgid "Help Menu"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:93
+#: ../../zrythm-interface/main-toolbar.rst:75
 msgid ""
 "The Help menu contains links for reporting bugs, donating, chatting and "
 "other useful links."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:96
+#: ../../zrythm-interface/main-toolbar.rst:83
+msgid "About"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:79
+msgid ""
+"View information about the running instance of Zrythm, such as version "
+"information, authors and copyright."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:85
 msgid "Chat"
 msgstr "聊天"
 
-#: ../../zrythm-interface/main-toolbar.rst:97
+#: ../../zrythm-interface/main-toolbar.rst:86
 msgid "Join the Zrythm chatroom on Matrix."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:98
+#: ../../zrythm-interface/main-toolbar.rst:87
 msgid "Manual"
 msgstr "手册"
 
-#: ../../zrythm-interface/main-toolbar.rst:99
+#: ../../zrythm-interface/main-toolbar.rst:88
 msgid "View the user manual."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:100
+#: ../../zrythm-interface/main-toolbar.rst:89
 msgid "News"
 msgstr "新闻"
 
-#: ../../zrythm-interface/main-toolbar.rst:101
+#: ../../zrythm-interface/main-toolbar.rst:90
 msgid "Show the latest changelog."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:102
+#: ../../zrythm-interface/main-toolbar.rst:91
 msgid "Keyboard Shortcuts"
 msgstr "键盘快捷键"
 
-#: ../../zrythm-interface/main-toolbar.rst:103
+#: ../../zrythm-interface/main-toolbar.rst:92
 msgid "Show all the available keyboard shortcuts."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:104
+#: ../../zrythm-interface/main-toolbar.rst:93
 msgid "Donate"
 msgstr "捐赠"
 
-#: ../../zrythm-interface/main-toolbar.rst:105
+#: ../../zrythm-interface/main-toolbar.rst:94
 msgid "Donate to Zrythm through LiberaPay."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:107
+#: ../../zrythm-interface/main-toolbar.rst:96
 msgid "Report a Bug"
 msgstr "报告错误"
 
-#: ../../zrythm-interface/main-toolbar.rst:107
+#: ../../zrythm-interface/main-toolbar.rst:96
 msgid "Opens the page to report a new bug."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:111
-msgid "The main toolbar also contains the following widgets."
+#: ../../zrythm-interface/main-toolbar.rst:99
+msgid "Additional Buttons"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:116
-msgid ""
-"There are the following buttons next to the name of the current project."
+#: ../../zrythm-interface/main-toolbar.rst:100
+msgid "The main toolbar also contains the following buttons."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:120
-msgid "Shows the scripting interface."
+#: ../../zrythm-interface/main-toolbar.rst:106
+#, fuzzy
+msgid "Shows the :ref:`scripting interface <scripting>`."
 msgstr "显示脚本接口。"
 
-#: ../../zrythm-interface/main-toolbar.rst:122
-msgid "See the :ref:`scripting` section for more information."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:124
+#: ../../zrythm-interface/main-toolbar.rst:108
 msgid "Log Viewer"
 msgstr "日志查看器"
 
-#: ../../zrythm-interface/main-toolbar.rst:125
+#: ../../zrythm-interface/main-toolbar.rst:109
 msgid "Displays the log, which gets updated real-time."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:127
+#: ../../zrythm-interface/main-toolbar.rst:111
 msgid "Shows the preferences dialog."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:129
+#: ../../zrythm-interface/main-toolbar.rst:113
 msgid "See the :ref:`preferences` section for more information."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:134
+#: ../../zrythm-interface/main-toolbar.rst:117
+msgid "Live Indicators"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:119
+msgid "The following live indicators are displayed on the right."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:123
 msgid "MIDI In"
 msgstr "MIDI 输入"
 
-#: ../../zrythm-interface/main-toolbar.rst:132
-msgid ""
-"The MIDI In widget shows the :term:`MIDI` activity of auto-connected MIDI "
-"devices and the live waveform display shows the audio waveform from the "
-"master output."
+#: ../../zrythm-interface/main-toolbar.rst:123
+msgid "Shows the :term:`MIDI` activity of auto-connected MIDI devices."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:125
+msgid "Oscilloscope"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:126
+msgid "Shows the audio waveform from the master output."
 msgstr ""
 
 #: ../../zrythm-interface/overview.rst:8
@@ -7392,11 +7382,11 @@ msgid "Each sub-module is explained in its own section."
 msgstr ""
 
 #: ../../zrythm-interface/overview.rst:15
-msgid ":ref:`timeline` (1)"
+msgid ":ref:`main-toolbar` (1)"
 msgstr ""
 
 #: ../../zrythm-interface/overview.rst:16
-msgid ":ref:`main-toolbar` (2)"
+msgid ":ref:`main-panel` (2)"
 msgstr ""
 
 #: ../../zrythm-interface/overview.rst:17
@@ -7408,48 +7398,65 @@ msgid ":ref:`bottom-panel` (4)"
 msgstr ""
 
 #: ../../zrythm-interface/overview.rst:19
-msgid ":ref:`transport-bar` (5)"
+msgid ":ref:`right-panel` (5)"
 msgstr ""
 
 #: ../../zrythm-interface/overview.rst:20
-msgid ":ref:`right-panel` (6)"
+msgid ":ref:`transport-bar` (6)"
+msgstr ""
+
+#: ../../zrythm-interface/overview.rst:22
+msgid ""
+"Panels contain multiple *views*, each of which is made visible by clicking "
+"on its corresponding tab."
+msgstr ""
+
+#: ../../zrythm-interface/overview.rst:26
+msgid "Detaching Views"
+msgstr ""
+
+#: ../../zrythm-interface/overview.rst:27
+msgid ""
+"Views in each panel are detachable. To detach a view into its own separate "
+"window, click and drag its tab outside the main window of Zrythm."
+msgstr ""
+
+#: ../../zrythm-interface/overview.rst:35
+msgid "Detached timeline view"
 msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:8
 msgid "Right Panel"
 msgstr ""
 
-#: ../../zrythm-interface/right-panel.rst:9
+#: ../../zrythm-interface/right-panel.rst:13
+msgid "Right panel"
+msgstr ""
+
+#: ../../zrythm-interface/right-panel.rst:15
 msgid ""
-"The right panel contains plugin and sample browsers in addition to the "
-"control room."
+"The right panel consists of the following views, each explained in its own "
+"section."
 msgstr ""
 
-#: ../../zrythm-interface/right-panel.rst:17
-msgid ""
-"The first tab is the plugin browser, which is explained in :ref:`plugin-"
-"browser`."
+#: ../../zrythm-interface/right-panel.rst:18
+msgid ":ref:`Plugin Browsers <plugin-browser>`"
 msgstr ""
 
-#: ../../zrythm-interface/right-panel.rst:22
-msgid "The file browser is covered in :ref:`file-browser`."
+#: ../../zrythm-interface/right-panel.rst:19
+msgid ":ref:`File Browser <file-browser>`"
 msgstr ""
 
-#: ../../zrythm-interface/right-panel.rst:26
-msgid "The control room is covered in :ref:`control-room`."
+#: ../../zrythm-interface/right-panel.rst:20
+msgid ":ref:`Monitor Section <routing/monitor-section:Monitor Section>`"
 msgstr ""
 
-#: ../../zrythm-interface/timeline.rst:10
-msgid ""
-"The timeline consists of the timeline arranger and the project's tracks on "
-"the left side. It has a special toolbar at the top for timeline-specific "
-"actions."
+#: ../../zrythm-interface/right-panel.rst:21
+msgid ":ref:`Chord Preset Browser <chords-and-scales/overview:Overview>`"
 msgstr ""
 
-#: ../../zrythm-interface/timeline.rst:17
-msgid ""
-"The :ref:`editing-timeline` section goes in depth about editing inside the "
-"timeline panel."
+#: ../../zrythm-interface/right-panel.rst:23
+msgid "Write and point to correct chord preset browser section."
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:8
@@ -7458,35 +7465,80 @@ msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:10
 msgid ""
-"The transport bar contains information about the audio engine and transport "
-"controls."
+"The transport bar contains information about the audio engine, transport "
+"controls and CPU/DSP usage."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:17
+#: ../../zrythm-interface/transport-bar.rst:16
+msgid "Transport bar"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:19
 msgid "BPM and Time Signature"
 msgstr "BPM 和拍子记号"
 
-#: ../../zrythm-interface/transport-bar.rst:18
+#: ../../zrythm-interface/transport-bar.rst:20
 msgid ""
 "BPM and Time Signature are covered in :ref:`playback-and-recording/bpm-and-"
 "time-signatures:BPM and Time Signatures`."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:23
+#: ../../zrythm-interface/transport-bar.rst:25
 msgid ""
 "Transport controls are covered in :ref:`playback-and-recording/transport-"
 "controls:Transport Controls`."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:27
+#: ../../zrythm-interface/transport-bar.rst:29
 msgid "Backend Information"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:28
+#: ../../zrythm-interface/transport-bar.rst:30
 msgid ""
 "Information about the currently selected backend and options is visible in "
 "the bottom left corner."
 msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:36
+msgid "Backend info"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:38
+msgid ""
+"If the backend supports it, the buffer size can be changed live by clicking "
+"the :guilabel:`change` button."
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:42
+msgid ""
+"If the backend supports it, the engine can be temporarily disabled by "
+"clicking the :guilabel:`Disable` button."
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:47
+msgid "CPU/DSP Usage"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:52
+msgid "CPU/DSP usage"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:54
+#, python-format
+msgid ""
+"This widget displays the current CPU % usage at the top and the current DSP "
+"% usage at the bottom. If the DSP % exceeds 100 (all bars filled), audio "
+"will start clipping."
+msgstr ""
+
+#~ msgid "Control Room"
+#~ msgstr "控制室"
+
+#~ msgid "Editor"
+#~ msgstr "编辑器"
+
+#~ msgid "Installer"
+#~ msgstr "安装程序"
 
 #~ msgid "Shortcut Keys"
 #~ msgstr "快捷键"

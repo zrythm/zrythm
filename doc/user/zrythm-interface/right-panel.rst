@@ -1,26 +1,24 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. _right-panel:
 
 Right Panel
 ===========
-The right panel contains plugin and sample browsers in addition
-to the control room.
 
-.. image:: /_static/img/right-panel.png
+.. figure:: /_static/img/right-panel.png
    :align: center
 
-Plugin Browser
---------------
-The first tab is the plugin browser, which is explained in
-:ref:`plugin-browser`.
+   Right panel
 
-File Browser
-------------
-The file browser is covered in :ref:`file-browser`.
+The right panel consists of the following views,
+each explained in its own section.
 
-Control Room
-------------
-The control room is covered in :ref:`control-room`.
+* :ref:`Plugin Browsers <plugin-browser>`
+* :ref:`File Browser <file-browser>`
+* :ref:`Monitor Section <routing/monitor-section:Monitor Section>`
+* :ref:`Chord Preset Browser <chords-and-scales/overview:Overview>`
+
+.. todo:: Write and point to correct chord preset
+   browser section.

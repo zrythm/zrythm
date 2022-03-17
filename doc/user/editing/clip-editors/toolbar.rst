@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. _editor-toolbar:
@@ -13,6 +13,22 @@ specific to the current editor.
 
 .. image:: /_static/img/editor-toolbar.png
    :align: center
+
+Common Controls
+---------------
+
+Zoom Controls
+~~~~~~~~~~~~~
+
+Zoom In
+  Zooms in.
+Zoom Out
+  Zooms out.
+Original Size
+  Zooms back to the default zoom level.
+Best Fit
+  Zooms in or out as much as required to show all of
+  the events in the timeline.
 
 Piano Roll
 ----------

@@ -44,9 +44,12 @@ run_sphinx_build = configure_file (
 subdir ('locale')
 
 index_rst = configure_file (
-  copy: true,
   input: 'index.rst',
-  output: '@PLAINNAME@')
+  output: '@PLAINNAME@',
+  configuration: {
+    'COPYRIGHT_NAME': copyright_name,
+    'COPYRIGHT_YEARS': copyright_years,
+    })
 rst_files = [ index_rst ]
 
 subdir ('_static')

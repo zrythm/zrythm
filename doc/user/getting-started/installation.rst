@@ -1,6 +1,8 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
+
+.. sectionauthor:: Alexandros Theodotou <alex@zrythm.org>
 
 Installation
 ============
@@ -21,10 +23,19 @@ support for it.
 
 .. tip:: The installers also include bundled plugins.
 
-Manual Installation
--------------------
-If you are an advanced user, you can also build
-Zrythm from source, either using
+Flatpak
+-------
+Zrythm is available on `Flathub`_ under the ID
+`org.zrythm.Zrythm`_.
+
+Distribution Repositories
+-------------------------
+If Zrythm is available in your distro's repositories,
+you can also install it from there.
+
+Building from Source
+--------------------
+You can build Zrythm from source, either using
 a `source distribution tarball <https://www.zrythm.org/releases/>`_
 or `git <https://git.zrythm.org/zrythm/zrythm/>`_.
 
@@ -32,33 +43,5 @@ See ``INSTALL.rst`` in
 the source distribution for installation
 instructions.
 
-GNU/Linux
----------
-
-Installer
-~~~~~~~~~
-The installer supports the following
-distributions (and derivatives):
-
-- **Arch Linux** - x86_64
-- **Debian Stable & Testing** - amd64
-- **Latest 2 Fedora releases** - x86_64
-- **Ubuntu latest LTS & non-LTS** - amd64
-
-We also offer an AppImage build, which is currently
-experimental. If you find any issues, please report
-them.
-
-Distribution Package
-~~~~~~~~~~~~~~~~~~~~
-If your distribution provides a Zrythm package you
-can also install it from there.
-
-Windows & MacOS
----------------
-The installers above fully support Windows 64bit and MacOS.
-
-FreeBSD
--------
-You can install the Zrythm port from the official
-repositories.
+.. _Flathub: https://flathub.org
+.. _org.zrythm.Zrythm: https://flathub.org/apps/details/org.zrythm.Zrythm

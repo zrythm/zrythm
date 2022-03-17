@@ -4,9 +4,11 @@
 
 Overview
 ========
-Editing in the timeline is the most common workflow inside
-Zrythm. The timeline section consists of the tracklist on the
-left and the ruler/arranger on the right side.
+Editing in the timeline is the most common workflow
+inside Zrythm. The timeline section consists of the
+tracklist on the left and the ruler/arranger on the
+right, along with a timeline-specific toolbar at the
+top.
 
 .. image:: /_static/img/timeline.png
    :align: center
