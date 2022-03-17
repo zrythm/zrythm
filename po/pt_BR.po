@@ -7,13 +7,14 @@
 # Vinicius Monego <monego@posteo.net>, 2021.
 # Rodrigo Zimmermann <rodrigo.zimmermann23@gmail.com>, 2021.
 # Pedro Portela <pportela@disroot.org>, 2021.
+# Wilker Santana da Silva <wilker@posteo.com.br>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-02-15 17:23+0000\n"
-"PO-Revision-Date: 2021-12-08 23:53+0000\n"
-"Last-Translator: Pedro Portela <pportela@disroot.org>\n"
+"PO-Revision-Date: 2022-03-06 09:46+0000\n"
+"Last-Translator: Wilker Santana da Silva <wilker@posteo.com.br>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -21,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.10-dev\n"
+"X-Generator: Weblate 4.12-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -132,7 +133,7 @@ msgstr "Baixo"
 
 #: inc/utils/ui.h:80
 msgid "Ultra Low"
-msgstr ""
+msgstr "Ultra Baixo"
 
 #: inc/utils/gtk.h:59
 #, fuzzy
@@ -552,7 +553,7 @@ msgstr ""
 
 #: inc/audio/scale.h:184
 msgid "Altered"
-msgstr ""
+msgstr "Alterado"
 
 #: inc/audio/scale.h:185
 msgid "Maqam"
@@ -721,9 +722,8 @@ msgid "Failed to load project. Will create a new one instead."
 msgstr "Falha ao carregar o projeto. Vou criar um novo em vez disso."
 
 #: src/project.c:1615
-#, fuzzy
 msgid "Failed to compress project file"
-msgstr "Falha ao descompactar o arquivo do projeto: %s"
+msgstr "Falha ao compactar o arquivo do projeto"
 
 #: src/project.c:1661 src/project.c:1664
 msgid "Backup saved."
@@ -748,9 +748,9 @@ msgid "%s has crashed. "
 msgstr "O %s travou. "
 
 #: src/zrythm_app.c:203
-#, fuzzy, c-format
+#, c-format
 msgid "Do you want %s to check for updates on startup?"
-msgstr "Você deseja que o %s verifique se há atualizações na inicialização?"
+msgstr "Deseja que o %s verifique se há atualizações na inicialização?"
 
 #: src/zrythm_app.c:210
 #, fuzzy
@@ -829,12 +829,12 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"%s-%s Copyright (C) 2018-2020 Os colaboradores do Zrythm\n"
+"%s-%s\n"
 "\n"
 "%s não possui ABSOLUTAMENTE NENHUMA GARANTIA!\n"
 "\n"
-"Este é um software livre e você pode distribuí-lo sob certas condições.\n"
-"Veja o arquivo 'COPYING' para obter detalhes.\n"
+"Este é um software livre, você é bem vinde para redistribuir-lo \n"
+"sob certas condições. Veja o arquivo 'COPYING' para detalhes.\n"
 "\n"
 "Envie comentários e bugs para %s\n"
 "Apoie este projeto em https://liberapay.com/Zrythm\n"
@@ -846,11 +846,10 @@ msgid "File %s not found."
 msgstr "Arquivo %s não encontrado."
 
 #: src/zrythm_app.c:1505
-#, fuzzy
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "Nenhum arquivo de saída foi informado. Por favor, passe um com o parâmetro "
-"`--output [ARQUIVO]`."
+"`--output=[ARQUIVO]`."
 
 #: src/zrythm_app.c:1571
 #, c-format
@@ -858,9 +857,8 @@ msgid "Project failed to decompress: %s\n"
 msgstr "Falha ao descompactar o projeto: %s\n"
 
 #: src/zrythm_app.c:1590
-#, fuzzy
 msgid "Unknown operation"
-msgstr "Opção desconhecida\n"
+msgstr "Operação desconhecida"
 
 #: src/zrythm_app.c:1610
 #, fuzzy, c-format
@@ -881,12 +879,13 @@ msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "Converter YAML-PROJECT-FILE para o formato .zpj"
 
 #: src/zrythm_app.c:1790
+#, fuzzy
 msgid "Generate a project from SCRIPT-FILE"
-msgstr ""
+msgstr "Gerar um projeto a partir de SCRIPT-FILE"
 
 #: src/zrythm_app.c:1794
 msgid "Print output in user-friendly way"
-msgstr ""
+msgstr "Saída de impressão amigável para leitura"
 
 #: src/zrythm_app.c:1798
 msgid "Print current settings"
@@ -927,7 +926,7 @@ msgstr ""
 #: src/zrythm_app.c:1862
 #, c-format
 msgid "Run %s, optionally passing a project file."
-msgstr ""
+msgstr "Execute %s, opcionalmente dado um arquivo de projeto."
 
 #: src/plugins/plugin_descriptor.c:579
 #, fuzzy
@@ -1181,9 +1180,8 @@ msgid "Could not find UI by URI <%s>"
 msgstr ""
 
 #: src/plugins/lv2_plugin.c:2640
-#, fuzzy
 msgid "Failed to make temporary dir"
-msgstr "Falha ao criar diretório temporário"
+msgstr "Falha ao criar um diretório temporário"
 
 #: src/plugins/lv2_plugin.c:2686
 #, fuzzy, c-format
@@ -1196,14 +1194,14 @@ msgid "Failed to load state from %s"
 msgstr "Falha ao abrir o arquivo: %s"
 
 #: src/plugins/lv2_plugin.c:2741
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find plugin with URI <%s>"
-msgstr "Falha ao localizar plugin com o URI: %s"
+msgstr "Falha ao encontrar suplemento com o URI <%s>"
 
 #: src/plugins/lv2_plugin.c:2765
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to dlopen %s: %s"
-msgstr "Falha ao abrir o arquivo: %s"
+msgstr "Falha ao dlopen %s: %s"
 
 #: src/plugins/lv2_plugin.c:2777
 #, fuzzy, c-format
@@ -1218,6 +1216,10 @@ msgid ""
 "bridged mode, and report this to the plugin distributor and/or author:\n"
 "%s <%s>"
 msgstr ""
+"%s <%s> contém uma referência a %s, que pode causar problemas.\n"
+"Se o suplemento não carregar, tente instanciar o suplemento no modo \"full-"
+"bridged\" e relate-o ao distribuidor do suplemento e/ou autor:\n"
+"%s <%s>"
 
 #: src/plugins/lv2_plugin.c:2835
 #, fuzzy
@@ -1550,9 +1552,8 @@ msgid "Inserts"
 msgstr "Inserções"
 
 #: src/gui/widgets/midi_arranger.c:545
-#, fuzzy
 msgid "Selection"
-msgstr "Seleções"
+msgstr "Seleção"
 
 #: src/gui/widgets/modulator_inner.c:101 src/actions/actions.c:1226
 msgid "Failed to delete plugins"
