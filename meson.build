@@ -154,6 +154,7 @@ language_mappings = {
   'gl': 'Galego',
   'he': 'עִבְרִית',
   'hi': 'हिन्दी',
+  'hu': 'magyar nyelv',
   'id': 'bahasa Indonesia',
   'it': 'Italiano',
   'ja': '日本語',

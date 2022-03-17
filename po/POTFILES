@@ -121,6 +121,7 @@ inc/gui/widgets/fader_controls_expander.h
 inc/gui/widgets/gtk_flipper.h
 inc/gui/widgets/route_target_selector.h
 inc/gui/widgets/marker.h
+inc/gui/widgets/zoom_buttons.h
 inc/gui/widgets/snap_grid_popover.h
 inc/gui/widgets/modulator_inner.h
 inc/gui/widgets/midi_note.h
@@ -191,7 +192,6 @@ inc/gui/widgets/fader_controls_grid.h
 inc/gui/widgets/chord_region.h
 inc/gui/widgets/active_hardware_mb.h
 inc/gui/widgets/bar_slider.h
-inc/gui/widgets/port_selector_popover.h
 inc/gui/widgets/timeline_minimap_selection.h
 inc/gui/widgets/file_browser.h
 inc/gui/widgets/file_browser_filters.h
@@ -205,6 +205,7 @@ inc/gui/widgets/chord_pad_panel.h
 inc/gui/widgets/chord_object.h
 inc/gui/widgets/text_expander.h
 inc/gui/widgets/project_toolbar.h
+inc/gui/widgets/velocity_settings.h
 inc/gui/widgets/header.h
 inc/gui/widgets/midi_region.h
 inc/gui/widgets/channel_send.h
@@ -258,12 +259,14 @@ inc/gui/widgets/dialogs/add_tracks_to_group_dialog.h
 inc/gui/widgets/dialogs/string_entry_dialog.h
 inc/gui/widgets/dialogs/save_chord_preset_dialog.h
 inc/gui/widgets/dialogs/changelog_dialog.h
+inc/gui/widgets/dialogs/port_selector_dialog.h
 inc/gui/widgets/dialogs/about_dialog.h
 inc/gui/widgets/dialogs/bug_report_dialog.h
 inc/gui/widgets/dialogs/port_info.h
 inc/gui/widgets/dialogs/export_midi_file_dialog.h
 inc/gui/widgets/dialogs/project_progress_dialog.h
 inc/gui/widgets/dialogs/generic_progress_dialog.h
+inc/gui/widgets/dialogs/welcome_message_dialog.h
 inc/gui/widgets/dialogs/object_color_chooser_dialog.h
 inc/gui/widgets/dialogs/bind_cc_dialog.h
 inc/gui/widgets/dialogs/create_project_dialog.h
@@ -541,7 +544,6 @@ src/gui/widgets/file_browser_filters.c
 src/gui/widgets/visibility.c
 src/gui/widgets/scale_object.c
 src/gui/widgets/center_dock.c
-src/gui/widgets/port_selector_popover.c
 src/gui/widgets/meter.c
 src/gui/widgets/automation_region.c
 src/gui/widgets/channel_send_selector.c
@@ -591,6 +593,7 @@ src/gui/widgets/automatable_selector_popover.c
 src/gui/widgets/chord_pad_panel.c
 src/gui/widgets/velocity.c
 src/gui/widgets/main_window.c
+src/gui/widgets/velocity_settings.c
 src/gui/widgets/snap_grid.c
 src/gui/widgets/automation_point.c
 src/gui/widgets/preferences.c
@@ -649,6 +652,7 @@ src/gui/widgets/main_notebook.c
 src/gui/widgets/modulator_macro.c
 src/gui/widgets/timeline_bot_box.c
 src/gui/widgets/active_hardware_popover.c
+src/gui/widgets/zoom_buttons.c
 src/gui/widgets/inspector_midi.c
 src/gui/widgets/chord_editor_space.c
 src/gui/widgets/rotated_label.c
@@ -661,6 +665,7 @@ src/gui/widgets/dialogs/save_chord_preset_dialog.c
 src/gui/widgets/dialogs/quantize_dialog.c
 src/gui/widgets/dialogs/bind_cc_dialog.c
 src/gui/widgets/dialogs/generic_progress_dialog.c
+src/gui/widgets/dialogs/welcome_message_dialog.c
 src/gui/widgets/dialogs/export_midi_file_dialog.c
 src/gui/widgets/dialogs/bounce_dialog.c
 src/gui/widgets/dialogs/string_entry_dialog.c
@@ -670,6 +675,7 @@ src/gui/widgets/dialogs/about_dialog.c
 src/gui/widgets/dialogs/export_progress_dialog.c
 src/gui/widgets/dialogs/bug_report_dialog.c
 src/gui/widgets/dialogs/object_color_chooser_dialog.c
+src/gui/widgets/dialogs/port_selector_dialog.c
 src/gui/widgets/dialogs/export_dialog.c
 src/gui/widgets/dialogs/project_progress_dialog.c
 src/gui/widgets/dialogs/track_icon_chooser_dialog.c
@@ -880,6 +886,7 @@ src/guile/actions/undo_manager.c
 resources/gtk/menus.ui
 resources/gtk/help-overlay.ui
 resources/ui/fader_controls_grid.ui
+resources/ui/zoom_buttons.ui
 resources/ui/inspector_plugin.ui
 resources/ui/first_run_assistant.ui
 resources/ui/view_toolbar.ui
@@ -915,6 +922,7 @@ resources/ui/mixer.ui
 resources/ui/chord_editor_space.ui
 resources/ui/scripting_window.ui
 resources/ui/chord_pack_browser.ui
+resources/ui/port_selector_dialog.ui
 resources/ui/chord_key.ui
 resources/ui/automation_editor_space.ui
 resources/ui/route_target_selector.ui
@@ -922,7 +930,6 @@ resources/ui/inspector_master.ui
 resources/ui/port_info_dialog.ui
 resources/ui/modulator_view.ui
 resources/ui/panel_file_browser.ui
-resources/ui/port_selector_popover.ui
 resources/ui/chord_pad_panel.ui
 resources/ui/file_auditioner_controls.ui
 resources/ui/audio_editor_space.ui

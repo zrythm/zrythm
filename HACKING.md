@@ -282,7 +282,9 @@ the PO files, use
 
 # Adding New Languages
 
+    msginit -i ./po/zrythm.pot -l 'ca_ES.UTF-8' -o ./po/ca.po
     msginit -i ./build/doc/user/_build/gettext/zrythm-manual.pot -l 'ca_ES.UTF-8' -o ./doc/user/locale/ca/LC_MESSAGES/zrythm-manual.po
+    msginit -i ./build/doc/user/_build/gettext/sphinx.pot -l 'ca_ES.UTF-8' -o ./doc/user/locale/ca/LC_MESSAGES/sphinx.po
 
 # Creating Releases
 Releases are created using git hooks.

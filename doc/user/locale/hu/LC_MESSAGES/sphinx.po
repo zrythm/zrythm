@@ -1,0 +1,59 @@
+# Hungarian translations for Zrythm package.
+# Copyright (C) 2018-2022 The Zrythm contributors
+# This file is distributed under the same license as the Zrythm package.
+#  <alex@zrythm.org>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 1.0.0-beta.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-16 19:17+0000\n"
+"PO-Revision-Date: 2022-03-17 23:06+0000\n"
+"Last-Translator:  <alex@zrythm.org>\n"
+"Language-Team: Hungarian <translation-team-hu@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: hu\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../../../../../doc/user/_templates/page.html:61
+msgid "Next"
+msgstr ""
+
+#: ../../../../../doc/user/_templates/page.html:73
+msgid "Previous"
+msgstr ""
+
+#: ../../../../../doc/user/_templates/page.html:76
+msgid "Home"
+msgstr ""
+
+#: ../../../../../doc/user/_templates/page.html:88
+msgid "<a href=\"%(path)s\">Copyright</a> &#169; %(copyright)s."
+msgstr ""
+
+#: ../../../../../doc/user/_templates/page.html:92
+msgid "Copyright &#169; %(copyright)s"
+msgstr ""
+
+#: ../../../../../doc/user/_templates/page.html:99
+msgid "Last updated on %(last_updated)s."
+msgstr ""
+
+#: ../../../../../doc/user/_templates/page.html:105
+msgid ""
+"Built with <a href=\"https://www.sphinx-doc.org/\">Sphinx</a>\n"
+"              and\n"
+"              <a class=\"muted-link\" href=\"https://pradyunsg.me"
+"\">@pradyunsg</a>'s\n"
+"              <a href=\"https://github.com/pradyunsg/furo\">Furo theme</a>."
+msgstr ""
+
+#: ../../../../../doc/user/_templates/page.html:116
+msgid "Show Source"
+msgstr ""
+
+#: ../../../../../doc/user/_templates/page.html:137
+msgid "Contents"
+msgstr ""
