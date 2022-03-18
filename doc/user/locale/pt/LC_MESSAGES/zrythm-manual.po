@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-18 16:25+0000\n"
+"POT-Creation-Date: 2022-03-18 22:07+0000\n"
 "PO-Revision-Date: 2022-02-02 23:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -315,7 +315,6 @@ msgstr "Resolução de problemas"
 #: ../../routing/monitor-section.rst:31
 #: ../../scripting/scripting-interface.rst:8
 #: ../../tracks/inspector-page.rst:151 ../../tracks/overview.rst:70
-#: ../../tracks/track-types.rst:178 ../../tracks/track-types.rst:221
 #: ../../zrythm-interface/right-panel.rst:23
 msgid "Todo"
 msgstr "Afazer"
@@ -359,7 +358,7 @@ msgstr ""
 "que podem ser usados para acionar acordes. O pad de acordes encontra-se no "
 "painel inferior."
 
-#: ../../chords-and-scales/overview.rst:22 ../../tracks/track-types.rst:122
+#: ../../chords-and-scales/overview.rst:22 ../../tracks/track-types.rst:135
 msgid "Chord Track"
 msgstr "Faixa de Acordes"
 
@@ -1589,7 +1588,7 @@ msgstr ""
 "actual. Ela também exibirá os seguintes marcadores e indicadores."
 
 #: ../../editing/clip-editors/ruler.rst:21
-#: ../../editing/timeline/arranger.rst:106 ../../tracks/track-types.rst:49
+#: ../../editing/timeline/arranger.rst:106 ../../tracks/track-types.rst:54
 msgid "Markers"
 msgstr "Marcadores"
 
@@ -3757,10 +3756,10 @@ msgstr ""
 #: ../../plugins-files/audio-midi-files/file-browser.rst:64
 #: ../../plugins-files/audio-midi-files/overview.rst:58
 #: ../../tracks/track-types.rst:36 ../../tracks/track-types.rst:37
-#: ../../tracks/track-types.rst:41 ../../tracks/track-types.rst:60
-#: ../../tracks/track-types.rst:61 ../../tracks/track-types.rst:62
+#: ../../tracks/track-types.rst:46 ../../tracks/track-types.rst:65
 #: ../../tracks/track-types.rst:66 ../../tracks/track-types.rst:67
 #: ../../tracks/track-types.rst:71 ../../tracks/track-types.rst:72
+#: ../../tracks/track-types.rst:76 ../../tracks/track-types.rst:77
 msgid "MIDI"
 msgstr "MIDI"
 
@@ -4214,7 +4213,7 @@ msgstr ""
 "portas de suplemento sidechain, se o suplemento tiver algum. Veja :ref:"
 "`track-sends` para detalhes."
 
-#: ../../modulators/intro.rst:8 ../../tracks/track-types.rst:55
+#: ../../modulators/intro.rst:8 ../../tracks/track-types.rst:60
 msgid "Modulators"
 msgstr "Moduladores"
 
@@ -4457,7 +4456,7 @@ msgstr "Zrythm usa o seguinte formato para posições:"
 msgid "Each sixteenth note is fixed to have 240 ticks."
 msgstr "Cada décima sexta nota é fixada para ter 240 Tiques."
 
-#: ../../playback-and-recording/recording.rst:6 ../../tracks/track-lanes.rst:18
+#: ../../playback-and-recording/recording.rst:6 ../../tracks/track-lanes.rst:30
 msgid "Recording"
 msgstr "Gravação"
 
@@ -4904,8 +4903,8 @@ msgstr ""
 #: ../../tracks/track-types.rst:21 ../../tracks/track-types.rst:22
 #: ../../tracks/track-types.rst:26 ../../tracks/track-types.rst:27
 #: ../../tracks/track-types.rst:31 ../../tracks/track-types.rst:32
-#: ../../tracks/track-types.rst:42 ../../tracks/track-types.rst:51
-#: ../../tracks/track-types.rst:52
+#: ../../tracks/track-types.rst:47 ../../tracks/track-types.rst:56
+#: ../../tracks/track-types.rst:57
 msgid "Audio"
 msgstr "Áudio"
 
@@ -4992,7 +4991,7 @@ msgid "Control the loudness of the output audio."
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:104
-#: ../../tracks/inspector-page.rst:34 ../../tracks/track-types.rst:40
+#: ../../tracks/inspector-page.rst:34 ../../tracks/track-types.rst:45
 msgid "Instrument"
 msgstr "Instrumento"
 
@@ -6775,9 +6774,10 @@ msgstr "Pistas de Automação"
 
 #: ../../tracks/automation.rst:12
 msgid ""
-"Automation tracks (or automation lanes) are used to create automation events "
-"for various automatable parameters/controls, such as fader volume, fader "
-"balance, plugin controls and MIDI controls, if the track type supports it."
+"Automation tracks (or automation *lanes*) are used to create automation "
+"events for various automatable parameters/controls, such as fader volume, "
+"fader balance, plugin controls and MIDI controls, if the track type supports "
+"it."
 msgstr ""
 
 #: ../../tracks/automation.rst:18
@@ -6785,9 +6785,8 @@ msgid "To show the automation lanes for a track, click the cusp icon."
 msgstr ""
 
 #: ../../tracks/automation.rst:24
-#, fuzzy
-msgid "Showing automation tracks"
-msgstr "Pistas de Automação"
+msgid "Automation track for Fader Volume"
+msgstr ""
 
 #: ../../tracks/automation.rst:26
 #, fuzzy
@@ -6807,32 +6806,29 @@ msgstr "Automatizar a Edição"
 
 #: ../../tracks/automation.rst:36
 msgid ""
-"Editing automation consists of creating automation regions and then creating "
-"automation events inside the automation editor. See the :ref:`editing` "
-"chapter for details."
+"Editing automation involves creating automation regions and then creating "
+"automation events inside the automation editor. See :ref:`editing/clip-"
+"editors/automation-editor:Automation Editor` for details."
 msgstr ""
-"A edição de automação consiste em criar regiões de automação e depois criar "
-"eventos de automação dentro do editor de automação. Veja o capítulo :ref:"
-"`editing` para detalhes."
 
-#: ../../tracks/automation.rst:41
+#: ../../tracks/automation.rst:43
 msgid "Behavior"
 msgstr ""
 
-#: ../../tracks/automation.rst:42
+#: ../../tracks/automation.rst:44
 msgid ""
 "The control corresponding to each automation lane will use the value from "
 "the automation lane if there are automation events present at the current "
 "playhead position."
 msgstr ""
 
-#: ../../tracks/automation.rst:47
+#: ../../tracks/automation.rst:49
 msgid ""
 "If there is no automation at the playhead, the control will use the last "
 "known value, either from the automation lane or from a manual change."
 msgstr ""
 
-#: ../../tracks/automation.rst:51
+#: ../../tracks/automation.rst:53
 msgid "This behavior also applies when rendering (exporting) the project."
 msgstr ""
 
@@ -7444,40 +7440,36 @@ msgstr "Nome da Faixa"
 #, fuzzy
 msgid ""
 "Some tracks can have multiple lanes for their regions. By default, all "
-"regions you create will be created in lane 1. Additional lanes will be auto-"
-"created and deleted as you add regions to each lane."
+"regions are created on the first lane. Additional lanes will be auto-created "
+"and deleted as you add regions to each lane."
 msgstr ""
 "A faixa MIDI pode ter várias pistas para gravar regiões. Por predefinição, "
 "todas as regiões que cria serão criadas na pista 1. Pistas adicionais serão "
 "auto criadas e apagadas à medida que adiciona regiões a cada pista."
 
-#: ../../tracks/track-lanes.rst:20
+#: ../../tracks/track-lanes.rst:17
+#, fuzzy
+msgid "Instrument track lanes"
+msgstr "Faixa De Instrumentos"
+
+#: ../../tracks/track-lanes.rst:19
 #, fuzzy
 msgid ""
-"Lanes are useful when recording, as each time the playback loops it will "
-"start recording in a new lane and mute the region in the previous lane."
-msgstr ""
-"As pistas são úteis quando gravando, pois, cada vez que os loops de "
-"reprodução começam a gravar numa nova pista e silenciam a região na pista "
-"anterior. As pistas também são úteis para organizar geralmente as suas "
-"regiões. Por exemplo, pode manter notas altas na pista 1 e notas baixas na "
-"pista 2."
-
-#: ../../tracks/track-lanes.rst:25
-msgid "Lanes can be made visible by clicking the \"hamburger\" icon."
+"Lanes can be made visible by clicking the \"hamburger\" icon in the track "
+"view."
 msgstr ""
 "As pistas podem ser tornadas visíveis clicando no ícone \"hambúrguer\"."
 
-#: ../../tracks/track-lanes.rst:29
+#: ../../tracks/track-lanes.rst:23
 #, fuzzy
 msgid "Organization"
 msgstr "Quantização"
 
-#: ../../tracks/track-lanes.rst:31
+#: ../../tracks/track-lanes.rst:25
 #, fuzzy
 msgid ""
-"Lanes are also useful for generally organizing regions. For example you can "
-"keep high notes in lane 1 and bass notes in lane 2."
+"Track lanes are useful for organizing regions in a track into layers. For "
+"example you can keep high notes in lane 1 and bass notes in lane 2."
 msgstr ""
 "As pistas são úteis quando gravando, pois, cada vez que os loops de "
 "reprodução começam a gravar numa nova pista e silenciam a região na pista "
@@ -7485,14 +7477,22 @@ msgstr ""
 "regiões. Por exemplo, pode manter notas altas na pista 1 e notas baixas na "
 "pista 2."
 
-#: ../../tracks/track-lanes.rst:36
+#: ../../tracks/track-lanes.rst:32
+msgid ""
+"Lanes are also useful when recording. If you set the :ref:`recording mode "
+"<playback-and-recording/recording:Recording Modes>` to :guilabel:`Create "
+"takes`, each time playback loops it will start recording in a new lane and "
+"optionally mute the last recorded region in the previous lane."
+msgstr ""
+
+#: ../../tracks/track-lanes.rst:40
 msgid "MIDI Export"
 msgstr ""
 
-#: ../../tracks/track-lanes.rst:38
+#: ../../tracks/track-lanes.rst:42
 msgid ""
-"For MIDI and instrument tracks, MIDI events in each lane can be exported as "
-"separate tracks in the resulting MIDI file."
+"When exporting MIDI from MIDI and instrument tracks, MIDI events in each "
+"lane can be exported as separate tracks in the resulting MIDI file."
 msgstr ""
 
 #: ../../tracks/track-operations.rst:8
@@ -7514,10 +7514,21 @@ msgstr ""
 "serão realçadas à medida que você move a Faixa."
 
 #: ../../tracks/track-operations.rst:18
+#, fuzzy
+msgid "Copying Tracks"
+msgstr "Mover Faixas"
+
+#: ../../tracks/track-operations.rst:20
+msgid ""
+"Tracks can be copied/cloned by clicking and dragging the selected tracks "
+"while holding :kbd:`Control`."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:24
 msgid "Deleting Tracks"
 msgstr "Apagar Faixas"
 
-#: ../../tracks/track-operations.rst:20
+#: ../../tracks/track-operations.rst:26
 #, fuzzy
 msgid ""
 "Tracks can be deleted by right-clicking them and selecting :guilabel:"
@@ -7526,7 +7537,7 @@ msgstr ""
 "As faixas podem ser apagadas clicando com o botão direito do rato neles e "
 "selecionando: zbutton: \"Apagar\"."
 
-#: ../../tracks/track-operations.rst:24
+#: ../../tracks/track-operations.rst:30
 msgid "All Track operations are undoable."
 msgstr "Todas as operações de Faixa poder ser desfeitas."
 
@@ -7556,7 +7567,7 @@ msgid "Objects"
 msgstr "Objetos"
 
 #: ../../tracks/track-types.rst:23 ../../tracks/track-types.rst:38
-#: ../../tracks/track-types.rst:43 ../../tracks/track-types.rst:63
+#: ../../tracks/track-types.rst:48 ../../tracks/track-types.rst:68
 msgid "Yes"
 msgstr "Sim"
 
@@ -7569,19 +7580,21 @@ msgid "Audio FX"
 msgstr "FX de áudio"
 
 #: ../../tracks/track-types.rst:28 ../../tracks/track-types.rst:33
-#: ../../tracks/track-types.rst:48 ../../tracks/track-types.rst:53
-#: ../../tracks/track-types.rst:58 ../../tracks/track-types.rst:68
+#: ../../tracks/track-types.rst:43 ../../tracks/track-types.rst:53
+#: ../../tracks/track-types.rst:58 ../../tracks/track-types.rst:63
 #: ../../tracks/track-types.rst:73 ../../tracks/track-types.rst:78
+#: ../../tracks/track-types.rst:83
 msgid "No"
 msgstr "Não"
 
 #: ../../tracks/track-types.rst:29 ../../tracks/track-types.rst:34
-#: ../../tracks/track-types.rst:46 ../../tracks/track-types.rst:47
-#: ../../tracks/track-types.rst:54 ../../tracks/track-types.rst:56
-#: ../../tracks/track-types.rst:57 ../../tracks/track-types.rst:59
-#: ../../tracks/track-types.rst:69 ../../tracks/track-types.rst:74
-#: ../../tracks/track-types.rst:76 ../../tracks/track-types.rst:77
-#: ../../tracks/track-types.rst:79
+#: ../../tracks/track-types.rst:41 ../../tracks/track-types.rst:42
+#: ../../tracks/track-types.rst:44 ../../tracks/track-types.rst:51
+#: ../../tracks/track-types.rst:52 ../../tracks/track-types.rst:59
+#: ../../tracks/track-types.rst:61 ../../tracks/track-types.rst:62
+#: ../../tracks/track-types.rst:64 ../../tracks/track-types.rst:74
+#: ../../tracks/track-types.rst:79 ../../tracks/track-types.rst:81
+#: ../../tracks/track-types.rst:82 ../../tracks/track-types.rst:84
 msgid "None"
 msgstr "Nenhum"
 
@@ -7598,42 +7611,48 @@ msgstr "Acorde"
 msgid "Chord regions, scales"
 msgstr "Regiões e escalas de acordes"
 
-#: ../../tracks/track-types.rst:44 ../../tracks/track-types.rst:64
+#: ../../tracks/track-types.rst:40
+msgid "Folder"
+msgstr ""
+
+#: ../../tracks/track-types.rst:49 ../../tracks/track-types.rst:69
 msgid "MIDI regions"
 msgstr "Regiões MIDI"
 
-#: ../../tracks/track-types.rst:45
+#: ../../tracks/track-types.rst:50
 msgid "Marker"
 msgstr "Marcador"
 
-#: ../../tracks/track-types.rst:50
+#: ../../tracks/track-types.rst:55
 msgid "Master"
 msgstr "Mestre"
 
-#: ../../tracks/track-types.rst:65
+#: ../../tracks/track-types.rst:70
 msgid "MIDI FX"
 msgstr "FX de MIDI"
 
-#: ../../tracks/track-types.rst:70
+#: ../../tracks/track-types.rst:75
 msgid "MIDI Group"
 msgstr "Grupo de MIDI"
 
-#: ../../tracks/track-types.rst:75
+#: ../../tracks/track-types.rst:80
 msgid "Tempo"
 msgstr "Tempo"
 
-#: ../../tracks/track-types.rst:81
+#: ../../tracks/track-types.rst:86
 #, fuzzy
-msgid "All tracks except the Chord Track have automation lanes available."
+msgid ""
+"All tracks types except Chord and Folder tracks have automation lanes "
+"available."
 msgstr ""
 "Todas as faixas, exceto a :doc:`chord-track` têm pistas de automação "
 "disponíveis."
 
-#: ../../tracks/track-types.rst:85
+#: ../../tracks/track-types.rst:90
 msgid "Audio Track"
 msgstr "Faixa de Áudio"
 
-#: ../../tracks/track-types.rst:87
+#: ../../tracks/track-types.rst:92
 msgid ""
 "An Audio Track contains audio regions and can be used for recording and "
 "playing back audio clips."
@@ -7641,11 +7660,15 @@ msgstr ""
 "Uma Faixa de Áudio contém regiões de áudio e pode ser usada para gravar e "
 "reproduzir áudio ou para reprodução de amostras."
 
-#: ../../tracks/track-types.rst:94
+#: ../../tracks/track-types.rst:98
+msgid "Audio track with an audio region"
+msgstr ""
+
+#: ../../tracks/track-types.rst:101
 msgid "Audio FX Track"
 msgstr "Faixa de Áudio FX"
 
-#: ../../tracks/track-types.rst:95
+#: ../../tracks/track-types.rst:102
 msgid ""
 "Audio FX tracks can be used for effects by sending audio signals to them "
 "with :ref:`track-sends`."
@@ -7653,7 +7676,12 @@ msgstr ""
 "As faixas de Audio FX podem ser utilizadas para efeitos enviando-lhes sinais "
 "de áudio com :ref:`track-sends`."
 
-#: ../../tracks/track-types.rst:102
+#: ../../tracks/track-types.rst:109
+#, fuzzy
+msgid "Audio FX track"
+msgstr "Faixa de Áudio"
+
+#: ../../tracks/track-types.rst:111
 msgid ""
 "A common use case is to create a separate Audio FX track with a reverb "
 "plugin and to send audio from another track to it. This way, the reverb "
@@ -7661,11 +7689,11 @@ msgid ""
 "several tracks."
 msgstr ""
 
-#: ../../tracks/track-types.rst:109
+#: ../../tracks/track-types.rst:118
 msgid "Audio Group Track"
 msgstr "Faixa de Grupo de Áudio"
 
-#: ../../tracks/track-types.rst:111
+#: ../../tracks/track-types.rst:120
 msgid ""
 "Audio group tracks can be used for grouping audio signals together via "
 "direct routing. For example, kicks, snares and hihats can be routed to a "
@@ -7678,7 +7706,16 @@ msgstr ""
 "adicionar efeitos e controlar o seu volume coletivamente em vez de "
 "separadamente."
 
-#: ../../tracks/track-types.rst:124
+#: ../../tracks/track-types.rst:130
+#, fuzzy
+msgid "Audio Group track"
+msgstr "Faixa de Grupo de Áudio"
+
+#: ../../tracks/track-types.rst:132 ../../tracks/track-types.rst:275
+msgid "Group tracks are foldable."
+msgstr ""
+
+#: ../../tracks/track-types.rst:137
 msgid ""
 "The Chord Track contains chord and scale objects that are used to specify "
 "when the song is using a particular chord or scale. Its main purpose is to "
@@ -7688,17 +7725,49 @@ msgstr ""
 "especificar quando a música está a usar um determinado acorde ou escala. O "
 "seu principal objetivo é auxiliar na progressão dos acordes."
 
-#: ../../tracks/track-types.rst:132
+#: ../../tracks/track-types.rst:145
+msgid "Chord track with a chord region and a scale"
+msgstr ""
+
+#: ../../tracks/track-types.rst:147
 msgid ""
 "For more information, see the section :doc:`../chords-and-scales/intro`."
 msgstr ""
 "Para mais informações, veja a secção :doc:`../chords-and-scales/intro`."
 
-#: ../../tracks/track-types.rst:136
+#: ../../tracks/track-types.rst:151
+#, fuzzy
+msgid "Folder Track"
+msgstr "Isola a faixa."
+
+#: ../../tracks/track-types.rst:153
+msgid "Folder tracks are used to organize tracks."
+msgstr ""
+
+#: ../../tracks/track-types.rst:158
+msgid "Folder track with a MIDI FX track as a child"
+msgstr ""
+
+#: ../../tracks/track-types.rst:160
+msgid ""
+"To move tracks inside folder tracks, simply select the tracks you want and "
+"drag-and-drop them inside the folder track."
+msgstr ""
+
+#: ../../tracks/track-types.rst:164
+msgid ""
+"Clicking the folder button will hide and expand the folder track's children."
+msgstr ""
+
+#: ../../tracks/track-types.rst:167
+msgid "Audio/MIDI group tracks are also foldable."
+msgstr ""
+
+#: ../../tracks/track-types.rst:170
 msgid "Instrument Track"
 msgstr "Faixa De Instrumentos"
 
-#: ../../tracks/track-types.rst:138
+#: ../../tracks/track-types.rst:172
 msgid ""
 "The instrument track is used for synths and other instruments. Instrument "
 "tracks contain a special `instrument slot` in the mixer that will get "
@@ -7709,7 +7778,11 @@ msgstr ""
 "especial no misturador que será processado \"depois\" da secção MIDI FX e "
 "\"antes\" da secção Inserções."
 
-#: ../../tracks/track-types.rst:147
+#: ../../tracks/track-types.rst:181
+msgid "Instrument track with a MIDI region"
+msgstr ""
+
+#: ../../tracks/track-types.rst:183
 msgid ""
 "Instrument tracks are similar to MIDI tracks, except that they produce audio "
 "instead of :term:`MIDI`."
@@ -7717,11 +7790,11 @@ msgstr ""
 "As faixas de instrumentos são semelhantes às faixas MIDI, exceto que "
 "produzem áudio em vez de :term:`MIDI`."
 
-#: ../../tracks/track-types.rst:151
+#: ../../tracks/track-types.rst:187
 msgid "Marker Track"
 msgstr "Faixa de Marcador"
 
-#: ../../tracks/track-types.rst:153
+#: ../../tracks/track-types.rst:189
 msgid ""
 "The marker track holds song markers - either custom or pre-defined ones - "
 "that make it easier to jump to or to export specific sections of the song. "
@@ -7733,11 +7806,15 @@ msgstr ""
 "canção. Cada projeto só pode ter uma faixa de marcador e não pode ser "
 "apagada (mas pode ser escondida)."
 
-#: ../../tracks/track-types.rst:164
+#: ../../tracks/track-types.rst:199
+msgid "Marker track with 2 markers"
+msgstr ""
+
+#: ../../tracks/track-types.rst:202
 msgid "Master Track"
 msgstr "Faixa Principal"
 
-#: ../../tracks/track-types.rst:166
+#: ../../tracks/track-types.rst:204
 #, fuzzy
 msgid ""
 "The master track is a special type of Audio Group Track that Zrythm uses to "
@@ -7748,19 +7825,35 @@ msgstr ""
 "Zrythm utiliza para rotear o sinal de áudio resultante após todo o "
 "processamento ser feito para o backend de áudio."
 
-#: ../../tracks/track-types.rst:176
+#: ../../tracks/track-types.rst:213
+#, fuzzy
+msgid "Master track"
+msgstr "Faixa Principal"
+
+#: ../../tracks/track-types.rst:216
 msgid "Modulator Track"
 msgstr "Faixa moduladora"
 
-#: ../../tracks/track-types.rst:178 ../../tracks/track-types.rst:221
-msgid "Write description."
+#: ../../tracks/track-types.rst:218
+msgid ""
+"The modulator track is a special track that is used for global modulators "
+"like LFOs and macro knobs that can be assigned to any automatable control "
+"inside Zrythm."
 msgstr ""
 
-#: ../../tracks/track-types.rst:181
+#: ../../tracks/track-types.rst:226
+msgid "Modulator track with automation for macro knob 1"
+msgstr ""
+
+#: ../../tracks/track-types.rst:228
+msgid "For more details, see :ref:`modulators/intro:Modulators`."
+msgstr ""
+
+#: ../../tracks/track-types.rst:232
 msgid "MIDI Track"
 msgstr "Faixa MIDI"
 
-#: ../../tracks/track-types.rst:183
+#: ../../tracks/track-types.rst:234
 msgid ""
 "A MIDI track contains MIDI regions and its purpose is playing back MIDI "
 "events and routing those MIDI signals to other instruments (including "
@@ -7770,7 +7863,7 @@ msgstr ""
 "eventos MIDI e rotear esses sinais MIDI para outros instrumentos (incluindo "
 "instrumentos e hardware externos)."
 
-#: ../../tracks/track-types.rst:188
+#: ../../tracks/track-types.rst:239
 msgid ""
 "MIDI tracks, unlike instrument tracks, produce MIDI output and so their "
 "channel strips will only have MIDI effects (plugins that change MIDI "
@@ -7780,18 +7873,22 @@ msgstr ""
 "MIDI e assim as suas faixas de canal só terão efeitos MIDI (suplementos que "
 "mudam os sinais MIDI)."
 
-#: ../../tracks/track-types.rst:192
+#: ../../tracks/track-types.rst:243
 msgid ""
 "MIDI tracks also have automation lanes for automating various parameters."
 msgstr ""
 "As faixas MIDI também possuem pistas de automação para automatizar vários "
 "parâmetros."
 
-#: ../../tracks/track-types.rst:199
+#: ../../tracks/track-types.rst:249
+msgid "MIDI track with a MIDI region"
+msgstr ""
+
+#: ../../tracks/track-types.rst:252
 msgid "MIDI FX Track"
 msgstr "Faixa MIDI FX"
 
-#: ../../tracks/track-types.rst:201
+#: ../../tracks/track-types.rst:254
 msgid ""
 "MIDI FX tracks can be used for MIDI effects by sending MIDI signals to them "
 "using :ref:`track-sends`."
@@ -7799,11 +7896,16 @@ msgstr ""
 "As faixas MIDI FX podem ser utilizadas para efeitos MIDI enviando-lhes "
 "sinais MIDI utilizando :ref:`track-sends`."
 
-#: ../../tracks/track-types.rst:209
+#: ../../tracks/track-types.rst:261
+#, fuzzy
+msgid "MIDI FX track"
+msgstr "O nome da faixa"
+
+#: ../../tracks/track-types.rst:264
 msgid "MIDI Group Track"
 msgstr "Faixa do Grupo MIDI"
 
-#: ../../tracks/track-types.rst:211
+#: ../../tracks/track-types.rst:266
 #, fuzzy
 msgid ""
 "These are similar to Audio Group tracks, except that they act on MIDI "
@@ -7812,9 +7914,24 @@ msgstr ""
 "Estes são similares a :ref:`audio-group-track`, exceto que eles lidam com "
 "sinais de MIDI ao invés de sinais de áudio."
 
-#: ../../tracks/track-types.rst:219
+#: ../../tracks/track-types.rst:273
+#, fuzzy
+msgid "MIDI Group track"
+msgstr "Faixa de Grupo de Áudio"
+
+#: ../../tracks/track-types.rst:278
 msgid "Tempo Track"
 msgstr "Faixa do ritmo"
+
+#: ../../tracks/track-types.rst:280
+msgid ""
+"The tempo track is a special track that allows automating the BPM and time "
+"signature."
+msgstr ""
+
+#: ../../tracks/track-types.rst:286
+msgid "Tempo track with BPM automation"
+msgstr ""
 
 #: ../../tracks/track-visibility.rst:8
 #, fuzzy
@@ -8437,6 +8554,28 @@ msgid ""
 "will start clipping."
 msgstr ""
 
+#~ msgid "Showing automation tracks"
+#~ msgstr "Pistas de Automação"
+
+#~ msgid ""
+#~ "Editing automation consists of creating automation regions and then "
+#~ "creating automation events inside the automation editor. See the :ref:"
+#~ "`editing` chapter for details."
+#~ msgstr ""
+#~ "A edição de automação consiste em criar regiões de automação e depois "
+#~ "criar eventos de automação dentro do editor de automação. Veja o "
+#~ "capítulo :ref:`editing` para detalhes."
+
+#~ msgid ""
+#~ "Lanes are useful when recording, as each time the playback loops it will "
+#~ "start recording in a new lane and mute the region in the previous lane."
+#~ msgstr ""
+#~ "As pistas são úteis quando gravando, pois, cada vez que os loops de "
+#~ "reprodução começam a gravar numa nova pista e silenciam a região na pista "
+#~ "anterior. As pistas também são úteis para organizar geralmente as suas "
+#~ "regiões. Por exemplo, pode manter notas altas na pista 1 e notas baixas "
+#~ "na pista 2."
+
 #~ msgid ""
 #~ "Audio and MIDI FX tracks (covered in :ref:`audio-bus-track` and :ref:"
 #~ "`midi-bus-track` respectively) can be created for sending additional "
@@ -8451,9 +8590,6 @@ msgstr ""
 
 #~ msgid "Arms the track for recording."
 #~ msgstr "Arma a faixa para gravação."
-
-#~ msgid "Soloes the track."
-#~ msgstr "Isola a faixa."
 
 #~ msgid "Mutes the track."
 #~ msgstr "Silencia a faixa."
@@ -8534,9 +8670,6 @@ msgstr ""
 
 #~ msgid "The track to route the output of the audio group track to."
 #~ msgstr "A faixa para a qual a saída da faixa de áudio será roteada."
-
-#~ msgid "Name of the track"
-#~ msgstr "O nome da faixa"
 
 #~ msgid ""
 #~ "If the track is an :ref:`instrument-track`, the instrument plugin for "

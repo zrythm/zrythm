@@ -6,35 +6,39 @@ Track Lanes
 ===========
 
 Some tracks can have multiple lanes for their
-regions. By default, all regions you create will be
-created in lane 1. Additional lanes will be
+regions. By default, all regions are created on the
+first lane. Additional lanes will be
 auto-created and deleted as you add regions to each
 lane.
 
-.. image:: /_static/img/track_lanes.png
+.. figure:: /_static/img/track-lanes.png
    :align: center
 
-Recording
----------
+   Instrument track lanes
 
-Lanes are useful when recording,
-as each time the playback loops it will start
-recording in a new lane and mute the region in the
-previous lane.
-
-Lanes can be made visible by clicking
-the "hamburger" icon.
+Lanes can be made visible by clicking the
+"hamburger" icon in the track view.
 
 Organization
 ------------
 
-Lanes are also useful for generally organizing
-regions. For example you can keep high notes in
-lane 1 and bass notes in lane 2.
+Track lanes are useful for organizing regions in
+a track into layers. For example you can keep high
+notes in lane 1 and bass notes in lane 2.
+
+Recording
+---------
+
+Lanes are also useful when recording. If you set the
+:ref:`recording mode <playback-and-recording/recording:Recording Modes>`
+to :guilabel:`Create takes`, each time playback
+loops it will start recording in a new lane and
+optionally mute the last recorded region in the
+previous lane.
 
 MIDI Export
 -----------
 
-For MIDI and instrument tracks, MIDI events in each
-lane can be exported as separate tracks in the
-resulting MIDI file.
+When exporting MIDI from MIDI and instrument tracks,
+MIDI events in each lane can be exported as separate
+tracks in the resulting MIDI file.

@@ -14,6 +14,12 @@ inside empty space in the Track, and dropping
 it at another location. The drop locations will
 be highlighted as you move the Track.
 
+Copying Tracks
+--------------
+
+Tracks can be copied/cloned by clicking and dragging
+the selected tracks while holding :kbd:`Control`.
+
 Deleting Tracks
 ---------------
 

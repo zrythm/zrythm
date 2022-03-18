@@ -9,7 +9,7 @@ Automation
 
 Automation Tracks
 -----------------
-Automation tracks (or automation lanes) are used to
+Automation tracks (or automation *lanes*) are used to
 create automation
 events for various automatable parameters/controls,
 such as fader volume, fader balance, plugin controls
@@ -18,10 +18,10 @@ and MIDI controls, if the track type supports it.
 To show the automation lanes for a track, click the
 cusp icon.
 
-.. figure:: /_static/img/automation_tracks.png
+.. figure:: /_static/img/automation-track.png
    :align: center
 
-   Showing automation tracks
+   Automation track for Fader Volume
 
 You can choose which parameter you want to
 automate in each automation lane.
@@ -33,9 +33,11 @@ automate in each automation lane.
 
 Editing Automation
 ------------------
-Editing automation consists of creating automation regions
-and then creating automation events inside the automation
-editor. See the :ref:`editing` chapter for details.
+Editing automation involves creating automation
+regions and then creating automation events inside
+the automation editor. See
+:ref:`editing/clip-editors/automation-editor:Automation Editor`
+for details.
 
 Behavior
 --------

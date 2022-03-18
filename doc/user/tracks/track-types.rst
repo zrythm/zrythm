@@ -37,6 +37,11 @@ Zrythm has the following types of Tracks.
      - MIDI
      - Yes
      - Chord regions, scales
+   * - Folder
+     - None
+     - None
+     - No
+     - None
    * - Instrument
      - MIDI
      - Audio
@@ -78,8 +83,8 @@ Zrythm has the following types of Tracks.
      - No
      - None
 
-All tracks except the Chord Track have
-automation lanes available.
+All tracks types except Chord and Folder tracks
+have automation lanes available.
 
 Audio Track
 -----------
@@ -87,8 +92,10 @@ Audio Track
 An Audio Track contains audio regions and can be
 used for recording and playing back audio clips.
 
-.. image:: /_static/img/audio-track.png
+.. figure:: /_static/img/audio-track.png
    :align: center
+
+   Audio track with an audio region
 
 Audio FX Track
 --------------
@@ -96,8 +103,10 @@ Audio FX tracks can be used for effects by
 sending audio signals to them with
 :ref:`track-sends`.
 
-.. image:: /_static/img/audio-bus-track.png
+.. figure:: /_static/img/audio-fx-track.png
    :align: center
+
+   Audio FX track
 
 A common use case is to create a separate Audio
 FX track with a reverb plugin and to send audio
@@ -115,8 +124,12 @@ routed to a "Drums" audio group track so you
 can add effects and control their volume
 collectively instead of separately.
 
-.. image:: /_static/img/audio-group-track.png
+.. figure:: /_static/img/audio-group-track.png
    :align: center
+
+   Audio Group track
+
+.. hint:: Group tracks are foldable.
 
 Chord Track
 -----------
@@ -126,11 +139,32 @@ objects that are used to specify when the song
 is using a particular chord or scale. Its main
 purpose is to assist with chord progressions.
 
-.. image:: /_static/img/chord-track.png
+.. figure:: /_static/img/chord-track.png
    :align: center
+
+   Chord track with a chord region and a scale
 
 For more information, see the section
 :doc:`../chords-and-scales/intro`.
+
+Folder Track
+------------
+
+Folder tracks are used to organize tracks.
+
+.. figure:: /_static/img/folder-track.png
+   :align: center
+
+   Folder track with a MIDI FX track as a child
+
+To move tracks inside folder tracks, simply select
+the tracks you want and drag-and-drop them inside
+the folder track.
+
+Clicking the folder button will hide and expand the
+folder track's children.
+
+.. tip:: Audio/MIDI group tracks are also foldable.
 
 Instrument Track
 ----------------
@@ -141,8 +175,10 @@ a special `instrument slot` in the mixer that
 will get processed `after` the MIDI FX section
 and `before` the Inserts section.
 
-.. image:: /_static/img/instrument-track.png
+.. figure:: /_static/img/instrument-track.png
    :align: center
+
+   Instrument track with a MIDI region
 
 Instrument tracks are similar to MIDI tracks, except
 that they produce audio instead of :term:`MIDI`.
@@ -157,8 +193,10 @@ sections of the song. Each project can only
 have one marker track and it cannot be deleted
 (but can be hidden).
 
-.. image:: /_static/img/marker-track.png
+.. figure:: /_static/img/marker-track.png
    :align: center
+
+   Marker track with 2 markers
 
 Master Track
 ------------
@@ -169,13 +207,26 @@ to route the resulting audio signal after
 all the processing is done to the
 audio backend.
 
-.. image:: /_static/img/master-track.png
+.. figure:: /_static/img/master-track.png
    :align: center
+
+   Master track
 
 Modulator Track
 ---------------
 
-.. todo:: Write description.
+The modulator track is a special track that is
+used for global modulators like LFOs and macro
+knobs that can be assigned to any automatable
+control inside Zrythm.
+
+.. figure:: /_static/img/modulator-track.png
+   :align: center
+
+   Modulator track with automation for macro knob 1
+
+For more details, see
+:ref:`modulators/intro:Modulators`.
 
 MIDI Track
 ----------
@@ -192,8 +243,10 @@ MIDI effects (plugins that change MIDI signals).
 MIDI tracks also have automation lanes for automating
 various parameters.
 
-.. image:: /_static/img/midi-track.png
+.. figure:: /_static/img/midi-track.png
    :align: center
+
+   MIDI track with a MIDI region
 
 MIDI FX Track
 -------------
@@ -202,8 +255,10 @@ MIDI FX tracks can be used for MIDI effects by
 sending MIDI signals to them using
 :ref:`track-sends`.
 
-.. image:: /_static/img/midi-bus-track.png
+.. figure:: /_static/img/midi-fx-track.png
    :align: center
+
+   MIDI FX track
 
 MIDI Group Track
 ----------------
@@ -212,10 +267,20 @@ These are similar to Audio Group tracks,
 except that they act on MIDI signals instead
 of audio signals.
 
-.. image:: /_static/img/midi-group-track.png
+.. figure:: /_static/img/midi-group-track.png
    :align: center
+
+   MIDI Group track
+
+.. hint:: Group tracks are foldable.
 
 Tempo Track
 -----------
 
-.. todo:: Write description.
+The tempo track is a special track that allows
+automating the BPM and time signature.
+
+.. figure:: /_static/img/tempo-track.png
+   :align: center
+
+   Tempo track with BPM automation
