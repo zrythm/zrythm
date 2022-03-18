@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. sectionauthor:: Alexandros Theodotou <alex@zrythm.org>
@@ -21,8 +21,8 @@ panel that can hold any number of modulators.
    :align: center
 
 Modulators are associated with the
-:doc:`../tracks/modulator-track`, which contains all
-modulators in the :term:`Project`.
+:ref:`Modulator Track <tracks/track-types:Modulator Track>`,
+which contains all modulators in the :term:`Project`.
 
 Adding Modulators
 -----------------

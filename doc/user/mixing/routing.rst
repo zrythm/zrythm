@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 Routing
@@ -7,10 +7,10 @@ Routing
 
 Groups
 ------
-Audio and MIDI group tracks (covered in
-:ref:`audio-group-track` and :ref:`midi-group-track`
-respectively) can be created for grouping
-signals.
+:ref:`Audio group tracks <tracks/track-types:Audio Group Track>`
+and
+:ref:`MIDI group tracks <tracks/track-types:MIDI Group Track>`
+can be created for grouping signals.
 
 To route channels to these tracks, you can click the
 direct out selector and choose them.
@@ -20,10 +20,13 @@ direct out selector and choose them.
 
 Buses/FX Tracks
 ---------------
-Audio and MIDI FX tracks (covered in :ref:`audio-bus-track`
-and :ref:`midi-bus-track` respectively) can be created
-for sending additional signals to them, in addition to
-the channel's main direct output.
+
+:ref:`Audio FX tracks <tracks/track-types:Audio FX Track>`
+and
+:ref:`MIDI FX tracks <tracks/track-types:MIDI FX Track>`
+can be created for sending additional signals to
+them, in addition to the channel's main direct
+output.
 
 This is useful for example for applying reverb and
 controlling the reverb signal separately.

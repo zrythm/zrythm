@@ -24,17 +24,14 @@ has.
    :align: center
 
 Track Name
-~~~~~~~~~~
-Name of the track
-
+  Name of the track. Can be changed by double
+  clicking.
 Direct Out
-~~~~~~~~~~
-The track that this track routes its output to.
-
+  The track that this track routes its output to.
 Instrument
-~~~~~~~~~~
-If the track is an :ref:`instrument-track`, the
-instrument plugin for this track.
+  The instrument plugin from this track. This is
+  only applicable to
+  :ref:`Instrument tracks <tracks/track-types:Instrument Track>`.
 
 .. _track-inputs:
 
@@ -92,7 +89,9 @@ the inserts will be added onto the signal coming from
 the instrument, and for other tracks they will be added
 on the incoming signal.
 
-.. todo:: Separate MIDI FX/inserts and expand more.
+The signal flow is summarized below.
+
+``[track input] -> [MIDI FX, if any] -> [instrument, if any] -> [inserts, if any] -> [track output]``
 
 .. _track-sends:
 
@@ -132,40 +131,19 @@ it is processed live. The following values are displayed
 next to the meter for additional reference.
 
 Peak
-~~~~
-Peak signal value.
-
+  Peak signal value
 RMS
-~~~
-Root Mean Square of the signal value.
+  Root Mean Square of the signal value
 
-The following controls are available for
-controlling the signal flow.
+The controls available for controlling the signal
+flow are covered in
+:ref:`tracks/track-controls:Signal Flow`.
 
-Record
-~~~~~~
-Arm the track for recording.
+.. tip:: MIDI faders use MIDI volume CC.
 
-Mute
-~~~~
-Mutes the track, meaning no sound will be sent to
-its direct out.
-
-.. note:: The track will still be processed, so if
-   you are looking to decrease :term:`DSP` usage,
-   try disabling plugins instead.
-
-Solo
-~~~~
-Soloes the track. If any track is soloed, only the
-soloed tracks will produce sounds.
-
-Listen
-~~~~~~
-Similar to solo, except it dims the volume of other
-tracks instead of muting them. The dim amount can
-be controlled in the
-:ref:`Monitor Section <routing/monitor-section:Monitor Section>`.
+.. note:: The MIDI fader is a TODO feature -
+   currently, it lets the signal pass through
+   unchanged.
 
 Channel Settings
 ~~~~~~~~~~~~~~~~

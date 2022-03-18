@@ -27,11 +27,7 @@ LV2 Scan
 
 Zrythm will scan for LV2 plugins in the
 `standard paths specified here <https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_.
-You can bypass this behavior by passing
-:envvar:`LV2_PATH`.
 
-Flatpak
-~~~~~~~
 On Flatpak builds, Zrythm will scan for LV2 plugins
 in the following paths.
 
@@ -61,16 +57,10 @@ and VST3 plugins in the following paths.
 - :file:`/usr/local/lib/vst3`
 - :file:`/usr/lib/vst3`
 
-You can bypass this behavior by passing
-:envvar:`VST_PATH` and :envvar:`VST3_PATH`,
-respectively.
-
 .. note:: If your system uses a libdir other than
    ``lib`` (for example ``lib64``), Zrythm will scan
    for plugins in both locations.
 
-Flatpak
-+++++++
 On Flatpak builds, Zrythm will scan for VST2 plugins
 in the following paths
 
@@ -87,7 +77,8 @@ respectively.
 Windows
 ~~~~~~~
 Zrythm will scan for VST plugins in the paths
-specified in :ref:`vst-paths`.
+specified in the
+:ref:`preferences <configuration/preferences:Preferences>`.
 
 MacOS
 ~~~~~
@@ -115,15 +106,6 @@ paths,
 - :file:`/usr/local/lib/dssi`
 - :file:`/usr/lib/dssi`
 
-You can bypass this behavior by passing
-:envvar:`DSSI_PATH`.
-
-.. note:: If your system uses a libdir other than
-   ``lib`` (for example ``lib64``), Zrythm will scan
-   for plugins in both locations.
-
-Flatpak
-~~~~~~~
 On Flatpak builds, Zrythm will scan for DSSI plugins
 in the following paths.
 
@@ -131,6 +113,10 @@ in the following paths.
 
 You can bypass this behavior by passing
 :envvar:`DSSI_PATH`.
+
+.. note:: If your system uses a libdir other than
+   ``lib`` (for example ``lib64``), Zrythm will scan
+   for plugins in both locations.
 
 LADSPA Scan
 -----------
@@ -140,15 +126,6 @@ paths,
 - :file:`/usr/local/lib/ladspa`
 - :file:`/usr/lib/ladspa`
 
-You can bypass this behavior by passing
-:envvar:`LADSPA_PATH`.
-
-.. note:: If your system uses a libdir other than
-   ``lib`` (for example ``lib64``), Zrythm will scan
-   for plugins in both locations.
-
-Flatpak
-~~~~~~~
 On Flatpak builds, Zrythm will scan for LADSPA
 plugins in the following paths.
 
@@ -156,6 +133,10 @@ plugins in the following paths.
 
 You can bypass this behavior by passing
 :envvar:`LADSPA_PATH`.
+
+.. note:: If your system uses a libdir other than
+   ``lib`` (for example ``lib64``), Zrythm will scan
+   for plugins in both locations.
 
 AU Scan
 -------
@@ -167,4 +148,5 @@ SFZ/SF2 Scan
 ------------
 :term:`SFZ` and :term:`SF2` instruments will be
 scanned in all  directories
-and subdirectories specified in :ref:`vst-paths`.
+and subdirectories specified in the
+:ref:`preferences <configuration/preferences:Preferences>`.

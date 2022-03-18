@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 Plugin Overview
@@ -21,7 +21,7 @@ Plugins are classified into the following categories.
 
 |icon_instrument| Instrument
   These plugins will create an
-  :ref:`instrument track <tracks/instrument-track:Instrument Track>`
+  :ref:`Instrument Track <tracks/track-types:Instrument Track>`
   when added to the project.
 
 |icon_audio-insert| Effect
@@ -37,8 +37,8 @@ Plugins are classified into the following categories.
 |icon_signal-midi| MIDI Effect
   These plugins modify incoming :term:`MIDI` signals
   and can be used in the MIDI signal chain of an
-  :ref:`instrument <tracks/instrument-track:Instrument Track>` or
-  :ref:`MIDI track <tracks/midi-track:MIDI Track>`.
+  :ref:`Instrument <tracks/track-types:Instrument Track>` or
+  :ref:`MIDI Track <tracks/track-types:MIDI Track>`.
 
 .. note::
   Zrythm looks inside the plugin's metadata to

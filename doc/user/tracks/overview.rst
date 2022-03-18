@@ -26,7 +26,9 @@ that appears in the :ref:`Mixer <mixer>`. See
 There are various kinds of tracks suited for
 different purposes, explained in the following
 sections. Some tracks are special, like the
-:ref:`chord-track` and the :ref:`marker-track`,
+:ref:`Chord Track <tracks/track-types:Chord Track>`
+and the
+:ref:`Marker Track <tracks/track-types:Marker Track>`,
 which contain chords and markers respectively.
 
 .. important:: In Zrythm, group tracks are used for
@@ -67,12 +69,6 @@ the tracklist.
 
 .. todo:: Add pic and explain how to add custom
    icons.
-
-Track Inspector
-----------------
-
-Each track will display its page in the inspector when
-selected. See :ref:`track-inspector` for more details.
 
 Context Menu
 ------------

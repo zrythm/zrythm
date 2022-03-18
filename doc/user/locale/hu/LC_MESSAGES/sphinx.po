@@ -17,31 +17,31 @@ msgstr ""
 "Language: hu\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../../../../../doc/user/_templates/page.html:61
+#: ../../_templates/page.html:61
 msgid "Next"
 msgstr ""
 
-#: ../../../../../doc/user/_templates/page.html:73
+#: ../../_templates/page.html:73
 msgid "Previous"
 msgstr ""
 
-#: ../../../../../doc/user/_templates/page.html:76
+#: ../../_templates/page.html:76
 msgid "Home"
 msgstr ""
 
-#: ../../../../../doc/user/_templates/page.html:88
+#: ../../_templates/page.html:88
 msgid "<a href=\"%(path)s\">Copyright</a> &#169; %(copyright)s."
 msgstr ""
 
-#: ../../../../../doc/user/_templates/page.html:92
+#: ../../_templates/page.html:92
 msgid "Copyright &#169; %(copyright)s"
 msgstr ""
 
-#: ../../../../../doc/user/_templates/page.html:99
+#: ../../_templates/page.html:99
 msgid "Last updated on %(last_updated)s."
 msgstr ""
 
-#: ../../../../../doc/user/_templates/page.html:105
+#: ../../_templates/page.html:105
 msgid ""
 "Built with <a href=\"https://www.sphinx-doc.org/\">Sphinx</a>\n"
 "              and\n"
@@ -50,10 +50,10 @@ msgid ""
 "              <a href=\"https://github.com/pradyunsg/furo\">Furo theme</a>."
 msgstr ""
 
-#: ../../../../../doc/user/_templates/page.html:116
+#: ../../_templates/page.html:116
 msgid "Show Source"
 msgstr ""
 
-#: ../../../../../doc/user/_templates/page.html:137
+#: ../../_templates/page.html:137
 msgid "Contents"
 msgstr ""

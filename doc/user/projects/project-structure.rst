@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 Project Structure
@@ -28,7 +28,7 @@ parent project.
   during autosave.
   You can change the autosave interval or turn it off
   in the
-  :ref:`preferences <configuration/preferences:General (Project)>`.
+  :ref:`preferences <configuration/preferences:Preferences>`.
 
 Project Directory
 -----------------

@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019-2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 Loop Points and Markers
@@ -48,12 +48,13 @@ in the timeline where the Song will end.
 Likewise, it is mainly used for exporting the
 mixdown into audio.
 
-These markers are part of the :ref:`marker-track`.
+These markers are part of the
+:ref:`Marker Track <tracks/track-types:Marker Track>`.
 
 Custom Markers
 --------------
 Custom Markers can also be created inside the
-:ref:`marker-track`.
+:ref:`Marker Track <tracks/track-types:Marker Track>`.
 
 .. image:: /_static/img/marker.png
    :align: center
