@@ -22,6 +22,7 @@
 #include "audio/chord_track.h"
 #include "audio/engine.h"
 #include "audio/marker_track.h"
+#include "audio/midi_event.h"
 #include "audio/midi_file.h"
 #include "audio/position.h"
 #include "audio/tempo_track.h"
@@ -844,11 +845,14 @@ timeline_selections_export_to_midi_file (
       arranger_selections_sort_by_indices (
         (ArrangerSelections *) sel_clone, false);
 
+      int last_midi_track_pos = -1;
+      MidiEvents * events = NULL;
       for (int i = 0; i < sel_clone->num_regions;
            i++)
         {
           const ZRegion * r = sel_clone->regions[i];
 
+          int midi_track_pos = 1;
           if (midi_version > 0)
             {
               /* add track name */
@@ -858,7 +862,6 @@ timeline_selections_export_to_midi_file (
               g_return_val_if_fail (
                 track, false);
               char midi_track_name[1000];
-              int midi_track_pos;
               if (lanes_as_tracks)
                 {
                   TrackLane * lane =
@@ -883,16 +886,47 @@ timeline_selections_export_to_midi_file (
                 textTrackName, midi_track_name);
             }
 
-          midi_region_write_to_midi_file (
-            r, mf, true, export_full_regions,
-            lanes_as_tracks,
-            midi_version == 0 ? false : true);
+          if (last_midi_track_pos == midi_track_pos)
+            {
+              g_return_val_if_fail (events, false);
+            }
+          else
+            {
+              /* finish prev events if any */
+              if (events)
+                {
+                  midi_events_write_to_midi_file (
+                    events, mf,
+                    last_midi_track_pos);
+                  object_free_w_func_and_null (
+                    midi_events_free, events);
+                }
+
+              /* start new events */
+              events = midi_events_new ();
+            }
+
+          /* append to the current events */
+          midi_region_add_events (
+            r, events, true,
+            export_full_regions);
+          last_midi_track_pos = midi_track_pos;
+        }
+
+      /* finish prev events if any again */
+      if (events)
+        {
+          midi_events_write_to_midi_file (
+            events, mf,
+            last_midi_track_pos);
+          object_free_w_func_and_null (
+            midi_events_free, events);
         }
 
       arranger_selections_free_full (
         (ArrangerSelections *) sel_clone);
 
-      midiFileClose(mf);
+      midiFileClose (mf);
     }
 
   return true;

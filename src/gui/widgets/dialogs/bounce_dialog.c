@@ -73,7 +73,8 @@ on_bounce_clicked (
   else
     {
       export_settings_set_bounce_defaults (
-        &settings, NULL, self->bounce_name);
+        &settings, EXPORT_FORMAT_WAV, NULL,
+        self->bounce_name);
     }
 
   Position start_pos;

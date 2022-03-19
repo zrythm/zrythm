@@ -1404,6 +1404,25 @@ tracklist_handle_file_drop (
           goto free_file_array_and_return;
         }
 
+      int num_nonempty_midi_tracks = 0;
+      if (track_type == TRACK_TYPE_MIDI)
+        {
+          num_nonempty_midi_tracks =
+            midi_file_get_num_tracks (
+              file->abs_path, true);
+          if (num_nonempty_midi_tracks == 0)
+            {
+              if (ZRYTHM_HAVE_UI)
+                {
+                  ui_show_error_message (
+                    MAIN_WINDOW, true,
+                    _("This MIDI file contains "
+                    "no data"));
+                }
+              goto free_file_array_and_return;
+            }
+        }
+
       if (perform_actions)
         {
           /* if current track exists and track
@@ -1432,10 +1451,7 @@ tracklist_handle_file_drop (
                       goto free_file_array_and_return;
                     }
 
-                  int num_nonempty_tracks =
-                    midi_file_get_num_tracks (
-                      file->abs_path, true);
-                  if (num_nonempty_tracks > 1)
+                  if (num_nonempty_midi_tracks > 1)
                     {
                       char msg[600];
                       sprintf (
@@ -1443,7 +1459,7 @@ tracklist_handle_file_drop (
                         _("This MIDI file contains %d "
                         "tracks. It cannot be dropped "
                         "into an existing track"),
-                        num_nonempty_tracks);
+                        num_nonempty_midi_tracks);
                       ui_show_error_message (
                         MAIN_WINDOW, true, msg);
                       goto free_file_array_and_return;

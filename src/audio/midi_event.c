@@ -554,6 +554,34 @@ midi_events_panic (
   zix_sem_post (&self->access_sem);
 }
 
+void
+midi_events_write_to_midi_file (
+  const MidiEvents * self,
+  MIDI_FILE *        mf,
+  int                midi_track)
+{
+  g_return_if_fail (midi_track > 0);
+
+  int last_time = 0;
+  for (int i = 0; i < self->num_events; i++)
+    {
+      const MidiEvent * ev = &self->events[i];
+
+      BYTE buf[] =
+        { ev->raw_buffer[0],
+          ev->raw_buffer[1],
+          ev->raw_buffer[2] };
+      int delta_time =
+        (int) ev->time - last_time;
+      midiTrackAddRaw (
+        mf, midi_track, 3, buf,
+        /* move ptr */
+        true,
+        delta_time);
+      last_time += delta_time;
+    }
+}
+
 #ifdef HAVE_JACK
 /**
  * Writes the events to the given JACK buffer.

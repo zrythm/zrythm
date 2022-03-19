@@ -838,6 +838,9 @@ midi_region_start_unended_note (
  * Exports the ZRegion to an existing MIDI file
  * instance.
  *
+ * This must only be called when exporting single
+ * regions.
+ *
  * @param add_region_start Add the region start
  *   offset to the positions.
  * @param export_full Traverse loops and export the
@@ -857,54 +860,21 @@ midi_region_write_to_midi_file (
   const ZRegion * self,
   MIDI_FILE *     mf,
   const bool      add_region_start,
-  bool            export_full,
-  bool            lanes_as_tracks,
-  bool            use_track_or_lane_pos)
+  bool            export_full)
 {
-  MidiEvents * events =
-    midi_region_get_as_events (
-      self, add_region_start, export_full);
-  MidiEvent * ev;
-  int i;
-  ArrangerObject * r_obj =
-    (ArrangerObject *) self;
-  Track * track =
-    arranger_object_get_track (r_obj);
-  for (i = 0; i < events->num_events; i++)
-    {
-      ev = &events->events[i];
+  MidiEvents * events = midi_events_new ();
+  midi_region_add_events (
+    self, events, add_region_start, export_full);
 
-      int midi_track_pos = 1;
-      if (use_track_or_lane_pos)
-        {
-          if (lanes_as_tracks)
-            {
-              TrackLane * lane =
-                region_get_lane (self);
-              g_return_if_fail (lane);
-              midi_track_pos =
-                track_lane_calculate_lane_idx (
-                  lane);
-            }
-          else
-            {
-              midi_track_pos = track->pos;
-            }
-        }
+  midiFileSetTracksDefaultChannel (
+    mf, 1, MIDI_CHANNEL_1);
+  midiTrackAddText (
+    mf, 1, textTrackName, self->name);
 
-      BYTE tmp[] =
-        { ev->raw_buffer[0],
-          ev->raw_buffer[1],
-        ev->raw_buffer[2] };
-      midiTrackAddRaw (
-        mf, midi_track_pos, 3, tmp,
-        1,
-        i == 0 ?
-          (int) ev->time :
-          (int)
-          (ev->time - events->events[i - 1].time));
-    }
-  midi_events_free (events);
+  midi_events_write_to_midi_file (
+    events, mf, 1);
+  object_free_w_func_and_null (
+    midi_events_free, events);
 }
 
 /**
@@ -921,8 +891,7 @@ midi_region_export_to_midi_file (
   const ZRegion * self,
   const char *    full_path,
   int             midi_version,
-  const bool      export_full,
-  const bool      lanes_as_tracks)
+  const bool      export_full)
 {
   MIDI_FILE *mf;
 
@@ -958,8 +927,7 @@ midi_region_export_to_midi_file (
           TRANSPORT->ticks_per_beat));
 
       midi_region_write_to_midi_file (
-        self, mf, false, export_full,
-        lanes_as_tracks, false);
+        self, mf, false, export_full);
 
       midiFileClose(mf);
     }
@@ -992,11 +960,8 @@ midi_region_get_midi_ch (
 }
 
 /**
- * Returns a newly initialized MidiEvents with
- * the contents of the region converted into
+ * Adds the contents of the region converted into
  * events.
- *
- * Must be free'd with midi_events_free ().
  *
  * @param add_region_start Add the region start
  *   offset to the positions.
@@ -1005,14 +970,13 @@ midi_region_get_midi_ch (
  *   If this is 0, only the original region (from
  *   true start to true end) is exported.
  */
-MidiEvents *
-midi_region_get_as_events (
+void
+midi_region_add_events (
   const ZRegion * self,
+  MidiEvents *    events,
   const bool      add_region_start,
   const bool      full)
 {
-  MidiEvents * events = midi_events_new ();
-
   ArrangerObject * self_obj =
     (ArrangerObject *) self;
 
@@ -1042,8 +1006,6 @@ midi_region_get_as_events (
     }
 
   midi_events_sort (events, F_NOT_QUEUED);
-
-  return events;
 }
 
 /**

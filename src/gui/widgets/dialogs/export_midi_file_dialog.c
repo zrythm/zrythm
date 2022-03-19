@@ -97,8 +97,7 @@ on_response (
         {
           midi_region_export_to_midi_file (
             sel->regions[0], filename,
-            midi_format, export_full,
-            lanes_as_separate_tracks);
+            midi_format, export_full);
 
           ui_show_notification (
             _("MIDI region exported."));

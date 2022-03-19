@@ -31,6 +31,7 @@
 #include "audio/exporter.h"
 #include "audio/marker_track.h"
 #include "audio/master_track.h"
+#include "audio/midi_event.h"
 #include "audio/router.h"
 #include "audio/position.h"
 #include "audio/tempo_track.h"
@@ -575,7 +576,6 @@ export_midi (
 {
   MIDI_FILE *mf;
 
-  int i;
   if ((mf = midiFileCreate (info->file_uri, TRUE)))
     {
       /* Write tempo information out to track 1 */
@@ -608,27 +608,42 @@ export_midi (
             mf, 1, textTrackName, info->title);
         }
 
-      Track * track;
-      for (i = 0; i < TRACKLIST->num_tracks; i++)
+      for (int i = 0; i < TRACKLIST->num_tracks;
+           i++)
         {
-          track = TRACKLIST->tracks[i];
+          Track * track = TRACKLIST->tracks[i];
 
           if (track_type_has_piano_roll (
                 track->type))
             {
+              MidiEvents * events = NULL;
+              if (midi_version == 0)
+                {
+                  events = midi_events_new ();
+                }
+
               /* write track to midi file */
               track_write_to_midi_file (
                 track, mf,
+                midi_version == 0 ? events : NULL,
                 midi_version == 0
                   ? false : info->lanes_as_tracks,
                 midi_version == 0 ? false : true);
+
+              if (events)
+                {
+                  midi_events_write_to_midi_file (
+                    events, mf, 1);
+                  object_free_w_func_and_null (
+                    midi_events_free, events);
+                }
             }
           info->progress_info.progress =
             (double) i /
             (double) TRACKLIST->num_tracks;
         }
 
-      midiFileClose(mf);
+      midiFileClose (mf);
     }
   info->progress_info.progress = 1.0;
 
@@ -665,10 +680,11 @@ export_settings_default ()
 void
 export_settings_set_bounce_defaults (
   ExportSettings * self,
+  ExportFormat     format,
   const char *     filepath,
   const char *     bounce_name)
 {
-  self->format = EXPORT_FORMAT_WAV;
+  self->format = format;
   self->artist = g_strdup ("");
   self->title = g_strdup ("");
   self->genre = g_strdup ("");
@@ -737,9 +753,12 @@ export_settings_set_bounce_defaults (
       char * tmp_dir =
         g_dir_make_tmp (
           "zrythm_bounce_XXXXXX", NULL);
+      const char * ext =
+        exporter_stringize_export_format (
+          self->format, true);
       char filename[800];
       sprintf (
-        filename, "%s.wav", bounce_name);
+        filename, "%s.%s", bounce_name, ext);
       self->file_uri =
         g_build_filename (
           tmp_dir, filename, NULL);

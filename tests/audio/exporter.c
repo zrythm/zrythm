@@ -208,7 +208,7 @@ bounce_region (
   memset (&settings, 0, sizeof (ExportSettings));
   settings.mode = EXPORT_MODE_REGIONS;
   export_settings_set_bounce_defaults (
-    &settings, NULL, region->name);
+    &settings, EXPORT_FORMAT_WAV, NULL, region->name);
   timeline_selections_mark_for_bounce (
     TL_SELECTIONS, settings.bounce_with_parents);
   position_add_ms (
@@ -305,7 +305,7 @@ test_mixdown_midi_routed_to_instrument_track (void)
   memset (&settings, 0, sizeof (ExportSettings));
   settings.mode = EXPORT_MODE_FULL;
   export_settings_set_bounce_defaults (
-    &settings, NULL, __func__);
+    &settings, EXPORT_FORMAT_WAV, NULL, __func__);
   settings.time_range = TIME_RANGE_LOOP;
 
   GPtrArray * conns =
@@ -402,7 +402,7 @@ test_bounce_region_with_first_note (void)
   memset (&settings, 0, sizeof (ExportSettings));
   settings.mode = EXPORT_MODE_REGIONS;
   export_settings_set_bounce_defaults (
-    &settings, NULL, region->name);
+    &settings, EXPORT_FORMAT_WAV, NULL, region->name);
   timeline_selections_mark_for_bounce (
     TL_SELECTIONS, settings.bounce_with_parents);
   position_add_ms (
@@ -492,7 +492,7 @@ _test_bounce_midi_track_routed_to_instrument_track (
   memset (&settings, 0, sizeof (ExportSettings));
   settings.mode = EXPORT_MODE_TRACKS;
   export_settings_set_bounce_defaults (
-    &settings, NULL, __func__);
+    &settings, EXPORT_FORMAT_WAV, NULL, __func__);
   settings.time_range = TIME_RANGE_LOOP;
   settings.bounce_with_parents = with_parents;
   settings.bounce_step = bounce_step;
@@ -619,7 +619,7 @@ _test_bounce_instrument_track (
   memset (&settings, 0, sizeof (ExportSettings));
   settings.mode = EXPORT_MODE_TRACKS;
   export_settings_set_bounce_defaults (
-    &settings, NULL, __func__);
+    &settings, EXPORT_FORMAT_WAV, NULL, __func__);
   settings.time_range = TIME_RANGE_LOOP;
   settings.bounce_with_parents = with_parents;
   settings.bounce_step = bounce_step;
@@ -723,7 +723,7 @@ _test_bounce_instrument_track (
   memset (&settings, 0, sizeof (ExportSettings));
   settings.mode = EXPORT_MODE_TRACKS;
   export_settings_set_bounce_defaults (
-    &settings, NULL, __func__);
+    &settings, EXPORT_FORMAT_WAV, NULL, __func__);
   settings.time_range = TIME_RANGE_SONG;
   settings.bounce_with_parents = with_parents;
   settings.bounce_step = bounce_step;
@@ -860,7 +860,7 @@ test_chord_routed_to_instrument (void)
         i == 0
         ? EXPORT_MODE_FULL : EXPORT_MODE_TRACKS;
       export_settings_set_bounce_defaults (
-        &settings, NULL, __func__);
+        &settings, EXPORT_FORMAT_WAV, NULL, __func__);
       settings.time_range = TIME_RANGE_LOOP;
 
       if (i == 1)
@@ -966,7 +966,7 @@ test_export_send (void)
           memset (
             &settings, 0, sizeof (ExportSettings));
           export_settings_set_bounce_defaults (
-            &settings, NULL, __func__);
+            &settings, EXPORT_FORMAT_WAV, NULL, __func__);
           settings.time_range = TIME_RANGE_LOOP;
           settings.bounce_with_parents = true;
           settings.mode = EXPORT_MODE_TRACKS;
@@ -1024,6 +1024,136 @@ test_export_send (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_mixdown_midi (void)
+{
+  test_helper_zrythm_init ();
+
+  /* create a MIDI track with 2 adjacent regions
+   * with 1 MIDI note each */
+  Track * track =
+    track_create_empty_with_action (
+      TRACK_TYPE_MIDI, NULL);
+  track_select (
+    track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+
+  Position start, end;
+  position_init (&start);
+  position_set_to_bar (&end, 4);
+  ZRegion * r =
+    midi_region_new (
+      &start, &end, track->name_hash, 0, 0);
+  track_add_region (
+    track, r, NULL, 0, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
+
+  /* midi note 1 */
+  position_init (&start);
+  position_set_to_bar (&end, 2);
+  MidiNote * mn =
+    midi_note_new (
+      &r->id, &start, &end, 70, 70);
+  midi_region_add_midi_note (
+    r, mn, F_NO_PUBLISH_EVENTS);
+
+  /* midi note 2 */
+  position_set_to_bar (&start, 3);
+  position_set_to_bar (&end, 4);
+  mn =
+    midi_note_new (
+      &r->id, &start, &end, 70, 70);
+  midi_region_add_midi_note (
+    r, mn, F_NO_PUBLISH_EVENTS);
+
+  /* region 2 */
+  position_set_to_bar (&start, 2);
+  position_set_to_bar (&end, 3);
+  r =
+    midi_region_new (
+      &start, &end, track->name_hash, 0, 1);
+  track_add_region (
+    track, r, NULL, 0, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
+
+  /* midi note 3 */
+  position_init (&start);
+  position_set_to_bar (&end, 2);
+  mn =
+    midi_note_new (
+      &r->id, &start, &end, 70, 70);
+  midi_region_add_midi_note (
+    r, mn, F_NO_PUBLISH_EVENTS);
+
+  /* bounce */
+  ExportSettings settings;
+  memset (&settings, 0, sizeof (ExportSettings));
+  settings.mode = EXPORT_MODE_FULL;
+  export_settings_set_bounce_defaults (
+    &settings, EXPORT_FORMAT_MIDI1, NULL, __func__);
+  settings.time_range = TIME_RANGE_LOOP;
+
+  GPtrArray * conns =
+    exporter_prepare_tracks_for_export (&settings);
+
+  /* start exporting in a new thread */
+  GThread * thread =
+    g_thread_new (
+      "bounce_thread",
+      (GThreadFunc) exporter_generic_export_thread,
+      &settings);
+
+  print_progress_and_sleep (
+    &settings.progress_info);
+
+  g_thread_join (thread);
+
+  exporter_return_connections_post_export (
+    &settings, conns);
+
+  /* create a MIDI track from the MIDI file */
+  SupportedFile * file =
+    supported_file_new_from_path (
+      settings.file_uri);
+  Track * exported_track =
+    track_create_with_action (
+      TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
+      TRACKLIST->num_tracks, 1, NULL);
+
+  /* verify correct data */
+  g_assert_cmpint (
+    exported_track->num_lanes, ==, 2);
+  g_assert_cmpint (
+    exported_track->lanes[0]->num_regions, ==, 1);
+  g_assert_cmpint (
+    exported_track->lanes[1]->num_regions, ==, 0);
+  r = exported_track->lanes[0]->regions[0];
+  g_assert_cmpint (
+    r->num_midi_notes, ==, 3);
+  mn = r->midi_notes[0];
+  ArrangerObject * mn_obj = (ArrangerObject *) mn;
+  position_set_to_bar (&start, 1);
+  position_set_to_bar (&end, 2);
+  g_assert_cmppos (&mn_obj->pos, &start);
+  g_assert_cmppos (&mn_obj->end_pos, &end);
+  mn = r->midi_notes[1];
+  mn_obj = (ArrangerObject *) mn;
+  position_set_to_bar (&start, 2);
+  position_set_to_bar (&end, 3);
+  g_assert_cmppos (&mn_obj->pos, &start);
+  g_assert_cmppos (&mn_obj->end_pos, &end);
+  mn = r->midi_notes[2];
+  mn_obj = (ArrangerObject *) mn;
+  position_set_to_bar (&start, 3);
+  position_set_to_bar (&end, 4);
+  g_assert_cmppos (&mn_obj->pos, &start);
+  g_assert_cmppos (&mn_obj->end_pos, &end);
+
+  export_settings_free_members (&settings);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1031,6 +1161,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/audio/exporter/"
 
+  g_test_add_func (
+    TEST_PREFIX "test mixdown midi",
+    (GTestFunc) test_mixdown_midi);
   g_test_add_func (
     TEST_PREFIX "test export send",
     (GTestFunc) test_export_send);

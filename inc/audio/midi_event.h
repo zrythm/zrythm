@@ -40,6 +40,8 @@
 
 #include <gtk/gtk.h>
 
+#include "ext/midilib/src/midifile.h"
+
 typedef struct ChordDescriptor ChordDescriptor;
 
 /**
@@ -362,6 +364,13 @@ void
 midi_events_panic (
   MidiEvents * self,
   bool         queued);
+
+NONNULL
+void
+midi_events_write_to_midi_file (
+  const MidiEvents * self,
+  MIDI_FILE *        mf,
+  int                midi_track);
 
 /**
  * Clears midi events.

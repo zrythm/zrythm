@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -77,9 +77,9 @@ test_export (void)
 
       /* export the region again */
       midi_region_export_to_midi_file (
-        region, export_filepath, 0, false, false);
+        region, export_filepath, 0, false);
       midi_region_export_to_midi_file (
-        region, export_filepath, 0, true, false);
+        region, export_filepath, 0, true);
 
       g_assert_true (
         g_file_test (

@@ -1664,32 +1664,47 @@ track_set_listened (
  * @param use_track_pos Whether to use the track
  *   position in the MIDI data. The track will be
  *   set to 1 if false.
+ * @param events Track events, if not using lanes
+ *   as tracks or using track position.
  */
-NONNULL
 void
 track_write_to_midi_file (
   const Track * self,
   MIDI_FILE *   mf,
+  MidiEvents *  events,
   bool          lanes_as_tracks,
   bool          use_track_pos)
 {
   g_return_if_fail (
     track_type_has_piano_roll (self->type));
 
-  TrackLane * lane;
+  bool own_events = false;
+  int midi_track_pos = self->pos;
+  if (!lanes_as_tracks && use_track_pos)
+    {
+      g_return_if_fail (!events);
+      midiTrackAddText (
+        mf, self->pos, textTrackName,
+        self->name);
+      events = midi_events_new ();
+      own_events = true;
+    }
+
   for (int i = 0; i < self->num_lanes; i++)
     {
-      lane = self->lanes[i];
-
-      if (!lanes_as_tracks && use_track_pos)
-        {
-          midiTrackAddText (
-            mf, self->pos, textTrackName,
-            self->name);
-        }
+      TrackLane * lane = self->lanes[i];
 
       track_lane_write_to_midi_file (
-        lane, mf, lanes_as_tracks, use_track_pos);
+        lane, mf, events, lanes_as_tracks,
+        use_track_pos);
+    }
+
+  if (own_events)
+    {
+      midi_events_write_to_midi_file (
+        events, mf, midi_track_pos);
+      object_free_w_func_and_null (
+        midi_events_free, events);
     }
 }
 
@@ -2229,7 +2244,8 @@ track_freeze (
         F_NO_MARK_CHILDREN, F_NO_MARK_PARENTS);
       settings.mode = EXPORT_MODE_TRACKS;
       export_settings_set_bounce_defaults (
-        &settings, NULL, self->name);
+        &settings, EXPORT_FORMAT_WAV, NULL,
+        self->name);
 
       /* start exporting in a new thread */
       GThread * thread =

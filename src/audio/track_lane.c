@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 #include "audio/audio_region.h"
+#include "audio/midi_event.h"
 #include "audio/track.h"
 #include "audio/track_lane.h"
 #include "audio/tracklist.h"
@@ -559,26 +560,38 @@ track_lane_calculate_lane_idx (
  *   track position (or lane position if @ref
  *   lanes_as_tracks is true) in the MIDI data.
  *   The MIDI track will be set to 1 if false.
+ * @param events Track events, if not using lanes
+ *   as tracks.
  */
-NONNULL
 void
 track_lane_write_to_midi_file (
-  TrackLane * self,
-  MIDI_FILE * mf,
-  bool        lanes_as_tracks,
-  bool        use_track_or_lane_pos)
+  TrackLane *  self,
+  MIDI_FILE *  mf,
+  MidiEvents * events,
+  bool         lanes_as_tracks,
+  bool         use_track_or_lane_pos)
 {
   Track * track = track_lane_get_track (self);
   g_return_if_fail (track);
   int midi_track_pos = track->pos;
+  bool own_events = false;
   if (lanes_as_tracks)
     {
+      g_return_if_fail (!events);
       midi_track_pos =
         track_lane_calculate_lane_idx (self);
+      events = midi_events_new ();
+      own_events = true;
     }
-  if (!use_track_or_lane_pos)
+  else if (!use_track_or_lane_pos)
     {
+      g_return_if_fail (events);
       midi_track_pos = 1;
+    }
+  /* else if using track positions */
+  else
+    {
+      g_return_if_fail (events);
     }
 
   /* All data is written out to tracks not
@@ -606,9 +619,16 @@ track_lane_write_to_midi_file (
   for (int i = 0; i < self->num_regions; i++)
     {
       const ZRegion * region = self->regions[i];
-      midi_region_write_to_midi_file (
-        region, mf, true, true, lanes_as_tracks,
-        use_track_or_lane_pos);
+      midi_region_add_events (
+        region, events, true, true);
+    }
+
+  if (own_events)
+    {
+      midi_events_write_to_midi_file (
+        events, mf, midi_track_pos);
+      object_free_w_func_and_null (
+        midi_events_free, events);
     }
 }
 

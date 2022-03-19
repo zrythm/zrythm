@@ -3102,7 +3102,7 @@ DEFINE_SIMPLE (activate_quick_bounce_selections)
   ExportSettings settings;
   settings.mode = EXPORT_MODE_REGIONS;
   export_settings_set_bounce_defaults (
-    &settings, NULL, r->name);
+    &settings, EXPORT_FORMAT_WAV, NULL, r->name);
   timeline_selections_mark_for_bounce (
     TL_SELECTIONS, settings.bounce_with_parents);
 
@@ -4086,7 +4086,8 @@ DEFINE_SIMPLE (
   ExportSettings settings;
   settings.mode = EXPORT_MODE_TRACKS;
   export_settings_set_bounce_defaults (
-    &settings, NULL, track->name);
+    &settings, EXPORT_FORMAT_WAV, NULL,
+    track->name);
   tracklist_selections_mark_for_bounce (
     TRACKLIST_SELECTIONS,
     settings.bounce_with_parents,

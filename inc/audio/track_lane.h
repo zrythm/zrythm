@@ -301,14 +301,17 @@ track_lane_clone (
  *   track position (or lane position if @ref
  *   lanes_as_tracks is true) in the MIDI data.
  *   The MIDI track will be set to 1 if false.
+ * @param events Track events, if not using lanes
+ *   as tracks.
  */
-NONNULL
+NONNULL_ARGS (1, 2)
 void
 track_lane_write_to_midi_file (
-  TrackLane * self,
-  MIDI_FILE * mf,
-  bool        lanes_as_tracks,
-  bool        use_track_or_lane_pos);
+  TrackLane *  self,
+  MIDI_FILE *  mf,
+  MidiEvents * events,
+  bool         lanes_as_tracks,
+  bool         use_track_or_lane_pos);
 
 NONNULL
 Tracklist *

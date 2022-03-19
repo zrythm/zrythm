@@ -198,6 +198,7 @@ export_settings_default (void);
 void
 export_settings_set_bounce_defaults (
   ExportSettings * self,
+  ExportFormat     format,
   const char *     filepath,
   const char *     bounce_name);
 

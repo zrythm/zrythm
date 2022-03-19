@@ -248,6 +248,9 @@ midi_region_remove_all_midi_notes (
  * Exports the ZRegion to an existing MIDI file
  * instance.
  *
+ * This must only be called when exporting single
+ * regions.
+ *
  * @param add_region_start Add the region start
  *   offset to the positions.
  * @param export_full Traverse loops and export the
@@ -262,15 +265,13 @@ midi_region_remove_all_midi_notes (
  *   track/lane position in the MIDI data. The
  *   MIDI track will be set to 1 if false.
  */
-NONNULL
+NONNULL_ARGS (1,2)
 void
 midi_region_write_to_midi_file (
   const ZRegion * self,
   MIDI_FILE *     mf,
   const bool      add_region_start,
-  bool            export_full,
-  bool            lanes_as_tracks,
-  bool            use_track_or_lane_pos);
+  bool            export_full);
 
 /**
  * Exports the ZRegion to a specified MIDI file.
@@ -287,8 +288,7 @@ midi_region_export_to_midi_file (
   const ZRegion * self,
   const char *    full_path,
   int             midi_version,
-  const bool      export_full,
-  const bool      lanes_as_tracks);
+  const bool      export_full);
 
 /**
  * Returns the MIDI channel that this region should
@@ -299,18 +299,20 @@ midi_region_get_midi_ch (
   const ZRegion * self);
 
 /**
- * Returns a newly initialized MidiEvents with
- * the contents of the region converted into
+ * Adds the contents of the region converted into
  * events.
- *
- * Must be free'd with midi_events_free ().
  *
  * @param add_region_start Add the region start
  *   offset to the positions.
+ * @param export_full Traverse loops and export the
+ *   MIDI file as it would be played inside Zrythm.
+ *   If this is 0, only the original region (from
+ *   true start to true end) is exported.
  */
-MidiEvents *
-midi_region_get_as_events (
+void
+midi_region_add_events (
   const ZRegion * self,
+  MidiEvents *    events,
   const bool      add_region_start,
   const bool      full);
 

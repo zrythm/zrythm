@@ -989,12 +989,15 @@ track_insert_region (
  * @param use_track_pos Whether to use the track
  *   position in the MIDI data. The track will be
  *   set to 1 if false.
+ * @param events Track events, if not using lanes
+ *   as tracks or using track position.
  */
-NONNULL
+NONNULL_ARGS (1, 2)
 void
 track_write_to_midi_file (
   const Track * self,
   MIDI_FILE *   mf,
+  MidiEvents *  events,
   bool          lanes_as_tracks,
   bool          use_track_pos);
 

@@ -119,6 +119,26 @@ test_swap_with_automation_regions (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_handle_drop_empty_midi_file (void)
+{
+  test_helper_zrythm_init ();
+
+  char * path =
+    g_build_filename (
+      TESTS_SRCDIR, "empty_midi_file_type1.mid",
+      NULL);
+  SupportedFile * file =
+    supported_file_new_from_path (path);
+  g_free (path);
+
+  tracklist_handle_file_drop (
+    TRACKLIST, NULL, file, NULL, NULL, PLAYHEAD,
+    true);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -128,6 +148,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/audio/tracklist/"
 
+  g_test_add_func (
+    TEST_PREFIX "test handle drop empty midi file",
+    (GTestFunc) test_handle_drop_empty_midi_file);
   g_test_add_func (
     TEST_PREFIX "test swap with automation regions",
     (GTestFunc) test_swap_with_automation_regions);
