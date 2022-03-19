@@ -510,7 +510,7 @@ audio_pool_print (
       else
         {
           g_string_append_printf (
-            gstr, "[Clip #%d] <empty>", i);
+            gstr, "[Clip #%d] <empty>\n", i);
         }
     }
   char * str = g_string_free (gstr, false);
