@@ -1,6 +1,6 @@
-[wrap-git]
-directory=pango
-url=https://gitlab.gnome.org/GNOME/pango.git
-push-url=git@gitlab.gnome.org:GNOME/pango.git
-revision=main
-depth=1
+[wrap-file]
+directory = pango-1.50.6
+
+source_url = https://download.gnome.org/sources/pango/1.50/pango-1.50.6.tar.xz
+source_filename = pango-1.50.6.tar.xz
+source_hash = a998bcf36881c3ac20495d40bceb304f4eaa9175bd2967c85656434cbdafe86a

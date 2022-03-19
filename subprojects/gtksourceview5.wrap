@@ -1,4 +1,6 @@
-[wrap-git]
-directory=gtksourceview5
-url=https://gitlab.gnome.org/GNOME/gtksourceview
-revision=5.2.0
+[wrap-file]
+directory = gtksourceview-5.4.0
+
+source_url = https://download.gnome.org/sources/gtksourceview/5.4/gtksourceview-5.4.0.tar.xz
+source_filename = gtksourceview-5.4.0.tar.xz
+source_hash = 003bc217e670a8ec8aa3aece994b70e70b7d6b8074938adda21718555d84e637

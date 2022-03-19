@@ -1,6 +1,6 @@
 [wrap-file]
-directory = libadwaita-1.0.0
+directory = libadwaita-1.1.0
 
-source_url = https://gitlab.gnome.org/GNOME/libadwaita/-/archive/1.0.0/libadwaita-1.0.0.tar.gz
-source_filename = libadwaita-1.0.0.tar.gz
-source_hash = 47c77d3e4703f0ce519dd8d4da24e94cad266b2b40f07cfaf9276f0f88aa4651
+source_url = https://download.gnome.org/sources/libadwaita/1.1/libadwaita-1.1.0.tar.xz
+source_filename = libadwaita-1.1.0.tar.xz
+source_hash = aff598803e810cc28266472cf5bf65e5ed5b90bb3523e206b06b14527325010e
