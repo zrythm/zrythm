@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. _snapping-grid-options:
@@ -7,28 +7,49 @@
 Snapping and Grid Options
 =========================
 
-Snap Toggles
+Snap Toolbar
 ------------
-Zrythm will snap according to the setting currently
-specified by the snap toolbar buttons.
+Zrythm will snap according to the options currently
+specified by the snap toolbar buttons in each panel.
 
-.. image:: /_static/img/snap-toolbar.png
+.. figure:: /_static/img/snap-toolbar.png
    :align: center
 
-.. note:: These are not operational at the moment and Zrythm
-   will snap by default. Use Shift to bypass snapping for now.
+   Snap toolbar
 
-Snap and Grid
--------------
-When snapping, Zrythm will follow the settings specified
-by the snap/grid widget on each editor.
+Snap/Grid Options
+-----------------
 
-.. image:: /_static/img/snap-grid-options.png
+The Snap/Grid options control allows fine-tuning
+snapping behavior inside arrangers.
+
+.. figure:: /_static/img/snap-grid-options.png
    :align: center
 
-Adaptive Grid
-  Not used at the moment.
+   Snap/Grid options
+
+Snap
+~~~~
+The Snap section controls the snapping behavior of
+the start position of objects.
+
+Note Length
+  Note length to snap to
+Triplet (t)
+  Use triplet note (2/3rds of the selected note
+  length)
+Dotted (.)
+  Use dotted note (3/2nds, or 1.5 times the selected
+  note length)
+Adaptive
+  Adapt snapping to the current zoom level
+
 Length
-  Note length to snap to.
-Note Type
-  Note type (normal/dotted/triplet)
+~~~~~~
+The Length section controls the default length of
+objects.
+
+Link
+  Use the same options as Snap
+Last Object
+  Use the length of the last created object

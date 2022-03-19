@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. _common-operations:
@@ -30,7 +30,10 @@ It is also possible to go back/forth more than one
 action, by clicking the arrow next to the
 :guilabel:`Undo` and :guilabel:`Redo` buttons.
 
-.. todo:: Show screenshot.
+.. figure:: /_static/img/undo-multiple.png
+   :align: center
+
+   Undoing multiple actions
 
 The shortcuts for undo and redo are
 :kbd:`Control-z` and :kbd:`Control-Shift-z`.
@@ -84,18 +87,12 @@ Clear Selection
 ~~~~~~~~~~~~~~~
 Clear current selection (unselect all objects).
 
-.. todo:: Illustrate.
-
 Select All
 ~~~~~~~~~~
 Select all objects in the current editor
 (:kbd:`Control-a`).
 
-.. todo:: Illustrate.
-
 Loop Selection
 ~~~~~~~~~~~~~~
 Place the loop markers around the selection
 (:kbd:`Control-l`).
-
-.. todo:: Illustrate.

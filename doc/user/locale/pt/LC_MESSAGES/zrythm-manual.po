@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-18 22:07+0000\n"
+"POT-Creation-Date: 2022-03-19 23:41+0000\n"
 "PO-Revision-Date: 2022-02-02 23:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -296,10 +296,6 @@ msgstr "Resolução de problemas"
 #: ../../editing/clip-editors/ruler.rst:36
 #: ../../editing/clip-editors/ruler.rst:44
 #: ../../editing/clip-editors/toolbar.rst:12
-#: ../../editing/common-operations.rst:33
-#: ../../editing/common-operations.rst:87
-#: ../../editing/common-operations.rst:94
-#: ../../editing/common-operations.rst:101 ../../editing/edit-tools.rst:55
 #: ../../editing/timeline/arranger.rst:96
 #: ../../editing/timeline/arranger.rst:100
 #: ../../editing/timeline/arranger.rst:116
@@ -1818,11 +1814,12 @@ msgstr ""
 "Também é possível voltar/avançar mais de uma ação, a clicar na seta ao lado "
 "dos botões :guilabel:`Undo` e :guilabel:`Redo`."
 
-#: ../../editing/common-operations.rst:33
-msgid "Show screenshot."
-msgstr "Mostrar captura de ecrã."
+#: ../../editing/common-operations.rst:36
+#, fuzzy
+msgid "Undoing multiple actions"
+msgstr "Coleções de suplementos"
 
-#: ../../editing/common-operations.rst:35
+#: ../../editing/common-operations.rst:38
 msgid ""
 "The shortcuts for undo and redo are :kbd:`Control-z` and :kbd:`Control-Shift-"
 "z`."
@@ -1830,22 +1827,22 @@ msgstr ""
 "Os atalhos para desfazer e refazer são :kbd:`Control-z` e :kbd:`Control-"
 "Shift-z`."
 
-#: ../../editing/common-operations.rst:38
+#: ../../editing/common-operations.rst:41
 msgid ""
 "If you Undo and then perform a new action, the Redo history will be deleted."
 msgstr ""
 "Se desfazer e depois executar uma nova ação, o histórico do refazer será "
 "apagado."
 
-#: ../../editing/common-operations.rst:42
+#: ../../editing/common-operations.rst:45
 msgid "Object Operations"
 msgstr "Operações de objetos"
 
-#: ../../editing/common-operations.rst:44
+#: ../../editing/common-operations.rst:47
 msgid "Cut"
 msgstr "Cortar"
 
-#: ../../editing/common-operations.rst:45
+#: ../../editing/common-operations.rst:48
 msgid ""
 "Delete and copy the selected objects and save them in the clipboard so that "
 "they can be pasted elsewhere. The shortcut for cutting is :kbd:`Control-x`."
@@ -1854,11 +1851,11 @@ msgstr ""
 "transferência para poderem ser colados em outro lugar. O atalho para cortar "
 "é :kbd:`Control-x`."
 
-#: ../../editing/common-operations.rst:51
+#: ../../editing/common-operations.rst:54
 msgid "Copy"
 msgstr "Copiar"
 
-#: ../../editing/common-operations.rst:52
+#: ../../editing/common-operations.rst:55
 msgid ""
 "Copy the selected objects to the clipboard so that they can be pasted "
 "elsewhere. The shortcut for copying is :kbd:`Control-c`."
@@ -1866,11 +1863,11 @@ msgstr ""
 "Copie os objetos selecionados para a área de transferência para poderem ser "
 "colados em outro lugar. O atalho para copiar é :kbd:`Controle-c`."
 
-#: ../../editing/common-operations.rst:58
+#: ../../editing/common-operations.rst:61
 msgid "Paste"
 msgstr "Colar"
 
-#: ../../editing/common-operations.rst:59
+#: ../../editing/common-operations.rst:62
 msgid ""
 "Paste the objects currently in the clipboard to the current playhead "
 "position. The shortcut for pasting is :kbd:`Control-v`."
@@ -1878,11 +1875,11 @@ msgstr ""
 "Colar os objetos atualmente na área de transferência na posição atual de "
 "cabeça de jogo. O atalho para colar é :kbd:`Controle-v`."
 
-#: ../../editing/common-operations.rst:65
+#: ../../editing/common-operations.rst:68
 msgid "Duplicate"
 msgstr "Duplicar"
 
-#: ../../editing/common-operations.rst:66
+#: ../../editing/common-operations.rst:69
 msgid ""
 "Create a copy of the selected objects adjacent to them. The shortcut for "
 "duplicating is :kbd:`Control-d`."
@@ -1890,49 +1887,43 @@ msgstr ""
 "Crie uma cópia dos objetos selecionados adjacentes a eles. O atalho para "
 "duplicar é :kbd:`Controle-d'."
 
-#: ../../editing/common-operations.rst:73
+#: ../../editing/common-operations.rst:76
 msgid "Duplicating a region"
 msgstr "Duplicar uma região"
 
-#: ../../editing/common-operations.rst:76
+#: ../../editing/common-operations.rst:79
 msgid "Delete"
 msgstr "Apagar"
 
-#: ../../editing/common-operations.rst:77
+#: ../../editing/common-operations.rst:80
 msgid "Delete the selected objects. You can also press :kbd:`Delete`."
 msgstr "Elimine os objetos selecionados. Também pode pressionar :kbd:`Delete`."
 
-#: ../../editing/common-operations.rst:82
+#: ../../editing/common-operations.rst:85
 msgid "Selections"
 msgstr "Seleções"
 
-#: ../../editing/common-operations.rst:84
+#: ../../editing/common-operations.rst:87
 msgid "Clear Selection"
 msgstr "Limpar seleção"
 
-#: ../../editing/common-operations.rst:85
+#: ../../editing/common-operations.rst:88
 msgid "Clear current selection (unselect all objects)."
 msgstr "Limpar seleção atual (desselecionar todos os objetos)."
 
-#: ../../editing/common-operations.rst:87
-#: ../../editing/common-operations.rst:94
-#: ../../editing/common-operations.rst:101
-msgid "Illustrate."
-msgstr "Ilustrar."
-
-#: ../../editing/common-operations.rst:90
+#: ../../editing/common-operations.rst:91
 msgid "Select All"
 msgstr "Selecionar tudo"
 
-#: ../../editing/common-operations.rst:91
+#: ../../editing/common-operations.rst:92
 msgid "Select all objects in the current editor (:kbd:`Control-a`)."
 msgstr "Selecione todos os objetos no editor atual (:kbd:`Control-a')."
 
-#: ../../editing/common-operations.rst:97
+#: ../../editing/common-operations.rst:96
 msgid "Loop Selection"
 msgstr "Seleção de loop"
 
-#: ../../editing/common-operations.rst:98
+#: ../../editing/common-operations.rst:97
 msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
 msgstr ""
 "Posicione os marcadores de laço ao redor da seleção (:kbd:`Controle-l')."
@@ -2018,15 +2009,16 @@ msgstr ""
 "Os objetos selecionados terão uma cor mais brilhante do que os objetos não "
 "selecionados."
 
-#: ../../editing/edit-tools.rst:55
-msgid "Add pic showing object selection."
-msgstr "Adicionar foto a mostrar a seleção de objetos."
-
 #: ../../editing/edit-tools.rst:58
+#, fuzzy
+msgid "Selecting objects"
+msgstr "Selecionar objetos"
+
+#: ../../editing/edit-tools.rst:61
 msgid "Moving Objects"
 msgstr "Mover objetos"
 
-#: ../../editing/edit-tools.rst:59
+#: ../../editing/edit-tools.rst:62
 msgid ""
 "Objects are moved by clicking and dragging them around. You can move regions "
 "to other tracks if the track types are compatible."
@@ -2034,15 +2026,15 @@ msgstr ""
 "Os objetos são movidos a clicar e arrastá-los de um lado para o outro. Pode "
 "mover regiões para outras pistas se os tipos de pistas forem compatíveis."
 
-#: ../../editing/edit-tools.rst:66
+#: ../../editing/edit-tools.rst:69
 msgid "Moving a region"
 msgstr "Mover a região"
 
-#: ../../editing/edit-tools.rst:69
+#: ../../editing/edit-tools.rst:72
 msgid "Cloning (Copy-Moving) Objects"
 msgstr "Clonagem (copiar-mover) de objetos"
 
-#: ../../editing/edit-tools.rst:71
+#: ../../editing/edit-tools.rst:74
 msgid ""
 "Holding down :kbd:`Ctrl` while moving objects will allow you to copy-and-"
 "move the objects to the new location."
@@ -2050,15 +2042,15 @@ msgstr ""
 "Manter :kbd:`Ctrl` pressionado enquanto move objetos permitirá que copie e "
 "mova os objetos ao novo local."
 
-#: ../../editing/edit-tools.rst:78
+#: ../../editing/edit-tools.rst:81
 msgid "Copy-moving a region"
 msgstr "Copiar-mover uma região"
 
-#: ../../editing/edit-tools.rst:81
+#: ../../editing/edit-tools.rst:84
 msgid "Resizing Objects"
 msgstr "Redimensionamento de objetos"
 
-#: ../../editing/edit-tools.rst:82
+#: ../../editing/edit-tools.rst:85
 msgid ""
 "Objects that have length, such as regions and MIDI notes, can be resized by "
 "clicking and dragging their edges."
@@ -2066,7 +2058,7 @@ msgstr ""
 "Objetos que possuem comprimento, como regiões e notas MIDI, podem ser "
 "redimensionados a clicar e arrastando as bordas deles."
 
-#: ../../editing/edit-tools.rst:85
+#: ../../editing/edit-tools.rst:88
 msgid ""
 "On objects that can be repeated, such as regions, moving the cursor on the "
 "bottom half of the object will allow you to resize the object by repeating "
@@ -2076,7 +2068,7 @@ msgstr ""
 "metade inferior do objeto permitirá redimensionar o objeto repetindo-o, ao "
 "invés de apenas redimensioná-lo."
 
-#: ../../editing/edit-tools.rst:90
+#: ../../editing/edit-tools.rst:93
 msgid ""
 "When resizing, already repeated objects can only be repeated. To resize them "
 "instead of repeat them, their length must be changed or their clip markers "
@@ -2086,19 +2078,19 @@ msgstr ""
 "redimensioná-los em vez de repeti-los, o comprimento deles deve ser alterado "
 "ou marcadores de clipes deles devem ser movidos para que já não se repitam."
 
-#: ../../editing/edit-tools.rst:98
+#: ../../editing/edit-tools.rst:101
 msgid "Cutting Objects"
 msgstr "Cortar objetos"
 
-#: ../../editing/edit-tools.rst:99
+#: ../../editing/edit-tools.rst:102
 msgid "You can :kbd:`Alt`-click inside objects to break them up."
 msgstr "Pode :kbd:`Alt-clicar nos objetos para separá-los."
 
-#: ../../editing/edit-tools.rst:102
+#: ../../editing/edit-tools.rst:106
 msgid "Edit Tool"
 msgstr "Ferramenta de edição"
 
-#: ../../editing/edit-tools.rst:103
+#: ../../editing/edit-tools.rst:107
 msgid ""
 "This tool is used to quickly create or delete objects. While you can still "
 "create objects using the Select tool by double clicking and dragging, with "
@@ -2111,7 +2103,7 @@ msgstr ""
 "arrastar uma vez, o que é mais eficiente ao criar uma grande quantidade de "
 "objetos."
 
-#: ../../editing/edit-tools.rst:109
+#: ../../editing/edit-tools.rst:113
 msgid ""
 "Holding down :kbd:`Control` while clicking will allow you to create multiple "
 "objects in a row (where applicable) with a length specified by the snap "
@@ -2121,11 +2113,11 @@ msgstr ""
 "numa fila (quando aplicável) com um comprimento especificado pelas "
 "configurações de encaixe correspondentes a cada editor."
 
-#: ../../editing/edit-tools.rst:115
+#: ../../editing/edit-tools.rst:119
 msgid "Cut Tool"
 msgstr "Ferramenta de corte"
 
-#: ../../editing/edit-tools.rst:116
+#: ../../editing/edit-tools.rst:120
 msgid ""
 "The Cut tool behaves similarly to what is mentioned in :ref:`cutting-"
 "objects`, with the exception that you can just click instead of :kbd:`Alt`-"
@@ -2135,11 +2127,11 @@ msgstr ""
 "ref:`cutting-objects`, com a exceção de que pode simplesmente clicar em vez "
 "de :kbd:`Alt`-clicar."
 
-#: ../../editing/edit-tools.rst:121
+#: ../../editing/edit-tools.rst:125
 msgid "Erase Tool"
 msgstr "Ferramenta de apagar"
 
-#: ../../editing/edit-tools.rst:122
+#: ../../editing/edit-tools.rst:126
 msgid ""
 "Using the Erase tool you can just click on objects to delete them, or click "
 "and drag to make a selection, deleting all objects inside it."
@@ -2148,11 +2140,11 @@ msgstr ""
 "clicar e arrastar para fazer uma seleção, apagando todos os objetos dentro "
 "dela."
 
-#: ../../editing/edit-tools.rst:129
+#: ../../editing/edit-tools.rst:133
 msgid "Ramp Tool"
 msgstr "Ferramenta de rampa"
 
-#: ../../editing/edit-tools.rst:130
+#: ../../editing/edit-tools.rst:134
 msgid ""
 "This tool is currently only used for editing velocities for MIDI notes. You "
 "can click and drag in the velocity editor to create velocity ramps."
@@ -2161,17 +2153,33 @@ msgstr ""
 "notas MIDI. Pode clicar e arrastar no editor de velocidade para criar rampas "
 "de velocidade."
 
-#: ../../editing/edit-tools.rst:138
+#: ../../editing/edit-tools.rst:141
+msgid "Using the ramp tool on velocities"
+msgstr ""
+
+#: ../../editing/edit-tools.rst:144
 msgid "Audition Tool"
 msgstr "Ferramenta de audição"
 
-#: ../../editing/edit-tools.rst:139
-msgid "This feature is not implemented yet."
-msgstr "Esta funcionalidade ainda não está implementada."
+#: ../../editing/edit-tools.rst:146
+msgid ""
+"The Audition tool is used to listen to specific parts of the song quickly. "
+"After enabling the audition tool, click anywhere to start playback from the "
+"position of the cursor and release the mouse button to stop."
+msgstr ""
 
-#: ../../editing/edit-tools.rst:141
+#: ../../editing/edit-tools.rst:155
+#, fuzzy
+msgid "Using the audition tool"
+msgstr "Controles adicionais"
+
+#: ../../editing/edit-tools.rst:157
 msgid "Where applicable, hold :kbd:`Shift` to bypass snapping."
 msgstr "Onde aplicável, segure :kbd:`Shift` para contornar o encaixe."
+
+#: ../../editing/edit-tools.rst:160
+msgid "Pressing :kbd:`Escape` will cancel any current action."
+msgstr ""
 
 #: ../../editing/intro.rst:8
 msgid "Editing"
@@ -2292,60 +2300,108 @@ msgid "Snapping and Grid Options"
 msgstr "Opções de Snapping e Grade"
 
 #: ../../editing/snapping-grid-options.rst:11
-msgid "Snap Toggles"
-msgstr ""
+#, fuzzy
+msgid "Snap Toolbar"
+msgstr "Barra de ferramentas principal"
 
 #: ../../editing/snapping-grid-options.rst:12
+#, fuzzy
 msgid ""
-"Zrythm will snap according to the setting currently specified by the snap "
-"toolbar buttons."
+"Zrythm will snap according to the options currently specified by the snap "
+"toolbar buttons in each panel."
 msgstr ""
 "Zrythm irá encaixar conforme a configuração atualmente especificada pelos "
 "botões da barra de ferramentas de encaixe."
 
 #: ../../editing/snapping-grid-options.rst:18
-msgid ""
-"These are not operational at the moment and Zrythm will snap by default. Use "
-"Shift to bypass snapping for now."
-msgstr ""
-"Estes não funcionam no momento e a Zrythm irá quebrar por padrão. Use Shift "
-"para contornar encaixar por enquanto."
+#, fuzzy
+msgid "Snap toolbar"
+msgstr "Barra de ferramentas principal"
 
-#: ../../editing/snapping-grid-options.rst:22
-msgid "Snap and Grid"
-msgstr "Encaixe e grelha"
+#: ../../editing/snapping-grid-options.rst:21
+#, fuzzy
+msgid "Snap/Grid Options"
+msgstr "Opções de desfazer."
 
 #: ../../editing/snapping-grid-options.rst:23
 msgid ""
-"When snapping, Zrythm will follow the settings specified by the snap/grid "
-"widget on each editor."
+"The Snap/Grid options control allows fine-tuning snapping behavior inside "
+"arrangers."
 msgstr ""
-"Ao encaixar, o Zrythm seguirá as configurações especificadas pelo widget "
-"encaixar/grelha em cada editor."
 
 #: ../../editing/snapping-grid-options.rst:29
-msgid "Adaptive Grid"
+#, fuzzy
+msgid "Snap/Grid options"
+msgstr "Opções de desfazer."
+
+#: ../../editing/snapping-grid-options.rst:32
+msgid "Snap"
+msgstr ""
+
+#: ../../editing/snapping-grid-options.rst:33
+msgid ""
+"The Snap section controls the snapping behavior of the start position of "
+"objects."
+msgstr ""
+
+#: ../../editing/snapping-grid-options.rst:36
+msgid "Note Length"
+msgstr ""
+
+#: ../../editing/snapping-grid-options.rst:37
+#, fuzzy
+msgid "Note length to snap to"
+msgstr "Comprimento de nota para encaixar."
+
+#: ../../editing/snapping-grid-options.rst:39
+msgid "Triplet (t)"
+msgstr ""
+
+#: ../../editing/snapping-grid-options.rst:39
+msgid "Use triplet note (2/3rds of the selected note length)"
+msgstr ""
+
+#: ../../editing/snapping-grid-options.rst:42
+msgid "Dotted (.)"
+msgstr ""
+
+#: ../../editing/snapping-grid-options.rst:42
+msgid "Use dotted note (3/2nds, or 1.5 times the selected note length)"
+msgstr ""
+
+#: ../../editing/snapping-grid-options.rst:45
+#, fuzzy
+msgid "Adaptive"
 msgstr "Grelha adaptável"
 
-#: ../../editing/snapping-grid-options.rst:30
-msgid "Not used at the moment."
-msgstr "Não usado de momento."
+#: ../../editing/snapping-grid-options.rst:45
+msgid "Adapt snapping to the current zoom level"
+msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:31
+#: ../../editing/snapping-grid-options.rst:48
 msgid "Length"
 msgstr "Comprimento"
 
-#: ../../editing/snapping-grid-options.rst:32
-msgid "Note length to snap to."
-msgstr "Comprimento de nota para encaixar."
+#: ../../editing/snapping-grid-options.rst:49
+msgid "The Length section controls the default length of objects."
+msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:33
-msgid "Note Type"
-msgstr "Tipo de nota"
+#: ../../editing/snapping-grid-options.rst:52
+#, fuzzy
+msgid "Link"
+msgstr "Suplemento"
 
-#: ../../editing/snapping-grid-options.rst:34
-msgid "Note type (normal/dotted/triplet)"
-msgstr "Tipo de nota (normal/dotado/triplo)"
+#: ../../editing/snapping-grid-options.rst:53
+msgid "Use the same options as Snap"
+msgstr ""
+
+#: ../../editing/snapping-grid-options.rst:54
+msgid "Last Object"
+msgstr ""
+
+#: ../../editing/snapping-grid-options.rst:55
+msgid "Use the length of the last created object"
+msgstr ""
 
 #: ../../editing/timeline/arranger.rst:8
 msgid "Timeline Arranger"
@@ -8554,6 +8610,44 @@ msgid ""
 "will start clipping."
 msgstr ""
 
+#~ msgid "Show screenshot."
+#~ msgstr "Mostrar captura de ecrã."
+
+#~ msgid "Illustrate."
+#~ msgstr "Ilustrar."
+
+#~ msgid "Add pic showing object selection."
+#~ msgstr "Adicionar foto a mostrar a seleção de objetos."
+
+#~ msgid "This feature is not implemented yet."
+#~ msgstr "Esta funcionalidade ainda não está implementada."
+
+#~ msgid ""
+#~ "These are not operational at the moment and Zrythm will snap by default. "
+#~ "Use Shift to bypass snapping for now."
+#~ msgstr ""
+#~ "Estes não funcionam no momento e a Zrythm irá quebrar por padrão. Use "
+#~ "Shift para contornar encaixar por enquanto."
+
+#~ msgid "Snap and Grid"
+#~ msgstr "Encaixe e grelha"
+
+#~ msgid ""
+#~ "When snapping, Zrythm will follow the settings specified by the snap/grid "
+#~ "widget on each editor."
+#~ msgstr ""
+#~ "Ao encaixar, o Zrythm seguirá as configurações especificadas pelo widget "
+#~ "encaixar/grelha em cada editor."
+
+#~ msgid "Not used at the moment."
+#~ msgstr "Não usado de momento."
+
+#~ msgid "Note Type"
+#~ msgstr "Tipo de nota"
+
+#~ msgid "Note type (normal/dotted/triplet)"
+#~ msgstr "Tipo de nota (normal/dotado/triplo)"
+
 #~ msgid "Showing automation tracks"
 #~ msgstr "Pistas de Automação"
 
@@ -9109,9 +9203,6 @@ msgstr ""
 
 #~ msgid "Undo"
 #~ msgstr "Desfazer"
-
-#~ msgid "Undo options."
-#~ msgstr "Opções de desfazer."
 
 #~ msgid "Maximum undo history stack length. Set to -1 for unlimited."
 #~ msgstr ""

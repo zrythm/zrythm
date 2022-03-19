@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. _edit-tools:
@@ -52,7 +52,10 @@ selection.
 Selected objects will have brighter color than non-selected
 objects.
 
-.. todo:: Add pic showing object selection.
+.. figure:: /_static/img/object-selection.png
+   :align: center
+
+   Selecting objects
 
 Moving Objects
 ++++++++++++++
@@ -95,8 +98,9 @@ resizing it.
 .. _cutting-objects:
 
 Cutting Objects
-~~~~~~~~~~~~~~~
-You can :kbd:`Alt`-click inside objects to break them up.
++++++++++++++++
+You can :kbd:`Alt`-click inside objects to break
+them up.
 
 Edit Tool
 ~~~~~~~~~
@@ -131,12 +135,27 @@ This tool is currently only used for editing
 velocities for MIDI notes. You can click and drag in
 the velocity editor to create velocity ramps.
 
-.. image:: /_static/img/ramp-tool.png
+.. figure:: /_static/img/ramp-tool.png
    :align: center
+
+   Using the ramp tool on velocities
 
 Audition Tool
 ~~~~~~~~~~~~~
-This feature is not implemented yet.
+
+The Audition tool is used to listen to specific
+parts of the song quickly. After enabling the
+audition tool, click anywhere to start playback
+from the position of the cursor and release the
+mouse button to stop.
+
+.. figure:: /_static/img/audition-tool.png
+   :align: center
+
+   Using the audition tool
 
 .. tip:: Where applicable, hold :kbd:`Shift` to
    bypass snapping.
+
+.. tip:: Pressing :kbd:`Escape` will cancel any
+   current action.
