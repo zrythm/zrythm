@@ -256,6 +256,8 @@ audio_region_replace_frames (
   dsp_copy (
     &clip->frames[start_frame * clip->channels],
     frames, num_frames * clip->channels);
+  audio_clip_update_channel_caches (
+    clip, start_frame);
 
   audio_clip_write_to_pool (
     clip, false, F_NOT_BACKUP);
