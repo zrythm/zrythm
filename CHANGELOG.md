@@ -1,6 +1,24 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.1.1.1] - 2022-03-19
+### Added
+- Add Hungarian locale
+
+### Changed
+- User manual: update Getting Started, Interface, Configuration, Projects, Plugins & Files, Tracks chapter
+- Update GTK-related subproject versions
+- Disable scroll-to-focus on arrangers
+- Cleanup plugin state dirs on save
+
+### Fixed
+- Fix applying audio function not updating clip frames
+- Fix MIDI export adding silence between regions
+- Fix non-fatal error when importing empty MIDI files
+
+### Removed
+- Remove message that says Zrythm is in alpha
+
 ## [1.0.0-beta.1.0.1] - 2022-03-16
 ### Added
 - Add MIDI format selector in the export dialog
