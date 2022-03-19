@@ -37,6 +37,7 @@ packages:
   - python-pip
   - rubberband
   - rtaudio
+  - sassc
   - sed
   - sfizz
   - suil
@@ -59,7 +60,6 @@ tasks:
   - setup: |
       sudo pip3 install sphinx-intl sphinx-copybutton furo sphinxcontrib-svg2pdfconverter
       pip3 install --user 'meson' --force-reinstall
-      sudo npm install -g sass
       cd zrythm
       meson build -Dtests=true -Dmanpage=true -Db_coverage=true
   - build: |
