@@ -3416,20 +3416,39 @@ track_get_plugins (
   const Track * const self,
   GPtrArray *         arr)
 {
-  if (!track_type_has_channel (self->type))
-    return 0;
-
-  Plugin * pls[100];
-  int num_pls =
-    channel_get_plugins (self->channel, pls);
-
-  if (arr)
+  int num_pls = 0;
+  if (track_type_has_channel (self->type))
     {
-      for (int i = 0; i < num_pls; i++)
+      Plugin * pls[100];
+      num_pls +=
+        channel_get_plugins (self->channel, pls);
+
+      if (arr)
         {
-          g_ptr_array_add (arr, pls[i]);
+          for (int i = 0; i < num_pls; i++)
+            {
+              g_ptr_array_add (arr, pls[i]);
+            }
         }
     }
+
+  if (self->type == TRACK_TYPE_MODULATOR)
+    {
+      for (int i = 0; i < self->num_modulators;
+           i++)
+        {
+          Plugin * pl = self->modulators[i];
+          if (pl)
+            {
+              num_pls++;
+              if (arr)
+                {
+                  g_ptr_array_add (arr, pl);
+                }
+            }
+        }
+    }
+
   return num_pls;
 }
 
@@ -3438,18 +3457,13 @@ track_activate_all_plugins (
   Track * track,
   bool    activate)
 {
-  if (!track_type_has_channel (track->type))
-    return;
-
-  Channel * ch = track_get_channel (track);
-  g_return_if_fail (ch);
-
-  Plugin * pls[120];
-  int num_pls = channel_get_plugins (ch, pls);
+  GPtrArray * pls = g_ptr_array_new ();
+  int num_pls = track_get_plugins (track, pls);
 
   for (int i = 0; i < num_pls; i++)
     {
-      Plugin * pl = pls[i];
+      Plugin * pl =
+        (Plugin *) g_ptr_array_index (pls, i);
 
       if (!pl->instantiated &&
           !pl->instantiation_failed)
@@ -3470,6 +3484,8 @@ track_activate_all_plugins (
           plugin_activate (pl, activate);
         }
     }
+
+  g_ptr_array_unref (pls);
 }
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -165,6 +165,17 @@ bool
 undo_manager_contains_clip (
   UndoManager * self,
   AudioClip *   clip);
+
+/**
+ * Returns all plugins in the undo stacks.
+ *
+ * Used when cleaning up state dirs.
+ */
+NONNULL
+void
+undo_manager_get_plugins (
+  UndoManager * self,
+  GPtrArray *   arr);
 
 /**
  * Returns the last performed action, or NULL if

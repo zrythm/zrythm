@@ -396,7 +396,7 @@ mixer_selections_contains_uninstantiated_plugin (
 {
   GPtrArray * arr = g_ptr_array_new ();
 
-  mixer_selections_get_plugins (self, arr);
+  mixer_selections_get_plugins (self, arr, false);
 
   bool ret = false;
   for (size_t i = 0; i < arr->len; i++)
@@ -459,46 +459,61 @@ mixer_selections_get_first_plugin (
 int
 mixer_selections_get_plugins (
   const MixerSelections * const self,
-  GPtrArray *                   arr)
+  GPtrArray *                   arr,
+  bool                          from_cache)
 {
   if (!self->has_any)
     return 0;
 
-  Track * track =
-    mixer_selections_get_track (self);
-  g_return_val_if_fail (
-    IS_TRACK_AND_NONNULL (track), false);
-
-  for (int i = 0; i < self->num_slots; i++)
+  if (from_cache)
     {
-      Plugin * pl = NULL;
-      switch (self->type)
+      for (int i = 0; i < self->num_slots; i++)
         {
-        case PLUGIN_SLOT_INSTRUMENT:
-          pl = track->channel->instrument;
-          break;
-        case PLUGIN_SLOT_INSERT:
-          pl =
-            track->channel->inserts[
-              self->slots[i]];
-          break;
-        case PLUGIN_SLOT_MIDI_FX:
-          pl =
-            track->channel->midi_fx[
-              self->slots[i]];
-          break;
-        case PLUGIN_SLOT_MODULATOR:
-          pl = track->modulators[self->slots[i]];
-          break;
-        default:
-          g_return_val_if_reached (false);
-          break;
+          Plugin * pl = self->plugins[i];
+          if (pl)
+            {
+              g_ptr_array_add (arr, pl);
+            }
         }
-
+    }
+  else
+    {
+      Track * track =
+        mixer_selections_get_track (self);
       g_return_val_if_fail (
-        IS_PLUGIN_AND_NONNULL (pl), 0);
+        IS_TRACK_AND_NONNULL (track), false);
 
-      g_ptr_array_add (arr, pl);
+      for (int i = 0; i < self->num_slots; i++)
+        {
+          Plugin * pl = NULL;
+          switch (self->type)
+            {
+            case PLUGIN_SLOT_INSTRUMENT:
+              pl = track->channel->instrument;
+              break;
+            case PLUGIN_SLOT_INSERT:
+              pl =
+                track->channel->inserts[
+                  self->slots[i]];
+              break;
+            case PLUGIN_SLOT_MIDI_FX:
+              pl =
+                track->channel->midi_fx[
+                  self->slots[i]];
+              break;
+            case PLUGIN_SLOT_MODULATOR:
+              pl = track->modulators[self->slots[i]];
+              break;
+            default:
+              g_return_val_if_reached (false);
+              break;
+            }
+
+          g_return_val_if_fail (
+            IS_PLUGIN_AND_NONNULL (pl), 0);
+
+          g_ptr_array_add (arr, pl);
+        }
     }
 
   return self->num_slots;

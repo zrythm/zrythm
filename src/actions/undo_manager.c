@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -371,6 +371,21 @@ undo_manager_contains_clip (
   g_debug ("%s: %d", __func__, ret);
 
   return ret;
+}
+
+/**
+ * Returns all plugins in the undo stacks.
+ *
+ * Used when cleaning up state dirs.
+ */
+NONNULL
+void
+undo_manager_get_plugins (
+  UndoManager * self,
+  GPtrArray *   arr)
+{
+  undo_stack_get_plugins (self->undo_stack, arr);
+  undo_stack_get_plugins (self->redo_stack, arr);
 }
 
 /**

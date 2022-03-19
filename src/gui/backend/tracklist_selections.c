@@ -667,6 +667,18 @@ tracklist_selections_sort (
     asc ? sort_tracks_func : sort_tracks_func_desc);
 }
 
+void
+tracklist_selections_get_plugins (
+  TracklistSelections * self,
+  GPtrArray *           arr)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+      track_get_plugins (track, arr);
+    }
+}
+
 /**
  * Toggle visibility of the selected tracks.
  */

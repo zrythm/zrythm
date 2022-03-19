@@ -192,6 +192,12 @@ undoable_action_contains_clip (
   UndoableAction * self,
   AudioClip *      clip);
 
+NONNULL
+void
+undoable_action_get_plugins (
+  UndoableAction * self,
+  GPtrArray *      arr);
+
 /**
  * Sets the number of actions for this action.
  *

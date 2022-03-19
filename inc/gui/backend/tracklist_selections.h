@@ -318,6 +318,12 @@ tracklist_selections_sort (
   TracklistSelections * self,
   bool                  asc);
 
+NONNULL
+void
+tracklist_selections_get_plugins (
+  TracklistSelections * self,
+  GPtrArray *           arr);
+
 /**
  * Marks the tracks to be bounced.
  *

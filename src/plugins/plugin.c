@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "actions/undo_manager.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/control_port.h"
@@ -2308,6 +2309,29 @@ plugin_ensure_state_dir (
   g_free (parent_dir);
   g_free (tmp);
   g_free (abs_state_dir);
+}
+
+/**
+ * Returns all plugins in the current project.
+ */
+void
+plugin_get_all (
+  Project *   prj,
+  GPtrArray * arr,
+  bool        check_undo_manager)
+{
+  for (int i = 0;
+       i < prj->tracklist->num_tracks; i++)
+    {
+      Track * track = prj->tracklist->tracks[i];
+      track_get_plugins (track, arr);
+    }
+
+  if (check_undo_manager)
+    {
+      undo_manager_get_plugins (
+        prj->undo_manager, arr);
+    }
 }
 
 /**

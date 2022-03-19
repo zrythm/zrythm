@@ -38,6 +38,7 @@
 /* pulled in from X11 */
 #undef Bool
 
+typedef struct Project Project;
 typedef struct Channel Channel;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct _ModulatorWidget ModulatorWidget;
@@ -631,6 +632,16 @@ void
 plugin_ensure_state_dir (
   Plugin * self,
   bool     is_backup);
+
+/**
+ * Returns all plugins in the current project.
+ */
+NONNULL
+void
+plugin_get_all (
+  Project *   prj,
+  GPtrArray * arr,
+  bool        check_undo_manager);
 
 NONNULL
 Channel *

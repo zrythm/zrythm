@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -442,6 +442,24 @@ undo_stack_contains_action (
     }
 
   return false;
+}
+
+/**
+ * Returns the plugins referred to in the undo stack.
+ */
+void
+undo_stack_get_plugins (
+  UndoStack * self,
+  GPtrArray * arr)
+{
+  for (int i = 0; i <= self->stack->top; i++)
+    {
+      UndoableAction * ua =
+        (UndoableAction *)
+        self->stack->elements[i];
+
+      undoable_action_get_plugins (ua, arr);
+    }
 }
 
 /**

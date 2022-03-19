@@ -1771,11 +1771,11 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/mixer_selections_action/"
 
   g_test_add_func (
-    TEST_PREFIX "test create plugins",
-    (GTestFunc) test_create_plugins);
-  g_test_add_func (
     TEST_PREFIX "test save modulators",
     (GTestFunc) test_save_modulators);
+  g_test_add_func (
+    TEST_PREFIX "test create plugins",
+    (GTestFunc) test_create_plugins);
 #if 0
   /* needs to know if port is sidechain, not
    * implemented in carla yet */

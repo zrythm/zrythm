@@ -1694,6 +1694,92 @@ project_idle_saved_cb (
 }
 
 /**
+ * Cleans up unnecessary plugin state dirs from the
+ * main project.
+ */
+static void
+cleanup_plugin_state_dirs (
+  ProjectSaveData * data)
+{
+  g_debug ("cleaning plugin state dirs...");
+
+  GPtrArray * arr = g_ptr_array_new ();
+  plugin_get_all (
+    /* if saving backup, the temporary state dirs
+     * created during clone() are not needed by
+     * the main project so we just check what is
+     * needed from the main project and delete the
+     * rest.
+     * if saving the main project, the newly copied
+     * state dirs are used instead of the old ones,
+     * so we check the cloned project and delete
+     * the rest */
+    data->is_backup ? PROJECT : data->project,
+    arr, true);
+
+  char * plugin_states_path =
+    project_get_path (
+      PROJECT, PROJECT_PATH_PLUGIN_STATES,
+      F_NOT_BACKUP);
+
+  /* get existing plugin state dirs */
+  GDir * dir;
+  GError * error = NULL;
+  dir = g_dir_open (
+    plugin_states_path, 0, &error);
+  g_return_if_fail (error == NULL);
+  const char * filename;
+  while ((filename = g_dir_read_name (dir)))
+    {
+      char * full_path =
+        g_build_filename (
+          plugin_states_path, filename, NULL);
+
+      /* skip non-dirs */
+      if (!g_file_test (
+             full_path, G_FILE_TEST_IS_DIR))
+        {
+          g_free (full_path);
+          continue;
+        }
+
+      /* if not found in the current plugins,
+       * remove the dir */
+      bool found = false;
+      for (size_t i = 0; i < arr->len; i++)
+        {
+          Plugin * pl =
+            (Plugin *) g_ptr_array_index (arr, i);
+
+          if (string_is_equal (
+                filename, pl->state_dir))
+            {
+              found = true;
+              break;
+            }
+        }
+
+      if (!found)
+        {
+          g_message (
+            "removing unused plugin state in %s",
+            full_path);
+          /*G_BREAKPOINT ();*/
+          io_rmdir (full_path, Z_F_FORCE);
+        }
+
+      g_free (full_path);
+    }
+  g_dir_close (dir);
+
+  g_ptr_array_unref (arr);
+
+  g_free (plugin_states_path);
+
+  g_debug ("cleaned plugin state dirs");
+}
+
+/**
  * Saves the project to a project file in the
  * given dir.
  *
@@ -1956,6 +2042,7 @@ project_save (
   /* TODO cleanup unused plugin states (or do it
    * when executing mixer/tracklist selection
    * actions) */
+  cleanup_plugin_state_dirs (data);
 
   if (async)
     {

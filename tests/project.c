@@ -234,12 +234,6 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/project/"
 
   g_test_add_func (
-    TEST_PREFIX "test save backup w pool and plugins",
-    (GTestFunc) test_save_backup_w_pool_and_plugins);
-  g_test_add_func (
-    TEST_PREFIX "test save as load w pool",
-    (GTestFunc) test_save_as_load_w_pool);
-  g_test_add_func (
     TEST_PREFIX "test new from template",
     (GTestFunc) test_new_from_template);
   g_test_add_func (
@@ -248,6 +242,12 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test save load with data",
     (GTestFunc) test_save_load_with_data);
+  g_test_add_func (
+    TEST_PREFIX "test save backup w pool and plugins",
+    (GTestFunc) test_save_backup_w_pool_and_plugins);
+  g_test_add_func (
+    TEST_PREFIX "test save as load w pool",
+    (GTestFunc) test_save_as_load_w_pool);
 
   return g_test_run ();
 }

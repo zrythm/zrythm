@@ -492,6 +492,55 @@ undoable_action_contains_clip (
   return ret;
 }
 
+void
+undoable_action_get_plugins (
+  UndoableAction * self,
+  GPtrArray *      arr)
+{
+  switch (self->type)
+    {
+    case UA_TRACKLIST_SELECTIONS:
+      {
+        TracklistSelectionsAction * action =
+          (TracklistSelectionsAction *) self;
+        if (action->tls_before)
+          {
+            tracklist_selections_get_plugins (
+              action->tls_before, arr);
+          }
+        if (action->tls_after)
+          {
+            tracklist_selections_get_plugins (
+              action->tls_after, arr);
+          }
+        if (action->foldable_tls_before)
+          {
+            tracklist_selections_get_plugins (
+              action->foldable_tls_before, arr);
+          }
+      }
+      break;
+    case UA_MIXER_SELECTIONS:
+      {
+        MixerSelectionsAction * action =
+          (MixerSelectionsAction *) self;
+        if (action->ms_before)
+          {
+            mixer_selections_get_plugins (
+              action->ms_before, arr, true);
+          }
+        if (action->deleted_ms)
+          {
+            mixer_selections_get_plugins (
+              action->deleted_ms, arr, true);
+          }
+      }
+      break;
+    default:
+      break;
+    }
+}
+
 /**
  * Sets the number of actions for this action.
  *

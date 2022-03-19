@@ -288,7 +288,8 @@ static const cyaml_schema_field_t
   YAML_FIELD_INT (
     TracklistSelectionsAction, have_pos),
   YAML_FIELD_MAPPING_EMBEDDED (
-    TracklistSelectionsAction, pos, position_fields_schema),
+    TracklistSelectionsAction, pos,
+    position_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
     "tracks_before", CYAML_FLAG_DEFAULT,
     TracklistSelectionsAction, tracks_before,

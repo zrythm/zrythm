@@ -262,7 +262,8 @@ mixer_selections_get_first_plugin (
 int
 mixer_selections_get_plugins (
   const MixerSelections * const self,
-  GPtrArray *                   arr);
+  GPtrArray *                   arr,
+  bool                          from_cache);
 
 NONNULL
 bool
