@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -48,9 +48,14 @@ G_DEFINE_TYPE (
 
 static void
 on_hadj_value_changed (
-  GtkAdjustment *adjustment,
-  gpointer       user_data)
+  GtkAdjustment * adj,
+  gpointer        user_data)
 {
+#if 0
+  g_debug (
+    "horizontal adjustment value changed to %f",
+    gtk_adjustment_get_value (adj));
+#endif
   EVENTS_PUSH (
     ET_RULER_VIEWPORT_CHANGED, MW_RULER);
 }
@@ -236,4 +241,6 @@ timeline_panel_widget_class_init (
   BIND_CHILD (timeline_toolbar);
   BIND_CHILD (timelines_plus_ruler);
   BIND_CHILD (bot_box);
+
+#undef BIND_CHILD
 }

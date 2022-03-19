@@ -1,4 +1,4 @@
-/* * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+/* * Copyright (C) 2019, 2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -195,22 +195,20 @@ two_col_expander_box_widget_init (
   prv->scroll =
     GTK_SCROLLED_WINDOW (
       gtk_scrolled_window_new ());
-  gtk_widget_set_visible (
-    GTK_WIDGET (prv->scroll), true);
   gtk_scrolled_window_set_policy (
-    prv->scroll,
-    GTK_POLICY_NEVER,
-    GTK_POLICY_NEVER);
+    prv->scroll, GTK_POLICY_NEVER, GTK_POLICY_NEVER);
   prv->content =
     GTK_BOX (
       gtk_box_new (
         GTK_ORIENTATION_VERTICAL,
         prv->vertical_spacing));
-  gtk_widget_set_visible (
-    GTK_WIDGET (prv->content), 1);
+  GtkViewport * viewport =
+    GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
+  gtk_viewport_set_scroll_to_focus (viewport, false);
+  gtk_viewport_set_child (
+    viewport, GTK_WIDGET (prv->content));
   gtk_scrolled_window_set_child (
-    prv->scroll,
-    GTK_WIDGET (prv->content));
+    prv->scroll, GTK_WIDGET (viewport));
 
   ExpanderBoxWidgetPrivate * prv_exp_box =
     expander_box_widget_get_private (

@@ -176,6 +176,8 @@ channel_sends_expander_widget_init (
   self->viewport =
     GTK_VIEWPORT (
       gtk_viewport_new (NULL, NULL));
+  gtk_viewport_set_scroll_to_focus (
+    self->viewport, false);
   gtk_widget_set_name (
     GTK_WIDGET (self->viewport),
     "channel-sends-expander-viewport");

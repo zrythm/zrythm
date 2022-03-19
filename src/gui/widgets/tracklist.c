@@ -563,9 +563,14 @@ tracklist_widget_init (TracklistWidget * self)
   gtk_box_append (
     GTK_BOX (self),
     GTK_WIDGET (self->unpinned_scroll));
+  GtkViewport * viewport =
+    GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
+  gtk_viewport_set_child (
+    viewport, GTK_WIDGET (self->unpinned_box));
+  gtk_viewport_set_scroll_to_focus (viewport, false);
   gtk_scrolled_window_set_child (
     GTK_SCROLLED_WINDOW (self->unpinned_scroll),
-    GTK_WIDGET (self->unpinned_box));
+    GTK_WIDGET (viewport));
 
   /* create the drag dest box and bump its reference
    * so it doesn't get deleted. */

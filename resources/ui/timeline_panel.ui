@@ -41,6 +41,7 @@
                 <property name="child">
                   <object class="GtkViewport" id="ruler_viewport">
                     <property name="hexpand">1</property>
+                    <property name="scroll-to-focus">0</property>
                     <child>
                       <object class="RulerWidget" id="ruler">
                       </object>
@@ -63,6 +64,7 @@
                         <property name="hexpand">1</property>
                         <property name="hscroll-policy">natural</property>
                         <property name="vscroll-policy">natural</property>
+                        <property name="scroll-to-focus">0</property>
                         <child>
                           <object class="ArrangerWidget" id="pinned_timeline">
                           </object>
@@ -82,6 +84,7 @@
                         <property name="hexpand">1</property>
                         <property name="hscroll-policy">natural</property>
                         <property name="vscroll-policy">natural</property>
+                        <property name="scroll-to-focus">0</property>
                         <child>
                           <object class="ArrangerWidget" id="timeline">
                             <property name="visible">1</property>

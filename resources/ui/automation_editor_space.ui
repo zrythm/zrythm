@@ -28,6 +28,7 @@
                     <property name="overlay-scrolling">0</property>
                     <property name="child">
                       <object class="GtkViewport" id="arranger_viewport">
+                        <property name="scroll-to-focus">0</property>
                         <child>
                           <object class="ArrangerWidget" id="arranger">
                             <property name="visible">1</property>

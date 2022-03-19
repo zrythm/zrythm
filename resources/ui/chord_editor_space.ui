@@ -23,6 +23,7 @@
                     <property name="vscrollbar_policy">external</property>
                     <property name="child">
                       <object class="GtkViewport" id="chord_keys_viewport">
+                        <property name="scroll-to-focus">0</property>
                         <property name="child">
                           <object class="GtkBox" id="chord_keys_box">
                             <property name="orientation">vertical</property>
@@ -58,6 +59,7 @@
                     <property name="overlay-scrolling">0</property>
                     <property name="child">
                       <object class="GtkViewport" id="arranger_viewport">
+                        <property name="scroll-to-focus">0</property>
                         <child>
                           <object class="ArrangerWidget" id="arranger">
                           </object>

@@ -2915,6 +2915,8 @@ drag_begin (
     TL_SELECTIONS->num_scale_objects == 0 &&
     TL_SELECTIONS->num_markers == 0;
 
+  /* this might cause issues with scrolling,
+   * describe why it is needed */
   if (!gtk_widget_has_focus (GTK_WIDGET (self)))
     gtk_widget_grab_focus (GTK_WIDGET (self));
 

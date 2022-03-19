@@ -21,7 +21,12 @@
                     <property name="hscrollbar_policy">never</property>
                     <property name="vscrollbar_policy">external</property>
                     <property name="child">
-                      <object class="PianoRollKeysWidget" id="piano_roll_keys">
+                      <object class="GtkViewport">
+                        <property name="scroll-to-focus">0</property>
+                        <child>
+                          <object class="PianoRollKeysWidget" id="piano_roll_keys">
+                          </object>
+                        </child>
                       </object>
                     </property>
                   </object>
@@ -47,7 +52,12 @@
                         <property name="vscrollbar_policy">external</property>
                         <property name="overlay-scrolling">0</property>
                         <property name="child">
-                          <object class="ArrangerWidget" id="arranger">
+                          <object class="GtkViewport">
+                            <property name="scroll-to-focus">0</property>
+                            <child>
+                              <object class="ArrangerWidget" id="arranger">
+                              </object>
+                            </child>
                           </object>
                         </property>
                       </object>
@@ -94,7 +104,12 @@
                 <property name="hscrollbar_policy">external</property>
                 <property name="vscrollbar_policy">never</property>
                 <property name="child">
-                  <object class="ArrangerWidget" id="modifier_arranger">
+                  <object class="GtkViewport">
+                    <property name="scroll-to-focus">0</property>
+                    <child>
+                      <object class="ArrangerWidget" id="modifier_arranger">
+                      </object>
+                    </child>
                   </object>
                 </property>
               </object>
