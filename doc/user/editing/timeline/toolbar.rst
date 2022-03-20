@@ -8,29 +8,23 @@ Toolbar
 The timeline has its own toolbar for
 timeline-specific operations.
 
-.. todo:: Update this section.
-
-.. image:: /_static/img/timeline-toolbar.png
+.. figure:: /_static/img/timeline-toolbar.png
    :align: center
 
-It contains a snap section, a quantize section, and
-an audio region section. For details about snapping
-and quantization, see the previous pages.
+   Timeline toolbar
 
-Zoom Section
-------------
+It includes the following sections:
 
-Zoom In
-  Zooms in.
-Zoom Out
-  Zooms out.
-Original Size
-  Zooms back to the default zoom level.
-Best Fit
-  Zooms in or out as much as required to show all of
-  the events in the timeline.
+* :ref:`Snapping options <editing/snapping-grid-options:Snapping and Grid Options>`
+* :ref:`Quantization options <editing/quantization:Quantization>`
+* Audio region options
+* Range actions
+* :ref:`Playhead tracking options <editing/common-operations:Playhead Tracking>`
+* Object merge options
+* :ref:`Zoom options <editing/common-operations:Zooming>`
+* :ref:`Event viewer options <editing/event-viewers:Event Viewers>`
 
-Audio Region Section
+Audio Region Options
 --------------------
 
 Musical Mode
@@ -40,3 +34,23 @@ time-stretched to match the new BPM, each time the BPM
 changes. If this is off, changing the BPM will cause
 audio regions to be repeated accordingly to match the
 new BPM without being time-stretched.
+
+Range Actions
+-------------
+
+Range actions are performed on the selected
+:term:`Range`.
+
+Insert Silence
+  Inserts silence at the selected range and pushes
+  all events in the range forward
+Remove Range
+  Deletes all events in the range and moves events
+  after the range backwards
+
+Object Merging
+--------------
+
+Merge Selections
+  Merge the selected objects into a single object,
+  if possible

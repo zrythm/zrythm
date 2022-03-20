@@ -1,6 +1,5 @@
 copy_files = [
   'arranger.rst',
-  'event-viewer.rst',
   'intro.rst',
   'overview.rst',
   'ruler.rst',

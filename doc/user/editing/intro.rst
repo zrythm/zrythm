@@ -15,5 +15,6 @@ Editing
    common-operations
    snapping-grid-options
    quantization
+   event-viewers
    timeline/intro
    clip-editors/intro

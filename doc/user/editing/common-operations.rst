@@ -7,9 +7,7 @@
 Common Operations
 =================
 
-These operations are common to most editors, and behave
-similarly to what you should be used to from other
-applications.
+These operations are common to most editors.
 
 Undo/Redo
 ---------
@@ -96,3 +94,51 @@ Loop Selection
 ~~~~~~~~~~~~~~
 Place the loop markers around the selection
 (:kbd:`Control-l`).
+
+Zooming
+-------
+
+The timeline arranger and each arranger in the editor
+include zooming functionality that can also be
+accessed from their corresponding toolbars.
+
+.. figure:: /_static/img/zoom-buttons.png
+   :align: center
+
+   Zoom buttons
+
+Zoom In
+  Zoom in at the location of the playhead
+Zoom Out
+  Zoom out
+Original Size
+  Zoom back to the default zoom level
+Best Fit
+  Zoom in or out as much as required to show all of
+  the events in the arranger
+
+Zooming in/out can also be conveniently performed
+by moving the cursor to the desired location and
+holding down :kbd:`Control` while scrolling up with
+the mouse wheel to zoom in or scrolling down to
+zoom out.
+
+Playhead Tracking
+-----------------
+
+Zrythm includes functionality for forcing the
+playhead to remain inside the visibile area during
+playback.
+
+.. figure:: /_static/img/playhead-tracking.png
+   :align: center
+
+   Toggles for controlling playhead tracking, found
+   in each arranger toolbar
+
+Scroll when Playhead Reaches Edge
+  Automatically  scroll the visible area when the
+  playhead moves outside it
+Follow Playhead
+  Keep the visible area centered at the position
+  of the playhead

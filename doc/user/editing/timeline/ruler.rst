@@ -27,14 +27,23 @@ Loop points
   shown in bright green if loop is enabled, or grey if
   disabled. Can be dragged to reposition.
 
-Clicking and dragging on empty space in the ruler
-(other than the top part, which is used for
-selecting ranges - see :term:`Range`) will allow
+Clicking and dragging on empty space in the
+bottom half of the ruler will allow
 you to reposition the playhead.
-
-.. tip:: Hold :guilabel:`Shift` to temporarily disable snapping
 
 Setting the Cue Point
 ---------------------
 Double click inside the ruler to set the cue point. This
 will be used to return to when playback is stopped.
+
+Range Selection
+---------------
+Clicking and dragging in the top half of the ruler
+will create a :term:`range <Range>` selection. If
+an existing range exists, you can click an drag it
+to move it.
+
+.. figure:: /_static/img/ranges.png
+   :align: center
+
+   Range selection

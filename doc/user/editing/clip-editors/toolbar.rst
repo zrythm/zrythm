@@ -6,55 +6,59 @@
 
 Editor Toolbar
 ==============
-The editor toolbar contains controls and buttons for actions
-specific to the current editor.
+The editor toolbar contains controls and buttons for
+actions specific to the current editor.
 
-.. todo:: Update this section/pic.
-
-.. image:: /_static/img/editor-toolbar.png
+.. figure:: /_static/img/editor-toolbar.png
    :align: center
 
-Common Controls
+   Piano roll toolbar
+
+Common sections
 ---------------
 
-Zoom Controls
-~~~~~~~~~~~~~
+All editor toolbars include the following sections.
 
-Zoom In
-  Zooms in.
-Zoom Out
-  Zooms out.
-Original Size
-  Zooms back to the default zoom level.
-Best Fit
-  Zooms in or out as much as required to show all of
-  the events in the timeline.
+* :ref:`Snapping options <editing/snapping-grid-options:Snapping and Grid Options>`
+* :ref:`Quantization options <editing/quantization:Quantization>`
+* :ref:`Playhead tracking options <editing/common-operations:Playhead Tracking>`
+* :ref:`Zoom options <editing/common-operations:Zooming>`
+* :ref:`Event viewer options <editing/event-viewers:Event Viewers>`
 
 Piano Roll
 ----------
-The piano roll toolbar consists of the following controls.
 
-Grid/snap settings
-~~~~~~~~~~~~~~~~~~
-Snapping and grid options are covered in
-:ref:`snapping-grid-options`.
+The piano roll toolbar includes the following
+additional sections.
 
-Highlight
-~~~~~~~~~
-Chord highlighting is covered in :ref:`chords-scales`.
+* :ref:`Chord highlighting options <chords-and-scales/overview:Highlighting>`
+* MIDI functions (TODO: link to reference)
+* Default velocity options
 
-Quantize options
+Default Velocity
 ~~~~~~~~~~~~~~~~
-Quantize options are covered in :ref:`quantization`.
+
+This is the velocity that will be used when creating
+new MIDI notes.
 
 Automation Editor
 -----------------
-No controls at the moment.
+
+The automation editor toolbar includes the following
+additional sections.
+
+* Automation functions (TODO: link to reference)
 
 Audio Editor
 ------------
-No controls at the moment.
+
+The audio editor toolbar includes the following
+additional sections.
+
+* Audio functions (TODO: link to reference)
 
 Chord Editor
 ------------
-No controls at the moment.
+
+The chord editor toolbar includes no
+additional sections.

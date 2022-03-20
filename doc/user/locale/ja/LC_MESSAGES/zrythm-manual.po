@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-19 23:41+0000\n"
+"POT-Creation-Date: 2022-03-20 12:07+0000\n"
 "PO-Revision-Date: 2022-02-19 21:56+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -290,16 +290,7 @@ msgstr "トラブルシューティング"
 #: ../../editing/clip-editors/ruler.rst:29
 #: ../../editing/clip-editors/ruler.rst:36
 #: ../../editing/clip-editors/ruler.rst:44
-#: ../../editing/clip-editors/toolbar.rst:12
-#: ../../editing/timeline/arranger.rst:96
-#: ../../editing/timeline/arranger.rst:100
-#: ../../editing/timeline/arranger.rst:116
-#: ../../editing/timeline/arranger.rst:132
-#: ../../editing/timeline/arranger.rst:165
-#: ../../editing/timeline/arranger.rst:170
-#: ../../editing/timeline/arranger.rst:242
-#: ../../editing/timeline/toolbar.rst:11 ../../exporting/audio-and-midi.rst:38
-#: ../../mixing/overview.rst:62
+#: ../../exporting/audio-and-midi.rst:38 ../../mixing/overview.rst:62
 #: ../../plugins-files/audio-midi-files/file-browser.rst:69
 #: ../../routing/making-connections.rst:30
 #: ../../routing/managing-connections.rst:8
@@ -1044,7 +1035,7 @@ msgstr ""
 "さい。"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
-#: ../../editing/clip-editors/toolbar.rst:55
+#: ../../editing/clip-editors/toolbar.rst:53
 msgid "Audio Editor"
 msgstr "オーディオエディタ"
 
@@ -1072,7 +1063,7 @@ msgstr ""
 "ます。"
 
 #: ../../editing/clip-editors/automation-editor.rst:8
-#: ../../editing/clip-editors/toolbar.rst:51
+#: ../../editing/clip-editors/toolbar.rst:45
 msgid "Automation Editor"
 msgstr "オートメーションエディター"
 
@@ -1157,7 +1148,7 @@ msgid "Elliptical curve."
 msgstr "楕円曲線。"
 
 #: ../../editing/clip-editors/automation-editor.rst:49
-#: ../../editing/timeline/arranger.rst:240
+#: ../../editing/timeline/arranger.rst:276
 msgid "Vital"
 msgstr "Vital"
 
@@ -1186,25 +1177,8 @@ msgstr "コンテキストメニュー"
 msgid "Write this section."
 msgstr "この部分を書くこと。"
 
-#: ../../editing/clip-editors/automation-editor.rst:59
-#: ../../editing/clip-editors/chord-editor.rst:69
-#: ../../editing/clip-editors/piano-roll.rst:118
-#: ../../editing/timeline/event-viewer.rst:8
-msgid "Event Viewer"
-msgstr "イベントビューア"
-
-#: ../../editing/clip-editors/automation-editor.rst:60
-msgid ""
-"The event viewer in the automation editor is similar to the timeline event "
-"viewer discussed in :ref:`timeline-event-viewer`."
-msgstr ""
-
-#: ../../editing/clip-editors/automation-editor.rst:67
-msgid "It displays information about each automation point and its curve."
-msgstr "各オートメーションポイントとその曲線に関する情報が表示されます。"
-
 #: ../../editing/clip-editors/chord-editor.rst:8
-#: ../../editing/clip-editors/toolbar.rst:59
+#: ../../editing/clip-editors/toolbar.rst:61
 msgid "Chord Editor"
 msgstr "コードエディター"
 
@@ -1305,16 +1279,6 @@ msgstr ""
 "コードエディターでの操作は :ref:`edit-tools` と :ref:`common-operations` と共"
 "通です。"
 
-#: ../../editing/clip-editors/chord-editor.rst:70
-msgid ""
-"The event viewer in the chord editor is similar to the timeline event viewer "
-"discussed in :ref:`timeline-event-viewer`."
-msgstr ""
-
-#: ../../editing/clip-editors/chord-editor.rst:77
-msgid "It displays information about each chord object."
-msgstr "各コードオブジェクトに関する情報が表示されます。"
-
 #: ../../editing/clip-editors/intro.rst:8
 msgid "Editors"
 msgstr "エディター"
@@ -1328,7 +1292,7 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:8
-#: ../../editing/clip-editors/toolbar.rst:34
+#: ../../editing/clip-editors/toolbar.rst:29
 msgid "Piano Roll"
 msgstr "ピアノロール"
 
@@ -1491,18 +1455,6 @@ msgstr ""
 ":ref:`ramp-mode` は、ベロシティエディターでベロシティを `ランプ` するために使"
 "用することもできます。"
 
-#: ../../editing/clip-editors/piano-roll.rst:119
-msgid ""
-"The event viewer in the piano roll is similar to the timeline event viewer "
-"discussed in :ref:`timeline-event-viewer`."
-msgstr ""
-"ピアノロールのイベントビューアは :ref:`timeline-event-viewer` で説明したタイ"
-"ムラインイベントビューアに似ています。"
-
-#: ../../editing/clip-editors/piano-roll.rst:126
-msgid "It displays information about each MIDI note in the MIDI arranger."
-msgstr "MIDI アレンジャーの各 MIDI ノートに関する情報を表示します。"
-
 #: ../../editing/clip-editors/ruler.rst:8
 msgid "Editor Ruler"
 msgstr "エディタールーラー"
@@ -1524,7 +1476,7 @@ msgstr ""
 "以下のマーカーとインジケータも表示されます。"
 
 #: ../../editing/clip-editors/ruler.rst:21
-#: ../../editing/timeline/arranger.rst:106 ../../tracks/track-types.rst:54
+#: ../../editing/timeline/arranger.rst:126 ../../tracks/track-types.rst:54
 msgid "Markers"
 msgstr "マーカー"
 
@@ -1542,11 +1494,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:29
 #: ../../editing/clip-editors/ruler.rst:36
-#: ../../editing/clip-editors/ruler.rst:44
-#: ../../editing/timeline/arranger.rst:96
-#: ../../editing/timeline/arranger.rst:100
-#: ../../editing/timeline/arranger.rst:116
-#: ../../editing/timeline/arranger.rst:132 ../../mixing/overview.rst:62
+#: ../../editing/clip-editors/ruler.rst:44 ../../mixing/overview.rst:62
 msgid "Add pic."
 msgstr "スクショを追加。"
 
@@ -1610,125 +1558,119 @@ msgstr ""
 "エディターのツールバーには、現在のエディターに固有のアクションのコントロール"
 "とボタンが含まれています。"
 
-#: ../../editing/clip-editors/toolbar.rst:12
-msgid "Update this section/pic."
-msgstr "このセクション/スクショを更新。"
+#: ../../editing/clip-editors/toolbar.rst:15
+#, fuzzy
+msgid "Piano roll toolbar"
+msgstr "メインツールバー"
 
 #: ../../editing/clip-editors/toolbar.rst:18
 #, fuzzy
-msgid "Common Controls"
-msgstr "コントロール"
+msgid "Common sections"
+msgstr "共通操作"
 
-#: ../../editing/clip-editors/toolbar.rst:21
+#: ../../editing/clip-editors/toolbar.rst:20
 #, fuzzy
-msgid "Zoom Controls"
-msgstr "コントロール"
+msgid "All editor toolbars include the following sections."
+msgstr "メイン ツールバーには、次のウィジェットも含まれています。"
+
+#: ../../editing/clip-editors/toolbar.rst:22
+#: ../../editing/timeline/toolbar.rst:18
+msgid ""
+":ref:`Snapping options <editing/snapping-grid-options:Snapping and Grid "
+"Options>`"
+msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:23
-#: ../../editing/timeline/toolbar.rst:23
-msgid "Zoom In"
-msgstr "ズーム イン"
+#: ../../editing/timeline/toolbar.rst:19
+msgid ":ref:`Quantization options <editing/quantization:Quantization>`"
+msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:24
-#: ../../editing/timeline/toolbar.rst:24
-msgid "Zooms in."
-msgstr "拡大する。"
+#: ../../editing/timeline/toolbar.rst:22
+msgid ""
+":ref:`Playhead tracking options <editing/common-operations:Playhead "
+"Tracking>`"
+msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:25
-#: ../../editing/timeline/toolbar.rst:25
-msgid "Zoom Out"
-msgstr "ズームアウト"
+#: ../../editing/timeline/toolbar.rst:24
+msgid ":ref:`Zoom options <editing/common-operations:Zooming>`"
+msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:26
-#: ../../editing/timeline/toolbar.rst:26
-msgid "Zooms out."
-msgstr "縮小する。"
-
-#: ../../editing/clip-editors/toolbar.rst:27
-#: ../../editing/timeline/toolbar.rst:27
-msgid "Original Size"
-msgstr "オリジナル サイズ"
-
-#: ../../editing/clip-editors/toolbar.rst:28
-#: ../../editing/timeline/toolbar.rst:28
-msgid "Zooms back to the default zoom level."
-msgstr "デフォルトのズームレベルに戻ります。"
+#: ../../editing/timeline/toolbar.rst:25
+msgid ":ref:`Event viewer options <editing/event-viewers:Event Viewers>`"
+msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:31
-#: ../../editing/timeline/toolbar.rst:31
-msgid "Best Fit"
-msgstr "ベストフィット"
+#, fuzzy
+msgid "The piano roll toolbar includes the following additional sections."
+msgstr "ピアノロールには、以下の追加コントロールが含まれています。"
 
-#: ../../editing/clip-editors/toolbar.rst:30
-#: ../../editing/timeline/toolbar.rst:30
+#: ../../editing/clip-editors/toolbar.rst:34
 msgid ""
-"Zooms in or out as much as required to show all of the events in the "
-"timeline."
+":ref:`Chord highlighting options <chords-and-scales/overview:Highlighting>`"
 msgstr ""
-"タイムライン内のすべてのイベントを表示するために必要なだけズームインまたは"
-"ズームアウトします。"
 
 #: ../../editing/clip-editors/toolbar.rst:35
-msgid "The piano roll toolbar consists of the following controls."
-msgstr "ピアノロールのツールバーは、次のコントロールで構成されています。"
+msgid "MIDI functions (TODO: link to reference)"
+msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:38
-msgid "Grid/snap settings"
-msgstr "グリッド/スナップ設定"
+#: ../../editing/clip-editors/toolbar.rst:36
+msgid "Default velocity options"
+msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:39
-msgid "Snapping and grid options are covered in :ref:`snapping-grid-options`."
+msgid "Default Velocity"
 msgstr ""
-"スナップとグリッドの設定については、 :ref:`snapping-grid-options` で説明され"
-"ています。"
 
-#: ../../editing/clip-editors/toolbar.rst:43
-msgid "Highlight"
-msgstr "ハイライト"
-
-#: ../../editing/clip-editors/toolbar.rst:44
-msgid "Chord highlighting is covered in :ref:`chords-scales`."
-msgstr "コードの強調表示については :ref:`chords-scales` で説明されています。"
+#: ../../editing/clip-editors/toolbar.rst:41
+msgid "This is the velocity that will be used when creating new MIDI notes."
+msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:47
-msgid "Quantize options"
-msgstr "クオンタイズの設定"
+#, fuzzy
+msgid ""
+"The automation editor toolbar includes the following additional sections."
+msgstr "ピアノロールには、以下の追加コントロールが含まれています。"
 
-#: ../../editing/clip-editors/toolbar.rst:48
-msgid "Quantize options are covered in :ref:`quantization`."
+#: ../../editing/clip-editors/toolbar.rst:50
+msgid "Automation functions (TODO: link to reference)"
 msgstr ""
-"クオンタイズオプションについては :ref:`quantization` で説明されています。"
 
-#: ../../editing/clip-editors/toolbar.rst:52
-#: ../../editing/clip-editors/toolbar.rst:56
-#: ../../editing/clip-editors/toolbar.rst:60
-msgid "No controls at the moment."
-msgstr "現時点ではコントロールはありません。"
+#: ../../editing/clip-editors/toolbar.rst:55
+#, fuzzy
+msgid "The audio editor toolbar includes the following additional sections."
+msgstr "ピアノロールには、以下の追加コントロールが含まれています。"
+
+#: ../../editing/clip-editors/toolbar.rst:58
+msgid "Audio functions (TODO: link to reference)"
+msgstr ""
+
+#: ../../editing/clip-editors/toolbar.rst:63
+msgid "The chord editor toolbar includes no additional sections."
+msgstr ""
 
 #: ../../editing/common-operations.rst:8
 msgid "Common Operations"
 msgstr "共通操作"
 
 #: ../../editing/common-operations.rst:10
-msgid ""
-"These operations are common to most editors, and behave similarly to what "
-"you should be used to from other applications."
+msgid "These operations are common to most editors."
 msgstr ""
-"これらの操作はほとんどのエディターに共通であり、他のアプリケーションから使用"
-"する操作と同様に動作します。"
 
-#: ../../editing/common-operations.rst:15
+#: ../../editing/common-operations.rst:13
 msgid "Undo/Redo"
 msgstr "元に戻す/やり直す"
 
-#: ../../editing/common-operations.rst:16
+#: ../../editing/common-operations.rst:14
 msgid ""
 "Most actions in Zrythm are undoable, which means that you can go back to the "
 "state before that action was made, or you can come back to a state that you "
 "undo'ed from."
 msgstr "Zrythm のほとんどのアクションは元に戻すことができます。"
 
-#: ../../editing/common-operations.rst:21
+#: ../../editing/common-operations.rst:19
 #, fuzzy
 msgid ""
 "For example, if you create a MIDI note and press undo, the MIDI note will be "
@@ -1742,18 +1684,18 @@ msgstr ""
 "押すと、MIDI ノートが再び作成され、元に戻す操作とやり直しの間に何度でも戻るこ"
 "とができます。"
 
-#: ../../editing/common-operations.rst:29
+#: ../../editing/common-operations.rst:27
 msgid ""
 "It is also possible to go back/forth more than one action, by clicking the "
 "arrow next to the :guilabel:`Undo` and :guilabel:`Redo` buttons."
 msgstr ""
 
-#: ../../editing/common-operations.rst:36
+#: ../../editing/common-operations.rst:34
 #, fuzzy
 msgid "Undoing multiple actions"
 msgstr "プラグインコレクション"
 
-#: ../../editing/common-operations.rst:38
+#: ../../editing/common-operations.rst:36
 msgid ""
 "The shortcuts for undo and redo are :kbd:`Control-z` and :kbd:`Control-Shift-"
 "z`."
@@ -1761,20 +1703,20 @@ msgstr ""
 "元に戻しのショートカットは :kbd:`Control` + :kbd:`Z` で、やり直しのショート"
 "カットは :kbd:`Ctrl` + :kbd:`Shift` + :kbd:`Z` です。"
 
-#: ../../editing/common-operations.rst:41
+#: ../../editing/common-operations.rst:39
 msgid ""
 "If you Undo and then perform a new action, the Redo history will be deleted."
 msgstr "元に戻して新しい操作を実行すると、やり直し履歴は削除されます。"
 
-#: ../../editing/common-operations.rst:45
+#: ../../editing/common-operations.rst:43
 msgid "Object Operations"
 msgstr "オブジェクト操作"
 
-#: ../../editing/common-operations.rst:47
+#: ../../editing/common-operations.rst:45
 msgid "Cut"
 msgstr "切り取り"
 
-#: ../../editing/common-operations.rst:48
+#: ../../editing/common-operations.rst:46
 #, fuzzy
 msgid ""
 "Delete and copy the selected objects and save them in the clipboard so that "
@@ -1784,11 +1726,11 @@ msgstr ""
 "貼り付けられるようにします。カットのショートカットは :zbutton:`Ctrl` + :"
 "zbutton:`X` です。"
 
-#: ../../editing/common-operations.rst:54
+#: ../../editing/common-operations.rst:52
 msgid "Copy"
 msgstr "コピー"
 
-#: ../../editing/common-operations.rst:55
+#: ../../editing/common-operations.rst:53
 #, fuzzy
 msgid ""
 "Copy the selected objects to the clipboard so that they can be pasted "
@@ -1797,11 +1739,11 @@ msgstr ""
 "選択したオブジェクトをクリップボードにコピーして、他の場所に貼り付けることが"
 "できます。コピーのショートカットは :zbutton:`Control` + :zbutton:`C` です。"
 
-#: ../../editing/common-operations.rst:61
+#: ../../editing/common-operations.rst:59
 msgid "Paste"
 msgstr "貼り付け"
 
-#: ../../editing/common-operations.rst:62
+#: ../../editing/common-operations.rst:60
 #, fuzzy
 msgid ""
 "Paste the objects currently in the clipboard to the current playhead "
@@ -1810,11 +1752,11 @@ msgstr ""
 "クリップボードに置かれているオブジェクトを再生ヘッド位置に貼り付けます。貼り"
 "付けのショートカットは次のとおりです。 :zbutton:`Control` + :zbutton:`V`"
 
-#: ../../editing/common-operations.rst:68
+#: ../../editing/common-operations.rst:66
 msgid "Duplicate"
 msgstr "複製"
 
-#: ../../editing/common-operations.rst:69
+#: ../../editing/common-operations.rst:67
 #, fuzzy
 msgid ""
 "Create a copy of the selected objects adjacent to them. The shortcut for "
@@ -1823,47 +1765,141 @@ msgstr ""
 "コピーを作成し、選択したオブジェクトに隣接します。 複製のショートカットは :"
 "zbutton:`Control`+:zbutton:`D` です。"
 
-#: ../../editing/common-operations.rst:76
+#: ../../editing/common-operations.rst:74
 msgid "Duplicating a region"
 msgstr "リージョンの複製"
 
-#: ../../editing/common-operations.rst:79
+#: ../../editing/common-operations.rst:77
 msgid "Delete"
 msgstr "削除"
 
-#: ../../editing/common-operations.rst:80
+#: ../../editing/common-operations.rst:78
 msgid "Delete the selected objects. You can also press :kbd:`Delete`."
 msgstr ""
 "選択したオブジェクトを削除します。 :kbd:`Delete` を押すこともできます。"
 
-#: ../../editing/common-operations.rst:85
+#: ../../editing/common-operations.rst:83
 msgid "Selections"
 msgstr "選択範囲"
 
-#: ../../editing/common-operations.rst:87
+#: ../../editing/common-operations.rst:85
 msgid "Clear Selection"
 msgstr "選択をクリア"
 
-#: ../../editing/common-operations.rst:88
+#: ../../editing/common-operations.rst:86
 msgid "Clear current selection (unselect all objects)."
 msgstr "現在の選択を解除します(すべてのオブジェクトの選択を解除)。"
 
-#: ../../editing/common-operations.rst:91
+#: ../../editing/common-operations.rst:89
 msgid "Select All"
 msgstr "すべてを選択"
 
-#: ../../editing/common-operations.rst:92
+#: ../../editing/common-operations.rst:90
 msgid "Select all objects in the current editor (:kbd:`Control-a`)."
 msgstr ""
 "現在のエディター内のすべてのオブジェクトを選択します (:kbd:`Control-a`)。"
 
-#: ../../editing/common-operations.rst:96
+#: ../../editing/common-operations.rst:94
 msgid "Loop Selection"
 msgstr "ループ選択"
 
-#: ../../editing/common-operations.rst:97
+#: ../../editing/common-operations.rst:95
 msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
 msgstr "ループマーカーを選択範囲の周囲に配置します(:kbd:`Control-l`)。"
+
+#: ../../editing/common-operations.rst:99
+#, fuzzy
+msgid "Zooming"
+msgstr "ループ"
+
+#: ../../editing/common-operations.rst:101
+msgid ""
+"The timeline arranger and each arranger in the editor include zooming "
+"functionality that can also be accessed from their corresponding toolbars."
+msgstr ""
+
+#: ../../editing/common-operations.rst:108
+#, fuzzy
+msgid "Zoom buttons"
+msgstr "下部ボタン"
+
+#: ../../editing/common-operations.rst:110
+msgid "Zoom In"
+msgstr "ズーム イン"
+
+#: ../../editing/common-operations.rst:111
+msgid "Zoom in at the location of the playhead"
+msgstr ""
+
+#: ../../editing/common-operations.rst:112
+msgid "Zoom Out"
+msgstr "ズームアウト"
+
+#: ../../editing/common-operations.rst:113
+#, fuzzy
+msgid "Zoom out"
+msgstr "縮小する。"
+
+#: ../../editing/common-operations.rst:114
+msgid "Original Size"
+msgstr "オリジナル サイズ"
+
+#: ../../editing/common-operations.rst:115
+#, fuzzy
+msgid "Zoom back to the default zoom level"
+msgstr "デフォルトのズームレベルに戻ります。"
+
+#: ../../editing/common-operations.rst:118
+msgid "Best Fit"
+msgstr "ベストフィット"
+
+#: ../../editing/common-operations.rst:117
+#, fuzzy
+msgid ""
+"Zoom in or out as much as required to show all of the events in the arranger"
+msgstr ""
+"タイムライン内のすべてのイベントを表示するために必要なだけズームインまたは"
+"ズームアウトします。"
+
+#: ../../editing/common-operations.rst:120
+msgid ""
+"Zooming in/out can also be conveniently performed by moving the cursor to "
+"the desired location and holding down :kbd:`Control` while scrolling up with "
+"the mouse wheel to zoom in or scrolling down to zoom out."
+msgstr ""
+
+#: ../../editing/common-operations.rst:127
+msgid "Playhead Tracking"
+msgstr ""
+
+#: ../../editing/common-operations.rst:129
+msgid ""
+"Zrythm includes functionality for forcing the playhead to remain inside the "
+"visibile area during playback."
+msgstr ""
+
+#: ../../editing/common-operations.rst:136
+msgid ""
+"Toggles for controlling playhead tracking, found in each arranger toolbar"
+msgstr ""
+
+#: ../../editing/common-operations.rst:140
+msgid "Scroll when Playhead Reaches Edge"
+msgstr ""
+
+#: ../../editing/common-operations.rst:140
+msgid ""
+"Automatically  scroll the visible area when the playhead moves outside it"
+msgstr ""
+
+#: ../../editing/common-operations.rst:143
+#, fuzzy
+msgid "Follow Playhead"
+msgstr "再生ヘッド"
+
+#: ../../editing/common-operations.rst:143
+msgid "Keep the visible area centered at the position of the playhead"
+msgstr ""
 
 #: ../../editing/edit-tools.rst:8
 msgid "Edit Tools"
@@ -2120,9 +2156,67 @@ msgstr "一時的にスナップを無効にするには、 :kbd:`Shift` を押�
 msgid "Pressing :kbd:`Escape` will cancel any current action."
 msgstr ""
 
-#: ../../editing/intro.rst:8
+#: ../../editing/event-viewers.rst:6
+#, fuzzy
+msgid "Event Viewers"
+msgstr "イベントビューア"
+
+#: ../../editing/event-viewers.rst:8
+#, fuzzy
+msgid ""
+"An event viewer (or `list editor`) displays all events in the corresponding "
+"arranger as a list."
+msgstr ""
+"イベントビューアは、タイムライン上のすべてのイベントを一覧として表示します。"
+
+#: ../../editing/event-viewers.rst:14
+#, fuzzy
+msgid "Timeline event viewer"
+msgstr "イベントビューア"
+
+#: ../../editing/event-viewers.rst:16
+msgid ""
+"The event viewer can be shown by clicking the :guilabel:`Toggle event "
+"viewer` button in the corresponding arranger toolbar."
+msgstr ""
+
+#: ../../editing/event-viewers.rst:21
+#, fuzzy
+msgid "Sorting"
+msgstr "エクスポート"
+
+#: ../../editing/event-viewers.rst:23
+msgid ""
+"Columns in the header row can be clicked to sort the events in ascending or "
+"descending order."
+msgstr ""
+
+#: ../../editing/event-viewers.rst:27 ../../editing/intro.rst:8
 msgid "Editing"
 msgstr "編集"
+
+#: ../../editing/event-viewers.rst:29
+msgid ""
+"Some values can be changed by clicking in the corresponding field to enter "
+"edit mode, then pressing :kbd:`Enter` when done."
+msgstr ""
+
+#: ../../editing/event-viewers.rst:36
+#, fuzzy
+msgid "Edit mode"
+msgstr "編集モード"
+
+#: ../../editing/event-viewers.rst:39
+#, fuzzy
+msgid "Object Selection"
+msgstr "プロジェクトの選択"
+
+#: ../../editing/event-viewers.rst:41
+msgid ""
+"The object selection in the event viewer is linked to the arranger. This "
+"means that selecting objects inside the event viewer will also select them "
+"inside the arranger and vice-versa."
+msgstr ""
 
 #: ../../editing/overview.rst:8
 msgid ""
@@ -2257,88 +2351,121 @@ msgstr ""
 msgid "Snap toolbar"
 msgstr "メインツールバー"
 
+#: ../../editing/snapping-grid-options.rst:20
+#, fuzzy
+msgid "Snap to Grid"
+msgstr "スナップとグリッド"
+
 #: ../../editing/snapping-grid-options.rst:21
+msgid "Turn snapping on/off"
+msgstr ""
+
+#: ../../editing/snapping-grid-options.rst:26
+msgid "Keep Offset"
+msgstr ""
+
+#: ../../editing/snapping-grid-options.rst:23
+msgid ""
+"When snapping, keep the offset of objects from the nearest snap point on "
+"their left"
+msgstr ""
+
+#: ../../editing/snapping-grid-options.rst:26
+#: ../../editing/snapping-grid-options.rst:32
+msgid "Requires Snap to Grid to be toggled on"
+msgstr ""
+
+#: ../../editing/snapping-grid-options.rst:32
+#, fuzzy
+msgid "Snap to Events"
+msgstr "音符を聞く"
+
+#: ../../editing/snapping-grid-options.rst:29
+msgid "When snapping, snap to the start/end positions other objects"
+msgstr ""
+
+#: ../../editing/snapping-grid-options.rst:35
 #, fuzzy
 msgid "Snap/Grid Options"
 msgstr "元に戻すオプション。"
 
-#: ../../editing/snapping-grid-options.rst:23
+#: ../../editing/snapping-grid-options.rst:37
 msgid ""
 "The Snap/Grid options control allows fine-tuning snapping behavior inside "
 "arrangers."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:29
+#: ../../editing/snapping-grid-options.rst:43
 #, fuzzy
 msgid "Snap/Grid options"
 msgstr "元に戻すオプション。"
 
-#: ../../editing/snapping-grid-options.rst:32
+#: ../../editing/snapping-grid-options.rst:46
 msgid "Snap"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:33
+#: ../../editing/snapping-grid-options.rst:47
 msgid ""
 "The Snap section controls the snapping behavior of the start position of "
 "objects."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:36
+#: ../../editing/snapping-grid-options.rst:50
 msgid "Note Length"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:37
+#: ../../editing/snapping-grid-options.rst:51
 #, fuzzy
 msgid "Note length to snap to"
 msgstr "スナップするノートの長さ。"
 
-#: ../../editing/snapping-grid-options.rst:39
+#: ../../editing/snapping-grid-options.rst:53
 msgid "Triplet (t)"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:39
+#: ../../editing/snapping-grid-options.rst:53
 msgid "Use triplet note (2/3rds of the selected note length)"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:42
+#: ../../editing/snapping-grid-options.rst:56
 msgid "Dotted (.)"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:42
+#: ../../editing/snapping-grid-options.rst:56
 msgid "Use dotted note (3/2nds, or 1.5 times the selected note length)"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:45
+#: ../../editing/snapping-grid-options.rst:59
 #, fuzzy
 msgid "Adaptive"
 msgstr "適応型グリッド"
 
-#: ../../editing/snapping-grid-options.rst:45
+#: ../../editing/snapping-grid-options.rst:59
 msgid "Adapt snapping to the current zoom level"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:48
+#: ../../editing/snapping-grid-options.rst:62
 msgid "Length"
 msgstr "長さ"
 
-#: ../../editing/snapping-grid-options.rst:49
+#: ../../editing/snapping-grid-options.rst:63
 msgid "The Length section controls the default length of objects."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:52
+#: ../../editing/snapping-grid-options.rst:66
 #, fuzzy
 msgid "Link"
 msgstr "プラグイン"
 
-#: ../../editing/snapping-grid-options.rst:53
+#: ../../editing/snapping-grid-options.rst:67
 msgid "Use the same options as Snap"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:54
+#: ../../editing/snapping-grid-options.rst:68
 msgid "Last Object"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:55
+#: ../../editing/snapping-grid-options.rst:69
 msgid "Use the length of the last created object"
 msgstr ""
 
@@ -2387,27 +2514,40 @@ msgid ""
 "`editor <editors>`. Regions can be repeated, like below."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:42
+#: ../../editing/timeline/arranger.rst:42 ../../glossary/intro.rst:134
+msgid "Region"
+msgstr "リージョン"
+
+#: ../../editing/timeline/arranger.rst:44
 msgid "The following types of regions exist."
 msgstr "次の種類のリージョンがあります。"
 
-#: ../../editing/timeline/arranger.rst:45
+#: ../../editing/timeline/arranger.rst:47
 msgid "Audio Regions"
 msgstr "オーディオリージョン"
 
-#: ../../editing/timeline/arranger.rst:46
+#: ../../editing/timeline/arranger.rst:48
 msgid "Audio regions contain audio clips from audio files."
 msgstr ""
 "オーディオリージョンには、オーディオファイルのオーディオデータが含まれていま"
 "す。"
 
-#: ../../editing/timeline/arranger.rst:51
+#: ../../editing/timeline/arranger.rst:53
+#, fuzzy
+msgid "Audio region"
+msgstr "オーディオリージョン"
+
+#: ../../editing/timeline/arranger.rst:55
 msgid "Audio regions belong to track lanes and appear inside Audio tracks."
 msgstr ""
 "オーディオリージョンは、トラックレーンに属し、オーディオトラック内に表示され"
 "ます。"
 
-#: ../../editing/timeline/arranger.rst:57
+#: ../../editing/timeline/arranger.rst:61
+msgid "Audio track with audio region"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:63
 msgid ""
 "Double-clicking an audio region will bring up the :doc:`Audio Editor <../../"
 "editing/clip-editors/audio-editor>`."
@@ -2415,15 +2555,19 @@ msgstr ""
 "オーディオリージョンをダブルクリックすると、 :doc:`オーディオエディター "
 "<../../editing/clip-editors/audio-editor>` が表示されます。"
 
-#: ../../editing/timeline/arranger.rst:61
+#: ../../editing/timeline/arranger.rst:67
 msgid "MIDI Regions"
 msgstr "MIDIリージョン"
 
-#: ../../editing/timeline/arranger.rst:62
+#: ../../editing/timeline/arranger.rst:68
 msgid "MIDI regions contain :term:`MIDI` notes."
 msgstr "MIDI リージョンには :term:`MIDI` ノートが含まれています。"
 
-#: ../../editing/timeline/arranger.rst:67
+#: ../../editing/timeline/arranger.rst:73
+msgid "MIDI region"
+msgstr "MIDI リージョン"
+
+#: ../../editing/timeline/arranger.rst:75
 msgid ""
 "MIDI regions belong to track lanes and appear inside MIDI or Instrument "
 "tracks."
@@ -2431,7 +2575,12 @@ msgstr ""
 "MIDIリージョンは、トラックレーンに属し、MIDIトラックやインストゥルメントト"
 "ラックの中に表示されます。"
 
-#: ../../editing/timeline/arranger.rst:73
+#: ../../editing/timeline/arranger.rst:81
+#, fuzzy
+msgid "MIDI track with MIDI region"
+msgstr "新しい MIDI リージョンを返します。"
+
+#: ../../editing/timeline/arranger.rst:83
 msgid ""
 "Double-clicking a MIDI region will bring up the :doc:`Piano Roll <../../"
 "editing/clip-editors/piano-roll>`."
@@ -2439,20 +2588,29 @@ msgstr ""
 "MIDIリージョンをダブルクリックすると、 :doc:`ピアノロール <../../editing/"
 "clip-editors/piano-roll>` が表示されます。"
 
-#: ../../editing/timeline/arranger.rst:77
+#: ../../editing/timeline/arranger.rst:87
 msgid "Automation Regions"
 msgstr "オートメーションリージョン"
 
-#: ../../editing/timeline/arranger.rst:78
+#: ../../editing/timeline/arranger.rst:88
 msgid "Automation regions contain automation events."
 msgstr ""
 "オートメーション・リージョンには、オートメーション・イベントが含まれます。"
 
-#: ../../editing/timeline/arranger.rst:83
+#: ../../editing/timeline/arranger.rst:93
+#, fuzzy
+msgid "Automation region"
+msgstr "オートメーションリージョン"
+
+#: ../../editing/timeline/arranger.rst:95
 msgid "Automation regions appear inside automation lanes."
 msgstr "オートメーションリージョンはオートメーションレーン内に表示されます。"
 
-#: ../../editing/timeline/arranger.rst:88
+#: ../../editing/timeline/arranger.rst:100
+msgid "Automation lane with automation region"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:102
 msgid ""
 "Double-clicking an automation region will bring up the :doc:`Automation "
 "Editor <../../editing/clip-editors/automation-editor>`."
@@ -2460,19 +2618,29 @@ msgstr ""
 "オートメーションリージョンをダブルクリックすると、 :doc:`オートメーションエ"
 "ディター <../../editing/clip-editors/automation-editor>` が表示されます。"
 
-#: ../../editing/timeline/arranger.rst:93
+#: ../../editing/timeline/arranger.rst:107
 msgid "Chord regions"
 msgstr "コードリージョン"
 
-#: ../../editing/timeline/arranger.rst:94
+#: ../../editing/timeline/arranger.rst:108
 msgid "Chord regions contain sequences of chords."
 msgstr "コード・リージョンは、コードのシーケンスを含みます。"
 
-#: ../../editing/timeline/arranger.rst:98
+#: ../../editing/timeline/arranger.rst:113
+#, fuzzy
+msgid "Chord region"
+msgstr "コードリージョン"
+
+#: ../../editing/timeline/arranger.rst:115
 msgid "Chord regions appear inside the chord track."
 msgstr "コード リージョンは、コード トラック内に表示されます。"
 
-#: ../../editing/timeline/arranger.rst:102
+#: ../../editing/timeline/arranger.rst:120
+#, fuzzy
+msgid "Chord track with chord region"
+msgstr "上のコードリージョン内のコードオブジェクト。"
+
+#: ../../editing/timeline/arranger.rst:122
 msgid ""
 "Double-clicking a chord region will bring up the :doc:`Chord Editor <../../"
 "editing/clip-editors/chord-editor>`."
@@ -2480,7 +2648,7 @@ msgstr ""
 "コード・リージョンをダブルクリックすると、 :doc:`コードエディター <../../"
 "editing/clip-editors/chord-editor>` が表示されます。"
 
-#: ../../editing/timeline/arranger.rst:107
+#: ../../editing/timeline/arranger.rst:127
 msgid ""
 "Markers are used to mark the start of a logical section inside the song, "
 "such as `Chorus` or `Intro`."
@@ -2488,11 +2656,19 @@ msgstr ""
 "マーカーは、 `コーラス` や `イントロ` のような、曲の中の論理的なセクションの"
 "始まりをマークするために使われます。"
 
-#: ../../editing/timeline/arranger.rst:114
+#: ../../editing/timeline/arranger.rst:134 ../../tracks/track-types.rst:50
+msgid "Marker"
+msgstr "マーカー"
+
+#: ../../editing/timeline/arranger.rst:136
 msgid "Markers appear inside the marker track."
 msgstr "マーカーはマーカー トラック内に表示されます。"
 
-#: ../../editing/timeline/arranger.rst:118
+#: ../../editing/timeline/arranger.rst:141
+msgid "Marker track with marker"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:143
 msgid ""
 "There are two special markers that signify the start and end of the song "
 "that are used for exporting the song and cannot be deleted."
@@ -2500,11 +2676,11 @@ msgstr ""
 "曲の書き出しに使用され、削除できない曲の開始と終了を示す 2 つの特殊なマーカー"
 "があります。"
 
-#: ../../editing/timeline/arranger.rst:123
+#: ../../editing/timeline/arranger.rst:148
 msgid "Scales"
 msgstr "スケール（音階）"
 
-#: ../../editing/timeline/arranger.rst:124
+#: ../../editing/timeline/arranger.rst:149
 msgid ""
 "Scales are used to indicate the start of a section using a specific musical "
 "scale."
@@ -2512,23 +2688,33 @@ msgstr ""
 "スケール（音階）は、特定の音階を使用したセクションの開始を示すために使用され"
 "ます。"
 
-#: ../../editing/timeline/arranger.rst:130
+#: ../../editing/timeline/arranger.rst:155
+#, fuzzy
+msgid "Scale"
+msgstr "スケール（音階）"
+
+#: ../../editing/timeline/arranger.rst:157
 msgid "Scales appear inside the Chord track."
 msgstr "スケールはコード トラック内に表示されます。"
 
-#: ../../editing/timeline/arranger.rst:135
+#: ../../editing/timeline/arranger.rst:162
+#, fuzzy
+msgid "Chord track with scale"
+msgstr "コード・リージョン、音階"
+
+#: ../../editing/timeline/arranger.rst:165
 msgid "Editing Regions"
 msgstr "リージョンの編集"
 
-#: ../../editing/timeline/arranger.rst:136
+#: ../../editing/timeline/arranger.rst:166
 msgid "The following operations apply to regions."
 msgstr "次の操作はリージョンに適用されます。"
 
-#: ../../editing/timeline/arranger.rst:139
+#: ../../editing/timeline/arranger.rst:169
 msgid "Looping"
 msgstr "ループ"
 
-#: ../../editing/timeline/arranger.rst:140
+#: ../../editing/timeline/arranger.rst:170
 msgid ""
 "Regions can be repeated, and hence they have :ref:`editable loop points and "
 "a clip start position <editing/clip-editors/ruler:Loop Points>` in the :doc:"
@@ -2536,7 +2722,7 @@ msgid ""
 "(repeating) behavior."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:146
+#: ../../editing/timeline/arranger.rst:176
 msgid ""
 "Regions can also be looped inside the timeline, by moving the cursor to the "
 "bottom-left or bottom-right edge of the region, then clicking and dragging."
@@ -2544,11 +2730,11 @@ msgstr ""
 "リージョンは、カーソルをリージョンの左下または右下の端に移動し、クリックして"
 "ドラッグすることにより、タイムライン内でループすることもできます。"
 
-#: ../../editing/timeline/arranger.rst:154
+#: ../../editing/timeline/arranger.rst:184
 msgid "Looping (loop-resizing) a region"
 msgstr "リージョンのループ（ループ・リサイズ）"
 
-#: ../../editing/timeline/arranger.rst:156
+#: ../../editing/timeline/arranger.rst:186
 msgid ""
 "If the region is already repeated, it cannot be resized anymore until its "
 "loop points match exactly the region's start and end points."
@@ -2557,22 +2743,22 @@ msgstr ""
 "始点と終了点に正確に一致するまで、ループ・リサイズ以上のサイズ変更はできませ"
 "ん。"
 
-#: ../../editing/timeline/arranger.rst:161
+#: ../../editing/timeline/arranger.rst:191
 msgid "Link-Moving"
 msgstr "リンク・移動"
 
-#: ../../editing/timeline/arranger.rst:162
+#: ../../editing/timeline/arranger.rst:192
 msgid "Linked regions can be created by holding down :kbd:`Alt` while moving."
 msgstr ""
 "リンクされたリージョンは、 :kbd:`Alt` を押しながら移動することで作成できま"
 "す。"
 
-#: ../../editing/timeline/arranger.rst:165
-#: ../../editing/timeline/arranger.rst:170
-msgid "Add pic to show this."
-msgstr "これを示すイラストを追加。"
+#: ../../editing/timeline/arranger.rst:198
+#, fuzzy
+msgid "Link-moving a MIDI region"
+msgstr "リージョンの複製・移動"
 
-#: ../../editing/timeline/arranger.rst:167
+#: ../../editing/timeline/arranger.rst:200
 msgid ""
 "You can verify that a link exists on a region by the link icon that shows in "
 "the top right."
@@ -2580,49 +2766,54 @@ msgstr ""
 "リージョン上にリンクが存在することは、右上に表示されるリンク アイコンで確認で"
 "きます。"
 
-#: ../../editing/timeline/arranger.rst:173
+#: ../../editing/timeline/arranger.rst:206
+#, fuzzy
+msgid "Linked MIDI regions"
+msgstr "オーディオリージョン"
+
+#: ../../editing/timeline/arranger.rst:209
 msgid "Renaming"
 msgstr "名前の変更"
 
-#: ../../editing/timeline/arranger.rst:174
+#: ../../editing/timeline/arranger.rst:210
 msgid "Regions can be renamed by selecting them and pressing :kbd:`F2`."
 msgstr ""
 "リージョンを選択して :kbd:`F2` を押すと、リージョンの名前を変更できます。"
 
-#: ../../editing/timeline/arranger.rst:180
+#: ../../editing/timeline/arranger.rst:216
 msgid "Renaming a region"
 msgstr "リージョン名の変更"
 
-#: ../../editing/timeline/arranger.rst:183
+#: ../../editing/timeline/arranger.rst:219
 msgid "Adjusting Fades"
 msgstr "フェードの調整"
 
-#: ../../editing/timeline/arranger.rst:184
+#: ../../editing/timeline/arranger.rst:220
 msgid ""
 "Audio regions can have fades. Fades are gradual increases or decreases in "
 "the level of the audio signal, and their positions can be adjusted by "
 "clicking and dragging the top left/right corners of the region."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:193
+#: ../../editing/timeline/arranger.rst:229
 msgid "Adjusting fade out point (click & drag)"
 msgstr "フェードアウトポイントの調整 (クリック＆ドラッグ)"
 
-#: ../../editing/timeline/arranger.rst:198
+#: ../../editing/timeline/arranger.rst:234
 msgid "Adjusting fade out point (drop)"
 msgstr "フェードアウトポイントの調整 (ドロップ)"
 
-#: ../../editing/timeline/arranger.rst:200
+#: ../../editing/timeline/arranger.rst:236
 msgid ""
 "Clicking and dragging the grey part up or down will adjust the curviness of "
 "the fade."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:206
+#: ../../editing/timeline/arranger.rst:242
 msgid "Adjusting curviness"
 msgstr "曲率の調整"
 
-#: ../../editing/timeline/arranger.rst:208
+#: ../../editing/timeline/arranger.rst:244
 #, fuzzy
 msgid ""
 "The type of fade algorithm used can also be changed by right-clicking on the "
@@ -2631,38 +2822,35 @@ msgstr ""
 "トラックを右クリックして :zbutton:`Delete` を選択すると、トラックを削除するこ"
 "とができます。"
 
-#: ../../editing/timeline/arranger.rst:215
+#: ../../editing/timeline/arranger.rst:251
 msgid "Fade context menu"
 msgstr "フェードのコンテキストメニュー"
 
-#: ../../editing/timeline/arranger.rst:217
+#: ../../editing/timeline/arranger.rst:253
 msgid "The various types of fade algorithms available are illustrated below."
 msgstr "フェードのアルゴリズムには、以下のような種類があります。"
 
-#: ../../editing/timeline/arranger.rst:220
+#: ../../editing/timeline/arranger.rst:256
 msgid "Fade algorithms"
 msgstr "フェードのアルゴリズム"
 
-#: ../../editing/timeline/arranger.rst:225
+#: ../../editing/timeline/arranger.rst:261
 msgid "Linear"
 msgstr "リニア (Linear)"
 
-#: ../../editing/timeline/arranger.rst:230
+#: ../../editing/timeline/arranger.rst:266
 msgid "Exponential"
 msgstr "指数関数"
 
-#: ../../editing/timeline/arranger.rst:235
+#: ../../editing/timeline/arranger.rst:271
 msgid "Elliptic (Superellipse)"
 msgstr "超楕円 (Superellipse)"
 
-#: ../../editing/timeline/arranger.rst:242
-msgid "Decide what to do about cross-fades (just use fades?)."
-msgstr "クロスフェードをどうするか決める（フェードを使うだけ？）。"
-
-#: ../../editing/timeline/event-viewer.rst:10
-msgid "The event viewer displays all events in the timeline as a list."
+#: ../../editing/timeline/arranger.rst:278
+msgid ""
+"All audio regions have some additional, built-in fade in and fade out that "
+"cannot be disabled. This is used to avoid clipping and should be unnoticable."
 msgstr ""
-"イベントビューアは、タイムライン上のすべてのイベントを一覧として表示します。"
 
 #: ../../editing/timeline/intro.rst:8
 msgid "Timeline"
@@ -2788,30 +2976,42 @@ msgstr ""
 "置を変更できます。"
 
 #: ../../editing/timeline/ruler.rst:30
+#, fuzzy
 msgid ""
-"Clicking and dragging on empty space in the ruler (other than the top part, "
-"which is used for selecting ranges - see :term:`Range`) will allow you to "
-"reposition the playhead."
+"Clicking and dragging on empty space in the bottom half of the ruler will "
+"allow you to reposition the playhead."
 msgstr ""
-"ルーラーの空白部分をクリックしてドラッグすると(範囲の選択に使用される上部以外"
-"の部分 - :term:`Range` を参照してください)、再生ヘッドの位置を変更できます。"
+"ルーラーの空の領域をクリックしてドラッグすると、再生ヘッドの位置を変更できま"
+"す。"
 
 #: ../../editing/timeline/ruler.rst:35
-msgid "Hold :guilabel:`Shift` to temporarily disable snapping"
-msgstr ""
-"スナップを一時的に無効にするには :guilabel:`Shift` を押したままにします"
-
-#: ../../editing/timeline/ruler.rst:38
 msgid "Setting the Cue Point"
 msgstr "キューポイントを設定する"
 
-#: ../../editing/timeline/ruler.rst:39
+#: ../../editing/timeline/ruler.rst:36
 msgid ""
 "Double click inside the ruler to set the cue point. This will be used to "
 "return to when playback is stopped."
 msgstr ""
 "ルーラーの内側をダブルクリックするとキューポイントを設定します。これは再生停"
 "止時に戻るときに使用します。"
+
+#: ../../editing/timeline/ruler.rst:40
+#, fuzzy
+msgid "Range Selection"
+msgstr "言語の選択"
+
+#: ../../editing/timeline/ruler.rst:41
+msgid ""
+"Clicking and dragging in the top half of the ruler will create a :term:"
+"`range <Range>` selection. If an existing range exists, you can click an "
+"drag it to move it."
+msgstr ""
+
+#: ../../editing/timeline/ruler.rst:49
+#, fuzzy
+msgid "Range selection"
+msgstr "言語の選択"
 
 #: ../../editing/timeline/toolbar.rst:6
 msgid "Toolbar"
@@ -2822,34 +3022,41 @@ msgid "The timeline has its own toolbar for timeline-specific operations."
 msgstr ""
 "タイムラインには、タイムラインに特化した操作のためのツールバーがあります。"
 
-#: ../../editing/timeline/toolbar.rst:11
+#: ../../editing/timeline/toolbar.rst:14
 #, fuzzy
-msgid "Update this section."
-msgstr "このセクション/スクショを更新。"
+msgid "Timeline toolbar"
+msgstr "タイムラインルーラー"
 
 #: ../../editing/timeline/toolbar.rst:16
-msgid ""
-"It contains a snap section, a quantize section, and an audio region section. "
-"For details about snapping and quantization, see the previous pages."
-msgstr ""
-"スナップセクション、クオンタイズセクション、オーディオリージョンセクションが"
-"あります。スナップとクオンタイズについての詳細は、前のページを参照してくださ"
-"い。"
+#, fuzzy
+msgid "It includes the following sections:"
+msgstr "Zrythm は、ポジションに次の形式を使用しています。"
+
+#: ../../editing/timeline/toolbar.rst:20
+#, fuzzy
+msgid "Audio region options"
+msgstr "オーディオリージョンセクション"
 
 #: ../../editing/timeline/toolbar.rst:21
 #, fuzzy
-msgid "Zoom Section"
-msgstr "ループ選択"
+msgid "Range actions"
+msgstr "翻訳"
 
-#: ../../editing/timeline/toolbar.rst:34
-msgid "Audio Region Section"
+#: ../../editing/timeline/toolbar.rst:23
+#, fuzzy
+msgid "Object merge options"
+msgstr "オブジェクト操作"
+
+#: ../../editing/timeline/toolbar.rst:28
+#, fuzzy
+msgid "Audio Region Options"
 msgstr "オーディオリージョンセクション"
 
-#: ../../editing/timeline/toolbar.rst:37
+#: ../../editing/timeline/toolbar.rst:31
 msgid "Musical Mode"
 msgstr "ミュージカルモード"
 
-#: ../../editing/timeline/toolbar.rst:38
+#: ../../editing/timeline/toolbar.rst:32
 #, fuzzy
 msgid ""
 "When this is on, audio regions will be automatically time-stretched to match "
@@ -2861,6 +3068,49 @@ msgstr ""
 "に合わせてタイムストレッチされます。これがオフの場合、BPMを変更すると、オー"
 "ディオ・リージョンはタイムストレッチされることなく、新しいBPMに合わせて繰り返"
 "されます。"
+
+#: ../../editing/timeline/toolbar.rst:39
+#, fuzzy
+msgid "Range Actions"
+msgstr "翻訳"
+
+#: ../../editing/timeline/toolbar.rst:41
+msgid "Range actions are performed on the selected :term:`Range`."
+msgstr ""
+
+#: ../../editing/timeline/toolbar.rst:45
+msgid "Insert Silence"
+msgstr ""
+
+#: ../../editing/timeline/toolbar.rst:45
+msgid ""
+"Inserts silence at the selected range and pushes all events in the range "
+"forward"
+msgstr ""
+
+#: ../../editing/timeline/toolbar.rst:49
+#, fuzzy
+msgid "Remove Range"
+msgstr "時間の範囲"
+
+#: ../../editing/timeline/toolbar.rst:48
+msgid ""
+"Deletes all events in the range and moves events after the range backwards"
+msgstr ""
+
+#: ../../editing/timeline/toolbar.rst:52
+#, fuzzy
+msgid "Object Merging"
+msgstr "プロジェクト設定。"
+
+#: ../../editing/timeline/toolbar.rst:55
+#, fuzzy
+msgid "Merge Selections"
+msgstr "プロジェクトの選択"
+
+#: ../../editing/timeline/toolbar.rst:55
+msgid "Merge the selected objects into a single object, if possible"
+msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:8
 msgid "Audio & MIDI"
@@ -3827,10 +4077,6 @@ msgstr "選択範囲 (Range)"
 #: ../../glossary/intro.rst:129
 msgid "A Range is a selection of time between two positions."
 msgstr "選択範囲 (Range)は、2つの位置間の範囲の選択です。"
-
-#: ../../glossary/intro.rst:134
-msgid "Region"
-msgstr "リージョン"
 
 #: ../../glossary/intro.rst:136
 #, fuzzy
@@ -7554,10 +7800,6 @@ msgstr ""
 msgid "MIDI regions"
 msgstr "MIDI リージョン"
 
-#: ../../tracks/track-types.rst:50
-msgid "Marker"
-msgstr "マーカー"
-
 #: ../../tracks/track-types.rst:55
 msgid "Master"
 msgstr "マスター"
@@ -8492,6 +8734,104 @@ msgid ""
 "will start clipping."
 msgstr ""
 
+#~ msgid "It displays information about each automation point and its curve."
+#~ msgstr "各オートメーションポイントとその曲線に関する情報が表示されます。"
+
+#~ msgid "It displays information about each chord object."
+#~ msgstr "各コードオブジェクトに関する情報が表示されます。"
+
+#~ msgid ""
+#~ "The event viewer in the piano roll is similar to the timeline event "
+#~ "viewer discussed in :ref:`timeline-event-viewer`."
+#~ msgstr ""
+#~ "ピアノロールのイベントビューアは :ref:`timeline-event-viewer` で説明したタ"
+#~ "イムラインイベントビューアに似ています。"
+
+#~ msgid "It displays information about each MIDI note in the MIDI arranger."
+#~ msgstr "MIDI アレンジャーの各 MIDI ノートに関する情報を表示します。"
+
+#~ msgid "Update this section/pic."
+#~ msgstr "このセクション/スクショを更新。"
+
+#~ msgid "Common Controls"
+#~ msgstr "コントロール"
+
+#~ msgid "Zoom Controls"
+#~ msgstr "コントロール"
+
+#~ msgid "Zooms in."
+#~ msgstr "拡大する。"
+
+#~ msgid "The piano roll toolbar consists of the following controls."
+#~ msgstr "ピアノロールのツールバーは、次のコントロールで構成されています。"
+
+#~ msgid "Grid/snap settings"
+#~ msgstr "グリッド/スナップ設定"
+
+#~ msgid ""
+#~ "Snapping and grid options are covered in :ref:`snapping-grid-options`."
+#~ msgstr ""
+#~ "スナップとグリッドの設定については、 :ref:`snapping-grid-options` で説明さ"
+#~ "れています。"
+
+#~ msgid "Highlight"
+#~ msgstr "ハイライト"
+
+#~ msgid "Chord highlighting is covered in :ref:`chords-scales`."
+#~ msgstr ""
+#~ "コードの強調表示については :ref:`chords-scales` で説明されています。"
+
+#~ msgid "Quantize options"
+#~ msgstr "クオンタイズの設定"
+
+#~ msgid "Quantize options are covered in :ref:`quantization`."
+#~ msgstr ""
+#~ "クオンタイズオプションについては :ref:`quantization` で説明されています。"
+
+#~ msgid "No controls at the moment."
+#~ msgstr "現時点ではコントロールはありません。"
+
+#~ msgid ""
+#~ "These operations are common to most editors, and behave similarly to what "
+#~ "you should be used to from other applications."
+#~ msgstr ""
+#~ "これらの操作はほとんどのエディターに共通であり、他のアプリケーションから使"
+#~ "用する操作と同様に動作します。"
+
+#~ msgid "Add pic to show this."
+#~ msgstr "これを示すイラストを追加。"
+
+#~ msgid "Decide what to do about cross-fades (just use fades?)."
+#~ msgstr "クロスフェードをどうするか決める（フェードを使うだけ？）。"
+
+#~ msgid ""
+#~ "Clicking and dragging on empty space in the ruler (other than the top "
+#~ "part, which is used for selecting ranges - see :term:`Range`) will allow "
+#~ "you to reposition the playhead."
+#~ msgstr ""
+#~ "ルーラーの空白部分をクリックしてドラッグすると(範囲の選択に使用される上部"
+#~ "以外の部分 - :term:`Range` を参照してください)、再生ヘッドの位置を変更でき"
+#~ "ます。"
+
+#~ msgid "Hold :guilabel:`Shift` to temporarily disable snapping"
+#~ msgstr ""
+#~ "スナップを一時的に無効にするには :guilabel:`Shift` を押したままにします"
+
+#~ msgid "Update this section."
+#~ msgstr "このセクション/スクショを更新。"
+
+#~ msgid ""
+#~ "It contains a snap section, a quantize section, and an audio region "
+#~ "section. For details about snapping and quantization, see the previous "
+#~ "pages."
+#~ msgstr ""
+#~ "スナップセクション、クオンタイズセクション、オーディオリージョンセクション"
+#~ "があります。スナップとクオンタイズについての詳細は、前のページを参照してく"
+#~ "ださい。"
+
+#~ msgid "Zoom Section"
+#~ msgstr "ループ選択"
+
 #~ msgid "Show screenshot."
 #~ msgstr "スクリーンショットを表示。"
 
@@ -8513,9 +8853,6 @@ msgstr ""
 #~ msgstr ""
 #~ "これらは現時点では動作しておらず、Zrythmはデフォルトでスナップします。今の"
 #~ "ところスナップをバイパスするにはShiftを使用してください。"
-
-#~ msgid "Snap and Grid"
-#~ msgstr "スナップとグリッド"
 
 #~ msgid ""
 #~ "When snapping, Zrythm will follow the settings specified by the snap/grid "
@@ -8562,9 +8899,6 @@ msgstr ""
 
 #~ msgid "Mutes the track."
 #~ msgstr "トラックをミュートします。"
-
-#~ msgid "Bottom Buttons"
-#~ msgstr "下部ボタン"
 
 #~ msgid "Toggles the visibility of lanes."
 #~ msgstr "レーンの表示/非表示を切り替えます。"
@@ -9062,9 +9396,6 @@ msgstr ""
 
 #~ msgid "We recommend leaving it at 128."
 #~ msgstr "128のままにすることをお勧めします。"
-
-#~ msgid "Project settings."
-#~ msgstr "プロジェクト設定。"
 
 #~ msgid "General (Project)"
 #~ msgstr "一般（プロジェクト）"
@@ -10155,12 +10486,6 @@ msgstr ""
 #~ msgstr ""
 #~ "リージョンは、イベントやデータ(オーディオクリップなど)のコンテナです。"
 
-#~ msgid "MIDI region"
-#~ msgstr "MIDI リージョン"
-
-#~ msgid "Edit Mode"
-#~ msgstr "編集モード"
-
 #~ msgid "Cut Mode"
 #~ msgstr "カットモード"
 
@@ -11014,13 +11339,6 @@ msgstr ""
 #~ msgstr ""
 #~ "ルーラーには、現在のズーム レベルに応じて、情報の表示量が増減します。ま"
 #~ "た、以下のマーカー/インジケータも表示されます。"
-
-#~ msgid ""
-#~ "Clicking and dragging on empty space in the ruler will allow you to "
-#~ "reposition the playhead."
-#~ msgstr ""
-#~ "ルーラーの空の領域をクリックしてドラッグすると、再生ヘッドの位置を変更でき"
-#~ "ます。"
 
 #~ msgid ""
 #~ "Hold :zbutton:`Shift` to disable snapping momentarily while moving things "

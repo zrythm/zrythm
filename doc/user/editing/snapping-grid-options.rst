@@ -17,6 +17,20 @@ specified by the snap toolbar buttons in each panel.
 
    Snap toolbar
 
+Snap to Grid
+  Turn snapping on/off
+Keep Offset
+  When snapping, keep the offset of objects from
+  the nearest snap point on their left
+
+  .. note:: Requires Snap to Grid to be toggled on
+
+Snap to Events
+  When snapping, snap to the start/end positions
+  other objects
+
+  .. note:: Requires Snap to Grid to be toggled on
+
 Snap/Grid Options
 -----------------
 

@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. _timeline-arranger:
@@ -36,8 +36,10 @@ clips - see below) that can be edited in an
 :ref:`editor <editors>`. Regions can be repeated,
 like below.
 
-.. image:: /_static/img/region.png
+.. figure:: /_static/img/region.png
    :align: center
+
+   Region
 
 The following types of regions exist.
 
@@ -45,14 +47,18 @@ Audio Regions
 +++++++++++++
 Audio regions contain audio clips from audio files.
 
-.. image:: /_static/img/audio-region.png
+.. figure:: /_static/img/audio-region.png
    :align: center
+
+   Audio region
 
 Audio regions belong to track lanes and appear inside
 Audio tracks.
 
-.. image:: /_static/img/audio-track-with-region.png
+.. figure:: /_static/img/audio-track-with-region.png
    :align: center
+
+   Audio track with audio region
 
 Double-clicking an audio region will bring up the
 :doc:`Audio Editor <../../editing/clip-editors/audio-editor>`.
@@ -61,14 +67,18 @@ MIDI Regions
 ++++++++++++
 MIDI regions contain :term:`MIDI` notes.
 
-.. image:: /_static/img/midi-region.png
+.. figure:: /_static/img/midi-region.png
    :align: center
+
+   MIDI region
 
 MIDI regions belong to track lanes and appear inside
 MIDI or Instrument tracks.
 
-.. image:: /_static/img/midi-track-with-region.png
+.. figure:: /_static/img/midi-track-with-region.png
    :align: center
+
+   MIDI track with MIDI region
 
 Double-clicking a MIDI region will bring up the
 :doc:`Piano Roll <../../editing/clip-editors/piano-roll>`.
@@ -77,13 +87,17 @@ Automation Regions
 ++++++++++++++++++
 Automation regions contain automation events.
 
-.. image:: /_static/img/automation-region.png
+.. figure:: /_static/img/automation-region.png
    :align: center
+
+   Automation region
 
 Automation regions appear inside automation lanes.
 
-.. image:: /_static/img/automation-lane-with-region.png
+.. figure:: /_static/img/automation-lane-with-region.png
    :align: center
+
+   Automation lane with automation region
 
 Double-clicking an automation region will bring up
 the
@@ -93,11 +107,17 @@ Chord regions
 +++++++++++++
 Chord regions contain sequences of chords.
 
-.. todo:: Add pic.
+.. figure:: /_static/img/chord-region.png
+   :align: center
+
+   Chord region
 
 Chord regions appear inside the chord track.
 
-.. todo:: Add pic.
+.. figure:: /_static/img/chord-track-with-region.png
+   :align: center
+
+   Chord track with chord region
 
 Double-clicking a chord region will bring up the
 :doc:`Chord Editor <../../editing/clip-editors/chord-editor>`.
@@ -108,12 +128,17 @@ Markers are used to mark the start of a logical
 section inside the song, such as `Chorus` or
 `Intro`.
 
-.. image:: /_static/img/marker.png
+.. figure:: /_static/img/marker.png
    :align: center
+
+   Marker
 
 Markers appear inside the marker track.
 
-.. todo:: Add pic.
+.. figure:: /_static/img/marker-track-with-marker.png
+   :align: center
+
+   Marker track with marker
 
 There are two special markers that signify the
 start and end of the song that are used for
@@ -124,12 +149,17 @@ Scales
 Scales are used to indicate the
 start of a section using a specific musical scale.
 
-.. image:: /_static/img/scale-object.png
+.. figure:: /_static/img/scale-object.png
    :align: center
+
+   Scale
 
 Scales appear inside the Chord track.
 
-.. todo:: Add pic.
+.. figure:: /_static/img/chord-track-with-scale.png
+   :align: center
+
+   Chord track with scale
 
 Editing Regions
 ---------------
@@ -162,12 +192,18 @@ Link-Moving
 Linked regions can be created by holding down
 :kbd:`Alt` while moving.
 
-.. todo:: Add pic to show this.
+.. figure:: /_static/img/link-moving-regions.png
+   :align: center
+
+   Link-moving a MIDI region
 
 You can verify that a link exists on a region by
 the link icon that shows in the top right.
 
-.. todo:: Add pic to show this.
+.. figure:: /_static/img/linked-regions.png
+   :align: center
+
+   Linked MIDI regions
 
 Renaming
 ~~~~~~~~
@@ -239,5 +275,8 @@ illustrated below.
 
           Vital
 
-.. todo:: Decide what to do about cross-fades
-   (just use fades?).
+.. note:: All audio regions have some additional,
+   built-in fade in and fade out that cannot be
+   disabled. This is used to avoid clipping and
+   should be unnoticable.
+

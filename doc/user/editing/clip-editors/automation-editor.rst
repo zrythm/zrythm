@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. _automation-editor:
@@ -54,15 +54,3 @@ Pulse
 Context Menu
 ------------
 .. todo:: Write this section.
-
-Event Viewer
-------------
-The event viewer in the automation editor is similar to the
-timeline event viewer discussed in
-:ref:`timeline-event-viewer`.
-
-.. image:: /_static/img/automation-event-viewer.png
-   :align: center
-
-It displays information about each automation point and its
-curve.

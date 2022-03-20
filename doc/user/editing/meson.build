@@ -1,6 +1,7 @@
 copy_files = [
   'common-operations.rst',
   'edit-tools.rst',
+  'event-viewers.rst',
   'intro.rst',
   'overview.rst',
   'quantization.rst',
