@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-20 12:07+0000\n"
+"POT-Creation-Date: 2022-03-20 21:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -294,13 +294,9 @@ msgstr ""
 #: ../../appendix/troubleshooting.rst:10
 #: ../../configuration/additional-settings.rst:34
 #: ../../configuration/shortcuts.rst:46
-#: ../../editing/clip-editors/automation-editor.rst:56
-#: ../../editing/clip-editors/chord-editor.rst:66
-#: ../../editing/clip-editors/piano-roll.rst:82
-#: ../../editing/clip-editors/piano-roll.rst:115
-#: ../../editing/clip-editors/ruler.rst:29
-#: ../../editing/clip-editors/ruler.rst:36
-#: ../../editing/clip-editors/ruler.rst:44
+#: ../../editing/clip-editors/automation-editor.rst:55
+#: ../../editing/clip-editors/chord-editor.rst:60
+#: ../../editing/clip-editors/piano-roll.rst:148
 #: ../../exporting/audio-and-midi.rst:38 ../../mixing/overview.rst:62
 #: ../../plugins-files/audio-midi-files/file-browser.rst:69
 #: ../../routing/making-connections.rst:30
@@ -1097,21 +1093,239 @@ msgid "The audio editor is displayed when an audio region is selected."
 msgstr "O editor de audio aparece cando se selecciona unha rexión de audio."
 
 #: ../../editing/clip-editors/audio-editor.rst:15
-msgid ""
-"Currently, it is only used to view audio and has no other functionality, "
-"besides changing the points in the ruler, as discussed in :ref:`editor-"
-"ruler`."
-msgstr ""
-"Actualmente só se usa para ver audio e non ten máis funcións, a parte de "
-"cambiar os puntos na regra, como se comenta en :ref:`editor-ruler`."
+#, fuzzy
+msgid "Audio editor"
+msgstr "Editor de Audio"
 
-#: ../../editing/clip-editors/audio-editor.rst:20
+#: ../../editing/clip-editors/audio-editor.rst:18
 msgid "Audio Arranger"
 msgstr "Xanela de Audio"
 
-#: ../../editing/clip-editors/audio-editor.rst:21
+#: ../../editing/clip-editors/audio-editor.rst:19
 msgid "The audio arranger refers to the arranger section of the audio editor."
 msgstr "A xanela de audio refírese á sección de arranxos do editor de audio."
+
+#: ../../editing/clip-editors/audio-editor.rst:25
+#, fuzzy
+msgid "Audio arranger"
+msgstr "Xanela de Audio"
+
+#: ../../editing/clip-editors/audio-editor.rst:27
+#, fuzzy
+msgid "The arranger shows the following indicators and controls."
+msgstr "O piano roll contén os seguintes controis adicionais."
+
+#: ../../editing/clip-editors/audio-editor.rst:30
+msgid "Waveform"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:31
+#, fuzzy
+msgid "Fades"
+msgstr "Estaxes"
+
+#: ../../editing/clip-editors/audio-editor.rst:32
+msgid "Amplitude line"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:33
+#, fuzzy
+msgid "Part selection"
+msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.8)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.8)  #-#-#-#-#\n"
+"Proxecto\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+
+#: ../../editing/clip-editors/audio-editor.rst:36
+#, fuzzy
+msgid "Changing the Amplitude"
+msgstr "Modificando Valores"
+
+#: ../../editing/clip-editors/audio-editor.rst:38
+#, fuzzy
+msgid ""
+"The amplitude of the clip can be changed by clicking and dragging the orange "
+"horizontal line up or down."
+msgstr ""
+"#-#-#-#-#  plugins-files.po (Zrythm 0.8)  #-#-#-#-#\n"
+"Os valores dos portos de control pódense modificar facendo clic e "
+"arrastrando dentro da barra.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  plugins-files.po (Zrythm 0.8)  #-#-#-#-#\n"
+"Os valores dos portos de control pódense modificar facendo clic e "
+"arrastrando dentro da barra.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+
+#: ../../editing/clip-editors/audio-editor.rst:42
+#, fuzzy
+msgid "Changing Fades"
+msgstr "Modificando Valores"
+
+#: ../../editing/clip-editors/audio-editor.rst:44
+msgid ""
+"Fade in/out positions can be changed by clicking and dragging near the top "
+"where the fade in ends or where the fade out starts."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:48
+msgid "The cursor will change to a resize left/right cursor."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:51
+msgid ""
+"Fade curviness can be changed by clicking and dragging the body of fades "
+"upwards or downwards."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:54
+msgid "The cursor will change to a resize up cursor."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:58
+#, fuzzy
+msgid "Selecting Parts"
+msgstr "Seleccionar Pistas"
+
+#: ../../editing/clip-editors/audio-editor.rst:60
+#, fuzzy
+msgid ""
+"Audio parts can be selected by clicking and dragging in the bottom half of "
+"the arranger."
+msgstr ""
+"#-#-#-#-#  plugins-files.po (Zrythm 0.8)  #-#-#-#-#\n"
+"Os valores dos portos de control pódense modificar facendo clic e "
+"arrastrando dentro da barra.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  plugins-files.po (Zrythm 0.8)  #-#-#-#-#\n"
+"Os valores dos portos de control pódense modificar facendo clic e "
+"arrastrando dentro da barra.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+
+#: ../../editing/clip-editors/audio-editor.rst:63
+msgid "The cursor will change to a range selection cursor."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:67
+#, fuzzy
+msgid "Audio Functions"
+msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.8)  #-#-#-#-#\n"
+"Rexión de Audio\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+
+#: ../../editing/clip-editors/audio-editor.rst:69
+msgid ""
+"Audio functions are logic that can be applied to transform the selected "
+"audio part."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:72
+#: ../../editing/clip-editors/automation-editor.rst:63
+#: ../../editing/clip-editors/piano-roll.rst:123
+#, fuzzy
+msgid "The following functions are available."
+msgstr "Existen os seguintes tipos de rexións."
+
+#: ../../editing/clip-editors/audio-editor.rst:74
+msgid "Invert"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:75
+msgid "Invert the polarity of the audio."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:76
+msgid "Normalize Peak"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:77
+msgid "Normalize the audio so that its peak is 0dB."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:78
+msgid "Linear Fade In"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:79
+msgid "Fade the audio from silence to full amplitude."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:80
+msgid "Linear Fade Out"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:81
+msgid "Fade the audio from full amplitude to silence."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:82
+#, fuzzy
+msgid "Nudge"
+msgstr "Idioma"
+
+#: ../../editing/clip-editors/audio-editor.rst:83
+msgid "Shift the audio by 1 sample backward or forward."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:84
+#, fuzzy
+msgid "Reverse"
+msgstr "Medidores"
+
+#: ../../editing/clip-editors/audio-editor.rst:85
+msgid "Reverse the audio (play back backwards)."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:110
+msgid "External Program"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:87
+msgid ""
+"Run an external program (such as `Audacity <https://www.audacityteam.org/"
+">`_) to edit the audio."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:94
+msgid "Edit the selected audio in an external app"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:96
+msgid ""
+"The selected program will be run with the path to a temporary file as an "
+"argument. Normally, the application will open that file, otherwise you will "
+"have to open it manually."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:101
+msgid "You can select and copy the path in the dialog."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:104
+msgid ""
+"Once you've made your changes to the file, close the external app and press "
+"OK. Zrythm will then apply your changes to the selected audio part."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:108
+msgid ""
+"The length of the audio must stay exactly the same, otherwise this operation "
+"will fail."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:112
+msgid "Guile Script"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:113
+msgid "Not available yet."
+msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:45
@@ -1126,24 +1340,26 @@ msgstr ""
 "automatizacións."
 
 #: ../../editing/clip-editors/automation-editor.rst:15
-msgid ""
-"It is very similar to the piano roll, with the exception that the arranger "
-"contains automation points and curves instead of MIDI notes."
-msgstr ""
-"É moi similar ao piano roll, coa excepción de que a xanela contén puntos de "
-"automatización e curvas, en vez de notas MIDI."
+#, fuzzy
+msgid "Automation editor"
+msgstr "Editor de Automatizacións"
 
-#: ../../editing/clip-editors/automation-editor.rst:20
+#: ../../editing/clip-editors/automation-editor.rst:18
 msgid "Automation Arranger"
 msgstr "Xanela de Automatizacións"
 
-#: ../../editing/clip-editors/automation-editor.rst:21
+#: ../../editing/clip-editors/automation-editor.rst:19
 msgid ""
 "The automation arranger refers to the arranger section of the automation "
 "editor."
 msgstr ""
 "A xanela de automatizacións refírese á sección de arranxos do editor de "
 "automatizacións."
+
+#: ../../editing/clip-editors/automation-editor.rst:25
+#, fuzzy
+msgid "Automation arranger"
+msgstr "Xanela de Automatizacións"
 
 #: ../../editing/clip-editors/automation-editor.rst:27
 msgid ""
@@ -1169,11 +1385,11 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
-#: ../../editing/clip-editors/automation-editor.rst:40
+#: ../../editing/clip-editors/automation-editor.rst:41
 msgid "Curves"
 msgstr "Curvas"
 
-#: ../../editing/clip-editors/automation-editor.rst:41
+#: ../../editing/clip-editors/automation-editor.rst:42
 msgid ""
 "Right-clicking on a curve allows you to change the curve algorithm used. The "
 "following curve algorithms are available."
@@ -1181,50 +1397,68 @@ msgstr ""
 "Facendo clic dereito nunha curva permíteche cambiar o algoritmo de curva "
 "utilizado. Están dispoñibles os seguintes algoritmos."
 
-#: ../../editing/clip-editors/automation-editor.rst:44
+#: ../../editing/clip-editors/automation-editor.rst:45
 msgid "Exponent"
 msgstr "Exponente"
 
-#: ../../editing/clip-editors/automation-editor.rst:45
+#: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Exponential curve."
 msgstr "Curva exponencial."
 
-#: ../../editing/clip-editors/automation-editor.rst:46
+#: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Superellipse"
 msgstr "Superelipse"
 
-#: ../../editing/clip-editors/automation-editor.rst:47
+#: ../../editing/clip-editors/automation-editor.rst:48
 msgid "Elliptical curve."
 msgstr "Curva elíptica."
 
-#: ../../editing/clip-editors/automation-editor.rst:49
+#: ../../editing/clip-editors/automation-editor.rst:50
 #: ../../editing/timeline/arranger.rst:276
 msgid "Vital"
 msgstr "Vital"
 
-#: ../../editing/clip-editors/automation-editor.rst:49
+#: ../../editing/clip-editors/automation-editor.rst:50
 msgid "The curve that Vital synth uses, similar to exponential curve."
 msgstr "A curva que usa o sintetizador Vital, similar á curva exponencial."
 
-#: ../../editing/clip-editors/automation-editor.rst:52
+#: ../../editing/clip-editors/automation-editor.rst:53
 msgid "Pulse"
 msgstr "Pulso"
 
-#: ../../editing/clip-editors/automation-editor.rst:52
+#: ../../editing/clip-editors/automation-editor.rst:53
 msgid "Pulse wave."
 msgstr "Onda de pulso."
 
 #: ../../editing/clip-editors/automation-editor.rst:55
-#: ../../editing/clip-editors/chord-editor.rst:65
-#: ../../editing/clip-editors/piano-roll.rst:114 ../../tracks/overview.rst:74
-msgid "Context Menu"
-msgstr "Menú Contextual"
+msgid "Create table with illustrations."
+msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:56
-#: ../../editing/clip-editors/chord-editor.rst:66
-#: ../../editing/clip-editors/piano-roll.rst:115
-#: ../../routing/managing-connections.rst:8
-msgid "Write this section."
+#: ../../editing/clip-editors/automation-editor.rst:58
+#, fuzzy
+msgid "Automation Functions"
+msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.8)  #-#-#-#-#\n"
+"Rexión de Automatización\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  tracks.po (Zrythm 0.8)  #-#-#-#-#\n"
+"Pistas de Automatización\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+
+#: ../../editing/clip-editors/automation-editor.rst:60
+msgid ""
+"Automation functions are logic that can be applied to transform the selected "
+"automation points/curves."
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:66
+#: ../../editing/clip-editors/piano-roll.rst:133
+msgid "Flip"
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:66
+msgid "Reverse/flip the selected automation horizontally or vertically."
 msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:8
@@ -1238,13 +1472,11 @@ msgstr ""
 "O editor de acordes amósase cando se selecciona unha rexión de acordes."
 
 #: ../../editing/clip-editors/chord-editor.rst:15
-msgid ""
-"Its ruler behaves similarly to the editor ruler explained in :ref:`editor-"
-"ruler`."
-msgstr ""
-"A súa regra compórtase parecido á do editor explicada en :ref:`editor-ruler`."
+#, fuzzy
+msgid "Chord editor"
+msgstr "Editor de Acordes"
 
-#: ../../editing/clip-editors/chord-editor.rst:18
+#: ../../editing/clip-editors/chord-editor.rst:17
 msgid ""
 "The chord editor has a list of chords on the left side that can be changed, "
 "and an arranger on the right side for creating chord progressions."
@@ -1252,11 +1484,11 @@ msgstr ""
 "O editor de acordes ten unha lista de acordes no lado esquerdo que se poden "
 "cambiar, e unha xanela á dereita para crear progresións de acordes."
 
-#: ../../editing/clip-editors/chord-editor.rst:23
+#: ../../editing/clip-editors/chord-editor.rst:22
 msgid "Chords"
 msgstr "Acordes"
 
-#: ../../editing/clip-editors/chord-editor.rst:24
+#: ../../editing/clip-editors/chord-editor.rst:23
 msgid ""
 "A chord in the context of the chord editor refers to a chord on the left "
 "side of the editor."
@@ -1264,27 +1496,40 @@ msgstr ""
 "Un acorde no contexto do editor de acordes refírese a un acorde no lado "
 "dereito do editor."
 
-#: ../../editing/clip-editors/chord-editor.rst:30
-msgid ""
-"These chords act similarly to the piano roll keys explained in :ref:`piano-"
-"roll-keys`."
+#: ../../editing/clip-editors/chord-editor.rst:29
+#, fuzzy
+msgid "Chords inside the chord editor"
 msgstr ""
-"Estes acordes compórtanse similar ás teclas do piano roll explicadas en :ref:"
-"`piano-roll-keys`."
+"#-#-#-#-#  editing.po (Zrythm 0.8)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"O nome da pista de acordes."
 
-#: ../../editing/clip-editors/chord-editor.rst:34
+#: ../../editing/clip-editors/chord-editor.rst:31
+msgid ""
+"These chords correspond to each chord in the :ref:`Chord pad <chords-and-"
+"scales/overview:Chord Pad>`."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:35
+#, fuzzy
+msgid "Each chord row contains the following controls."
+msgstr "O piano roll contén os seguintes controis adicionais."
+
+#: ../../editing/clip-editors/chord-editor.rst:55
 msgid "Chord Selector"
 msgstr "Selector de Acordes"
 
-#: ../../editing/clip-editors/chord-editor.rst:35
-msgid ""
-"Double-clicking on a chord will bring up the chord selector, which allows "
-"you to change that chord."
+#: ../../editing/clip-editors/chord-editor.rst:38
+msgid "Change the selected chord."
 msgstr ""
-"Dobre clic nun acorde activará o selector de acordes, que che permite "
-"cambiar ese acorde."
 
-#: ../../editing/clip-editors/chord-editor.rst:41
+#: ../../editing/clip-editors/chord-editor.rst:43
+#, fuzzy
+msgid "Chord selector"
+msgstr "Selector de Acordes"
+
+#: ../../editing/clip-editors/chord-editor.rst:45
 msgid ""
 "At the moment, only the chord creator is functional. A chord can be created "
 "by selecting its root note, its type, its accent and its bass note."
@@ -1292,33 +1537,56 @@ msgstr ""
 "Polo de agora, só funciona o creador de acordes. Un acorde pódese crear "
 "seleccionando a súa nota raíz, o tipo, o acento e a nota do baixo."
 
-#: ../../editing/clip-editors/chord-editor.rst:45
+#: ../../editing/clip-editors/chord-editor.rst:50
+#, fuzzy
 msgid ""
-"Selecting :zbutton:`In scale` under `Visibility` will only show options that "
-"correspond to chords inside the scale active at the start of the region. "
-"This makes it easy to create chords that stay in the current scale."
+"Selecting :guilabel:`In scale` under :guilabel:`Visibility` will only show "
+"options that correspond to chords inside the scale active at the start of "
+"the region. This makes it easy to create chords that stay in the current "
+"scale."
 msgstr ""
 "Seleccionando :zbutton: `En escala` baixo `Visibilidade` só amosará opcións "
 "que correspondan a acordes dentro da escala activa ao comezo da rexión. Isto "
 "fai doado crear acordes que se manteñan dentro da escala actual."
 
-#: ../../editing/clip-editors/chord-editor.rst:51
+#: ../../editing/clip-editors/chord-editor.rst:58
+msgid "Inversion"
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:58
+msgid "Invert the chord."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:60
+msgid "Move this part to the chords and scales chapter."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:64
 msgid "Chord Arranger"
 msgstr "Xanela de Acordes"
 
-#: ../../editing/clip-editors/chord-editor.rst:52
+#: ../../editing/clip-editors/chord-editor.rst:65
 msgid "The chord arranger refers to the arranger section of the chord editor."
 msgstr "A xanela de acordes é a sección de arranxos do editor de acordes."
 
-#: ../../editing/clip-editors/chord-editor.rst:58
+#: ../../editing/clip-editors/chord-editor.rst:71
+#, fuzzy
+msgid "Chord arranger"
+msgstr "Xanela de Acordes"
+
+#: ../../editing/clip-editors/chord-editor.rst:73
+#, fuzzy
 msgid ""
-"The chord editor contains `chord objects` that signify the start of a chord. "
-"Chord objects do not have a length."
+"The chord editor contains `chord objects` that signify the start of a chord."
 msgstr ""
 "O editor de acordes contén `obxectos de acordes` que simbolizan o comezo dun "
 "acorde. Os obxectos de acordes non teñen lonxitude."
 
-#: ../../editing/clip-editors/chord-editor.rst:61
+#: ../../editing/clip-editors/chord-editor.rst:76
+msgid "Chord objects do not have a length."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:78
 #, fuzzy
 msgid ""
 "Editing in the chord arranger follows :ref:`edit-tools` and :ref:`common-"
@@ -1352,44 +1620,41 @@ msgid "Piano Roll"
 msgstr "Piano Roll"
 
 #: ../../editing/clip-editors/piano-roll.rst:10
-msgid "The piano roll is the main editor for editing MIDI regions."
-msgstr "O piano roll é o editor principal para rexións MIDI."
-
-#: ../../editing/clip-editors/piano-roll.rst:15
 #, fuzzy
 msgid ""
-"It consists of the toolbar discussed in :ref:`editor-toolbar` at the very "
-"top, a smaller space containing extra controls, the ruler discussed in :ref:"
-"`editor-ruler`, the piano roll keys on the left, the piano roll (MIDI) "
-"arranger on the right and the velocity editor at the bottom."
+"The piano roll is the main editor for editing MIDI regions, and is displayed "
+"when a MIDI region is selected."
 msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.8)  #-#-#-#-#\n"
-"Consiste na barra de ferramentas comentada en :ref:`editor-toolbar` arriba "
-"de todo, un pequeno espazo que contén controis extra, a regra comentada en :"
-"ref:`editor-ruler`, as teclas do piano rol na esquerda, a xanela do piano "
-"roll (MIDI) na dereita e o editor da intensidade das notas MIDI na parte de "
-"abaixo.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"O editor de automatizacións amósase cando se selecciona unha rexión de "
+"automatizacións."
 
-#: ../../editing/clip-editors/piano-roll.rst:22
+#: ../../editing/clip-editors/piano-roll.rst:17
+#, fuzzy
+msgid "Piano roll"
+msgstr "Piano Roll"
+
+#: ../../editing/clip-editors/piano-roll.rst:20
 msgid "Additional Controls"
 msgstr "Controis Adicionais"
 
-#: ../../editing/clip-editors/piano-roll.rst:23
+#: ../../editing/clip-editors/piano-roll.rst:21
 msgid "The piano roll contains the following additional controls."
 msgstr "O piano roll contén os seguintes controis adicionais."
 
-#: ../../editing/clip-editors/piano-roll.rst:29
+#: ../../editing/clip-editors/piano-roll.rst:27
+#, fuzzy
+msgid "Piano roll controls"
+msgstr "Barra de Ferramentas"
+
+#: ../../editing/clip-editors/piano-roll.rst:38
 msgid "Drum View"
 msgstr "Vista de Percusión"
 
 #: ../../editing/clip-editors/piano-roll.rst:30
 #, fuzzy
 msgid ""
-"Enabling this will change the display of the arranger into a drum editor "
-"view, where each :term:`MIDI note` is drawn as a diamond and the piano roll "
-"keys display the name of each drum."
+"Switch to drum editor view (or `Drum mode`), where each :term:`MIDI note` is "
+"drawn as a diamond and the piano roll keys display the name of each drum."
 msgstr ""
 "#-#-#-#-#  editing.po (Zrythm 0.8)  #-#-#-#-#\n"
 "Activando isto cambiará a xanela ao modo vista de editor de percusión, onde "
@@ -1398,27 +1663,36 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
-#: ../../editing/clip-editors/piano-roll.rst:36
+#: ../../editing/clip-editors/piano-roll.rst:38
+#, fuzzy
+msgid "Drum mode"
+msgstr "Modo Edición"
+
+#: ../../editing/clip-editors/piano-roll.rst:42
 msgid "Listen to notes"
 msgstr "Escoitar as notas"
 
-#: ../../editing/clip-editors/piano-roll.rst:37
-msgid ""
-"Enabling this will play back each note as you drag it inside the piano roll. "
-"This is useful if you want to `hear` what you are doing."
+#: ../../editing/clip-editors/piano-roll.rst:41
+#, fuzzy
+msgid "Play back each note as you drag it inside the piano roll."
 msgstr ""
 "Activar isto reproducirá cada nota cando as marques no piano roll. Isto é "
 "útil se queres `escoitar` o que estás a facer."
 
-#: ../../editing/clip-editors/piano-roll.rst:44
+#: ../../editing/clip-editors/piano-roll.rst:47
 msgid "Piano Roll Keys"
 msgstr "Teclas do Piano Roll"
 
-#: ../../editing/clip-editors/piano-roll.rst:45
+#: ../../editing/clip-editors/piano-roll.rst:48
 msgid "These are the keys corresponding to each key found on a piano."
 msgstr "Estas son as teclas de acordo ás teclas dun piano."
 
-#: ../../editing/clip-editors/piano-roll.rst:51
+#: ../../editing/clip-editors/piano-roll.rst:54
+#, fuzzy
+msgid "Piano roll keys"
+msgstr "Teclas do Piano Roll"
+
+#: ../../editing/clip-editors/piano-roll.rst:56
 msgid ""
 "Clicking on each key allows you to listen to it, much like pressing a key on "
 "a real piano."
@@ -1426,7 +1700,7 @@ msgstr ""
 "Facendo clic en cada tecla permíteche escoitalas, coma premendo as teclas "
 "dun piano."
 
-#: ../../editing/clip-editors/piano-roll.rst:54
+#: ../../editing/clip-editors/piano-roll.rst:59
 msgid ""
 "A label for each key is shown on the left side of the black/white keys, in "
 "addition to any highlighting (if selected). See :ref:`chord-highlighting` "
@@ -1436,11 +1710,11 @@ msgstr ""
 "maiores do resaltado (se está seleccionada). Bota un ollo a :ref:`chord-"
 "highlighting` para máis información."
 
-#: ../../editing/clip-editors/piano-roll.rst:59
+#: ../../editing/clip-editors/piano-roll.rst:64
 #, fuzzy
 msgid ""
-"The zoom level can be changed by holding down :kbd:`Ctrl` and :kbd:`Shift` "
-"and scrolling."
+"The vertical zoom level can be changed by holding down :kbd:`Ctrl` and :kbd:"
+"`Shift` and scrolling."
 msgstr ""
 "#-#-#-#-#  editing.po (Zrythm 0.8)  #-#-#-#-#\n"
 "O nivel de zoom pódese cambiar mantendo premido :zbutton:`Ctrl` e :zbutton: "
@@ -1448,15 +1722,19 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
-#: ../../editing/clip-editors/piano-roll.rst:63
+#: ../../editing/clip-editors/piano-roll.rst:69
 msgid "MIDI Arranger"
 msgstr "Xanela de MIDI"
 
-#: ../../editing/clip-editors/piano-roll.rst:64
+#: ../../editing/clip-editors/piano-roll.rst:70
 msgid "The MIDI arranger refers to the arranger section of the piano roll."
 msgstr "A xanela de MIDI refírese á sección de arranxos do piano roll."
 
-#: ../../editing/clip-editors/piano-roll.rst:70
+#: ../../editing/clip-editors/piano-roll.rst:76
+msgid "MIDI arranger with notes"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:78
 msgid ""
 "The MIDI arranger contains MIDI notes drawn as rectangles from their start "
 "position to their end position. Zrythm will send a MIDI note on signal when "
@@ -1468,7 +1746,7 @@ msgstr ""
 "cando se alcance a posición de inicio dunha nota e unha sinal de fin da nota "
 "cando se chegue á posición final."
 
-#: ../../editing/clip-editors/piano-roll.rst:76
+#: ../../editing/clip-editors/piano-roll.rst:84
 #, fuzzy
 msgid ""
 "Editing inside the MIDI arranger is covered in :ref:`edit-tools` and :ref:"
@@ -1480,19 +1758,11 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
-#: ../../editing/clip-editors/piano-roll.rst:80
-msgid "Drum Mode"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:82
-msgid "Explain/show how the 2 sections above look in drum mode."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:86
+#: ../../editing/clip-editors/piano-roll.rst:88
 msgid "Velocity Editor"
 msgstr "Editor de Intensidade"
 
-#: ../../editing/clip-editors/piano-roll.rst:87
+#: ../../editing/clip-editors/piano-roll.rst:89
 msgid ""
 "There is another arranger at the bottom of the MIDI arranger for editing the "
 "velocity of each note."
@@ -1500,7 +1770,7 @@ msgstr ""
 "Hai outra xanela na parte de abaixo da xanela MIDI para editar a intensidade "
 "de cada nota."
 
-#: ../../editing/clip-editors/piano-roll.rst:93
+#: ../../editing/clip-editors/piano-roll.rst:95
 msgid ""
 "Velocity refers to the force with which a note is played. Each instrument "
 "handles various velocities for the same note differently, but generally a "
@@ -1512,7 +1782,7 @@ msgstr ""
 "intensidade máis alta resultará nunha nota `máis forte`. As intensidades son "
 "útiles para darlle expresividade ás melodías."
 
-#: ../../editing/clip-editors/piano-roll.rst:99
+#: ../../editing/clip-editors/piano-roll.rst:101
 msgid ""
 "The velocity of each note is drawn as a bar, where higher means a larger "
 "value. Clicking and dragging the tip of each velocity bar allows you to "
@@ -1522,7 +1792,7 @@ msgstr ""
 "maior valor. Facendo clic e arrastrando a punta da barra de intensidade "
 "permíteche cambiala."
 
-#: ../../editing/clip-editors/piano-roll.rst:103
+#: ../../editing/clip-editors/piano-roll.rst:105
 msgid ""
 "You can also edit multiple velocities at once by selecting multiple MIDI "
 "notes before editing a velocity bar."
@@ -1530,13 +1800,102 @@ msgstr ""
 "Tamén podes editar varias intensidades dunha soa vez, seleccionando varias "
 "notas MIDI antes de editar a barra de intensidade."
 
-#: ../../editing/clip-editors/piano-roll.rst:107
+#: ../../editing/clip-editors/piano-roll.rst:109
 msgid ""
 "The :ref:`ramp-mode` can also be used in the velocity editor to `ramp` "
 "velocities."
 msgstr ""
 "A :ref:`ramp-mode` pódese usar tamén no editor de intensidade para facer "
 "`ramplas` de intensidade."
+
+#: ../../editing/clip-editors/piano-roll.rst:115
+msgid "Using the ramp tool on MIDI note velocities"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:118
+msgid "MIDI Functions"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:120
+msgid ""
+"MIDI functions are logic that can be applied to transform the selected MIDI "
+"notes."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:126
+msgid "Crescendo"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:126
+msgid ""
+"Gradually increase the velocities of the selected notes from low to high. "
+"Used to create a climax."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:130
+msgid "Flam"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:129
+msgid ""
+"Create additional MIDI notes right after the start position of each selected "
+"note. This is usually used on snares."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:133
+msgid "Reverse/flip the selected notes horizontally or vertically."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:136
+msgid "Legato"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:136
+msgid "Connect all selected notes so that they play smoothly."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:139
+#, fuzzy
+msgid "Portato"
+msgstr "Formato"
+
+#: ../../editing/clip-editors/piano-roll.rst:139
+msgid "Similar to legato, but leaves some space between the notes."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:141
+#, fuzzy
+msgid "Staccato"
+msgstr "Instalación"
+
+#: ../../editing/clip-editors/piano-roll.rst:142
+msgid "Make the selected notes short and punctuated."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:146
+msgid "Strum Up/Down"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:144
+msgid ""
+"Shift the position and velocity of notes that start at the same position "
+"(chords) to simulate strumming, like when playing guitar."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:148
+#, fuzzy
+msgid "Add illustrations."
+msgstr "TODO: engadir instrucións para compilar"
+
+#: ../../editing/clip-editors/piano-roll.rst:150
+msgid "Some of these are not implemented yet."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:152
+msgid ""
+"In the future, it will be possible to implement custom functions using user "
+"scripts."
+msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:8
 #, fuzzy
@@ -1556,6 +1915,15 @@ msgstr ""
 "`timeline-ruler`, con algunhas diferenzas."
 
 #: ../../editing/clip-editors/ruler.rst:16
+#, fuzzy
+msgid "Editor ruler"
+msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.8)  #-#-#-#-#\n"
+"Barra de ferramentas do Editor\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+
+#: ../../editing/clip-editors/ruler.rst:18
 msgid ""
 "The ruler will display more or less information depending on the current "
 "zoom level. It will also display the following markers and indicators."
@@ -1563,12 +1931,12 @@ msgstr ""
 "A regra amosará máis ou menos información dependendo do nivel de zoom. Tamén "
 "amosará os seguintes marcadores e indicadores."
 
-#: ../../editing/clip-editors/ruler.rst:21
+#: ../../editing/clip-editors/ruler.rst:23
 #: ../../editing/timeline/arranger.rst:126 ../../tracks/track-types.rst:54
 msgid "Markers"
 msgstr "Marcadores"
 
-#: ../../editing/clip-editors/ruler.rst:24
+#: ../../editing/clip-editors/ruler.rst:27
 #, fuzzy
 msgid "Clip Start"
 msgstr ""
@@ -1577,59 +1945,39 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
-#: ../../editing/clip-editors/ruler.rst:25
+#: ../../editing/clip-editors/ruler.rst:26
 msgid ""
-"Displayed as a blue, right-pointing arrow. This controls the position where "
-"the clip will start playback from."
-msgstr ""
-"Aparece como unha frecha azul cara a dereita. Controla a posición na que "
-"empezará a reprodución do clip."
-
-#: ../../editing/clip-editors/ruler.rst:29
-#: ../../editing/clip-editors/ruler.rst:36
-#: ../../editing/clip-editors/ruler.rst:44 ../../mixing/overview.rst:62
-msgid "Add pic."
+"Controls the position where the clip will start playback from. Displayed as "
+"a blue, right-pointing arrow."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:32
+#: ../../editing/clip-editors/ruler.rst:30
 #: ../../playback-and-recording/overview.rst:12
 msgid "Playhead"
 msgstr "Cabeza de Reprodución"
 
-#: ../../editing/clip-editors/ruler.rst:33
+#: ../../editing/clip-editors/ruler.rst:30
 msgid ""
-"Shown as a grey, down-facing arrow. This is the current position of the "
-"playhead."
+"Current position of the playhead. Displayed as a grey, down-facing arrow."
 msgstr ""
-"Aparece como unha frecha gris cara abaixo. É a posición actual da cabeza de "
-"reprodución."
 
-#: ../../editing/clip-editors/ruler.rst:39
+#: ../../editing/clip-editors/ruler.rst:35
 #: ../../playback-and-recording/loop-points-and-markers.rst:11
 msgid "Loop Points"
 msgstr "Puntos de Bucle"
 
-#: ../../editing/clip-editors/ruler.rst:40
+#: ../../editing/clip-editors/ruler.rst:33
 msgid ""
-"Shown as 2 green arrows. These control where the clip will start looping at "
-"and where it will return to after looping."
+"These control the range where the clip will loop after it reaches the loop "
+"end point. Displayed as 2 green arrows."
 msgstr ""
-"Aparecen como dúas frechas verdes. Controlan onde empeza e remata o bucle do "
-"clip."
 
-#: ../../editing/clip-editors/ruler.rst:47
-msgid "Setting Each Point"
-msgstr "Configurando Cada Punto"
+#: ../../editing/clip-editors/ruler.rst:37
+#, fuzzy
+msgid "You can move these markers by clicking and dragging."
+msgstr "As notas MIDI créanse facendo dobre clic e arrastrando."
 
-#: ../../editing/clip-editors/ruler.rst:48
-msgid ""
-"To set the position of each point, click on it and drag it to the desired "
-"position."
-msgstr ""
-"Para configurar a posición de cada punto, fai clic e arrástrao á posición "
-"desexada."
-
-#: ../../editing/clip-editors/ruler.rst:51
+#: ../../editing/clip-editors/ruler.rst:39
 #, fuzzy
 msgid ""
 "Clicking and dragging on empty space will allow you to reposition the "
@@ -1641,14 +1989,20 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
-#: ../../editing/clip-editors/ruler.rst:54
-#, fuzzy
-msgid "Hold :kbd:`Shift` to temporarily disable snapping."
+#: ../../editing/clip-editors/ruler.rst:43
+#: ../../editing/timeline/arranger.rst:32
+msgid "Regions"
+msgstr "Rexións"
+
+#: ../../editing/clip-editors/ruler.rst:45
+msgid ""
+"All regions in the same track as the active region will be shown inside the "
+"ruler. The active region will be displayed in a more prominent color."
 msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.8)  #-#-#-#-#\n"
-"Mantén premido :zbutton:`Shift` para desactivar temporalmente a ancoraxe\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+
+#: ../../editing/clip-editors/ruler.rst:52
+msgid "Regions in the editor ruler"
+msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:8
 msgid "Editor Toolbar"
@@ -1717,7 +2071,7 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:35
-msgid "MIDI functions (TODO: link to reference)"
+msgid ":ref:`MIDI functions <editing/clip-editors/piano-roll:MIDI Functions>`"
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:36
@@ -1739,7 +2093,9 @@ msgid ""
 msgstr "O piano roll contén os seguintes controis adicionais."
 
 #: ../../editing/clip-editors/toolbar.rst:50
-msgid "Automation functions (TODO: link to reference)"
+msgid ""
+":ref:`Automation functions <editing/clip-editors/automation-editor:"
+"Automation Functions>`"
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:55
@@ -1748,12 +2104,14 @@ msgid "The audio editor toolbar includes the following additional sections."
 msgstr "O piano roll contén os seguintes controis adicionais."
 
 #: ../../editing/clip-editors/toolbar.rst:58
-msgid "Audio functions (TODO: link to reference)"
+msgid ""
+":ref:`Audio functions <editing/clip-editors/audio-editor:Audio Functions>`"
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:63
-msgid "The chord editor toolbar includes no additional sections."
-msgstr ""
+#, fuzzy
+msgid "`The chord editor toolbar includes no additional sections.`"
+msgstr "O piano roll contén os seguintes controis adicionais."
 
 #: ../../editing/common-operations.rst:8
 msgid "Common Operations"
@@ -2767,10 +3125,6 @@ msgstr "Obxectos de Xanela."
 msgid "The following arranger objects can exist inside the timeline."
 msgstr "Na liña de tempo pode haber os seguintes obxectos de xanela."
 
-#: ../../editing/timeline/arranger.rst:32
-msgid "Regions"
-msgstr "Rexións"
-
 #: ../../editing/timeline/arranger.rst:33
 msgid ""
 "Regions (or :term:`clips <Clip>`) are containers for events or data (such as "
@@ -3055,8 +3409,8 @@ msgstr ""
 #: ../../editing/timeline/arranger.rst:170
 msgid ""
 "Regions can be repeated, and hence they have :ref:`editable loop points and "
-"a clip start position <editing/clip-editors/ruler:Loop Points>` in the :doc:"
-"`Editor Ruler <../../editing/clip-editors/ruler>` to modify the looping "
+"a clip start position <editing/clip-editors/ruler:Markers>` in the :doc:"
+"`Editor ruler <../../editing/clip-editors/ruler>` to modify the looping "
 "(repeating) behavior."
 msgstr ""
 
@@ -4847,6 +5201,10 @@ msgstr ""
 msgid ""
 "The name of the track the channel corresponds to can be changed by double "
 "clicking the name at the top of the channel."
+msgstr ""
+
+#: ../../mixing/overview.rst:62
+msgid "Add pic."
 msgstr ""
 
 #: ../../mixing/routing.rst:6 ../../routing/intro.rst:6
@@ -7114,6 +7472,10 @@ msgstr ""
 msgid "Managing Connections"
 msgstr "Facer Seleccións"
 
+#: ../../routing/managing-connections.rst:8
+msgid "Write this section."
+msgstr ""
+
 #: ../../routing/monitor-section.rst:6
 #, fuzzy
 msgid "Monitor Section"
@@ -8196,6 +8558,10 @@ msgstr ""
 #: ../../tracks/overview.rst:70
 msgid "Add pic and explain how to add custom icons."
 msgstr ""
+
+#: ../../tracks/overview.rst:74
+msgid "Context Menu"
+msgstr "Menú Contextual"
 
 #: ../../tracks/overview.rst:76
 #, fuzzy
@@ -9632,6 +9998,98 @@ msgid ""
 msgstr ""
 
 #~ msgid ""
+#~ "Currently, it is only used to view audio and has no other functionality, "
+#~ "besides changing the points in the ruler, as discussed in :ref:`editor-"
+#~ "ruler`."
+#~ msgstr ""
+#~ "Actualmente só se usa para ver audio e non ten máis funcións, a parte de "
+#~ "cambiar os puntos na regra, como se comenta en :ref:`editor-ruler`."
+
+#~ msgid ""
+#~ "It is very similar to the piano roll, with the exception that the "
+#~ "arranger contains automation points and curves instead of MIDI notes."
+#~ msgstr ""
+#~ "É moi similar ao piano roll, coa excepción de que a xanela contén puntos "
+#~ "de automatización e curvas, en vez de notas MIDI."
+
+#~ msgid ""
+#~ "Its ruler behaves similarly to the editor ruler explained in :ref:`editor-"
+#~ "ruler`."
+#~ msgstr ""
+#~ "A súa regra compórtase parecido á do editor explicada en :ref:`editor-"
+#~ "ruler`."
+
+#~ msgid ""
+#~ "These chords act similarly to the piano roll keys explained in :ref:"
+#~ "`piano-roll-keys`."
+#~ msgstr ""
+#~ "Estes acordes compórtanse similar ás teclas do piano roll explicadas en :"
+#~ "ref:`piano-roll-keys`."
+
+#~ msgid ""
+#~ "Double-clicking on a chord will bring up the chord selector, which allows "
+#~ "you to change that chord."
+#~ msgstr ""
+#~ "Dobre clic nun acorde activará o selector de acordes, que che permite "
+#~ "cambiar ese acorde."
+
+#~ msgid "The piano roll is the main editor for editing MIDI regions."
+#~ msgstr "O piano roll é o editor principal para rexións MIDI."
+
+#~ msgid ""
+#~ "It consists of the toolbar discussed in :ref:`editor-toolbar` at the very "
+#~ "top, a smaller space containing extra controls, the ruler discussed in :"
+#~ "ref:`editor-ruler`, the piano roll keys on the left, the piano roll "
+#~ "(MIDI) arranger on the right and the velocity editor at the bottom."
+#~ msgstr ""
+#~ "#-#-#-#-#  editing.po (Zrythm 0.8)  #-#-#-#-#\n"
+#~ "Consiste na barra de ferramentas comentada en :ref:`editor-toolbar` "
+#~ "arriba de todo, un pequeno espazo que contén controis extra, a regra "
+#~ "comentada en :ref:`editor-ruler`, as teclas do piano rol na esquerda, a "
+#~ "xanela do piano roll (MIDI) na dereita e o editor da intensidade das "
+#~ "notas MIDI na parte de abaixo.\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+
+#~ msgid ""
+#~ "Displayed as a blue, right-pointing arrow. This controls the position "
+#~ "where the clip will start playback from."
+#~ msgstr ""
+#~ "Aparece como unha frecha azul cara a dereita. Controla a posición na que "
+#~ "empezará a reprodución do clip."
+
+#~ msgid ""
+#~ "Shown as a grey, down-facing arrow. This is the current position of the "
+#~ "playhead."
+#~ msgstr ""
+#~ "Aparece como unha frecha gris cara abaixo. É a posición actual da cabeza "
+#~ "de reprodución."
+
+#~ msgid ""
+#~ "Shown as 2 green arrows. These control where the clip will start looping "
+#~ "at and where it will return to after looping."
+#~ msgstr ""
+#~ "Aparecen como dúas frechas verdes. Controlan onde empeza e remata o bucle "
+#~ "do clip."
+
+#~ msgid "Setting Each Point"
+#~ msgstr "Configurando Cada Punto"
+
+#~ msgid ""
+#~ "To set the position of each point, click on it and drag it to the desired "
+#~ "position."
+#~ msgstr ""
+#~ "Para configurar a posición de cada punto, fai clic e arrástrao á posición "
+#~ "desexada."
+
+#~ msgid "Hold :kbd:`Shift` to temporarily disable snapping."
+#~ msgstr ""
+#~ "#-#-#-#-#  editing.po (Zrythm 0.8)  #-#-#-#-#\n"
+#~ "Mantén premido :zbutton:`Shift` para desactivar temporalmente a ancoraxe\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+
+#~ msgid ""
 #~ "The event viewer in the automation editor is similar to the timeline "
 #~ "event viewer discussed in :ref:`timeline-event-viewer`."
 #~ msgstr ""
@@ -9808,9 +10266,6 @@ msgstr ""
 
 #~ msgid "Sends"
 #~ msgstr "Envíos"
-
-#~ msgid "Lanes"
-#~ msgstr "Estaxes"
 
 #~ msgid "These are similar to :ref:`midi-track-lanes`."
 #~ msgstr "Estas son similares ás :ref:`midi-track-lanes`."
@@ -10002,23 +10457,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Zrythm ten os seguintes tipos de pistas, explicados máis adiante nas súas "
 #~ "propias seccións."
-
-#~ msgid "Changing Values"
-#~ msgstr "Modificando Valores"
-
-#~ msgid ""
-#~ "The values of control ports can be changed by clicking and dragging "
-#~ "inside each bar."
-#~ msgstr ""
-#~ "#-#-#-#-#  plugins-files.po (Zrythm 0.8)  #-#-#-#-#\n"
-#~ "Os valores dos portos de control pódense modificar facendo clic e "
-#~ "arrastrando dentro da barra.\n"
-#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-#~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-#~ "#-#-#-#-#  plugins-files.po (Zrythm 0.8)  #-#-#-#-#\n"
-#~ "Os valores dos portos de control pódense modificar facendo clic e "
-#~ "arrastrando dentro da barra.\n"
-#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #~ msgid ""
 #~ "Some plugin UIs cannot be wrapped and will be opened in separate windows "
@@ -10728,9 +11166,6 @@ msgstr ""
 #~ "Se se deben manter sempre as UIs dos plugins por riba doutras xanelas de "
 #~ "Zrythm ou non."
 
-#~ msgid "Language"
-#~ msgstr "Idioma"
-
 #~ msgid ""
 #~ "The amount of time to wait before auto-saving a backup of the current "
 #~ "project, in minutes. Setting this to 0 will turn it off."
@@ -10847,9 +11282,6 @@ msgstr ""
 #~ msgid "Sections of this manual"
 #~ msgstr "Seccións deste manual"
 
-#~ msgid "TODO: add build instructions"
-#~ msgstr "TODO: engadir instrucións para compilar"
-
 #~ msgid ""
 #~ "We have a `Patreon <https://www.patreon.com/alex_tee>`_ and `LiberaPay "
 #~ "<https://liberapay.com/Zrythm>`_ account for recurrent donations. "
@@ -10913,9 +11345,6 @@ msgstr ""
 #~ msgid "Creating MIDI Notes"
 #~ msgstr "Crear notas MIDI"
 
-#~ msgid "MIDI notes are created by double-clicking and dragging."
-#~ msgstr "As notas MIDI créanse facendo dobre clic e arrastrando."
-
 #~ msgid "Regions are created by double clicking and dragging."
 #~ msgstr "As Rexións créanse facendo dobre clic e arrastrando."
 
@@ -10960,9 +11389,6 @@ msgstr ""
 
 #~ msgid "Selecting Regions"
 #~ msgstr "Seleccionar Rexións"
-
-#~ msgid "Selecting Tracks"
-#~ msgstr "Seleccionar Pistas"
 
 #~ msgid "Arranger"
 #~ msgstr "Arranxador"
@@ -11294,9 +11720,6 @@ msgstr ""
 
 #~ msgid "Channel Overview"
 #~ msgstr "Información das Canles"
-
-#~ msgid "Meters"
-#~ msgstr "Medidores"
 
 #~ msgid "Plugin Strip"
 #~ msgstr "Restra de Plugins"

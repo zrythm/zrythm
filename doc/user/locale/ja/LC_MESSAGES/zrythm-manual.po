@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-20 12:07+0000\n"
+"POT-Creation-Date: 2022-03-20 21:44+0000\n"
 "PO-Revision-Date: 2022-02-19 21:56+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -283,13 +283,9 @@ msgstr "トラブルシューティング"
 #: ../../appendix/troubleshooting.rst:10
 #: ../../configuration/additional-settings.rst:34
 #: ../../configuration/shortcuts.rst:46
-#: ../../editing/clip-editors/automation-editor.rst:56
-#: ../../editing/clip-editors/chord-editor.rst:66
-#: ../../editing/clip-editors/piano-roll.rst:82
-#: ../../editing/clip-editors/piano-roll.rst:115
-#: ../../editing/clip-editors/ruler.rst:29
-#: ../../editing/clip-editors/ruler.rst:36
-#: ../../editing/clip-editors/ruler.rst:44
+#: ../../editing/clip-editors/automation-editor.rst:55
+#: ../../editing/clip-editors/chord-editor.rst:60
+#: ../../editing/clip-editors/piano-roll.rst:148
 #: ../../exporting/audio-and-midi.rst:38 ../../mixing/overview.rst:62
 #: ../../plugins-files/audio-midi-files/file-browser.rst:69
 #: ../../routing/making-connections.rst:30
@@ -1044,23 +1040,217 @@ msgid "The audio editor is displayed when an audio region is selected."
 msgstr "オーディオエディターは、オーディオリージョンを選択すると表示されます。"
 
 #: ../../editing/clip-editors/audio-editor.rst:15
-msgid ""
-"Currently, it is only used to view audio and has no other functionality, "
-"besides changing the points in the ruler, as discussed in :ref:`editor-"
-"ruler`."
-msgstr ""
-"現在のところ、これはオーディオを表示するためにのみ使用され、 :ref:`editor-"
-"ruler` で説明したように、ルーラーのポイントを変更する以外の機能はありません。"
+#, fuzzy
+msgid "Audio editor"
+msgstr "オーディオエディタ"
 
-#: ../../editing/clip-editors/audio-editor.rst:20
+#: ../../editing/clip-editors/audio-editor.rst:18
 msgid "Audio Arranger"
 msgstr "オーディオアレンジャー"
 
-#: ../../editing/clip-editors/audio-editor.rst:21
+#: ../../editing/clip-editors/audio-editor.rst:19
 msgid "The audio arranger refers to the arranger section of the audio editor."
 msgstr ""
 "オーディオアレンジャーとは、オーディオエディターのアレンジャー部のことを指し"
 "ます。"
+
+#: ../../editing/clip-editors/audio-editor.rst:25
+#, fuzzy
+msgid "Audio arranger"
+msgstr "オーディオアレンジャー"
+
+#: ../../editing/clip-editors/audio-editor.rst:27
+#, fuzzy
+msgid "The arranger shows the following indicators and controls."
+msgstr "ピアノロールには、以下の追加コントロールが含まれています。"
+
+#: ../../editing/clip-editors/audio-editor.rst:30
+msgid "Waveform"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:31
+msgid "Fades"
+msgstr "フェード"
+
+#: ../../editing/clip-editors/audio-editor.rst:32
+msgid "Amplitude line"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:33
+#, fuzzy
+msgid "Part selection"
+msgstr "プロジェクトの選択"
+
+#: ../../editing/clip-editors/audio-editor.rst:36
+#, fuzzy
+msgid "Changing the Amplitude"
+msgstr "トラック名の変更"
+
+#: ../../editing/clip-editors/audio-editor.rst:38
+#, fuzzy
+msgid ""
+"The amplitude of the clip can be changed by clicking and dragging the orange "
+"horizontal line up or down."
+msgstr ""
+"コントロールポートの値は、バー内をクリックしてドラッグすることで変更できま"
+"す。"
+
+#: ../../editing/clip-editors/audio-editor.rst:42
+#, fuzzy
+msgid "Changing Fades"
+msgstr "値の変更"
+
+#: ../../editing/clip-editors/audio-editor.rst:44
+msgid ""
+"Fade in/out positions can be changed by clicking and dragging near the top "
+"where the fade in ends or where the fade out starts."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:48
+msgid "The cursor will change to a resize left/right cursor."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:51
+msgid ""
+"Fade curviness can be changed by clicking and dragging the body of fades "
+"upwards or downwards."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:54
+msgid "The cursor will change to a resize up cursor."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:58
+#, fuzzy
+msgid "Selecting Parts"
+msgstr "トラックの選択"
+
+#: ../../editing/clip-editors/audio-editor.rst:60
+#, fuzzy
+msgid ""
+"Audio parts can be selected by clicking and dragging in the bottom half of "
+"the arranger."
+msgstr ""
+"コントロールポートの値は、バー内をクリックしてドラッグすることで変更できま"
+"す。"
+
+#: ../../editing/clip-editors/audio-editor.rst:63
+msgid "The cursor will change to a range selection cursor."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:67
+#, fuzzy
+msgid "Audio Functions"
+msgstr "オーディオリージョン"
+
+#: ../../editing/clip-editors/audio-editor.rst:69
+msgid ""
+"Audio functions are logic that can be applied to transform the selected "
+"audio part."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:72
+#: ../../editing/clip-editors/automation-editor.rst:63
+#: ../../editing/clip-editors/piano-roll.rst:123
+#, fuzzy
+msgid "The following functions are available."
+msgstr "以下のトグルが用意されています。"
+
+#: ../../editing/clip-editors/audio-editor.rst:74
+#, fuzzy
+msgid "Invert"
+msgstr "リニア (Linear)"
+
+#: ../../editing/clip-editors/audio-editor.rst:75
+msgid "Invert the polarity of the audio."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:76
+msgid "Normalize Peak"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:77
+msgid "Normalize the audio so that its peak is 0dB."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:78
+msgid "Linear Fade In"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:79
+msgid "Fade the audio from silence to full amplitude."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:80
+msgid "Linear Fade Out"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:81
+msgid "Fade the audio from full amplitude to silence."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:82
+#, fuzzy
+msgid "Nudge"
+msgstr "言語"
+
+#: ../../editing/clip-editors/audio-editor.rst:83
+msgid "Shift the audio by 1 sample backward or forward."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:84
+#, fuzzy
+msgid "Reverse"
+msgstr "メーター"
+
+#: ../../editing/clip-editors/audio-editor.rst:85
+msgid "Reverse the audio (play back backwards)."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:110
+msgid "External Program"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:87
+msgid ""
+"Run an external program (such as `Audacity <https://www.audacityteam.org/"
+">`_) to edit the audio."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:94
+msgid "Edit the selected audio in an external app"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:96
+msgid ""
+"The selected program will be run with the path to a temporary file as an "
+"argument. Normally, the application will open that file, otherwise you will "
+"have to open it manually."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:101
+msgid "You can select and copy the path in the dialog."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:104
+msgid ""
+"Once you've made your changes to the file, close the external app and press "
+"OK. Zrythm will then apply your changes to the selected audio part."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:108
+msgid ""
+"The length of the audio must stay exactly the same, otherwise this operation "
+"will fail."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:112
+msgid "Guile Script"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:113
+msgid "Not available yet."
+msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:45
@@ -1076,25 +1266,25 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:15
 #, fuzzy
-msgid ""
-"It is very similar to the piano roll, with the exception that the arranger "
-"contains automation points and curves instead of MIDI notes."
-msgstr ""
-"これはピアノロールに非常に似ていますが、アレンジャーがMIDI音符の代わりに自動"
-"化ポイントとカーブを含んでいることを除いては、ピアノロールと非常によく似てい"
-"ます。"
+msgid "Automation editor"
+msgstr "オートメーションエディター"
 
-#: ../../editing/clip-editors/automation-editor.rst:20
+#: ../../editing/clip-editors/automation-editor.rst:18
 msgid "Automation Arranger"
 msgstr "オートメーションアレンジャー"
 
-#: ../../editing/clip-editors/automation-editor.rst:21
+#: ../../editing/clip-editors/automation-editor.rst:19
 msgid ""
 "The automation arranger refers to the arranger section of the automation "
 "editor."
 msgstr ""
 "オートメーションアレンジャーとは、オートメーションエディターのアレンジャー部"
 "を指します。"
+
+#: ../../editing/clip-editors/automation-editor.rst:25
+#, fuzzy
+msgid "Automation arranger"
+msgstr "オートメーションアレンジャー"
 
 #: ../../editing/clip-editors/automation-editor.rst:27
 #, fuzzy
@@ -1118,11 +1308,11 @@ msgstr ""
 "ref:`common-operations` に従います。曲線を上下にドラッグして「曲線度」を変更"
 "できる機能が追加されています。"
 
-#: ../../editing/clip-editors/automation-editor.rst:40
+#: ../../editing/clip-editors/automation-editor.rst:41
 msgid "Curves"
 msgstr "カーブ"
 
-#: ../../editing/clip-editors/automation-editor.rst:41
+#: ../../editing/clip-editors/automation-editor.rst:42
 #, fuzzy
 msgid ""
 "Right-clicking on a curve allows you to change the curve algorithm used. The "
@@ -1131,51 +1321,63 @@ msgstr ""
 "カーブを右クリックすると、使用する曲線アルゴリズムを変更できます。以下の曲線"
 "アルゴリズムが利用可能です。"
 
-#: ../../editing/clip-editors/automation-editor.rst:44
+#: ../../editing/clip-editors/automation-editor.rst:45
 msgid "Exponent"
 msgstr "指数"
 
-#: ../../editing/clip-editors/automation-editor.rst:45
+#: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Exponential curve."
 msgstr "指数曲線。"
 
-#: ../../editing/clip-editors/automation-editor.rst:46
+#: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Superellipse"
 msgstr "超楕円"
 
-#: ../../editing/clip-editors/automation-editor.rst:47
+#: ../../editing/clip-editors/automation-editor.rst:48
 msgid "Elliptical curve."
 msgstr "楕円曲線。"
 
-#: ../../editing/clip-editors/automation-editor.rst:49
+#: ../../editing/clip-editors/automation-editor.rst:50
 #: ../../editing/timeline/arranger.rst:276
 msgid "Vital"
 msgstr "Vital"
 
-#: ../../editing/clip-editors/automation-editor.rst:49
+#: ../../editing/clip-editors/automation-editor.rst:50
 msgid "The curve that Vital synth uses, similar to exponential curve."
 msgstr "Vitalシンセが使用している曲線で、指数関数的な曲線に似ています。"
 
-#: ../../editing/clip-editors/automation-editor.rst:52
+#: ../../editing/clip-editors/automation-editor.rst:53
 msgid "Pulse"
 msgstr "パルス"
 
-#: ../../editing/clip-editors/automation-editor.rst:52
+#: ../../editing/clip-editors/automation-editor.rst:53
 msgid "Pulse wave."
 msgstr "パルス波。"
 
 #: ../../editing/clip-editors/automation-editor.rst:55
-#: ../../editing/clip-editors/chord-editor.rst:65
-#: ../../editing/clip-editors/piano-roll.rst:114 ../../tracks/overview.rst:74
-msgid "Context Menu"
-msgstr "コンテキストメニュー"
+msgid "Create table with illustrations."
+msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:56
-#: ../../editing/clip-editors/chord-editor.rst:66
-#: ../../editing/clip-editors/piano-roll.rst:115
-#: ../../routing/managing-connections.rst:8
-msgid "Write this section."
-msgstr "この部分を書くこと。"
+#: ../../editing/clip-editors/automation-editor.rst:58
+#, fuzzy
+msgid "Automation Functions"
+msgstr "オートメーションリージョン"
+
+#: ../../editing/clip-editors/automation-editor.rst:60
+msgid ""
+"Automation functions are logic that can be applied to transform the selected "
+"automation points/curves."
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:66
+#: ../../editing/clip-editors/piano-roll.rst:133
+#, fuzzy
+msgid "Flip"
+msgstr "クリップ"
+
+#: ../../editing/clip-editors/automation-editor.rst:66
+msgid "Reverse/flip the selected automation horizontally or vertically."
+msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:61
@@ -1187,14 +1389,11 @@ msgid "The chord editor is displayed when a chord region is selected."
 msgstr "コードエディターは、コードリージョンを選択すると表示されます。"
 
 #: ../../editing/clip-editors/chord-editor.rst:15
-msgid ""
-"Its ruler behaves similarly to the editor ruler explained in :ref:`editor-"
-"ruler`."
-msgstr ""
-"そのルーラーは :ref:`editor-ruler` で説明したエディタルーラーと同様の動作をし"
-"ます。"
+#, fuzzy
+msgid "Chord editor"
+msgstr "コードエディター"
 
-#: ../../editing/clip-editors/chord-editor.rst:18
+#: ../../editing/clip-editors/chord-editor.rst:17
 #, fuzzy
 msgid ""
 "The chord editor has a list of chords on the left side that can be changed, "
@@ -1203,11 +1402,11 @@ msgstr ""
 "コードエディタには、変更可能なコードの左側のリストと、コード進行を作成するた"
 "めの右側のアレンジャーが含まれます。"
 
-#: ../../editing/clip-editors/chord-editor.rst:23
+#: ../../editing/clip-editors/chord-editor.rst:22
 msgid "Chords"
 msgstr "和音"
 
-#: ../../editing/clip-editors/chord-editor.rst:24
+#: ../../editing/clip-editors/chord-editor.rst:23
 msgid ""
 "A chord in the context of the chord editor refers to a chord on the left "
 "side of the editor."
@@ -1215,28 +1414,36 @@ msgstr ""
 "コードエディターの文脈でのコードとは、エディターの左側にあるコードのことを指"
 "します。"
 
-#: ../../editing/clip-editors/chord-editor.rst:30
-msgid ""
-"These chords act similarly to the piano roll keys explained in :ref:`piano-"
-"roll-keys`."
-msgstr ""
-"これらのコードは、 :ref:`piano-roll-keys` で説明されているピアノロールキーと"
-"同様に機能します。"
+#: ../../editing/clip-editors/chord-editor.rst:29
+#, fuzzy
+msgid "Chords inside the chord editor"
+msgstr "コード リージョンは、コード トラック内に表示されます。"
 
-#: ../../editing/clip-editors/chord-editor.rst:34
-msgid "Chord Selector"
-msgstr "コードセレクタ"
+#: ../../editing/clip-editors/chord-editor.rst:31
+msgid ""
+"These chords correspond to each chord in the :ref:`Chord pad <chords-and-"
+"scales/overview:Chord Pad>`."
+msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:35
 #, fuzzy
-msgid ""
-"Double-clicking on a chord will bring up the chord selector, which allows "
-"you to change that chord."
-msgstr ""
-"コードをダブルクリックすると、コードセレクタが表示され、コードを変更できま"
-"す。"
+msgid "Each chord row contains the following controls."
+msgstr "ピアノロールには、以下の追加コントロールが含まれています。"
 
-#: ../../editing/clip-editors/chord-editor.rst:41
+#: ../../editing/clip-editors/chord-editor.rst:55
+msgid "Chord Selector"
+msgstr "コードセレクタ"
+
+#: ../../editing/clip-editors/chord-editor.rst:38
+msgid "Change the selected chord."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:43
+#, fuzzy
+msgid "Chord selector"
+msgstr "コードセレクタ"
+
+#: ../../editing/clip-editors/chord-editor.rst:45
 msgid ""
 "At the moment, only the chord creator is functional. A chord can be created "
 "by selecting its root note, its type, its accent and its bass note."
@@ -1245,33 +1452,54 @@ msgstr ""
 "ト音符、その種類、そのアクセントとその低音符を選択することによって作成するこ"
 "とができます。"
 
-#: ../../editing/clip-editors/chord-editor.rst:45
+#: ../../editing/clip-editors/chord-editor.rst:50
 msgid ""
-"Selecting :zbutton:`In scale` under `Visibility` will only show options that "
-"correspond to chords inside the scale active at the start of the region. "
-"This makes it easy to create chords that stay in the current scale."
+"Selecting :guilabel:`In scale` under :guilabel:`Visibility` will only show "
+"options that correspond to chords inside the scale active at the start of "
+"the region. This makes it easy to create chords that stay in the current "
+"scale."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:51
+#: ../../editing/clip-editors/chord-editor.rst:58
+msgid "Inversion"
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:58
+msgid "Invert the chord."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:60
+msgid "Move this part to the chords and scales chapter."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:64
 msgid "Chord Arranger"
 msgstr "コードアレンジャー"
 
-#: ../../editing/clip-editors/chord-editor.rst:52
+#: ../../editing/clip-editors/chord-editor.rst:65
 msgid "The chord arranger refers to the arranger section of the chord editor."
 msgstr ""
 "コードアレンジャーとは、コードエディターのアレンジャーセクションのことを指し"
 "ます。"
 
-#: ../../editing/clip-editors/chord-editor.rst:58
+#: ../../editing/clip-editors/chord-editor.rst:71
+#, fuzzy
+msgid "Chord arranger"
+msgstr "コードアレンジャー"
+
+#: ../../editing/clip-editors/chord-editor.rst:73
 #, fuzzy
 msgid ""
-"The chord editor contains `chord objects` that signify the start of a chord. "
-"Chord objects do not have a length."
+"The chord editor contains `chord objects` that signify the start of a chord."
 msgstr ""
 "コードエディタには、コードの開始を示す `コードオブジェクト` が含まれていま"
 "す。弦オブジェクトには長さが含まれていません。"
 
-#: ../../editing/clip-editors/chord-editor.rst:61
+#: ../../editing/clip-editors/chord-editor.rst:76
+msgid "Chord objects do not have a length."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:78
 msgid ""
 "Editing in the chord arranger follows :ref:`edit-tools` and :ref:`common-"
 "operations`."
@@ -1297,58 +1525,72 @@ msgid "Piano Roll"
 msgstr "ピアノロール"
 
 #: ../../editing/clip-editors/piano-roll.rst:10
-msgid "The piano roll is the main editor for editing MIDI regions."
-msgstr "ピアノロールはMIDIリージョンを編集するためのメインエディターです。"
-
-#: ../../editing/clip-editors/piano-roll.rst:15
+#, fuzzy
 msgid ""
-"It consists of the toolbar discussed in :ref:`editor-toolbar` at the very "
-"top, a smaller space containing extra controls, the ruler discussed in :ref:"
-"`editor-ruler`, the piano roll keys on the left, the piano roll (MIDI) "
-"arranger on the right and the velocity editor at the bottom."
+"The piano roll is the main editor for editing MIDI regions, and is displayed "
+"when a MIDI region is selected."
 msgstr ""
+"オートメーションエディターは、オートメーションリージョンを選択すると表示され"
+"ます。"
 
-#: ../../editing/clip-editors/piano-roll.rst:22
+#: ../../editing/clip-editors/piano-roll.rst:17
+#, fuzzy
+msgid "Piano roll"
+msgstr "ピアノロール"
+
+#: ../../editing/clip-editors/piano-roll.rst:20
 msgid "Additional Controls"
 msgstr "その他のコントロール"
 
-#: ../../editing/clip-editors/piano-roll.rst:23
+#: ../../editing/clip-editors/piano-roll.rst:21
 msgid "The piano roll contains the following additional controls."
 msgstr "ピアノロールには、以下の追加コントロールが含まれています。"
 
-#: ../../editing/clip-editors/piano-roll.rst:29
+#: ../../editing/clip-editors/piano-roll.rst:27
+#, fuzzy
+msgid "Piano roll controls"
+msgstr "メインツールバー"
+
+#: ../../editing/clip-editors/piano-roll.rst:38
 msgid "Drum View"
 msgstr "ドラムビュー"
 
 #: ../../editing/clip-editors/piano-roll.rst:30
 msgid ""
-"Enabling this will change the display of the arranger into a drum editor "
-"view, where each :term:`MIDI note` is drawn as a diamond and the piano roll "
-"keys display the name of each drum."
+"Switch to drum editor view (or `Drum mode`), where each :term:`MIDI note` is "
+"drawn as a diamond and the piano roll keys display the name of each drum."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:36
+#: ../../editing/clip-editors/piano-roll.rst:38
+#, fuzzy
+msgid "Drum mode"
+msgstr "ドラムモード"
+
+#: ../../editing/clip-editors/piano-roll.rst:42
 msgid "Listen to notes"
 msgstr "音符を聞く"
 
-#: ../../editing/clip-editors/piano-roll.rst:37
+#: ../../editing/clip-editors/piano-roll.rst:41
 #, fuzzy
-msgid ""
-"Enabling this will play back each note as you drag it inside the piano roll. "
-"This is useful if you want to `hear` what you are doing."
+msgid "Play back each note as you drag it inside the piano roll."
 msgstr ""
 "これを有効にすると、ピアノロール内でドラッグすると、各ノートが再生されます。"
 "これは、自分のやっていることを「聞きたい」場合に便利です。"
 
-#: ../../editing/clip-editors/piano-roll.rst:44
+#: ../../editing/clip-editors/piano-roll.rst:47
 msgid "Piano Roll Keys"
 msgstr "ピアノロールキー"
 
-#: ../../editing/clip-editors/piano-roll.rst:45
+#: ../../editing/clip-editors/piano-roll.rst:48
 msgid "These are the keys corresponding to each key found on a piano."
 msgstr "ピアノにある鍵盤に対応する鍵盤です。"
 
-#: ../../editing/clip-editors/piano-roll.rst:51
+#: ../../editing/clip-editors/piano-roll.rst:54
+#, fuzzy
+msgid "Piano roll keys"
+msgstr "ピアノロールキー"
+
+#: ../../editing/clip-editors/piano-roll.rst:56
 #, fuzzy
 msgid ""
 "Clicking on each key allows you to listen to it, much like pressing a key on "
@@ -1357,30 +1599,35 @@ msgstr ""
 "各キーをクリックすると、実際のピアノのキーを押すのと同じように、それを聴くこ"
 "とができます。"
 
-#: ../../editing/clip-editors/piano-roll.rst:54
+#: ../../editing/clip-editors/piano-roll.rst:59
 msgid ""
 "A label for each key is shown on the left side of the black/white keys, in "
 "addition to any highlighting (if selected). See :ref:`chord-highlighting` "
 "for more information."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:59
+#: ../../editing/clip-editors/piano-roll.rst:64
+#, fuzzy
 msgid ""
-"The zoom level can be changed by holding down :kbd:`Ctrl` and :kbd:`Shift` "
-"and scrolling."
+"The vertical zoom level can be changed by holding down :kbd:`Ctrl` and :kbd:"
+"`Shift` and scrolling."
 msgstr ""
 "ズームレベルは、 :kbd:`Ctrl` と :kbd:`Shift` を押しながらスクロールすることで"
 "変更できます。"
 
-#: ../../editing/clip-editors/piano-roll.rst:63
+#: ../../editing/clip-editors/piano-roll.rst:69
 msgid "MIDI Arranger"
 msgstr "MIDIアレンジャー"
 
-#: ../../editing/clip-editors/piano-roll.rst:64
+#: ../../editing/clip-editors/piano-roll.rst:70
 msgid "The MIDI arranger refers to the arranger section of the piano roll."
 msgstr "MIDIアレンジャーとは、ピアノロールのアレンジャー部のことを指します。"
 
-#: ../../editing/clip-editors/piano-roll.rst:70
+#: ../../editing/clip-editors/piano-roll.rst:76
+msgid "MIDI arranger with notes"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:78
 #, fuzzy
 msgid ""
 "The MIDI arranger contains MIDI notes drawn as rectangles from their start "
@@ -1392,7 +1639,7 @@ msgstr ""
 "ノートが含まれています。Zrythmは、ノートの開始位置に達すると信号にMIDIノート"
 "を送信し、ノートの終了位置に達するとノートオフ信号を送信します。"
 
-#: ../../editing/clip-editors/piano-roll.rst:76
+#: ../../editing/clip-editors/piano-roll.rst:84
 msgid ""
 "Editing inside the MIDI arranger is covered in :ref:`edit-tools` and :ref:"
 "`common-operations`."
@@ -1400,20 +1647,11 @@ msgstr ""
 "MIDIエディター内での操作については :ref:`edit-tools` と :ref:`common-"
 "operations` を参照してください。"
 
-#: ../../editing/clip-editors/piano-roll.rst:80
-msgid "Drum Mode"
-msgstr "ドラムモード"
-
-#: ../../editing/clip-editors/piano-roll.rst:82
-msgid "Explain/show how the 2 sections above look in drum mode."
-msgstr ""
-"上記の2つのセクションがドラムモードでどのように表示されるかを説明/示す。"
-
-#: ../../editing/clip-editors/piano-roll.rst:86
+#: ../../editing/clip-editors/piano-roll.rst:88
 msgid "Velocity Editor"
 msgstr "ベロシティエディタ"
 
-#: ../../editing/clip-editors/piano-roll.rst:87
+#: ../../editing/clip-editors/piano-roll.rst:89
 msgid ""
 "There is another arranger at the bottom of the MIDI arranger for editing the "
 "velocity of each note."
@@ -1421,7 +1659,7 @@ msgstr ""
 "MIDI アレンジャーの下部には、各音符のベロシティーを編集するためのアレンジャー"
 "がもう 1 つあります。"
 
-#: ../../editing/clip-editors/piano-roll.rst:93
+#: ../../editing/clip-editors/piano-roll.rst:95
 msgid ""
 "Velocity refers to the force with which a note is played. Each instrument "
 "handles various velocities for the same note differently, but generally a "
@@ -1429,7 +1667,7 @@ msgid ""
 "useful for adding expression to melodies."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:99
+#: ../../editing/clip-editors/piano-roll.rst:101
 #, fuzzy
 msgid ""
 "The velocity of each note is drawn as a bar, where higher means a larger "
@@ -1439,7 +1677,7 @@ msgstr ""
 "各ノートのベロシティはバーとして描画され、高いほど大きな値が意味します。各ベ"
 "ロシティバーの先端をクリックしてドラッグすると、それを変更できます。"
 
-#: ../../editing/clip-editors/piano-roll.rst:103
+#: ../../editing/clip-editors/piano-roll.rst:105
 msgid ""
 "You can also edit multiple velocities at once by selecting multiple MIDI "
 "notes before editing a velocity bar."
@@ -1447,13 +1685,103 @@ msgstr ""
 "ベロシティバーを編集する前に複数の MIDI ノートを選択して、複数のベロシティを"
 "一括編集することもできます。"
 
-#: ../../editing/clip-editors/piano-roll.rst:107
+#: ../../editing/clip-editors/piano-roll.rst:109
 msgid ""
 "The :ref:`ramp-mode` can also be used in the velocity editor to `ramp` "
 "velocities."
 msgstr ""
 ":ref:`ramp-mode` は、ベロシティエディターでベロシティを `ランプ` するために使"
 "用することもできます。"
+
+#: ../../editing/clip-editors/piano-roll.rst:115
+msgid "Using the ramp tool on MIDI note velocities"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:118
+msgid "MIDI Functions"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:120
+msgid ""
+"MIDI functions are logic that can be applied to transform the selected MIDI "
+"notes."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:126
+msgid "Crescendo"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:126
+msgid ""
+"Gradually increase the velocities of the selected notes from low to high. "
+"Used to create a climax."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:130
+msgid "Flam"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:129
+msgid ""
+"Create additional MIDI notes right after the start position of each selected "
+"note. This is usually used on snares."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:133
+msgid "Reverse/flip the selected notes horizontally or vertically."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:136
+msgid "Legato"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:136
+msgid "Connect all selected notes so that they play smoothly."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:139
+#, fuzzy
+msgid "Portato"
+msgstr "フォーマット"
+
+#: ../../editing/clip-editors/piano-roll.rst:139
+msgid "Similar to legato, but leaves some space between the notes."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:141
+#, fuzzy
+msgid "Staccato"
+msgstr "インストール"
+
+#: ../../editing/clip-editors/piano-roll.rst:142
+msgid "Make the selected notes short and punctuated."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:146
+msgid "Strum Up/Down"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:144
+msgid ""
+"Shift the position and velocity of notes that start at the same position "
+"(chords) to simulate strumming, like when playing guitar."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:148
+#, fuzzy
+msgid "Add illustrations."
+msgstr "イラストを追加すること。"
+
+#: ../../editing/clip-editors/piano-roll.rst:150
+#, fuzzy
+msgid "Some of these are not implemented yet."
+msgstr "この機能はまだ実装されていません。"
+
+#: ../../editing/clip-editors/piano-roll.rst:152
+msgid ""
+"In the future, it will be possible to implement custom functions using user "
+"scripts."
+msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:8
 msgid "Editor Ruler"
@@ -1468,6 +1796,11 @@ msgstr ""
 "ルーラーに似ていますが、いくつかの違いがあります。"
 
 #: ../../editing/clip-editors/ruler.rst:16
+#, fuzzy
+msgid "Editor ruler"
+msgstr "エディタールーラー"
+
+#: ../../editing/clip-editors/ruler.rst:18
 msgid ""
 "The ruler will display more or less information depending on the current "
 "zoom level. It will also display the following markers and indicators."
@@ -1475,76 +1808,68 @@ msgstr ""
 "ルーラーは、現在のズームレベルに応じて多かれ少なかれ情報を表示します。また、"
 "以下のマーカーとインジケータも表示されます。"
 
-#: ../../editing/clip-editors/ruler.rst:21
+#: ../../editing/clip-editors/ruler.rst:23
 #: ../../editing/timeline/arranger.rst:126 ../../tracks/track-types.rst:54
 msgid "Markers"
 msgstr "マーカー"
 
-#: ../../editing/clip-editors/ruler.rst:24
+#: ../../editing/clip-editors/ruler.rst:27
 msgid "Clip Start"
 msgstr "クリップの開始点"
 
-#: ../../editing/clip-editors/ruler.rst:25
+#: ../../editing/clip-editors/ruler.rst:26
 msgid ""
-"Displayed as a blue, right-pointing arrow. This controls the position where "
-"the clip will start playback from."
+"Controls the position where the clip will start playback from. Displayed as "
+"a blue, right-pointing arrow."
 msgstr ""
-"青色の右向き矢印で表示されます。これは、クリップの再生を開始する位置を制御し"
-"ます。"
 
-#: ../../editing/clip-editors/ruler.rst:29
-#: ../../editing/clip-editors/ruler.rst:36
-#: ../../editing/clip-editors/ruler.rst:44 ../../mixing/overview.rst:62
-msgid "Add pic."
-msgstr "スクショを追加。"
-
-#: ../../editing/clip-editors/ruler.rst:32
+#: ../../editing/clip-editors/ruler.rst:30
 #: ../../playback-and-recording/overview.rst:12
 msgid "Playhead"
 msgstr "再生ヘッド"
 
-#: ../../editing/clip-editors/ruler.rst:33
+#: ../../editing/clip-editors/ruler.rst:30
 msgid ""
-"Shown as a grey, down-facing arrow. This is the current position of the "
-"playhead."
+"Current position of the playhead. Displayed as a grey, down-facing arrow."
 msgstr ""
-"灰色の下向き矢印として表示されています。これはプレイヘッドの現在の位置です。"
 
-#: ../../editing/clip-editors/ruler.rst:39
+#: ../../editing/clip-editors/ruler.rst:35
 #: ../../playback-and-recording/loop-points-and-markers.rst:11
 msgid "Loop Points"
 msgstr "ループポイント"
 
-#: ../../editing/clip-editors/ruler.rst:40
+#: ../../editing/clip-editors/ruler.rst:33
 msgid ""
-"Shown as 2 green arrows. These control where the clip will start looping at "
-"and where it will return to after looping."
+"These control the range where the clip will loop after it reaches the loop "
+"end point. Displayed as 2 green arrows."
 msgstr ""
-"2 つの緑の矢印で示されています。これらの矢印は、クリップがループを開始する位"
-"置とループ後に戻る位置を制御します。"
 
-#: ../../editing/clip-editors/ruler.rst:47
-msgid "Setting Each Point"
-msgstr "各ポイントの設定"
+#: ../../editing/clip-editors/ruler.rst:37
+#, fuzzy
+msgid "You can move these markers by clicking and dragging."
+msgstr "MIDIノートは、ダブルクリックしてドラッグすることで作成されます。"
 
-#: ../../editing/clip-editors/ruler.rst:48
-msgid ""
-"To set the position of each point, click on it and drag it to the desired "
-"position."
-msgstr ""
-"各ポイントの位置を設定するには、ポイントをクリックして目的の位置にドラッグし"
-"ます。"
-
-#: ../../editing/clip-editors/ruler.rst:51
+#: ../../editing/clip-editors/ruler.rst:39
 msgid ""
 "Clicking and dragging on empty space will allow you to reposition the "
 "playhead."
 msgstr ""
 "空のスペースをクリックしてドラッグすると、再生ヘッドの位置を変更できます。"
 
-#: ../../editing/clip-editors/ruler.rst:54
-msgid "Hold :kbd:`Shift` to temporarily disable snapping."
-msgstr "一時的にスナップを無効にするには、 :kbd:`Shift` を押します"
+#: ../../editing/clip-editors/ruler.rst:43
+#: ../../editing/timeline/arranger.rst:32
+msgid "Regions"
+msgstr "リージョン"
+
+#: ../../editing/clip-editors/ruler.rst:45
+msgid ""
+"All regions in the same track as the active region will be shown inside the "
+"ruler. The active region will be displayed in a more prominent color."
+msgstr ""
+
+#: ../../editing/clip-editors/ruler.rst:52
+msgid "Regions in the editor ruler"
+msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:8
 msgid "Editor Toolbar"
@@ -1613,7 +1938,7 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:35
-msgid "MIDI functions (TODO: link to reference)"
+msgid ":ref:`MIDI functions <editing/clip-editors/piano-roll:MIDI Functions>`"
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:36
@@ -1635,7 +1960,9 @@ msgid ""
 msgstr "ピアノロールには、以下の追加コントロールが含まれています。"
 
 #: ../../editing/clip-editors/toolbar.rst:50
-msgid "Automation functions (TODO: link to reference)"
+msgid ""
+":ref:`Automation functions <editing/clip-editors/automation-editor:"
+"Automation Functions>`"
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:55
@@ -1644,12 +1971,14 @@ msgid "The audio editor toolbar includes the following additional sections."
 msgstr "ピアノロールには、以下の追加コントロールが含まれています。"
 
 #: ../../editing/clip-editors/toolbar.rst:58
-msgid "Audio functions (TODO: link to reference)"
+msgid ""
+":ref:`Audio functions <editing/clip-editors/audio-editor:Audio Functions>`"
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:63
-msgid "The chord editor toolbar includes no additional sections."
-msgstr ""
+#, fuzzy
+msgid "`The chord editor toolbar includes no additional sections.`"
+msgstr "ピアノロールには、以下の追加コントロールが含まれています。"
 
 #: ../../editing/common-operations.rst:8
 msgid "Common Operations"
@@ -2503,10 +2832,6 @@ msgstr "アレンジャー オブジェクト"
 msgid "The following arranger objects can exist inside the timeline."
 msgstr "タイムライン内に次のアレンジャー オブジェクトを配置できます。"
 
-#: ../../editing/timeline/arranger.rst:32
-msgid "Regions"
-msgstr "リージョン"
-
 #: ../../editing/timeline/arranger.rst:33
 msgid ""
 "Regions (or :term:`clips <Clip>`) are containers for events or data (such as "
@@ -2717,8 +3042,8 @@ msgstr "ループ"
 #: ../../editing/timeline/arranger.rst:170
 msgid ""
 "Regions can be repeated, and hence they have :ref:`editable loop points and "
-"a clip start position <editing/clip-editors/ruler:Loop Points>` in the :doc:"
-"`Editor Ruler <../../editing/clip-editors/ruler>` to modify the looping "
+"a clip start position <editing/clip-editors/ruler:Markers>` in the :doc:"
+"`Editor ruler <../../editing/clip-editors/ruler>` to modify the looping "
 "(repeating) behavior."
 msgstr ""
 
@@ -4376,6 +4701,10 @@ msgid ""
 msgstr ""
 "チャンネルの上部にある名前をダブルクリックすると、チャンネルが対応するトラッ"
 "クの名前を変更できます。"
+
+#: ../../mixing/overview.rst:62
+msgid "Add pic."
+msgstr "スクショを追加。"
 
 #: ../../mixing/routing.rst:6 ../../routing/intro.rst:6
 msgid "Routing"
@@ -6362,6 +6691,10 @@ msgstr "詳細については、 :ref:`export-routing-graph` を参照してく�
 msgid "Managing Connections"
 msgstr "コネクトする"
 
+#: ../../routing/managing-connections.rst:8
+msgid "Write this section."
+msgstr "この部分を書くこと。"
+
 #: ../../routing/monitor-section.rst:6
 #, fuzzy
 msgid "Monitor Section"
@@ -7458,6 +7791,10 @@ msgstr ""
 #: ../../tracks/overview.rst:70
 msgid "Add pic and explain how to add custom icons."
 msgstr "画像を追加し、カスタム アイコンを追加する方法を説明。"
+
+#: ../../tracks/overview.rst:74
+msgid "Context Menu"
+msgstr "コンテキストメニュー"
 
 #: ../../tracks/overview.rst:76
 msgid ""
@@ -8734,6 +9071,85 @@ msgid ""
 "will start clipping."
 msgstr ""
 
+#~ msgid ""
+#~ "Currently, it is only used to view audio and has no other functionality, "
+#~ "besides changing the points in the ruler, as discussed in :ref:`editor-"
+#~ "ruler`."
+#~ msgstr ""
+#~ "現在のところ、これはオーディオを表示するためにのみ使用され、 :ref:`editor-"
+#~ "ruler` で説明したように、ルーラーのポイントを変更する以外の機能はありませ"
+#~ "ん。"
+
+#~ msgid ""
+#~ "It is very similar to the piano roll, with the exception that the "
+#~ "arranger contains automation points and curves instead of MIDI notes."
+#~ msgstr ""
+#~ "これはピアノロールに非常に似ていますが、アレンジャーがMIDI音符の代わりに自"
+#~ "動化ポイントとカーブを含んでいることを除いては、ピアノロールと非常によく似"
+#~ "ています。"
+
+#~ msgid ""
+#~ "Its ruler behaves similarly to the editor ruler explained in :ref:`editor-"
+#~ "ruler`."
+#~ msgstr ""
+#~ "そのルーラーは :ref:`editor-ruler` で説明したエディタルーラーと同様の動作"
+#~ "をします。"
+
+#~ msgid ""
+#~ "These chords act similarly to the piano roll keys explained in :ref:"
+#~ "`piano-roll-keys`."
+#~ msgstr ""
+#~ "これらのコードは、 :ref:`piano-roll-keys` で説明されているピアノロールキー"
+#~ "と同様に機能します。"
+
+#~ msgid ""
+#~ "Double-clicking on a chord will bring up the chord selector, which allows "
+#~ "you to change that chord."
+#~ msgstr ""
+#~ "コードをダブルクリックすると、コードセレクタが表示され、コードを変更できま"
+#~ "す。"
+
+#~ msgid "The piano roll is the main editor for editing MIDI regions."
+#~ msgstr "ピアノロールはMIDIリージョンを編集するためのメインエディターです。"
+
+#~ msgid "Explain/show how the 2 sections above look in drum mode."
+#~ msgstr ""
+#~ "上記の2つのセクションがドラムモードでどのように表示されるかを説明/示す。"
+
+#~ msgid ""
+#~ "Displayed as a blue, right-pointing arrow. This controls the position "
+#~ "where the clip will start playback from."
+#~ msgstr ""
+#~ "青色の右向き矢印で表示されます。これは、クリップの再生を開始する位置を制御"
+#~ "します。"
+
+#~ msgid ""
+#~ "Shown as a grey, down-facing arrow. This is the current position of the "
+#~ "playhead."
+#~ msgstr ""
+#~ "灰色の下向き矢印として表示されています。これはプレイヘッドの現在の位置で"
+#~ "す。"
+
+#~ msgid ""
+#~ "Shown as 2 green arrows. These control where the clip will start looping "
+#~ "at and where it will return to after looping."
+#~ msgstr ""
+#~ "2 つの緑の矢印で示されています。これらの矢印は、クリップがループを開始する"
+#~ "位置とループ後に戻る位置を制御します。"
+
+#~ msgid "Setting Each Point"
+#~ msgstr "各ポイントの設定"
+
+#~ msgid ""
+#~ "To set the position of each point, click on it and drag it to the desired "
+#~ "position."
+#~ msgstr ""
+#~ "各ポイントの位置を設定するには、ポイントをクリックして目的の位置にドラッグ"
+#~ "します。"
+
+#~ msgid "Hold :kbd:`Shift` to temporarily disable snapping."
+#~ msgstr "一時的にスナップを無効にするには、 :kbd:`Shift` を押します"
+
 #~ msgid "It displays information about each automation point and its curve."
 #~ msgstr "各オートメーションポイントとその曲線に関する情報が表示されます。"
 
@@ -8840,9 +9256,6 @@ msgstr ""
 
 #~ msgid "Add pic showing object selection."
 #~ msgstr "オブジェクトの選択を示すイラストを追加。"
-
-#~ msgid "This feature is not implemented yet."
-#~ msgstr "この機能はまだ実装されていません。"
 
 #~ msgid "Snap Toggles"
 #~ msgstr "スナップ設定の切り替えボタン"
@@ -9107,16 +9520,6 @@ msgstr ""
 
 #~ msgid "Add page for Modulators and Tempo track."
 #~ msgstr "モジュレーターとテンポトラックのページを追加。"
-
-#~ msgid "Changing Values"
-#~ msgstr "値の変更"
-
-#~ msgid ""
-#~ "The values of control ports can be changed by clicking and dragging "
-#~ "inside each bar."
-#~ msgstr ""
-#~ "コントロールポートの値は、バー内をクリックしてドラッグすることで変更できま"
-#~ "す。"
 
 #~ msgid ""
 #~ "Some plugin UIs cannot be wrapped and will be opened in separate windows "
@@ -9895,9 +10298,6 @@ msgstr ""
 #~ "Geonkickトラックを作成し、そのモノ出力をオーディオFXトラックにルーティング"
 #~ "する"
 
-#~ msgid "Add illustration."
-#~ msgstr "イラストを追加すること。"
-
 #~ msgid "Expand, add illustrations, etc."
 #~ msgstr "詳細、イラスト追加など。"
 
@@ -10246,9 +10646,6 @@ msgstr ""
 #~ msgid "Whether to always keep plugin UIs above other Zrythm windows or not."
 #~ msgstr "常に他のZrythmウィンドウの上にプラグインのUIを表示するかどうか。"
 
-#~ msgid "Language"
-#~ msgstr "言語"
-
 #~ msgid ""
 #~ "The amount of time to wait before auto-saving a backup of the current "
 #~ "project, in minutes. Setting this to 0 will turn it off."
@@ -10425,9 +10822,6 @@ msgstr ""
 #~ msgid "Creating MIDI Notes"
 #~ msgstr "MIDI ノートの作成"
 
-#~ msgid "MIDI notes are created by double-clicking and dragging."
-#~ msgstr "MIDIノートは、ダブルクリックしてドラッグすることで作成されます。"
-
 #~ msgid "Regions are created by double clicking and dragging."
 #~ msgstr "リージョンはダブルクリックとドラッグで作成されます。"
 
@@ -10473,9 +10867,6 @@ msgstr ""
 #~ msgid "Selecting Regions"
 #~ msgstr "リージョンの選択"
 
-#~ msgid "Selecting Tracks"
-#~ msgstr "トラックの選択"
-
 #~ msgid "Arranger"
 #~ msgstr "アレンジャー"
 
@@ -10514,9 +10905,6 @@ msgstr ""
 
 #~ msgid "Expand + add pic."
 #~ msgstr "Expand + add pic."
-
-#~ msgid "Fades"
-#~ msgstr "フェード"
 
 #~ msgid "Explain how fades work."
 #~ msgstr "フェードの仕組みを説明。"
@@ -10983,9 +11371,6 @@ msgstr ""
 
 #~ msgid "Channel Overview"
 #~ msgstr "チャンネルの概要"
-
-#~ msgid "Meters"
-#~ msgstr "メーター"
 
 #~ msgid "Plugin Strip"
 #~ msgstr "プラグインのストリップ"

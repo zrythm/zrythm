@@ -9,30 +9,31 @@ Automation Editor
 The automation editor is displayed when an automation
 region is selected.
 
-.. image:: /_static/img/automation-editor.png
+.. figure:: /_static/img/automation-editor.png
    :align: center
 
-It is very similar to the piano roll, with the exception
-that the arranger contains automation points and curves
-instead of MIDI notes.
+   Automation editor
 
 Automation Arranger
 -------------------
-The automation arranger refers to the arranger section of
-the automation editor.
+The automation arranger refers to the arranger
+section of the automation editor.
 
-.. image:: /_static/img/automation-arranger.png
+.. figure:: /_static/img/automation-arranger.png
    :align: center
 
-The automation arranger contains automation points drawn
-as circles and curves connecting them. During playback,
-Zrythm will interpolate the value of the control being
-automated based on the curve.
+   Automation arranger
 
-Editing inside the automation arranger generally follows
-:ref:`edit-tools` and :ref:`common-operations`, with the
-added feature that curves can be dragged up or down to
-change their `curviness`.
+The automation arranger contains automation points
+drawn as circles and curves connecting them. During
+playback, Zrythm will interpolate the value of the
+control being automated based on the curve.
+
+Editing inside the automation arranger generally
+follows :ref:`edit-tools` and
+:ref:`common-operations`, with the
+added feature that curves can be dragged up or down
+to change their `curviness`.
 
 .. _automation-curves:
 
@@ -51,6 +52,16 @@ Vital
 Pulse
   Pulse wave.
 
-Context Menu
-------------
-.. todo:: Write this section.
+.. todo:: Create table with illustrations.
+
+Automation Functions
+--------------------
+
+Automation functions are logic that can be applied
+to transform the selected automation points/curves.
+
+The following functions are available.
+
+Flip
+  Reverse/flip the selected automation horizontally
+  or vertically.

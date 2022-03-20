@@ -7,36 +7,39 @@
 Piano Roll
 ==========
 
-The piano roll is the main editor for editing MIDI regions.
+The piano roll is the main editor for editing MIDI
+regions, and is displayed when a MIDI region is
+selected.
 
-.. image:: /_static/img/piano-roll.png
+.. figure:: /_static/img/piano-roll.png
    :align: center
 
-It consists of the toolbar discussed in :ref:`editor-toolbar`
-at the very top, a smaller space containing extra controls, the
-ruler discussed in :ref:`editor-ruler`, the piano roll keys
-on the left, the piano roll (MIDI) arranger on the right
-and the velocity editor at the bottom.
+   Piano roll
 
 Additional Controls
 -------------------
-The piano roll contains the following additional controls.
+The piano roll contains the following additional
+controls.
 
-.. image:: /_static/img/piano-roll-controls.png
+.. figure:: /_static/img/piano-roll-controls.png
    :align: center
 
+   Piano roll controls
+
 Drum View
-~~~~~~~~~
-Enabling this will change the display of the
-arranger into a drum editor view, where each
-:term:`MIDI note` is drawn as a diamond and the
-piano roll keys display the name of each drum.
+  Switch to drum editor view (or `Drum mode`),
+  where each
+  :term:`MIDI note` is drawn as a diamond and the
+  piano roll keys display the name of each drum.
+
+  .. figure:: /_static/img/drum-mode.png
+     :align: center
+
+     Drum mode
 
 Listen to notes
-~~~~~~~~~~~~~~~
-Enabling this will play back each note as you drag
-it inside the piano roll. This is useful if you
-want to `hear` what you are doing.
+  Play back each note as you drag it inside the
+  piano roll.
 
 .. _piano-roll-keys:
 
@@ -45,27 +48,32 @@ Piano Roll Keys
 These are the keys corresponding to each key found
 on a piano.
 
-.. image:: /_static/img/piano-roll-keys.png
+.. figure:: /_static/img/piano-roll-keys.png
    :align: center
 
-Clicking on each key allows you to listen to it, much like
-pressing a key on a real piano.
+   Piano roll keys
+
+Clicking on each key allows you to listen to it,
+much like pressing a key on a real piano.
 
 A label for each key is shown on the left side of the
 black/white keys, in addition to any highlighting
 (if selected).
 See :ref:`chord-highlighting` for more information.
 
-.. tip:: The zoom level can be changed by holding
-   down :kbd:`Ctrl` and :kbd:`Shift` and scrolling.
+.. tip:: The vertical zoom level can be changed by
+   holding down :kbd:`Ctrl` and :kbd:`Shift` and
+   scrolling.
 
 MIDI Arranger
 -------------
 The MIDI arranger refers to the arranger section of the piano
 roll.
 
-.. image:: /_static/img/midi-arranger.png
+.. figure:: /_static/img/midi-arranger.png
    :align: center
+
+   MIDI arranger with notes
 
 The MIDI arranger contains MIDI notes drawn as rectangles
 from their start position to their end position. Zrythm
@@ -75,12 +83,6 @@ position of a note is reached.
 
 Editing inside the MIDI arranger is covered in
 :ref:`edit-tools` and :ref:`common-operations`.
-
-Drum Mode
----------
-
-.. todo:: Explain/show how the 2 sections above look
-   in drum mode.
 
 Velocity Editor
 ---------------
@@ -107,9 +109,45 @@ velocity bar allows you to change it.
 The :ref:`ramp-mode` can also be used in the velocity editor to
 `ramp` velocities.
 
-.. image:: /_static/img/ramp-tool.png
+.. figure:: /_static/img/ramp-tool.png
    :align: center
 
-Context Menu
-------------
-.. todo:: Write this section.
+   Using the ramp tool on MIDI note velocities
+
+MIDI Functions
+--------------
+
+MIDI functions are logic that can be applied
+to transform the selected MIDI notes.
+
+The following functions are available.
+
+Crescendo
+  Gradually increase the velocities of the selected
+  notes from low to high. Used to create a climax.
+Flam
+  Create additional MIDI notes right after the start
+  position of each selected note. This is usually
+  used on snares.
+Flip
+  Reverse/flip the selected notes horizontally or
+  vertically.
+Legato
+  Connect all selected notes so that they play
+  smoothly.
+Portato
+  Similar to legato, but leaves some space between
+  the notes.
+Staccato
+  Make the selected notes short and punctuated.
+Strum Up/Down
+  Shift the position and velocity of notes that
+  start at the same position (chords) to simulate
+  strumming, like when playing guitar.
+
+.. todo:: Add illustrations.
+
+.. note:: Some of these are not implemented yet.
+
+In the future, it will be possible to implement
+custom functions using user scripts.

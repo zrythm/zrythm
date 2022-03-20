@@ -168,9 +168,9 @@ The following operations apply to regions.
 Looping
 ~~~~~~~
 Regions can be repeated, and hence they have
-:ref:`editable loop points and a clip start position <editing/clip-editors/ruler:Loop Points>`
+:ref:`editable loop points and a clip start position <editing/clip-editors/ruler:Markers>`
 in the
-:doc:`Editor Ruler <../../editing/clip-editors/ruler>`
+:doc:`Editor ruler <../../editing/clip-editors/ruler>`
 to modify the looping (repeating) behavior.
 
 Regions can also be looped inside the timeline,

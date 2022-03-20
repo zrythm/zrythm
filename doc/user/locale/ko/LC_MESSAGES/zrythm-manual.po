@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-20 12:07+0000\n"
+"POT-Creation-Date: 2022-03-20 21:44+0000\n"
 "PO-Revision-Date: 2022-02-28 15:54+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language: ko\n"
@@ -238,13 +238,9 @@ msgstr ""
 #: ../../appendix/troubleshooting.rst:10
 #: ../../configuration/additional-settings.rst:34
 #: ../../configuration/shortcuts.rst:46
-#: ../../editing/clip-editors/automation-editor.rst:56
-#: ../../editing/clip-editors/chord-editor.rst:66
-#: ../../editing/clip-editors/piano-roll.rst:82
-#: ../../editing/clip-editors/piano-roll.rst:115
-#: ../../editing/clip-editors/ruler.rst:29
-#: ../../editing/clip-editors/ruler.rst:36
-#: ../../editing/clip-editors/ruler.rst:44
+#: ../../editing/clip-editors/automation-editor.rst:55
+#: ../../editing/clip-editors/chord-editor.rst:60
+#: ../../editing/clip-editors/piano-roll.rst:148
 #: ../../exporting/audio-and-midi.rst:38 ../../mixing/overview.rst:62
 #: ../../plugins-files/audio-midi-files/file-browser.rst:69
 #: ../../routing/making-connections.rst:30
@@ -936,21 +932,200 @@ msgid "The audio editor is displayed when an audio region is selected."
 msgstr "오디오 영역을 선택하면 오디오 편집기가 표시됩니다."
 
 #: ../../editing/clip-editors/audio-editor.rst:15
-msgid ""
-"Currently, it is only used to view audio and has no other functionality, "
-"besides changing the points in the ruler, as discussed in :ref:`editor-"
-"ruler`."
-msgstr ""
-"현재, 이것은 오디오를 보는 데만 사용되며 :ref:`editor-ruler`에서 논의된 바와 "
-"같이 눈금자의 포인트를 변경하는 것 외에 다른 기능은 없습니다."
+#, fuzzy
+msgid "Audio editor"
+msgstr "오디오 편집기"
 
-#: ../../editing/clip-editors/audio-editor.rst:20
+#: ../../editing/clip-editors/audio-editor.rst:18
 msgid "Audio Arranger"
 msgstr "오디오 편곡기"
 
-#: ../../editing/clip-editors/audio-editor.rst:21
+#: ../../editing/clip-editors/audio-editor.rst:19
 msgid "The audio arranger refers to the arranger section of the audio editor."
 msgstr "오디오 편곡기는 오디오 편집기의 편곡기 섹션을 나타냅니다."
+
+#: ../../editing/clip-editors/audio-editor.rst:25
+#, fuzzy
+msgid "Audio arranger"
+msgstr "오디오 편곡기"
+
+#: ../../editing/clip-editors/audio-editor.rst:27
+msgid "The arranger shows the following indicators and controls."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:30
+msgid "Waveform"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:31
+msgid "Fades"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:32
+msgid "Amplitude line"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:33
+#, fuzzy
+msgid "Part selection"
+msgstr "번역"
+
+#: ../../editing/clip-editors/audio-editor.rst:36
+msgid "Changing the Amplitude"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:38
+msgid ""
+"The amplitude of the clip can be changed by clicking and dragging the orange "
+"horizontal line up or down."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:42
+msgid "Changing Fades"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:44
+msgid ""
+"Fade in/out positions can be changed by clicking and dragging near the top "
+"where the fade in ends or where the fade out starts."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:48
+msgid "The cursor will change to a resize left/right cursor."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:51
+msgid ""
+"Fade curviness can be changed by clicking and dragging the body of fades "
+"upwards or downwards."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:54
+msgid "The cursor will change to a resize up cursor."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:58
+msgid "Selecting Parts"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:60
+msgid ""
+"Audio parts can be selected by clicking and dragging in the bottom half of "
+"the arranger."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:63
+msgid "The cursor will change to a range selection cursor."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:67
+msgid "Audio Functions"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:69
+msgid ""
+"Audio functions are logic that can be applied to transform the selected "
+"audio part."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:72
+#: ../../editing/clip-editors/automation-editor.rst:63
+#: ../../editing/clip-editors/piano-roll.rst:123
+msgid "The following functions are available."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:74
+msgid "Invert"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:75
+msgid "Invert the polarity of the audio."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:76
+msgid "Normalize Peak"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:77
+msgid "Normalize the audio so that its peak is 0dB."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:78
+msgid "Linear Fade In"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:79
+msgid "Fade the audio from silence to full amplitude."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:80
+msgid "Linear Fade Out"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:81
+msgid "Fade the audio from full amplitude to silence."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:82
+msgid "Nudge"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:83
+msgid "Shift the audio by 1 sample backward or forward."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:84
+msgid "Reverse"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:85
+msgid "Reverse the audio (play back backwards)."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:110
+msgid "External Program"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:87
+msgid ""
+"Run an external program (such as `Audacity <https://www.audacityteam.org/"
+">`_) to edit the audio."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:94
+msgid "Edit the selected audio in an external app"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:96
+msgid ""
+"The selected program will be run with the path to a temporary file as an "
+"argument. Normally, the application will open that file, otherwise you will "
+"have to open it manually."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:101
+msgid "You can select and copy the path in the dialog."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:104
+msgid ""
+"Once you've made your changes to the file, close the external app and press "
+"OK. Zrythm will then apply your changes to the selected audio part."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:108
+msgid ""
+"The length of the audio must stay exactly the same, otherwise this operation "
+"will fail."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:112
+msgid "Guile Script"
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:113
+msgid "Not available yet."
+msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:45
@@ -963,22 +1138,24 @@ msgid ""
 msgstr "자동화 영역을 선택하면 자동화 편집기가 표시됩니다."
 
 #: ../../editing/clip-editors/automation-editor.rst:15
-msgid ""
-"It is very similar to the piano roll, with the exception that the arranger "
-"contains automation points and curves instead of MIDI notes."
-msgstr ""
-"편곡기에 MIDI 음표 대신 자동화 포인트와 곡선이 포함되어 있다는 점을 제외하면 "
-"피아노 롤과 매우 유사합니다."
+#, fuzzy
+msgid "Automation editor"
+msgstr "자동화 편집기"
 
-#: ../../editing/clip-editors/automation-editor.rst:20
+#: ../../editing/clip-editors/automation-editor.rst:18
 msgid "Automation Arranger"
 msgstr "자동화 편곡기"
 
-#: ../../editing/clip-editors/automation-editor.rst:21
+#: ../../editing/clip-editors/automation-editor.rst:19
 msgid ""
 "The automation arranger refers to the arranger section of the automation "
 "editor."
 msgstr "자동화 편곡기는 자동화 편집기의 편곡기 섹션을 말합니다."
+
+#: ../../editing/clip-editors/automation-editor.rst:25
+#, fuzzy
+msgid "Automation arranger"
+msgstr "자동화 편곡기"
 
 #: ../../editing/clip-editors/automation-editor.rst:27
 msgid ""
@@ -994,60 +1171,71 @@ msgid ""
 "dragged up or down to change their `curviness`."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:40
+#: ../../editing/clip-editors/automation-editor.rst:41
 msgid "Curves"
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:41
+#: ../../editing/clip-editors/automation-editor.rst:42
 msgid ""
 "Right-clicking on a curve allows you to change the curve algorithm used. The "
 "following curve algorithms are available."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:44
+#: ../../editing/clip-editors/automation-editor.rst:45
 msgid "Exponent"
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:45
+#: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Exponential curve."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:46
+#: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Superellipse"
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:47
+#: ../../editing/clip-editors/automation-editor.rst:48
 msgid "Elliptical curve."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:49
+#: ../../editing/clip-editors/automation-editor.rst:50
 #: ../../editing/timeline/arranger.rst:276
 msgid "Vital"
 msgstr "바이탈"
 
-#: ../../editing/clip-editors/automation-editor.rst:49
+#: ../../editing/clip-editors/automation-editor.rst:50
 msgid "The curve that Vital synth uses, similar to exponential curve."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:52
+#: ../../editing/clip-editors/automation-editor.rst:53
 msgid "Pulse"
 msgstr "파동"
 
-#: ../../editing/clip-editors/automation-editor.rst:52
+#: ../../editing/clip-editors/automation-editor.rst:53
 msgid "Pulse wave."
 msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:55
-#: ../../editing/clip-editors/chord-editor.rst:65
-#: ../../editing/clip-editors/piano-roll.rst:114 ../../tracks/overview.rst:74
-msgid "Context Menu"
+msgid "Create table with illustrations."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:56
-#: ../../editing/clip-editors/chord-editor.rst:66
-#: ../../editing/clip-editors/piano-roll.rst:115
-#: ../../routing/managing-connections.rst:8
-msgid "Write this section."
+#: ../../editing/clip-editors/automation-editor.rst:58
+#, fuzzy
+msgid "Automation Functions"
+msgstr "자동화 편집기"
+
+#: ../../editing/clip-editors/automation-editor.rst:60
+msgid ""
+"Automation functions are logic that can be applied to transform the selected "
+"automation points/curves."
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:66
+#: ../../editing/clip-editors/piano-roll.rst:133
+msgid "Flip"
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:66
+msgid "Reverse/flip the selected automation horizontally or vertically."
 msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:8
@@ -1060,71 +1248,100 @@ msgid "The chord editor is displayed when a chord region is selected."
 msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:15
-msgid ""
-"Its ruler behaves similarly to the editor ruler explained in :ref:`editor-"
-"ruler`."
+msgid "Chord editor"
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:18
+#: ../../editing/clip-editors/chord-editor.rst:17
 msgid ""
 "The chord editor has a list of chords on the left side that can be changed, "
 "and an arranger on the right side for creating chord progressions."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:23
+#: ../../editing/clip-editors/chord-editor.rst:22
 msgid "Chords"
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:24
+#: ../../editing/clip-editors/chord-editor.rst:23
 msgid ""
 "A chord in the context of the chord editor refers to a chord on the left "
 "side of the editor."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:30
-msgid ""
-"These chords act similarly to the piano roll keys explained in :ref:`piano-"
-"roll-keys`."
+#: ../../editing/clip-editors/chord-editor.rst:29
+msgid "Chords inside the chord editor"
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:34
-msgid "Chord Selector"
+#: ../../editing/clip-editors/chord-editor.rst:31
+msgid ""
+"These chords correspond to each chord in the :ref:`Chord pad <chords-and-"
+"scales/overview:Chord Pad>`."
 msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:35
-msgid ""
-"Double-clicking on a chord will bring up the chord selector, which allows "
-"you to change that chord."
+msgid "Each chord row contains the following controls."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:41
+#: ../../editing/clip-editors/chord-editor.rst:55
+msgid "Chord Selector"
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:38
+msgid "Change the selected chord."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:43
+msgid "Chord selector"
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:45
 msgid ""
 "At the moment, only the chord creator is functional. A chord can be created "
 "by selecting its root note, its type, its accent and its bass note."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:45
+#: ../../editing/clip-editors/chord-editor.rst:50
 msgid ""
-"Selecting :zbutton:`In scale` under `Visibility` will only show options that "
-"correspond to chords inside the scale active at the start of the region. "
-"This makes it easy to create chords that stay in the current scale."
-msgstr ""
-
-#: ../../editing/clip-editors/chord-editor.rst:51
-msgid "Chord Arranger"
-msgstr ""
-
-#: ../../editing/clip-editors/chord-editor.rst:52
-msgid "The chord arranger refers to the arranger section of the chord editor."
+"Selecting :guilabel:`In scale` under :guilabel:`Visibility` will only show "
+"options that correspond to chords inside the scale active at the start of "
+"the region. This makes it easy to create chords that stay in the current "
+"scale."
 msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:58
-msgid ""
-"The chord editor contains `chord objects` that signify the start of a chord. "
-"Chord objects do not have a length."
+msgid "Inversion"
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:61
+#: ../../editing/clip-editors/chord-editor.rst:58
+msgid "Invert the chord."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:60
+msgid "Move this part to the chords and scales chapter."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:64
+msgid "Chord Arranger"
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:65
+msgid "The chord arranger refers to the arranger section of the chord editor."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:71
+#, fuzzy
+msgid "Chord arranger"
+msgstr "오디오 편곡기"
+
+#: ../../editing/clip-editors/chord-editor.rst:73
+msgid ""
+"The chord editor contains `chord objects` that signify the start of a chord."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:76
+msgid "Chord objects do not have a length."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:78
 msgid ""
 "Editing in the chord arranger follows :ref:`edit-tools` and :ref:`common-"
 "operations`."
@@ -1148,82 +1365,94 @@ msgid "Piano Roll"
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:10
-msgid "The piano roll is the main editor for editing MIDI regions."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:15
+#, fuzzy
 msgid ""
-"It consists of the toolbar discussed in :ref:`editor-toolbar` at the very "
-"top, a smaller space containing extra controls, the ruler discussed in :ref:"
-"`editor-ruler`, the piano roll keys on the left, the piano roll (MIDI) "
-"arranger on the right and the velocity editor at the bottom."
+"The piano roll is the main editor for editing MIDI regions, and is displayed "
+"when a MIDI region is selected."
+msgstr "자동화 영역을 선택하면 자동화 편집기가 표시됩니다."
+
+#: ../../editing/clip-editors/piano-roll.rst:17
+msgid "Piano roll"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:22
+#: ../../editing/clip-editors/piano-roll.rst:20
 msgid "Additional Controls"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:23
+#: ../../editing/clip-editors/piano-roll.rst:21
 msgid "The piano roll contains the following additional controls."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:29
+#: ../../editing/clip-editors/piano-roll.rst:27
+msgid "Piano roll controls"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:38
 msgid "Drum View"
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:30
 msgid ""
-"Enabling this will change the display of the arranger into a drum editor "
-"view, where each :term:`MIDI note` is drawn as a diamond and the piano roll "
-"keys display the name of each drum."
+"Switch to drum editor view (or `Drum mode`), where each :term:`MIDI note` is "
+"drawn as a diamond and the piano roll keys display the name of each drum."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:36
+#: ../../editing/clip-editors/piano-roll.rst:38
+msgid "Drum mode"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:42
 msgid "Listen to notes"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:37
-msgid ""
-"Enabling this will play back each note as you drag it inside the piano roll. "
-"This is useful if you want to `hear` what you are doing."
+#: ../../editing/clip-editors/piano-roll.rst:41
+msgid "Play back each note as you drag it inside the piano roll."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:44
+#: ../../editing/clip-editors/piano-roll.rst:47
 msgid "Piano Roll Keys"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:45
+#: ../../editing/clip-editors/piano-roll.rst:48
 msgid "These are the keys corresponding to each key found on a piano."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:51
+#: ../../editing/clip-editors/piano-roll.rst:54
+msgid "Piano roll keys"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:56
 msgid ""
 "Clicking on each key allows you to listen to it, much like pressing a key on "
 "a real piano."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:54
+#: ../../editing/clip-editors/piano-roll.rst:59
 msgid ""
 "A label for each key is shown on the left side of the black/white keys, in "
 "addition to any highlighting (if selected). See :ref:`chord-highlighting` "
 "for more information."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:59
+#: ../../editing/clip-editors/piano-roll.rst:64
 msgid ""
-"The zoom level can be changed by holding down :kbd:`Ctrl` and :kbd:`Shift` "
-"and scrolling."
+"The vertical zoom level can be changed by holding down :kbd:`Ctrl` and :kbd:"
+"`Shift` and scrolling."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:63
+#: ../../editing/clip-editors/piano-roll.rst:69
 msgid "MIDI Arranger"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:64
+#: ../../editing/clip-editors/piano-roll.rst:70
 msgid "The MIDI arranger refers to the arranger section of the piano roll."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:70
+#: ../../editing/clip-editors/piano-roll.rst:76
+msgid "MIDI arranger with notes"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:78
 msgid ""
 "The MIDI arranger contains MIDI notes drawn as rectangles from their start "
 "position to their end position. Zrythm will send a MIDI note on signal when "
@@ -1231,31 +1460,23 @@ msgid ""
 "position of a note is reached."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:76
+#: ../../editing/clip-editors/piano-roll.rst:84
 msgid ""
 "Editing inside the MIDI arranger is covered in :ref:`edit-tools` and :ref:"
 "`common-operations`."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:80
-msgid "Drum Mode"
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:82
-msgid "Explain/show how the 2 sections above look in drum mode."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:86
+#: ../../editing/clip-editors/piano-roll.rst:88
 msgid "Velocity Editor"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:87
+#: ../../editing/clip-editors/piano-roll.rst:89
 msgid ""
 "There is another arranger at the bottom of the MIDI arranger for editing the "
 "velocity of each note."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:93
+#: ../../editing/clip-editors/piano-roll.rst:95
 msgid ""
 "Velocity refers to the force with which a note is played. Each instrument "
 "handles various velocities for the same note differently, but generally a "
@@ -1263,23 +1484,109 @@ msgid ""
 "useful for adding expression to melodies."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:99
+#: ../../editing/clip-editors/piano-roll.rst:101
 msgid ""
 "The velocity of each note is drawn as a bar, where higher means a larger "
 "value. Clicking and dragging the tip of each velocity bar allows you to "
 "change it."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:103
+#: ../../editing/clip-editors/piano-roll.rst:105
 msgid ""
 "You can also edit multiple velocities at once by selecting multiple MIDI "
 "notes before editing a velocity bar."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:107
+#: ../../editing/clip-editors/piano-roll.rst:109
 msgid ""
 "The :ref:`ramp-mode` can also be used in the velocity editor to `ramp` "
 "velocities."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:115
+msgid "Using the ramp tool on MIDI note velocities"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:118
+msgid "MIDI Functions"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:120
+msgid ""
+"MIDI functions are logic that can be applied to transform the selected MIDI "
+"notes."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:126
+msgid "Crescendo"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:126
+msgid ""
+"Gradually increase the velocities of the selected notes from low to high. "
+"Used to create a climax."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:130
+msgid "Flam"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:129
+msgid ""
+"Create additional MIDI notes right after the start position of each selected "
+"note. This is usually used on snares."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:133
+msgid "Reverse/flip the selected notes horizontally or vertically."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:136
+msgid "Legato"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:136
+msgid "Connect all selected notes so that they play smoothly."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:139
+msgid "Portato"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:139
+msgid "Similar to legato, but leaves some space between the notes."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:141
+msgid "Staccato"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:142
+msgid "Make the selected notes short and punctuated."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:146
+msgid "Strum Up/Down"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:144
+msgid ""
+"Shift the position and velocity of notes that start at the same position "
+"(chords) to simulate strumming, like when playing guitar."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:148
+msgid "Add illustrations."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:150
+msgid "Some of these are not implemented yet."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:152
+msgid ""
+"In the future, it will be possible to implement custom functions using user "
+"scripts."
 msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:8
@@ -1293,72 +1600,74 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:16
+msgid "Editor ruler"
+msgstr ""
+
+#: ../../editing/clip-editors/ruler.rst:18
 msgid ""
 "The ruler will display more or less information depending on the current "
 "zoom level. It will also display the following markers and indicators."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:21
+#: ../../editing/clip-editors/ruler.rst:23
 #: ../../editing/timeline/arranger.rst:126 ../../tracks/track-types.rst:54
 msgid "Markers"
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:24
+#: ../../editing/clip-editors/ruler.rst:27
 msgid "Clip Start"
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:25
+#: ../../editing/clip-editors/ruler.rst:26
 msgid ""
-"Displayed as a blue, right-pointing arrow. This controls the position where "
-"the clip will start playback from."
+"Controls the position where the clip will start playback from. Displayed as "
+"a blue, right-pointing arrow."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:29
-#: ../../editing/clip-editors/ruler.rst:36
-#: ../../editing/clip-editors/ruler.rst:44 ../../mixing/overview.rst:62
-msgid "Add pic."
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:32
+#: ../../editing/clip-editors/ruler.rst:30
 #: ../../playback-and-recording/overview.rst:12
 msgid "Playhead"
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:33
+#: ../../editing/clip-editors/ruler.rst:30
 msgid ""
-"Shown as a grey, down-facing arrow. This is the current position of the "
-"playhead."
+"Current position of the playhead. Displayed as a grey, down-facing arrow."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:39
+#: ../../editing/clip-editors/ruler.rst:35
 #: ../../playback-and-recording/loop-points-and-markers.rst:11
 msgid "Loop Points"
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:40
+#: ../../editing/clip-editors/ruler.rst:33
 msgid ""
-"Shown as 2 green arrows. These control where the clip will start looping at "
-"and where it will return to after looping."
+"These control the range where the clip will loop after it reaches the loop "
+"end point. Displayed as 2 green arrows."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:47
-msgid "Setting Each Point"
+#: ../../editing/clip-editors/ruler.rst:37
+msgid "You can move these markers by clicking and dragging."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:48
-msgid ""
-"To set the position of each point, click on it and drag it to the desired "
-"position."
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:51
+#: ../../editing/clip-editors/ruler.rst:39
 msgid ""
 "Clicking and dragging on empty space will allow you to reposition the "
 "playhead."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:54
-msgid "Hold :kbd:`Shift` to temporarily disable snapping."
+#: ../../editing/clip-editors/ruler.rst:43
+#: ../../editing/timeline/arranger.rst:32
+msgid "Regions"
+msgstr ""
+
+#: ../../editing/clip-editors/ruler.rst:45
+msgid ""
+"All regions in the same track as the active region will be shown inside the "
+"ruler. The active region will be displayed in a more prominent color."
+msgstr ""
+
+#: ../../editing/clip-editors/ruler.rst:52
+msgid "Regions in the editor ruler"
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:8
@@ -1422,7 +1731,7 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:35
-msgid "MIDI functions (TODO: link to reference)"
+msgid ":ref:`MIDI functions <editing/clip-editors/piano-roll:MIDI Functions>`"
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:36
@@ -1443,7 +1752,9 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:50
-msgid "Automation functions (TODO: link to reference)"
+msgid ""
+":ref:`Automation functions <editing/clip-editors/automation-editor:"
+"Automation Functions>`"
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:55
@@ -1451,11 +1762,12 @@ msgid "The audio editor toolbar includes the following additional sections."
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:58
-msgid "Audio functions (TODO: link to reference)"
+msgid ""
+":ref:`Audio functions <editing/clip-editors/audio-editor:Audio Functions>`"
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:63
-msgid "The chord editor toolbar includes no additional sections."
+msgid "`The chord editor toolbar includes no additional sections.`"
 msgstr ""
 
 #: ../../editing/common-operations.rst:8
@@ -2183,10 +2495,6 @@ msgstr ""
 msgid "The following arranger objects can exist inside the timeline."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:32
-msgid "Regions"
-msgstr ""
-
 #: ../../editing/timeline/arranger.rst:33
 msgid ""
 "Regions (or :term:`clips <Clip>`) are containers for events or data (such as "
@@ -2371,8 +2679,8 @@ msgstr ""
 #: ../../editing/timeline/arranger.rst:170
 msgid ""
 "Regions can be repeated, and hence they have :ref:`editable loop points and "
-"a clip start position <editing/clip-editors/ruler:Loop Points>` in the :doc:"
-"`Editor Ruler <../../editing/clip-editors/ruler>` to modify the looping "
+"a clip start position <editing/clip-editors/ruler:Markers>` in the :doc:"
+"`Editor ruler <../../editing/clip-editors/ruler>` to modify the looping "
 "(repeating) behavior."
 msgstr ""
 
@@ -3786,6 +4094,10 @@ msgstr ""
 msgid ""
 "The name of the track the channel corresponds to can be changed by double "
 "clicking the name at the top of the channel."
+msgstr ""
+
+#: ../../mixing/overview.rst:62
+msgid "Add pic."
 msgstr ""
 
 #: ../../mixing/routing.rst:6 ../../routing/intro.rst:6
@@ -5489,6 +5801,10 @@ msgstr ""
 msgid "Managing Connections"
 msgstr ""
 
+#: ../../routing/managing-connections.rst:8
+msgid "Write this section."
+msgstr ""
+
 #: ../../routing/monitor-section.rst:6
 msgid "Monitor Section"
 msgstr ""
@@ -6416,6 +6732,10 @@ msgstr ""
 
 #: ../../tracks/overview.rst:70
 msgid "Add pic and explain how to add custom icons."
+msgstr ""
+
+#: ../../tracks/overview.rst:74
+msgid "Context Menu"
 msgstr ""
 
 #: ../../tracks/overview.rst:76
@@ -7532,6 +7852,21 @@ msgid ""
 "% usage at the bottom. If the DSP % exceeds 100 (all bars filled), audio "
 "will start clipping."
 msgstr ""
+
+#~ msgid ""
+#~ "Currently, it is only used to view audio and has no other functionality, "
+#~ "besides changing the points in the ruler, as discussed in :ref:`editor-"
+#~ "ruler`."
+#~ msgstr ""
+#~ "현재, 이것은 오디오를 보는 데만 사용되며 :ref:`editor-ruler`에서 논의된 바"
+#~ "와 같이 눈금자의 포인트를 변경하는 것 외에 다른 기능은 없습니다."
+
+#~ msgid ""
+#~ "It is very similar to the piano roll, with the exception that the "
+#~ "arranger contains automation points and curves instead of MIDI notes."
+#~ msgstr ""
+#~ "편곡기에 MIDI 음표 대신 자동화 포인트와 곡선이 포함되어 있다는 점을 제외하"
+#~ "면 피아노 롤과 매우 유사합니다."
 
 #~ msgid "Zrythm path"
 #~ msgstr "Zrythm 경로"

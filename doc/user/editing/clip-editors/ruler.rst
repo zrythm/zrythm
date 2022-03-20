@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. _editor-ruler:
@@ -10,8 +10,10 @@ The editor ruler is similar to the timeline ruler
 explained in :ref:`timeline-ruler`, with some
 differences.
 
-.. image:: /_static/img/editor-ruler.png
+.. figure:: /_static/img/editor-ruler.png
    :align: center
+
+   Editor ruler
 
 The ruler will display more or less information
 depending on the current zoom level. It will also
@@ -21,35 +23,30 @@ Markers
 -------
 
 Clip Start
-~~~~~~~~~~
-Displayed as a blue, right-pointing arrow. This
-controls the position where the clip will start
-playback from.
-
-.. todo:: Add pic.
-
+  Controls the position where the clip will start
+  playback from. Displayed as a blue, right-pointing
+  arrow.
 Playhead
-~~~~~~~~
-Shown as a grey, down-facing arrow. This is the
-current position of the playhead.
-
-.. todo:: Add pic.
-
+  Current position of the playhead. Displayed as a
+  grey, down-facing arrow.
 Loop Points
-~~~~~~~~~~~
-Shown as 2 green arrows. These control where the
-clip will start looping at and where it will
-return to after looping.
+  These control the range where the clip will loop
+  after it reaches the loop end point. Displayed
+  as 2 green arrows.
 
-.. todo:: Add pic.
-
-Setting Each Point
----------------------
-To set the position of each point, click on it and
-drag it to the desired position.
+You can move these markers by clicking and dragging.
 
 Clicking and dragging on empty space will allow you
 to reposition the playhead.
 
-.. tip:: Hold :kbd:`Shift` to temporarily disable
-  snapping.
+Regions
+-------
+
+All regions in the same track as the active region
+will be shown inside the ruler. The active region
+will be displayed in a more prominent color.
+
+.. figure:: /_static/img/editor-ruler-regions.png
+   :align: center
+
+   Regions in the editor ruler

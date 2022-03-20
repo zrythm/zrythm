@@ -32,7 +32,7 @@ The piano roll toolbar includes the following
 additional sections.
 
 * :ref:`Chord highlighting options <chords-and-scales/overview:Highlighting>`
-* MIDI functions (TODO: link to reference)
+* :ref:`MIDI functions <editing/clip-editors/piano-roll:MIDI Functions>`
 * Default velocity options
 
 Default Velocity
@@ -47,7 +47,7 @@ Automation Editor
 The automation editor toolbar includes the following
 additional sections.
 
-* Automation functions (TODO: link to reference)
+* :ref:`Automation functions <editing/clip-editors/automation-editor:Automation Functions>`
 
 Audio Editor
 ------------
@@ -55,10 +55,10 @@ Audio Editor
 The audio editor toolbar includes the following
 additional sections.
 
-* Audio functions (TODO: link to reference)
+* :ref:`Audio functions <editing/clip-editors/audio-editor:Audio Functions>`
 
 Chord Editor
 ------------
 
-The chord editor toolbar includes no
-additional sections.
+`The chord editor toolbar includes no additional
+sections.`
