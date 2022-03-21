@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. sectionauthor:: Alexandros Theodotou <alex@zrythm.org>
@@ -13,30 +13,23 @@ such as routing signals around, controlling the
 fader level of various channels and setting their
 stereo balance.
 
-.. image:: /_static/img/mixer.png
+.. figure:: /_static/img/mixer.png
    :align: center
+
+   The mixer
 
 .. _mixer:
 
 Mixer
 -----
 The mixer contains all of the channels in the
-project corresponding to visible tracks.
-
-The master channel,
-a special channel used to route audio to the output audio
-device, is pinned on the right side of the mixer.
-
-.. image:: /_static/img/master-channel.png
-   :align: center
-
-The rest of the mixer shows the rest of the channels, along
-with some extra space used for drag-and-dropping
+project corresponding to visible tracks. There is
+some extra space reserved  for drag-and-dropping
 plugins or files.
 
-Most of the activities that can be performed in the mixer
-are also available in the track inspector described in
-:ref:`track-inspector`.
+Most of the activities that can be performed in the
+mixer are also available in the
+:ref:`Track inspector <tracks/inspector-page:Track Inspector>`.
 
 .. _channels:
 
@@ -45,13 +38,27 @@ Channels
 A channel is part of a track, if the track type has a
 channel.
 
-.. image:: /_static/img/master-channel.png
+.. figure:: /_static/img/channel.png
    :align: center
+
+   Channel for an instrument track
 
 Channels contain a fader, controls such as
 mute and solo, a meter, a direct out selector and
 a strip of insert plugins. These are covered in
 :ref:`track-inspector`.
+
+Master Channel
+~~~~~~~~~~~~~~
+
+The master channel, a special channel used to route
+audio to the output audio device, is pinned on the
+right side of the mixer.
+
+.. figure:: /_static/img/master-channel.png
+   :align: center
+
+   The master channel
 
 Changing the Track Name
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -59,4 +66,7 @@ The name of the track the channel corresponds to can
 be changed by double clicking the name at the top of
 the channel.
 
-.. todo:: Add pic.
+.. figure:: /_static/img/changing-channel-name.png
+   :align: center
+
+   Changing the track name from the channel view

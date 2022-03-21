@@ -33,7 +33,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-20 21:44+0000\n"
+"POT-Creation-Date: 2022-03-21 11:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -264,13 +264,13 @@ msgstr ""
 #: ../../editing/clip-editors/automation-editor.rst:55
 #: ../../editing/clip-editors/chord-editor.rst:60
 #: ../../editing/clip-editors/piano-roll.rst:148
-#: ../../exporting/audio-and-midi.rst:38 ../../mixing/overview.rst:62
+#: ../../exporting/audio-and-midi.rst:38
 #: ../../plugins-files/audio-midi-files/file-browser.rst:69
 #: ../../routing/making-connections.rst:30
 #: ../../routing/managing-connections.rst:8
 #: ../../routing/monitor-section.rst:31
 #: ../../scripting/scripting-interface.rst:8
-#: ../../tracks/inspector-page.rst:151 ../../tracks/overview.rst:70
+#: ../../tracks/inspector-page.rst:157 ../../tracks/overview.rst:70
 #: ../../zrythm-interface/right-panel.rst:23
 msgid "Todo"
 msgstr ""
@@ -3076,7 +3076,7 @@ msgstr ""
 msgid "Dither"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:38 ../../tracks/inspector-page.rst:151
+#: ../../exporting/audio-and-midi.rst:38 ../../tracks/inspector-page.rst:157
 msgid "Implement."
 msgstr ""
 
@@ -4069,63 +4069,75 @@ msgstr ""
 "van signalen, het regelen van het faderniveau van de verschillende kanalen "
 "en het instellen van hun stereobalans."
 
-#: ../../mixing/overview.rst:22
+#: ../../mixing/overview.rst:19
+msgid "The mixer"
+msgstr ""
+
+#: ../../mixing/overview.rst:24
 msgid "Mixer"
 msgstr "Mengpaneel"
 
-#: ../../mixing/overview.rst:23
+#: ../../mixing/overview.rst:25
+#, fuzzy
 msgid ""
 "The mixer contains all of the channels in the project corresponding to "
-"visible tracks."
+"visible tracks. There is some extra space reserved  for drag-and-dropping "
+"plugins or files."
 msgstr ""
 "Het mengpaneel bevat alle kanalen van het project die overeenkomen met de "
 "zichtbare tracks (sporen)."
 
-#: ../../mixing/overview.rst:26
+#: ../../mixing/overview.rst:30
 msgid ""
-"The master channel, a special channel used to route audio to the output "
-"audio device, is pinned on the right side of the mixer."
-msgstr ""
-
-#: ../../mixing/overview.rst:33
-msgid ""
-"The rest of the mixer shows the rest of the channels, along with some extra "
-"space used for drag-and-dropping plugins or files."
+"Most of the activities that can be performed in the mixer are also available "
+"in the :ref:`Track inspector <tracks/inspector-page:Track Inspector>`."
 msgstr ""
 
 #: ../../mixing/overview.rst:37
-msgid ""
-"Most of the activities that can be performed in the mixer are also available "
-"in the track inspector described in :ref:`track-inspector`."
-msgstr ""
-
-#: ../../mixing/overview.rst:44
 msgid "Channels"
 msgstr ""
 
-#: ../../mixing/overview.rst:45
+#: ../../mixing/overview.rst:38
 msgid "A channel is part of a track, if the track type has a channel."
 msgstr ""
 
-#: ../../mixing/overview.rst:51
+#: ../../mixing/overview.rst:44
+msgid "Channel for an instrument track"
+msgstr ""
+
+#: ../../mixing/overview.rst:46
 msgid ""
 "Channels contain a fader, controls such as mute and solo, a meter, a direct "
 "out selector and a strip of insert plugins. These are covered in :ref:`track-"
 "inspector`."
 msgstr ""
 
-#: ../../mixing/overview.rst:57
+#: ../../mixing/overview.rst:52
+msgid "Master Channel"
+msgstr ""
+
+#: ../../mixing/overview.rst:54
+msgid ""
+"The master channel, a special channel used to route audio to the output "
+"audio device, is pinned on the right side of the mixer."
+msgstr ""
+
+#: ../../mixing/overview.rst:61
+msgid "The master channel"
+msgstr ""
+
+#: ../../mixing/overview.rst:64
 msgid "Changing the Track Name"
 msgstr ""
 
-#: ../../mixing/overview.rst:58
+#: ../../mixing/overview.rst:65
 msgid ""
 "The name of the track the channel corresponds to can be changed by double "
 "clicking the name at the top of the channel."
 msgstr ""
 
-#: ../../mixing/overview.rst:62
-msgid "Add pic."
+#: ../../mixing/overview.rst:72
+msgid "Changing the track name from the channel view"
 msgstr ""
 
 #: ../../mixing/routing.rst:6 ../../routing/intro.rst:6
@@ -4146,44 +4158,49 @@ msgstr ""
 #: ../../mixing/routing.rst:15
 msgid ""
 "To route channels to these tracks, you can click the direct out selector and "
-"choose them."
+"choose them, similar to how it works in the :ref:`track properties in the "
+"track inspector <tracks/inspector-page:Track Properties>`."
 msgstr ""
 
-#: ../../mixing/routing.rst:22
+#: ../../mixing/routing.rst:20
+msgid "The Master track is also a group."
+msgstr ""
+
+#: ../../mixing/routing.rst:23
 msgid "Buses/FX Tracks"
 msgstr ""
 
-#: ../../mixing/routing.rst:24
+#: ../../mixing/routing.rst:25
 msgid ""
 ":ref:`Audio FX tracks <tracks/track-types:Audio FX Track>` and :ref:`MIDI FX "
 "tracks <tracks/track-types:MIDI FX Track>` can be created for sending "
 "additional signals to them, in addition to the channel's main direct output."
 msgstr ""
 
-#: ../../mixing/routing.rst:31
+#: ../../mixing/routing.rst:32
 msgid ""
 "This is useful for example for applying reverb and controlling the reverb "
 "signal separately."
 msgstr ""
 
-#: ../../mixing/routing.rst:34
+#: ../../mixing/routing.rst:35
 msgid ""
 "You can send to these tracks/channels using the Sends section in the track "
 "inspector explained in :ref:`track-sends`."
 msgstr ""
 
-#: ../../mixing/routing.rst:38
+#: ../../mixing/routing.rst:39
 msgid ""
 "Some other DAWs use the term `bus` to refer to what Zrythm refers to as "
 "`group`. Please keep this in mind if you are coming from other DAWs as they "
 "are different things in Zrythm."
 msgstr ""
 
-#: ../../mixing/routing.rst:44 ../../routing/making-connections.rst:28
+#: ../../mixing/routing.rst:45 ../../routing/making-connections.rst:28
 msgid "Sidechaining"
 msgstr ""
 
-#: ../../mixing/routing.rst:45
+#: ../../mixing/routing.rst:46
 msgid ""
 "Similar to sending signals to FX tracks, you can also send signals to plugin "
 "sidechain ports, if the plugin has any. See :ref:`track-sends` for details."
@@ -4370,16 +4387,24 @@ msgid ""
 "a red line inside arrangers."
 msgstr ""
 
-#: ../../playback-and-recording/overview.rst:18
+#: ../../playback-and-recording/overview.rst:20
+msgid "The playhead"
+msgstr ""
+
+#: ../../playback-and-recording/overview.rst:23
 msgid "Position"
 msgstr ""
 
-#: ../../playback-and-recording/overview.rst:20
+#: ../../playback-and-recording/overview.rst:25
 msgid "Zrythm uses the following format for positions:"
 msgstr ""
 
-#: ../../playback-and-recording/overview.rst:26
+#: ../../playback-and-recording/overview.rst:31
 msgid "Each sixteenth note is fixed to have 240 ticks."
+msgstr ""
+
+#: ../../playback-and-recording/overview.rst:34
+msgid "Ticks are expressed in decimals."
 msgstr ""
 
 #: ../../playback-and-recording/recording.rst:6 ../../tracks/track-lanes.rst:30
@@ -4427,7 +4452,7 @@ msgid "Recording audio"
 msgstr ""
 
 #: ../../playback-and-recording/recording.rst:41
-#: ../../tracks/inspector-page.rst:39
+#: ../../tracks/inspector-page.rst:45
 msgid "Inputs"
 msgstr ""
 
@@ -4856,7 +4881,7 @@ msgid "Control the loudness of the output audio."
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:104
-#: ../../tracks/inspector-page.rst:34 ../../tracks/track-types.rst:45
+#: ../../tracks/inspector-page.rst:40 ../../tracks/track-types.rst:45
 msgid "Instrument"
 msgstr ""
 
@@ -6483,7 +6508,7 @@ msgstr ""
 msgid "Name of the track. Can be changed by double clicking."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:29
+#: ../../tracks/inspector-page.rst:35
 msgid "Direct Out"
 msgstr ""
 
@@ -6491,123 +6516,127 @@ msgstr ""
 msgid "The track that this track routes its output to."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:32
+#: ../../tracks/inspector-page.rst:35
+msgid "Routing an instrument to an audio group"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:38
 msgid ""
 "The instrument plugin from this track. This is only applicable to :ref:"
 "`Instrument tracks <tracks/track-types:Instrument Track>`."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:41
+#: ../../tracks/inspector-page.rst:47
 msgid ""
 "If the track takes input, there will be an input selection section. This is "
 "mainly used for :ref:`playback-and-recording/recording:Recording`."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:46
+#: ../../tracks/inspector-page.rst:52
 msgid "MIDI Inputs"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:51
+#: ../../tracks/inspector-page.rst:57
 msgid "Input Device"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:52
+#: ../../tracks/inspector-page.rst:58
 msgid "Device to read MIDI input from"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:55
+#: ../../tracks/inspector-page.rst:61
 msgid "MIDI Channels"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:54
+#: ../../tracks/inspector-page.rst:60
 msgid "MIDI channels to listen to (other channels will be ignored)"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:58
+#: ../../tracks/inspector-page.rst:64
 msgid "Audio Inputs"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:63
+#: ../../tracks/inspector-page.rst:69
 msgid "Left Input"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:64
+#: ../../tracks/inspector-page.rst:70
 msgid "Left audio input port to listen to"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:65
+#: ../../tracks/inspector-page.rst:71
 msgid "Right Input"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:66
+#: ../../tracks/inspector-page.rst:72
 msgid "Right audio input port to listen to"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:67
+#: ../../tracks/inspector-page.rst:73
 msgid "Mono toggle"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:68
+#: ../../tracks/inspector-page.rst:74
 msgid "Duplicate the left signal on both channels"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:70
+#: ../../tracks/inspector-page.rst:76
 msgid "Gain knob"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:70
+#: ../../tracks/inspector-page.rst:76
 msgid "Adjust input gain"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:73
+#: ../../tracks/inspector-page.rst:79
 msgid "MIDI FX/Inserts"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:75
+#: ../../tracks/inspector-page.rst:81
 msgid ""
 "These are slots for dropping audio or MIDI effects that will be applied to "
 "the signal as it passes through the track."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:81
+#: ../../tracks/inspector-page.rst:87
 msgid ""
 "MIDI FX are processed after the input and piano roll events and before the "
 "instruments in instrument tracks, or before the inserts in MIDI tracks."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:85
+#: ../../tracks/inspector-page.rst:91
 msgid "Only MIDI and Instrument tracks support MIDI FX."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:87
+#: ../../tracks/inspector-page.rst:93
 msgid ""
 "Inserts are processed in order. For instrument tracks, the inserts will be "
 "added onto the signal coming from the instrument, and for other tracks they "
 "will be added on the incoming signal."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:92
+#: ../../tracks/inspector-page.rst:98
 msgid "The signal flow is summarized below."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:94
+#: ../../tracks/inspector-page.rst:100
 msgid ""
 "``[track input] -> [MIDI FX, if any] -> [instrument, if any] -> [inserts, if "
 "any] -> [track output]``"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:99
+#: ../../tracks/inspector-page.rst:105
 msgid "Aux Sends"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:101
+#: ../../tracks/inspector-page.rst:107
 msgid ""
 "These are `aux sends <https://en.wikipedia.org/wiki/Aux-send>`_ to other "
 "tracks or plugin side-chain inputs. These are generally useful for side-"
 "chaining or applying additional effects to channels, such as reverb."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:111
+#: ../../tracks/inspector-page.rst:117
 msgid ""
 "The first 6 slots are for pre-fader sends and the last 3 slots are for post-"
 "fader sends. The pre-fader slots will send the signal before the fader is "
@@ -6615,73 +6644,73 @@ msgid ""
 "applied."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:118
+#: ../../tracks/inspector-page.rst:124
 msgid "Fader"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:119
+#: ../../tracks/inspector-page.rst:125
 msgid "Fader section to control the volume and stereo balance."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:124
+#: ../../tracks/inspector-page.rst:130
 msgid ""
 "To change the fader or stereo balance amount, click and drag their "
 "respective widgets. You can reset them to their default positions with :"
 "menuselection:`Right click --> Reset`."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:129
+#: ../../tracks/inspector-page.rst:135
 msgid ""
 "The meter displays the amplitude of the signal in dBFS as it is processed "
 "live. The following values are displayed next to the meter for additional "
 "reference."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:133
+#: ../../tracks/inspector-page.rst:139
 msgid "Peak"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:134
+#: ../../tracks/inspector-page.rst:140
 msgid "Peak signal value"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:136
+#: ../../tracks/inspector-page.rst:142
 msgid "RMS"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:136
+#: ../../tracks/inspector-page.rst:142
 msgid "Root Mean Square of the signal value"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:138
+#: ../../tracks/inspector-page.rst:144
 msgid ""
 "The controls available for controlling the signal flow are covered in :ref:"
 "`tracks/track-controls:Signal Flow`."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:142
+#: ../../tracks/inspector-page.rst:148
 msgid "MIDI faders use MIDI volume CC."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:144
+#: ../../tracks/inspector-page.rst:150
 msgid ""
 "The MIDI fader is a TODO feature - currently, it lets the signal pass "
 "through unchanged."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:149
+#: ../../tracks/inspector-page.rst:155
 msgid "Channel Settings"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:154
+#: ../../tracks/inspector-page.rst:160
 msgid "Comments"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:155
+#: ../../tracks/inspector-page.rst:161
 msgid "User comments. This feature is useful for keeping notes about tracks."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:161
+#: ../../tracks/inspector-page.rst:167
 msgid "Clicking the pencil button will bring up a popup to edit the comment."
 msgstr ""
 

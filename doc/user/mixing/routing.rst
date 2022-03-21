@@ -13,10 +13,11 @@ and
 can be created for grouping signals.
 
 To route channels to these tracks, you can click the
-direct out selector and choose them.
+direct out selector and choose them, similar to
+how it works in the
+:ref:`track properties in the track inspector <tracks/inspector-page:Track Properties>`.
 
-.. image:: /_static/img/routing-to-groups.png
-   :align: center
+.. hint:: The Master track is also a group.
 
 Buses/FX Tracks
 ---------------
@@ -35,13 +36,13 @@ You can send to these tracks/channels using the Sends
 section in the track inspector explained in
 :ref:`track-sends`.
 
-.. note:: Some other DAWs use the term `bus` to refer to what
-  Zrythm refers to as `group`. Please keep this in mind if you
-  are coming from other DAWs as they are different things in
-  Zrythm.
+.. note:: Some other DAWs use the term `bus` to
+   refer to what Zrythm refers to as `group`.
+   Please keep this in mind if you are coming from
+   other DAWs as they are different things in Zrythm.
 
 Sidechaining
 ------------
-Similar to sending signals to FX tracks, you can also send
-signals to plugin sidechain ports, if the plugin has
-any. See :ref:`track-sends` for details.
+Similar to sending signals to FX tracks, you can
+also send signals to plugin sidechain ports, if the
+plugin has any. See :ref:`track-sends` for details.

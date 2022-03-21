@@ -28,6 +28,12 @@ Track Name
   clicking.
 Direct Out
   The track that this track routes its output to.
+
+  .. figure:: /_static/img/routing-to-groups.png
+     :align: center
+
+     Routing an instrument to an audio group
+
 Instrument
   The instrument plugin from this track. This is
   only applicable to
