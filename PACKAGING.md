@@ -6,8 +6,8 @@ Information for Packagers
 You can use <https://www.zrythm.org/releases>
 to fetch tarballs. The project's home page is
 <https://www.zrythm.org>. The main git repositories
-are found on our
-[Gitea instance](https://git.zrythm.org/zrythm/).
+for packagers and the general public are on
+[SourceHut](https://git.sr.ht/~alextee/zrythm).
 
 # Versioning
 
@@ -101,7 +101,7 @@ we missed. If you find any, please let us know.
 
 ----
 
-Copyright (C) 2019-2021 Alexandros Theodotou
+Copyright (C) 2019-2022 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
