@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.1.1.11] - 2022-03-23
+### Changed
+- User manual: update Editing, Mixing, Playback & Recording chapters
+- Show warning when attempting to load unsupported projects
+- Ignore CRITICAL message when opening native file chooser in Flatpak builds
+- Make editor toolbar scrollable
+
+### Fixed
+- Fix opening projects from latest backup missing plugin states
+
 ## [1.0.0-beta.1.1.1] - 2022-03-19
 ### Added
 - Add Hungarian locale
