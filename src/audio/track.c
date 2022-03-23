@@ -3802,8 +3802,14 @@ track_append_ports (
     }
 
 #define _ADD(port) \
-  g_warn_if_fail (port); \
-  g_ptr_array_add (ports, port)
+  if (port) \
+    { \
+      g_ptr_array_add (ports, port); \
+    } \
+  else \
+    { \
+      g_warn_if_fail (port); \
+    }
 
   if (track_type_can_record (self->type))
     {

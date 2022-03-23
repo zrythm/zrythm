@@ -942,7 +942,7 @@ load (
   const char * filename,
   const int is_template)
 {
-  g_warn_if_fail (filename);
+  g_return_val_if_fail (filename, -1);
   char * dir = io_get_dir (filename);
 
   if (!PROJECT)
@@ -1034,16 +1034,17 @@ load (
   self->backup_dir =
     g_strdup (PROJECT->backup_dir);
 
-  /* versions are now compatible, this is not
-   * applicable anymore */
-#if 0
-  char * version = zrythm_get_version (0);
-  if (!string_is_equal (self->version, version))
+  /* return if old, incompatible version */
+  if (string_contains_substr (
+        self->version, "alpha")
+      &&
+      string_contains_substr (
+        self->version, "1.0.0"))
     {
       char * str =
         g_strdup_printf (
-          _("This project was created with a "
-            "different version of %s (%s). "
+          _("This project was created with an "
+            "unsupported version of %s (%s). "
             "It may not work correctly."),
           PROGRAM_NAME, self->version);
       ui_show_message_full (
@@ -1053,8 +1054,6 @@ load (
         GTK_MESSAGE_WARNING, true, "%s", str);
       g_free (str);
     }
-  g_free (version);
-#endif
 
   if (self == NULL)
     {

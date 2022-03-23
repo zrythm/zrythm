@@ -33,7 +33,7 @@ stable and we are working towards a v1 release.
 ![screenshot](https://www.zrythm.org/static/images/screenshots/mar-16-2022.png)
 
 ### Supported plugins/instruments
-- Native support: [LV2](https://lv2plug.in/)
+- Native support (currently disabled): [LV2](https://lv2plug.in/)
 - Support via [Carla](https://github.com/falkTX/Carla/): LV2, VST2, VST3, AU, SFZ, SF2, DSSI, LADSPA
 
 ### Supported file formats
@@ -48,8 +48,9 @@ stable and we are working towards a v1 release.
 - GNU/Linux, FreeBSD, Windows, MacOS
 
 ## Building and Installation
-See [INSTALL.rst](INSTALL.rst) for build instructions.
-Prebuilt packages/installers available at
+See [INSTALL.rst](INSTALL.rst) for build
+instructions. Prebuilt packages/installers
+available at
 <https://www.zrythm.org/en/download.html>.
 
 ## Using
