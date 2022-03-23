@@ -674,6 +674,16 @@ need_backtrace (
     !string_contains_substr (
       ev->message, "GDK_DROP_STATE_NONE")
     &&
+    /* this happens with portals when opening
+     * the native file chooser (either flatpak
+     * builds or when using GTK_USE_PORTAL=1
+     * TODO: only do this if using portals, find
+     * a way to check if using portals via code */
+    !string_contains_substr (
+      ev->message,
+      "g_variant_new_string: assertion "
+      "'string != NULL' failed")
+    &&
     !string_contains_substr (
       ev->message,
       "assertion 'self->drop == "
