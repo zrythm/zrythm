@@ -967,44 +967,55 @@ load (
             "newer backup found %s",
             PROJECT->backup_dir);
 
-          GtkWidget * dialog =
-            gtk_message_dialog_new (
-              NULL,
-              GTK_DIALOG_MODAL |
-                GTK_DIALOG_DESTROY_WITH_PARENT,
-              GTK_MESSAGE_INFO,
-              GTK_BUTTONS_YES_NO,
-              _("Newer backup found:\n  %s.\n"
-                "Use the newer backup?"),
-              PROJECT->backup_dir);
-          gtk_window_set_title (
-            GTK_WINDOW (dialog),
-            _("Backup found"));
-          gtk_window_set_icon_name (
-            GTK_WINDOW (dialog), "zrythm");
-          if (MAIN_WINDOW)
+          if (ZRYTHM_TESTING)
             {
-              gtk_widget_set_visible (
-                GTK_WIDGET (MAIN_WINDOW), 0);
+              if (!ZRYTHM->open_newer_backup)
+                {
+                  g_free (PROJECT->backup_dir);
+                  PROJECT->backup_dir = NULL;
+                }
             }
-          int res =
-            z_gtk_dialog_run (
-              GTK_DIALOG (dialog), true);
-          switch (res)
+          else
             {
-            case GTK_RESPONSE_YES:
-              break;
-            case GTK_RESPONSE_NO:
-              g_free (PROJECT->backup_dir);
-              PROJECT->backup_dir = NULL;
-              break;
-            default:
-              break;
-            }
-          if (MAIN_WINDOW)
-            {
-              gtk_widget_set_visible (
-                GTK_WIDGET (MAIN_WINDOW), 1);
+              GtkWidget * dialog =
+                gtk_message_dialog_new (
+                  NULL,
+                  GTK_DIALOG_MODAL |
+                    GTK_DIALOG_DESTROY_WITH_PARENT,
+                  GTK_MESSAGE_INFO,
+                  GTK_BUTTONS_YES_NO,
+                  _("Newer backup found:\n  %s.\n"
+                    "Use the newer backup?"),
+                  PROJECT->backup_dir);
+              gtk_window_set_title (
+                GTK_WINDOW (dialog),
+                _("Backup found"));
+              gtk_window_set_icon_name (
+                GTK_WINDOW (dialog), "zrythm");
+              if (MAIN_WINDOW)
+                {
+                  gtk_widget_set_visible (
+                    GTK_WIDGET (MAIN_WINDOW), 0);
+                }
+              int res =
+                z_gtk_dialog_run (
+                  GTK_DIALOG (dialog), true);
+              switch (res)
+                {
+                case GTK_RESPONSE_YES:
+                  break;
+                case GTK_RESPONSE_NO:
+                  g_free (PROJECT->backup_dir);
+                  PROJECT->backup_dir = NULL;
+                  break;
+                default:
+                  break;
+                }
+              if (MAIN_WINDOW)
+                {
+                  gtk_widget_set_visible (
+                    GTK_WIDGET (MAIN_WINDOW), 1);
+                }
             }
         }
     }
@@ -1097,6 +1108,25 @@ load (
       g_free (dir);
       dir =
         g_strdup (ZRYTHM->create_project_path);
+    }
+
+  /* FIXME this is a hack, make sure none of this
+   * extra copying is needed */
+  /* if backup, copy plugin states */
+  if (use_backup)
+    {
+      char * prev_plugins_dir =
+        g_build_filename (
+          self->backup_dir, PROJECT_PLUGINS_DIR,
+          NULL);
+      char * new_plugins_dir =
+        g_build_filename (
+          dir, PROJECT_PLUGINS_DIR, NULL);
+      io_copy_dir (
+        new_plugins_dir, prev_plugins_dir,
+        F_NO_FOLLOW_SYMLINKS, F_RECURSIVE);
+      g_free (prev_plugins_dir);
+      g_free (new_plugins_dir);
     }
 
   MainWindowWidget * mww = NULL;

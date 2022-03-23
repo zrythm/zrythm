@@ -315,6 +315,14 @@ typedef struct Zrythm
 
   /** Cached version (without 'v'). */
   char *              version;
+
+  /**
+   * Whether to open a newer backup if found.
+   *
+   * This is only used during tests where there
+   * is no UI to choose.
+   */
+  bool              open_newer_backup;
 } Zrythm;
 
 /**

@@ -199,6 +199,8 @@ test_save_backup_w_pool_and_plugins (void)
     PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks,
     NULL);
 
+  char * dir = g_strdup (PROJECT->dir);
+
   /* save a project backup */
   int ret =
     project_save (
@@ -212,16 +214,34 @@ test_save_backup_w_pool_and_plugins (void)
   object_free_w_func_and_null (
     project_free, PROJECT);
 
-  /* load the new one */
+  /* load the backup directly */
   char * filepath =
     g_build_filename (
       backup_dir, "project.zpj", NULL);
-  ret = project_load (filepath, 0);
+  ret = project_load (filepath, false);
+  g_free (filepath);
   g_assert_cmpint (ret, ==, 0);
 
   /* test undo and redo cloning the track */
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
+
+  /* free the project */
+  object_free_w_func_and_null (
+    project_free, PROJECT);
+
+  /* attempt to open the latest backup (mimic
+   * behavior from UI) */
+  ZRYTHM->open_newer_backup = true;
+  filepath =
+    g_build_filename (
+      dir, "project.zpj", NULL);
+  ret = project_load (filepath, false);
+  g_free (filepath);
+  g_assert_cmpint (ret, ==, 0);
+
+  g_free (backup_dir);
+  g_free (dir);
 
   test_helper_zrythm_cleanup ();
 }
@@ -234,6 +254,9 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/project/"
 
   g_test_add_func (
+    TEST_PREFIX "test save backup w pool and plugins",
+    (GTestFunc) test_save_backup_w_pool_and_plugins);
+  g_test_add_func (
     TEST_PREFIX "test new from template",
     (GTestFunc) test_new_from_template);
   g_test_add_func (
@@ -242,9 +265,6 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test save load with data",
     (GTestFunc) test_save_load_with_data);
-  g_test_add_func (
-    TEST_PREFIX "test save backup w pool and plugins",
-    (GTestFunc) test_save_backup_w_pool_and_plugins);
   g_test_add_func (
     TEST_PREFIX "test save as load w pool",
     (GTestFunc) test_save_as_load_w_pool);
