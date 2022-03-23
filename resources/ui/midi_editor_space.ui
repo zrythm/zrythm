@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="MidiEditorSpaceWidget" parent="GtkBox">
+  <template class="MidiEditorSpaceWidget" parent="GtkWidget" >
     <child>
       <object class="GtkPaned" id="midi_arranger_velocity_paned">
         <property name="hexpand">1</property>

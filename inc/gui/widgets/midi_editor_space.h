@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2019, 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,10 +31,9 @@
 #define MIDI_EDITOR_SPACE_WIDGET_TYPE \
   (midi_editor_space_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  MidiEditorSpaceWidget,
-  midi_editor_space_widget,
+  MidiEditorSpaceWidget, midi_editor_space_widget,
   Z, MIDI_EDITOR_SPACE_WIDGET,
-  GtkBox)
+  GtkWidget)
 
 typedef struct _ArrangerWidget ArrangerWidget;
 typedef struct _PianoRollKeysWidget
@@ -55,7 +54,7 @@ typedef struct _PianoRollKeysWidget
  */
 typedef struct _MidiEditorSpaceWidget
 {
-  GtkBox               parent_instance;
+  GtkWidget            parent_instance;
 
   GtkPaned *           midi_arranger_velocity_paned;
 

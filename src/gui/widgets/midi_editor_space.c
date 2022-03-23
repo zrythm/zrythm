@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -46,7 +46,7 @@
 
 G_DEFINE_TYPE (
   MidiEditorSpaceWidget, midi_editor_space_widget,
-  GTK_TYPE_BOX)
+  GTK_TYPE_WIDGET)
 
 static void
 on_midi_modifier_changed (
@@ -127,11 +127,39 @@ on_scroll (
   return TRUE;
 }
 
-/*static void*/
-/*scroll_to_mid_note (*/
-  /*MidiEditorSpaceWidget * self)*/
-/*{*/
-/*}*/
+/**
+ * Source function that keeps trying to scroll to the
+ * mid note until successful.
+ */
+static gboolean
+midi_editor_space_tick_cb (
+  GtkWidget *     widget,
+  GdkFrameClock * frame_clock,
+  gpointer        user_data)
+{
+  MidiEditorSpaceWidget * self =
+    Z_MIDI_EDITOR_SPACE_WIDGET (user_data);
+  GtkAdjustment * adj =
+    gtk_scrolled_window_get_vadjustment (
+      self->arranger_scroll);
+  double lower =
+    gtk_adjustment_get_lower (adj);
+  double upper =
+    gtk_adjustment_get_upper (adj);
+
+  /* keep trying until the scrolled window has
+   * a proper size */
+  if (upper > 0)
+    {
+      gtk_adjustment_set_value (
+        adj,
+        lower + (upper - lower) / 2.0);
+
+      return G_SOURCE_REMOVE;
+    }
+
+  return G_SOURCE_CONTINUE;
+}
 
 void
 midi_editor_space_widget_refresh (
@@ -140,7 +168,7 @@ midi_editor_space_widget_refresh (
   piano_roll_keys_widget_refresh (
     self->piano_roll_keys);
 
-  /* relink scrolls */
+  /* relink scrolls (why?) */
   link_scrolls (self);
 
   /* setup combo box */
@@ -188,18 +216,6 @@ midi_editor_space_widget_setup (
     self->piano_roll_keys);
 
   midi_editor_space_widget_refresh (self);
-
-  /* scroll to note in middle */
-  GtkAdjustment * adj =
-    gtk_scrolled_window_get_vadjustment (
-      self->arranger_scroll);
-  double lower =
-    gtk_adjustment_get_lower (adj);
-  double upper =
-    gtk_adjustment_get_upper (adj);
-  gtk_adjustment_set_value (
-    adj,
-    lower + (upper - lower) / 2.0);
 }
 
 static void
@@ -258,6 +274,10 @@ midi_editor_space_widget_init (
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (scroll_controller));
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self), midi_editor_space_tick_cb,
+    self, NULL);
 }
 
 static void
@@ -287,4 +307,7 @@ midi_editor_space_widget_class_init (
   BIND_CHILD (midi_vel_chooser_box);
 
 #undef BIND_CHILD
+
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BIN_LAYOUT);
 }
