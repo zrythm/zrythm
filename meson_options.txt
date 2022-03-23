@@ -283,3 +283,9 @@ option (
   type: 'feature',
   value: 'disabled',
   description: 'Compile with libsoundio support (not operational).')
+
+option (
+  'want_clang_tidy',
+  type: 'boolean',
+  value: false,
+  description: 'Whether we want the clang-tidy ninja targets. This is off by default because it causes long configuration times. Only useful for developers')

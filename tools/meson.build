@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-if jq.found ()
+if jq.found () and get_option ('want_clang_tidy')
 
   # get files from compile_commands.json
   compile_commands_files = run_command (
