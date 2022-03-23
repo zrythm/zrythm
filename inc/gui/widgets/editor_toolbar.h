@@ -30,7 +30,7 @@
   (editor_toolbar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   EditorToolbarWidget, editor_toolbar_widget,
-  Z, EDITOR_TOOLBAR_WIDGET, GtkBox)
+  Z, EDITOR_TOOLBAR_WIDGET, GtkWidget)
 
 #define MW_EDITOR_TOOLBAR \
   MW_CLIP_EDITOR->editor_toolbar
@@ -52,7 +52,7 @@ typedef struct _ZoomButtonsWidget ZoomButtonsWidget;
  */
 typedef struct _EditorToolbarWidget
 {
-  GtkBox              parent_instance;
+  GtkWidget           parent_instance;
   GtkComboBoxText *   chord_highlighting;
   SnapBoxWidget *     snap_box;
   QuantizeBoxWidget * quantize_box;

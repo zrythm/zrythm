@@ -44,7 +44,7 @@
 
 G_DEFINE_TYPE (
   EditorToolbarWidget, editor_toolbar_widget,
-  GTK_TYPE_BOX)
+  GTK_TYPE_WIDGET)
 
 static void
 on_highlighting_changed (
@@ -499,4 +499,7 @@ editor_toolbar_widget_class_init (
   BIND_CHILD (zoom_buttons);
 
 #undef BIND_CHILD
+
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BIN_LAYOUT);
 }
