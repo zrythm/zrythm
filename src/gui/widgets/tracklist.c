@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -451,14 +451,12 @@ void
 tracklist_widget_update_track_visibility (
   TracklistWidget *self)
 {
-  gtk_widget_show (GTK_WIDGET (self));
-  Track * track;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      track = TRACKLIST->tracks[i];
+      Track * track = TRACKLIST->tracks[i];
 
       if (!GTK_IS_WIDGET (track->widget))
-        track->widget = track_widget_new (track);
+        continue;
 
       gtk_widget_set_visible (
         GTK_WIDGET (track->widget),

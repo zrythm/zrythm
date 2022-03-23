@@ -1788,7 +1788,7 @@ track_widget_on_show_automation_toggled (
 {
   Track * track = self->track;
 
-  g_message (
+  g_debug (
     "%s: toggled on %s", __func__, track->name);
 
   /* set visibility flag */

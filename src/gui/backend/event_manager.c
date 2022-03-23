@@ -900,8 +900,22 @@ event_manager_process_event (
         MW_BOT_DOCK_EDGE);
       break;
     case ET_TRACK_AUTOMATION_VISIBILITY_CHANGED:
-      tracklist_widget_update_track_visibility (
-        MW_TRACKLIST);
+      {
+        Track * track = (Track *) ev->arg;
+        if (!IS_TRACK_AND_NONNULL (track))
+          {
+            g_critical ("expected track argument");
+            break;
+          }
+
+        if (GTK_IS_WIDGET (track->widget))
+          {
+            track_widget_update_icons (
+              track->widget);
+            track_widget_update_size (
+              track->widget);
+          }
+      }
       break;
     case ET_TRACK_LANES_VISIBILITY_CHANGED:
       tracklist_widget_update_track_visibility (
