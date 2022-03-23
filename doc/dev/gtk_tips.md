@@ -15,6 +15,18 @@ The "destroy" signal is for
 other code, using your widget, to release
 references they might have.
 
+# map() vs realize()
+
+Alexander Mikhaylenko:
+```
+map - if you put it into a stack and switch pages,
+it will map/unmap every time, but will still be
+realized the whole time
+realized == when it's in a realized window iirc
+but basically you can access the window and you have access to rendering stuff
+mapped == when it's actually gonna be drawn, yes
+```
+
 # Popovers
 Thanks to ebassi from GTK:
 always make sure that the popover opens inside
