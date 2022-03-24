@@ -25,14 +25,9 @@ or run ``meson.py`` directly from
 Building
 --------
 
-To configure and build, use::
+Configure the build directory, optionally passing options::
 
-    meson build
-    meson compile -C build
-
-To pass options, use the following syntax::
-
-    meson build -Doption_name=value
+    meson setup build -Doption_name=value
 
 To see all available options, type the following
 after the build directory is initialized, or look
@@ -45,6 +40,10 @@ Built-in meson options can be found
 To change an option after configuration, use::
 
     meson configure build -Doption_name=value
+
+Compile after configuring the build directory::
+
+    meson compile -C build
 
 To clean the build directory while keeping the
 current configuration, use::
@@ -66,9 +65,10 @@ Optimization
 The default build type is ``debugoptmized``, which
 is equivalent to ``-Ddebug=true -Doptimization=2``
 (``-O2 -g``). This works well in most cases. For
-extremely optimized builds, we suggest building with::
+extremely optimized builds, we suggest building with
+the following options::
 
-    meson build -Ddebug=true -Doptimization=3 -Dextra_optimizations=true -Dnative_build=true
+    -Ddebug=true -Doptimization=3 -Dextra_optimizations=true -Dnative_build=true
 
 We suggest always keeping ``-Ddebug=true`` to assist
 with meaningful stack traces and bug reports.
