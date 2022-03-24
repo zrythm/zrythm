@@ -1993,7 +1993,7 @@ msgstr "Kijelölés szétválasztása sikertelen"
 #: src/gui/widgets/arranger.c:4953
 #, c-format
 msgid "%s name"
-msgstr "% név"
+msgstr "%s név"
 
 #: src/gui/widgets/piano_roll_keys.c:185
 msgid "bass"
@@ -4085,7 +4085,7 @@ msgid ""
 "Couldn't open SNDFILE %s:\n"
 "%d: %s"
 msgstr ""
-"Az SNDFILE %s megnyitása sikertelen:%s\n"
+"Az SNDFILE megnyitása sikertelen:%s\n"
 "%d: %s"
 
 #: src/audio/exporter.c:1011 src/audio/exporter.c:1020
@@ -5036,7 +5036,7 @@ msgstr "Bővítmény törlése"
 #: src/actions/mixer_selections_action.c:1383
 #, c-format
 msgid "Delete %d Plugins"
-msgstr "%s bővítmény törlése"
+msgstr "%d bővítmény törlése"
 
 #: src/actions/mixer_selections_action.c:1390
 #, c-format
@@ -5046,7 +5046,7 @@ msgstr "%s mozgatása"
 #: src/actions/mixer_selections_action.c:1397
 #, c-format
 msgid "Move %d Plugins"
-msgstr "%s bővítmény mozgatása"
+msgstr "%d bővítmény mozgatása"
 
 #: src/actions/mixer_selections_action.c:1404
 #, c-format
@@ -5056,7 +5056,7 @@ msgstr "%s másolása"
 #: src/actions/mixer_selections_action.c:1411
 #, c-format
 msgid "Copy %d Plugins"
-msgstr "%s bővítmény másolása"
+msgstr "%d bővítmény másolása"
 
 #: src/actions/mixer_selections_action.c:1418
 #, c-format
