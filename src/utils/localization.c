@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -216,7 +216,9 @@ localization_locale_exists (
   char * match = NULL;
   switch (lang)
     {
+    IS_MATCH (AF_ZA, "af_ZA");
     IS_MATCH (AR, "ar_");
+    IS_MATCH (CA, "ca_");
     /*IS_MATCH (CS, "cs_");*/
     /*IS_MATCH (DA, "da_");*/
     IS_MATCH (DE, "de_");
@@ -231,7 +233,10 @@ localization_locale_exists (
     IS_MATCH (FR, "fr_");
     /*IS_MATCH (GD, "gd_");*/
     IS_MATCH (GL, "gl_");
+    IS_MATCH (HE, "he_");
     IS_MATCH (HI, "hi_");
+    IS_MATCH (HU, "hu_");
+    IS_MATCH (ID, "id_");
     IS_MATCH (IT, "it_");
     IS_MATCH (JA, "ja_");
     IS_MATCH (KO, "ko_");
@@ -242,12 +247,15 @@ localization_locale_exists (
     IS_MATCH (PT_BR, "pt_BR");
     IS_MATCH (PT, "pt_");
     IS_MATCH (RU, "ru_");
+    IS_MATCH (TH, "th_");
+    IS_MATCH (TR, "tr_");
     IS_MATCH (SV, "sv_");
+    IS_MATCH (UK, "uk_");
+    IS_MATCH (VI, "vi_");
     IS_MATCH (ZH_CN, "zh_CN");
     IS_MATCH (ZH_TW, "zh_TW");
-    default:
-      g_warn_if_reached ();
-      break;
+    case NUM_LL_LANGUAGES:
+      g_return_val_if_reached (NULL);
     }
 
 #undef IS_MATCH
