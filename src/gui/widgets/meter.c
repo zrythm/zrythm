@@ -323,8 +323,6 @@ finalize (
 static void
 meter_widget_init (MeterWidget * self)
 {
-  /*gdk_rgba_parse (&self->start_color, "#F9CA1B");*/
-  /*gdk_rgba_parse (&self->end_color, "#1DDD6A");*/
   self->start_color = UI_COLORS->z_yellow;
   self->end_color = UI_COLORS->bright_green;
 }
