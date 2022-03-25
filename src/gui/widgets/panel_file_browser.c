@@ -421,6 +421,19 @@ on_file_row_activated (
             err, "%s", _("Failed to create track"));
         }
     }
+  else if (descr->type == FILE_TYPE_MIDI)
+    {
+      GError * err = NULL;
+      bool ret =
+        track_create_with_action (
+          TRACK_TYPE_MIDI, NULL, descr,
+          PLAYHEAD, TRACKLIST->num_tracks, 1, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s", _("Failed to create track"));
+        }
+    }
 }
 
 static void
