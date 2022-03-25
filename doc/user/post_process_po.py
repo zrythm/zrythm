@@ -12,6 +12,7 @@ import subprocess
 import re
 
 srcpath = '@MANUAL_SRC_DIR@/locale'
+msggrep_bin = '@MSGGREP@'
 for subdir, dirs, files in os.walk(srcpath):
     for file in files:
         fullpath = os.path.join(subdir,file)
@@ -31,7 +32,7 @@ for subdir, dirs, files in os.walk(srcpath):
 
                     # remove prolog
                     completed_process = subprocess.run ([
-                        '@MSGGREP@',
+                        msggrep_bin,
                         '--invert-match',
                         '--location',
                         '../../../../<rst_prolog>',
@@ -45,7 +46,7 @@ for subdir, dirs, files in os.walk(srcpath):
 
                     # remove scheme code
                     completed_process = subprocess.run ([
-                        '@MSGGREP@',
+                        msggrep_bin,
                         '--invert-match',
                         '--msgid',
                         '--regexp',
@@ -58,7 +59,7 @@ for subdir, dirs, files in os.walk(srcpath):
                         check = True)
                     filedata = completed_process.stdout
                     completed_process = subprocess.run ([
-                        '@MSGGREP@',
+                        msggrep_bin,
                         '--invert-match',
                         '--msgid',
                         '--regexp',
@@ -73,11 +74,41 @@ for subdir, dirs, files in os.walk(srcpath):
 
                     # remove :file:`<path>`
                     completed_process = subprocess.run ([
-                        '@MSGGREP@',
+                        msggrep_bin,
                         '--invert-match',
                         '--msgid',
                         '--regexp',
                         '^:file:`[^`]*`$',
+                        '-',
+                        ],
+                        input = filedata,
+                        text = True,
+                        capture_output = True,
+                        check = True)
+                    filedata = completed_process.stdout
+
+                    # remove "Permission is granted"
+                    completed_process = subprocess.run ([
+                        msggrep_bin,
+                        '--invert-match',
+                        '--msgid',
+                        '--regexp',
+                        'Permission is granted to copy',
+                        '-',
+                        ],
+                        input = filedata,
+                        text = True,
+                        capture_output = True,
+                        check = True)
+                    filedata = completed_process.stdout
+
+                    # remove "Copyright ©"
+                    completed_process = subprocess.run ([
+                        msggrep_bin,
+                        '--invert-match',
+                        '--msgid',
+                        '--regexp',
+                        'Copyright ©',
                         '-',
                         ],
                         input = filedata,

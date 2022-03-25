@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-21 11:52+0000\n"
+"POT-Creation-Date: 2022-03-25 10:57+0000\n"
 "PO-Revision-Date: 2022-03-06 09:46+0000\n"
 "Last-Translator: Anthony V. <batmanplayer123@gmail.com>\n"
 "Language: el\n"
@@ -4713,29 +4713,7 @@ msgstr "Zrythm"
 msgid "Welcome to the Zrythm manual."
 msgstr "Καλώς ήρθατε στο εγχειρίδιο χρήσης του Zrythm."
 
-#: ../../index.rst:16 ../../index.rst:60
-#, fuzzy
-msgid "Copyright © 2018-2022 The Zrythm contributors"
-msgstr "Copyright © 2019-2020 Οι συνεργάτες του Zrythm"
-
-#: ../../index.rst:18 ../../index.rst:62
-msgid ""
-"*Permission is granted to copy, distribute and/or modify this document under "
-"the terms of the GNU Free Documentation License, Version 1.3 or any later "
-"version published by the Free Software Foundation; with the Invariant "
-"Sections being just \"Credits\", with no Front-Cover Texts, and with no Back-"
-"Cover Texts.  A copy of the license is included in the subsection entitled "
-"\"GNU Free Documentation License\" in the section entitled \"Appendix\".*"
-msgstr ""
-"*Επιτρέπεται η αντιγραφή, διανομή και/ή επεξεργασία αυτού του εγγράφου υπό "
-"τους όρους της Άδειας Ελεύθερης Τεκμηρίωσης GNU, Έκδοσης 1.3 ή οποιασδήποτε "
-"μεταγενέστερης έκδοσης δημοσιευμένης από το Ίδρυμα Ελεύθερου Λογισμικού· με "
-"αμετάβλητα τμήματα να είναι μόνο οι «Ευχαριστίες», χωρίς κείμενα εξώφυλλου, "
-"και χωρίς κείμενα οπισθόφυλλου.  Ένα αντίγραφο της άδειας περιλαμβάνεται στο "
-"υποτμήμα με τίτλο «Άδεια Ελεύθερης Τεκμηρίωσης GNU» στο τμήμα με τίτλο "
-"«Παράρτημα».*"
-
-#: ../../index.rst:27 ../../index.rst:71
+#: ../../index.rst:26 ../../index.rst:69
 msgid ""
 "*Zrythm and the Zrythm logo are registered trademarks of Alexandros "
 "Theodotou in the United Kingdom.*"

@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-21 11:52+0000\n"
+"POT-Creation-Date: 2022-03-25 10:57+0000\n"
 "PO-Revision-Date: 2022-03-14 09:57+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
@@ -4875,29 +4875,7 @@ msgstr "Zrythm"
 msgid "Welcome to the Zrythm manual."
 msgstr "Bienvenue sur le manuel de Zrythm."
 
-#: ../../index.rst:16 ../../index.rst:60
-#, fuzzy
-msgid "Copyright © 2018-2022 The Zrythm contributors"
-msgstr "Copyright © Alexandros Theodotou 2019-2020"
-
-#: ../../index.rst:18 ../../index.rst:62
-msgid ""
-"*Permission is granted to copy, distribute and/or modify this document under "
-"the terms of the GNU Free Documentation License, Version 1.3 or any later "
-"version published by the Free Software Foundation; with the Invariant "
-"Sections being just \"Credits\", with no Front-Cover Texts, and with no Back-"
-"Cover Texts.  A copy of the license is included in the subsection entitled "
-"\"GNU Free Documentation License\" in the section entitled \"Appendix\".*"
-msgstr ""
-"*La permission est accordée de copier, distribuer et/ou modifier ce document "
-"selon les termes de la licence de documentation libre GNU (NdT : GNU FDL), "
-"Version 1.3 ou toute version ultérieure publiée par la Free Software "
-"Foundation ; les sections invariables étant simplement des \"crédits\", sans "
-"textes de couverture.  Une copie de la licence est incluse dans la sous-"
-"section intitulée \"GNU Free Documentation License\" dans la section "
-"intitulée \"Appendix \".*"
-
-#: ../../index.rst:27 ../../index.rst:71
+#: ../../index.rst:26 ../../index.rst:69
 msgid ""
 "*Zrythm and the Zrythm logo are registered trademarks of Alexandros "
 "Theodotou in the United Kingdom.*"
