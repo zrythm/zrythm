@@ -55,6 +55,11 @@ All other uses of a Zrythm trademark require our
 prior written permission. Contact
 trademarks@zrythm.org for more information.
 
+Alexandros Theodotou reserves the right to review
+all use of the Zrythm trademarks and to object to
+any use that appears outside of this
+Trademark Policy.
+
 # Software Distribution Policy
 You may distribute unaltered copies of the Zrythm
 digital audio workstation (DAW) and related software
@@ -89,22 +94,8 @@ acknowledged by Alexandros Theodotou or CVE
 
 You may further redistribute copies of the software
 as published by the aforementioned software
-distributors, namely:
-- any free system distribution currently approved
-by the Free Software Foundation at
-<https://www.gnu.org/distros/free-distros.html>, OR
-- the Debian operating system, as published by the
-Debian project at <https://debian.org/>, OR
-- the Fedora Workstation operating system, as
-published by the Fedora Project at
-<https://getfedora.org/>, OR
-- the FreeBSD operating system, as published by The
-FreeBSD Project at <https://www.freebsd.org/>, OR
-- the Arch Linux operating
-system, as published by Levente Polyak and others at
-<https://archlinux.org/>,
-
-provided that no further modifications are made.
+distributors provided that no further modifications
+are made.
 
 In any case, you may not add or remove
 functionalities and you must preserve all messages
@@ -140,7 +131,7 @@ current policy at the time of each release.
 
 ----
 
-Copyright (C) 2020-2021 Alexandros Theodotou
+Copyright (C) 2020-2022 Alexandros Theodotou
 
 Everyone is permitted to copy and distribute
 verbatim copies of this document, but changing it is
