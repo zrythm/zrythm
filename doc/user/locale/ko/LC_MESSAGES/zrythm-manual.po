@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-25 10:57+0000\n"
+"POT-Creation-Date: 2022-03-25 12:27+0000\n"
 "PO-Revision-Date: 2022-02-28 15:54+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language: ko\n"
@@ -886,11 +886,15 @@ msgstr ""
 msgid "Credits"
 msgstr ""
 
-#: ../../credits/intro.rst:9
+#: ../../credits/intro.rst:8
+msgid "This section lists the original contributors to Zrythm project."
+msgstr ""
+
+#: ../../credits/intro.rst:12
 msgid "Authors"
 msgstr "개발자"
 
-#: ../../credits/intro.rst:10
+#: ../../credits/intro.rst:13
 msgid ""
 "See the :download:`AUTHORS <../../../AUTHORS>` file in the source "
 "distribution. These include developers, graphic artists and other authors of "
@@ -899,11 +903,11 @@ msgstr ""
 "소스 배포판의 :download:`AUTHORS <../../../AUTHORS>` 파일을 참조하십시오. 여"
 "기에는 개발자, 그래픽 아티스트 및 기타 저작물 작성자가 포함됩니다."
 
-#: ../../credits/intro.rst:16
+#: ../../credits/intro.rst:19
 msgid "Translators"
 msgstr "번역자"
 
-#: ../../credits/intro.rst:17
+#: ../../credits/intro.rst:20
 msgid ""
 "See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source "
 "distribution. These include translators of the software, the user manual and "
@@ -912,11 +916,11 @@ msgstr ""
 "소스 배포판의 :download:`TRANSLATORS <../../../TRANSLATORS>` 파일을 참조하십"
 "시오. 여기에는 소프트웨어 번역자, 사용자 설명서 및 웹사이트가 포함됩니다."
 
-#: ../../credits/intro.rst:24
+#: ../../credits/intro.rst:27
 msgid "Other Contributors"
 msgstr "다른 기여자"
 
-#: ../../credits/intro.rst:25
+#: ../../credits/intro.rst:28
 msgid ""
 "See the :download:`THANKS <../../../THANKS>` file in the source distribution."
 msgstr ""
@@ -3939,7 +3943,7 @@ msgstr ""
 msgid "Welcome to the Zrythm manual."
 msgstr ""
 
-#: ../../index.rst:26 ../../index.rst:69
+#: ../../index.rst:27 ../../index.rst:71
 msgid ""
 "*Zrythm and the Zrythm logo are registered trademarks of Alexandros "
 "Theodotou in the United Kingdom.*"

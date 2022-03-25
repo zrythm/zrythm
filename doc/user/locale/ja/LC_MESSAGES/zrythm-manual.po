@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-25 10:57+0000\n"
+"POT-Creation-Date: 2022-03-25 12:27+0000\n"
 "PO-Revision-Date: 2022-02-19 21:56+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -990,11 +990,15 @@ msgstr ""
 msgid "Credits"
 msgstr "貢献者一覧"
 
-#: ../../credits/intro.rst:9
+#: ../../credits/intro.rst:8
+msgid "This section lists the original contributors to Zrythm project."
+msgstr ""
+
+#: ../../credits/intro.rst:12
 msgid "Authors"
 msgstr "作者"
 
-#: ../../credits/intro.rst:10
+#: ../../credits/intro.rst:13
 msgid ""
 "See the :download:`AUTHORS <../../../AUTHORS>` file in the source "
 "distribution. These include developers, graphic artists and other authors of "
@@ -1004,11 +1008,11 @@ msgstr ""
 "い。これらのファイルには、開発者、グラフィックアーティスト、その他の著作権の"
 "ある作品の作者が含まれています。"
 
-#: ../../credits/intro.rst:16
+#: ../../credits/intro.rst:19
 msgid "Translators"
 msgstr "翻訳者"
 
-#: ../../credits/intro.rst:17
+#: ../../credits/intro.rst:20
 #, fuzzy
 msgid ""
 "See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source "
@@ -1019,11 +1023,11 @@ msgstr ""
 "してください。これらには、ソフトウェア、ユーザーマニュアル、ウェブサイトの翻"
 "訳者が含まれています。"
 
-#: ../../credits/intro.rst:24
+#: ../../credits/intro.rst:27
 msgid "Other Contributors"
 msgstr "その他の貢献者"
 
-#: ../../credits/intro.rst:25
+#: ../../credits/intro.rst:28
 msgid ""
 "See the :download:`THANKS <../../../THANKS>` file in the source distribution."
 msgstr ""
@@ -4506,7 +4510,7 @@ msgstr "Zrythm"
 msgid "Welcome to the Zrythm manual."
 msgstr "Zrythmのマニュアルへようこそ。"
 
-#: ../../index.rst:26 ../../index.rst:69
+#: ../../index.rst:27 ../../index.rst:71
 msgid ""
 "*Zrythm and the Zrythm logo are registered trademarks of Alexandros "
 "Theodotou in the United Kingdom.*"

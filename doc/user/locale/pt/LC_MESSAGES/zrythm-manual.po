@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-25 10:57+0000\n"
+"POT-Creation-Date: 2022-03-25 12:27+0000\n"
 "PO-Revision-Date: 2022-02-02 23:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -1036,11 +1036,15 @@ msgstr ""
 msgid "Credits"
 msgstr "Méritos"
 
-#: ../../credits/intro.rst:9
+#: ../../credits/intro.rst:8
+msgid "This section lists the original contributors to Zrythm project."
+msgstr ""
+
+#: ../../credits/intro.rst:12
 msgid "Authors"
 msgstr "Autores"
 
-#: ../../credits/intro.rst:10
+#: ../../credits/intro.rst:13
 msgid ""
 "See the :download:`AUTHORS <../../../AUTHORS>` file in the source "
 "distribution. These include developers, graphic artists and other authors of "
@@ -1050,11 +1054,11 @@ msgstr ""
 "Estes incluem programadores, artistas gráficos e outros autores de trabalhos "
 "sujeitos a direitos autorais."
 
-#: ../../credits/intro.rst:16
+#: ../../credits/intro.rst:19
 msgid "Translators"
 msgstr "Tradutores"
 
-#: ../../credits/intro.rst:17
+#: ../../credits/intro.rst:20
 #, fuzzy
 msgid ""
 "See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source "
@@ -1065,11 +1069,11 @@ msgstr ""
 "fonte. Estes incluem tradutores do software, do manual do utilizador e do "
 "website."
 
-#: ../../credits/intro.rst:24
+#: ../../credits/intro.rst:27
 msgid "Other Contributors"
 msgstr "Outros contribuidores"
 
-#: ../../credits/intro.rst:25
+#: ../../credits/intro.rst:28
 #, fuzzy
 msgid ""
 "See the :download:`THANKS <../../../THANKS>` file in the source distribution."
@@ -4566,7 +4570,7 @@ msgstr "Zrythm"
 msgid "Welcome to the Zrythm manual."
 msgstr "Bem-vindo ao manual do Zrythm."
 
-#: ../../index.rst:26 ../../index.rst:69
+#: ../../index.rst:27 ../../index.rst:71
 msgid ""
 "*Zrythm and the Zrythm logo are registered trademarks of Alexandros "
 "Theodotou in the United Kingdom.*"

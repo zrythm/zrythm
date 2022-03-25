@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-25 10:57+0000\n"
+"POT-Creation-Date: 2022-03-25 12:27+0000\n"
 "PO-Revision-Date: 2022-03-06 09:46+0000\n"
 "Last-Translator: Anthony V. <batmanplayer123@gmail.com>\n"
 "Language: el\n"
@@ -988,11 +988,15 @@ msgstr ""
 msgid "Credits"
 msgstr "Μνείες"
 
-#: ../../credits/intro.rst:9
+#: ../../credits/intro.rst:8
+msgid "This section lists the original contributors to Zrythm project."
+msgstr ""
+
+#: ../../credits/intro.rst:12
 msgid "Authors"
 msgstr "Δημιουργοί"
 
-#: ../../credits/intro.rst:10
+#: ../../credits/intro.rst:13
 msgid ""
 "See the :download:`AUTHORS <../../../AUTHORS>` file in the source "
 "distribution. These include developers, graphic artists and other authors of "
@@ -1002,11 +1006,11 @@ msgstr ""
 "Περιλαμβάνουν τους προγραμματιστές, σχεδιαστές και άλλους δημιουργούς "
 "δουλειάς που υπόκειται σε πνευματικά δικαιώματα."
 
-#: ../../credits/intro.rst:16
+#: ../../credits/intro.rst:19
 msgid "Translators"
 msgstr "Μεταφραστές"
 
-#: ../../credits/intro.rst:17
+#: ../../credits/intro.rst:20
 #, fuzzy
 msgid ""
 "See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source "
@@ -1017,11 +1021,11 @@ msgstr ""
 "διανομή. Περιλαμβάνουν τους μεταφραστές του προγράμματος, το εγχειρίδιο "
 "χρήστη και την ιστοσελίδα."
 
-#: ../../credits/intro.rst:24
+#: ../../credits/intro.rst:27
 msgid "Other Contributors"
 msgstr "Άλλοι συνεργάτες"
 
-#: ../../credits/intro.rst:25
+#: ../../credits/intro.rst:28
 #, fuzzy
 msgid ""
 "See the :download:`THANKS <../../../THANKS>` file in the source distribution."
@@ -4713,7 +4717,7 @@ msgstr "Zrythm"
 msgid "Welcome to the Zrythm manual."
 msgstr "Καλώς ήρθατε στο εγχειρίδιο χρήσης του Zrythm."
 
-#: ../../index.rst:26 ../../index.rst:69
+#: ../../index.rst:27 ../../index.rst:71
 msgid ""
 "*Zrythm and the Zrythm logo are registered trademarks of Alexandros "
 "Theodotou in the United Kingdom.*"

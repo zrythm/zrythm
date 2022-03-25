@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-25 10:57+0000\n"
+"POT-Creation-Date: 2022-03-25 12:27+0000\n"
 "PO-Revision-Date: 2021-09-06 18:34+0000\n"
 "Last-Translator: Nikita Saschenko <neketa777@gmail.com>\n"
 "Language: ru\n"
@@ -1027,11 +1027,15 @@ msgstr ""
 msgid "Credits"
 msgstr "Авторы (Credits)"
 
-#: ../../credits/intro.rst:9
+#: ../../credits/intro.rst:8
+msgid "This section lists the original contributors to Zrythm project."
+msgstr ""
+
+#: ../../credits/intro.rst:12
 msgid "Authors"
 msgstr "Авторы"
 
-#: ../../credits/intro.rst:10
+#: ../../credits/intro.rst:13
 msgid ""
 "See the :download:`AUTHORS <../../../AUTHORS>` file in the source "
 "distribution. These include developers, graphic artists and other authors of "
@@ -1041,11 +1045,11 @@ msgstr ""
 "относятся разработчики, художники и другие авторы работ, охраняемых "
 "авторским правом."
 
-#: ../../credits/intro.rst:16
+#: ../../credits/intro.rst:19
 msgid "Translators"
 msgstr "Переводчики (Translators)"
 
-#: ../../credits/intro.rst:17
+#: ../../credits/intro.rst:20
 #, fuzzy
 msgid ""
 "See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source "
@@ -1059,11 +1063,11 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
-#: ../../credits/intro.rst:24
+#: ../../credits/intro.rst:27
 msgid "Other Contributors"
 msgstr "Другие участники"
 
-#: ../../credits/intro.rst:25
+#: ../../credits/intro.rst:28
 msgid ""
 "See the :download:`THANKS <../../../THANKS>` file in the source distribution."
 msgstr "Смотрите :download:`THANKS <../../../THANKS>` в исходном коде."
@@ -4866,7 +4870,7 @@ msgstr "Zrythm"
 msgid "Welcome to the Zrythm manual."
 msgstr "Добро пожаловать в руководство Zrythm."
 
-#: ../../index.rst:26 ../../index.rst:69
+#: ../../index.rst:27 ../../index.rst:71
 msgid ""
 "*Zrythm and the Zrythm logo are registered trademarks of Alexandros "
 "Theodotou in the United Kingdom.*"
