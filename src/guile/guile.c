@@ -222,12 +222,14 @@ guile_run_script (
   engine_wait_for_pause (
     AUDIO_ENGINE, &state, Z_F_NO_FORCE);
 
-  return
+  char * ret =
     scm_with_guile (
       &guile_mode_func, (void *) script);
 
   /* restart engine */
   engine_resume (AUDIO_ENGINE, &state);
+
+  return ret;
 }
 
 /**
