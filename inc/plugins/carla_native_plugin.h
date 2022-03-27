@@ -59,6 +59,7 @@ typedef enum CarlaPluginType
 
 typedef struct CarlaPatchbayPortInfo
 {
+  unsigned int plugin_id;
   unsigned int port_hints;
   unsigned int port_id;
   char *       port_name;

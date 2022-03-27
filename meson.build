@@ -244,6 +244,9 @@ ext_lv2_plugins = {
   'sherlock_atom_inspector': [
     'Sherlock Atom Inspector',
     'http://open-music-kontrollers.ch/lv2/sherlock#atom_inspector'],
+  'lsp_compressor_mono': [
+    'LSP Compressor Mono',
+    'http://lsp-plug.in/plugins/lv2/compressor_mono'],
   'lsp_compressor': [
     'LSP Compressor',
     'http://lsp-plug.in/plugins/lv2/compressor_stereo'],
