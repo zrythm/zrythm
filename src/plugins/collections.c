@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -252,4 +252,6 @@ plugin_collections_free (
         plugin_collection_free,
         self->collections[i]);
     }
+
+  object_zero_and_free (self);
 }

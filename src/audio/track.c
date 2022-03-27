@@ -3280,12 +3280,14 @@ track_get_unique_name (
   Track *      track_to_skip,
   const char * _name)
 {
-  char name[strlen (_name) + 1];
+  /* add enough space for brackets and number
+   * inside brackets */
+  char name[strlen (_name) + 40];
   strcpy (name, _name);
   while (!tracklist_track_name_is_unique (
             TRACKLIST, name, track_to_skip))
     {
-      char name_without_num[780];
+      char name_without_num[strlen (name) + 1];
       int ending_num =
         string_get_int_after_last_space (
           name, name_without_num);
@@ -4109,11 +4111,12 @@ track_free (Track * self)
        * already free'd by now */
       remove_ats_from_automation_tracklist (
         self, F_NO_PUBLISH_EVENTS);
-      object_free_w_func_and_null (
-        track_processor_free, self->processor);
-      object_free_w_func_and_null (
-        channel_free, self->channel);
     }
+
+  object_free_w_func_and_null (
+    track_processor_free, self->processor);
+  object_free_w_func_and_null (
+    channel_free, self->channel);
 
   g_free_and_null (self->name);
   g_free_and_null (self->comment);

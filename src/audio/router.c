@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -216,9 +216,7 @@ router_recalc_graph (
         {
           g_usleep (100);
         }
-      /*zix_sem_wait (&self->graph_access);*/
       graph_setup (self->graph, 1, 1);
-      /*zix_sem_post (&self->graph_access);*/
       g_atomic_int_set (
         &AUDIO_ENGINE->run, (guint) running);
     }

@@ -1361,5 +1361,18 @@ transport_free (
 {
   zix_sem_destroy (&self->paused);
 
+  object_free_w_func_and_null (
+    port_free, self->roll);
+  object_free_w_func_and_null (
+    port_free, self->stop);
+  object_free_w_func_and_null (
+    port_free, self->backward);
+  object_free_w_func_and_null (
+    port_free, self->forward);
+  object_free_w_func_and_null (
+    port_free, self->loop_toggle);
+  object_free_w_func_and_null (
+    port_free, self->rec_toggle);
+
   object_zero_and_free (self);
 }

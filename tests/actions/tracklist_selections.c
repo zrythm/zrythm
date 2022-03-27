@@ -3239,6 +3239,12 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/tracklist_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test track deletion with lv2 worker",
+    (GTestFunc) test_track_deletion_with_lv2_worker);
+  g_test_add_func (
+    TEST_PREFIX "test no visible tracks after track deletion",
+    (GTestFunc) test_no_visible_tracks_after_track_deletion);
+  g_test_add_func (
     TEST_PREFIX
     "test track deletion w mixer selections",
     (GTestFunc)
@@ -3325,12 +3331,6 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test audio track deletion",
     (GTestFunc) test_audio_track_deletion);
-  g_test_add_func (
-    TEST_PREFIX "test track deletion with lv2 worker",
-    (GTestFunc) test_track_deletion_with_lv2_worker);
-  g_test_add_func (
-    TEST_PREFIX "test no visible tracks after track deletion",
-    (GTestFunc) test_no_visible_tracks_after_track_deletion);
 
   (void) test_copy_after_uninstalling_plugin;
 

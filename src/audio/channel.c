@@ -235,6 +235,7 @@ disconnect_no_prev_no_next (
   Plugin *  pl)
 {
   Track * track = channel_get_track (ch);
+  g_return_if_fail (track);
 
   /* -------------------------------------------
    * disconnect input ports
@@ -272,6 +273,7 @@ disconnect_no_prev_next (
   Plugin *  next_pl)
 {
   Track * track = channel_get_track (ch);
+  g_return_if_fail (track);
 
   /* -------------------------------------------
    * Disconnect input ports

@@ -952,17 +952,19 @@ midi_events_add_event_from_buf (
   int           buf_size,
   int           queued)
 {
-#if 0
-  if (buf_size != 3)
+  if (G_UNLIKELY (buf_size != 3))
     {
+#if 0
       g_debug (
         "buf size of %d received (%"PRIu8" %"
         PRIu8" %"PRIu8"), expected 3, skipping...",
         buf_size > 0 ? buf[0] : 0,
         buf_size > 1 ? buf[1] : 0,
         buf_size > 2 ? buf[2] : 0, buf_size);
-    }
 #endif
+
+      return;
+    }
 
   midi_byte_t type = buf[0] & 0xf0;
   midi_byte_t channel =

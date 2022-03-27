@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1530,7 +1530,7 @@ void
 plugin_manager_free (
   PluginManager * self)
 {
-  g_message ("%s: Freeing...", __func__);
+  g_debug ("%s: Freeing...", __func__);
 
   symap_free (self->symap);
   zix_sem_destroy (&self->symap_lock);
@@ -1552,8 +1552,11 @@ plugin_manager_free (
   object_free_w_func_and_null (
     cached_plugin_descriptors_free,
     self->cached_plugin_descriptors);
+  object_free_w_func_and_null (
+    plugin_collections_free,
+    self->collections);
 
   object_zero_and_free (self);
 
-  g_message ("%s: done", __func__);
+  g_debug ("%s: done", __func__);
 }

@@ -893,6 +893,8 @@ sample_processor_free (
     tracklist_free, self->tracklist);
   object_free_w_func_and_null (
     fader_free, self->fader);
+  object_free_w_func_and_null (
+    midi_events_free, self->midi_events);
 
   object_zero_and_free (self);
 }

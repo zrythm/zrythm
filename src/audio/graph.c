@@ -1894,6 +1894,9 @@ graph_free (
   object_set_to_zero (&self->callback_done);
   object_set_to_zero (&self->trigger);
 
+  object_free_w_func_and_null (
+    mpmc_queue_free, self->trigger_queue);
+
   object_zero_and_free (self);
 
   g_debug ("%s: done", __func__);

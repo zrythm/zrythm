@@ -77,9 +77,9 @@ tasks:
       #. ~/.ssh_home
       #scp -q -o StrictHostKeyChecking=no -r build/meson-logs/coveragereport "srht@www.zrythm.org:$SSH_HOME/coverage/${JOB_ID}-$(git rev-parse --short HEAD)-report" >/dev/null 2>&1
       set -x
-  - test-no-jack: |
+  - test-no-jack-sanitize: |
       cd zrythm
-      meson build --reconfigure -Dgraphviz=enabled -Djack=disabled
+      meson build --reconfigure -Dgraphviz=enabled -Djack=disabled -Db_sanitize=address
       meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5
   - run_cppcheck: |
       cd zrythm
