@@ -1422,7 +1422,7 @@ clear_output_buffers (
 
   /* if not running, do not attempt to access any
    * possibly deleted ports */
-  if (G_UNLIKELY (engine_get_run (self)))
+  if (G_UNLIKELY (!engine_get_run (self)))
     return;
 
   /* clear outputs exposed to jack */
