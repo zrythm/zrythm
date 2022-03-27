@@ -3,7 +3,7 @@
   <requires lib="gtk" version="4.0"/>
   <template class="EditorToolbarWidget" parent="GtkWidget">
     <child>
-      <object class="GtkScrolledWindow">
+      <object class="GtkScrolledWindow" id="scroll">
         <property name="vscrollbar-policy">never</property>
         <child>
           <object class="GtkBox">

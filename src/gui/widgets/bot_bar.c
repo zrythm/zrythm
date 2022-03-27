@@ -643,31 +643,17 @@ bot_bar_widget_setup (
 }
 
 static void
-bot_bar_widget_class_init (
-  BotBarWidgetClass * _klass)
+dispose (
+  BotBarWidget * self)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "bot_bar.ui");
+  gtk_widget_unparent (
+    GTK_WIDGET (self->popover_menu));
+  gtk_widget_unparent (
+    GTK_WIDGET (self->center_box));
 
-  gtk_widget_class_set_css_name (
-    klass, "bot-bar");
-
-#define BIND_CHILD(child) \
-  gtk_widget_class_bind_template_child ( \
-    klass, BotBarWidget, child)
-
-  BIND_CHILD (digital_meters);
-  BIND_CHILD (metronome);
-  BIND_CHILD (transport_controls);
-  BIND_CHILD (cpu_load);
-  BIND_CHILD (status_bar);
-  BIND_CHILD (playhead_box);
-
-#undef BIND_CHILD
-
-  gtk_widget_class_set_layout_manager_type (
-    klass, GTK_TYPE_BIN_LAYOUT);
+  G_OBJECT_CLASS (
+    bot_bar_widget_parent_class)->
+      dispose (G_OBJECT (self));
 }
 
 static void
@@ -737,4 +723,38 @@ bot_bar_widget_init (BotBarWidget * self)
   g_signal_connect (
     self->label, "activate-link",
     G_CALLBACK (activate_link), self);
+}
+
+static void
+bot_bar_widget_class_init (
+  BotBarWidgetClass * _klass)
+{
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (
+    klass, "bot_bar.ui");
+
+  gtk_widget_class_set_css_name (
+    klass, "bot-bar");
+
+#define BIND_CHILD(child) \
+  gtk_widget_class_bind_template_child ( \
+    klass, BotBarWidget, child)
+
+  BIND_CHILD (center_box);
+  BIND_CHILD (digital_meters);
+  BIND_CHILD (metronome);
+  BIND_CHILD (transport_controls);
+  BIND_CHILD (cpu_load);
+  BIND_CHILD (status_bar);
+  BIND_CHILD (playhead_box);
+
+#undef BIND_CHILD
+
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BIN_LAYOUT);
+
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+  oklass->dispose =
+    (GObjectFinalizeFunc) dispose;
 }

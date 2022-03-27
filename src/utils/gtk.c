@@ -317,7 +317,17 @@ z_gtk_widget_remove_children_of_type (
               gtk_box_remove (
                 GTK_BOX (widget), child);
             }
-          /*gtk_widget_unparent (child);*/
+          else
+            {
+              g_debug (
+                "unparenting %s (%p) from "
+                "parent %s (%p)",
+                gtk_widget_get_name (child),
+                child,
+                gtk_widget_get_name (widget),
+                widget);
+              gtk_widget_unparent (child);
+            }
         }
       child = next_child;
     }

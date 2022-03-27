@@ -409,6 +409,17 @@ editor_toolbar_widget_setup (
 }
 
 static void
+dispose (
+  EditorToolbarWidget * self)
+{
+  gtk_widget_unparent (GTK_WIDGET (self->scroll));
+
+  G_OBJECT_CLASS (
+    editor_toolbar_widget_parent_class)->
+      dispose (G_OBJECT (self));
+}
+
+static void
 editor_toolbar_widget_init (
   EditorToolbarWidget * self)
 {
@@ -480,6 +491,7 @@ editor_toolbar_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, EditorToolbarWidget, x)
 
+  BIND_CHILD (scroll);
   BIND_CHILD (chord_highlighting);
   BIND_CHILD (chord_highlight_box);
   BIND_CHILD (sep_after_chord_highlight);
@@ -502,4 +514,9 @@ editor_toolbar_widget_class_init (
 
   gtk_widget_class_set_layout_manager_type (
     klass, GTK_TYPE_BIN_LAYOUT);
+
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+  oklass->dispose =
+    (GObjectFinalizeFunc) dispose;
 }

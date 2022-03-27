@@ -63,6 +63,8 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _BotBarWidget
 {
   GtkWidget             parent_instance;
+
+  GtkCenterBox *        center_box;
   GtkStatusbar *        status_bar;
 
   /** New label replacing the original status

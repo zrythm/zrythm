@@ -219,6 +219,18 @@ midi_editor_space_widget_setup (
 }
 
 static void
+dispose (
+  MidiEditorSpaceWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->midi_arranger_velocity_paned));
+
+  G_OBJECT_CLASS (
+    midi_editor_space_widget_parent_class)->
+      dispose (G_OBJECT (self));
+}
+
+static void
 midi_editor_space_widget_init (
   MidiEditorSpaceWidget * self)
 {
@@ -310,4 +322,9 @@ midi_editor_space_widget_class_init (
 
   gtk_widget_class_set_layout_manager_type (
     klass, GTK_TYPE_BIN_LAYOUT);
+
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+  oklass->dispose =
+    (GObjectFinalizeFunc) dispose;
 }

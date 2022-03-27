@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -146,8 +146,9 @@ static void
 on_dispose (
   GObject * object)
 {
-  z_gtk_widget_remove_all_children (
-    GTK_WIDGET (object));
+  RotatedLabelWidget * self =
+    Z_ROTATED_LABEL_WIDGET (object);
+  gtk_widget_unparent (GTK_WIDGET (self->lbl));
 
   G_OBJECT_CLASS (
     rotated_label_widget_parent_class)->

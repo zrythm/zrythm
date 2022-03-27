@@ -53,6 +53,9 @@ typedef struct _ZoomButtonsWidget ZoomButtonsWidget;
 typedef struct _EditorToolbarWidget
 {
   GtkWidget           parent_instance;
+
+  GtkScrolledWindow * scroll;
+
   GtkComboBoxText *   chord_highlighting;
   SnapBoxWidget *     snap_box;
   QuantizeBoxWidget * quantize_box;
