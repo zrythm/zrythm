@@ -208,9 +208,19 @@ router_recalc_graph (
     }
   else
     {
-      zix_sem_wait (&self->graph_access);
+      int running =
+        g_atomic_int_get (&AUDIO_ENGINE->run);
+      g_atomic_int_set (&AUDIO_ENGINE->run, 0);
+      while (g_atomic_int_get (
+               &AUDIO_ENGINE->cycle_running))
+        {
+          g_usleep (100);
+        }
+      /*zix_sem_wait (&self->graph_access);*/
       graph_setup (self->graph, 1, 1);
-      zix_sem_post (&self->graph_access);
+      /*zix_sem_post (&self->graph_access);*/
+      g_atomic_int_set (
+        &AUDIO_ENGINE->run, (guint) running);
     }
 
   g_message ("done");
