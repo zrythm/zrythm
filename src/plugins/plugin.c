@@ -2613,6 +2613,10 @@ plugin_close_ui (
     }
 #endif
 
+  /* run events immediately otherwise freed
+   * plugin might be accessed by event manager */
+  event_manager_process_now (EVENT_MANAGER);
+
   self->visible = false;
 }
 

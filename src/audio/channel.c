@@ -2305,5 +2305,10 @@ channel_free (Channel * self)
         channel_send_free, send);
     }
 
+  if (Z_IS_CHANNEL_WIDGET (self->widget))
+    {
+      self->widget->channel = NULL;
+    }
+
   object_zero_and_free (self);
 }

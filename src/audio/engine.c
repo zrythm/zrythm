@@ -1420,6 +1420,11 @@ clear_output_buffers (
   port_clear_buffer (self->monitor_out->l);
   port_clear_buffer (self->monitor_out->r);
 
+  /* if not running, do not attempt to access any
+   * possibly deleted ports */
+  if (G_UNLIKELY (engine_get_run (self)))
+    return;
+
   /* clear outputs exposed to jack */
 #ifdef HAVE_JACK
   for (size_t i = 0;
