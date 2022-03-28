@@ -30,7 +30,7 @@ there are many plugins that can easily be installed via apt.
 
 For users of Arch Linux-based distributions such as
 Manjaro we recommend installing the
-`lv2-plugins <https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_
+`lv2-plugins <https://archlinux.org/groups/x86_64/lv2-plugins/>`_
 group.
 
 Recommended Plugin Bundles
@@ -39,7 +39,7 @@ Recommended Plugin Bundles
 `DISTRHO Ports`_ provides a good variety of synths
 and effects.
 
-`ZAM Plugins <http://www.zamaudio.com/?p=976>`_
+`ZAM Plugins <https://www.zamaudio.com/?p=976>`_
 is an effects pack that contains high quality plugins for
 all the basic effects such as Delay, Reverb, Compression,
 EQ and Saturation.
@@ -74,7 +74,7 @@ synthesize a wide variety of sounds.
 Percussion Generators
 ~~~~~~~~~~~~~~~~~~~~~
 
-`GeonKick <https://gitlab.com/iurie/geonkick>`_ is a
+`GeonKick <https://gitlab.com/iurie-sw/geonkick>`_ is a
 kick drum synthesizer that can also synthesize
 other types of percussion.
 
