@@ -1189,6 +1189,47 @@ create_ports (
             self->plugin, port);
         }
 
+      /* set L/R for sidechain groups (assume
+       * stereo) */
+      int num_default_sidechains_added = 0;
+      for (int i = 0;
+           i < self->plugin->num_in_ports;
+           i++)
+        {
+          Port * port =
+            self->plugin->in_ports[i];
+          if (port->id.type == TYPE_AUDIO
+              &&
+              port->id.flags & PORT_FLAG_SIDECHAIN
+              &&
+              port->id.port_group == NULL
+              &&
+              !(port->id.flags &
+                  PORT_FLAG_STEREO_L)
+              &&
+              !(port->id.flags &
+                  PORT_FLAG_STEREO_R))
+            {
+              port->id.port_group =
+                g_strdup (
+                  "[Zrythm] Sidechain Group");
+              if (
+                num_default_sidechains_added == 0)
+                {
+                  port->id.flags |=
+                    PORT_FLAG_STEREO_L;
+                  num_default_sidechains_added++;
+                }
+              else if (
+                num_default_sidechains_added == 1)
+                {
+                  port->id.flags |=
+                    PORT_FLAG_STEREO_R;
+                  break;
+                }
+            }
+        }
+
       int audio_outs_to_create =
         descr->num_audio_outs == 1
         ? 2 :  descr->num_audio_outs;

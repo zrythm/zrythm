@@ -1375,10 +1375,12 @@ plugin_add_in_port (
   Port *   port)
 {
   ADD_PORT (in);
-  /*g_message (*/
-    /*"added input port %s to plugin %s at index %d",*/
-    /*port->id.label, pl->descr->name,*/
-    /*port->id.port_index);*/
+#if 0
+  g_debug (
+    "added input port %s to plugin %s at index %d",
+    port->id.label, pl->descr->name,
+    port->id.port_index);
+#endif
 }
 
 /**
