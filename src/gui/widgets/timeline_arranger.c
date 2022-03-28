@@ -1508,6 +1508,7 @@ finish_data_received:
   return true;
 }
 
+#if 0
 static void
 on_dnd_motion_value_ready (
   GObject* source_object,
@@ -1639,6 +1640,7 @@ on_dnd_motion (
 
   return GDK_ACTION_MOVE;
 }
+#endif
 
 static void
 on_dnd_leave (
@@ -1671,45 +1673,14 @@ timeline_arranger_setup_drag_dest (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (drop_target));
 
-#if 0
-  /* set as drag dest */
-  GtkTargetEntry entries[] = {
-    {
-      (char *) TARGET_ENTRY_CHORD_DESCR,
-      GTK_TARGET_SAME_APP,
-      symap_map (ZSYMAP, TARGET_ENTRY_CHORD_DESCR),
-    },
-    {
-      (char *) TARGET_ENTRY_SUPPORTED_FILE,
-      GTK_TARGET_SAME_APP,
-      symap_map (
-        ZSYMAP, TARGET_ENTRY_SUPPORTED_FILE),
-    },
-    {
-      (char *) TARGET_ENTRY_URI_LIST,
-      GTK_TARGET_SAME_APP,
-      symap_map (ZSYMAP, TARGET_ENTRY_URI_LIST),
-    },
-    {
-      (char *) TARGET_ENTRY_URI_LIST,
-      GTK_TARGET_OTHER_APP,
-      symap_map (ZSYMAP, TARGET_ENTRY_URI_LIST),
-    },
-  };
-  gtk_drag_dest_set (
-    GTK_WIDGET (self),
-    GTK_DEST_DEFAULT_MOTION |
-      GTK_DEST_DEFAULT_DROP,
-    entries, G_N_ELEMENTS (entries),
-    GDK_ACTION_MOVE | GDK_ACTION_COPY);
-#endif
-
   g_signal_connect (
     drop_target, "drop",
     G_CALLBACK (on_dnd_drop), self);
+#if 0
   g_signal_connect (
     drop_target, "motion",
     G_CALLBACK (on_dnd_motion), self);
+#endif
   g_signal_connect (
     drop_target, "leave",
     G_CALLBACK (on_dnd_leave), self);
