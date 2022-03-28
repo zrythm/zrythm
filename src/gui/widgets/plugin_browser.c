@@ -854,6 +854,10 @@ on_plugin_selection_changed (
   PluginDescriptor * descr =
     (PluginDescriptor *) wrapped_obj->obj;
 
+  /* set as current descriptor */
+  self->current_descriptors[0] = descr;
+  self->num_current_descriptors = 1;
+
   /* update status label */
   char * label = g_strdup_printf (
     "%s\n%s, %s%s\nAudio: %d, %d\nMidi: %d, "
