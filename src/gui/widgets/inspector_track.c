@@ -175,8 +175,6 @@ inspector_track_widget_show_tracks (
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self->inputs), true);
-              track_input_expander_widget_refresh (
-                self->inputs, track);
             }
           if (track->in_signal_type == TYPE_EVENT)
             {
@@ -186,6 +184,8 @@ inspector_track_widget_show_tracks (
                 self->midi_fx, PLUGIN_SLOT_MIDI_FX,
                 PSE_POSITION_INSPECTOR, track);
             }
+          track_input_expander_widget_refresh (
+            self->inputs, track);
           ports_expander_widget_setup_track (
             self->outputs,
             track, PE_TRACK_PORT_TYPE_SENDS);

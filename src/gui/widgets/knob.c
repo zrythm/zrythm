@@ -43,15 +43,16 @@
 #include "audio/port_connection.h"
 #include "gui/widgets/knob.h"
 #include "utils/cairo.h"
+#include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (KnobWidget,
-               knob_widget,
-               GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (
+  KnobWidget, knob_widget,
+  GTK_TYPE_DRAWING_AREA)
 
 #define ARC_CUT_ANGLE 60.f
 

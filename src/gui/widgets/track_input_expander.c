@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -530,14 +530,8 @@ track_input_expander_widget_refresh (
   TrackInputExpanderWidget * self,
   Track *                    track)
 {
-  /* TODO */
-  g_warn_if_fail (track);
+  g_return_if_fail (track);
   self->track = track;
-
-  g_warn_if_fail (
-    track->type == TRACK_TYPE_MIDI ||
-    track->type == TRACK_TYPE_INSTRUMENT ||
-    track->type == TRACK_TYPE_AUDIO);
 
   gtk_widget_set_visible (
     GTK_WIDGET (self->midi_input), 0);
@@ -557,6 +551,14 @@ track_input_expander_widget_refresh (
         GTK_BOX (self->gain_box),
         GTK_WIDGET (self->gain));
       self->gain = NULL;
+    }
+
+  if (
+    track->type != TRACK_TYPE_MIDI
+    && track->type != TRACK_TYPE_INSTRUMENT
+    && track->type != TRACK_TYPE_AUDIO)
+    {
+      return;
     }
 
   if (track->type == TRACK_TYPE_MIDI ||
@@ -596,8 +598,6 @@ track_input_expander_widget_refresh (
           control_port_set_real_val_w_events,
           port, port->minf, port->maxf, 24,
           port->zerof);
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->gain), true);
       gtk_box_append (
         GTK_BOX (self->gain_box),
         GTK_WIDGET (self->gain));
