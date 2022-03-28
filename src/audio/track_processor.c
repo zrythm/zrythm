@@ -1355,12 +1355,21 @@ track_processor_connect_to_plugin (
     }
   else if (tr->in_signal_type == TYPE_AUDIO)
     {
+      /* get actual port counts */
+      int num_pl_audio_ins = 0;
+      for (i = 0; i < pl->num_in_ports; i++)
+        {
+          Port * port = pl->in_ports[i];
+          if (port->id.type == TYPE_AUDIO)
+            num_pl_audio_ins++;
+        }
+
       num_ports_to_connect = 0;
-      if (pl->setting->descr->num_audio_ins == 1)
+      if (num_pl_audio_ins == 1)
         {
           num_ports_to_connect = 1;
         }
-      else if (pl->setting->descr->num_audio_ins > 1)
+      else if (num_pl_audio_ins > 1)
         {
           num_ports_to_connect = 2;
         }
@@ -1372,9 +1381,7 @@ track_processor_connect_to_plugin (
                last_index < pl->num_in_ports;
                last_index++)
             {
-              in_port =
-                pl->in_ports[
-                  last_index];
+              in_port = pl->in_ports[last_index];
               if (in_port->id.type == TYPE_AUDIO)
                 {
                   if (i == 0)

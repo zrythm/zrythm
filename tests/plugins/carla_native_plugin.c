@@ -43,11 +43,27 @@ test_mono_plugin (void)
   AUDIO_ENGINE->stop_dummy_audio_thread = true;
   g_usleep (1000000);
 
-  /* create a track */
-  Track * track =
-    track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_BUS, NULL);
+  /* create an audio track */
+  char * filepath =
+    g_build_filename (
+      TESTS_SRCDIR, "test.wav", NULL);
+  SupportedFile * file =
+    supported_file_new_from_path (filepath);
+  Track * audio_track =
+    track_create_with_action (
+      TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+      TRACKLIST->num_tracks, 1, NULL);
+  supported_file_free (file);
 
+  /* hard pan right */
+  GError * err = NULL;
+  UndoableAction * ua =
+    tracklist_selections_action_new_edit_single_float (
+      EDIT_TRACK_ACTION_TYPE_PAN,
+      audio_track, 0.5f, 1.f, false, &err);
+  undo_manager_perform (UNDO_MANAGER, ua, NULL);
+
+  /* add a mono insert */
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
     LSP_COMPRESSOR_MONO_BUNDLE,
@@ -58,12 +74,12 @@ test_mono_plugin (void)
   bool ret =
     mixer_selections_action_perform_create (
       PLUGIN_SLOT_INSERT,
-      track_get_name_hash (track), 0, setting, 1,
-      NULL);
+      track_get_name_hash (audio_track), 0,
+      setting, 1, NULL);
   g_assert_true (ret);
 
   Plugin * pl =
-    track->channel->inserts[0];
+    audio_track->channel->inserts[0];
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
   engine_process (
@@ -72,6 +88,39 @@ test_mono_plugin (void)
     AUDIO_ENGINE, AUDIO_ENGINE->block_length);
   engine_process (
     AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+
+  /* bounce */
+  ExportSettings settings;
+  memset (
+    &settings, 0, sizeof (ExportSettings));
+  export_settings_set_bounce_defaults (
+    &settings, EXPORT_FORMAT_WAV, NULL, __func__);
+  settings.time_range = TIME_RANGE_LOOP;
+  settings.bounce_with_parents = true;
+  settings.mode = EXPORT_MODE_FULL;
+
+  GPtrArray * conns =
+    exporter_prepare_tracks_for_export (
+      &settings);
+
+  /* start exporting in a new thread */
+  GThread * thread =
+    g_thread_new (
+      "bounce_thread",
+      (GThreadFunc)
+      exporter_generic_export_thread,
+      &settings);
+
+  g_thread_join (thread);
+
+  exporter_return_connections_post_export (
+    &settings, conns);
+
+  g_assert_false (
+    audio_file_is_silent (
+      settings.file_uri));
+
+  export_settings_free_members (&settings);
 
   test_helper_zrythm_cleanup ();
 #endif
