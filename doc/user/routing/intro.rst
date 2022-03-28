@@ -9,7 +9,5 @@ Routing
    :maxdepth: 4
 
    ports
-   making-connections
-   managing-connections
-   inserts-sends
+   connections
    monitor-section

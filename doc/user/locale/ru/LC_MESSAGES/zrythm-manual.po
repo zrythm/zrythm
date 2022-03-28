@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-25 12:27+0000\n"
+"POT-Creation-Date: 2022-03-28 17:00+0100\n"
 "PO-Revision-Date: 2021-09-06 18:34+0000\n"
 "Last-Translator: Nikita Saschenko <neketa777@gmail.com>\n"
 "Language: ru\n"
@@ -300,9 +300,6 @@ msgstr "Решение проблем (Troubleshooting)"
 #: ../../editing/clip-editors/piano-roll.rst:148
 #: ../../exporting/audio-and-midi.rst:38
 #: ../../plugins-files/audio-midi-files/file-browser.rst:69
-#: ../../routing/making-connections.rst:30
-#: ../../routing/managing-connections.rst:8
-#: ../../routing/monitor-section.rst:31
 #: ../../scripting/scripting-interface.rst:8
 #: ../../tracks/inspector-page.rst:157 ../../tracks/overview.rst:70
 #: ../../zrythm-interface/right-panel.rst:23
@@ -3900,7 +3897,7 @@ msgstr "Экспортированные файлы"
 msgid "Exporting"
 msgstr "Экспорт (Exporting)"
 
-#: ../../exporting/routing-graph.rst:8 ../../routing/making-connections.rst:34
+#: ../../exporting/routing-graph.rst:8 ../../routing/connections.rst:96
 msgid "Routing Graph"
 msgstr "График направлений (Routing Graph)"
 
@@ -4687,7 +4684,7 @@ msgstr ""
 ":term:`MIDI` ноты используются для взаимодействия с виртуальными (или "
 "аппаратными) инструментами."
 
-#: ../../glossary/intro.rst:100
+#: ../../glossary/intro.rst:100 ../../routing/monitor-section.rst:65
 msgid "Mono"
 msgstr "Моно (Mono)"
 
@@ -5128,7 +5125,7 @@ msgstr ""
 "что Zrythm называет «группой» (Group). Имейте это в виду, если вы переходите "
 "из других DAW, поскольку в Zrythm они разные."
 
-#: ../../mixing/routing.rst:45 ../../routing/making-connections.rst:28
+#: ../../mixing/routing.rst:45 ../../routing/connections.rst:47
 msgid "Sidechaining"
 msgstr "Сайдчейн (Sidechaining)"
 
@@ -7072,23 +7069,20 @@ msgid ""
 "backups."
 msgstr ""
 
-#: ../../routing/inserts-sends.rst:8
-msgid "Inserts & Sends"
-msgstr "Инсерты (Insert) и посылы (Send)"
+#: ../../routing/connections.rst:8
+msgid "Connections"
+msgstr "Подключения"
 
-#: ../../routing/inserts-sends.rst:9
-msgid ""
-"Inserts and sends are covered in :ref:`tracks/inspector-page:MIDI FX/"
-"Inserts` and :ref:`tracks/inspector-page:Aux Sends` respectively."
-msgstr ""
-"Инсерты и посылы описаны в :ref:`tracks/inspector-page:MIDI FX/Inserts` и :"
-"ref:`tracks/inspector-page:Aux Sends` соответственно."
-
-#: ../../routing/making-connections.rst:8
+#: ../../routing/connections.rst:11
 msgid "Making Connections"
 msgstr "Создание подключений"
 
-#: ../../routing/making-connections.rst:10
+#: ../../routing/connections.rst:14
+#, fuzzy
+msgid "Direct Connections"
+msgstr "Подключения к портам"
+
+#: ../../routing/connections.rst:16
 msgid ""
 "Zrythm allows the user to connect almost any port to any other port, as long "
 "as they are compatible. For example, you can route an LFO's CV output to a "
@@ -7098,7 +7092,7 @@ msgstr ""
 "любому другому порту, если они совместимы. Например, вы можете направить "
 "выход CV LFO на параметр реверберации (Reverb) плагина фильтра."
 
-#: ../../routing/making-connections.rst:15
+#: ../../routing/connections.rst:21
 msgid ""
 "Connections can be made by double clicking on ports in the :ref:`track-"
 "inspector` or the :ref:`plugin-inspector-page`."
@@ -7106,26 +7100,107 @@ msgstr ""
 "Подключения могут быть созданы двойным нажатием по портам на странице :ref:"
 "`track-inspector` или :ref:`plugin-inspector-page`."
 
-#: ../../routing/making-connections.rst:22
+#: ../../routing/connections.rst:28
+#, fuzzy
+msgid "Plugin controls"
+msgstr "Порты Плагинов (Plugin Ports)"
+
+#: ../../routing/connections.rst:30
 msgid ""
-"By double clicking the port, you can select a port to connect it to, or edit "
-"existing connections. You can also drag the slider to adjust the level of "
-"the amount to send."
+"In the popover, you can view existing connections and press :guilabel:`Add` "
+"to create a new connection."
 msgstr ""
-"Дважды нажав на порт, вы можете выбрать порт для подключения или "
-"отредактировать существующие подключения. Вы также можете перетащить "
-"ползунок, чтобы настроить уровень отправляемогоц сигнала."
 
-#: ../../routing/making-connections.rst:30
-msgid "Give an example of how to sidechain (classic bass + kick example)."
-msgstr "Приведите пример сайдчейна (классический пример баса и бочки)."
+#: ../../routing/connections.rst:36
+#, fuzzy
+msgid "Port connections for control"
+msgstr "Параметры экспорта для микса"
 
-#: ../../routing/making-connections.rst:35
+#: ../../routing/connections.rst:38
+msgid "You can select the port to connect to in the presented dialog."
+msgstr ""
+
+#: ../../routing/connections.rst:44 ../../routing/connections.rst:56
+msgid "Selecting a new port to connect to"
+msgstr ""
+
+#: ../../routing/connections.rst:49
 msgid ""
-"It is very helpful to be able to view the routing graph when making "
+"Signal from tracks can be routed to plugins that have sidechain inputs via :"
+"ref:`Aux Sends <tracks/inspector-page:Aux Sends>`."
+msgstr ""
+
+#: ../../routing/connections.rst:58
+msgid ""
+"For example, you can use a compressor plugin on a bass track that accepts a "
+"sidechain input from a kick track to get a pumping/ducking effect."
+msgstr ""
+
+#: ../../routing/connections.rst:63
+#, fuzzy
+msgid "Managing Connections"
+msgstr "Создание подключений"
+
+#: ../../routing/connections.rst:65
+msgid ""
+"Connections can be managed in the Connections tab in the :ref:`Main Panel "
+"<zrythm-interface/main-panel:Main Panel>`."
+msgstr ""
+
+#: ../../routing/connections.rst:72
+#, fuzzy
+msgid "Managing connections"
+msgstr "Создание подключений"
+
+#: ../../routing/connections.rst:74
+msgid ""
+"Individual connections can be edited in the inspector pages by double "
+"clicking."
+msgstr ""
+
+#: ../../routing/connections.rst:80
+#, fuzzy
+msgid "Editing a connection"
+msgstr "Создание подключений"
+
+#: ../../routing/connections.rst:82
+msgid ""
+"You can click and drag the bar to select how much the connection should "
+"affect the signal. 100% means the whole signal will be passed from the "
+"source port to the destination port, and 0% means no signal will be allowed "
+"through."
+msgstr ""
+
+#: ../../routing/connections.rst:88
+#, fuzzy
+msgid "The following controls are also available."
+msgstr "Существуют следующие типы регионов."
+
+#: ../../routing/connections.rst:90
+msgid "Enable/Disable Connection"
+msgstr ""
+
+#: ../../routing/connections.rst:91
+msgid "Toggle whether the connection is enabled (active)"
+msgstr ""
+
+#: ../../routing/connections.rst:93
+#, fuzzy
+msgid "Delete Connection"
+msgstr "Подключения к портам"
+
+#: ../../routing/connections.rst:93
+#, fuzzy
+msgid "Delete the connection"
+msgstr "Обновить этот раздел / картинку."
+
+#: ../../routing/connections.rst:97
+#, fuzzy
+msgid ""
+"It may be helpful to be able to view the routing graph when making "
 "connections. We plan to add this functionality into Zrythm in the future, "
-"but for now Zrythm allows you to export the whole routing graph as a PNG "
-"image, so you can view it externally."
+"but for now Zrythm allows you to export the whole routing graph as an image, "
+"so you can view it externally."
 msgstr ""
 "Очень полезно иметь возможность просматривать график направлений при "
 "создании соединений. Мы планируем добавить эту функциональность в Zrythm в "
@@ -7133,18 +7208,9 @@ msgstr ""
 "направлений как изображение PNG, чтобы вы могли просматривать его в своих "
 "приложениях."
 
-#: ../../routing/making-connections.rst:41
+#: ../../routing/connections.rst:103
 msgid "See :ref:`export-routing-graph` for details."
 msgstr "Читайте :ref:`export-routing-graph` для подробностей."
-
-#: ../../routing/managing-connections.rst:6
-#, fuzzy
-msgid "Managing Connections"
-msgstr "Создание подключений"
-
-#: ../../routing/managing-connections.rst:8
-msgid "Write this section."
-msgstr "Написать этот раздел."
 
 #: ../../routing/monitor-section.rst:6
 #, fuzzy
@@ -7161,42 +7227,136 @@ msgstr ""
 "Комната управления используется для редактирования глобальных настроек, "
 "связанных с микшированием (Mixing) и направлением (Routing) сигналов."
 
-#: ../../routing/monitor-section.rst:13
-msgid "Monitor Out"
+#: ../../routing/monitor-section.rst:15
+#, fuzzy
+msgid "Monitor section"
+msgstr "Цикл выделения"
+
+#: ../../routing/monitor-section.rst:18
+#, fuzzy
+msgid "Channel Controls"
+msgstr "Основная Панель Инструментов (Main Toolbar)"
+
+#: ../../routing/monitor-section.rst:20
+msgid ""
+"The monitor section displays the number of tracks currently soloed, muted or "
+"listened, along with buttons to unsolo, unmute, or unlisten every track."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:25
+#, fuzzy
+msgid "Global Levels"
+msgstr "Глобальные меню"
+
+#: ../../routing/monitor-section.rst:27
+msgid ""
+"The monitor section includes global mute, listen and dim level controls."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:30
+msgid "Mute Level"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:31
+msgid "The level at which muted tracks will be played"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:32
+msgid "Listen Level"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:33
+msgid "The level at which listened tracks will be played"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:36
+msgid "Dim Level"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:35
+msgid ""
+"The level at which unlistened tracks will be played when at least 1 track is "
+"listened"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:39
+#, fuzzy
+msgid "Monitor Output"
 msgstr "Выход монитора (Monitor Out)"
 
-#: ../../routing/monitor-section.rst:14
+#: ../../routing/monitor-section.rst:41
+#, fuzzy
 msgid ""
 "In Zrythm, what you actually hear through your speakers is not the output of "
-"the master track, but the monitor output."
+"the master track, but the monitor output. The master track routes its output "
+"to this special processor that processes the signal before sending the "
+"output to the speakers."
 msgstr ""
 "В Zrythm то, что вы действительно слышите через выходные аудиоустройства, - "
 "это не выход мастер трека (Master), а выход монитора (Monitor)."
 
-#: ../../routing/monitor-section.rst:18
+#: ../../routing/monitor-section.rst:49
+#, fuzzy
+msgid "Monitor Knob"
+msgstr "Монитор"
+
+#: ../../routing/monitor-section.rst:51
 msgid ""
-"The master track routes its output to a special processor called `Monitor "
-"Out` that changes the volume before sending the output to the speakers."
+"The :guilabel:`Monitor` knob controls the output volume. If set to 0dB, the "
+"volume coming from the master track will remain unchanged."
 msgstr ""
-"Мастер трек направляет свой выход на специальный процессор, называемый "
-"`Выход монитора` (Monitor Out), который изменяет громкость перед отправкой "
-"выхода на выходное аудиоустройство."
 
-#: ../../routing/monitor-section.rst:25
-msgid "The `Monitor Out` knob controls this volume."
-msgstr "Ползунок `Выход монитора` (Monitor Out) управляет этой громкостью."
+#: ../../routing/monitor-section.rst:56
+#, fuzzy
+msgid "Monitor Controls"
+msgstr "Управление (Controls)"
 
-#: ../../routing/monitor-section.rst:28
+#: ../../routing/monitor-section.rst:58
+msgid ""
+"The following buttons exist to alter the signal passing through the monitor "
+"processor."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:62
+msgid "Sum the output to mono"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:64
+msgid "This is useful for checking how the mix sounds in mono."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:68
 msgid "Dim"
 msgstr "Диммер (Dim)"
 
-#: ../../routing/monitor-section.rst:29
-msgid "This is not operational at the moment."
-msgstr "На данный момент это не работает."
+#: ../../routing/monitor-section.rst:68
+msgid "Dim the output to the dim level"
+msgstr ""
 
-#: ../../routing/monitor-section.rst:31
-msgid "Move to another chapter."
-msgstr "Переместить в другую главу."
+#: ../../routing/monitor-section.rst:71 ../../tracks/track-controls.rst:24
+msgid "Mute"
+msgstr "Заглушить (Mute)"
+
+#: ../../routing/monitor-section.rst:71
+msgid "Mute the output"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:74
+#, fuzzy
+msgid "JACK Output"
+msgstr "Типы треков"
+
+#: ../../routing/monitor-section.rst:76
+msgid ""
+"When using the :term:`JACK` backend, there will be additional controls to "
+"route the output signal to one or more user-specified devices, instead of "
+"the default device used by JACK."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:84
+#, fuzzy
+msgid "JACK output"
+msgstr "Типы треков"
 
 #: ../../routing/ports.rst:8
 msgid "Ports"
@@ -7227,10 +7387,11 @@ msgid ""
 msgstr ""
 
 #: ../../routing/ports.rst:25
+#, fuzzy
 msgid ""
 "For example, an instrument track has a `MIDI input` port it uses to read "
-"MIDI data and 2 `Audio output` ports where it copies the stereo signal after "
-"being processed."
+"MIDI data from and 2 `Audio output` ports where it copies the stereo signal "
+"after being processed."
 msgstr ""
 "Например, инструментальный трек имеет порт «MIDI вход» (MIDI Input), который "
 "он использует для чтения данных MIDI, и 2 порта «Audio выход» (Audio "
@@ -8358,10 +8519,6 @@ msgstr ""
 msgid "Arm the track for recording."
 msgstr "Активировать трек для записи."
 
-#: ../../tracks/track-controls.rst:24
-msgid "Mute"
-msgstr "Заглушить (Mute)"
-
 #: ../../tracks/track-controls.rst:19
 #, fuzzy
 msgid "Mute the track, meaning no signal will be sent to its direct out."
@@ -9127,7 +9284,7 @@ msgid ":ref:`Timeline <editing-timeline>`"
 msgstr ":ref:`timeline` (1)"
 
 #: ../../zrythm-interface/main-panel.rst:19
-msgid ":doc:`Connections <../routing/managing-connections>`"
+msgid ":ref:`Connections <routing/connections:Managing Connections>`"
 msgstr ""
 
 #: ../../zrythm-interface/main-panel.rst:20
@@ -9605,6 +9762,48 @@ msgid ""
 "will start clipping."
 msgstr ""
 
+#~ msgid "Inserts & Sends"
+#~ msgstr "Инсерты (Insert) и посылы (Send)"
+
+#~ msgid ""
+#~ "Inserts and sends are covered in :ref:`tracks/inspector-page:MIDI FX/"
+#~ "Inserts` and :ref:`tracks/inspector-page:Aux Sends` respectively."
+#~ msgstr ""
+#~ "Инсерты и посылы описаны в :ref:`tracks/inspector-page:MIDI FX/Inserts` "
+#~ "и :ref:`tracks/inspector-page:Aux Sends` соответственно."
+
+#~ msgid ""
+#~ "By double clicking the port, you can select a port to connect it to, or "
+#~ "edit existing connections. You can also drag the slider to adjust the "
+#~ "level of the amount to send."
+#~ msgstr ""
+#~ "Дважды нажав на порт, вы можете выбрать порт для подключения или "
+#~ "отредактировать существующие подключения. Вы также можете перетащить "
+#~ "ползунок, чтобы настроить уровень отправляемогоц сигнала."
+
+#~ msgid "Give an example of how to sidechain (classic bass + kick example)."
+#~ msgstr "Приведите пример сайдчейна (классический пример баса и бочки)."
+
+#~ msgid "Write this section."
+#~ msgstr "Написать этот раздел."
+
+#~ msgid ""
+#~ "The master track routes its output to a special processor called `Monitor "
+#~ "Out` that changes the volume before sending the output to the speakers."
+#~ msgstr ""
+#~ "Мастер трек направляет свой выход на специальный процессор, называемый "
+#~ "`Выход монитора` (Monitor Out), который изменяет громкость перед "
+#~ "отправкой выхода на выходное аудиоустройство."
+
+#~ msgid "The `Monitor Out` knob controls this volume."
+#~ msgstr "Ползунок `Выход монитора` (Monitor Out) управляет этой громкостью."
+
+#~ msgid "This is not operational at the moment."
+#~ msgstr "На данный момент это не работает."
+
+#~ msgid "Move to another chapter."
+#~ msgstr "Переместить в другую главу."
+
 #~ msgid ""
 #~ "The rest of the mixer shows the rest of the channels, along with some "
 #~ "extra space used for drag-and-dropping plugins or files."
@@ -9745,9 +9944,6 @@ msgstr ""
 #~ msgid "Update this section/pic."
 #~ msgstr "Обновить этот раздел / картинку."
 
-#~ msgid "Common Controls"
-#~ msgstr "Управление (Controls)"
-
 #~ msgid "Zoom Controls"
 #~ msgstr "Управление (Controls)"
 
@@ -9804,9 +10000,6 @@ msgstr ""
 #~ "Щелчок и перетаскивание пустого места на линейке (кроме верхней части, "
 #~ "которая используется для выбора диапазонов - читайте :term:`Range`) "
 #~ "позволит вам переместить курсор (Playhead)."
-
-#~ msgid "Update this section."
-#~ msgstr "Обновить этот раздел / картинку."
 
 #~ msgid ""
 #~ "It contains a snap section, a quantize section, and an audio region "
@@ -11075,9 +11268,6 @@ msgstr ""
 #~ "Это обнаруженные устройства, которые будут автоматически подключаться и "
 #~ "готовы к использованию при каждом запуске Zrythm. Нажмите на кнопку :"
 #~ "zbutton:`Сканирование (Rescan)`, чтобы снова найти устройства."
-
-#~ msgid "Connections"
-#~ msgstr "Подключения"
 
 #~ msgid "Cut Mode"
 #~ msgstr "Режим обрезания (Cut Mode)"

@@ -16,6 +16,6 @@ The main panel consists of the following views, each
 explained in its own section.
 
 * :ref:`Timeline <editing-timeline>`
-* :doc:`Connections <../routing/managing-connections>`
+* :ref:`Connections <routing/connections:Managing Connections>`
 * :ref:`Bindings <configuration/device-setup:MIDI Bindings>`
 * Scenes *(not implemented yet)*

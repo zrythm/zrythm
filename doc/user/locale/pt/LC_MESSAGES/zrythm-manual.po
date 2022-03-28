@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-25 12:27+0000\n"
+"POT-Creation-Date: 2022-03-28 17:00+0100\n"
 "PO-Revision-Date: 2022-02-02 23:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -293,9 +293,6 @@ msgstr "Resolução de problemas"
 #: ../../editing/clip-editors/piano-roll.rst:148
 #: ../../exporting/audio-and-midi.rst:38
 #: ../../plugins-files/audio-midi-files/file-browser.rst:69
-#: ../../routing/making-connections.rst:30
-#: ../../routing/managing-connections.rst:8
-#: ../../routing/monitor-section.rst:31
 #: ../../scripting/scripting-interface.rst:8
 #: ../../tracks/inspector-page.rst:157 ../../tracks/overview.rst:70
 #: ../../zrythm-interface/right-panel.rst:23
@@ -3651,7 +3648,7 @@ msgstr "Ficheiros exportados"
 msgid "Exporting"
 msgstr "Exportação"
 
-#: ../../exporting/routing-graph.rst:8 ../../routing/making-connections.rst:34
+#: ../../exporting/routing-graph.rst:8 ../../routing/connections.rst:96
 msgid "Routing Graph"
 msgstr "Gráfico de Roteamento"
 
@@ -4412,7 +4409,7 @@ msgid ""
 ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
 
-#: ../../glossary/intro.rst:100
+#: ../../glossary/intro.rst:100 ../../routing/monitor-section.rst:65
 msgid "Mono"
 msgstr "Mono"
 
@@ -4827,7 +4824,7 @@ msgstr ""
 "refere como `grupo`. Por favor tenha isto em mente se está vindo de outros "
 "DAWs como eles são coisas diferentes em Zrythm."
 
-#: ../../mixing/routing.rst:45 ../../routing/making-connections.rst:28
+#: ../../mixing/routing.rst:45 ../../routing/connections.rst:47
 msgid "Sidechaining"
 msgstr "Sidechaining"
 
@@ -6717,23 +6714,20 @@ msgid ""
 "backups."
 msgstr ""
 
-#: ../../routing/inserts-sends.rst:8
-msgid "Inserts & Sends"
-msgstr "Inserções e envios"
+#: ../../routing/connections.rst:8
+msgid "Connections"
+msgstr "Ligações"
 
-#: ../../routing/inserts-sends.rst:9
-msgid ""
-"Inserts and sends are covered in :ref:`tracks/inspector-page:MIDI FX/"
-"Inserts` and :ref:`tracks/inspector-page:Aux Sends` respectively."
-msgstr ""
-"Inserts e envios são abrangidos em :ref:`tracks/inspector-page:MIDI FX/"
-"Inserts` e :ref:`tracks/inspector-page:Aux Sends` respetivamente."
-
-#: ../../routing/making-connections.rst:8
+#: ../../routing/connections.rst:11
 msgid "Making Connections"
 msgstr "Fazer conexões"
 
-#: ../../routing/making-connections.rst:10
+#: ../../routing/connections.rst:14
+#, fuzzy
+msgid "Direct Connections"
+msgstr "Conexões de portas"
+
+#: ../../routing/connections.rst:16
 msgid ""
 "Zrythm allows the user to connect almost any port to any other port, as long "
 "as they are compatible. For example, you can route an LFO's CV output to a "
@@ -6743,7 +6737,7 @@ msgstr ""
 "desde que sejam compatíveis. Por exemplo, pode rotear uma saída CV do LFO "
 "para o parâmetro de corte de um suplemento de filtro."
 
-#: ../../routing/making-connections.rst:15
+#: ../../routing/connections.rst:21
 msgid ""
 "Connections can be made by double clicking on ports in the :ref:`track-"
 "inspector` or the :ref:`plugin-inspector-page`."
@@ -6751,45 +6745,120 @@ msgstr ""
 "As conexões podem ser feitas a clicar duas vezes nas portas do :ref:`track-"
 "inspector` ou no :ref:`plugin-inspector-page`."
 
-#: ../../routing/making-connections.rst:22
-msgid ""
-"By double clicking the port, you can select a port to connect it to, or edit "
-"existing connections. You can also drag the slider to adjust the level of "
-"the amount to send."
-msgstr ""
-"Ao clicar duas vezes na porta, pode selecionar uma porta para conectá-la ou "
-"editar as conexões existentes. Também pode arrastar o controle deslizante "
-"para ajustar o nível da quantidade a ser enviada."
+#: ../../routing/connections.rst:28
+#, fuzzy
+msgid "Plugin controls"
+msgstr "Portas de Suplementos"
 
-#: ../../routing/making-connections.rst:30
-msgid "Give an example of how to sidechain (classic bass + kick example)."
-msgstr ""
-"Dê um exemplo de como fazer o sidechain (exemplo clássico de baixo + chute)."
-
-#: ../../routing/making-connections.rst:35
+#: ../../routing/connections.rst:30
 msgid ""
-"It is very helpful to be able to view the routing graph when making "
+"In the popover, you can view existing connections and press :guilabel:`Add` "
+"to create a new connection."
+msgstr ""
+
+#: ../../routing/connections.rst:36
+#, fuzzy
+msgid "Port connections for control"
+msgstr "Opções de exportação para mixdown"
+
+#: ../../routing/connections.rst:38
+msgid "You can select the port to connect to in the presented dialog."
+msgstr ""
+
+#: ../../routing/connections.rst:44 ../../routing/connections.rst:56
+#, fuzzy
+msgid "Selecting a new port to connect to"
+msgstr "Selecionar Automação"
+
+#: ../../routing/connections.rst:49
+msgid ""
+"Signal from tracks can be routed to plugins that have sidechain inputs via :"
+"ref:`Aux Sends <tracks/inspector-page:Aux Sends>`."
+msgstr ""
+
+#: ../../routing/connections.rst:58
+msgid ""
+"For example, you can use a compressor plugin on a bass track that accepts a "
+"sidechain input from a kick track to get a pumping/ducking effect."
+msgstr ""
+
+#: ../../routing/connections.rst:63
+#, fuzzy
+msgid "Managing Connections"
+msgstr "Fazer conexões"
+
+#: ../../routing/connections.rst:65
+#, fuzzy
+msgid ""
+"Connections can be managed in the Connections tab in the :ref:`Main Panel "
+"<zrythm-interface/main-panel:Main Panel>`."
+msgstr ""
+"Os mapeamentos de aparelhos (vinculações) são encontrados no separador :"
+"guilabel:`Bindings` no painel principal."
+
+#: ../../routing/connections.rst:72
+#, fuzzy
+msgid "Managing connections"
+msgstr "Fazer conexões"
+
+#: ../../routing/connections.rst:74
+msgid ""
+"Individual connections can be edited in the inspector pages by double "
+"clicking."
+msgstr ""
+
+#: ../../routing/connections.rst:80
+#, fuzzy
+msgid "Editing a connection"
+msgstr "Fazer conexões"
+
+#: ../../routing/connections.rst:82
+msgid ""
+"You can click and drag the bar to select how much the connection should "
+"affect the signal. 100% means the whole signal will be passed from the "
+"source port to the destination port, and 0% means no signal will be allowed "
+"through."
+msgstr ""
+
+#: ../../routing/connections.rst:88
+#, fuzzy
+msgid "The following controls are also available."
+msgstr "Os seguintes formatos de ficheiro são suportados."
+
+#: ../../routing/connections.rst:90
+msgid "Enable/Disable Connection"
+msgstr ""
+
+#: ../../routing/connections.rst:91
+msgid "Toggle whether the connection is enabled (active)"
+msgstr ""
+
+#: ../../routing/connections.rst:93
+#, fuzzy
+msgid "Delete Connection"
+msgstr "Conexões de portas"
+
+#: ../../routing/connections.rst:93
+#, fuzzy
+msgid "Delete the connection"
+msgstr "Atualizar esta secção/foto."
+
+#: ../../routing/connections.rst:97
+#, fuzzy
+msgid ""
+"It may be helpful to be able to view the routing graph when making "
 "connections. We plan to add this functionality into Zrythm in the future, "
-"but for now Zrythm allows you to export the whole routing graph as a PNG "
-"image, so you can view it externally."
+"but for now Zrythm allows you to export the whole routing graph as an image, "
+"so you can view it externally."
 msgstr ""
 "É muito útil poder visualizar o gráfico de roteamento ao fazer conexões. "
 "Planeamos adicionar essa funcionalidade ao Zrythm no futuro, mas por "
 "enquanto o Zrythm permite que exporte todo o gráfico de roteamento como uma "
 "imagem PNG, para que possa visualizá-lo externamente."
 
-#: ../../routing/making-connections.rst:41
+#: ../../routing/connections.rst:103
 msgid "See :ref:`export-routing-graph` for details."
 msgstr "Veja :ref:`export-routing-graph` para detalhes."
-
-#: ../../routing/managing-connections.rst:6
-#, fuzzy
-msgid "Managing Connections"
-msgstr "Fazer conexões"
-
-#: ../../routing/managing-connections.rst:8
-msgid "Write this section."
-msgstr "Escreva esta secção."
 
 #: ../../routing/monitor-section.rst:6
 #, fuzzy
@@ -6806,41 +6875,136 @@ msgstr ""
 "A sala de controle é usada para editar configurações globais relacionadas à "
 "mistura e roteamento de sinais."
 
-#: ../../routing/monitor-section.rst:13
-msgid "Monitor Out"
+#: ../../routing/monitor-section.rst:15
+#, fuzzy
+msgid "Monitor section"
+msgstr "Seleção de loop"
+
+#: ../../routing/monitor-section.rst:18
+#, fuzzy
+msgid "Channel Controls"
+msgstr "Barra de ferramentas principal"
+
+#: ../../routing/monitor-section.rst:20
+msgid ""
+"The monitor section displays the number of tracks currently soloed, muted or "
+"listened, along with buttons to unsolo, unmute, or unlisten every track."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:25
+#, fuzzy
+msgid "Global Levels"
+msgstr "Menus Globais"
+
+#: ../../routing/monitor-section.rst:27
+msgid ""
+"The monitor section includes global mute, listen and dim level controls."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:30
+msgid "Mute Level"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:31
+msgid "The level at which muted tracks will be played"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:32
+msgid "Listen Level"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:33
+msgid "The level at which listened tracks will be played"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:36
+msgid "Dim Level"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:35
+msgid ""
+"The level at which unlistened tracks will be played when at least 1 track is "
+"listened"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:39
+#, fuzzy
+msgid "Monitor Output"
 msgstr "Saída de monitor"
 
-#: ../../routing/monitor-section.rst:14
+#: ../../routing/monitor-section.rst:41
+#, fuzzy
 msgid ""
 "In Zrythm, what you actually hear through your speakers is not the output of "
-"the master track, but the monitor output."
+"the master track, but the monitor output. The master track routes its output "
+"to this special processor that processes the signal before sending the "
+"output to the speakers."
 msgstr ""
 "No Zrythm, o que realmente ouve através dos alto-falantes não é a saída da "
 "faixa principal, mas a saída do monitor."
 
-#: ../../routing/monitor-section.rst:18
+#: ../../routing/monitor-section.rst:49
+#, fuzzy
+msgid "Monitor Knob"
+msgstr "Monitor"
+
+#: ../../routing/monitor-section.rst:51
 msgid ""
-"The master track routes its output to a special processor called `Monitor "
-"Out` that changes the volume before sending the output to the speakers."
+"The :guilabel:`Monitor` knob controls the output volume. If set to 0dB, the "
+"volume coming from the master track will remain unchanged."
 msgstr ""
-"A faixa master rotea a saída dela a um processador especial chamado `Saída "
-"de monitor` que muda o volume antes de enviar a saída para os alto-falantes."
 
-#: ../../routing/monitor-section.rst:25
-msgid "The `Monitor Out` knob controls this volume."
-msgstr "O botão `Saída de monitor` controla este volume."
+#: ../../routing/monitor-section.rst:56
+#, fuzzy
+msgid "Monitor Controls"
+msgstr "Controles de Zoom"
 
-#: ../../routing/monitor-section.rst:28
+#: ../../routing/monitor-section.rst:58
+msgid ""
+"The following buttons exist to alter the signal passing through the monitor "
+"processor."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:62
+msgid "Sum the output to mono"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:64
+msgid "This is useful for checking how the mix sounds in mono."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:68
 msgid "Dim"
 msgstr "Dim"
 
-#: ../../routing/monitor-section.rst:29
-msgid "This is not operational at the moment."
-msgstr "Isto não está operacional de momento."
+#: ../../routing/monitor-section.rst:68
+msgid "Dim the output to the dim level"
+msgstr ""
 
-#: ../../routing/monitor-section.rst:31
-msgid "Move to another chapter."
-msgstr "Ir para outro capítulo."
+#: ../../routing/monitor-section.rst:71 ../../tracks/track-controls.rst:24
+msgid "Mute"
+msgstr "Silenciar"
+
+#: ../../routing/monitor-section.rst:71
+msgid "Mute the output"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:74
+#, fuzzy
+msgid "JACK Output"
+msgstr "Tipos de Faixas"
+
+#: ../../routing/monitor-section.rst:76
+msgid ""
+"When using the :term:`JACK` backend, there will be additional controls to "
+"route the output signal to one or more user-specified devices, instead of "
+"the default device used by JACK."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:84
+#, fuzzy
+msgid "JACK output"
+msgstr "Tipos de Faixas"
 
 #: ../../routing/ports.rst:8
 msgid "Ports"
@@ -6871,10 +7035,11 @@ msgid ""
 msgstr ""
 
 #: ../../routing/ports.rst:25
+#, fuzzy
 msgid ""
 "For example, an instrument track has a `MIDI input` port it uses to read "
-"MIDI data and 2 `Audio output` ports where it copies the stereo signal after "
-"being processed."
+"MIDI data from and 2 `Audio output` ports where it copies the stereo signal "
+"after being processed."
 msgstr ""
 "Por exemplo, uma faixa de instrumento tem uma porta \"entrada MIDI\" que "
 "utiliza para ler dados MIDI e 2 portas \"saída de áudio\" onde copia o sinal "
@@ -7958,10 +8123,6 @@ msgstr ""
 msgid "Arm the track for recording."
 msgstr "Armar a faixa para gravação."
 
-#: ../../tracks/track-controls.rst:24
-msgid "Mute"
-msgstr "Silenciar"
-
 #: ../../tracks/track-controls.rst:19
 #, fuzzy
 msgid "Mute the track, meaning no signal will be sent to its direct out."
@@ -8724,7 +8885,7 @@ msgid ":ref:`Timeline <editing-timeline>`"
 msgstr ":ref:`timeline` (1)"
 
 #: ../../zrythm-interface/main-panel.rst:19
-msgid ":doc:`Connections <../routing/managing-connections>`"
+msgid ":ref:`Connections <routing/connections:Managing Connections>`"
 msgstr ""
 
 #: ../../zrythm-interface/main-panel.rst:20
@@ -9198,6 +9359,50 @@ msgid ""
 "will start clipping."
 msgstr ""
 
+#~ msgid "Inserts & Sends"
+#~ msgstr "Inserções e envios"
+
+#~ msgid ""
+#~ "Inserts and sends are covered in :ref:`tracks/inspector-page:MIDI FX/"
+#~ "Inserts` and :ref:`tracks/inspector-page:Aux Sends` respectively."
+#~ msgstr ""
+#~ "Inserts e envios são abrangidos em :ref:`tracks/inspector-page:MIDI FX/"
+#~ "Inserts` e :ref:`tracks/inspector-page:Aux Sends` respetivamente."
+
+#~ msgid ""
+#~ "By double clicking the port, you can select a port to connect it to, or "
+#~ "edit existing connections. You can also drag the slider to adjust the "
+#~ "level of the amount to send."
+#~ msgstr ""
+#~ "Ao clicar duas vezes na porta, pode selecionar uma porta para conectá-la "
+#~ "ou editar as conexões existentes. Também pode arrastar o controle "
+#~ "deslizante para ajustar o nível da quantidade a ser enviada."
+
+#~ msgid "Give an example of how to sidechain (classic bass + kick example)."
+#~ msgstr ""
+#~ "Dê um exemplo de como fazer o sidechain (exemplo clássico de baixo + "
+#~ "chute)."
+
+#~ msgid "Write this section."
+#~ msgstr "Escreva esta secção."
+
+#~ msgid ""
+#~ "The master track routes its output to a special processor called `Monitor "
+#~ "Out` that changes the volume before sending the output to the speakers."
+#~ msgstr ""
+#~ "A faixa master rotea a saída dela a um processador especial chamado "
+#~ "`Saída de monitor` que muda o volume antes de enviar a saída para os alto-"
+#~ "falantes."
+
+#~ msgid "The `Monitor Out` knob controls this volume."
+#~ msgstr "O botão `Saída de monitor` controla este volume."
+
+#~ msgid "This is not operational at the moment."
+#~ msgstr "Isto não está operacional de momento."
+
+#~ msgid "Move to another chapter."
+#~ msgstr "Ir para outro capítulo."
+
 #~ msgid ""
 #~ "The rest of the mixer shows the rest of the channels, along with some "
 #~ "extra space used for drag-and-dropping plugins or files."
@@ -9338,9 +9543,6 @@ msgstr ""
 #~ msgid "Update this section/pic."
 #~ msgstr "Atualizar esta secção/foto."
 
-#~ msgid "Common Controls"
-#~ msgstr "Controles de Zoom"
-
 #~ msgid "Zoom Controls"
 #~ msgstr "Controles de Zoom"
 
@@ -9397,9 +9599,6 @@ msgstr ""
 
 #~ msgid "Hold :guilabel:`Shift` to temporarily disable snapping"
 #~ msgstr "Segure :guilabel:`Shift` para desativar temporariamente o snapping"
-
-#~ msgid "Update this section."
-#~ msgstr "Atualizar esta secção/foto."
 
 #~ msgid "Zoom Section"
 #~ msgstr "Seleção de loop"
@@ -10535,9 +10734,6 @@ msgstr ""
 #~ "Iniciantes para Começar com JACK <https://libremusicproduction.com/"
 #~ "articles/demystifying-jack-%E2%80%93-beginners-guide-getting-getting-"
 #~ "started-jack.html>`_, então vamos pular esta parte."
-
-#~ msgid "Connections"
-#~ msgstr "Ligações"
 
 #~ msgid ""
 #~ "Connections can be made by double clicking on ports in the :ref:`track-"

@@ -1,8 +1,6 @@
 copy_files = [
-  'inserts-sends.rst',
+  'connections.rst',
   'intro.rst',
-  'making-connections.rst',
-  'managing-connections.rst',
   'monitor-section.rst',
   'ports.rst',
   ]

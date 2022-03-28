@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-25 12:27+0000\n"
+"POT-Creation-Date: 2022-03-28 17:00+0100\n"
 "PO-Revision-Date: 2022-03-06 09:46+0000\n"
 "Last-Translator: Anthony V. <batmanplayer123@gmail.com>\n"
 "Language: el\n"
@@ -250,9 +250,6 @@ msgstr "Επίλυση προβλημάτων"
 #: ../../editing/clip-editors/piano-roll.rst:148
 #: ../../exporting/audio-and-midi.rst:38
 #: ../../plugins-files/audio-midi-files/file-browser.rst:69
-#: ../../routing/making-connections.rst:30
-#: ../../routing/managing-connections.rst:8
-#: ../../routing/monitor-section.rst:31
 #: ../../scripting/scripting-interface.rst:8
 #: ../../tracks/inspector-page.rst:157 ../../tracks/overview.rst:70
 #: ../../zrythm-interface/right-panel.rst:23
@@ -3738,7 +3735,7 @@ msgstr "Εξαχθέντα αρχεία"
 msgid "Exporting"
 msgstr "Εξαγωγή"
 
-#: ../../exporting/routing-graph.rst:8 ../../routing/making-connections.rst:34
+#: ../../exporting/routing-graph.rst:8 ../../routing/connections.rst:96
 msgid "Routing Graph"
 msgstr "Γράφημα δρομολόγησης"
 
@@ -4517,7 +4514,7 @@ msgstr ""
 "Οι νότες :term:`MIDI` χρησιμοποιούνται για να πυροδοτήσουν ψηφιακά (ή υλικά) "
 "όργανα."
 
-#: ../../glossary/intro.rst:100
+#: ../../glossary/intro.rst:100 ../../routing/monitor-section.rst:65
 msgid "Mono"
 msgstr "Μόνο"
 
@@ -4979,7 +4976,7 @@ msgstr ""
 "κρατήστε το αυτό στον νου σας αν προέρχεστε από άλλους σταθμούς διότι είναι "
 "διαφορετικά πράγματα στο Zrythm."
 
-#: ../../mixing/routing.rst:45 ../../routing/making-connections.rst:28
+#: ../../mixing/routing.rst:45 ../../routing/connections.rst:47
 msgid "Sidechaining"
 msgstr "Πλευρική αλυσίδωση (sidechaining)"
 
@@ -6905,23 +6902,21 @@ msgid ""
 "backups."
 msgstr ""
 
-#: ../../routing/inserts-sends.rst:8
-msgid "Inserts & Sends"
-msgstr "Εισαγωγές και αποστολές"
+#: ../../routing/connections.rst:8
+#, fuzzy
+msgid "Connections"
+msgstr "Συνδέσεις θυρών"
 
-#: ../../routing/inserts-sends.rst:9
-msgid ""
-"Inserts and sends are covered in :ref:`tracks/inspector-page:MIDI FX/"
-"Inserts` and :ref:`tracks/inspector-page:Aux Sends` respectively."
-msgstr ""
-"Οι εισαγωγές και οι αποστολές καλύπτονται στο :ref:`tracks/inspector-page:"
-"MIDI FX/Inserts` και :ref:`tracks/inspector-page:Aux Sends` αντίστοιχα."
-
-#: ../../routing/making-connections.rst:8
+#: ../../routing/connections.rst:11
 msgid "Making Connections"
 msgstr "Δημιουργία συνδέσεων"
 
-#: ../../routing/making-connections.rst:10
+#: ../../routing/connections.rst:14
+#, fuzzy
+msgid "Direct Connections"
+msgstr "Συνδέσεις θυρών"
+
+#: ../../routing/connections.rst:16
 msgid ""
 "Zrythm allows the user to connect almost any port to any other port, as long "
 "as they are compatible. For example, you can route an LFO's CV output to a "
@@ -6932,7 +6927,7 @@ msgstr ""
 "δρομολογήσετε την έξοδο CV ενός LFO στην παράμετρο κατωφλιού αποκοπής ενός "
 "προσθέτου φίλτρου."
 
-#: ../../routing/making-connections.rst:15
+#: ../../routing/connections.rst:21
 msgid ""
 "Connections can be made by double clicking on ports in the :ref:`track-"
 "inspector` or the :ref:`plugin-inspector-page`."
@@ -6940,28 +6935,107 @@ msgstr ""
 "Οι συνδέσεις μπορούν να γίνουν κάνοντας διπλό κλικ στις θύρες στον :ref:"
 "`track-inspector` ή στον :ref:`plugin-inspector-page`."
 
-#: ../../routing/making-connections.rst:22
-msgid ""
-"By double clicking the port, you can select a port to connect it to, or edit "
-"existing connections. You can also drag the slider to adjust the level of "
-"the amount to send."
-msgstr ""
-"Κάνοντας διπλό κλικ στη θύρα, μπορείτε να επιλέξετε τη θύρα προς σύνδεση ή "
-"να επεξεργαστείτε ήδη υπάρχουσες συνδέσεις. Μπορείτε επίσης να σύρετε τον "
-"σλάιντερ στο επίπεδο του ποσού προς αποστολή."
+#: ../../routing/connections.rst:28
+#, fuzzy
+msgid "Plugin controls"
+msgstr "Θύρες προσθέτων"
 
-#: ../../routing/making-connections.rst:30
-msgid "Give an example of how to sidechain (classic bass + kick example)."
-msgstr ""
-"Να δοθεί παράδειγμα πώς γίνεται το sidechain (κλασικό παράδειγμα μπάσου + "
-"μπότας)."
-
-#: ../../routing/making-connections.rst:35
+#: ../../routing/connections.rst:30
 msgid ""
-"It is very helpful to be able to view the routing graph when making "
+"In the popover, you can view existing connections and press :guilabel:`Add` "
+"to create a new connection."
+msgstr ""
+
+#: ../../routing/connections.rst:36
+#, fuzzy
+msgid "Port connections for control"
+msgstr "Ρυθμίσεις εξαγωγής για τη μίξη"
+
+#: ../../routing/connections.rst:38
+msgid "You can select the port to connect to in the presented dialog."
+msgstr ""
+
+#: ../../routing/connections.rst:44 ../../routing/connections.rst:56
+msgid "Selecting a new port to connect to"
+msgstr ""
+
+#: ../../routing/connections.rst:49
+msgid ""
+"Signal from tracks can be routed to plugins that have sidechain inputs via :"
+"ref:`Aux Sends <tracks/inspector-page:Aux Sends>`."
+msgstr ""
+
+#: ../../routing/connections.rst:58
+msgid ""
+"For example, you can use a compressor plugin on a bass track that accepts a "
+"sidechain input from a kick track to get a pumping/ducking effect."
+msgstr ""
+
+#: ../../routing/connections.rst:63
+#, fuzzy
+msgid "Managing Connections"
+msgstr "Δημιουργία συνδέσεων"
+
+#: ../../routing/connections.rst:65
+msgid ""
+"Connections can be managed in the Connections tab in the :ref:`Main Panel "
+"<zrythm-interface/main-panel:Main Panel>`."
+msgstr ""
+
+#: ../../routing/connections.rst:72
+#, fuzzy
+msgid "Managing connections"
+msgstr "Δημιουργία συνδέσεων"
+
+#: ../../routing/connections.rst:74
+msgid ""
+"Individual connections can be edited in the inspector pages by double "
+"clicking."
+msgstr ""
+
+#: ../../routing/connections.rst:80
+#, fuzzy
+msgid "Editing a connection"
+msgstr "Δημιουργία συνδέσεων"
+
+#: ../../routing/connections.rst:82
+msgid ""
+"You can click and drag the bar to select how much the connection should "
+"affect the signal. 100% means the whole signal will be passed from the "
+"source port to the destination port, and 0% means no signal will be allowed "
+"through."
+msgstr ""
+
+#: ../../routing/connections.rst:88
+#, fuzzy
+msgid "The following controls are also available."
+msgstr "Υπάρχουν οι εξής τύποι περιοχών."
+
+#: ../../routing/connections.rst:90
+msgid "Enable/Disable Connection"
+msgstr ""
+
+#: ../../routing/connections.rst:91
+msgid "Toggle whether the connection is enabled (active)"
+msgstr ""
+
+#: ../../routing/connections.rst:93
+#, fuzzy
+msgid "Delete Connection"
+msgstr "Συνδέσεις θυρών"
+
+#: ../../routing/connections.rst:93
+#, fuzzy
+msgid "Delete the connection"
+msgstr "Ενημέρωση αυτού του τομέα/εικόνας."
+
+#: ../../routing/connections.rst:97
+#, fuzzy
+msgid ""
+"It may be helpful to be able to view the routing graph when making "
 "connections. We plan to add this functionality into Zrythm in the future, "
-"but for now Zrythm allows you to export the whole routing graph as a PNG "
-"image, so you can view it externally."
+"but for now Zrythm allows you to export the whole routing graph as an image, "
+"so you can view it externally."
 msgstr ""
 "Είναι πολύ χρήσιμο να υπάρχει δυνατότητα προβολής του γραφήματος "
 "δρομολόγησης κατά τη δημιουργία συνδέσεων. Σχεδιάζουμε να προσθέσουμε στο "
@@ -6969,18 +7043,9 @@ msgstr ""
 "επιτρέπει να εξάγετε όλο το γράφημα δρομολόγησης ως εικόνα PNG, ώστε να "
 "μπορεί να γίνει προβολή εξωτερικά."
 
-#: ../../routing/making-connections.rst:41
+#: ../../routing/connections.rst:103
 msgid "See :ref:`export-routing-graph` for details."
 msgstr "Βλέπε :ref:`export-routing-graph` για λεπτομέρειες."
-
-#: ../../routing/managing-connections.rst:6
-#, fuzzy
-msgid "Managing Connections"
-msgstr "Δημιουργία συνδέσεων"
-
-#: ../../routing/managing-connections.rst:8
-msgid "Write this section."
-msgstr "Να γραφεί αυτό το τμήμα."
 
 #: ../../routing/monitor-section.rst:6
 #, fuzzy
@@ -6997,42 +7062,136 @@ msgstr ""
 "Η αίθουσα ελέγχου χρησιμοποιείται για την επεξεργασία γενικών ρυθμίσεων "
 "σχετικών με τη μίξη και τα σήματα δρομολόγησης."
 
-#: ../../routing/monitor-section.rst:13
-msgid "Monitor Out"
+#: ../../routing/monitor-section.rst:15
+#, fuzzy
+msgid "Monitor section"
+msgstr "Επιλογή λούπας"
+
+#: ../../routing/monitor-section.rst:18
+#, fuzzy
+msgid "Channel Controls"
+msgstr "Κύρια γραμμή εργαλείων"
+
+#: ../../routing/monitor-section.rst:20
+msgid ""
+"The monitor section displays the number of tracks currently soloed, muted or "
+"listened, along with buttons to unsolo, unmute, or unlisten every track."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:25
+#, fuzzy
+msgid "Global Levels"
+msgstr "Γενικά μενού"
+
+#: ../../routing/monitor-section.rst:27
+msgid ""
+"The monitor section includes global mute, listen and dim level controls."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:30
+msgid "Mute Level"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:31
+msgid "The level at which muted tracks will be played"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:32
+msgid "Listen Level"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:33
+msgid "The level at which listened tracks will be played"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:36
+msgid "Dim Level"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:35
+msgid ""
+"The level at which unlistened tracks will be played when at least 1 track is "
+"listened"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:39
+#, fuzzy
+msgid "Monitor Output"
 msgstr "Μόνιτορ έξω"
 
-#: ../../routing/monitor-section.rst:14
+#: ../../routing/monitor-section.rst:41
+#, fuzzy
 msgid ""
 "In Zrythm, what you actually hear through your speakers is not the output of "
-"the master track, but the monitor output."
+"the master track, but the monitor output. The master track routes its output "
+"to this special processor that processes the signal before sending the "
+"output to the speakers."
 msgstr ""
 "Στο Zrythm, αυτό που ακούτε από τα ηχεία σας δεν είναι η έξοδος του "
 "κομματιού μάστερ, αλλά η έξοδος του μόνιτορ."
 
-#: ../../routing/monitor-section.rst:18
+#: ../../routing/monitor-section.rst:49
+#, fuzzy
+msgid "Monitor Knob"
+msgstr "Οθόνη"
+
+#: ../../routing/monitor-section.rst:51
 msgid ""
-"The master track routes its output to a special processor called `Monitor "
-"Out` that changes the volume before sending the output to the speakers."
+"The :guilabel:`Monitor` knob controls the output volume. If set to 0dB, the "
+"volume coming from the master track will remain unchanged."
 msgstr ""
-"Το κομμάτι μάστερ δρομολογεί την έξοδό του σε έναν ειδικό επεξεργαστή που "
-"ονομάζεται `Monitor Out` που αλλάζει την ένταση πριν στείλει το εξαγόμενο "
-"σήμα στα ηχεία."
 
-#: ../../routing/monitor-section.rst:25
-msgid "The `Monitor Out` knob controls this volume."
-msgstr "Ο επιλογέας `Monitor Out` ελέγχει αυτή την ένταση."
+#: ../../routing/monitor-section.rst:56
+#, fuzzy
+msgid "Monitor Controls"
+msgstr "Χειριστής"
 
-#: ../../routing/monitor-section.rst:28
+#: ../../routing/monitor-section.rst:58
+msgid ""
+"The following buttons exist to alter the signal passing through the monitor "
+"processor."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:62
+msgid "Sum the output to mono"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:64
+msgid "This is useful for checking how the mix sounds in mono."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:68
 msgid "Dim"
 msgstr "Dim"
 
-#: ../../routing/monitor-section.rst:29
-msgid "This is not operational at the moment."
-msgstr "Δεν είναι λειτουργικό αυτή τη στιγμη."
+#: ../../routing/monitor-section.rst:68
+msgid "Dim the output to the dim level"
+msgstr ""
 
-#: ../../routing/monitor-section.rst:31
-msgid "Move to another chapter."
-msgstr "Μετακίνηση σε άλλον τομέα."
+#: ../../routing/monitor-section.rst:71 ../../tracks/track-controls.rst:24
+msgid "Mute"
+msgstr "Σίγαση"
+
+#: ../../routing/monitor-section.rst:71
+msgid "Mute the output"
+msgstr ""
+
+#: ../../routing/monitor-section.rst:74
+#, fuzzy
+msgid "JACK Output"
+msgstr "Τύποι κομματιών"
+
+#: ../../routing/monitor-section.rst:76
+msgid ""
+"When using the :term:`JACK` backend, there will be additional controls to "
+"route the output signal to one or more user-specified devices, instead of "
+"the default device used by JACK."
+msgstr ""
+
+#: ../../routing/monitor-section.rst:84
+#, fuzzy
+msgid "JACK output"
+msgstr "Τύποι κομματιών"
 
 #: ../../routing/ports.rst:8
 msgid "Ports"
@@ -7064,10 +7223,11 @@ msgid ""
 msgstr ""
 
 #: ../../routing/ports.rst:25
+#, fuzzy
 msgid ""
 "For example, an instrument track has a `MIDI input` port it uses to read "
-"MIDI data and 2 `Audio output` ports where it copies the stereo signal after "
-"being processed."
+"MIDI data from and 2 `Audio output` ports where it copies the stereo signal "
+"after being processed."
 msgstr ""
 "Για παράδειγμα, ένα κομμάτι οργάνου έχει μια θύρα `MIDI input` που "
 "χρησιμοποιεί για να διαβάζει δεδομένα MIDI και 2 θύρες `Audio output` όπου "
@@ -8168,10 +8328,6 @@ msgstr ""
 msgid "Arm the track for recording."
 msgstr "Οπλισμός του κομματιού για ηχογράφηση."
 
-#: ../../tracks/track-controls.rst:24
-msgid "Mute"
-msgstr "Σίγαση"
-
 #: ../../tracks/track-controls.rst:19
 #, fuzzy
 msgid "Mute the track, meaning no signal will be sent to its direct out."
@@ -8938,7 +9094,7 @@ msgid ":ref:`Timeline <editing-timeline>`"
 msgstr ":ref:`timeline` (1)"
 
 #: ../../zrythm-interface/main-panel.rst:19
-msgid ":doc:`Connections <../routing/managing-connections>`"
+msgid ":ref:`Connections <routing/connections:Managing Connections>`"
 msgstr ""
 
 #: ../../zrythm-interface/main-panel.rst:20
@@ -9414,6 +9570,50 @@ msgid ""
 "will start clipping."
 msgstr ""
 
+#~ msgid "Inserts & Sends"
+#~ msgstr "Εισαγωγές και αποστολές"
+
+#~ msgid ""
+#~ "Inserts and sends are covered in :ref:`tracks/inspector-page:MIDI FX/"
+#~ "Inserts` and :ref:`tracks/inspector-page:Aux Sends` respectively."
+#~ msgstr ""
+#~ "Οι εισαγωγές και οι αποστολές καλύπτονται στο :ref:`tracks/inspector-page:"
+#~ "MIDI FX/Inserts` και :ref:`tracks/inspector-page:Aux Sends` αντίστοιχα."
+
+#~ msgid ""
+#~ "By double clicking the port, you can select a port to connect it to, or "
+#~ "edit existing connections. You can also drag the slider to adjust the "
+#~ "level of the amount to send."
+#~ msgstr ""
+#~ "Κάνοντας διπλό κλικ στη θύρα, μπορείτε να επιλέξετε τη θύρα προς σύνδεση "
+#~ "ή να επεξεργαστείτε ήδη υπάρχουσες συνδέσεις. Μπορείτε επίσης να σύρετε "
+#~ "τον σλάιντερ στο επίπεδο του ποσού προς αποστολή."
+
+#~ msgid "Give an example of how to sidechain (classic bass + kick example)."
+#~ msgstr ""
+#~ "Να δοθεί παράδειγμα πώς γίνεται το sidechain (κλασικό παράδειγμα μπάσου + "
+#~ "μπότας)."
+
+#~ msgid "Write this section."
+#~ msgstr "Να γραφεί αυτό το τμήμα."
+
+#~ msgid ""
+#~ "The master track routes its output to a special processor called `Monitor "
+#~ "Out` that changes the volume before sending the output to the speakers."
+#~ msgstr ""
+#~ "Το κομμάτι μάστερ δρομολογεί την έξοδό του σε έναν ειδικό επεξεργαστή που "
+#~ "ονομάζεται `Monitor Out` που αλλάζει την ένταση πριν στείλει το εξαγόμενο "
+#~ "σήμα στα ηχεία."
+
+#~ msgid "The `Monitor Out` knob controls this volume."
+#~ msgstr "Ο επιλογέας `Monitor Out` ελέγχει αυτή την ένταση."
+
+#~ msgid "This is not operational at the moment."
+#~ msgstr "Δεν είναι λειτουργικό αυτή τη στιγμη."
+
+#~ msgid "Move to another chapter."
+#~ msgstr "Μετακίνηση σε άλλον τομέα."
+
 #~ msgid ""
 #~ "The rest of the mixer shows the rest of the channels, along with some "
 #~ "extra space used for drag-and-dropping plugins or files."
@@ -9561,9 +9761,6 @@ msgstr ""
 #~ msgid "Update this section/pic."
 #~ msgstr "Ενημέρωση αυτού του τομέα/εικόνας."
 
-#~ msgid "Common Controls"
-#~ msgstr "Χειριστής"
-
 #~ msgid "Zoom Controls"
 #~ msgstr "Χειριστής"
 
@@ -9619,9 +9816,6 @@ msgstr ""
 #~ "Κάνοντας κλικ και σύροντας πάνω σε κενό χώρο στον χάρακα (εκτός από το "
 #~ "πάνω μέρος, το οποίο χρησιμοποιείται για την επιλογή εύρους - βλέπε :term:"
 #~ "`Range`) θα σας επιτρέψει να αλλάξετε θέση την κεφαλή αναπαραγωγής."
-
-#~ msgid "Update this section."
-#~ msgstr "Ενημέρωση αυτού του τομέα/εικόνας."
 
 #~ msgid ""
 #~ "It contains a snap section, a quantize section, and an audio region "

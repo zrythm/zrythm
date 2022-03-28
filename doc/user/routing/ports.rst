@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019-2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. _ports:
@@ -23,7 +23,7 @@ or track.
    produces output to 2 output ports
 
 For example, an instrument track has a `MIDI input`
-port it uses to read MIDI data and 2
+port it uses to read MIDI data from and 2
 `Audio output` ports where it copies the
 stereo signal after being processed.
 
