@@ -37,6 +37,7 @@ packages:
   - python-pip
   - rubberband
   - rtaudio
+  - ruby-sass
   - sassc
   - sed
   - sfizz
