@@ -1619,6 +1619,16 @@ event_manager_stop_events (
   /* process any remaining events - clear the
    * queue. */
   process_events (self);
+
+  /* clear the event queue just in case no events
+   * were processed */
+  ZEvent * event;
+  while (event_queue_dequeue_event (
+           self->mqueue, &event))
+    {
+      object_pool_return (
+        self->obj_pool, event);
+    }
 }
 
 /**
