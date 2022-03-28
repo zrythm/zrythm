@@ -2710,6 +2710,14 @@ arranger_object_gen_human_readable_name (
         return g_strdup (str);
       }
       break;
+    case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
+      {
+        const ScaleObject * so =
+          (const ScaleObject *) self;
+        MusicalScale * scale = so->scale;
+        return musical_scale_to_string (scale);
+      }
+      break;
     default:
       break;
     }
