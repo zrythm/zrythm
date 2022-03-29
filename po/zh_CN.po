@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-03-17 23:11+0000\n"
+"POT-Creation-Date: 2022-03-29 17:57+0100\n"
 "PO-Revision-Date: 2022-02-18 17:36+0000\n"
 "Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -84,7 +84,7 @@ msgstr "自动化轨关键点"
 #: inc/schemas/gui/backend/arranger_object.h:68
 #: inc/gui/backend/arranger_object.h:117 src/gui/widgets/event_viewer.c:808
 #: src/gui/widgets/item_factory.c:305 src/gui/widgets/item_factory.c:907
-#: resources/ui/midi_editor_space.ui:81
+#: resources/ui/midi_editor_space.ui:91
 msgid "Velocity"
 msgstr "力度"
 
@@ -365,11 +365,11 @@ msgstr "ALSA 音序器（失灵）"
 msgid "ALSA Sequencer (rtmidi)"
 msgstr "ALSA 音序器（rtmidi）"
 
-#: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:126
+#: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:132
 msgid "Crescendo"
 msgstr "渐强"
 
-#: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:132
+#: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:138
 msgid "Flam"
 msgstr "装饰音"
 
@@ -381,19 +381,19 @@ msgstr "水平翻转"
 msgid "Flip V"
 msgstr "竖直翻转"
 
-#: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:153
+#: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:159
 msgid "Legato"
 msgstr "连奏"
 
-#: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:159
+#: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:165
 msgid "Portato"
 msgstr "次断音"
 
-#: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:165
+#: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:171
 msgid "Staccato"
 msgstr "断奏"
 
-#: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:171
+#: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:177
 msgid "Strum"
 msgstr "扫弦"
 
@@ -688,7 +688,7 @@ msgstr "无法读取文件:%s"
 msgid "Failed to decompress project file"
 msgstr "未能解压缩工程文件"
 
-#: src/project.c:977
+#: src/project.c:987
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -699,34 +699,34 @@ msgstr ""
 "%s.\n"
 "是否使用新的备份？"
 
-#: src/project.c:982
+#: src/project.c:992
 msgid "Backup found"
 msgstr "找到备份"
 
-#: src/project.c:1045
-#, c-format
+#: src/project.c:1057
+#, fuzzy, c-format
 msgid ""
-"This project was created with a different version of %s (%s). It may not "
+"This project was created with an unsupported version of %s (%s). It may not "
 "work correctly."
 msgstr "此项目是使用不同版本%s（%s）创建的。它可能没有正常运作。"
 
-#: src/project.c:1063
+#: src/project.c:1073
 msgid "Failed to load project. Please check the logs for more information."
 msgstr "无法加载项目。请检查日志，查看更多信息。"
 
-#: src/project.c:1288
+#: src/project.c:1317
 msgid "Failed to load project. Will create a new one instead."
 msgstr "无法加载项目。将创建一个新项目。"
 
-#: src/project.c:1622
+#: src/project.c:1651
 msgid "Failed to compress project file"
 msgstr "未能解压缩工程文件"
 
-#: src/project.c:1668 src/project.c:1671
+#: src/project.c:1697 src/project.c:1700
 msgid "Backup saved."
 msgstr "备份已保存。"
 
-#: src/project.c:1682
+#: src/project.c:1711
 msgid "Project saved."
 msgstr "项目已保存。"
 
@@ -966,62 +966,62 @@ msgstr "添加到集锦"
 msgid "Remove from collection"
 msgstr "从合集中移除"
 
-#: src/plugins/carla_native_plugin.c:681 src/plugins/lv2_plugin.c:3757
+#: src/plugins/carla_native_plugin.c:689 src/plugins/lv2_plugin.c:3757
 msgid "Default bank"
 msgstr "默认bank"
 
-#: src/plugins/carla_native_plugin.c:686 src/plugins/lv2_plugin.c:3762
+#: src/plugins/carla_native_plugin.c:694 src/plugins/lv2_plugin.c:3762
 msgid "Init"
 msgstr "初始化"
 
-#: src/plugins/carla_native_plugin.c:707
+#: src/plugins/carla_native_plugin.c:715
 #, fuzzy, c-format
 msgid "Preset %u"
 msgstr "预设"
 
-#: src/plugins/carla_native_plugin.c:1152
+#: src/plugins/carla_native_plugin.c:1163
 msgid "Audio in"
 msgstr "音频输入"
 
-#: src/plugins/carla_native_plugin.c:1180
+#: src/plugins/carla_native_plugin.c:1238
 msgid "Audio out"
 msgstr "音频输出"
 
 #. TRANSLATORS: either leave this
 #. * untranslated or make sure the translated text
 #. * is max 7 characters
-#: src/plugins/carla_native_plugin.c:1193 src/gui/widgets/header.c:112
+#: src/plugins/carla_native_plugin.c:1251 src/gui/widgets/header.c:112
 msgid "MIDI in"
 msgstr "MIDI In"
 
-#: src/plugins/carla_native_plugin.c:1208 src/audio/channel.c:1342
+#: src/plugins/carla_native_plugin.c:1266 src/audio/channel.c:1344
 msgid "MIDI out"
 msgstr "MIDI Out"
 
-#: src/plugins/carla_native_plugin.c:1223
+#: src/plugins/carla_native_plugin.c:1281
 msgid "CV in"
 msgstr "控制电压(CV)输入"
 
-#: src/plugins/carla_native_plugin.c:1235
+#: src/plugins/carla_native_plugin.c:1293
 msgid "CV out"
 msgstr "控制电压(CV)输出"
 
-#: src/plugins/carla_native_plugin.c:1885
+#: src/plugins/carla_native_plugin.c:1967
 #, c-format
 msgid "Error adding carla plugin: %s"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:2131
+#: src/plugins/carla_native_plugin.c:2212
 msgid "Failed to load Carla state"
 msgstr "未能加载 Carla 状态"
 
-#: src/plugins/carla_native_plugin.c:2146
+#: src/plugins/carla_native_plugin.c:2227
 msgid ""
 "Failed to instantiate Carla plugin: handle/descriptor not initialized "
 "properly"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:2583
+#: src/plugins/carla_native_plugin.c:2670
 #, c-format
 msgid "State file %s doesn't exist"
 msgstr "状态文件 %s 不存在"
@@ -1061,58 +1061,58 @@ msgstr "已扫描AU插件"
 msgid "Skipped AU plugin at %u"
 msgstr "跳过%u处的AU插件"
 
-#: src/plugins/plugin.c:279
+#: src/plugins/plugin.c:269
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr "插件 '%s' 实例化失败。禁用中..."
 
-#: src/plugins/plugin.c:323
+#: src/plugins/plugin.c:313
 msgid "Enabled"
 msgstr "已启用"
 
-#: src/plugins/plugin.c:326
+#: src/plugins/plugin.c:316
 msgid "Enables or disables the plugin"
 msgstr "启用/禁用插件"
 
-#: src/plugins/plugin.c:349 src/gui/widgets/track_input_expander.c:730
+#: src/plugins/plugin.c:339 src/gui/widgets/track_input_expander.c:730
 msgid "Gain"
 msgstr "增益"
 
-#: src/plugins/plugin.c:351
+#: src/plugins/plugin.c:341
 msgid "Plugin gain"
 msgstr "插件增益"
 
-#: src/plugins/plugin.c:553 src/plugins/plugin_gtk.c:177
+#: src/plugins/plugin.c:543 src/plugins/plugin_gtk.c:177
 #: src/gui/widgets/plugin_properties_expander.c:163
 msgid "Failed to apply preset"
 msgstr "未能应用预设"
 
-#: src/plugins/plugin.c:630
+#: src/plugins/plugin.c:620
 msgid "Failed to get Carla plugin"
 msgstr ""
 
-#: src/plugins/plugin.c:646
+#: src/plugins/plugin.c:636
 msgid "Failed to get LV2 plugin"
 msgstr "获取 LV2 插件失败"
 
-#: src/plugins/plugin.c:1158
+#: src/plugins/plugin.c:1148
 #, c-format
 msgid " - bridge: %s"
 msgstr ""
 
-#: src/plugins/plugin.c:1169
+#: src/plugins/plugin.c:1159
 msgid "instrument"
 msgstr "乐器"
 
-#: src/plugins/plugin.c:1737
+#: src/plugins/plugin.c:1729
 msgid "Carla plugin instantiation failed"
 msgstr "Carla 插件实例化失败"
 
-#: src/plugins/plugin.c:1765
+#: src/plugins/plugin.c:1757
 msgid "LV2 plugin instantiation failed"
 msgstr "LV2 插件实例化失败"
 
-#: src/plugins/plugin.c:2063
+#: src/plugins/plugin.c:2055
 #, c-format
 msgid ""
 "%s <%s> has a deprecated UI type:\n"
@@ -1122,7 +1122,7 @@ msgid ""
 "  %s <%s>"
 msgstr ""
 
-#: src/plugins/plugin.c:2375
+#: src/plugins/plugin.c:2390
 #, c-format
 msgid "Failed to create plugin clone for %s"
 msgstr "未能为 %s 创建插件克隆"
@@ -1137,7 +1137,7 @@ msgstr "保存状态"
 #: src/gui/widgets/plugin_properties_expander.c:112
 #: src/gui/widgets/main_window.c:234
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:181
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:152
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:151
 #: src/gui/widgets/dialogs/bug_report_dialog.c:353
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:167
 #: src/utils/dialogs.c:45 src/utils/dialogs.c:74 src/audio/clip.c:675
@@ -1590,7 +1590,7 @@ msgstr "插件"
 msgid "Plugin inspector"
 msgstr "插件检查器"
 
-#: src/gui/widgets/left_dock_edge.c:247 src/utils/gtk.c:1308
+#: src/gui/widgets/left_dock_edge.c:247 src/utils/gtk.c:1318
 #: resources/ui/chord_selector_window.ui:478
 msgid "Visibility"
 msgstr "可见性"
@@ -1642,7 +1642,7 @@ msgstr "未选择对象"
 msgid "Failed to change send amount"
 msgstr "未能更改发送数目"
 
-#: src/gui/widgets/bot_dock_edge.c:296 src/utils/gtk.c:1305
+#: src/gui/widgets/bot_dock_edge.c:296 src/utils/gtk.c:1315
 msgid "Editor"
 msgstr "编辑器"
 
@@ -1650,7 +1650,7 @@ msgstr "编辑器"
 msgid "Editor view"
 msgstr "编辑器视图"
 
-#: src/gui/widgets/bot_dock_edge.c:300 src/utils/gtk.c:1296
+#: src/gui/widgets/bot_dock_edge.c:300 src/utils/gtk.c:1306
 msgid "Mixer"
 msgstr "混音器"
 
@@ -1658,12 +1658,12 @@ msgstr "混音器"
 msgid "Mixer view"
 msgstr "混音器视图"
 
-#: src/gui/widgets/bot_dock_edge.c:304 src/utils/gtk.c:1299
+#: src/gui/widgets/bot_dock_edge.c:304 src/utils/gtk.c:1309
 #: src/audio/modulator_track.c:80 resources/ui/plugin_browser.ui:111
 msgid "Modulators"
 msgstr "调制器"
 
-#: src/gui/widgets/bot_dock_edge.c:308 src/utils/gtk.c:1302
+#: src/gui/widgets/bot_dock_edge.c:308 src/utils/gtk.c:1312
 msgid "Chord Pad"
 msgstr "和弦垫"
 
@@ -1789,7 +1789,7 @@ msgstr "空插槽"
 msgid "Failed to move selection"
 msgstr "未能移动所选"
 
-#: src/gui/widgets/arranger.c:1884 src/gui/widgets/arranger.c:4378
+#: src/gui/widgets/arranger.c:1884 src/gui/widgets/arranger.c:4380
 msgid "Failed to move chords"
 msgstr "未能移动和弦"
 
@@ -1808,94 +1808,94 @@ msgid ""
 "objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3871
+#: src/gui/widgets/arranger.c:3873
 msgid "Failed to delete selection"
 msgstr "未能删除所选"
 
-#: src/gui/widgets/arranger.c:3900 src/gui/widgets/arranger.c:4573
+#: src/gui/widgets/arranger.c:3902 src/gui/widgets/arranger.c:4575
 msgid "Failed to edit selection"
 msgstr "未能编辑所选"
 
-#: src/gui/widgets/arranger.c:3955
+#: src/gui/widgets/arranger.c:3957
 msgid "Failed to move automation"
 msgstr "未能移动包络线"
 
-#: src/gui/widgets/arranger.c:3984
+#: src/gui/widgets/arranger.c:3986
 msgid "Failed to duplicate automation"
 msgstr "未能重复包络线"
 
-#: src/gui/widgets/arranger.c:4008 src/gui/widgets/arranger.c:4423
-#: src/gui/widgets/arranger.c:4905
+#: src/gui/widgets/arranger.c:4010 src/gui/widgets/arranger.c:4425
+#: src/gui/widgets/arranger.c:4907
 msgid "Failed to create objects"
 msgstr "未能创建对象"
 
-#: src/gui/widgets/arranger.c:4030
+#: src/gui/widgets/arranger.c:4032
 msgid "Failed to fill automation"
 msgstr "未能填充包络线"
 
-#: src/gui/widgets/arranger.c:4063 src/gui/widgets/arranger.c:4116
-#: src/gui/widgets/arranger.c:4139 src/gui/widgets/timeline_arranger.c:1000
+#: src/gui/widgets/arranger.c:4065 src/gui/widgets/arranger.c:4118
+#: src/gui/widgets/arranger.c:4141 src/gui/widgets/timeline_arranger.c:1000
 msgid "Failed to edit selections"
 msgstr "未能编辑所选"
 
-#: src/gui/widgets/arranger.c:4174 src/gui/widgets/arranger.c:4200
+#: src/gui/widgets/arranger.c:4176 src/gui/widgets/arranger.c:4202
 msgid "Failed to resize objects"
 msgstr "未能调整对象大小"
 
-#: src/gui/widgets/arranger.c:4212 src/gui/widgets/arranger.c:4262
+#: src/gui/widgets/arranger.c:4214 src/gui/widgets/arranger.c:4264
 msgid "Failed to move MIDI notes"
 msgstr "未能移动 MIDI 音符"
 
-#: src/gui/widgets/arranger.c:4288
+#: src/gui/widgets/arranger.c:4290
 msgid "Failed to duplicate MIDI notes"
 msgstr "未能重复 MIDI 音符"
 
-#: src/gui/widgets/arranger.c:4311
+#: src/gui/widgets/arranger.c:4313
 msgid "Failed to create MIDI notes"
 msgstr "未能创建 MIDI 音符"
 
-#: src/gui/widgets/arranger.c:4400
+#: src/gui/widgets/arranger.c:4402
 msgid "Failed to duplicate chords"
 msgstr "未能重复和弦"
 
-#: src/gui/widgets/arranger.c:4498 src/gui/widgets/arranger.c:4794
+#: src/gui/widgets/arranger.c:4500 src/gui/widgets/arranger.c:4796
 msgid "Failed resizing selection"
 msgstr "未能调整选择大小"
 
-#: src/gui/widgets/arranger.c:4609
+#: src/gui/widgets/arranger.c:4611
 msgid "Failed to edit timeline objects"
 msgstr "未能编辑时间线对象"
 
-#: src/gui/widgets/arranger.c:4632 src/gui/widgets/arranger.c:4655
+#: src/gui/widgets/arranger.c:4634 src/gui/widgets/arranger.c:4657
 msgid "Failed to resize timeline objects"
 msgstr "未能调整时间线对象的大小"
 
-#: src/gui/widgets/arranger.c:4678
+#: src/gui/widgets/arranger.c:4680
 msgid "Failed to resize selection"
 msgstr "未能调整选择的大小"
 
-#: src/gui/widgets/arranger.c:4700
+#: src/gui/widgets/arranger.c:4702
 msgid "Failed setting fade in position"
 msgstr "设置淡入位置失败"
 
-#: src/gui/widgets/arranger.c:4724 src/gui/widgets/arranger.c:4750
-#: src/gui/widgets/arranger.c:4772
+#: src/gui/widgets/arranger.c:4726 src/gui/widgets/arranger.c:4752
+#: src/gui/widgets/arranger.c:4774
 msgid "Failed resizing selections"
 msgstr "未能调整对象大小"
 
-#: src/gui/widgets/arranger.c:4839
+#: src/gui/widgets/arranger.c:4841
 msgid "Failed to move objects"
 msgstr "未能移动对象"
 
-#: src/gui/widgets/arranger.c:4881
+#: src/gui/widgets/arranger.c:4883
 msgid "Failed to link or move selection"
 msgstr "未能链接或移动所选"
 
-#: src/gui/widgets/arranger.c:4941
+#: src/gui/widgets/arranger.c:4943
 msgid "Failed to split selection"
 msgstr "未能分割所选"
 
-#: src/gui/widgets/arranger.c:4953
+#: src/gui/widgets/arranger.c:4955
 #, c-format
 msgid "%s name"
 msgstr ""
@@ -1928,7 +1928,7 @@ msgstr "重命名"
 msgid "Delete"
 msgstr "删除"
 
-#: src/gui/widgets/plugin_browser.c:1577
+#: src/gui/widgets/plugin_browser.c:1581
 msgid "Search..."
 msgstr ""
 
@@ -2031,11 +2031,11 @@ msgstr "音量"
 msgid "Count-in"
 msgstr ""
 
-#: src/gui/widgets/bot_bar.c:702
+#: src/gui/widgets/bot_bar.c:688
 msgid "bpm"
 msgstr "BPM"
 
-#: src/gui/widgets/bot_bar.c:706
+#: src/gui/widgets/bot_bar.c:692
 msgid "time sig."
 msgstr "时间符号。"
 
@@ -2172,10 +2172,11 @@ msgstr "关于%s"
 msgid "No file selected"
 msgstr "未选中文件"
 
-#: src/gui/widgets/panel_file_browser.c:421 src/settings/plugin_settings.c:381
+#: src/gui/widgets/panel_file_browser.c:421
+#: src/gui/widgets/panel_file_browser.c:434 src/settings/plugin_settings.c:381
 #: src/settings/plugin_settings.c:397 src/settings/plugin_settings.c:480
-#: src/settings/plugin_settings.c:616 src/audio/tracklist.c:1541
-#: src/audio/track.c:3942
+#: src/settings/plugin_settings.c:616 src/audio/tracklist.c:1557
+#: src/audio/track.c:3982
 msgid "Failed to create track"
 msgstr "未能创建音轨"
 
@@ -2283,7 +2284,7 @@ msgid "File browser"
 msgstr "文件浏览器"
 
 #: src/gui/widgets/right_dock_edge.c:136 src/gui/widgets/monitor_section.c:49
-#: src/gui/widgets/track.c:372 src/utils/gtk.c:1327
+#: src/gui/widgets/track.c:372 src/utils/gtk.c:1337
 msgid "Monitor"
 msgstr "监视器"
 
@@ -2786,7 +2787,7 @@ msgstr "更改 direct out 失败"
 msgid "Failed to remove direct out"
 msgstr "删除 direct out 失败"
 
-#: src/gui/widgets/file_browser_window.c:38 src/utils/gtk.c:1320
+#: src/gui/widgets/file_browser_window.c:38 src/utils/gtk.c:1330
 msgid "File Browser"
 msgstr "文件浏览器"
 
@@ -3033,7 +3034,7 @@ msgstr "MIDI通道%d"
 msgid "Piano Roll"
 msgstr "钢琴卷板"
 
-#: src/gui/widgets/main_notebook.c:141 src/utils/gtk.c:1331
+#: src/gui/widgets/main_notebook.c:141 src/utils/gtk.c:1341
 msgid "Timeline"
 msgstr "时间线"
 
@@ -3053,7 +3054,7 @@ msgstr "绑定"
 msgid "MIDI CC bindings"
 msgstr "MIDI CC 绑定"
 
-#: src/gui/widgets/main_notebook.c:155 src/utils/gtk.c:1340
+#: src/gui/widgets/main_notebook.c:155 src/utils/gtk.c:1350
 msgid "Scenes"
 msgstr ""
 
@@ -3178,64 +3179,64 @@ msgstr ""
 msgid "Welcome"
 msgstr ""
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:104
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:103
 #, fuzzy
 msgid "MIDI region exported."
 msgstr "MIDI 区域"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:115
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:114
 #, fuzzy
 msgid "MIDI regions exported."
 msgstr "MIDI 区域"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:121
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:120
 #, fuzzy
 msgid "Failed to export MIDI regions."
 msgstr "未能设置 MIDI 模式"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:150
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:149
 msgid "Select MIDI file"
 msgstr "选择MIDI文件"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:152
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:151
 msgid "_Export"
 msgstr "导出"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:162
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:161
 msgid "Base region"
 msgstr "基区"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:166
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:165
 msgid "Full region"
 msgstr "完整区域"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:173
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:172
 msgid "Region Content"
 msgstr "区域内容"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:187
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:186
 msgid "Format 0"
 msgstr "格式0"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:191
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:190
 msgid "Format 1"
 msgstr "格式1"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:198
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:197
 msgid "MIDI Format"
 msgstr "MIDI 格式"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:213
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:212
 #, fuzzy
 msgid "Part of parent track"
 msgstr "未能创建音轨"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:218
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:217
 #, fuzzy
 msgid "Separate tracks"
 msgstr "重命名音轨"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:226
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:225
 #, fuzzy
 msgid "Export lanes as"
 msgstr "导出为"
@@ -3503,12 +3504,12 @@ msgstr "无法粘贴所选"
 msgid "Failed to edit object"
 msgstr "未能创建对象"
 
-#: src/gui/backend/arranger_object.c:3570
+#: src/gui/backend/arranger_object.c:3578
 #, c-format
 msgid "Invalid object name %s"
 msgstr "无效的对象名称 %s"
 
-#: src/gui/backend/arranger_object.c:3610
+#: src/gui/backend/arranger_object.c:3618
 msgid "Failed to rename object"
 msgstr "未能重命名"
 
@@ -3517,63 +3518,63 @@ msgstr "未能重命名"
 msgid "Plugin '%s' has crashed and has been disabled."
 msgstr ""
 
-#: src/gui/backend/event_manager.c:1279
+#: src/gui/backend/event_manager.c:1293
 #, c-format
 msgid "Trial limit has been reached. %s will now go silent"
 msgstr "已达到试用限制。%s将变为静默状态"
 
-#: src/gui/backend/event_manager.c:1401
+#: src/gui/backend/event_manager.c:1415
 #, fuzzy
 msgid "Plugin preset saved."
 msgstr "插件浏览器大小"
 
-#: src/gui/backend/event_manager.c:1405
+#: src/gui/backend/event_manager.c:1419
 #, fuzzy
 msgid "Plugin preset loaded."
 msgstr "插件浏览器已分离"
 
-#: src/gui/backend/tracklist_selections.c:732
+#: src/gui/backend/tracklist_selections.c:744
 #, c-format
 msgid "Failed to clone track '%s'"
 msgstr "未能克隆音轨 '%s'"
 
-#: src/gui/backend/tracklist_selections.c:775
+#: src/gui/backend/tracklist_selections.c:787
 #, fuzzy
 msgid "Failed to paste tracks"
 msgstr "倾听音轨失败"
 
-#: src/gui/backend/mixer_selections.c:694
+#: src/gui/backend/mixer_selections.c:709
 msgid "Failed to paste plugins"
 msgstr "未能粘贴插件"
 
-#: src/utils/log.c:786
+#: src/utils/log.c:796
 #, c-format
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "
 "will be undefined. "
 msgstr "%s 遇到非致命错误。它可以继续运行，但行为将不明确。 "
 
-#: src/utils/gtk.c:1311
+#: src/utils/gtk.c:1321
 msgid "Track Inspector"
 msgstr "音轨检查器"
 
-#: src/utils/gtk.c:1314
+#: src/utils/gtk.c:1324
 msgid "Plugin Inspector"
 msgstr "插件检查器"
 
-#: src/utils/gtk.c:1317
+#: src/utils/gtk.c:1327
 msgid "Plugin Browser"
 msgstr "插件浏览器"
 
-#: src/utils/gtk.c:1323
+#: src/utils/gtk.c:1333
 msgid "Chord Preset Browser"
 msgstr ""
 
-#: src/utils/gtk.c:1334
+#: src/utils/gtk.c:1344
 msgid "MIDI CC Bindings"
 msgstr "MIDI CC 绑定"
 
-#: src/utils/gtk.c:1337
+#: src/utils/gtk.c:1347
 msgid "Port Connections"
 msgstr "端口连接"
 
@@ -3757,7 +3758,7 @@ msgid "%s Output"
 msgstr "使输出变弱"
 
 #: src/settings/plugin_settings.c:453 src/settings/plugin_settings.c:501
-#: src/audio/track.c:3136
+#: src/audio/track.c:3152
 msgid "Failed to rename track"
 msgstr "未能重命名音轨"
 
@@ -3837,59 +3838,63 @@ msgstr "未找到文件"
 msgid "Unsupported file type %s"
 msgstr "不支持的文件类型%s"
 
-#: src/audio/tracklist.c:1417
+#: src/audio/tracklist.c:1419
+msgid "This MIDI file contains no data"
+msgstr ""
+
+#: src/audio/tracklist.c:1436
 msgid "Can only drop 1 file at a time on existing tracks"
 msgstr "一次只能在现有轨道上放置 1 个文件"
 
-#: src/audio/tracklist.c:1430
+#: src/audio/tracklist.c:1449
 msgid "Can only drop MIDI files on MIDI/instrument tracks"
 msgstr "只能在 MIDI/乐器轨道上放下 MIDI 文件"
 
-#: src/audio/tracklist.c:1443
+#: src/audio/tracklist.c:1459
 #, c-format
 msgid ""
 "This MIDI file contains %d tracks. It cannot be dropped into an existing "
 "track"
 msgstr ""
 
-#: src/audio/tracklist.c:1457
+#: src/audio/tracklist.c:1473
 msgid "Can only drop audio files on audio tracks"
 msgstr "只能将音频文件拖放到音频轨道上"
 
-#: src/audio/tracklist.c:1512
+#: src/audio/tracklist.c:1528
 msgid "Failed to create arranger objects"
 msgstr "未能创建编曲对象"
 
-#: src/audio/tracklist.c:1582
+#: src/audio/tracklist.c:1598
 msgid "Failed to move tracks after copying or moving inside folder"
 msgstr "在将音轨复制或移入文件夹后，未能移动它们"
 
-#: src/audio/tracklist.c:1664
+#: src/audio/tracklist.c:1680
 msgid "Failed to copy tracks inside"
 msgstr "未能将音轨复制进去"
 
-#: src/audio/tracklist.c:1712
+#: src/audio/tracklist.c:1728
 msgid "Failed to copy track inside"
 msgstr "未能复制内部音轨"
 
-#: src/audio/tracklist.c:1733 src/audio/tracklist.c:1875
+#: src/audio/tracklist.c:1749 src/audio/tracklist.c:1891
 #: src/actions/tracklist_selections.c:394
 msgid "Failed to clone track"
 msgstr "未能克隆音轨"
 
-#: src/audio/tracklist.c:1758
+#: src/audio/tracklist.c:1774
 msgid "Failed to copy tracks"
 msgstr "未能复制音轨"
 
-#: src/audio/tracklist.c:1785
+#: src/audio/tracklist.c:1801
 msgid "Cannot drag folder into itself"
 msgstr ""
 
-#: src/audio/tracklist.c:1804 src/audio/tracklist.c:1854
+#: src/audio/tracklist.c:1820 src/audio/tracklist.c:1870
 msgid "Failed to move track inside folder"
 msgstr "未能将音轨移入文件夹"
 
-#: src/audio/tracklist.c:1900
+#: src/audio/tracklist.c:1916
 msgid "Failed to move tracks"
 msgstr "未能移动音轨"
 
@@ -3905,7 +3910,7 @@ msgstr "触摸"
 msgid "Latch"
 msgstr "锁存器"
 
-#: src/audio/channel.c:2031 src/actions/mixer_selections_action.c:499
+#: src/audio/channel.c:2033 src/actions/mixer_selections_action.c:499
 msgid "Failed to clone plugin"
 msgstr "未能克隆插件"
 
@@ -3975,23 +3980,23 @@ msgstr ""
 msgid "Macro CV Out %d"
 msgstr ""
 
-#: src/audio/exporter.c:155
+#: src/audio/exporter.c:156
 #, c-format
 msgid "Format %s not supported yet"
 msgstr "格式 %s 尚不被支持"
 
-#: src/audio/exporter.c:252
+#: src/audio/exporter.c:253
 msgid "SF INFO invalid"
 msgstr ""
 
-#: src/audio/exporter.c:274
+#: src/audio/exporter.c:275
 #, c-format
 msgid ""
 "Couldn't open SNDFILE %s:\n"
 "%d: %s"
 msgstr ""
 
-#: src/audio/exporter.c:1011 src/audio/exporter.c:1020
+#: src/audio/exporter.c:1030 src/audio/exporter.c:1039
 #: src/actions/actions.c:1705
 msgid "Failed to create audio track"
 msgstr "未能创建音轨"
@@ -4102,26 +4107,26 @@ msgstr "指数的"
 msgid "Elliptic"
 msgstr "椭圆"
 
-#: src/audio/track_lane.c:85
+#: src/audio/track_lane.c:86
 #, c-format
 msgid "Lane %d"
 msgstr "通道%d"
 
-#: src/audio/track_lane.c:117
+#: src/audio/track_lane.c:118
 msgid "Failed to rename lane"
 msgstr "未能重命名 lane"
 
-#: src/audio/track_lane.c:166
+#: src/audio/track_lane.c:167
 #, fuzzy
 msgid "Cannot set track lane soloed"
 msgstr "无法将音轨状态设为 soloed"
 
-#: src/audio/track_lane.c:218
+#: src/audio/track_lane.c:219
 #, fuzzy
 msgid "Cannot set track lane muted"
 msgstr "无法将音轨设为静音"
 
-#: src/audio/audio_function.c:162 src/audio/track.c:2340 src/audio/track.c:3464
+#: src/audio/audio_function.c:162 src/audio/track.c:2356 src/audio/track.c:3496
 #: src/actions/mixer_selections_action.c:627
 msgid "Failed to instantiate plugin"
 msgstr "未能实例化插件"
@@ -4189,15 +4194,15 @@ msgstr "无法将音轨状态设为 soloed"
 msgid "Cannot set track listened"
 msgstr "无法将音轨状态设为 listened"
 
-#: src/audio/track.c:3514 src/audio/track.c:3562
+#: src/audio/track.c:3548 src/audio/track.c:3596
 msgid "Cannot set track comment"
 msgstr "无法设置音轨注释"
 
-#: src/audio/track.c:3602
+#: src/audio/track.c:3636
 msgid "Cannot set track icon"
 msgstr "无法设置音轨图标"
 
-#: src/audio/track.c:3845
+#: src/audio/track.c:3885
 msgid "Cannot set track enabled"
 msgstr "无法将音轨状态设为启用"
 
@@ -4787,7 +4792,7 @@ msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
 msgstr ""
 
-#: src/actions/actions.c:4226
+#: src/actions/actions.c:4227
 msgid "Failed to change direct output"
 msgstr "设置直接输出失败"
 
@@ -5569,7 +5574,7 @@ msgstr "音乐模式"
 msgid "Merge selections"
 msgstr "合并选定内容"
 
-#: resources/ui/timeline_toolbar.ui:84 resources/ui/editor_toolbar.ui:119
+#: resources/ui/timeline_toolbar.ui:84 resources/ui/editor_toolbar.ui:121
 msgid "Toggle event viewer"
 msgstr "切换事件查看器"
 
@@ -5680,15 +5685,15 @@ msgstr "重新扫描"
 msgid "Scan again for MIDI controllers"
 msgstr "再次扫描MIDI控制器"
 
-#: resources/ui/midi_editor_space.ui:82
+#: resources/ui/midi_editor_space.ui:92
 msgid "Pitch Wheel"
 msgstr "俯仰轮"
 
-#: resources/ui/midi_editor_space.ui:83
+#: resources/ui/midi_editor_space.ui:93
 msgid "Mod Wheel"
 msgstr "MOD轮"
 
-#: resources/ui/midi_editor_space.ui:84
+#: resources/ui/midi_editor_space.ui:94
 msgid "Aftertouch"
 msgstr "后触"
 
@@ -6164,15 +6169,15 @@ msgstr "使用上次创建对象的长度"
 msgid "Remove range"
 msgstr "移除范围"
 
-#: resources/ui/editor_toolbar.ui:138 resources/ui/editor_toolbar.ui:181
+#: resources/ui/editor_toolbar.ui:144 resources/ui/editor_toolbar.ui:187
 msgid "Flip"
 msgstr ""
 
-#: resources/ui/editor_toolbar.ui:140 resources/ui/editor_toolbar.ui:183
+#: resources/ui/editor_toolbar.ui:146 resources/ui/editor_toolbar.ui:189
 msgid "Horizontal"
 msgstr "水平"
 
-#: resources/ui/editor_toolbar.ui:146 resources/ui/editor_toolbar.ui:189
+#: resources/ui/editor_toolbar.ui:152 resources/ui/editor_toolbar.ui:195
 msgid "Vertical"
 msgstr "竖直"
 
@@ -7505,6 +7510,232 @@ msgstr "扫描插件"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:41
 msgid "Main window with detached panels"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:164
+#, fuzzy
+msgid "Changed"
+msgstr "更改"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+msgid "User manual: update Editing, Mixing, Playback &amp; Recording chapters"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+msgid "Show warning when attempting to load unsupported projects"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+msgid ""
+"Ignore CRITICAL message when opening native file chooser in Flatpak builds"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+msgid "Make editor toolbar scrollable"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:72
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:178
+msgid "Fixed"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+msgid "Fix opening projects from latest backup missing plugin states"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:156
+msgid "Added"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+#, fuzzy
+msgid "Add Hungarian locale"
+msgstr "匈牙利小调音阶"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+msgid ""
+"User manual: update Getting Started, Interface, Configuration, Projects, "
+"Plugins &amp; Files, Tracks chapter"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+msgid "Update GTK-related subproject versions"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+msgid "Disable scroll-to-focus on arrangers"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+#, fuzzy
+msgid "Cleanup plugin state dirs on save"
+msgstr "Carla 插件实例化失败"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
+msgid "Fix applying audio function not updating clip frames"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
+msgid "Fix MIDI export adding silence between regions"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
+msgid "Fix non-fatal error when importing empty MIDI files"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:145
+#, fuzzy
+msgid "Removed"
+msgstr "删除"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
+msgid "Remove message that says Zrythm is in alpha"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
+msgid "Add MIDI format selector in the export dialog"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
+msgid ""
+"Add option to export track lanes as separate MIDI tracks in the export dialog"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
+msgid "Cancel current arranger action on Escape press"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
+msgid "Update copyright years in about dialog"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
+msgid ""
+"Resize MIDI and velocity arrangers proportionally when resizing the editor"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
+msgid "Queue some startup messages to be shown after main window loads"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
+msgid "Improve context menu styling"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:132
+msgid ""
+"Clear undo history when deleting channel slots or tracks with uninstantiated "
+"plugins"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
+msgid "Use custom-built test instrument instead of Geonkick in some tests"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
+msgid "Update default screenshot in appdata"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:140
+msgid "Fix plugin state dirs in backups being empty"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
+msgid "Fix audio FX track stems being silent"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:142
+msgid "Fix being unable to open main window on MacOS"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:148
+msgid ""
+"Remove warranty disclaimer from welcome dialog (already mentioned in about "
+"dialog)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:159
+msgid "Force an app icon in the header bar"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
+msgid "Auto-reconnect to any hardware devices that get disconnected"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:161
+msgid "Add some missing internal port symbols for channels/tracks"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:167
+msgid "Move zoom buttons to timeline and editor toolbars"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:168
+msgid "Move about button to Help toolbar"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:169
+msgid "Make Edit icon lighter"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:170
+msgid ""
+"MIDI CC recording must now be enabled manually via automation lanes "
+"(improves DSP performance of MIDI and instrument tracks)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:171
+msgid "Optimize plugin DSP processing"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:172
+msgid "Consider region as looped if loop end point is beyond region end"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:173
+msgid ""
+"Re-enable PipeWire support for Flatpak (add related message in welcome "
+"dialog)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:174
+msgid "Make accelerators in popover menus orange"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:175
+msgid "Group various button groups together in toolbars"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:181
+msgid "Fix plugin passthrough ignoring MIDI events"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:182
+msgid "Fix incorrect track routing when using MIDI FX plugins"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:183
+msgid "Fix error when splitting unlooped automation regions"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:184
+msgid "Fix hardware inputs not being routed properly to tracks"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:185
+msgid "Fix \"all audio inputs\" in track inputs not behaving as intended"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:186
+msgid "Fix incorrect logic when checking whether a note is in a scale"
 msgstr ""
 
 #~ msgid "License Information"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-03-17 23:11+0000\n"
+"POT-Creation-Date: 2022-03-29 17:57+0100\n"
 "PO-Revision-Date: 2022-01-17 09:53+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
@@ -80,7 +80,7 @@ msgstr "Flytt automasjon"
 #: inc/schemas/gui/backend/arranger_object.h:68
 #: inc/gui/backend/arranger_object.h:117 src/gui/widgets/event_viewer.c:808
 #: src/gui/widgets/item_factory.c:305 src/gui/widgets/item_factory.c:907
-#: resources/ui/midi_editor_space.ui:81
+#: resources/ui/midi_editor_space.ui:91
 msgid "Velocity"
 msgstr ""
 
@@ -381,11 +381,11 @@ msgstr ""
 msgid "ALSA Sequencer (rtmidi)"
 msgstr ""
 
-#: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:126
+#: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:132
 msgid "Crescendo"
 msgstr ""
 
-#: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:132
+#: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:138
 msgid "Flam"
 msgstr ""
 
@@ -397,20 +397,20 @@ msgstr ""
 msgid "Flip V"
 msgstr ""
 
-#: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:153
+#: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:159
 msgid "Legato"
 msgstr ""
 
-#: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:159
+#: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:165
 #, fuzzy
 msgid "Portato"
 msgstr "Port"
 
-#: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:165
+#: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:171
 msgid "Staccato"
 msgstr ""
 
-#: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:171
+#: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:177
 msgid "Strum"
 msgstr ""
 
@@ -712,7 +712,7 @@ msgstr "Kunne ikke lese fil: %s"
 msgid "Failed to decompress project file"
 msgstr "Klarte ikke å tilbakestille plan %s"
 
-#: src/project.c:977
+#: src/project.c:987
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -720,36 +720,36 @@ msgid ""
 "Use the newer backup?"
 msgstr ""
 
-#: src/project.c:982
+#: src/project.c:992
 #, fuzzy
 msgid "Backup found"
 msgstr "Bakender"
 
-#: src/project.c:1045
+#: src/project.c:1057
 #, c-format
 msgid ""
-"This project was created with a different version of %s (%s). It may not "
+"This project was created with an unsupported version of %s (%s). It may not "
 "work correctly."
 msgstr ""
 
-#: src/project.c:1063
+#: src/project.c:1073
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 
-#: src/project.c:1288
+#: src/project.c:1317
 msgid "Failed to load project. Will create a new one instead."
 msgstr ""
 
-#: src/project.c:1622
+#: src/project.c:1651
 #, fuzzy
 msgid "Failed to compress project file"
 msgstr "Klarte ikke å tilbakestille plan %s"
 
-#: src/project.c:1668 src/project.c:1671
+#: src/project.c:1697 src/project.c:1700
 msgid "Backup saved."
 msgstr ""
 
-#: src/project.c:1682
+#: src/project.c:1711
 msgid "Project saved."
 msgstr "Prosjekt lagret."
 
@@ -985,25 +985,25 @@ msgstr "Lagre prosjektet"
 msgid "Remove from collection"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:681 src/plugins/lv2_plugin.c:3757
+#: src/plugins/carla_native_plugin.c:689 src/plugins/lv2_plugin.c:3757
 msgid "Default bank"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:686 src/plugins/lv2_plugin.c:3762
+#: src/plugins/carla_native_plugin.c:694 src/plugins/lv2_plugin.c:3762
 msgid "Init"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:707
+#: src/plugins/carla_native_plugin.c:715
 #, fuzzy, c-format
 msgid "Preset %u"
 msgstr "Tilbakestill"
 
-#: src/plugins/carla_native_plugin.c:1152
+#: src/plugins/carla_native_plugin.c:1163
 #, fuzzy
 msgid "Audio in"
 msgstr "Lydinnganger"
 
-#: src/plugins/carla_native_plugin.c:1180
+#: src/plugins/carla_native_plugin.c:1238
 #, fuzzy
 msgid "Audio out"
 msgstr "Lydutganger"
@@ -1011,41 +1011,41 @@ msgstr "Lydutganger"
 #. TRANSLATORS: either leave this
 #. * untranslated or make sure the translated text
 #. * is max 7 characters
-#: src/plugins/carla_native_plugin.c:1193 src/gui/widgets/header.c:112
+#: src/plugins/carla_native_plugin.c:1251 src/gui/widgets/header.c:112
 #, fuzzy
 msgid "MIDI in"
 msgstr "MIDI-bakende"
 
-#: src/plugins/carla_native_plugin.c:1208 src/audio/channel.c:1342
+#: src/plugins/carla_native_plugin.c:1266 src/audio/channel.c:1344
 #, fuzzy
 msgid "MIDI out"
 msgstr "MIDI-utgang"
 
-#: src/plugins/carla_native_plugin.c:1223
+#: src/plugins/carla_native_plugin.c:1281
 msgid "CV in"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:1235
+#: src/plugins/carla_native_plugin.c:1293
 msgid "CV out"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:1885
+#: src/plugins/carla_native_plugin.c:1967
 #, c-format
 msgid "Error adding carla plugin: %s"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:2131
+#: src/plugins/carla_native_plugin.c:2212
 #, fuzzy
 msgid "Failed to load Carla state"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/plugins/carla_native_plugin.c:2146
+#: src/plugins/carla_native_plugin.c:2227
 msgid ""
 "Failed to instantiate Carla plugin: handle/descriptor not initialized "
 "properly"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:2583
+#: src/plugins/carla_native_plugin.c:2670
 #, fuzzy, c-format
 msgid "State file %s doesn't exist"
 msgstr "Forespurt klient finnes ikke"
@@ -1085,63 +1085,63 @@ msgstr ""
 msgid "Skipped AU plugin at %u"
 msgstr ""
 
-#: src/plugins/plugin.c:279
+#: src/plugins/plugin.c:269
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr ""
 
-#: src/plugins/plugin.c:323
+#: src/plugins/plugin.c:313
 #, fuzzy
 msgid "Enabled"
 msgstr "Opphev forstumming av spor"
 
-#: src/plugins/plugin.c:326
+#: src/plugins/plugin.c:316
 msgid "Enables or disables the plugin"
 msgstr ""
 
-#: src/plugins/plugin.c:349 src/gui/widgets/track_input_expander.c:730
+#: src/plugins/plugin.c:339 src/gui/widgets/track_input_expander.c:730
 msgid "Gain"
 msgstr ""
 
-#: src/plugins/plugin.c:351
+#: src/plugins/plugin.c:341
 #, fuzzy
 msgid "Plugin gain"
 msgstr "Protramtillegg 1"
 
-#: src/plugins/plugin.c:553 src/plugins/plugin_gtk.c:177
+#: src/plugins/plugin.c:543 src/plugins/plugin_gtk.c:177
 #: src/gui/widgets/plugin_properties_expander.c:163
 #, fuzzy
 msgid "Failed to apply preset"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/plugins/plugin.c:630
+#: src/plugins/plugin.c:620
 msgid "Failed to get Carla plugin"
 msgstr ""
 
-#: src/plugins/plugin.c:646
+#: src/plugins/plugin.c:636
 #, fuzzy
 msgid "Failed to get LV2 plugin"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/plugins/plugin.c:1158
+#: src/plugins/plugin.c:1148
 #, c-format
 msgid " - bridge: %s"
 msgstr ""
 
-#: src/plugins/plugin.c:1169
+#: src/plugins/plugin.c:1159
 #, fuzzy
 msgid "instrument"
 msgstr "Instrument"
 
-#: src/plugins/plugin.c:1737
+#: src/plugins/plugin.c:1729
 msgid "Carla plugin instantiation failed"
 msgstr ""
 
-#: src/plugins/plugin.c:1765
+#: src/plugins/plugin.c:1757
 msgid "LV2 plugin instantiation failed"
 msgstr ""
 
-#: src/plugins/plugin.c:2063
+#: src/plugins/plugin.c:2055
 #, c-format
 msgid ""
 "%s <%s> has a deprecated UI type:\n"
@@ -1151,7 +1151,7 @@ msgid ""
 "  %s <%s>"
 msgstr ""
 
-#: src/plugins/plugin.c:2375
+#: src/plugins/plugin.c:2390
 #, fuzzy, c-format
 msgid "Failed to create plugin clone for %s"
 msgstr "Klarte ikke å vise planen %s"
@@ -1166,7 +1166,7 @@ msgstr "Lagringstilstand"
 #: src/gui/widgets/plugin_properties_expander.c:112
 #: src/gui/widgets/main_window.c:234
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:181
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:152
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:151
 #: src/gui/widgets/dialogs/bug_report_dialog.c:353
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:167
 #: src/utils/dialogs.c:45 src/utils/dialogs.c:74 src/audio/clip.c:675
@@ -1649,7 +1649,7 @@ msgstr "Programtillegg"
 msgid "Plugin inspector"
 msgstr "Programtilleggsutforsker"
 
-#: src/gui/widgets/left_dock_edge.c:247 src/utils/gtk.c:1308
+#: src/gui/widgets/left_dock_edge.c:247 src/utils/gtk.c:1318
 #: resources/ui/chord_selector_window.ui:478
 msgid "Visibility"
 msgstr "Synlighet"
@@ -1707,7 +1707,7 @@ msgstr "Inget objekt valgt"
 msgid "Failed to change send amount"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/bot_dock_edge.c:296 src/utils/gtk.c:1305
+#: src/gui/widgets/bot_dock_edge.c:296 src/utils/gtk.c:1315
 msgid "Editor"
 msgstr ""
 
@@ -1715,7 +1715,7 @@ msgstr ""
 msgid "Editor view"
 msgstr ""
 
-#: src/gui/widgets/bot_dock_edge.c:300 src/utils/gtk.c:1296
+#: src/gui/widgets/bot_dock_edge.c:300 src/utils/gtk.c:1306
 msgid "Mixer"
 msgstr "Mikser"
 
@@ -1723,12 +1723,12 @@ msgstr "Mikser"
 msgid "Mixer view"
 msgstr "Mikser-visning"
 
-#: src/gui/widgets/bot_dock_edge.c:304 src/utils/gtk.c:1299
+#: src/gui/widgets/bot_dock_edge.c:304 src/utils/gtk.c:1309
 #: src/audio/modulator_track.c:80 resources/ui/plugin_browser.ui:111
 msgid "Modulators"
 msgstr "Modulatorer"
 
-#: src/gui/widgets/bot_dock_edge.c:308 src/utils/gtk.c:1302
+#: src/gui/widgets/bot_dock_edge.c:308 src/utils/gtk.c:1312
 msgid "Chord Pad"
 msgstr ""
 
@@ -1870,7 +1870,7 @@ msgstr ""
 msgid "Failed to move selection"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/arranger.c:1884 src/gui/widgets/arranger.c:4378
+#: src/gui/widgets/arranger.c:1884 src/gui/widgets/arranger.c:4380
 #, fuzzy
 msgid "Failed to move chords"
 msgstr "Klarte ikke å tilbakestille plan %s"
@@ -1891,115 +1891,115 @@ msgid ""
 "objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3871
+#: src/gui/widgets/arranger.c:3873
 #, fuzzy
 msgid "Failed to delete selection"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/arranger.c:3900 src/gui/widgets/arranger.c:4573
+#: src/gui/widgets/arranger.c:3902 src/gui/widgets/arranger.c:4575
 #, fuzzy
 msgid "Failed to edit selection"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/arranger.c:3955
+#: src/gui/widgets/arranger.c:3957
 #, fuzzy
 msgid "Failed to move automation"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/arranger.c:3984
+#: src/gui/widgets/arranger.c:3986
 #, fuzzy
 msgid "Failed to duplicate automation"
 msgstr "_Dupliser spor"
 
-#: src/gui/widgets/arranger.c:4008 src/gui/widgets/arranger.c:4423
-#: src/gui/widgets/arranger.c:4905
+#: src/gui/widgets/arranger.c:4010 src/gui/widgets/arranger.c:4425
+#: src/gui/widgets/arranger.c:4907
 #, fuzzy
 msgid "Failed to create objects"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/arranger.c:4030
+#: src/gui/widgets/arranger.c:4032
 #, fuzzy
 msgid "Failed to fill automation"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/arranger.c:4063 src/gui/widgets/arranger.c:4116
-#: src/gui/widgets/arranger.c:4139 src/gui/widgets/timeline_arranger.c:1000
+#: src/gui/widgets/arranger.c:4065 src/gui/widgets/arranger.c:4118
+#: src/gui/widgets/arranger.c:4141 src/gui/widgets/timeline_arranger.c:1000
 #, fuzzy
 msgid "Failed to edit selections"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/arranger.c:4174 src/gui/widgets/arranger.c:4200
+#: src/gui/widgets/arranger.c:4176 src/gui/widgets/arranger.c:4202
 #, fuzzy
 msgid "Failed to resize objects"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/arranger.c:4212 src/gui/widgets/arranger.c:4262
+#: src/gui/widgets/arranger.c:4214 src/gui/widgets/arranger.c:4264
 #, fuzzy
 msgid "Failed to move MIDI notes"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/arranger.c:4288
+#: src/gui/widgets/arranger.c:4290
 #, fuzzy
 msgid "Failed to duplicate MIDI notes"
 msgstr "Klarte ikke å tilbakestille plan %s"
 
-#: src/gui/widgets/arranger.c:4311
+#: src/gui/widgets/arranger.c:4313
 #, fuzzy
 msgid "Failed to create MIDI notes"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/arranger.c:4400
+#: src/gui/widgets/arranger.c:4402
 #, fuzzy
 msgid "Failed to duplicate chords"
 msgstr "Klarte ikke å tilbakestille plan %s"
 
-#: src/gui/widgets/arranger.c:4498 src/gui/widgets/arranger.c:4794
+#: src/gui/widgets/arranger.c:4500 src/gui/widgets/arranger.c:4796
 #, fuzzy
 msgid "Failed resizing selection"
 msgstr "Klarte ikke å innhente va_list-verdi: %s"
 
-#: src/gui/widgets/arranger.c:4609
+#: src/gui/widgets/arranger.c:4611
 #, fuzzy
 msgid "Failed to edit timeline objects"
 msgstr "Klarte ikke å tilbakestille plan %s"
 
-#: src/gui/widgets/arranger.c:4632 src/gui/widgets/arranger.c:4655
+#: src/gui/widgets/arranger.c:4634 src/gui/widgets/arranger.c:4657
 #, fuzzy
 msgid "Failed to resize timeline objects"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/arranger.c:4678
+#: src/gui/widgets/arranger.c:4680
 #, fuzzy
 msgid "Failed to resize selection"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/arranger.c:4700
+#: src/gui/widgets/arranger.c:4702
 #, fuzzy
 msgid "Failed setting fade in position"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/arranger.c:4724 src/gui/widgets/arranger.c:4750
-#: src/gui/widgets/arranger.c:4772
+#: src/gui/widgets/arranger.c:4726 src/gui/widgets/arranger.c:4752
+#: src/gui/widgets/arranger.c:4774
 #, fuzzy
 msgid "Failed resizing selections"
 msgstr "Utvalg"
 
-#: src/gui/widgets/arranger.c:4839
+#: src/gui/widgets/arranger.c:4841
 #, fuzzy
 msgid "Failed to move objects"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/arranger.c:4881
+#: src/gui/widgets/arranger.c:4883
 #, fuzzy
 msgid "Failed to link or move selection"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/arranger.c:4941
+#: src/gui/widgets/arranger.c:4943
 #, fuzzy
 msgid "Failed to split selection"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/arranger.c:4953
+#: src/gui/widgets/arranger.c:4955
 #, c-format
 msgid "%s name"
 msgstr ""
@@ -2035,7 +2035,7 @@ msgstr "Opprinnelig størrelse"
 msgid "Delete"
 msgstr "Slett spor"
 
-#: src/gui/widgets/plugin_browser.c:1577
+#: src/gui/widgets/plugin_browser.c:1581
 msgid "Search..."
 msgstr ""
 
@@ -2142,11 +2142,11 @@ msgstr ""
 msgid "Count-in"
 msgstr ""
 
-#: src/gui/widgets/bot_bar.c:702
+#: src/gui/widgets/bot_bar.c:688
 msgid "bpm"
 msgstr ""
 
-#: src/gui/widgets/bot_bar.c:706
+#: src/gui/widgets/bot_bar.c:692
 msgid "time sig."
 msgstr ""
 
@@ -2297,10 +2297,11 @@ msgstr "Om %s"
 msgid "No file selected"
 msgstr "Inget klipp valgt"
 
-#: src/gui/widgets/panel_file_browser.c:421 src/settings/plugin_settings.c:381
+#: src/gui/widgets/panel_file_browser.c:421
+#: src/gui/widgets/panel_file_browser.c:434 src/settings/plugin_settings.c:381
 #: src/settings/plugin_settings.c:397 src/settings/plugin_settings.c:480
-#: src/settings/plugin_settings.c:616 src/audio/tracklist.c:1541
-#: src/audio/track.c:3942
+#: src/settings/plugin_settings.c:616 src/audio/tracklist.c:1557
+#: src/audio/track.c:3982
 #, fuzzy
 msgid "Failed to create track"
 msgstr "Klarte ikke å vise planen %s"
@@ -2416,7 +2417,7 @@ msgid "File browser"
 msgstr "Filutforsker"
 
 #: src/gui/widgets/right_dock_edge.c:136 src/gui/widgets/monitor_section.c:49
-#: src/gui/widgets/track.c:372 src/utils/gtk.c:1327
+#: src/gui/widgets/track.c:372 src/utils/gtk.c:1337
 #, fuzzy
 msgid "Monitor"
 msgstr "Forminsk"
@@ -2978,7 +2979,7 @@ msgstr "Klarte ikke å tilbakestille plan %s"
 msgid "Failed to remove direct out"
 msgstr "Klarte ikke å tilbakestille plan %s"
 
-#: src/gui/widgets/file_browser_window.c:38 src/utils/gtk.c:1320
+#: src/gui/widgets/file_browser_window.c:38 src/utils/gtk.c:1330
 msgid "File Browser"
 msgstr "Filutforsker"
 
@@ -3248,7 +3249,7 @@ msgstr "MIDI-kanal %d"
 msgid "Piano Roll"
 msgstr "Framheving"
 
-#: src/gui/widgets/main_notebook.c:141 src/utils/gtk.c:1331
+#: src/gui/widgets/main_notebook.c:141 src/utils/gtk.c:1341
 #, fuzzy
 msgid "Timeline"
 msgstr "Tidsrom"
@@ -3272,7 +3273,7 @@ msgstr ""
 msgid "MIDI CC bindings"
 msgstr "MIDI-bakende"
 
-#: src/gui/widgets/main_notebook.c:155 src/utils/gtk.c:1340
+#: src/gui/widgets/main_notebook.c:155 src/utils/gtk.c:1350
 msgid "Scenes"
 msgstr ""
 
@@ -3410,71 +3411,71 @@ msgstr ""
 msgid "Welcome"
 msgstr ""
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:104
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:103
 #, fuzzy
 msgid "MIDI region exported."
 msgstr "MIDI-bakende"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:115
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:114
 #, fuzzy
 msgid "MIDI regions exported."
 msgstr "MIDI-bakende"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:121
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:120
 #, fuzzy
 msgid "Failed to export MIDI regions."
 msgstr "Klarte ikke å tilbakestille plan %s"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:150
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:149
 #, fuzzy
 msgid "Select MIDI file"
 msgstr "Velg alt"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:152
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:151
 #, fuzzy
 msgid "_Export"
 msgstr "Eksporter"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:162
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:161
 msgid "Base region"
 msgstr ""
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:166
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:165
 #, fuzzy
 msgid "Full region"
 msgstr "Veksle fullskjermsvisning"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:173
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:172
 #, fuzzy
 msgid "Region Content"
 msgstr "Opprinnelig størrelse"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:187
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:186
 #, fuzzy
 msgid "Format 0"
 msgstr "Format"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:191
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:190
 #, fuzzy
 msgid "Format 1"
 msgstr "Format"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:198
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:197
 #, fuzzy
 msgid "MIDI Format"
 msgstr "MIDI-bakende"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:213
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:212
 #, fuzzy
 msgid "Part of parent track"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:218
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:217
 #, fuzzy
 msgid "Separate tracks"
 msgstr "Frys"
 
-#: src/gui/widgets/dialogs/export_midi_file_dialog.c:226
+#: src/gui/widgets/dialogs/export_midi_file_dialog.c:225
 #, fuzzy
 msgid "Export lanes as"
 msgstr "Eksporter som…"
@@ -3760,12 +3761,12 @@ msgstr "Klarte ikke å vise planen %s"
 msgid "Failed to edit object"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/backend/arranger_object.c:3570
+#: src/gui/backend/arranger_object.c:3578
 #, c-format
 msgid "Invalid object name %s"
 msgstr ""
 
-#: src/gui/backend/arranger_object.c:3610
+#: src/gui/backend/arranger_object.c:3618
 #, fuzzy
 msgid "Failed to rename object"
 msgstr "Klarte ikke å vise planen %s"
@@ -3775,67 +3776,67 @@ msgstr "Klarte ikke å vise planen %s"
 msgid "Plugin '%s' has crashed and has been disabled."
 msgstr ""
 
-#: src/gui/backend/event_manager.c:1279
+#: src/gui/backend/event_manager.c:1293
 #, c-format
 msgid "Trial limit has been reached. %s will now go silent"
 msgstr ""
 
-#: src/gui/backend/event_manager.c:1401
+#: src/gui/backend/event_manager.c:1415
 #, fuzzy
 msgid "Plugin preset saved."
 msgstr "Programtilleggsutforsker"
 
-#: src/gui/backend/event_manager.c:1405
+#: src/gui/backend/event_manager.c:1419
 #, fuzzy
 msgid "Plugin preset loaded."
 msgstr "Programtilleggsutforsker"
 
-#: src/gui/backend/tracklist_selections.c:732
+#: src/gui/backend/tracklist_selections.c:744
 #, fuzzy, c-format
 msgid "Failed to clone track '%s'"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/gui/backend/tracklist_selections.c:775
+#: src/gui/backend/tracklist_selections.c:787
 #, fuzzy
 msgid "Failed to paste tracks"
 msgstr "Klarte ikke å tilbakestille plan %s"
 
-#: src/gui/backend/mixer_selections.c:694
+#: src/gui/backend/mixer_selections.c:709
 #, fuzzy
 msgid "Failed to paste plugins"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/utils/log.c:786
+#: src/utils/log.c:796
 #, c-format
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "
 "will be undefined. "
 msgstr ""
 
-#: src/utils/gtk.c:1311
+#: src/utils/gtk.c:1321
 #, fuzzy
 msgid "Track Inspector"
 msgstr "Inspektør"
 
-#: src/utils/gtk.c:1314
+#: src/utils/gtk.c:1324
 #, fuzzy
 msgid "Plugin Inspector"
 msgstr "Programtilleggsutforsker"
 
-#: src/utils/gtk.c:1317
+#: src/utils/gtk.c:1327
 msgid "Plugin Browser"
 msgstr "Programtilleggsutforsker"
 
-#: src/utils/gtk.c:1323
+#: src/utils/gtk.c:1333
 msgid "Chord Preset Browser"
 msgstr ""
 
-#: src/utils/gtk.c:1334
+#: src/utils/gtk.c:1344
 #, fuzzy
 msgid "MIDI CC Bindings"
 msgstr "MIDI-bakende"
 
-#: src/utils/gtk.c:1337
+#: src/utils/gtk.c:1347
 #, fuzzy
 msgid "Port Connections"
 msgstr "Slett objekt(er)"
@@ -4028,7 +4029,7 @@ msgid "%s Output"
 msgstr ""
 
 #: src/settings/plugin_settings.c:453 src/settings/plugin_settings.c:501
-#: src/audio/track.c:3136
+#: src/audio/track.c:3152
 #, fuzzy
 msgid "Failed to rename track"
 msgstr "Klarte ikke å tilbakestille plan %s"
@@ -4110,66 +4111,70 @@ msgstr "Oppdagede kontrollere"
 msgid "Unsupported file type %s"
 msgstr ""
 
-#: src/audio/tracklist.c:1417
+#: src/audio/tracklist.c:1419
+msgid "This MIDI file contains no data"
+msgstr ""
+
+#: src/audio/tracklist.c:1436
 msgid "Can only drop 1 file at a time on existing tracks"
 msgstr ""
 
-#: src/audio/tracklist.c:1430
+#: src/audio/tracklist.c:1449
 msgid "Can only drop MIDI files on MIDI/instrument tracks"
 msgstr ""
 
-#: src/audio/tracklist.c:1443
+#: src/audio/tracklist.c:1459
 #, c-format
 msgid ""
 "This MIDI file contains %d tracks. It cannot be dropped into an existing "
 "track"
 msgstr ""
 
-#: src/audio/tracklist.c:1457
+#: src/audio/tracklist.c:1473
 msgid "Can only drop audio files on audio tracks"
 msgstr ""
 
-#: src/audio/tracklist.c:1512
+#: src/audio/tracklist.c:1528
 #, fuzzy
 msgid "Failed to create arranger objects"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/audio/tracklist.c:1582
+#: src/audio/tracklist.c:1598
 #, fuzzy
 msgid "Failed to move tracks after copying or moving inside folder"
 msgstr "Flytt spor"
 
-#: src/audio/tracklist.c:1664
+#: src/audio/tracklist.c:1680
 #, fuzzy
 msgid "Failed to copy tracks inside"
 msgstr "Flytt spor"
 
-#: src/audio/tracklist.c:1712
+#: src/audio/tracklist.c:1728
 #, fuzzy
 msgid "Failed to copy track inside"
 msgstr "Flytt spor"
 
-#: src/audio/tracklist.c:1733 src/audio/tracklist.c:1875
+#: src/audio/tracklist.c:1749 src/audio/tracklist.c:1891
 #: src/actions/tracklist_selections.c:394
 #, fuzzy
 msgid "Failed to clone track"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/audio/tracklist.c:1758
+#: src/audio/tracklist.c:1774
 #, fuzzy
 msgid "Failed to copy tracks"
 msgstr "Flytt spor"
 
-#: src/audio/tracklist.c:1785
+#: src/audio/tracklist.c:1801
 msgid "Cannot drag folder into itself"
 msgstr ""
 
-#: src/audio/tracklist.c:1804 src/audio/tracklist.c:1854
+#: src/audio/tracklist.c:1820 src/audio/tracklist.c:1870
 #, fuzzy
 msgid "Failed to move track inside folder"
 msgstr "Flytt spor"
 
-#: src/audio/tracklist.c:1900
+#: src/audio/tracklist.c:1916
 #, fuzzy
 msgid "Failed to move tracks"
 msgstr "Klarte ikke å vise planen %s"
@@ -4187,7 +4192,7 @@ msgstr ""
 msgid "Latch"
 msgstr ""
 
-#: src/audio/channel.c:2031 src/actions/mixer_selections_action.c:499
+#: src/audio/channel.c:2033 src/actions/mixer_selections_action.c:499
 #, fuzzy
 msgid "Failed to clone plugin"
 msgstr "Klarte ikke å vise planen %s"
@@ -4260,23 +4265,23 @@ msgstr ""
 msgid "Macro CV Out %d"
 msgstr ""
 
-#: src/audio/exporter.c:155
+#: src/audio/exporter.c:156
 #, fuzzy, c-format
 msgid "Format %s not supported yet"
 msgstr "Formatet %s støttes ikke enda"
 
-#: src/audio/exporter.c:252
+#: src/audio/exporter.c:253
 msgid "SF INFO invalid"
 msgstr ""
 
-#: src/audio/exporter.c:274
+#: src/audio/exporter.c:275
 #, c-format
 msgid ""
 "Couldn't open SNDFILE %s:\n"
 "%d: %s"
 msgstr ""
 
-#: src/audio/exporter.c:1011 src/audio/exporter.c:1020
+#: src/audio/exporter.c:1030 src/audio/exporter.c:1039
 #: src/actions/actions.c:1705
 #, fuzzy
 msgid "Failed to create audio track"
@@ -4387,27 +4392,27 @@ msgstr ""
 msgid "Elliptic"
 msgstr ""
 
-#: src/audio/track_lane.c:85
+#: src/audio/track_lane.c:86
 #, c-format
 msgid "Lane %d"
 msgstr ""
 
-#: src/audio/track_lane.c:117
+#: src/audio/track_lane.c:118
 #, fuzzy
 msgid "Failed to rename lane"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/audio/track_lane.c:166
+#: src/audio/track_lane.c:167
 #, fuzzy
 msgid "Cannot set track lane soloed"
 msgstr "Spor"
 
-#: src/audio/track_lane.c:218
+#: src/audio/track_lane.c:219
 #, fuzzy
 msgid "Cannot set track lane muted"
 msgstr "Spor"
 
-#: src/audio/audio_function.c:162 src/audio/track.c:2340 src/audio/track.c:3464
+#: src/audio/audio_function.c:162 src/audio/track.c:2356 src/audio/track.c:3496
 #: src/actions/mixer_selections_action.c:627
 #, fuzzy
 msgid "Failed to instantiate plugin"
@@ -4486,17 +4491,17 @@ msgstr "Spor"
 msgid "Cannot set track listened"
 msgstr "Spor"
 
-#: src/audio/track.c:3514 src/audio/track.c:3562
+#: src/audio/track.c:3548 src/audio/track.c:3596
 #, fuzzy
 msgid "Cannot set track comment"
 msgstr "Spor"
 
-#: src/audio/track.c:3602
+#: src/audio/track.c:3636
 #, fuzzy
 msgid "Cannot set track icon"
 msgstr "Spor"
 
-#: src/audio/track.c:3845
+#: src/audio/track.c:3885
 #, fuzzy
 msgid "Cannot set track enabled"
 msgstr "Spor"
@@ -5167,7 +5172,7 @@ msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
 msgstr ""
 
-#: src/actions/actions.c:4226
+#: src/actions/actions.c:4227
 #, fuzzy
 msgid "Failed to change direct output"
 msgstr "Klarte ikke å tilbakestille plan %s"
@@ -5991,7 +5996,7 @@ msgstr ""
 msgid "Merge selections"
 msgstr "Utvalg"
 
-#: resources/ui/timeline_toolbar.ui:84 resources/ui/editor_toolbar.ui:119
+#: resources/ui/timeline_toolbar.ui:84 resources/ui/editor_toolbar.ui:121
 #, fuzzy
 msgid "Toggle event viewer"
 msgstr "Veksle venstre panel"
@@ -6107,15 +6112,15 @@ msgstr "Skann på ny"
 msgid "Scan again for MIDI controllers"
 msgstr "Se etter MIDI-kontrollere igjen"
 
-#: resources/ui/midi_editor_space.ui:82
+#: resources/ui/midi_editor_space.ui:92
 msgid "Pitch Wheel"
 msgstr ""
 
-#: resources/ui/midi_editor_space.ui:83
+#: resources/ui/midi_editor_space.ui:93
 msgid "Mod Wheel"
 msgstr ""
 
-#: resources/ui/midi_editor_space.ui:84
+#: resources/ui/midi_editor_space.ui:94
 msgid "Aftertouch"
 msgstr ""
 
@@ -6609,15 +6614,15 @@ msgstr "notelengde"
 msgid "Remove range"
 msgstr "Fjern tidsområde"
 
-#: resources/ui/editor_toolbar.ui:138 resources/ui/editor_toolbar.ui:181
+#: resources/ui/editor_toolbar.ui:144 resources/ui/editor_toolbar.ui:187
 msgid "Flip"
 msgstr ""
 
-#: resources/ui/editor_toolbar.ui:140 resources/ui/editor_toolbar.ui:183
+#: resources/ui/editor_toolbar.ui:146 resources/ui/editor_toolbar.ui:189
 msgid "Horizontal"
 msgstr ""
 
-#: resources/ui/editor_toolbar.ui:146 resources/ui/editor_toolbar.ui:189
+#: resources/ui/editor_toolbar.ui:152 resources/ui/editor_toolbar.ui:195
 msgid "Vertical"
 msgstr ""
 
@@ -8044,6 +8049,230 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:41
 msgid "Main window with detached panels"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:164
+#, fuzzy
+msgid "Changed"
+msgstr "Tidsrom"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+msgid "User manual: update Editing, Mixing, Playback &amp; Recording chapters"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+msgid "Show warning when attempting to load unsupported projects"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+msgid ""
+"Ignore CRITICAL message when opening native file chooser in Flatpak builds"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+msgid "Make editor toolbar scrollable"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:72
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:178
+msgid "Fixed"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+msgid "Fix opening projects from latest backup missing plugin states"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:156
+msgid "Added"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+msgid "Add Hungarian locale"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+msgid ""
+"User manual: update Getting Started, Interface, Configuration, Projects, "
+"Plugins &amp; Files, Tracks chapter"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+msgid "Update GTK-related subproject versions"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+msgid "Disable scroll-to-focus on arrangers"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+msgid "Cleanup plugin state dirs on save"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
+msgid "Fix applying audio function not updating clip frames"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
+msgid "Fix MIDI export adding silence between regions"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
+msgid "Fix non-fatal error when importing empty MIDI files"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:145
+#, fuzzy
+msgid "Removed"
+msgstr "Fjern"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
+msgid "Remove message that says Zrythm is in alpha"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
+msgid "Add MIDI format selector in the export dialog"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
+msgid ""
+"Add option to export track lanes as separate MIDI tracks in the export dialog"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
+msgid "Cancel current arranger action on Escape press"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
+msgid "Update copyright years in about dialog"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
+msgid ""
+"Resize MIDI and velocity arrangers proportionally when resizing the editor"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
+msgid "Queue some startup messages to be shown after main window loads"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
+msgid "Improve context menu styling"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:132
+msgid ""
+"Clear undo history when deleting channel slots or tracks with uninstantiated "
+"plugins"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
+msgid "Use custom-built test instrument instead of Geonkick in some tests"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
+msgid "Update default screenshot in appdata"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:140
+msgid "Fix plugin state dirs in backups being empty"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
+msgid "Fix audio FX track stems being silent"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:142
+msgid "Fix being unable to open main window on MacOS"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:148
+msgid ""
+"Remove warranty disclaimer from welcome dialog (already mentioned in about "
+"dialog)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:159
+msgid "Force an app icon in the header bar"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
+msgid "Auto-reconnect to any hardware devices that get disconnected"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:161
+msgid "Add some missing internal port symbols for channels/tracks"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:167
+msgid "Move zoom buttons to timeline and editor toolbars"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:168
+msgid "Move about button to Help toolbar"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:169
+msgid "Make Edit icon lighter"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:170
+msgid ""
+"MIDI CC recording must now be enabled manually via automation lanes "
+"(improves DSP performance of MIDI and instrument tracks)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:171
+msgid "Optimize plugin DSP processing"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:172
+msgid "Consider region as looped if loop end point is beyond region end"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:173
+msgid ""
+"Re-enable PipeWire support for Flatpak (add related message in welcome "
+"dialog)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:174
+msgid "Make accelerators in popover menus orange"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:175
+msgid "Group various button groups together in toolbars"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:181
+msgid "Fix plugin passthrough ignoring MIDI events"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:182
+msgid "Fix incorrect track routing when using MIDI FX plugins"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:183
+msgid "Fix error when splitting unlooped automation regions"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:184
+msgid "Fix hardware inputs not being routed properly to tracks"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:185
+msgid "Fix \"all audio inputs\" in track inputs not behaving as intended"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:186
+msgid "Fix incorrect logic when checking whether a note is in a scale"
 msgstr ""
 
 #, fuzzy
