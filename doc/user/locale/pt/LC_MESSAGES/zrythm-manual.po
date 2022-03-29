@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-28 17:00+0100\n"
+"POT-Creation-Date: 2022-03-29 14:04+0100\n"
 "PO-Revision-Date: 2022-02-02 23:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -289,7 +289,6 @@ msgstr "Resolução de problemas"
 #: ../../configuration/additional-settings.rst:34
 #: ../../configuration/shortcuts.rst:46
 #: ../../editing/clip-editors/automation-editor.rst:55
-#: ../../editing/clip-editors/chord-editor.rst:60
 #: ../../editing/clip-editors/piano-roll.rst:148
 #: ../../exporting/audio-and-midi.rst:38
 #: ../../plugins-files/audio-midi-files/file-browser.rst:69
@@ -303,11 +302,11 @@ msgstr "Afazer"
 msgid "Write this page."
 msgstr "Escreva esta página."
 
-#: ../../chords-and-scales/intro.rst:8
-msgid "Chords and Scales"
-msgstr "Acordes e escalas"
+#: ../../chords-and-scales/chord-pad.rst:6
+msgid "Chord Pad"
+msgstr "Pad de Acordes"
 
-#: ../../chords-and-scales/overview.rst:6
+#: ../../chords-and-scales/chord-pad.rst:9
 #: ../../editing/clip-editors/overview.rst:6 ../../editing/overview.rst:6
 #: ../../editing/timeline/overview.rst:6
 #: ../../playback-and-recording/overview.rst:6
@@ -317,19 +316,7 @@ msgstr "Acordes e escalas"
 msgid "Overview"
 msgstr "Sinopse"
 
-#: ../../chords-and-scales/overview.rst:8
-msgid ""
-"Chords and scales can be used to easily try out various chords and to make "
-"it easier to follow chord progressions."
-msgstr ""
-"Acordes e escalas podem ser usados para experimentar facilmente vários "
-"acordes e para facilitar seguir progressões de acordes."
-
-#: ../../chords-and-scales/overview.rst:12
-msgid "Chord Pad"
-msgstr "Pad de Acordes"
-
-#: ../../chords-and-scales/overview.rst:14
+#: ../../chords-and-scales/chord-pad.rst:11
 msgid ""
 "The chord pad contains 12 pads (1 for each key on a piano keyboard) that can "
 "be used to trigger chords. The chord pad can be found in the bottom panel."
@@ -338,68 +325,271 @@ msgstr ""
 "que podem ser usados para acionar acordes. O pad de acordes encontra-se no "
 "painel inferior."
 
-#: ../../chords-and-scales/overview.rst:22 ../../tracks/track-types.rst:135
-msgid "Chord Track"
-msgstr "Faixa de Acordes"
-
-#: ../../chords-and-scales/overview.rst:24
+#: ../../chords-and-scales/chord-pad.rst:18
+#, fuzzy
 msgid ""
-"Chord regions and scale objects can be created inside the chord track, and "
-"these can then be used to dictate what chord and scale is active when. For "
-"example, you can specify a chord progression as follows."
+"These 12 chords are linked to the chords in the :ref:`Chord Editor <editing/"
+"clip-editors/chord-editor:Chord Editor>`."
 msgstr ""
-"Regiões de acordes e objetos de escala podem ser criados dentro da faixa de "
-"acordes e estes podem depois ser usados para ditar qual acorde e escala está "
-"ativado e quando. Por exemplo, pode especificar uma progressão de acordes da "
-"maneira seguinte."
+"Clicar duas vezes numa região de acordes abrirá o :doc:`Editor de acordes "
+"<.. /.. /editing/clip-editor/chord-editor>`."
 
-#: ../../chords-and-scales/overview.rst:34
-msgid "Chord region and scale inside the chord track in the timeline."
-msgstr "Região e escala de acordes dentro da faixa de acordes na cronologia."
+#: ../../chords-and-scales/chord-pad.rst:22
+#: ../../getting-started/getting-plugins.rst:85
+#: ../../plugins-files/audio-midi-files/file-browser.rst:67
+msgid "Presets"
+msgstr "Predefinições"
 
-#: ../../chords-and-scales/overview.rst:41
-msgid "Chord objects inside the chord region above."
-msgstr "Objetos de acordes dentro da região de acordes acima."
+#: ../../chords-and-scales/chord-pad.rst:24
+msgid ""
+"Zrythm comes with pre-installed chord presets, and it also allows you to "
+"generate chord presets from scales, or even save your own."
+msgstr ""
 
-#: ../../chords-and-scales/overview.rst:46
+#: ../../chords-and-scales/chord-pad.rst:29
+#, fuzzy
+msgid "Preset Packs"
+msgstr "Predefinições"
+
+#: ../../chords-and-scales/chord-pad.rst:31
+msgid ""
+"A list of preset packs and presets is found in the :ref:`Right Panel <zrythm-"
+"interface/right-panel:Right Panel>` under :guilabel:`Chord Preset Browser`."
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:38
+msgid "Chord preset browser"
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:41
+#: ../../plugins-files/audio-midi-files/file-browser.rst:47
+msgid "Filtering"
+msgstr "Filtrar"
+
+#: ../../chords-and-scales/chord-pad.rst:43
+msgid ""
+"Clicking a preset pack in the top will filter the list of presets to presets "
+"in the selected pack."
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:47
+#: ../../plugins-files/audio-midi-files/file-browser.rst:86
+#, fuzzy
+msgid "Auditioning"
+msgstr "Edição"
+
+#: ../../chords-and-scales/chord-pad.rst:49
+msgid ""
+"You can audition chord presets by selecting an instrument plugin from the "
+"list and using the available playback controls. This works similarly to :ref:"
+"`auditioning in the File Browser <plugins-files/audio-midi-files/file-"
+"browser:Auditioning>`."
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:55
+msgid "Standard Packs"
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:57
+msgid ""
+"Zrythm comes with some standard packs that cannot be renamed or deleted."
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:61
+#, fuzzy
+msgid "Custom Packs"
+msgstr "Marcadores Personalizados"
+
+#: ../../chords-and-scales/chord-pad.rst:64
+#, fuzzy
+msgid "Creating Custom Packs"
+msgstr "Criar faixas"
+
+#: ../../chords-and-scales/chord-pad.rst:66
+msgid ""
+"You can create your own pack by clicking the :guilabel:`Add` button below "
+"the list of chord preset packs."
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:73
+msgid "Creating a chord preset pack"
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:76
+#, fuzzy
+msgid "Editing Custom Packs"
+msgstr "Editar Faixas"
+
+#: ../../chords-and-scales/chord-pad.rst:78
+msgid "Custom packs can be renamed or deleted by right-clicking."
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:84
+msgid "Renaming or deleting a custom chord preset pack"
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:86
+msgid "Chord presets under the selected pack can also be renamed and deleted."
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:90
+#, fuzzy
+msgid "Saving Presets"
+msgstr "Gravar Projetos"
+
+#: ../../chords-and-scales/chord-pad.rst:92
+msgid ""
+"Clicking on the :guilabel:`Save Preset` button in the top part of the chord "
+"pad will allow you to save the current chord configuration in a preset."
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:99
+msgid "Saving a chord preset"
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:102
+#, fuzzy
+msgid "Loading Presets"
+msgstr "Carregar Projetos"
+
+#: ../../chords-and-scales/chord-pad.rst:104
+msgid ""
+"To load a preset, click the :guilabel:`Load Preset` button in the top part "
+"of the chord pad, then select the preset you want to use."
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:111
+#, fuzzy
+msgid "Selecting a chord preset"
+msgstr "Selecionar Faixas"
+
+#: ../../chords-and-scales/chord-pad.rst:113
+msgid ""
+"You can also load a preset by double clicking on it in the preset browser."
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:117
+msgid "Generating Chords from Scale"
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:119
+msgid ""
+"Chords can be generated from a scale and a root note by clicking on the :"
+"guilabel:`Load Preset` button, then selecting a scale and a root note."
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:126
+msgid "Generating chords from a scale"
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:129
+msgid "Transpose"
+msgstr "Transposição"
+
+#: ../../chords-and-scales/chord-pad.rst:131
+msgid ""
+"Clicking on the up/down transpose buttons will transpose all chords by 1 "
+"semitone up or down."
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:135
+#, fuzzy
+msgid "Editing Chords"
+msgstr "Editar Faixas"
+
+#: ../../chords-and-scales/chord-pad.rst:138
+#, fuzzy
+msgid "Chord Selection"
+msgstr "Seletor de acordes"
+
+#: ../../chords-and-scales/chord-pad.rst:140
+#, fuzzy
+msgid ""
+"Clicking on the chord button will bring up the chord selector window that "
+"allows you to change the current chord."
+msgstr ""
+"Clicar duas vezes num acorde trará o seletor de acordes, o que permite que "
+"altere esse acorde."
+
+#: ../../chords-and-scales/chord-pad.rst:147
+#, fuzzy
+msgid "Chord selector"
+msgstr "Seletor de acordes"
+
+#: ../../chords-and-scales/chord-pad.rst:149
+#, fuzzy
+msgid ""
+"At the moment, only the :guilabel:`Chord Creator` tab is functional. A chord "
+"can be created by selecting its root note, its type, its accent and its bass "
+"note."
+msgstr ""
+"Agora, só o criador de acordes funciona. Um acorde pode ser criado a "
+"selecionar a nota raiz, o tipo, o acento e a nota de baixo dele."
+
+#: ../../chords-and-scales/chord-pad.rst:153
+#, fuzzy
+msgid ""
+"Selecting :guilabel:`In scale` under :guilabel:`Visibility` will only show "
+"options that correspond to chords inside the currently active scale. This "
+"makes it easy to create chords that stay in the current scale."
+msgstr ""
+"Selecionar :zbutton:`Em escala` na `Visibilidade` somente mostrará opções "
+"que correspondem a acordes na escala ativa no início da região. Isso "
+"facilita a criação de acordes que permanecem na escala atual."
+
+#: ../../chords-and-scales/chord-pad.rst:161
+msgid "Inversions"
+msgstr ""
+
+#: ../../chords-and-scales/chord-pad.rst:163
+msgid ""
+"Clicking on the left or right arrows will allow you to invert the chord. "
+"Each inversion towards the right moves the lowest note in the chord one "
+"octave higher, and each inversion towards the left moves the highest note in "
+"the chord one octave below."
+msgstr ""
+
+#: ../../chords-and-scales/intro.rst:8
+msgid "Chords and Scales"
+msgstr "Acordes e escalas"
+
+#: ../../chords-and-scales/piano-roll-integration.rst:6
+#, fuzzy
+msgid "Piano Roll Integration"
+msgstr "Edição de Cílindros de Piano"
+
+#: ../../chords-and-scales/piano-roll-integration.rst:11
 msgid "Highlighting"
 msgstr "Destaque"
 
-#: ../../chords-and-scales/overview.rst:48
+#: ../../chords-and-scales/piano-roll-integration.rst:13
+#, fuzzy
 msgid ""
-"You can then use highlighting inside MIDI regions to highlight the notes "
+"You can use highlighting inside the piano roll to highlight the notes "
 "corresponding to the scale, chord, or both at the position of the playhead."
 msgstr ""
 "Pode então usar o realce dentro das regiões MIDI para destacar as notas "
 "correspondentes à escala, acorde ou ambos na posição da cabeça de reprodução."
 
-#: ../../chords-and-scales/overview.rst:56
-msgid "Chord highlighting."
+#: ../../chords-and-scales/piano-roll-integration.rst:21
+#, fuzzy
+msgid "No highlighting"
 msgstr "Destaque de acordes."
 
-#: ../../chords-and-scales/overview.rst:62
-msgid "Scale highlighting."
+#: ../../chords-and-scales/piano-roll-integration.rst:27
+#, fuzzy
+msgid "Chord highlighting"
+msgstr "Destaque de acordes."
+
+#: ../../chords-and-scales/piano-roll-integration.rst:33
+#, fuzzy
+msgid "Scale highlighting"
 msgstr "Destaques de escala."
 
-#: ../../chords-and-scales/overview.rst:68
-msgid "Scale and chord highlighting."
+#: ../../chords-and-scales/piano-roll-integration.rst:39
+#, fuzzy
+msgid "Scale and chord highlighting"
 msgstr "Destaques de escala e acordes."
-
-#: ../../chords-and-scales/overview.rst:71
-msgid "Live Audition"
-msgstr "Audição ao Vivo"
-
-#: ../../chords-and-scales/overview.rst:73
-msgid ""
-"You can route the output of the chord track to a MIDI or Instrument track "
-"for live auditioning of the chord track's events."
-msgstr ""
-"Pode encaminhar a saída da faixa de acordes para uma faixa de MIDI ou "
-"Instrumento para audição do acorde da pista de eventos ao vivo."
-
-#: ../../chords-and-scales/overview.rst:77
-msgid "This is a TODO feature."
-msgstr "Esta é uma função TODO."
 
 #: ../../configuration/additional-settings.rst:6
 msgid "Additional Settings"
@@ -1464,75 +1654,29 @@ msgstr "Regiões de acordes aparecem na faixa de acordes."
 #: ../../editing/clip-editors/chord-editor.rst:31
 msgid ""
 "These chords correspond to each chord in the :ref:`Chord pad <chords-and-"
-"scales/overview:Chord Pad>`."
+"scales/chord-pad:Chord Pad>`."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:35
-#, fuzzy
-msgid "Each chord row contains the following controls."
-msgstr "Os cilindros de piano contém os seguintes controles adicionais."
-
-#: ../../editing/clip-editors/chord-editor.rst:55
-msgid "Chord Selector"
-msgstr "Seletor de acordes"
+#: ../../editing/clip-editors/chord-editor.rst:34
+msgid "The controls available are similar to those in the chord pad."
+msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:38
-msgid "Change the selected chord."
-msgstr ""
-
-#: ../../editing/clip-editors/chord-editor.rst:43
-#, fuzzy
-msgid "Chord selector"
-msgstr "Seletor de acordes"
-
-#: ../../editing/clip-editors/chord-editor.rst:45
-msgid ""
-"At the moment, only the chord creator is functional. A chord can be created "
-"by selecting its root note, its type, its accent and its bass note."
-msgstr ""
-"Agora, só o criador de acordes funciona. Um acorde pode ser criado a "
-"selecionar a nota raiz, o tipo, o acento e a nota de baixo dele."
-
-#: ../../editing/clip-editors/chord-editor.rst:50
-#, fuzzy
-msgid ""
-"Selecting :guilabel:`In scale` under :guilabel:`Visibility` will only show "
-"options that correspond to chords inside the scale active at the start of "
-"the region. This makes it easy to create chords that stay in the current "
-"scale."
-msgstr ""
-"Selecionar :zbutton:`Em escala` na `Visibilidade` somente mostrará opções "
-"que correspondem a acordes na escala ativa no início da região. Isso "
-"facilita a criação de acordes que permanecem na escala atual."
-
-#: ../../editing/clip-editors/chord-editor.rst:58
-msgid "Inversion"
-msgstr ""
-
-#: ../../editing/clip-editors/chord-editor.rst:58
-msgid "Invert the chord."
-msgstr ""
-
-#: ../../editing/clip-editors/chord-editor.rst:60
-msgid "Move this part to the chords and scales chapter."
-msgstr ""
-
-#: ../../editing/clip-editors/chord-editor.rst:64
 msgid "Chord Arranger"
 msgstr "Arranjador de acordes"
 
-#: ../../editing/clip-editors/chord-editor.rst:65
+#: ../../editing/clip-editors/chord-editor.rst:39
 msgid "The chord arranger refers to the arranger section of the chord editor."
 msgstr ""
 "O arranjador de acordes refere-se à secção do arranjador do editor de "
 "acordes."
 
-#: ../../editing/clip-editors/chord-editor.rst:71
+#: ../../editing/clip-editors/chord-editor.rst:45
 #, fuzzy
 msgid "Chord arranger"
 msgstr "Arranjador de acordes"
 
-#: ../../editing/clip-editors/chord-editor.rst:73
+#: ../../editing/clip-editors/chord-editor.rst:47
 #, fuzzy
 msgid ""
 "The chord editor contains `chord objects` that signify the start of a chord."
@@ -1540,11 +1684,11 @@ msgstr ""
 "O editor de acordes contém 'objetos de acordes' que significam o início de "
 "um acorde. Os objetos de acorde não têm comprimento."
 
-#: ../../editing/clip-editors/chord-editor.rst:76
+#: ../../editing/clip-editors/chord-editor.rst:50
 msgid "Chord objects do not have a length."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:78
+#: ../../editing/clip-editors/chord-editor.rst:52
 msgid ""
 "Editing in the chord arranger follows :ref:`edit-tools` and :ref:`common-"
 "operations`."
@@ -3724,10 +3868,11 @@ msgstr ""
 ">`_, pois há muitos suplementos que podem ser facilmente instalados via apt."
 
 #: ../../getting-started/getting-plugins.rst:31
+#, fuzzy
 msgid ""
 "For users of Arch Linux-based distributions such as Manjaro we recommend "
-"installing the `lv2-plugins <https://www.archlinux.org/groups/x86_64/lv2-"
-"plugins/>`_ group."
+"installing the `lv2-plugins <https://archlinux.org/groups/x86_64/lv2-plugins/"
+">`_ group."
 msgstr ""
 "Para utilizadores de distribuições baseadas no Arch Linux como o Manjaro, "
 "recomendamos instalar o grupo `lv2-plugins <https://www.archlinux.org/groups/"
@@ -3745,8 +3890,9 @@ msgstr ""
 "variedade de sintetizadores e efeitos."
 
 #: ../../getting-started/getting-plugins.rst:42
+#, fuzzy
 msgid ""
-"`ZAM Plugins <http://www.zamaudio.com/?p=976>`_ is an effects pack that "
+"`ZAM Plugins <https://www.zamaudio.com/?p=976>`_ is an effects pack that "
 "contains high quality plugins for all the basic effects such as Delay, "
 "Reverb, Compression, EQ and Saturation."
 msgstr ""
@@ -3814,9 +3960,10 @@ msgid "Percussion Generators"
 msgstr "Geradores de Percussão"
 
 #: ../../getting-started/getting-plugins.rst:77
+#, fuzzy
 msgid ""
-"`GeonKick <https://gitlab.com/iurie/geonkick>`_ is a kick drum synthesizer "
-"that can also synthesize other types of percussion."
+"`GeonKick <https://gitlab.com/iurie-sw/geonkick>`_ is a kick drum "
+"synthesizer that can also synthesize other types of percussion."
 msgstr ""
 "`GeonKick <https://gitlab.com/iurie/geonkick>`_ é um sintetizador de tambor "
 "de pontapé que também pode sintetizar outros tipos de percussão."
@@ -3826,11 +3973,6 @@ msgid "See :ref:`scanning-plugins` for paths where plugins will be scanned in."
 msgstr ""
 "Veja :ref:`scanning-plugins` para caminhos onde os suplementos serão "
 "procurados."
-
-#: ../../getting-started/getting-plugins.rst:85
-#: ../../plugins-files/audio-midi-files/file-browser.rst:67
-msgid "Presets"
-msgstr "Predefinições"
 
 #: ../../getting-started/getting-plugins.rst:86
 msgid "`Freesound`_ has presets available to download for specific plugins."
@@ -5506,10 +5648,6 @@ msgstr ""
 "As faixas podem ser apagadas clicando com o botão direito do rato neles e "
 "selecionando: zbutton: \"Apagar\"."
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:47
-msgid "Filtering"
-msgstr "Filtrar"
-
 #: ../../plugins-files/audio-midi-files/file-browser.rst:50
 #: ../../plugins-files/plugins/plugin-browser.rst:43
 msgid "Filter Buttons"
@@ -5581,11 +5719,6 @@ msgid ""
 "`file browser preferences <plugins-files/audio-midi-files/file-browser:"
 "Preferences>`."
 msgstr ""
-
-#: ../../plugins-files/audio-midi-files/file-browser.rst:86
-#, fuzzy
-msgid "Auditioning"
-msgstr "Edição"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:87
 msgid ""
@@ -8516,9 +8649,13 @@ msgstr ""
 msgid "Audio Group track"
 msgstr "Faixa de Grupo de Áudio"
 
-#: ../../tracks/track-types.rst:132 ../../tracks/track-types.rst:275
+#: ../../tracks/track-types.rst:132 ../../tracks/track-types.rst:286
 msgid "Group tracks are foldable."
 msgstr ""
+
+#: ../../tracks/track-types.rst:135
+msgid "Chord Track"
+msgstr "Faixa de Acordes"
 
 #: ../../tracks/track-types.rst:137
 msgid ""
@@ -8535,44 +8672,66 @@ msgid "Chord track with a chord region and a scale"
 msgstr ""
 
 #: ../../tracks/track-types.rst:147
+#, fuzzy
 msgid ""
-"For more information, see the section :doc:`../chords-and-scales/intro`."
+"For more information about chords, see the section :ref:`chords-and-scales/"
+"intro:Chords and Scales`."
 msgstr ""
 "Para mais informações, veja a secção :doc:`../chords-and-scales/intro`."
 
-#: ../../tracks/track-types.rst:151
+#: ../../tracks/track-types.rst:150
+msgid ""
+"For editing chords inside chord regions, see :ref:`editing/clip-editors/"
+"chord-editor:Chord Editor`."
+msgstr ""
+
+#: ../../tracks/track-types.rst:154
+msgid "Live Audition"
+msgstr "Audição ao Vivo"
+
+#: ../../tracks/track-types.rst:156
+#, fuzzy
+msgid ""
+"You can route the output of the chord track to a MIDI or Instrument track "
+"for live auditioning of the chord track's events. You can also play the "
+"chords live with a MIDI keyboard."
+msgstr ""
+"Pode encaminhar a saída da faixa de acordes para uma faixa de MIDI ou "
+"Instrumento para audição do acorde da pista de eventos ao vivo."
+
+#: ../../tracks/track-types.rst:162
 #, fuzzy
 msgid "Folder Track"
 msgstr "Isola a faixa."
 
-#: ../../tracks/track-types.rst:153
+#: ../../tracks/track-types.rst:164
 msgid "Folder tracks are used to organize tracks."
 msgstr ""
 
-#: ../../tracks/track-types.rst:158
+#: ../../tracks/track-types.rst:169
 msgid "Folder track with a MIDI FX track as a child"
 msgstr ""
 
-#: ../../tracks/track-types.rst:160
+#: ../../tracks/track-types.rst:171
 msgid ""
 "To move tracks inside folder tracks, simply select the tracks you want and "
 "drag-and-drop them inside the folder track."
 msgstr ""
 
-#: ../../tracks/track-types.rst:164
+#: ../../tracks/track-types.rst:175
 msgid ""
 "Clicking the folder button will hide and expand the folder track's children."
 msgstr ""
 
-#: ../../tracks/track-types.rst:167
+#: ../../tracks/track-types.rst:178
 msgid "Audio/MIDI group tracks are also foldable."
 msgstr ""
 
-#: ../../tracks/track-types.rst:170
+#: ../../tracks/track-types.rst:181
 msgid "Instrument Track"
 msgstr "Faixa De Instrumentos"
 
-#: ../../tracks/track-types.rst:172
+#: ../../tracks/track-types.rst:183
 msgid ""
 "The instrument track is used for synths and other instruments. Instrument "
 "tracks contain a special `instrument slot` in the mixer that will get "
@@ -8583,11 +8742,11 @@ msgstr ""
 "especial no misturador que será processado \"depois\" da secção MIDI FX e "
 "\"antes\" da secção Inserções."
 
-#: ../../tracks/track-types.rst:181
+#: ../../tracks/track-types.rst:192
 msgid "Instrument track with a MIDI region"
 msgstr ""
 
-#: ../../tracks/track-types.rst:183
+#: ../../tracks/track-types.rst:194
 msgid ""
 "Instrument tracks are similar to MIDI tracks, except that they produce audio "
 "instead of :term:`MIDI`."
@@ -8595,11 +8754,11 @@ msgstr ""
 "As faixas de instrumentos são semelhantes às faixas MIDI, exceto que "
 "produzem áudio em vez de :term:`MIDI`."
 
-#: ../../tracks/track-types.rst:187
+#: ../../tracks/track-types.rst:198
 msgid "Marker Track"
 msgstr "Faixa de Marcador"
 
-#: ../../tracks/track-types.rst:189
+#: ../../tracks/track-types.rst:200
 msgid ""
 "The marker track holds song markers - either custom or pre-defined ones - "
 "that make it easier to jump to or to export specific sections of the song. "
@@ -8611,15 +8770,15 @@ msgstr ""
 "canção. Cada projeto só pode ter uma faixa de marcador e não pode ser "
 "apagada (mas pode ser escondida)."
 
-#: ../../tracks/track-types.rst:199
+#: ../../tracks/track-types.rst:210
 msgid "Marker track with 2 markers"
 msgstr ""
 
-#: ../../tracks/track-types.rst:202
+#: ../../tracks/track-types.rst:213
 msgid "Master Track"
 msgstr "Faixa Principal"
 
-#: ../../tracks/track-types.rst:204
+#: ../../tracks/track-types.rst:215
 #, fuzzy
 msgid ""
 "The master track is a special type of Audio Group Track that Zrythm uses to "
@@ -8630,35 +8789,35 @@ msgstr ""
 "Zrythm utiliza para rotear o sinal de áudio resultante após todo o "
 "processamento ser feito para o backend de áudio."
 
-#: ../../tracks/track-types.rst:213
+#: ../../tracks/track-types.rst:224
 #, fuzzy
 msgid "Master track"
 msgstr "Faixa Principal"
 
-#: ../../tracks/track-types.rst:216
+#: ../../tracks/track-types.rst:227
 msgid "Modulator Track"
 msgstr "Faixa moduladora"
 
-#: ../../tracks/track-types.rst:218
+#: ../../tracks/track-types.rst:229
 msgid ""
 "The modulator track is a special track that is used for global modulators "
 "like LFOs and macro knobs that can be assigned to any automatable control "
 "inside Zrythm."
 msgstr ""
 
-#: ../../tracks/track-types.rst:226
+#: ../../tracks/track-types.rst:237
 msgid "Modulator track with automation for macro knob 1"
 msgstr ""
 
-#: ../../tracks/track-types.rst:228
+#: ../../tracks/track-types.rst:239
 msgid "For more details, see :ref:`modulators/intro:Modulators`."
 msgstr ""
 
-#: ../../tracks/track-types.rst:232
+#: ../../tracks/track-types.rst:243
 msgid "MIDI Track"
 msgstr "Faixa MIDI"
 
-#: ../../tracks/track-types.rst:234
+#: ../../tracks/track-types.rst:245
 msgid ""
 "A MIDI track contains MIDI regions and its purpose is playing back MIDI "
 "events and routing those MIDI signals to other instruments (including "
@@ -8668,7 +8827,7 @@ msgstr ""
 "eventos MIDI e rotear esses sinais MIDI para outros instrumentos (incluindo "
 "instrumentos e hardware externos)."
 
-#: ../../tracks/track-types.rst:239
+#: ../../tracks/track-types.rst:250
 msgid ""
 "MIDI tracks, unlike instrument tracks, produce MIDI output and so their "
 "channel strips will only have MIDI effects (plugins that change MIDI "
@@ -8678,22 +8837,22 @@ msgstr ""
 "MIDI e assim as suas faixas de canal só terão efeitos MIDI (suplementos que "
 "mudam os sinais MIDI)."
 
-#: ../../tracks/track-types.rst:243
+#: ../../tracks/track-types.rst:254
 msgid ""
 "MIDI tracks also have automation lanes for automating various parameters."
 msgstr ""
 "As faixas MIDI também possuem pistas de automação para automatizar vários "
 "parâmetros."
 
-#: ../../tracks/track-types.rst:249
+#: ../../tracks/track-types.rst:260
 msgid "MIDI track with a MIDI region"
 msgstr ""
 
-#: ../../tracks/track-types.rst:252
+#: ../../tracks/track-types.rst:263
 msgid "MIDI FX Track"
 msgstr "Faixa MIDI FX"
 
-#: ../../tracks/track-types.rst:254
+#: ../../tracks/track-types.rst:265
 msgid ""
 "MIDI FX tracks can be used for MIDI effects by sending MIDI signals to them "
 "using :ref:`track-sends`."
@@ -8701,16 +8860,16 @@ msgstr ""
 "As faixas MIDI FX podem ser utilizadas para efeitos MIDI enviando-lhes "
 "sinais MIDI utilizando :ref:`track-sends`."
 
-#: ../../tracks/track-types.rst:261
+#: ../../tracks/track-types.rst:272
 #, fuzzy
 msgid "MIDI FX track"
 msgstr "O nome da faixa"
 
-#: ../../tracks/track-types.rst:264
+#: ../../tracks/track-types.rst:275
 msgid "MIDI Group Track"
 msgstr "Faixa do Grupo MIDI"
 
-#: ../../tracks/track-types.rst:266
+#: ../../tracks/track-types.rst:277
 #, fuzzy
 msgid ""
 "These are similar to Audio Group tracks, except that they act on MIDI "
@@ -8719,22 +8878,22 @@ msgstr ""
 "Estes são similares a :ref:`audio-group-track`, exceto que eles lidam com "
 "sinais de MIDI ao invés de sinais de áudio."
 
-#: ../../tracks/track-types.rst:273
+#: ../../tracks/track-types.rst:284
 #, fuzzy
 msgid "MIDI Group track"
 msgstr "Faixa de Grupo de Áudio"
 
-#: ../../tracks/track-types.rst:278
+#: ../../tracks/track-types.rst:289
 msgid "Tempo Track"
 msgstr "Faixa do ritmo"
 
-#: ../../tracks/track-types.rst:280
+#: ../../tracks/track-types.rst:291
 msgid ""
 "The tempo track is a special track that allows automating the BPM and time "
 "signature."
 msgstr ""
 
-#: ../../tracks/track-types.rst:286
+#: ../../tracks/track-types.rst:297
 msgid "Tempo track with BPM automation"
 msgstr ""
 
@@ -9359,6 +9518,39 @@ msgid ""
 "will start clipping."
 msgstr ""
 
+#~ msgid ""
+#~ "Chords and scales can be used to easily try out various chords and to "
+#~ "make it easier to follow chord progressions."
+#~ msgstr ""
+#~ "Acordes e escalas podem ser usados para experimentar facilmente vários "
+#~ "acordes e para facilitar seguir progressões de acordes."
+
+#~ msgid ""
+#~ "Chord regions and scale objects can be created inside the chord track, "
+#~ "and these can then be used to dictate what chord and scale is active "
+#~ "when. For example, you can specify a chord progression as follows."
+#~ msgstr ""
+#~ "Regiões de acordes e objetos de escala podem ser criados dentro da faixa "
+#~ "de acordes e estes podem depois ser usados para ditar qual acorde e "
+#~ "escala está ativado e quando. Por exemplo, pode especificar uma "
+#~ "progressão de acordes da maneira seguinte."
+
+#~ msgid "Chord region and scale inside the chord track in the timeline."
+#~ msgstr ""
+#~ "Região e escala de acordes dentro da faixa de acordes na cronologia."
+
+#~ msgid "Chord objects inside the chord region above."
+#~ msgstr "Objetos de acordes dentro da região de acordes acima."
+
+#~ msgid "This is a TODO feature."
+#~ msgstr "Esta é uma função TODO."
+
+#~ msgid "Each chord row contains the following controls."
+#~ msgstr "Os cilindros de piano contém os seguintes controles adicionais."
+
+#~ msgid "Chord Selector"
+#~ msgstr "Seletor de acordes"
+
 #~ msgid "Inserts & Sends"
 #~ msgstr "Inserções e envios"
 
@@ -9449,13 +9641,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Estes acordes agem de forma semelhante às teclas de cilindros de piano "
 #~ "explicadas em :ref:`piano-roll-keys'."
-
-#~ msgid ""
-#~ "Double-clicking on a chord will bring up the chord selector, which allows "
-#~ "you to change that chord."
-#~ msgstr ""
-#~ "Clicar duas vezes num acorde trará o seletor de acordes, o que permite "
-#~ "que altere esse acorde."
 
 #~ msgid "The piano roll is the main editor for editing MIDI regions."
 #~ msgstr "O cilindro de piano é o editor principal para editar regiões MIDI."
@@ -9863,9 +10048,6 @@ msgstr ""
 
 #~ msgid "MIDI Transformations"
 #~ msgstr "Transformações MIDI"
-
-#~ msgid "Transpose"
-#~ msgstr "Transposição"
 
 #~ msgid ""
 #~ "Each track will display its page in the inspector when selected. See :ref:"
@@ -11278,9 +11460,6 @@ msgstr ""
 #~ "Veja o ficheiro `THANKS <https://git.sr.ht/~alextee/zrythm/tree/master/"
 #~ "TRANSLATORS>`_ na distribuição da fonte."
 
-#~ msgid "Piano Roll Editing"
-#~ msgstr "Edição de Cílindros de Piano"
-
 #~ msgid "Timeline Editing"
 #~ msgstr "Edição de cronologia"
 
@@ -11437,9 +11616,6 @@ msgstr ""
 
 #~ msgid "Editing MIDI Notes"
 #~ msgstr "Editar Notas MIDI"
-
-#~ msgid "Editing Tracks"
-#~ msgstr "Editar Faixas"
 
 #~ msgid "Editing Selections"
 #~ msgstr "Editar Seleções"

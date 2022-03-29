@@ -29,36 +29,10 @@ to a chord on the left side of the editor.
    Chords inside the chord editor
 
 These chords correspond to each chord in the
-:ref:`Chord pad <chords-and-scales/overview:Chord Pad>`.
+:ref:`Chord pad <chords-and-scales/chord-pad:Chord Pad>`.
 
-
-Each chord row contains the following controls.
-
-Chord Selector
-  Change the selected chord.
-
-  .. figure:: /_static/img/chord-selector.png
-     :align: center
-
-     Chord selector
-
-  At the moment, only the chord creator is
-  functional. A chord can be created by selecting
-  its root note, its type,
-  its accent and its bass note.
-
-  Selecting :guilabel:`In scale` under
-  :guilabel:`Visibility`
-  will only show options that correspond to chords
-  inside the scale active at the start of the
-  region. This makes it easy to create chords that
-  stay in the current scale.
-
-Inversion
-  Invert the chord.
-
-.. todo:: Move this part to the chords and scales
-   chapter.
+The controls available are similar to those in
+the chord pad.
 
 Chord Arranger
 --------------

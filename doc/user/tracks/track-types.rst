@@ -144,8 +144,19 @@ purpose is to assist with chord progressions.
 
    Chord track with a chord region and a scale
 
-For more information, see the section
-:doc:`../chords-and-scales/intro`.
+For more information about chords, see the section
+:ref:`chords-and-scales/intro:Chords and Scales`.
+
+For editing chords inside chord regions, see
+:ref:`editing/clip-editors/chord-editor:Chord Editor`.
+
+Live Audition
+~~~~~~~~~~~~~
+
+You can route the output of the chord track to
+a MIDI or Instrument track for live auditioning of
+the chord track's events. You can also play the
+chords live with a MIDI keyboard.
 
 Folder Track
 ------------
