@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.1.2.3] - 2022-03-29
+### Fixed
+- Fix PDF manual build
+
 ## [1.0.0-beta.1.2.1] - 2022-03-29
 ### Added
 - Use one instance for each channel for mono plugins
