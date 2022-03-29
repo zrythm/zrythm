@@ -26,7 +26,36 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 ftw)
+  #:use-module (srfi srfi-1)
   #:use-module (sxml simple))
+
+;; Returns a <ul> of changelog entries for the given
+;; title (Added/Fixed/etc.) and given changelog info
+;; for a single release
+(define (get-list-for-changelog-group
+          changelog-nfo title)
+  (let*
+    ((last-title ""))
+    (fold
+      (lambda (x accumulator)
+        (if (string-contains x "###")
+          (begin
+            (set!
+              last-title
+              (string-replace-substring
+                x "### " ""))
+            accumulator)
+          (if (string=? last-title title)
+            (let*
+              ((line
+                 (string-replace-substring
+                   x "- " "")))
+              (if (> (string-length line) 0)
+                (append accumulator `((li ,line)))
+                accumulator))
+            accumulator)))
+      '()
+      (string-split-substring changelog-nfo "\n"))))
 
 ;; Returns a list of the last 4 releases
 (define (get-releases)
@@ -47,7 +76,11 @@
              (car
                (cdr
                  (string-split-substring x " - "))))
-           (date (car (string-split-substring str-from-date "\n"))))
+           (date (car (string-split-substring str-from-date "\n")))
+           (changelog-nfo
+             (string-join
+               (cdr (string-split-substring x "\n"))
+               "\n")))
           (set!
             releases-list
             (append
@@ -58,7 +91,27 @@
                      (type "development"))
                   (url
                     ,(string-append
-                       "https://git.sr.ht/~alextee/zrythm/refs/v" ver))))))))
+                       "https://git.sr.ht/~alextee/zrythm/refs/v" ver))
+                  (description
+                    ,(fold
+                      (lambda (x accumulator)
+                        (if
+                          (string-contains x "###")
+                          (let*
+                            ((title
+                               (string-replace-substring
+                                 x "### " "")))
+                            (append
+                              accumulator
+                              `((p
+                                  (em ,title))
+                                (ul
+                                  ,@(get-list-for-changelog-group
+                                      changelog-nfo
+                                      title)))))
+                          accumulator))
+                      '()
+                      (string-split-substring changelog-nfo "\n")))))))))
       changelog-list)
     (list-head releases-list 4)))
 
