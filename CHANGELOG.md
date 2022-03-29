@@ -1,6 +1,39 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.1.2.1] - 2022-03-29
+### Added
+- Use one instance for each channel for mono plugins
+- Include release changelog info in appstream data
+
+### Changed
+- Scroll to mid note when first showing the piano roll
+- Update Hungarian translations
+- INSTALL: clarify build instructions
+- Enable locale detection for all languages
+- TRADEMARKS: simplify some wording and reserve right to review and object to use deemed outside the policy
+- Make sure UI event queue is cleared before freeing (fixes occasional errors)
+- User manual: update Routing, Chords and Scales, Modulators, Scripting, Theming, User Media, Contributing and Credits chapters
+- User manual: update some URLs (fix permanent redirects)
+
+### Fixed
+- Fix automation lanes not being shown immediately when made visible
+- Fix MIDI files not being activatable in the file browser
+- Fix audio engine not being resumed after running Guile scripts
+- Fix engine preprocessing sometimes running while the graph is being updated
+- Fix various invalid accesses reported by GCC address sanitizer
+- Fix various memory leaks reported by GCC leak sanitizer
+- Fix various custom widget children not being unparented during dispose
+- Fix segfault when attempting to add a plugin to a collection
+- Fix scale objects throwing errors in the event viewer
+- Fix plugin sidechain options not being available in channel sends
+
+### Removed
+- Remove clang-tidy targets from meson configuration (speeds up reconfiguration)
+- User manual: remove copyright and license info from translatables
+- Remove drop motion handler from timeline (should fix errors on drag and hover)
+- Remove emails from AUTHORS/THANKS/TRANSLATORS
+
 ## [1.0.0-beta.1.1.11] - 2022-03-23
 ### Changed
 - User manual: update Editing, Mixing, Playback & Recording chapters
