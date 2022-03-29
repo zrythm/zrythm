@@ -22,9 +22,17 @@ Translators
 These include translators of the software, the user
 manual and the website.
 
-.. literalinclude:: ../../../TRANSLATORS
-   :language: text
-   :end-before: ----
+.. only:: html or epub
+
+   .. literalinclude:: ../../../TRANSLATORS
+      :language: text
+      :end-before: ----
+
+.. only:: latex
+
+   See the
+   :download:`TRANSLATORS <../../../TRANSLATORS>`
+   file in the source distribution.
 
 Other Contributors
 ------------------
