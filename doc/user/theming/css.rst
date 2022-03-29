@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. _css:
@@ -37,6 +37,6 @@ rules for general GTK widgets online.
 
 Here are some links by official GNOME sources:
 
-* `GTK+ CSS Overview <https://docs.gtk.org/gtk3/css-overview.html>`_
-* `GTK+ CSS Properties <https://docs.gtk.org/gtk3/css-properties.html>`_
+* `GTK+ CSS Overview <https://docs.gtk.org/gtk4/css-overview.html>`_
+* `GTK+ CSS Properties <https://docs.gtk.org/gtk4/css-properties.html>`_
 * `Styling GTK with CSS <https://thegnomejournal.wordpress.com/2011/03/15/styling-gtk-with-css/>`_

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-29 14:04+0100\n"
+"POT-Creation-Date: 2022-03-29 15:32+0100\n"
 "PO-Revision-Date: 2022-02-28 15:54+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language: ko\n"
@@ -242,7 +242,6 @@ msgstr ""
 #: ../../editing/clip-editors/piano-roll.rst:148
 #: ../../exporting/audio-and-midi.rst:38
 #: ../../plugins-files/audio-midi-files/file-browser.rst:69
-#: ../../scripting/scripting-interface.rst:8
 #: ../../tracks/inspector-page.rst:157 ../../tracks/overview.rst:70
 #: ../../zrythm-interface/right-panel.rst:23
 msgid "Todo"
@@ -911,22 +910,20 @@ msgstr ""
 
 #: ../../contributing/intro.rst:45
 msgid ""
-"Click on the :guilabel:`View Source` button at the top of the page to find "
-"which file the page exists in, find the file in the source distribution and "
-"edit it."
+"Edit the RST files under :file:`doc/user` and submit a patch when finished."
 msgstr ""
 
-#: ../../contributing/intro.rst:50
+#: ../../contributing/intro.rst:48
 msgid ""
 "You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "installed to compile this manual."
 msgstr ""
 
-#: ../../contributing/intro.rst:55
+#: ../../contributing/intro.rst:53
 msgid "Translation"
 msgstr "번역"
 
-#: ../../contributing/intro.rst:56
+#: ../../contributing/intro.rst:54
 msgid ""
 "Zrythm is available for translation at `Weblate <https://hosted.weblate.org/"
 "engage/zrythm/?utm_source=widget>`_."
@@ -934,15 +931,16 @@ msgstr ""
 "Zrythm은 `Weblate <https://hosted.weblate.org/engage/zrythm/?"
 "utm_source=widget>`_에서 번역할 수 있습니다."
 
-#: ../../contributing/intro.rst:59
+#: ../../contributing/intro.rst:57
+#, fuzzy
 msgid ""
 "The Zrythm translation project contains the translations for the Zrythm "
-"program, the website as well as sections of this manual."
+"program, the website, the accounts site, and sections of this manual."
 msgstr ""
 "Zrythm 번역 프로젝트에는 Zrythm 프로그램, 웹사이트 및 이 설명서의 섹션에 대"
 "한 번역이 포함되어 있습니다."
 
-#: ../../contributing/intro.rst:63
+#: ../../contributing/intro.rst:61
 msgid ""
 "Click on the project you wish to work on, and then select a language in the "
 "screen that follows. For more information on using Weblate, please see the "
@@ -953,7 +951,7 @@ msgstr ""
 "에 대한 자세한 내용은 `공식 문서 <https://docs.weblate.org/en/latest/user/"
 "translating.html>`_를 참조하십시오."
 
-#: ../../contributing/intro.rst:70
+#: ../../contributing/intro.rst:68
 msgid ""
 "Zrythm contains terminology similar to existing audio software. You may find "
 "it useful to borrow terms from them. See the `Cubase Pro Artist manual "
@@ -961,11 +959,11 @@ msgid ""
 "`fr` in the URL with your language code)."
 msgstr ""
 
-#: ../../contributing/intro.rst:77
+#: ../../contributing/intro.rst:75
 msgid "User Manual"
 msgstr ""
 
-#: ../../contributing/intro.rst:78
+#: ../../contributing/intro.rst:76
 msgid ""
 "When translating the user manual, please make sure you follow the following "
 "Sphinx/RST syntax, to avoid errors when applying your translations."
@@ -973,11 +971,11 @@ msgstr ""
 "사용자 설명서를 번역할 때 번역 적용 시 오류가 발생하지 않도록 다음 Sphinx/"
 "RST 구문을 따라야 합니다."
 
-#: ../../contributing/intro.rst:83
+#: ../../contributing/intro.rst:81
 msgid "General Syntax"
 msgstr ""
 
-#: ../../contributing/intro.rst:84
+#: ../../contributing/intro.rst:82
 msgid ""
 "When you see something inside ``:``, such as ``:term:``, it should be left "
 "untranslated. The part following should be left untranslated as well. For "
@@ -986,11 +984,11 @@ msgstr ""
 "``:`` 내부에서 ``:term:``과 같은 것을 보면 번역되지 않은 상태로 두어야 합니"
 "다. 다음 부분도 번역되지 않은 채로 두어야 합니다. 예를 들어:"
 
-#: ../../contributing/intro.rst:93 ../../contributing/intro.rst:108
+#: ../../contributing/intro.rst:91 ../../contributing/intro.rst:106
 msgid "should be translated in French as"
 msgstr "다음과 같이 프랑스어로 번역해야 합니다"
 
-#: ../../contributing/intro.rst:99
+#: ../../contributing/intro.rst:97
 msgid ""
 "This is because this value will replaced automatically by Sphinx with the "
 "translation for ``Parameter``. The only exception to this rule is when you "
@@ -1000,50 +998,54 @@ msgstr ""
 "문입니다. 이 규칙의 유일한 예외는 ``<>`` 문자가 표시되는 경우입니다. 예를 들"
 "어:"
 
-#: ../../contributing/intro.rst:115
+#: ../../contributing/intro.rst:113
 msgid ""
 "Please make sure you do not insert or remove spaces. The following examples "
 "will cause errors."
 msgstr ""
 
-#: ../../contributing/intro.rst:127
+#: ../../contributing/intro.rst:125
 msgid ""
 "Also, there should be space, comma or period after such syntax, like below."
 msgstr ""
 
-#: ../../contributing/intro.rst:136
+#: ../../contributing/intro.rst:134
 msgid "The following examples will cause errors."
 msgstr ""
 
-#: ../../contributing/intro.rst:143
+#: ../../contributing/intro.rst:141
 msgid ""
 "The following syntax usually refers to a path, so please keep it unchanged, "
 "otherwise the file it refers to will not be found."
 msgstr ""
 
-#: ../../contributing/intro.rst:152
+#: ../../contributing/intro.rst:150
 msgid "Donations"
 msgstr ""
 
-#: ../../contributing/intro.rst:153
+#: ../../contributing/intro.rst:151
 msgid ""
 "We use the following services for receiving donations. Any amount, small or "
 "large is appreciated and helps sustain continuous development:"
 msgstr ""
 
-#: ../../contributing/intro.rst:157
+#: ../../contributing/intro.rst:155
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr ""
 
-#: ../../contributing/intro.rst:158
+#: ../../contributing/intro.rst:156
 msgid "`PayPal <https://paypal.me/zrythm>`_"
 msgstr ""
 
-#: ../../contributing/intro.rst:159
+#: ../../contributing/intro.rst:157
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
 msgstr ""
 
-#: ../../contributing/intro.rst:161
+#: ../../contributing/intro.rst:159
+msgid "We also accept cryptocurrency donations at the following addresses:"
+msgstr ""
+
+#: ../../contributing/intro.rst:168
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer <https://www.zrythm.org/"
 "en/download.html>`_."
@@ -1062,36 +1064,29 @@ msgid "Authors"
 msgstr "개발자"
 
 #: ../../credits/intro.rst:13
+#, fuzzy
 msgid ""
-"See the :download:`AUTHORS <../../../AUTHORS>` file in the source "
-"distribution. These include developers, graphic artists and other authors of "
-"copyrightable work."
+"These include developers, graphic artists and other authors of copyrightable "
+"work."
 msgstr ""
 "소스 배포판의 :download:`AUTHORS <../../../AUTHORS>` 파일을 참조하십시오. 여"
 "기에는 개발자, 그래픽 아티스트 및 기타 저작물 작성자가 포함됩니다."
 
-#: ../../credits/intro.rst:19
+#: ../../credits/intro.rst:21
 msgid "Translators"
 msgstr "번역자"
 
-#: ../../credits/intro.rst:20
+#: ../../credits/intro.rst:22
+#, fuzzy
 msgid ""
-"See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source "
-"distribution. These include translators of the software, the user manual and "
-"the website."
+"These include translators of the software, the user manual and the website."
 msgstr ""
 "소스 배포판의 :download:`TRANSLATORS <../../../TRANSLATORS>` 파일을 참조하십"
 "시오. 여기에는 소프트웨어 번역자, 사용자 설명서 및 웹사이트가 포함됩니다."
 
-#: ../../credits/intro.rst:27
+#: ../../credits/intro.rst:30
 msgid "Other Contributors"
 msgstr "다른 기여자"
-
-#: ../../credits/intro.rst:28
-msgid ""
-"See the :download:`THANKS <../../../THANKS>` file in the source distribution."
-msgstr ""
-"소스 배포판에서 :download:`THANKS <../../../THANKS>` 파일을 참조하십시오."
 
 #: ../../editing/clip-editors/audio-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:53
@@ -4310,20 +4305,21 @@ msgstr ""
 #: ../../modulators/intro.rst:17
 msgid ""
 "Zrythm has a modulators tab in the bottom panel that can hold any number of "
-"modulators."
+"modulators and a fixed number of macro knobs."
 msgstr ""
 
-#: ../../modulators/intro.rst:23
+#: ../../modulators/intro.rst:24
 msgid ""
-"Modulators are associated with the :ref:`Modulator Track <tracks/track-types:"
-"Modulator Track>`, which contains all modulators in the :term:`Project`."
-msgstr ""
-
-#: ../../modulators/intro.rst:28
-msgid "Adding Modulators"
+"Modulators and macro knobs are associated with the :ref:`Modulator Track "
+"<tracks/track-types:Modulator Track>`, which contains all modulators in the :"
+"term:`Project`."
 msgstr ""
 
 #: ../../modulators/intro.rst:29
+msgid "Adding Modulators"
+msgstr ""
+
+#: ../../modulators/intro.rst:30
 msgid ""
 "Modulator plugins can be drag-n-dropped from the :doc:`../plugins-files/"
 "plugins/plugin-browser` into the Modulators tab. Modulator plugins can be :"
@@ -4331,14 +4327,45 @@ msgid ""
 "browser:Filter Buttons>`."
 msgstr ""
 
-#: ../../modulators/intro.rst:35
+#: ../../modulators/intro.rst:36
 msgid "Routing Modulators"
 msgstr ""
 
-#: ../../modulators/intro.rst:36
+#: ../../modulators/intro.rst:37
 msgid ""
 "Modulator outputs can be routed to automatable :term:`controls <Control>` by "
 "clicking on the arrow and following the prompt to select the destination."
+msgstr ""
+
+#: ../../modulators/intro.rst:49
+msgid "Macro Knobs"
+msgstr ""
+
+#: ../../modulators/intro.rst:51
+msgid ""
+"Macro knobs are simple controls that can be used to control multiple "
+"parameters. They can be automated in the :ref:`Modulator Track <tracks/track-"
+"types:Modulator Track>`, and you can also route envelopes like LFOs to them."
+msgstr ""
+
+#: ../../modulators/intro.rst:58
+msgid "Adding Inputs"
+msgstr ""
+
+#: ../../modulators/intro.rst:60
+msgid ""
+"Click the :guilabel:`Add` button on the left side of a macro knob to add "
+"inputs to modulate the macro knob."
+msgstr ""
+
+#: ../../modulators/intro.rst:65
+msgid "Routing to Outputs"
+msgstr ""
+
+#: ../../modulators/intro.rst:67
+msgid ""
+"Click the arrow button on the right side of a macro knob to route it to one "
+"or more controls. The process is similar to modulator output routing."
 msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:6
@@ -6465,7 +6492,21 @@ msgid "Scripting Interface"
 msgstr ""
 
 #: ../../scripting/scripting-interface.rst:8
-msgid "Explain the scripting window/interface."
+msgid ""
+"Clicking the :guilabel:`Scripting Interface` button in the :ref:`Main "
+"Toolbar <zrythm-interface/main-toolbar:Main Toolbar>` will bring up the "
+"scripting interface dialog."
+msgstr ""
+
+#: ../../scripting/scripting-interface.rst:16
+msgid "Scripting interface"
+msgstr ""
+
+#: ../../scripting/scripting-interface.rst:18
+msgid ""
+"Scripts can be edited in the editor found in the top part of the scrpiting "
+"interface. Pressing :guilabel:`Execute` will execute the script and print "
+"any output in the label at the bottom."
 msgstr ""
 
 #: ../../theming/css.rst:8
@@ -6523,11 +6564,11 @@ msgid "Here are some links by official GNOME sources:"
 msgstr ""
 
 #: ../../theming/css.rst:40
-msgid "`GTK+ CSS Overview <https://docs.gtk.org/gtk3/css-overview.html>`_"
+msgid "`GTK+ CSS Overview <https://docs.gtk.org/gtk4/css-overview.html>`_"
 msgstr ""
 
 #: ../../theming/css.rst:41
-msgid "`GTK+ CSS Properties <https://docs.gtk.org/gtk3/css-properties.html>`_"
+msgid "`GTK+ CSS Properties <https://docs.gtk.org/gtk4/css-properties.html>`_"
 msgstr ""
 
 #: ../../theming/css.rst:42
@@ -7626,28 +7667,37 @@ msgstr ""
 msgid "User Media"
 msgstr ""
 
-#: ../../user-media/intro.rst:9
-msgid "Mascot"
+#: ../../user-media/intro.rst:8
+msgid ""
+"This chapter contains references to user-created media not part of Zrythm."
 msgstr ""
 
 #: ../../user-media/intro.rst:12
+msgid "Mascot Idea"
+msgstr ""
+
+#: ../../user-media/intro.rst:15
 msgid "Concept"
 msgstr ""
 
-#: ../../user-media/intro.rst:17
-msgid "Concept by `FanaticMoose`_ [`CC-BY-SA`_]"
+#: ../../user-media/intro.rst:20
+msgid "Concept by `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
 msgstr ""
 
-#: ../../user-media/intro.rst:20
+#: ../../user-media/intro.rst:23
 msgid "Sketches"
 msgstr ""
 
 #: ../../user-media/intro.rst:25
-msgid "Sketch by `FanaticMoose`_ [`CC-BY-SA`_]"
+msgid "User Sketches"
 msgstr ""
 
-#: ../../user-media/intro.rst:27
-msgid "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
+#: ../../user-media/intro.rst:30
+msgid "Sketch by `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
+msgstr ""
+
+#: ../../user-media/intro.rst:35
+msgid "Sketch by `@weoxm@koyu.space`_"
 msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:8
@@ -8160,6 +8210,12 @@ msgid ""
 "% usage at the bottom. If the DSP % exceeds 100 (all bars filled), audio "
 "will start clipping."
 msgstr ""
+
+#~ msgid ""
+#~ "See the :download:`THANKS <../../../THANKS>` file in the source "
+#~ "distribution."
+#~ msgstr ""
+#~ "소스 배포판에서 :download:`THANKS <../../../THANKS>` 파일을 참조하십시오."
 
 #~ msgid ""
 #~ "Currently, it is only used to view audio and has no other functionality, "

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-29 14:04+0100\n"
+"POT-Creation-Date: 2022-03-29 15:32+0100\n"
 "PO-Revision-Date: 2022-03-06 09:46+0000\n"
 "Last-Translator: Anthony V. <batmanplayer123@gmail.com>\n"
 "Language: el\n"
@@ -249,7 +249,6 @@ msgstr "Επίλυση προβλημάτων"
 #: ../../editing/clip-editors/piano-roll.rst:148
 #: ../../exporting/audio-and-midi.rst:38
 #: ../../plugins-files/audio-midi-files/file-browser.rst:69
-#: ../../scripting/scripting-interface.rst:8
 #: ../../tracks/inspector-page.rst:157 ../../tracks/overview.rst:70
 #: ../../zrythm-interface/right-panel.rst:23
 msgid "Todo"
@@ -1014,15 +1013,10 @@ msgstr "Επεξεργασία αυτού του εγχειριδίου"
 
 #: ../../contributing/intro.rst:45
 msgid ""
-"Click on the :guilabel:`View Source` button at the top of the page to find "
-"which file the page exists in, find the file in the source distribution and "
-"edit it."
+"Edit the RST files under :file:`doc/user` and submit a patch when finished."
 msgstr ""
-"Κάντε κλικ στο κουμπί :guilabel:`Προβολή κώδικα` στο πάνω μέρος της σελίδας "
-"για να βρείτε σε ποιο αρχείο βρίσκεται η σελίδα, να βρείτε πού βρίσκεται το "
-"αρχείο στην πηγαία διανομή και να το επεξεργαστείτε."
 
-#: ../../contributing/intro.rst:50
+#: ../../contributing/intro.rst:48
 msgid ""
 "You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "installed to compile this manual."
@@ -1030,11 +1024,11 @@ msgstr ""
 "Θα πρέπει να έχετε το `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "εγκατεστημένο για να μεταγλωττίσετε αυτό το εγχειρίδιο."
 
-#: ../../contributing/intro.rst:55
+#: ../../contributing/intro.rst:53
 msgid "Translation"
 msgstr "Μετάφραση"
 
-#: ../../contributing/intro.rst:56
+#: ../../contributing/intro.rst:54
 msgid ""
 "Zrythm is available for translation at `Weblate <https://hosted.weblate.org/"
 "engage/zrythm/?utm_source=widget>`_."
@@ -1042,15 +1036,16 @@ msgstr ""
 "Το Zrythm είναι διαθέσιμο για μετάφραση στο `Weblate <https://hosted.weblate."
 "org/engage/zrythm/?utm_source=widget>`_."
 
-#: ../../contributing/intro.rst:59
+#: ../../contributing/intro.rst:57
+#, fuzzy
 msgid ""
 "The Zrythm translation project contains the translations for the Zrythm "
-"program, the website as well as sections of this manual."
+"program, the website, the accounts site, and sections of this manual."
 msgstr ""
 "Το εγχείρημα μετάφρασης του Zrythm περιέχει τις μεταφράσεις για το πρόγραμμα "
 "Zrythm, την ιστοσελίδα, καθώς και τις ενότητες αυτού του εγχειριδίου."
 
-#: ../../contributing/intro.rst:63
+#: ../../contributing/intro.rst:61
 msgid ""
 "Click on the project you wish to work on, and then select a language in the "
 "screen that follows. For more information on using Weblate, please see the "
@@ -1063,7 +1058,7 @@ msgstr ""
 "`επίσημα εγχειρίδια <https://docs.weblate.org/en/latest/user/translating."
 "html>`_ του Weblate."
 
-#: ../../contributing/intro.rst:70
+#: ../../contributing/intro.rst:68
 msgid ""
 "Zrythm contains terminology similar to existing audio software. You may find "
 "it useful to borrow terms from them. See the `Cubase Pro Artist manual "
@@ -1071,11 +1066,11 @@ msgid ""
 "`fr` in the URL with your language code)."
 msgstr ""
 
-#: ../../contributing/intro.rst:77
+#: ../../contributing/intro.rst:75
 msgid "User Manual"
 msgstr "Εγχειρίδιο χρήστη"
 
-#: ../../contributing/intro.rst:78
+#: ../../contributing/intro.rst:76
 msgid ""
 "When translating the user manual, please make sure you follow the following "
 "Sphinx/RST syntax, to avoid errors when applying your translations."
@@ -1084,11 +1079,11 @@ msgstr ""
 "ακολουθείτε τη σύνταξη Sphinx/RST, ώστε να αποφευχθούν σφάλματα κατά την "
 "εφαρμογή των μεταφράσεών σας."
 
-#: ../../contributing/intro.rst:83
+#: ../../contributing/intro.rst:81
 msgid "General Syntax"
 msgstr "Γενική σύνταξη"
 
-#: ../../contributing/intro.rst:84
+#: ../../contributing/intro.rst:82
 msgid ""
 "When you see something inside ``:``, such as ``:term:``, it should be left "
 "untranslated. The part following should be left untranslated as well. For "
@@ -1098,11 +1093,11 @@ msgstr ""
 "αμετάφραστο. Το μέρος που ακολουθεί πρέπει να μείνει επίσης αμετάφραστο. Για "
 "παράδειγμα:"
 
-#: ../../contributing/intro.rst:93 ../../contributing/intro.rst:108
+#: ../../contributing/intro.rst:91 ../../contributing/intro.rst:106
 msgid "should be translated in French as"
 msgstr "πρέπει να μεταφραστεί στα Γαλλικά ως"
 
-#: ../../contributing/intro.rst:99
+#: ../../contributing/intro.rst:97
 msgid ""
 "This is because this value will replaced automatically by Sphinx with the "
 "translation for ``Parameter``. The only exception to this rule is when you "
@@ -1112,7 +1107,7 @@ msgstr ""
 "από το Sphinx με τη μετάφραση για το ``Parameter``. Η μόνη εξαίρεση σε αυτόν "
 "τον κανόνα είναι όταν βλέπετε τους χαρακτήρες ``<>``. Για παράδειγμα:"
 
-#: ../../contributing/intro.rst:115
+#: ../../contributing/intro.rst:113
 msgid ""
 "Please make sure you do not insert or remove spaces. The following examples "
 "will cause errors."
@@ -1120,18 +1115,18 @@ msgstr ""
 "Παρακαλούμε βεβαιωθείτε ότι δεν εισάγετε ή δεν αφαιρείτε κενά. Τα ακόλουθα "
 "παραδείγματα θα προκαλέσουν σφάλματα."
 
-#: ../../contributing/intro.rst:127
+#: ../../contributing/intro.rst:125
 msgid ""
 "Also, there should be space, comma or period after such syntax, like below."
 msgstr ""
 "Επίσης, πρέπει να υπάρχει κενό, κόμμα ή περίοδος μετά από αντίστοιχη "
 "σύνταξη, όπως παρακάτω."
 
-#: ../../contributing/intro.rst:136
+#: ../../contributing/intro.rst:134
 msgid "The following examples will cause errors."
 msgstr "Τα ακόλουθα παραδείγματα θα προκαλέσουν σφάλματα."
 
-#: ../../contributing/intro.rst:143
+#: ../../contributing/intro.rst:141
 msgid ""
 "The following syntax usually refers to a path, so please keep it unchanged, "
 "otherwise the file it refers to will not be found."
@@ -1139,11 +1134,11 @@ msgstr ""
 "Η ακόλουθη σύνταξη συνήθως αναφέρεται σε ένα μονοπάτι, οπότε παρακαλούμε "
 "αφήστε το χωρίς αλλαγή, αλλιώς το αρχείο στο οποίο αναφέρεται δεν θα βρεθεί."
 
-#: ../../contributing/intro.rst:152
+#: ../../contributing/intro.rst:150
 msgid "Donations"
 msgstr "Δωρεές"
 
-#: ../../contributing/intro.rst:153
+#: ../../contributing/intro.rst:151
 msgid ""
 "We use the following services for receiving donations. Any amount, small or "
 "large is appreciated and helps sustain continuous development:"
@@ -1152,19 +1147,23 @@ msgstr ""
 "ποσό, μικρό ή μεγάλο, είναι καλοδεχούμενο και βοηθάει στην αδιάκοπη ανάπτυξη "
 "του Zrythm:"
 
-#: ../../contributing/intro.rst:157
+#: ../../contributing/intro.rst:155
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr "`LiberaPay <https://liberapay.com/Zrythm>`_"
 
-#: ../../contributing/intro.rst:158
+#: ../../contributing/intro.rst:156
 msgid "`PayPal <https://paypal.me/zrythm>`_"
 msgstr "`PayPal <https://paypal.me/zrythm>`_"
 
-#: ../../contributing/intro.rst:159
+#: ../../contributing/intro.rst:157
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
 msgstr "`Open Collective <https://opencollective.com/zrythm>`_"
 
-#: ../../contributing/intro.rst:161
+#: ../../contributing/intro.rst:159
+msgid "We also accept cryptocurrency donations at the following addresses:"
+msgstr ""
+
+#: ../../contributing/intro.rst:168
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer <https://www.zrythm.org/"
 "en/download.html>`_."
@@ -1185,40 +1184,31 @@ msgid "Authors"
 msgstr "Δημιουργοί"
 
 #: ../../credits/intro.rst:13
+#, fuzzy
 msgid ""
-"See the :download:`AUTHORS <../../../AUTHORS>` file in the source "
-"distribution. These include developers, graphic artists and other authors of "
-"copyrightable work."
+"These include developers, graphic artists and other authors of copyrightable "
+"work."
 msgstr ""
 "Βλέπε το αρχείο :download:`AUTHORS <../../../AUTHORS>` στην πηγαία διανομή. "
 "Περιλαμβάνουν τους προγραμματιστές, σχεδιαστές και άλλους δημιουργούς "
 "δουλειάς που υπόκειται σε πνευματικά δικαιώματα."
 
-#: ../../credits/intro.rst:19
+#: ../../credits/intro.rst:21
 msgid "Translators"
 msgstr "Μεταφραστές"
 
-#: ../../credits/intro.rst:20
+#: ../../credits/intro.rst:22
 #, fuzzy
 msgid ""
-"See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source "
-"distribution. These include translators of the software, the user manual and "
-"the website."
+"These include translators of the software, the user manual and the website."
 msgstr ""
 "Βλέπε το αρχείο :download:`TRANSLATORS <../../../TRANSLATORS>` στην πηγαία "
 "διανομή. Περιλαμβάνουν τους μεταφραστές του προγράμματος, το εγχειρίδιο "
 "χρήστη και την ιστοσελίδα."
 
-#: ../../credits/intro.rst:27
+#: ../../credits/intro.rst:30
 msgid "Other Contributors"
 msgstr "Άλλοι συνεργάτες"
-
-#: ../../credits/intro.rst:28
-#, fuzzy
-msgid ""
-"See the :download:`THANKS <../../../THANKS>` file in the source distribution."
-msgstr ""
-"Βλέπε το αρχείο :download:`THANKS <../../../THANKS>` στην πηγαία διανομή."
 
 #: ../../editing/clip-editors/audio-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:53
@@ -5152,27 +5142,29 @@ msgid "Modulators Tab"
 msgstr "Καρτέλα διαμορφωτών"
 
 #: ../../modulators/intro.rst:17
+#, fuzzy
 msgid ""
 "Zrythm has a modulators tab in the bottom panel that can hold any number of "
-"modulators."
+"modulators and a fixed number of macro knobs."
 msgstr ""
 "Το Zrythm έχει μια καρτέλα διαμορφωτών στο κάτω πάνελ που μπορεί να "
 "υποστηρίξει οποιονδήποτε αριθμό διαμορφωτών."
 
-#: ../../modulators/intro.rst:23
+#: ../../modulators/intro.rst:24
 #, fuzzy
 msgid ""
-"Modulators are associated with the :ref:`Modulator Track <tracks/track-types:"
-"Modulator Track>`, which contains all modulators in the :term:`Project`."
+"Modulators and macro knobs are associated with the :ref:`Modulator Track "
+"<tracks/track-types:Modulator Track>`, which contains all modulators in the :"
+"term:`Project`."
 msgstr ""
 "Οι διαμορφωτές συσχετίζονται με το :doc:`../tracks/modulator-track`, το "
 "οποίο περιέχει όλους τους διαμορφωτές στο :term:`Project`."
 
-#: ../../modulators/intro.rst:28
+#: ../../modulators/intro.rst:29
 msgid "Adding Modulators"
 msgstr "Προσθήκη διαμορφωτών"
 
-#: ../../modulators/intro.rst:29
+#: ../../modulators/intro.rst:30
 msgid ""
 "Modulator plugins can be drag-n-dropped from the :doc:`../plugins-files/"
 "plugins/plugin-browser` into the Modulators tab. Modulator plugins can be :"
@@ -5184,11 +5176,11 @@ msgstr ""
 "διαμορφωτών μπορούν :ref:`να φιλτραριστούν μέσα στον περιηγητή προσθέτων "
 "<plugins-files/plugins/plugin-browser:Filter Buttons>`."
 
-#: ../../modulators/intro.rst:35
+#: ../../modulators/intro.rst:36
 msgid "Routing Modulators"
 msgstr "Δρομολόγηση διαμορφωτών"
 
-#: ../../modulators/intro.rst:36
+#: ../../modulators/intro.rst:37
 msgid ""
 "Modulator outputs can be routed to automatable :term:`controls <Control>` by "
 "clicking on the arrow and following the prompt to select the destination."
@@ -5196,6 +5188,39 @@ msgstr ""
 "Οι εξαγωγές διαμορφωτών μπορούν να δρομολογηθούν σε :term:`controls "
 "<Control>` που μπορούν να αυτοματοποιηθούν κάνοντας κλικ πάνω στο βέλος και "
 "ακολουθώντας την υπόδειξη για να επιλεγεί ο προορισμός."
+
+#: ../../modulators/intro.rst:49
+msgid "Macro Knobs"
+msgstr ""
+
+#: ../../modulators/intro.rst:51
+msgid ""
+"Macro knobs are simple controls that can be used to control multiple "
+"parameters. They can be automated in the :ref:`Modulator Track <tracks/track-"
+"types:Modulator Track>`, and you can also route envelopes like LFOs to them."
+msgstr ""
+
+#: ../../modulators/intro.rst:58
+#, fuzzy
+msgid "Adding Inputs"
+msgstr "Εισαγόμενοι ήχοι"
+
+#: ../../modulators/intro.rst:60
+msgid ""
+"Click the :guilabel:`Add` button on the left side of a macro knob to add "
+"inputs to modulate the macro knob."
+msgstr ""
+
+#: ../../modulators/intro.rst:65
+#, fuzzy
+msgid "Routing to Outputs"
+msgstr "Μόνιτορ έξω"
+
+#: ../../modulators/intro.rst:67
+msgid ""
+"Click the arrow button on the right side of a macro knob to route it to one "
+"or more controls. The process is similar to modulator output routing."
+msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:6
 msgid "BPM and Time Signatures"
@@ -7722,7 +7747,22 @@ msgid "Scripting Interface"
 msgstr "Διεπαφή δέσμης ενεργειών (scripting)"
 
 #: ../../scripting/scripting-interface.rst:8
-msgid "Explain the scripting window/interface."
+msgid ""
+"Clicking the :guilabel:`Scripting Interface` button in the :ref:`Main "
+"Toolbar <zrythm-interface/main-toolbar:Main Toolbar>` will bring up the "
+"scripting interface dialog."
+msgstr ""
+
+#: ../../scripting/scripting-interface.rst:16
+#, fuzzy
+msgid "Scripting interface"
+msgstr "Διεπαφή δέσμης ενεργειών (scripting)"
+
+#: ../../scripting/scripting-interface.rst:18
+msgid ""
+"Scripts can be edited in the editor found in the top part of the scrpiting "
+"interface. Pressing :guilabel:`Execute` will execute the script and print "
+"any output in the label at the bottom."
 msgstr ""
 
 #: ../../theming/css.rst:8
@@ -7799,14 +7839,14 @@ msgstr "Ορίστε κάποιοι σύνδεσμοι από τις επίση�
 
 #: ../../theming/css.rst:40
 #, fuzzy
-msgid "`GTK+ CSS Overview <https://docs.gtk.org/gtk3/css-overview.html>`_"
+msgid "`GTK+ CSS Overview <https://docs.gtk.org/gtk4/css-overview.html>`_"
 msgstr ""
 "`Επισκόπηση GTK + CSS <https://developer.gnome.org/gtk3/stable/chap-css-"
 "overview.html>`_"
 
 #: ../../theming/css.rst:41
 #, fuzzy
-msgid "`GTK+ CSS Properties <https://docs.gtk.org/gtk3/css-properties.html>`_"
+msgid "`GTK+ CSS Properties <https://docs.gtk.org/gtk4/css-properties.html>`_"
 msgstr ""
 "`Ιδιότητες GTK + CSS <https://developer.gnome.org/gtk3/stable/chap-css-"
 "properties.html>`_"
@@ -9130,29 +9170,38 @@ msgstr ""
 msgid "User Media"
 msgstr "Μέσα χρηστών"
 
-#: ../../user-media/intro.rst:9
-msgid "Mascot"
+#: ../../user-media/intro.rst:8
+msgid ""
+"This chapter contains references to user-created media not part of Zrythm."
 msgstr ""
 
 #: ../../user-media/intro.rst:12
+msgid "Mascot Idea"
+msgstr ""
+
+#: ../../user-media/intro.rst:15
 #, fuzzy
 msgid "Concept"
 msgstr "Μετατροπή σε ήχο"
 
-#: ../../user-media/intro.rst:17
-msgid "Concept by `FanaticMoose`_ [`CC-BY-SA`_]"
+#: ../../user-media/intro.rst:20
+msgid "Concept by `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
 msgstr ""
 
-#: ../../user-media/intro.rst:20
+#: ../../user-media/intro.rst:23
 msgid "Sketches"
 msgstr ""
 
 #: ../../user-media/intro.rst:25
-msgid "Sketch by `FanaticMoose`_ [`CC-BY-SA`_]"
+msgid "User Sketches"
 msgstr ""
 
-#: ../../user-media/intro.rst:27
-msgid "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
+#: ../../user-media/intro.rst:30
+msgid "Sketch by `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
+msgstr ""
+
+#: ../../user-media/intro.rst:35
+msgid "Sketch by `@weoxm@koyu.space`_"
 msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:8
@@ -9728,6 +9777,21 @@ msgid ""
 "% usage at the bottom. If the DSP % exceeds 100 (all bars filled), audio "
 "will start clipping."
 msgstr ""
+
+#~ msgid ""
+#~ "Click on the :guilabel:`View Source` button at the top of the page to "
+#~ "find which file the page exists in, find the file in the source "
+#~ "distribution and edit it."
+#~ msgstr ""
+#~ "Κάντε κλικ στο κουμπί :guilabel:`Προβολή κώδικα` στο πάνω μέρος της "
+#~ "σελίδας για να βρείτε σε ποιο αρχείο βρίσκεται η σελίδα, να βρείτε πού "
+#~ "βρίσκεται το αρχείο στην πηγαία διανομή και να το επεξεργαστείτε."
+
+#~ msgid ""
+#~ "See the :download:`THANKS <../../../THANKS>` file in the source "
+#~ "distribution."
+#~ msgstr ""
+#~ "Βλέπε το αρχείο :download:`THANKS <../../../THANKS>` στην πηγαία διανομή."
 
 #~ msgid ""
 #~ "Chords and scales can be used to easily try out various chords and to "
@@ -10442,9 +10506,6 @@ msgstr ""
 
 #~ msgid "A list of controllers to auto-connect to."
 #~ msgstr "Μια λίστα χειριστών προς σύνδεση."
-
-#~ msgid "Audio inputs"
-#~ msgstr "Εισαγόμενοι ήχοι"
 
 #~ msgid "A list of audio inputs to auto-connect to."
 #~ msgstr "Μια λίστα εισαγόμενων ήχων προς σύνδεση."

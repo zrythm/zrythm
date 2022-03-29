@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.28\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-29 14:04+0100\n"
+"POT-Creation-Date: 2022-03-29 15:32+0100\n"
 "PO-Revision-Date: 2022-02-28 15:54+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language: ca\n"
@@ -290,7 +290,6 @@ msgstr "Solució de problemes"
 #: ../../editing/clip-editors/piano-roll.rst:148
 #: ../../exporting/audio-and-midi.rst:38
 #: ../../plugins-files/audio-midi-files/file-browser.rst:69
-#: ../../scripting/scripting-interface.rst:8
 #: ../../tracks/inspector-page.rst:157 ../../tracks/overview.rst:70
 #: ../../zrythm-interface/right-panel.rst:23
 msgid "Todo"
@@ -1060,15 +1059,10 @@ msgstr "Editant aquest manual"
 
 #: ../../contributing/intro.rst:45
 msgid ""
-"Click on the :guilabel:`View Source` button at the top of the page to find "
-"which file the page exists in, find the file in the source distribution and "
-"edit it."
+"Edit the RST files under :file:`doc/user` and submit a patch when finished."
 msgstr ""
-"Clica el botó :guilabel:`View Source` a la part superior de la pàgina per a "
-"trobar en quin fitxer hi ha la pàgina, trobar el fitxer a la distribució "
-"d'origen i editar-lo."
 
-#: ../../contributing/intro.rst:50
+#: ../../contributing/intro.rst:48
 msgid ""
 "You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "installed to compile this manual."
@@ -1076,11 +1070,11 @@ msgstr ""
 "Has de tenir instal·lat `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "per a compilar aquest manual."
 
-#: ../../contributing/intro.rst:55
+#: ../../contributing/intro.rst:53
 msgid "Translation"
 msgstr "Traducció"
 
-#: ../../contributing/intro.rst:56
+#: ../../contributing/intro.rst:54
 msgid ""
 "Zrythm is available for translation at `Weblate <https://hosted.weblate.org/"
 "engage/zrythm/?utm_source=widget>`_."
@@ -1088,15 +1082,16 @@ msgstr ""
 "Zrythm està disponible per a la seva traducció a `Weblate <https://hosted."
 "weblate.org/engage/zrythm/?utm_source=widget>`_."
 
-#: ../../contributing/intro.rst:59
+#: ../../contributing/intro.rst:57
+#, fuzzy
 msgid ""
 "The Zrythm translation project contains the translations for the Zrythm "
-"program, the website as well as sections of this manual."
+"program, the website, the accounts site, and sections of this manual."
 msgstr ""
 "El projecte de traducció de Zrythm conté les traduccions per al programa "
 "Zrythm, el lloc web i seccions d'aquest manual."
 
-#: ../../contributing/intro.rst:63
+#: ../../contributing/intro.rst:61
 msgid ""
 "Click on the project you wish to work on, and then select a language in the "
 "screen that follows. For more information on using Weblate, please see the "
@@ -1108,7 +1103,7 @@ msgstr ""
 "Weblate, consulta `official documentation <https://docs.weblate.org/en/"
 "latest/user/translating.html>`_."
 
-#: ../../contributing/intro.rst:70
+#: ../../contributing/intro.rst:68
 msgid ""
 "Zrythm contains terminology similar to existing audio software. You may find "
 "it useful to borrow terms from them. See the `Cubase Pro Artist manual "
@@ -1120,11 +1115,11 @@ msgstr ""
 "`Cubase Pro Artist manual <https://steinberg.help/cubase_pro_artist/v9/fr/"
 ">`_ per exemple (substituïu `fr` a l'URL amb el teu codi d'idioma)."
 
-#: ../../contributing/intro.rst:77
+#: ../../contributing/intro.rst:75
 msgid "User Manual"
 msgstr "Manual d'usuari"
 
-#: ../../contributing/intro.rst:78
+#: ../../contributing/intro.rst:76
 msgid ""
 "When translating the user manual, please make sure you follow the following "
 "Sphinx/RST syntax, to avoid errors when applying your translations."
@@ -1132,11 +1127,11 @@ msgstr ""
 "En traduir el manual d'usuari, assegura't de seguir la següent sintaxi "
 "Sphinx / RST, per a evitar errors."
 
-#: ../../contributing/intro.rst:83
+#: ../../contributing/intro.rst:81
 msgid "General Syntax"
 msgstr "Sintaxi general"
 
-#: ../../contributing/intro.rst:84
+#: ../../contributing/intro.rst:82
 msgid ""
 "When you see something inside ``:``, such as ``:term:``, it should be left "
 "untranslated. The part following should be left untranslated as well. For "
@@ -1145,11 +1140,11 @@ msgstr ""
 "Quan vegis alguna cosa entre ``:``, com ara ``:term:``, s'ha de deixar sense "
 "traduir. La part següent també s'ha de deixar sense traduir. Per exemple:"
 
-#: ../../contributing/intro.rst:93 ../../contributing/intro.rst:108
+#: ../../contributing/intro.rst:91 ../../contributing/intro.rst:106
 msgid "should be translated in French as"
 msgstr "s'ha de traduir al francès com"
 
-#: ../../contributing/intro.rst:99
+#: ../../contributing/intro.rst:97
 msgid ""
 "This is because this value will replaced automatically by Sphinx with the "
 "translation for ``Parameter``. The only exception to this rule is when you "
@@ -1159,7 +1154,7 @@ msgstr ""
 "amb la traducció per a ``Parameter``. L'única excepció a aquesta regla és "
 "quan vegis els caràcters ``<>``. Per exemple:"
 
-#: ../../contributing/intro.rst:115
+#: ../../contributing/intro.rst:113
 msgid ""
 "Please make sure you do not insert or remove spaces. The following examples "
 "will cause errors."
@@ -1167,18 +1162,18 @@ msgstr ""
 "Assegura't que no insereixes ni suprimeixes espais. Els exemples següents "
 "provocaran errors."
 
-#: ../../contributing/intro.rst:127
+#: ../../contributing/intro.rst:125
 msgid ""
 "Also, there should be space, comma or period after such syntax, like below."
 msgstr ""
 "A més, hi ha d'haver espai, coma o punt després d'aquesta sintaxi, com a "
 "continuació."
 
-#: ../../contributing/intro.rst:136
+#: ../../contributing/intro.rst:134
 msgid "The following examples will cause errors."
 msgstr "Els exemples següents provocaran errors."
 
-#: ../../contributing/intro.rst:143
+#: ../../contributing/intro.rst:141
 msgid ""
 "The following syntax usually refers to a path, so please keep it unchanged, "
 "otherwise the file it refers to will not be found."
@@ -1187,11 +1182,11 @@ msgstr ""
 "plau, manten-lo sense canvis, en cas contrari no es trobarà el fitxer al "
 "qual es refereix."
 
-#: ../../contributing/intro.rst:152
+#: ../../contributing/intro.rst:150
 msgid "Donations"
 msgstr "Donatius"
 
-#: ../../contributing/intro.rst:153
+#: ../../contributing/intro.rst:151
 msgid ""
 "We use the following services for receiving donations. Any amount, small or "
 "large is appreciated and helps sustain continuous development:"
@@ -1199,19 +1194,23 @@ msgstr ""
 "Utilitzem els següents serveis per a rebre donatius. Qualsevol quantitat, "
 "petita o gran és apreciada i ajuda a mantenir el desenvolupament continu:"
 
-#: ../../contributing/intro.rst:157
+#: ../../contributing/intro.rst:155
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr "`LiberaPay <https://liberapay.com/Zrythm>`_"
 
-#: ../../contributing/intro.rst:158
+#: ../../contributing/intro.rst:156
 msgid "`PayPal <https://paypal.me/zrythm>`_"
 msgstr "`PayPal <https://paypal.me/zrythm>`_"
 
-#: ../../contributing/intro.rst:159
+#: ../../contributing/intro.rst:157
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
 msgstr "`Open Collective <https://opencollective.com/zrythm>`_"
 
-#: ../../contributing/intro.rst:161
+#: ../../contributing/intro.rst:159
+msgid "We also accept cryptocurrency donations at the following addresses:"
+msgstr ""
+
+#: ../../contributing/intro.rst:168
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer <https://www.zrythm.org/"
 "en/download.html>`_."
@@ -1232,39 +1231,31 @@ msgid "Authors"
 msgstr "Autors"
 
 #: ../../credits/intro.rst:13
+#, fuzzy
 msgid ""
-"See the :download:`AUTHORS <../../../AUTHORS>` file in the source "
-"distribution. These include developers, graphic artists and other authors of "
-"copyrightable work."
+"These include developers, graphic artists and other authors of copyrightable "
+"work."
 msgstr ""
 "Mira el fitxer :download:`AUTHORS <../../../AUTHORS>` a la distribució "
 "d'origen. Aquests inclouen desenvolupadors, artistes gràfics i altres autors "
 "d'obres amb drets d'autor."
 
-#: ../../credits/intro.rst:19
+#: ../../credits/intro.rst:21
 msgid "Translators"
 msgstr "Traductors"
 
-#: ../../credits/intro.rst:20
+#: ../../credits/intro.rst:22
+#, fuzzy
 msgid ""
-"See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source "
-"distribution. These include translators of the software, the user manual and "
-"the website."
+"These include translators of the software, the user manual and the website."
 msgstr ""
 "Mira el fitxer :download:`TRANSLATORS <../../../TRANSLATORS>` a la "
 "distribució d'origen. Aquests inclouen traductors del programari, el manual "
 "d'usuari i el lloc web."
 
-#: ../../credits/intro.rst:27
+#: ../../credits/intro.rst:30
 msgid "Other Contributors"
 msgstr "Altres col·laboradors"
-
-#: ../../credits/intro.rst:28
-msgid ""
-"See the :download:`THANKS <../../../THANKS>` file in the source distribution."
-msgstr ""
-"Veure el fitxer :download:`THANKS <../../../THANKS>` a la distribució "
-"d'origen."
 
 #: ../../editing/clip-editors/audio-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:53
@@ -5074,27 +5065,29 @@ msgid "Modulators Tab"
 msgstr "Pestanya moduladors"
 
 #: ../../modulators/intro.rst:17
+#, fuzzy
 msgid ""
 "Zrythm has a modulators tab in the bottom panel that can hold any number of "
-"modulators."
+"modulators and a fixed number of macro knobs."
 msgstr ""
 "Zrythm té una pestanya moduladors al quadre inferior que pot contenir "
 "qualsevol nombre de moduladors."
 
-#: ../../modulators/intro.rst:23
+#: ../../modulators/intro.rst:24
 #, fuzzy
 msgid ""
-"Modulators are associated with the :ref:`Modulator Track <tracks/track-types:"
-"Modulator Track>`, which contains all modulators in the :term:`Project`."
+"Modulators and macro knobs are associated with the :ref:`Modulator Track "
+"<tracks/track-types:Modulator Track>`, which contains all modulators in the :"
+"term:`Project`."
 msgstr ""
 "Els moduladors estan associats amb el :doc:`../tracks/modulator-track`, que "
 "conté tots els moduladors del :term:`Project`."
 
-#: ../../modulators/intro.rst:28
+#: ../../modulators/intro.rst:29
 msgid "Adding Modulators"
 msgstr "Addició de moduladors"
 
-#: ../../modulators/intro.rst:29
+#: ../../modulators/intro.rst:30
 msgid ""
 "Modulator plugins can be drag-n-dropped from the :doc:`../plugins-files/"
 "plugins/plugin-browser` into the Modulators tab. Modulator plugins can be :"
@@ -5106,11 +5099,11 @@ msgstr ""
 "complements del modulador poden ser :ref:`filtered inside the plugin browser "
 "<plugins-files/plugins/plugin-browser:Filter Buttons>`."
 
-#: ../../modulators/intro.rst:35
+#: ../../modulators/intro.rst:36
 msgid "Routing Modulators"
 msgstr "Encaminament de moduladors"
 
-#: ../../modulators/intro.rst:36
+#: ../../modulators/intro.rst:37
 msgid ""
 "Modulator outputs can be routed to automatable :term:`controls <Control>` by "
 "clicking on the arrow and following the prompt to select the destination."
@@ -5118,6 +5111,40 @@ msgstr ""
 "Les sortides del modulador es poden encaminar a l'automatitzable :term:"
 "`controls <Control>` clicant a la fletxa i seguint la sol·licitud per a "
 "seleccionar la destinació."
+
+#: ../../modulators/intro.rst:49
+#, fuzzy
+msgid "Macro Knobs"
+msgstr "Rodeta de guany"
+
+#: ../../modulators/intro.rst:51
+msgid ""
+"Macro knobs are simple controls that can be used to control multiple "
+"parameters. They can be automated in the :ref:`Modulator Track <tracks/track-"
+"types:Modulator Track>`, and you can also route envelopes like LFOs to them."
+msgstr ""
+
+#: ../../modulators/intro.rst:58
+#, fuzzy
+msgid "Adding Inputs"
+msgstr "Entrades d’àudio"
+
+#: ../../modulators/intro.rst:60
+msgid ""
+"Click the :guilabel:`Add` button on the left side of a macro knob to add "
+"inputs to modulate the macro knob."
+msgstr ""
+
+#: ../../modulators/intro.rst:65
+#, fuzzy
+msgid "Routing to Outputs"
+msgstr "Sortida monitor"
+
+#: ../../modulators/intro.rst:67
+msgid ""
+"Click the arrow button on the right side of a macro knob to route it to one "
+"or more controls. The process is similar to modulator output routing."
+msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:6
 msgid "BPM and Time Signatures"
@@ -7663,8 +7690,23 @@ msgid "Scripting Interface"
 msgstr "Interfície de script"
 
 #: ../../scripting/scripting-interface.rst:8
-msgid "Explain the scripting window/interface."
-msgstr "Explica la finestra/interfície de scripting."
+msgid ""
+"Clicking the :guilabel:`Scripting Interface` button in the :ref:`Main "
+"Toolbar <zrythm-interface/main-toolbar:Main Toolbar>` will bring up the "
+"scripting interface dialog."
+msgstr ""
+
+#: ../../scripting/scripting-interface.rst:16
+#, fuzzy
+msgid "Scripting interface"
+msgstr "Interfície de script"
+
+#: ../../scripting/scripting-interface.rst:18
+msgid ""
+"Scripts can be edited in the editor found in the top part of the scrpiting "
+"interface. Pressing :guilabel:`Execute` will execute the script and print "
+"any output in the label at the bottom."
+msgstr ""
 
 #: ../../theming/css.rst:8
 msgid "CSS"
@@ -7739,11 +7781,13 @@ msgid "Here are some links by official GNOME sources:"
 msgstr "Aquests són alguns enllaços de fonts oficials del GNOME:"
 
 #: ../../theming/css.rst:40
-msgid "`GTK+ CSS Overview <https://docs.gtk.org/gtk3/css-overview.html>`_"
+#, fuzzy
+msgid "`GTK+ CSS Overview <https://docs.gtk.org/gtk4/css-overview.html>`_"
 msgstr "`GTK+ CSS Overview <https://docs.gtk.org/gtk3/css-overview.html>`_"
 
 #: ../../theming/css.rst:41
-msgid "`GTK+ CSS Properties <https://docs.gtk.org/gtk3/css-properties.html>`_"
+#, fuzzy
+msgid "`GTK+ CSS Properties <https://docs.gtk.org/gtk4/css-properties.html>`_"
 msgstr "`GTK+ CSS Properties <https://docs.gtk.org/gtk3/css-properties.html>`_"
 
 #: ../../theming/css.rst:42
@@ -9057,29 +9101,41 @@ msgstr ""
 msgid "User Media"
 msgstr "Multimèdia d'usuaris"
 
-#: ../../user-media/intro.rst:9
-msgid "Mascot"
-msgstr "Mascota"
+#: ../../user-media/intro.rst:8
+msgid ""
+"This chapter contains references to user-created media not part of Zrythm."
+msgstr ""
 
 #: ../../user-media/intro.rst:12
+msgid "Mascot Idea"
+msgstr ""
+
+#: ../../user-media/intro.rst:15
 msgid "Concept"
 msgstr "Concepte"
 
-#: ../../user-media/intro.rst:17
-msgid "Concept by `FanaticMoose`_ [`CC-BY-SA`_]"
+#: ../../user-media/intro.rst:20
+#, fuzzy
+msgid "Concept by `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
 msgstr "Concepte de `FanaticMoose`_ [`CC-BY-SA`_]"
 
-#: ../../user-media/intro.rst:20
+#: ../../user-media/intro.rst:23
 msgid "Sketches"
 msgstr "Esbossos"
 
 #: ../../user-media/intro.rst:25
-msgid "Sketch by `FanaticMoose`_ [`CC-BY-SA`_]"
+#, fuzzy
+msgid "User Sketches"
+msgstr "Esbossos"
+
+#: ../../user-media/intro.rst:30
+#, fuzzy
+msgid "Sketch by `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
 msgstr "Esbós de `FanaticMoose`_ [`CC-BY-SA`_]"
 
-#: ../../user-media/intro.rst:27
-msgid "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
-msgstr "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
+#: ../../user-media/intro.rst:35
+msgid "Sketch by `@weoxm@koyu.space`_"
+msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
@@ -9655,6 +9711,31 @@ msgid ""
 "% usage at the bottom. If the DSP % exceeds 100 (all bars filled), audio "
 "will start clipping."
 msgstr ""
+
+#~ msgid ""
+#~ "Click on the :guilabel:`View Source` button at the top of the page to "
+#~ "find which file the page exists in, find the file in the source "
+#~ "distribution and edit it."
+#~ msgstr ""
+#~ "Clica el botó :guilabel:`View Source` a la part superior de la pàgina per "
+#~ "a trobar en quin fitxer hi ha la pàgina, trobar el fitxer a la "
+#~ "distribució d'origen i editar-lo."
+
+#~ msgid ""
+#~ "See the :download:`THANKS <../../../THANKS>` file in the source "
+#~ "distribution."
+#~ msgstr ""
+#~ "Veure el fitxer :download:`THANKS <../../../THANKS>` a la distribució "
+#~ "d'origen."
+
+#~ msgid "Explain the scripting window/interface."
+#~ msgstr "Explica la finestra/interfície de scripting."
+
+#~ msgid "Mascot"
+#~ msgstr "Mascota"
+
+#~ msgid "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
+#~ msgstr "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
 
 #~ msgid ""
 #~ "Chords and scales can be used to easily try out various chords and to "
@@ -10351,9 +10432,6 @@ msgstr ""
 #~ msgid "A list of controllers to auto-connect to."
 #~ msgstr ""
 #~ "Una llista de controladors als que s'han de connectar automàticament."
-
-#~ msgid "Audio inputs"
-#~ msgstr "Entrades d’àudio"
 
 #~ msgid "A list of audio inputs to auto-connect to."
 #~ msgstr ""

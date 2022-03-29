@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019-2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 Contributing
@@ -42,10 +42,8 @@ The latest development branch for new features is
 
 Editing this Manual
 -------------------
-Click on the :guilabel:`View Source` button at the
-top of the page to find which file the page exists
-in, find the file in the source distribution and
-edit it.
+Edit the RST files under :file:`doc/user` and
+submit a patch when finished.
 
 You will need to have
 `Sphinx <https://www.sphinx-doc.org/en/master/>`_
@@ -56,9 +54,9 @@ Translation
 Zrythm is available for translation at `Weblate
 <https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_.
 
-The Zrythm translation project contains the translations
-for the Zrythm program, the website as well as sections
-of this manual.
+The Zrythm translation project contains the
+translations for the Zrythm program, the website,
+the accounts site, and sections of this manual.
 
 Click on the project you wish to work on, and
 then select a language in
@@ -157,6 +155,15 @@ sustain continuous development:
 * `LiberaPay <https://liberapay.com/Zrythm>`_
 * `PayPal <https://paypal.me/zrythm>`_
 * `Open Collective <https://opencollective.com/zrythm>`_
+
+We also accept cryptocurrency donations at the
+following addresses:
+
+.. code-block:: text
+
+   Bitcoin (BTC): bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j
+   Litecoin (LTC): ltc1qpva5up8vu8k03r8vncrfhu5apkd7p4cgy4355a
+   Monero (XMR): 87YVi6nqwDhAQwfAuB8a7UeD6wrr81PJG4yBxkkGT3Ri5ng9D1E91hdbCCQsi3ZzRuXiX3aRWesS95S8ij49YMBKG3oEfnr
 
 Alternatively, you can `purchase a Zrythm installer
 <https://www.zrythm.org/en/download.html>`_.

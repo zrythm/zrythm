@@ -10,21 +10,26 @@ Zrythm project.
 
 Authors
 -------
-See the
-:download:`AUTHORS <../../../AUTHORS>`
-file in the source distribution.
 These include developers, graphic artists and other authors of copyrightable work.
+
+.. literalinclude:: ../../../AUTHORS
+   :language: text
+   :start-after: Authors:
+   :end-before: ----
 
 Translators
 -----------
-See the
-:download:`TRANSLATORS <../../../TRANSLATORS>`
-file in the source distribution.
-These include translators of the software, the user manual
-and the website.
+These include translators of the software, the user
+manual and the website.
+
+.. literalinclude:: ../../../TRANSLATORS
+   :language: text
+   :end-before: ----
 
 Other Contributors
 ------------------
-See the
-:download:`THANKS <../../../THANKS>`
-file in the source distribution.
+
+.. literalinclude:: ../../../THANKS
+   :language: text
+   :start-after: Thanks:
+   :end-before: ----
