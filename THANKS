@@ -14,7 +14,7 @@ Thanks:
    * UI/feature ideas
    * Bug reports
  bill-auger
-   * Coming up with the Zrythm tagline
+   * Coming up with the original Zrythm tagline
    * Packaging advice
  Robin Gareus <https://gareus.org/>
    * Help and advice
@@ -29,7 +29,7 @@ Thanks:
  LAD
    * Assistance with LV2 and audio-related code
  Eli Schwartz
-   * Help with meson, packaging and various things
+   * Help with meson, packaging and build issues
  rghvdberg
    * Testing and ideas
  vinceliuice
@@ -60,18 +60,14 @@ Thanks:
    * Help and advice regarding GPL issues
  sr.ht
    * CI infrastructure for builds and testing
- sphinx-doc
-   * Sphinx tools used to build the manual
- Dimitri van Heesch
-   * Doxygen used to document the code
  Weblate
    * Free hosting for Zrythm translations
- LSP
-   * Optimized DSP functions (lsp-dsp-lib)
+ sadko4u
+   * Adding a C interface to lsp-dsp-lib
  MrTeeXD
    * Testing and reporting bugs
  MSYS2
-   * Making it easy to build on Windows
+   * Packaging some of our dependencies
  autumncheney
    * Testing and bug reports
  Till Parisot
@@ -85,7 +81,7 @@ Thanks:
 
 ----
 
-Copyright (C) 2019-2020 Alexandros Theodotou
+Copyright (C) 2019-2022 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright

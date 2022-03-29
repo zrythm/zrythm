@@ -1,12 +1,12 @@
 Authors:
 
- Alexandros Theodotou <alex@zrythm.org>
+ Alexandros Theodotou
    * Main developer
    * Main author of user manual
    * Main author of developer docs
- Ryan Gonzalez <rymg19 at gmail dot com>
+ Ryan Gonzalez
    * PulseAudio backend
- Sascha Bast <sash@mischkonsum.org>
+ Sascha Bast
    * Piano roll auto-scroll
  Georg Krause
    * Forward and backward button callbacks
@@ -17,9 +17,11 @@ Authors:
  Matthieu Talbot
    * Co-author of `Building on Windows` article
 
+See git commit history for contact info.
+
 ----
 
-Copyright (C) 2019-2020 Alexandros Theodotou
+Copyright (C) 2019-2022 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright

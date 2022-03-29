@@ -20,8 +20,8 @@ Chinese (Traditional):
   * UnluckyNinja
 
 French:
-  * Nicolas Faure <sub26nico@laposte.net>
-  * Olivier Humbert <trebmuh@tuxfamily.org>
+  * Nicolas Faure
+  * Olivier Humbert
   * Samuel Aubert
   * Mickaël J.
   * Maxime Leroy
@@ -62,10 +62,10 @@ Korean:
   * 이정희
 
 Norwegian Bokmal:
-  * Allan Nordhøy <epost@anotheragency.no>
+  * Allan Nordhøy
 
 Polish:
-  * WaldiS <admin@sto.ugu.pl>
+  * WaldiS
 
 Portuguese:
   * Silvério Santos
@@ -107,9 +107,11 @@ Turkish:
 Ukrainian:
   * Tymofij Lytvynenko
 
+See git commit history for contact info.
+
 ----
 
-Copyright (C) 2019-2021 Alexandros Theodotou
+Copyright (C) 2019-2022 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
