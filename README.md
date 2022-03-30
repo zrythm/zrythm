@@ -4,16 +4,18 @@ Zrythm
 [![translated](https://hosted.weblate.org/widgets/zrythm/-/svg-badge.svg "Translation Status")](https://hosted.weblate.org/engage/zrythm/?utm_source=widget)
 [![builds.sr.ht status](https://builds.sr.ht/~alextee/zrythm.svg)](https://builds.sr.ht/~alextee/zrythm?)
 
+*a highly automated and intuitive digital audio
+workstation*
+
+![screenshot](https://www.zrythm.org/static/images/screenshots/mar-16-2022.png)
+
 Zrythm is a digital audio workstation designed to be
-featureful and easy to use. It allows limitless
-automation through curves, LFOs and envelopes,
-supports multiple plugin formats including LV2, VST2
-and VST3, works with multiple backends including
-JACK, RtAudio/RtMidi and SDL2, assists with chord
-progressions via a special Chord Track and chord
-pads, and can be used in multiple languages
-including English, French, Portuguese, Japanese and
-German.
+featureful and easy to use.
+It offers intuitive editing workflows with flexible
+tools and specialized interfaces, limitless
+automation capabilities, powerful mixing tools,
+chord assistance and support for various plugin and
+file formats.
 
 Zrythm is
 [free software](https://www.gnu.org/philosophy/free-sw.html)
@@ -23,21 +25,52 @@ toolkit and can be
 extended using
 [GNU Guile](https://www.gnu.org/software/guile/).
 
-[Home page](https://www.zrythm.org)
+## Features
 
-# Current state
+- Object looping, cloning, linking and stretching
+- Adaptive snapping
+- Multiple lanes per track
+- Bounce anything to audio or MIDI
+- Piano roll (MIDI editor) with chord integration, drum mode and a lollipop velocity editor
+- Audio editor with part editing (including in external app) and adjustable gain/fades
+- Event viewers (list editors) with editable object parameters
+- Built-in and scriptable per-context object functions
+- Audio/MIDI/automation recording with options to punch in/out, record on MIDI input and create takes
+- Device-bindable parameters for external control
+- Wide variety of track types for every purpose
+- Signal manipulation with signal groups, aux sends and direct anywhere-to-anywhere connections
+- In-context listening by dimming other tracks
+- Automate anything using automation events or CV signal from modulator plugins and macro knobs
+- Detachable views for multi-monitor setups
+- Searchable preferences
+- Support for LV2/VST2/VST3/AU/LADSPA/DSSI plugins, SFZ/SF2 SoundFonts, Type 0 and 1 MIDI files, and almost every audio file format
+- Flexible built-in file and plugin browsers
+- Optional plugin sandboxing (bridging)
+- Stem export
+- Chord pad with built-in and user presets, including the ability to generate chords from scales
+- Automatic project backups
+- Undoable user actions with serializable undo history
+- User scripting capabilities via Guile API
+- Hardware-accelerated UI
+- SIMD-optimized DSP
+- Cross-platform, cross-audio/MIDI backend and cross-architecture
+- Available in multiple languages including Chinese, Japanese, Russian, Portuguese, French and German
+
+For a full list of features, see the
+[Features page](https://www.zrythm.org/en/features.html)
+on our website.
+
+## Current state
 
 Zrythm is currently in beta. The project format is
 stable and we are working towards a v1 release.
-
-![screenshot](https://www.zrythm.org/static/images/screenshots/mar-16-2022.png)
 
 ### Supported plugins/instruments
 - Native support (currently disabled): [LV2](https://lv2plug.in/)
 - Support via [Carla](https://github.com/falkTX/Carla/): LV2, VST2, VST3, AU, SFZ, SF2, DSSI, LADSPA
 
 ### Supported file formats
-- Audio: OGG (Vorbis), FLAC, WAV, MP3
+- Audio: Anything supported by libsndfile
 - MIDI: SMF Type 0, SMF Type 1
 
 ### Supported backends
