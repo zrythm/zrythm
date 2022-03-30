@@ -114,9 +114,8 @@ policy.
 If you would like to support this project please
 donate below or purchase a binary installer from
 <https://www.zrythm.org/en/download.html> - creating
-a DAW takes thousands of hours of work and
-contributions enable us to spend more time working
-on the project.
+a DAW takes years of work and contributions enable
+us to spend more time working on the project.
 
 - [liberapay.com/Zrythm](https://liberapay.com/Zrythm/donate)
 - [paypal.me/zrythm](https://paypal.me/zrythm)
