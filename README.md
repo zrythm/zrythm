@@ -11,11 +11,10 @@ workstation*
 
 Zrythm is a digital audio workstation designed to be
 featureful and easy to use.
-It offers intuitive editing workflows with flexible
-tools and specialized interfaces, limitless
-automation capabilities, powerful mixing tools,
-chord assistance and support for various plugin and
-file formats.
+It offers streamlined editing workflows with flexible
+tools, limitless automation capabilities, powerful
+mixing features, chord assistance and support for
+various plugin and file formats.
 
 Zrythm is
 [free software](https://www.gnu.org/philosophy/free-sw.html)
