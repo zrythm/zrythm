@@ -64,14 +64,6 @@ on our website.
 Zrythm is currently in beta. The project format is
 stable and we are working towards a v1 release.
 
-### Supported plugins/instruments
-- Native support (currently disabled): [LV2](https://lv2plug.in/)
-- Support via [Carla](https://github.com/falkTX/Carla/): LV2, VST2, VST3, AU, SFZ, SF2, DSSI, LADSPA
-
-### Supported file formats
-- Audio: Anything supported by libsndfile
-- MIDI: SMF Type 0, SMF Type 1
-
 ### Supported backends
 - Audio: JACK (PipeWire), PulseAudio, SDL2, RtAudio (ALSA/WASAPI/CoreAudio)
 - MIDI: JACK (PipeWire), WindowsMME, RtMidi (ALSA sequencer/Windows MME/CoreMIDI)
