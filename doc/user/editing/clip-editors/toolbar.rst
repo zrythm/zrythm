@@ -31,7 +31,7 @@ Piano Roll
 The piano roll toolbar includes the following
 additional sections.
 
-* :ref:`Chord highlighting options <chords-and-scales/overview:Highlighting>`
+* :ref:`Chord highlighting options <chords-and-scales/piano-roll-integration:Highlighting>`
 * :ref:`MIDI functions <editing/clip-editors/piano-roll:MIDI Functions>`
 * Default velocity options
 

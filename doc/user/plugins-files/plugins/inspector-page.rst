@@ -53,6 +53,6 @@ Display
 The number in the top right of each port name will
 display the current number of connections to/from
 this port. See
-:doc:`../../routing/making-connections` for details.
+:ref:`routing/connections:Connections` for details.
 
 .. seealso:: :ref:`plugins-files/plugins/plugin-info:Plugin Ports`
