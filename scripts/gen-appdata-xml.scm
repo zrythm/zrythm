@@ -104,7 +104,8 @@
                             (append
                               accumulator
                               `((p
-                                  (em ,title))
+                                  ,(string-append
+                                     title ":"))
                                 (ul
                                   ,@(get-list-for-changelog-group
                                       changelog-nfo
