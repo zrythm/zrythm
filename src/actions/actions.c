@@ -223,8 +223,6 @@ DEFINE_SIMPLE (activate_bugreport)
 
 DEFINE_SIMPLE (activate_about)
 {
-  g_critical ("test");
-  return;
   GtkWindow * window =
     GTK_WINDOW (
       about_dialog_widget_new (
