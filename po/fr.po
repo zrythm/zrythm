@@ -18,10 +18,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-03-29 17:57+0100\n"
-"PO-Revision-Date: 2022-03-17 22:24+0000\n"
+"PO-Revision-Date: 2022-03-31 17:07+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -828,11 +828,16 @@ msgid ""
 "memory. This may cause audio dropouts. Please refer to the 'Getting Started' "
 "section in the user manual for details."
 msgstr ""
+"Votre utilisateur ne dispose pas de suffisamment de privilèges pour "
+"permettre à %s de verrouiller une mémoire illimitée. Cela peut entraîner des "
+"pertes audio. Veuillez vous référer à la section 'Getting Started' du manuel "
+"d'utilisation pour plus de détails."
 
 #: src/zrythm_app.c:878
 #, c-format
 msgid "Could not get system memory lock limit (%s)"
 msgstr ""
+"Impossible d'obtenir la limite de verrouillage de la mémoire du système (%s)"
 
 #: src/zrythm_app.c:903
 #, fuzzy, c-format
@@ -3277,7 +3282,7 @@ msgstr "Pas un événement de changement de contrôle"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:40
 msgid "Welcome to the Zrythm DAW"
-msgstr ""
+msgstr "Bienvenue sur la STAN Zrythm"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:44
 #, c-format
@@ -3285,6 +3290,8 @@ msgid ""
 "If this is your first time using Zrythm, we suggest going through the "
 "'Getting Started' section in the %suser manual%s."
 msgstr ""
+"Si vous utilisez Zrythm pour la première fois, nous vous suggérons de "
+"parcourir la section 'Getting Started' du %s manuel d'utilisation%s."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:54
 #, c-format
@@ -3292,10 +3299,13 @@ msgid ""
 "%sZrythm relies on donations and purchases to sustain development%s. If you "
 "enjoy the software, please consider %sdonating%s or %sbuying an installer%s."
 msgstr ""
+"%sZrythm dépend des dons et des achats pour soutenir le développement%s. Si "
+"vous appréciez le logiciel, pensez à %sfaire un don%s ou %sacheter un "
+"installateur%s."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:69
 msgid "Flatpak users"
-msgstr ""
+msgstr "Utilisateurs de Flatpak"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:70
 msgid ""
@@ -3303,21 +3313,26 @@ msgid ""
 "errors when starting Zrythm. We recommend setting a fixed buffer size for "
 "Zrythm in your PipeWire config to avoid this."
 msgstr ""
+"La version PipeWire de cet exécutable Flatpak comporte un bogue connu qui "
+"peut provoquer des erreurs lors du démarrage de Zrythm. Nous vous "
+"recommandons de définir une taille de tampon fixe pour Zrythm dans votre "
+"configuration PipeWire pour éviter cela."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:88
 msgid ""
 "Zrythm and the Zrythm logo are registered trademarks of Alexandros Theodotou "
 "in the United Kingdom."
 msgstr ""
+"*Zrythm et le logo Zrythm sont des marques déposées de Alexandros Theodotou "
+"au Royaume-Uni.*"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:107
 msgid "Welcome"
-msgstr ""
+msgstr "Bienvenue"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:103
-#, fuzzy
 msgid "MIDI region exported."
-msgstr "Entrée MIDI"
+msgstr "Région MIDI exportée."
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:114
 #, fuzzy
@@ -3922,14 +3937,15 @@ msgid ""
 "This plugin contains multiple audio outputs. Would you like to auto-route "
 "each output to a separate FX track?"
 msgstr ""
+"Ce greffon contient plusieurs sorties audio. Souhaitez-vous acheminer "
+"automatiquement chaque sortie vers une piste FX distincte ?"
 
 #: src/settings/plugin_settings.c:357
 msgid "Are the outputs stereo?"
-msgstr ""
+msgstr "Les sorties sont-elles stéréo ?"
 
 #: src/settings/plugin_settings.c:419 src/settings/plugin_settings.c:518
 #: src/settings/plugin_settings.c:536
-#, fuzzy
 msgid "Failed to move track"
 msgstr "Échec de l'ouverture du fichier : %s"
 
@@ -3952,7 +3968,7 @@ msgstr "Impossible de réinitialiser le schéma %s"
 #: src/settings/plugin_settings.c:490
 #, c-format
 msgid "%s %d"
-msgstr ""
+msgstr "%s %d"
 
 #: src/settings/plugin_settings.c:574
 #, fuzzy
@@ -4386,6 +4402,10 @@ msgid ""
 "priority of threads. Please refer to the 'Getting Started' section in the "
 "user manual for details."
 msgstr ""
+"Votre utilisateur ne dispose pas de suffisamment de privilèges pour "
+"permettre à %s de définir la priorité d'ordonnancement des threads. Veuillez "
+"vous reporter à la section 'Getting Started' du manuel de l'utilisateur pour "
+"plus de détails."
 
 #: src/audio/sample_processor.c:646
 #, fuzzy, c-format
@@ -4920,6 +4940,9 @@ msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
 msgstr ""
+"Les pistes sélectionnées contiennent des greffons non-instanciés. Leurs "
+"suppressions ne seront pas annulable et l'historique des annulations sera "
+"effacé. Poursuivre la suppression ?"
 
 #: src/actions/actions.c:1978
 #, fuzzy
@@ -5057,6 +5080,9 @@ msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
 "undoable and the undo history will be cleared. Continue with deletion?"
 msgstr ""
+"La sélection contient des greffons non-instanciés. Leurs suppressions ne "
+"seront pas annulable et l'historique des annulations sera effacé. Poursuivre "
+"la suppression ?"
 
 #: src/actions/actions.c:3672
 #, fuzzy, c-format
@@ -5911,7 +5937,7 @@ msgstr "Créer %s"
 
 #: resources/ui/project_assistant.ui:98
 msgid "Open from _Path"
-msgstr ""
+msgstr "Ouvrir à partir de _Path"
 
 #: resources/ui/bug_report_dialog.ui:6
 msgid "Error"
@@ -6363,7 +6389,7 @@ msgstr "Échec de l'écriture du fichier : %s"
 
 #: resources/ui/export_dialog.ui:276
 msgid "Export track lanes as separate MIDI tracks"
-msgstr ""
+msgstr "Exporter les lignes de pistes comme des pistes MIDI séparées"
 
 #: resources/ui/export_dialog.ui:336
 msgid "~"
@@ -6785,7 +6811,7 @@ msgstr "Répertoire du dernier projet"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:407
 msgid "Last set velocity on a MIDI note."
-msgstr ""
+msgstr "Dernière vélocité réglée sur une note MIDI."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:412
 msgid ""
@@ -7547,7 +7573,7 @@ msgstr "Enlever le Solo de toutes les pistes"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:866
 msgid "Export track lanes as separate MIDI tracks."
-msgstr ""
+msgstr "Exportez les lignes de pistes comme des pistes MIDI séparées."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:871
 msgid "Add dither while exporting, if applicable."
@@ -7983,7 +8009,7 @@ msgstr "Scan des greffons"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:41
 msgid "Main window with detached panels"
-msgstr ""
+msgstr "Fenêtre principale avec panneaux détachés"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:89
