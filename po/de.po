@@ -9,21 +9,22 @@
 # Ulrich <drulli@airmail.cc>, 2022.
 # Johannes Maibaum <jmaibaum@gmail.com>, 2022.
 # ssantos <ssantos@web.de>, 2022.
+# Cgrieger <translate@cgrieger.org>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-03-29 17:57+0100\n"
-"PO-Revision-Date: 2022-02-26 16:54+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"PO-Revision-Date: 2022-03-31 17:07+0000\n"
+"Last-Translator: Cgrieger <translate@cgrieger.org>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.11.1-dev\n"
+"X-Generator: Weblate 4.12-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -489,9 +490,8 @@ msgid "Double Harmonic"
 msgstr "Sinti- und Roma-Dur / Arabisch"
 
 #: inc/audio/scale.h:169
-#, fuzzy
 msgid "Chinese"
-msgstr "Chinesisch [zh]"
+msgstr "Chinesisch"
 
 #: inc/audio/scale.h:170
 msgid "Diminished"
