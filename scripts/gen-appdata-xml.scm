@@ -157,17 +157,13 @@ Args:
                  (summary "Digital audio workstation")
                  (description
                    (p "Zrythm is a digital audio
-  workstation designed to
-  be featureful and easy to use. It allows
-  limitless automation through curves, LFOs and
-  envelopes, supports multiple plugin formats
-  including LV2, VST2 and VST3, works with
-  multiple backends including JACK, RtAudio/RtMidi
-  and SDL2, assists with chord progressions via a
-  special Chord Track and chord pads, and can be
-  used in multiple languages including English,
-  French, Portuguese, Japanese and German.")
-                   (p "Zrythm can be extended using GNU Guile."))
+workstation designed to
+be featureful and easy to use.
+It offers streamlined editing workflows with flexible
+tools, limitless automation capabilities, powerful
+mixing features, chord assistance and support for
+various plugin and file formats.")
+                   (p "Zrythm can be extended with user scripts written in GNU Guile."))
                  (categories
                    (category "AudioVideo")
                    (category "Audio"))
