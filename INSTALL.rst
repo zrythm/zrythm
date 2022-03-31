@@ -4,6 +4,9 @@ Installation Instructions
 Prerequisites
 -------------
 
+Build Tools
+~~~~~~~~~~~
+
 You will need the GNU toolchain, a C/C++ compiler
 and the following
 
@@ -22,59 +25,12 @@ install meson from
 or run ``meson.py`` directly from
 `meson's source code <https://github.com/mesonbuild/meson>`_.
 
-Building
---------
-
-Configure the build directory, optionally passing options::
-
-    meson setup build -Doption_name=value
-
-To see all available options, type the following
-after the build directory is initialized, or look
-inside `meson_options.txt <meson_options.txt>`_.
-Built-in meson options can be found
-`here <https://mesonbuild.com/Builtin-options.html>`_::
-
-    meson configure build
-
-To change an option after configuration, use::
-
-    meson configure build -Doption_name=value
-
-Compile after configuring the build directory::
-
-    meson compile -C build
-
-To clean the build directory while keeping the
-current configuration, use::
-
-    meson compile --clean -C build
-
-To change environment variables (such as ``CC`` and
-``CXX``) while keeping the current configuration, use::
-
-    MY_ENV_VARIABLE=myvalue meson build --wipe
-
-To start from scratch, remove the ``build`` directory::
-
-    rm -rf build
-
-Optimization
-~~~~~~~~~~~~
-
-The default build type is ``debugoptmized``, which
-is equivalent to ``-Ddebug=true -Doptimization=2``
-(``-O2 -g``). This works well in most cases. For
-extremely optimized builds, we suggest building with
-the following options::
-
-    -Ddebug=true -Doptimization=3 -Dextra_optimizations=true -Dnative_build=true
-
-We suggest always keeping ``-Ddebug=true`` to assist
-with meaningful stack traces and bug reports.
-
 Dependencies
 ~~~~~~~~~~~~
+
+The following dependencies must be installed before
+attempting to build or run Zrythm.
+
 Required
 ++++++++
 `breeze-icons (LGPLv3+) <https://github.com/KDE/breeze-icons>`_
@@ -162,8 +118,63 @@ Dependency package names for various distros
 can be found `here <https://git.sr.ht/~alextee/zrythm-builds/tree/master/item/.builds>`_
 and `here <https://git.sr.ht/~alextee/zrythm-builds2/tree/master/item/.builds>`_
 
+Configuration
+-------------
+
+Configure the build directory, optionally passing options::
+
+    meson setup build -Doption_name=value
+
+To see all available options, type the following
+after the build directory is initialized, or look
+inside `meson_options.txt <meson_options.txt>`_.
+Built-in meson options can be found
+`here <https://mesonbuild.com/Builtin-options.html>`_::
+
+    meson configure build
+
+To change an option after configuration, use::
+
+    meson configure build -Doption_name=value
+
+To change environment variables (such as ``CC`` and
+``CXX``) while keeping the current configuration, use::
+
+    MY_ENV_VARIABLE=myvalue meson build --wipe
+
+To start from scratch, remove the ``build`` directory::
+
+    rm -rf build
+
+Optimization
+~~~~~~~~~~~~
+
+The default build type is ``debugoptmized``, which
+is equivalent to ``-Ddebug=true -Doptimization=2``
+(``-O2 -g``). This works well in most cases. For
+extremely optimized builds, we suggest building with
+the following options::
+
+    -Ddebug=true -Doptimization=3 -Dextra_optimizations=true -Dnative_build=true
+
+We suggest always keeping ``-Ddebug=true`` to assist
+with meaningful stack traces and bug reports.
+
+Compilation
+-----------
+
+Compile after configuring the build directory::
+
+    meson compile -C build
+
+To clean the build directory while keeping the
+current configuration, use::
+
+    meson compile --clean -C build
+
 Installation
 ------------
+
 Once the program is built, it will need to be
 installed the first time before it can run (to
 install the `GSettings <https://developer.gnome.org/gio/stable/GSettings.html>`_ among other things)::
@@ -173,7 +184,7 @@ install the `GSettings <https://developer.gnome.org/gio/stable/GSettings.html>`_
 If you don't want to install anything permanent on
 your system, you can install it somewhere
 temporary by configuring with
-``meson build --prefix=/tmp/zrythm`` for example, and
+``--prefix=/tmp/zrythm`` for example, and
 then you can run it with
 ``/tmp/zrythm/bin/zrythm_launch``.
 
@@ -185,6 +196,9 @@ recommended to use ``zrythm_launch`` instead of
 running the ``zrythm`` binary directly. This takes
 care of using the correct GSettings schemas and
 other resources in the installed prefix.
+
+For debugging and other developer tools, see
+`HACKING.md <HACKING.md>`_.
 
 .. Copyright (C) 2019-2022 Alexandros Theodotou
 
