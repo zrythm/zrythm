@@ -18,4 +18,4 @@ each explained in its own section.
 * :ref:`Editor <editors>`
 * :ref:`Mixer <mixing>`
 * :ref:`Modulators <modulators/intro:Modulators>`
-* :ref:`Chord Pad <chords-and-scales/overview:Chord Pad>`
+* :ref:`Chord Pad <chords-and-scales/chord-pad:Chord Pad>`
