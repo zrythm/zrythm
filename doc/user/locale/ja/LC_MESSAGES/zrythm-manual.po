@@ -13,15 +13,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-03-29 15:32+0100\n"
-"PO-Revision-Date: 2022-02-19 21:56+0000\n"
+"PO-Revision-Date: 2022-03-31 17:07+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.12-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -5540,7 +5541,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
 msgid "File Browser"
-msgstr "ファイル ブラウザ"
+msgstr "ファイルブラウザ"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:10
 msgid ""
