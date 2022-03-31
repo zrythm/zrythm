@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -42,10 +42,8 @@
 #define BUG_REPORT_DIALOG_WIDGET_TYPE \
   (bug_report_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  BugReportDialogWidget,
-  bug_report_dialog_widget,
-  Z, BUG_REPORT_DIALOG_WIDGET,
-  GtkDialog)
+  BugReportDialogWidget, bug_report_dialog_widget,
+  Z, BUG_REPORT_DIALOG_WIDGET, GtkDialog)
 
 typedef struct _BugReportDialogWidget
 {
@@ -53,21 +51,18 @@ typedef struct _BugReportDialogWidget
 
   GtkLabel *      top_lbl;
 
-  GtkButton *     button_close;
-  GtkButton *     button_send_srht;
-  GtkButton *     button_send_email;
-  GtkButton *     button_send_automatically;
+  GtkLabel *      backtrace_lbl;
+  GtkLabel *      log_lbl;
+  GtkLabel *      system_info_lbl;
 
-  GtkSourceView * steps_to_reproduce_text_view;
-  GtkSourceView * other_info_text_view;
-  GtkSourceBuffer * steps_to_reproduce_buffer;
-  GtkSourceBuffer * other_info_buffer;
+  GtkTextView *   user_input_text_view;
 
   char *          log;
   char *          log_long;
   char *          undo_stack;
   char *          undo_stack_long;
   char *          backtrace;
+  char *          system_nfo;
   bool            fatal;
 
 } BugReportDialogWidget;

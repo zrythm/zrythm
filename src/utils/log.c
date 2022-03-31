@@ -793,10 +793,7 @@ log_idle_cb (
               char msg[500];
               sprintf (
                 msg,
-                _("%s has encountered a "
-                "non-fatal error. It may "
-                "continue to run but "
-                "behavior will be undefined. "),
+                _("%s has encountered an error\n"),
                 PROGRAM_NAME);
               BugReportDialogWidget * dialog =
                 bug_report_dialog_new (
@@ -806,10 +803,6 @@ log_idle_cb (
                   false);
               gtk_window_present (
                 GTK_WINDOW (dialog));
-              g_signal_connect (
-                GTK_DIALOG (dialog), "response",
-                G_CALLBACK (gtk_window_destroy),
-                NULL);
             }
 
           /* write the backtrace to the log after

@@ -263,3 +263,12 @@ The following icons are released as
 
 - plugin-line.svg
 - plugin-solid.svg
+
+---
+
+The following files are part of
+[libadwaita](https://gitlab.gnome.org/GNOME/libadwaita)
+licensed under
+[GNU LGPLv2.1+](https://gitlab.gnome.org/GNOME/libadwaita/-/blob/main/COPYING).
+
+- adw-expander-arrow-symbolic.svg

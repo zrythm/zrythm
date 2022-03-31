@@ -270,10 +270,10 @@ zrythm_get_version_with_capabilities (
   if (include_system_info)
     {
       g_string_append (gstr, "\n");
-      g_string_append_printf (
-        gstr,
-        "XDG_SESSION_TYPE=%s",
-        g_getenv("XDG_SESSION_TYPE"));
+      char * system_nfo =
+        zrythm_get_system_info ();
+      g_string_append (gstr, system_nfo);
+      g_free (system_nfo);
     }
 
   char * str = g_string_free (gstr, false);
@@ -281,6 +281,37 @@ zrythm_get_version_with_capabilities (
 
   g_free (str);
   g_free (ver);
+}
+
+/**
+ * Returns system info (mainly used for bug
+ * reports).
+ */
+char *
+zrythm_get_system_info (void)
+{
+  GString * gstr = g_string_new (NULL);
+
+  char * content = NULL;
+  bool ret =
+    g_file_get_contents (
+      "/etc/os-release",
+      &content, NULL, NULL);
+  if (ret)
+    {
+      g_string_append_printf (
+        gstr, "%s\n", content);
+      g_free (content);
+    }
+
+  g_string_append_printf (
+    gstr,
+    "XDG_SESSION_TYPE=%s",
+    g_getenv("XDG_SESSION_TYPE"));
+
+  char * str = g_string_free (gstr, false);
+
+  return str;
 }
 
 /**

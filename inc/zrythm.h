@@ -390,6 +390,13 @@ zrythm_get_version_with_capabilities (
   bool   include_system_info);
 
 /**
+ * Returns system info (mainly used for bug
+ * reports).
+ */
+char *
+zrythm_get_system_info (void);
+
+/**
  * Returns the default user "zrythm" dir.
  *
  * This is used when resetting or when the

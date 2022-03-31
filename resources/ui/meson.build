@@ -24,7 +24,6 @@ resource_files += files ([
   'bind_cc_dialog.ui',
   'bot_bar.ui',
   'bounce_dialog.ui',
-  'bug_report_dialog.ui',
   'center_dock.ui',
   'channel.ui',
   'chord_editor_space.ui',

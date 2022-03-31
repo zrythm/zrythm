@@ -162,9 +162,8 @@ segv_handler (int sig)
         bug_report_dialog_new (
           GTK_WINDOW (MAIN_WINDOW), str, bt, true);
 
-      /* run the dialog */
-      z_gtk_dialog_run (
-        GTK_DIALOG (dialog), true);
+      gtk_window_present (GTK_WINDOW (dialog));
+      return;
     }
 
   exit (EXIT_FAILURE);
