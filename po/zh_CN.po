@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-03-29 17:57+0100\n"
-"PO-Revision-Date: 2022-02-18 17:36+0000\n"
+"PO-Revision-Date: 2022-03-31 17:07+0000\n"
 "Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.11-dev\n"
+"X-Generator: Weblate 4.12-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -190,7 +190,7 @@ msgstr "取消静音"
 
 #: inc/audio/audio_function.h:70
 msgid "Invert"
-msgstr "翻转"
+msgstr "反转"
 
 #: inc/audio/audio_function.h:71
 msgid "Normalize peak"
@@ -704,11 +704,11 @@ msgid "Backup found"
 msgstr "找到备份"
 
 #: src/project.c:1057
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "This project was created with an unsupported version of %s (%s). It may not "
 "work correctly."
-msgstr "此项目是使用不同版本%s（%s）创建的。它可能没有正常运作。"
+msgstr "此项目是使用不受支持的%s版本（%s）创建的。它可能无法正常运作。"
 
 #: src/project.c:1073
 msgid "Failed to load project. Please check the logs for more information."
@@ -817,9 +817,9 @@ msgid "Could not get system memory lock limit (%s)"
 msgstr ""
 
 #: src/zrythm_app.c:903
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot lock down memory: %s"
-msgstr "无法 solo 音轨：%s"
+msgstr "无法锁定内存：%s"
 
 #: src/zrythm_app.c:1049
 #, c-format
@@ -975,9 +975,9 @@ msgid "Init"
 msgstr "初始化"
 
 #: src/plugins/carla_native_plugin.c:715
-#, fuzzy, c-format
+#, c-format
 msgid "Preset %u"
-msgstr "预设"
+msgstr "预设 %u"
 
 #: src/plugins/carla_native_plugin.c:1163
 msgid "Audio in"
@@ -1520,30 +1520,25 @@ msgid "Select a directory"
 msgstr "选择目录"
 
 #: src/gui/widgets/project_assistant.c:39
-#, fuzzy
 msgid "<File not found>"
-msgstr "文件%s未找到。"
+msgstr "<未找到文件>"
 
 #: src/gui/widgets/project_assistant.c:157
 #: resources/ui/project_assistant.ui:104
-#, fuzzy
 msgid "_Open Selected"
-msgstr "_选择"
+msgstr "打开所选(_O)"
 
 #: src/gui/widgets/project_assistant.c:165
-#, fuzzy
 msgid "_Create"
-msgstr "创建%s"
+msgstr "创建(_C)"
 
 #: src/gui/widgets/project_assistant.c:505
-#, fuzzy
 msgid "No project selected"
-msgstr "未选择对象"
+msgstr "未选中项目"
 
 #: src/gui/widgets/project_assistant.c:522
-#, fuzzy
 msgid "Select Project File"
-msgstr "选择项目"
+msgstr "选择项目文件"
 
 #: src/gui/widgets/project_assistant.c:525 src/utils/dialogs.c:47
 msgid "_Open"
@@ -1560,9 +1555,8 @@ msgid "Name"
 msgstr "名称"
 
 #: src/gui/widgets/project_assistant.c:666 src/gui/widgets/item_factory.c:962
-#, fuzzy
 msgid "Template Name"
-msgstr "曲目名称"
+msgstr "模板名称"
 
 #: src/gui/widgets/project_assistant.c:679 src/gui/widgets/item_factory.c:968
 #: resources/ui/first_run_assistant.ui:56
@@ -1596,9 +1590,8 @@ msgid "Visibility"
 msgstr "可见性"
 
 #: src/gui/widgets/left_dock_edge.c:248
-#, fuzzy
 msgid "Track visibility"
-msgstr "可见性"
+msgstr "音轨可见性"
 
 #: src/gui/widgets/plugin_strip_expander.c:191
 msgid "Inserts"
@@ -2138,9 +2131,8 @@ msgid "Audio Regions"
 msgstr "音频区域"
 
 #: src/gui/widgets/timeline_arranger.c:1219
-#, fuzzy
 msgid "Export as MIDI file..."
-msgstr "导出为MIDI文件"
+msgstr "导出为 MIDI 文件…"
 
 #: src/gui/widgets/timeline_arranger.c:1225
 msgid "MIDI Regions"
@@ -2270,7 +2262,6 @@ msgid "Plugins"
 msgstr "插件"
 
 #: src/gui/widgets/right_dock_edge.c:107
-#, fuzzy
 msgid "Plugin browser"
 msgstr "插件浏览器"
 
@@ -2279,7 +2270,6 @@ msgid "Files"
 msgstr ""
 
 #: src/gui/widgets/right_dock_edge.c:122
-#, fuzzy
 msgid "File browser"
 msgstr "文件浏览器"
 
@@ -2289,9 +2279,8 @@ msgid "Monitor"
 msgstr "监视器"
 
 #: src/gui/widgets/right_dock_edge.c:137
-#, fuzzy
 msgid "Monitor section"
-msgstr "监视器部分"
+msgstr "监视部分"
 
 #: src/gui/widgets/right_dock_edge.c:151 src/settings/chord_preset.c:67
 #: src/audio/chord_track.c:60 resources/ui/inspector_chord.ui:7
@@ -2299,9 +2288,8 @@ msgid "Chords"
 msgstr "和弦"
 
 #: src/gui/widgets/right_dock_edge.c:152
-#, fuzzy
 msgid "Chord preset browser"
-msgstr "显示文件浏览器"
+msgstr "和弦预设浏览器"
 
 #: src/gui/widgets/right_dock_edge.c:160
 msgid "Show file browser"
@@ -2461,17 +2449,15 @@ msgstr "日志查看器"
 
 #: src/gui/widgets/main_window.c:888
 msgid "Scripting interface"
-msgstr "脚本接口"
+msgstr "脚本编程接口"
 
 #: src/gui/widgets/velocity_settings.c:101
-#, fuzzy
 msgid "Default Velocity"
-msgstr "默认脚本"
+msgstr "默认速率"
 
 #: src/gui/widgets/velocity_settings.c:105
-#, fuzzy
 msgid "Last Note"
-msgstr "低音音符"
+msgstr "上个音符"
 
 #: src/gui/widgets/snap_grid.c:59
 #, c-format
@@ -2480,7 +2466,7 @@ msgstr ""
 
 #: src/gui/widgets/snap_grid.c:121
 msgid "Snap/Grid options"
-msgstr "对齐/网格选项"
+msgstr "Snap/Grid 选项"
 
 #: src/gui/widgets/preferences.c:499
 msgid "Select a folder"
@@ -2699,9 +2685,8 @@ msgid "Value"
 msgstr "值"
 
 #: src/gui/widgets/event_viewer.c:953 src/gui/widgets/item_factory.c:932
-#, fuzzy
 msgid "Curve type"
-msgstr "note类型"
+msgstr "曲线类型"
 
 #: src/gui/widgets/event_viewer.c:968 src/gui/widgets/item_factory.c:387
 #: src/gui/widgets/item_factory.c:941
@@ -2840,34 +2825,28 @@ msgid "Failed to enable binding"
 msgstr "未能启用绑定"
 
 #: src/gui/widgets/item_factory.c:205
-#, fuzzy
 msgid "Invalid position"
-msgstr "起始位置"
+msgstr "无效位置"
 
 #: src/gui/widgets/item_factory.c:212
-#, fuzzy
 msgid "Failed to parse position"
-msgstr "未能编辑位置"
+msgstr "未能解析位置"
 
 #: src/gui/widgets/item_factory.c:301
-#, fuzzy
 msgid "Invalid name"
-msgstr "无效化"
+msgstr "无效名称"
 
 #: src/gui/widgets/item_factory.c:314
-#, fuzzy
 msgid "Invalid velocity"
-msgstr "Velocity"
+msgstr "无效速率"
 
 #: src/gui/widgets/item_factory.c:338
-#, fuzzy
 msgid "Invalid pitch"
-msgstr "无效化"
+msgstr "无效音高"
 
 #: src/gui/widgets/item_factory.c:368 src/gui/widgets/item_factory.c:396
-#, fuzzy
 msgid "Invalid value"
-msgstr "无效化"
+msgstr "无效值"
 
 #: src/gui/widgets/item_factory.c:605
 msgid "Add Bookmark"
@@ -3020,19 +2999,16 @@ msgid "MIDI Channel %d"
 msgstr "MIDI通道%d"
 
 #: src/gui/widgets/track.c:1027
-#, fuzzy
 msgid "Track MIDI Channel"
-msgstr "音轨MIDI通道"
+msgstr "音轨 MIDI 通道"
 
 #: src/gui/widgets/track.c:1058
-#, fuzzy
 msgid "Lane MIDI Channel"
-msgstr "MIDI通道%d"
+msgstr "Lane MIDI 通道"
 
 #: src/gui/widgets/track.c:1063
-#, fuzzy
 msgid "Piano Roll"
-msgstr "钢琴卷板"
+msgstr "钢琴卷帘"
 
 #: src/gui/widgets/main_notebook.c:141 src/utils/gtk.c:1341
 msgid "Timeline"
@@ -3180,19 +3156,16 @@ msgid "Welcome"
 msgstr ""
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:103
-#, fuzzy
 msgid "MIDI region exported."
-msgstr "MIDI 区域"
+msgstr "MIDI 区域已导出。"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:114
-#, fuzzy
 msgid "MIDI regions exported."
-msgstr "MIDI 区域"
+msgstr "MIDI 区域已导出。"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:120
-#, fuzzy
 msgid "Failed to export MIDI regions."
-msgstr "未能设置 MIDI 模式"
+msgstr "未能导出 MIDI 区域。"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:149
 msgid "Select MIDI file"
@@ -3227,19 +3200,16 @@ msgid "MIDI Format"
 msgstr "MIDI 格式"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:212
-#, fuzzy
 msgid "Part of parent track"
-msgstr "未能创建音轨"
+msgstr "主音轨的一部分"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:217
-#, fuzzy
 msgid "Separate tracks"
-msgstr "重命名音轨"
+msgstr "分开音轨"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:225
-#, fuzzy
 msgid "Export lanes as"
-msgstr "导出为"
+msgstr "将 lane 导出为"
 
 #: src/gui/widgets/dialogs/string_entry_dialog.c:86
 msgid "Please enter a value"
@@ -3500,9 +3470,8 @@ msgid "Failed to paste selections"
 msgstr "无法粘贴所选"
 
 #: src/gui/backend/arranger_object.c:1881
-#, fuzzy
 msgid "Failed to edit object"
-msgstr "未能创建对象"
+msgstr "未能编辑对象"
 
 #: src/gui/backend/arranger_object.c:3578
 #, c-format
@@ -3524,14 +3493,12 @@ msgid "Trial limit has been reached. %s will now go silent"
 msgstr "已达到试用限制。%s将变为静默状态"
 
 #: src/gui/backend/event_manager.c:1415
-#, fuzzy
 msgid "Plugin preset saved."
-msgstr "插件浏览器大小"
+msgstr "已保存插件预设。"
 
 #: src/gui/backend/event_manager.c:1419
-#, fuzzy
 msgid "Plugin preset loaded."
-msgstr "插件浏览器已分离"
+msgstr "已加载插件预设。"
 
 #: src/gui/backend/tracklist_selections.c:744
 #, c-format
@@ -3539,9 +3506,8 @@ msgid "Failed to clone track '%s'"
 msgstr "未能克隆音轨 '%s'"
 
 #: src/gui/backend/tracklist_selections.c:787
-#, fuzzy
 msgid "Failed to paste tracks"
-msgstr "倾听音轨失败"
+msgstr "粘贴音轨失败"
 
 #: src/gui/backend/mixer_selections.c:709
 msgid "Failed to paste plugins"
@@ -3743,19 +3709,17 @@ msgstr ""
 
 #: src/settings/plugin_settings.c:419 src/settings/plugin_settings.c:518
 #: src/settings/plugin_settings.c:536
-#, fuzzy
 msgid "Failed to move track"
-msgstr "未能移动音轨"
+msgstr "移动音轨失败"
 
 #: src/settings/plugin_settings.c:436 src/settings/plugin_settings.c:553
-#, fuzzy
 msgid "Failed to set direct out"
-msgstr "更改 direct out 失败"
+msgstr "设置 direct out 失败"
 
 #: src/settings/plugin_settings.c:443
-#, fuzzy, c-format
+#, c-format
 msgid "%s Output"
-msgstr "使输出变弱"
+msgstr "%s 输出"
 
 #: src/settings/plugin_settings.c:453 src/settings/plugin_settings.c:501
 #: src/audio/track.c:3152
@@ -3768,14 +3732,12 @@ msgid "%s %d"
 msgstr ""
 
 #: src/settings/plugin_settings.c:574
-#, fuzzy
 msgid "Failed to connect L port"
-msgstr "未能连接端口"
+msgstr "连接 L 端口失败"
 
 #: src/settings/plugin_settings.c:595
-#, fuzzy
 msgid "Failed to connect R port"
-msgstr "未能连接端口"
+msgstr "连接 R 端口失败"
 
 #: src/settings/settings.c:163
 #, c-format
@@ -4117,14 +4079,12 @@ msgid "Failed to rename lane"
 msgstr "未能重命名 lane"
 
 #: src/audio/track_lane.c:167
-#, fuzzy
 msgid "Cannot set track lane soloed"
-msgstr "无法将音轨状态设为 soloed"
+msgstr "无法将音轨 lane 状态设为 soloed"
 
 #: src/audio/track_lane.c:219
-#, fuzzy
 msgid "Cannot set track lane muted"
-msgstr "无法将音轨设为静音"
+msgstr "无法将音轨 lane 设为静音"
 
 #: src/audio/audio_function.c:162 src/audio/track.c:2356 src/audio/track.c:3496
 #: src/actions/mixer_selections_action.c:627
@@ -4715,9 +4675,8 @@ msgid "Failed to remove range"
 msgstr "无法移除区间"
 
 #: src/actions/actions.c:2865
-#, fuzzy
 msgid "Object name"
-msgstr "项目名称"
+msgstr "对象名称"
 
 #: src/actions/actions.c:2909
 msgid "Please enter a BPM"
@@ -5032,12 +4991,11 @@ msgstr "非独奏曲目"
 #: src/actions/tracklist_selections.c:2313
 #, fuzzy
 msgid "Solo Lane"
-msgstr "独奏曲目"
+msgstr "独奏 Lane"
 
 #: src/actions/tracklist_selections.c:2316
-#, fuzzy
 msgid "Unsolo Lane"
-msgstr "非独奏"
+msgstr "非独奏 Lane"
 
 #: src/actions/tracklist_selections.c:2320
 msgid "Mute Track"
@@ -5048,14 +5006,12 @@ msgid "Unmute Track"
 msgstr "取消音轨静音"
 
 #: src/actions/tracklist_selections.c:2327
-#, fuzzy
 msgid "Mute Lane"
 msgstr "静音音轨"
 
 #: src/actions/tracklist_selections.c:2330
-#, fuzzy
 msgid "Unmute Lane"
-msgstr "取消静音"
+msgstr "取消 Lane 静音"
 
 #: src/actions/tracklist_selections.c:2334
 msgid "Listen Track"
@@ -5389,7 +5345,6 @@ msgid "Language"
 msgstr "语言"
 
 #: resources/ui/first_run_assistant.ui:28
-#, fuzzy
 msgid ""
 "<b><i>Note: Zrythm is currently in beta</i></b>\n"
 "\n"
@@ -5397,7 +5352,7 @@ msgid ""
 "This will guide you through the basic setup of Zrythm. First, choose your "
 "language."
 msgstr ""
-"<b><i>注意：Zrythm 尚在 Alpha 阶段</i></b>\n"
+"<b><i>注意：Zrythm 眼下处于 beta 阶段</i></b>\n"
 "\n"
 "欢迎使用 Zrythm。\n"
 "此向导将协助您完成 Zrythm 的基本设置。首先，选择您的语言。"
@@ -5579,19 +5534,16 @@ msgid "Toggle event viewer"
 msgstr "切换事件查看器"
 
 #: resources/ui/project_assistant.ui:5
-#, fuzzy
 msgid "Select a Project"
 msgstr "选择项目"
 
 #: resources/ui/project_assistant.ui:31
-#, fuzzy
 msgid "Open Recent"
-msgstr "开放项目"
+msgstr "打开最近项目"
 
 #: resources/ui/project_assistant.ui:56
-#, fuzzy
 msgid "Create New"
-msgstr "创建%s"
+msgstr "新建"
 
 #: resources/ui/project_assistant.ui:98
 msgid "Open from _Path"
@@ -6036,9 +5988,8 @@ msgid "Dither"
 msgstr "抖动"
 
 #: resources/ui/export_dialog.ui:274
-#, fuzzy
 msgid "Lanes as separate tracks"
-msgstr "未能创建音轨"
+msgstr "将 Lanes 作为单独音轨"
 
 #: resources/ui/export_dialog.ui:276
 msgid "Export track lanes as separate MIDI tracks"
@@ -6069,19 +6020,16 @@ msgid "Protocol"
 msgstr "协议"
 
 #: resources/ui/plugin_browser.ui:95
-#, fuzzy
 msgid "Instruments"
 msgstr "乐器"
 
 #: resources/ui/plugin_browser.ui:103
-#, fuzzy
 msgid "Effects"
-msgstr "插件效果"
+msgstr "音效"
 
 #: resources/ui/plugin_browser.ui:119
-#, fuzzy
 msgid "MIDI Modifiers"
-msgstr "钢琴卷MIDI修改器"
+msgstr "MIDI 修改器"
 
 #: resources/ui/clip_editor.ui:9
 msgid "No clip selected"
@@ -6092,34 +6040,28 @@ msgid "Select a clip from the timeline"
 msgstr ""
 
 #: resources/ui/toolbox.ui:12
-#, fuzzy
 msgid "Select mode"
-msgstr "选择文件夹"
+msgstr "选择模式"
 
 #: resources/ui/toolbox.ui:24
-#, fuzzy
 msgid "Edit mode"
-msgstr "编辑器"
+msgstr "编辑模式"
 
 #: resources/ui/toolbox.ui:36
-#, fuzzy
 msgid "Cut mode"
-msgstr "音乐模式"
+msgstr "剪切模式"
 
 #: resources/ui/toolbox.ui:48
-#, fuzzy
 msgid "Erase mode"
-msgstr "橡皮擦工具"
+msgstr "擦除模式"
 
 #: resources/ui/toolbox.ui:60
-#, fuzzy
 msgid "Ramp mode"
-msgstr "斜坡工具"
+msgstr "Ramp 模式"
 
 #: resources/ui/toolbox.ui:72
-#, fuzzy
 msgid "Audition mode"
-msgstr "试听工具"
+msgstr "Audition 模式"
 
 #: resources/ui/quantize_box.ui:28
 msgid "Full Quantize..."
@@ -6151,7 +6093,7 @@ msgstr "吸附"
 
 #: resources/ui/snap_grid_popover.ui:211
 msgid "Link"
-msgstr ""
+msgstr "链接"
 
 #: resources/ui/snap_grid_popover.ui:212
 msgid "Link length to snap setting"
@@ -6413,19 +6355,16 @@ msgid ""
 msgstr "钢琴卷中音音调索引中使用的音符（C，C#，）等）"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:401
-#, fuzzy
 msgid "Default velocity"
-msgstr "默认脚本"
+msgstr "默认速率"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:402
-#, fuzzy
 msgid "The default velocity to use when creating new MIDI notes."
-msgstr "创建时间线对象时使用的默认长度。"
+msgstr "创建新的 MIDI 音符时使用的默认速率。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:406
-#, fuzzy
 msgid "Last set velocity"
-msgstr "最后一个项目目录"
+msgstr "上个设置的速率"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:407
 msgid "Last set velocity on a MIDI note."
@@ -7102,9 +7041,8 @@ msgid "Filename pattern for exported files."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:865
-#, fuzzy
 msgid "Lanes as tracks"
-msgstr "取消所有音轨的独奏"
+msgstr "将 Lanes 作为音轨"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:866
 msgid "Export track lanes as separate MIDI tracks."
@@ -7504,9 +7442,8 @@ msgid "Zrythm can be extended using GNU Guile."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:37
-#, fuzzy
 msgid "Main window with plugins"
-msgstr "扫描插件"
+msgstr "有插件的主窗口"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:41
 msgid "Main window with detached panels"
@@ -7516,9 +7453,8 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:89
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:125
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:164
-#, fuzzy
 msgid "Changed"
-msgstr "更改"
+msgstr "已更改"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:66
 msgid "User manual: update Editing, Mixing, Playback &amp; Recording chapters"
@@ -7555,9 +7491,8 @@ msgid "Added"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:86
-#, fuzzy
 msgid "Add Hungarian locale"
-msgstr "匈牙利小调音阶"
+msgstr "添加匈牙利 locale"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:92
 msgid ""
@@ -7574,9 +7509,8 @@ msgid "Disable scroll-to-focus on arrangers"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:95
-#, fuzzy
 msgid "Cleanup plugin state dirs on save"
-msgstr "Carla 插件实例化失败"
+msgstr "保存时清理插件状态目录"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:101
 msgid "Fix applying audio function not updating clip frames"
@@ -7592,9 +7526,8 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:106
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:145
-#, fuzzy
 msgid "Removed"
-msgstr "删除"
+msgstr "已删除"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:109
 msgid "Remove message that says Zrythm is in alpha"

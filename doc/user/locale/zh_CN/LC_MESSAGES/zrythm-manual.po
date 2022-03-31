@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-03-29 15:32+0100\n"
-"PO-Revision-Date: 2022-02-02 16:54+0000\n"
+"PO-Revision-Date: 2022-03-31 17:07+0000\n"
 "Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
-"Language: zh_CN\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.12-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -296,9 +297,8 @@ msgid ""
 msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:29
-#, fuzzy
 msgid "Preset Packs"
-msgstr "预设"
+msgstr "预设包"
 
 #: ../../chords-and-scales/chord-pad.rst:31
 msgid ""
@@ -308,7 +308,7 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:38
 msgid "Chord preset browser"
-msgstr ""
+msgstr "和弦预设浏览器"
 
 #: ../../chords-and-scales/chord-pad.rst:41
 #: ../../plugins-files/audio-midi-files/file-browser.rst:47
@@ -392,9 +392,8 @@ msgid "Saving a chord preset"
 msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:102
-#, fuzzy
 msgid "Loading Presets"
-msgstr "录音设置"
+msgstr "加载预设中"
 
 #: ../../chords-and-scales/chord-pad.rst:104
 msgid ""
@@ -403,9 +402,8 @@ msgid ""
 msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:111
-#, fuzzy
 msgid "Selecting a chord preset"
-msgstr "选择"
+msgstr "选择和弦预设"
 
 #: ../../chords-and-scales/chord-pad.rst:113
 msgid ""
@@ -437,14 +435,12 @@ msgid ""
 msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:135
-#, fuzzy
 msgid "Editing Chords"
-msgstr "录音模式"
+msgstr "编辑和弦"
 
 #: ../../chords-and-scales/chord-pad.rst:138
-#, fuzzy
 msgid "Chord Selection"
-msgstr "清除选定内容"
+msgstr "和弦选择"
 
 #: ../../chords-and-scales/chord-pad.rst:140
 msgid ""
@@ -709,9 +705,8 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/preferences.rst:19
-#, fuzzy
 msgid "Preferences dialog"
-msgstr "首选项"
+msgstr "首选项对话框"
 
 #: ../../configuration/preferences.rst:21
 msgid ""
@@ -740,9 +735,8 @@ msgid "Searching the user preferences"
 msgstr ""
 
 #: ../../configuration/preferences.rst:44
-#, fuzzy
 msgid "Notable Preferences"
-msgstr "首选项"
+msgstr "值得注意的首选项"
 
 #: ../../configuration/preferences.rst:46
 msgid ""
@@ -750,9 +744,8 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/preferences.rst:50
-#, fuzzy
 msgid "Backend Selection"
-msgstr "清除选定内容"
+msgstr "后端选择"
 
 #: ../../configuration/preferences.rst:52
 msgid ""
@@ -778,9 +771,8 @@ msgid "Zrythm will ignore input from any devices not explicitly enabled."
 msgstr ""
 
 #: ../../configuration/preferences.rst:72
-#, fuzzy
 msgid "Undo Stack Length"
-msgstr "撤销次数限制"
+msgstr "撤销 Stack 长度"
 
 #: ../../configuration/preferences.rst:74
 msgid ""
@@ -803,9 +795,8 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/preferences.rst:90
-#, fuzzy
 msgid "Backup Saving"
-msgstr "备份"
+msgstr "备份保存"
 
 #: ../../configuration/preferences.rst:92
 msgid ""
@@ -815,7 +806,6 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/preferences.rst:99
-#, fuzzy
 msgid "User Interface Language"
 msgstr "用户界面语言"
 
@@ -1092,7 +1082,6 @@ msgid "The audio editor is displayed when an audio region is selected."
 msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:15
-#, fuzzy
 msgid "Audio editor"
 msgstr "音频编辑器"
 
@@ -1117,7 +1106,6 @@ msgid "Waveform"
 msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:31
-#, fuzzy
 msgid "Fades"
 msgstr "推子"
 
@@ -1126,9 +1114,8 @@ msgid "Amplitude line"
 msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:33
-#, fuzzy
 msgid "Part selection"
-msgstr "清除选定内容"
+msgstr "部分选择"
 
 #: ../../editing/clip-editors/audio-editor.rst:36
 msgid "Changing the Amplitude"
@@ -1165,9 +1152,8 @@ msgid "The cursor will change to a resize up cursor."
 msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:58
-#, fuzzy
 msgid "Selecting Parts"
-msgstr "选择"
+msgstr "选择部分"
 
 #: ../../editing/clip-editors/audio-editor.rst:60
 msgid ""
@@ -1180,9 +1166,8 @@ msgid "The cursor will change to a range selection cursor."
 msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:67
-#, fuzzy
 msgid "Audio Functions"
-msgstr "音频区域"
+msgstr "音频函数"
 
 #: ../../editing/clip-editors/audio-editor.rst:69
 msgid ""
@@ -1197,9 +1182,8 @@ msgid "The following functions are available."
 msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:74
-#, fuzzy
 msgid "Invert"
-msgstr "线性"
+msgstr "反转"
 
 #: ../../editing/clip-editors/audio-editor.rst:75
 msgid "Invert the polarity of the audio."
@@ -1232,7 +1216,7 @@ msgstr ""
 #: ../../editing/clip-editors/audio-editor.rst:82
 #, fuzzy
 msgid "Nudge"
-msgstr "范围"
+msgstr "Nudge"
 
 #: ../../editing/clip-editors/audio-editor.rst:83
 msgid "Shift the audio by 1 sample backward or forward."
@@ -1302,9 +1286,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:15
-#, fuzzy
 msgid "Automation editor"
-msgstr "自动化"
+msgstr "自动化编辑器"
 
 #: ../../editing/clip-editors/automation-editor.rst:18
 msgid "Automation Arranger"
@@ -1317,9 +1300,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:25
-#, fuzzy
 msgid "Automation arranger"
-msgstr "自动化"
+msgstr "自动化编曲"
 
 #: ../../editing/clip-editors/automation-editor.rst:27
 msgid ""
@@ -1383,9 +1365,8 @@ msgid "Create table with illustrations."
 msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:58
-#, fuzzy
 msgid "Automation Functions"
-msgstr "自动化"
+msgstr "自动化函数"
 
 #: ../../editing/clip-editors/automation-editor.rst:60
 msgid ""
@@ -1487,7 +1468,7 @@ msgstr ""
 #: ../../editing/clip-editors/piano-roll.rst:8
 #: ../../editing/clip-editors/toolbar.rst:29
 msgid "Piano Roll"
-msgstr "钢琴滚筒"
+msgstr "钢琴卷帘"
 
 #: ../../editing/clip-editors/piano-roll.rst:10
 msgid ""
@@ -1496,9 +1477,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:17
-#, fuzzy
 msgid "Piano roll"
-msgstr "钢琴滚筒"
+msgstr "钢琴卷帘"
 
 #: ../../editing/clip-editors/piano-roll.rst:20
 msgid "Additional Controls"
@@ -1509,9 +1489,8 @@ msgid "The piano roll contains the following additional controls."
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:27
-#, fuzzy
 msgid "Piano roll controls"
-msgstr "控件"
+msgstr "钢琴卷帘控件"
 
 #: ../../editing/clip-editors/piano-roll.rst:38
 msgid "Drum View"
@@ -1544,9 +1523,8 @@ msgid "These are the keys corresponding to each key found on a piano."
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:54
-#, fuzzy
 msgid "Piano roll keys"
-msgstr "钢琴滚筒"
+msgstr "钢琴卷帘键"
 
 #: ../../editing/clip-editors/piano-roll.rst:56
 msgid ""
@@ -1677,9 +1655,8 @@ msgid "Connect all selected notes so that they play smoothly."
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:139
-#, fuzzy
 msgid "Portato"
-msgstr "格式"
+msgstr "次断音"
 
 #: ../../editing/clip-editors/piano-roll.rst:139
 msgid "Similar to legato, but leaves some space between the notes."
@@ -1813,9 +1790,8 @@ msgid "Piano roll toolbar"
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:18
-#, fuzzy
 msgid "Common sections"
-msgstr "循环选择"
+msgstr "共同段"
 
 #: ../../editing/clip-editors/toolbar.rst:20
 msgid "All editor toolbars include the following sections."
@@ -1869,7 +1845,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:39
 msgid "Default Velocity"
-msgstr ""
+msgstr "默认速率"
 
 #: ../../editing/clip-editors/toolbar.rst:41
 msgid "This is the velocity that will be used when creating new MIDI notes."
@@ -2033,9 +2009,8 @@ msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
 msgstr ""
 
 #: ../../editing/common-operations.rst:99
-#, fuzzy
 msgid "Zooming"
-msgstr "循环"
+msgstr "缩放"
 
 #: ../../editing/common-operations.rst:101
 msgid ""
@@ -2044,9 +2019,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/common-operations.rst:108
-#, fuzzy
 msgid "Zoom buttons"
-msgstr "缩小"
+msgstr "缩放按钮"
 
 #: ../../editing/common-operations.rst:110
 msgid "Zoom In"
@@ -2061,7 +2035,6 @@ msgid "Zoom Out"
 msgstr "缩小"
 
 #: ../../editing/common-operations.rst:113
-#, fuzzy
 msgid "Zoom out"
 msgstr "缩小"
 
@@ -2114,9 +2087,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/common-operations.rst:143
-#, fuzzy
 msgid "Follow Playhead"
-msgstr "播放头"
+msgstr "跟随播放头"
 
 #: ../../editing/common-operations.rst:143
 msgid "Keep the visible area centered at the position of the playhead"
@@ -2326,7 +2298,6 @@ msgid "Pressing :kbd:`Escape` will cancel any current action."
 msgstr ""
 
 #: ../../editing/event-viewers.rst:6
-#, fuzzy
 msgid "Event Viewers"
 msgstr "事件查看器"
 
@@ -2337,9 +2308,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/event-viewers.rst:14
-#, fuzzy
 msgid "Timeline event viewer"
-msgstr "事件查看器"
+msgstr "时间线事件查看器"
 
 #: ../../editing/event-viewers.rst:16
 msgid ""
@@ -2348,9 +2318,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/event-viewers.rst:21
-#, fuzzy
 msgid "Sorting"
-msgstr "导出"
+msgstr "排序"
 
 #: ../../editing/event-viewers.rst:23
 msgid ""
@@ -2370,12 +2339,11 @@ msgstr ""
 
 #: ../../editing/event-viewers.rst:36
 msgid "Edit mode"
-msgstr ""
+msgstr "编辑模式"
 
 #: ../../editing/event-viewers.rst:39
-#, fuzzy
 msgid "Object Selection"
-msgstr "循环选择"
+msgstr "对象选择"
 
 #: ../../editing/event-viewers.rst:41
 msgid ""
@@ -2526,9 +2494,8 @@ msgid "When snapping, snap to the start/end positions other objects"
 msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:35
-#, fuzzy
 msgid "Snap/Grid Options"
-msgstr "录音选项"
+msgstr "Snap/Grid 选项"
 
 #: ../../editing/snapping-grid-options.rst:37
 msgid ""
@@ -2537,9 +2504,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:43
-#, fuzzy
 msgid "Snap/Grid options"
-msgstr "录音选项"
+msgstr "Snap/Grid 选项"
 
 #: ../../editing/snapping-grid-options.rst:46
 msgid "Snap"
@@ -2592,9 +2558,8 @@ msgid "The Length section controls the default length of objects."
 msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:66
-#, fuzzy
 msgid "Link"
-msgstr "插件"
+msgstr "链接"
 
 #: ../../editing/snapping-grid-options.rst:67
 msgid "Use the same options as Snap"
@@ -2659,7 +2624,6 @@ msgid "Audio regions contain audio clips from audio files."
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:53
-#, fuzzy
 msgid "Audio region"
 msgstr "音频区域"
 
@@ -2686,9 +2650,8 @@ msgid "MIDI regions contain :term:`MIDI` notes."
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:73
-#, fuzzy
 msgid "MIDI region"
-msgstr "音频区域"
+msgstr "MIDI 区域"
 
 #: ../../editing/timeline/arranger.rst:75
 msgid ""
@@ -2715,9 +2678,8 @@ msgid "Automation regions contain automation events."
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:93
-#, fuzzy
 msgid "Automation region"
-msgstr "自动化"
+msgstr "自动化区域"
 
 #: ../../editing/timeline/arranger.rst:95
 msgid "Automation regions appear inside automation lanes."
@@ -2742,9 +2704,8 @@ msgid "Chord regions contain sequences of chords."
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:113
-#, fuzzy
 msgid "Chord region"
-msgstr "录音选项"
+msgstr "和弦区域"
 
 #: ../../editing/timeline/arranger.rst:115
 msgid "Chord regions appear inside the chord track."
@@ -3057,9 +3018,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/ruler.rst:40
-#, fuzzy
 msgid "Range Selection"
-msgstr "清除选定内容"
+msgstr "区域选定"
 
 #: ../../editing/timeline/ruler.rst:41
 msgid ""
@@ -3069,9 +3029,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/ruler.rst:49
-#, fuzzy
 msgid "Range selection"
-msgstr "清除选定内容"
+msgstr "区域选定"
 
 #: ../../editing/timeline/toolbar.rst:6
 msgid "Toolbar"
@@ -3090,24 +3049,20 @@ msgid "It includes the following sections:"
 msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:20
-#, fuzzy
 msgid "Audio region options"
-msgstr "音频引擎设置。"
+msgstr "音频区域选项"
 
 #: ../../editing/timeline/toolbar.rst:21
-#, fuzzy
 msgid "Range actions"
-msgstr "随机化"
+msgstr "区域动作"
 
 #: ../../editing/timeline/toolbar.rst:23
-#, fuzzy
 msgid "Object merge options"
-msgstr "节拍器选项"
+msgstr "对象合并选项"
 
 #: ../../editing/timeline/toolbar.rst:28
-#, fuzzy
 msgid "Audio Region Options"
-msgstr "音频引擎设置。"
+msgstr "音频区域选项"
 
 #: ../../editing/timeline/toolbar.rst:31
 msgid "Musical Mode"
@@ -3122,9 +3077,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:39
-#, fuzzy
 msgid "Range Actions"
-msgstr "随机化"
+msgstr "区域操作"
 
 #: ../../editing/timeline/toolbar.rst:41
 msgid "Range actions are performed on the selected :term:`Range`."
@@ -3141,9 +3095,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:49
-#, fuzzy
 msgid "Remove Range"
-msgstr "时间范围"
+msgstr "删除区域"
 
 #: ../../editing/timeline/toolbar.rst:48
 msgid ""
@@ -3155,9 +3108,8 @@ msgid "Object Merging"
 msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:55
-#, fuzzy
 msgid "Merge Selections"
-msgstr "清除选定内容"
+msgstr "合并所选"
 
 #: ../../editing/timeline/toolbar.rst:55
 msgid "Merge the selected objects into a single object, if possible"
@@ -4365,9 +4317,8 @@ msgid ""
 msgstr ""
 
 #: ../../modulators/intro.rst:58
-#, fuzzy
 msgid "Adding Inputs"
-msgstr "音频输入"
+msgstr "添加输入"
 
 #: ../../modulators/intro.rst:60
 msgid ""
@@ -4517,7 +4468,6 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/overview.rst:20
-#, fuzzy
 msgid "The playhead"
 msgstr "播放头"
 
@@ -5207,7 +5157,6 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/plugins/inspector-page.rst:18
-#, fuzzy
 msgid "Plugin inspector"
 msgstr "插件检查器"
 
@@ -5284,7 +5233,6 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:16
-#, fuzzy
 msgid "Plugin browser"
 msgstr "插件浏览器"
 
@@ -5925,18 +5873,16 @@ msgid ""
 msgstr ""
 
 #: ../../routing/connections.rst:8
-#, fuzzy
 msgid "Connections"
-msgstr "端口连接"
+msgstr "连接"
 
 #: ../../routing/connections.rst:11
 msgid "Making Connections"
 msgstr ""
 
 #: ../../routing/connections.rst:14
-#, fuzzy
 msgid "Direct Connections"
-msgstr "端口连接"
+msgstr "直接连接"
 
 #: ../../routing/connections.rst:16
 msgid ""
@@ -5952,9 +5898,8 @@ msgid ""
 msgstr ""
 
 #: ../../routing/connections.rst:28
-#, fuzzy
 msgid "Plugin controls"
-msgstr "控件"
+msgstr "插件控制"
 
 #: ../../routing/connections.rst:30
 msgid ""
@@ -5963,9 +5908,8 @@ msgid ""
 msgstr ""
 
 #: ../../routing/connections.rst:36
-#, fuzzy
 msgid "Port connections for control"
-msgstr "端口连接"
+msgstr "控件端口连接"
 
 #: ../../routing/connections.rst:38
 msgid "You can select the port to connect to in the presented dialog."
@@ -5988,9 +5932,8 @@ msgid ""
 msgstr ""
 
 #: ../../routing/connections.rst:63
-#, fuzzy
 msgid "Managing Connections"
-msgstr "端口连接"
+msgstr "管理连接"
 
 #: ../../routing/connections.rst:65
 msgid ""
@@ -5999,9 +5942,8 @@ msgid ""
 msgstr ""
 
 #: ../../routing/connections.rst:72
-#, fuzzy
 msgid "Managing connections"
-msgstr "端口连接"
+msgstr "管理连接"
 
 #: ../../routing/connections.rst:74
 msgid ""
@@ -6010,9 +5952,8 @@ msgid ""
 msgstr ""
 
 #: ../../routing/connections.rst:80
-#, fuzzy
 msgid "Editing a connection"
-msgstr "端口连接"
+msgstr "编辑连接"
 
 #: ../../routing/connections.rst:82
 msgid ""
@@ -6035,9 +5976,8 @@ msgid "Toggle whether the connection is enabled (active)"
 msgstr ""
 
 #: ../../routing/connections.rst:93
-#, fuzzy
 msgid "Delete Connection"
-msgstr "端口连接"
+msgstr "删除连接"
 
 #: ../../routing/connections.rst:93
 msgid "Delete the connection"
@@ -6056,9 +5996,8 @@ msgid "See :ref:`export-routing-graph` for details."
 msgstr ""
 
 #: ../../routing/monitor-section.rst:6
-#, fuzzy
 msgid "Monitor Section"
-msgstr "循环选择"
+msgstr "监视选区"
 
 #: ../../routing/monitor-section.rst:7
 msgid ""
@@ -6068,14 +6007,12 @@ msgid ""
 msgstr ""
 
 #: ../../routing/monitor-section.rst:15
-#, fuzzy
 msgid "Monitor section"
-msgstr "循环选择"
+msgstr "监视部分"
 
 #: ../../routing/monitor-section.rst:18
-#, fuzzy
 msgid "Channel Controls"
-msgstr "控件"
+msgstr "通道控制"
 
 #: ../../routing/monitor-section.rst:20
 msgid ""
@@ -6131,9 +6068,8 @@ msgid ""
 msgstr ""
 
 #: ../../routing/monitor-section.rst:49
-#, fuzzy
 msgid "Monitor Knob"
-msgstr "监视器"
+msgstr "Knob 监视器"
 
 #: ../../routing/monitor-section.rst:51
 msgid ""
@@ -6142,9 +6078,8 @@ msgid ""
 msgstr ""
 
 #: ../../routing/monitor-section.rst:56
-#, fuzzy
 msgid "Monitor Controls"
-msgstr "控件"
+msgstr "监视器控制"
 
 #: ../../routing/monitor-section.rst:58
 msgid ""
@@ -6529,9 +6464,8 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/scripting-interface.rst:16
-#, fuzzy
 msgid "Scripting interface"
-msgstr "脚本接口"
+msgstr "脚本编程接口"
 
 #: ../../scripting/scripting-interface.rst:18
 msgid ""
@@ -7112,9 +7046,8 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/track-controls.rst:6
-#, fuzzy
 msgid "Track Controls"
-msgstr "控件"
+msgstr "音轨控件"
 
 #: ../../tracks/track-controls.rst:8
 msgid ""
@@ -7206,9 +7139,8 @@ msgid "Only available on instrument tracks."
 msgstr ""
 
 #: ../../tracks/track-controls.rst:54
-#, fuzzy
 msgid "Other"
-msgstr "抖动"
+msgstr "其他"
 
 #: ../../tracks/track-controls.rst:59
 msgid "Lock"
@@ -7233,9 +7165,8 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/track-lanes.rst:6
-#, fuzzy
 msgid "Track Lanes"
-msgstr "曲目名称"
+msgstr "音轨 Lanes"
 
 #: ../../tracks/track-lanes.rst:8
 msgid ""
@@ -7255,9 +7186,8 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/track-lanes.rst:23
-#, fuzzy
 msgid "Organization"
-msgstr "随机化"
+msgstr "编排"
 
 #: ../../tracks/track-lanes.rst:25
 msgid ""
@@ -7299,9 +7229,8 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/track-operations.rst:18
-#, fuzzy
 msgid "Copying Tracks"
-msgstr "脚本接口"
+msgstr "复制音轨"
 
 #: ../../tracks/track-operations.rst:20
 msgid ""
@@ -7393,7 +7322,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:40
 msgid "Folder"
-msgstr ""
+msgstr "文件夹"
 
 #: ../../tracks/track-types.rst:49 ../../tracks/track-types.rst:69
 msgid "MIDI regions"
@@ -7470,9 +7399,8 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/track-types.rst:130
-#, fuzzy
 msgid "Audio Group track"
-msgstr "音频组"
+msgstr "音频组音轨"
 
 #: ../../tracks/track-types.rst:132 ../../tracks/track-types.rst:286
 msgid "Group tracks are foldable."
@@ -7798,14 +7726,12 @@ msgid ":ref:`Track Visibility <track-visibility>`"
 msgstr ""
 
 #: ../../zrythm-interface/main-panel.rst:8
-#, fuzzy
 msgid "Main Panel"
-msgstr "时间线"
+msgstr "主面板"
 
 #: ../../zrythm-interface/main-panel.rst:13
-#, fuzzy
 msgid "Main panel"
-msgstr "时间线"
+msgstr "主面板"
 
 #: ../../zrythm-interface/main-panel.rst:15
 msgid ""
@@ -8052,9 +7978,8 @@ msgid "The main toolbar also contains the following buttons."
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:106
-#, fuzzy
 msgid "Shows the :ref:`scripting interface <scripting>`."
-msgstr "显示脚本接口。"
+msgstr "显示 :ref:`scripting interface <scripting>`。"
 
 #: ../../zrythm-interface/main-toolbar.rst:107
 msgid "Log Viewer"
