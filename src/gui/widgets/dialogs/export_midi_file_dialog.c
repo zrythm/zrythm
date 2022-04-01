@@ -75,7 +75,7 @@ on_response (
       if (string_is_equal (
             region_content_str, "full"))
         {
-          midi_format = true;
+          export_full = true;
         }
 
       bool lanes_as_separate_tracks = false;
