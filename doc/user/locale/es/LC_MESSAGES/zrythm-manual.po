@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-29 15:32+0100\n"
+"POT-Creation-Date: 2022-04-01 12:08+0100\n"
 "PO-Revision-Date: 2022-02-02 16:54+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language: es\n"
@@ -1238,7 +1238,16 @@ msgid ""
 "These include translators of the software, the user manual and the website."
 msgstr ""
 
-#: ../../credits/intro.rst:30
+#: ../../credits/intro.rst:33
+#, fuzzy
+msgid ""
+"See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source "
+"distribution."
+msgstr ""
+"Por favo. vea el archivo :download:`HACKING <../../../HACKING.md>` en la "
+"distribución de código fuente."
+
+#: ../../credits/intro.rst:38
 msgid "Other Contributors"
 msgstr ""
 
@@ -2157,7 +2166,8 @@ msgstr "El piano roll contiene los siguientes controles adicionales."
 
 #: ../../editing/clip-editors/toolbar.rst:34
 msgid ""
-":ref:`Chord highlighting options <chords-and-scales/overview:Highlighting>`"
+":ref:`Chord highlighting options <chords-and-scales/piano-roll-integration:"
+"Highlighting>`"
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:35
@@ -4334,27 +4344,29 @@ msgstr "Ejecutando Zrythm"
 
 #: ../../getting-started/running-zrythm.rst:11
 #, fuzzy
-msgid "First Run Wizard"
-msgstr ""
-"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Asistente para primera ejecución\n"
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Asistente para la ejecución inicial"
+msgid "Initial Configuration"
+msgstr "Configuración"
 
 #: ../../getting-started/running-zrythm.rst:13
+#, fuzzy
 msgid ""
-"When you first run Zrythm, it will display a wizard that lets you configure "
+"When you first run Zrythm, it will display a dialog that lets you configure "
 "the basic settings that Zrythm will use. These include the :term:`Zrythm "
-"user path`, the language of the user interface and audio/MIDI backends."
+"user path` and the language of the user interface."
 msgstr ""
 "Cuando ejecutas Zrythm por primera vez, se muestra un asistente que te "
 "permite configurar los ajustes básicos que utiliza Zrythm. Estos incluyen "
 "la :term:`ruta de usuario de Zrythm <Zrythm user path>`, el idioma de la "
 "interfaz de usuario y los backends de audio/MIDI."
 
-#: ../../getting-started/running-zrythm.rst:20
-msgid "Language Selection"
-msgstr "Selección de idioma"
+#: ../../getting-started/running-zrythm.rst:22
+msgid "Initial configuration dialog"
+msgstr ""
+
+#: ../../getting-started/running-zrythm.rst:30
+#, fuzzy
+msgid "Language"
+msgstr "Intervalo"
 
 #: ../../getting-started/running-zrythm.rst:25
 msgid ""
@@ -4377,7 +4389,7 @@ msgstr ""
 "Debes tener una configuración regional habilitada para el idioma que deseas "
 "utilizar."
 
-#: ../../getting-started/running-zrythm.rst:34
+#: ../../getting-started/running-zrythm.rst:33
 #, fuzzy
 msgid "Path"
 msgstr ""
@@ -4386,80 +4398,19 @@ msgstr ""
 "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
 "Ruta"
 
-#: ../../getting-started/running-zrythm.rst:39
+#: ../../getting-started/running-zrythm.rst:33
 msgid "This is the :term:`Zrythm user path`."
 msgstr "Esta es la :term:`Ruta de usuario de Zrythm <Zrythm user path>`."
 
-#: ../../getting-started/running-zrythm.rst:42
-msgid "Audio/MIDI Backends"
-msgstr "Backends de audio/MIDI"
-
-#: ../../getting-started/running-zrythm.rst:47
-#, fuzzy
-msgid ""
-"Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is the "
-"recommended one for both."
+#: ../../getting-started/running-zrythm.rst:35
+msgid "More settings are available in the :ref:`preferences`."
 msgstr ""
-"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Zrythm soporta múltiples motores backend de audio y MIDI. :term:`JACK` es el "
-"recomendado para ambos, pero lleva un poco de tiempo instalarlo if esta es "
-"la primera vez que lo esté usando. Si elige usar JACK, debe usar JACK MIDI y "
-"el backend JACK audio.\n"
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Zrythm admite varios motores de backend de audio y MIDI. :term:`JACK` es el "
-"recomendado para ambos, pero lleva un tiempo configurarlo si es la primera "
-"vez que se utiliza."
 
-#: ../../getting-started/running-zrythm.rst:51
-#, fuzzy
-msgid ""
-"If JACK is not available on your system, we recommend RtAudio and RtMidi."
-msgstr ""
-"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Si JACK no está disponible en su sistema, le recomendamos RtAudio and "
-"RtMidi.\n"
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Si JACK no está disponible en el sistema, recomendamos RtAudio y RtMidi."
-
-#: ../../getting-started/running-zrythm.rst:54
-msgid ""
-"Click :guilabel:`Test` to try connecting to the backend to see if it is "
-"functional."
-msgstr ""
-"Haz clic en :guilabel:`Test` para intentar conectarte al backend y comprobar "
-"si funciona."
-
-#: ../../getting-started/running-zrythm.rst:57
-#, fuzzy
-msgid ""
-"If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
-"chosen together."
-msgstr ""
-"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Si elige usar JACK, debe usar JACK MIDI y el backend JACK audio.\n"
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Si decides usar JACK, el JACK MIDI y el backend de audio JACK deben elegirse "
-"juntos."
-
-#: ../../getting-started/running-zrythm.rst:62
-#, fuzzy
-msgid ""
-"All of the settings mentioned here are also available in the :ref:"
-"`preferences`, so don't worry if you selected the wrong settings."
-msgstr ""
-"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Todas las configuraciones mencionadas aqui tambien estan disponibles en :ref:"
-"`preferences`, no se preocupe si ha elegido la configuracion incorrecta.\n"
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Todas las configuraciones mencionadas aquí también están disponibles en :ref:"
-"`preferences`, así que no te preocupes si seleccionaste la configuración "
-"incorrecta."
-
-#: ../../getting-started/running-zrythm.rst:67
+#: ../../getting-started/running-zrythm.rst:39
 msgid "Plugin Scan"
 msgstr "Escáner de plugins"
 
-#: ../../getting-started/running-zrythm.rst:68
+#: ../../getting-started/running-zrythm.rst:40
 msgid ""
 "When the first run wizard is completed, Zrythm will start :doc:`scanning for "
 "plugins <../plugins-files/plugins/scanning>`."
@@ -4467,11 +4418,11 @@ msgstr ""
 "Cuando se complete el primer asistente de ejecución, Zrythm se iniciará :doc:"
 "`escaneando en busca de plugins <../plugins-files/plugins/scanning>`."
 
-#: ../../getting-started/running-zrythm.rst:76
+#: ../../getting-started/running-zrythm.rst:48
 msgid "Project Selection"
 msgstr "Selección de proyectos"
 
-#: ../../getting-started/running-zrythm.rst:77
+#: ../../getting-started/running-zrythm.rst:49
 #, fuzzy
 msgid ""
 "Finally, Zrythm will ask you to :doc:`load or create a project <../projects/"
@@ -4482,12 +4433,12 @@ msgstr ""
 "saving-loading>` y luego :doc:`interfaz principal <../zrythm-interface/"
 "zrythm-interface-overview>` aparecerá."
 
-#: ../../getting-started/running-zrythm.rst:86
+#: ../../getting-started/running-zrythm.rst:58
 #: ../../projects/saving-loading.rst:20
 msgid "Project selection"
 msgstr "Selección de proyectos"
 
-#: ../../getting-started/running-zrythm.rst:91
+#: ../../getting-started/running-zrythm.rst:63
 msgid "Main interface"
 msgstr "Interfaz principal"
 
@@ -6313,10 +6264,11 @@ msgid "Display"
 msgstr "Visualización"
 
 #: ../../plugins-files/plugins/inspector-page.rst:53
+#, fuzzy
 msgid ""
 "The number in the top right of each port name will display the current "
-"number of connections to/from this port. See :doc:`../../routing/making-"
-"connections` for details."
+"number of connections to/from this port. See :ref:`routing/connections:"
+"Connections` for details."
 msgstr ""
 "El número en la parte superior derecha de cada nombre de puerto muestra el "
 "número actual de conexiones a/desde este puerto. Consulta :doc:`../../"
@@ -9100,7 +9052,7 @@ msgid ":ref:`Modulators <modulators/intro:Modulators>`"
 msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:21
-msgid ":ref:`Chord Pad <chords-and-scales/overview:Chord Pad>`"
+msgid ":ref:`Chord Pad <chords-and-scales/chord-pad:Chord Pad>`"
 msgstr ""
 
 #: ../../zrythm-interface/intro.rst:6
@@ -9550,7 +9502,7 @@ msgid ":ref:`Monitor Section <routing/monitor-section:Monitor Section>`"
 msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:21
-msgid ":ref:`Chord Preset Browser <chords-and-scales/overview:Overview>`"
+msgid ":ref:`Chord Preset Browser <chords-and-scales/chord-pad:Presets>`"
 msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:23
@@ -9636,6 +9588,72 @@ msgid ""
 "% usage at the bottom. If the DSP % exceeds 100 (all bars filled), audio "
 "will start clipping."
 msgstr ""
+
+#~ msgid "First Run Wizard"
+#~ msgstr ""
+#~ "#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Asistente para primera ejecución\n"
+#~ "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Asistente para la ejecución inicial"
+
+#~ msgid "Language Selection"
+#~ msgstr "Selección de idioma"
+
+#~ msgid "Audio/MIDI Backends"
+#~ msgstr "Backends de audio/MIDI"
+
+#~ msgid ""
+#~ "Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is "
+#~ "the recommended one for both."
+#~ msgstr ""
+#~ "#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Zrythm soporta múltiples motores backend de audio y MIDI. :term:`JACK` es "
+#~ "el recomendado para ambos, pero lleva un poco de tiempo instalarlo if "
+#~ "esta es la primera vez que lo esté usando. Si elige usar JACK, debe usar "
+#~ "JACK MIDI y el backend JACK audio.\n"
+#~ "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Zrythm admite varios motores de backend de audio y MIDI. :term:`JACK` es "
+#~ "el recomendado para ambos, pero lleva un tiempo configurarlo si es la "
+#~ "primera vez que se utiliza."
+
+#~ msgid ""
+#~ "If JACK is not available on your system, we recommend RtAudio and RtMidi."
+#~ msgstr ""
+#~ "#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Si JACK no está disponible en su sistema, le recomendamos RtAudio and "
+#~ "RtMidi.\n"
+#~ "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Si JACK no está disponible en el sistema, recomendamos RtAudio y RtMidi."
+
+#~ msgid ""
+#~ "Click :guilabel:`Test` to try connecting to the backend to see if it is "
+#~ "functional."
+#~ msgstr ""
+#~ "Haz clic en :guilabel:`Test` para intentar conectarte al backend y "
+#~ "comprobar si funciona."
+
+#~ msgid ""
+#~ "If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
+#~ "chosen together."
+#~ msgstr ""
+#~ "#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Si elige usar JACK, debe usar JACK MIDI y el backend JACK audio.\n"
+#~ "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Si decides usar JACK, el JACK MIDI y el backend de audio JACK deben "
+#~ "elegirse juntos."
+
+#~ msgid ""
+#~ "All of the settings mentioned here are also available in the :ref:"
+#~ "`preferences`, so don't worry if you selected the wrong settings."
+#~ msgstr ""
+#~ "#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Todas las configuraciones mencionadas aqui tambien estan disponibles en :"
+#~ "ref:`preferences`, no se preocupe si ha elegido la configuracion "
+#~ "incorrecta.\n"
+#~ "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Todas las configuraciones mencionadas aquí también están disponibles en :"
+#~ "ref:`preferences`, así que no te preocupes si seleccionaste la "
+#~ "configuración incorrecta."
 
 #~ msgid ""
 #~ "Click on the :guilabel:`View Source` button at the top of the page to "

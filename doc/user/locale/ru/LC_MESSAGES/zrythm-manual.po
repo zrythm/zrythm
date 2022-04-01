@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-29 15:32+0100\n"
+"POT-Creation-Date: 2022-04-01 12:08+0100\n"
 "PO-Revision-Date: 2021-09-06 18:34+0000\n"
 "Last-Translator: Nikita Saschenko <neketa777@gmail.com>\n"
 "Language: ru\n"
@@ -1249,7 +1249,14 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
-#: ../../credits/intro.rst:30
+#: ../../credits/intro.rst:33
+#, fuzzy
+msgid ""
+"See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source "
+"distribution."
+msgstr "Смотрите :download:`THANKS <../../../THANKS>` в исходном коде."
+
+#: ../../credits/intro.rst:38
 msgid "Other Contributors"
 msgstr "Другие участники"
 
@@ -2170,7 +2177,8 @@ msgstr "Редактор нот содержит следующие дополн
 
 #: ../../editing/clip-editors/toolbar.rst:34
 msgid ""
-":ref:`Chord highlighting options <chords-and-scales/overview:Highlighting>`"
+":ref:`Chord highlighting options <chords-and-scales/piano-roll-integration:"
+"Highlighting>`"
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:35
@@ -4331,22 +4339,29 @@ msgid "Running Zrythm"
 msgstr "Запуск Zrythm"
 
 #: ../../getting-started/running-zrythm.rst:11
-msgid "First Run Wizard"
-msgstr "Мастер первого запуска (First Run Wizard)"
+#, fuzzy
+msgid "Initial Configuration"
+msgstr "Конфигурация"
 
 #: ../../getting-started/running-zrythm.rst:13
+#, fuzzy
 msgid ""
-"When you first run Zrythm, it will display a wizard that lets you configure "
+"When you first run Zrythm, it will display a dialog that lets you configure "
 "the basic settings that Zrythm will use. These include the :term:`Zrythm "
-"user path`, the language of the user interface and audio/MIDI backends."
+"user path` and the language of the user interface."
 msgstr ""
 "При первом запуске Zrythm появится окно, которое позволить настроить "
 "основные параметры Zrythm, включая :term:`Zrythm user path`, язык интерфейса "
 "и аудио/MIDI системы."
 
-#: ../../getting-started/running-zrythm.rst:20
-msgid "Language Selection"
-msgstr "Выбор языка"
+#: ../../getting-started/running-zrythm.rst:22
+msgid "Initial configuration dialog"
+msgstr ""
+
+#: ../../getting-started/running-zrythm.rst:30
+#, fuzzy
+msgid "Language"
+msgstr "Диапазон (Range)"
 
 #: ../../getting-started/running-zrythm.rst:25
 msgid ""
@@ -4364,61 +4379,23 @@ msgid "You must have a locale enabled for the language you want to use."
 msgstr ""
 "У вас должна быть включена локаль языка, который вы хотите использовать."
 
-#: ../../getting-started/running-zrythm.rst:34
+#: ../../getting-started/running-zrythm.rst:33
 msgid "Path"
 msgstr "Путь (Path)"
 
-#: ../../getting-started/running-zrythm.rst:39
+#: ../../getting-started/running-zrythm.rst:33
 msgid "This is the :term:`Zrythm user path`."
 msgstr "Это :term:`Zrythm user path`."
 
-#: ../../getting-started/running-zrythm.rst:42
-msgid "Audio/MIDI Backends"
-msgstr "Аудио/MIDI Бэкэнды (Backends)"
-
-#: ../../getting-started/running-zrythm.rst:47
-msgid ""
-"Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is the "
-"recommended one for both."
+#: ../../getting-started/running-zrythm.rst:35
+msgid "More settings are available in the :ref:`preferences`."
 msgstr ""
-"Zrythm поддерживает несколько Аудио и MIDI бэкeндов. :term:`JACK` "
-"рекомендуется и в качестве обоих."
 
-#: ../../getting-started/running-zrythm.rst:51
-msgid ""
-"If JACK is not available on your system, we recommend RtAudio and RtMidi."
-msgstr ""
-"Если JACK недоступен на вашей системе, мы рекомендуем RtAudio и RtMidi."
-
-#: ../../getting-started/running-zrythm.rst:54
-msgid ""
-"Click :guilabel:`Test` to try connecting to the backend to see if it is "
-"functional."
-msgstr ""
-"Нажмите на кнопку :guilabel:`Test` , чтобы попытаться подключиться к бэкенду "
-"и проверить, работает ли он."
-
-#: ../../getting-started/running-zrythm.rst:57
-msgid ""
-"If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
-"chosen together."
-msgstr ""
-"Если вы решили использовать JACK, то вам необходимо выбрать его в качестве "
-"аудио и MIDI бэкенда одновременно."
-
-#: ../../getting-started/running-zrythm.rst:62
-msgid ""
-"All of the settings mentioned here are also available in the :ref:"
-"`preferences`, so don't worry if you selected the wrong settings."
-msgstr ""
-"Все упомянутые здесь настройки также доступны в :ref:`preferences`, поэтому "
-"не беспокойтесь, если настроили что-то неправильно."
-
-#: ../../getting-started/running-zrythm.rst:67
+#: ../../getting-started/running-zrythm.rst:39
 msgid "Plugin Scan"
 msgstr "Сканирование плагинов"
 
-#: ../../getting-started/running-zrythm.rst:68
+#: ../../getting-started/running-zrythm.rst:40
 msgid ""
 "When the first run wizard is completed, Zrythm will start :doc:`scanning for "
 "plugins <../plugins-files/plugins/scanning>`."
@@ -4426,11 +4403,11 @@ msgstr ""
 "Когда первичная настойка будет закончена, Zrythm начнёт :doc:`сканировать "
 "плагины <../plugins-files/plugins/scanning>`."
 
-#: ../../getting-started/running-zrythm.rst:76
+#: ../../getting-started/running-zrythm.rst:48
 msgid "Project Selection"
 msgstr "Выбор проекта"
 
-#: ../../getting-started/running-zrythm.rst:77
+#: ../../getting-started/running-zrythm.rst:49
 msgid ""
 "Finally, Zrythm will ask you to :doc:`load or create a project <../projects/"
 "saving-loading>` and then the :doc:`main interface <../zrythm-interface/"
@@ -4440,12 +4417,12 @@ msgstr ""
 "projects/saving-loading>`, после чего на экране появится :doc:`главное окно "
 "<.../zrythm-interface/overview>`."
 
-#: ../../getting-started/running-zrythm.rst:86
+#: ../../getting-started/running-zrythm.rst:58
 #: ../../projects/saving-loading.rst:20
 msgid "Project selection"
 msgstr "Выбор проекта"
 
-#: ../../getting-started/running-zrythm.rst:91
+#: ../../getting-started/running-zrythm.rst:63
 msgid "Main interface"
 msgstr "Главное окно"
 
@@ -6416,8 +6393,8 @@ msgstr ""
 #: ../../plugins-files/plugins/inspector-page.rst:53
 msgid ""
 "The number in the top right of each port name will display the current "
-"number of connections to/from this port. See :doc:`../../routing/making-"
-"connections` for details."
+"number of connections to/from this port. See :ref:`routing/connections:"
+"Connections` for details."
 msgstr ""
 
 #: ../../plugins-files/plugins/inspector-page.rst:58
@@ -9421,7 +9398,7 @@ msgid ":ref:`Modulators <modulators/intro:Modulators>`"
 msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:21
-msgid ":ref:`Chord Pad <chords-and-scales/overview:Chord Pad>`"
+msgid ":ref:`Chord Pad <chords-and-scales/chord-pad:Chord Pad>`"
 msgstr ""
 
 #: ../../zrythm-interface/intro.rst:6
@@ -9884,7 +9861,7 @@ msgid ":ref:`Monitor Section <routing/monitor-section:Monitor Section>`"
 msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:21
-msgid ":ref:`Chord Preset Browser <chords-and-scales/overview:Overview>`"
+msgid ":ref:`Chord Preset Browser <chords-and-scales/chord-pad:Presets>`"
 msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:23
@@ -9973,6 +9950,48 @@ msgid ""
 "will start clipping."
 msgstr ""
 
+#~ msgid "First Run Wizard"
+#~ msgstr "Мастер первого запуска (First Run Wizard)"
+
+#~ msgid "Language Selection"
+#~ msgstr "Выбор языка"
+
+#~ msgid "Audio/MIDI Backends"
+#~ msgstr "Аудио/MIDI Бэкэнды (Backends)"
+
+#~ msgid ""
+#~ "Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is "
+#~ "the recommended one for both."
+#~ msgstr ""
+#~ "Zrythm поддерживает несколько Аудио и MIDI бэкeндов. :term:`JACK` "
+#~ "рекомендуется и в качестве обоих."
+
+#~ msgid ""
+#~ "If JACK is not available on your system, we recommend RtAudio and RtMidi."
+#~ msgstr ""
+#~ "Если JACK недоступен на вашей системе, мы рекомендуем RtAudio и RtMidi."
+
+#~ msgid ""
+#~ "Click :guilabel:`Test` to try connecting to the backend to see if it is "
+#~ "functional."
+#~ msgstr ""
+#~ "Нажмите на кнопку :guilabel:`Test` , чтобы попытаться подключиться к "
+#~ "бэкенду и проверить, работает ли он."
+
+#~ msgid ""
+#~ "If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
+#~ "chosen together."
+#~ msgstr ""
+#~ "Если вы решили использовать JACK, то вам необходимо выбрать его в "
+#~ "качестве аудио и MIDI бэкенда одновременно."
+
+#~ msgid ""
+#~ "All of the settings mentioned here are also available in the :ref:"
+#~ "`preferences`, so don't worry if you selected the wrong settings."
+#~ msgstr ""
+#~ "Все упомянутые здесь настройки также доступны в :ref:`preferences`, "
+#~ "поэтому не беспокойтесь, если настроили что-то неправильно."
+
 #~ msgid ""
 #~ "Click on the :guilabel:`View Source` button at the top of the page to "
 #~ "find which file the page exists in, find the file in the source "
@@ -9981,11 +10000,6 @@ msgstr ""
 #~ "Нажмите кнопку :guilabel:`View Source` вверху страницы, чтобы узнать, в "
 #~ "каком файле существует страница, найдите файл в исходном коде и "
 #~ "отредактируйте его."
-
-#~ msgid ""
-#~ "See the :download:`THANKS <../../../THANKS>` file in the source "
-#~ "distribution."
-#~ msgstr "Смотрите :download:`THANKS <../../../THANKS>` в исходном коде."
 
 #~ msgid ""
 #~ "Chords and scales can be used to easily try out various chords and to "

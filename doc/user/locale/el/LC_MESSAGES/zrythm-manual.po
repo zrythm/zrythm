@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-29 15:32+0100\n"
+"POT-Creation-Date: 2022-04-01 12:08+0100\n"
 "PO-Revision-Date: 2022-03-06 09:46+0000\n"
 "Last-Translator: Anthony V. <batmanplayer123@gmail.com>\n"
 "Language: el\n"
@@ -1206,7 +1206,15 @@ msgstr ""
 "διανομή. Περιλαμβάνουν τους μεταφραστές του προγράμματος, το εγχειρίδιο "
 "χρήστη και την ιστοσελίδα."
 
-#: ../../credits/intro.rst:30
+#: ../../credits/intro.rst:33
+#, fuzzy
+msgid ""
+"See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source "
+"distribution."
+msgstr ""
+"Βλέπε το αρχείο :download:`THANKS <../../../THANKS>` στην πηγαία διανομή."
+
+#: ../../credits/intro.rst:38
 msgid "Other Contributors"
 msgstr "Άλλοι συνεργάτες"
 
@@ -2097,7 +2105,8 @@ msgstr "Το ρολό πιάνου περιέχει τους εξής επιπρ
 
 #: ../../editing/clip-editors/toolbar.rst:34
 msgid ""
-":ref:`Chord highlighting options <chords-and-scales/overview:Highlighting>`"
+":ref:`Chord highlighting options <chords-and-scales/piano-roll-integration:"
+"Highlighting>`"
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:35
@@ -4169,23 +4178,30 @@ msgid "Running Zrythm"
 msgstr "Εκτέλεση του Zrythm"
 
 #: ../../getting-started/running-zrythm.rst:11
-msgid "First Run Wizard"
-msgstr "Οδηγός πρώτης εκτέλεσης"
+#, fuzzy
+msgid "Initial Configuration"
+msgstr "Ρύθμιση"
 
 #: ../../getting-started/running-zrythm.rst:13
+#, fuzzy
 msgid ""
-"When you first run Zrythm, it will display a wizard that lets you configure "
+"When you first run Zrythm, it will display a dialog that lets you configure "
 "the basic settings that Zrythm will use. These include the :term:`Zrythm "
-"user path`, the language of the user interface and audio/MIDI backends."
+"user path` and the language of the user interface."
 msgstr ""
 "Όταν εκτελείτε το Zrythm για πρώτη φορά, θα προβάλει έναν οδηγό ο οποίος σας "
 "επιτρέπει να επιλέξετε τις πιο βασικές ρυθμίσεις που θα χρησιμοποιήσει το "
 "Zrythm. Αυτές περιλαμβάνουν το :term:`Zrythm user path`, τη γλώσσα του "
 "περιβάλλοντος χρήστη και τα παρασκήνια ήχου/MIDI."
 
-#: ../../getting-started/running-zrythm.rst:20
-msgid "Language Selection"
-msgstr "Επιλογή γλώσσας"
+#: ../../getting-started/running-zrythm.rst:22
+msgid "Initial configuration dialog"
+msgstr ""
+
+#: ../../getting-started/running-zrythm.rst:30
+#, fuzzy
+msgid "Language"
+msgstr "Εύρος"
 
 #: ../../getting-started/running-zrythm.rst:25
 msgid ""
@@ -4205,64 +4221,23 @@ msgstr ""
 "Πρέπει να έχετε ενεργοποιήσει το locale που αντιστοιχεί στη γλώσσα που "
 "θέλετε να χρησιμοποιήσετε."
 
-#: ../../getting-started/running-zrythm.rst:34
+#: ../../getting-started/running-zrythm.rst:33
 msgid "Path"
 msgstr "Μονοπάτι"
 
-#: ../../getting-started/running-zrythm.rst:39
+#: ../../getting-started/running-zrythm.rst:33
 msgid "This is the :term:`Zrythm user path`."
 msgstr "Αυτό είναι το :term:`Zrythm user path`."
 
-#: ../../getting-started/running-zrythm.rst:42
-msgid "Audio/MIDI Backends"
-msgstr "Παρασκήνια ήχου/MIDI"
-
-#: ../../getting-started/running-zrythm.rst:47
-#, fuzzy
-msgid ""
-"Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is the "
-"recommended one for both."
+#: ../../getting-started/running-zrythm.rst:35
+msgid "More settings are available in the :ref:`preferences`."
 msgstr ""
-"Το Zrythm υποστηρίζει πολλαπλούς παρασκηνιακούς κινητήρες ήχου και MIDI. Το :"
-"term:`JACK` είναι αυτό που συνίσταται περισσότερο και για τα δύο, παίρνει "
-"όμως κάποιον χρόνο για να στηθεί αν είναι η πρώτη φορά που το χρησιμοποιείτε."
 
-#: ../../getting-started/running-zrythm.rst:51
-msgid ""
-"If JACK is not available on your system, we recommend RtAudio and RtMidi."
-msgstr ""
-"Αν το JACK δεν είναι διαθέσιμο στο σύστημά σας, προτείνουμε τα RtAudio και "
-"RtMidi."
-
-#: ../../getting-started/running-zrythm.rst:54
-msgid ""
-"Click :guilabel:`Test` to try connecting to the backend to see if it is "
-"functional."
-msgstr ""
-"Κάνετε κλικ στο :guilabel:`Test` για να προσπαθήσετε να συνδεθείτε στο "
-"παρασκήνιο και να ελέγξετε αν είναι λειτουργικό."
-
-#: ../../getting-started/running-zrythm.rst:57
-msgid ""
-"If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
-"chosen together."
-msgstr ""
-"Αν επιλέξετε να χρησιμοποιήσετε το JACK, τότε πρέπει να επιλεχθούν μαζί και "
-"τα δύο παρασκήνια JACK MIDI και JACK ήχου."
-
-#: ../../getting-started/running-zrythm.rst:62
-msgid ""
-"All of the settings mentioned here are also available in the :ref:"
-"`preferences`, so don't worry if you selected the wrong settings."
-msgstr ""
-"Όλες οι ρυθμίσεις που αναφέρονται εδώ είναι διαθέσιμες επίσης στις :ref:"
-"`preferences`, οπότε μην ανησυχείτε αν επιλέξατε τις λάθος ρυθμίσεις."
-
-#: ../../getting-started/running-zrythm.rst:67
+#: ../../getting-started/running-zrythm.rst:39
 msgid "Plugin Scan"
 msgstr "Σκανάρισμα προσθέτων"
 
-#: ../../getting-started/running-zrythm.rst:68
+#: ../../getting-started/running-zrythm.rst:40
 msgid ""
 "When the first run wizard is completed, Zrythm will start :doc:`scanning for "
 "plugins <../plugins-files/plugins/scanning>`."
@@ -4270,11 +4245,11 @@ msgstr ""
 "Όταν ο οδηγός πρώτης εκτέλεσης ολοκληρωθεί, το Zrythm θα εκκινήσει :doc:`το "
 "σκανάρισμα προσθέτων <../plugins-files/plugins/scanning>`."
 
-#: ../../getting-started/running-zrythm.rst:76
+#: ../../getting-started/running-zrythm.rst:48
 msgid "Project Selection"
 msgstr "Επιλογή έργου"
 
-#: ../../getting-started/running-zrythm.rst:77
+#: ../../getting-started/running-zrythm.rst:49
 #, fuzzy
 msgid ""
 "Finally, Zrythm will ask you to :doc:`load or create a project <../projects/"
@@ -4285,12 +4260,12 @@ msgstr ""
 "έργο <../projects/saving-loading>` και ύστερα :doc:`η κύρια διεπαφή <../"
 "zrythm-interface/zrythm-interface-overview>` θα εμφανιστεί."
 
-#: ../../getting-started/running-zrythm.rst:86
+#: ../../getting-started/running-zrythm.rst:58
 #: ../../projects/saving-loading.rst:20
 msgid "Project selection"
 msgstr "Επιλογή έργου"
 
-#: ../../getting-started/running-zrythm.rst:91
+#: ../../getting-started/running-zrythm.rst:63
 msgid "Main interface"
 msgstr "Κύρια διεπαφή"
 
@@ -6242,10 +6217,11 @@ msgid "Display"
 msgstr "Προβολή"
 
 #: ../../plugins-files/plugins/inspector-page.rst:53
+#, fuzzy
 msgid ""
 "The number in the top right of each port name will display the current "
-"number of connections to/from this port. See :doc:`../../routing/making-"
-"connections` for details."
+"number of connections to/from this port. See :ref:`routing/connections:"
+"Connections` for details."
 msgstr ""
 "Ο αριθμός πάνω δεξιά σε κάθε όνομα θύρας θα προβάλει τον τρέχοντα αριθμό "
 "συνδέσεων από/προς αυτή τη θύρα. Βλέπε :doc:`../../routing/making-"
@@ -9235,7 +9211,7 @@ msgid ":ref:`Modulators <modulators/intro:Modulators>`"
 msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:21
-msgid ":ref:`Chord Pad <chords-and-scales/overview:Chord Pad>`"
+msgid ":ref:`Chord Pad <chords-and-scales/chord-pad:Chord Pad>`"
 msgstr ""
 
 #: ../../zrythm-interface/intro.rst:6
@@ -9691,7 +9667,7 @@ msgid ":ref:`Monitor Section <routing/monitor-section:Monitor Section>`"
 msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:21
-msgid ":ref:`Chord Preset Browser <chords-and-scales/overview:Overview>`"
+msgid ":ref:`Chord Preset Browser <chords-and-scales/chord-pad:Presets>`"
 msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:23
@@ -9778,6 +9754,51 @@ msgid ""
 "will start clipping."
 msgstr ""
 
+#~ msgid "First Run Wizard"
+#~ msgstr "Οδηγός πρώτης εκτέλεσης"
+
+#~ msgid "Language Selection"
+#~ msgstr "Επιλογή γλώσσας"
+
+#~ msgid "Audio/MIDI Backends"
+#~ msgstr "Παρασκήνια ήχου/MIDI"
+
+#~ msgid ""
+#~ "Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is "
+#~ "the recommended one for both."
+#~ msgstr ""
+#~ "Το Zrythm υποστηρίζει πολλαπλούς παρασκηνιακούς κινητήρες ήχου και MIDI. "
+#~ "Το :term:`JACK` είναι αυτό που συνίσταται περισσότερο και για τα δύο, "
+#~ "παίρνει όμως κάποιον χρόνο για να στηθεί αν είναι η πρώτη φορά που το "
+#~ "χρησιμοποιείτε."
+
+#~ msgid ""
+#~ "If JACK is not available on your system, we recommend RtAudio and RtMidi."
+#~ msgstr ""
+#~ "Αν το JACK δεν είναι διαθέσιμο στο σύστημά σας, προτείνουμε τα RtAudio "
+#~ "και RtMidi."
+
+#~ msgid ""
+#~ "Click :guilabel:`Test` to try connecting to the backend to see if it is "
+#~ "functional."
+#~ msgstr ""
+#~ "Κάνετε κλικ στο :guilabel:`Test` για να προσπαθήσετε να συνδεθείτε στο "
+#~ "παρασκήνιο και να ελέγξετε αν είναι λειτουργικό."
+
+#~ msgid ""
+#~ "If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
+#~ "chosen together."
+#~ msgstr ""
+#~ "Αν επιλέξετε να χρησιμοποιήσετε το JACK, τότε πρέπει να επιλεχθούν μαζί "
+#~ "και τα δύο παρασκήνια JACK MIDI και JACK ήχου."
+
+#~ msgid ""
+#~ "All of the settings mentioned here are also available in the :ref:"
+#~ "`preferences`, so don't worry if you selected the wrong settings."
+#~ msgstr ""
+#~ "Όλες οι ρυθμίσεις που αναφέρονται εδώ είναι διαθέσιμες επίσης στις :ref:"
+#~ "`preferences`, οπότε μην ανησυχείτε αν επιλέξατε τις λάθος ρυθμίσεις."
+
 #~ msgid ""
 #~ "Click on the :guilabel:`View Source` button at the top of the page to "
 #~ "find which file the page exists in, find the file in the source "
@@ -9786,12 +9807,6 @@ msgstr ""
 #~ "Κάντε κλικ στο κουμπί :guilabel:`Προβολή κώδικα` στο πάνω μέρος της "
 #~ "σελίδας για να βρείτε σε ποιο αρχείο βρίσκεται η σελίδα, να βρείτε πού "
 #~ "βρίσκεται το αρχείο στην πηγαία διανομή και να το επεξεργαστείτε."
-
-#~ msgid ""
-#~ "See the :download:`THANKS <../../../THANKS>` file in the source "
-#~ "distribution."
-#~ msgstr ""
-#~ "Βλέπε το αρχείο :download:`THANKS <../../../THANKS>` στην πηγαία διανομή."
 
 #~ msgid ""
 #~ "Chords and scales can be used to easily try out various chords and to "

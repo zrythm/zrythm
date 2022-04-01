@@ -7,61 +7,33 @@
 Running Zrythm
 ==============
 
-First Run Wizard
-----------------
+Initial Configuration
+---------------------
 
-When you first run Zrythm, it will display a wizard
+When you first run Zrythm, it will display a dialog
 that lets you configure the basic settings that
 Zrythm will use. These include the
-:term:`Zrythm user path`, the language of the
-user interface and audio/MIDI backends.
+:term:`Zrythm user path` and the language of the
+user interface.
 
-Language Selection
-~~~~~~~~~~~~~~~~~~
-
-.. image:: /_static/img/first-run-language.png
+.. figure:: /_static/img/initial-configuration-dialog.png
    :align: center
 
-Zrythm lets you choose the language of the
-interface. The interface is already translated in
-`multiple languages <https://hosted.weblate.org/projects/zrythm/#languages>`_,
-so choose the language you are most comfortable in.
+   Initial configuration dialog
 
-.. note:: You must have a locale enabled for the
-  language you want to use.
+Language
+  Zrythm lets you choose the language of the
+  interface. The interface is already translated in
+  `multiple languages <https://hosted.weblate.org/projects/zrythm/#languages>`_,
+  so choose the language you are most comfortable in.
 
+  .. note:: You must have a locale enabled for the
+    language you want to use.
 Path
-~~~~
+  This is the :term:`Zrythm user path`.
 
-.. image:: /_static/img/first-run-path.png
-   :align: center
-
-This is the :term:`Zrythm user path`.
-
-Audio/MIDI Backends
-~~~~~~~~~~~~~~~~~~~
-
-.. image:: /_static/img/first-run-backends.png
-   :align: center
-
-Zrythm supports multiple audio and MIDI backend
-engines. :term:`JACK` is the recommended one for
-both.
-
-If JACK is not available on your system, we
-recommend RtAudio and RtMidi.
-
-Click :guilabel:`Test` to try connecting to the
-backend to see if it is functional.
-
-.. note:: If you choose to use JACK, JACK MIDI and
-   the JACK audio backend must be chosen together.
-
-.. _midi_devices:
-
-.. tip:: All of the settings mentioned here are also
-   available in the :ref:`preferences`, so don't
-   worry if you selected the wrong settings.
+.. tip:: More settings are
+   available in the :ref:`preferences`.
 
 Plugin Scan
 -----------

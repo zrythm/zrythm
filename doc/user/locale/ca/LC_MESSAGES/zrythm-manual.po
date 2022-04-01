@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.28\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-29 15:32+0100\n"
+"POT-Creation-Date: 2022-04-01 12:08+0100\n"
 "PO-Revision-Date: 2022-02-28 15:54+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language: ca\n"
@@ -1253,7 +1253,16 @@ msgstr ""
 "distribució d'origen. Aquests inclouen traductors del programari, el manual "
 "d'usuari i el lloc web."
 
-#: ../../credits/intro.rst:30
+#: ../../credits/intro.rst:33
+#, fuzzy
+msgid ""
+"See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source "
+"distribution."
+msgstr ""
+"Veure el fitxer :download:`THANKS <../../../THANKS>` a la distribució "
+"d'origen."
+
+#: ../../credits/intro.rst:38
 msgid "Other Contributors"
 msgstr "Altres col·laboradors"
 
@@ -2134,7 +2143,8 @@ msgstr "El rotlle de pianola conté els següents controls addicionals."
 
 #: ../../editing/clip-editors/toolbar.rst:34
 msgid ""
-":ref:`Chord highlighting options <chords-and-scales/overview:Highlighting>`"
+":ref:`Chord highlighting options <chords-and-scales/piano-roll-integration:"
+"Highlighting>`"
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:35
@@ -4094,22 +4104,29 @@ msgid "Running Zrythm"
 msgstr "Executant Zrythm"
 
 #: ../../getting-started/running-zrythm.rst:11
-msgid "First Run Wizard"
-msgstr "Assistent de primera execució"
+#, fuzzy
+msgid "Initial Configuration"
+msgstr "Configuració"
 
 #: ../../getting-started/running-zrythm.rst:13
+#, fuzzy
 msgid ""
-"When you first run Zrythm, it will display a wizard that lets you configure "
+"When you first run Zrythm, it will display a dialog that lets you configure "
 "the basic settings that Zrythm will use. These include the :term:`Zrythm "
-"user path`, the language of the user interface and audio/MIDI backends."
+"user path` and the language of the user interface."
 msgstr ""
 "Quan executes Zrythm per primera vegada, podràs fer la configuració bàsica "
 "que utilitzarà Zrythm. Aquesta inclou :term:`Zrythm user path`, l'idioma de "
 "la interfície d'usuari i els backend d'àudio/MIDI."
 
-#: ../../getting-started/running-zrythm.rst:20
-msgid "Language Selection"
-msgstr "Selecció d'idioma"
+#: ../../getting-started/running-zrythm.rst:22
+msgid "Initial configuration dialog"
+msgstr ""
+
+#: ../../getting-started/running-zrythm.rst:30
+#, fuzzy
+msgid "Language"
+msgstr "Interval"
 
 #: ../../getting-started/running-zrythm.rst:25
 msgid ""
@@ -4128,62 +4145,23 @@ msgstr ""
 "Has de tenir una configuració regional habilitada per a l'idioma que vols "
 "utilitzar."
 
-#: ../../getting-started/running-zrythm.rst:34
+#: ../../getting-started/running-zrythm.rst:33
 msgid "Path"
 msgstr "Camí"
 
-#: ../../getting-started/running-zrythm.rst:39
+#: ../../getting-started/running-zrythm.rst:33
 msgid "This is the :term:`Zrythm user path`."
 msgstr "Aquest és :term:`Zrythm user path`."
 
-#: ../../getting-started/running-zrythm.rst:42
-msgid "Audio/MIDI Backends"
-msgstr "Backend d'àudio/MIDI"
-
-#: ../../getting-started/running-zrythm.rst:47
-msgid ""
-"Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is the "
-"recommended one for both."
+#: ../../getting-started/running-zrythm.rst:35
+msgid "More settings are available in the :ref:`preferences`."
 msgstr ""
-"Zrythm admet múltiples motors de backend d'àudio i MIDI. :term:`JACK` és el "
-"recomanat per a tots dos."
 
-#: ../../getting-started/running-zrythm.rst:51
-msgid ""
-"If JACK is not available on your system, we recommend RtAudio and RtMidi."
-msgstr ""
-"Si JACK no està disponible al teu sistema, et recomanem RtAudio i RtMidi."
-
-#: ../../getting-started/running-zrythm.rst:54
-msgid ""
-"Click :guilabel:`Test` to try connecting to the backend to see if it is "
-"functional."
-msgstr ""
-"Clica a :guilabel:`Test` per a intentar connectar-te al backend per a veure "
-"si és funcional."
-
-#: ../../getting-started/running-zrythm.rst:57
-msgid ""
-"If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
-"chosen together."
-msgstr ""
-"Si decideixes utilitzar JACK, llavors JACK MIDI i el backend d'àudio JACK "
-"s'han de triar junts."
-
-#: ../../getting-started/running-zrythm.rst:62
-msgid ""
-"All of the settings mentioned here are also available in the :ref:"
-"`preferences`, so don't worry if you selected the wrong settings."
-msgstr ""
-"Tots els paràmetres esmentats aquí també estan disponibles a la opció :ref:"
-"`preferences`,així que no et preocupis si has seleccionat la configuració "
-"incorrecta."
-
-#: ../../getting-started/running-zrythm.rst:67
+#: ../../getting-started/running-zrythm.rst:39
 msgid "Plugin Scan"
 msgstr "Exploració de complements"
 
-#: ../../getting-started/running-zrythm.rst:68
+#: ../../getting-started/running-zrythm.rst:40
 msgid ""
 "When the first run wizard is completed, Zrythm will start :doc:`scanning for "
 "plugins <../plugins-files/plugins/scanning>`."
@@ -4191,11 +4169,11 @@ msgstr ""
 "Quan es completi l'auxiliar de primera execució, Zrythm començarà :doc:"
 "`scanning for plugins <../plugins-files/plugins/scanning>`."
 
-#: ../../getting-started/running-zrythm.rst:76
+#: ../../getting-started/running-zrythm.rst:48
 msgid "Project Selection"
 msgstr "Selecció de projectes"
 
-#: ../../getting-started/running-zrythm.rst:77
+#: ../../getting-started/running-zrythm.rst:49
 msgid ""
 "Finally, Zrythm will ask you to :doc:`load or create a project <../projects/"
 "saving-loading>` and then the :doc:`main interface <../zrythm-interface/"
@@ -4205,12 +4183,12 @@ msgstr ""
 "projects/saving-loading>` i després apareixerà el :doc:`main interface <../"
 "zrythm-interface/overview>`."
 
-#: ../../getting-started/running-zrythm.rst:86
+#: ../../getting-started/running-zrythm.rst:58
 #: ../../projects/saving-loading.rst:20
 msgid "Project selection"
 msgstr "Selecció de projectes"
 
-#: ../../getting-started/running-zrythm.rst:91
+#: ../../getting-started/running-zrythm.rst:63
 msgid "Main interface"
 msgstr "Interfície principal"
 
@@ -6197,10 +6175,11 @@ msgid "Display"
 msgstr "Mostrar"
 
 #: ../../plugins-files/plugins/inspector-page.rst:53
+#, fuzzy
 msgid ""
 "The number in the top right of each port name will display the current "
-"number of connections to/from this port. See :doc:`../../routing/making-"
-"connections` for details."
+"number of connections to/from this port. See :ref:`routing/connections:"
+"Connections` for details."
 msgstr ""
 "El número de la part superior dreta de cada nom del port mostrarà el nombre "
 "actual de connexions a/des d'aquest port. Veure :doc:`../../routing/making-"
@@ -9168,7 +9147,7 @@ msgid ":ref:`Modulators <modulators/intro:Modulators>`"
 msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:21
-msgid ":ref:`Chord Pad <chords-and-scales/overview:Chord Pad>`"
+msgid ":ref:`Chord Pad <chords-and-scales/chord-pad:Chord Pad>`"
 msgstr ""
 
 #: ../../zrythm-interface/intro.rst:6
@@ -9622,7 +9601,7 @@ msgid ":ref:`Monitor Section <routing/monitor-section:Monitor Section>`"
 msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:21
-msgid ":ref:`Chord Preset Browser <chords-and-scales/overview:Overview>`"
+msgid ":ref:`Chord Preset Browser <chords-and-scales/chord-pad:Presets>`"
 msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:23
@@ -9712,6 +9691,49 @@ msgid ""
 "will start clipping."
 msgstr ""
 
+#~ msgid "First Run Wizard"
+#~ msgstr "Assistent de primera execució"
+
+#~ msgid "Language Selection"
+#~ msgstr "Selecció d'idioma"
+
+#~ msgid "Audio/MIDI Backends"
+#~ msgstr "Backend d'àudio/MIDI"
+
+#~ msgid ""
+#~ "Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is "
+#~ "the recommended one for both."
+#~ msgstr ""
+#~ "Zrythm admet múltiples motors de backend d'àudio i MIDI. :term:`JACK` és "
+#~ "el recomanat per a tots dos."
+
+#~ msgid ""
+#~ "If JACK is not available on your system, we recommend RtAudio and RtMidi."
+#~ msgstr ""
+#~ "Si JACK no està disponible al teu sistema, et recomanem RtAudio i RtMidi."
+
+#~ msgid ""
+#~ "Click :guilabel:`Test` to try connecting to the backend to see if it is "
+#~ "functional."
+#~ msgstr ""
+#~ "Clica a :guilabel:`Test` per a intentar connectar-te al backend per a "
+#~ "veure si és funcional."
+
+#~ msgid ""
+#~ "If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
+#~ "chosen together."
+#~ msgstr ""
+#~ "Si decideixes utilitzar JACK, llavors JACK MIDI i el backend d'àudio JACK "
+#~ "s'han de triar junts."
+
+#~ msgid ""
+#~ "All of the settings mentioned here are also available in the :ref:"
+#~ "`preferences`, so don't worry if you selected the wrong settings."
+#~ msgstr ""
+#~ "Tots els paràmetres esmentats aquí també estan disponibles a la opció :"
+#~ "ref:`preferences`,així que no et preocupis si has seleccionat la "
+#~ "configuració incorrecta."
+
 #~ msgid ""
 #~ "Click on the :guilabel:`View Source` button at the top of the page to "
 #~ "find which file the page exists in, find the file in the source "
@@ -9720,13 +9742,6 @@ msgstr ""
 #~ "Clica el botó :guilabel:`View Source` a la part superior de la pàgina per "
 #~ "a trobar en quin fitxer hi ha la pàgina, trobar el fitxer a la "
 #~ "distribució d'origen i editar-lo."
-
-#~ msgid ""
-#~ "See the :download:`THANKS <../../../THANKS>` file in the source "
-#~ "distribution."
-#~ msgstr ""
-#~ "Veure el fitxer :download:`THANKS <../../../THANKS>` a la distribució "
-#~ "d'origen."
 
 #~ msgid "Explain the scripting window/interface."
 #~ msgstr "Explica la finestra/interfície de scripting."
