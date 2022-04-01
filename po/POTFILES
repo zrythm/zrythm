@@ -224,7 +224,6 @@ inc/gui/widgets/midi_arranger.h
 inc/gui/widgets/popover_menu_bin.h
 inc/gui/widgets/automation_mode.h
 inc/gui/widgets/chord_pad.h
-inc/gui/widgets/first_run_assistant.h
 inc/gui/widgets/timeline_minimap_bg.h
 inc/gui/widgets/two_col_expander_box.h
 inc/gui/widgets/timeline_ruler.h
@@ -262,6 +261,7 @@ inc/gui/widgets/dialogs/changelog_dialog.h
 inc/gui/widgets/dialogs/port_selector_dialog.h
 inc/gui/widgets/dialogs/about_dialog.h
 inc/gui/widgets/dialogs/bug_report_dialog.h
+inc/gui/widgets/dialogs/first_run_dialog.h
 inc/gui/widgets/dialogs/port_info.h
 inc/gui/widgets/dialogs/export_midi_file_dialog.h
 inc/gui/widgets/dialogs/project_progress_dialog.h
@@ -527,7 +527,6 @@ src/gui/widgets/track_input_expander.c
 src/gui/widgets/editable_label.c
 src/gui/widgets/expander_box.c
 src/gui/widgets/ruler_range.c
-src/gui/widgets/first_run_assistant.c
 src/gui/widgets/project_assistant.c
 src/gui/widgets/left_dock_edge.c
 src/gui/widgets/plugin_strip_expander.c
@@ -676,6 +675,7 @@ src/gui/widgets/dialogs/export_progress_dialog.c
 src/gui/widgets/dialogs/bug_report_dialog.c
 src/gui/widgets/dialogs/object_color_chooser_dialog.c
 src/gui/widgets/dialogs/port_selector_dialog.c
+src/gui/widgets/dialogs/first_run_dialog.c
 src/gui/widgets/dialogs/export_dialog.c
 src/gui/widgets/dialogs/project_progress_dialog.c
 src/gui/widgets/dialogs/track_icon_chooser_dialog.c
@@ -888,7 +888,6 @@ resources/gtk/help-overlay.ui
 resources/ui/fader_controls_grid.ui
 resources/ui/zoom_buttons.ui
 resources/ui/inspector_plugin.ui
-resources/ui/first_run_assistant.ui
 resources/ui/view_toolbar.ui
 resources/ui/right_dock_edge.ui
 resources/ui/modulator_macro.ui
@@ -900,7 +899,6 @@ resources/ui/expander_box.ui
 resources/ui/fishbowl_window.ui
 resources/ui/timeline_toolbar.ui
 resources/ui/project_assistant.ui
-resources/ui/bug_report_dialog.ui
 resources/ui/left_dock_edge.ui
 resources/ui/chord_selector_window.ui
 resources/ui/folder_channel.ui

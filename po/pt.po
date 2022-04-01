@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-03-29 17:57+0100\n"
+"POT-Creation-Date: 2022-04-01 12:19+0100\n"
 "PO-Revision-Date: 2022-01-30 22:48+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -755,16 +755,16 @@ msgstr "Erro: %s - Backtrace:\n"
 msgid "%s has crashed. "
 msgstr "%s caiu. "
 
-#: src/zrythm_app.c:227
+#: src/zrythm_app.c:226
 #, c-format
 msgid "Do you want %s to check for updates on startup?"
 msgstr "Deseja que %s verifica se há atualizações durante a inicialização?"
 
-#: src/zrythm_app.c:234
+#: src/zrythm_app.c:233
 msgid "Check for Updates"
 msgstr "Procurar atualizações"
 
-#: src/zrythm_app.c:307
+#: src/zrythm_app.c:306
 #, c-format
 msgid ""
 "A new version of Zrythm has been released: <b>%s</b>\n"
@@ -775,49 +775,49 @@ msgstr ""
 "\n"
 "A sua versão atual é %s"
 
-#: src/zrythm_app.c:396
+#: src/zrythm_app.c:395
 msgid "Setting up main window"
 msgstr "Configurar a janela principal"
 
-#: src/zrythm_app.c:441
+#: src/zrythm_app.c:440
 msgid "Loading project"
 msgstr "A carregar o projeto"
 
-#: src/zrythm_app.c:459
+#: src/zrythm_app.c:458
 #, c-format
 msgid "No project has been selected. %s will now close."
 msgstr "Nenhum projeto foi selecionado. %s vai fechar agora."
 
-#: src/zrythm_app.c:482
+#: src/zrythm_app.c:481
 msgid "Initializing settings"
 msgstr "A Inicializar as configurações"
 
-#: src/zrythm_app.c:489
+#: src/zrythm_app.c:488
 #, c-format
 msgid "Initializing %s directories"
 msgstr "Inicialização de %s diretórios"
 
-#: src/zrythm_app.c:499
+#: src/zrythm_app.c:498
 msgid "Initializing logging system"
 msgstr "Inicialização do sistema de registro de dados"
 
-#: src/zrythm_app.c:516
+#: src/zrythm_app.c:515
 msgid "Initializing caches"
 msgstr "Inicialização de caches"
 
-#: src/zrythm_app.c:520
+#: src/zrythm_app.c:519
 msgid "Initializing file manager"
 msgstr "A inicializar o gestor de ficheiros"
 
-#: src/zrythm_app.c:527
+#: src/zrythm_app.c:526
 msgid "Scanning plugins"
 msgstr "Procurar suplementos"
 
-#: src/zrythm_app.c:618
+#: src/zrythm_app.c:657
 msgid "Waiting for project"
 msgstr "Aguardando projeto"
 
-#: src/zrythm_app.c:858
+#: src/zrythm_app.c:897
 #, c-format
 msgid ""
 "Your user does not have enough privileges to allow %s to lock unlimited "
@@ -825,17 +825,17 @@ msgid ""
 "section in the user manual for details."
 msgstr ""
 
-#: src/zrythm_app.c:878
+#: src/zrythm_app.c:917
 #, c-format
 msgid "Could not get system memory lock limit (%s)"
 msgstr ""
 
-#: src/zrythm_app.c:903
+#: src/zrythm_app.c:942
 #, fuzzy, c-format
 msgid "Cannot lock down memory: %s"
 msgstr "Desfazer a Faixa Solo"
 
-#: src/zrythm_app.c:1049
+#: src/zrythm_app.c:1088
 #, c-format
 msgid ""
 "%s-%s\n"
@@ -862,76 +862,76 @@ msgstr ""
 "Apoie este projeto em https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1510
+#: src/zrythm_app.c:1549
 #, c-format
 msgid "File %s not found."
 msgstr "Ficheiro %s não encontrado."
 
-#: src/zrythm_app.c:1531
+#: src/zrythm_app.c:1570
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "Nenhum ficheiro de saída foi especificado. Por favor, passe um com `--output "
 "[FICHEIRO]`."
 
-#: src/zrythm_app.c:1597
+#: src/zrythm_app.c:1636
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "Não foi possível descomprimir o projeto: %s\n"
 
-#: src/zrythm_app.c:1616
+#: src/zrythm_app.c:1655
 msgid "Unknown operation"
 msgstr "Operação desconhecida"
 
-#: src/zrythm_app.c:1636
+#: src/zrythm_app.c:1675
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "libguile é necessário para esta opção\n"
 
-#: src/zrythm_app.c:1801
+#: src/zrythm_app.c:1840
 msgid "Print version information"
 msgstr "Imprimir informações da versão"
 
-#: src/zrythm_app.c:1806
+#: src/zrythm_app.c:1845
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "Converter ZPJ-FILE para YAML"
 
-#: src/zrythm_app.c:1811
+#: src/zrythm_app.c:1850
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "Converter YAML-PROJECT-FILE para o formato .zpj"
 
-#: src/zrythm_app.c:1816
+#: src/zrythm_app.c:1855
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "Gerar um projeto a partir do SCRIPT-FILE"
 
-#: src/zrythm_app.c:1820
+#: src/zrythm_app.c:1859
 msgid "Print output in user-friendly way"
 msgstr "Saída de impressão de forma fácil de usar"
 
-#: src/zrythm_app.c:1824
+#: src/zrythm_app.c:1863
 msgid "Print current settings"
 msgstr "Imprimir definições atuais"
 
-#: src/zrythm_app.c:1828
+#: src/zrythm_app.c:1867
 msgid "Reset to factory settings"
 msgstr "Redefinir para configurações de fábrica"
 
-#: src/zrythm_app.c:1831
+#: src/zrythm_app.c:1870
 msgid "Override the audio backend to use"
 msgstr "Substitur o backend de áudio a usar"
 
-#: src/zrythm_app.c:1835
+#: src/zrythm_app.c:1874
 msgid "Override the MIDI backend to use"
 msgstr "Substituir o back-end MIDI a usar"
 
-#: src/zrythm_app.c:1839
+#: src/zrythm_app.c:1878
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "Abreviação para --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1871
+#: src/zrythm_app.c:1910
 msgid "[PROJECT-FILE]"
 msgstr "[PROJECT-FILE]"
 
-#: src/zrythm_app.c:1876
+#: src/zrythm_app.c:1915
 #, c-format
 msgid ""
 "Examples:\n"
@@ -950,7 +950,7 @@ msgstr ""
 "\n"
 "Por favor, relate problemas a %s.\n"
 
-#: src/zrythm_app.c:1888
+#: src/zrythm_app.c:1927
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "Execute %s, opcionalmente passando um ficheiro de projeto."
@@ -1164,7 +1164,8 @@ msgstr "Guardar Estado"
 #: src/gui/widgets/main_window.c:234
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:181
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:151
-#: src/gui/widgets/dialogs/bug_report_dialog.c:353
+#: src/gui/widgets/dialogs/bug_report_dialog.c:242
+#: src/gui/widgets/dialogs/first_run_dialog.c:326
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:167
 #: src/utils/dialogs.c:45 src/utils/dialogs.c:74 src/audio/clip.c:675
 #: src/actions/actions.c:783 resources/ui/project_assistant.ui:92
@@ -1295,7 +1296,8 @@ msgid "Delete Preset?"
 msgstr "Eliminar pré-ajuste?"
 
 #: src/plugins/lv2/lv2_gtk.c:269
-#: src/gui/widgets/dialogs/bug_report_dialog.c:351 src/utils/dialogs.c:72
+#: src/gui/widgets/dialogs/bug_report_dialog.c:240
+#: src/gui/widgets/dialogs/first_run_dialog.c:328 src/utils/dialogs.c:72
 #: src/audio/clip.c:674 resources/ui/string_entry_dialog.ui:55
 #: resources/ui/port_selector_dialog.ui:126
 msgid "_OK"
@@ -1335,7 +1337,7 @@ msgstr "Adicionar"
 #: src/gui/widgets/inspector_port.c:158 src/gui/widgets/modulator_inner.c:171
 #: src/gui/widgets/plugin_browser.c:577 src/gui/widgets/plugin_browser.c:627
 #: src/gui/widgets/balance_control.c:308 src/gui/widgets/modulator_macro.c:176
-#: src/gui/widgets/fader.c:307 resources/ui/first_run_assistant.ui:77
+#: src/gui/widgets/fader.c:307
 msgid "Reset"
 msgstr "Redefinir"
 
@@ -1536,22 +1538,6 @@ msgstr "Mono"
 msgid "Inputs"
 msgstr "Entradas"
 
-#: src/gui/widgets/first_run_assistant.c:228
-msgid "Backend combination not supported"
-msgstr "Combinação backend não suportada"
-
-#: src/gui/widgets/first_run_assistant.c:234
-msgid "The selected backends are operational"
-msgstr "Os backends selecionados estão operacionais"
-
-#: src/gui/widgets/first_run_assistant.c:274
-msgid "JACK MIDI can only be used with JACK audio"
-msgstr "O JACK MIDI só pode ser usado com JACK audio"
-
-#: src/gui/widgets/first_run_assistant.c:413
-msgid "Select a directory"
-msgstr "Selecione um diretório"
-
 #: src/gui/widgets/project_assistant.c:39
 #, fuzzy
 msgid "<File not found>"
@@ -1598,7 +1584,6 @@ msgid "Template Name"
 msgstr "Nome da Faixa"
 
 #: src/gui/widgets/project_assistant.c:679 src/gui/widgets/item_factory.c:968
-#: resources/ui/first_run_assistant.ui:56
 msgid "Path"
 msgstr "Caminho"
 
@@ -2503,7 +2488,7 @@ msgstr ""
 "Mudanças:\n"
 "%s"
 
-#: src/gui/widgets/main_window.c:885 src/gui/widgets/preferences.c:985
+#: src/gui/widgets/main_window.c:885 src/gui/widgets/preferences.c:989
 #: resources/gtk/menus.ui:40 resources/gtk/help-overlay.ui:39
 #: resources/ui/file_auditioner_controls.ui:33
 msgid "Preferences"
@@ -2544,7 +2529,7 @@ msgstr "Selecione uma pasta"
 msgid "Select a file"
 msgstr "Selecione um ficheiro"
 
-#: src/gui/widgets/preferences.c:967
+#: src/gui/widgets/preferences.c:971
 #, c-format
 msgid "Some changes will only take effect after you restart %s"
 msgstr "Algumas alterações só terão efeito depois de reiniciar %s"
@@ -3249,12 +3234,11 @@ msgid ""
 msgstr ""
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:88
-msgid ""
-"Zrythm and the Zrythm logo are registered trademarks of Alexandros Theodotou "
-"in the United Kingdom."
+#, c-format
+msgid "Zrythm and the Zrythm logo are %strademarks of Alexandros Theodotou%s."
 msgstr ""
 
-#: src/gui/widgets/dialogs/welcome_message_dialog.c:107
+#: src/gui/widgets/dialogs/welcome_message_dialog.c:111
 msgid "Welcome"
 msgstr ""
 
@@ -3389,38 +3373,26 @@ msgstr "Abrir Diretório"
 msgid "Opens the containing directory"
 msgstr "Abre o diretório acima"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:61
-msgid "Please enter steps to reproduce"
-msgstr "Por favor, digite os passos para reproduzir"
+#: src/gui/widgets/dialogs/bug_report_dialog.c:65
+#, fuzzy
+msgid "Please enter more details"
+msgstr "Por favor, insira um valor"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:74
-msgid "Please fill in all fields"
-msgstr "Por favor, preencha todos os campos"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:161
-msgid "Send via Sourcehut"
-msgstr "Enviar via Sourcehut"
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:170
-#, c-format
-msgid "Please copy the template below in a %snew issue%s."
-msgstr "Por favor, copie o modelo abaixo numa %snova edição%s."
-
-#: src/gui/widgets/dialogs/bug_report_dialog.c:325
+#: src/gui/widgets/dialogs/bug_report_dialog.c:215
 #, c-format
 msgid "error: %s"
 msgstr "erro: %s"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:330
-#: src/gui/widgets/dialogs/bug_report_dialog.c:548
+#: src/gui/widgets/dialogs/bug_report_dialog.c:220
+#: src/gui/widgets/dialogs/bug_report_dialog.c:437
 msgid "Done"
 msgstr "Pronto"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:349
+#: src/gui/widgets/dialogs/bug_report_dialog.c:238
 msgid "Send Automatically"
 msgstr "Enviar automaticamente"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:374
+#: src/gui/widgets/dialogs/bug_report_dialog.c:263
 #, c-format
 msgid ""
 "Click OK to submit. You can verify what will be sent below. By clicking OK, "
@@ -3429,51 +3401,106 @@ msgstr ""
 "Clique em OK para enviar. Você pode verificar o que será enviado abaixo. Ao "
 "clicar em OK, você concorda com a nossa %sPolítica de Privacidade%s."
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:391
+#: src/gui/widgets/dialogs/bug_report_dialog.c:280
 msgid "<b>Data</b>"
 msgstr "<b>Dados</b>"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:445
+#: src/gui/widgets/dialogs/bug_report_dialog.c:334
 msgid "<b>Log file</b>"
 msgstr "<b>Ficheiro de registo</b>"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:486
+#: src/gui/widgets/dialogs/bug_report_dialog.c:375
 msgid "<b>Screenshot</b>"
 msgstr "<b>Captura de ecrã</b>"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:537
+#: src/gui/widgets/dialogs/bug_report_dialog.c:426
 msgid "Sending"
 msgstr "A enviar"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:546
+#: src/gui/widgets/dialogs/bug_report_dialog.c:435
 msgid "Sending data..."
 msgstr "A enviar dados..."
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:549
+#: src/gui/widgets/dialogs/bug_report_dialog.c:438
 msgid "Failed"
 msgstr "Falhou"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:553
+#: src/gui/widgets/dialogs/bug_report_dialog.c:442
 msgid "Sending..."
 msgstr "A enviar..."
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:581
+#: src/gui/widgets/dialogs/bug_report_dialog.c:471
 msgid "Sent successfully"
 msgstr "Enviado com sucesso"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:654
+#: src/gui/widgets/dialogs/bug_report_dialog.c:517
+msgid "Send via Sourcehut"
+msgstr "Enviar via Sourcehut"
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:526
 #, c-format
-msgid "%sPlease help us fix this by submitting a bug report."
+msgid "Please copy the template below in a %snew issue%s."
+msgstr "Por favor, copie o modelo abaixo numa %snova edição%s."
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:630
+#, fuzzy
+msgid "Fatal Error"
+msgstr "Erro"
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:630
+msgid "Error"
+msgstr "Erro"
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:635
+#, fuzzy, c-format
+msgid "%sPlease help us fix this by submitting a bug report"
 msgstr "%sPor favor, ajude-nos a corrigir isto a enviar um relatório de bug."
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:685
-msgid "Enter a list of steps to reproduce the error. Markdown is supported."
-msgstr ""
-"Digite uma lista de passos para reproduzir o erro. Markdown é suportado."
+#: src/gui/widgets/dialogs/bug_report_dialog.c:729
+msgid "What did you do?"
+msgstr "O que fez?"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:690
-msgid "Enter more context, what distro you use, etc. Markdown is supported."
-msgstr "Digite mais contexto, qual distro usa, etc. O Markdown é suportado."
+#: src/gui/widgets/dialogs/bug_report_dialog.c:732
+#, fuzzy
+msgid "Please enter as many details as possible (such as steps to reproduce)"
+msgstr "Por favor, digite os passos para reproduzir"
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:757
+#, fuzzy
+msgid "Error details"
+msgstr "Desenhar detalhes"
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:765
+#, fuzzy
+msgid "Backtrace"
+msgstr "Erro - Backtrace:\n"
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:780
+#, fuzzy
+msgid "Log"
+msgstr "Baixo"
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:796
+#, fuzzy
+msgid "System info"
+msgstr "Ver informações"
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:811
+#, fuzzy
+msgid "_Close"
+msgstr "Fechar"
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:812
+msgid "Submit on _SourceHut"
+msgstr ""
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:814
+msgid "Send via _email (publicly visible)"
+msgstr ""
+
+#: src/gui/widgets/dialogs/bug_report_dialog.c:816
+msgid "Preview and send _automatically (privately)"
+msgstr ""
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:55
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:71
@@ -3505,6 +3532,41 @@ msgstr "Estas portas não podem ser ligadas"
 #: src/gui/widgets/dialogs/port_selector_dialog.c:371
 msgid "Track Ports"
 msgstr "Portas de Faixa"
+
+#: src/gui/widgets/dialogs/first_run_dialog.c:206
+msgid "Setup Zrythm"
+msgstr "Configuração do Zrythm"
+
+#: src/gui/widgets/dialogs/first_run_dialog.c:250
+msgid "Initial Configuration"
+msgstr ""
+
+#: src/gui/widgets/dialogs/first_run_dialog.c:262
+msgid "Language"
+msgstr "Idioma"
+
+#: src/gui/widgets/dialogs/first_run_dialog.c:264
+#, fuzzy
+msgid "Preferred language"
+msgstr "Balanço do Pré-fader"
+
+#: src/gui/widgets/dialogs/first_run_dialog.c:284
+#, fuzzy
+msgid "User path"
+msgstr "Selecione o caminho"
+
+#: src/gui/widgets/dialogs/first_run_dialog.c:286
+msgid "Location to save user files"
+msgstr ""
+
+#: src/gui/widgets/dialogs/first_run_dialog.c:290
+msgid "Select a directory"
+msgstr "Selecione um diretório"
+
+#: src/gui/widgets/dialogs/first_run_dialog.c:327
+#, fuzzy
+msgid "_Reset"
+msgstr "Redefinir"
 
 #: src/gui/widgets/dialogs/export_dialog.c:247
 msgid "none"
@@ -3639,14 +3701,10 @@ msgstr "Falha ao redefinir o esquema %s"
 msgid "Failed to paste plugins"
 msgstr "Falha ao escrever o ficheiro: %s"
 
-#: src/utils/log.c:796
+#: src/utils/log.c:804
 #, c-format
-msgid ""
-"%s has encountered a non-fatal error. It may continue to run but behavior "
-"will be undefined. "
+msgid "%s has encountered an error\n"
 msgstr ""
-"%s encontrou um erro não fatal. Pode continuar a ser executado, mas o "
-"comportamento será indefinido. "
 
 #: src/utils/gtk.c:1321
 #, fuzzy
@@ -4508,51 +4566,51 @@ msgid "JACK has shut down"
 msgstr "JACK fechou"
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:669
+#: src/audio/engine_jack.c:677
 msgid "Overall operation failed"
 msgstr "A operação geral falhou"
 
-#: src/audio/engine_jack.c:675
+#: src/audio/engine_jack.c:683
 msgid "The operation contained an invalid or unsupported option"
 msgstr "A operação continha uma opção inválida ou não suportada"
 
-#: src/audio/engine_jack.c:682
+#: src/audio/engine_jack.c:690
 msgid "The desired client name was not unique"
 msgstr "O nome do cliente desejado não foi exclusivo"
 
-#: src/audio/engine_jack.c:688
+#: src/audio/engine_jack.c:696
 msgid "Unable to connect to the JACK server"
 msgstr "Impossível conectar ao servidor JACK"
 
-#: src/audio/engine_jack.c:694
+#: src/audio/engine_jack.c:702
 msgid "Communication error with the JACK server"
 msgstr "Erro de comunicação com o servidor JACK"
 
-#: src/audio/engine_jack.c:700
+#: src/audio/engine_jack.c:708
 msgid "Requested client does not exist"
 msgstr "O cliente solicitado não existe"
 
-#: src/audio/engine_jack.c:706
+#: src/audio/engine_jack.c:714
 msgid "Unable to load internal client"
 msgstr "Impossível carregar o cliente interno"
 
-#: src/audio/engine_jack.c:712
+#: src/audio/engine_jack.c:720
 msgid "Unable to initialize client"
 msgstr "Impossível inicializar o cliente"
 
-#: src/audio/engine_jack.c:718
+#: src/audio/engine_jack.c:726
 msgid "Unable to access shared memory"
 msgstr "Impossível acessar a memória compartilhada"
 
-#: src/audio/engine_jack.c:724
+#: src/audio/engine_jack.c:732
 msgid "Client's protocol version does not match"
 msgstr "A versão de protocolo do cliente não corresponde"
 
-#: src/audio/engine_jack.c:728
+#: src/audio/engine_jack.c:736
 msgid "Backend error"
 msgstr "Erro backend"
 
-#: src/audio/engine_jack.c:732
+#: src/audio/engine_jack.c:740
 msgid "Client zombie"
 msgstr "Cliente zumbi"
 
@@ -5637,65 +5695,6 @@ msgstr "Quantificar"
 msgid "Looping"
 msgstr "Looping"
 
-#: resources/ui/first_run_assistant.ui:5
-msgid "Setup Zrythm"
-msgstr "Configuração do Zrythm"
-
-#: resources/ui/first_run_assistant.ui:15
-msgid "Language"
-msgstr "Idioma"
-
-#: resources/ui/first_run_assistant.ui:28
-#, fuzzy
-msgid ""
-"<b><i>Note: Zrythm is currently in beta</i></b>\n"
-"\n"
-"Welcome to Zrythm.\n"
-"This will guide you through the basic setup of Zrythm. First, choose your "
-"language."
-msgstr ""
-"<b><i>Nota: Zrythm está atualmente em alfa</i></b>\n"
-"\n"
-"Bem-vindo à Zrythm.\n"
-"Isto irá guiá-lo através da configuração básica da Zrythm. Primeiro escolha "
-"o seu idioma."
-
-#: resources/ui/first_run_assistant.ui:68
-msgid ""
-"Next, choose the location to use for saving temporary files and projects (or "
-"accept the default)"
-msgstr ""
-"Em seguida, escolha o local para gravar ficheiros e projetos temporários (ou "
-"aceite o padrão)"
-
-#: resources/ui/first_run_assistant.ui:80
-msgid "Resets the path to the default"
-msgstr "Redefine o caminho para o padrão"
-
-#: resources/ui/first_run_assistant.ui:90
-msgid "Backends"
-msgstr "Backends"
-
-#: resources/ui/first_run_assistant.ui:100
-msgid "Select the audio and MIDI engine backends to use"
-msgstr "Selecione o áudio e os backends do motor MIDI usados"
-
-#: resources/ui/first_run_assistant.ui:109
-msgid "MIDI Backend"
-msgstr "Backend MIDI"
-
-#: resources/ui/first_run_assistant.ui:120
-msgid "Audio Backend"
-msgstr "Backend Áudio"
-
-#: resources/ui/first_run_assistant.ui:148
-msgid "Test"
-msgstr "Teste"
-
-#: resources/ui/first_run_assistant.ui:151
-msgid "Tests the backends"
-msgstr "Testa os backends"
-
 #: resources/ui/bind_cc_dialog.ui:5
 msgid "Bind MIDI CC"
 msgstr "Ligar MIDI CC"
@@ -5857,19 +5856,6 @@ msgstr "Criar %s"
 #: resources/ui/project_assistant.ui:98
 msgid "Open from _Path"
 msgstr ""
-
-#: resources/ui/bug_report_dialog.ui:6
-msgid "Error"
-msgstr "Erro"
-
-#: resources/ui/bug_report_dialog.ui:31
-msgid "What did you do?"
-msgstr "O que fez?"
-
-#: resources/ui/bug_report_dialog.ui:42
-#, fuzzy
-msgid "Other info"
-msgstr "Ver informações"
 
 #: resources/ui/chord_selector_window.ui:20
 msgid "Root Note"
@@ -7925,262 +7911,310 @@ msgid "Digital audio workstation"
 msgstr "Estação de Trabalho de Áudio Digital"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:10
-#, fuzzy
 msgid ""
 "Zrythm is a digital audio workstation designed to be featureful and easy to "
-"use. It allows limitless automation through curves, LFOs and envelopes, "
-"supports multiple plugin formats including LV2, VST2 and VST3, works with "
-"multiple backends including JACK, RtAudio/RtMidi and SDL2, assists with "
-"chord progressions via a special Chord Track and chord pads, and can be used "
-"in multiple languages including English, French, Portuguese, Japanese and "
-"German."
+"use. It offers streamlined editing workflows with flexible tools, limitless "
+"automation capabilities, powerful mixing features, chord assistance and "
+"support for various plugin and file formats."
 msgstr ""
-"A Zrythm é uma estação de trabalho de áudio digital concebida para ser "
-"funcional e fácil de usar. Permite uma automação ilimitada através de "
-"curvas, LFOs e envelopes, suporta múltiplos formatos de suplementos "
-"incluindo LV2, VST2 e VST3, funciona com múltiplos backends incluindo JACK, "
-"RtAudio/RtMidi e SDL2, auxilia na progressão de acordes através de uma "
-"trilha especial de acordes e pads de acordes, e pode ser usada em vários "
-"idiomas, incluindo inglês, francês, português, japonês e alemão."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:21
-msgid "Zrythm can be extended using GNU Guile."
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:17
+#, fuzzy
+msgid "Zrythm can be extended with user scripts written in GNU Guile."
 msgstr "Zrythm pode ser estendido a usar o GNU Guile."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:37
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:33
 #, fuzzy
 msgid "Main window with plugins"
 msgstr "Procurar suplementos"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:41
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:37
 msgid "Main window with detached panels"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:164
-#, fuzzy
-msgid "Changed"
-msgstr "alterar"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
+msgid "Fixed:"
+msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
-msgid "User manual: update Editing, Mixing, Playback &amp; Recording chapters"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
+msgid "Fix PDF manual build"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
+msgid "Added:"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+msgid "Use one instance for each channel for mono plugins"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:70
+msgid "Include release changelog info in appstream data"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:72
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
+#, fuzzy
+msgid "Changed:"
+msgstr "alterar"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+#, fuzzy
+msgid "Scroll to mid note when first showing the piano roll"
+msgstr "Se ouvir as notas MIDI enquanto as arrasta nos cilindros de piano."
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+msgid "Update Hungarian translations"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:76
+msgid "INSTALL: clarify build instructions"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+msgid "Enable locale detection for all languages"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:78
+msgid ""
+"TRADEMARKS: simplify some wording and reserve right to review and object to "
+"use deemed outside the policy"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+msgid ""
+"Make sure UI event queue is cleared before freeing (fixes occasional errors)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
+msgid ""
+"User manual: update Routing, Chords and Scales, Modulators, Scripting, "
+"Theming, User Media, Contributing and Credits chapters"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
+msgid "User manual: update some URLs (fix permanent redirects)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:85
+msgid "Fix automation lanes not being shown immediately when made visible"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+msgid "Fix MIDI files not being activatable in the file browser"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+msgid "Fix audio engine not being resumed after running Guile scripts"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
+msgid ""
+"Fix engine preprocessing sometimes running while the graph is being updated"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+msgid "Fix various invalid accesses reported by GCC address sanitizer"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
+msgid "Fix various memory leaks reported by GCC leak sanitizer"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
+msgid "Fix various custom widget children not being unparented during dispose"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+msgid "Fix segfault when attempting to add a plugin to a collection"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+msgid "Fix scale objects throwing errors in the event viewer"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+msgid "Fix plugin sidechain options not being available in channel sends"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
+#, fuzzy
+msgid "Removed:"
+msgstr "Remover"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
+msgid ""
+"Remove clang-tidy targets from meson configuration (speeds up "
+"reconfiguration)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
+msgid "User manual: remove copyright and license info from translatables"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
+msgid ""
+"Remove drop motion handler from timeline (should fix errors on drag and "
+"hover)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
+msgid "Remove emails from AUTHORS/THANKS/TRANSLATORS"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:110
+msgid "User manual: update Editing, Mixing, Playback &amp; Recording chapters"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
 msgid "Show warning when attempting to load unsupported projects"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:112
 msgid ""
 "Ignore CRITICAL message when opening native file chooser in Flatpak builds"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:113
 msgid "Make editor toolbar scrollable"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:72
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:178
-msgid "Fixed"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
 msgid "Fix opening projects from latest backup missing plugin states"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:156
-msgid "Added"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
 #, fuzzy
 msgid "Add Hungarian locale"
 msgstr "Harmônica Menor"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
 msgid ""
 "User manual: update Getting Started, Interface, Configuration, Projects, "
 "Plugins &amp; Files, Tracks chapter"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
 msgid "Update GTK-related subproject versions"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:132
 msgid "Disable scroll-to-focus on arrangers"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
 #, fuzzy
 msgid "Cleanup plugin state dirs on save"
 msgstr "A instanciação do suplemento Carla falhou"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
 msgid "Fix applying audio function not updating clip frames"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
 msgid "Fix MIDI export adding silence between regions"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
 msgid "Fix non-fatal error when importing empty MIDI files"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:145
-#, fuzzy
-msgid "Removed"
-msgstr "Remover"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:143
 msgid "Remove message that says Zrythm is in alpha"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
-msgid "Add MIDI format selector in the export dialog"
-msgstr ""
+#~ msgid "Backend combination not supported"
+#~ msgstr "Combinação backend não suportada"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
-msgid ""
-"Add option to export track lanes as separate MIDI tracks in the export dialog"
-msgstr ""
+#~ msgid "The selected backends are operational"
+#~ msgstr "Os backends selecionados estão operacionais"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
-msgid "Cancel current arranger action on Escape press"
-msgstr ""
+#~ msgid "JACK MIDI can only be used with JACK audio"
+#~ msgstr "O JACK MIDI só pode ser usado com JACK audio"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
-msgid "Update copyright years in about dialog"
-msgstr ""
+#~ msgid "Please fill in all fields"
+#~ msgstr "Por favor, preencha todos os campos"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
-msgid ""
-"Resize MIDI and velocity arrangers proportionally when resizing the editor"
-msgstr ""
+#~ msgid "Enter a list of steps to reproduce the error. Markdown is supported."
+#~ msgstr ""
+#~ "Digite uma lista de passos para reproduzir o erro. Markdown é suportado."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
-msgid "Queue some startup messages to be shown after main window loads"
-msgstr ""
+#~ msgid "Enter more context, what distro you use, etc. Markdown is supported."
+#~ msgstr "Digite mais contexto, qual distro usa, etc. O Markdown é suportado."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
-msgid "Improve context menu styling"
-msgstr ""
+#, c-format
+#~ msgid ""
+#~ "%s has encountered a non-fatal error. It may continue to run but behavior "
+#~ "will be undefined. "
+#~ msgstr ""
+#~ "%s encontrou um erro não fatal. Pode continuar a ser executado, mas o "
+#~ "comportamento será indefinido. "
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:132
-msgid ""
-"Clear undo history when deleting channel slots or tracks with uninstantiated "
-"plugins"
-msgstr ""
+#, fuzzy
+#~ msgid ""
+#~ "<b><i>Note: Zrythm is currently in beta</i></b>\n"
+#~ "\n"
+#~ "Welcome to Zrythm.\n"
+#~ "This will guide you through the basic setup of Zrythm. First, choose your "
+#~ "language."
+#~ msgstr ""
+#~ "<b><i>Nota: Zrythm está atualmente em alfa</i></b>\n"
+#~ "\n"
+#~ "Bem-vindo à Zrythm.\n"
+#~ "Isto irá guiá-lo através da configuração básica da Zrythm. Primeiro "
+#~ "escolha o seu idioma."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
-msgid "Use custom-built test instrument instead of Geonkick in some tests"
-msgstr ""
+#~ msgid ""
+#~ "Next, choose the location to use for saving temporary files and projects "
+#~ "(or accept the default)"
+#~ msgstr ""
+#~ "Em seguida, escolha o local para gravar ficheiros e projetos temporários "
+#~ "(ou aceite o padrão)"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
-msgid "Update default screenshot in appdata"
-msgstr ""
+#~ msgid "Resets the path to the default"
+#~ msgstr "Redefine o caminho para o padrão"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:140
-msgid "Fix plugin state dirs in backups being empty"
-msgstr ""
+#~ msgid "Backends"
+#~ msgstr "Backends"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
-msgid "Fix audio FX track stems being silent"
-msgstr ""
+#~ msgid "Select the audio and MIDI engine backends to use"
+#~ msgstr "Selecione o áudio e os backends do motor MIDI usados"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:142
-msgid "Fix being unable to open main window on MacOS"
-msgstr ""
+#~ msgid "MIDI Backend"
+#~ msgstr "Backend MIDI"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:148
-msgid ""
-"Remove warranty disclaimer from welcome dialog (already mentioned in about "
-"dialog)"
-msgstr ""
+#~ msgid "Audio Backend"
+#~ msgstr "Backend Áudio"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:159
-msgid "Force an app icon in the header bar"
-msgstr ""
+#~ msgid "Test"
+#~ msgstr "Teste"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
-msgid "Auto-reconnect to any hardware devices that get disconnected"
-msgstr ""
+#~ msgid "Tests the backends"
+#~ msgstr "Testa os backends"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:161
-msgid "Add some missing internal port symbols for channels/tracks"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:167
-msgid "Move zoom buttons to timeline and editor toolbars"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:168
-msgid "Move about button to Help toolbar"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:169
-msgid "Make Edit icon lighter"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:170
-msgid ""
-"MIDI CC recording must now be enabled manually via automation lanes "
-"(improves DSP performance of MIDI and instrument tracks)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:171
-msgid "Optimize plugin DSP processing"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:172
-msgid "Consider region as looped if loop end point is beyond region end"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:173
-msgid ""
-"Re-enable PipeWire support for Flatpak (add related message in welcome "
-"dialog)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:174
-msgid "Make accelerators in popover menus orange"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:175
-msgid "Group various button groups together in toolbars"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:181
-msgid "Fix plugin passthrough ignoring MIDI events"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:182
-msgid "Fix incorrect track routing when using MIDI FX plugins"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:183
-msgid "Fix error when splitting unlooped automation regions"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:184
-msgid "Fix hardware inputs not being routed properly to tracks"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:185
-msgid "Fix \"all audio inputs\" in track inputs not behaving as intended"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:186
-msgid "Fix incorrect logic when checking whether a note is in a scale"
-msgstr ""
+#, fuzzy
+#~ msgid ""
+#~ "Zrythm is a digital audio workstation designed to be featureful and easy "
+#~ "to use. It allows limitless automation through curves, LFOs and "
+#~ "envelopes, supports multiple plugin formats including LV2, VST2 and VST3, "
+#~ "works with multiple backends including JACK, RtAudio/RtMidi and SDL2, "
+#~ "assists with chord progressions via a special Chord Track and chord pads, "
+#~ "and can be used in multiple languages including English, French, "
+#~ "Portuguese, Japanese and German."
+#~ msgstr ""
+#~ "A Zrythm é uma estação de trabalho de áudio digital concebida para ser "
+#~ "funcional e fácil de usar. Permite uma automação ilimitada através de "
+#~ "curvas, LFOs e envelopes, suporta múltiplos formatos de suplementos "
+#~ "incluindo LV2, VST2 e VST3, funciona com múltiplos backends incluindo "
+#~ "JACK, RtAudio/RtMidi e SDL2, auxilia na progressão de acordes através de "
+#~ "uma trilha especial de acordes e pads de acordes, e pode ser usada em "
+#~ "vários idiomas, incluindo inglês, francês, português, japonês e alemão."
 
 #~ msgid "License Information"
 #~ msgstr "Informações sobre a Licença"
