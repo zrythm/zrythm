@@ -102,7 +102,8 @@ localization_locale_exists (
 bool
 localization_init (
   bool use_locale,
-  bool print_debug_messages);
+  bool print_debug_messages,
+  bool queue_error_if_not_installed);
 
 /**
  * @}

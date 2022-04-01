@@ -284,7 +284,8 @@ localization_locale_exists (
 bool
 localization_init (
   bool use_locale,
-  bool print_debug_messages)
+  bool print_debug_messages,
+  bool queue_error_if_not_installed)
 {
   char * code = NULL;
   LocalizationLanguage lang;
@@ -355,9 +356,12 @@ localization_init (
               "No locale for \"%s\" is "
               "installed, using default",
               language_strings[lang]);
-          zrythm_app->startup_errors[
-            zrythm_app->num_startup_errors++] =
-              msg;
+          if (queue_error_if_not_installed)
+            {
+              zrythm_app->startup_errors[
+                zrythm_app->num_startup_errors++] =
+                  msg;
+            }
           g_warning ("%s", msg);
         }
       setlocale (LC_ALL, "C");

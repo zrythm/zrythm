@@ -69,8 +69,8 @@
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/dialogs/bug_report_dialog.h"
 #include "gui/widgets/dialogs/changelog_dialog.h"
+#include "gui/widgets/dialogs/first_run_dialog.h"
 #include "gui/widgets/dialogs/welcome_message_dialog.h"
-#include "gui/widgets/first_run_assistant.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/project_assistant.h"
 #include "gui/widgets/splash.h"
@@ -562,6 +562,37 @@ zrythm_app_prompt_for_project_func (
 }
 
 static void
+first_run_dialog_response_cb (
+  GtkDialog * dialog,
+  gint        response_id,
+  ZrythmApp * self)
+{
+  FirstRunDialogWidget * first_run_dialog =
+    Z_FIRST_RUN_DIALOG_WIDGET (dialog);
+
+  g_debug ("response %d", response_id);
+
+  switch (response_id)
+    {
+    case FIRST_RUN_DIALOG_RESET_RESPONSE:
+      first_run_dialog_widget_reset (
+        first_run_dialog);
+      return;
+    case GTK_RESPONSE_CANCEL:
+    case GTK_RESPONSE_DELETE_EVENT:
+      exit (0);
+      break;
+    case GTK_RESPONSE_OK:
+      first_run_dialog_widget_ok (
+        first_run_dialog);
+      break;
+    }
+
+  gtk_window_destroy (GTK_WINDOW (dialog));
+}
+
+
+static void
 license_info_dialog_response_cb (
   GtkDialog * dialog,
   gint        response_id,
@@ -569,8 +600,17 @@ license_info_dialog_response_cb (
 {
   g_message ("license info dialog closed");
   gtk_window_destroy (GTK_WINDOW (dialog));
-  first_run_assistant_widget_present (
-    GTK_WINDOW (self->splash));
+
+  FirstRunDialogWidget * first_run_dialog =
+    first_run_dialog_widget_new (
+      GTK_WINDOW (self->splash));
+  gtk_window_present (
+    GTK_WINDOW (first_run_dialog));
+
+  g_signal_connect (
+    G_OBJECT (first_run_dialog), "response",
+    G_CALLBACK (first_run_dialog_response_cb),
+    self);
 }
 
 /**
@@ -1017,7 +1057,7 @@ zrythm_app_startup (
       GSETTINGS_ZRYTHM_PREFIX ".general");
   localization_init (
     g_settings_get_boolean (
-      prefs, "first-run"), true);
+      prefs, "first-run"), true, true);
   g_object_unref (G_OBJECT (prefs));
 
   char * exe_path = NULL;
@@ -1538,7 +1578,7 @@ static bool
 print_settings (
   ZrythmApp * self)
 {
-  localization_init (false, false);
+  localization_init (false, false, false);
   settings_print (self->pretty_print);
 
   exit (EXIT_SUCCESS);

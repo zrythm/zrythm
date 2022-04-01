@@ -41,7 +41,6 @@ resource_files += files ([
   'fader_buttons.ui',
   'fader_controls_grid.ui',
   'file_browser.ui',
-  'first_run_assistant.ui',
   'fishbowl_window.ui',
   'generic_progress_dialog.ui',
   'header.ui',

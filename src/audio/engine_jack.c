@@ -567,7 +567,15 @@ engine_jack_test (
       char full_msg[800];
       sprintf (
         full_msg, "JACK Error: %s", msg);
-      ui_show_error_message (win, false, full_msg);
+      if (win)
+        {
+          ui_show_error_message (
+            win, false, full_msg);
+        }
+      else
+        {
+          g_message ("%s", full_msg);
+        }
       return 1;
     }
 

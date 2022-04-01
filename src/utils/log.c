@@ -684,6 +684,14 @@ need_backtrace (
       "g_variant_new_string: assertion "
       "'string != NULL' failed")
     &&
+    /* this happens in the first run dialog and
+     * bug report dialog */
+    !string_contains_substr (
+      ev->message,
+      "gtk_box_append: assertion "
+      "'gtk_widget_get_parent (child) == NULL' "
+      "failed")
+    &&
     !string_contains_substr (
       ev->message,
       "assertion 'self->drop == "

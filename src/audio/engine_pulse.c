@@ -521,8 +521,15 @@ engine_pulse_test (
   if (!engine_pulse_try_lock_connect_sync (
         &mainloop, &context, &msg))
     {
-      ui_show_error_message (
-        win, true, msg);
+      if (win)
+        {
+          ui_show_error_message (
+            win, true, msg);
+        }
+      else
+        {
+          g_message ("%s", msg);
+        }
       g_free (msg);
       result = 1;
     }

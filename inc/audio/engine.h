@@ -1118,6 +1118,18 @@ engine_reset_bounce_mode (
   AudioEngine * self);
 
 /**
+ * Detects the best backends on the system and
+ * sets them to GSettings.
+ *
+ * @param reset_to_dummy Whether to reset the
+ *   backends to dummy before attempting to set
+ *   defaults.
+ */
+void
+engine_set_default_backends (
+  bool reset_to_dummy);
+
+/**
  * Clones the audio engine.
  *
  * To be used for serialization.

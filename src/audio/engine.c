@@ -2143,6 +2143,91 @@ engine_reset_bounce_mode (
 }
 
 /**
+ * Detects the best backends on the system and
+ * sets them to GSettings.
+ *
+ * @param reset_to_dummy Whether to reset the
+ *   backends to dummy before attempting to set
+ *   defaults.
+ */
+void
+engine_set_default_backends (
+  bool reset_to_dummy)
+{
+  bool audio_set = false;
+  bool midi_set = false;
+
+  if (reset_to_dummy)
+    {
+      g_settings_set_enum (
+        S_P_GENERAL_ENGINE,
+        "audio-backend", AUDIO_BACKEND_DUMMY);
+      g_settings_set_enum (
+        S_P_GENERAL_ENGINE,
+        "midi-backend", MIDI_BACKEND_DUMMY);
+    }
+
+#ifdef HAVE_JACK
+  if (engine_jack_test (NULL))
+    {
+      g_settings_set_enum (
+        S_P_GENERAL_ENGINE,
+        "audio-backend", AUDIO_BACKEND_JACK);
+      g_settings_set_enum (
+        S_P_GENERAL_ENGINE,
+        "midi-backend", MIDI_BACKEND_JACK);
+      audio_set = true;
+      midi_set = true;
+    }
+#endif
+
+#ifdef HAVE_PULSEAUDIO
+  if (!audio_set && engine_pulse_test (NULL))
+    {
+      g_settings_set_enum (
+        S_P_GENERAL_ENGINE,
+        "audio-backend", AUDIO_BACKEND_PULSEAUDIO);
+      audio_set = true;
+    }
+#endif
+
+  /* default to RtAudio if above failed */
+  if (!audio_set)
+    {
+#ifdef _WOE32
+      g_settings_set_enum (
+        S_P_GENERAL_ENGINE,
+        "audio-backend", AUDIO_BACKEND_WASAPI_RTAUDIO);
+      audio_set = true;
+#elif defined (__APPLE__)
+      g_settings_set_enum (
+        S_P_GENERAL_ENGINE,
+        "audio-backend",
+        AUDIO_BACKEND_COREAUDIO_RTAUDIO);
+      audio_set = true;
+#endif
+    }
+
+  /* default to RtMidi if above failed */
+  if (!midi_set)
+    {
+#ifdef _WOE32
+      g_settings_set_enum (
+        S_P_GENERAL_ENGINE,
+        "midi-backend",
+        MIDI_BACKEND_WINDOWS_MME_RTMIDI);
+      audio_set = true;
+#elif defined (__APPLE__)
+      g_settings_set_enum (
+        S_P_GENERAL_ENGINE,
+        "midi-backend",
+        MIDI_BACKEND_COREMIDI_RTMIDI);
+      audio_set = true;
+#endif
+    }
+}
+
+/**
  * Stops events from getting fired.
  */
 static void

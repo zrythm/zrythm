@@ -145,6 +145,8 @@ struct _ZrythmApp
 
   /** Messages to show when the main window is
    * shown. */
+  /* FIXME delete this. it does the same thing as
+   * the queue below */
   char *             startup_errors[24];
   int                num_startup_errors;
 
