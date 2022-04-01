@@ -83,11 +83,15 @@ welcome_message_dialog_new (
 
   /* trademark info */
 #if !defined(HAVE_CUSTOM_NAME) || !defined(HAVE_CUSTOM_LOGO_AND_SPLASH)
+  char * trademarks =
+    g_strdup_printf (
+      _("Zrythm and the Zrythm logo are "
+      "%strademarks of Alexandros Theodotou%s."),
+      "<a href=\"https://git.sr.ht/~alextee/zrythm/tree/master/item/TRADEMARKS.md\">",
+      "</a>");
   g_string_append_printf (
-    gstr, "\n\n%s",
-    _("Zrythm and the Zrythm logo are registered "
-    "trademarks of Alexandros Theodotou in the "
-    "United Kingdom."));
+    gstr, "\n\n%s", trademarks);
+  g_free (trademarks);
 #endif
 
   char * str = g_string_free (gstr, false);
