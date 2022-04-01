@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-03-29 17:57+0100\n"
-"PO-Revision-Date: 2022-02-19 21:56+0000\n"
+"PO-Revision-Date: 2022-03-31 17:07+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.11-dev\n"
+"X-Generator: Weblate 4.12-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:159 inc/audio/engine.h:294
@@ -2904,7 +2904,7 @@ msgstr "スキーマ %s をリセットできませんでした"
 
 #: src/gui/widgets/file_browser_window.c:38 src/utils/gtk.c:1330
 msgid "File Browser"
-msgstr "ファイル ブラウザ"
+msgstr "ファイルブラウザ"
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
