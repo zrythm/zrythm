@@ -46,6 +46,8 @@
 
 @import '_palette';
 
+$accent_color: white;
+$error_color: #e01b24;
 $osd_fg_color: transparentize(white, .1);
 $osd_text_color: white;
 $osd_bg_color: transparentize(black, 0.3);
@@ -61,6 +63,96 @@ $view_selected_color: gtkalpha(currentColor, .1);
 $view_selected_hover_color: gtkalpha(currentColor, .13);
 $view_selected_active_color: gtkalpha(currentColor, .19);
 //$focus_border_color:  gtkalpha($accent_bg_color, $focus_border_opacity);
+
+label {
+  caret-color: currentColor;
+
+  &.separator {
+    @extend .dim-label;
+  }
+
+  &:disabled {
+    filter: opacity($disabled_opacity);
+  }
+
+  &.error {
+   color: $error_color;
+  }
+}
+
+.dim-label {
+  opacity: $dim_label_opacity;
+}
+
+.accent {
+  color: $accent_color;
+}
+
+/**********************
+ * General Typography *
+ **********************/
+
+.large-title {
+  font-weight: 300;
+  font-size: 24pt;
+}
+
+.title-1 {
+  font-weight: 800;
+  font-size: 20pt;
+}
+
+.title-2 {
+  font-weight: 800;
+  font-size: 15pt;
+}
+
+.title-3 {
+  font-weight: 700;
+  font-size: 15pt;
+}
+
+.title-4 {
+  font-weight: 700;
+  font-size: 13pt;
+}
+
+.heading {
+  font-weight: 700;
+  font-size: 11pt;
+}
+
+.body {
+  font-weight: 400;
+  font-size: 11pt;
+}
+
+.caption-heading {
+  font-weight: 700;
+  font-size: 9pt;
+}
+
+.caption {
+  font-weight: 400;
+  font-size: 9pt;
+}
+
+.monospace {
+  font-family: monospace;
+}
+
+.numeric {
+  font-feature-settings: "tnum";
+}
+
+/*******************
+ * Editable Labels *
+ *******************/
+
+editablelabel > stack > text {
+  color: $view_fg_color;
+  background-color: $view_bg_color;
+}
 
 /* adwaita stack view */
 viewswitcher {
@@ -229,6 +321,32 @@ statuspage {
       > .title {
         font-size: 18pt;
       }
+    }
+  }
+}
+
+/****************
+ * AdwActionRow *
+ ****************/
+
+row {
+  label.subtitle {
+    font-size: smaller;
+    @extend .dim-label;
+  }
+
+  > box.header {
+    margin-left: 12px;
+    margin-right: 12px;
+    min-height: 50px;
+
+    > .icon:disabled {
+      filter: opacity($disabled_opacity);
+    }
+
+    > box.title {
+      margin-top: 8px;
+      margin-bottom: 8px;
     }
   }
 }

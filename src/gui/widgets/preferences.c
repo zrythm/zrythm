@@ -755,6 +755,8 @@ add_subgroup (
         ADW_PREFERENCES_ROW (
           adw_action_row_new ());
       adw_preferences_row_set_title (row, summary);
+      adw_action_row_set_subtitle (
+        ADW_ACTION_ROW (row), description);
       adw_preferences_group_add (
         subgroup, GTK_WIDGET (row));
 
@@ -773,8 +775,10 @@ add_subgroup (
             {
               gtk_widget_set_hexpand (widget, true);
             }
+#if 0
           gtk_widget_set_tooltip_text (
             widget, description);
+#endif
           adw_action_row_add_suffix (
             ADW_ACTION_ROW (row), widget);
           num_controls++;
