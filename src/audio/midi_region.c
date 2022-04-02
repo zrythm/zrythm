@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2022 Robert Panovics <robert.panovics at gmail dot com>
  *
  * This file is part of Zrythm
  *
@@ -36,6 +37,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+#include <tgmath.h>
 
 #include "audio/channel.h"
 #include "audio/exporter.h"
@@ -960,6 +962,114 @@ midi_region_get_midi_ch (
 }
 
 /**
+ * Returns whether the given note is not muted and starts within any
+ * playable part of the region.
+ */
+bool
+midi_region_is_note_playable (
+  const ZRegion *  self,
+  const MidiNote * midi_note
+)
+{
+  ArrangerObject * self_obj =
+    (ArrangerObject *) self;
+
+  ArrangerObject * mn_obj =
+    (ArrangerObject *) midi_note;
+
+  if (arranger_object_get_muted (mn_obj, false))
+  {
+    return false;
+  }
+
+  if (!position_is_between (&mn_obj->pos,
+          &self_obj->loop_start_pos, &self_obj->loop_end_pos) &&
+      !position_is_between (&mn_obj->pos,
+          &self_obj->clip_start_pos, &self_obj->loop_start_pos))
+    {
+      return false;
+    }
+
+  return true;
+}
+
+/**
+ * Set positions to the exact values in the export
+ * region as it is played inside Zrythm.
+ *
+ * @param[in,out] start_pos start position of the event
+ * @param[in,out] end_pos end position of the event
+ * @param repeat_index repetition counter for loop offset
+ */
+static
+void
+get_note_positions_in_export (
+  const ZRegion *  self,
+  Position *       start_pos,
+  Position *       end_pos,
+  int              repeat_index
+)
+{
+  ArrangerObject * self_obj =
+    (ArrangerObject *) self;
+
+  double loop_length_in_ticks =
+    arranger_object_get_loop_length_in_ticks (self_obj);
+  POSITION_INIT_ON_STACK (export_start_pos);
+  POSITION_INIT_ON_STACK (export_end_pos);
+  position_add_ticks (&export_end_pos,
+    arranger_object_get_length_in_ticks (self_obj));
+
+  position_set_to_pos (end_pos,
+                       position_min (&self_obj->loop_end_pos,
+                                     end_pos));
+
+  if (position_is_before (start_pos,
+      &self_obj->clip_start_pos))
+    {
+      ++repeat_index;
+    }
+  
+  position_add_ticks (start_pos,
+                      loop_length_in_ticks * repeat_index -
+                      position_to_ticks (&self_obj->clip_start_pos));
+  position_add_ticks (end_pos,
+                      loop_length_in_ticks * repeat_index -
+                      position_to_ticks (&self_obj->clip_start_pos));
+  position_set_to_pos (start_pos,
+                       position_max (start_pos, &export_start_pos));
+  position_set_to_pos (end_pos,
+                       position_min (end_pos, &export_end_pos));
+}
+
+/**
+ * Returns if the given positions are in a given
+ * region as it is played inside Zrythm.
+ *
+ * @param offset_in_ticks Offset value if note is
+ * repeated inside a loop
+ */
+static
+bool
+is_note_export_start_pos_in_full_region (
+  const ZRegion *  self,
+  const Position * start_pos
+)
+{
+  ArrangerObject * self_obj =
+    (ArrangerObject *) self;
+
+  POSITION_INIT_ON_STACK (export_start_pos);
+  POSITION_INIT_ON_STACK (export_end_pos);
+  position_add_ticks (&export_end_pos,
+    arranger_object_get_length_in_ticks (self_obj));
+
+  return
+    position_is_between (
+      start_pos, &export_start_pos, &export_end_pos);
+}
+
+/**
  * Adds the contents of the region converted into
  * events.
  *
@@ -984,25 +1094,65 @@ midi_region_add_events (
   if (add_region_start)
     region_start = self_obj->pos.ticks;
 
-  MidiNote * mn;
+  double loop_length_in_ticks =
+    arranger_object_get_loop_length_in_ticks (self_obj);
+  int number_of_loop_repeats =
+    (int)ceil((arranger_object_get_length_in_ticks (self_obj) -
+               position_to_ticks (&self_obj->loop_start_pos) +
+               position_to_ticks (&self_obj->clip_start_pos)) /
+              loop_length_in_ticks);
+  
   for (int i = 0; i < self->num_midi_notes; i++)
     {
-      mn = self->midi_notes[i];
+      MidiNote * mn = self->midi_notes[i];
       ArrangerObject * mn_obj =
         (ArrangerObject *) mn;
 
-      midi_events_add_note_on (
-        events, 1, mn->val, mn->vel->vel,
-        (midi_time_t)
-        (position_to_ticks (&mn_obj->pos) +
-          region_start),
-        F_NOT_QUEUED);
-      midi_events_add_note_off (
-        events, 1, mn->val,
-        (midi_time_t)
-        (position_to_ticks (&mn_obj->end_pos) +
-          region_start),
-        F_NOT_QUEUED);
+      if (full && !midi_region_is_note_playable (self, mn))
+      {
+        continue;
+      }
+
+      int repeat_counter = 0;
+      bool write_only_once = true;
+      
+      do
+        {
+          Position mn_pos = mn_obj->pos;
+          Position mn_end_pos = mn_obj->end_pos;
+
+          if (full)
+            {
+              if (position_is_between(&mn_obj->pos,
+                  &self_obj->loop_start_pos, &self_obj->loop_end_pos))
+                {
+                  write_only_once = false;
+                }
+              
+              get_note_positions_in_export(
+                self, &mn_pos, &mn_end_pos, repeat_counter);
+            
+              if (!is_note_export_start_pos_in_full_region (
+                    self, &mn_pos))
+                {
+                  continue;
+                }
+            }
+
+          midi_events_add_note_on (
+            events, 1, mn->val, mn->vel->vel,
+            (midi_time_t)
+            (position_to_ticks (&mn_pos) +
+              region_start),
+            F_NOT_QUEUED);
+          midi_events_add_note_off (
+            events, 1, mn->val,
+            (midi_time_t)
+            (position_to_ticks (&mn_end_pos) +
+              region_start),
+            F_NOT_QUEUED);
+        } while (++repeat_counter < number_of_loop_repeats &&
+                 !write_only_once);        
     }
 
   midi_events_sort (events, F_NOT_QUEUED);

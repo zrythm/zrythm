@@ -299,6 +299,15 @@ midi_region_get_midi_ch (
   const ZRegion * self);
 
 /**
+ * Returns whether the given note is not muted and starts within any
+ * playable part of the region.
+ */
+bool
+midi_region_is_note_playable (
+  const ZRegion *  self,
+  const MidiNote * midi_note);
+
+/**
  * Adds the contents of the region converted into
  * events.
  *

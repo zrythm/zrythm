@@ -125,6 +125,14 @@
   (position_is_after (_pos, _start) && \
    position_is_before (_pos, _end))
 
+/** Returns minimum of p1 and p2 */
+#define position_min(p1,p2) \
+  (position_compare(p1,p2) < 0 ? p1 : p2)
+
+/** Returns maximum of p1 and p2 */
+#define position_max(p1,p2) \
+  (position_compare(p1,p2) > 0 ? p1 : p2)
+
 /** Inits the default position on the stack. */
 #define POSITION_INIT_ON_STACK(name) \
   Position name = POSITION_START;
