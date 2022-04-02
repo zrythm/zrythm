@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-01 12:19+0100\n"
-"PO-Revision-Date: 2022-03-31 17:07+0000\n"
+"PO-Revision-Date: 2022-04-02 14:09+0000\n"
 "Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -3263,9 +3263,8 @@ msgid "Opens the containing directory"
 msgstr "打开包含目录"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:65
-#, fuzzy
 msgid "Please enter more details"
-msgstr "请输入值"
+msgstr "请输入更多细节"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:215
 #, c-format
@@ -3338,43 +3337,37 @@ msgid "Error"
 msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:635
-#, fuzzy, c-format
+#, c-format
 msgid "%sPlease help us fix this by submitting a bug report"
-msgstr "%s请帮助我们修复这个问题，方法是提交一份故障报告。"
+msgstr "%s请提交一份故障报告帮助我们修复这个问题"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:729
 msgid "What did you do?"
 msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:732
-#, fuzzy
 msgid "Please enter as many details as possible (such as steps to reproduce)"
-msgstr "请输入重现步骤"
+msgstr "请输入尽可能多的细节（比如重现步骤）"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:757
-#, fuzzy
 msgid "Error details"
-msgstr "绘制详细信息"
+msgstr "错误详情"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:765
-#, fuzzy
 msgid "Backtrace"
-msgstr "错误-回溯:\n"
+msgstr "回溯"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:780
-#, fuzzy
 msgid "Log"
-msgstr "低"
+msgstr "日志"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:796
-#, fuzzy
 msgid "System info"
-msgstr "其他信息"
+msgstr "系统信息"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:811
-#, fuzzy
 msgid "_Close"
-msgstr "关闭"
+msgstr "关闭(_C)"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:812
 msgid "Submit on _SourceHut"
@@ -3432,14 +3425,12 @@ msgid "Language"
 msgstr "语言"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:264
-#, fuzzy
 msgid "Preferred language"
-msgstr "前推子平衡"
+msgstr "首选语言"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:284
-#, fuzzy
 msgid "User path"
-msgstr "选择路径"
+msgstr "用户路径"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:286
 msgid "Location to save user files"
@@ -3450,9 +3441,8 @@ msgid "Select a directory"
 msgstr "选择目录"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:327
-#, fuzzy
 msgid "_Reset"
-msgstr "重置"
+msgstr "重置(_R)"
 
 #: src/gui/widgets/dialogs/export_dialog.c:247
 msgid "none"
@@ -6690,8 +6680,9 @@ msgid "Whether MIDI FX are expanded."
 msgstr "是否展开 MIDI FX 。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:628
+#, fuzzy
 msgid "Sends expanded"
-msgstr ""
+msgstr "已展开 Sends"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:629
 msgid "Whether sends are expanded."
@@ -7466,14 +7457,12 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:72
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:108
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:128
-#, fuzzy
 msgid "Changed:"
-msgstr "已更改"
+msgstr "已更改："
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:74
-#, fuzzy
 msgid "Scroll to mid note when first showing the piano roll"
-msgstr "是否一边听MIDI音符，一边在钢琴卷里拖它们。"
+msgstr "第一次显示钢琴卷帘时，滚动到中调"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
 msgid "Update Hungarian translations"
@@ -7551,9 +7540,8 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:96
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:141
-#, fuzzy
 msgid "Removed:"
-msgstr "已删除"
+msgstr "已删除："
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:98
 msgid ""
