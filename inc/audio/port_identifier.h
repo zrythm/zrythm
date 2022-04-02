@@ -642,7 +642,7 @@ port_identifier_validate (
   PortIdentifier * self);
 
 NONNULL
-unsigned int
+uint32_t
 port_identifier_get_hash (
   const void * self);
 

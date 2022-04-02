@@ -97,6 +97,11 @@ port_connections_manager_regenerate_hashtables (
   object_free_w_func_and_null (
     g_hash_table_destroy, self->dest_ht);
 
+  /* FIXME the hashes returned are 32 bits but
+   * they should allow the minimum size of 16 bits
+   * for guint used in the hash func. currently
+   * this doesn't affect any major platform but
+   * it's not standards compliant */
   self->src_ht =
     g_hash_table_new_full (
       port_identifier_get_hash,

@@ -1246,7 +1246,7 @@ port_apply_pan (
  * Generates a hash for a given port.
  */
 NONNULL
-unsigned int
+uint32_t
 port_get_hash (
   const void * ptr);
 

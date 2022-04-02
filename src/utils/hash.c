@@ -29,13 +29,14 @@
 #define SEED_32 0xbaad5eed
 #define SEED_64 0xbaad5eedbaad5eed
 
-static char *
+static uint32_t
 get_xxh32_hash (
-  FILE * stream)
+  FILE *  stream,
+  char ** hash_str)
 {
   /* create a state */
   XXH32_state_t * state = XXH32_createState();
-  g_return_val_if_fail (state, NULL);
+  g_return_val_if_fail (state, 0);
 
   /* reset state with a seed (0 fastest) */
   XXH32_reset (state, 0);
@@ -56,25 +57,29 @@ get_xxh32_hash (
   /* get as canonical string */
   XXH32_canonical_t canonical;
   XXH32_canonicalFromHash (&canonical, hash);
-  char * ret =
-    g_strdup_printf (
-      "%x%x%x%x",
-      canonical.digest[0],
-      canonical.digest[1],
-      canonical.digest[2],
-      canonical.digest[3]);
+  if (hash_str)
+    {
+      *hash_str =
+        g_strdup_printf (
+          "%x%x%x%x",
+          canonical.digest[0],
+          canonical.digest[1],
+          canonical.digest[2],
+          canonical.digest[3]);
+    }
 
-  return ret;
+  return hash;
 }
 
 #if XXH_VERSION_NUMBER >= 800
-static char *
+static uint64_t
 get_xxh3_64_hash (
-  FILE * stream)
+  FILE *  stream,
+  char ** hash_str)
 {
   /* create a state */
   XXH3_state_t * state = XXH3_createState ();
-  g_return_val_if_fail (state, NULL);
+  g_return_val_if_fail (state, 0);
 
   /* reset state */
   XXH3_64bits_reset (state);
@@ -95,20 +100,23 @@ get_xxh3_64_hash (
   /* get as canonical string */
   XXH64_canonical_t canonical;
   XXH64_canonicalFromHash (&canonical, hash);
-  char * ret =
-    g_strdup_printf (
-      "%x%x%x%x%x%x%x%x",
-      canonical.digest[0],
-      canonical.digest[1],
-      canonical.digest[2],
-      canonical.digest[3],
-      canonical.digest[4],
-      canonical.digest[5],
-      canonical.digest[6],
-      canonical.digest[7]
-      );
+  if (hash_str)
+    {
+      *hash_str =
+        g_strdup_printf (
+          "%x%x%x%x%x%x%x%x",
+          canonical.digest[0],
+          canonical.digest[1],
+          canonical.digest[2],
+          canonical.digest[3],
+          canonical.digest[4],
+          canonical.digest[5],
+          canonical.digest[6],
+          canonical.digest[7]
+          );
+    }
 
-  return ret;
+  return hash;
 }
 #endif
 
@@ -121,27 +129,38 @@ hash_get_from_file (
 
   FILE * stream = fopen (filepath, "rb");
 
-  char * ret = NULL;
+  char * ret_str = NULL;
   switch (algo)
     {
     case HASH_ALGORITHM_XXH3_64:
 #if XXH_VERSION_NUMBER >= 800
-      ret = get_xxh3_64_hash (stream);
+      get_xxh3_64_hash (stream, &ret_str);
       break;
 #endif
     case HASH_ALGORITHM_XXH32:
-      ret = get_xxh32_hash (stream);
+      get_xxh32_hash (stream, &ret_str);
       break;
     }
 
   fclose (stream);
 
-  g_debug ("hash for %s: %s", filepath, ret);
+  g_debug ("hash for %s: %s", filepath, ret_str);
 
-  return ret;
+  return ret_str;
 }
 
-unsigned int
+uint32_t
+hash_get_from_file_simple (
+  const char *  filepath)
+{
+  FILE * stream = fopen (filepath, "rb");
+  uint32_t hash = get_xxh32_hash (stream, NULL);
+  fclose (stream);
+
+  return hash;
+}
+
+uint32_t
 hash_get_for_struct_full (
   XXH32_state_t *    state,
   const void * const obj,
@@ -154,7 +173,7 @@ hash_get_for_struct_full (
   XXH32_update (state, obj, size);
 
   /* finalize the hash */
-  return (unsigned int) XXH32_digest (state);
+  return XXH32_digest (state);
 }
 
 void *
@@ -172,7 +191,7 @@ hash_free_state (
   XXH32_freeState (state);
 }
 
-unsigned int
+uint32_t
 hash_get_for_struct (
   const void * const obj,
   size_t             size)
@@ -187,5 +206,5 @@ hash_get_for_struct (
   /* free the state */
   XXH32_freeState (state);
 
-  return (unsigned int) hash;
+  return hash;
 }

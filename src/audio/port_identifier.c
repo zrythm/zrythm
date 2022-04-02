@@ -230,14 +230,14 @@ port_identifier_validate (
   return true;
 }
 
-unsigned int
+uint32_t
 port_identifier_get_hash (
   const void * self)
 {
   void * state = hash_create_state ();
   const PortIdentifier * id =
     (const PortIdentifier *) self;
-  unsigned int hash = 0;
+  uint32_t hash = 0;
   if (id->label)
     hash = hash ^ g_str_hash (id->label);
   if (id->sym)
