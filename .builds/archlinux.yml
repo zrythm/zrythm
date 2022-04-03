@@ -3,6 +3,7 @@ packages:
   - alsa-lib
   - binutils
   - carla
+  - clang
   - cmake
   - chromaprint
   - cppcheck
@@ -69,6 +70,7 @@ tasks:
   - test: |
       cd zrythm
       meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5
+      ninja -C build clang-format-check
   - gen-coverage-report: |
       cd zrythm
       ninja -C build coverage-text
