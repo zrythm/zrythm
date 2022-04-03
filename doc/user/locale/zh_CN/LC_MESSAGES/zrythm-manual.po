@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-04-01 12:08+0100\n"
-"PO-Revision-Date: 2022-03-31 17:07+0000\n"
+"PO-Revision-Date: 2022-04-02 14:09+0000\n"
 "Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
@@ -77,7 +77,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:9
 msgid "User path"
-msgstr ""
+msgstr "用户路径"
 
 #: ../../appendix/files-and-directories.rst:10
 msgid ""
@@ -3488,9 +3488,8 @@ msgid "Initial configuration dialog"
 msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:30
-#, fuzzy
 msgid "Language"
-msgstr "范围"
+msgstr "语言"
 
 #: ../../getting-started/running-zrythm.rst:25
 msgid ""
