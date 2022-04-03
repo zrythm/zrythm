@@ -22,51 +22,57 @@ class BeatTrackerData;
 class BeatTracker : public Vamp::Plugin
 {
 public:
-    BeatTracker(float inputSampleRate);
-    virtual ~BeatTracker();
+  BeatTracker (float inputSampleRate);
+  virtual ~BeatTracker ();
 
-    bool initialise(size_t channels, size_t stepSize, size_t blockSize);
-    void reset();
+  bool initialise (
+    size_t channels,
+    size_t stepSize,
+    size_t blockSize);
+  void reset ();
 
-    InputDomain getInputDomain() const { return FrequencyDomain; }
+  InputDomain getInputDomain () const
+  {
+    return FrequencyDomain;
+  }
 
-    std::string getIdentifier() const;
-    std::string getName() const;
-    std::string getDescription() const;
-    std::string getMaker() const;
-    int getPluginVersion() const;
-    std::string getCopyright() const;
+  std::string getIdentifier () const;
+  std::string getName () const;
+  std::string getDescription () const;
+  std::string getMaker () const;
+  int         getPluginVersion () const;
+  std::string getCopyright () const;
 
-    ParameterList getParameterDescriptors() const;
-    float getParameter(std::string) const;
-    void setParameter(std::string, float);
+  ParameterList getParameterDescriptors () const;
+  float         getParameter (std::string) const;
+  void          setParameter (std::string, float);
 
-    size_t getPreferredStepSize() const;
-    size_t getPreferredBlockSize() const;
+  size_t getPreferredStepSize () const;
+  size_t getPreferredBlockSize () const;
 
-    OutputList getOutputDescriptors() const;
+  OutputList getOutputDescriptors () const;
 
-    FeatureSet process(const float *const *inputBuffers,
-                       Vamp::RealTime timestamp);
+  FeatureSet process (
+    const float * const * inputBuffers,
+    Vamp::RealTime        timestamp);
 
-    FeatureSet getRemainingFeatures();
+  FeatureSet getRemainingFeatures ();
 
 protected:
-    BeatTrackerData *m_d;
-    int m_method;
-    int m_dfType;
+  BeatTrackerData * m_d;
+  int               m_method;
+  int               m_dfType;
 
-    // MEPD new protected parameters to allow the user to control these advanced parameters of the beat tracker
-    double m_alpha;
-    double m_tightness;
-    double m_inputtempo;
-    bool m_constraintempo;
+  // MEPD new protected parameters to allow the user to control these advanced parameters of the beat tracker
+  double m_alpha;
+  double m_tightness;
+  double m_inputtempo;
+  bool   m_constraintempo;
 
-    bool m_whiten;
-    static float m_stepSecs;
-    FeatureSet beatTrackOld();
-    FeatureSet beatTrackNew();
+  bool         m_whiten;
+  static float m_stepSecs;
+  FeatureSet   beatTrackOld ();
+  FeatureSet   beatTrackNew ();
 };
-
 
 #endif

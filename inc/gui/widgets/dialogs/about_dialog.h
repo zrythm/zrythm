@@ -38,8 +38,7 @@
  * Creates and displays the about dialog.
  */
 GtkAboutDialog *
-about_dialog_widget_new (
-  GtkWindow * parent);
+about_dialog_widget_new (GtkWindow * parent);
 
 /**
  * @}

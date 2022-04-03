@@ -21,15 +21,15 @@
 
 #ifdef HAVE_CHROMAPRINT
 
-#include "utils/audio.h"
-#include "utils/chromaprint.h"
-#include "utils/math.h"
-#include "utils/objects.h"
+#  include "utils/audio.h"
+#  include "utils/chromaprint.h"
+#  include "utils/math.h"
+#  include "utils/objects.h"
 
-#include <glib.h>
+#  include <glib.h>
 
-#include <audec/audec.h>
-#include <sndfile.h>
+#  include <audec/audec.h>
+#  include <sndfile.h>
 
 void
 z_chromaprint_fingerprint_free (
@@ -51,8 +51,7 @@ z_chromaprint_get_fingerprint (
 
   SF_INFO sfinfo;
   memset (&sfinfo, 0, sizeof (sfinfo));
-  sfinfo.format =
-    sfinfo.format | SF_FORMAT_PCM_16;
+  sfinfo.format = sfinfo.format | SF_FORMAT_PCM_16;
   SNDFILE * sndfile =
     sf_open (file1, SFM_READ, &sfinfo);
   g_return_val_if_fail (sndfile, NULL);
@@ -90,8 +89,8 @@ z_chromaprint_get_fingerprint (
   g_return_val_if_fail (ret == 1, NULL);
 
   g_message (
-    "fingerprint %s [%d]",
-    fp->compressed_str, fp->size);
+    "fingerprint %s [%d]", fp->compressed_str,
+    fp->size);
 
   chromaprint_free (ctx);
   free (data);
@@ -113,10 +112,9 @@ z_chromaprint_check_fingerprint_similarity (
   int          perc,
   int          expected_size)
 {
-  const unsigned_frame_t max_frames =
-    MIN (
-      audio_get_num_frames (file1),
-      audio_get_num_frames (file2));
+  const unsigned_frame_t max_frames = MIN (
+    audio_get_num_frames (file1),
+    audio_get_num_frames (file2));
   ChromaprintFingerprint * fp1 =
     z_chromaprint_get_fingerprint (file1, max_frames);
   g_return_if_fail (fp1);
@@ -135,8 +133,7 @@ z_chromaprint_check_fingerprint_similarity (
     }
 
   double rated = (double) rate / (double) min;
-  int rate_perc =
-    (int)
+  int    rate_perc = (int)
     math_round_double_to_signed_32 (rated * 100.0);
   g_message (
     "%d out of %d (%d%%)", rate, min, rate_perc);

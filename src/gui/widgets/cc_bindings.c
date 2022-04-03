@@ -26,18 +26,19 @@
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
-  CcBindingsWidget, cc_bindings_widget, GTK_TYPE_BOX)
+  CcBindingsWidget,
+  cc_bindings_widget,
+  GTK_TYPE_BOX)
 
 /**
  * Refreshes the cc_bindings widget.
  */
 void
-cc_bindings_widget_refresh (
-  CcBindingsWidget * self)
+cc_bindings_widget_refresh (CcBindingsWidget * self)
 {
   cc_bindings_tree_widget_refresh (
     self->bindings_tree);
@@ -70,7 +71,6 @@ cc_bindings_widget_class_init (
 }
 
 static void
-cc_bindings_widget_init (
-  CcBindingsWidget * self)
+cc_bindings_widget_init (CcBindingsWidget * self)
 {
 }

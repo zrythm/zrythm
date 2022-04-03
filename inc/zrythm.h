@@ -28,23 +28,23 @@
 
 #include "zrythm-config.h"
 
-#include "zix/sem.h"
-
 #include <glib.h>
 
-typedef struct Project Project;
-typedef struct Symap Symap;
+#include "zix/sem.h"
+
+typedef struct Project          Project;
+typedef struct Symap            Symap;
 typedef struct RecordingManager RecordingManager;
-typedef struct EventManager EventManager;
-typedef struct ObjectUtils ObjectUtils;
-typedef struct PluginManager PluginManager;
-typedef struct FileManager FileManager;
+typedef struct EventManager     EventManager;
+typedef struct ObjectUtils      ObjectUtils;
+typedef struct PluginManager    PluginManager;
+typedef struct FileManager      FileManager;
 typedef struct ChordPresetPackManager
-  ChordPresetPackManager;
-typedef struct Settings Settings;
-typedef struct Log Log;
+                           ChordPresetPackManager;
+typedef struct Settings    Settings;
+typedef struct Log         Log;
 typedef struct CairoCaches CairoCaches;
-typedef struct PCGRand PCGRand;
+typedef struct PCGRand     PCGRand;
 
 /**
  * @addtogroup general
@@ -66,10 +66,10 @@ typedef struct PCGRand PCGRand;
 #define ZRYTHM_HAVE_UI (ZRYTHM && ZRYTHM->have_ui)
 
 #ifdef HAVE_LSP_DSP
-#define ZRYTHM_USE_OPTIMIZED_DSP \
-  (G_LIKELY (ZRYTHM->use_optimized_dsp))
+#  define ZRYTHM_USE_OPTIMIZED_DSP \
+    (G_LIKELY (ZRYTHM->use_optimized_dsp))
 #else
-#define ZRYTHM_USE_OPTIMIZED_DSP false
+#  define ZRYTHM_USE_OPTIMIZED_DSP false
 #endif
 
 /**
@@ -189,17 +189,17 @@ typedef enum ZrythmDirType
 typedef struct Zrythm
 {
   /** argv[0]. */
-  const char *        exe_path;
+  const char * exe_path;
 
   /**
    * Manages plugins (loading, instantiating, etc.)
    */
-  PluginManager *     plugin_manager;
+  PluginManager * plugin_manager;
 
   /**
    * Application settings
    */
-  Settings *          settings;
+  Settings * settings;
 
   /**
    * Project data.
@@ -210,29 +210,28 @@ typedef struct Zrythm
    * The only reason this is a pointer is to easily
    * deserialize.
    */
-  Project *           project;
+  Project * project;
 
   /** +1 to ensure last element is NULL in case
    * full. */
-  char *
-    recent_projects[MAX_RECENT_PROJECTS + 1];
-  int                 num_recent_projects;
+  char * recent_projects[MAX_RECENT_PROJECTS + 1];
+  int    num_recent_projects;
 
   /** NULL terminated array of project template
    * absolute paths. */
-  char **             templates;
+  char ** templates;
 
   /** Whether the open file is a template to be used
    * to create a new project from. */
-  bool                opening_template;
+  bool opening_template;
 
   /** Whether creating a new project, either from
    * a template or blank. */
-  bool                creating_project;
+  bool creating_project;
 
   /** Path to create a project in, including its
    * title. */
-  char *              create_project_path;
+  char * create_project_path;
 
   /**
    * Filename to open passed through the command
@@ -241,15 +240,15 @@ typedef struct Zrythm
    * Used only when a filename is passed.
    * E.g., zrytm myproject.xml
    */
-  char *              open_filename;
+  char * open_filename;
 
-  EventManager *      event_manager;
+  EventManager * event_manager;
 
   /** Recording manager. */
-  RecordingManager *  recording_manager;
+  RecordingManager * recording_manager;
 
   /** File manager. */
-  FileManager *       file_manager;
+  FileManager * file_manager;
 
   /** Chord preset pack manager. */
   ChordPresetPackManager * chord_preset_pack_manager;
@@ -257,34 +256,34 @@ typedef struct Zrythm
   /**
    * String interner for internal things.
    */
-  Symap *             symap;
+  Symap * symap;
 
   /**
    * String interner for error domains.
    */
-  Symap *             error_domain_symap;
+  Symap * error_domain_symap;
 
   /** Object utils. */
-  ObjectUtils *       object_utils;
+  ObjectUtils * object_utils;
 
   /** Random number generator. */
-  PCGRand *           rand;
+  PCGRand * rand;
 
   /**
    * In debug mode or not (determined by GSetting).
    */
-  bool                debug;
+  bool debug;
 
   /**
    * Used when running the tests.
    *
    * This is set by the TESTING environment variable.
    */
-  bool                testing;
+  bool testing;
 
   /** Whether this is a dummy instance used when
    * generating projects. */
-  bool                generating_project;
+  bool generating_project;
 
   /** Log settings. */
   //Log *               log;
@@ -295,26 +294,26 @@ typedef struct Zrythm
    * To be used in things like the splash screen,
    * loading projects, etc.
    */
-  double              progress;
+  double progress;
 
   /** 1 if Zrythm has a UI, 0 if headless (eg, when
    * unit-testing). */
-  bool                have_ui;
+  bool have_ui;
 
   /** Whether to use optimized DSP when
    * available. */
-  bool                use_optimized_dsp;
+  bool use_optimized_dsp;
 
-  CairoCaches *       cairo_caches;
+  CairoCaches * cairo_caches;
 
   /** Zrythm directory used during unit tests. */
-  char *              testing_dir;
+  char * testing_dir;
 
   /** Undo stack length, used during tests. */
-  int                 undo_stack_len;
+  int undo_stack_len;
 
   /** Cached version (without 'v'). */
-  char *              version;
+  char * version;
 
   /**
    * Whether to open a newer backup if found.
@@ -322,7 +321,7 @@ typedef struct Zrythm
    * This is only used during tests where there
    * is no UI to choose.
    */
-  bool              open_newer_backup;
+  bool open_newer_backup;
 } Zrythm;
 
 /**
@@ -332,12 +331,11 @@ extern Zrythm * zrythm;
 
 void
 zrythm_add_to_recent_projects (
-  Zrythm * self,
+  Zrythm *     self,
   const char * filepath);
 
 void
-zrythm_remove_recent_project (
-  char * filepath);
+zrythm_remove_recent_project (char * filepath);
 
 /**
  * Returns the version string.
@@ -348,8 +346,7 @@ zrythm_remove_recent_project (
  */
 MALLOC
 char *
-zrythm_get_version (
-  bool with_v);
+zrythm_get_version (bool with_v);
 
 /**
  * Returns whether the current Zrythm version is a
@@ -358,8 +355,7 @@ zrythm_get_version (
  * @note This only does regex checking.
  */
 bool
-zrythm_is_release (
-  bool official);
+zrythm_is_release (bool official);
 
 /**
  * Returns the latest release version.
@@ -374,8 +370,7 @@ zrythm_fetch_latest_release_ver (void);
  * return value should be ignored.
  */
 bool
-zrythm_is_latest_release (
-  GError ** error);
+zrythm_is_latest_release (GError ** error);
 
 /**
  * Returns the version and the capabilities.
@@ -412,8 +407,7 @@ zrythm_get_default_user_dir (void);
  * @return A newly allocated string.
  */
 char *
-zrythm_get_dir (
-  ZrythmDirType type);
+zrythm_get_dir (ZrythmDirType type);
 
 /**
  * Returns the prefix or in the case of windows
@@ -439,8 +433,7 @@ zrythm_get_prefix (void);
  * Must be free'd by caller.
  */
 char *
-zrythm_get_user_dir (
-  bool  force_default);
+zrythm_get_user_dir (bool force_default);
 
 /**
  * Initializes/creates the default dirs/files in
@@ -448,16 +441,14 @@ zrythm_get_user_dir (
  */
 NONNULL
 void
-zrythm_init_user_dirs_and_files (
-  Zrythm * self);
+zrythm_init_user_dirs_and_files (Zrythm * self);
 
 /**
  * Initializes the array of project templates.
  */
 NONNULL
 void
-zrythm_init_templates (
-  Zrythm * self);
+zrythm_init_templates (Zrythm * self);
 
 /**
  * Creates a new Zrythm instance.
@@ -477,8 +468,7 @@ zrythm_new (
  * Frees the instance and any unfreed members.
  */
 void
-zrythm_free (
-  Zrythm * self);
+zrythm_free (Zrythm * self);
 
 /**
  * @}

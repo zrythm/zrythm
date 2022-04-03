@@ -45,7 +45,7 @@ typedef struct Track Track;
 #define PIANO_ROLL (CLIP_EDITOR->piano_roll)
 
 #define DRUM_LABELS \
-static const char * drum_labels[47] = { \
+  static const char * drum_labels[47] = { \
     "Acoustic Bass Drum", \
     "Bass Drum 1", \
     "Side Stick", \
@@ -92,7 +92,8 @@ static const char * drum_labels[47] = { \
     "Mute Cuica", \
     "Open Cuica", \
     "Mute Triangle", \
-    "Open Triangle" }
+    "Open Triangle" \
+  }
 
 /**
  * A MIDI modifier to use to display data for.
@@ -104,7 +105,6 @@ typedef enum MidiModifier
   MIDI_MODIFIER_MOD_WHEEL,
   MIDI_MODIFIER_AFTERTOUCH,
 } MidiModifier;
-
 
 /**
  * Highlighting for the piano roll.
@@ -133,34 +133,34 @@ typedef struct MidiNoteDescriptor
   /**
    * The index to display the note at.
    */
-  int      index;
+  int index;
 
   /**
    * The actual value (0-127).
    *
    * Must be unique in the array.
    */
-  int      value;
+  int value;
 
   /** Whether the note is visible or not. */
-  int      visible;
+  int visible;
 
   /**
    * Custom name, from midnam or GM MIDI specs, etc.
    *
    * This is only used in drum mode.
    */
-  char *   custom_name;
+  char * custom_name;
 
   /** Name of the note, from C-2 to B8. */
-  char *   note_name;
+  char * note_name;
 
   /** Note name with extra formatting. */
-  char *   note_name_pango;
+  char * note_name_pango;
 
   /** Whether the note is highlighted/marked or not.
    */
-  int      marked;
+  int marked;
 } MidiNoteDescriptor;
 
 MidiNoteDescriptor *
@@ -177,18 +177,18 @@ midi_note_descriptor_free (
  */
 typedef struct PianoRoll
 {
-  int             schema_version;
+  int schema_version;
 
   /** Notes zoom level. */
-  float           notes_zoom;
+  float notes_zoom;
 
   /** Selected MidiModifier. */
-  MidiModifier    midi_modifier;
+  MidiModifier midi_modifier;
 
   /** Currently pressed notes (used only at
    * runtime). */
-  int             current_notes[128];
-  int             num_current_notes;
+  int current_notes[128];
+  int num_current_notes;
 
   /**
    * Piano roll mode descriptors.
@@ -214,46 +214,41 @@ typedef struct PianoRoll
    */
   MidiNoteDescriptor * drum_descriptors[128];
 
-  EditorSettings  editor_settings;
+  EditorSettings editor_settings;
 } PianoRoll;
 
-static const cyaml_strval_t
-midi_modifier_strings[] =
-{
-  { "Velocity",      MIDI_MODIFIER_VELOCITY    },
-  { "Pitch Wheel",   MIDI_MODIFIER_PITCH_WHEEL   },
-  { "Mod Wheel",     MIDI_MODIFIER_MOD_WHEEL   },
-  { "Aftertouch",    MIDI_MODIFIER_AFTERTOUCH   },
+static const cyaml_strval_t midi_modifier_strings[] = {
+  {"Velocity",     MIDI_MODIFIER_VELOCITY   },
+  { "Pitch Wheel", MIDI_MODIFIER_PITCH_WHEEL},
+  { "Mod Wheel",   MIDI_MODIFIER_MOD_WHEEL  },
+  { "Aftertouch",  MIDI_MODIFIER_AFTERTOUCH },
 };
 
 static const cyaml_schema_field_t
-piano_roll_fields_schema[] =
-{
-  YAML_FIELD_INT (PianoRoll, schema_version),
-  YAML_FIELD_FLOAT (PianoRoll, notes_zoom),
-  YAML_FIELD_ENUM (
-    PianoRoll, midi_modifier,
-    midi_modifier_strings),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    PianoRoll, editor_settings,
-    editor_settings_fields_schema),
+  piano_roll_fields_schema[] = {
+    YAML_FIELD_INT (PianoRoll, schema_version),
+    YAML_FIELD_FLOAT (PianoRoll, notes_zoom),
+    YAML_FIELD_ENUM (
+      PianoRoll,
+      midi_modifier,
+      midi_modifier_strings),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      PianoRoll,
+      editor_settings,
+      editor_settings_fields_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t
-piano_roll_schema =
-{
-  YAML_VALUE_PTR (
-    PianoRoll, piano_roll_fields_schema),
+static const cyaml_schema_value_t piano_roll_schema = {
+  YAML_VALUE_PTR (PianoRoll, piano_roll_fields_schema),
 };
 
 /**
  * Returns if the key is black.
  */
 int
-piano_roll_is_key_black (
-  int        note);
+piano_roll_is_key_black (int note);
 
 #define piano_roll_is_next_key_black(x) \
   piano_roll_is_key_black (x + 1)
@@ -297,7 +292,7 @@ piano_roll_get_current_track (
 void
 piano_roll_set_notes_zoom (
   PianoRoll * self,
-  float         notes_zoom,
+  float       notes_zoom,
   int         fire_events);
 
 /**
@@ -305,8 +300,7 @@ piano_roll_set_notes_zoom (
  * loaded.
  */
 void
-piano_roll_init_loaded (
-  PianoRoll * self);
+piano_roll_init_loaded (PianoRoll * self);
 
 /**
  * Returns the MidiNoteDescriptor matching the value
@@ -335,7 +329,7 @@ midi_note_descriptor_set_custom_name (
  */
 void
 piano_roll_set_highlighting (
-  PianoRoll * self,
+  PianoRoll *           self,
   PianoRollHighlighting highlighting);
 
 /**
@@ -343,7 +337,7 @@ piano_roll_set_highlighting (
  */
 void
 piano_roll_set_midi_modifier (
-  PianoRoll * self,
+  PianoRoll *  self,
   MidiModifier modifier);
 
 /**
@@ -389,15 +383,13 @@ piano_roll_init (PianoRoll * self);
  * Only clones what is needed for serialization.
  */
 PianoRoll *
-piano_roll_clone (
-  const PianoRoll * src);
+piano_roll_clone (const PianoRoll * src);
 
 PianoRoll *
 piano_roll_new (void);
 
 void
-piano_roll_free (
-  PianoRoll * self);
+piano_roll_free (PianoRoll * self);
 
 /**
  * @}

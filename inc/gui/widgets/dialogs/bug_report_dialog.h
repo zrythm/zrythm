@@ -29,7 +29,8 @@
 #include <gtk/gtk.h>
 
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored \
+  "-Wdeprecated-declarations"
 #include <gtksourceview/gtksource.h>
 #pragma GCC diagnostic pop
 
@@ -42,28 +43,31 @@
 #define BUG_REPORT_DIALOG_WIDGET_TYPE \
   (bug_report_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  BugReportDialogWidget, bug_report_dialog_widget,
-  Z, BUG_REPORT_DIALOG_WIDGET, GtkDialog)
+  BugReportDialogWidget,
+  bug_report_dialog_widget,
+  Z,
+  BUG_REPORT_DIALOG_WIDGET,
+  GtkDialog)
 
 typedef struct _BugReportDialogWidget
 {
-  GtkDialog       parent_instance;
+  GtkDialog parent_instance;
 
-  GtkLabel *      top_lbl;
+  GtkLabel * top_lbl;
 
-  GtkLabel *      backtrace_lbl;
-  GtkLabel *      log_lbl;
-  GtkLabel *      system_info_lbl;
+  GtkLabel * backtrace_lbl;
+  GtkLabel * log_lbl;
+  GtkLabel * system_info_lbl;
 
-  GtkTextView *   user_input_text_view;
+  GtkTextView * user_input_text_view;
 
-  char *          log;
-  char *          log_long;
-  char *          undo_stack;
-  char *          undo_stack_long;
-  char *          backtrace;
-  char *          system_nfo;
-  bool            fatal;
+  char * log;
+  char * log_long;
+  char * undo_stack;
+  char * undo_stack_long;
+  char * backtrace;
+  char * system_nfo;
+  bool   fatal;
 
 } BugReportDialogWidget;
 

@@ -37,19 +37,20 @@
 G_DECLARE_FINAL_TYPE (
   QuantizeBoxWidget,
   quantize_box_widget,
-  Z, QUANTIZE_BOX_WIDGET,
+  Z,
+  QUANTIZE_BOX_WIDGET,
   GtkBox)
 
 #define MW_QUANTIZE_BOX \
   MW_TIMELINE_TOOLBAR->quantize_box
 
 typedef struct _SnapGridWidget SnapGridWidget;
-typedef struct SnapGrid SnapGrid;
+typedef struct SnapGrid        SnapGrid;
 typedef struct QuantizeOptions QuantizeOptions;
 
 typedef struct _QuantizeBoxWidget
 {
-  GtkBox      parent_instance;
+  GtkBox            parent_instance;
   GtkButton *       quick_quantize_btn;
   GtkButton *       quantize_opts_btn;
   QuantizeOptions * q_opts;

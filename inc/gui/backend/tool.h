@@ -38,5 +38,4 @@ typedef enum Tool
   TOOL_AUDITION,
 } Tool;
 
-
 #endif

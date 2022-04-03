@@ -39,8 +39,7 @@
  * Inits a chord track (e.g. when cloning).
  */
 void
-chord_track_init (
-  Track * self)
+chord_track_init (Track * self)
 {
   self->type = TRACK_TYPE_CHORD;
   /* GTK color picker color */
@@ -52,13 +51,11 @@ chord_track_init (
  * Creates a new chord track.
  */
 ChordTrack *
-chord_track_new (
-  int     track_pos)
+chord_track_new (int track_pos)
 {
-  ChordTrack * self =
-    track_new (
-      TRACK_TYPE_CHORD, track_pos, _("Chords"),
-      F_WITHOUT_LANE);
+  ChordTrack * self = track_new (
+    TRACK_TYPE_CHORD, track_pos, _ ("Chords"),
+    F_WITHOUT_LANE);
 
   return self;
 }
@@ -75,11 +72,9 @@ chord_track_insert_chord_region (
 {
   g_return_if_fail (idx >= 0);
   array_double_size_if_full (
-    self->chord_regions,
-    self->num_chord_regions,
+    self->chord_regions, self->num_chord_regions,
     self->chord_regions_size, ZRegion *);
-  for (int i = self->num_chord_regions;
-       i > idx; i--)
+  for (int i = self->num_chord_regions; i > idx; i--)
     {
       self->chord_regions[i] =
         self->chord_regions[i - 1];
@@ -138,10 +133,10 @@ chord_track_add_scale (
  */
 ScaleObject *
 chord_track_get_scale_at_pos (
-  const Track * ct,
+  const Track *    ct,
   const Position * pos)
 {
-  ScaleObject * scale = NULL;
+  ScaleObject *    scale = NULL;
   ArrangerObject * s_obj;
   for (int i = ct->num_scales - 1; i >= 0; i--)
     {
@@ -160,7 +155,7 @@ chord_track_get_scale_at_pos (
  */
 ChordObject *
 chord_track_get_chord_at_pos (
-  const Track * ct,
+  const Track *    ct,
   const Position * pos)
 {
   ZRegion * region =
@@ -171,16 +166,14 @@ chord_track_get_chord_at_pos (
       return NULL;
     }
 
-  signed_frame_t local_frames =
-    (signed_frame_t)
+  signed_frame_t local_frames = (signed_frame_t)
     region_timeline_frames_to_local (
       region, pos->frames, F_NORMALIZE);
 
-  ChordObject * chord = NULL;
+  ChordObject *    chord = NULL;
   ArrangerObject * c_obj;
-  int i;
-  for (i = region->num_chord_objects - 1;
-       i >= 0; i--)
+  int              i;
+  for (i = region->num_chord_objects - 1; i >= 0; i--)
     {
       chord = region->chord_objects[i];
       c_obj = (ArrangerObject *) chord;
@@ -196,12 +189,11 @@ chord_track_get_chord_at_pos (
  * Mainly used in testing.
  */
 void
-chord_track_clear (
-  ChordTrack * self)
+chord_track_clear (ChordTrack * self)
 {
   g_return_if_fail (
-    IS_TRACK (self) &&
-    self->type == TRACK_TYPE_CHORD);
+    IS_TRACK (self)
+    && self->type == TRACK_TYPE_CHORD);
 
   for (int i = 0; i < self->num_scales; i++)
     {
@@ -216,8 +208,7 @@ chord_track_clear (
 }
 
 bool
-chord_track_validate (
-  Track * self)
+chord_track_validate (Track * self)
 {
   for (int i = 0; i < self->num_scales; i++)
     {
@@ -251,8 +242,7 @@ chord_track_remove_scale (
 
   /* deselect */
   arranger_object_select (
-    (ArrangerObject *) scale, F_NO_SELECT,
-    F_APPEND,
+    (ArrangerObject *) scale, F_NO_SELECT, F_APPEND,
     F_NO_PUBLISH_EVENTS);
 
   int pos = -1;

@@ -27,11 +27,12 @@
 #define __AUDIO_RECORDING_MANAGER_H__
 
 #include "utils/types.h"
+
 #include "zix/sem.h"
 
-typedef struct ObjectPool ObjectPool;
+typedef struct ObjectPool     ObjectPool;
 typedef struct TrackProcessor TrackProcessor;
-typedef struct MPMCQueue MPMCQueue;
+typedef struct MPMCQueue      MPMCQueue;
 
 /**
  * @addtogroup audio
@@ -39,27 +40,28 @@ typedef struct MPMCQueue MPMCQueue;
  * @{
  */
 
-#define RECORDING_MANAGER (ZRYTHM->recording_manager)
+#define RECORDING_MANAGER \
+  (ZRYTHM->recording_manager)
 
 typedef struct RecordingManager
 {
   /** Number of recordings currently in progress. */
-  int                num_active_recordings;
+  int num_active_recordings;
 
   /** Event queue. */
-  MPMCQueue *        event_queue;
+  MPMCQueue * event_queue;
 
   /**
    * Object pool of event structs to avoid real time
    * allocation.
    */
-  ObjectPool *       event_obj_pool;
+  ObjectPool * event_obj_pool;
 
   /** Cloned selections before starting recording. */
   ArrangerSelections * selections_before_start;
 
   /** Source func ID. */
-  guint              source_id;
+  guint source_id;
 
   /**
    * Recorded region identifiers, to be used for
@@ -67,16 +69,16 @@ typedef struct RecordingManager
    *
    * TODO use region pointers ?
    */
-  RegionIdentifier   recorded_ids[8000];
-  int                num_recorded_ids;
+  RegionIdentifier recorded_ids[8000];
+  int              num_recorded_ids;
 
   /** Pending recorded automation points. */
-  GPtrArray *        pending_aps;
+  GPtrArray * pending_aps;
 
-  bool               currently_processing;
-  ZixSem             processing_sem;
+  bool   currently_processing;
+  ZixSem processing_sem;
 
-  bool               freeing;
+  bool freeing;
 } RecordingManager;
 
 /**
@@ -121,8 +123,7 @@ RecordingManager *
 recording_manager_new (void);
 
 void
-recording_manager_free (
-  RecordingManager * self);
+recording_manager_free (RecordingManager * self);
 
 /**
  * @}

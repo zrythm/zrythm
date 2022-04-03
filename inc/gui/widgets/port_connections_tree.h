@@ -38,7 +38,8 @@ typedef struct Port Port;
 G_DECLARE_FINAL_TYPE (
   PortConnectionsTreeWidget,
   port_connections_tree_widget,
-  Z, PORT_CONNECTIONS_TREE_WIDGET,
+  Z,
+  PORT_CONNECTIONS_TREE_WIDGET,
   GtkBox)
 
 /**
@@ -49,17 +50,17 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _PortConnectionsTreeWidget
 {
-  GtkBox               parent_instance;
+  GtkBox parent_instance;
 
-  GtkScrolledWindow *  scroll;
+  GtkScrolledWindow * scroll;
 
   /* The tree views */
-  GtkTreeView *        tree;
-  GtkTreeModel *       tree_model;
+  GtkTreeView *  tree;
+  GtkTreeModel * tree_model;
 
   /** Temporary storage. */
-  Port *               src_port;
-  Port *               dest_port;
+  Port * src_port;
+  Port * dest_port;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;

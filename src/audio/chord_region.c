@@ -17,8 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/chord_region.h"
 #include "audio/chord_object.h"
+#include "audio/chord_region.h"
 #include "audio/chord_track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -46,16 +46,14 @@ chord_region_new (
   ZRegion * self = object_new (ZRegion);
 
   self->chord_objects_size = 1;
-  self->chord_objects =
-    object_new_n (
-      self->chord_objects_size, ChordObject *);
+  self->chord_objects = object_new_n (
+    self->chord_objects_size, ChordObject *);
 
   self->id.type = REGION_TYPE_CHORD;
 
   region_init (
     self, start_pos, end_pos,
-    track_get_name_hash (P_CHORD_TRACK),
-    0, idx);
+    track_get_name_hash (P_CHORD_TRACK), 0, idx);
 
   g_warn_if_fail (IS_REGION (self));
 
@@ -74,7 +72,7 @@ chord_region_insert_chord_object (
 {
   g_return_if_fail (IS_REGION (self));
 
-  char str[500];
+  char              str[500];
   ChordDescriptor * cd =
     chord_object_get_chord_descriptor (chord);
   chord_descriptor_to_string (cd, str);
@@ -133,7 +131,7 @@ chord_region_remove_chord_object (
   g_return_if_fail (
     IS_REGION (self) && IS_CHORD_OBJECT (chord));
 
-  char str[500];
+  char              str[500];
   ChordDescriptor * cd =
     chord_object_get_chord_descriptor (chord);
   chord_descriptor_to_string (cd, str);
@@ -147,8 +145,7 @@ chord_region_remove_chord_object (
     {
       arranger_object_select (
         (ArrangerObject *) chord, F_NO_SELECT,
-        F_APPEND,
-        F_NO_PUBLISH_EVENTS);
+        F_APPEND, F_NO_PUBLISH_EVENTS);
     }
 
   int pos = -1;
@@ -177,8 +174,7 @@ chord_region_remove_chord_object (
 }
 
 bool
-chord_region_validate (
-  ZRegion * self)
+chord_region_validate (ZRegion * self)
 {
   for (int i = 0; i < self->num_chord_objects; i++)
     {
@@ -196,8 +192,7 @@ chord_region_validate (
  * Regions should be free'd using region_free.
  */
 void
-chord_region_free_members (
-  ZRegion * self)
+chord_region_free_members (ZRegion * self)
 {
   g_return_if_fail (IS_REGION (self));
 

@@ -42,8 +42,9 @@ G_DEFINE_TYPE (
   GTK_TYPE_DIALOG)
 
 static void
-on_cancel_clicked (GtkButton * btn,
-                   BounceDialogWidget * self)
+on_cancel_clicked (
+  GtkButton *          btn,
+  BounceDialogWidget * self)
 {
   gtk_window_close (GTK_WINDOW (self));
   /*gtk_widget_destroy (GTK_WIDGET (self));*/
@@ -51,7 +52,7 @@ on_cancel_clicked (GtkButton * btn,
 
 static void
 on_bounce_clicked (
-  GtkButton * btn,
+  GtkButton *          btn,
   BounceDialogWidget * self)
 {
   ExportSettings settings;
@@ -83,8 +84,7 @@ on_bounce_clicked (
     {
     case BOUNCE_DIALOG_REGIONS:
       timeline_selections_mark_for_bounce (
-        TL_SELECTIONS,
-        settings.bounce_with_parents);
+        TL_SELECTIONS, settings.bounce_with_parents);
       settings.mode = EXPORT_MODE_REGIONS;
       arranger_selections_get_start_pos (
         (ArrangerSelections *) TL_SELECTIONS,
@@ -99,9 +99,8 @@ on_bounce_clicked (
         settings.mode = EXPORT_MODE_TRACKS;
 
         /* start at start marker */
-        Marker * m =
-          marker_track_get_start_marker (
-            P_MARKER_TRACK);
+        Marker * m = marker_track_get_start_marker (
+          P_MARKER_TRACK);
         ArrangerObject * m_obj =
           (ArrangerObject *) m;
         position_set_to_pos (
@@ -114,19 +113,17 @@ on_bounce_clicked (
     exporter_prepare_tracks_for_export (&settings);
 
   /* start exporting in a new thread */
-  GThread * thread =
-    g_thread_new (
-      "bounce_thread",
-      (GThreadFunc) exporter_generic_export_thread,
-      &settings);
+  GThread * thread = g_thread_new (
+    "bounce_thread",
+    (GThreadFunc) exporter_generic_export_thread,
+    &settings);
 
   /* create a progress dialog and block */
   ExportProgressDialogWidget * progress_dialog =
     export_progress_dialog_widget_new (
       &settings, true, false, F_CANCELABLE);
   gtk_window_set_transient_for (
-    GTK_WINDOW (progress_dialog),
-    GTK_WINDOW (self));
+    GTK_WINDOW (progress_dialog), GTK_WINDOW (self));
   z_gtk_dialog_run (
     GTK_DIALOG (progress_dialog), true);
 
@@ -135,9 +132,10 @@ on_bounce_clicked (
   exporter_return_connections_post_export (
     &settings, conns);
 
-  if (!self->bounce_to_file &&
-      !settings.progress_info.has_error &&
-      !settings.progress_info.cancelled)
+  if (
+    !self->bounce_to_file
+    && !settings.progress_info.has_error
+    && !settings.progress_info.cancelled)
     {
       /* create audio track with bounced material */
       exporter_create_audio_track_after_bounce (
@@ -256,19 +254,17 @@ bounce_dialog_widget_class_init (
 }
 
 static void
-bounce_dialog_widget_init (
-  BounceDialogWidget * self)
+bounce_dialog_widget_init (BounceDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
   gtk_spin_button_set_value (
     self->tail_spin,
-    (double)
-    g_settings_get_int (S_UI, "bounce-tail"));
+    (double) g_settings_get_int (
+      S_UI, "bounce-tail"));
 
-  bool bounce_with_parents =
-    g_settings_get_boolean (
-      S_UI, "bounce-with-parents");
+  bool bounce_with_parents = g_settings_get_boolean (
+    S_UI, "bounce-with-parents");
   gtk_check_button_set_active (
     GTK_CHECK_BUTTON (self->bounce_with_parents),
     bounce_with_parents);
@@ -276,9 +272,8 @@ bounce_dialog_widget_init (
     GTK_WIDGET (self->bounce_step_box),
     !bounce_with_parents);
 
-  bool disable_after_bounce =
-    g_settings_get_boolean (
-      S_UI, "disable-after-bounce");
+  bool disable_after_bounce = g_settings_get_boolean (
+    S_UI, "disable-after-bounce");
   gtk_check_button_set_active (
     GTK_CHECK_BUTTON (self->disable_after_bounce),
     disable_after_bounce);

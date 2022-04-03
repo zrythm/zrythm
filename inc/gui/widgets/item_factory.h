@@ -64,13 +64,13 @@ typedef struct ItemFactory
 {
   GtkListItemFactory * list_item_factory;
 
-  ItemFactoryType      type;
+  ItemFactoryType type;
 
-  bool                 editable;
+  bool editable;
 
   /** Column name, or NULL if used for list
    * views. */
-  char *               column_name;
+  char * column_name;
 } ItemFactory;
 
 /**
@@ -105,12 +105,10 @@ item_factory_generate_and_append_column (
   const char *    column_name);
 
 void
-item_factory_free (
-  ItemFactory * self);
+item_factory_free (ItemFactory * self);
 
 void
-item_factory_free_func (
-  void * self);
+item_factory_free_func (void * self);
 
 /**
  * @}

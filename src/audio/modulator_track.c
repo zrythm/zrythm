@@ -20,9 +20,9 @@
 #include <stdlib.h>
 
 #include "audio/automation_track.h"
-#include "audio/port.h"
 #include "audio/modulator_macro_processor.h"
 #include "audio/modulator_track.h"
+#include "audio/port.h"
 #include "audio/router.h"
 #include "audio/track.h"
 #include "gui/backend/event.h"
@@ -34,19 +34,18 @@
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/mem.h"
-#include "utils/objects.h"
 #include "utils/object_utils.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 /**
  * Inits the modulator track.
  */
 void
-modulator_track_init (
-  Track * self)
+modulator_track_init (Track * self)
 {
   self->type = TRACK_TYPE_MODULATOR;
   self->main_height = TRACK_DEF_HEIGHT / 2;
@@ -71,13 +70,11 @@ modulator_track_init (
  * Creates the default modulator track.
  */
 Track *
-modulator_track_default (
-  int   track_pos)
+modulator_track_default (int track_pos)
 {
-  Track * self =
-    track_new (
-      TRACK_TYPE_MODULATOR, track_pos,
-      _("Modulators"), F_WITHOUT_LANE);
+  Track * self = track_new (
+    TRACK_TYPE_MODULATOR, track_pos,
+    _ ("Modulators"), F_WITHOUT_LANE);
 
   return self;
 }
@@ -103,14 +100,15 @@ modulator_track_insert_modulator (
   bool     pub_events)
 {
   g_return_if_fail (
-    IS_TRACK (self) && IS_PLUGIN (modulator) &&
-    slot <= self->num_modulators);
+    IS_TRACK (self) && IS_PLUGIN (modulator)
+    && slot <= self->num_modulators);
 
   if (replace_mode)
     {
       Plugin * existing_pl =
-        slot < self->num_modulators ?
-          self->modulators[slot] : NULL;
+        slot < self->num_modulators
+          ? self->modulators[slot]
+          : NULL;
       if (existing_pl)
         {
           /* confirm if another plugin exists */
@@ -142,7 +140,8 @@ modulator_track_insert_modulator (
 
       g_message (
         "Inserting modulator %s at %s:%d",
-        modulator->setting->descr->name, self->name, slot);
+        modulator->setting->descr->name, self->name,
+        slot);
       if (slot == self->num_modulators)
         {
           array_double_size_if_full (
@@ -184,10 +183,8 @@ modulator_track_insert_modulator (
     modulator->setting->descr->name, slot);
 
   plugin_set_track_and_slot (
-    modulator,
-    track_get_name_hash (self),
-    PLUGIN_SLOT_MODULATOR,
-    slot);
+    modulator, track_get_name_hash (self),
+    PLUGIN_SLOT_MODULATOR, slot);
 
   if (gen_automatables)
     {
@@ -230,8 +227,8 @@ modulator_track_remove_modulator (
   Plugin * plugin = self->modulators[slot];
   g_return_if_fail (IS_PLUGIN (plugin));
   g_return_if_fail (
-    plugin->id.track_name_hash ==
-      track_get_name_hash (self));
+    plugin->id.track_name_hash
+    == track_get_name_hash (self));
 
   plugin_remove_ats_from_automation_tracklist (
     plugin, deleting_modulator,

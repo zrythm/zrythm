@@ -24,8 +24,8 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
-#include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/editor_ruler.h"
+#include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_notebook.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
@@ -56,8 +56,7 @@ on_hadj_value_changed (
     "horizontal adjustment value changed to %f",
     gtk_adjustment_get_value (adj));
 #endif
-  EVENTS_PUSH (
-    ET_RULER_VIEWPORT_CHANGED, MW_RULER);
+  EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, MW_RULER);
 }
 
 void
@@ -70,14 +69,13 @@ timeline_panel_widget_setup (
   tracklist_widget_setup (
     self->tracklist, TRACKLIST);
   /*pinned_tracklist_widget_setup (*/
-    /*self->pinned_tracklist,*/
-    /*TRACKLIST);*/
+  /*self->pinned_tracklist,*/
+  /*TRACKLIST);*/
 
   /* set tracklist header size */
   GtkRequisition req;
   gtk_widget_get_preferred_size (
-    GTK_WIDGET (self->ruler_scroll),
-    &req, NULL);
+    GTK_WIDGET (self->ruler_scroll), &req, NULL);
   gtk_widget_set_size_request (
     GTK_WIDGET (self->tracklist_header), -1,
     req.height);
@@ -97,8 +95,7 @@ timeline_panel_widget_setup (
     gtk_scrolled_window_get_hadjustment (
       self->timeline_scroll));
 
-  ruler_widget_refresh (
-    Z_RULER_WIDGET (MW_RULER));
+  ruler_widget_refresh (Z_RULER_WIDGET (MW_RULER));
   ruler_widget_refresh (
     Z_RULER_WIDGET (EDITOR_RULER));
 
@@ -152,8 +149,7 @@ TimelinePanelWidget *
 timeline_panel_widget_new (void)
 {
   TimelinePanelWidget * self =
-    g_object_new (
-      TIMELINE_PANEL_WIDGET_TYPE, NULL);
+    g_object_new (TIMELINE_PANEL_WIDGET_TYPE, NULL);
 
   return self;
 }
@@ -171,8 +167,7 @@ timeline_panel_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->ruler->type =
-    RULER_WIDGET_TYPE_TIMELINE;
+  self->ruler->type = RULER_WIDGET_TYPE_TIMELINE;
   self->timeline->type =
     ARRANGER_WIDGET_TYPE_TIMELINE;
   self->pinned_timeline->type =
@@ -207,13 +202,11 @@ timeline_panel_widget_init (
     "timeline-divider-box");
 }
 
-
 static void
 timeline_panel_widget_class_init (
   TimelinePanelWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "timeline_panel.ui");
 

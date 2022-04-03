@@ -56,9 +56,7 @@ file_symlink (
  * @return Non-zero on error.
  */
 int
-file_reflink (
-  const char * dest,
-  const char * src);
+file_reflink (const char * dest, const char * src);
 
 /**
  * @}

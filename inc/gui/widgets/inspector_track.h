@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   InspectorTrackWidget,
   inspector_track_widget,
-  Z, INSPECTOR_TRACK_WIDGET,
+  Z,
+  INSPECTOR_TRACK_WIDGET,
   GtkBox)
 
 typedef struct TracklistSelections
@@ -48,9 +49,8 @@ typedef struct _PluginStripExpanderWidget
   PluginStripExpanderWidget;
 typedef struct _FaderControlsExpanderWidget
   FaderControlsExpanderWidget;
-typedef struct _TextExpanderWidget
-  TextExpanderWidget;
-typedef struct _ColorAreaWidget ColorAreaWidget;
+typedef struct _TextExpanderWidget TextExpanderWidget;
+typedef struct _ColorAreaWidget    ColorAreaWidget;
 typedef struct _ChannelSendsExpanderWidget
   ChannelSendsExpanderWidget;
 
@@ -68,7 +68,7 @@ typedef struct _ChannelSendsExpanderWidget
  */
 typedef struct _InspectorTrackWidget
 {
-  GtkBox             parent_instance;
+  GtkBox                          parent_instance;
   TrackPropertiesExpanderWidget * track_info;
 
   TrackInputExpanderWidget * inputs;
@@ -85,9 +85,9 @@ typedef struct _InspectorTrackWidget
   PluginStripExpanderWidget * midi_fx;
 
   FaderControlsExpanderWidget * fader;
-  TextExpanderWidget * comment;
+  TextExpanderWidget *          comment;
 
-  ColorAreaWidget *     color;
+  ColorAreaWidget * color;
 } InspectorTrackWidget;
 
 /**

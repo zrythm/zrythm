@@ -49,8 +49,10 @@
 
 #define Z_LV2_EXT_URI \
   "https://lv2.zrythm.org/ns/ext"
-#define Z_LV2_HOST_INFO_URI Z_LV2_EXT_URI "/host-info"
-#define Z_LV2_HOST_INFO_PREFIX Z_LV2_HOST_INFO_URI "#"
+#define Z_LV2_HOST_INFO_URI \
+  Z_LV2_EXT_URI "/host-info"
+#define Z_LV2_HOST_INFO_PREFIX \
+  Z_LV2_HOST_INFO_URI "#"
 #define Z_LV2_HOST_INFO__name \
   Z_LV2_HOST_INFO_PREFIX "name"
 #define Z_LV2_HOST_INFO__version \

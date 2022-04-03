@@ -30,7 +30,8 @@
 
 typedef struct Track Track;
 
-typedef enum FoldableTrackMixerStatus {
+typedef enum FoldableTrackMixerStatus
+{
   FOLDABLE_TRACK_MIXER_STATUS_MUTED,
   FOLDABLE_TRACK_MIXER_STATUS_SOLOED,
   FOLDABLE_TRACK_MIXER_STATUS_IMPLIED_SOLOED,
@@ -62,9 +63,7 @@ foldable_track_is_direct_child (
  * @p self.
  */
 bool
-foldable_track_is_child (
-  Track * self,
-  Track * child);
+foldable_track_is_child (Track * self, Track * child);
 
 /**
  * Adds to the size recursively.
@@ -73,8 +72,6 @@ foldable_track_is_child (
  * foldable track.
  */
 void
-foldable_track_add_to_size (
-  Track * self,
-  int     delta);
+foldable_track_add_to_size (Track * self, int delta);
 
 #endif /* __AUDIO_FOLDABLE_TRACK_H__ */

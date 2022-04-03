@@ -28,37 +28,32 @@
 #include "zrythm.h"
 
 static void
-init_common (
-  ControlRoom * self)
+init_common (ControlRoom * self)
 {
   self->schema_version = CONTROL_ROOM_SCHEMA_VERSION;
 
   /* set the monitor volume */
   float amp =
-    ZRYTHM_TESTING ?
-      1.f :
-      (float)
-      g_settings_get_double (
+    ZRYTHM_TESTING
+      ? 1.f
+      : (float) g_settings_get_double (
         S_MONITOR, "monitor-vol");
   fader_set_amp (self->monitor_fader, amp);
 
   double lower, upper;
 
   /* init listen/mute/dim faders */
-  self->mute_fader =
-    fader_new (
-      FADER_TYPE_GENERIC, false, NULL, self, NULL);
+  self->mute_fader = fader_new (
+    FADER_TYPE_GENERIC, false, NULL, self, NULL);
   amp =
-    ZRYTHM_TESTING ?
-      0.f :
-      (float)
-      g_settings_get_double (
+    ZRYTHM_TESTING
+      ? 0.f
+      : (float) g_settings_get_double (
         S_MONITOR, "mute-vol");
   self->mute_fader->amp->deff =
-    ZRYTHM_TESTING ?
-      0.f :
-      (float)
-      settings_get_default_value_double (
+    ZRYTHM_TESTING
+      ? 0.f
+      : (float) settings_get_default_value_double (
         GSETTINGS_ZRYTHM_PREFIX ".monitor",
         "mute-vol");
   if (!ZRYTHM_TESTING)
@@ -71,20 +66,17 @@ init_common (
     }
   fader_set_amp (self->mute_fader, amp);
 
-  self->listen_fader =
-    fader_new (
-      FADER_TYPE_GENERIC, false, NULL, self, NULL);
+  self->listen_fader = fader_new (
+    FADER_TYPE_GENERIC, false, NULL, self, NULL);
   amp =
-    ZRYTHM_TESTING ?
-      1.f :
-      (float)
-      g_settings_get_double (
+    ZRYTHM_TESTING
+      ? 1.f
+      : (float) g_settings_get_double (
         S_MONITOR, "listen-vol");
   self->listen_fader->amp->deff =
-    ZRYTHM_TESTING ?
-      1.f :
-      (float)
-      settings_get_default_value_double (
+    ZRYTHM_TESTING
+      ? 1.f
+      : (float) settings_get_default_value_double (
         GSETTINGS_ZRYTHM_PREFIX ".monitor",
         "listen-vol");
   fader_set_amp (self->listen_fader, amp);
@@ -97,20 +89,17 @@ init_common (
       self->listen_fader->amp->maxf = (float) upper;
     }
 
-  self->dim_fader =
-    fader_new (
-      FADER_TYPE_GENERIC, false, NULL, self, NULL);
+  self->dim_fader = fader_new (
+    FADER_TYPE_GENERIC, false, NULL, self, NULL);
   amp =
-    ZRYTHM_TESTING ?
-      0.1f :
-      (float)
-      g_settings_get_double (
+    ZRYTHM_TESTING
+      ? 0.1f
+      : (float) g_settings_get_double (
         S_MONITOR, "dim-vol");
   self->dim_fader->amp->deff =
-    ZRYTHM_TESTING ?
-      0.1f :
-      (float)
-      settings_get_default_value_double (
+    ZRYTHM_TESTING
+      ? 0.1f
+      : (float) settings_get_default_value_double (
         GSETTINGS_ZRYTHM_PREFIX ".monitor",
         "dim-vol");
   if (!ZRYTHM_TESTING)
@@ -125,20 +114,20 @@ init_common (
 
   fader_set_mono_compat_enabled (
     self->monitor_fader,
-    ZRYTHM_TESTING ?
-      false :
-      g_settings_get_boolean (S_MONITOR, "mono"),
+    ZRYTHM_TESTING
+      ? false
+      : g_settings_get_boolean (S_MONITOR, "mono"),
     F_NO_PUBLISH_EVENTS);
 
   self->dim_output =
-    ZRYTHM_TESTING ?
-      false :
-      g_settings_get_boolean (
+    ZRYTHM_TESTING
+      ? false
+      : g_settings_get_boolean (
         S_MONITOR, "dim-output");
   bool mute =
-    ZRYTHM_TESTING ?
-      false :
-      g_settings_get_boolean (S_MONITOR, "mute");
+    ZRYTHM_TESTING
+      ? false
+      : g_settings_get_boolean (S_MONITOR, "mute");
   self->monitor_fader->mute->control =
     mute ? 1.f : 0.f;
 }
@@ -162,15 +151,13 @@ control_room_init_loaded (
  * Creates a new control room.
  */
 ControlRoom *
-control_room_new (
-  AudioEngine * engine)
+control_room_new (AudioEngine * engine)
 {
   ControlRoom * self = object_new (ControlRoom);
   self->audio_engine = engine;
 
-  self->monitor_fader =
-    fader_new (
-      FADER_TYPE_MONITOR, false, NULL, self, NULL);
+  self->monitor_fader = fader_new (
+    FADER_TYPE_MONITOR, false, NULL, self, NULL);
 
   init_common (self);
 
@@ -193,12 +180,10 @@ control_room_set_dim_output (
  * Used during serialization.
  */
 ControlRoom *
-control_room_clone (
-  const ControlRoom * src)
+control_room_clone (const ControlRoom * src)
 {
   ControlRoom * self = object_new (ControlRoom);
-  self->schema_version =
-    CONTROL_ROOM_SCHEMA_VERSION;
+  self->schema_version = CONTROL_ROOM_SCHEMA_VERSION;
 
   self->monitor_fader =
     fader_clone (src->monitor_fader);
@@ -207,8 +192,7 @@ control_room_clone (
 }
 
 void
-control_room_free (
-  ControlRoom * self)
+control_room_free (ControlRoom * self)
 {
   object_free_w_func_and_null (
     fader_free, self->monitor_fader);

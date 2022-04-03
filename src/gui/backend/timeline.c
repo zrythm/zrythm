@@ -24,8 +24,7 @@
  * Inits the Timeline after a Project is loaded.
  */
 void
-timeline_init_loaded (
-  Timeline * self)
+timeline_init_loaded (Timeline * self)
 {
 }
 
@@ -33,15 +32,13 @@ timeline_init_loaded (
  * Inits the Timeline instance.
  */
 void
-timeline_init (
-  Timeline * self)
+timeline_init (Timeline * self)
 {
   editor_settings_init (&self->editor_settings);
 }
 
 Timeline *
-timeline_clone (
-  Timeline * src)
+timeline_clone (Timeline * src)
 {
   Timeline * self = object_new (Timeline);
   self->schema_version = TIMELINE_SCHEMA_VERSION;
@@ -64,8 +61,7 @@ timeline_new (void)
 }
 
 void
-timeline_free (
-  Timeline * self)
+timeline_free (Timeline * self)
 {
   object_zero_and_free (self);
 }

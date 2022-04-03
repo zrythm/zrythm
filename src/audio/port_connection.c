@@ -33,7 +33,8 @@ port_connection_new (
   bool                   locked,
   bool                   enabled)
 {
-  PortConnection * self = object_new (PortConnection);
+  PortConnection * self =
+    object_new (PortConnection);
   self->schema_version =
     PORT_CONNECTION_SCHEMA_VERSION;
 
@@ -58,12 +59,10 @@ port_connection_update (
 }
 
 bool
-port_connection_is_send (
-  const PortConnection * self)
+port_connection_is_send (const PortConnection * self)
 {
-  return
-    self->src_id->owner_type ==
-      PORT_OWNER_TYPE_CHANNEL_SEND;
+  return self->src_id->owner_type
+         == PORT_OWNER_TYPE_CHANNEL_SEND;
 }
 
 void
@@ -74,10 +73,10 @@ port_connection_print_to_str (
 {
   bool is_send = port_connection_is_send (self);
   const char * send_str = is_send ? " (send)" : "";
-  if (ZRYTHM && PROJECT
-      &&
-      port_connections_manager_contains_connection (
-        PORT_CONNECTIONS_MGR, self))
+  if (
+    ZRYTHM && PROJECT
+    && port_connections_manager_contains_connection (
+      PORT_CONNECTIONS_MGR, self))
     {
       Track * src_track =
         tracklist_find_track_by_name_hash (
@@ -93,8 +92,7 @@ port_connection_print_to_str (
         self->src_id->label,
         dest_track ? dest_track->name : "(none)",
         self->dest_id->track_name_hash,
-        self->dest_id->label,
-        send_str);
+        self->dest_id->label, send_str);
     }
   else
     {
@@ -104,14 +102,12 @@ port_connection_print_to_str (
         self->src_id->track_name_hash,
         self->src_id->label,
         self->dest_id->track_name_hash,
-        self->dest_id->label,
-        send_str);
+        self->dest_id->label, send_str);
     }
 }
 
 void
-port_connection_print (
-  const PortConnection * self)
+port_connection_print (const PortConnection * self)
 {
   char buf[200];
   port_connection_print_to_str (self, buf, 200);
@@ -123,13 +119,11 @@ port_connection_print (
  */
 NONNULL
 PortConnection *
-port_connection_clone (
-  const PortConnection * src)
+port_connection_clone (const PortConnection * src)
 {
-  PortConnection * self =
-    port_connection_new (
-      src->src_id, src->dest_id, src->multiplier,
-      src->locked, src->enabled);
+  PortConnection * self = port_connection_new (
+    src->src_id, src->dest_id, src->multiplier,
+    src->locked, src->enabled);
   return self;
 }
 
@@ -138,8 +132,7 @@ port_connection_clone (
  */
 NONNULL
 void
-port_connection_free (
-  PortConnection * self)
+port_connection_free (PortConnection * self)
 {
   port_identifier_free (self->src_id);
   port_identifier_free (self->dest_id);

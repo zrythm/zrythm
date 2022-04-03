@@ -31,24 +31,22 @@
 #include "utils/gtk.h"
 #include "utils/string.h"
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include <glib/gi18n.h>
-
 G_DEFINE_TYPE (
-  ModulatorWidget, modulator_widget,
+  ModulatorWidget,
+  modulator_widget,
   TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
 
 void
-modulator_widget_refresh (
-  ModulatorWidget * self)
+modulator_widget_refresh (ModulatorWidget * self)
 {
   modulator_inner_widget_refresh (self->inner);
 }
 
 ModulatorWidget *
-modulator_widget_new (
-  Plugin * modulator)
+modulator_widget_new (Plugin * modulator)
 {
   g_return_val_if_fail (IS_PLUGIN (modulator), NULL);
 
@@ -63,8 +61,7 @@ modulator_widget_new (
     Z_EXPANDER_BOX_WIDGET (self),
     modulator->setting->descr->name);
   expander_box_widget_set_icon_name (
-    Z_EXPANDER_BOX_WIDGET (self),
-    "modulator");
+    Z_EXPANDER_BOX_WIDGET (self), "modulator");
 
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
@@ -89,12 +86,10 @@ modulator_widget_new (
 }
 
 static void
-finalize (
-  ModulatorWidget * self)
+finalize (ModulatorWidget * self)
 {
-  G_OBJECT_CLASS (
-    modulator_widget_parent_class)->
-      finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (modulator_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 static void
@@ -107,8 +102,7 @@ modulator_widget_class_init (
 }
 
 static void
-modulator_widget_init (
-  ModulatorWidget * self)
+modulator_widget_init (ModulatorWidget * self)
 {
   expander_box_widget_set_orientation (
     Z_EXPANDER_BOX_WIDGET (self),

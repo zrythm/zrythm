@@ -30,8 +30,7 @@
 static void
 test_array_dynamic_swap (void)
 {
-  int ** arr1 =
-    calloc (1, sizeof (int *));
+  int ** arr1 = calloc (1, sizeof (int *));
   size_t sz1 = 1;
   int ** arr2 = NULL;
   size_t sz2 = 0;
@@ -44,7 +43,8 @@ test_array_dynamic_swap (void)
   g_test_assert_expected_messages ();
 
   /* test arr2 allocated and arr1 NULL */
-  arr2 = arr1; arr1 = NULL;
+  arr2 = arr1;
+  arr1 = NULL;
   g_test_expect_message (
     G_LOG_DOMAIN, G_LOG_LEVEL_CRITICAL,
     "* assertion*failed");
@@ -59,13 +59,14 @@ test_array_dynamic_swap (void)
    */
   int a = 0, b = 1, c = 2, d = 3, e = 4;
   sz1 = 3;
-  arr1 =
-    realloc (arr1, sz1 * sizeof (int *));
-  arr1[0] = &a; arr1[1] = &b; arr1[2] = &c;
+  arr1 = realloc (arr1, sz1 * sizeof (int *));
+  arr1[0] = &a;
+  arr1[1] = &b;
+  arr1[2] = &c;
   sz2 = 2;
-  arr2 =
-    realloc (arr2, sz2 * sizeof (int *));
-  arr2[0] = &d; arr2[1] = &e;
+  arr2 = realloc (arr2, sz2 * sizeof (int *));
+  arr2[0] = &d;
+  arr2[1] = &e;
 
   /* test swap with the above */
   array_dynamic_swap (&arr1, &sz1, &arr2, &sz2);
@@ -84,12 +85,11 @@ test_array_dynamic_swap (void)
    * b = { 3, 4 }
    */
   sz1 = 0;
-  arr1 =
-    realloc (arr1, 1 * sizeof (int *));
+  arr1 = realloc (arr1, 1 * sizeof (int *));
   sz2 = 2;
-  arr2 =
-    realloc (arr2, sz2 * sizeof (int *));
-  arr2[0] = &d; arr2[1] = &e;
+  arr2 = realloc (arr2, sz2 * sizeof (int *));
+  arr2[0] = &d;
+  arr2[1] = &e;
 
   /* test swap with the above */
   array_dynamic_swap (&arr1, &sz1, &arr2, &sz2);
@@ -103,7 +103,7 @@ static void
 test_double_size_if_full (void)
 {
   size_t size = 3;
-  int * arr = g_malloc0_n (size, sizeof (int));
+  int *  arr = g_malloc0_n (size, sizeof (int));
 
   arr[0] = 15;
   arr[1] = 16;
@@ -114,8 +114,7 @@ test_double_size_if_full (void)
   array_double_size_if_full (
     arr, num_objs, size, int);
 
-  g_assert_cmpuint (
-    size, ==, orig_sz * 2);
+  g_assert_cmpuint (size, ==, orig_sz * 2);
 
   array_append (arr, num_objs, 18);
 
@@ -129,7 +128,7 @@ test_double_size_if_full (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

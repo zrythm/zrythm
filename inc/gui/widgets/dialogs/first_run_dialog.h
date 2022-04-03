@@ -25,8 +25,11 @@
 #define FIRST_RUN_DIALOG_WIDGET_TYPE \
   (first_run_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  FirstRunDialogWidget, first_run_dialog_widget,
-  Z, FIRST_RUN_DIALOG_WIDGET, GtkDialog)
+  FirstRunDialogWidget,
+  first_run_dialog_widget,
+  Z,
+  FIRST_RUN_DIALOG_WIDGET,
+  GtkDialog)
 
 #define FIRST_RUN_DIALOG_RESET_RESPONSE 450
 
@@ -35,20 +38,19 @@ typedef struct _FileChooserButtonWidget
 
 typedef struct _FirstRunDialogWidget
 {
-  GtkDialog       parent_instance;
+  GtkDialog parent_instance;
 
-  GtkDropDown *   language_dropdown;
+  GtkDropDown *             language_dropdown;
   FileChooserButtonWidget * fc_btn;
 
-  GtkLabel *      lang_error_txt;
+  GtkLabel * lang_error_txt;
 } FirstRunDialogWidget;
 
 /**
  * Returns a new instance.
  */
 FirstRunDialogWidget *
-first_run_dialog_widget_new (
-  GtkWindow * parent);
+first_run_dialog_widget_new (GtkWindow * parent);
 
 void
 first_run_dialog_widget_reset (

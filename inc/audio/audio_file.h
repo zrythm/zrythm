@@ -33,10 +33,10 @@ typedef struct SupportedFile SupportedFile;
  */
 typedef struct AudioFile
 {
-  int              channels;
+  int channels;
 
   /** Pointer to parent SupportedFile. */
-  SupportedFile *  file;
+  SupportedFile * file;
 } AudioFile;
 
 #endif

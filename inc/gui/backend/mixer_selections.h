@@ -42,8 +42,7 @@ typedef struct Plugin Plugin;
 
 #define MIXER_SELECTIONS_SCHEMA_VERSION 1
 
-#define MIXER_SELECTIONS \
-  (PROJECT->mixer_selections)
+#define MIXER_SELECTIONS (PROJECT->mixer_selections)
 
 #define MIXER_SELECTIONS_MAX_SLOTS 60
 
@@ -53,54 +52,57 @@ typedef struct Plugin Plugin;
  */
 typedef struct MixerSelections
 {
-  int            schema_version;
+  int schema_version;
 
   PluginSlotType type;
 
   /** Slots selected. */
-  int       slots[MIXER_SELECTIONS_MAX_SLOTS];
+  int slots[MIXER_SELECTIONS_MAX_SLOTS];
 
   /** Cache, used in actions. */
-  Plugin *  plugins[MIXER_SELECTIONS_MAX_SLOTS];
+  Plugin * plugins[MIXER_SELECTIONS_MAX_SLOTS];
 
-  int       num_slots;
+  int num_slots;
 
   /** Channel selected. */
   unsigned int track_name_hash;
 
   /** Whether any slot is selected. */
-  int       has_any;
+  int has_any;
 } MixerSelections;
 
 static const cyaml_schema_field_t
-  mixer_selections_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    MixerSelections, schema_version),
-  YAML_FIELD_ENUM (
-    MixerSelections, type,
-    plugin_slot_type_strings),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    MixerSelections, slots, int_schema),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "plugins", CYAML_FLAG_DEFAULT,
-    MixerSelections, plugins,
-    num_slots,
-    &plugin_schema, 0, CYAML_UNLIMITED),
-  YAML_FIELD_UINT (
-    MixerSelections, track_name_hash),
-  YAML_FIELD_INT (
-    MixerSelections, has_any),
+  mixer_selections_fields_schema[] = {
+    YAML_FIELD_INT (MixerSelections, schema_version),
+    YAML_FIELD_ENUM (
+      MixerSelections,
+      type,
+      plugin_slot_type_strings),
+    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+      MixerSelections,
+      slots,
+      int_schema),
+    CYAML_FIELD_SEQUENCE_COUNT (
+      "plugins",
+      CYAML_FLAG_DEFAULT,
+      MixerSelections,
+      plugins,
+      num_slots,
+      &plugin_schema,
+      0,
+      CYAML_UNLIMITED),
+    YAML_FIELD_UINT (MixerSelections, track_name_hash),
+    YAML_FIELD_INT (MixerSelections, has_any),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-mixer_selections_schema = {
-  YAML_VALUE_PTR (
-    MixerSelections,
-    mixer_selections_fields_schema),
-};
+  mixer_selections_schema = {
+    YAML_VALUE_PTR (
+      MixerSelections,
+      mixer_selections_fields_schema),
+  };
 
 void
 mixer_selections_init_loaded (
@@ -111,8 +113,7 @@ MixerSelections *
 mixer_selections_new (void);
 
 void
-mixer_selections_init (
-  MixerSelections * self);
+mixer_selections_init (MixerSelections * self);
 
 /**
  * Clone the struct for copying, undoing, etc.
@@ -129,8 +130,7 @@ mixer_selections_clone (
  * Returns if there are any selections.
  */
 int
-mixer_selections_has_any (
-  MixerSelections * ms);
+mixer_selections_has_any (MixerSelections * ms);
 
 /**
  * Gets highest slot in the selections.
@@ -267,8 +267,7 @@ mixer_selections_get_plugins (
 
 NONNULL
 bool
-mixer_selections_validate (
-  MixerSelections * self);
+mixer_selections_validate (MixerSelections * self);
 
 /**
  * Clears selections.
@@ -281,8 +280,7 @@ mixer_selections_clear (
 
 NONNULL
 void
-mixer_selections_free (
-  MixerSelections * self);
+mixer_selections_free (MixerSelections * self);
 
 /**
  * @}

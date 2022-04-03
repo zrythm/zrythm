@@ -35,7 +35,8 @@
 G_DECLARE_FINAL_TYPE (
   ButtonWithMenuWidget,
   button_with_menu_widget,
-  Z, BUTTON_WITH_MENU_WIDGET,
+  Z,
+  BUTTON_WITH_MENU_WIDGET,
   GtkBox)
 
 /**
@@ -49,15 +50,15 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _ButtonWithMenuWidget
 {
-  GtkBox           parent_instance;
+  GtkBox parent_instance;
 
-  GtkBox *         button_box;
+  GtkBox * button_box;
 
   /** True for downward arrow, false for upward
    * arrow. */
-  bool             downard_arrow;
+  bool downard_arrow;
 
-  GtkMenuButton *  menu_btn;
+  GtkMenuButton * menu_btn;
 
   /** The menu to show when arrow is clicked. */
   //GtkMenu *        menu;

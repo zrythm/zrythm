@@ -25,6 +25,7 @@
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/color.h"
 #include "utils/datetime.h"
@@ -35,7 +36,6 @@
 #include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
-#include "settings/settings.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -93,13 +93,11 @@ add_enabled_recursively (
   GtkTreeModel * model =
     GTK_TREE_MODEL (self->tracks_store);
 
-  Track * track;
+  Track *  track;
   gboolean checked;
   gtk_tree_model_get (
-    model, iter,
-    TRACK_COLUMN_CHECKBOX, &checked,
-    TRACK_COLUMN_TRACK, &track,
-    -1);
+    model, iter, TRACK_COLUMN_CHECKBOX, &checked,
+    TRACK_COLUMN_TRACK, &track, -1);
   if (checked)
     {
       array_double_size_if_full (
@@ -115,8 +113,7 @@ add_enabled_recursively (
   if (has_children)
     {
       int num_children =
-        gtk_tree_model_iter_n_children (
-          model, iter);
+        gtk_tree_model_iter_n_children (model, iter);
 
       for (int i = 0; i < num_children; i++)
         {
@@ -146,15 +143,14 @@ get_enabled_tracks (
   ExportDialogWidget * self,
   int *                num_tracks)
 {
-  size_t size = 1;
-  int count = 0;
+  size_t   size = 1;
+  int      count = 0;
   Track ** tracks = object_new_n (size, Track *);
 
   GtkTreeModel * model =
     GTK_TREE_MODEL (self->tracks_store);
   GtkTreeIter iter;
-  gtk_tree_model_get_iter_first (
-    model, &iter);
+  gtk_tree_model_get_iter_first (model, &iter);
 
   add_enabled_recursively (
     self, &iter, &tracks, &size, &count);
@@ -179,36 +175,30 @@ get_mixdown_export_filename (
   const char * mixdown_str = "mixdown";
   const char * format =
     exporter_stringize_export_format (
-      gtk_combo_box_get_active (self->format),
-      true);
-  char * datetime_str =
-    datetime_get_for_filename ();
+      gtk_combo_box_get_active (self->format), true);
+  char * datetime_str = datetime_get_for_filename ();
   char * base = NULL;
   switch (g_settings_get_enum (
-            S_EXPORT, "filename-pattern"))
+    S_EXPORT, "filename-pattern"))
     {
     case EFP_APPEND_FORMAT:
-      base =
-        g_strdup_printf (
-          "%s.%s", mixdown_str, format);
+      base = g_strdup_printf (
+        "%s.%s", mixdown_str, format);
       break;
     case EFP_PREPEND_DATE_APPEND_FORMAT:
-      base =
-        g_strdup_printf (
-          "%s_%s.%s", datetime_str,
-          mixdown_str, format);
+      base = g_strdup_printf (
+        "%s_%s.%s", datetime_str, mixdown_str,
+        format);
       break;
     default:
       g_return_val_if_reached (NULL);
     }
   g_return_val_if_fail (base, NULL);
 
-  char * exports_dir =
-    project_get_path (
-      PROJECT, PROJECT_PATH_EXPORTS, false);
+  char * exports_dir = project_get_path (
+    PROJECT, PROJECT_PATH_EXPORTS, false);
   char * tmp =
-    g_build_filename (
-      exports_dir, base, NULL);
+    g_build_filename (exports_dir, base, NULL);
   char * full_path =
     io_get_next_available_filepath (tmp);
   g_free (base);
@@ -238,21 +228,19 @@ get_stem_export_filenames (
   int                  max_files,
   Track *              in_track)
 {
-  int num_tracks;
+  int      num_tracks;
   Track ** tracks =
     get_enabled_tracks (self, &num_tracks);
 
   if (!tracks)
     {
-      return g_strdup (_("none"));
+      return g_strdup (_ ("none"));
     }
 
   const char * format =
     exporter_stringize_export_format (
-      gtk_combo_box_get_active (self->format),
-      true);
-  char * datetime_str =
-    datetime_get_for_filename ();
+      gtk_combo_box_get_active (self->format), true);
+  char * datetime_str = datetime_get_for_filename ();
 
   GString * gstr = g_string_new (NULL);
 
@@ -269,30 +257,26 @@ get_stem_export_filenames (
 
       char * base = NULL;
       switch (g_settings_get_enum (
-                S_EXPORT, "filename-pattern"))
+        S_EXPORT, "filename-pattern"))
         {
         case EFP_APPEND_FORMAT:
-          base =
-            g_strdup_printf (
-              "%s.%s", track->name, format);
+          base = g_strdup_printf (
+            "%s.%s", track->name, format);
           break;
         case EFP_PREPEND_DATE_APPEND_FORMAT:
-          base =
-            g_strdup_printf (
-              "%s_%s.%s", datetime_str,
-              track->name, format);
+          base = g_strdup_printf (
+            "%s_%s.%s", datetime_str, track->name,
+            format);
           break;
         default:
           g_return_val_if_reached (NULL);
         }
       g_return_val_if_fail (base, NULL);
 
-      char * exports_dir =
-        project_get_path (
-          PROJECT, PROJECT_PATH_EXPORTS, false);
+      char * exports_dir = project_get_path (
+        PROJECT, PROJECT_PATH_EXPORTS, false);
       char * tmp =
-        g_build_filename (
-          exports_dir, base, NULL);
+        g_build_filename (exports_dir, base, NULL);
       char * full_path =
         io_get_next_available_filepath (tmp);
       g_free (base);
@@ -316,18 +300,19 @@ get_stem_export_filenames (
         {
           g_string_append (gstr, "\n");
         }
-      else if (i == (new_max_files - 1) &&
-               new_max_files < num_tracks)
+      else if (
+        i == (new_max_files - 1)
+        && new_max_files < num_tracks)
         {
           if (num_tracks - new_max_files == 1)
             {
               g_string_append (
-                gstr, _("\n1 more file..."));
+                gstr, _ ("\n1 more file..."));
             }
           else
             {
               g_string_append_printf (
-                gstr, _("\n%d more files..."),
+                gstr, _ ("\n%d more files..."),
                 num_tracks - new_max_files);
             }
         }
@@ -342,16 +327,14 @@ return_result:
 static char *
 get_exports_dir (void)
 {
-  bool export_stems =
-    g_settings_get_boolean (
-      S_EXPORT, "export-stems");
-  return
-    project_get_path (
-      PROJECT,
-      export_stems ?
-        PROJECT_PATH_EXPORTS_STEMS :
-        PROJECT_PATH_EXPORTS,
-      false);
+  bool export_stems = g_settings_get_boolean (
+    S_EXPORT, "export-stems");
+  return project_get_path (
+    PROJECT,
+    export_stems
+      ? PROJECT_PATH_EXPORTS_STEMS
+      : PROJECT_PATH_EXPORTS,
+    false);
 }
 
 /**
@@ -367,9 +350,8 @@ get_export_filename (
   bool                 absolute,
   Track *              track)
 {
-  bool export_stems =
-    g_settings_get_boolean (
-      S_EXPORT, "export-stems");
+  bool export_stems = g_settings_get_boolean (
+    S_EXPORT, "export-stems");
   char * filename = NULL;
   if (export_stems)
     {
@@ -378,9 +360,8 @@ get_export_filename (
       if (absolute)
         {
           char * exports_dir = get_exports_dir ();
-          char * abs_path =
-            g_build_filename (
-              exports_dir, filename, NULL);
+          char * abs_path = g_build_filename (
+            exports_dir, filename, NULL);
           g_free (exports_dir);
           g_free (filename);
           return abs_path;
@@ -392,15 +373,13 @@ get_export_filename (
     }
   else
     {
-      filename =
-        get_mixdown_export_filename (self);
+      filename = get_mixdown_export_filename (self);
 
       if (absolute)
         {
           char * exports_dir = get_exports_dir ();
-          char * abs_path =
-            g_build_filename (
-              exports_dir, filename, NULL);
+          char * abs_path = g_build_filename (
+            exports_dir, filename, NULL);
           g_free (exports_dir);
           g_free (filename);
           return abs_path;
@@ -427,21 +406,16 @@ update_text (ExportDialogWidget * self)
   "foreground=\"" matcha "\">" x "</span>"
 
   char * exports_dir = get_exports_dir ();
-  char * str =
-    g_strdup_printf (
-      "%s\n"
-      "<span foreground=\"%s\">%s</span>"
-      "\n\n"
-      "%s\n"
-      "<a href=\"%s\">%s</a>",
-      _("The following files will be created:"),
-      matcha,
-      filename,
-      _("in the directory:"),
-      exports_dir,
-      exports_dir);
-  gtk_label_set_markup (
-    self->output_label, str);
+  char * str = g_strdup_printf (
+    "%s\n"
+    "<span foreground=\"%s\">%s</span>"
+    "\n\n"
+    "%s\n"
+    "<a href=\"%s\">%s</a>",
+    _ ("The following files will be created:"),
+    matcha, filename, _ ("in the directory:"),
+    exports_dir, exports_dir);
+  gtk_label_set_markup (self->output_label, str);
   g_free (filename);
   g_free (str);
   g_free (exports_dir);
@@ -454,8 +428,9 @@ update_text (ExportDialogWidget * self)
 }
 
 static void
-on_song_toggled (GtkToggleButton * toggle,
-                 ExportDialogWidget * self)
+on_song_toggled (
+  GtkToggleButton *    toggle,
+  ExportDialogWidget * self)
 {
   if (gtk_toggle_button_get_active (toggle))
     {
@@ -467,8 +442,9 @@ on_song_toggled (GtkToggleButton * toggle,
 }
 
 static void
-on_loop_toggled (GtkToggleButton * toggle,
-                 ExportDialogWidget * self)
+on_loop_toggled (
+  GtkToggleButton *    toggle,
+  ExportDialogWidget * self)
 {
   if (gtk_toggle_button_get_active (toggle))
     {
@@ -480,8 +456,9 @@ on_loop_toggled (GtkToggleButton * toggle,
 }
 
 static void
-on_custom_toggled (GtkToggleButton * toggle,
-                   ExportDialogWidget * self)
+on_custom_toggled (
+  GtkToggleButton *    toggle,
+  ExportDialogWidget * self)
 {
   if (gtk_toggle_button_get_active (toggle))
     {
@@ -494,7 +471,7 @@ on_custom_toggled (GtkToggleButton * toggle,
 
 static void
 on_mixdown_toggled (
-  GtkToggleButton * toggle,
+  GtkToggleButton *    toggle,
   ExportDialogWidget * self)
 {
   bool export_stems =
@@ -508,7 +485,7 @@ on_mixdown_toggled (
 
 static void
 on_stems_toggled (
-  GtkToggleButton * toggle,
+  GtkToggleButton *    toggle,
   ExportDialogWidget * self)
 {
   bool export_stems =
@@ -526,58 +503,38 @@ on_stems_toggled (
 static GtkTreeModel *
 create_bit_depth_store (void)
 {
-  GtkTreeIter iter;
-  GtkTreeStore *store;
+  GtkTreeIter    iter;
+  GtkTreeStore * store;
 
-  store =
-    gtk_tree_store_new (1,
-                        G_TYPE_STRING);
+  store = gtk_tree_store_new (1, G_TYPE_STRING);
 
   gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (
-    store, &iter,
-    0, "16 bit",
-    -1);
+  gtk_tree_store_set (store, &iter, 0, "16 bit", -1);
   gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (
-    store, &iter,
-    0, "24 bit",
-    -1);
+  gtk_tree_store_set (store, &iter, 0, "24 bit", -1);
   gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (
-    store, &iter,
-    0, "32 bit",
-    -1);
+  gtk_tree_store_set (store, &iter, 0, "32 bit", -1);
 
   return GTK_TREE_MODEL (store);
 }
 
 static void
-setup_bit_depth_combo_box (
-  ExportDialogWidget * self)
+setup_bit_depth_combo_box (ExportDialogWidget * self)
 {
-  GtkTreeModel * model =
-    create_bit_depth_store ();
-  gtk_combo_box_set_model (
-    self->bit_depth,
-    model);
+  GtkTreeModel * model = create_bit_depth_store ();
+  gtk_combo_box_set_model (self->bit_depth, model);
   gtk_cell_layout_clear (
     GTK_CELL_LAYOUT (self->bit_depth));
-  GtkCellRenderer* renderer =
+  GtkCellRenderer * renderer =
     gtk_cell_renderer_text_new ();
   gtk_cell_layout_pack_start (
-    GTK_CELL_LAYOUT (self->bit_depth),
-    renderer,
+    GTK_CELL_LAYOUT (self->bit_depth), renderer,
     TRUE);
   gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (self->bit_depth),
-    renderer,
-    "text", 0,
-    NULL);
+    GTK_CELL_LAYOUT (self->bit_depth), renderer,
+    "text", 0, NULL);
 
-  gtk_combo_box_set_active (
-    self->bit_depth,
-    0);
+  gtk_combo_box_set_active (self->bit_depth, 0);
 }
 
 /**
@@ -586,20 +543,17 @@ setup_bit_depth_combo_box (
 static GtkTreeModel *
 create_filename_pattern_store (void)
 {
-  GtkTreeIter iter;
-  GtkTreeStore *store;
+  GtkTreeIter    iter;
+  GtkTreeStore * store;
 
   store = gtk_tree_store_new (1, G_TYPE_STRING);
 
   gtk_tree_store_append (store, &iter, NULL);
   gtk_tree_store_set (
-    store, &iter,
-    0, _("<name>.<format>"),
-    -1);
+    store, &iter, 0, _ ("<name>.<format>"), -1);
   gtk_tree_store_append (store, &iter, NULL);
   gtk_tree_store_set (
-    store, &iter,
-    0, _("<date>_<name>.<format>"),
+    store, &iter, 0, _ ("<date>_<name>.<format>"),
     -1);
 
   return GTK_TREE_MODEL (store);
@@ -627,7 +581,7 @@ setup_filename_pattern_combo_box (
     self->filename_pattern, model);
   gtk_cell_layout_clear (
     GTK_CELL_LAYOUT (self->filename_pattern));
-  GtkCellRenderer* renderer =
+  GtkCellRenderer * renderer =
     gtk_cell_renderer_text_new ();
   gtk_cell_layout_pack_start (
     GTK_CELL_LAYOUT (self->filename_pattern),
@@ -653,13 +607,12 @@ setup_filename_pattern_combo_box (
 static GtkTreeModel *
 create_formats_store (void)
 {
-  GtkTreeIter iter;
-  GtkTreeStore *store;
+  GtkTreeIter    iter;
+  GtkTreeStore * store;
 
-  store =
-    gtk_tree_store_new (NUM_EXPORT_FORMAT_COLUMNS,
-                        G_TYPE_STRING,
-                        G_TYPE_INT);
+  store = gtk_tree_store_new (
+    NUM_EXPORT_FORMAT_COLUMNS, G_TYPE_STRING,
+    G_TYPE_INT);
 
   for (int i = 0; i < NUM_EXPORT_FORMATS; i++)
     {
@@ -667,10 +620,8 @@ create_formats_store (void)
       const char * str =
         exporter_stringize_export_format (i, false);
       gtk_tree_store_set (
-        store, &iter,
-        COLUMN_EXPORT_FORMAT_LABEL, str,
-        COLUMN_EXPORT_FORMAT, i,
-        -1);
+        store, &iter, COLUMN_EXPORT_FORMAT_LABEL,
+        str, COLUMN_EXPORT_FORMAT, i, -1);
     }
 
   return GTK_TREE_MODEL (store);
@@ -685,16 +636,13 @@ on_format_changed (
   ExportFormat format =
     gtk_combo_box_get_active (widget);
 
-  g_settings_set_enum (
-    S_EXPORT, "format", format);
+  g_settings_set_enum (S_EXPORT, "format", format);
 
 #define SET_SENSITIVE(x) \
-  gtk_widget_set_sensitive ( \
-    GTK_WIDGET (self->x), 1)
+  gtk_widget_set_sensitive (GTK_WIDGET (self->x), 1)
 
 #define SET_UNSENSITIVE(x) \
-  gtk_widget_set_sensitive ( \
-    GTK_WIDGET (self->x), 0)
+  gtk_widget_set_sensitive (GTK_WIDGET (self->x), 0)
 
   SET_UNSENSITIVE (export_genre);
   SET_UNSENSITIVE (export_artist);
@@ -731,27 +679,19 @@ on_format_changed (
 }
 
 static void
-setup_formats_combo_box (
-  ExportDialogWidget * self)
+setup_formats_combo_box (ExportDialogWidget * self)
 {
-  GtkTreeModel * model =
-    create_formats_store ();
-  gtk_combo_box_set_model (
-    self->format,
-    model);
+  GtkTreeModel * model = create_formats_store ();
+  gtk_combo_box_set_model (self->format, model);
   gtk_cell_layout_clear (
     GTK_CELL_LAYOUT (self->format));
-  GtkCellRenderer* renderer =
+  GtkCellRenderer * renderer =
     gtk_cell_renderer_text_new ();
   gtk_cell_layout_pack_start (
-    GTK_CELL_LAYOUT (self->format),
-    renderer,
-    TRUE);
+    GTK_CELL_LAYOUT (self->format), renderer, TRUE);
   gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (self->format),
-    renderer,
-    "text", COLUMN_EXPORT_FORMAT_LABEL,
-    NULL);
+    GTK_CELL_LAYOUT (self->format), renderer,
+    "text", COLUMN_EXPORT_FORMAT_LABEL, NULL);
 
   gtk_combo_box_set_active (
     self->format,
@@ -759,8 +699,9 @@ setup_formats_combo_box (
 }
 
 static void
-on_cancel_clicked (GtkButton * btn,
-                   ExportDialogWidget * self)
+on_cancel_clicked (
+  GtkButton *          btn,
+  ExportDialogWidget * self)
 {
   gtk_window_close (GTK_WINDOW (self));
   /*gtk_widget_destroy (GTK_WIDGET (self));*/
@@ -768,8 +709,8 @@ on_cancel_clicked (GtkButton * btn,
 
 static void
 on_progress_dialog_closed (
-  GtkDialog * dialog,
-  int         response_id,
+  GtkDialog *          dialog,
+  int                  response_id,
   ExportDialogWidget * self)
 {
   update_text (self);
@@ -804,18 +745,12 @@ init_export_info (
     gtk_toggle_button_get_active (self->dither);
   g_settings_set_boolean (
     S_EXPORT, "dither", info->dither);
-  info->artist =
-    g_strdup (
-      gtk_editable_get_text (
-        GTK_EDITABLE (self->export_artist)));
-  info->title =
-    g_strdup (
-      gtk_editable_get_text (
-        GTK_EDITABLE (self->export_title)));
-  info->genre =
-    g_strdup (
-      gtk_editable_get_text (
-        GTK_EDITABLE (self->export_genre)));
+  info->artist = g_strdup (gtk_editable_get_text (
+    GTK_EDITABLE (self->export_artist)));
+  info->title = g_strdup (gtk_editable_get_text (
+    GTK_EDITABLE (self->export_title)));
+  info->genre = g_strdup (gtk_editable_get_text (
+    GTK_EDITABLE (self->export_genre)));
   g_settings_set_string (
     S_EXPORT, "artist", info->artist);
   g_settings_set_string (
@@ -824,9 +759,9 @@ init_export_info (
     S_EXPORT, "genre", info->genre);
 
 #define SET_TIME_RANGE(x) \
-g_settings_set_enum ( \
-S_EXPORT, "time-range", TIME_RANGE_##x); \
-info->time_range = TIME_RANGE_##x
+  g_settings_set_enum ( \
+    S_EXPORT, "time-range", TIME_RANGE_##x); \
+  info->time_range = TIME_RANGE_##x
 
   if (gtk_toggle_button_get_active (
         self->time_range_song))
@@ -857,21 +792,20 @@ info->time_range = TIME_RANGE_##x
 
 static void
 on_export_clicked (
-  GtkButton * btn,
+  GtkButton *          btn,
   ExportDialogWidget * self)
 {
-  bool export_stems =
-    g_settings_get_boolean (
-      S_EXPORT, "export-stems");
+  bool export_stems = g_settings_get_boolean (
+    S_EXPORT, "export-stems");
 
-  int num_tracks;
+  int      num_tracks;
   Track ** tracks =
     get_enabled_tracks (self, &num_tracks);
   if (!tracks)
     {
       ui_show_error_message (
         MAIN_WINDOW, false,
-        _("No tracks to export"));
+        _ ("No tracks to export"));
       return;
     }
 
@@ -887,8 +821,7 @@ on_export_clicked (
         {
           Track * track = tracks[i];
           g_debug (
-            "~ bouncing stem for %s ~",
-            track->name);
+            "~ bouncing stem for %s ~", track->name);
 
           /* unmark all tracks for bounce */
           tracklist_mark_all_tracks_for_bounce (
@@ -908,12 +841,11 @@ on_export_clicked (
           g_message ("exporting %s", info.file_uri);
 
           /* start exporting in a new thread */
-          GThread * thread =
-            g_thread_new (
-              "export_thread",
-              (GThreadFunc)
+          GThread * thread = g_thread_new (
+            "export_thread",
+            (GThreadFunc)
               exporter_generic_export_thread,
-              &info);
+            &info);
 
           /* create a progress dialog and block */
           ExportProgressDialogWidget * progress_dialog =
@@ -967,11 +899,10 @@ on_export_clicked (
       g_message ("exporting %s", info.file_uri);
 
       /* start exporting in a new thread */
-      GThread * thread =
-        g_thread_new (
-          "export_thread",
-          (GThreadFunc) exporter_generic_export_thread,
-          &info);
+      GThread * thread = g_thread_new (
+        "export_thread",
+        (GThreadFunc) exporter_generic_export_thread,
+        &info);
 
       /* create a progress dialog and block */
       ExportProgressDialogWidget * progress_dialog =
@@ -982,7 +913,8 @@ on_export_clicked (
         GTK_WINDOW (self));
       g_signal_connect (
         G_OBJECT (progress_dialog), "response",
-        G_CALLBACK (on_progress_dialog_closed), self);
+        G_CALLBACK (on_progress_dialog_closed),
+        self);
       z_gtk_dialog_run (
         GTK_DIALOG (progress_dialog), true);
 
@@ -1002,7 +934,7 @@ on_export_clicked (
 static gboolean
 tracks_tree_model_visible_func (
   GtkTreeModel *       model,
-  GtkTreeIter  *       iter,
+  GtkTreeIter *        iter,
   ExportDialogWidget * self)
 {
   bool visible = true;
@@ -1022,17 +954,14 @@ add_group_track_children (
   gtk_tree_store_append (
     tree_store, &group_iter, iter);
   gtk_tree_store_set (
-    tree_store, &group_iter,
-    TRACK_COLUMN_CHECKBOX, true,
-    TRACK_COLUMN_ICON, track->icon_name,
+    tree_store, &group_iter, TRACK_COLUMN_CHECKBOX,
+    true, TRACK_COLUMN_ICON, track->icon_name,
     TRACK_COLUMN_BG_RGBA, &track->color,
     TRACK_COLUMN_DUMMY_TEXT, dummy_text,
     TRACK_COLUMN_NAME, track->name,
-    TRACK_COLUMN_TRACK, track,
-    -1);
+    TRACK_COLUMN_TRACK, track, -1);
 
-  g_debug (
-    "%s: track '%s'", __func__, track->name);
+  g_debug ("%s: track '%s'", __func__, track->name);
 
   /* add the children */
   for (int i = 0; i < track->num_children; i++)
@@ -1062,27 +991,20 @@ add_group_track_children (
             TRACK_COLUMN_BG_RGBA, &child->color,
             TRACK_COLUMN_DUMMY_TEXT, dummy_text,
             TRACK_COLUMN_NAME, child->name,
-            TRACK_COLUMN_TRACK, child,
-            -1);
+            TRACK_COLUMN_TRACK, child, -1);
         }
     }
 }
 
 static GtkTreeModel *
-create_model_for_tracks (
-  ExportDialogWidget * self)
+create_model_for_tracks (ExportDialogWidget * self)
 {
   /* checkbox, icon, foreground rgba,
    * background rgba, name, track */
-  GtkTreeStore * tree_store =
-    gtk_tree_store_new (
-      NUM_TRACK_COLUMNS,
-      G_TYPE_BOOLEAN,
-      G_TYPE_STRING,
-      GDK_TYPE_RGBA,
-      G_TYPE_STRING,
-      G_TYPE_STRING,
-      G_TYPE_POINTER);
+  GtkTreeStore * tree_store = gtk_tree_store_new (
+    NUM_TRACK_COLUMNS, G_TYPE_BOOLEAN,
+    G_TYPE_STRING, GDK_TYPE_RGBA, G_TYPE_STRING,
+    G_TYPE_STRING, G_TYPE_POINTER);
 
   /*GtkTreeIter iter;*/
   /*gtk_tree_store_append (tree_store, &iter, NULL);*/
@@ -1091,13 +1013,12 @@ create_model_for_tracks (
 
   self->tracks_store = tree_store;
 
-  GtkTreeModel * model =
-    gtk_tree_model_filter_new (
-      GTK_TREE_MODEL (tree_store), NULL);
+  GtkTreeModel * model = gtk_tree_model_filter_new (
+    GTK_TREE_MODEL (tree_store), NULL);
   gtk_tree_model_filter_set_visible_func (
     GTK_TREE_MODEL_FILTER (model),
     (GtkTreeModelFilterVisibleFunc)
-    tracks_tree_model_visible_func,
+      tracks_tree_model_visible_func,
     self, NULL);
 
   return model;
@@ -1123,9 +1044,8 @@ set_track_toggle_on_parent_recursively (
 
   /* enable the parent if toggled */
   GtkTreeIter parent_iter;
-  bool has_parent =
-    gtk_tree_model_iter_parent (
-      model, &parent_iter, iter);
+  bool has_parent = gtk_tree_model_iter_parent (
+    model, &parent_iter, iter);
   if (has_parent)
     {
       /* set new value on widget */
@@ -1154,8 +1074,7 @@ set_track_toggle_recursively (
   if (has_children)
     {
       int num_children =
-        gtk_tree_model_iter_n_children (
-          model, iter);
+        gtk_tree_model_iter_n_children (model, iter);
 
       for (int i = 0; i < num_children; i++)
         {
@@ -1188,22 +1107,20 @@ on_track_toggled (
   /* get tree path and iter */
   GtkTreePath * path =
     gtk_tree_path_new_from_string (path_str);
-  GtkTreeIter  iter;
-  bool ret =
+  GtkTreeIter iter;
+  bool        ret =
     gtk_tree_model_get_iter (model, &iter, path);
   g_return_if_fail (ret);
-  g_return_if_fail (
-    gtk_tree_store_iter_is_valid (
-      GTK_TREE_STORE (model), &iter));
+  g_return_if_fail (gtk_tree_store_iter_is_valid (
+    GTK_TREE_STORE (model), &iter));
 
   /* get toggled */
   gboolean toggled;
   gtk_tree_model_get (
-    model, &iter,
-    TRACK_COLUMN_CHECKBOX, &toggled, -1);
-  g_return_if_fail (
-    gtk_tree_store_iter_is_valid (
-      GTK_TREE_STORE (model), &iter));
+    model, &iter, TRACK_COLUMN_CHECKBOX, &toggled,
+    -1);
+  g_return_if_fail (gtk_tree_store_iter_is_valid (
+    GTK_TREE_STORE (model), &iter));
 
   /* get new value */
   toggled ^= 1;
@@ -1337,8 +1254,7 @@ on_tracks_enable (
 #endif
 
 static void
-show_tracks_context_menu (
-  ExportDialogWidget * self)
+show_tracks_context_menu (ExportDialogWidget * self)
 {
 #if 0
   GtkWidget *menuitem;
@@ -1375,11 +1291,11 @@ show_tracks_context_menu (
 
 static void
 on_track_right_click (
-  GtkGestureClick * gesture,
-  gint                   n_press,
-  gdouble                x_dbl,
-  gdouble                y_dbl,
-  ExportDialogWidget *   self)
+  GtkGestureClick *    gesture,
+  gint                 n_press,
+  gdouble              x_dbl,
+  gdouble              y_dbl,
+  ExportDialogWidget * self)
 {
   if (n_press != 1)
     return;
@@ -1388,8 +1304,7 @@ on_track_right_click (
 }
 
 static void
-setup_treeview (
-  ExportDialogWidget * self)
+setup_treeview (ExportDialogWidget * self)
 {
   self->tracks_model =
     create_model_for_tracks (self);
@@ -1399,16 +1314,14 @@ setup_treeview (
   GtkTreeView * tree_view = self->tracks_treeview;
 
   /* init tree view */
-  GtkCellRenderer * renderer;
+  GtkCellRenderer *   renderer;
   GtkTreeViewColumn * column;
 
   /* column for checkbox */
   renderer = gtk_cell_renderer_toggle_new ();
-  column =
-    gtk_tree_view_column_new_with_attributes (
-      "icon", renderer,
-      "active", TRACK_COLUMN_CHECKBOX,
-      NULL);
+  column = gtk_tree_view_column_new_with_attributes (
+    "icon", renderer, "active",
+    TRACK_COLUMN_CHECKBOX, NULL);
   gtk_tree_view_append_column (tree_view, column);
   g_signal_connect (
     renderer, "toggled",
@@ -1416,30 +1329,24 @@ setup_treeview (
 
   /* column for color */
   renderer = gtk_cell_renderer_text_new ();
-  column =
-    gtk_tree_view_column_new_with_attributes (
-      "name", renderer,
-      "text", TRACK_COLUMN_DUMMY_TEXT,
-      "background-rgba", TRACK_COLUMN_BG_RGBA,
-      NULL);
+  column = gtk_tree_view_column_new_with_attributes (
+    "name", renderer, "text",
+    TRACK_COLUMN_DUMMY_TEXT, "background-rgba",
+    TRACK_COLUMN_BG_RGBA, NULL);
   gtk_tree_view_append_column (tree_view, column);
 
   /* column for icon */
   renderer = gtk_cell_renderer_pixbuf_new ();
-  column =
-    gtk_tree_view_column_new_with_attributes (
-      "icon", renderer,
-      "icon-name", TRACK_COLUMN_ICON,
-      NULL);
+  column = gtk_tree_view_column_new_with_attributes (
+    "icon", renderer, "icon-name",
+    TRACK_COLUMN_ICON, NULL);
   gtk_tree_view_append_column (tree_view, column);
 
   /* column for name */
   renderer = gtk_cell_renderer_text_new ();
-  column =
-    gtk_tree_view_column_new_with_attributes (
-      "name", renderer,
-      "text", TRACK_COLUMN_NAME,
-      NULL);
+  column = gtk_tree_view_column_new_with_attributes (
+    "name", renderer, "text", TRACK_COLUMN_NAME,
+    NULL);
   gtk_tree_view_append_column (tree_view, column);
 
   /* set search column */
@@ -1456,11 +1363,9 @@ setup_treeview (
 
   /* connect right click handler */
   GtkGestureClick * mp =
-    GTK_GESTURE_CLICK (
-      gtk_gesture_click_new ());
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (mp),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (mp), "pressed",
     G_CALLBACK (on_track_right_click), self);
@@ -1561,8 +1466,7 @@ export_dialog_widget_class_init (
 }
 
 static void
-export_dialog_widget_init (
-  ExportDialogWidget * self)
+export_dialog_widget_init (ExportDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -1582,7 +1486,8 @@ export_dialog_widget_init (
     self->time_range_loop, false);
   gtk_toggle_button_set_active (
     self->time_range_custom, false);
-  switch (g_settings_get_enum (S_EXPORT, "time-range"))
+  switch (
+    g_settings_get_enum (S_EXPORT, "time-range"))
     {
     case 0: // loop
       gtk_toggle_button_set_active (
@@ -1597,9 +1502,8 @@ export_dialog_widget_init (
         self->time_range_custom, true);
       break;
     }
-  bool export_stems =
-    g_settings_get_boolean (
-      S_EXPORT, "export-stems");
+  bool export_stems = g_settings_get_boolean (
+    S_EXPORT, "export-stems");
   gtk_toggle_button_set_active (
     self->mixdown_toggle, !export_stems);
   gtk_toggle_button_set_active (
@@ -1612,8 +1516,7 @@ export_dialog_widget_init (
 
   gtk_toggle_button_set_active (
     GTK_TOGGLE_BUTTON (self->dither),
-    g_settings_get_boolean (
-      S_EXPORT, "dither"));
+    g_settings_get_boolean (S_EXPORT, "dither"));
 
   setup_bit_depth_combo_box (self);
   setup_formats_combo_box (self);

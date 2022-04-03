@@ -23,7 +23,7 @@
 #include "zix/sem.h"
 
 typedef struct MPMCQueue MPMCQueue;
-typedef struct Stack Stack;
+typedef struct Stack     Stack;
 
 /**
  * @addtogroup utils
@@ -40,20 +40,19 @@ typedef struct ObjectUtils
   ZixSem      free_stack_for_source_lock;
 
   /** Source func ID. */
-  guint       source_id;
+  guint source_id;
 
-  GThread *   free_later_thread;
+  GThread * free_later_thread;
 
   /** Whether to quit the thread. */
-  bool        quit_thread;
+  bool quit_thread;
 } ObjectUtils;
 
 /** Calls _free_later after doing the casting so the
  * caller doesn't have to. */
-#define free_later(obj,func) \
+#define free_later(obj, func) \
   _free_later ( \
-    (void *)obj, \
-    (void (*) (void *)) func, \
+    (void *) obj, (void (*) (void *)) func, \
     __FILE__, __func__, __LINE__)
 
 /**
@@ -64,8 +63,8 @@ typedef struct ObjectUtils
  */
 void
 _free_later (
-  void *       object,
-  void         (*dfunc) (void *),
+  void * object,
+  void (*dfunc) (void *),
   const char * file,
   const char * func,
   int          line);
@@ -78,8 +77,7 @@ ObjectUtils *
 object_utils_new (void);
 
 void
-object_utils_free (
-  ObjectUtils * self);
+object_utils_free (ObjectUtils * self);
 
 /**
  * @}

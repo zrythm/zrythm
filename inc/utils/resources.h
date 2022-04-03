@@ -91,8 +91,7 @@ resources_add_icon_to_button (
  * @return bytes or NULL if error.
  */
 GBytes *
-resources_get_gl_shader_data (
-  const char * path);
+resources_get_gl_shader_data (const char * path);
 
 /**
  * @}

@@ -26,15 +26,15 @@
 #include "zrythm-config.h"
 
 #ifndef __PLUGINS_CARLA_NATIVE_PLUGIN_H__
-#define __PLUGINS_CARLA_NATIVE_PLUGIN_H__
+#  define __PLUGINS_CARLA_NATIVE_PLUGIN_H__
 
-#ifdef HAVE_CARLA
-#include <CarlaNativePlugin.h>
-#include <CarlaUtils.h>
-#endif
+#  ifdef HAVE_CARLA
+#    include <CarlaNativePlugin.h>
+#    include <CarlaUtils.h>
+#  endif
 
 typedef struct PluginDescriptor PluginDescriptor;
-typedef void * CarlaPluginHandle;
+typedef void *                  CarlaPluginHandle;
 
 /**
  * @addtogroup plugins
@@ -42,7 +42,7 @@ typedef void * CarlaPluginHandle;
  * @{
  */
 
-#define CARLA_STATE_FILENAME "state.carla"
+#  define CARLA_STATE_FILENAME "state.carla"
 
 /**
  * The type of the Carla plugin.
@@ -67,78 +67,79 @@ typedef struct CarlaPatchbayPortInfo
 
 typedef struct CarlaNativePlugin
 {
-#ifdef HAVE_CARLA
-  NativePluginHandle native_plugin_handle;
+#  ifdef HAVE_CARLA
+  NativePluginHandle   native_plugin_handle;
   NativeHostDescriptor native_host_descriptor;
-  const NativePluginDescriptor * native_plugin_descriptor;
+  const NativePluginDescriptor *
+    native_plugin_descriptor;
 
-  CarlaHostHandle  host_handle;
+  CarlaHostHandle host_handle;
 
   //uint32_t                 num_midi_events;
   //NativeMidiEvent          midi_events[200];
-  NativeTimeInfo   time_info;
-#endif
+  NativeTimeInfo time_info;
+#  endif
 
   /** Pointer back to Plugin. */
-  Plugin *         plugin;
+  Plugin * plugin;
 
   /** Plugin ID inside carla engine. */
-  unsigned int     carla_plugin_id;
+  unsigned int carla_plugin_id;
 
   /** Whether ports are already created or not. */
-  bool             ports_created;
+  bool ports_created;
 
   /** Flag. */
-  bool             loading_state;
+  bool loading_state;
 
   /** Port ID of first audio input (for connecting
    * inside patchbay). */
-  unsigned int     audio_input_port_id;
+  unsigned int audio_input_port_id;
   /** Port ID of first audio output (for connecting
    * inside patchbay). */
-  unsigned int     audio_output_port_id;
+  unsigned int audio_output_port_id;
 
   /** Port ID of first cv input (for connecting
    * inside patchbay). */
-  unsigned int     cv_input_port_id;
+  unsigned int cv_input_port_id;
   /** Port ID of first cv output (for connecting
    * inside patchbay). */
-  unsigned int     cv_output_port_id;
+  unsigned int cv_output_port_id;
 
   /** Port ID of first midi input (for connecting
    * inside patchbay). */
-  unsigned int     midi_input_port_id;
+  unsigned int midi_input_port_id;
   /** Port ID of first midi output (for connecting
    * inside patchbay). */
-  unsigned int     midi_output_port_id;
+  unsigned int midi_output_port_id;
 
   /** Used when connecting Carla's internal plugin
    * to patchbay ports. */
-  GPtrArray *      patchbay_port_info;
+  GPtrArray * patchbay_port_info;
 
   /** GTK tick callback. */
-  guint            tick_cb;
+  guint tick_cb;
 
   /**
    * Used during processing.
    *
    * Must be resized on buffer size change.
    */
-  float **         zero_inbufs;
-  float **         zero_outbufs;
-  float **         inbufs;
-  float **         outbufs;
+  float ** zero_inbufs;
+  float ** zero_outbufs;
+  float ** inbufs;
+  float ** outbufs;
 
-  unsigned int     max_variant_audio_ins;
-  unsigned int     max_variant_audio_outs;
-  unsigned int     max_variant_cv_ins;
-  unsigned int     max_variant_cv_outs;
-  unsigned int     max_variant_midi_ins;
-  unsigned int     max_variant_midi_outs;
+  unsigned int max_variant_audio_ins;
+  unsigned int max_variant_audio_outs;
+  unsigned int max_variant_cv_ins;
+  unsigned int max_variant_cv_outs;
+  unsigned int max_variant_midi_ins;
+  unsigned int max_variant_midi_outs;
 
 } CarlaNativePlugin;
 
-#ifdef HAVE_CARLA
+#  ifdef HAVE_CARLA
 
 NONNULL
 void
@@ -168,7 +169,7 @@ NONNULL
 PluginDescriptor *
 carla_native_plugin_get_descriptor_from_cached (
   const CarlaCachedPluginInfo * info,
-  PluginType              type);
+  PluginType                    type);
 
 /**
  * Saves the state inside the standard state
@@ -238,10 +239,7 @@ carla_native_plugin_get_abs_state_file_path (
 /**
  * Processes the plugin for this cycle.
  */
-HOT
-NONNULL
-OPTIMIZE_O3
-void
+HOT NONNULL OPTIMIZE_O3 void
 carla_native_plugin_process (
   CarlaNativePlugin *                 self,
   const EngineProcessTimeInfo * const time_nfo);
@@ -300,8 +298,7 @@ carla_native_plugin_activate (
 
 NONNULL
 void
-carla_native_plugin_close (
-  CarlaNativePlugin * self);
+carla_native_plugin_close (CarlaNativePlugin * self);
 
 bool
 carla_native_plugin_has_custom_ui (
@@ -320,10 +317,9 @@ carla_native_plugin_get_latency (
  */
 NONNULL
 void
-carla_native_plugin_free (
-  CarlaNativePlugin * self);
+carla_native_plugin_free (CarlaNativePlugin * self);
 
-#endif /* HAVE_CARLA */
+#  endif /* HAVE_CARLA */
 
 /**
  * @}

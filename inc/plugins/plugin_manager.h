@@ -31,7 +31,6 @@
 #include "utils/symap.h"
 
 #include "zix/sem.h"
-
 #include <lilv/lilv.h>
 
 typedef struct CachedPluginDescriptors
@@ -68,42 +67,42 @@ typedef struct PluginManager
   /**
    * Scanned plugin descriptors.
    */
-  GPtrArray *         plugin_descriptors;
+  GPtrArray * plugin_descriptors;
 
   /** Plugin categories. */
-  char *              plugin_categories[500];
-  int                 num_plugin_categories;
+  char * plugin_categories[500];
+  int    num_plugin_categories;
 
   /** Plugin authors. */
-  char *              plugin_authors[6000];
-  int                 num_plugin_authors;
+  char * plugin_authors[6000];
+  int    num_plugin_authors;
 
   LilvWorld *         lilv_world;
   const LilvPlugins * lilv_plugins;
 
-  LilvNode **         nodes;
-  int                 num_nodes;
-  size_t              nodes_size;
+  LilvNode ** nodes;
+  int         num_nodes;
+  size_t      nodes_size;
 
   /** Cached VST descriptors */
   CachedPluginDescriptors * cached_plugin_descriptors;
 
   /** Plugin collections. */
-  PluginCollections *    collections;
+  PluginCollections * collections;
 
   /** URI map for URID feature. */
-  Symap*                 symap;
+  Symap * symap;
   /** Lock for URI map. */
-  ZixSem                 symap_lock;
+  ZixSem symap_lock;
 
   /** URIDs. */
-  Lv2URIDs               urids;
+  Lv2URIDs urids;
 
-  char *                 lv2_path;
+  char * lv2_path;
 
   /** Whether the plugin manager has been set up
    * already. */
-  bool                   setup;
+  bool setup;
 
 } PluginManager;
 
@@ -177,12 +176,10 @@ plugin_manager_pick_instrument (
   PluginManager * self);
 
 void
-plugin_manager_clear_plugins (
-  PluginManager * self);
+plugin_manager_clear_plugins (PluginManager * self);
 
 void
-plugin_manager_free (
-  PluginManager * self);
+plugin_manager_free (PluginManager * self);
 
 /**
  * @}

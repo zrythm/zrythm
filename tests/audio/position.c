@@ -91,13 +91,14 @@ test_get_totals (void)
   ret = position_get_total_sixteenths (&pos, false);
   g_assert_cmpint (
     ret, ==,
-    position_get_total_beats (&pos, true) *
-    (int) TRANSPORT->sixteenths_per_beat - 1);
+    position_get_total_beats (&pos, true)
+        * (int) TRANSPORT->sixteenths_per_beat
+      - 1);
   ret = position_get_total_sixteenths (&pos, true);
   g_assert_cmpint (
     ret, ==,
-    position_get_total_beats (&pos, true) *
-    (int) TRANSPORT->sixteenths_per_beat);
+    position_get_total_beats (&pos, true)
+      * (int) TRANSPORT->sixteenths_per_beat);
 
   position_init (&pos);
   position_add_bars (&pos, 1);
@@ -115,13 +116,14 @@ test_get_totals (void)
   ret = position_get_total_sixteenths (&pos, false);
   g_assert_cmpint (
     ret, ==,
-    position_get_total_beats (&pos, true) *
-    (int) TRANSPORT->sixteenths_per_beat - 1);
+    position_get_total_beats (&pos, true)
+        * (int) TRANSPORT->sixteenths_per_beat
+      - 1);
   ret = position_get_total_sixteenths (&pos, true);
   g_assert_cmpint (
     ret, ==,
-    position_get_total_beats (&pos, true) *
-    (int) TRANSPORT->sixteenths_per_beat);
+    position_get_total_beats (&pos, true)
+      * (int) TRANSPORT->sixteenths_per_beat);
 
   test_helper_zrythm_cleanup ();
 }
@@ -131,9 +133,9 @@ test_set_to (void)
 {
   test_helper_zrythm_init ();
 
-  Position pos;
+  Position     pos;
   const char * expect = "4.1.1.0";
-  char res[400];
+  char         res[400];
 
   position_set_to_bar (&pos, 4);
   position_to_string (&pos, res);
@@ -168,7 +170,7 @@ test_print_position (void)
 
   for (int i = 0; i < 2000; i++)
     {
-      position_add_ticks (&pos, - 4.1);
+      position_add_ticks (&pos, -4.1);
       position_print (&pos);
     }
 
@@ -183,7 +185,7 @@ test_position_from_ticks (void)
   test_helper_zrythm_init ();
 
   Position pos;
-  double ticks = 50000.0;
+  double   ticks = 50000.0;
 
   /* assert values are correct */
   position_from_ticks (&pos, ticks);
@@ -203,7 +205,7 @@ test_position_to_frames (void)
   test_helper_zrythm_init ();
 
   Position pos;
-  double ticks = 50000.0;
+  double   ticks = 50000.0;
 
   /* assert values are correct */
   position_from_ticks (&pos, ticks);
@@ -222,30 +224,24 @@ test_get_total_beats (void)
   test_helper_zrythm_init ();
 
   Position start_pos = {
-    .ticks = 4782.3818594104323,
-    .frames = 69376
+    .ticks = 4782.3818594104323, .frames = 69376
   };
   Position end_pos = {
-    .ticks = 4800.0290249433119,
-    .frames = 69632
+    .ticks = 4800.0290249433119, .frames = 69632
   };
   position_from_ticks (
     &start_pos, 4782.3818594104323);
-  position_from_ticks (
-    &end_pos, 4800);
+  position_from_ticks (&end_pos, 4800);
 
   int beats = 0;
   beats =
     position_get_total_beats (&start_pos, false);
   g_assert_cmpint (beats, ==, 4);
-  beats =
-    position_get_total_beats (&end_pos, false);
+  beats = position_get_total_beats (&end_pos, false);
   g_assert_cmpint (beats, ==, 4);
 
-  position_from_ticks (
-    &end_pos, 4800.0290249433119);
-  beats =
-    position_get_total_beats (&end_pos, false);
+  position_from_ticks (&end_pos, 4800.0290249433119);
+  beats = position_get_total_beats (&end_pos, false);
   g_assert_cmpint (beats, ==, 5);
 
   test_helper_zrythm_cleanup ();
@@ -256,9 +252,9 @@ test_position_benchmarks (void)
 {
   test_helper_zrythm_init ();
 
-  double ticks = 50000.0;
-  gint64 loop_times = 5;
-  gint total_time;
+  double   ticks = 50000.0;
+  gint64   loop_times = 5;
+  gint     total_time;
   Position pos;
   position_from_ticks (&pos, ticks);
 
@@ -329,38 +325,35 @@ test_snap (void)
   char buf2[100];
   position_to_string (&cur_pos, buf1);
   position_to_string (&test_pos, buf2);
-  g_message (
-    "cur pos %s test pos %s", buf1, buf2);
+  g_message ("cur pos %s test pos %s", buf1, buf2);
   g_assert_cmppos (&cur_pos, &test_pos);
 
   position_set_to_bar (&start_pos, 4);
   position_add_ticks (
     &start_pos, 2 * TICKS_PER_QUARTER_NOTE);
   position_set_to_pos (&cur_pos, &start_pos);
-  position_add_ticks (&cur_pos, - 10);
+  position_add_ticks (&cur_pos, -10);
   position_set_to_pos (&test_pos, &start_pos);
   position_snap (
     &start_pos, &cur_pos, NULL, NULL,
     SNAP_GRID_TIMELINE);
   position_to_string (&cur_pos, buf1);
   position_to_string (&test_pos, buf2);
-  g_message (
-    "cur pos %s test pos %s", buf1, buf2);
+  g_message ("cur pos %s test pos %s", buf1, buf2);
   g_assert_cmppos (&cur_pos, &test_pos);
 
   test_helper_zrythm_cleanup ();
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
 #define TEST_PREFIX "/audio/position/"
 
   g_test_add_func (
-    TEST_PREFIX "test snap",
-    (GTestFunc) test_snap);
+    TEST_PREFIX "test snap", (GTestFunc) test_snap);
   g_test_add_func (
     TEST_PREFIX "test print position",
     (GTestFunc) test_print_position);

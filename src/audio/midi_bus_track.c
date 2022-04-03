@@ -30,8 +30,7 @@
 #include "project.h"
 
 void
-midi_bus_track_init (
-  Track * self)
+midi_bus_track_init (Track * self)
 {
   self->type = TRACK_TYPE_MIDI_BUS;
   /* GTK color picker color */

@@ -30,10 +30,9 @@ get_cached_plugin_descriptors_file_path (void)
     zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
   g_return_val_if_fail (zrythm_dir, NULL);
 
-  return
-    g_build_filename (
-      zrythm_dir,
-      "cached_plugin_descriptors.yaml", NULL);
+  return g_build_filename (
+    zrythm_dir, "cached_plugin_descriptors.yaml",
+    NULL);
 }
 
 void
@@ -42,19 +41,17 @@ cached_plugin_descriptors_serialize_to_file (
 {
   g_message (
     "Serializing cached plugin descriptors...");
-  char * yaml =
-    yaml_serialize (
-      self, &cached_plugin_descriptors_schema);
+  char * yaml = yaml_serialize (
+    self, &cached_plugin_descriptors_schema);
   g_return_if_fail (yaml);
-  GError *err = NULL;
-  char * path =
+  GError * err = NULL;
+  char *   path =
     get_cached_plugin_descriptors_file_path ();
   g_return_if_fail (path && strlen (path) > 2);
   g_message (
     "Writing cached plugin descriptors to %s...",
     path);
-  g_file_set_contents (
-    path, yaml, -1, &err);
+  g_file_set_contents (path, yaml, -1, &err);
   if (err != NULL)
     {
       g_warning (
@@ -71,8 +68,7 @@ cached_plugin_descriptors_serialize_to_file (
 }
 
 static bool
-is_yaml_our_version (
-  const char * yaml)
+is_yaml_our_version (const char * yaml)
 {
   bool same_version = false;
   char version_str[120];
@@ -99,14 +95,15 @@ is_yaml_our_version (
 CachedPluginDescriptors *
 cached_plugin_descriptors_new (void)
 {
-  GError *err = NULL;
-  char * path =
+  GError * err = NULL;
+  char *   path =
     get_cached_plugin_descriptors_file_path ();
   if (!file_exists (path))
     {
       g_message (
         "Cached plugin descriptors file at %s does "
-        "not exist", path);
+        "not exist",
+        path);
 return_new_instance:
       g_free (path);
       CachedPluginDescriptors * self =
@@ -121,7 +118,8 @@ return_new_instance:
     {
       g_critical (
         "Failed to create CachedPluginDescriptors "
-        "from %s", path);
+        "from %s",
+        path);
       g_free (err);
       g_free (yaml);
       g_free (path);
@@ -135,8 +133,7 @@ return_new_instance:
       g_message (
         "Found old plugin descriptor file version. "
         "Purging file and creating a new one.");
-      GFile * file =
-        g_file_new_for_path (path);
+      GFile * file = g_file_new_for_path (path);
       g_file_delete (file, NULL, NULL);
       g_object_unref (file);
       g_free (yaml);
@@ -144,14 +141,14 @@ return_new_instance:
     }
 
   CachedPluginDescriptors * self =
-    (CachedPluginDescriptors *)
-    yaml_deserialize (
+    (CachedPluginDescriptors *) yaml_deserialize (
       yaml, &cached_plugin_descriptors_schema);
   if (!self)
     {
       g_critical (
         "Failed to deserialize "
-        "CachedPluginDescriptors from %s", path);
+        "CachedPluginDescriptors from %s",
+        path);
       g_free (yaml);
       g_free (path);
       return NULL;
@@ -174,8 +171,7 @@ delete_file (void)
 {
   char * path =
     get_cached_plugin_descriptors_file_path ();
-  GFile * file =
-    g_file_new_for_path (path);
+  GFile * file = g_file_new_for_path (path);
   if (!g_file_delete (file, NULL, NULL))
     {
       g_warning (
@@ -193,7 +189,7 @@ delete_file (void)
 int
 cached_plugin_descriptors_is_blacklisted (
   CachedPluginDescriptors * self,
-  const char *           abs_path)
+  const char *              abs_path)
 {
   for (int i = 0; i < self->num_blacklisted; i++)
     {
@@ -201,8 +197,9 @@ cached_plugin_descriptors_is_blacklisted (
         self->blacklisted[i];
       GFile * file =
         g_file_new_for_path (descr->path);
-      if (string_is_equal (descr->path, abs_path) &&
-          descr->ghash == g_file_hash (file))
+      if (
+        string_is_equal (descr->path, abs_path)
+        && descr->ghash == g_file_hash (file))
         {
           g_object_unref (file);
           return 1;
@@ -298,17 +295,17 @@ cached_plugin_descriptors_get (
           if (descr->ghash == g_file_hash (file))
             {
               num_descriptors++;
-              descriptors =
-                g_realloc (
-                  descriptors,
-                  (size_t) (num_descriptors + 1) *
-                    sizeof (PluginDescriptor *));
+              descriptors = g_realloc (
+                descriptors,
+                (size_t) (num_descriptors + 1)
+                  * sizeof (PluginDescriptor *));
               descriptors[num_descriptors - 1] =
                 descr;
             }
           else
             {
-              g_debug ("hash differs %u != %u",
+              g_debug (
+                "hash differs %u != %u",
                 descr->ghash, g_file_hash (file));
             }
         }
@@ -336,8 +333,8 @@ cached_plugin_descriptors_get (
 void
 cached_plugin_descriptors_blacklist (
   CachedPluginDescriptors * self,
-  const char *           abs_path,
-  int                    _serialize)
+  const char *              abs_path,
+  int                       _serialize)
 {
   g_return_if_fail (abs_path && self);
 

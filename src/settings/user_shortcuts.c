@@ -24,8 +24,7 @@
 #include "zrythm.h"
 
 void
-user_shortcut_free (
-  UserShortcut * shortcut)
+user_shortcut_free (UserShortcut * shortcut)
 {
   g_free_and_null (shortcut->action);
   g_free_and_null (shortcut->primary);
@@ -41,14 +40,12 @@ get_user_shortcuts_file_path (void)
     zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
   g_return_val_if_fail (zrythm_dir, NULL);
 
-  return
-    g_build_filename (
-      zrythm_dir, "shortcuts.yaml", NULL);
+  return g_build_filename (
+    zrythm_dir, "shortcuts.yaml", NULL);
 }
 
 static bool
-is_yaml_our_version (
-  const char * yaml)
+is_yaml_our_version (const char * yaml)
 {
   bool same_version = false;
   char version_str[120];
@@ -75,9 +72,8 @@ is_yaml_our_version (
 UserShortcuts *
 user_shortcuts_new (void)
 {
-  GError *err = NULL;
-  char * path =
-    get_user_shortcuts_file_path ();
+  GError * err = NULL;
+  char *   path = get_user_shortcuts_file_path ();
   if (!file_exists (path))
     {
       g_message (
@@ -97,7 +93,8 @@ return_new_instance:
     {
       g_warning (
         "Failed to create UserShortcuts "
-        "from %s", path);
+        "from %s",
+        path);
       g_free (err);
       g_free (yaml);
       goto return_new_instance;
@@ -114,15 +111,14 @@ return_new_instance:
       goto return_new_instance;
     }
 
-  UserShortcuts * self =
-    (UserShortcuts *)
-    yaml_deserialize (
-      yaml, &user_shortcuts_schema);
+  UserShortcuts * self = (UserShortcuts *)
+    yaml_deserialize (yaml, &user_shortcuts_schema);
   if (!self)
     {
       g_warning (
         "Failed to deserialize "
-        "UserShortcuts from %s", path);
+        "UserShortcuts from %s",
+        path);
       g_free (yaml);
       goto return_new_instance;
     }
@@ -164,14 +160,12 @@ user_shortcuts_get (
 }
 
 void
-user_shortcuts_free (
-  UserShortcuts * self)
+user_shortcuts_free (UserShortcuts * self)
 {
   for (int i = 0; i < self->num_shortcuts; i++)
     {
       object_free_w_func_and_null (
-        user_shortcut_free,
-        self->shortcuts[i]);
+        user_shortcut_free, self->shortcuts[i]);
     }
 
   object_zero_and_free (self);

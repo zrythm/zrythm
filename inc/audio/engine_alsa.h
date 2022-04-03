@@ -19,14 +19,14 @@
 
 #if 0
 
-#ifdef HAVE_ALSA
+#  ifdef HAVE_ALSA
 
-#ifndef __AUDIO_ENGINE_ALSA_H__
-#define __AUDIO_ENGINE_ALSA_H__
+#    ifndef __AUDIO_ENGINE_ALSA_H__
+#      define __AUDIO_ENGINE_ALSA_H__
 
-#include <stdlib.h>
+#      include <stdlib.h>
 
-#include "utils/types.h"
+#      include "utils/types.h"
 
 typedef struct AudioEngine AudioEngine;
 
@@ -83,6 +83,6 @@ engine_alsa_setup (
 void
 engine_alsa_tear_down (void);
 
-#endif // header guard
-#endif // HAVE_ALSA
+#    endif // header guard
+#  endif   // HAVE_ALSA
 #endif

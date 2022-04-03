@@ -18,12 +18,13 @@
  */
 
 #include <stdlib.h>
-#include <string.h>
 
 #include "gui/backend/event.h"
 #include "utils/objects.h"
 
 #include <gtk/gtk.h>
+
+#include <string.h>
 
 ZEvent *
 event_new (void)

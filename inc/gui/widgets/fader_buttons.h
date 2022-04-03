@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   FaderButtonsWidget,
   fader_buttons_widget,
-  Z, FADER_BUTTONS_WIDGET,
+  Z,
+  FADER_BUTTONS_WIDGET,
   GtkBox)
 
 typedef struct Track Track;
@@ -46,7 +47,7 @@ typedef struct Track Track;
 
 typedef struct _FaderButtonsWidget
 {
-  GtkBox   parent_instance;
+  GtkBox parent_instance;
 
   GtkToggleButton * mono_compat;
   GtkToggleButton * solo;
@@ -58,14 +59,14 @@ typedef struct _FaderButtonsWidget
   /**
    * Signal handler IDs.
    */
-  gulong         mono_compat_toggled_handler_id;
-  gulong         record_toggled_handler_id;
-  gulong         solo_toggled_handler_id;
-  gulong         mute_toggled_handler_id;
-  gulong         listen_toggled_handler_id;
+  gulong mono_compat_toggled_handler_id;
+  gulong record_toggled_handler_id;
+  gulong solo_toggled_handler_id;
+  gulong mute_toggled_handler_id;
+  gulong listen_toggled_handler_id;
 
   /** Owner track. */
-  Track *        track;
+  Track * track;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;

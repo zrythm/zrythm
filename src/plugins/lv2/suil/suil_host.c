@@ -19,46 +19,51 @@
 
 #ifndef HAVE_SUIL
 
-#include <suil/suil.h>
+#  include <suil/suil.h>
 
-#ifdef HAVE_X11
-#include <X11/Xlib.h>
-#endif
+#  ifdef HAVE_X11
+#    include <X11/Xlib.h>
+#  endif
 
-SuilHost*
-suil_host_new(SuilPortWriteFunc       write_func,
-              SuilPortIndexFunc       index_func,
-              SuilPortSubscribeFunc   subscribe_func,
-              SuilPortUnsubscribeFunc unsubscribe_func)
+SuilHost *
+suil_host_new (
+  SuilPortWriteFunc       write_func,
+  SuilPortIndexFunc       index_func,
+  SuilPortSubscribeFunc   subscribe_func,
+  SuilPortUnsubscribeFunc unsubscribe_func)
 {
-	SuilHost* host = (SuilHost*)calloc(1, sizeof(struct SuilHostImpl));
-	host->write_func       = write_func;
-	host->index_func       = index_func;
-	host->subscribe_func   = subscribe_func;
-	host->unsubscribe_func = unsubscribe_func;
-	return host;
+  SuilHost * host = (SuilHost *) calloc (
+    1, sizeof (struct SuilHostImpl));
+  host->write_func = write_func;
+  host->index_func = index_func;
+  host->subscribe_func = subscribe_func;
+  host->unsubscribe_func = unsubscribe_func;
+  return host;
 }
 
 void
-suil_host_set_touch_func(SuilHost*     host,
-                         SuilTouchFunc touch_func)
+suil_host_set_touch_func (
+  SuilHost *    host,
+  SuilTouchFunc touch_func)
 {
-	host->touch_func = touch_func;
+  host->touch_func = touch_func;
 }
 
 void
-suil_host_free(SuilHost* host)
+suil_host_free (SuilHost * host)
 {
-	if (host) {
-		if (host->gtk_lib) {
-			dlclose(host->gtk_lib);
-		}
-		free(host);
-	}
+  if (host)
+    {
+      if (host->gtk_lib)
+        {
+          dlclose (host->gtk_lib);
+        }
+      free (host);
+    }
 }
 
 void
-suil_init(int* argc, char*** argv, SuilArg key, ...)
+suil_init (int * argc, char *** argv, SuilArg key, ...)
 {
 }
 

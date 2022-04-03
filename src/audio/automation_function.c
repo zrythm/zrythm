@@ -17,8 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/engine.h"
 #include "audio/automation_function.h"
+#include "audio/engine.h"
 #include "gui/backend/arranger_selections.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -28,9 +28,7 @@
 #include "zrythm_app.h"
 
 static void
-flip (
-  AutomationSelections * sel,
-  bool                   vertical)
+flip (AutomationSelections * sel, bool vertical)
 {
   for (int i = 0; i < sel->num_automation_points; i++)
     {
@@ -43,7 +41,7 @@ flip (
             ap, 1.f - ap->normalized_val,
             F_NORMALIZED, F_NO_PUBLISH_EVENTS);
           ap->curve_opts.curviness =
-            - ap->curve_opts.curviness;
+            -ap->curve_opts.curviness;
         }
       else
         {

@@ -17,10 +17,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <inttypes.h>
-#include <stdlib.h>
-
 #include "zrythm-config.h"
+
+#include <stdlib.h>
 
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
@@ -31,8 +30,8 @@
 #include "audio/region.h"
 #include "audio/track.h"
 #include "audio/velocity.h"
-#include "project.h"
 #include "gui/widgets/track.h"
+#include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/math.h"
@@ -40,12 +39,13 @@
 
 #include <gtk/gtk.h>
 
+#include <inttypes.h>
+
 /**
  * Initializes an midi track.
  */
 void
-midi_track_init (
-  Track * self)
+midi_track_init (Track * self)
 {
   self->type = TRACK_TYPE_MIDI;
   gdk_rgba_parse (&self->color, "#F79616");

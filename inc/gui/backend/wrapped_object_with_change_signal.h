@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   WrappedObjectWithChangeSignal,
   wrapped_object_with_change_signal,
-  Z, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL,
+  Z,
+  WRAPPED_OBJECT_WITH_CHANGE_SIGNAL,
   GObject)
 
 /**
@@ -58,7 +59,7 @@ typedef enum WrappedObjectType
 
 typedef struct _WrappedObjectWithChangeSignal
 {
-  GObject           parent_instance;
+  GObject parent_instance;
 
   WrappedObjectType type;
   void *            obj;

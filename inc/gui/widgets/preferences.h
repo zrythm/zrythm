@@ -31,8 +31,11 @@
 #define PREFERENCES_WIDGET_TYPE \
   (preferences_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  PreferencesWidget, preferences_widget,
-  Z, PREFERENCES_WIDGET, AdwPreferencesWindow)
+  PreferencesWidget,
+  preferences_widget,
+  Z,
+  PREFERENCES_WIDGET,
+  AdwPreferencesWindow)
 
 typedef struct Preferences Preferences;
 typedef struct _MidiControllerMbWidget
@@ -49,11 +52,11 @@ typedef struct _MidiControllerMbWidget
 typedef struct SubgroupInfo
 {
   /** Localized name. */
-  const char *      name;
+  const char * name;
 
-  const char *      group_name;
+  const char * group_name;
 
-  const char *      group_icon;
+  const char * group_icon;
 
   int               group_idx;
   int               subgroup_idx;
@@ -67,9 +70,9 @@ typedef struct SubgroupInfo
 typedef struct _PreferencesWidget
 {
   AdwPreferencesWindow parent_instance;
-  GtkNotebook *  group_notebook;
+  GtkNotebook *        group_notebook;
 
-  SubgroupInfo   subgroup_infos[12][40];
+  SubgroupInfo subgroup_infos[12][40];
 } PreferencesWidget;
 
 PreferencesWidget *

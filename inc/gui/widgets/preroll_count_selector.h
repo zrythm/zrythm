@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   PrerollCountSelectorWidget,
   preroll_count_selector_widget,
-  Z, PREROLL_COUNT_SELECTOR_WIDGET,
+  Z,
+  PREROLL_COUNT_SELECTOR_WIDGET,
   GtkBox)
 
 /**

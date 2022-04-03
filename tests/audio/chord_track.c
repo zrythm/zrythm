@@ -44,7 +44,7 @@ test_get_chord_at_pos (void)
   position_set_to_bar (&p2, 24);
   position_set_to_bar (&loop, 5);
 
-  ZRegion * r = P_CHORD_TRACK->chord_regions[0];
+  ZRegion *     r = P_CHORD_TRACK->chord_regions[0];
   ChordObject * co1 = r->chord_objects[0];
   ChordObject * co2 = r->chord_objects[1];
   co1->chord_index = 0;
@@ -58,86 +58,74 @@ test_get_chord_at_pos (void)
 
   region_print (r);
 
-  Position pos;
+  Position      pos;
   ChordObject * co;
 
   position_init (&pos);
-  co =
-    chord_track_get_chord_at_pos (
-      P_CHORD_TRACK, &pos);
+  co = chord_track_get_chord_at_pos (
+    P_CHORD_TRACK, &pos);
   g_assert_null (co);
 
   position_set_to_bar (&pos, 2);
-  co =
-    chord_track_get_chord_at_pos (
-      P_CHORD_TRACK, &pos);
+  co = chord_track_get_chord_at_pos (
+    P_CHORD_TRACK, &pos);
   g_assert_null (co);
 
   position_set_to_bar (&pos, 3);
-  co =
-    chord_track_get_chord_at_pos (
-      P_CHORD_TRACK, &pos);
+  co = chord_track_get_chord_at_pos (
+    P_CHORD_TRACK, &pos);
   g_assert_null (co);
 
   position_set_to_bar (&pos, 12);
-  co =
-    chord_track_get_chord_at_pos (
-      P_CHORD_TRACK, &pos);
+  co = chord_track_get_chord_at_pos (
+    P_CHORD_TRACK, &pos);
   g_assert_null (co);
 
   position_set_to_bar (&pos, 13);
-  co =
-    chord_track_get_chord_at_pos (
-      P_CHORD_TRACK, &pos);
+  co = chord_track_get_chord_at_pos (
+    P_CHORD_TRACK, &pos);
   g_assert_true (co == co1);
 
   position_set_to_bar (&pos, 14);
-  co =
-    chord_track_get_chord_at_pos (
-      P_CHORD_TRACK, &pos);
+  co = chord_track_get_chord_at_pos (
+    P_CHORD_TRACK, &pos);
   g_assert_true (co == co1);
 
   position_set_to_bar (&pos, 15);
-  co =
-    chord_track_get_chord_at_pos (
-      P_CHORD_TRACK, &pos);
+  co = chord_track_get_chord_at_pos (
+    P_CHORD_TRACK, &pos);
   g_assert_true (co == co2);
 
   position_set_to_bar (&pos, 16);
-  co =
-    chord_track_get_chord_at_pos (
-      P_CHORD_TRACK, &pos);
+  co = chord_track_get_chord_at_pos (
+    P_CHORD_TRACK, &pos);
   g_assert_null (co);
 
   position_set_to_bar (&pos, 17);
-  co =
-    chord_track_get_chord_at_pos (
-      P_CHORD_TRACK, &pos);
+  co = chord_track_get_chord_at_pos (
+    P_CHORD_TRACK, &pos);
   g_assert_true (co == co1);
 
   position_set_to_bar (&pos, 18);
-  co =
-    chord_track_get_chord_at_pos (
-      P_CHORD_TRACK, &pos);
+  co = chord_track_get_chord_at_pos (
+    P_CHORD_TRACK, &pos);
   g_assert_true (co == co1);
 
   position_set_to_bar (&pos, 19);
-  co =
-    chord_track_get_chord_at_pos (
-      P_CHORD_TRACK, &pos);
+  co = chord_track_get_chord_at_pos (
+    P_CHORD_TRACK, &pos);
   g_assert_true (co == co2);
 
   position_set_to_bar (&pos, 100);
-  co =
-    chord_track_get_chord_at_pos (
-      P_CHORD_TRACK, &pos);
+  co = chord_track_get_chord_at_pos (
+    P_CHORD_TRACK, &pos);
   g_assert_null (co);
 
   test_helper_zrythm_cleanup ();
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

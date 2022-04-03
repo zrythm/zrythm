@@ -44,9 +44,9 @@ audio_arranger_widget_snap_range_r (
       ui_px_to_pos_editor (
         self->start_x, &AUDIO_SELECTIONS->sel_start,
         true);
-      if (SNAP_GRID_ANY_SNAP (
-            self->snap_grid) &&
-          !self->shift_held)
+      if (
+        SNAP_GRID_ANY_SNAP (self->snap_grid)
+        && !self->shift_held)
         {
           position_snap_simple (
             &AUDIO_SELECTIONS->sel_start,
@@ -60,8 +60,9 @@ audio_arranger_widget_snap_range_r (
     }
 
   /* set range */
-  if (SNAP_GRID_ANY_SNAP (self->snap_grid) &&
-      !self->shift_held)
+  if (
+    SNAP_GRID_ANY_SNAP (self->snap_grid)
+    && !self->shift_held)
     {
       position_snap_simple (pos, SNAP_GRID_EDITOR);
     }
@@ -96,15 +97,15 @@ audio_arranger_widget_is_cursor_in_fade (
 
   const int start_px =
     ui_pos_to_px_editor (&r_obj->pos, F_PADDING);
-  const int end_px =
-    ui_pos_to_px_editor (&r_obj->end_pos, F_PADDING);
+  const int end_px = ui_pos_to_px_editor (
+    &r_obj->end_pos, F_PADDING);
   const int fade_in_px =
-    start_px +
-    ui_pos_to_px_editor (
+    start_px
+    + ui_pos_to_px_editor (
       &r_obj->fade_in_pos, F_PADDING);
   const int fade_out_px =
-    start_px +
-    ui_pos_to_px_editor (
+    start_px
+    + ui_pos_to_px_editor (
       &r_obj->fade_out_pos, F_PADDING);
 
   const int resize_padding = 4;
@@ -121,18 +122,18 @@ audio_arranger_widget_is_cursor_in_fade (
   int fade_out_px_w_padding =
     fade_out_px - resize_padding;
 
-  if (fade_in
-      && x >= start_px
-      && x <= fade_in_px_w_padding)
+  if (
+    fade_in && x >= start_px
+    && x <= fade_in_px_w_padding)
     {
       if (resize)
         return x >= fade_in_px - resize_padding;
       else
         return true;
     }
-  if (!fade_in
-      && x >= fade_out_px_w_padding
-      && x < end_px)
+  if (
+    !fade_in && x >= fade_out_px_w_padding
+    && x < end_px)
     {
       if (resize)
         return x <= fade_out_px + resize_padding;
@@ -149,13 +150,11 @@ get_region_gain_y (
   ArrangerWidget * self,
   ZRegion *        region)
 {
-  int height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
+  int height = gtk_widget_get_allocated_height (
+    GTK_WIDGET (self));
   float gain_fader_val =
     math_get_fader_val_from_amp (region->gain);
-  return
-    height * (1.0 - gain_fader_val);
+  return height * (1.0 - gain_fader_val);
 }
 
 /**
@@ -174,20 +173,18 @@ audio_arranger_widget_is_cursor_gain (
 
   const int start_px =
     ui_pos_to_px_editor (&r_obj->pos, F_PADDING);
-  const int end_px =
-    ui_pos_to_px_editor (&r_obj->end_pos, F_PADDING);
+  const int end_px = ui_pos_to_px_editor (
+    &r_obj->end_pos, F_PADDING);
 
-  double gain_y =
-    get_region_gain_y (self, r);
+  double gain_y = get_region_gain_y (self, r);
 
   const int padding = 4;
 
   /*g_message ("y %f gain y %f", y, gain_y);*/
 
-  return
-    x >= start_px && x < end_px
-    && y >= gain_y - padding
-    && y <= gain_y + padding;
+  return x >= start_px && x < end_px
+         && y >= gain_y - padding
+         && y <= gain_y + padding;
 }
 
 UiOverlayAction
@@ -252,12 +249,13 @@ audio_arranger_widget_fade_up (
   g_return_if_fail (IS_REGION_AND_NONNULL (r));
 
   CurveOptions * opts =
-    fade_in ?
-      &r_obj->fade_in_opts : &r_obj->fade_out_opts;
+    fade_in
+      ? &r_obj->fade_in_opts
+      : &r_obj->fade_out_opts;
   double delta =
     (self->last_offset_y - offset_y) * 0.008;
   opts->curviness =
-    CLAMP (opts->curviness + delta, - 1.0, 1.0);
+    CLAMP (opts->curviness + delta, -1.0, 1.0);
 
   if (fade_in)
     {
@@ -279,9 +277,8 @@ audio_arranger_widget_update_gain (
   ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (IS_REGION_AND_NONNULL (r));
 
-  int height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
+  int height = gtk_widget_get_allocated_height (
+    GTK_WIDGET (self));
 
   /* get current Y value */
   double gain_y = self->start_y + offset_y;
@@ -292,8 +289,8 @@ audio_arranger_widget_update_gain (
     CLAMP (1.0 - gain_y / height, 0.02, 1.0);
 
   /* set */
-  r->gain =
-    math_get_amp_val_from_fader ((float) gain_fader);
+  r->gain = math_get_amp_val_from_fader (
+    (float) gain_fader);
 
   EVENTS_PUSH (ET_AUDIO_REGION_GAIN_CHANGED, r);
 }
@@ -339,30 +336,30 @@ audio_arranger_widget_snap_fade (
   position_set_to_pos (
     &new_pos,
     fade_in
-    ? &r_obj->fade_in_pos
-    : &r_obj->fade_out_pos);
+      ? &r_obj->fade_in_pos
+      : &r_obj->fade_out_pos);
   position_add_ticks (&new_pos, delta);
 
   /* negative positions not allowed */
   if (!position_is_positive (&new_pos))
     return -1;
 
-  if (SNAP_GRID_ANY_SNAP (self->snap_grid)
-      && !self->shift_held)
+  if (
+    SNAP_GRID_ANY_SNAP (self->snap_grid)
+    && !self->shift_held)
     {
       Track * track =
         arranger_object_get_track (r_obj);
       position_snap (
-        &self->fade_pos_at_start,
-        &new_pos, track,
+        &self->fade_pos_at_start, &new_pos, track,
         NULL, self->snap_grid);
     }
 
   if (!arranger_object_is_position_valid (
         r_obj, &new_pos,
         fade_in
-        ? ARRANGER_OBJECT_POSITION_TYPE_FADE_IN
-        : ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT))
+          ? ARRANGER_OBJECT_POSITION_TYPE_FADE_IN
+          : ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT))
     {
       return -1;
     }
@@ -370,14 +367,12 @@ audio_arranger_widget_snap_fade (
   if (!dry_run)
     {
       double diff =
-        position_to_ticks (&new_pos) -
-        position_to_ticks (
-          fade_in
-          ? &r_obj->fade_in_pos
-          : &r_obj->fade_out_pos);
+        position_to_ticks (&new_pos)
+        - position_to_ticks (
+          fade_in ? &r_obj->fade_in_pos
+                  : &r_obj->fade_out_pos);
       arranger_object_resize (
-        r_obj, fade_in,
-        ARRANGER_OBJECT_RESIZE_FADE,
+        r_obj, fade_in, ARRANGER_OBJECT_RESIZE_FADE,
         diff, true);
     }
 

@@ -20,13 +20,13 @@
 #include "actions/undo_manager.h"
 #include "actions/undoable_action.h"
 #include "gui/accel.h"
-#include "gui/widgets/timeline_toolbar.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/quantize_box.h"
 #include "gui/widgets/playhead_scroll_buttons.h"
+#include "gui/widgets/quantize_box.h"
 #include "gui/widgets/range_action_buttons.h"
 #include "gui/widgets/snap_box.h"
 #include "gui/widgets/snap_grid.h"
+#include "gui/widgets/timeline_toolbar.h"
 #include "gui/widgets/zoom_buttons.h"
 #include "project.h"
 #include "utils/gtk.h"
@@ -37,16 +37,16 @@
 
 G_DEFINE_TYPE (
   TimelineToolbarWidget,
-  timeline_toolbar_widget, GTK_TYPE_BOX)
+  timeline_toolbar_widget,
+  GTK_TYPE_BOX)
 
 void
 timeline_toolbar_widget_refresh (
   TimelineToolbarWidget * self)
 {
   /* enable/disable merge button */
-  bool sensitive =
-    arranger_selections_can_be_merged (
-      (ArrangerSelections *) TL_SELECTIONS);
+  bool sensitive = arranger_selections_can_be_merged (
+    (ArrangerSelections *) TL_SELECTIONS);
   g_debug (
     "settings merge button sensitivity %d",
     sensitive);
@@ -61,8 +61,7 @@ timeline_toolbar_widget_setup (
   snap_box_widget_setup (
     self->snap_box, SNAP_GRID_TIMELINE);
   quantize_box_widget_setup (
-    self->quantize_box,
-    QUANTIZE_OPTIONS_TIMELINE);
+    self->quantize_box, QUANTIZE_OPTIONS_TIMELINE);
 }
 
 static void
@@ -98,8 +97,7 @@ static void
 timeline_toolbar_widget_class_init (
   TimelineToolbarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "timeline_toolbar.ui");
 

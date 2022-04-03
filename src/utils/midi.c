@@ -31,19 +31,20 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <inttypes.h>
 #include <math.h>
-#include <stdlib.h>
 #include <signal.h>
+#include <stdlib.h>
 
 #include "audio/channel.h"
 #include "audio/engine.h"
-#include "audio/router.h"
-#include "utils/midi.h"
 #include "audio/midi_event.h"
+#include "audio/router.h"
 #include "audio/transport.h"
 #include "project.h"
+#include "utils/midi.h"
 #include "utils/objects.h"
+
+#include <inttypes.h>
 
 /* https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2 */
 static const char * midi_cc_names[128] = {
@@ -178,25 +179,16 @@ static const char * midi_cc_names[128] = {
 };
 
 static const char * note_labels[12] = {
-  "C",
-  "D\u266D",
-  "D",
-  "E\u266D",
-  "E",
-  "F",
-  "F\u266F",
-  "G",
-  "A\u266D",
-  "A",
-  "B\u266D",
-  "B" };
+  "C",       "D\u266D", "D",       "E\u266D",
+  "E",       "F",       "F\u266F", "G",
+  "A\u266D", "A",       "B\u266D", "B"
+};
 
 /**
  * Return the name of the given cc (0-127).
  */
 const char *
-midi_get_controller_name (
-  uint8_t cc)
+midi_get_controller_name (uint8_t cc)
 {
   return midi_cc_names[cc];
 }
@@ -220,23 +212,24 @@ midi_ctrl_change_get_ch_and_description (
    * get_controller_name() ? */
 
   /* assert the given event is a ctrl change event */
-  if (ctrl_change[0] < 0xB0 ||
-      ctrl_change[0] > 0xBF)
+  if (ctrl_change[0] < 0xB0 || ctrl_change[0] > 0xBF)
     {
       return -1;
     }
 
   if (buf)
     {
-      if (ctrl_change[1] >= 0x08 &&
-          ctrl_change[1] <= 0x1F)
+      if (
+        ctrl_change[1] >= 0x08
+        && ctrl_change[1] <= 0x1F)
         {
           sprintf (
             buf, "Continuous controller #%u",
             ctrl_change[1]);
         }
-      else if (ctrl_change[1] >= 0x28 &&
-               ctrl_change[1] <= 0x3F)
+      else if (
+        ctrl_change[1] >= 0x28
+        && ctrl_change[1] <= 0x3F)
         {
           sprintf (
             buf, "Continuous controller #%u",
@@ -315,38 +308,39 @@ midi_get_bytes_from_combined (
  * split separate files for MidiEvents and MidiEvent.
  */
 int
-midi_get_msg_length (
-  const uint8_t status_byte)
+midi_get_msg_length (const uint8_t status_byte)
 {
   // define these with meaningful names
-  switch (status_byte & 0xf0) {
-  case 0x80:
-  case 0x90:
-  case 0xa0:
-  case 0xb0:
-  case 0xe0:
-    return 3;
-  case 0xc0:
-  case 0xd0:
-    return 2;
-  case 0xf0:
-    switch (status_byte) {
-    case 0xf0:
-      return 0;
-    case 0xf1:
-    case 0xf3:
-      return 2;
-    case 0xf2:
+  switch (status_byte & 0xf0)
+    {
+    case 0x80:
+    case 0x90:
+    case 0xa0:
+    case 0xb0:
+    case 0xe0:
       return 3;
-    case 0xf4:
-    case 0xf5:
-    case 0xf7:
-    case 0xfd:
-      break;
-    default:
-      return 1;
+    case 0xc0:
+    case 0xd0:
+      return 2;
+    case 0xf0:
+      switch (status_byte)
+        {
+        case 0xf0:
+          return 0;
+        case 0xf1:
+        case 0xf3:
+          return 2;
+        case 0xf2:
+          return 3;
+        case 0xf4:
+        case 0xf5:
+        case 0xf7:
+        case 0xfd:
+          break;
+        default:
+          return 1;
+        }
     }
-  }
   g_return_val_if_reached (-1);
 }
 
@@ -355,8 +349,7 @@ midi_get_msg_length (
  * between 0 and 127.
  */
 const char *
-midi_get_note_name (
-  const midi_byte_t note)
+midi_get_note_name (const midi_byte_t note)
 {
   return note_labels[note % 12];
 }
@@ -367,14 +360,13 @@ midi_get_note_name_with_octave (
   char *            buf)
 {
   midi_byte_t note =
-      midi_get_note_number (short_msg);
+    midi_get_note_number (short_msg);
   midi_byte_t note_idx =
     midi_get_chromatic_scale_index (note);
-  midi_byte_t octave =
-    midi_get_octave_number (note);
+  midi_byte_t octave = midi_get_octave_number (note);
   sprintf (
-    buf, "%s%u",
-    midi_get_note_name (note_idx), octave);
+    buf, "%s%u", midi_get_note_name (note_idx),
+    octave);
 }
 
 void
@@ -384,54 +376,54 @@ midi_get_meta_event_type_name (
 {
   switch (type)
     {
-      case 0x00:
-        strcpy (buf, "Sequence number");
-        break;
-      case 0x01:
-        strcpy (buf, "Text");
-        break;
-      case 0x02:
-        strcpy (buf, "Copyright notice");
-        break;
-      case 0x03:
-        strcpy (buf, "Track name");
-        break;
-      case 0x04:
-        strcpy (buf, "Instrument name");
-        break;
-      case 0x05:
-        strcpy (buf, "Lyrics");
-        break;
-      case 0x06:
-        strcpy (buf, "Marker");
-        break;
-      case 0x07:
-        strcpy (buf, "Cue point");
-        break;
-      case 0x20:
-        strcpy (buf, "Channel prefix");
-        break;
-      case 0x2F:
-        strcpy (buf, "End of track");
-        break;
-      case 0x51:
-        strcpy (buf, "Set tempo");
-        break;
-      case 0x54:
-        strcpy (buf, "SMPTE offset");
-        break;
-      case 0x58:
-        strcpy (buf, "Time signature");
-        break;
-      case 0x59:
-        strcpy (buf, "Key signature");
-        break;
-      case 0x7F:
-        strcpy (buf, "Sequencer specific");
-        break;
-      default:
-        sprintf (buf, "Unknown type %hhx", type);
-        break;
+    case 0x00:
+      strcpy (buf, "Sequence number");
+      break;
+    case 0x01:
+      strcpy (buf, "Text");
+      break;
+    case 0x02:
+      strcpy (buf, "Copyright notice");
+      break;
+    case 0x03:
+      strcpy (buf, "Track name");
+      break;
+    case 0x04:
+      strcpy (buf, "Instrument name");
+      break;
+    case 0x05:
+      strcpy (buf, "Lyrics");
+      break;
+    case 0x06:
+      strcpy (buf, "Marker");
+      break;
+    case 0x07:
+      strcpy (buf, "Cue point");
+      break;
+    case 0x20:
+      strcpy (buf, "Channel prefix");
+      break;
+    case 0x2F:
+      strcpy (buf, "End of track");
+      break;
+    case 0x51:
+      strcpy (buf, "Set tempo");
+      break;
+    case 0x54:
+      strcpy (buf, "SMPTE offset");
+      break;
+    case 0x58:
+      strcpy (buf, "Time signature");
+      break;
+    case 0x59:
+      strcpy (buf, "Key signature");
+      break;
+    case 0x7F:
+      strcpy (buf, "Sequencer specific");
+      break;
+    default:
+      sprintf (buf, "Unknown type %hhx", type);
+      break;
     }
 }
 
@@ -466,9 +458,8 @@ midi_print_short_msg_to_str (
       midi_get_note_name_with_octave (
         short_msg, note);
       sprintf (
-        buf,
-        "Note-On %s: Velocity: %u",
-        note, midi_get_velocity (short_msg));
+        buf, "Note-On %s: Velocity: %u", note,
+        midi_get_velocity (short_msg));
     }
   else if (midi_is_note_off (short_msg))
     {
@@ -476,9 +467,8 @@ midi_print_short_msg_to_str (
       midi_get_note_name_with_octave (
         short_msg, note);
       sprintf (
-        buf,
-        "Note-Off %s: Velocity: %u",
-        note, midi_get_velocity (short_msg));
+        buf, "Note-Off %s: Velocity: %u", note,
+        midi_get_velocity (short_msg));
     }
   else if (midi_is_aftertouch (short_msg))
     {
@@ -486,32 +476,27 @@ midi_print_short_msg_to_str (
       midi_get_note_name_with_octave (
         short_msg, note);
       sprintf (
-        buf,
-        "Aftertouch %s: %u",
-        note, midi_get_aftertouch_value (short_msg));
+        buf, "Aftertouch %s: %u", note,
+        midi_get_aftertouch_value (short_msg));
     }
   else if (midi_is_pitch_wheel (short_msg))
     {
       sprintf (
-        buf,
-        "Pitch Wheel: %u (Ch%u)",
+        buf, "Pitch Wheel: %u (Ch%u)",
         midi_get_pitchwheel_value (short_msg),
         channel);
     }
   else if (midi_is_channel_pressure (short_msg))
     {
       sprintf (
-        buf,
-        "Channel Pressure: %u (Ch%u)",
+        buf, "Channel Pressure: %u (Ch%u)",
         midi_get_channel_pressure_value (short_msg),
         channel);
     }
   else if (midi_is_controller (short_msg))
     {
       sprintf (
-        buf,
-        "Controller (Ch%u): %s=%u",
-        channel,
+        buf, "Controller (Ch%u): %s=%u", channel,
         midi_get_controller_name (
           midi_get_controller_number (short_msg)),
         midi_get_controller_value (short_msg));
@@ -519,22 +504,19 @@ midi_print_short_msg_to_str (
   else if (midi_is_program_change (short_msg))
     {
       sprintf (
-        buf,
-        "Program Change: %u (Ch%u)",
+        buf, "Program Change: %u (Ch%u)",
         midi_get_program_change_number (short_msg),
         channel);
     }
   else if (midi_is_all_notes_off (short_msg))
     {
       sprintf (
-        buf,
-        "All Notes Off: (Ch%u)", channel);
+        buf, "All Notes Off: (Ch%u)", channel);
     }
   else if (midi_is_all_sound_off (short_msg))
     {
       sprintf (
-        buf,
-        "All Sound Off: (Ch%u)", channel);
+        buf, "All Sound Off: (Ch%u)", channel);
     }
   else if (midi_is_quarter_frame (short_msg))
     {
@@ -559,8 +541,7 @@ midi_print_short_msg_to_str (
   else if (midi_is_short_msg_meta_event (short_msg))
     {
       sprintf (
-        buf,
-        "Meta-Event Type: %u",
+        buf, "Meta-Event Type: %u",
         midi_get_meta_event_type (short_msg, 3));
     }
   else if (midi_is_song_position_pointer (short_msg))
@@ -574,8 +555,7 @@ midi_print_short_msg_to_str (
     {
       char hex[3 * 4];
       midi_get_hex_str (short_msg, 3, hex);
-      sprintf (
-        buf, "Unknown MIDI Message: %s", hex);
+      sprintf (buf, "Unknown MIDI Message: %s", hex);
     }
 }
 
@@ -598,9 +578,8 @@ midi_print_to_str (
   else if (midi_is_meta_event (msg, msg_sz))
     {
       const midi_byte_t * data = NULL;
-      size_t data_sz =
-        midi_get_meta_event_data (
-          &data, msg, msg_sz);
+      size_t data_sz = midi_get_meta_event_data (
+        &data, msg, msg_sz);
       if (data_sz == 0)
         {
           strcpy (buf, "Invalid meta event");
@@ -608,14 +587,12 @@ midi_print_to_str (
       else
         {
           midi_byte_t meta_event_type =
-            midi_get_meta_event_type (
-              msg, msg_sz);
+            midi_get_meta_event_type (msg, msg_sz);
           char meta_event_name[600];
           midi_get_meta_event_type_name (
             meta_event_name, meta_event_type);
           char hex[data_sz * 4];
-          midi_get_hex_str (
-            data, data_sz, hex);
+          midi_get_hex_str (data, data_sz, hex);
           sprintf (
             buf,
             "Meta-event: %s\n"
@@ -629,8 +606,7 @@ midi_print_to_str (
       char hex[msg_sz * 4];
       midi_get_hex_str (msg, msg_sz, hex);
       sprintf (
-        buf,
-        "Unknown MIDI event of size %zu: %s",
+        buf, "Unknown MIDI event of size %zu: %s",
         msg_sz, hex);
     }
 }

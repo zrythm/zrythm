@@ -41,20 +41,18 @@ typedef enum ChannelSendActionType
 } ChannelSendActionType;
 
 static const cyaml_strval_t
-  channel_send_action_type_strings[] =
-{
-  { "Connect stereo",
-    CHANNEL_SEND_ACTION_CONNECT_STEREO },
-  { "Connect MIDI",
-    CHANNEL_SEND_ACTION_CONNECT_MIDI },
-  { "Connect sidechain",
-    CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN },
-  { "Change amount",
-    CHANNEL_SEND_ACTION_CHANGE_AMOUNT },
-  { "Change ports",
-    CHANNEL_SEND_ACTION_CHANGE_PORTS },
-  { "Disconnect",
-    CHANNEL_SEND_ACTION_DISCONNECT },
+  channel_send_action_type_strings[] = {
+    {"Connect stereo",
+     CHANNEL_SEND_ACTION_CONNECT_STEREO                  },
+    { "Connect MIDI",
+     CHANNEL_SEND_ACTION_CONNECT_MIDI                    },
+    { "Connect sidechain",
+     CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN               },
+    { "Change amount",
+     CHANNEL_SEND_ACTION_CHANGE_AMOUNT                   },
+    { "Change ports",
+     CHANNEL_SEND_ACTION_CHANGE_PORTS                    },
+    { "Disconnect",        CHANNEL_SEND_ACTION_DISCONNECT},
 };
 
 /**
@@ -62,11 +60,11 @@ static const cyaml_strval_t
  */
 typedef struct ChannelSendAction
 {
-  UndoableAction  parent_instance;
+  UndoableAction parent_instance;
 
-  ChannelSend *   send_before;
+  ChannelSend * send_before;
 
-  float            amount;
+  float amount;
 
   /** Target port identifiers. */
   PortIdentifier * l_id;
@@ -87,36 +85,38 @@ typedef struct ChannelSendAction
 } ChannelSendAction;
 
 static const cyaml_schema_field_t
-  channel_send_action_fields_schema[] =
-{
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ChannelSendAction, parent_instance,
-    undoable_action_fields_schema),
-  YAML_FIELD_ENUM (
-    ChannelSendAction, type,
-    channel_send_action_type_strings),
-  YAML_FIELD_MAPPING_PTR (
-    ChannelSendAction, send_before,
-    channel_send_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    ChannelSendAction,
-    connections_mgr_before,
-    port_connections_manager_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    ChannelSendAction,
-    connections_mgr_after,
-    port_connections_manager_fields_schema),
+  channel_send_action_fields_schema[] = {
+    YAML_FIELD_MAPPING_EMBEDDED (
+      ChannelSendAction,
+      parent_instance,
+      undoable_action_fields_schema),
+    YAML_FIELD_ENUM (
+      ChannelSendAction,
+      type,
+      channel_send_action_type_strings),
+    YAML_FIELD_MAPPING_PTR (
+      ChannelSendAction,
+      send_before,
+      channel_send_fields_schema),
+    YAML_FIELD_MAPPING_PTR_OPTIONAL (
+      ChannelSendAction,
+      connections_mgr_before,
+      port_connections_manager_fields_schema),
+    YAML_FIELD_MAPPING_PTR_OPTIONAL (
+      ChannelSendAction,
+      connections_mgr_after,
+      port_connections_manager_fields_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-  channel_send_action_schema =
-{
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER, ChannelSendAction,
-    channel_send_action_fields_schema),
-};
+  channel_send_action_schema = {
+    CYAML_VALUE_MAPPING (
+      CYAML_FLAG_POINTER,
+      ChannelSendAction,
+      channel_send_action_fields_schema),
+  };
 
 void
 channel_send_action_init_loaded (
@@ -133,40 +133,40 @@ channel_send_action_init_loaded (
 WARN_UNUSED_RESULT
 UndoableAction *
 channel_send_action_new (
-  ChannelSend *         send,
-  ChannelSendActionType type,
-  Port *                port,
-  StereoPorts *         stereo,
-  float                 amount,
+  ChannelSend *                  send,
+  ChannelSendActionType          type,
+  Port *                         port,
+  StereoPorts *                  stereo,
+  float                          amount,
   const PortConnectionsManager * port_connections_mgr,
-  GError **             error);
+  GError **                      error);
 
 #define channel_send_action_new_disconnect( \
-  send,error) \
+  send, error) \
   channel_send_action_new ( \
-    send, CHANNEL_SEND_ACTION_DISCONNECT, NULL, NULL, \
-    0.f, PORT_CONNECTIONS_MGR, error)
+    send, CHANNEL_SEND_ACTION_DISCONNECT, NULL, \
+    NULL, 0.f, PORT_CONNECTIONS_MGR, error)
 
 #define channel_send_action_new_connect_midi( \
-  send,midi,error) \
+  send, midi, error) \
   channel_send_action_new ( \
     send, CHANNEL_SEND_ACTION_CONNECT_MIDI, midi, \
     NULL, 0.f, PORT_CONNECTIONS_MGR, error)
 
 #define channel_send_action_new_connect_audio( \
-  send,stereo,error) \
+  send, stereo, error) \
   channel_send_action_new ( \
-    send, CHANNEL_SEND_ACTION_CONNECT_STEREO, NULL, \
-    stereo, 0.f, PORT_CONNECTIONS_MGR, error)
+    send, CHANNEL_SEND_ACTION_CONNECT_STEREO, \
+    NULL, stereo, 0.f, PORT_CONNECTIONS_MGR, error)
 
 #define channel_send_action_new_connect_sidechain( \
-  send,stereo,error) \
+  send, stereo, error) \
   channel_send_action_new ( \
     send, CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN, \
     NULL, stereo, 0.f, PORT_CONNECTIONS_MGR, error)
 
 #define channel_send_action_new_change_amount( \
-  send,amt,error) \
+  send, amt, error) \
   channel_send_action_new ( \
     send, CHANNEL_SEND_ACTION_CHANGE_AMOUNT, NULL, \
     NULL, amt, NULL, error)
@@ -184,40 +184,40 @@ channel_send_action_clone (
  */
 bool
 channel_send_action_perform (
-  ChannelSend *         send,
-  ChannelSendActionType type,
-  Port *                port,
-  StereoPorts *         stereo,
-  float                 amount,
+  ChannelSend *                  send,
+  ChannelSendActionType          type,
+  Port *                         port,
+  StereoPorts *                  stereo,
+  float                          amount,
   const PortConnectionsManager * port_connections_mgr,
-  GError **             error);
+  GError **                      error);
 
 #define channel_send_action_perform_disconnect( \
-  send,error) \
+  send, error) \
   channel_send_action_perform ( \
-    send, CHANNEL_SEND_ACTION_DISCONNECT, NULL, NULL, \
-    0.f, PORT_CONNECTIONS_MGR, error)
+    send, CHANNEL_SEND_ACTION_DISCONNECT, NULL, \
+    NULL, 0.f, PORT_CONNECTIONS_MGR, error)
 
 #define channel_send_action_perform_connect_midi( \
-  send,midi,error) \
+  send, midi, error) \
   channel_send_action_perform ( \
     send, CHANNEL_SEND_ACTION_CONNECT_MIDI, midi, \
     NULL, 0.f, PORT_CONNECTIONS_MGR, error)
 
 #define channel_send_action_perform_connect_audio( \
-  send,stereo,error) \
+  send, stereo, error) \
   channel_send_action_perform ( \
-    send, CHANNEL_SEND_ACTION_CONNECT_STEREO, NULL, \
-    stereo, 0.f, PORT_CONNECTIONS_MGR, error)
+    send, CHANNEL_SEND_ACTION_CONNECT_STEREO, \
+    NULL, stereo, 0.f, PORT_CONNECTIONS_MGR, error)
 
 #define channel_send_action_perform_connect_sidechain( \
-  send,stereo,error) \
+  send, stereo, error) \
   channel_send_action_perform ( \
     send, CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN, \
     NULL, stereo, 0.f, PORT_CONNECTIONS_MGR, error)
 
 #define channel_send_action_perform_change_amount( \
-  send,amt,error) \
+  send, amt, error) \
   channel_send_action_perform ( \
     send, CHANNEL_SEND_ACTION_CHANGE_AMOUNT, NULL, \
     NULL, amt, NULL, error)
@@ -237,8 +237,7 @@ channel_send_action_stringize (
   ChannelSendAction * self);
 
 void
-channel_send_action_free (
-  ChannelSendAction * self);
+channel_send_action_free (ChannelSendAction * self);
 
 /**
  * @}

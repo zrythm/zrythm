@@ -38,22 +38,20 @@
 #include "utils/io.h"
 #include "zrythm.h"
 
+#include <glib.h>
+
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project.h"
 #include "tests/helpers/zrythm.h"
 
-#include <glib.h>
-
 #ifdef HAVE_NO_DELAY_LINE
 static Port *
-get_delay_port (
-  Plugin * pl)
+get_delay_port (Plugin * pl)
 {
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       if (string_is_equal_ignore_case (
-            pl->in_ports[i]->id.label,
-            "Delay Time"))
+            pl->in_ports[i]->id.label, "Delay Time"))
         {
           return pl->in_ports[i];
           break;
@@ -84,12 +82,13 @@ _test (
 
   /* 2. add no delay line */
   mixer_selections_action_perform_create (
-    PLUGIN_SLOT_INSERT,
-    track_get_name_hash (track), 0, setting, 1, NULL);
+    PLUGIN_SLOT_INSERT, track_get_name_hash (track),
+    0, setting, 1, NULL);
 
   /* 3. set delay to high value */
   Plugin * pl = track->channel->inserts[0];
-  Port * port = get_delay_port (pl);;
+  Port *   port = get_delay_port (pl);
+  ;
   control_port_set_val_from_normalized (
     port, 0.1f, false);
 
@@ -100,9 +99,8 @@ _test (
 
   /* recalculate graph to update latencies */
   router_recalc_graph (ROUTER, F_SOFT);
-  GraphNode * node =
-    graph_find_node_from_track (
-      ROUTER->graph, track, false);
+  GraphNode * node = graph_find_node_from_track (
+    ROUTER->graph, track, false);
   g_assert_true (node);
   g_assert_cmpint (
     latency, ==, node->route_playback_latency);
@@ -126,17 +124,16 @@ _test (
 
   /* add another track with latency and check if
    * OK */
-  setting =
-    test_plugin_manager_get_plugin_setting (
-      NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI,
-      with_carla);
-  Track * new_track =
-    track_create_with_action (
-      TRACK_TYPE_AUDIO_BUS, setting, NULL, NULL,
-      TRACKLIST->num_tracks, 1, NULL);
+  setting = test_plugin_manager_get_plugin_setting (
+    NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI,
+    with_carla);
+  Track * new_track = track_create_with_action (
+    TRACK_TYPE_AUDIO_BUS, setting, NULL, NULL,
+    TRACKLIST->num_tracks, 1, NULL);
 
   pl = new_track->channel->inserts[0];
-  port = get_delay_port (pl);;
+  port = get_delay_port (pl);
+  ;
   control_port_set_val_from_normalized (
     port, 0.2f, false);
 
@@ -148,15 +145,13 @@ _test (
 
   /* recalculate graph to update latencies */
   router_recalc_graph (ROUTER, F_SOFT);
-  node =
-    graph_find_node_from_track (
-      ROUTER->graph, P_TEMPO_TRACK, false);
+  node = graph_find_node_from_track (
+    ROUTER->graph, P_TEMPO_TRACK, false);
   g_assert_true (node);
   g_assert_cmpint (
     latency2, ==, node->route_playback_latency);
-  node =
-    graph_find_node_from_track (
-      ROUTER->graph, new_track, false);
+  node = graph_find_node_from_track (
+    ROUTER->graph, new_track, false);
   g_assert_true (node);
   g_assert_cmpint (
     latency2, ==, node->route_playback_latency);
@@ -175,12 +170,14 @@ _test (
   /* set latencies to 0 and verify that the updated
    * latency for tempo is 0 */
   pl = new_track->channel->inserts[0];
-  port = get_delay_port (pl);;
+  port = get_delay_port (pl);
+  ;
   control_port_set_val_from_normalized (
     port, 0.f, false);
   track = TRACKLIST->tracks[orig_track_pos];
   pl = track->channel->inserts[0];
-  port = get_delay_port (pl);;
+  port = get_delay_port (pl);
+  ;
   control_port_set_val_from_normalized (
     port, 0.f, false);
 
@@ -189,9 +186,8 @@ _test (
 
   /* recalculate graph to update latencies */
   router_recalc_graph (ROUTER, F_SOFT);
-  node =
-    graph_find_node_from_track (
-      ROUTER->graph, P_TEMPO_TRACK, false);
+  node = graph_find_node_from_track (
+    ROUTER->graph, P_TEMPO_TRACK, false);
   g_assert_true (node);
   g_assert_cmpint (
     node->route_playback_latency, ==, 0);
@@ -202,28 +198,28 @@ static void
 run_graph_with_playback_latencies (void)
 {
 #ifdef HAVE_NO_DELAY_LINE
-#ifdef HAVE_HELM
-  _test (
-    HELM_BUNDLE, HELM_URI, true, false);
-#endif
+#  ifdef HAVE_HELM
+  _test (HELM_BUNDLE, HELM_URI, true, false);
+#  endif
 #endif
 #if 0
-#ifdef HAVE_NO_DELAY_LINE
+#  ifdef HAVE_NO_DELAY_LINE
   _test (
     NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI, false,
     false);
-#endif
+#  endif
 #endif
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
   test_helper_zrythm_init ();
 
-#define TEST_PREFIX "/integration/run_graph_with_latencies/"
+#define TEST_PREFIX \
+  "/integration/run_graph_with_latencies/"
 
   g_test_add_func (
     TEST_PREFIX "run graph with playback latencies",

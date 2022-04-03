@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   PortSelectorDialogWidget,
   port_selector_dialog_widget,
-  Z, PORT_SELECTOR_DIALOG_WIDGET,
+  Z,
+  PORT_SELECTOR_DIALOG_WIDGET,
   GtkDialog)
 
 /**
@@ -51,10 +52,10 @@ typedef struct _PortConnectionsPopoverWidget
  */
 typedef struct _PortSelectorDialogWidget
 {
-  GtkDialog           parent_instance;
+  GtkDialog parent_instance;
 
   /** The owner Port. */
-  Port            *   port;
+  Port * port;
 
   GtkScrolledWindow * track_scroll;
   GtkTreeView *       track_treeview;
@@ -68,14 +69,14 @@ typedef struct _PortSelectorDialogWidget
   GtkTreeModel *      port_model;
 
   /** Track selected in the Track treeview. */
-  Track *             selected_track;
+  Track * selected_track;
 
   /**
    * Plugin selected in the Plugin treeview.
    *
    * If this is NULL, see track_ports_selected.
    */
-  Plugin *            selected_plugin;
+  Plugin * selected_plugin;
 
   /**
    * Used if selected_plugin is NULL.
@@ -84,16 +85,16 @@ typedef struct _PortSelectorDialogWidget
    * otherwise if this is 0 then nothing is selected
    * in the Plugin treeview.
    */
-  int                 track_ports_selected;
+  int track_ports_selected;
 
-  Port *              selected_port;
+  Port * selected_port;
 
-  GtkButton *         ok_btn;
-  GtkButton *         cancel_btn;
+  GtkButton * ok_btn;
+  GtkButton * cancel_btn;
 
   /** Whether already set up (to avoid re-adding
    * existing widgets). */
-  bool                setup;
+  bool setup;
 
   PortConnectionsPopoverWidget * owner;
 } PortSelectorDialogWidget;
@@ -101,7 +102,7 @@ typedef struct _PortSelectorDialogWidget
 void
 port_selector_dialog_widget_refresh (
   PortSelectorDialogWidget * self,
-  Port *                      port);
+  Port *                     port);
 
 /**
  * Creates the popover.

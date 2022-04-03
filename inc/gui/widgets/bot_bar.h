@@ -28,10 +28,9 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _DigitalMeterWidget
-  DigitalMeterWidget;
+typedef struct _DigitalMeterWidget DigitalMeterWidget;
 typedef struct _TransportControlsWidget
-  TransportControlsWidget;
+                          TransportControlsWidget;
 typedef struct _CpuWidget CpuWidget;
 typedef struct _ButtonWithMenuWidget
   ButtonWithMenuWidget;
@@ -45,15 +44,17 @@ typedef struct _ButtonWithMenuWidget
 #define BOT_BAR_WIDGET_TYPE \
   (bot_bar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  BotBarWidget, bot_bar_widget,
-  Z, BOT_BAR_WIDGET, GtkWidget)
+  BotBarWidget,
+  bot_bar_widget,
+  Z,
+  BOT_BAR_WIDGET,
+  GtkWidget)
 
 #define MW_BOT_BAR MW->bot_bar
 #define MW_STATUS_BAR MW_BOT_BAR->status_bar
 #define MW_DIGITAL_TRANSPORT \
   MW_BOT_BAR->digital_transport
-#define MW_DIGITAL_BPM \
-  MW_BOT_BAR->digital_bpm
+#define MW_DIGITAL_BPM MW_BOT_BAR->digital_bpm
 #define MW_DIGITAL_TIME_SIG \
   MW_BOT_BAR->digital_timesig
 
@@ -62,51 +63,51 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _BotBarWidget
 {
-  GtkWidget             parent_instance;
+  GtkWidget parent_instance;
 
-  GtkCenterBox *        center_box;
-  GtkStatusbar *        status_bar;
+  GtkCenterBox * center_box;
+  GtkStatusbar * status_bar;
 
   /** New label replacing the original status
    * bar label. */
-  GtkLabel *            label;
+  GtkLabel * label;
 
   /** Status bar context id. */
-  guint                 context_id;
+  guint context_id;
 
-  GtkBox *              digital_meters;
-  DigitalMeterWidget *  digital_bpm;
+  GtkBox *             digital_meters;
+  DigitalMeterWidget * digital_bpm;
 
   /**
    * Overlay for showing things on top of the
    * playhead positionmeter.
    */
-  GtkOverlay *          playhead_overlay;
+  GtkOverlay * playhead_overlay;
 
   ButtonWithMenuWidget * metronome;
-  GtkToggleButton *     metronome_btn;
+  GtkToggleButton *      metronome_btn;
 
   /**
    * The playhead digital meter.
    */
-  DigitalMeterWidget *  digital_transport;
+  DigitalMeterWidget * digital_transport;
 
   /** Jack timebase master image. */
-  GtkWidget *           master_img;
+  GtkWidget * master_img;
 
   /** Jack client master image. */
-  GtkWidget *           client_img;
+  GtkWidget * client_img;
 
-  GtkBox *              playhead_box;
+  GtkBox * playhead_box;
 
-  DigitalMeterWidget *  digital_timesig;
+  DigitalMeterWidget *      digital_timesig;
   TransportControlsWidget * transport_controls;
-  CpuWidget *           cpu_load;
+  CpuWidget *               cpu_load;
 
   /** Color in hex to use in pango markups. */
-  char                  hex_color[8];
-  char                  green_hex[8];
-  char                  red_hex[8];
+  char hex_color[8];
+  char green_hex[8];
+  char red_hex[8];
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
@@ -119,15 +120,13 @@ bot_bar_widget_refresh (BotBarWidget * self);
  * Updates the content of the status bar.
  */
 void
-bot_bar_widget_update_status (
-  BotBarWidget * self);
+bot_bar_widget_update_status (BotBarWidget * self);
 
 /**
  * Sets up the bot bar.
  */
 void
-bot_bar_widget_setup (
-  BotBarWidget * self);
+bot_bar_widget_setup (BotBarWidget * self);
 
 /**
  * @}

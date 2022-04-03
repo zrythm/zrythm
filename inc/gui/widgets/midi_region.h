@@ -26,17 +26,17 @@
  * RegionWidget.
  */
 
-#ifndef __GUI_WIDGETS_MIDI_REGION_H__
-#define __GUI_WIDGETS_MIDI_REGION_H__
+#  ifndef __GUI_WIDGETS_MIDI_REGION_H__
+#    define __GUI_WIDGETS_MIDI_REGION_H__
 
-#include "audio/region.h"
-#include "gui/widgets/region.h"
-#include "utils/ui.h"
+#    include "audio/region.h"
+#    include "gui/widgets/region.h"
+#    include "utils/ui.h"
 
-#include <gtk/gtk.h>
+#    include <gtk/gtk.h>
 
-#define MIDI_REGION_WIDGET_TYPE \
-  (midi_region_widget_get_type ())
+#    define MIDI_REGION_WIDGET_TYPE \
+      (midi_region_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   MidiRegionWidget,
   midi_region_widget,
@@ -64,5 +64,5 @@ MidiRegionWidget *
 midi_region_widget_new (
   ZRegion * midi_region);
 
-#endif
+#  endif
 #endif

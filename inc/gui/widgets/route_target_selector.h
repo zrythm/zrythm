@@ -27,7 +27,8 @@
 G_DECLARE_FINAL_TYPE (
   RouteTargetSelectorWidget,
   route_target_selector_widget,
-  Z, ROUTE_TARGET_SELECTOR_WIDGET,
+  Z,
+  ROUTE_TARGET_SELECTOR_WIDGET,
   GtkBox)
 
 typedef struct _RouteTargetSelectorPopoverWidget
@@ -42,27 +43,26 @@ typedef struct _ChannelWidget ChannelWidget;
 
 typedef struct _RouteTargetSelectorWidget
 {
-  GtkBox             parent_instance;
+  GtkBox parent_instance;
 
-  GtkMenuButton *    menu_button;
+  GtkMenuButton * menu_button;
 
   /** The box. */
-  GtkBox *           box;
+  GtkBox * box;
   /** Image to show next to the label. */
-  GtkImage *         img;
+  GtkImage * img;
   /** Label. */
-  GtkLabel           * label;
+  GtkLabel * label;
   /** Popover to be shown when clicked. */
   RouteTargetSelectorPopoverWidget * popover;
 
   /** Popover content holder. */
-  GtkBox                  * content;
-  Channel *          channel;
+  GtkBox *  content;
+  Channel * channel;
 } RouteTargetSelectorWidget;
 
 RouteTargetSelectorWidget *
-route_target_selector_widget_new (
-  Channel * channel);
+route_target_selector_widget_new (Channel * channel);
 
 void
 route_target_selector_widget_setup (

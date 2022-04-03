@@ -154,4 +154,3 @@
  * \section latency_compensation Latency Compensation
  *
  */
-

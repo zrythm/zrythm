@@ -37,7 +37,8 @@
 G_DECLARE_FINAL_TYPE (
   ActiveHardwareMbWidget,
   active_hardware_mb_widget,
-  Z, ACTIVE_HARDWARE_MB_WIDGET,
+  Z,
+  ACTIVE_HARDWARE_MB_WIDGET,
   GtkWidget)
 
 /**
@@ -55,10 +56,10 @@ typedef struct _ActiveHardwarePopoverWidget
  */
 typedef struct _ActiveHardwareMbWidget
 {
-  GtkWidget         parent_instance;
+  GtkWidget parent_instance;
 
   /** The actual menu button. */
-  GtkMenuButton *   mbutton;
+  GtkMenuButton * mbutton;
 
   //GtkBox *          box;
 
@@ -72,22 +73,22 @@ typedef struct _ActiveHardwareMbWidget
   ActiveHardwarePopoverWidget * popover;
 
   /** True for MIDI, false for audio. */
-  bool              is_midi;
+  bool is_midi;
 
   /** True for input, false for output. */
-  bool              input;
+  bool input;
 
   /** The settings to save to. */
-  GSettings *       settings;
+  GSettings * settings;
 
   /** The key in the settings to save to. */
-  const char *      key;
+  const char * key;
 
   /** Popover content holder. */
-  GtkBox *          content;
+  GtkBox * content;
 
-  GenericCallback   callback;
-  void *            object;
+  GenericCallback callback;
+  void *          object;
 } ActiveHardwareMbWidget;
 
 void

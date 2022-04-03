@@ -41,8 +41,7 @@
 
 #define TL_SELECTIONS_SCHEMA_VERSION 1
 
-#define TL_SELECTIONS \
-  (PROJECT->timeline_selections)
+#define TL_SELECTIONS (PROJECT->timeline_selections)
 
 /**
  * Selections to be used for the timeline's current
@@ -53,62 +52,69 @@ typedef struct TimelineSelections
   /** Base struct. */
   ArrangerSelections base;
 
-  int                schema_version;
+  int schema_version;
 
   /** Selected TrackLane Region's. */
-  ZRegion **          regions;
-  int                num_regions;
-  size_t             regions_size;
+  ZRegion ** regions;
+  int        num_regions;
+  size_t     regions_size;
 
-  ScaleObject **     scale_objects;
-  int                num_scale_objects;
-  size_t             scale_objects_size;
+  ScaleObject ** scale_objects;
+  int            num_scale_objects;
+  size_t         scale_objects_size;
 
-  Marker **          markers;
-  int                num_markers;
-  size_t             markers_size;
-
-  /** Visible track index, used during copying. */
-  int                region_track_vis_index;
+  Marker ** markers;
+  int       num_markers;
+  size_t    markers_size;
 
   /** Visible track index, used during copying. */
-  int                chord_track_vis_index;
+  int region_track_vis_index;
 
   /** Visible track index, used during copying. */
-  int                marker_track_vis_index;
+  int chord_track_vis_index;
+
+  /** Visible track index, used during copying. */
+  int marker_track_vis_index;
 } TimelineSelections;
 
 static const cyaml_schema_field_t
-  timeline_selections_fields_schema[] =
-{
-  YAML_FIELD_MAPPING_EMBEDDED (
-    TimelineSelections, base,
-    arranger_selections_fields_schema),
-  YAML_FIELD_INT (
-    TimelineSelections, schema_version),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-    TimelineSelections, regions, region_schema),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-    TimelineSelections, scale_objects,
-    scale_object_schema),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-    TimelineSelections, markers, marker_schema),
-  YAML_FIELD_INT (
-    TimelineSelections, region_track_vis_index),
-  YAML_FIELD_INT (
-    TimelineSelections, chord_track_vis_index),
-  YAML_FIELD_INT (
-    TimelineSelections, marker_track_vis_index),
+  timeline_selections_fields_schema[] = {
+    YAML_FIELD_MAPPING_EMBEDDED (
+      TimelineSelections,
+      base,
+      arranger_selections_fields_schema),
+    YAML_FIELD_INT (TimelineSelections, schema_version),
+    YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+      TimelineSelections,
+      regions,
+      region_schema),
+    YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+      TimelineSelections,
+      scale_objects,
+      scale_object_schema),
+    YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+      TimelineSelections,
+      markers,
+      marker_schema),
+    YAML_FIELD_INT (
+      TimelineSelections,
+      region_track_vis_index),
+    YAML_FIELD_INT (
+      TimelineSelections,
+      chord_track_vis_index),
+    YAML_FIELD_INT (
+      TimelineSelections,
+      marker_track_vis_index),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-timeline_selections_schema = {
-  YAML_VALUE_PTR (
-    TimelineSelections,
-    timeline_selections_fields_schema),
-};
+  timeline_selections_schema = {
+    YAML_VALUE_PTR (
+      TimelineSelections,
+      timeline_selections_fields_schema),
+  };
 
 /**
  * Creates a new TimelineSelections instance for
@@ -226,17 +232,15 @@ timeline_selections_export_to_midi_file (
   const bool                 export_full_regions,
   const bool                 lanes_as_tracks);
 
-#define \
-timeline_selections_move_w_action( \
-  sel,ticks,delta_tracks,delta_lanes, \
+#define timeline_selections_move_w_action( \
+  sel, ticks, delta_tracks, delta_lanes, \
   already_moved) \
   arranger_selections_move_w_action ( \
     sel, ticks, 0, 0, delta_tracks, delta_lanes, \
     0, already_moved)
 
-#define \
-timeline_selections_duplicate_w_action( \
-  sel,ticks,delta_tracks,delta_lanes, \
+#define timeline_selections_duplicate_w_action( \
+  sel, ticks, delta_tracks, delta_lanes, \
   already_moved) \
   arranger_selections_duplicate_w_action ( \
     sel, ticks, 0, 0, delta_tracks, delta_lanes, \

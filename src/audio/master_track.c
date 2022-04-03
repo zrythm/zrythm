@@ -26,8 +26,7 @@
 #include <gtk/gtk.h>
 
 void
-master_track_init (
-  Track * self)
+master_track_init (Track * self)
 {
   self->type = TRACK_TYPE_MASTER;
   /* GTK color picker color */

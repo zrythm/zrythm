@@ -20,12 +20,12 @@
 #include <math.h>
 
 #include "actions/arranger_selections.h"
-#include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
+#include "actions/undoable_action.h"
+#include "audio/audio_bus_track.h"
+#include "audio/audio_track.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
-#include "audio/audio_track.h"
-#include "audio/audio_bus_track.h"
 #include "audio/channel.h"
 #include "audio/chord_object.h"
 #include "audio/chord_region.h"
@@ -44,8 +44,9 @@
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/chord_object.h"
+#include "gui/widgets/chord_arranger.h"
 #include "gui/widgets/chord_editor_space.h"
+#include "gui/widgets/chord_object.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
@@ -53,12 +54,11 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/marker.h"
 #include "gui/widgets/midi_arranger.h"
-#include "gui/widgets/midi_region.h"
 #include "gui/widgets/midi_note.h"
+#include "gui/widgets/midi_region.h"
 #include "gui/widgets/region.h"
-#include "gui/widgets/scale_object.h"
 #include "gui/widgets/ruler.h"
-#include "gui/widgets/chord_arranger.h"
+#include "gui/widgets/scale_object.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
@@ -88,8 +88,7 @@ chord_arranger_widget_create_chord (
 {
   g_return_if_fail (
     chord_index < CHORD_EDITOR->num_chords);
-  self->action =
-    UI_OVERLAY_ACTION_CREATING_MOVING;
+  self->action = UI_OVERLAY_ACTION_CREATING_MOVING;
 
   ArrangerObject * region_obj =
     (ArrangerObject *) region;
@@ -97,15 +96,12 @@ chord_arranger_widget_create_chord (
   /* get local pos */
   Position local_pos;
   position_from_ticks (
-    &local_pos,
-    pos->ticks -
-    region_obj->pos.ticks);
+    &local_pos, pos->ticks - region_obj->pos.ticks);
 
   /* create a new chord */
-  ChordObject * chord =
-    chord_object_new (
-      &region->id, chord_index,
-      region->num_chord_objects);
+  ChordObject * chord = chord_object_new (
+    &region->id, chord_index,
+    region->num_chord_objects);
   ArrangerObject * chord_obj =
     (ArrangerObject *) chord;
 
@@ -127,13 +123,12 @@ chord_arranger_widget_create_chord (
  * Returns the chord index at y.
  */
 int
-chord_arranger_widget_get_chord_at_y (
-  double y)
+chord_arranger_widget_get_chord_at_y (double y)
 {
   double adj_y = y - 1;
   double adj_px_per_key =
     chord_editor_space_widget_get_chord_height (
-      MW_CHORD_EDITOR_SPACE) + 1;
-  return
-    (int) floor (adj_y / adj_px_per_key);
+      MW_CHORD_EDITOR_SPACE)
+    + 1;
+  return (int) floor (adj_y / adj_px_per_key);
 }

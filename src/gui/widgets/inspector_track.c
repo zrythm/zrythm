@@ -29,18 +29,17 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/plugin_strip_expander.h"
 #include "gui/widgets/ports_expander.h"
+#include "gui/widgets/text_expander.h"
 #include "gui/widgets/track_input_expander.h"
 #include "gui/widgets/track_properties_expander.h"
-#include "gui/widgets/text_expander.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
-
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   InspectorTrackWidget,
@@ -50,18 +49,18 @@ G_DEFINE_TYPE (
 static void
 reveal_cb (
   ExpanderBoxWidget * expander,
-  const bool    revealed,
-  void *        user_data)
+  const bool          revealed,
+  void *              user_data)
 {
   InspectorTrackWidget * self =
     Z_INSPECTOR_TRACK_WIDGET (user_data);
 
-#define SET_SETTING(mem,key) \
+#define SET_SETTING(mem, key) \
   if (expander == Z_EXPANDER_BOX_WIDGET (self->mem)) \
     { \
       g_settings_set_boolean ( \
-        S_UI_INSPECTOR, \
-        "track-" key "-expanded", revealed); \
+        S_UI_INSPECTOR, "track-" key "-expanded", \
+        revealed); \
     }
 
   SET_SETTING (track_info, "properties");
@@ -110,10 +109,11 @@ inspector_track_widget_show_tracks (
 {
   g_debug ("showing %d tracks", tls->num_tracks);
 
-  if (set_notebook_page
-      &&
-      foldable_notebook_widget_get_current_page (
-        MW_LEFT_DOCK_EDGE->inspector_notebook) != 0)
+  if (
+    set_notebook_page
+    && foldable_notebook_widget_get_current_page (
+         MW_LEFT_DOCK_EDGE->inspector_notebook)
+         != 0)
     {
       foldable_notebook_widget_set_current_page (
         MW_LEFT_DOCK_EDGE->inspector_notebook, 0,
@@ -154,7 +154,7 @@ inspector_track_widget_show_tracks (
         track_comment_setter, track);
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self->comment),
-        _("Comment"));
+        _ ("Comment"));
 
       if (track_type_has_channel (track->type))
         {
@@ -187,11 +187,11 @@ inspector_track_widget_show_tracks (
           track_input_expander_widget_refresh (
             self->inputs, track);
           ports_expander_widget_setup_track (
-            self->outputs,
-            track, PE_TRACK_PORT_TYPE_SENDS);
+            self->outputs, track,
+            PE_TRACK_PORT_TYPE_SENDS);
           ports_expander_widget_setup_track (
-            self->controls,
-            track, PE_TRACK_PORT_TYPE_CONTROLS);
+            self->controls, track,
+            PE_TRACK_PORT_TYPE_CONTROLS);
 
           plugin_strip_expander_widget_setup (
             self->inserts, PLUGIN_SLOT_INSERT,
@@ -210,11 +210,11 @@ inspector_track_widget_show_tracks (
       track_properties_expander_widget_refresh (
         self->track_info, NULL);
       ports_expander_widget_setup_track (
-        self->outputs,
-        track, PE_TRACK_PORT_TYPE_SENDS);
+        self->outputs, track,
+        PE_TRACK_PORT_TYPE_SENDS);
       ports_expander_widget_setup_track (
-        self->controls,
-        track, PE_TRACK_PORT_TYPE_CONTROLS);
+        self->controls, track,
+        PE_TRACK_PORT_TYPE_CONTROLS);
       text_expander_widget_setup (
         self->comment, false, NULL, NULL, NULL);
 
@@ -250,9 +250,8 @@ inspector_track_widget_setup (
 InspectorTrackWidget *
 inspector_track_widget_new (void)
 {
-  InspectorTrackWidget * self =
-    g_object_new (
-      INSPECTOR_TRACK_WIDGET_TYPE, NULL);
+  InspectorTrackWidget * self = g_object_new (
+    INSPECTOR_TRACK_WIDGET_TYPE, NULL);
 
   return self;
 }
@@ -279,16 +278,14 @@ static void
 inspector_track_widget_class_init (
   InspectorTrackWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "inspector_track.ui");
 
 #define BIND_CHILD(child) \
   gtk_widget_class_bind_template_child ( \
     GTK_WIDGET_CLASS (klass), \
-    InspectorTrackWidget, \
-    child);
+    InspectorTrackWidget, child);
 
   BIND_CHILD (track_info);
   BIND_CHILD (sends);
@@ -310,20 +307,14 @@ inspector_track_widget_init (
 {
   g_type_ensure (
     TRACK_PROPERTIES_EXPANDER_WIDGET_TYPE);
-  g_type_ensure (
-    TRACK_INPUT_EXPANDER_WIDGET_TYPE);
-  g_type_ensure (
-    PORTS_EXPANDER_WIDGET_TYPE);
-  g_type_ensure (
-    PLUGIN_STRIP_EXPANDER_WIDGET_TYPE);
-  g_type_ensure (
-    CHANNEL_SENDS_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (TRACK_INPUT_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (PORTS_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (PLUGIN_STRIP_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (CHANNEL_SENDS_EXPANDER_WIDGET_TYPE);
   g_type_ensure (
     FADER_CONTROLS_EXPANDER_WIDGET_TYPE);
-  g_type_ensure (
-    TEXT_EXPANDER_WIDGET_TYPE);
-  g_type_ensure (
-    COLOR_AREA_WIDGET_TYPE);
+  g_type_ensure (TEXT_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (COLOR_AREA_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -338,15 +329,14 @@ inspector_track_widget_init (
     Z_EXPANDER_BOX_WIDGET (self->comment), false);
 
   /* set states */
-#define SET_STATE(mem,key) \
+#define SET_STATE(mem, key) \
   expander_box_widget_set_reveal ( \
     Z_EXPANDER_BOX_WIDGET (self->mem), \
     g_settings_get_boolean ( \
-      S_UI_INSPECTOR, \
-      "track-" key "-expanded")); \
+      S_UI_INSPECTOR, "track-" key "-expanded")); \
   expander_box_widget_set_reveal_callback ( \
-    Z_EXPANDER_BOX_WIDGET (self->mem), \
-    reveal_cb, self)
+    Z_EXPANDER_BOX_WIDGET (self->mem), reveal_cb, \
+    self)
 
   SET_STATE (track_info, "properties");
   SET_STATE (inputs, "inputs");

@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   SliderBarWidget,
   slider_bar_widget,
-  Z, SLIDER_BAR_WIDGET,
+  Z,
+  SLIDER_BAR_WIDGET,
   GtkDrawingArea)
 
 /**
@@ -47,34 +48,34 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _SliderBarWidget
 {
-  GtkDrawingArea    parent_instance;
+  GtkDrawingArea parent_instance;
 
   /** Getter. */
-  float (*getter)(void*);
+  float (*getter) (void *);
 
   /** Setter. */
-  void (*setter)(void*, float);
+  void (*setter) (void *, float);
 
   /** The object to call get/set with. */
-  void *           object;
+  void * object;
 
-  float            min;
-  float            max;
-  float            zero;
-  int              width;
-  int              height;
+  float min;
+  float max;
+  float zero;
+  int   width;
+  int   height;
 
   /** Size in px. */
-  int              size;
+  int size;
 
   /** Drag gesture. */
-  GtkGestureDrag   *drag;
+  GtkGestureDrag * drag;
 
   /** Used for dragging. */
-  double           last_y;
+  double last_y;
 
   /** Text to be displayed in the center. */
-  char *           text;
+  char * text;
 
   /** Pointer to backend. */
 } SliderBarWidget;
@@ -89,21 +90,20 @@ SliderBarWidget *
 _slider_bar_widget_new (
   float (*get_val) (void *),
   void (*set_val) (void *, float),
-  void * object,
-  float min,
-  float max,
-  int   width,
-  int   height,
-  float zero,
+  void *       object,
+  float        min,
+  float        max,
+  int          width,
+  int          height,
+  float        zero,
   const char * text);
 
-#define slider_bar_widget_new_simple(\
-  getter,setter,obj,min,max,w,h,zero,text) \
+#define slider_bar_widget_new_simple( \
+  getter, setter, obj, min, max, w, h, zero, text) \
   _slider_bar_widget_new ( \
     (float (*) (void *)) getter, \
     (void (*) (void *, float)) setter, \
-    (void *) obj, \
-    min, max, w, h, zero, text)
+    (void *) obj, min, max, w, h, zero, text)
 
 /**
  * @}

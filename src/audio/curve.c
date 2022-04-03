@@ -48,8 +48,7 @@
 #include <glib/gi18n.h>
 
 void
-curve_opts_init (
-  CurveOptions * opts)
+curve_opts_init (CurveOptions * opts)
 {
   opts->schema_version =
     CURVE_OPTIONS_SCHEMA_VERSION;
@@ -67,19 +66,19 @@ curve_algorithm_get_localized_name (
   switch (algo)
     {
     case CURVE_ALGORITHM_EXPONENT:
-      sprintf (buf, _("Exponent"));
+      sprintf (buf, _ ("Exponent"));
       break;
     case CURVE_ALGORITHM_SUPERELLIPSE:
-      sprintf (buf, _("Superellipse"));
+      sprintf (buf, _ ("Superellipse"));
       break;
     case CURVE_ALGORITHM_VITAL:
       sprintf (buf, "Vital");
       break;
     case CURVE_ALGORITHM_PULSE:
-      sprintf (buf, _("Pulse"));
+      sprintf (buf, _ ("Pulse"));
       break;
     case CURVE_ALGORITHM_LOGARITHMIC:
-      sprintf (buf, _("Logarithmic"));
+      sprintf (buf, _ ("Logarithmic"));
       break;
     default:
       g_return_if_reached ();
@@ -112,8 +111,8 @@ curve_get_normalized_y (
       {
         /* convert curviness to bound */
         double curviness_for_calc =
-          opts->curviness *
-          CURVE_EXPONENT_CURVINESS_BOUND;
+          opts->curviness
+          * CURVE_EXPONENT_CURVINESS_BOUND;
 
         curviness_for_calc =
           1.0 - fabs (curviness_for_calc);
@@ -141,8 +140,8 @@ curve_get_normalized_y (
       {
         /* convert curviness to bound */
         double curviness_for_calc =
-          opts->curviness *
-          CURVE_SUPERELLIPSE_CURVINESS_BOUND;
+          opts->curviness
+          * CURVE_SUPERELLIPSE_CURVINESS_BOUND;
 
         curviness_for_calc =
           1.0 - fabs (curviness_for_calc);
@@ -159,10 +158,9 @@ curve_get_normalized_y (
           }
         else
           {
-            val =
-              pow (
-                1.0 - pow (x, curviness_for_calc),
-                (1.0 / curviness_for_calc));
+            val = pow (
+              1.0 - pow (x, curviness_for_calc),
+              (1.0 / curviness_for_calc));
           }
 
         if (curve_up)
@@ -173,11 +171,11 @@ curve_get_normalized_y (
       {
         /* convert curviness to bound */
         double curviness_for_calc =
-          opts->curviness *
-          CURVE_VITAL_CURVINESS_BOUND;
+          opts->curviness
+          * CURVE_VITAL_CURVINESS_BOUND;
 
         curviness_for_calc =
-          - curviness_for_calc * 10.0;
+          -curviness_for_calc * 10.0;
         if (start_higher)
           x = 1.0 - x;
 
@@ -190,16 +188,17 @@ curve_get_normalized_y (
         else
           {
             val =
-              expm1 (curviness_for_calc * x) /
-              expm1 (curviness_for_calc);
+              expm1 (curviness_for_calc * x)
+              / expm1 (curviness_for_calc);
           }
       }
       break;
     case CURVE_ALGORITHM_PULSE:
       {
         val =
-          ((1.0 + opts->curviness) / 2.0) > x ?
-            0.0 : 1.0;
+          ((1.0 + opts->curviness) / 2.0) > x
+            ? 0.0
+            : 1.0;
 
         if (start_higher)
           val = 1.0 - val;
@@ -209,15 +208,13 @@ curve_get_normalized_y (
       {
         /* convert curviness to bound */
         static const float bound = 1e-12f;
-        float s =
+        float              s =
           CLAMP (
-            fabsf ((float) opts->curviness),
-            0.01f, 1 - bound)
+            fabsf ((float) opts->curviness), 0.01f,
+            1 - bound)
           * 10.f;
-        float curviness_for_calc =
-          CLAMP (
-            (10.f - s) / (powf (s, s)),
-            bound, 10.f);
+        float curviness_for_calc = CLAMP (
+          (10.f - s) / (powf (s, s)), bound, 10.f);
 
         if (!start_higher)
           x = 1.0 - x;
@@ -237,14 +234,11 @@ curve_get_normalized_y (
           {
             /* required vals */
             const float a =
-              logf (
-                curviness_for_calc);
+              logf (curviness_for_calc);
             const float b =
               1.f
-              /
-              logf (
-                1.f
-                + (1.f / curviness_for_calc));
+              / logf (
+                1.f + (1.f / curviness_for_calc));
 
             float fval;
             if (curve_up)
@@ -260,9 +254,8 @@ curve_get_normalized_y (
                 fval =
                   (a
                    - logf (
-                       (float) x
-                       + curviness_for_calc))
-                  * b
+                     (float) x + curviness_for_calc))
+                    * b
                   + 1.f;
               }
             val = (double) fval;
@@ -271,14 +264,11 @@ curve_get_normalized_y (
           {
             /* required vals */
             const float a =
-              math_fast_log (
-                curviness_for_calc);
+              math_fast_log (curviness_for_calc);
             const float b =
               1.f
-              /
-              math_fast_log (
-                1.f
-                + (1.f / curviness_for_calc));
+              / math_fast_log (
+                1.f + (1.f / curviness_for_calc));
 
             float fval;
             if (curve_up)
@@ -294,9 +284,8 @@ curve_get_normalized_y (
                 fval =
                   (a
                    - math_fast_log (
-                       (float) x
-                       + curviness_for_calc))
-                  * b
+                     (float) x + curviness_for_calc))
+                    * b
                   + 1.f;
               }
             val = (double) fval;
@@ -328,8 +317,7 @@ curve_fade_preset_create (
 }
 
 static void
-curve_fade_preset_free (
-  gpointer data)
+curve_fade_preset_free (gpointer data)
 {
   CurveFadePreset * preset =
     (CurveFadePreset *) data;
@@ -344,34 +332,33 @@ curve_fade_preset_free (
 GPtrArray *
 curve_get_fade_presets (void)
 {
-  GPtrArray * arr =
-    g_ptr_array_new_with_free_func (
-      curve_fade_preset_free);
+  GPtrArray * arr = g_ptr_array_new_with_free_func (
+    curve_fade_preset_free);
   g_ptr_array_add (
     arr,
     curve_fade_preset_create (
-      "linear", _("Linear"),
+      "linear", _ ("Linear"),
       CURVE_ALGORITHM_SUPERELLIPSE, 0));
   g_ptr_array_add (
     arr,
     curve_fade_preset_create (
-      "exponential", _("Exponential"),
-      CURVE_ALGORITHM_EXPONENT, - 0.6));
+      "exponential", _ ("Exponential"),
+      CURVE_ALGORITHM_EXPONENT, -0.6));
   g_ptr_array_add (
     arr,
     curve_fade_preset_create (
-      "elliptic", _("Elliptic"),
-      CURVE_ALGORITHM_SUPERELLIPSE, - 0.5));
+      "elliptic", _ ("Elliptic"),
+      CURVE_ALGORITHM_SUPERELLIPSE, -0.5));
   g_ptr_array_add (
     arr,
     curve_fade_preset_create (
-      "logarithmic", _("Logarithmic"),
-      CURVE_ALGORITHM_LOGARITHMIC, - 0.5));
+      "logarithmic", _ ("Logarithmic"),
+      CURVE_ALGORITHM_LOGARITHMIC, -0.5));
   g_ptr_array_add (
     arr,
     curve_fade_preset_create (
-      "vital", _("Vital"),
-      CURVE_ALGORITHM_VITAL, - 0.5));
+      "vital", _ ("Vital"), CURVE_ALGORITHM_VITAL,
+      -0.5));
 
   return arr;
 }
@@ -381,8 +368,7 @@ curve_options_are_equal (
   const CurveOptions * a,
   const CurveOptions * b)
 {
-  return
-    a->algo == b->algo &&
-    math_doubles_equal (
-      a->curviness, b->curviness);
+  return a->algo == b->algo
+         && math_doubles_equal (
+           a->curviness, b->curviness);
 }

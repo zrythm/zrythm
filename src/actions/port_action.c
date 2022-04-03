@@ -31,8 +31,7 @@
 #include <glib/gi18n.h>
 
 void
-port_action_init_loaded (
-  PortAction * self)
+port_action_init_loaded (PortAction * self)
 {
   /* no need */
 }
@@ -48,8 +47,7 @@ port_action_new (
   bool             is_normalized,
   GError **        error)
 {
-  PortAction * self =
-    object_new (PortAction);
+  PortAction *     self = object_new (PortAction);
   UndoableAction * ua = (UndoableAction *) self;
   undoable_action_init (ua, UA_PORT);
 
@@ -79,18 +77,15 @@ port_action_new_reset_control (
   PortIdentifier * port_id,
   GError **        error)
 {
-  Port * port =
-    port_find_from_identifier (port_id);
+  Port * port = port_find_from_identifier (port_id);
 
-  return
-    port_action_new (
-      PORT_ACTION_SET_CONTROL_VAL, port_id,
-      port->deff, F_NOT_NORMALIZED, error);
+  return port_action_new (
+    PORT_ACTION_SET_CONTROL_VAL, port_id,
+    port->deff, F_NOT_NORMALIZED, error);
 }
 
 PortAction *
-port_action_clone (
-  const PortAction * src)
+port_action_clone (const PortAction * src)
 {
   PortAction * self = object_new (PortAction);
   self->parent_instance = src->parent_instance;
@@ -112,8 +107,8 @@ port_action_perform (
   GError **        error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    port_action_new,
-    error, type, port_id, val, is_normalized, error);
+    port_action_new, error, type, port_id, val,
+    is_normalized, error);
 }
 
 bool
@@ -122,14 +117,12 @@ port_action_perform_reset_control (
   GError **        error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    port_action_new_reset_control,
-    error, port_id, error);
+    port_action_new_reset_control, error, port_id,
+    error);
 }
 
 static int
-port_action_do_or_undo (
-  PortAction * self,
-  bool         _do)
+port_action_do_or_undo (PortAction * self, bool _do)
 {
   Port * port =
     port_find_from_identifier (&self->port_id);
@@ -154,31 +147,24 @@ port_action_do_or_undo (
 }
 
 int
-port_action_do (
-  PortAction * self,
-  GError **    error)
+port_action_do (PortAction * self, GError ** error)
 {
-  return
-    port_action_do_or_undo (self, true);
+  return port_action_do_or_undo (self, true);
 }
 
 int
-port_action_undo (
-  PortAction * self,
-  GError **    error)
+port_action_undo (PortAction * self, GError ** error)
 {
-  return
-    port_action_do_or_undo (self, false);
+  return port_action_do_or_undo (self, false);
 }
 
 char *
-port_action_stringize (
-  PortAction * self)
+port_action_stringize (PortAction * self)
 {
   switch (self->type)
     {
     case PORT_ACTION_SET_CONTROL_VAL:
-      return g_strdup (_("Set control value"));
+      return g_strdup (_ ("Set control value"));
       break;
     default:
       g_warn_if_reached ();
@@ -187,8 +173,7 @@ port_action_stringize (
 }
 
 void
-port_action_free (
-  PortAction * self)
+port_action_free (PortAction * self)
 {
   object_zero_and_free (self);
 }

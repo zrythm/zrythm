@@ -27,42 +27,41 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include <glib.h>
+
 #include "tests/helpers/project.h"
 #include "tests/helpers/zrythm.h"
 
-#include <glib.h>
 #include <locale.h>
 
 static void
-create_automation_region (
-  int track_pos)
+create_automation_region (int track_pos)
 {
   Track * track = TRACKLIST->tracks[track_pos];
 
   Position start, end;
   position_set_to_bar (&start, 1);
   position_set_to_bar (&end, 3);
-  ZRegion * region =
-    automation_region_new (
-      &start, &end,
-      track_get_name_hash (track), 0, 0);
+  ZRegion * region = automation_region_new (
+    &start, &end, track_get_name_hash (track), 0, 0);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
   track_add_region (
     track, region, atl->ats[0], 0, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) region, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+    (ArrangerObject *) region, F_SELECT,
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_create (
     (ArrangerSelections *) TL_SELECTIONS, NULL);
 
   AutomationPoint * ap =
-    automation_point_new_float (
-      0.1f, 0.1f, &start);
+    automation_point_new_float (0.1f, 0.1f, &start);
   automation_region_add_ap (
     region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_create (
     (ArrangerSelections *) AUTOMATION_SELECTIONS,
     NULL);
@@ -95,8 +94,8 @@ test_swap_with_automation_regions (void)
     track2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_move (
-    TRACKLIST_SELECTIONS,
-    PORT_CONNECTIONS_MGR, track1->pos, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
+    track1->pos, NULL);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -124,10 +123,8 @@ test_handle_drop_empty_midi_file (void)
 {
   test_helper_zrythm_init ();
 
-  char * path =
-    g_build_filename (
-      TESTS_SRCDIR, "empty_midi_file_type1.mid",
-      NULL);
+  char * path = g_build_filename (
+    TESTS_SRCDIR, "empty_midi_file_type1.mid", NULL);
   SupportedFile * file =
     supported_file_new_from_path (path);
   g_free (path);
@@ -140,7 +137,7 @@ test_handle_drop_empty_midi_file (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

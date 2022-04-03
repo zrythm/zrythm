@@ -51,30 +51,30 @@
 
 typedef struct QuantizeOptions
 {
-  int              schema_version;
+  int schema_version;
 
   /** See SnapGrid. */
-  NoteLength       note_length;
+  NoteLength note_length;
 
   /** See SnapGrid. */
-  NoteType         note_type;
+  NoteType note_type;
 
   /** Percentage to apply quantize (0-100). */
-  float            amount;
+  float amount;
 
   /** Adjust start position or not (only applies to
    * objects with length. */
-  int              adj_start;
+  int adj_start;
 
   /** Adjust end position or not (only applies to
    * objects with length. */
-  int              adj_end;
+  int adj_end;
 
   /** Swing amount (0-100). */
-  float            swing;
+  float swing;
 
   /** Number of ticks for randomization. */
-  double           rand_ticks;
+  double rand_ticks;
 
   /**
    * Quantize points.
@@ -85,39 +85,36 @@ typedef struct QuantizeOptions
    *
    * Not to be serialized.
    */
-  Position         q_points[MAX_SNAP_POINTS];
-  int              num_q_points;
+  Position q_points[MAX_SNAP_POINTS];
+  int      num_q_points;
 } QuantizeOptions;
 
 static const cyaml_schema_field_t
-  quantize_options_fields_schema[] =
-{
-  YAML_FIELD_INT (QuantizeOptions, schema_version),
-  YAML_FIELD_ENUM (
-    QuantizeOptions, note_length,
-    note_length_strings),
-  YAML_FIELD_ENUM (
-    QuantizeOptions, note_type, note_type_strings),
-  YAML_FIELD_FLOAT (
-    QuantizeOptions, amount),
-  YAML_FIELD_INT (
-    QuantizeOptions, adj_start),
-  YAML_FIELD_INT (
-    QuantizeOptions, adj_end),
-  YAML_FIELD_FLOAT (
-    QuantizeOptions, swing),
-  YAML_FIELD_FLOAT (
-    QuantizeOptions, rand_ticks),
+  quantize_options_fields_schema[] = {
+    YAML_FIELD_INT (QuantizeOptions, schema_version),
+    YAML_FIELD_ENUM (
+      QuantizeOptions,
+      note_length,
+      note_length_strings),
+    YAML_FIELD_ENUM (
+      QuantizeOptions,
+      note_type,
+      note_type_strings),
+    YAML_FIELD_FLOAT (QuantizeOptions, amount),
+    YAML_FIELD_INT (QuantizeOptions, adj_start),
+    YAML_FIELD_INT (QuantizeOptions, adj_end),
+    YAML_FIELD_FLOAT (QuantizeOptions, swing),
+    YAML_FIELD_FLOAT (QuantizeOptions, rand_ticks),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-quantize_options_schema = {
-  YAML_VALUE_PTR (
-    QuantizeOptions,
-    quantize_options_fields_schema),
-};
+  quantize_options_schema = {
+    YAML_VALUE_PTR (
+      QuantizeOptions,
+      quantize_options_fields_schema),
+  };
 
 void
 quantize_options_init (
@@ -132,12 +129,10 @@ quantize_options_update_quantize_points (
   QuantizeOptions * self);
 
 float
-quantize_options_get_swing (
-  QuantizeOptions * self);
+quantize_options_get_swing (QuantizeOptions * self);
 
 float
-quantize_options_get_amount (
-  QuantizeOptions * self);
+quantize_options_get_amount (QuantizeOptions * self);
 
 float
 quantize_options_get_randomization (
@@ -182,14 +177,13 @@ quantize_options_stringize (
 double
 quantize_options_quantize_position (
   QuantizeOptions * self,
-  Position *              pos);
+  Position *        pos);
 
 /**
  * Clones the QuantizeOptions.
  */
 QuantizeOptions *
-quantize_options_clone (
-  const QuantizeOptions * src);
+quantize_options_clone (const QuantizeOptions * src);
 
 QuantizeOptions *
 quantize_options_new (void);
@@ -198,8 +192,7 @@ quantize_options_new (void);
  * Free's the QuantizeOptions.
  */
 void
-quantize_options_free (
-  QuantizeOptions * self);
+quantize_options_free (QuantizeOptions * self);
 
 /**
  * @}

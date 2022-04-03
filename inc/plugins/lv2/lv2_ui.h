@@ -42,8 +42,7 @@ typedef struct Lv2Plugin Lv2Plugin;
  * Returns if the UI of the plugin is resizable.
  */
 bool
-lv2_ui_is_resizable (
-  Lv2Plugin* plugin);
+lv2_ui_is_resizable (Lv2Plugin * plugin);
 
 /**
  * Inits the LV2 plugin UI.
@@ -52,15 +51,13 @@ lv2_ui_is_resizable (
  * external UIs.
  */
 void
-lv2_ui_init (
-  Lv2Plugin* plugin);
+lv2_ui_init (Lv2Plugin * plugin);
 
 /**
  * Instantiates the plugin UI.
  */
 void
-lv2_ui_instantiate (
-  Lv2Plugin *  plugin);
+lv2_ui_instantiate (Lv2Plugin * plugin);
 
 /**
  * Read and apply control change events from UI,
@@ -74,18 +71,18 @@ lv2_ui_instantiate (
 void
 lv2_ui_read_and_apply_events (
   Lv2Plugin * plugin,
-  uint32_t nframes);
+  uint32_t    nframes);
 
 /**
  * Write events from the plugin's UI to the plugin.
  */
 void
 lv2_ui_send_event_from_ui_to_plugin (
-  Lv2Plugin *    plugin,
-  uint32_t       port_index,
-  uint32_t       buffer_size,
-  uint32_t       protocol, ///< format
-  const void*    buffer);
+  Lv2Plugin *  plugin,
+  uint32_t     port_index,
+  uint32_t     buffer_size,
+  uint32_t     protocol, ///< format
+  const void * buffer);
 
 /**
  * Send event to UI, called during the real time
@@ -111,8 +108,8 @@ lv2_ui_send_event_from_plugin_to_ui (
 NONNULL
 void
 lv2_ui_send_control_val_event_from_plugin_to_ui (
-  Lv2Plugin *  lv2_plugin,
-  Port *       port);
+  Lv2Plugin * lv2_plugin,
+  Port *      port);
 
 /**
  * @}

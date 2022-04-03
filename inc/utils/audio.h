@@ -50,17 +50,14 @@ typedef enum BitDepth
   BIT_DEPTH_32
 } BitDepth;
 
-static const cyaml_strval_t
-  bit_depth_strings[] =
-{
-  { "16",   BIT_DEPTH_16 },
-  { "24",   BIT_DEPTH_24 },
-  { "32",   BIT_DEPTH_32 },
+static const cyaml_strval_t bit_depth_strings[] = {
+  {"16",  BIT_DEPTH_16},
+  { "24", BIT_DEPTH_24},
+  { "32", BIT_DEPTH_32},
 };
 
 static inline int
-audio_bit_depth_enum_to_int (
-  BitDepth depth)
+audio_bit_depth_enum_to_int (BitDepth depth)
 {
   switch (depth)
     {
@@ -101,22 +98,21 @@ audio_audec_log_func (
  */
 int
 audio_write_raw_file (
-  float *          buff,
-  size_t           frames_already_written,
-  size_t           nframes,
-  uint32_t         samplerate,
-  bool             flac,
-  BitDepth         bit_depth,
-  channels_t       channels,
-  const char *     filename);
+  float *      buff,
+  size_t       frames_already_written,
+  size_t       nframes,
+  uint32_t     samplerate,
+  bool         flac,
+  BitDepth     bit_depth,
+  channels_t   channels,
+  const char * filename);
 
 /**
  * Returns the number of frames in the given audio
  * file.
  */
 unsigned_frame_t
-audio_get_num_frames (
-  const char * filepath);
+audio_get_num_frames (const char * filepath);
 
 /**
  * Returns whether the frame buffers are equal.
@@ -132,9 +128,7 @@ audio_frames_equal (
  * Returns whether the frame buffer is empty (zero).
  */
 bool
-audio_frames_empty (
-  float * src,
-  size_t  num_frames);
+audio_frames_empty (float * src, size_t num_frames);
 
 /**
  * Detect BPM.
@@ -149,8 +143,7 @@ audio_detect_bpm (
   GArray *     candidates);
 
 bool
-audio_file_is_silent (
-  const char * filepath);
+audio_file_is_silent (const char * filepath);
 
 /**
  * Returns the number of CPU cores.

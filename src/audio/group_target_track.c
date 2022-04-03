@@ -23,10 +23,10 @@
 #include "audio/group_target_track.h"
 #include "audio/router.h"
 #include "audio/track.h"
-#include "utils/arrays.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "project.h"
+#include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
@@ -34,27 +34,23 @@
 #include "zrythm_app.h"
 
 void
-group_target_track_init_loaded (
-  Track * self)
+group_target_track_init_loaded (Track * self)
 {
   self->children_size = (size_t) self->num_children;
   if (self->num_children == 0)
     {
       self->children_size = 1;
-      self->children =
-        calloc (
-          (size_t) self->children_size, sizeof (int));
+      self->children = calloc (
+        (size_t) self->children_size, sizeof (int));
     }
 }
 
 void
-group_target_track_init (
-  Track * self)
+group_target_track_init (Track * self)
 {
   self->children_size = 1;
-  self->children =
-    calloc (
-      (size_t) self->children_size, sizeof (int));
+  self->children = calloc (
+    (size_t) self->children_size, sizeof (int));
 }
 
 /**
@@ -72,8 +68,7 @@ update_child_output (
 
   if (ch->has_output)
     {
-      Track * track =
-        channel_get_output_track (ch);
+      Track * track = channel_get_output_track (ch);
       /* disconnect Channel's output from the
        * current
        * output channel */
@@ -89,8 +84,7 @@ update_child_output (
           break;
         case TYPE_EVENT:
           port_disconnect (
-            ch->midi_out,
-            track->processor->midi_in);
+            ch->midi_out, track->processor->midi_in);
           break;
         default:
           break;
@@ -116,8 +110,7 @@ update_child_output (
         case TYPE_EVENT:
           port_connect (
             ch->midi_out,
-            output->processor->midi_in,
-            F_LOCKED);
+            output->processor->midi_in, F_LOCKED);
           break;
         default:
           break;
@@ -171,17 +164,14 @@ group_target_track_remove_child (
   bool         pub_events)
 {
   g_return_if_fail (
-    child_name_hash !=
-      track_get_name_hash (self));
+    child_name_hash != track_get_name_hash (self));
   g_return_if_fail (
     contains_child (self, child_name_hash));
 
-  Tracklist * tracklist =
-    track_get_tracklist (self);
+  Tracklist * tracklist = track_get_tracklist (self);
 
-  Track * child =
-    tracklist_find_track_by_name_hash (
-      tracklist, child_name_hash);
+  Track * child = tracklist_find_track_by_name_hash (
+    tracklist, child_name_hash);
   g_return_if_fail (IS_TRACK_AND_NONNULL (child));
   g_message (
     "removing '%s' from '%s' - disconnect? %d",
@@ -224,8 +214,7 @@ group_target_track_remove_all_children (
 }
 
 bool
-group_target_track_validate (
-  Track * self)
+group_target_track_validate (Track * self)
 {
   for (int i = 0; i < self->num_children; i++)
     {
@@ -275,8 +264,8 @@ group_target_track_add_child (
         IS_TRACK_AND_NONNULL (out_track)
         && out_track->channel);
       update_child_output (
-        out_track->channel, self,
-        recalc_graph, pub_events);
+        out_track->channel, self, recalc_graph,
+        pub_events);
     }
 
   array_double_size_if_full (

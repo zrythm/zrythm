@@ -49,7 +49,7 @@ typedef struct ChordPresetPackManager
   /**
    * Scanned preset packs.
    */
-  GPtrArray *     pset_packs;
+  GPtrArray * pset_packs;
 } ChordPresetPackManager;
 
 /**
@@ -59,8 +59,7 @@ typedef struct ChordPresetPackManager
  *   packs.
  */
 ChordPresetPackManager *
-chord_preset_pack_manager_new (
-  bool scan_for_packs);
+chord_preset_pack_manager_new (bool scan_for_packs);
 
 int
 chord_preset_pack_manager_get_num_packs (

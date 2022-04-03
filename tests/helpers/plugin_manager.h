@@ -32,8 +32,8 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
-#include "utils/objects.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -48,7 +48,7 @@
 
 void
 test_plugin_manager_reload_lilv_world_w_path (
-  const char *    path);
+  const char * path);
 
 /**
  * Get a plugin setting clone from the given
@@ -78,7 +78,7 @@ test_plugin_manager_create_tracks_from_plugin (
 
 void
 test_plugin_manager_reload_lilv_world_w_path (
-  const char *    path)
+  const char * path)
 {
   LilvWorld * world = lilv_world_new ();
   PLUGIN_MANAGER->lilv_world = world;
@@ -190,10 +190,9 @@ test_plugin_manager_create_tracks_from_plugin (
     }
 
   /* create a track from the plugin */
-  bool ret =
-    track_create_with_action (
-      track_type, setting, NULL, NULL,
-      TRACKLIST->num_tracks, num_tracks, NULL);
+  bool ret = track_create_with_action (
+    track_type, setting, NULL, NULL,
+    TRACKLIST->num_tracks, num_tracks, NULL);
   g_assert_true (ret);
 
   return TRACKLIST->num_tracks - 1;

@@ -49,8 +49,7 @@ modulator_view_widget_refresh (
   z_gtk_widget_remove_all_children (
     GTK_WIDGET (self->modulators_box));
 
-  for (int i = 0;
-       i < self->track->num_modulators;
+  for (int i = 0; i < self->track->num_modulators;
        i++)
     {
       Plugin * modulator = track->modulators[i];
@@ -66,8 +65,7 @@ modulator_view_widget_refresh (
 
   DragDestBoxWidget * drag_dest =
     drag_dest_box_widget_new (
-      GTK_ORIENTATION_HORIZONTAL,
-      0,
+      GTK_ORIENTATION_HORIZONTAL, 0,
       DRAG_DEST_BOX_TYPE_MODULATORS);
   gtk_box_append (
     GTK_BOX (self->modulators_box),
@@ -78,8 +76,7 @@ ModulatorViewWidget *
 modulator_view_widget_new (void)
 {
   ModulatorViewWidget * self =
-    g_object_new (
-      MODULATOR_VIEW_WIDGET_TYPE, NULL);
+    g_object_new (MODULATOR_VIEW_WIDGET_TYPE, NULL);
 
   return self;
 }
@@ -92,18 +89,15 @@ modulator_view_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  rotated_label_widget_setup (
-    self->track_name, -90);
+  rotated_label_widget_setup (self->track_name, -90);
 
   GdkRGBA color;
   gdk_rgba_parse (&color, "gray");
-  color_area_widget_set_color (
-    self->color, &color);
+  color_area_widget_set_color (self->color, &color);
 
   DragDestBoxWidget * drag_dest =
     drag_dest_box_widget_new (
-      GTK_ORIENTATION_HORIZONTAL,
-      0,
+      GTK_ORIENTATION_HORIZONTAL, 0,
       DRAG_DEST_BOX_TYPE_MODULATORS);
   gtk_box_append (
     GTK_BOX (self->modulators_box),
@@ -125,8 +119,7 @@ static void
 modulator_view_widget_class_init (
   ModulatorViewWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "modulator_view.ui");
 
@@ -135,9 +128,7 @@ modulator_view_widget_class_init (
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, \
-    ModulatorViewWidget, \
-    x)
+    klass, ModulatorViewWidget, x)
 
   BIND_CHILD (color);
   BIND_CHILD (track_name);

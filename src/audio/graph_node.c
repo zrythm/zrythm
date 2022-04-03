@@ -35,7 +35,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <inttypes.h>
 #include <stdlib.h>
 
 #include "audio/engine.h"
@@ -60,14 +59,15 @@
 
 #include <gtk/gtk.h>
 
+#include <inttypes.h>
+
 /**
  * Returns a human friendly name of the node.
  *
  * Must be free'd.
  */
 char *
-graph_node_get_name (
-  GraphNode * node)
+graph_node_get_name (GraphNode * node)
 {
   char str[600];
   switch (node->type)
@@ -75,11 +75,9 @@ graph_node_get_name (
     case ROUTE_NODE_TYPE_PLUGIN:
       {
         Track * track = plugin_get_track (node->pl);
-        return
-          g_strdup_printf (
-            "%s/%s (Plugin)",
-            track->name,
-            node->pl->setting->descr->name);
+        return g_strdup_printf (
+          "%s/%s (Plugin)", track->name,
+          node->pl->setting->descr->name);
       }
     case ROUTE_NODE_TYPE_PORT:
       port_get_full_designation (node->port, str);
@@ -88,9 +86,8 @@ graph_node_get_name (
       {
         Track * track =
           fader_get_track (node->fader);
-        return
-          g_strdup_printf (
-            "%s Fader", track->name);
+        return g_strdup_printf (
+          "%s Fader", track->name);
       }
     case ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
       {
@@ -98,51 +95,41 @@ graph_node_get_name (
           node->modulator_macro_processor;
         Track * track =
           port_get_track (mmp->cv_in, true);
-        return
-          g_strdup_printf (
-            "%s Modulator Macro Processor",
-            track->name);
+        return g_strdup_printf (
+          "%s Modulator Macro Processor",
+          track->name);
       }
     case ROUTE_NODE_TYPE_TRACK:
-      return
-        g_strdup (
-          node->track->name);
+      return g_strdup (node->track->name);
     case ROUTE_NODE_TYPE_PREFADER:
       {
         Track * track =
           fader_get_track (node->prefader);
-        return
-          g_strdup_printf (
-            "%s Pre-Fader", track->name);
+        return g_strdup_printf (
+          "%s Pre-Fader", track->name);
       }
     case ROUTE_NODE_TYPE_MONITOR_FADER:
-      return
-        g_strdup ("Monitor Fader");
+      return g_strdup ("Monitor Fader");
     case ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
-      return
-        g_strdup ("Sample Processor");
+      return g_strdup ("Sample Processor");
     case ROUTE_NODE_TYPE_INITIAL_PROCESSOR:
-      return
-        g_strdup ("Initial Processor");
+      return g_strdup ("Initial Processor");
     case ROUTE_NODE_TYPE_HW_PROCESSOR:
-      return
-        g_strdup ("HW Processor");
+      return g_strdup ("HW Processor");
     case ROUTE_NODE_TYPE_CHANNEL_SEND:
       {
         Track * track =
           channel_send_get_track (node->send);
-        return
-          g_strdup_printf (
-            "%s/Channel Send %d",
-            track->name, node->send->slot + 1);
+        return g_strdup_printf (
+          "%s/Channel Send %d", track->name,
+          node->send->slot + 1);
       }
     }
   g_return_val_if_reached (NULL);
 }
 
 void *
-graph_node_get_pointer (
-  GraphNode * node)
+graph_node_get_pointer (GraphNode * node)
 {
   switch (node->type)
     {
@@ -191,24 +178,20 @@ graph_node_print_to_str (
     }
 
   char * name = graph_node_get_name (node);
-  char * str1 =
-    g_strdup_printf (
-      "node [(%d) %s] refcount: %d | terminal: %s | initial: %s | playback latency: %d",
-      node->id,
-      name,
-      node->refcount,
-      node->terminal ? "yes" : "no",
-      node->initial ? "yes" : "no",
-      node->playback_latency);
+  char * str1 = g_strdup_printf (
+    "node [(%d) %s] refcount: %d | terminal: %s | initial: %s | playback latency: %d",
+    node->id, name, node->refcount,
+    node->terminal ? "yes" : "no",
+    node->initial ? "yes" : "no",
+    node->playback_latency);
   g_free (name);
   char * str2;
   for (int j = 0; j < node->n_childnodes; j++)
     {
       dest = node->childnodes[j];
       name = graph_node_get_name (dest);
-      str2 =
-        g_strdup_printf ("%s (dest [(%d) %s])",
-          str1, dest->id, name);
+      str2 = g_strdup_printf (
+        "%s (dest [(%d) %s])", str1, dest->id, name);
       g_free (str1);
       g_free (name);
       str1 = str2;
@@ -218,19 +201,16 @@ graph_node_print_to_str (
 }
 
 void
-graph_node_print (
-  GraphNode * node)
+graph_node_print (GraphNode * node)
 {
   size_t sz = 2000;
-  char str[sz];
+  char   str[sz];
   graph_node_print_to_str (node, str, sz);
   g_message ("%s", str);
 }
 
-HOT
-static void
-on_node_finish (
-  GraphNode * self)
+HOT static void
+on_node_finish (GraphNode * self)
 {
   int feeds = 0;
 
@@ -261,8 +241,7 @@ on_node_finish (
     }
 }
 
-HOT
-static void
+HOT static void
 process_node (
   const GraphNode *           node,
   const EngineProcessTimeInfo time_nfo)
@@ -300,8 +279,9 @@ process_node (
           {
             g_return_if_reached ();
           }
-        if (track->type != TRACK_TYPE_TEMPO &&
-            track->type != TRACK_TYPE_MARKER)
+        if (
+          track->type != TRACK_TYPE_TEMPO
+          && track->type != TRACK_TYPE_MARKER)
           {
             track_processor_process (
               track->processor, &time_nfo);
@@ -316,14 +296,13 @@ process_node (
         /*PortIdentifier * id = &port->id;*/
 
         /* if midi editor manual press */
-        if (port ==
-              AUDIO_ENGINE->
-                midi_editor_manual_press)
+        if (
+          port
+          == AUDIO_ENGINE->midi_editor_manual_press)
           {
             midi_events_dequeue (
-              AUDIO_ENGINE->
-                midi_editor_manual_press->
-                  midi_events);
+              AUDIO_ENGINE->midi_editor_manual_press
+                ->midi_events);
           }
 
         /* if exporting and the port is not a
@@ -358,40 +337,41 @@ graph_node_process (
     node && node->graph && node->graph->router);
 
   /*g_message (*/
-    /*"processing %s", graph_node_get_name (node));*/
+  /*"processing %s", graph_node_get_name (node));*/
 
   /* skip BPM during cycle (already processed in
    * router_start_cycle()) */
   if (G_UNLIKELY (
-        node->graph->router->callback_in_progress &&
-        node->port &&
-        node->port == P_TEMPO_TRACK->bpm_port))
+        node->graph->router->callback_in_progress
+        && node->port
+        && node->port == P_TEMPO_TRACK->bpm_port))
     {
       goto node_process_finish;
     }
 
   /* figure out if we are doing a no-roll */
-  if (node->route_playback_latency <
-        AUDIO_ENGINE->remaining_latency_preroll)
+  if (
+    node->route_playback_latency
+    < AUDIO_ENGINE->remaining_latency_preroll)
     {
       /* no roll */
       if (node->type == ROUTE_NODE_TYPE_PLUGIN)
         {
-      /*g_message (*/
-        /*"-- not processing: %s "*/
-        /*"route latency %ld",*/
-        /*node->type == ROUTE_NODE_TYPE_PLUGIN ?*/
+          /*g_message (*/
+          /*"-- not processing: %s "*/
+          /*"route latency %ld",*/
+          /*node->type == ROUTE_NODE_TYPE_PLUGIN ?*/
           /*node->pl->descr->name :*/
           /*node->port->identifier.label,*/
-        /*node->route_playback_latency);*/
+          /*node->route_playback_latency);*/
         }
 
       /* if no-roll, only process terminal nodes
        * to set their buffers to 0 */
       goto node_process_finish;
       /*if (!node->terminal)*/
-        /*{*/
-        /*}*/
+      /*{*/
+      /*}*/
     }
 
   /* only compensate latency when rolling */
@@ -409,26 +389,26 @@ graph_node_process (
        * handled by the ports/processors instead */
       Position playhead_copy = *PLAYHEAD;
       g_warn_if_fail (
-        node->route_playback_latency >=
-          AUDIO_ENGINE->remaining_latency_preroll);
+        node->route_playback_latency
+        >= AUDIO_ENGINE->remaining_latency_preroll);
       transport_position_add_frames (
         TRANSPORT, &playhead_copy,
-        node->route_playback_latency -
-          AUDIO_ENGINE->remaining_latency_preroll);
+        node->route_playback_latency
+          - AUDIO_ENGINE->remaining_latency_preroll);
       time_nfo.g_start_frame =
         (unsigned_frame_t) playhead_copy.frames;
     }
 
   /* split at loop points */
-  for (nframes_t num_processable_frames = 0;
-       (num_processable_frames =
-          MIN (
-            transport_is_loop_point_met (
-              TRANSPORT,
-              (signed_frame_t)
-              time_nfo.g_start_frame,
-              time_nfo.nframes),
-            time_nfo.nframes)) != 0;)
+  for (
+    nframes_t num_processable_frames = 0;
+    (num_processable_frames = MIN (
+       transport_is_loop_point_met (
+         TRANSPORT,
+         (signed_frame_t) time_nfo.g_start_frame,
+         time_nfo.nframes),
+       time_nfo.nframes))
+    != 0;)
     {
 #if 0
       g_message (
@@ -442,8 +422,7 @@ graph_node_process (
        * having to declare a separate
        * EngineProcessTimeInfo */
       nframes_t orig_nframes = time_nfo.nframes;
-      time_nfo.nframes =
-        num_processable_frames;
+      time_nfo.nframes = num_processable_frames;
       process_node (node, time_nfo);
 
       /* calculate the remaining frames */
@@ -454,8 +433,10 @@ graph_node_process (
       time_nfo.g_start_frame =
         (time_nfo.g_start_frame
          + num_processable_frames
-         + (unsigned_frame_t) TRANSPORT->loop_start_pos.frames)
-        - (unsigned_frame_t) TRANSPORT->loop_end_pos.frames;
+         + (unsigned_frame_t)
+             TRANSPORT->loop_start_pos.frames)
+        - (unsigned_frame_t)
+            TRANSPORT->loop_end_pos.frames;
       time_nfo.local_offset +=
         num_processable_frames;
     }
@@ -477,8 +458,7 @@ node_process_finish:
  * processing.
  */
 void
-graph_node_trigger (
-  GraphNode * self)
+graph_node_trigger (GraphNode * self)
 {
   /* check if we can run */
   if (g_atomic_int_dec_and_test (&self->refcount))
@@ -500,9 +480,7 @@ graph_node_trigger (
 }
 
 static void
-add_feeds (
-  GraphNode * self,
-  GraphNode * dest)
+add_feeds (GraphNode * self, GraphNode * dest)
 {
   /* return if already added */
   for (int i = 0; i < self->n_childnodes; i++)
@@ -513,33 +491,28 @@ add_feeds (
         }
     }
 
-  self->childnodes =
-    (GraphNode **) g_realloc (
-      self->childnodes,
-      (size_t) (1 + self->n_childnodes) *
-        sizeof (GraphNode *));
+  self->childnodes = (GraphNode **) g_realloc (
+    self->childnodes,
+    (size_t) (1 + self->n_childnodes)
+      * sizeof (GraphNode *));
   self->childnodes[self->n_childnodes++] = dest;
 
   self->terminal = false;
 }
 
 static void
-add_depends (
-  GraphNode * self,
-  GraphNode * src)
+add_depends (GraphNode * self, GraphNode * src)
 {
   ++self->init_refcount;
   self->refcount = self->init_refcount;
 
   /* add parent nodes */
-  self->parentnodes =
-    (GraphNode **) g_realloc (
-      self->parentnodes,
-      (size_t) (self->init_refcount) *
-        sizeof (GraphNode *));
+  self->parentnodes = (GraphNode **) g_realloc (
+    self->parentnodes,
+    (size_t) (self->init_refcount)
+      * sizeof (GraphNode *));
 
-  self->parentnodes[self->init_refcount - 1] =
-    src;
+  self->parentnodes[self->init_refcount - 1] = src;
 
   self->initial = false;
 }
@@ -610,15 +583,11 @@ graph_node_set_route_playback_latency (
 }
 
 void
-graph_node_connect (
-  GraphNode * from,
-  GraphNode * to)
+graph_node_connect (GraphNode * from, GraphNode * to)
 {
   g_return_if_fail (from && to);
   if (array_contains (
-        from->childnodes,
-        from->n_childnodes,
-        to))
+        from->childnodes, from->n_childnodes, to))
     return;
 
   add_feeds (from, to);
@@ -629,14 +598,13 @@ graph_node_connect (
 
 GraphNode *
 graph_node_new (
-  Graph * graph,
+  Graph *       graph,
   GraphNodeType type,
-  void *   data)
+  void *        data)
 {
   GraphNode * node = object_new (GraphNode);
-  node->id =
-    (int)
-    g_hash_table_size (graph->setup_graph_nodes);
+  node->id = (int) g_hash_table_size (
+    graph->setup_graph_nodes);
   node->graph = graph;
   node->type = type;
   switch (type)
@@ -687,8 +655,7 @@ graph_node_new (
 }
 
 void
-graph_node_free (
-  GraphNode * self)
+graph_node_free (GraphNode * self)
 {
   free (self->childnodes);
   free (self->parentnodes);

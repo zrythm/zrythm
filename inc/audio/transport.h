@@ -34,9 +34,8 @@
 
 #include "zix/sem.h"
 
-typedef struct TimelineSelections
-  TimelineSelections;
-typedef struct AudioEngine AudioEngine;
+typedef struct TimelineSelections TimelineSelections;
+typedef struct AudioEngine        AudioEngine;
 
 /**
  * @addtogroup audio
@@ -55,8 +54,7 @@ typedef struct AudioEngine AudioEngine;
   (TRANSPORT->play_state == PLAYSTATE_ROLLING)
 #define TRANSPORT_IS_PAUSED \
   (TRANSPORT->play_state == PLAYSTATE_PAUSED)
-#define TRANSPORT_IS_LOOPING \
-  (TRANSPORT->loop)
+#define TRANSPORT_IS_LOOPING (TRANSPORT->loop)
 #define TRANSPORT_IS_RECORDING \
   (TRANSPORT->recording)
 
@@ -69,10 +67,10 @@ typedef enum PrerollCountBars
 } PrerollCountBars;
 
 static const char * preroll_count_bars_str[] = {
-  __("None"),
-  __("1 bar"),
-  __("2 bars"),
-  __("4 bars"),
+  __ ("None"),
+  __ ("1 bar"),
+  __ ("2 bars"),
+  __ ("4 bars"),
 };
 
 static inline const char *
@@ -100,7 +98,8 @@ transport_preroll_count_bars_enum_to_int (
   return -1;
 }
 
-typedef enum {
+typedef enum
+{
   PLAYSTATE_ROLL_REQUESTED,
   PLAYSTATE_ROLLING,
   PLAYSTATE_PAUSE_REQUESTED,
@@ -212,28 +211,28 @@ time_signature_schema =
  */
 typedef struct Transport
 {
-  int           schema_version;
+  int schema_version;
 
   /** Total bars in the song. */
-  int           total_bars;
+  int total_bars;
 
   /** Playhead position. */
-  Position      playhead_pos;
+  Position playhead_pos;
 
   /** Cue point position. */
-  Position      cue_pos;
+  Position cue_pos;
 
   /** Loop start position. */
-  Position      loop_start_pos;
+  Position loop_start_pos;
 
   /** Loop end position. */
-  Position      loop_end_pos;
+  Position loop_end_pos;
 
   /** Punch in position. */
-  Position      punch_in_pos;
+  Position punch_in_pos;
 
   /** Punch out position. */
-  Position      punch_out_pos;
+  Position punch_out_pos;
 
   /**
    * Selected range.
@@ -245,38 +244,38 @@ typedef struct Transport
    * Should be compared each time to see which one
    * is first.
    */
-  Position      range_1;
-  Position      range_2;
+  Position range_1;
+  Position range_2;
 
   /** Whether range should be displayed or not. */
-  int           has_range;
+  int has_range;
 
   //TimeSignature time_sig;
 
   /* ---------- CACHE -------------- */
-  int           ticks_per_beat;
-  int           ticks_per_bar;
-  int           sixteenths_per_beat;
-  int           sixteenths_per_bar;
+  int ticks_per_beat;
+  int ticks_per_bar;
+  int sixteenths_per_beat;
+  int sixteenths_per_bar;
 
   /* ------------------------------- */
 
   /** Transport position in frames.
    * FIXME is this used? */
-  nframes_t     position;
+  nframes_t position;
 
   /** Looping or not. */
-  bool          loop;
+  bool loop;
 
   /** Whether punch in/out mode is enabled. */
-  bool          punch_mode;
+  bool punch_mode;
 
   /** Whether MIDI/audio recording is enabled
    * (recording toggle in transport bar). */
-  bool          recording;
+  bool recording;
 
   /** Metronome enabled or not. */
-  bool          metronome_enabled;
+  bool metronome_enabled;
 
   /** Preroll frames remaining. */
   signed_frame_t preroll_frames_remaining;
@@ -285,7 +284,7 @@ typedef struct Transport
   signed_frame_t countin_frames_remaining;
 
   /** Whether to start playback on MIDI input. */
-  bool          start_playback_on_midi_input;
+  bool start_playback_on_midi_input;
 
   TransportRecordingMode recording_mode;
 
@@ -299,14 +298,14 @@ typedef struct Transport
   //int               starting_recording;
 
   /** Paused signal from process thread. */
-  ZixSem        paused;
+  ZixSem paused;
 
   /**
    * Position of the playhead before pausing.
    *
    * Used by UndoableAction.
    */
-  Position      playhead_before_pause;
+  Position playhead_before_pause;
 
   /**
    * Roll/play MIDI port.
@@ -314,7 +313,7 @@ typedef struct Transport
    * Any event received on this port will request
    * a roll.
    */
-  Port *        roll;
+  Port * roll;
 
   /**
    * Stop MIDI port.
@@ -322,93 +321,105 @@ typedef struct Transport
    * Any event received on this port will request
    * a stop/pause.
    */
-  Port *        stop;
+  Port * stop;
 
   /** Backward MIDI port. */
-  Port *        backward;
+  Port * backward;
 
   /** Forward MIDI port. */
-  Port *        forward;
+  Port * forward;
 
   /** Loop toggle MIDI port. */
-  Port *        loop_toggle;
+  Port * loop_toggle;
 
   /** Rec toggle MIDI port. */
-  Port *        rec_toggle;
+  Port * rec_toggle;
 
   /** Play state. */
-  Play_State    play_state;
+  Play_State play_state;
 
   /** Last timestamp the playhead position was
    * changed manually. */
-  gint64        last_manual_playhead_change;
+  gint64 last_manual_playhead_change;
 
   /** Pointer to owner audio engine, if any. */
   AudioEngine * audio_engine;
 } Transport;
 
-static const cyaml_schema_field_t
-transport_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    Transport, schema_version),
-  YAML_FIELD_INT (
-    Transport, total_bars),
+static const cyaml_schema_field_t transport_fields_schema[] = {
+  YAML_FIELD_INT (Transport, schema_version),
+  YAML_FIELD_INT (Transport, total_bars),
   YAML_FIELD_MAPPING_EMBEDDED (
-    Transport, playhead_pos,
+    Transport,
+    playhead_pos,
     position_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
-    Transport, cue_pos,
+    Transport,
+    cue_pos,
     position_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
-    Transport, loop_start_pos,
+    Transport,
+    loop_start_pos,
     position_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
-    Transport, loop_end_pos,
+    Transport,
+    loop_end_pos,
     position_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
-    Transport, punch_in_pos,
+    Transport,
+    punch_in_pos,
     position_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
-    Transport, punch_out_pos,
+    Transport,
+    punch_out_pos,
     position_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
-    Transport, range_1, position_fields_schema),
+    Transport,
+    range_1,
+    position_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
-    Transport, range_2, position_fields_schema),
-  YAML_FIELD_INT (
-    Transport, has_range),
-  YAML_FIELD_INT (
-    Transport, position),
+    Transport,
+    range_2,
+    position_fields_schema),
+  YAML_FIELD_INT (Transport, has_range),
+  YAML_FIELD_INT (Transport, position),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport, roll, port_fields_schema),
+    Transport,
+    roll,
+    port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport, stop, port_fields_schema),
+    Transport,
+    stop,
+    port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport, backward, port_fields_schema),
+    Transport,
+    backward,
+    port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport, forward, port_fields_schema),
+    Transport,
+    forward,
+    port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport, loop_toggle, port_fields_schema),
+    Transport,
+    loop_toggle,
+    port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport, rec_toggle, port_fields_schema),
+    Transport,
+    rec_toggle,
+    port_fields_schema),
 
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-transport_schema =
-{
-  YAML_VALUE_PTR (
-    Transport, transport_fields_schema),
+static const cyaml_schema_value_t transport_schema = {
+  YAML_VALUE_PTR (Transport, transport_fields_schema),
 };
 
 /**
  * Initialize transport
  */
 Transport *
-transport_new (
-  AudioEngine * engine);
+transport_new (AudioEngine * engine);
 
 /**
  * Initialize loaded transport.
@@ -428,8 +439,7 @@ transport_init_loaded (
  * Clones the transport values.
  */
 Transport *
-transport_clone (
-  const Transport * src);
+transport_clone (const Transport * src);
 
 /**
  * Prepares audio regions for stretching (sets the
@@ -477,7 +487,7 @@ transport_set_start_playback_on_midi_input (
 
 void
 transport_set_recording_mode (
-  Transport * self,
+  Transport *            self,
   TransportRecordingMode mode);
 
 /**
@@ -593,15 +603,13 @@ transport_set_loop (
  * Moves the playhead to the prev Marker.
  */
 void
-transport_goto_prev_marker (
-  Transport * self);
+transport_goto_prev_marker (Transport * self);
 
 /**
  * Moves the playhead to the next Marker.
  */
 void
-transport_goto_next_marker (
-  Transport * self);
+transport_goto_next_marker (Transport * self);
 
 /**
  * Updates the frames in all transport positions
@@ -646,8 +654,7 @@ transport_position_add_frames (
  * Returns the PPQN (Parts/Ticks Per Quarter Note).
  */
 double
-transport_get_ppqn (
-  Transport * self);
+transport_get_ppqn (Transport * self);
 
 /**
  * Stores the position of the range in \ref pos.
@@ -687,10 +694,7 @@ transport_set_range (
  * g_start_frames and (g_start_frames + nframes),
  * otherwise returns 0;
  */
-HOT
-NONNULL
-WARN_UNUSED_RESULT
-static inline nframes_t
+HOT NONNULL WARN_UNUSED_RESULT static inline nframes_t
 transport_is_loop_point_met (
   const Transport *    self,
   const signed_frame_t g_start_frames,
@@ -698,17 +702,13 @@ transport_is_loop_point_met (
 {
   if (
     self->loop
-    &&
-    G_UNLIKELY (
+    && G_UNLIKELY (
       self->loop_end_pos.frames > g_start_frames
-      &&
-      self->loop_end_pos.frames <=
-        g_start_frames + (long) nframes))
+      && self->loop_end_pos.frames
+           <= g_start_frames + (long) nframes))
     {
-      return
-        (nframes_t)
-        (self->loop_end_pos.frames -
-         g_start_frames);
+      return (
+        nframes_t) (self->loop_end_pos.frames - g_start_frames);
     }
   return 0;
 }
@@ -757,8 +757,7 @@ transport_set_recording (
   bool        fire_events);
 
 void
-transport_free (
-  Transport * self);
+transport_free (Transport * self);
 
 /**
  * @}

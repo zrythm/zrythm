@@ -25,13 +25,12 @@
 
 #include <stdlib.h>
 
-#include "audio/automation_tracklist.h"
 #include "audio/audio_bus_track.h"
+#include "audio/automation_tracklist.h"
 #include "project.h"
 
 void
-audio_bus_track_init (
-  Track * self)
+audio_bus_track_init (Track * self)
 {
   self->type = TRACK_TYPE_AUDIO_BUS;
   /* GTK color picker color */

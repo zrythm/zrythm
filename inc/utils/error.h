@@ -43,7 +43,7 @@ error_handle_prv (
  *
  * @note Only used for non-programming errors.
  */
-#define HANDLE_ERROR(err,fmt,...) \
+#define HANDLE_ERROR(err, fmt, ...) \
   { \
     error_handle_prv (err, fmt, __VA_ARGS__); \
     err = NULL; \
@@ -57,7 +57,7 @@ error_propagate_prefixed_prv (
   ...) G_GNUC_PRINTF (3, 4);
 
 #define PROPAGATE_PREFIXED_ERROR( \
-  main_err,err,fmt,...) \
+  main_err, err, fmt, ...) \
   { \
     error_propagate_prefixed_prv ( \
       main_err, err, fmt, __VA_ARGS__); \

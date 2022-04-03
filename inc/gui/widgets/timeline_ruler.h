@@ -31,7 +31,7 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _RulerRangeWidget RulerRangeWidget;
+typedef struct _RulerRangeWidget  RulerRangeWidget;
 typedef struct _RulerMarkerWidget RulerMarkerWidget;
 
 /**
@@ -52,16 +52,15 @@ timeline_ruler_widget_draw_markers (
 void
 timeline_ruler_on_drag_begin_no_marker_hit (
   RulerWidget * self,
-  gdouble               start_x,
-  gdouble               start_y,
-  int                  height);
+  gdouble       start_x,
+  gdouble       start_y,
+  int           height);
 
 /**
  * Called from ruler drag end.
  */
 void
-timeline_ruler_on_drag_end (
-  RulerWidget * self);
+timeline_ruler_on_drag_end (RulerWidget * self);
 
 /**
  * Called from ruler drag update.
@@ -69,8 +68,8 @@ timeline_ruler_on_drag_end (
 void
 timeline_ruler_on_drag_update (
   RulerWidget * self,
-  gdouble               offset_x,
-  gdouble               offset_y);
+  gdouble       offset_x,
+  gdouble       offset_y);
 
 /**
  * @}

@@ -48,12 +48,13 @@
 #ifndef __UTILS_MATH_H__
 #define __UTILS_MATH_H__
 
-#include <float.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
 
 #include "utils/types.h"
+
+#include <float.h>
 
 /**
  * @addtogroup utils
@@ -72,14 +73,14 @@
  * (-140dB). */
 #define MATH_TINY_NUMBER (0.0000001)
 
-#define MATH_MINUS_INFINITY (- HUGE_VAL)
+#define MATH_MINUS_INFINITY (-HUGE_VAL)
 
 /**
  * Checks if 2 doubles are equal.
  *
  * @param epsilon The allowed difference.
  */
-#define math_floats_equal_epsilon(a,b,e) \
+#define math_floats_equal_epsilon(a, b, e) \
   ((a) > (b) ? (a) - (b) < e : (b) - (a) < e)
 
 #define math_doubles_equal_epsilon \
@@ -88,15 +89,15 @@
 /**
  * Checks if 2 doubles are equal.
  */
-#define math_floats_equal(a,b) \
-  ((a) > (b) ? \
-   (a) - (b) < FLT_EPSILON : \
-   (b) - (a) < FLT_EPSILON)
+#define math_floats_equal(a, b) \
+  ((a) > (b) \
+     ? (a) - (b) < FLT_EPSILON \
+     : (b) - (a) < FLT_EPSILON)
 
-#define math_doubles_equal(a,b) \
-  ((a) > (b) ? \
-   (a) - (b) < DBL_EPSILON : \
-   (b) - (a) < DBL_EPSILON)
+#define math_doubles_equal(a, b) \
+  ((a) > (b) \
+     ? (a) - (b) < DBL_EPSILON \
+     : (b) - (a) < DBL_EPSILON)
 
 /**
  * Rounds a double to a (minimum) signed 32-bit
@@ -140,39 +141,40 @@
  */
 CONST
 static inline float
-math_fast_log2 (
-  float val)
+math_fast_log2 (float val)
 {
-  union {float f; int i;} t;
+  union
+  {
+    float f;
+    int   i;
+  } t;
   t.f = val;
-  int* const exp_ptr =  &t.i;
-  int        x       = *exp_ptr;
-  const int  log_2   = ((x >> 23) & 255) - 128;
+  int * const exp_ptr = &t.i;
+  int         x = *exp_ptr;
+  const int   log_2 = ((x >> 23) & 255) - 128;
 
   x &= ~(255 << 23);
   x += 127 << 23;
 
   *exp_ptr = x;
 
-  val = ((-1.0f/3) * t.f + 2) * t.f - 2.0f/3;
+  val = ((-1.0f / 3) * t.f + 2) * t.f - 2.0f / 3;
 
   return (val + log_2);
 }
 
 CONST
 static inline float
-math_fast_log (
-  const float val)
+math_fast_log (const float val)
 {
   return (math_fast_log2 (val) * 0.69314718f);
 }
 
 CONST
 static inline float
-math_fast_log10 (
-  const float val)
+math_fast_log10 (const float val)
 {
-  return math_fast_log2(val) / 3.312500f;
+  return math_fast_log2 (val) / 3.312500f;
 }
 
 /**
@@ -181,8 +183,7 @@ math_fast_log10 (
  */
 CONST
 static inline sample_t
-math_get_fader_val_from_amp (
-  sample_t amp)
+math_get_fader_val_from_amp (sample_t amp)
 {
   static const float fader_coefficient1 =
     /*192.f * logf (2.f);*/
@@ -205,8 +206,8 @@ math_get_fader_val_from_amp (
         }
       sample_t fader =
         powf (
-          6.f * logf (amp) + fader_coefficient1, 8.f) /
-        fader_coefficient2;
+          6.f * logf (amp) + fader_coefficient1, 8.f)
+        / fader_coefficient2;
       return (sample_t) fader;
     }
 }
@@ -217,15 +218,13 @@ math_get_fader_val_from_amp (
  */
 CONST
 static inline sample_t
-math_get_amp_val_from_fader (
-  sample_t fader)
+math_get_amp_val_from_fader (sample_t fader)
 {
   static const float val1 = 1.f / 6.f;
-  return
-    powf (
-      2.f,
-      (val1) *
-      (-192.f + 198.f * powf (fader, 1.f / 8.f)));
+  return powf (
+    2.f,
+    (val1)
+      * (-192.f + 198.f * powf (fader, 1.f / 8.f)));
 }
 
 /**
@@ -233,8 +232,7 @@ math_get_amp_val_from_fader (
  */
 CONST
 static inline sample_t
-math_amp_to_dbfs (
-  sample_t amp)
+math_amp_to_dbfs (sample_t amp)
 {
   return 20.f * log10f (amp);
 }
@@ -260,8 +258,7 @@ math_calculate_rms_db (
  */
 CONST
 static inline sample_t
-math_dbfs_to_amp (
-  sample_t dbfs)
+math_dbfs_to_amp (sample_t dbfs)
 {
   return powf (10.f, (dbfs / 20.f));
 }
@@ -271,12 +268,10 @@ math_dbfs_to_amp (
  */
 CONST
 static inline sample_t
-math_dbfs_to_fader_val (
-  sample_t dbfs)
+math_dbfs_to_fader_val (sample_t dbfs)
 {
-  return
-    math_get_fader_val_from_amp (
-      math_dbfs_to_amp (dbfs));
+  return math_get_fader_val_from_amp (
+    math_dbfs_to_amp (dbfs));
 }
 
 /**
@@ -287,8 +282,7 @@ math_dbfs_to_fader_val (
  * @return Whether the value is valid (nonnan).
  */
 bool
-math_assert_nonnann (
-  float x);
+math_assert_nonnann (float x);
 
 /**
  * @}

@@ -27,10 +27,11 @@
 G_DECLARE_FINAL_TYPE (
   SplashWindowWidget,
   splash_window_widget,
-  Z, SPLASH_WINDOW_WIDGET,
+  Z,
+  SPLASH_WINDOW_WIDGET,
   GtkWindow)
 
-typedef struct _ZrythmApp ZrythmApp;
+typedef struct _ZrythmApp         ZrythmApp;
 typedef struct _CustomImageWidget CustomImageWidget;
 
 /**
@@ -47,15 +48,14 @@ typedef struct _SplashWindowWidget
   GtkProgressBar *    progress_bar;
   CustomImageWidget * img;
 
-  guint               tick_cb_id;
+  guint tick_cb_id;
 } SplashWindowWidget;
 
 /**
  * Creates a splash_window widget.
  */
 SplashWindowWidget *
-splash_window_widget_new (
-  ZrythmApp * app);
+splash_window_widget_new (ZrythmApp * app);
 
 void
 splash_window_widget_close (

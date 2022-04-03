@@ -19,9 +19,9 @@
 
 #include "zrythm-test-config.h"
 
-#include "guile/guile.h"
-
 #include <gtk/gtk.h>
+
+#include "guile/guile.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-conversion"
@@ -45,16 +45,14 @@ call_proc (void * data)
    */
   scm_c_primitive_load (full_path);
   SCM func =
-    scm_variable_ref (
-      scm_c_lookup ("zrythm-test"));
+    scm_variable_ref (scm_c_lookup ("zrythm-test"));
   scm_call_0 (func);
 
   return SCM_BOOL_T;
 }
 
 static SCM
-eval_handler (
-  void * handler_data, SCM key, SCM args)
+eval_handler (void * handler_data, SCM key, SCM args)
 {
   SCM stack = *(SCM *) handler_data;
 
@@ -62,8 +60,7 @@ eval_handler (
    * after the stack has been unwound here. */
 
   scm_print_exception (
-    error_out_port, SCM_BOOL_F,
-    key, args);
+    error_out_port, SCM_BOOL_F, key, args);
   scm_display_backtrace (
     stack, error_out_port, SCM_BOOL_F, SCM_BOOL_F);
 
@@ -86,14 +83,11 @@ preunwind_proc (
 /**
  * Function that runs in guile mode.
  */
-static void*
+static void *
 guile_mode_func (void * data)
 {
-  char * script_path =
-    g_build_filename (
-      TESTS_SRCDIR,
-      (const char *) data,
-      NULL);
+  char * script_path = g_build_filename (
+    TESTS_SRCDIR, (const char *) data, NULL);
 
   guile_define_modules ();
 
@@ -105,18 +99,15 @@ guile_mode_func (void * data)
 
   SCM captured_stack = SCM_BOOL_F;
 
-  SCM ret =
-    scm_c_catch (
-      SCM_BOOL_T, call_proc, script_path, eval_handler,
-      &captured_stack, preunwind_proc,
-      &captured_stack);
+  SCM ret = scm_c_catch (
+    SCM_BOOL_T, call_proc, script_path,
+    eval_handler, &captured_stack, preunwind_proc,
+    &captured_stack);
   g_free (script_path);
 
   SCM str_scm = scm_get_output_string (out_port);
-  str_scm =
-    scm_get_output_string (error_out_port);
-  char * err_str =
-    scm_to_locale_string (str_scm);
+  str_scm = scm_get_output_string (error_out_port);
+  char * err_str = scm_to_locale_string (str_scm);
   if (ret == SCM_BOOL_T)
     {
       g_message ("Test successful");
@@ -130,17 +121,16 @@ guile_mode_func (void * data)
 }
 
 int
-main (
-  int     argc,
-  char ** argv)
+main (int argc, char ** argv)
 {
   if (argc != 2)
     {
       g_error ("Script path is required");
     }
 
-  if (scm_with_guile (
-        &guile_mode_func, argv[1]) == SCM_BOOL_T)
+  if (
+    scm_with_guile (&guile_mode_func, argv[1])
+    == SCM_BOOL_T)
     {
       return 0;
     }

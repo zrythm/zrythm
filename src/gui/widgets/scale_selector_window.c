@@ -29,8 +29,8 @@
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   ScaleSelectorWindowWidget,
@@ -43,8 +43,8 @@ on_close_request (
   ScaleSelectorWindowWidget * self)
 {
   arranger_selections_clear (
-    (ArrangerSelections *) TL_SELECTIONS,
-    F_NO_FREE, F_NO_PUBLISH_EVENTS);
+    (ArrangerSelections *) TL_SELECTIONS, F_NO_FREE,
+    F_NO_PUBLISH_EVENTS);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) self->scale);
@@ -61,16 +61,14 @@ on_close_request (
     musical_scale_clone (self->descr);
 
   GError * err = NULL;
-  bool ret =
-    arranger_selections_action_perform_edit (
-      before, after,
-      ARRANGER_SELECTIONS_ACTION_EDIT_SCALE,
-      F_NOT_ALREADY_EDITED, &err);
+  bool ret = arranger_selections_action_perform_edit (
+    before, after,
+    ARRANGER_SELECTIONS_ACTION_EDIT_SCALE,
+    F_NOT_ALREADY_EDITED, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s",
-        _("Failed to edit scale"));
+        err, "%s", _ ("Failed to edit scale"));
     }
 
   arranger_selections_free_full (before);
@@ -81,8 +79,8 @@ on_close_request (
 
 static void
 creator_select_root_note (
-  GtkFlowBox * box,
-  GtkFlowBoxChild * child,
+  GtkFlowBox *                box,
+  GtkFlowBoxChild *           child,
   ScaleSelectorWindowWidget * self)
 {
   MusicalScale * clone;
@@ -101,8 +99,8 @@ creator_select_root_note (
 
 static void
 creator_select_type (
-  GtkFlowBox * box,
-  GtkFlowBoxChild * child,
+  GtkFlowBox *                box,
+  GtkFlowBoxChild *           child,
   ScaleSelectorWindowWidget * self)
 {
   MusicalScale * clone;
@@ -111,9 +109,8 @@ creator_select_type (
     {
       if (self->creator_types[i] != child)
         continue;
-      clone =
-        musical_scale_new (
-          i, self->descr->root_key);
+      clone = musical_scale_new (
+        i, self->descr->root_key);
       musical_scale_free (self->descr);
       self->descr = clone;
       break;
@@ -122,7 +119,7 @@ creator_select_type (
 
 static void
 on_creator_root_note_selected_children_changed (
-  GtkFlowBox * flowbox,
+  GtkFlowBox *                flowbox,
   ScaleSelectorWindowWidget * self)
 {
   gtk_flow_box_selected_foreach (
@@ -133,7 +130,7 @@ on_creator_root_note_selected_children_changed (
 
 static void
 on_creator_type_selected_children_changed (
-  GtkFlowBox * flowbox,
+  GtkFlowBox *                flowbox,
   ScaleSelectorWindowWidget * self)
 {
   GList * selected_children =
@@ -141,8 +138,9 @@ on_creator_type_selected_children_changed (
   unsigned int list_len =
     g_list_length (selected_children);
   g_debug ("list len %u", list_len);
-  if (flowbox == self->creator_type_flowbox
-      && list_len > 0)
+  if (
+    flowbox == self->creator_type_flowbox
+    && list_len > 0)
     {
       gtk_flow_box_unselect_all (
         self->creator_type_other_flowbox);
@@ -163,11 +161,9 @@ on_creator_type_selected_children_changed (
 }
 
 static void
-setup_creator_tab (
-  ScaleSelectorWindowWidget * self)
+setup_creator_tab (ScaleSelectorWindowWidget * self)
 {
-  MusicalScale * descr =
-    self->scale->scale;
+  MusicalScale * descr = self->scale->scale;
 
 #define SELECT_CHILD(flowbox, child) \
   gtk_flow_box_select_child ( \
@@ -190,15 +186,21 @@ setup_creator_tab (
   g_signal_connect (
     G_OBJECT (self->creator_root_note_flowbox),
     "selected-children-changed",
-    G_CALLBACK (on_creator_root_note_selected_children_changed), self);
+    G_CALLBACK (
+      on_creator_root_note_selected_children_changed),
+    self);
   g_signal_connect (
     G_OBJECT (self->creator_type_flowbox),
     "selected-children-changed",
-    G_CALLBACK (on_creator_type_selected_children_changed), self);
+    G_CALLBACK (
+      on_creator_type_selected_children_changed),
+    self);
   g_signal_connect (
     G_OBJECT (self->creator_type_other_flowbox),
     "selected-children-changed",
-    G_CALLBACK (on_creator_type_selected_children_changed), self);
+    G_CALLBACK (
+      on_creator_type_selected_children_changed),
+    self);
 }
 
 /**
@@ -208,22 +210,17 @@ ScaleSelectorWindowWidget *
 scale_selector_window_widget_new (
   ScaleObject * owner)
 {
-  ScaleSelectorWindowWidget * self =
-    g_object_new (
-      SCALE_SELECTOR_WINDOW_WIDGET_TYPE,
-      NULL);
+  ScaleSelectorWindowWidget * self = g_object_new (
+    SCALE_SELECTOR_WINDOW_WIDGET_TYPE, NULL);
 
   self->scale = owner;
 
   gtk_window_set_transient_for (
-    GTK_WINDOW (self),
-    GTK_WINDOW (MAIN_WINDOW));
+    GTK_WINDOW (self), GTK_WINDOW (MAIN_WINDOW));
 
   setup_creator_tab (self);
 
-  self->descr =
-    musical_scale_clone (
-      owner->scale);
+  self->descr = musical_scale_clone (owner->scale);
 
   return self;
 }
@@ -238,9 +235,7 @@ scale_selector_window_widget_class_init (
 
 #define BIND_CHILD(child) \
   gtk_widget_class_bind_template_child ( \
-    klass, \
-    ScaleSelectorWindowWidget, \
-    child)
+    klass, ScaleSelectorWindowWidget, child)
 
   BIND_CHILD (creator_root_note_flowbox);
   BIND_CHILD (creator_root_note_c);

@@ -19,15 +19,16 @@
 
 #include "zrythm-test-config.h"
 
-#include "audio/track.h"
 #include "audio/tempo_track.h"
+#include "audio/track.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include <glib.h>
+
 #include "helpers/zrythm.h"
 
-#include <glib.h>
 #include <locale.h>
 
 static void
@@ -41,15 +42,14 @@ static void
 test_fetch_latest_release (void)
 {
 #ifdef CHECK_UPDATES
-  char * ver =
-    zrythm_fetch_latest_release_ver ();
+  char * ver = zrythm_fetch_latest_release_ver ();
   g_assert_nonnull (ver);
   g_assert_cmpuint (strlen (ver), <, 20);
 #endif
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

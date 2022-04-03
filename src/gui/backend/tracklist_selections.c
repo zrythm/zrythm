@@ -36,9 +36,8 @@
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
-
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 void
 tracklist_selections_init_loaded (
@@ -47,7 +46,7 @@ tracklist_selections_init_loaded (
   for (int i = 0; i < self->num_tracks; i++)
     {
       Track * track = self->tracks[i];
-      int track_pos = track->pos;
+      int     track_pos = track->pos;
       track_init_loaded (track, NULL, self);
       if (self->is_project)
         {
@@ -68,7 +67,7 @@ tracklist_selections_get_highest_track (
   TracklistSelections * ts)
 {
   Track * track;
-  int min_pos = 1000;
+  int     min_pos = 1000;
   Track * min_track = NULL;
   for (int i = 0; i < ts->num_tracks; i++)
     {
@@ -92,7 +91,7 @@ tracklist_selections_get_lowest_track (
   TracklistSelections * ts)
 {
   Track * track;
-  int max_pos = -1;
+  int     max_pos = -1;
   Track * max_track = NULL;
   for (int i = 0; i < ts->num_tracks; i++)
     {
@@ -113,8 +112,7 @@ tracklist_selections_get_lowest_track (
  *   the project selections (as opposed to clones).
  */
 TracklistSelections *
-tracklist_selections_new (
-  bool  is_project)
+tracklist_selections_new (bool is_project)
 {
   TracklistSelections * self =
     object_new (TracklistSelections);
@@ -136,13 +134,11 @@ tracklist_selections_add_track (
   Track *               track,
   bool                  fire_events)
 {
-  if (!array_contains (self->tracks,
-                      self->num_tracks,
-                      track))
+  if (!array_contains (
+        self->tracks, self->num_tracks, track))
     {
-      array_append (self->tracks,
-                    self->num_tracks,
-                    track);
+      array_append (
+        self->tracks, self->num_tracks, track);
 
       if (fire_events)
         {
@@ -155,16 +151,17 @@ tracklist_selections_add_track (
   g_debug (
     "%s currently recording: %d, have channel: %d",
     track->name,
-    track_type_can_record (track->type) &&
-      track_get_recording (track),
+    track_type_can_record (track->type)
+      && track_get_recording (track),
     track->channel != NULL);
 
   /* if recording is not already on, turn these on */
-  if (track_type_can_record (track->type) &&
-      !track_get_recording (track) && track->channel)
+  if (
+    track_type_can_record (track->type)
+    && !track_get_recording (track)
+    && track->channel)
     {
-      track_set_recording (
-        track, true, fire_events);
+      track_set_recording (track, true, fire_events);
       track->record_set_automatically = true;
     }
 }
@@ -177,8 +174,8 @@ tracklist_selections_add_tracks_in_range (
   bool                  fire_events)
 {
   g_message (
-    "selecting tracks from %d to %d...",
-    min_pos, max_pos);
+    "selecting tracks from %d to %d...", min_pos,
+    max_pos);
 
   tracklist_selections_clear (self);
 
@@ -220,8 +217,9 @@ tracklist_selections_clear (
         }
     }
 
-  if (self->is_project && ZRYTHM_HAVE_UI &&
-      PROJECT->loaded)
+  if (
+    self->is_project && ZRYTHM_HAVE_UI
+    && PROJECT->loaded)
     {
       EVENTS_PUSH (
         ET_TRACKLIST_SELECTIONS_CHANGED, NULL);
@@ -242,7 +240,7 @@ tracklist_selections_select_foldable_children (
   for (int i = 0; i < num_tracklist_sel; i++)
     {
       Track * cur_track = self->tracks[i];
-      int cur_idx = cur_track->pos;
+      int     cur_idx = cur_track->pos;
       if (track_type_is_foldable (cur_track->type))
         {
           for (int j = 1; j < cur_track->size; j++)
@@ -301,8 +299,8 @@ tracklist_selections_handle_click (
                 tracklist_selections_get_lowest_track (
                   TRACKLIST_SELECTIONS);
               g_return_if_fail (
-                IS_TRACK_AND_NONNULL (highest) &&
-                IS_TRACK_AND_NONNULL (lowest));
+                IS_TRACK_AND_NONNULL (highest)
+                && IS_TRACK_AND_NONNULL (lowest));
               if (track->pos > highest->pos)
                 {
                   /* select all tracks in between */
@@ -315,9 +313,8 @@ tracklist_selections_handle_click (
                 {
                   /* select all tracks in between */
                   tracklist_selections_add_tracks_in_range (
-                    TRACKLIST_SELECTIONS,
-                    track->pos, lowest->pos,
-                    F_PUBLISH_EVENTS);
+                    TRACKLIST_SELECTIONS, track->pos,
+                    lowest->pos, F_PUBLISH_EVENTS);
                 }
             }
         }
@@ -358,8 +355,8 @@ tracklist_selections_select_all (
         }
     }
 
-  EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
-               NULL);
+  EVENTS_PUSH (
+    ET_TRACKLIST_SELECTIONS_CHANGED, NULL);
 }
 
 void
@@ -380,23 +377,19 @@ tracklist_selections_remove_track (
       return;
     }
 
-    /* if record mode was set automatically
+  /* if record mode was set automatically
      * when the track was selected, turn record
      * off - unless currently recording */
-  if (track->channel
-      && track->record_set_automatically
-      &&
-      !(TRANSPORT_IS_RECORDING &&
-        TRANSPORT_IS_ROLLING))
+  if (
+    track->channel && track->record_set_automatically
+    && !(
+      TRANSPORT_IS_RECORDING && TRANSPORT_IS_ROLLING))
     {
       track_set_recording (track, 0, fire_events);
       track->record_set_automatically = false;
     }
 
-  array_delete (
-    ts->tracks,
-    ts->num_tracks,
-    track);
+  array_delete (ts->tracks, ts->num_tracks, track);
 
   if (fire_events)
     {
@@ -555,9 +548,8 @@ tracklist_selections_contains_track (
   TracklistSelections * self,
   Track *               track)
 {
-  return
-    array_contains (
-      self->tracks, self->num_tracks, track);
+  return array_contains (
+    self->tracks, self->num_tracks, track);
 }
 
 bool
@@ -588,9 +580,9 @@ tracklist_selections_print (
   for (int i = 0; i < self->num_tracks; i++)
     {
       track = self->tracks[i];
-      g_message ("[idx %d] %s (pos %d)",
-                 i, track->name,
-                 track->pos);
+      g_message (
+        "[idx %d] %s (pos %d)", i, track->name,
+        track->pos);
     }
   g_message ("-------- end --------");
 }
@@ -607,8 +599,7 @@ tracklist_selections_select_single (
 {
   tracklist_selections_clear (ts);
 
-  tracklist_selections_add_track (
-    ts, track, 0);
+  tracklist_selections_add_track (ts, track, 0);
 
   if (fire_events)
     {
@@ -625,28 +616,26 @@ void
 tracklist_selections_select_last_visible (
   TracklistSelections * ts)
 {
-  Track * track =
-    tracklist_get_last_track (
-      TRACKLIST,
-      TRACKLIST_PIN_OPTION_BOTH, true);
+  Track * track = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, true);
   g_warn_if_fail (track);
   tracklist_selections_select_single (
     ts, track, F_PUBLISH_EVENTS);
 }
 
 static int
-sort_tracks_func_desc (const void *a, const void *b)
+sort_tracks_func_desc (const void * a, const void * b)
 {
-  Track * aa = * (Track * const *) a;
-  Track * bb = * (Track * const *) b;
+  Track * aa = *(Track * const *) a;
+  Track * bb = *(Track * const *) b;
   return aa->pos < bb->pos;
 }
 
 static int
-sort_tracks_func (const void *a, const void *b)
+sort_tracks_func (const void * a, const void * b)
 {
-  Track * aa = * (Track * const *) a;
-  Track * bb = * (Track * const *) b;
+  Track * aa = *(Track * const *) a;
+  Track * bb = *(Track * const *) b;
   return aa->pos > bb->pos;
 }
 
@@ -661,8 +650,7 @@ tracklist_selections_sort (
   bool                  asc)
 {
   qsort (
-    self->tracks,
-    (size_t) self->num_tracks,
+    self->tracks, (size_t) self->num_tracks,
     sizeof (Track *),
     asc ? sort_tracks_func : sort_tracks_func_desc);
 }
@@ -736,20 +724,19 @@ tracklist_selections_clone (
       Track * r = src->tracks[i];
 
       GError * err = NULL;
-      Track * new_r = track_clone (r, &err);
+      Track *  new_r = track_clone (r, &err);
       if (!new_r)
         {
           PROPAGATE_PREFIXED_ERROR (
             error, err,
-            _("Failed to clone track '%s'"),
+            _ ("Failed to clone track '%s'"),
             r->name);
           object_free_w_func_and_null (
             tracklist_selections_free, self);
           return NULL;
         }
       array_append (
-        self->tracks, self->num_tracks,
-        new_r);
+        self->tracks, self->num_tracks, new_r);
     }
 
   self->is_project = false;
@@ -777,14 +764,13 @@ tracklist_selections_paste_to_pos (
   int                   pos)
 {
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     tracklist_selections_action_perform_copy (
       ts, PORT_CONNECTIONS_MGR, pos, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s",
-        _("Failed to paste tracks"));
+        err, "%s", _ ("Failed to paste tracks"));
     }
 }
 

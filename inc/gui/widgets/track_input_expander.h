@@ -38,8 +38,8 @@ G_DECLARE_FINAL_TYPE (
   TwoColExpanderBoxWidget);
 
 typedef struct _EditableLabelWidget
-  EditableLabelWidget;
-typedef struct Track Track;
+                           EditableLabelWidget;
+typedef struct Track       Track;
 typedef struct _KnobWidget KnobWidget;
 
 typedef struct _TrackInputExpanderWidget
@@ -47,30 +47,30 @@ typedef struct _TrackInputExpanderWidget
   TwoColExpanderBoxWidget parent_instance;
 
   /** Track input port for midi. */
-  GtkComboBox *      midi_input;
+  GtkComboBox * midi_input;
 
   /** Track input port for audio L. */
-  GtkComboBox *      stereo_l_input;
+  GtkComboBox * stereo_l_input;
 
   /** Track input port for audio R. */
-  GtkComboBox *      stereo_r_input;
+  GtkComboBox * stereo_r_input;
 
   /** MIDI channels selector. */
-  GtkComboBox *      midi_channels;
+  GtkComboBox * midi_channels;
 
   /** Size group for audio inputs. */
-  GtkSizeGroup *     audio_input_size_group;
+  GtkSizeGroup * audio_input_size_group;
 
   /** Mono switch for audio tracks. */
-  GtkToggleButton *  mono;
+  GtkToggleButton * mono;
 
   /** Gain knob for audio tracks. */
-  GtkBox *           gain_box;
-  KnobWidget *       gain;
+  GtkBox *     gain_box;
+  KnobWidget * gain;
 
   /** Track the TrackInputExpanderWidget is
    * associated with. */
-  Track *            track;
+  Track * track;
 } TrackInputExpanderWidget;
 
 /**

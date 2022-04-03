@@ -41,44 +41,37 @@
  */
 typedef struct EditorSettings
 {
-  int             schema_version;
+  int schema_version;
 
   /** Horizontal scroll start position. */
-  int             scroll_start_x;
+  int scroll_start_x;
 
   /** Vertical scroll start position. */
-  int             scroll_start_y;
+  int scroll_start_y;
 
   /** Horizontal zoom level. */
-  double           hzoom_level;
+  double hzoom_level;
 } EditorSettings;
 
 static const cyaml_schema_field_t
-editor_settings_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    EditorSettings, schema_version),
-  YAML_FIELD_INT (
-    EditorSettings, scroll_start_x),
-  YAML_FIELD_INT (
-    EditorSettings, scroll_start_y),
-  YAML_FIELD_FLOAT (
-    EditorSettings, hzoom_level),
+  editor_settings_fields_schema[] = {
+    YAML_FIELD_INT (EditorSettings, schema_version),
+    YAML_FIELD_INT (EditorSettings, scroll_start_x),
+    YAML_FIELD_INT (EditorSettings, scroll_start_y),
+    YAML_FIELD_FLOAT (EditorSettings, hzoom_level),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-editor_settings_schema =
-{
-  YAML_VALUE_PTR (
-    EditorSettings,
-    editor_settings_fields_schema),
-};
+  editor_settings_schema = {
+    YAML_VALUE_PTR (
+      EditorSettings,
+      editor_settings_fields_schema),
+  };
 
 void
-editor_settings_init (
-  EditorSettings * self);
+editor_settings_init (EditorSettings * self);
 
 /**
  * @}

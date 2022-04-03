@@ -31,19 +31,20 @@
 #define FOLDER_CHANNEL_WIDGET_TYPE \
   (folder_channel_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  FolderChannelWidget, folder_channel_widget,
-  Z, FOLDER_CHANNEL_WIDGET,
+  FolderChannelWidget,
+  folder_channel_widget,
+  Z,
+  FOLDER_CHANNEL_WIDGET,
   GtkBox)
 
 typedef struct _ColorAreaWidget ColorAreaWidget;
-typedef struct Track Track;
-typedef struct _FolderChannelSlotWidget FolderChannelSlotWidget;
+typedef struct Track            Track;
+typedef struct _FolderChannelSlotWidget
+  FolderChannelSlotWidget;
 typedef struct _EditableLabelWidget
   EditableLabelWidget;
-typedef struct _RotatedLabelWidget
-  RotatedLabelWidget;
-typedef struct _FaderButtonsWidget
-  FaderButtonsWidget;
+typedef struct _RotatedLabelWidget RotatedLabelWidget;
+typedef struct _FaderButtonsWidget FaderButtonsWidget;
 
 /**
  * @addtogroup widgets
@@ -53,41 +54,41 @@ typedef struct _FaderButtonsWidget
 
 typedef struct _FolderChannelWidget
 {
-  GtkBox         parent_instance;
-  GtkGrid *           grid;
-  ColorAreaWidget *   color_top;
-  ColorAreaWidget *   color_left;
-  GtkBox *       icon_and_name_event_box;
+  GtkBox               parent_instance;
+  GtkGrid *            grid;
+  ColorAreaWidget *    color_top;
+  ColorAreaWidget *    color_left;
+  GtkBox *             icon_and_name_event_box;
   RotatedLabelWidget * name;
 
-  GtkImage *          icon;
+  GtkImage * icon;
 
-  GtkToggleButton *   fold_toggle;
+  GtkToggleButton * fold_toggle;
 
   /** Used for highlighting. */
-  GtkBox *            highlight_left_box;
-  GtkBox *            highlight_right_box;
+  GtkBox * highlight_left_box;
+  GtkBox * highlight_right_box;
 
   /** Fader buttons. */
-  FaderButtonsWidget *  fader_buttons;
+  FaderButtonsWidget * fader_buttons;
 
   /** Number of clicks, used when selecting/moving/
    * dragging channels. */
-  int                 n_press;
+  int n_press;
 
   /** Control held down on drag begin. */
-  int                 ctrl_held_at_start;
+  int ctrl_held_at_start;
 
   /** If drag update was called at least once. */
-  int                 dragged;
+  int dragged;
 
   /** The track selection processing was done in
    * the dnd callbacks, so no need to do it in
    * drag_end. */
-  int                 selected_in_dnd;
+  int selected_in_dnd;
 
   /** Pointer to owner Track. */
-  Track *             track;
+  Track * track;
 
   /** Whole folder_channel press. */
   GtkGestureClick * mp;
@@ -95,11 +96,11 @@ typedef struct _FolderChannelWidget
   GtkGestureClick * right_mouse_mp;
 
   /** Drag on the icon and name event box. */
-  GtkGestureDrag       * drag;
+  GtkGestureDrag * drag;
 
-  gulong              fold_toggled_handler_id;
+  gulong fold_toggled_handler_id;
 
-  bool                   setup;
+  bool setup;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
@@ -109,8 +110,7 @@ typedef struct _FolderChannelWidget
  * Creates a folder_channel widget using the given folder_channel data.
  */
 FolderChannelWidget *
-folder_channel_widget_new (
-  Track * track);
+folder_channel_widget_new (Track * track);
 
 void
 folder_channel_widget_tear_down (

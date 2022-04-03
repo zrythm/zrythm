@@ -35,8 +35,7 @@ custom_image_snapshot (
   gtk_snapshot_append_texture (
     snapshot, self->texture,
     &GRAPHENE_RECT_INIT (
-      0, 0,
-      gdk_texture_get_width (self->texture),
+      0, 0, gdk_texture_get_width (self->texture),
       gdk_texture_get_height (self->texture)));
 }
 
@@ -69,8 +68,7 @@ static void
 custom_image_widget_class_init (
   CustomImageWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   klass->snapshot = custom_image_snapshot;
   gtk_widget_class_set_css_name (
     klass, "custom-image");

@@ -30,8 +30,8 @@
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
@@ -42,22 +42,18 @@
 
 int
 automation_region_sort_func (
-  const void * _a, const void * _b)
+  const void * _a,
+  const void * _b)
 {
   AutomationPoint * a =
     *(AutomationPoint * const *) _a;
   AutomationPoint * b =
-    *(AutomationPoint * const *)_b;
-  ArrangerObject * a_obj =
-    (ArrangerObject *) a;
-  ArrangerObject * b_obj =
-    (ArrangerObject *) b;
-  long ret =
-    position_compare (
-      &a_obj->pos, &b_obj->pos);
-  if (ret == 0 &&
-      a->index <
-      b->index)
+    *(AutomationPoint * const *) _b;
+  ArrangerObject * a_obj = (ArrangerObject *) a;
+  ArrangerObject * b_obj = (ArrangerObject *) b;
+  long             ret =
+    position_compare (&a_obj->pos, &b_obj->pos);
+  if (ret == 0 && a->index < b->index)
     {
       return -1;
     }
@@ -92,11 +88,10 @@ automation_region_new (
  * Prints the automation in this Region.
  */
 void
-automation_region_print_automation (
-  ZRegion * self)
+automation_region_print_automation (ZRegion * self)
 {
   AutomationPoint * ap;
-  ArrangerObject * ap_obj;
+  ArrangerObject *  ap_obj;
   for (int i = 0; i < self->num_aps; i++)
     {
       ap = self->aps[i];
@@ -110,14 +105,13 @@ automation_region_print_automation (
  * Forces sort of the automation points.
  */
 void
-automation_region_force_sort (
-  ZRegion * self)
+automation_region_force_sort (ZRegion * self)
 {
   /* sort by position */
-  qsort (self->aps,
-         (size_t) self->num_aps,
-         sizeof (AutomationPoint *),
-         automation_region_sort_func);
+  qsort (
+    self->aps, (size_t) self->num_aps,
+    sizeof (AutomationPoint *),
+    automation_region_sort_func);
 
   /* refresh indices */
   for (int i = 0; i < self->num_aps; i++)
@@ -143,8 +137,7 @@ automation_region_add_ap (
   array_double_size_if_full (
     self->aps, self->num_aps, self->aps_size,
     AutomationPoint *);
-  array_append (
-    self->aps, self->num_aps, ap);
+  array_append (self->aps, self->num_aps, ap);
 
   /* re-sort */
   automation_region_force_sort (self);
@@ -154,7 +147,6 @@ automation_region_add_ap (
       EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, ap);
     }
 }
-
 
 /**
  * Returns the AutomationPoint before the given
@@ -190,19 +182,17 @@ automation_region_get_next_ap (
   bool              check_positions,
   bool              check_transients)
 {
-  g_return_val_if_fail (
-    self && ap, NULL);
+  g_return_val_if_fail (self && ap, NULL);
 
   if (check_positions)
     {
       check_transients =
-        ZRYTHM_HAVE_UI &&
-        MW_AUTOMATION_ARRANGER &&
-        MW_AUTOMATION_ARRANGER->action ==
-          UI_OVERLAY_ACTION_MOVING_COPY;
-      ArrangerObject * obj = (ArrangerObject *) ap;
+        ZRYTHM_HAVE_UI && MW_AUTOMATION_ARRANGER
+        && MW_AUTOMATION_ARRANGER->action
+             == UI_OVERLAY_ACTION_MOVING_COPY;
+      ArrangerObject *  obj = (ArrangerObject *) ap;
       AutomationPoint * next_ap = NULL;
-      ArrangerObject * next_obj = NULL;
+      ArrangerObject *  next_obj = NULL;
       for (int i = 0; i < self->num_aps; i++)
         {
           for (int j = 0;
@@ -218,8 +208,7 @@ automation_region_get_next_ap (
                     {
                       cur_obj = cur_obj->transient;
                       cur_ap =
-                        (AutomationPoint *)
-                        cur_obj;
+                        (AutomationPoint *) cur_obj;
                     }
                   else
                     continue;
@@ -268,8 +257,7 @@ automation_region_remove_ap (
   g_message ("removing %p", ap);
   /* deselect */
   arranger_object_select (
-    (ArrangerObject *) ap, F_NO_SELECT,
-    F_APPEND,
+    (ArrangerObject *) ap, F_NO_SELECT, F_APPEND,
     F_NO_PUBLISH_EVENTS);
 
   if (self->last_recorded_ap == ap)
@@ -277,8 +265,7 @@ automation_region_remove_ap (
       self->last_recorded_ap = NULL;
     }
 
-  array_delete (
-    self->aps, self->num_aps, ap);
+  array_delete (self->aps, self->num_aps, ap);
 
   if (!freeing_region)
     {
@@ -308,29 +295,31 @@ automation_region_remove_ap (
  */
 void
 automation_region_get_aps_since_last_recorded (
-  ZRegion *          self,
-  Position *         pos,
-  GPtrArray *        aps)
+  ZRegion *   self,
+  Position *  pos,
+  GPtrArray * aps)
 {
   g_ptr_array_remove_range (aps, 0, aps->len);
 
   ArrangerObject * last_recorded_obj =
     (ArrangerObject *) self->last_recorded_ap;
-  if (!last_recorded_obj ||
-      position_is_before_or_equal (
-        pos, &last_recorded_obj->pos))
+  if (
+    !last_recorded_obj
+    || position_is_before_or_equal (
+      pos, &last_recorded_obj->pos))
     return;
 
   for (int i = 0; i < self->num_aps; i++)
     {
       AutomationPoint * ap = self->aps[i];
-      ArrangerObject * ap_obj =
+      ArrangerObject *  ap_obj =
         (ArrangerObject *) ap;
 
-      if (position_is_after (
-            &ap_obj->pos, &last_recorded_obj->pos) &&
-          position_is_before_or_equal (
-            &ap_obj->pos, pos))
+      if (
+        position_is_after (
+          &ap_obj->pos, &last_recorded_obj->pos)
+        && position_is_before_or_equal (
+          &ap_obj->pos, pos))
         {
           g_ptr_array_add (aps, ap);
         }
@@ -359,27 +348,24 @@ automation_region_get_ap_around (
   AutomationPoint * ap =
     automation_track_get_ap_before_pos (
       at, &pos, true);
-  ArrangerObject * ap_obj =
-    (ArrangerObject *) ap;
-  if (ap &&
-      pos.ticks -
-        ap_obj->pos.ticks <=
-          (double) delta_ticks)
+  ArrangerObject * ap_obj = (ArrangerObject *) ap;
+  if (
+    ap
+    && pos.ticks - ap_obj->pos.ticks
+         <= (double) delta_ticks)
     {
       return ap;
     }
   else if (!before_only)
     {
       position_add_ticks (&pos, delta_ticks);
-      ap =
-        automation_track_get_ap_before_pos (
-          at, &pos, true);
+      ap = automation_track_get_ap_before_pos (
+        at, &pos, true);
       ap_obj = (ArrangerObject *) ap;
       if (ap)
         {
           double diff =
-            ap_obj->pos.ticks -
-              _pos->ticks;
+            ap_obj->pos.ticks - _pos->ticks;
           if (diff >= 0.0)
             return ap;
         }
@@ -389,8 +375,7 @@ automation_region_get_ap_around (
 }
 
 bool
-automation_region_validate (
-  ZRegion * self)
+automation_region_validate (ZRegion * self)
 {
   for (int i = 0; i < self->num_aps; i++)
     {
@@ -408,8 +393,7 @@ automation_region_validate (
  * Regions should be free'd using region_free.
  */
 void
-automation_region_free_members (
-  ZRegion * self)
+automation_region_free_members (ZRegion * self)
 {
   int i;
   for (i = self->num_aps - 1; i >= 0; i--)

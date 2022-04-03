@@ -28,7 +28,7 @@
 #define MW_MIDI_MODIFIER_ARRANGER \
   (MW_MIDI_EDITOR_SPACE->modifier_arranger)
 
-typedef struct Velocity Velocity;
+typedef struct Velocity        Velocity;
 typedef struct _VelocityWidget VelocityWidget;
 typedef struct _ArrangerWidget ArrangerWidget;
 

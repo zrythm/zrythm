@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   AutomationEditorSpaceWidget,
   automation_editor_space_widget,
-  Z, AUTOMATION_EDITOR_SPACE_WIDGET,
+  Z,
+  AUTOMATION_EDITOR_SPACE_WIDGET,
   GtkBox)
 
 typedef struct _ArrangerWidget ArrangerWidget;
@@ -55,15 +56,15 @@ typedef struct _AutomationEditorLegendWidget
  */
 typedef struct _AutomationEditorSpaceWidget
 {
-  GtkBox              parent_instance;
+  GtkBox parent_instance;
 
   /** The box dividing the chord keys and the
    * arranger. */
-  GtkBox *            left_slash_arranger_box;
+  GtkBox * left_slash_arranger_box;
 
   /** The box on the left of the arranger containing
    * the chord keys. */
-  GtkBox *            left_box;
+  GtkBox * left_box;
 
   /** The arranger. */
   ArrangerWidget *    arranger;
@@ -84,7 +85,7 @@ automation_editor_space_widget_setup (
 void
 automation_editor_space_widget_update_size_group (
   AutomationEditorSpaceWidget * self,
-  int                     visible);
+  int                           visible);
 
 void
 automation_editor_space_widget_refresh (

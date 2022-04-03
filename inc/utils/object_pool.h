@@ -32,27 +32,27 @@
  * Function to call to create the objects in the
  * pool.
  */
-typedef void * (* ObjectCreatorFunc) (void);
+typedef void * (*ObjectCreatorFunc) (void);
 
 /**
  * Function to call to free the objects in the
  * pool.
  */
-typedef void (* ObjectFreeFunc) (void *);
+typedef void (*ObjectFreeFunc) (void *);
 
 typedef struct ObjectPool
 {
-  int         max_objects;
+  int max_objects;
 
   /** Available objects. */
-  void **     obj_available;
-  int         num_obj_available;
+  void ** obj_available;
+  int     num_obj_available;
 
   /** Object free func. */
   ObjectFreeFunc free_func;
 
   /** Semaphore for atomic operations. */
-  ZixSem      access_sem;
+  ZixSem access_sem;
 } ObjectPool;
 
 /**
@@ -68,8 +68,7 @@ object_pool_new (
  * Returns an available object.
  */
 void *
-object_pool_get (
-  ObjectPool * self);
+object_pool_get (ObjectPool * self);
 
 /**
  * Returns the number of available objects.
@@ -79,22 +78,18 @@ object_pool_get (
  *   for debugging purposes.
  */
 int
-object_pool_get_num_available (
-  ObjectPool * self);
+object_pool_get_num_available (ObjectPool * self);
 
 /**
  * Puts an object back in the pool.
  */
 void
-object_pool_return (
-  ObjectPool * self,
-  void *       object);
+object_pool_return (ObjectPool * self, void * object);
 
 /**
  * Frees the pool and all its objects.
  */
 void
-object_pool_free (
-  ObjectPool * self);
+object_pool_free (ObjectPool * self);
 
 #endif

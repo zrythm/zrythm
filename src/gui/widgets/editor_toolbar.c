@@ -43,35 +43,33 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  EditorToolbarWidget, editor_toolbar_widget,
+  EditorToolbarWidget,
+  editor_toolbar_widget,
   GTK_TYPE_WIDGET)
 
 static void
 on_highlighting_changed (
-  GtkComboBox *widget,
+  GtkComboBox *         widget,
   EditorToolbarWidget * self)
 {
   piano_roll_set_highlighting (
-    PIANO_ROLL,
-    gtk_combo_box_get_active (widget));
+    PIANO_ROLL, gtk_combo_box_get_active (widget));
 }
 
 static GtkButton *
-gen_apply_funcs_btn (
-  EditorToolbarWidget * self)
+gen_apply_funcs_btn (EditorToolbarWidget * self)
 {
   const char * str = "Legato";
-  GtkButton * btn =
-    GTK_BUTTON (
-      gtk_button_new_from_icon_name (
-        /*"mathmode",*/
-        "code-context"));
+  GtkButton *  btn =
+    GTK_BUTTON (gtk_button_new_from_icon_name (
+      /*"mathmode",*/
+      "code-context"));
   gtk_actionable_set_detailed_action_name (
     GTK_ACTIONABLE (btn),
     "app.editor-function::current");
   gtk_button_set_label (btn, str);
   /*gtk_button_set_always_show_image (*/
-    /*self->apply_function_btn, true);*/
+  /*self->apply_function_btn, true);*/
 
   return btn;
 }
@@ -80,8 +78,7 @@ gen_apply_funcs_btn (
  * Appends eligible plugins.
  */
 static void
-update_audio_funcs_menu (
-  EditorToolbarWidget * self)
+update_audio_funcs_menu (EditorToolbarWidget * self)
 {
   self->audio_functions_menu =
     G_MENU_MODEL (g_menu_new ());
@@ -89,29 +86,28 @@ update_audio_funcs_menu (
        i < AUDIO_FUNCTION_CUSTOM_PLUGIN; i++)
     {
       /* not implemented yet */
-      if (i == AUDIO_FUNCTION_NORMALIZE_RMS
-          || i == AUDIO_FUNCTION_NORMALIZE_LUFS)
+      if (
+        i == AUDIO_FUNCTION_NORMALIZE_RMS
+        || i == AUDIO_FUNCTION_NORMALIZE_LUFS)
         continue;
 
       char * detailed_action =
         audio_function_get_detailed_action_for_type (
           i, "editor-toolbar.editor-function");
-      GMenuItem * item =
-        g_menu_item_new (
-          audio_function_type_to_string (i),
-          detailed_action);
+      GMenuItem * item = g_menu_item_new (
+        audio_function_type_to_string (i),
+        detailed_action);
       g_free (detailed_action);
       const char * icon_name =
         audio_function_get_icon_name_for_type (i);
       g_menu_item_set_attribute (
-        item, G_MENU_ATTRIBUTE_ICON,
-        "s", icon_name, NULL);
+        item, G_MENU_ATTRIBUTE_ICON, "s", icon_name,
+        NULL);
       g_menu_append_item (
-        G_MENU (self->audio_functions_menu),
-        item);
+        G_MENU (self->audio_functions_menu), item);
     }
 
-  /* ignore plugins for now */
+    /* ignore plugins for now */
 #if 0
   GMenu * plugins_menu = g_menu_new ();
   for (size_t i = 0;
@@ -166,29 +162,26 @@ update_audio_funcs_menu (
     gen_apply_funcs_btn (self);
   button_with_menu_widget_setup (
     self->audio_functions_btn,
-    self->audio_apply_function_btn,
-    NULL, true, -1,
+    self->audio_apply_function_btn, NULL, true, -1,
     gtk_button_get_label (
       self->audio_apply_function_btn),
-    _("Select function"));
+    _ ("Select function"));
   button_with_menu_widget_set_menu_model (
     self->audio_functions_btn,
     self->audio_functions_menu);
 }
 
 static void
-update_midi_funcs_menu (
-  EditorToolbarWidget * self)
+update_midi_funcs_menu (EditorToolbarWidget * self)
 {
   self->midi_apply_function_btn =
     gen_apply_funcs_btn (self);
   button_with_menu_widget_setup (
     self->midi_functions_btn,
-    self->midi_apply_function_btn,
-    NULL, true, -1,
+    self->midi_apply_function_btn, NULL, true, -1,
     gtk_button_get_label (
       self->midi_apply_function_btn),
-    _("Select function"));
+    _ ("Select function"));
   button_with_menu_widget_set_menu_model (
     self->midi_functions_btn,
     self->midi_functions_menu);
@@ -202,11 +195,11 @@ update_automation_funcs_menu (
     gen_apply_funcs_btn (self);
   button_with_menu_widget_setup (
     self->automation_functions_btn,
-    self->automation_apply_function_btn,
-    NULL, true, -1,
+    self->automation_apply_function_btn, NULL, true,
+    -1,
     gtk_button_get_label (
       self->automation_apply_function_btn),
-    _("Select function"));
+    _ ("Select function"));
   button_with_menu_widget_set_menu_model (
     self->automation_functions_btn,
     self->automation_functions_menu);
@@ -228,8 +221,7 @@ editor_toolbar_widget_refresh (
 
   /* set visibility of each tool item */
   gtk_widget_set_visible (
-    GTK_WIDGET (self->chord_highlight_box),
-    false);
+    GTK_WIDGET (self->chord_highlight_box), false);
   gtk_widget_set_visible (
     GTK_WIDGET (self->sep_after_chord_highlight),
     false);
@@ -240,16 +232,14 @@ editor_toolbar_widget_refresh (
       {
         gtk_stack_set_visible_child_name (
           self->functions_btn_stack, "midi-page");
-        MidiFunctionType type =
-          g_settings_get_int (S_UI, "midi-function");
-        char * str =
-          g_strdup_printf (
-            _("Apply %s"),
-          _(midi_function_type_to_string (type)));
-        char * tooltip_str =
-          g_strdup_printf (
-            _("Apply %s with previous settings"),
-          _(midi_function_type_to_string (type)));
+        MidiFunctionType type = g_settings_get_int (
+          S_UI, "midi-function");
+        char * str = g_strdup_printf (
+          _ ("Apply %s"),
+          _ (midi_function_type_to_string (type)));
+        char * tooltip_str = g_strdup_printf (
+          _ ("Apply %s with previous settings"),
+          _ (midi_function_type_to_string (type)));
         gtk_button_set_label (
           self->midi_apply_function_btn, str);
         gtk_widget_set_tooltip_text (
@@ -260,8 +250,7 @@ editor_toolbar_widget_refresh (
 
         /* set visibility of each tool item */
         gtk_widget_set_visible (
-          GTK_WIDGET (
-            self->chord_highlight_box),
+          GTK_WIDGET (self->chord_highlight_box),
           true);
         gtk_widget_set_visible (
           GTK_WIDGET (
@@ -277,18 +266,19 @@ editor_toolbar_widget_refresh (
         AutomationFunctionType type =
           g_settings_get_int (
             S_UI, "automation-function");
-        char * str =
-          g_strdup_printf (
-            _("Apply %s"),
-          _(automation_function_type_to_string (type)));
-        char * tooltip_str =
-          g_strdup_printf (
-            _("Apply %s with previous settings"),
-          _(automation_function_type_to_string (type)));
+        char * str = g_strdup_printf (
+          _ ("Apply %s"),
+          _ (automation_function_type_to_string (
+            type)));
+        char * tooltip_str = g_strdup_printf (
+          _ ("Apply %s with previous settings"),
+          _ (automation_function_type_to_string (
+            type)));
         gtk_button_set_label (
           self->automation_apply_function_btn, str);
         gtk_widget_set_tooltip_text (
-          GTK_WIDGET (self->automation_apply_function_btn),
+          GTK_WIDGET (
+            self->automation_apply_function_btn),
           tooltip_str);
         g_free (str);
         g_free (tooltip_str);
@@ -298,17 +288,14 @@ editor_toolbar_widget_refresh (
       {
         gtk_stack_set_visible_child_name (
           self->functions_btn_stack, "audio-page");
-        AudioFunctionType type =
-          g_settings_get_int (
-            S_UI, "audio-function");
-        char * str =
-          g_strdup_printf (
-            _("Apply %s"),
-          _(audio_function_type_to_string (type)));
-        char * tooltip_str =
-          g_strdup_printf (
-            _("Apply %s with previous settings"),
-          _(audio_function_type_to_string (type)));
+        AudioFunctionType type = g_settings_get_int (
+          S_UI, "audio-function");
+        char * str = g_strdup_printf (
+          _ ("Apply %s"),
+          _ (audio_function_type_to_string (type)));
+        char * tooltip_str = g_strdup_printf (
+          _ ("Apply %s with previous settings"),
+          _ (audio_function_type_to_string (type)));
         gtk_button_set_label (
           self->audio_apply_function_btn, str);
         gtk_widget_set_tooltip_text (
@@ -341,82 +328,63 @@ editor_toolbar_widget_setup (
   snap_box_widget_setup (
     self->snap_box, SNAP_GRID_EDITOR);
   quantize_box_widget_setup (
-    self->quantize_box,
-    QUANTIZE_OPTIONS_EDITOR);
+    self->quantize_box, QUANTIZE_OPTIONS_EDITOR);
 
   /* setup highlighting */
-  GtkTreeIter iter;
-  GtkListStore * list_store =
-    gtk_list_store_new (
-      3, G_TYPE_STRING, G_TYPE_STRING,
-      G_TYPE_STRING);
+  GtkTreeIter    iter;
+  GtkListStore * list_store = gtk_list_store_new (
+    3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
   gtk_list_store_append (list_store, &iter);
   gtk_list_store_set (
-    list_store, &iter,
-    0, "draw-highlight",
-    1, _("No Highlight"),
-    2, "highlight",
-    -1);
+    list_store, &iter, 0, "draw-highlight", 1,
+    _ ("No Highlight"), 2, "highlight", -1);
   gtk_list_store_append (list_store, &iter);
   gtk_list_store_set (
-    list_store, &iter,
-    0, "draw-highlight",
-    1, _("Highlight Chord"),
-    2, "chord",
-    -1);
+    list_store, &iter, 0, "draw-highlight", 1,
+    _ ("Highlight Chord"), 2, "chord", -1);
   gtk_list_store_append (list_store, &iter);
   gtk_list_store_set (
-    list_store, &iter,
-    0, "draw-highlight",
-    1, _("Highlight Scale"),
-    2, "scale",
-    -1);
+    list_store, &iter, 0, "draw-highlight", 1,
+    _ ("Highlight Scale"), 2, "scale", -1);
   gtk_list_store_append (list_store, &iter);
   gtk_list_store_set (
-    list_store, &iter,
-    0, "draw-highlight",
-    1, _("Highlight Both"),
-    2, "both",
-    -1);
+    list_store, &iter, 0, "draw-highlight", 1,
+    _ ("Highlight Both"), 2, "both", -1);
   GtkComboBox * combo =
     GTK_COMBO_BOX (self->chord_highlighting);
   gtk_combo_box_set_model (
-    combo,
-    GTK_TREE_MODEL (list_store));
+    combo, GTK_TREE_MODEL (list_store));
   gtk_combo_box_set_active (
-    combo,
-    PIANO_ROLL->highlighting);
+    combo, PIANO_ROLL->highlighting);
   GtkCellRenderer * cell =
     gtk_cell_renderer_pixbuf_new ();
   gtk_cell_layout_pack_start (
     GTK_CELL_LAYOUT (combo), cell, TRUE);
   gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (combo), cell,
-    "icon-name", ICON_NAME_COL, NULL);
+    GTK_CELL_LAYOUT (combo), cell, "icon-name",
+    ICON_NAME_COL, NULL);
   cell = gtk_cell_renderer_text_new ();
   gtk_cell_layout_pack_start (
     GTK_CELL_LAYOUT (combo), cell, TRUE);
   gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (combo), cell,
-    "text", LABEL_COL, NULL);
+    GTK_CELL_LAYOUT (combo), cell, "text",
+    LABEL_COL, NULL);
 
   /* setup signals */
   g_signal_connect (
     G_OBJECT (self->chord_highlighting), "changed",
-    G_CALLBACK (on_highlighting_changed),  self);
+    G_CALLBACK (on_highlighting_changed), self);
 
   editor_toolbar_widget_refresh (self);
 }
 
 static void
-dispose (
-  EditorToolbarWidget * self)
+dispose (EditorToolbarWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->scroll));
 
-  G_OBJECT_CLASS (
-    editor_toolbar_widget_parent_class)->
-      dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (editor_toolbar_widget_parent_class)
+    ->dispose (G_OBJECT (self));
 }
 
 static void
@@ -435,8 +403,8 @@ editor_toolbar_widget_init (
   GSimpleActionGroup * action_group =
     g_simple_action_group_new ();
   const GActionEntry entries[] = {
-    { "editor-function", activate_app_action_wrapper,
-      "s" },
+    {"editor-function",
+     activate_app_action_wrapper, "s"},
   };
   g_action_map_add_action_entries (
     G_ACTION_MAP (action_group), entries,
@@ -455,8 +423,7 @@ editor_toolbar_widget_init (
 
 #define SET_TOOLTIP(x, tooltip) \
   z_gtk_set_tooltip_for_actionable ( \
-    GTK_ACTIONABLE (self->x), \
-    _(tooltip))
+    GTK_ACTIONABLE (self->x), _ (tooltip))
   /*SET_TOOLTIP (loop_selection, "Loop Selection");*/
 #undef SET_TOOLTIP
 
@@ -515,8 +482,6 @@ editor_toolbar_widget_class_init (
   gtk_widget_class_set_layout_manager_type (
     klass, GTK_TYPE_BIN_LAYOUT);
 
-  GObjectClass * oklass =
-    G_OBJECT_CLASS (klass);
-  oklass->dispose =
-    (GObjectFinalizeFunc) dispose;
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
 }

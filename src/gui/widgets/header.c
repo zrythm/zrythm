@@ -37,11 +37,12 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  HeaderWidget, header_widget, GTK_TYPE_BOX)
+  HeaderWidget,
+  header_widget,
+  GTK_TYPE_BOX)
 
 void
-header_widget_refresh (
-  HeaderWidget * self)
+header_widget_refresh (HeaderWidget * self)
 {
   /* TODO move to main window */
 #if 0
@@ -60,14 +61,13 @@ header_widget_refresh (
 void
 header_widget_setup (
   HeaderWidget * self,
-  const char * title)
+  const char *   title)
 {
   home_toolbar_widget_setup (self->home_toolbar);
 }
 
 static void
-header_widget_init (
-  HeaderWidget * self)
+header_widget_init (HeaderWidget * self)
 {
   g_type_ensure (HOME_TOOLBAR_WIDGET_TYPE);
   g_type_ensure (TOOLBOX_WIDGET_TYPE);
@@ -82,26 +82,22 @@ header_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  GtkStyleContext *context;
-  context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self));
-  gtk_style_context_add_class (
-    context, "header");
+  GtkStyleContext * context;
+  context = gtk_widget_get_style_context (
+    GTK_WIDGET (self));
+  gtk_style_context_add_class (context, "header");
 
   live_waveform_widget_setup_engine (
     self->live_waveform);
   midi_activity_bar_widget_setup_engine (
     self->midi_activity);
   midi_activity_bar_widget_set_animation (
-    self->midi_activity,
-    MAB_ANIMATION_FLASH);
+    self->midi_activity, MAB_ANIMATION_FLASH);
 
   /* setup the rotated label */
   rotated_label_widget_setup (
     self->midi_in_rotated_lbl, -90);
-  GtkLabel * lbl =
-    rotated_label_widget_get_label (
+  GtkLabel * lbl = rotated_label_widget_get_label (
     self->midi_in_rotated_lbl);
   gtk_widget_add_css_class (
     GTK_WIDGET (lbl), "small-vertical-lbl");
@@ -109,7 +105,7 @@ header_widget_init (
     /* TRANSLATORS: either leave this
      * untranslated or make sure the translated text
      * is max 7 characters */
-    _("MIDI in");
+    _ ("MIDI in");
   const char * midi_in_txt = midi_in_txt_translated;
   if (g_utf8_strlen (midi_in_txt, -1) > 8)
     midi_in_txt = "MIDI in";
@@ -119,18 +115,15 @@ header_widget_init (
   /* set tooltips */
   char about_tooltip[500];
   sprintf (
-    about_tooltip, _("About %s"), PROGRAM_NAME);
+    about_tooltip, _ ("About %s"), PROGRAM_NAME);
 }
 
 static void
-header_widget_class_init (
-  HeaderWidgetClass * _klass)
+header_widget_class_init (HeaderWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
 
-  resources_set_class_template (
-    klass, "header.ui");
+  resources_set_class_template (klass, "header.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

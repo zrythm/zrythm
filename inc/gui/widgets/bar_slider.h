@@ -36,7 +36,8 @@
 G_DECLARE_FINAL_TYPE (
   BarSliderWidget,
   bar_slider_widget,
-  Z, BAR_SLIDER_WIDGET,
+  Z,
+  BAR_SLIDER_WIDGET,
   GtkWidget)
 
 typedef struct Port Port;
@@ -69,26 +70,26 @@ typedef enum BarSliderType
  */
 typedef struct _BarSliderWidget
 {
-  GtkWidget          parent_instance;
+  GtkWidget parent_instance;
 
   /** Number of decimal points to show. */
-  int                decimals;
+  int decimals;
 
   /** The suffix to show after the value (eg "%" for
    * percentages). */
-  char               suffix[600];
+  char suffix[600];
 
   /** The prefix to show before the value. */
-  char               prefix[600];
+  char prefix[600];
 
   /** Maximum value. */
-  float              max;
+  float max;
 
   /** Minimum value. */
-  float              min;
+  float min;
 
   /** Zero point. */
-  float              zero;
+  float zero;
 
   /** Float getter. */
   GenericFloatGetter getter;
@@ -106,47 +107,47 @@ typedef struct _BarSliderWidget
   GenericFloatSetter end_setter;
 
   /** Port, if control port. */
-  Port *          port;
+  Port * port;
 
   /** Widget width. */
-  int             width;
+  int width;
 
   /** Widget height. */
-  int             height;
+  int height;
 
   /** Object to call get/set with. */
-  void *          object;
+  void * object;
 
   /** Used when dragging. */
-  GtkGestureDrag  *drag;
+  GtkGestureDrag * drag;
 
   /** Used in gesture drag. */
-  double          last_x;
+  double last_x;
 
   /** Used in gesture drag. */
-  double          start_x;
+  double start_x;
 
   /** Update mode. */
-  UiDragMode      mode;
+  UiDragMode mode;
 
   /** Whether hovering or not. */
-  int             hover;
+  int hover;
 
   /** The type of slider. */
-  BarSliderType   type;
+  BarSliderType type;
 
   /** Whether to show the value in text or just the
    * prefix + suffix. */
-  int             show_value;
+  int show_value;
 
   /** Whether the user can change the value. */
-  int             editable;
+  int editable;
 
   /** Multiply the value by 100 when showing it. */
-  int             convert_to_percentage;
+  int convert_to_percentage;
 
   /** Cache layout. */
-  PangoLayout *   layout;
+  PangoLayout * layout;
 } BarSliderWidget;
 
 /**
@@ -160,17 +161,17 @@ typedef struct _BarSliderWidget
 BarSliderWidget *
 _bar_slider_widget_new (
   BarSliderType type,
-  float (*get_val)(void *),
-  void (*set_val)(void *, float),
-  void * object,
-  float  min,
-  float  max,
-  int    w,
-  int    h,
-  float  zero,
-  int    convert_to_percentage,
-  int    decimals,
-  UiDragMode mode,
+  float (*get_val) (void *),
+  void (*set_val) (void *, float),
+  void *       object,
+  float        min,
+  float        max,
+  int          w,
+  int          h,
+  float        zero,
+  int          convert_to_percentage,
+  int          decimals,
+  UiDragMode   mode,
   const char * prefix,
   const char * suffix);
 
@@ -178,25 +179,25 @@ _bar_slider_widget_new (
  * Helper to create a bar slider widget.
  */
 #define bar_slider_widget_new( \
-  getter,setter,obj,min,max,w,h,zero,dec,mode,suffix) \
+  getter, setter, obj, min, max, w, h, zero, dec, \
+  mode, suffix) \
   _bar_slider_widget_new ( \
     BAR_SLIDER_TYPE_NORMAL, \
     (float (*) (void *)) getter, \
     (void (*) (void *, float)) setter, \
-    (void *) obj, \
-    min, max, w, h, zero, 0, dec, mode, "", suffix)
+    (void *) obj, min, max, w, h, zero, 0, dec, \
+    mode, "", suffix)
 
 /**
  * Wrapper.
  *
  * @param conn PortConnection pointer.
  */
-#define bar_slider_widget_new_port_connection(conn,prefix) \
+#define bar_slider_widget_new_port_connection( \
+  conn, prefix) \
   _bar_slider_widget_new ( \
-    BAR_SLIDER_TYPE_PORT_MULTIPLIER, \
-    NULL, NULL, (void *) conn, 0.f, 1.f, \
-    160, 20, \
-    0.f, 1, 0, \
+    BAR_SLIDER_TYPE_PORT_MULTIPLIER, NULL, NULL, \
+    (void *) conn, 0.f, 1.f, 160, 20, 0.f, 1, 0, \
     UI_DRAG_MODE_CURSOR, prefix, " %")
 
 /**

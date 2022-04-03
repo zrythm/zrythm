@@ -31,15 +31,11 @@
 typedef struct Track Track;
 
 #define TRACK_CAN_BE_GROUP_TARGET(tr) \
-  (IS_TRACK (tr) && \
-   (tr->type == TRACK_TYPE_AUDIO_GROUP || \
-    tr->type == TRACK_TYPE_MIDI_GROUP || \
-    tr->type == TRACK_TYPE_INSTRUMENT || \
-    tr->type == TRACK_TYPE_MASTER))
+  (IS_TRACK (tr) \
+   && (tr->type == TRACK_TYPE_AUDIO_GROUP || tr->type == TRACK_TYPE_MIDI_GROUP || tr->type == TRACK_TYPE_INSTRUMENT || tr->type == TRACK_TYPE_MASTER))
 
 void
-group_target_track_init_loaded (
-  Track * self);
+group_target_track_init_loaded (Track * self);
 
 void
 group_target_track_init (Track * track);
@@ -81,8 +77,7 @@ group_target_track_add_child (
   bool         pub_events);
 
 bool
-group_target_track_validate (
-  Track * self);
+group_target_track_validate (Track * self);
 
 void
 group_target_track_add_children (
@@ -98,8 +93,7 @@ group_target_track_add_children (
  * given hash.
  */
 NONNULL
-PURE
-int
+PURE int
 group_target_track_find_child (
   Track *      self,
   unsigned int track_name_hash);

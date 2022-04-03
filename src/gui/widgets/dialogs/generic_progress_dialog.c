@@ -35,8 +35,8 @@
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE_WITH_PRIVATE (
   GenericProgressDialogWidget,
@@ -45,11 +45,12 @@ G_DEFINE_TYPE_WITH_PRIVATE (
 
 #define GET_PRIVATE(x) \
   GenericProgressDialogWidgetPrivate * prv = \
-     generic_progress_dialog_widget_get_instance_private (x)
+    generic_progress_dialog_widget_get_instance_private ( \
+      x)
 
 static void
 on_closed (
-  GtkDialog *                  dialog,
+  GtkDialog *                   dialog,
   GenericProgressDialogWidget * self)
 {
   GET_PRIVATE (self);
@@ -58,7 +59,7 @@ on_closed (
 
 static void
 on_ok_clicked (
-  GtkButton * btn,
+  GtkButton *                   btn,
   GenericProgressDialogWidget * self)
 {
   gtk_dialog_response (GTK_DIALOG (self), 0);
@@ -66,7 +67,7 @@ on_ok_clicked (
 
 static void
 on_cancel_clicked (
-  GtkButton * btn,
+  GtkButton *                   btn,
   GenericProgressDialogWidget * self)
 {
   GET_PRIVATE (self);
@@ -85,13 +86,13 @@ tick_cb (
   gtk_progress_bar_set_fraction (
     GTK_PROGRESS_BAR (widget), info->progress);
 
-  if (math_doubles_equal (info->progress, 1.0) ||
-      info->has_error || info->cancelled)
+  if (
+    math_doubles_equal (info->progress, 1.0)
+    || info->has_error || info->cancelled)
     {
       if (prv->autoclose || info->cancelled)
         {
-          gtk_dialog_response (
-            GTK_DIALOG (self), 0);
+          gtk_dialog_response (GTK_DIALOG (self), 0);
         }
       else
         {
@@ -175,9 +176,8 @@ generic_progress_dialog_add_button (
 GenericProgressDialogWidget *
 generic_progress_dialog_widget_new (void)
 {
-  return
-    g_object_new (
-      GENERIC_PROGRESS_DIALOG_WIDGET_TYPE, NULL);
+  return g_object_new (
+    GENERIC_PROGRESS_DIALOG_WIDGET_TYPE, NULL);
 }
 
 /**

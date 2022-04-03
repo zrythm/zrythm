@@ -21,10 +21,10 @@
 
 #ifdef HAVE_PORT_AUDIO
 
-#ifndef __AUDIO_ENGINE_PA_H__
-#define __AUDIO_ENGINE_PA_H__
+#  ifndef __AUDIO_ENGINE_PA_H__
+#    define __AUDIO_ENGINE_PA_H__
 
-#include <portaudio.h>
+#    include <portaudio.h>
 
 typedef struct AudioEngine AudioEngine;
 
@@ -38,8 +38,7 @@ typedef struct AudioEngine AudioEngine;
  * Set up Port Audio.
  */
 int
-engine_pa_setup (
-  AudioEngine * self);
+engine_pa_setup (AudioEngine * self);
 
 void
 engine_pa_fill_out_bufs (
@@ -55,8 +54,7 @@ engine_pa_fill_out_bufs (
  * to it.
  */
 int
-engine_pa_test (
-  GtkWindow * win);
+engine_pa_test (GtkWindow * win);
 
 /**
  * Closes Port Audio.
@@ -68,5 +66,5 @@ engine_pa_tear_down (AudioEngine * engine);
  * @}
  */
 
-#endif
+#  endif
 #endif // HAVE_PORT_AUDIO

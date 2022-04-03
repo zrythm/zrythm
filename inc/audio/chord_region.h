@@ -28,9 +28,9 @@
 
 #include <stdbool.h>
 
-typedef struct Position Position;
+typedef struct Position    Position;
 typedef struct ChordObject ChordObject;
-typedef struct ZRegion ZRegion;
+typedef struct ZRegion     ZRegion;
 
 /**
  * @addtogroup audio
@@ -86,8 +86,7 @@ chord_region_remove_chord_object (
 
 NONNULL
 bool
-chord_region_validate (
-  ZRegion * self);
+chord_region_validate (ZRegion * self);
 
 /**
  * Frees members only but not the ZRegion itself.
@@ -96,8 +95,7 @@ chord_region_validate (
  */
 NONNULL
 void
-chord_region_free_members (
-  ZRegion * self);
+chord_region_free_members (ZRegion * self);
 
 /**
  * @}

@@ -26,21 +26,21 @@
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
-#include "utils/ui.h"
 #include "utils/resources.h"
+#include "utils/ui.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  ChannelSendWidget, channel_send_widget,
+  ChannelSendWidget,
+  channel_send_widget,
   GTK_TYPE_WIDGET)
 
 #define ELLIPSIZE_PADDING 2
 
 static void
-recreate_pango_layouts (
-  ChannelSendWidget * self)
+recreate_pango_layouts (ChannelSendWidget * self)
 {
   if (PANGO_IS_LAYOUT (self->empty_slot_layout))
     g_object_unref (self->empty_slot_layout);
@@ -71,16 +71,16 @@ channel_send_snapshot (
     gtk_widget_get_allocated_height (widget);
 
   GtkStyleContext * context =
-  gtk_widget_get_style_context (widget);
+    gtk_widget_get_style_context (widget);
 
   gtk_snapshot_render_background (
     snapshot, context, 0, 0, width, height);
 
   recreate_pango_layouts (self);
 
-  int padding = 2;
+  int           padding = 2;
   ChannelSend * send = self->send;
-  char dest_name[400] = "";
+  char          dest_name[400] = "";
   channel_send_get_dest_name (send, dest_name);
   if (channel_send_is_empty (send))
     {
@@ -89,8 +89,7 @@ channel_send_snapshot (
         snapshot,
         &Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, 1.f),
         &GRAPHENE_RECT_INIT (
-          padding, padding,
-          width - padding * 2,
+          padding, padding, width - padding * 2,
           height - padding * 2));
 
       /* fill text */
@@ -134,20 +133,19 @@ channel_send_snapshot (
       gtk_snapshot_append_color (
         snapshot, &bg_color,
         &GRAPHENE_RECT_INIT (
-          padding, padding,
-          width - padding * 2,
+          padding, padding, width - padding * 2,
           height - padding * 2));
 
       /* fill amount */
       bg_color.alpha = 1.f;
       float amount =
         channel_send_get_amount_for_widgets (
-          self->send) * width;
+          self->send)
+        * width;
       gtk_snapshot_append_color (
         snapshot, &bg_color,
         &GRAPHENE_RECT_INIT (
-          padding, padding,
-          amount - padding * 2,
+          padding, padding, amount - padding * 2,
           height - padding * 2));
 
       /* fill text */
@@ -167,14 +165,14 @@ channel_send_snapshot (
       gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
-      if (!self->cache_tooltip ||
-          !g_strcmp0 (
-            dest_name, self->cache_tooltip))
+      if (
+        !self->cache_tooltip
+        || !g_strcmp0 (
+          dest_name, self->cache_tooltip))
         {
           if (self->cache_tooltip)
             g_free (self->cache_tooltip);
-          self->cache_tooltip =
-            g_strdup (dest_name);
+          self->cache_tooltip = g_strdup (dest_name);
           gtk_widget_set_tooltip_text (
             widget, self->cache_tooltip);
         }
@@ -202,17 +200,16 @@ on_drag_update (
 {
   if (channel_send_is_enabled (self->send))
     {
-      int width =
-        gtk_widget_get_allocated_width (
-          GTK_WIDGET (self));
+      int width = gtk_widget_get_allocated_width (
+        GTK_WIDGET (self));
       double new_normalized_val =
         ui_get_normalized_draggable_value (
           width,
           channel_send_get_amount_for_widgets (
             self->send),
           self->start_x, self->start_x + offset_x,
-          self->start_x + self->last_offset_x,
-          1.0, UI_DRAG_MODE_CURSOR);
+          self->start_x + self->last_offset_x, 1.0,
+          UI_DRAG_MODE_CURSOR);
       channel_send_set_amount_from_widget (
         self->send, (float) new_normalized_val);
       gtk_widget_queue_draw (GTK_WIDGET (self));
@@ -237,29 +234,30 @@ on_drag_end (
     self->send->amount, self->send_amount_at_start,
     F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
-  if (channel_send_is_enabled (self->send) &&
-      self->n_press != 2)
+  if (
+    channel_send_is_enabled (self->send)
+    && self->n_press != 2)
     {
       GError * err = NULL;
-      bool ret =
+      bool     ret =
         channel_send_action_perform_change_amount (
           self->send, send_amount_at_end, &err);
       if (!ret)
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Failed to change send amount"));
+            _ ("Failed to change send amount"));
         }
     }
 }
 
 static void
 on_pressed (
-  GtkGestureClick *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
-  ChannelSendWidget *   self)
+  GtkGestureClick *   gesture,
+  gint                n_press,
+  gdouble             x,
+  gdouble             y,
+  ChannelSendWidget * self)
 {
   self->n_press = n_press;
   g_message ("clicked %d", n_press);
@@ -279,15 +277,13 @@ show_context_menu (
   double              x,
   double              y)
 {
-  GMenu * menu = g_menu_new ();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
   char tmp[500];
   sprintf (
-    tmp, "app.bind-midi-cc::%p",
-    self->send->amount);
-  menuitem =
-    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+    tmp, "app.bind-midi-cc::%p", self->send->amount);
+  menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
@@ -296,11 +292,11 @@ show_context_menu (
 
 static void
 on_right_click (
-  GtkGestureClick *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
-  ChannelSendWidget *   self)
+  GtkGestureClick *   gesture,
+  gint                n_press,
+  gdouble             x,
+  gdouble             y,
+  ChannelSendWidget * self)
 {
   if (n_press != 1)
     return;
@@ -318,8 +314,7 @@ on_enter (
   ChannelSendWidget * self =
     Z_CHANNEL_SEND_WIDGET (user_data);
   gtk_widget_set_state_flags (
-    GTK_WIDGET (self),
-    GTK_STATE_FLAG_PRELIGHT, 0);
+    GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT, 0);
 }
 
 static void
@@ -330,27 +325,23 @@ on_leave (
   ChannelSendWidget * self =
     Z_CHANNEL_SEND_WIDGET (user_data);
   gtk_widget_unset_state_flags (
-    GTK_WIDGET (self),
-    GTK_STATE_FLAG_PRELIGHT);
+    GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT);
 }
 
 static void
-dispose (
-  ChannelSendWidget * self)
+dispose (ChannelSendWidget * self)
 {
   gtk_widget_unparent (
     GTK_WIDGET (self->popover_menu));
   gtk_widget_unparent (
     GTK_WIDGET (self->selector_popover));
 
-  G_OBJECT_CLASS (
-    channel_send_widget_parent_class)->
-      dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (channel_send_widget_parent_class)
+    ->dispose (G_OBJECT (self));
 }
 
 static void
-finalize (
-  ChannelSendWidget * self)
+finalize (ChannelSendWidget * self)
 {
   if (self->cache_tooltip)
     g_free (self->cache_tooltip);
@@ -359,9 +350,8 @@ finalize (
   if (self->name_layout)
     g_object_unref (self->name_layout);
 
-  G_OBJECT_CLASS (
-    channel_send_widget_parent_class)->
-      finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (channel_send_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 /**
@@ -369,30 +359,25 @@ finalize (
  * the given value.
  */
 ChannelSendWidget *
-channel_send_widget_new (
-  ChannelSend * send)
+channel_send_widget_new (ChannelSend * send)
 {
   ChannelSendWidget * self =
-    g_object_new (
-      CHANNEL_SEND_WIDGET_TYPE, NULL);
+    g_object_new (CHANNEL_SEND_WIDGET_TYPE, NULL);
   self->send = send;
 
   return self;
 }
 
 static void
-channel_send_widget_init (
-  ChannelSendWidget * self)
+channel_send_widget_init (ChannelSendWidget * self)
 {
   gtk_widget_set_size_request (
     GTK_WIDGET (self), -1, 20);
 
   self->cache_tooltip = NULL;
 
-  gtk_widget_set_hexpand (
-    GTK_WIDGET (self), true);
-  gtk_widget_set_focusable (
-    GTK_WIDGET (self), true);
+  gtk_widget_set_hexpand (GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (GTK_WIDGET (self), true);
 
   self->selector_popover =
     channel_send_selector_widget_new (self);
@@ -400,16 +385,14 @@ channel_send_widget_init (
     GTK_WIDGET (self->selector_popover),
     GTK_WIDGET (self));
 
-  self->popover_menu =
-    GTK_POPOVER_MENU (
-      gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu = GTK_POPOVER_MENU (
+    gtk_popover_menu_new_from_model (NULL));
   gtk_widget_set_parent (
     GTK_WIDGET (self->popover_menu),
     GTK_WIDGET (self));
 
   self->click =
-    GTK_GESTURE_CLICK (
-      gtk_gesture_click_new ());
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_event_controller_set_propagation_phase (
     GTK_EVENT_CONTROLLER (self->click),
     GTK_PHASE_CAPTURE);
@@ -418,12 +401,10 @@ channel_send_widget_init (
     GTK_EVENT_CONTROLLER (self->click));
 
   self->right_mouse_mp =
-    GTK_GESTURE_CLICK (
-      gtk_gesture_click_new ());
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (
-      self->right_mouse_mp),
-      GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (self->right_mouse_mp),
+    GDK_BUTTON_SECONDARY);
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (self->right_mouse_mp));
@@ -458,21 +439,20 @@ channel_send_widget_init (
     G_CALLBACK (on_right_click), self);
   g_signal_connect (
     G_OBJECT (self->drag), "drag-begin",
-    G_CALLBACK (on_drag_begin),  self);
+    G_CALLBACK (on_drag_begin), self);
   g_signal_connect (
     G_OBJECT (self->drag), "drag-update",
-    G_CALLBACK (on_drag_update),  self);
+    G_CALLBACK (on_drag_update), self);
   g_signal_connect (
     G_OBJECT (self->drag), "drag-end",
-    G_CALLBACK (on_drag_end),  self);
+    G_CALLBACK (on_drag_end), self);
 }
 
 static void
 channel_send_widget_class_init (
   ChannelSendWidgetClass * klass)
 {
-  GtkWidgetClass * wklass =
-    GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   gtk_widget_class_set_css_name (
     wklass, "channel-send");
   wklass->snapshot = channel_send_snapshot;
@@ -480,10 +460,7 @@ channel_send_widget_class_init (
   gtk_widget_class_set_layout_manager_type (
     wklass, GTK_TYPE_BIN_LAYOUT);
 
-  GObjectClass * oklass =
-    G_OBJECT_CLASS (klass);
-  oklass->finalize =
-    (GObjectFinalizeFunc) finalize;
-  oklass->dispose =
-    (GObjectFinalizeFunc) dispose;
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->finalize = (GObjectFinalizeFunc) finalize;
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
 }

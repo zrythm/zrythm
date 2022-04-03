@@ -29,9 +29,7 @@
  * @param def Default value to return if not found.
  */
 char *
-env_get_string (
-  const char * key,
-  const char * def)
+env_get_string (const char * key, const char * def)
 {
   const char * val = g_getenv (key);
   if (!val)
@@ -47,9 +45,7 @@ env_get_string (
  * @param def Default value to return if not found.
  */
 int
-env_get_int (
-  const char * key,
-  int          def)
+env_get_int (const char * key, int def)
 {
   const char * str = g_getenv (key);
   if (!str)

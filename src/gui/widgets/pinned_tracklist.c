@@ -20,36 +20,37 @@
 #include "audio/engine.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/pinned_tracklist.h"
-#include "gui/widgets/track.h"
 #include "gui/widgets/timeline_panel.h"
-#include "gui/backend/event_manager.h"
+#include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "zrythm.h"
 
-G_DEFINE_TYPE (PinnedTracklistWidget,
-               pinned_tracklist_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  PinnedTracklistWidget,
+  pinned_tracklist_widget,
+  GTK_TYPE_BOX)
 
 /**
  * Gets TrackWidget hit at the given coordinates.
  */
 TrackWidget *
 pinned_tracklist_widget_get_hit_track (
-  PinnedTracklistWidget *  self,
-  double            x,
-  double            y)
+  PinnedTracklistWidget * self,
+  double                  x,
+  double                  y)
 {
   /* go through each child */
-  Track * track;
+  Track *       track;
   TrackWidget * tw;
   GtkAllocation allocation;
-  gint wx, wy;
-  for(int i = 0;
-      i < self->tracklist->num_tracks; i++)
+  gint          wx, wy;
+  for (int i = 0; i < self->tracklist->num_tracks;
+       i++)
     {
       track = self->tracklist->tracks[i];
       if (!track->visible || !track->pinned)
@@ -61,15 +62,13 @@ pinned_tracklist_widget_get_hit_track (
         GTK_WIDGET (tw), &allocation);
 
       gtk_widget_translate_coordinates (
-        GTK_WIDGET (self),
-        GTK_WIDGET (tw),
-        (int) x, (int) y, &wx, &wy);
+        GTK_WIDGET (self), GTK_WIDGET (tw), (int) x,
+        (int) y, &wx, &wy);
 
       /* if hit */
-      if (wx >= 0 &&
-          wx <= allocation.width &&
-          wy >= 0 &&
-          wy <= allocation.height)
+      if (
+        wx >= 0 && wx <= allocation.width && wy >= 0
+        && wy <= allocation.height)
         {
           return tw;
         }
@@ -90,8 +89,8 @@ pinned_tracklist_widget_hard_refresh (
 
   /* add tracks */
   Track * track;
-  for(int i = 0;
-      i < self->tracklist->num_tracks; i++)
+  for (int i = 0; i < self->tracklist->num_tracks;
+       i++)
     {
       track = self->tracklist->tracks[i];
       if (!track->visible || !track->pinned)
@@ -109,21 +108,19 @@ pinned_tracklist_widget_hard_refresh (
         GTK_WIDGET (track->widget));
     }
   /*GtkWidget * sep =*/
-    /*gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);*/
+  /*gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);*/
   /*gtk_widget_set_visible (sep, 1);*/
   /*gtk_container_add (*/
-    /*GTK_CONTAINER (self),*/
-    /*sep);*/
+  /*GTK_CONTAINER (self),*/
+  /*sep);*/
 
   /* set handle position.
    * this is done because the position resets to
    * -1 every time a child is added or deleted */
   GList *children, *iter;
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (self));
-  for (iter = children;
-       iter != NULL;
+  children = gtk_container_get_children (
+    GTK_CONTAINER (self));
+  for (iter = children; iter != NULL;
        iter = g_list_next (iter))
     {
       if (Z_IS_TRACK_WIDGET (iter->data))
@@ -136,28 +133,27 @@ pinned_tracklist_widget_hard_refresh (
           g_value_init (&a, G_TYPE_INT);
           g_value_set_int (&a, track->handle_pos);
           gtk_container_child_set_property (
-            GTK_CONTAINER (self),
-            GTK_WIDGET (tw),
-            "position",
-            &a);
+            GTK_CONTAINER (self), GTK_WIDGET (tw),
+            "position", &a);
         }
     }
-  g_list_free(children);
+  g_list_free (children);
 }
 
 static void
 pinned_tracklist_widget_on_size_allocate (
-  GtkWidget    *widget,
-  GdkRectangle *allocation,
+  GtkWidget *             widget,
+  GdkRectangle *          allocation,
   PinnedTracklistWidget * self)
 {
   /*gtk_widget_set_size_request (*/
-    /*GTK_WIDGET (*/
-      /*MW_CENTER_DOCK->pinned_timeline_scroll),*/
-    /*-1, allocation->height);*/
-  if (gtk_paned_get_position (
-        MW_TIMELINE_PANEL->timeline_divider_pane) !=
-      allocation->height)
+  /*GTK_WIDGET (*/
+  /*MW_CENTER_DOCK->pinned_timeline_scroll),*/
+  /*-1, allocation->height);*/
+  if (
+    gtk_paned_get_position (
+      MW_TIMELINE_PANEL->timeline_divider_pane)
+    != allocation->height)
     {
       gtk_paned_set_position (
         MW_TIMELINE_PANEL->timeline_divider_pane,
@@ -171,7 +167,7 @@ pinned_tracklist_widget_on_size_allocate (
 void
 pinned_tracklist_widget_setup (
   PinnedTracklistWidget * self,
-  Tracklist * tracklist)
+  Tracklist *             tracklist)
 {
   g_warn_if_fail (tracklist);
   self->tracklist = tracklist;
@@ -190,8 +186,7 @@ static void
 pinned_tracklist_widget_class_init (
   PinnedTracklistWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
 
   gtk_widget_class_set_css_name (
     klass, "ruler-tracklist");
@@ -202,8 +197,6 @@ pinned_tracklist_widget_init (
   PinnedTracklistWidget * self)
 {
   gtk_orientable_set_orientation (
-    GTK_ORIENTABLE (self),
-    GTK_ORIENTATION_VERTICAL);
-  gtk_box_set_spacing (
-    GTK_BOX (self), 1);
+    GTK_ORIENTABLE (self), GTK_ORIENTATION_VERTICAL);
+  gtk_box_set_spacing (GTK_BOX (self), 1);
 }

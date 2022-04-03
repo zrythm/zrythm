@@ -38,8 +38,7 @@
  * Returns if the string is ASCII.
  */
 int
-string_is_ascii (
-  const char * string);
+string_is_ascii (const char * string);
 
 /**
  * Returns the matched string if the string array
@@ -47,9 +46,9 @@ string_is_ascii (
  */
 char *
 string_array_contains_substr (
-  char ** str_array,
-  int     num_str,
-  const char *  substr);
+  char **      str_array,
+  int          num_str,
+  const char * substr);
 
 /**
  * Returns if the given string contains the given
@@ -73,9 +72,7 @@ string_contains_substr_case_insensitive (
  * chars as \ref in.
  */
 void
-string_to_upper (
-  const char * in,
-  char *       out);
+string_to_upper (const char * in, char * out);
 
 /**
  * Converts the given string to lowercase in \ref
@@ -85,14 +82,12 @@ string_to_upper (
  * chars as \ref in.
  */
 void
-string_to_lower (
-  const char * in,
-  char *       out);
+string_to_lower (const char * in, char * out);
 
 /**
  * Returns if the two strings are exactly equal.
  */
-#define string_is_equal(str1,str2) \
+#define string_is_equal(str1, str2) \
   (!g_strcmp0 (str1, str2))
 
 /**
@@ -111,8 +106,7 @@ string_is_equal_ignore_case (
  * Example: "MIDI ZRegion #1" -> "MIDI_Region_1".
  */
 char *
-string_convert_to_filename (
-  const char * str);
+string_convert_to_filename (const char * str);
 
 /**
  * Removes the suffix starting from \ref suffix
@@ -226,16 +220,13 @@ string_copy_w_realloc (
  * characters and replaces the rest with underscore.
  */
 char *
-string_symbolify (
-  const char * in);
+string_symbolify (const char * in);
 
 /**
  * Returns whether the string is NULL or empty.
  */
-PURE
-bool
-string_is_empty (
-  const char * str);
+PURE bool
+string_is_empty (const char * str);
 
 /**
  * @}

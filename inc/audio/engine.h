@@ -38,46 +38,47 @@
 #include "audio/sample_processor.h"
 #include "audio/transport.h"
 #include "utils/types.h"
+
 #include "zix/sem.h"
 
 #ifdef HAVE_JACK
-#include "weak_libjack.h"
+#  include "weak_libjack.h"
 #endif
 
 #ifdef HAVE_PULSEAUDIO
-#include <pulse/pulseaudio.h>
+#  include <pulse/pulseaudio.h>
 #endif
 
 #ifdef HAVE_PORT_AUDIO
-#include <portaudio.h>
+#  include <portaudio.h>
 #endif
 
 #ifdef HAVE_ALSA
-#include <alsa/asoundlib.h>
+#  include <alsa/asoundlib.h>
 #endif
 
 #ifdef HAVE_SDL
-#include <SDL2/SDL_audio.h>
+#  include <SDL2/SDL_audio.h>
 #endif
 
 #ifdef HAVE_RTAUDIO
-#include <rtaudio_c.h>
+#  include <rtaudio_c.h>
 #endif
 
-typedef struct StereoPorts StereoPorts;
-typedef struct Port Port;
-typedef struct Channel Channel;
-typedef struct Plugin Plugin;
-typedef struct Tracklist Tracklist;
-typedef struct ExtPort ExtPort;
-typedef struct MidiMappings MidiMappings;
-typedef struct WindowsMmeDevice WindowsMmeDevice;
-typedef struct Router Router;
-typedef struct Metronome Metronome;
-typedef struct Project Project;
+typedef struct StereoPorts       StereoPorts;
+typedef struct Port              Port;
+typedef struct Channel           Channel;
+typedef struct Plugin            Plugin;
+typedef struct Tracklist         Tracklist;
+typedef struct ExtPort           ExtPort;
+typedef struct MidiMappings      MidiMappings;
+typedef struct WindowsMmeDevice  WindowsMmeDevice;
+typedef struct Router            Router;
+typedef struct Metronome         Metronome;
+typedef struct Project           Project;
 typedef struct HardwareProcessor HardwareProcessor;
-typedef struct ObjectPool ObjectPool;
-typedef struct MPMCQueue MPMCQueue;
+typedef struct ObjectPool        ObjectPool;
+typedef struct MPMCQueue         MPMCQueue;
 
 /**
  * @addtogroup audio Audio
@@ -87,17 +88,18 @@ typedef struct MPMCQueue MPMCQueue;
 
 #define AUDIO_ENGINE_SCHEMA_VERSION 1
 
-#define BLOCK_LENGTH 4096 // should be set by backend
-#define MIDI_BUF_SIZE 1024 // should be set by backend
+#define BLOCK_LENGTH \
+  4096 // should be set by backend
+#define MIDI_BUF_SIZE \
+  1024 // should be set by backend
 
 #define MIDI_IN_NUM_EVENTS \
   AUDIO_ENGINE->midi_in->midi_events->num_events
 
-
 #define AUDIO_ENGINE (PROJECT->audio_engine)
 #define MANUAL_PRESS_EVENTS \
-  (AUDIO_ENGINE->midi_editor_manual_press-> \
-  midi_events)
+  (AUDIO_ENGINE->midi_editor_manual_press \
+     ->midi_events)
 
 #define DENORMAL_PREVENTION_VAL \
   (AUDIO_ENGINE->denormal_prevention_val)
@@ -107,30 +109,27 @@ typedef struct MPMCQueue MPMCQueue;
 
 /** Set whether engine should process (true) or
  * skip (false). */
-#define engine_set_run(engine,_run) \
+#define engine_set_run(engine, _run) \
   g_atomic_int_set (&(engine)->run, _run)
 #define engine_get_run(engine) \
   g_atomic_int_get (&(engine)->run)
 
 #define ENGINE_MAX_EVENTS 100
 
-#define engine_queue_push_back_event(q,x) \
-  mpmc_queue_push_back ( \
-    q, (void *) x)
+#define engine_queue_push_back_event(q, x) \
+  mpmc_queue_push_back (q, (void *) x)
 
-#define engine_queue_dequeue_event(q,x) \
-  mpmc_queue_dequeue ( \
-    q, (void *) x)
+#define engine_queue_dequeue_event(q, x) \
+  mpmc_queue_dequeue (q, (void *) x)
 
 /**
  * Push events.
  */
 #define ENGINE_EVENTS_PUSH( \
-  et,_arg,_uint_arg,_float_arg) \
+  et, _arg, _uint_arg, _float_arg) \
   if (true) \
     { \
-      AudioEngineEvent * _ev = \
-        (AudioEngineEvent *) \
+      AudioEngineEvent * _ev = (AudioEngineEvent *) \
         object_pool_get (AUDIO_ENGINE->ev_pool); \
       _ev->file = __FILE__; \
       _ev->func = __func__; \
@@ -139,14 +138,13 @@ typedef struct MPMCQueue MPMCQueue;
       _ev->arg = (void *) _arg; \
       _ev->uint_arg = _uint_arg; \
       _ev->float_arg = _float_arg; \
-      if (zrythm_app->gtk_thread == \
-            g_thread_self ()) \
+      if (zrythm_app->gtk_thread == g_thread_self ()) \
         { \
           _ev->backtrace = \
             backtrace_get ("", 40, false); \
           g_debug ( \
-            "pushing engine event " #et \
-            " (%s:%d)", __func__, __LINE__); \
+            "pushing engine event " #et " (%s:%d)", \
+            __func__, __LINE__); \
         } \
       engine_queue_push_back_event ( \
         AUDIO_ENGINE->ev_queue, _ev); \
@@ -193,17 +191,10 @@ typedef enum AudioEngineBufferSize
   NUM_AUDIO_ENGINE_BUFFER_SIZES,
 } AudioEngineBufferSize;
 
-static const char * buffer_size_str[] =
-{
-  "16",
-  "32",
-  "64",
-  "128",
-  "256",
-  "512",
-  __("1,024"),
-  __("2,048"),
-  __("4,096"),
+static const char * buffer_size_str[] = {
+  "16",         "32",         "64",
+  "128",        "256",        "512",
+  __ ("1,024"), __ ("2,048"), __ ("4,096"),
 };
 
 static inline const char *
@@ -228,15 +219,10 @@ typedef enum AudioEngineSamplerate
   NUM_AUDIO_ENGINE_SAMPLERATES,
 } AudioEngineSamplerate;
 
-static const char * sample_rate_str[] =
-{
-  __("22,050"),
-  __("32,000"),
-  __("44,100"),
-  __("48,000"),
-  __("88,200"),
-  __("96,000"),
-  __("192,000"),
+static const char * sample_rate_str[] = {
+  __ ("22,050"),  __ ("32,000"), __ ("44,100"),
+  __ ("48,000"),  __ ("88,200"), __ ("96,000"),
+  __ ("192,000"),
 };
 
 static inline const char *
@@ -248,8 +234,8 @@ engine_sample_rate_to_string (
 
 //typedef struct MIDI_Controller
 //{
-  //jack_midi_event_t    in_event[30];
-  //int                  num_events;
+//jack_midi_event_t    in_event[30];
+//int                  num_events;
 //} MIDI_Controller;
 
 typedef enum AudioBackend
@@ -275,38 +261,27 @@ typedef enum AudioBackend
 } AudioBackend;
 
 static inline bool
-audio_backend_is_rtaudio (
-  AudioBackend backend)
+audio_backend_is_rtaudio (AudioBackend backend)
 {
-  return
-    backend == AUDIO_BACKEND_ALSA_RTAUDIO ||
-    backend == AUDIO_BACKEND_JACK_RTAUDIO ||
-    backend == AUDIO_BACKEND_PULSEAUDIO_RTAUDIO ||
-    backend == AUDIO_BACKEND_COREAUDIO_RTAUDIO ||
-    backend == AUDIO_BACKEND_WASAPI_RTAUDIO ||
-    backend == AUDIO_BACKEND_ASIO_RTAUDIO;
+  return backend == AUDIO_BACKEND_ALSA_RTAUDIO
+         || backend == AUDIO_BACKEND_JACK_RTAUDIO
+         || backend == AUDIO_BACKEND_PULSEAUDIO_RTAUDIO
+         || backend == AUDIO_BACKEND_COREAUDIO_RTAUDIO
+         || backend == AUDIO_BACKEND_WASAPI_RTAUDIO
+         || backend == AUDIO_BACKEND_ASIO_RTAUDIO;
 }
 
-__attribute__ ((unused))
-static const char * audio_backend_str[] =
-{
+__attribute__ ((
+  unused)) static const char * audio_backend_str[] = {
   /* TRANSLATORS: Dummy backend */
-  __("Dummy"),
-  __("Dummy (libsoundio)"),
-  "ALSA (not working)",
-  "ALSA (libsoundio)",
-  "ALSA (rtaudio)",
-  "JACK",
-  "JACK (libsoundio)",
-  "JACK (rtaudio)",
-  "PulseAudio",
-  "PulseAudio (libsoundio)",
-  "PulseAudio (rtaudio)",
-  "CoreAudio (libsoundio)",
-  "CoreAudio (rtaudio)",
-  "SDL",
-  "WASAPI (libsoundio)",
-  "WASAPI (rtaudio)",
+  __ ("Dummy"),           __ ("Dummy (libsoundio)"),
+  "ALSA (not working)",   "ALSA (libsoundio)",
+  "ALSA (rtaudio)",       "JACK",
+  "JACK (libsoundio)",    "JACK (rtaudio)",
+  "PulseAudio",           "PulseAudio (libsoundio)",
+  "PulseAudio (rtaudio)", "CoreAudio (libsoundio)",
+  "CoreAudio (rtaudio)",  "SDL",
+  "WASAPI (libsoundio)",  "WASAPI (rtaudio)",
   "ASIO (rtaudio)",
 };
 
@@ -345,22 +320,19 @@ typedef enum MidiBackend
 } MidiBackend;
 
 static inline bool
-midi_backend_is_rtmidi (
-  MidiBackend backend)
+midi_backend_is_rtmidi (MidiBackend backend)
 {
-  return
-    backend == MIDI_BACKEND_ALSA_RTMIDI ||
-    backend == MIDI_BACKEND_JACK_RTMIDI ||
-    backend == MIDI_BACKEND_WINDOWS_MME_RTMIDI ||
-    backend == MIDI_BACKEND_COREMIDI_RTMIDI;
+  return backend == MIDI_BACKEND_ALSA_RTMIDI
+         || backend == MIDI_BACKEND_JACK_RTMIDI
+         || backend == MIDI_BACKEND_WINDOWS_MME_RTMIDI
+         || backend == MIDI_BACKEND_COREMIDI_RTMIDI;
 }
 
-static const char * midi_backend_str[] =
-{
+static const char * midi_backend_str[] = {
   /* TRANSLATORS: Dummy backend */
-  __("Dummy"),
-  __("ALSA Sequencer (not working)"),
-  __("ALSA Sequencer (rtmidi)"),
+  __ ("Dummy"),
+  __ ("ALSA Sequencer (not working)"),
+  __ ("ALSA Sequencer (rtmidi)"),
   "JACK MIDI",
   "JACK MIDI (rtmidi)",
   "Windows MME",
@@ -376,14 +348,13 @@ typedef enum AudioEngineJackTransportType
 } AudioEngineJackTransportType;
 
 static const cyaml_strval_t
-jack_transport_type_strings[] =
-{
-  { "Timebase master",
-    AUDIO_ENGINE_JACK_TIMEBASE_MASTER    },
-  { "Transport client",
-    AUDIO_ENGINE_JACK_TRANSPORT_CLIENT    },
-  { "No JACK transport",
-    AUDIO_ENGINE_NO_JACK_TRANSPORT    },
+  jack_transport_type_strings[] = {
+    {"Timebase master",
+     AUDIO_ENGINE_JACK_TIMEBASE_MASTER },
+    { "Transport client",
+     AUDIO_ENGINE_JACK_TRANSPORT_CLIENT},
+    { "No JACK transport",
+     AUDIO_ENGINE_NO_JACK_TRANSPORT    },
 };
 
 /**
@@ -391,20 +362,20 @@ jack_transport_type_strings[] =
  */
 typedef struct AudioEngine
 {
-  int               schema_version;
+  int schema_version;
 
   /**
    * Cycle count to know which cycle we are in.
    *
    * Useful for debugging.
    */
-  uint_fast64_t     cycle;
+  uint_fast64_t cycle;
 
 #ifdef HAVE_JACK
   /** JACK client. */
-  jack_client_t *   client;
+  jack_client_t * client;
 #else
-  void *            client;
+  void *   client;
 #endif
 
   /**
@@ -414,35 +385,35 @@ typedef struct AudioEngine
   AudioEngineJackTransportType transport_type;
 
   /** Current audio backend. */
-  AudioBackend      audio_backend;
+  AudioBackend audio_backend;
 
   /** Current MIDI backend. */
-  MidiBackend       midi_backend;
+  MidiBackend midi_backend;
 
   /** Audio buffer size (block length), per
    * channel. */
-  nframes_t         block_length;
+  nframes_t block_length;
 
   /** Size of MIDI port buffers in bytes. */
-  size_t            midi_buf_size;
+  size_t midi_buf_size;
 
   /** Sample rate. */
-  sample_rate_t     sample_rate;
+  sample_rate_t sample_rate;
 
   /** Number of frames/samples per tick. */
-  double            frames_per_tick;
+  double frames_per_tick;
 
   /**
    * Reciprocal of \ref
    * AudioEngine.frames_per_tick.
    */
-  double            ticks_per_frame;
+  double ticks_per_frame;
 
   /** True iff buffer size callback fired. */
-  int               buf_size_set;
+  int buf_size_set;
 
   /** The processing graph router. */
-  Router *          router;
+  Router * router;
 
   /** Input device processor. */
   HardwareProcessor * hw_in_processor;
@@ -482,13 +453,13 @@ typedef struct AudioEngine
 #endif
 
   /** MIDI Clock in TODO. */
-  Port *            midi_clock_in;
+  Port * midi_clock_in;
 
   /** The ControlRoom. */
-  ControlRoom *     control_room;
+  ControlRoom * control_room;
 
   /** Audio file pool. */
-  AudioPool *       pool;
+  AudioPool * pool;
 
   /**
    * Used during tests to pass input data for
@@ -496,13 +467,13 @@ typedef struct AudioEngine
    *
    * Will be ignored if NULL.
    */
-  StereoPorts *     dummy_input;
+  StereoPorts * dummy_input;
 
   /**
    * Monitor - these should be the last ports in
    * the signal chain.
    */
-  StereoPorts *     monitor_out;
+  StereoPorts * monitor_out;
 
   /**
    * Flag to tell the UI that this channel had
@@ -512,7 +483,7 @@ typedef struct AudioEngine
    * the UI should create a separate event using
    * EVENTS_PUSH.
    */
-  int               trigger_midi_activity;
+  int trigger_midi_activity;
 
 #if 0
   /**
@@ -536,13 +507,13 @@ typedef struct AudioEngine
    * when processing the corresponding track
    * processor.
    */
-  Port *            midi_editor_manual_press;
+  Port * midi_editor_manual_press;
 
   /**
    * Port used for receiving MIDI in messages for
    * binding CC and other non-recording purposes.
    */
-  Port *            midi_in;
+  Port * midi_in;
 
   /**
    * Number of frames/samples in the current
@@ -550,30 +521,30 @@ typedef struct AudioEngine
    *
    * @note This is used by the engine internally.
    */
-  nframes_t         nframes;
+  nframes_t nframes;
 
   /**
    * Semaphore for blocking DSP while a plugin and
    * its ports are deleted.
    */
-  ZixSem            port_operation_lock;
+  ZixSem port_operation_lock;
 
   /** Ok to process or not. */
-  volatile gint     run;
+  volatile gint run;
 
   /** 1 if currently exporting. */
-  gint              exporting;
+  gint exporting;
 
   /** Send note off MIDI everywhere. */
-  volatile gint     panic;
+  volatile gint panic;
 
   //ZixSem             alsa_callback_start;
 
   /* ----------- ALSA --------------- */
 #ifdef HAVE_ALSA
   /** Alsa playback handle. */
-  snd_pcm_t *       playback_handle;
-  snd_seq_t *       seq_handle;
+  snd_pcm_t *           playback_handle;
+  snd_seq_t *           seq_handle;
   snd_pcm_hw_params_t * hw_params;
   snd_pcm_sw_params_t * sw_params;
 
@@ -591,29 +562,28 @@ typedef struct AudioEngine
    * ALSA MIDI events from above. */
   //ZixSem             alsa_midi_events_sem;
 #else
-  void *       playback_handle;
-  void *       seq_handle;
-  void * hw_params;
-  void * sw_params;
+  void *   playback_handle;
+  void *   seq_handle;
+  void *   hw_params;
+  void *   sw_params;
 #endif
 
   /** ALSA audio buffer. */
-  float *           alsa_out_buf;
+  float * alsa_out_buf;
 
   /* ------------------------------- */
 
-
   /** Flag used when processing in some backends. */
-  volatile gint     filled_stereo_out_bufs;
+  volatile gint filled_stereo_out_bufs;
 
   /** Flag used to check if we are inside
    * engine_process_prepare(). */
-  gint              preparing_for_process;
+  gint preparing_for_process;
 
 #ifdef HAVE_PORT_AUDIO
-  PaStream *        pa_stream;
+  PaStream * pa_stream;
 #else
-  void *            pa_stream;
+  void *   pa_stream;
 #endif
 
   /**
@@ -623,7 +593,7 @@ typedef struct AudioEngine
    * FIXME this is not really needed, just
    * do the calculations in pa_stream_cb.
    */
-  float *           pa_out_buf;
+  float * pa_out_buf;
 
 #ifdef _WOE32
   /** Windows MME MIDI devices. */
@@ -632,22 +602,22 @@ typedef struct AudioEngine
   WindowsMmeDevice * mme_out_devs[1024];
   int                num_mme_out_devs;
 #else
-  void * mme_in_devs[1024];
-  int                num_mme_in_devs;
-  void * mme_out_devs[1024];
-  int                num_mme_out_devs;
+  void *   mme_in_devs[1024];
+  int      num_mme_in_devs;
+  void *   mme_out_devs[1024];
+  int      num_mme_out_devs;
 #endif
 
 #ifdef HAVE_SDL
   SDL_AudioDeviceID dev;
 #else
-  uint32_t          sdl_dev;
+  uint32_t sdl_dev;
 #endif
 
 #ifdef HAVE_RTAUDIO
-  rtaudio_t         rtaudio;
+  rtaudio_t rtaudio;
 #else
-  void *            rtaudio;
+  void *   rtaudio;
 #endif
 
 #ifdef HAVE_PULSEAUDIO
@@ -655,65 +625,65 @@ typedef struct AudioEngine
   pa_context *           pulse_context;
   pa_stream *            pulse_stream;
 #else
-  void *                 pulse_mainloop;
-  void *                 pulse_context;
-  void *                 pulse_stream;
+  void *   pulse_mainloop;
+  void *   pulse_context;
+  void *   pulse_stream;
 #endif
-  gboolean               pulse_notified_underflow;
+  gboolean pulse_notified_underflow;
 
   /**
    * Dummy audio DSP processing thread.
    */
-  GThread *         dummy_audio_thread;
+  GThread * dummy_audio_thread;
 
   /** Set to 1 to stop the dummy audio thread. */
-  int               stop_dummy_audio_thread;
+  int stop_dummy_audio_thread;
 
   /**
    * Timeline metadata like BPM, time signature, etc.
    */
-  Transport *       transport;
+  Transport * transport;
 
   /* note: these 2 are ignored at the moment */
   /** Pan law. */
-  PanLaw            pan_law;
+  PanLaw pan_law;
   /** Pan algorithm */
-  PanAlgorithm      pan_algo;
+  PanAlgorithm pan_algo;
 
   /** Time taken to process in the last cycle */
-  gint64            last_time_taken;
+  gint64 last_time_taken;
 
   /** Max time taken to process in the last few
    * cycles. */
-  gint64            max_time_taken;
+  gint64 max_time_taken;
 
   /** Timestamp at the start of the current
    * cycle. */
-  gint64            timestamp_start;
+  gint64 timestamp_start;
 
   /** Expected timestamp at the end of the current
    * cycle. */
-  gint64            timestamp_end;
+  gint64 timestamp_end;
 
   /** Timestamp at start of previous cycle. */
-  gint64            last_timestamp_start;
+  gint64 last_timestamp_start;
 
   /** Timestamp at end of previous cycle. */
-  gint64            last_timestamp_end;
+  gint64 last_timestamp_end;
 
   /** When first set, it is equal to the max
    * playback latency of all initial trigger
    * nodes. */
-  nframes_t         remaining_latency_preroll;
+  nframes_t remaining_latency_preroll;
 
   SampleProcessor * sample_processor;
 
   /** To be set to 1 when the CC from the Midi in
    * port should be captured. */
-  int               capture_cc;
+  int capture_cc;
 
   /** Last MIDI CC captured. */
-  midi_byte_t       last_cc[3];
+  midi_byte_t last_cc[3];
 
   /**
    * Last time an XRUN notification was shown.
@@ -722,7 +692,7 @@ typedef struct AudioEngine
    * being shown so quickly that Zrythm becomes
    * unusable.
    */
-  gint64            last_xrun_notification;
+  gint64 last_xrun_notification;
 
   /**
    * Whether the denormal prevention value
@@ -733,18 +703,18 @@ typedef struct AudioEngine
    *
    * See https://www.earlevel.com/main/2019/04/19/floating-point-denormals/ for details.
    */
-  bool              denormal_prevention_val_positive;
-  float             denormal_prevention_val;
+  bool  denormal_prevention_val_positive;
+  float denormal_prevention_val;
 
   /* --- trial version flags --- */
 
   /** Time at start to keep track if trial limit
    * is reached. */
-  gint64            zrythm_start_time;
+  gint64 zrythm_start_time;
 
   /** Flag to keep track of the first time the
    * limit is reached. */
-  int               limit_reached;
+  int limit_reached;
 
   /* --- end trial version flags --- */
 
@@ -755,17 +725,17 @@ typedef struct AudioEngine
    * Automation and everything else will work as
    * normal.
    */
-  BounceMode        bounce_mode;
+  BounceMode bounce_mode;
 
   /** Bounce step cache. */
-  BounceStep        bounce_step;
+  BounceStep bounce_step;
 
   /** Whether currently bouncing with parents
    * (cache). */
-  bool              bounce_with_parents;
+  bool bounce_with_parents;
 
   /** The metronome. */
-  Metronome *       metronome;
+  Metronome * metronome;
 
   /* --- events --- */
 
@@ -780,92 +750,94 @@ typedef struct AudioEngine
    * queue still has events or is currently
    * processing events.
    */
-  MPMCQueue *       ev_queue;
+  MPMCQueue * ev_queue;
 
   /**
    * Object pool of event structs to avoid
    * allocation.
    */
-  ObjectPool *      ev_pool;
+  ObjectPool * ev_pool;
 
   /** ID of the event processing source func. */
-  guint             process_source_id;
+  guint process_source_id;
 
   /** Whether currently processing events. */
-  int               processing_events;
+  int processing_events;
 
   /** Time last event processing started. */
-  gint64            last_events_process_started;
+  gint64 last_events_process_started;
 
   /** Time last event processing completed. */
-  gint64            last_events_processed;
+  gint64 last_events_processed;
 
   /* --- end events --- */
 
   /** Whether the cycle is currently running. */
-  volatile gint     cycle_running;
+  volatile gint cycle_running;
 
   /** Whether the engine is already pre-set up. */
-  bool              pre_setup;
+  bool pre_setup;
 
   /** Whether the engine is already set up. */
-  bool              setup;
+  bool setup;
 
   /** Whether the engine is currently activated. */
-  bool              activated;
+  bool activated;
 
   /** Pointer to owner project, if any. */
-  Project *         project;
+  Project * project;
 } AudioEngine;
 
-static const cyaml_schema_field_t
-engine_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    AudioEngine, schema_version),
+static const cyaml_schema_field_t engine_fields_schema[] = {
+  YAML_FIELD_INT (AudioEngine, schema_version),
   YAML_FIELD_ENUM (
-    AudioEngine, transport_type,
+    AudioEngine,
+    transport_type,
     jack_transport_type_strings),
-  YAML_FIELD_INT (
-    AudioEngine, sample_rate),
-  YAML_FIELD_FLOAT (
-    AudioEngine, frames_per_tick),
+  YAML_FIELD_INT (AudioEngine, sample_rate),
+  YAML_FIELD_FLOAT (AudioEngine, frames_per_tick),
   YAML_FIELD_MAPPING_PTR (
-    AudioEngine, monitor_out,
+    AudioEngine,
+    monitor_out,
     stereo_ports_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    AudioEngine, midi_editor_manual_press,
+    AudioEngine,
+    midi_editor_manual_press,
     port_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    AudioEngine, midi_in,
+    AudioEngine,
+    midi_in,
     port_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    AudioEngine, transport,
+    AudioEngine,
+    transport,
     transport_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    AudioEngine, pool,
+    AudioEngine,
+    pool,
     audio_pool_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    AudioEngine, control_room,
+    AudioEngine,
+    control_room,
     control_room_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    AudioEngine, sample_processor,
+    AudioEngine,
+    sample_processor,
     sample_processor_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    AudioEngine, hw_in_processor,
+    AudioEngine,
+    hw_in_processor,
     hardware_processor_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    AudioEngine, hw_out_processor,
+    AudioEngine,
+    hw_out_processor,
     hardware_processor_fields_schema),
 
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-engine_schema =
-{
-  YAML_VALUE_PTR (
-    AudioEngine, engine_fields_schema),
+static const cyaml_schema_value_t engine_schema = {
+  YAML_VALUE_PTR (AudioEngine, engine_fields_schema),
 };
 
 void
@@ -873,10 +845,7 @@ engine_realloc_port_buffers (
   AudioEngine * self,
   nframes_t     buf_size);
 
-COLD
-NONNULL_ARGS (1)
-void
-engine_init_loaded (
+COLD NONNULL_ARGS (1) void engine_init_loaded (
   AudioEngine * self,
   Project *     project);
 
@@ -886,20 +855,17 @@ engine_init_loaded (
  * This only initializes the engine and doe snot
  * connect to the backend.
  */
-COLD
-WARN_UNUSED_RESULT
-AudioEngine *
-engine_new (
-  Project * project);
+COLD WARN_UNUSED_RESULT AudioEngine *
+engine_new (Project * project);
 
 typedef struct EngineState
 {
   /** Engine running. */
-  int      running;
+  int running;
   /** Playback. */
-  bool     playing;
+  bool playing;
   /** Transport loop. */
-  bool     looping;
+  bool looping;
 } EngineState;
 
 /**
@@ -924,9 +890,7 @@ engine_resume (
  * Used during tests.
  */
 void
-engine_wait_n_cycles (
-  AudioEngine * self,
-  int           n);
+engine_wait_n_cycles (AudioEngine * self, int n);
 
 void
 engine_append_ports (
@@ -938,16 +902,14 @@ engine_append_ports (
  * initialized/loaded.
  */
 void
-engine_pre_setup (
-  AudioEngine * self);
+engine_pre_setup (AudioEngine * self);
 
 /**
  * Sets up the audio engine after the project
  * is initialized/loaded.
  */
 void
-engine_setup (
-  AudioEngine * self);
+engine_setup (AudioEngine * self);
 
 /**
  * Activates the audio engine to start processing
@@ -955,11 +917,8 @@ engine_setup (
  *
  * @param activate Activate or deactivate.
  */
-COLD
-void
-engine_activate (
-  AudioEngine * self,
-  bool          activate);
+COLD void
+engine_activate (AudioEngine * self, bool activate);
 
 /**
  * Updates frames per tick based on the time sig,
@@ -988,8 +947,7 @@ engine_update_frames_per_tick (
  * This will loop indefinintely.
  */
 int
-engine_process_events (
-  AudioEngine * self);
+engine_process_events (AudioEngine * self);
 
 /**
  * To be called by each implementation to prepare
@@ -1000,8 +958,7 @@ engine_process_events (
  * @return Whether the cycle should be skipped.
  */
 NONNULL
-HOT
-bool
+HOT bool
 engine_process_prepare (
   AudioEngine * self,
   nframes_t     nframes);
@@ -1013,8 +970,7 @@ engine_process_prepare (
  * callback.
  */
 NONNULL
-HOT
-int
+HOT int
 engine_process (
   AudioEngine *   self,
   const nframes_t total_frames_to_process);
@@ -1028,8 +984,7 @@ engine_process (
  *   cycle.
  */
 NONNULL
-HOT
-void
+HOT void
 engine_post_process (
   AudioEngine *   self,
   const nframes_t roll_nframes,
@@ -1078,11 +1033,11 @@ engine_set_buffer_size (
  * Returns 1 if the port is an engine port or
  * control room port, otherwise 0.
  */
-#define engine_is_port_own(self,port) \
-  (port == MONITOR_FADER->stereo_in->l || \
-  port == MONITOR_FADER->stereo_in->r || \
-  port == MONITOR_FADER->stereo_out->l || \
-  port == MONITOR_FADER->stereo_out->r)
+#define engine_is_port_own(self, port) \
+  (port == MONITOR_FADER->stereo_in->l \
+   || port == MONITOR_FADER->stereo_in->r \
+   || port == MONITOR_FADER->stereo_out->l \
+   || port == MONITOR_FADER->stereo_out->r)
 
 /**
  * Returns the audio backend as a string.
@@ -1092,30 +1047,26 @@ engine_audio_backend_to_string (
   AudioBackend backend);
 
 AudioBackend
-engine_audio_backend_from_string (
-  char * str);
+engine_audio_backend_from_string (char * str);
 
 /**
  * Returns the MIDI backend as a string.
  */
 static inline const char *
-engine_midi_backend_to_string (
-  MidiBackend backend)
+engine_midi_backend_to_string (MidiBackend backend)
 {
   return midi_backend_str[backend];
 }
 
 MidiBackend
-engine_midi_backend_from_string (
-  char * str);
+engine_midi_backend_from_string (char * str);
 
 /**
  * Reset the bounce mode on the engine, all tracks
  * and regions to OFF.
  */
 void
-engine_reset_bounce_mode (
-  AudioEngine * self);
+engine_reset_bounce_mode (AudioEngine * self);
 
 /**
  * Detects the best backends on the system and
@@ -1126,28 +1077,21 @@ engine_reset_bounce_mode (
  *   defaults.
  */
 void
-engine_set_default_backends (
-  bool reset_to_dummy);
+engine_set_default_backends (bool reset_to_dummy);
 
 /**
  * Clones the audio engine.
  *
  * To be used for serialization.
  */
-COLD
-NONNULL
-AudioEngine *
-engine_clone (
-  const AudioEngine * src);
+COLD NONNULL AudioEngine *
+engine_clone (const AudioEngine * src);
 
 /**
  * Closes any connections and free's data.
  */
-COLD
-NONNULL
-void
-engine_free (
-  AudioEngine * self);
+COLD NONNULL void
+engine_free (AudioEngine * self);
 
 /**
  * @}

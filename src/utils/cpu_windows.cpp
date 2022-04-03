@@ -25,17 +25,19 @@
 
 #ifdef _WOE32
 
-#include <stdio.h>
-#include <Windows.h>
-#include <iostream>
+#  include <stdio.h>
+
+#  include <Windows.h>
+#  include <iostream>
 
 using namespace std;
 
-typedef long long int64_t;
+typedef long long          int64_t;
 typedef unsigned long long uint64_t;
 
 /// time convert
-static uint64_t file_time_2_utc(const FILETIME *ftime)
+static uint64_t
+file_time_2_utc (const FILETIME * ftime)
 {
   LARGE_INTEGER li;
 
@@ -45,24 +47,25 @@ static uint64_t file_time_2_utc(const FILETIME *ftime)
 }
 
 // get CPU num
-static int get_processor_number()
+static int
+get_processor_number ()
 {
   SYSTEM_INFO info;
-  GetSystemInfo(&info);
-  return (int)info.dwNumberOfProcessors;
+  GetSystemInfo (&info);
+  return (int) info.dwNumberOfProcessors;
 }
 
-extern "C"
-{
+extern "C" {
 
-int cpu_windows_get_usage(int pid)
+int
+cpu_windows_get_usage (int pid)
 {
   if (pid == -1)
     {
       pid = GetCurrentProcessId ();
     }
 
-  static int processor_count_ = -1;
+  static int     processor_count_ = -1;
   static int64_t last_time_ = 0;
   static int64_t last_system_time_ = 0;
 
@@ -71,45 +74,53 @@ int cpu_windows_get_usage(int pid)
   FILETIME exit_time;
   FILETIME kernel_time;
   FILETIME user_time;
-  int64_t system_time;
-  int64_t time;
-  int64_t system_time_delta;
-  int64_t time_delta;
+  int64_t  system_time;
+  int64_t  time;
+  int64_t  system_time_delta;
+  int64_t  time_delta;
 
   int cpu = -1;
 
   if (processor_count_ == -1)
-  {
-    processor_count_ = get_processor_number();
-  }
+    {
+      processor_count_ = get_processor_number ();
+    }
 
-  GetSystemTimeAsFileTime(&now);
+  GetSystemTimeAsFileTime (&now);
 
-  HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, pid);
-  if (!GetProcessTimes(hProcess, &creation_time, &exit_time, &kernel_time, &user_time))
-  {
-    // can not find the process
-    exit(EXIT_FAILURE);
-  }
-  system_time = (file_time_2_utc(&kernel_time) + file_time_2_utc(&user_time)) / processor_count_;
-  time = file_time_2_utc(&now);
+  HANDLE hProcess =
+    OpenProcess (PROCESS_ALL_ACCESS, false, pid);
+  if (!GetProcessTimes (
+        hProcess, &creation_time, &exit_time,
+        &kernel_time, &user_time))
+    {
+      // can not find the process
+      exit (EXIT_FAILURE);
+    }
+  system_time =
+    (file_time_2_utc (&kernel_time)
+     + file_time_2_utc (&user_time))
+    / processor_count_;
+  time = file_time_2_utc (&now);
 
   if ((last_system_time_ == 0) || (last_time_ == 0))
-  {
-    last_system_time_ = system_time;
-    last_time_ = time;
-    return cpu_windows_get_usage(pid);
-  }
+    {
+      last_system_time_ = system_time;
+      last_time_ = time;
+      return cpu_windows_get_usage (pid);
+    }
 
-  system_time_delta = system_time - last_system_time_;
+  system_time_delta =
+    system_time - last_system_time_;
   time_delta = time - last_time_;
 
   if (time_delta == 0)
-  {
-    return cpu_windows_get_usage(pid);
-  }
+    {
+      return cpu_windows_get_usage (pid);
+    }
 
-  cpu = (int)((system_time_delta * 100 + time_delta / 2) / time_delta);
+  cpu =
+    (int) ((system_time_delta * 100 + time_delta / 2) / time_delta);
   last_system_time_ = system_time;
   last_time_ = time;
   return cpu;

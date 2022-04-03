@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   InspectorPluginWidget,
   inspector_plugin_widget,
-  Z, INSPECTOR_PLUGIN_WIDGET,
+  Z,
+  INSPECTOR_PLUGIN_WIDGET,
   GtkBox)
 
 /**
@@ -50,23 +51,23 @@ typedef struct _PortsExpanderWidget
 typedef struct _PluginPropertiesExpanderWidget
   PluginPropertiesExpanderWidget;
 typedef struct _ColorAreaWidget ColorAreaWidget;
-typedef struct MixerSelections MixerSelections;
+typedef struct MixerSelections  MixerSelections;
 
 typedef struct _InspectorPluginWidget
 {
-  GtkBox                parent_instance;
+  GtkBox parent_instance;
 
   PluginPropertiesExpanderWidget * properties;
-  PortsExpanderWidget * ctrl_ins;
-  PortsExpanderWidget * ctrl_outs;
-  PortsExpanderWidget * audio_ins;
-  PortsExpanderWidget * audio_outs;
-  PortsExpanderWidget * midi_ins;
-  PortsExpanderWidget * midi_outs;
-  PortsExpanderWidget * cv_ins;
-  PortsExpanderWidget * cv_outs;
+  PortsExpanderWidget *            ctrl_ins;
+  PortsExpanderWidget *            ctrl_outs;
+  PortsExpanderWidget *            audio_ins;
+  PortsExpanderWidget *            audio_outs;
+  PortsExpanderWidget *            midi_ins;
+  PortsExpanderWidget *            midi_outs;
+  PortsExpanderWidget *            cv_ins;
+  PortsExpanderWidget *            cv_outs;
 
-  ColorAreaWidget *     color;
+  ColorAreaWidget * color;
 } InspectorPluginWidget;
 
 /**

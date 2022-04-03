@@ -43,40 +43,41 @@
 typedef struct CachedPluginDescriptors
 {
   /** Version of the file. */
-  int                 schema_version;
+  int schema_version;
 
   /** Valid descriptors. */
-  PluginDescriptor *  descriptors[90000];
-  int                 num_descriptors;
+  PluginDescriptor * descriptors[90000];
+  int                num_descriptors;
 
   /** Blacklisted paths and hashes, to skip
    * when scanning */
-  PluginDescriptor *  blacklisted[90000];
-  int                 num_blacklisted;
+  PluginDescriptor * blacklisted[90000];
+  int                num_blacklisted;
 } CachedPluginDescriptors;
 
 static const cyaml_schema_field_t
-cached_plugin_descriptors_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    CachedPluginDescriptors, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    CachedPluginDescriptors, descriptors,
-    plugin_descriptor_schema),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    CachedPluginDescriptors, blacklisted,
-    plugin_descriptor_schema),
+  cached_plugin_descriptors_fields_schema[] = {
+    YAML_FIELD_INT (
+      CachedPluginDescriptors,
+      schema_version),
+    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+      CachedPluginDescriptors,
+      descriptors,
+      plugin_descriptor_schema),
+    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+      CachedPluginDescriptors,
+      blacklisted,
+      plugin_descriptor_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-cached_plugin_descriptors_schema =
-{
-  YAML_VALUE_PTR (
-    CachedPluginDescriptors,
-    cached_plugin_descriptors_fields_schema),
-};
+  cached_plugin_descriptors_schema = {
+    YAML_VALUE_PTR (
+      CachedPluginDescriptors,
+      cached_plugin_descriptors_fields_schema),
+  };
 
 /**
  * Reads the file and fills up the object.
@@ -95,7 +96,7 @@ cached_plugin_descriptors_serialize_to_file (
 int
 cached_plugin_descriptors_is_blacklisted (
   CachedPluginDescriptors * self,
-  const char *           abs_path);
+  const char *              abs_path);
 
 /**
  * Finds a descriptor matching the given one's
@@ -139,8 +140,8 @@ cached_plugin_descriptors_get (
 void
 cached_plugin_descriptors_blacklist (
   CachedPluginDescriptors * self,
-  const char *           abs_path,
-  int                    _serialize);
+  const char *              abs_path,
+  int                       _serialize);
 
 /**
  * Replaces a descriptor in the cache.

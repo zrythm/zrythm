@@ -24,8 +24,8 @@
 #include "project.h"
 #include "utils/gtk.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 #define TEXT_EXPANDER_WIDGET_TYPE \
   (text_expander_widget_get_type ())
@@ -64,10 +64,9 @@ on_focus_leave (
         GTK_TEXT_BUFFER (self->buffer), &start_iter);
       gtk_text_buffer_get_end_iter (
         GTK_TEXT_BUFFER (self->buffer), &end_iter);
-      char * content =
-        gtk_text_buffer_get_text (
-          GTK_TEXT_BUFFER (self->buffer),
-          &start_iter, &end_iter, false);
+      char * content = gtk_text_buffer_get_text (
+        GTK_TEXT_BUFFER (self->buffer), &start_iter,
+        &end_iter, false);
       self->setter (self->obj, content);
       text_expander_widget_refresh (self);
     }
@@ -121,15 +120,13 @@ text_expander_widget_class_init (
 }
 
 static void
-text_expander_widget_init (
-  TextExpanderWidget * self)
+text_expander_widget_init (TextExpanderWidget * self)
 {
   GtkWidget * box =
     gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 
-  self->scroll =
-    GTK_SCROLLED_WINDOW (
-      gtk_scrolled_window_new ());
+  self->scroll = GTK_SCROLLED_WINDOW (
+    gtk_scrolled_window_new ());
   gtk_widget_set_vexpand (
     GTK_WIDGET (self->scroll), 1);
   gtk_widget_set_visible (
@@ -140,15 +137,13 @@ text_expander_widget_init (
     GTK_BOX (box), GTK_WIDGET (self->scroll));
 
   self->viewport =
-    GTK_VIEWPORT (
-      gtk_viewport_new (NULL, NULL));
+    GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
   gtk_widget_set_visible (
     GTK_WIDGET (self->viewport), 1);
   gtk_scrolled_window_set_child (
     self->scroll, GTK_WIDGET (self->viewport));
 
-  self->label =
-    GTK_LABEL (gtk_label_new (""));
+  self->label = GTK_LABEL (gtk_label_new (""));
   gtk_viewport_set_child (
     self->viewport, GTK_WIDGET (self->label));
   gtk_widget_set_vexpand (
@@ -161,8 +156,7 @@ text_expander_widget_init (
   gtk_menu_button_set_icon_name (
     self->edit_btn, "edit");
 
-  self->popover =
-    GTK_POPOVER (gtk_popover_new ());
+  self->popover = GTK_POPOVER (gtk_popover_new ());
   gtk_menu_button_set_popover (
     GTK_MENU_BUTTON (self->edit_btn),
     GTK_WIDGET (self->popover));
@@ -177,18 +171,14 @@ text_expander_widget_init (
   self->buffer =
     gtk_source_buffer_new_with_language (lang);
   g_return_if_fail (self->buffer);
-  self->editor =
-    GTK_SOURCE_VIEW (
-      gtk_source_view_new_with_buffer (
-        self->buffer));
+  self->editor = GTK_SOURCE_VIEW (
+    gtk_source_view_new_with_buffer (self->buffer));
   gtk_popover_set_child (
     self->popover, GTK_WIDGET (self->editor));
   gtk_widget_set_visible (
     GTK_WIDGET (self->editor), true);
-  gtk_source_view_set_tab_width (
-    self->editor, 2);
-  gtk_source_view_set_indent_width (
-    self->editor, 2);
+  gtk_source_view_set_tab_width (self->editor, 2);
+  gtk_source_view_set_indent_width (self->editor, 2);
   gtk_source_view_set_insert_spaces_instead_of_tabs (
     self->editor, true);
   gtk_source_view_set_smart_backspace (
@@ -208,8 +198,7 @@ text_expander_widget_init (
     self->buffer, scheme);
 
   expander_box_widget_add_content (
-    Z_EXPANDER_BOX_WIDGET (self),
-    GTK_WIDGET (box));
+    Z_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (box));
 
   expander_box_widget_set_icon_name (
     Z_EXPANDER_BOX_WIDGET (self), "text-bubble");
@@ -227,4 +216,3 @@ text_expander_widget_init (
     GTK_WIDGET (self->editor),
     GTK_EVENT_CONTROLLER (focus_controller));
 }
-

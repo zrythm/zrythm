@@ -33,12 +33,12 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
-#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/rotated_label.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
@@ -67,21 +67,20 @@ clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
     {
       gtk_size_group_add_widget (
         self->left_of_ruler_size_group, widget);
-      g_message ("%s: adding %s",
-        __func__,
+      g_message (
+        "%s: adding %s", __func__,
         gtk_widget_get_name (widget));
     }
   else
     {
-      GSList * list =
-        gtk_size_group_get_widgets (
-          self->left_of_ruler_size_group);
+      GSList * list = gtk_size_group_get_widgets (
+        self->left_of_ruler_size_group);
       if (g_slist_index (list, widget) >= 0)
         {
           gtk_size_group_remove_widget (
             self->left_of_ruler_size_group, widget);
-          g_message ("%s: removing %s",
-            __func__,
+          g_message (
+            "%s: removing %s", __func__,
             gtk_widget_get_name (widget));
         }
     }
@@ -92,26 +91,26 @@ clip_editor_inner_widget_get_visible_arranger (
   ClipEditorInnerWidget * self)
 {
   GtkWidget * visible_w =
-    gtk_stack_get_visible_child (
-      self->editor_stack);
-  if (visible_w ==
-        GTK_WIDGET (self->midi_editor_space))
+    gtk_stack_get_visible_child (self->editor_stack);
+  if (visible_w == GTK_WIDGET (self->midi_editor_space))
     {
       return MW_MIDI_ARRANGER;
     }
-  else if (visible_w ==
-             GTK_WIDGET (self->audio_editor_space))
+  else if (
+    visible_w
+    == GTK_WIDGET (self->audio_editor_space))
     {
       return MW_AUDIO_ARRANGER;
     }
-  else if (visible_w ==
-             GTK_WIDGET (self->chord_editor_space))
+  else if (
+    visible_w
+    == GTK_WIDGET (self->chord_editor_space))
     {
       return MW_CHORD_ARRANGER;
     }
-  else if (visible_w ==
-             GTK_WIDGET (
-               self->automation_editor_space))
+  else if (
+    visible_w
+    == GTK_WIDGET (self->automation_editor_space))
     {
       return MW_AUTOMATION_ARRANGER;
     }
@@ -127,19 +126,16 @@ clip_editor_inner_widget_refresh (
 {
   g_message ("refreshing...");
 
-  ZRegion * r =
-    clip_editor_get_region (CLIP_EDITOR);
-  ArrangerObject * r_obj =
-    (ArrangerObject *) r;
-  Track * track = NULL;
+  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  ArrangerObject * r_obj = (ArrangerObject *) r;
+  Track *          track = NULL;
 
   if (r)
     {
       track = arranger_object_get_track (r_obj);
 
       color_area_widget_set_color (
-        self->color_bar,
-        &track->color);
+        self->color_bar, &track->color);
       rotated_label_widget_set_markup (
         self->track_name_rotated_label, r->name);
 
@@ -147,26 +143,30 @@ clip_editor_inner_widget_refresh (
       GtkWidget * visible_w =
         gtk_stack_get_visible_child (
           self->editor_stack);
-      if (visible_w ==
-          GTK_WIDGET (self->midi_editor_space))
+      if (
+        visible_w
+        == GTK_WIDGET (self->midi_editor_space))
         {
           midi_editor_space_widget_update_size_group (
             self->midi_editor_space, false);
         }
-      else if (visible_w ==
-          GTK_WIDGET (self->audio_editor_space))
+      else if (
+        visible_w
+        == GTK_WIDGET (self->audio_editor_space))
         {
           audio_editor_space_widget_update_size_group (
             self->audio_editor_space, false);
         }
-      else if (visible_w ==
-          GTK_WIDGET (self->chord_editor_space))
+      else if (
+        visible_w
+        == GTK_WIDGET (self->chord_editor_space))
         {
           chord_editor_space_widget_update_size_group (
             self->chord_editor_space, false);
         }
-      else if (visible_w ==
-          GTK_WIDGET (self->automation_editor_space))
+      else if (
+        visible_w
+        == GTK_WIDGET (self->automation_editor_space))
         {
           automation_editor_space_widget_update_size_group (
             self->automation_editor_space, false);
@@ -233,15 +233,13 @@ clip_editor_inner_widget_refresh (
         case REGION_TYPE_AUTOMATION:
           gtk_stack_set_visible_child (
             self->editor_stack,
-            GTK_WIDGET (
-              MW_AUTOMATION_EDITOR_SPACE));
+            GTK_WIDGET (MW_AUTOMATION_EDITOR_SPACE));
           automation_editor_space_widget_update_size_group (
             self->automation_editor_space, true);
           automation_editor_space_widget_refresh (
             self->automation_editor_space);
           gtk_widget_set_visible (
-            GTK_WIDGET (
-              self->show_automation_values),
+            GTK_WIDGET (self->show_automation_values),
             true);
           break;
         }
@@ -267,15 +265,14 @@ clip_editor_inner_widget_setup (
 }
 
 static void
-finalize (
-  ClipEditorInnerWidget * self)
+finalize (ClipEditorInnerWidget * self)
 {
   if (self->left_of_ruler_size_group)
     g_object_unref (self->left_of_ruler_size_group);
 
   G_OBJECT_CLASS (
-    clip_editor_inner_widget_parent_class)->
-      finalize (G_OBJECT (self));
+    clip_editor_inner_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 static void
@@ -298,8 +295,7 @@ clip_editor_inner_widget_init (
 
   /* add all arrangers and the ruler to the same
    * size group */
-  self->ruler->type =
-    RULER_WIDGET_TYPE_EDITOR;
+  self->ruler->type = RULER_WIDGET_TYPE_EDITOR;
   gtk_size_group_add_widget (
     self->ruler_arranger_hsize_group,
     GTK_WIDGET (self->ruler));
@@ -324,18 +320,16 @@ clip_editor_inner_widget_init (
   /* setup the rotated label */
   rotated_label_widget_setup (
     self->track_name_rotated_label, -90);
-  GtkLabel * lbl =
-    rotated_label_widget_get_label (
+  GtkLabel * lbl = rotated_label_widget_get_label (
     self->track_name_rotated_label);
   gtk_widget_add_css_class (
     GTK_WIDGET (lbl), "editor-track-name-lbl");
   rotated_label_widget_set_markup (
     self->track_name_rotated_label,
-    _("Select a region..."));
+    _ ("Select a region..."));
 
   self->left_of_ruler_size_group =
-    gtk_size_group_new (
-      GTK_SIZE_GROUP_HORIZONTAL);
+    gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
   gtk_size_group_add_widget (
     self->left_of_ruler_size_group,
     GTK_WIDGET (self->left_of_ruler_box));

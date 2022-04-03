@@ -59,25 +59,15 @@ typedef enum ZFileType
   NUM_FILE_TYPES,
 } ZFileType;
 
-static const cyaml_strval_t
-  file_type_strings[] =
-{
-  { "MIDI",
-    FILE_TYPE_MIDI },
-  { "mp3",
-    FILE_TYPE_MP3 },
-  { "FLAC",
-    FILE_TYPE_FLAC },
-  { "ogg",
-    FILE_TYPE_OGG },
-  { "wav",
-    FILE_TYPE_WAV },
-  { "directory",
-    FILE_TYPE_DIR },
-  { "parent dir",
-    FILE_TYPE_PARENT_DIR },
-  { "other",
-    FILE_TYPE_OTHER },
+static const cyaml_strval_t file_type_strings[] = {
+  {"MIDI",        FILE_TYPE_MIDI      },
+  { "mp3",        FILE_TYPE_MP3       },
+  { "FLAC",       FILE_TYPE_FLAC      },
+  { "ogg",        FILE_TYPE_OGG       },
+  { "wav",        FILE_TYPE_WAV       },
+  { "directory",  FILE_TYPE_DIR       },
+  { "parent dir", FILE_TYPE_PARENT_DIR},
+  { "other",      FILE_TYPE_OTHER     },
 };
 
 /**
@@ -86,16 +76,16 @@ static const cyaml_strval_t
 typedef struct SupportedFile
 {
   /** Absolute path. */
-  char *         abs_path;
+  char * abs_path;
 
   /** Type of file. */
-  ZFileType       type;
+  ZFileType type;
 
   /** Human readable label. */
-  char *          label;
+  char * label;
 
   /** Hidden or not. */
-  int             hidden;
+  int hidden;
 
   /** MIDI file, if midi. */
   //MidiFile *     midi_file;
@@ -108,38 +98,36 @@ typedef struct SupportedFile
 } SupportedFile;
 
 static const cyaml_schema_field_t
-  supported_file_fields_schema[] =
-{
-  YAML_FIELD_STRING_PTR (
-    SupportedFile, abs_path),
-  YAML_FIELD_ENUM (
-    SupportedFile, type, file_type_strings),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    SupportedFile, label),
-  YAML_FIELD_INT (
-    SupportedFile, hidden),
+  supported_file_fields_schema[] = {
+    YAML_FIELD_STRING_PTR (SupportedFile, abs_path),
+    YAML_FIELD_ENUM (
+      SupportedFile,
+      type,
+      file_type_strings),
+    YAML_FIELD_STRING_PTR_OPTIONAL (
+      SupportedFile,
+      label),
+    YAML_FIELD_INT (SupportedFile, hidden),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-  supported_file_schema =
-{
-  YAML_VALUE_PTR_NULLABLE (
-    SupportedFile, supported_file_fields_schema),
-};
+  supported_file_schema = {
+    YAML_VALUE_PTR_NULLABLE (
+      SupportedFile,
+      supported_file_fields_schema),
+  };
 
 /**
  * Creates a new SupportedFile from the given absolute
  * path.
  */
 SupportedFile *
-supported_file_new_from_path (
-  const char * path);
+supported_file_new_from_path (const char * path);
 
 SupportedFile *
-supported_file_new_from_uri (
-  const char * uri);
+supported_file_new_from_uri (const char * uri);
 
 /**
  * Returns a human readable description of the given
@@ -148,52 +136,44 @@ supported_file_new_from_uri (
  * Example: wav -> "Wave file".
  */
 char *
-supported_file_type_get_description (
-  ZFileType type);
-
+supported_file_type_get_description (ZFileType type);
 
 /**
  * Clones the given SupportedFile.
  */
 SupportedFile *
-supported_file_clone (
-  SupportedFile * src);
+supported_file_clone (SupportedFile * src);
 
 /**
  * Returns if the given type is supported.
  */
 int
-supported_file_type_is_supported (
-  ZFileType type);
+supported_file_type_is_supported (ZFileType type);
 
 /**
  * Returns if the SupportedFile is an audio file.
  */
 int
-supported_file_type_is_audio (
-  ZFileType type);
+supported_file_type_is_audio (ZFileType type);
 
 /**
  * Returns if the SupportedFile is a midi file.
  */
 int
-supported_file_type_is_midi (
-  ZFileType type);
+supported_file_type_is_midi (ZFileType type);
 
 /**
  * Returns the most common extension for the given
  * filetype.
  */
 const char *
-supported_file_type_get_ext (
-  ZFileType type);
+supported_file_type_get_ext (ZFileType type);
 
 /**
  * Returns the file type of the given file path.
  */
 ZFileType
-supported_file_get_type (
-  const char * file);
+supported_file_get_type (const char * file);
 
 /**
  * Returns whether the given file should auto-play
@@ -224,8 +204,7 @@ supported_file_get_info_text_for_label (
  * Frees the instance and all its members.
  */
 void
-supported_file_free (
-  SupportedFile * self);
+supported_file_free (SupportedFile * self);
 
 /**
  * @}

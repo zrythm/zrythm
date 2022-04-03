@@ -26,14 +26,14 @@
 #ifndef __AUDIO_TRACK_PROCESSOR_H__
 #define __AUDIO_TRACK_PROCESSOR_H__
 
-#include "utils/midi.h"
 #include "audio/port.h"
+#include "utils/midi.h"
 #include "utils/types.h"
 #include "utils/yaml.h"
 
-typedef struct StereoPorts StereoPorts;
-typedef struct Port Port;
-typedef struct Track Track;
+typedef struct StereoPorts  StereoPorts;
+typedef struct Port         Port;
+typedef struct Track        Track;
 typedef struct MidiMappings MidiMappings;
 typedef struct EngineProcessTimeInfo
   EngineProcessTimeInfo;
@@ -60,18 +60,18 @@ typedef struct EngineProcessTimeInfo
  */
 typedef struct TrackProcessor
 {
-  int              schema_version;
+  int schema_version;
 
   /**
    * L & R audio input ports, if audio.
    */
-  StereoPorts *    stereo_in;
+  StereoPorts * stereo_in;
 
   /** Mono toggle, if audio. */
-  Port *           mono;
+  Port * mono;
 
   /** Input gain, if audio. */
-  Port *           input_gain;
+  Port * input_gain;
 
   /**
    * Output gain, if audio.
@@ -79,12 +79,12 @@ typedef struct TrackProcessor
    * This is applied after regions are processed to
    * TrackProcessor.streo_out.
    */
-  Port *           output_gain;
+  Port * output_gain;
 
   /**
    * L & R audio output ports, if audio.
    */
-  StereoPorts *    stereo_out;
+  StereoPorts * stereo_out;
 
   /**
    * MIDI in Port.
@@ -96,12 +96,12 @@ typedef struct TrackProcessor
    * manual press will be routed to and this will
    * be the port used to pass midi to the plugins.
    */
-  Port *           midi_in;
+  Port * midi_in;
 
   /**
    * MIDI out port, if MIDI.
    */
-  Port *           midi_out;
+  Port * midi_out;
 
   /**
    * MIDI input for receiving MIDI signals from
@@ -112,7 +112,7 @@ typedef struct TrackProcessor
    * during processing. It will be processed by
    * the TrackProcessor internally.
    */
-  Port *           piano_roll;
+  Port * piano_roll;
 
   /**
    * Whether to monitor the audio output.
@@ -125,18 +125,18 @@ typedef struct TrackProcessor
    * When not recording, this will only take effect
    * when paused.
    */
-  Port *           monitor_audio;
+  Port * monitor_audio;
 
   /* --- MIDI controls --- */
 
   /** Mappings to each CC port. */
-  MidiMappings *   cc_mappings;
+  MidiMappings * cc_mappings;
 
   /** MIDI CC control ports, 16 channels. */
-  Port *           midi_cc[128 * 16];
+  Port * midi_cc[128 * 16];
 
   /** Pitch bend. */
-  Port *           pitch_bend[16];
+  Port * pitch_bend[16];
 
   /**
    * Polyphonic key pressure (aftertouch).
@@ -144,7 +144,7 @@ typedef struct TrackProcessor
    * This message is most often sent by pressing
    * down on the key after it "bottoms out".
    */
-  Port *           poly_key_pressure[16];
+  Port * poly_key_pressure[16];
 
   /**
    * Channel pressure (aftertouch).
@@ -154,7 +154,7 @@ typedef struct TrackProcessor
    * pressure value (of all the current depressed
    * keys).
    */
-  Port *           channel_pressure[16];
+  Port * channel_pressure[16];
 
   /* --- end MIDI controls --- */
 
@@ -163,77 +163,88 @@ typedef struct TrackProcessor
    *
    * Transient variables only used by the GUI.
    */
-  float            l_port_db;
-  float            r_port_db;
+  float l_port_db;
+  float r_port_db;
 
   /** Pointer to owner track, if any. */
-  Track *          track;
+  Track * track;
 
-  int              magic;
+  int magic;
 } TrackProcessor;
 
-static const cyaml_schema_field_t
-track_processor_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    TrackProcessor, schema_version),
+static const cyaml_schema_field_t track_processor_fields_schema[] = {
+  YAML_FIELD_INT (TrackProcessor, schema_version),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor, mono,
+    TrackProcessor,
+    mono,
     port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor, input_gain,
+    TrackProcessor,
+    input_gain,
     port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor, output_gain,
+    TrackProcessor,
+    output_gain,
     port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor, midi_in,
+    TrackProcessor,
+    midi_in,
     port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor, midi_out,
+    TrackProcessor,
+    midi_out,
     port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor, piano_roll,
+    TrackProcessor,
+    piano_roll,
     port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor, monitor_audio,
+    TrackProcessor,
+    monitor_audio,
     port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor, stereo_in,
+    TrackProcessor,
+    stereo_in,
     stereo_ports_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor, stereo_out,
+    TrackProcessor,
+    stereo_out,
     stereo_ports_fields_schema),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-    TrackProcessor, midi_cc,
-    port_schema, 128 * 16),
+    TrackProcessor,
+    midi_cc,
+    port_schema,
+    128 * 16),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-    TrackProcessor, pitch_bend,
-    port_schema, 16),
+    TrackProcessor,
+    pitch_bend,
+    port_schema,
+    16),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-    TrackProcessor, poly_key_pressure,
-    port_schema, 16),
+    TrackProcessor,
+    poly_key_pressure,
+    port_schema,
+    16),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-    TrackProcessor, channel_pressure,
-    port_schema, 16),
+    TrackProcessor,
+    channel_pressure,
+    port_schema,
+    16),
 
   CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
-track_processor_schema =
-{
-  YAML_VALUE_PTR (
-    TrackProcessor, track_processor_fields_schema),
-};
+  track_processor_schema = {
+    YAML_VALUE_PTR (
+      TrackProcessor,
+      track_processor_fields_schema),
+  };
 
 /**
  * Inits a TrackProcessor after a project is loaded.
  */
-COLD
-NONNULL_ARGS (1)
-void
-track_processor_init_loaded (
+COLD NONNULL_ARGS (1) void track_processor_init_loaded (
   TrackProcessor * self,
   Track *          track);
 
@@ -248,11 +259,8 @@ track_processor_set_is_project (
  * Creates a new track processor for the given
  * track.
  */
-COLD
-WARN_UNUSED_RESULT
-TrackProcessor *
-track_processor_new (
-  Track *          track);
+COLD WARN_UNUSED_RESULT TrackProcessor *
+track_processor_new (Track * track);
 
 /**
  * Copy port values from \ref src to \ref dest.
@@ -333,7 +341,7 @@ track_processor_connect_to_prefader (
 void
 track_processor_disconnect_from_plugin (
   TrackProcessor * self,
-  Plugin         * pl);
+  Plugin *         pl);
 
 /**
  * Connect the TrackProcessor's out ports to the
@@ -342,7 +350,7 @@ track_processor_disconnect_from_plugin (
 void
 track_processor_connect_to_plugin (
   TrackProcessor * self,
-  Plugin         * pl);
+  Plugin *         pl);
 
 #if 0
 void
@@ -359,8 +367,7 @@ track_processor_append_ports (
  * Frees the TrackProcessor.
  */
 void
-track_processor_free (
-  TrackProcessor * self);
+track_processor_free (TrackProcessor * self);
 
 /**
  * @}

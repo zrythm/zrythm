@@ -29,7 +29,8 @@
 G_DECLARE_FINAL_TYPE (
   KnobWithNameWidget,
   knob_with_name_widget,
-  Z, KNOB_WITH_NAME_WIDGET,
+  Z,
+  KNOB_WITH_NAME_WIDGET,
   GtkBox)
 
 typedef struct _KnobWidget KnobWidget;
@@ -42,16 +43,15 @@ typedef struct _EditableLabelWidget
 */
 typedef struct _KnobWithNameWidget
 {
-  GtkBox         parent_instance;
+  GtkBox parent_instance;
 
   /** The label to show below the knob. */
   //GtkLabel *     label;
   EditableLabelWidget * label;
 
   /** The knob. */
-  KnobWidget *   knob;
+  KnobWidget * knob;
 } KnobWithNameWidget;
-
 
 /**
  * Returns a new instance.
@@ -61,12 +61,12 @@ typedef struct _KnobWithNameWidget
  */
 KnobWithNameWidget *
 knob_with_name_widget_new (
-  void *         obj,
+  void *              obj,
   GenericStringGetter name_getter,
   GenericStringSetter name_setter,
-  KnobWidget *   knob,
-  GtkOrientation orientation,
-  bool           label_before,
-  int            spacing);
+  KnobWidget *        knob,
+  GtkOrientation      orientation,
+  bool                label_before,
+  int                 spacing);
 
 #endif

@@ -37,7 +37,8 @@
 G_DECLARE_FINAL_TYPE (
   TimelineSelectionInfoWidget,
   timeline_selection_info_widget,
-  Z, TIMELINE_SELECTION_INFO_WIDGET,
+  Z,
+  TIMELINE_SELECTION_INFO_WIDGET,
   GtkStack);
 
 #define MW_TS_INFO MW_TIMELINE_PANEL->selection_info
@@ -64,6 +65,6 @@ typedef struct _TimelineSelectionInfoWidget
 void
 timeline_selection_info_widget_refresh (
   TimelineSelectionInfoWidget * self,
-  TimelineSelections * ts);
+  TimelineSelections *          ts);
 
 #endif

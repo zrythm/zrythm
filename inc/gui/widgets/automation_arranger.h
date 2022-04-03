@@ -27,8 +27,8 @@
 #define __GUI_WIDGETS_AUTOMATION_ARRANGER_H__
 
 #include "audio/position.h"
-#include "gui/backend/tool.h"
 #include "gui/backend/automation_selections.h"
+#include "gui/backend/tool.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
 
@@ -39,10 +39,10 @@ typedef struct AutomationCurve AutomationCurve;
 typedef struct _AutomationPointWidget
   AutomationPointWidget;
 typedef struct _AutomationCurveWidget
-  AutomationCurveWidget;
+                        AutomationCurveWidget;
 typedef struct SnapGrid SnapGrid;
 typedef struct AutomationTrack AutomationTrack;
-typedef struct _RegionWidget RegionWidget;
+typedef struct _RegionWidget   RegionWidget;
 
 /**
  * @addtogroup widgets

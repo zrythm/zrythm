@@ -19,25 +19,26 @@
 
 #include "audio/engine.h"
 #include "audio/master_track.h"
-#include "utils/midi.h"
 #include "audio/track.h"
 #include "gui/widgets/live_waveform.h"
 #include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/arrays.h"
-#include "utils/objects.h"
 #include "utils/cairo.h"
+#include "utils/midi.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
-#include "ext/zix/zix/ring.h"
-
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
+
+#include "ext/zix/zix/ring.h"
 
 #define BUF_SIZE 65000
 
 G_DEFINE_TYPE (
-  LiveWaveformWidget, live_waveform_widget,
+  LiveWaveformWidget,
+  live_waveform_widget,
   GTK_TYPE_DRAWING_AREA)
 
 static void
@@ -49,19 +50,16 @@ draw_lines (
   nframes_t            lstart_index,
   nframes_t            rstart_index)
 {
-  gint width =
-    gtk_widget_get_allocated_width (
-      GTK_WIDGET (self));
-  gint height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
+  gint width = gtk_widget_get_allocated_width (
+    GTK_WIDGET (self));
+  gint height = gtk_widget_get_allocated_height (
+    GTK_WIDGET (self));
 
   /* draw */
-  gdk_cairo_set_source_rgba (
-    cr, &self->color_green);
-  float half_height = (float) height / 2.0f;
-  uint32_t nframes = AUDIO_ENGINE->block_length;
-  float val;
+  gdk_cairo_set_source_rgba (cr, &self->color_green);
+  float        half_height = (float) height / 2.0f;
+  uint32_t     nframes = AUDIO_ENGINE->block_length;
+  float        val;
   unsigned int step =
     MAX (1, (nframes / (unsigned int) width));
 
@@ -69,17 +67,16 @@ draw_lines (
     {
       if (rbuf)
         {
-          val =
-            MAX (
-              lbuf[lstart_index + i],
-              rbuf[rstart_index + i]);
+          val = MAX (
+            lbuf[lstart_index + i],
+            rbuf[rstart_index + i]);
         }
       else
         {
           val = lbuf[lstart_index + i];
         }
 
-      val = - val;
+      val = -val;
 
       double x = width * ((double) i / nframes);
       double y = half_height + val * half_height;
@@ -129,8 +126,8 @@ live_waveform_draw_cb (
     }
 
   size_t block_size_in_bytes =
-    sizeof (float) *
-    (size_t) AUDIO_ENGINE->block_length;
+    sizeof (float)
+    * (size_t) AUDIO_ENGINE->block_length;
 
   Port * port = NULL;
   switch (self->type)
@@ -138,13 +135,13 @@ live_waveform_draw_cb (
     case LIVE_WAVEFORM_ENGINE:
       g_return_if_fail (
         IS_TRACK_AND_NONNULL (P_MASTER_TRACK));
-      if (!P_MASTER_TRACK->channel->stereo_out->l->
-            write_ring_buffers)
+      if (!P_MASTER_TRACK->channel->stereo_out->l
+             ->write_ring_buffers)
         {
-          P_MASTER_TRACK->channel->stereo_out->l->
-            write_ring_buffers = true;
-          P_MASTER_TRACK->channel->stereo_out->r->
-            write_ring_buffers = true;
+          P_MASTER_TRACK->channel->stereo_out->l
+            ->write_ring_buffers = true;
+          P_MASTER_TRACK->channel->stereo_out->r
+            ->write_ring_buffers = true;
           return;
         }
       port = P_MASTER_TRACK->channel->stereo_out->l;
@@ -169,8 +166,9 @@ live_waveform_draw_cb (
   size_t read_space_avail =
     zix_ring_read_space (port->audio_ring);
   size_t blocks_to_read =
-    block_size_in_bytes == 0 ?
-      0 : read_space_avail / block_size_in_bytes;
+    block_size_in_bytes == 0
+      ? 0
+      : read_space_avail / block_size_in_bytes;
   /* if buffer is not filled do not draw */
   if (blocks_to_read <= 0)
     return;
@@ -181,10 +179,9 @@ live_waveform_draw_cb (
         self->bufs[0], self->buf_sz[0],
         self->buf_sz[0], float);
     }
-  size_t lblocks_read =
-    zix_ring_peek (
-      port->audio_ring, &(self->bufs[0][0]),
-      read_space_avail);
+  size_t lblocks_read = zix_ring_peek (
+    port->audio_ring, &(self->bufs[0][0]),
+    read_space_avail);
   lblocks_read /= block_size_in_bytes;
   size_t lstart_index =
     (lblocks_read - 1) * AUDIO_ENGINE->block_length;
@@ -197,8 +194,7 @@ live_waveform_draw_cb (
   if (self->type == LIVE_WAVEFORM_ENGINE)
     {
       /* get the R buffer */
-      port =
-        P_MASTER_TRACK->channel->stereo_out->r;
+      port = P_MASTER_TRACK->channel->stereo_out->r;
       read_space_avail =
         zix_ring_read_space (port->audio_ring);
       blocks_to_read =
@@ -214,14 +210,13 @@ live_waveform_draw_cb (
             self->bufs[1], self->buf_sz[1],
             self->buf_sz[1], float);
         }
-      size_t rblocks_read =
-        zix_ring_peek (
-          port->audio_ring, &(self->bufs[1][0]),
-          read_space_avail);
+      size_t rblocks_read = zix_ring_peek (
+        port->audio_ring, &(self->bufs[1][0]),
+        read_space_avail);
       rblocks_read /= block_size_in_bytes;
       size_t rstart_index =
-        (rblocks_read - 1) *
-          AUDIO_ENGINE->block_length;
+        (rblocks_read - 1)
+        * AUDIO_ENGINE->block_length;
       if (rblocks_read == 0)
         {
           return;
@@ -242,8 +237,8 @@ live_waveform_draw_cb (
 
 static int
 update_activity (
-  GtkWidget * widget,
-  GdkFrameClock * frame_clock,
+  GtkWidget *          widget,
+  GdkFrameClock *      frame_clock,
   LiveWaveformWidget * self)
 {
   gtk_widget_queue_draw (widget);
@@ -252,15 +247,12 @@ update_activity (
 }
 
 static void
-init_common (
-  LiveWaveformWidget * self)
+init_common (LiveWaveformWidget * self)
 {
   self->draw_border = 1;
 
-  self->bufs[0] =
-    object_new_n (BUF_SIZE, float);
-  self->bufs[1] =
-    object_new_n (BUF_SIZE, float);
+  self->bufs[0] = object_new_n (BUF_SIZE, float);
+  self->bufs[1] = object_new_n (BUF_SIZE, float);
   self->buf_sz[0] = BUF_SIZE;
   self->buf_sz[1] = BUF_SIZE;
 
@@ -270,8 +262,7 @@ init_common (
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self),
-    (GtkTickCallback) update_activity,
-    self, NULL);
+    (GtkTickCallback) update_activity, self, NULL);
 }
 
 /**
@@ -290,8 +281,7 @@ live_waveform_widget_setup_engine (
  * Creates a LiveWaveformWidget for a port.
  */
 LiveWaveformWidget *
-live_waveform_widget_new_port (
-  Port *               port)
+live_waveform_widget_new_port (Port * port)
 {
   LiveWaveformWidget * self =
     g_object_new (LIVE_WAVEFORM_WIDGET_TYPE, NULL);
@@ -305,23 +295,21 @@ live_waveform_widget_new_port (
 }
 
 static void
-finalize (
-  LiveWaveformWidget * self)
+finalize (LiveWaveformWidget * self)
 {
   object_zero_and_free_if_nonnull (self->bufs[0]);
   object_zero_and_free_if_nonnull (self->bufs[1]);
 
-  G_OBJECT_CLASS (
-    live_waveform_widget_parent_class)->
-      finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (live_waveform_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 static void
-live_waveform_widget_init (
-  LiveWaveformWidget * self)
+live_waveform_widget_init (LiveWaveformWidget * self)
 {
   gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self), _("Live waveform indicator"));
+    GTK_WIDGET (self),
+    _ ("Live waveform indicator"));
   gdk_rgba_parse (&self->color_white, "white");
   gdk_rgba_parse (&self->color_green, "#11FF44");
 }
@@ -335,6 +323,5 @@ live_waveform_widget_class_init (
     klass, "live-waveform");
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
-  oklass->finalize =
-    (GObjectFinalizeFunc) finalize;
+  oklass->finalize = (GObjectFinalizeFunc) finalize;
 }

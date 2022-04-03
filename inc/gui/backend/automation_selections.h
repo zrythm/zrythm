@@ -47,7 +47,7 @@
  */
 typedef struct AutomationSelections
 {
-  int                schema_version;
+  int schema_version;
 
   ArrangerSelections base;
 
@@ -59,30 +59,34 @@ typedef struct AutomationSelections
 } AutomationSelections;
 
 static const cyaml_schema_field_t
-  automation_selections_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    AutomationSelections, schema_version),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    AutomationSelections, base,
-    arranger_selections_fields_schema),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "automation_points",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    AutomationSelections, automation_points,
-    num_automation_points,
-    &automation_point_schema, 0, CYAML_UNLIMITED),
+  automation_selections_fields_schema[] = {
+    YAML_FIELD_INT (
+      AutomationSelections,
+      schema_version),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      AutomationSelections,
+      base,
+      arranger_selections_fields_schema),
+    CYAML_FIELD_SEQUENCE_COUNT (
+      "automation_points",
+      CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+      AutomationSelections,
+      automation_points,
+      num_automation_points,
+      &automation_point_schema,
+      0,
+      CYAML_UNLIMITED),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-automation_selections_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    AutomationSelections,
-    automation_selections_fields_schema),
-};
+  automation_selections_schema = {
+    CYAML_VALUE_MAPPING (
+      CYAML_FLAG_POINTER,
+      AutomationSelections,
+      automation_selections_fields_schema),
+  };
 
 /**
  * Returns if the selections can be pasted.

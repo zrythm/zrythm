@@ -44,8 +44,7 @@ midi_function_apply (
     midi_function_type_to_string (type));
 
   /* set last action */
-  g_settings_set_int (
-    S_UI, "midi-function", type);
+  g_settings_set_int (S_UI, "midi-function", type);
 
   EVENTS_PUSH (ET_EDITOR_FUNCTION_APPLIED, NULL);
 

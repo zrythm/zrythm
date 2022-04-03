@@ -27,7 +27,8 @@
 G_DECLARE_FINAL_TYPE (
   ProjectToolbarWidget,
   project_toolbar_widget,
-  Z, PROJECT_TOOLBAR_WIDGET,
+  Z,
+  PROJECT_TOOLBAR_WIDGET,
   GtkBox)
 
 /**
@@ -39,13 +40,13 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _ProjectToolbarWidget
 {
-  GtkBox         parent_instance;
-  GtkButton *    new;
-  GtkButton *     save_btn;
-  GtkButton *     save_as_btn;
-  GtkButton *    open;
-  GtkButton *    export_as;
-  GtkButton *    export_graph;
+  GtkBox parent_instance;
+  GtkButton * new;
+  GtkButton * save_btn;
+  GtkButton * save_as_btn;
+  GtkButton * open;
+  GtkButton * export_as;
+  GtkButton * export_graph;
 } ProjectToolbarWidget;
 
 #endif

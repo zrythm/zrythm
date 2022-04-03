@@ -83,10 +83,10 @@
 #ifndef __UTILS_VAMP_H__
 #define __UTILS_VAMP_H__
 
-#include <vamp/vamp.h>
-#include <vamp-hostsdk/host-c.h>
-
 #include <glib.h>
+
+#include <vamp-hostsdk/host-c.h>
+#include <vamp/vamp.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -128,7 +128,7 @@ typedef struct ZVampFeature
    *
    * Number of frames from start (per channel).
    */
-  long     timestamp;
+  long timestamp;
 
   /**
    * True if an output feature has a specified
@@ -325,22 +325,22 @@ vamp_output_descriptor_new (
   const char * name,
   const char * description,
   const char * unit,
-  bool hasFixedBinCount,
-  bool hasKnownExtents,
-  float minValue,
-  float maxValue,
-  int sampleType,
-  float sampleRate,
-  bool hasDuration);
+  bool         hasFixedBinCount,
+  bool         hasKnownExtents,
+  float        minValue,
+  float        maxValue,
+  int          sampleType,
+  float        sampleRate,
+  bool         hasDuration);
 
 ZVampFeature *
 vamp_feature_new (
-  bool has_timestamp,
-  long     timestamp,
-  bool hasDuration,
-  size_t duration,
-  float * values,
-  size_t num_values,
+  bool         has_timestamp,
+  long         timestamp,
+  bool         hasDuration,
+  size_t       duration,
+  float *      values,
+  size_t       num_values,
   const char * label);
 
 const ZVampFeatureList *
@@ -357,8 +357,7 @@ vamp_feature_set_print (
   const ZVampFeatureSet * self);
 
 void
-vamp_feature_print (
-  ZVampFeature * self);
+vamp_feature_print (ZVampFeature * self);
 
 void
 vamp_plugin_output_print (
@@ -369,20 +368,16 @@ vamp_plugin_output_list_print (
   ZVampOutputList * self);
 
 void
-vamp_feature_free (
-  void * self);
+vamp_feature_free (void * self);
 
 void
-vamp_feature_list_free (
-  void * list);
+vamp_feature_list_free (void * list);
 
 void
-vamp_output_descriptor_free (
-  void * descr);
+vamp_output_descriptor_free (void * descr);
 
 void
-vamp_feature_set_free (
-  ZVampFeatureSet * self);
+vamp_feature_set_free (ZVampFeatureSet * self);
 
 void
 vamp_plugin_output_list_free (

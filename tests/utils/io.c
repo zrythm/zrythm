@@ -19,8 +19,6 @@
 
 #include "zrythm-test-config.h"
 
-#include "tests/helpers/zrythm.h"
-
 #include <stdlib.h>
 
 #include "utils/arrays.h"
@@ -29,6 +27,8 @@
 
 #include <glib.h>
 
+#include "tests/helpers/zrythm.h"
+
 static void
 test_get_parent_dir (void)
 {
@@ -36,37 +36,23 @@ test_get_parent_dir (void)
 
 #ifdef _WOE32
   parent =
-    io_path_get_parent_dir (
-      "C:\\ab\\cd\\ef\\gh");
+    io_path_get_parent_dir ("C:\\ab\\cd\\ef\\gh");
   g_assert_cmpstr (parent, ==, "C:\\ab\\cd\\ef");
   parent =
-    io_path_get_parent_dir (
-      "C:\\ab\\cd\\ef\\gh\\");
+    io_path_get_parent_dir ("C:\\ab\\cd\\ef\\gh\\");
   g_assert_cmpstr (parent, ==, "C:\\ab\\cd\\ef");
-  parent =
-    io_path_get_parent_dir (
-      "C:\\ab");
+  parent = io_path_get_parent_dir ("C:\\ab");
   g_assert_cmpstr (parent, ==, "C:\\");
-  parent =
-    io_path_get_parent_dir (
-      "C:\\");
+  parent = io_path_get_parent_dir ("C:\\");
   g_assert_cmpstr (parent, ==, "C:\\");
 #else
-  parent =
-    io_path_get_parent_dir (
-      "/ab/cd/ef/gh");
+  parent = io_path_get_parent_dir ("/ab/cd/ef/gh");
   g_assert_cmpstr (parent, ==, "/ab/cd/ef");
-  parent =
-    io_path_get_parent_dir (
-      "/ab/cd/ef/gh/");
+  parent = io_path_get_parent_dir ("/ab/cd/ef/gh/");
   g_assert_cmpstr (parent, ==, "/ab/cd/ef");
-  parent =
-    io_path_get_parent_dir (
-      "/ab");
+  parent = io_path_get_parent_dir ("/ab");
   g_assert_cmpstr (parent, ==, "/");
-  parent =
-    io_path_get_parent_dir (
-      "/");
+  parent = io_path_get_parent_dir ("/");
   g_assert_cmpstr (parent, ==, "/");
 #endif
 }
@@ -113,29 +99,24 @@ test_get_files_in_dir (void)
 #ifdef __linux__
   char ** files;
 
-  files =
-    io_get_files_in_dir_ending_in (
-      TESTS_SRCDIR, F_NO_RECURSIVE, ".wav", false);
+  files = io_get_files_in_dir_ending_in (
+    TESTS_SRCDIR, F_NO_RECURSIVE, ".wav", false);
   g_assert_nonnull (files);
   g_strfreev (files);
 
   files = NULL;
 
   g_test_expect_message (
-    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
-    "*reached*");
-  files =
-    io_get_files_in_dir_ending_in (
-      "/non-existent", F_RECURSIVE, ".wav", false);
+    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*reached*");
+  files = io_get_files_in_dir_ending_in (
+    "/non-existent", F_RECURSIVE, ".wav", false);
   g_test_assert_expected_messages ();
   g_assert_null (files);
 
   g_test_expect_message (
-    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
-    "*reached*");
-  files =
-    io_get_files_in_dir_ending_in (
-      "/non-existent", F_RECURSIVE, ".wav", true);
+    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*reached*");
+  files = io_get_files_in_dir_ending_in (
+    "/non-existent", F_RECURSIVE, ".wav", true);
   g_test_assert_expected_messages ();
   g_assert_nonnull (files);
   g_assert_null (files[0]);
@@ -146,7 +127,7 @@ test_get_files_in_dir (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
@@ -167,4 +148,3 @@ main (int argc, char *argv[])
 
   return g_test_run ();
 }
-

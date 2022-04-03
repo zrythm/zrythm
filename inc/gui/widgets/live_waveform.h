@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   LiveWaveformWidget,
   live_waveform_widget,
-  Z, LIVE_WAVEFORM_WIDGET,
+  Z,
+  LIVE_WAVEFORM_WIDGET,
   GtkDrawingArea)
 
 typedef struct Port Port;
@@ -57,19 +58,19 @@ typedef struct _LiveWaveformWidget
   LiveWaveformType type;
 
   /** Draw border or not. */
-  int            draw_border;
+  int draw_border;
 
-  float *        bufs[2];
+  float * bufs[2];
 
   /** Current buffer sizes. */
-  size_t         buf_sz[2];
+  size_t buf_sz[2];
 
   /** Used for drawing. */
-  GdkRGBA        color_green;
-  GdkRGBA        color_white;
+  GdkRGBA color_green;
+  GdkRGBA color_white;
 
   /** Port, if port. */
-  Port *         port;
+  Port * port;
 
 } LiveWaveformWidget;
 
@@ -85,8 +86,7 @@ live_waveform_widget_setup_engine (
  * Creates a LiveWaveformWidget for a port.
  */
 LiveWaveformWidget *
-live_waveform_widget_new_port (
-  Port *               port);
+live_waveform_widget_new_port (Port * port);
 
 /**
  * @}

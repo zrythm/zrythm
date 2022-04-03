@@ -30,11 +30,11 @@
 #include "audio/track.h"
 #include "gui/widgets/track.h"
 
-typedef struct Track Track;
+typedef struct Track            Track;
 typedef struct _TracklistWidget TracklistWidget;
 typedef struct _PinnedTracklistWidget
-  PinnedTracklistWidget;
-typedef struct Track ChordTrack;
+                             PinnedTracklistWidget;
+typedef struct Track         ChordTrack;
 typedef struct SupportedFile SupportedFile;
 
 /**
@@ -82,7 +82,7 @@ typedef enum TracklistPinOption
  */
 typedef struct Tracklist
 {
-  int                 schema_version;
+  int schema_version;
 
   /**
    * All tracks that exist.
@@ -103,27 +103,27 @@ typedef struct Tracklist
    *   ...
    * }
    */
-  Track *             tracks[MAX_TRACKS];
+  Track * tracks[MAX_TRACKS];
 
-  int                 num_tracks;
+  int num_tracks;
 
   /** The chord track, for convenience. */
-  Track *             chord_track;
+  Track * chord_track;
 
   /** The marker track, for convenience. */
-  Track *             marker_track;
+  Track * marker_track;
 
   /** The tempo track, for convenience. */
-  Track *             tempo_track;
+  Track * tempo_track;
 
   /** The modulator track, for convenience. */
-  Track *             modulator_track;
+  Track * modulator_track;
 
   /** The master track, for convenience. */
-  Track *             master_track;
+  Track * master_track;
 
   /** Non-pinned TracklistWidget. */
-  TracklistWidget *   widget;
+  TracklistWidget * widget;
 
   /** PinnedTracklistWidget. */
   PinnedTracklistWidget * pinned_widget;
@@ -135,52 +135,44 @@ typedef struct Tracklist
    * Tracks before this position will be considered
    * as pinned.
    */
-  int                 pinned_tracks_cutoff;
+  int pinned_tracks_cutoff;
 
   /** When this is true, some tracks may temporarily
    * be moved beyond num_tracks. */
-  bool                swapping_tracks;
+  bool swapping_tracks;
 
   /** Pointer to owner sample processor, if any. */
-  SampleProcessor *   sample_processor;
+  SampleProcessor * sample_processor;
 
   /** Pointer to owner project, if any. */
-  Project *           project;
+  Project * project;
 } Tracklist;
 
 static const cyaml_schema_field_t
-  tracklist_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    Tracklist, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    Tracklist, tracks, track_schema),
-  YAML_FIELD_INT (
-    Tracklist, pinned_tracks_cutoff),
+  tracklist_fields_schema[] = {
+    YAML_FIELD_INT (Tracklist, schema_version),
+    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+      Tracklist,
+      tracks,
+      track_schema),
+    YAML_FIELD_INT (Tracklist, pinned_tracks_cutoff),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t
-  tracklist_schema =
-{
-  YAML_VALUE_PTR (
-    Tracklist, tracklist_fields_schema),
+static const cyaml_schema_value_t tracklist_schema = {
+  YAML_VALUE_PTR (Tracklist, tracklist_fields_schema),
 };
 
 /**
  * Initializes the tracklist when loading a project.
  */
-COLD
-NONNULL_ARGS (1)
-void
-tracklist_init_loaded (
+COLD NONNULL_ARGS (1) void tracklist_init_loaded (
   Tracklist *       self,
   Project *         project,
   SampleProcessor * sample_processor);
 
-COLD
-Tracklist *
+COLD Tracklist *
 tracklist_new (
   Project *         project,
   SampleProcessor * sample_processor);
@@ -230,21 +222,18 @@ tracklist_find_track_by_name_hash (
 
 NONNULL
 int
-tracklist_contains_master_track (
-  Tracklist * self);
+tracklist_contains_master_track (Tracklist * self);
 
 NONNULL
 int
-tracklist_contains_chord_track (
-  Tracklist * self);
+tracklist_contains_chord_track (Tracklist * self);
 
 /**
  * Prints the tracks (for debugging).
  */
 NONNULL
 void
-tracklist_print_tracks (
-  Tracklist * self);
+tracklist_print_tracks (Tracklist * self);
 
 /**
  * Adds given track to given spot in tracklist.
@@ -331,8 +320,7 @@ tracklist_set_track_pinned (
 
 NONNULL
 bool
-tracklist_validate (
-  Tracklist * self);
+tracklist_validate (Tracklist * self);
 
 /**
  * Returns the track at the given index or NULL if
@@ -341,11 +329,8 @@ tracklist_validate (
  * Not to be used in real-time code.
  */
 NONNULL
-HOT
-Track *
-tracklist_get_track (
-  Tracklist * self,
-  int         idx);
+HOT Track *
+tracklist_get_track (Tracklist * self, int idx);
 
 /**
  * Returns the index of the given Track.
@@ -365,8 +350,7 @@ tracklist_get_track_by_type (
   TrackType   type);
 
 ChordTrack *
-tracklist_get_chord_track (
-  const Tracklist * self);
+tracklist_get_chord_track (const Tracklist * self);
 
 /**
  * Returns the first visible Track.
@@ -408,7 +392,7 @@ tracklist_get_last_pos (
  * @param visible_only Only consider visible
  *   Track's.
  */
-Track*
+Track *
 tracklist_get_last_track (
   Tracklist *              self,
   const TracklistPinOption pin_opt,
@@ -520,16 +504,14 @@ tracklist_track_name_is_unique (
  */
 NONNULL
 bool
-tracklist_has_soloed (
-  const Tracklist * self);
+tracklist_has_soloed (const Tracklist * self);
 
 /**
  * Returns if the tracklist has listened tracks.
  */
 NONNULL
 bool
-tracklist_has_listened (
-  const Tracklist * self);
+tracklist_has_listened (const Tracklist * self);
 
 NONNULL
 int
@@ -583,8 +565,7 @@ tracklist_activate_all_plugins (
  * engine.
  */
 void
-tracklist_expose_ports_to_backend (
-  Tracklist * self);
+tracklist_expose_ports_to_backend (Tracklist * self);
 
 /**
  * Marks or unmarks all tracks for bounce.
@@ -601,8 +582,7 @@ tracklist_get_total_bars (
 
 NONNULL
 void
-tracklist_set_caches (
-  Tracklist * self);
+tracklist_set_caches (Tracklist * self);
 
 /**
  * Only clones what is needed for project save.
@@ -611,12 +591,10 @@ tracklist_set_caches (
  *   tracklist of the project in use.
  */
 Tracklist *
-tracklist_clone (
-  Tracklist * src);
+tracklist_clone (Tracklist * src);
 
 void
-tracklist_free (
-  Tracklist * self);
+tracklist_free (Tracklist * self);
 
 /**
  * Define guile module.

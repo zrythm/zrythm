@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   SaveChordPresetDialogWidget,
   save_chord_preset_dialog_widget,
-  Z, SAVE_CHORD_PRESET_DIALOG_WIDGET,
+  Z,
+  SAVE_CHORD_PRESET_DIALOG_WIDGET,
   GtkDialog)
 
 /**
@@ -47,10 +48,10 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _SaveChordPresetDialogWidget
 {
-  GtkDialog      parent_instance;
+  GtkDialog parent_instance;
 
-  GtkDropDown *  pack_dropdown;
-  GtkEntry *     preset_name_entry;
+  GtkDropDown * pack_dropdown;
+  GtkEntry *    preset_name_entry;
 } SaveChordPresetDialogWidget;
 
 /**

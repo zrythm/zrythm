@@ -26,9 +26,9 @@
 #ifndef __AUDIO_MIDI_FILE_H__
 #define __AUDIO_MIDI_FILE_H__
 
-#include "ext/midilib/src/midifile.h"
-
 #include <stdbool.h>
+
+#include "ext/midilib/src/midifile.h"
 
 /**
  * @addtogroup audio

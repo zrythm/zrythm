@@ -27,8 +27,11 @@
 #define TRACKLIST_WIDGET_TYPE \
   (tracklist_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  TracklistWidget, tracklist_widget,
-  Z, TRACKLIST_WIDGET, GtkBox)
+  TracklistWidget,
+  tracklist_widget,
+  Z,
+  TRACKLIST_WIDGET,
+  GtkBox)
 
 /**
  * @addtogroup widgets
@@ -38,11 +41,11 @@ G_DECLARE_FINAL_TYPE (
 
 #define MW_TRACKLIST MW_TIMELINE_PANEL->tracklist
 
-typedef struct _TrackWidget TrackWidget;
+typedef struct _TrackWidget       TrackWidget;
 typedef struct _DragDestBoxWidget DragDestBoxWidget;
-typedef struct _ChordTrackWidget ChordTrackWidget;
-typedef struct Track InstrumentTrack;
-typedef struct Tracklist Tracklist;
+typedef struct _ChordTrackWidget  ChordTrackWidget;
+typedef struct Track              InstrumentTrack;
+typedef struct Tracklist          Tracklist;
 
 /**
  * The TracklistWidget holds all the Track's
@@ -54,39 +57,39 @@ typedef struct Tracklist Tracklist;
  */
 typedef struct _TracklistWidget
 {
-  GtkBox              parent_instance;
+  GtkBox parent_instance;
 
   /** The scrolled window for unpinned tracks. */
   GtkScrolledWindow * unpinned_scroll;
 
   /** Box to hold pinned tracks. */
-  GtkBox *            pinned_box;
+  GtkBox * pinned_box;
 
   /** Box inside unpinned scroll. */
-  GtkBox *            unpinned_box;
+  GtkBox * unpinned_box;
 
   /**
    * Widget for drag and dropping plugins in to
    * create new tracks.
    */
-  DragDestBoxWidget *   ddbox;
+  DragDestBoxWidget * ddbox;
 
   /**
    * Internal tracklist.
    */
-  Tracklist *           tracklist;
+  Tracklist * tracklist;
 
   /** Size group to set the pinned track box and
    * the pinned timeline to the same height. */
-  GtkSizeGroup *       pinned_size_group;
-  GtkSizeGroup *       unpinned_size_group;
+  GtkSizeGroup * pinned_size_group;
+  GtkSizeGroup * unpinned_size_group;
 
   /** Cache. */
-  GdkRectangle         last_allocation;
+  GdkRectangle last_allocation;
 
-  bool                 setup;
+  bool setup;
 
-  double               hover_y;
+  double hover_y;
 } TracklistWidget;
 
 /**
@@ -95,14 +98,13 @@ typedef struct _TracklistWidget
 void
 tracklist_widget_setup (
   TracklistWidget * self,
-  Tracklist * tracklist);
+  Tracklist *       tracklist);
 
 /**
  * Prepare for finalization.
  */
 void
-tracklist_widget_tear_down (
-  TracklistWidget * self);
+tracklist_widget_tear_down (TracklistWidget * self);
 
 /**
  * Makes sure all the tracks for channels marked as
@@ -110,15 +112,14 @@ tracklist_widget_tear_down (
  */
 void
 tracklist_widget_update_track_visibility (
-  TracklistWidget *self);
-
+  TracklistWidget * self);
 
 /**
  * Gets hit TrackWidget and the given coordinates.
  */
 TrackWidget *
 tracklist_widget_get_hit_track (
-  TracklistWidget *  self,
+  TracklistWidget * self,
   double            x,
   double            y);
 

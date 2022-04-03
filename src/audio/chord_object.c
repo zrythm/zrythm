@@ -40,11 +40,9 @@ chord_object_new (
 {
   ChordObject * self = object_new (ChordObject);
 
-  self->schema_version =
-    CHORD_OBJECT_SCHEMA_VERSION;
+  self->schema_version = CHORD_OBJECT_SCHEMA_VERSION;
 
-  ArrangerObject * obj =
-    (ArrangerObject *) self;
+  ArrangerObject * obj = (ArrangerObject *) self;
   obj->type = ARRANGER_OBJECT_TYPE_CHORD_OBJECT;
 
   self->chord_index = chord_index;
@@ -75,15 +73,12 @@ chord_object_is_equal (
   ChordObject * a,
   ChordObject * b)
 {
-  ArrangerObject * obj_a =
-    (ArrangerObject *) a;
-  ArrangerObject * obj_b =
-    (ArrangerObject *) b;
-  return
-    position_is_equal_ticks (
-      &obj_a->pos, &obj_b->pos) &&
-    a->chord_index == b->chord_index &&
-    a->index == b->index;
+  ArrangerObject * obj_a = (ArrangerObject *) a;
+  ArrangerObject * obj_b = (ArrangerObject *) b;
+  return position_is_equal_ticks (
+           &obj_a->pos, &obj_b->pos)
+         && a->chord_index == b->chord_index
+         && a->index == b->index;
 }
 
 /**
@@ -93,19 +88,17 @@ chord_object_is_equal (
  * Used in actions.
  */
 ChordObject *
-chord_object_find_by_pos (
-  ChordObject * clone)
+chord_object_find_by_pos (ChordObject * clone)
 {
   ArrangerObject * clone_obj =
     (ArrangerObject *) clone;
 
   /* get actual region - clone's region might be
    * an unused clone */
-  ZRegion * r =
-    region_find (&clone_obj->region_id);
+  ZRegion * r = region_find (&clone_obj->region_id);
   g_return_val_if_fail (r, NULL);
 
-  ChordObject * chord;
+  ChordObject *    chord;
   ArrangerObject * c_obj;
   for (int i = 0; i < r->num_chord_objects; i++)
     {
@@ -134,8 +127,7 @@ chord_object_set_region_and_index (
 }
 
 ZRegion *
-chord_object_get_region (
-  ChordObject * self)
+chord_object_get_region (ChordObject * self)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   return region_find (&obj->region_id);

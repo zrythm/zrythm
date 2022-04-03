@@ -30,7 +30,8 @@
 #include "zrythm_app.h"
 
 G_DEFINE_TYPE (
-  PianoKeyboardWidget, piano_keyboard_widget,
+  PianoKeyboardWidget,
+  piano_keyboard_widget,
   GTK_TYPE_DRAWING_AREA)
 
 /**
@@ -45,8 +46,7 @@ draw_orange_circle (
   int                   i)
 {
   double height =
-    (double)
-    gtk_widget_get_allocated_height (
+    (double) gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
   if (self->for_chord)
     {
@@ -55,18 +55,14 @@ draw_orange_circle (
       if (descr->notes[self->start_key + i])
         {
           double circle_radius = key_width / 3.0;
-          bool is_black =
-            piano_roll_is_key_black (
-              self->start_key + i);
+          bool is_black = piano_roll_is_key_black (
+            self->start_key + i);
           gdk_cairo_set_source_rgba (
             cr, &UI_COLORS->dark_orange);
           cairo_set_source_rgba (cr, 1, 0, 0, 1);
           cairo_arc (
-            cr,
-            cur_offset + key_width / 2.0,
-            is_black ?
-              height / 3.0 :
-              height / 1.2,
+            cr, cur_offset + key_width / 2.0,
+            is_black ? height / 3.0 : height / 1.2,
             circle_radius, 0, 2 * M_PI);
           cairo_fill (cr);
         }
@@ -105,9 +101,8 @@ piano_keyboard_draw_cb (
   double cur_offset = 0.0;
   for (int i = 0; i < self->num_keys; i++)
     {
-      bool is_black =
-        piano_roll_is_key_black (
-          self->start_key + i);
+      bool is_black = piano_roll_is_key_black (
+        self->start_key + i);
       if (is_black)
         continue;
 
@@ -130,9 +125,8 @@ piano_keyboard_draw_cb (
   cur_offset = 0.0;
   for (int i = 0; i < self->num_keys; i++)
     {
-      bool is_black =
-        piano_roll_is_key_black (
-          self->start_key + i);
+      bool is_black = piano_roll_is_key_black (
+        self->start_key + i);
       if (!is_black)
         {
           bool is_next_black =
@@ -200,8 +194,7 @@ piano_keyboard_widget_new (
     g_object_new (PIANO_KEYBOARD_WIDGET_TYPE, NULL);
 
   gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self),
-    piano_keyboard_draw_cb,
+    GTK_DRAWING_AREA (self), piano_keyboard_draw_cb,
     self, NULL);
 
   return self;

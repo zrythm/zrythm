@@ -35,10 +35,11 @@
 G_DECLARE_FINAL_TYPE (
   PluginStripExpanderWidget,
   plugin_strip_expander_widget,
-  Z, PLUGIN_STRIP_EXPANDER_WIDGET,
+  Z,
+  PLUGIN_STRIP_EXPANDER_WIDGET,
   ExpanderBoxWidget);
 
-typedef struct Track Track;
+typedef struct Track              Track;
 typedef struct _ChannelSlotWidget ChannelSlotWidget;
 
 /**
@@ -61,24 +62,24 @@ typedef struct _PluginStripExpanderWidget
 {
   ExpanderBoxWidget parent_instance;
 
-  PluginSlotType    slot_type;
+  PluginSlotType              slot_type;
   PluginStripExpanderPosition position;
 
   /** Scrolled window for the vbox inside. */
   GtkScrolledWindow * scroll;
-  GtkViewport *     viewport;
+  GtkViewport *       viewport;
 
   /** VBox containing each slot. */
-  GtkBox *          box;
+  GtkBox * box;
 
   /** 1 box for each item. */
-  GtkBox *          strip_boxes[STRIP_SIZE];
+  GtkBox * strip_boxes[STRIP_SIZE];
 
   /** Channel slots, if type is inserts. */
   ChannelSlotWidget * slots[STRIP_SIZE];
 
   /** Owner track. */
-  Track *           track;
+  Track * track;
 } PluginStripExpanderWidget;
 
 /**

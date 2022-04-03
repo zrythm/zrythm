@@ -35,12 +35,12 @@
 #include "zrythm_app.h"
 
 G_DEFINE_TYPE (
-  ToolboxWidget, toolbox_widget,
+  ToolboxWidget,
+  toolbox_widget,
   GTK_TYPE_BOX)
 
 static void
-on_toggled (GtkToggleButton * tb,
-            ToolboxWidget   * self)
+on_toggled (GtkToggleButton * tb, ToolboxWidget * self)
 {
   g_message ("toggling");
   if (tb == self->select_mode)
@@ -69,8 +69,7 @@ on_toggled (GtkToggleButton * tb,
  * the callbacks.
  */
 void
-toolbox_widget_refresh (
-  ToolboxWidget * self)
+toolbox_widget_refresh (ToolboxWidget * self)
 {
 #define BLOCK_SIGNAL_HANDLER(lowercase) \
   g_signal_handler_block ( \
@@ -90,22 +89,19 @@ toolbox_widget_refresh (
   /* set all inactive */
   gtk_toggle_button_set_active (
     self->select_mode, 0);
-  gtk_toggle_button_set_active (
-    self->edit_mode, 0);
-  gtk_toggle_button_set_active (
-    self->cut_mode, 0);
-  gtk_toggle_button_set_active (
-    self->erase_mode, 0);
-  gtk_toggle_button_set_active (
-    self->ramp_mode, 0);
+  gtk_toggle_button_set_active (self->edit_mode, 0);
+  gtk_toggle_button_set_active (self->cut_mode, 0);
+  gtk_toggle_button_set_active (self->erase_mode, 0);
+  gtk_toggle_button_set_active (self->ramp_mode, 0);
   gtk_toggle_button_set_active (
     self->audition_mode, 0);
 
   /* set select mode img */
   gtk_image_set_from_icon_name (
     self->select_img,
-    P_TOOL == TOOL_SELECT_STRETCH ?
-      "selection-end-symbolic" : "edit-select");
+    P_TOOL == TOOL_SELECT_STRETCH
+      ? "selection-end-symbolic"
+      : "edit-select");
 
   /* set toggled states */
   switch (P_TOOL)
@@ -157,12 +153,9 @@ static void
 toolbox_widget_class_init (
   ToolboxWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "toolbox.ui");
-  gtk_widget_class_set_css_name (
-    klass, "toolbox");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "toolbox.ui");
+  gtk_widget_class_set_css_name (klass, "toolbox");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
@@ -206,12 +199,9 @@ toolbox_widget_init (ToolboxWidget * self)
   gtk_widget_init_template (GTK_WIDGET (self));
 
 #define CONNECT_CLICK_HANDLER(lowercase) \
-  self->lowercase##_handler_id = \
-    g_signal_connect ( \
-      G_OBJECT (self->lowercase##_mode), \
-      "toggled", \
-      G_CALLBACK (on_toggled), \
-      self)
+  self->lowercase##_handler_id = g_signal_connect ( \
+    G_OBJECT (self->lowercase##_mode), "toggled", \
+    G_CALLBACK (on_toggled), self)
 
   /* connect click handlers */
   CONNECT_CLICK_HANDLER (select);
@@ -237,13 +227,12 @@ toolbox_widget_init (ToolboxWidget * self)
 #undef CONNECT_NOTIFY_SIGNALS
 
   const char * tooltip_text;
-#define SET_TOOLTIP(x,action) \
-  tooltip_text = \
-    gtk_widget_get_tooltip_text ( \
-      GTK_WIDGET (self->x##_mode)); \
+#define SET_TOOLTIP(x, action) \
+  tooltip_text = gtk_widget_get_tooltip_text ( \
+    GTK_WIDGET (self->x##_mode)); \
   z_gtk_widget_set_tooltip_for_action ( \
     GTK_WIDGET (self->x##_mode), action, \
-    tooltip_text); \
+    tooltip_text);
 
   SET_TOOLTIP (select, "app.select-mode");
   SET_TOOLTIP (edit, "app.edit-mode");

@@ -28,8 +28,8 @@
 
 #include <stdbool.h>
 
-#include "audio/transport.h"
 #include "actions/undoable_action.h"
+#include "audio/transport.h"
 #include "utils/types.h"
 #include "utils/yaml.h"
 
@@ -47,13 +47,12 @@ typedef enum TransportActionType
 } TransportActionType;
 
 static const cyaml_strval_t
-transport_action_type_strings[] =
-{
-  { "BPM change", TRANSPORT_ACTION_BPM_CHANGE },
-  { "beats per bar change",
-    TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE },
-  { "beat unit change",
-    TRANSPORT_ACTION_BEAT_UNIT_CHANGE },
+  transport_action_type_strings[] = {
+    {"BPM change",            TRANSPORT_ACTION_BPM_CHANGE},
+    { "beats per bar change",
+     TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE               },
+    { "beat unit change",
+     TRANSPORT_ACTION_BEAT_UNIT_CHANGE                   },
 };
 
 /**
@@ -61,53 +60,50 @@ transport_action_type_strings[] =
  */
 typedef struct TransportAction
 {
-  UndoableAction   parent_instance;
+  UndoableAction parent_instance;
 
   TransportActionType type;
 
-  bpm_t            bpm_before;
-  bpm_t            bpm_after;
+  bpm_t bpm_before;
+  bpm_t bpm_after;
 
-  int              int_before;
-  int              int_after;
+  int int_before;
+  int int_after;
 
   /** Flag whether the action was already performed
    * the first time. */
-  bool             already_done;
+  bool already_done;
 
   /** Whether musical mode was enabled when this
    * action was made. */
-  bool             musical_mode;
+  bool musical_mode;
 } TransportAction;
 
 static const cyaml_schema_field_t
-  transport_action_fields_schema[] =
-{
-  YAML_FIELD_MAPPING_EMBEDDED (
-    TransportAction, parent_instance,
-    undoable_action_fields_schema),
-  YAML_FIELD_ENUM (
-    TransportAction, type,
-    transport_action_type_strings),
-  YAML_FIELD_FLOAT (
-    TransportAction, bpm_before),
-  YAML_FIELD_FLOAT (
-    TransportAction, bpm_after),
-  YAML_FIELD_INT (TransportAction, int_before),
-  YAML_FIELD_INT (TransportAction, int_after),
-  YAML_FIELD_INT (
-    TransportAction, musical_mode),
+  transport_action_fields_schema[] = {
+    YAML_FIELD_MAPPING_EMBEDDED (
+      TransportAction,
+      parent_instance,
+      undoable_action_fields_schema),
+    YAML_FIELD_ENUM (
+      TransportAction,
+      type,
+      transport_action_type_strings),
+    YAML_FIELD_FLOAT (TransportAction, bpm_before),
+    YAML_FIELD_FLOAT (TransportAction, bpm_after),
+    YAML_FIELD_INT (TransportAction, int_before),
+    YAML_FIELD_INT (TransportAction, int_after),
+    YAML_FIELD_INT (TransportAction, musical_mode),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-  transport_action_schema =
-{
-  YAML_VALUE_PTR (
-    TransportAction,
-    transport_action_fields_schema),
-};
+  transport_action_schema = {
+    YAML_VALUE_PTR (
+      TransportAction,
+      transport_action_fields_schema),
+  };
 
 void
 transport_action_init_loaded (
@@ -132,8 +128,7 @@ transport_action_new_time_sig_change (
 
 NONNULL
 TransportAction *
-transport_action_clone (
-  const TransportAction * src);
+transport_action_clone (const TransportAction * src);
 
 bool
 transport_action_perform_bpm_change (
@@ -161,12 +156,10 @@ transport_action_undo (
   GError **         error);
 
 char *
-transport_action_stringize (
-  TransportAction * self);
+transport_action_stringize (TransportAction * self);
 
 void
-transport_action_free (
-  TransportAction * self);
+transport_action_free (TransportAction * self);
 
 /**
  * @}

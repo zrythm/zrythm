@@ -20,9 +20,9 @@
 #include "actions/transport_action.h"
 #include "audio/control_port.h"
 #include "audio/engine.h"
+#include "audio/router.h"
 #include "audio/tempo_track.h"
 #include "audio/transport.h"
-#include "audio/router.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "project.h"
@@ -35,8 +35,7 @@
 #include <glib/gi18n.h>
 
 void
-transport_action_init_loaded (
-  TransportAction * self)
+transport_action_init_loaded (TransportAction * self)
 {
 }
 
@@ -45,10 +44,10 @@ transport_action_init_loaded (
  */
 UndoableAction *
 transport_action_new_bpm_change (
-  bpm_t           bpm_before,
-  bpm_t           bpm_after,
-  bool            already_done,
-  GError **       error)
+  bpm_t     bpm_before,
+  bpm_t     bpm_after,
+  bool      already_done,
+  GError ** error)
 {
   TransportAction * self =
     object_new (TransportAction);
@@ -62,8 +61,8 @@ transport_action_new_bpm_change (
   self->already_done = already_done;
   self->musical_mode =
     ZRYTHM_TESTING
-    ? false
-    : g_settings_get_boolean (S_UI, "musical-mode");
+      ? false
+      : g_settings_get_boolean (S_UI, "musical-mode");
 
   return ua;
 }
@@ -88,15 +87,14 @@ transport_action_new_time_sig_change (
   self->already_done = already_done;
   self->musical_mode =
     ZRYTHM_TESTING
-    ? false
-    : g_settings_get_boolean (S_UI, "musical-mode");
+      ? false
+      : g_settings_get_boolean (S_UI, "musical-mode");
 
   return ua;
 }
 
 TransportAction *
-transport_action_clone (
-  const TransportAction * src)
+transport_action_clone (const TransportAction * src)
 {
   TransportAction * self =
     object_new (TransportAction);
@@ -120,9 +118,8 @@ transport_action_perform_bpm_change (
   GError ** error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    transport_action_new_bpm_change,
-    error, bpm_before, bpm_after, already_done,
-    error);
+    transport_action_new_bpm_change, error,
+    bpm_before, bpm_after, already_done, error);
 }
 
 bool
@@ -134,9 +131,8 @@ transport_action_perform_time_sig_change (
   GError **           error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    transport_action_new_time_sig_change,
-    error, type, before, after, already_done,
-    error);
+    transport_action_new_time_sig_change, error,
+    type, before, after, already_done, error);
 }
 
 static bool
@@ -157,9 +153,7 @@ need_update_positions_from_ticks (
 }
 
 static int
-do_or_undo (
-  TransportAction * self,
-  bool              _do)
+do_or_undo (TransportAction * self, bool _do)
 {
   ControlPortChange change = { 0 };
   switch (self->type)
@@ -170,17 +164,16 @@ do_or_undo (
         _do ? self->bpm_after : self->bpm_before;
       break;
     case TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE:
-      change.flag2 =
-        PORT_FLAG2_BEATS_PER_BAR;
+      change.flag2 = PORT_FLAG2_BEATS_PER_BAR;
       change.ival =
         _do ? self->int_after : self->int_before;
       break;
     case TRANSPORT_ACTION_BEAT_UNIT_CHANGE:
-      change.flag2 =
-          change.flag2 = PORT_FLAG2_BEAT_UNIT;
-      change.beat_unit =
-        tempo_track_beat_unit_to_enum (
-          _do ? self->int_after : self->int_before);
+      change.flag2 = change.flag2 =
+        PORT_FLAG2_BEAT_UNIT;
+      change
+        .beat_unit = tempo_track_beat_unit_to_enum (
+        _do ? self->int_after : self->int_before);
       break;
     }
 
@@ -193,7 +186,8 @@ do_or_undo (
     .g_start_frame =
       (unsigned_frame_t) PLAYHEAD->frames,
     .local_offset = 0,
-    .nframes = 1, };
+    .nframes = 1,
+  };
   router_start_cycle (ROUTER, time_nfo);
   engine_post_process (AUDIO_ENGINE, 0, 1);
 
@@ -222,9 +216,10 @@ do_or_undo (
             self->bpm_before / self->bpm_after;
         }
 
-      if (self->musical_mode &&
-          /* doesn't work */
-          false)
+      if (
+        self->musical_mode &&
+        /* doesn't work */
+        false)
         {
           transport_stretch_regions (
             TRANSPORT, NULL, true, time_ratio,
@@ -245,8 +240,7 @@ transport_action_do (
       self->already_done = false;
 
       int beats_per_bar =
-        tempo_track_get_beats_per_bar (
-          P_TEMPO_TRACK);
+        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
       bpm_t bpm =
         tempo_track_get_current_bpm (P_TEMPO_TRACK);
 
@@ -282,25 +276,23 @@ transport_action_undo (
 }
 
 char *
-transport_action_stringize (
-  TransportAction * self)
+transport_action_stringize (TransportAction * self)
 {
   switch (self->type)
     {
     case TRANSPORT_ACTION_BPM_CHANGE:
-      return g_strdup (_("Change BPM"));
+      return g_strdup (_ ("Change BPM"));
     case TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE:
-      return g_strdup (_("Beats per bar change"));
+      return g_strdup (_ ("Beats per bar change"));
     case TRANSPORT_ACTION_BEAT_UNIT_CHANGE:
-      return g_strdup (_("Beat unit change"));
+      return g_strdup (_ ("Beat unit change"));
     }
 
   g_return_val_if_reached (NULL);
 }
 
 void
-transport_action_free (
-  TransportAction * self)
+transport_action_free (TransportAction * self)
 {
   free (self);
 }

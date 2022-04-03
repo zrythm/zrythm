@@ -29,8 +29,7 @@
 #include <glib/gi18n.h>
 
 ChordPreset *
-chord_preset_new (
-  const char * name)
+chord_preset_new (const char * name)
 {
   ChordPreset * self = object_new (ChordPreset);
 
@@ -41,8 +40,7 @@ chord_preset_new (
 }
 
 ChordPreset *
-chord_preset_clone (
-  const ChordPreset * src)
+chord_preset_clone (const ChordPreset * src)
 {
   ChordPreset * self = chord_preset_new (src->name);
 
@@ -61,10 +59,9 @@ chord_preset_clone (
  * Must be free'd by caller.
  */
 char *
-chord_preset_get_info_text (
-  const ChordPreset * self)
+chord_preset_get_info_text (const ChordPreset * self)
 {
-  GString * gstr = g_string_new (_("Chords"));
+  GString * gstr = g_string_new (_ ("Chords"));
   g_string_append (gstr, ":\n");
   bool have_any = false;
   for (int i = 0; i < 12; i++)
@@ -91,8 +88,7 @@ chord_preset_get_info_text (
 }
 
 const char *
-chord_preset_get_name (
-  const ChordPreset * self)
+chord_preset_get_name (const ChordPreset * self)
 {
   return self->name;
 }
@@ -120,26 +116,22 @@ chord_preset_generate_context_menu (
   if (pack->is_standard)
     return NULL;
 
-  GMenu * menu = g_menu_new ();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
-  char action[800];
+  char        action[800];
 
   /* rename */
   sprintf (
-    action, "app.rename-chord-preset::%p",
-    self);
-  menuitem =
-    z_gtk_create_menu_item (
-      _("_Rename"), "edit-rename", action);
+    action, "app.rename-chord-preset::%p", self);
+  menuitem = z_gtk_create_menu_item (
+    _ ("_Rename"), "edit-rename", action);
   g_menu_append_item (menu, menuitem);
 
   /* delete */
   sprintf (
-    action, "app.delete-chord-preset::%p",
-    self);
-  menuitem =
-    z_gtk_create_menu_item (
-      _("_Delete"), "edit-delete", action);
+    action, "app.delete-chord-preset::%p", self);
+  menuitem = z_gtk_create_menu_item (
+    _ ("_Delete"), "edit-delete", action);
   g_menu_append_item (menu, menuitem);
 
   return G_MENU_MODEL (menu);
@@ -149,11 +141,9 @@ chord_preset_generate_context_menu (
  * Frees the plugin setting.
  */
 void
-chord_preset_free (
-  ChordPreset * self)
+chord_preset_free (ChordPreset * self)
 {
-  object_free_w_func_and_null (
-    g_free, self->name);
+  object_free_w_func_and_null (g_free, self->name);
 
   for (int i = 0; i < 12; i++)
     {

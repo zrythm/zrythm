@@ -42,10 +42,10 @@
 typedef struct SamplePlayback
 {
   /** A pointer to the original buffer. */
-  sample_t **    buf;
+  sample_t ** buf;
 
   /** The number of channels. */
-  channels_t     channels;
+  channels_t channels;
 
   /** The number of frames in the buffer. */
   unsigned_frame_t buf_size;
@@ -55,20 +55,20 @@ typedef struct SamplePlayback
 
   /** The volume to play the sample at (ratio from
    * 0.0 to 2.0, where 1.0 is the normal volume). */
-  float          volume;
+  float volume;
 
   /** Offset relative to the current processing cycle
    * to start playing the sample. */
-  nframes_t      start_offset;
+  nframes_t start_offset;
 
   /** Source file initialized from. */
-  const char *   file;
+  const char * file;
 
   /** Function initialized from. */
-  const char *   func;
+  const char * func;
 
   /** Line no initialized from. */
-  int            lineno;
+  int lineno;
 } SamplePlayback;
 
 /**
@@ -76,7 +76,8 @@ typedef struct SamplePlayback
  * play back.
  */
 #define sample_playback_init( \
-  self,_buf,_buf_size,_channels,_vol,_start_offset) \
+  self, _buf, _buf_size, _channels, _vol, \
+  _start_offset) \
   if (_channels <= 0) \
     { \
       g_critical ("channels: %u", _channels); \

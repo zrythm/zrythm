@@ -50,36 +50,38 @@ typedef struct MidiArrangerSelections
   /** Base struct. */
   ArrangerSelections base;
 
-  int                schema_version;
+  int schema_version;
 
   /** Selected notes. */
-  MidiNote **        midi_notes;
-  int                num_midi_notes;
-  size_t             midi_notes_size;
+  MidiNote ** midi_notes;
+  int         num_midi_notes;
+  size_t      midi_notes_size;
 
 } MidiArrangerSelections;
 
 static const cyaml_schema_field_t
-  midi_arranger_selections_fields_schema[] =
-{
-  YAML_FIELD_MAPPING_EMBEDDED (
-    MidiArrangerSelections, base,
-    arranger_selections_fields_schema),
-  YAML_FIELD_INT (
-    MidiArrangerSelections, schema_version),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-    MidiArrangerSelections, midi_notes,
-    midi_note_schema),
+  midi_arranger_selections_fields_schema[] = {
+    YAML_FIELD_MAPPING_EMBEDDED (
+      MidiArrangerSelections,
+      base,
+      arranger_selections_fields_schema),
+    YAML_FIELD_INT (
+      MidiArrangerSelections,
+      schema_version),
+    YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+      MidiArrangerSelections,
+      midi_notes,
+      midi_note_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-midi_arranger_selections_schema = {
-  YAML_VALUE_PTR (
-    MidiArrangerSelections,
-    midi_arranger_selections_fields_schema),
-};
+  midi_arranger_selections_schema = {
+    YAML_VALUE_PTR (
+      MidiArrangerSelections,
+      midi_arranger_selections_fields_schema),
+  };
 
 MidiNote *
 midi_arranger_selections_get_highest_note (
@@ -109,7 +111,7 @@ int
 midi_arranger_selections_can_be_pasted (
   MidiArrangerSelections * ts,
   Position *               pos,
-  ZRegion *                 region);
+  ZRegion *                region);
 
 /**
 * @}

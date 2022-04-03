@@ -23,8 +23,8 @@
  * Box used as destination for DnD.
  */
 
-#include "actions/tracklist_selections.h"
 #include "actions/mixer_selections_action.h"
+#include "actions/tracklist_selections.h"
 #include "audio/channel.h"
 #include "audio/modulator_track.h"
 #include "audio/port_connections_manager.h"
@@ -67,12 +67,12 @@ G_DEFINE_TYPE (
 
 static void
 on_dnd_leave_value_ready (
-  GObject* source_object,
-  GAsyncResult* res,
-  gpointer user_data)
+  GObject *      source_object,
+  GAsyncResult * res,
+  gpointer       user_data)
 {
-  GdkDrop * drop = GDK_DROP (source_object);
-  GError * err = NULL;
+  GdkDrop *      drop = GDK_DROP (source_object);
+  GError *       err = NULL;
   const GValue * value =
     gdk_drop_read_value_finish (drop, res, &err);
   if (err)
@@ -88,14 +88,12 @@ on_dnd_leave_value_ready (
 
   WrappedObjectWithChangeSignal * wrapped_obj =
     g_value_get_object (value);
-  if (wrapped_obj->type ==
-        WRAPPED_OBJECT_TYPE_TRACK)
+  if (wrapped_obj->type == WRAPPED_OBJECT_TYPE_TRACK)
     {
       /* unhighlight bottom part of last track */
-      Track * track =
-        tracklist_get_last_track (
-          TRACKLIST,
-          TRACKLIST_PIN_OPTION_UNPINNED_ONLY, true);
+      Track * track = tracklist_get_last_track (
+        TRACKLIST,
+        TRACKLIST_PIN_OPTION_UNPINNED_ONLY, true);
       track_widget_do_highlight (
         track->widget, 0, 0, 0);
     }
@@ -107,24 +105,23 @@ on_dnd_leave (
   DragDestBoxWidget * self)
 {
   GdkDrop * drop =
-    gtk_drop_target_get_current_drop (
-      drop_target);
+    gtk_drop_target_get_current_drop (drop_target);
   if (!drop)
     return;
 
   gdk_drop_read_value_async (
-    drop, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
-    0, NULL, on_dnd_leave_value_ready, self);
+    drop, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, 0,
+    NULL, on_dnd_leave_value_ready, self);
 }
 
 static void
 on_dnd_motion_value_ready (
-  GObject* source_object,
-  GAsyncResult* res,
-  gpointer user_data)
+  GObject *      source_object,
+  GAsyncResult * res,
+  gpointer       user_data)
 {
-  GdkDrop * drop = GDK_DROP (source_object);
-  GError * err = NULL;
+  GdkDrop *      drop = GDK_DROP (source_object);
+  GError *       err = NULL;
   const GValue * value =
     gdk_drop_read_value_finish (drop, res, &err);
   if (err)
@@ -133,9 +130,9 @@ on_dnd_motion_value_ready (
       return;
     }
 
-  SupportedFile * supported_file = NULL;
-  Track * dropped_track = NULL;
-  Plugin * pl = NULL;
+  SupportedFile *    supported_file = NULL;
+  Track *            dropped_track = NULL;
+  Plugin *           pl = NULL;
   PluginDescriptor * pl_descr = NULL;
   if (G_VALUE_HOLDS (
         value,
@@ -143,35 +140,38 @@ on_dnd_motion_value_ready (
     {
       WrappedObjectWithChangeSignal * wrapped_obj =
         g_value_get_object (value);
-      if (wrapped_obj->type ==
-            WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
+      if (
+        wrapped_obj->type
+        == WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
           supported_file =
             (SupportedFile *) wrapped_obj->obj;
         }
-      else if (wrapped_obj->type ==
-                 WRAPPED_OBJECT_TYPE_PLUGIN)
+      else if (
+        wrapped_obj->type
+        == WRAPPED_OBJECT_TYPE_PLUGIN)
         {
           pl = (Plugin *) wrapped_obj->obj;
         }
-      else if (wrapped_obj->type ==
-                 WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
+      else if (
+        wrapped_obj->type
+        == WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
         {
           pl_descr =
             (PluginDescriptor *) wrapped_obj->obj;
         }
-      else if (wrapped_obj->type ==
-                 WRAPPED_OBJECT_TYPE_TRACK)
+      else if (
+        wrapped_obj->type
+        == WRAPPED_OBJECT_TYPE_TRACK)
         {
           dropped_track = (Track *) wrapped_obj->obj;
         }
     }
 
   bool has_files = false;
-  if (G_VALUE_HOLDS (
-        value, GDK_TYPE_FILE_LIST)
-      ||
-      G_VALUE_HOLDS (value, G_TYPE_FILE))
+  if (
+    G_VALUE_HOLDS (value, GDK_TYPE_FILE_LIST)
+    || G_VALUE_HOLDS (value, G_TYPE_FILE))
     {
       has_files = true;
     }
@@ -182,7 +182,7 @@ on_dnd_motion_value_ready (
       /*self->defer_drag_motion_status = 1;*/
 
       /*gtk_drag_get_data (*/
-        /*widget, context, target, time);*/
+      /*widget, context, target, time);*/
 
       return;
     }
@@ -205,16 +205,14 @@ on_dnd_motion_value_ready (
       /*gtk_drag_unhighlight (widget);*/
 
       /* highlight bottom part of last track */
-      Track * track =
-        tracklist_get_last_track (
-          TRACKLIST,
-          TRACKLIST_PIN_OPTION_UNPINNED_ONLY, true);
+      Track * track = tracklist_get_last_track (
+        TRACKLIST,
+        TRACKLIST_PIN_OPTION_UNPINNED_ONLY, true);
       int track_height =
         gtk_widget_get_allocated_height (
           GTK_WIDGET (track->widget));
       track_widget_do_highlight (
-        track->widget, 0,
-        track_height - 1, 1);
+        track->widget, 0, track_height - 1, 1);
     }
   else
     {
@@ -234,11 +232,10 @@ on_dnd_motion (
 
   /* request value */
   GdkDrop * drop =
-    gtk_drop_target_get_current_drop (
-      drop_target);
+    gtk_drop_target_get_current_drop (drop_target);
   gdk_drop_read_value_async (
-    drop, G_TYPE_OBJECT,
-    0, NULL, on_dnd_motion_value_ready, self);
+    drop, G_TYPE_OBJECT, 0, NULL,
+    on_dnd_motion_value_ready, self);
 
   return GDK_ACTION_MOVE;
 }
@@ -246,7 +243,7 @@ on_dnd_motion (
 static gboolean
 on_dnd_drop (
   GtkDropTarget * drop_target,
-  const GValue  * value,
+  const GValue *  value,
   double          x,
   double          y,
   gpointer        data)
@@ -258,35 +255,37 @@ on_dnd_drop (
     z_gtk_drop_target_get_selected_action (
       drop_target);
 
-  SupportedFile * file = NULL;
+  SupportedFile *    file = NULL;
   PluginDescriptor * pd = NULL;
-  Plugin * pl = NULL;
-  Track * track = NULL;
+  Plugin *           pl = NULL;
+  Track *            track = NULL;
   if (G_VALUE_HOLDS (
         value,
         WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
       WrappedObjectWithChangeSignal * wrapped_obj =
         g_value_get_object (value);
-      if (wrapped_obj->type ==
-            WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
+      if (
+        wrapped_obj->type
+        == WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
-          file =
-            (SupportedFile *) wrapped_obj->obj;
+          file = (SupportedFile *) wrapped_obj->obj;
         }
-      else if (wrapped_obj->type ==
-                 WRAPPED_OBJECT_TYPE_PLUGIN)
+      else if (
+        wrapped_obj->type
+        == WRAPPED_OBJECT_TYPE_PLUGIN)
         {
           pl = (Plugin *) wrapped_obj->obj;
         }
-      else if (wrapped_obj->type ==
-                 WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
+      else if (
+        wrapped_obj->type
+        == WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
         {
-          pd =
-            (PluginDescriptor *) wrapped_obj->obj;
+          pd = (PluginDescriptor *) wrapped_obj->obj;
         }
-      else if (wrapped_obj->type ==
-                 WRAPPED_OBJECT_TYPE_TRACK)
+      else if (
+        wrapped_obj->type
+        == WRAPPED_OBJECT_TYPE_TRACK)
         {
           track = (Track *) wrapped_obj->obj;
         }
@@ -294,20 +293,17 @@ on_dnd_drop (
 
   if (
     G_VALUE_HOLDS (value, GDK_TYPE_FILE_LIST)
-    || G_VALUE_HOLDS (value, G_TYPE_FILE)
-    || file)
+    || G_VALUE_HOLDS (value, G_TYPE_FILE) || file)
     {
       char ** uris = NULL;
       if (G_VALUE_HOLDS (value, G_TYPE_FILE))
         {
-          GFile * gfile =
-            g_value_get_object (value);
+          GFile * gfile = g_value_get_object (value);
           StrvBuilder * uris_builder =
             strv_builder_new ();
           char * uri = g_file_get_uri (gfile);
           strv_builder_add (uris_builder, uri);
-          uris =
-            strv_builder_end (uris_builder);
+          uris = strv_builder_end (uris_builder);
         }
       else if (G_VALUE_HOLDS (
                  value, GDK_TYPE_FILE_LIST))
@@ -322,8 +318,7 @@ on_dnd_drop (
               strv_builder_add (uris_builder, uri);
               g_free (uri);
             }
-          uris =
-            strv_builder_end (uris_builder);
+          uris = strv_builder_end (uris_builder);
         }
 
       tracklist_handle_file_drop (
@@ -333,9 +328,9 @@ on_dnd_drop (
     }
   else if (pd)
     {
-      if (self->type == DRAG_DEST_BOX_TYPE_MIXER
-          ||
-          self->type == DRAG_DEST_BOX_TYPE_TRACKLIST)
+      if (
+        self->type == DRAG_DEST_BOX_TYPE_MIXER
+        || self->type == DRAG_DEST_BOX_TYPE_TRACKLIST)
         {
           PluginSetting * setting =
             plugin_setting_new_default (pd);
@@ -349,18 +344,17 @@ on_dnd_drop (
           PluginSetting * setting =
             plugin_setting_new_default (pd);
           GError * err = NULL;
-          bool ret =
+          bool     ret =
             mixer_selections_action_perform_create (
               PLUGIN_SLOT_MODULATOR,
-              track_get_name_hash (
-                P_MODULATOR_TRACK),
+              track_get_name_hash (P_MODULATOR_TRACK),
               P_MODULATOR_TRACK->num_modulators,
               setting, 1, &err);
           if (!ret)
             {
               HANDLE_ERROR (
                 err, "%s",
-                _("Failed to create plugin"));
+                _ ("Failed to create plugin"));
             }
           plugin_setting_free (setting);
         }
@@ -374,24 +368,18 @@ on_dnd_drop (
       g_warn_if_fail (pl);
 
       GError * err = NULL;
-      bool ret;
+      bool     ret;
       if (action == GDK_ACTION_COPY)
         {
-          ret =
-            mixer_selections_action_perform_copy (
-              MIXER_SELECTIONS,
-              PORT_CONNECTIONS_MGR,
-              PLUGIN_SLOT_INSERT,
-              0, 0, &err);
+          ret = mixer_selections_action_perform_copy (
+            MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
+            PLUGIN_SLOT_INSERT, 0, 0, &err);
         }
       else if (action == GDK_ACTION_MOVE)
         {
-          ret =
-            mixer_selections_action_perform_move (
-              MIXER_SELECTIONS,
-              PORT_CONNECTIONS_MGR,
-              PLUGIN_SLOT_INSERT,
-              0, 0, &err);
+          ret = mixer_selections_action_perform_move (
+            MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
+            PLUGIN_SLOT_INSERT, 0, 0, &err);
         }
       else
         g_return_val_if_reached (true);
@@ -400,7 +388,7 @@ on_dnd_drop (
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Failed to move or copy plugin"));
+            _ ("Failed to move or copy plugin"));
         }
 
       return true;
@@ -409,14 +397,13 @@ on_dnd_drop (
     {
       tracklist_selections_select_foldable_children (
         TRACKLIST_SELECTIONS);
-      int pos =
-        tracklist_get_last_pos (
-          TRACKLIST,
-          TRACKLIST_PIN_OPTION_UNPINNED_ONLY, true);
+      int pos = tracklist_get_last_pos (
+        TRACKLIST,
+        TRACKLIST_PIN_OPTION_UNPINNED_ONLY, true);
       pos++;
 
       GError * err = NULL;
-      bool ret;
+      bool     ret;
       if (action == GDK_ACTION_COPY)
         {
           if (tracklist_selections_contains_uncopyable_track (
@@ -446,7 +433,7 @@ on_dnd_drop (
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Failed to move or copy track"));
+            _ ("Failed to move or copy track"));
         }
 
       return true;
@@ -462,59 +449,48 @@ show_context_menu (
   double              x,
   double              y)
 {
-  GMenu * menu = g_menu_new ();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
-  menuitem =
-    z_gtk_create_menu_item (
-      _("Add _MIDI Track"), NULL,
-      "app.create-midi-track");
+  menuitem = z_gtk_create_menu_item (
+    _ ("Add _MIDI Track"), NULL,
+    "app.create-midi-track");
   g_menu_append_item (menu, menuitem);
 
-  menuitem =
-    z_gtk_create_menu_item (
-      _("Add Audio Track"), NULL,
-      "app.create-audio-track");
+  menuitem = z_gtk_create_menu_item (
+    _ ("Add Audio Track"), NULL,
+    "app.create-audio-track");
   g_menu_append_item (menu, menuitem);
 
   GMenu * bus_submenu = g_menu_new ();
-  menuitem =
-    z_gtk_create_menu_item (
-      _(track_type_to_string (
-          TRACK_TYPE_AUDIO_BUS)),
-      NULL, "app.create-audio-bus-track");
+  menuitem = z_gtk_create_menu_item (
+    _ (track_type_to_string (TRACK_TYPE_AUDIO_BUS)),
+    NULL, "app.create-audio-bus-track");
   g_menu_append_item (bus_submenu, menuitem);
-  menuitem =
-    z_gtk_create_menu_item (
-      _(track_type_to_string (
-          TRACK_TYPE_MIDI_BUS)),
-      NULL, "app.create-midi-bus-track");
+  menuitem = z_gtk_create_menu_item (
+    _ (track_type_to_string (TRACK_TYPE_MIDI_BUS)),
+    NULL, "app.create-midi-bus-track");
   g_menu_append_item (bus_submenu, menuitem);
   g_menu_append_section (
-    menu, _("Add FX Track"),
+    menu, _ ("Add FX Track"),
     G_MENU_MODEL (bus_submenu));
 
   GMenu * group_submenu = g_menu_new ();
-  menuitem =
-    z_gtk_create_menu_item (
-      _(track_type_to_string (
-          TRACK_TYPE_AUDIO_GROUP)),
-      NULL, "app.create-audio-group-track");
+  menuitem = z_gtk_create_menu_item (
+    _ (track_type_to_string (TRACK_TYPE_AUDIO_GROUP)),
+    NULL, "app.create-audio-group-track");
   g_menu_append_item (group_submenu, menuitem);
-  menuitem =
-    z_gtk_create_menu_item (
-      _(track_type_to_string (
-          TRACK_TYPE_MIDI_GROUP)),
-      NULL, "app.create-midi-group-track");
+  menuitem = z_gtk_create_menu_item (
+    _ (track_type_to_string (TRACK_TYPE_MIDI_GROUP)),
+    NULL, "app.create-midi-group-track");
   g_menu_append_item (group_submenu, menuitem);
   g_menu_append_section (
-    menu, _("Add Group Track"),
+    menu, _ ("Add Group Track"),
     G_MENU_MODEL (group_submenu));
 
-  menuitem =
-    z_gtk_create_menu_item (
-      _("Add Folder Track"), NULL,
-      "app.create-folder-track");
+  menuitem = z_gtk_create_menu_item (
+    _ ("Add Folder Track"), NULL,
+    "app.create-folder-track");
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
@@ -540,35 +516,32 @@ on_right_click (
 
 static void
 on_click_pressed (
-  GtkGestureClick * gesture,
-  gint                   n_press,
-  gdouble                x,
-  gdouble                y,
-  DragDestBoxWidget *    self)
+  GtkGestureClick *   gesture,
+  gint                n_press,
+  gdouble             x,
+  gdouble             y,
+  DragDestBoxWidget * self)
 {
   mixer_selections_clear (
-    MIXER_SELECTIONS,
-    F_PUBLISH_EVENTS);
+    MIXER_SELECTIONS, F_PUBLISH_EVENTS);
   tracklist_selections_select_last_visible (
     TRACKLIST_SELECTIONS);
 
-  PROJECT->last_selection =
-    SELECTION_TYPE_TRACKLIST;
+  PROJECT->last_selection = SELECTION_TYPE_TRACKLIST;
   EVENTS_PUSH (
     ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
 }
 
 static void
-setup_dnd (
-  DragDestBoxWidget * self)
+setup_dnd (DragDestBoxWidget * self)
 {
-  GtkDropTarget * drop_target =
-    gtk_drop_target_new (
-      G_TYPE_INVALID,
-      GDK_ACTION_COPY | GDK_ACTION_MOVE);
+  GtkDropTarget * drop_target = gtk_drop_target_new (
+    G_TYPE_INVALID,
+    GDK_ACTION_COPY | GDK_ACTION_MOVE);
   GType types[] = {
     GDK_TYPE_FILE_LIST, G_TYPE_FILE,
-    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE };
+    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE
+  };
   gtk_drop_target_set_gtypes (
     drop_target, types, G_N_ELEMENTS (types));
   gtk_widget_add_controller (
@@ -580,11 +553,11 @@ setup_dnd (
     drop_target, "motion",
     G_CALLBACK (on_dnd_motion), self);
   g_signal_connect (
-    drop_target, "drop",
-    G_CALLBACK (on_dnd_drop), self);
+    drop_target, "drop", G_CALLBACK (on_dnd_drop),
+    self);
   g_signal_connect (
-    drop_target, "leave",
-    G_CALLBACK (on_dnd_leave), self);
+    drop_target, "leave", G_CALLBACK (on_dnd_leave),
+    self);
 }
 
 /**
@@ -598,8 +571,7 @@ drag_dest_box_widget_new (
 {
   /* create */
   DragDestBoxWidget * self =
-    g_object_new (
-      DRAG_DEST_BOX_WIDGET_TYPE, NULL);
+    g_object_new (DRAG_DEST_BOX_WIDGET_TYPE, NULL);
 
   self->type = type;
 
@@ -617,10 +589,8 @@ drag_dest_box_widget_new (
     }
 
   /* make expandable */
-  gtk_widget_set_vexpand (
-    GTK_WIDGET (self), true);
-  gtk_widget_set_hexpand (
-    GTK_WIDGET (self), true);
+  gtk_widget_set_vexpand (GTK_WIDGET (self), true);
+  gtk_widget_set_hexpand (GTK_WIDGET (self), true);
 
   setup_dnd (self);
 
@@ -631,15 +601,12 @@ drag_dest_box_widget_new (
  * GTK boilerplate.
  */
 static void
-drag_dest_box_widget_init (
-  DragDestBoxWidget * self)
+drag_dest_box_widget_init (DragDestBoxWidget * self)
 {
-  self->popover_menu =
-    GTK_POPOVER_MENU (
-      gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu = GTK_POPOVER_MENU (
+    gtk_popover_menu_new_from_model (NULL));
   gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->popover_menu));
+    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
 
   self->click =
     GTK_GESTURE_CLICK (gtk_gesture_click_new ());

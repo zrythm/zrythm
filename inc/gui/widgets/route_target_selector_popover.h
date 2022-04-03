@@ -20,7 +20,6 @@
 #ifndef __GUI_WIDGETS_ROUTE_TARGET_SELECTOR_POPOVER_H__
 #define __GUI_WIDGETS_ROUTE_TARGET_SELECTOR_POPOVER_H__
 
-
 #include <gtk/gtk.h>
 
 #define ROUTE_TARGET_SELECTOR_POPOVER_WIDGET_TYPE \
@@ -28,7 +27,8 @@
 G_DECLARE_FINAL_TYPE (
   RouteTargetSelectorPopoverWidget,
   route_target_selector_popover_widget,
-  Z, ROUTE_TARGET_SELECTOR_POPOVER_WIDGET,
+  Z,
+  ROUTE_TARGET_SELECTOR_POPOVER_WIDGET,
   GtkPopover)
 
 /**
@@ -51,23 +51,23 @@ typedef struct _RouteTargetSelectorWidget
 
 typedef struct _RouteTargetSelectorPopoverWidget
 {
-  GtkPopover              parent_instance;
+  GtkPopover parent_instance;
 
   /** The owner button. */
   RouteTargetSelectorWidget * owner;
 
-  GtkBox *                type_treeview_box;
-  GtkTreeView *           type_treeview;
-  GtkTreeModel *          type_model;
-  GtkBox *                route_treeview_box;
-  GtkTreeView *           route_treeview;
-  GtkTreeModel *          route_model;
+  GtkBox *       type_treeview_box;
+  GtkTreeView *  type_treeview;
+  GtkTreeModel * type_model;
+  GtkBox *       route_treeview_box;
+  GtkTreeView *  route_treeview;
+  GtkTreeModel * route_model;
 
   GtkLabel *              info;
   RouteTargetSelectorType type;
 
   /** Newly selected track. */
-  Track *                 new_track;
+  Track * new_track;
 } RouteTargetSelectorPopoverWidget;
 
 /**

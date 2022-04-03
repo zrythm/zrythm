@@ -21,16 +21,15 @@
 
 #ifdef HAVE_JACK
 
-#ifndef __AUDIO_ENGINE_JACK_H__
-#define __AUDIO_ENGINE_JACK_H__
+#  ifndef __AUDIO_ENGINE_JACK_H__
+#    define __AUDIO_ENGINE_JACK_H__
 
-#include <stdlib.h>
+#    include <stdlib.h>
 
-#define JACK_PORT_T(exp) ((jack_port_t *) exp)
+#    define JACK_PORT_T(exp) ((jack_port_t *) exp)
 
-typedef struct AudioEngine AudioEngine;
-typedef enum AudioEngineJackTransportType
-  AudioEngineJackTransportType;
+TYPEDEF_STRUCT (AudioEngine);
+TYPEDEF_ENUM (AudioEngineJackTransportType);
 
 /**
  * Tests if JACK is working properly.
@@ -41,15 +40,13 @@ typedef enum AudioEngineJackTransportType
  * to it.
  */
 int
-engine_jack_test (
-  GtkWindow * win);
+engine_jack_test (GtkWindow * win);
 
 /**
  * Refreshes the list of external ports.
  */
 void
-engine_jack_rescan_ports (
-  AudioEngine * self);
+engine_jack_rescan_ports (AudioEngine * self);
 
 /**
  * Disconnects and reconnects the monitor output
@@ -65,12 +62,10 @@ engine_jack_handle_position_change (
   AudioEngine * self);
 
 void
-engine_jack_handle_start (
-  AudioEngine * self);
+engine_jack_handle_start (AudioEngine * self);
 
 void
-engine_jack_handle_stop (
-  AudioEngine * self);
+engine_jack_handle_stop (AudioEngine * self);
 
 void
 engine_jack_handle_buf_size_change (
@@ -88,15 +83,14 @@ engine_jack_handle_sample_rate_change (
  * Called at the start of each process cycle.
  */
 void
-engine_jack_prepare_process (
-  AudioEngine * self);
+engine_jack_prepare_process (AudioEngine * self);
 
 /**
  * Updates the JACK Transport type.
  */
 void
 engine_jack_set_transport_type (
-  AudioEngine * self,
+  AudioEngine *                self,
   AudioEngineJackTransportType type);
 
 /**
@@ -113,8 +107,7 @@ engine_jack_fill_out_bufs (
  * @param loading Loading a Project or not.
  */
 int
-engine_jack_midi_setup (
-  AudioEngine * self);
+engine_jack_midi_setup (AudioEngine * self);
 
 /**
  * Sets up the audio engine to use jack.
@@ -122,8 +115,7 @@ engine_jack_midi_setup (
  * @param loading Loading a Project or not.
  */
 int
-engine_jack_setup (
-  AudioEngine * self);
+engine_jack_setup (AudioEngine * self);
 /**
  * Copies the error message corresponding to \p
  * status in \p msg.
@@ -134,8 +126,7 @@ engine_jack_get_error_message (
   char *        msg);
 
 void
-engine_jack_tear_down (
-  AudioEngine * self);
+engine_jack_tear_down (AudioEngine * self);
 
 int
 engine_jack_activate (
@@ -147,15 +138,13 @@ engine_jack_activate (
  */
 CONST
 const char *
-engine_jack_get_jack_type (
-  PortType type);
+engine_jack_get_jack_type (PortType type);
 
 /**
  * Returns if this is a pipewire session.
  */
 bool
-engine_jack_is_pipewire (
-  AudioEngine * self);
+engine_jack_is_pipewire (AudioEngine * self);
 
-#endif /* header guard */
-#endif /* HAVE_JACK */
+#  endif /* header guard */
+#endif   /* HAVE_JACK */

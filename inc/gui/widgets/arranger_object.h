@@ -67,22 +67,22 @@ arranger_object_is_fade (
   bool             check_lane);
 
 #define arranger_object_is_fade_in( \
-  self,x,y,only_handle,only_outer) \
+  self, x, y, only_handle, only_outer) \
   arranger_object_is_fade ( \
     self, true, x, y, only_handle, only_outer, \
-    true) || \
-  arranger_object_is_fade ( \
-    self, true, x, y, only_handle, only_outer, \
-    false)
+    true) \
+    || arranger_object_is_fade ( \
+      self, true, x, y, only_handle, only_outer, \
+      false)
 
 #define arranger_object_is_fade_out( \
-  self,x,y,only_handle,only_outer) \
+  self, x, y, only_handle, only_outer) \
   arranger_object_is_fade ( \
     self, false, x, y, only_handle, only_outer, \
-    true) || \
-  arranger_object_is_fade ( \
-    self, false, x, y, only_handle, only_outer, \
-    false)
+    true) \
+    || arranger_object_is_fade ( \
+      self, false, x, y, only_handle, only_outer, \
+      false)
 
 /**
  * Returns if the current position is for resizing
@@ -91,8 +91,7 @@ arranger_object_is_fade (
  * @param x X in local coordinates.
  */
 NONNULL
-PURE
-bool
+PURE bool
 arranger_object_is_resize_l (
   ArrangerObject * self,
   const int        x);
@@ -208,7 +207,7 @@ void
 arranger_object_draw (
   ArrangerObject * self,
   ArrangerWidget * arranger,
-  GtkSnapshot *  snapshot,
+  GtkSnapshot *    snapshot,
   GdkRectangle *   rect);
 
 /**

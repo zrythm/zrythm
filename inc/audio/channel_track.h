@@ -23,10 +23,10 @@
 #include "audio/automation_tracklist.h"
 #include "audio/track.h"
 
-typedef struct Position Position;
+typedef struct Position     Position;
 typedef struct _TrackWidget TrackWidget;
-typedef struct Channel Channel;
-typedef struct Automatable Automatable;
+typedef struct Channel      Channel;
+typedef struct Automatable  Automatable;
 
 /**
  * This track is for convenience. It contains common

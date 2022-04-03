@@ -42,23 +42,22 @@ typedef Track Track;
  */
 typedef struct TrackIconChooserDialogWidget
 {
-  GtkDialog *        dialog;
+  GtkDialog * dialog;
 
-  GtkTreeModel *     icon_model;
-  GtkIconView *      icon_view;
+  GtkTreeModel * icon_model;
+  GtkIconView *  icon_view;
 
-  char *             selected_icon;
+  char * selected_icon;
 
   /** Track. */
-  Track *            track;
+  Track * track;
 } TrackIconChooserDialogWidget;
 
 /**
  * Creates a new dialog.
  */
 TrackIconChooserDialogWidget *
-track_icon_chooser_dialog_widget_new (
-  Track * track);
+track_icon_chooser_dialog_widget_new (Track * track);
 
 /**
  * Runs the widget and processes the result, then

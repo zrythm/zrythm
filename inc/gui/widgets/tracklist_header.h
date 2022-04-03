@@ -36,7 +36,8 @@
 G_DECLARE_FINAL_TYPE (
   TracklistHeaderWidget,
   tracklist_header_widget,
-  Z, TRACKLIST_HEADER_WIDGET,
+  Z,
+  TRACKLIST_HEADER_WIDGET,
   GtkGrid)
 
 /**
@@ -50,8 +51,8 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _TracklistHeaderWidget
 {
-  GtkGrid             parent_instance;
-  GtkLabel *          track_count_lbl;
+  GtkGrid    parent_instance;
+  GtkLabel * track_count_lbl;
 } TracklistHeaderWidget;
 
 void

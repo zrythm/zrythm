@@ -31,24 +31,27 @@
 #define EDITABLE_LABEL_WIDGET_TYPE \
   (editable_label_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  EditableLabelWidget, editable_label_widget,
-  Z, EDITABLE_LABEL_WIDGET, GtkWidget)
+  EditableLabelWidget,
+  editable_label_widget,
+  Z,
+  EDITABLE_LABEL_WIDGET,
+  GtkWidget)
 
 /**
  * A label that shows a popover when clicked.
  */
 typedef struct _EditableLabelWidget
 {
-  GtkWidget         parent_instance;
+  GtkWidget parent_instance;
 
   /** The label. */
-  GtkLabel *        label;
+  GtkLabel * label;
 
   /** Popover owned by another widget. */
-  GtkPopover *      foreign_popover;
+  GtkPopover * foreign_popover;
 
-  GtkPopover *      popover;
-  GtkEntry *        entry;
+  GtkPopover * popover;
+  GtkEntry *   entry;
 
   /** Getter. */
   GenericStringGetter getter;
@@ -57,11 +60,11 @@ typedef struct _EditableLabelWidget
   GenericStringSetter setter;
 
   /** Object to call get/set with. */
-  void *            object;
+  void * object;
 
   /** Whether this is a temporary widget for just
    * showing the popover. */
-  int               is_temp;
+  int is_temp;
 
   /** Multipress for the label. */
   GtkGestureClick * mp;

@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   TransportControlsWidget,
   transport_controls_widget,
-  Z, TRANSPORT_CONTROLS_WIDGET,
+  Z,
+  TRANSPORT_CONTROLS_WIDGET,
   GtkBox)
 
 typedef struct _ButtonWithMenuWidget
@@ -53,17 +54,17 @@ typedef struct _ButtonWithMenuWidget
  */
 typedef struct _TransportControlsWidget
 {
-  GtkBox             parent_instance;
-  GtkButton *        play;
-  GtkButton *        stop;
-  GtkButton *        backward;
-  GtkButton *        forward;
-  GtkToggleButton *  trans_record_btn;
+  GtkBox                 parent_instance;
+  GtkButton *            play;
+  GtkButton *            stop;
+  GtkButton *            backward;
+  GtkButton *            forward;
+  GtkToggleButton *      trans_record_btn;
   ButtonWithMenuWidget * trans_record;
-  GtkToggleButton *  loop;
-  GtkToggleButton *  return_to_cue_toggle;
+  GtkToggleButton *      loop;
+  GtkToggleButton *      return_to_cue_toggle;
 
-  gulong             rec_toggled_handler_id;
+  gulong rec_toggled_handler_id;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;

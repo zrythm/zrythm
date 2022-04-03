@@ -36,46 +36,49 @@
 
 typedef struct ClipEditor_v1
 {
-  int               schema_version;
-  RegionIdentifier_v1  region_id;
-  bool             has_region;
+  int                 schema_version;
+  RegionIdentifier_v1 region_id;
+  bool                has_region;
   PianoRoll_v1        piano_roll;
   AudioClipEditor_v1  audio_clip_editor;
   AutomationEditor_v1 automation_editor;
   ChordEditor_v1      chord_editor;
-  int              region_changed;
+  int                 region_changed;
 } ClipEditor_v1;
 
 static const cyaml_schema_field_t
-clip_editor_fields_schema_v1[] =
-{
-  YAML_FIELD_INT (ClipEditor_v1, schema_version),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ClipEditor_v1, region_id,
-    region_identifier_fields_schema_v1),
-  YAML_FIELD_INT (
-    ClipEditor_v1, has_region),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ClipEditor_v1, piano_roll,
-    piano_roll_fields_schema_v1),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ClipEditor_v1, automation_editor,
-    automation_editor_fields_schema_v1),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ClipEditor_v1, chord_editor,
-    chord_editor_fields_schema_v1),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ClipEditor_v1, audio_clip_editor,
-    audio_clip_editor_fields_schema_v1),
+  clip_editor_fields_schema_v1[] = {
+    YAML_FIELD_INT (ClipEditor_v1, schema_version),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      ClipEditor_v1,
+      region_id,
+      region_identifier_fields_schema_v1),
+    YAML_FIELD_INT (ClipEditor_v1, has_region),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      ClipEditor_v1,
+      piano_roll,
+      piano_roll_fields_schema_v1),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      ClipEditor_v1,
+      automation_editor,
+      automation_editor_fields_schema_v1),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      ClipEditor_v1,
+      chord_editor,
+      chord_editor_fields_schema_v1),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      ClipEditor_v1,
+      audio_clip_editor,
+      audio_clip_editor_fields_schema_v1),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-clip_editor_schema_v1 =
-{
-  YAML_VALUE_PTR (
-    ClipEditor_v1, clip_editor_fields_schema_v1),
-};
+  clip_editor_schema_v1 = {
+    YAML_VALUE_PTR (
+      ClipEditor_v1,
+      clip_editor_fields_schema_v1),
+  };
 
 #endif

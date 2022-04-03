@@ -21,9 +21,9 @@
 
 #include "audio/marker_track.h"
 #include "audio/track.h"
-#include "project.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/math.h"
@@ -32,15 +32,14 @@
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 /**
  * Inits the marker track.
  */
 void
-marker_track_init (
-  Track * self)
+marker_track_init (Track * self)
 {
   self->type = TRACK_TYPE_MARKER;
   self->main_height = TRACK_DEF_HEIGHT / 2;
@@ -54,13 +53,11 @@ marker_track_init (
  * Creates the default marker track.
  */
 MarkerTrack *
-marker_track_default (
-  int   track_pos)
+marker_track_default (int track_pos)
 {
-  Track * self =
-    track_new (
-      TRACK_TYPE_MARKER, track_pos, _("Markers"),
-      F_WITHOUT_LANE);
+  Track * self = track_new (
+    TRACK_TYPE_MARKER, track_pos, _ ("Markers"),
+    F_WITHOUT_LANE);
 
 #if 0
   /* hack to allow setting positions */
@@ -76,16 +73,14 @@ marker_track_default (
   /* add start and end markers */
   Marker * marker;
   Position pos;
-  marker = marker_new (_("start"));
-  ArrangerObject * m_obj =
-    (ArrangerObject *) marker;
+  marker = marker_new (_ ("start"));
+  ArrangerObject * m_obj = (ArrangerObject *) marker;
   position_set_to_bar (&pos, 1);
   arranger_object_pos_setter (m_obj, &pos);
   marker->type = MARKER_TYPE_START;
   marker_track_add_marker (self, marker);
-  marker = marker_new (_("end"));
-  m_obj =
-    (ArrangerObject *) marker;
+  marker = marker_new (_ ("end"));
+  m_obj = (ArrangerObject *) marker;
   position_set_to_bar (&pos, 129);
   arranger_object_pos_setter (m_obj, &pos);
   marker->type = MARKER_TYPE_END;
@@ -106,8 +101,7 @@ marker_track_default (
  * Returns the start marker.
  */
 Marker *
-marker_track_get_start_marker (
-  const Track * self)
+marker_track_get_start_marker (const Track * self)
 {
   g_return_val_if_fail (
     self->type == TRACK_TYPE_MARKER, NULL);
@@ -130,8 +124,7 @@ marker_track_get_start_marker (
  * Returns the end marker.
  */
 Marker *
-marker_track_get_end_marker (
-  const Track * self)
+marker_track_get_end_marker (const Track * self)
 {
   g_return_val_if_fail (
     self->type == TRACK_TYPE_MARKER, NULL);
@@ -178,8 +171,7 @@ marker_track_insert_marker (
 
   marker_track_validate (self);
 
-  EVENTS_PUSH (
-    ET_ARRANGER_OBJECT_CREATED, marker);
+  EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, marker);
 }
 
 /**
@@ -200,22 +192,21 @@ marker_track_add_marker (
  * Mainly used in testing.
  */
 void
-marker_track_clear (
-  MarkerTrack * self)
+marker_track_clear (MarkerTrack * self)
 {
   for (int i = 0; i < self->num_markers; i++)
     {
       Marker * marker = self->markers[i];
-      if (marker->type == MARKER_TYPE_START ||
-          marker->type == MARKER_TYPE_END)
+      if (
+        marker->type == MARKER_TYPE_START
+        || marker->type == MARKER_TYPE_END)
         continue;
       marker_track_remove_marker (self, marker, 1);
     }
 }
 
 bool
-marker_track_validate (
-  MarkerTrack * self)
+marker_track_validate (MarkerTrack * self)
 {
   for (int i = 0; i < self->num_markers; i++)
     {

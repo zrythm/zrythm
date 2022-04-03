@@ -36,15 +36,15 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _RegionWidget RegionWidget;
-typedef struct Channel Channel;
-typedef struct Track Track;
-typedef struct MidiNote MidiNote;
-typedef struct TrackLane TrackLane;
+typedef struct _RegionWidget    RegionWidget;
+typedef struct Channel          Channel;
+typedef struct Track            Track;
+typedef struct MidiNote         MidiNote;
+typedef struct TrackLane        TrackLane;
 typedef struct _AudioClipWidget AudioClipWidget;
-typedef struct RegionLinkGroup RegionLinkGroup;
-typedef struct Stretcher Stretcher;
-typedef struct AudioClip AudioClip;
+typedef struct RegionLinkGroup  RegionLinkGroup;
+typedef struct Stretcher        Stretcher;
+typedef struct AudioClip        AudioClip;
 
 /**
  * @addtogroup audio
@@ -63,8 +63,7 @@ typedef struct AudioClip AudioClip;
 #define REGION_PRINTF_FILENAME "%s_%s.mid"
 
 #define region_is_selected(r) \
-  arranger_object_is_selected ( \
-    (ArrangerObject *) r)
+  arranger_object_is_selected ((ArrangerObject *) r)
 
 /**
  * Musical mode setting for audio regions.
@@ -82,14 +81,10 @@ typedef enum RegionMusicalMode
 } RegionMusicalMode;
 
 static const cyaml_strval_t
-region_musical_mode_strings[] =
-{
-  { __("Inherit"),
-    REGION_MUSICAL_MODE_INHERIT },
-  { __("Off"),
-    REGION_MUSICAL_MODE_OFF },
-  { __("On"),
-    REGION_MUSICAL_MODE_ON },
+  region_musical_mode_strings[] = {
+    {__ ("Inherit"), REGION_MUSICAL_MODE_INHERIT},
+    { __ ("Off"),    REGION_MUSICAL_MODE_OFF    },
+    { __ ("On"),     REGION_MUSICAL_MODE_ON     },
 };
 
 /**
@@ -104,30 +99,30 @@ typedef struct ZRegion
   /** Base struct. */
   ArrangerObject base;
 
-  int            schema_version;
+  int schema_version;
 
   /** Unique ID. */
   RegionIdentifier id;
 
   /** Name to be shown on the widget. */
-  char *          name;
+  char * name;
 
   /** Escaped name for drawing. */
-  char *          escaped_name;
+  char * escaped_name;
 
   /**
    * TODO region color independent of track.
    *
    * If null, the track color is used.
    */
-  GdkRGBA         color;
+  GdkRGBA color;
 
   /* ==== MIDI REGION ==== */
 
   /** MIDI notes. */
-  MidiNote **     midi_notes;
-  int             num_midi_notes;
-  size_t          midi_notes_size;
+  MidiNote ** midi_notes;
+  int         num_midi_notes;
+  size_t      midi_notes_size;
 
   /**
    * Unended notes started in recording with
@@ -143,8 +138,8 @@ typedef struct ZRegion
    *   \ref ZRegion.midi_notes and must not be
    *   free'd separately.
    */
-  MidiNote *      unended_notes[12000];
-  int             num_unended_notes;
+  MidiNote * unended_notes[12000];
+  int        num_unended_notes;
 
   /* ==== MIDI REGION END ==== */
 
@@ -152,7 +147,7 @@ typedef struct ZRegion
 
   /** Audio pool ID of the associated audio file,
    * mostly used during serialization. */
-  int               pool_id;
+  int pool_id;
 
   /**
    * Whether currently running the stretching
@@ -161,30 +156,30 @@ typedef struct ZRegion
    * If this is true, region drawing will be
    * deferred.
    */
-  bool              stretching;
+  bool stretching;
 
   /**
    * The length before stretching, in ticks.
    */
-  double            before_length;
+  double before_length;
 
   /** Used during arranger UI overlay actions. */
-  double            stretch_ratio;
+  double stretch_ratio;
 
   /**
    * Whether to read the clip from the pool (used
    * in most cases).
    */
-  bool              read_from_pool;
+  bool read_from_pool;
 
   /** Gain to apply to the audio (amplitude
    * 0.0-2.0). */
-  float             gain;
+  float gain;
 
   /**
    * Clip to read frames from, if not from the pool.
    */
-  AudioClip *       clip;
+  AudioClip * clip;
 
 #if 0
   /**
@@ -206,9 +201,9 @@ typedef struct ZRegion
   RegionMusicalMode musical_mode;
 
   /** Array of split points. */
-  Position *        split_points;
-  int               num_split_points;
-  size_t            split_points_size;
+  Position * split_points;
+  int        num_split_points;
+  size_t     split_points_size;
 
   /* ==== AUDIO REGION END ==== */
 
@@ -227,16 +222,16 @@ typedef struct ZRegion
   size_t             aps_size;
 
   /** Last recorded automation point. */
-  AutomationPoint *  last_recorded_ap;
+  AutomationPoint * last_recorded_ap;
 
   /* ==== AUTOMATION REGION END ==== */
 
   /* ==== CHORD REGION ==== */
 
   /** ChordObject's in this Region. */
-  ChordObject **     chord_objects;
-  int                num_chord_objects;
-  size_t             chord_objects_size;
+  ChordObject ** chord_objects;
+  int            num_chord_objects;
+  size_t         chord_objects_size;
 
   /* ==== CHORD REGION END ==== */
 
@@ -246,7 +241,7 @@ typedef struct ZRegion
    *
    * Only relevant for audio and midi regions.
    */
-  int                bounce;
+  int bounce;
 
   /* --- drawing caches --- */
 
@@ -267,77 +262,92 @@ typedef struct ZRegion
    */
 
   /** Cache layout for drawing the name. */
-  PangoLayout *      layout;
+  PangoLayout * layout;
 
   /** Cache layout for drawing the chord names
    * inside the region. */
-  PangoLayout *      chords_layout;
+  PangoLayout * chords_layout;
 
   /* these are used for caching */
-  GdkRectangle       last_main_full_rect;
+  GdkRectangle last_main_full_rect;
 
   /** Last main draw rect. */
-  GdkRectangle       last_main_draw_rect;
+  GdkRectangle last_main_draw_rect;
 
   /* these are used for caching */
-  GdkRectangle       last_lane_full_rect;
+  GdkRectangle last_lane_full_rect;
 
   /** Last lane draw rect. */
-  GdkRectangle       last_lane_draw_rect;
+  GdkRectangle last_lane_draw_rect;
 
   /** Last timestamp the audio clip or its contents
    * changed. */
-  gint64             last_clip_change;
+  gint64 last_clip_change;
 
   /** Last timestamp the region was cached. */
-  gint64             last_cache_time;
+  gint64 last_cache_time;
 
   /** Last known marker positions (only positions
    * are used). */
-  ArrangerObject     last_positions_obj;
+  ArrangerObject last_positions_obj;
 
   /* --- drawing caches end --- */
 
-  int                magic;
+  int magic;
 } ZRegion;
 
-static const cyaml_schema_field_t
-  region_fields_schema[] =
-{
+static const cyaml_schema_field_t region_fields_schema[] = {
   YAML_FIELD_INT (ZRegion, schema_version),
   YAML_FIELD_MAPPING_EMBEDDED (
-    ZRegion, base, arranger_object_fields_schema),
+    ZRegion,
+    base,
+    arranger_object_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
-    ZRegion, id, region_identifier_fields_schema),
+    ZRegion,
+    id,
+    region_identifier_fields_schema),
   YAML_FIELD_STRING_PTR (ZRegion, name),
   YAML_FIELD_INT (ZRegion, pool_id),
   YAML_FIELD_FLOAT (ZRegion, gain),
   CYAML_FIELD_SEQUENCE_COUNT (
     "midi_notes",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    ZRegion, midi_notes, num_midi_notes,
-    &midi_note_schema, 0, CYAML_UNLIMITED),
+    ZRegion,
+    midi_notes,
+    num_midi_notes,
+    &midi_note_schema,
+    0,
+    CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "aps", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    ZRegion, aps, num_aps,
-    &automation_point_schema, 0, CYAML_UNLIMITED),
+    "aps",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    ZRegion,
+    aps,
+    num_aps,
+    &automation_point_schema,
+    0,
+    CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
     "chord_objects",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    ZRegion, chord_objects, num_chord_objects,
-    &chord_object_schema, 0, CYAML_UNLIMITED),
+    ZRegion,
+    chord_objects,
+    num_chord_objects,
+    &chord_object_schema,
+    0,
+    CYAML_UNLIMITED),
   YAML_FIELD_ENUM (
-    ZRegion, musical_mode,
+    ZRegion,
+    musical_mode,
     region_musical_mode_strings),
 
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-  region_schema =
-{
+static const cyaml_schema_value_t region_schema = {
   YAML_VALUE_PTR_NULLABLE (
-    ZRegion, region_fields_schema),
+    ZRegion,
+    region_fields_schema),
 };
 
 /**
@@ -351,7 +361,7 @@ static const cyaml_schema_value_t
  */
 void
 region_init (
-  ZRegion *   region,
+  ZRegion *        region,
   const Position * start_pos,
   const Position * end_pos,
   unsigned int     track_name_hash,
@@ -361,11 +371,8 @@ region_init (
 /**
  * Looks for the ZRegion matching the identifier.
  */
-HOT
-NONNULL
-ZRegion *
-region_find (
-  const RegionIdentifier * const id);
+HOT NONNULL ZRegion *
+region_find (const RegionIdentifier * const id);
 
 #if 0
 static inline void
@@ -389,19 +396,16 @@ region_print_to_str (
  */
 NONNULL
 void
-region_print (
-  const ZRegion * region);
+region_print (const ZRegion * region);
 
 TrackLane *
-region_get_lane (
-  const ZRegion * region);
+region_get_lane (const ZRegion * region);
 
 /**
  * Returns the region's link group.
  */
 RegionLinkGroup *
-region_get_link_group (
-  ZRegion * self);
+region_get_link_group (ZRegion * self);
 
 /**
  * Sets the link group to the region.
@@ -417,8 +421,7 @@ region_set_link_group (
 
 NONNULL
 bool
-region_has_link_group (
-  ZRegion * region);
+region_has_link_group (ZRegion * region);
 
 /**
  * Returns the MidiNote matching the properties of
@@ -428,9 +431,7 @@ region_has_link_group (
  * from a cloned MidiNote (e.g. when doing/undoing).
  */
 MidiNote *
-region_find_midi_note (
-  ZRegion * r,
-  MidiNote * _mn);
+region_find_midi_note (ZRegion * r, MidiNote * _mn);
 
 /**
  * Converts frames on the timeline (global)
@@ -447,8 +448,7 @@ region_find_midi_note (
  * @return The local frames.
  */
 NONNULL
-HOT
-signed_frame_t
+HOT signed_frame_t
 region_timeline_frames_to_local (
   const ZRegion * const self,
   const signed_frame_t  timeline_frames,
@@ -504,9 +504,7 @@ region_gen_name (
  */
 NONNULL
 void
-region_stretch (
-  ZRegion * self,
-  double    ratio);
+region_stretch (ZRegion * self, double ratio);
 
 /**
  * To be called every time the identifier changes
@@ -514,8 +512,7 @@ region_stretch (
  */
 NONNULL
 void
-region_update_identifier (
-  ZRegion * self);
+region_update_identifier (ZRegion * self);
 
 /**
  * Updates all other regions in the region link
@@ -523,8 +520,7 @@ region_update_identifier (
  */
 NONNULL
 void
-region_update_link_group (
-  ZRegion * self);
+region_update_link_group (ZRegion * self);
 
 /**
  * Moves the given ZRegion to the given TrackLane.
@@ -543,9 +539,9 @@ region_update_link_group (
  */
 void
 region_move_to_lane (
-  ZRegion *    region,
+  ZRegion *   region,
   TrackLane * lane,
-  int          index_in_lane);
+  int         index_in_lane);
 
 /**
  * Moves the ZRegion to the given Track, maintaining
@@ -561,9 +557,9 @@ region_move_to_lane (
  */
 void
 region_move_to_track (
-  ZRegion *  region,
-  Track *    track,
-  int        index_in_lane);
+  ZRegion * region,
+  Track *   track,
+  int       index_in_lane);
 
 /**
  * Returns if the given ZRegion type can exist
@@ -571,12 +567,10 @@ region_move_to_track (
  */
 CONST
 static inline int
-region_type_has_lane (
-  const RegionType type)
+region_type_has_lane (const RegionType type)
 {
-  return
-    type == REGION_TYPE_MIDI ||
-    type == REGION_TYPE_AUDIO;
+  return type == REGION_TYPE_MIDI
+         || type == REGION_TYPE_AUDIO;
 }
 
 /**
@@ -584,7 +578,7 @@ region_type_has_lane (
  */
 void
 region_set_automation_track (
-  ZRegion * region,
+  ZRegion *         region,
   AutomationTrack * at);
 
 /**
@@ -601,9 +595,7 @@ region_get_automation_track (
  * clip start point, loop start point, etc.
  */
 void
-region_copy (
-  ZRegion * src,
-  ZRegion * dest);
+region_copy (ZRegion * src, ZRegion * dest);
 
 /**
  * Returns if the position is inside the region
@@ -616,8 +608,7 @@ region_copy (
  *   be counted as part of the region.
  */
 NONNULL
-PURE
-int
+PURE int
 region_is_hit (
   const ZRegion *      region,
   const signed_frame_t gframes,
@@ -646,8 +637,7 @@ region_is_hit_by_range (
  * @param pos The position.
  */
 NONNULL_ARGS (3)
-PURE
-ZRegion *
+PURE ZRegion *
 region_at_position (
   const Track *           track,
   const AutomationTrack * at,
@@ -671,8 +661,7 @@ region_get_type_as_string (
  * recorded onto.
  */
 bool
-region_is_recording (
-  ZRegion * self);
+region_is_recording (ZRegion * self);
 
 /**
  * Returns whether the region is effectively in
@@ -681,8 +670,7 @@ region_is_recording (
  * @note Only applicable to audio regions.
  */
 bool
-region_get_musical_mode (
-  ZRegion * self);
+region_get_musical_mode (ZRegion * self);
 
 /**
  * Wrapper for adding an arranger object.
@@ -694,52 +682,43 @@ region_add_arranger_object (
   bool             fire_events);
 
 void
-region_create_link_group_if_none (
-  ZRegion * region);
+region_create_link_group_if_none (ZRegion * region);
 
 /**
  * Removes the link group from the region, if any.
  */
 void
-region_unlink (
-  ZRegion * region);
+region_unlink (ZRegion * region);
 
 /**
  * Removes all children objects from the region.
  */
 void
-region_remove_all_children (
-  ZRegion * region);
+region_remove_all_children (ZRegion * region);
 
 /**
  * Clones and copies all children from \ref src to
  * \ref dest.
  */
 void
-region_copy_children (
-  ZRegion * dest,
-  ZRegion * src);
+region_copy_children (ZRegion * dest, ZRegion * src);
 
 NONNULL
 bool
-region_is_looped (
-  const ZRegion * const self);
+region_is_looped (const ZRegion * const self);
 
 /**
  * Returns the ArrangerSelections based on the
  * given region type.
  */
 ArrangerSelections *
-region_get_arranger_selections (
-  ZRegion * self);
+region_get_arranger_selections (ZRegion * self);
 
 /**
  * Sanity checking.
  */
 bool
-region_validate (
-  ZRegion * self,
-  bool      is_project);
+region_validate (ZRegion * self, bool is_project);
 
 /**
  * Disconnects the region and anything using it.
@@ -748,8 +727,7 @@ region_validate (
  * resources.
  */
 void
-region_disconnect (
-  ZRegion * self);
+region_disconnect (ZRegion * self);
 
 /**
  * @}

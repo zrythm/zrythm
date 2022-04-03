@@ -37,11 +37,14 @@
 #define DIGITAL_METER_WIDGET_TYPE \
   (digital_meter_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  DigitalMeterWidget, digital_meter_widget,
-  Z, DIGITAL_METER_WIDGET, GtkWidget)
+  DigitalMeterWidget,
+  digital_meter_widget,
+  Z,
+  DIGITAL_METER_WIDGET,
+  GtkWidget)
 
 typedef enum NoteLength NoteLength;
-typedef enum NoteType NoteType;
+typedef enum NoteType   NoteType;
 typedef struct Position Position;
 
 /**
@@ -63,11 +66,11 @@ typedef struct SnapGrid SnapGrid;
 
 typedef struct _DigitalMeterWidget
 {
-  GtkWidget        parent_instance;
+  GtkWidget parent_instance;
 
   DigitalMeterType type;
 
-  bool             is_transport;
+  bool is_transport;
 
   GtkGestureDrag * drag;
   double           last_y;
@@ -77,106 +80,106 @@ typedef struct _DigitalMeterWidget
 
   /* ========= BPM ========= */
   /* for BPM */
-  int              num_part_start_pos;
-  int              num_part_end_pos;
-  int              dec_part_start_pos;
-  int              dec_part_end_pos;
+  int num_part_start_pos;
+  int num_part_end_pos;
+  int dec_part_start_pos;
+  int dec_part_end_pos;
 
   /** Used when changing the BPM. */
-  bpm_t            bpm_at_start;
+  bpm_t bpm_at_start;
 
   /** Used during update. */
-  bpm_t            last_set_bpm;
+  bpm_t last_set_bpm;
 
   /** Flag to update BPM. */
-  bool             update_num;
+  bool update_num;
   /** Flag to update BPM decimal. */
-  bool             update_dec;
+  bool update_dec;
 
   /* ========= BPM end ========= */
 
   /* ========= position ========= */
 
-  int              bars_start_pos;
-  int              bars_end_pos;
-  int              beats_start_pos;
-  int              beats_end_pos;
-  int              sixteenths_start_pos;
-  int              sixteenths_end_pos;
-  int              ticks_start_pos;
-  int              ticks_end_pos;
+  int bars_start_pos;
+  int bars_end_pos;
+  int beats_start_pos;
+  int beats_end_pos;
+  int sixteenths_start_pos;
+  int sixteenths_end_pos;
+  int ticks_start_pos;
+  int ticks_end_pos;
 
   /** Update flags. */
-  int               update_bars;
-  int               update_beats;
-  int               update_sixteenths;
-  int               update_ticks;
+  int update_bars;
+  int update_beats;
+  int update_sixteenths;
+  int update_ticks;
 
   /* ========= position end ========= */
 
   /* ========= time ========= */
 
   /** For time. */
-  int               minutes_start_pos;
-  int               minutes_end_pos;
-  int               seconds_start_pos;
-  int               seconds_end_pos;
-  int               ms_start_pos;
-  int               ms_end_pos;
+  int minutes_start_pos;
+  int minutes_end_pos;
+  int seconds_start_pos;
+  int seconds_end_pos;
+  int ms_start_pos;
+  int ms_end_pos;
 
   /** Update flags. */
-  int               update_minutes;
-  int               update_seconds;
-  int               update_ms;
+  int update_minutes;
+  int update_seconds;
+  int update_ms;
 
   /* ========= time end ========= */
 
   /* for note length/type */
-  NoteLength *      note_length;
-  NoteType *        note_type;
-  int               update_note_length; ///< flag to update note length
-  int               start_note_length; ///< start note length
-  int               update_note_type; ///< flag to update note type
-  int               start_note_type; ///< start note type
+  NoteLength * note_length;
+  NoteType *   note_type;
+  int update_note_length; ///< flag to update note length
+  int start_note_length; ///< start note length
+  int update_note_type; ///< flag to update note type
+  int start_note_type;  ///< start note type
 
   /* for time sig */
-  int               update_timesig_top;
+  int update_timesig_top;
   /* ebeat unit */
-  int               update_timesig_bot;
+  int update_timesig_bot;
 
   /** Used when changing the time signature. */
-  int               beats_per_bar_at_start;
-  int               beat_unit_at_start;
+  int beats_per_bar_at_start;
+  int beat_unit_at_start;
 
   /* ---------- FOR POSITION ---------------- */
-  void *            obj;
+  void * obj;
 
   /** Getter for Position. */
-  void              (*getter)(void*, Position*);
+  void (*getter) (void *, Position *);
   /** Setter for Position. */
-  void              (*setter)(void*, Position*);
+  void (*setter) (void *, Position *);
   /** Function to call on drag begin. */
-  void              (*on_drag_begin)(void*);
+  void (*on_drag_begin) (void *);
   /** Function to call on drag end. */
-  void              (*on_drag_end)(void*);
+  void (*on_drag_end) (void *);
 
   /* ----------- position end --------------- */
 
-  double            hover_x;
-  double            hover_y;
+  double hover_x;
+  double hover_y;
 
   /** Draw line above the meter or not. */
-  int               draw_line;
+  int draw_line;
 
   /** Caption to show above, NULL to not show. */
-  char *            caption;
+  char * caption;
 
   /** Cached layouts for drawing text. */
-  PangoLayout *     caption_layout;
-  PangoLayout *     seg7_layout;
-  PangoLayout *     normal_layout;
+  PangoLayout * caption_layout;
+  PangoLayout * seg7_layout;
+  PangoLayout * normal_layout;
 
-  bool              initialized;
+  bool initialized;
 } DigitalMeterWidget;
 
 /**
@@ -185,21 +188,19 @@ typedef struct _DigitalMeterWidget
  */
 DigitalMeterWidget *
 digital_meter_widget_new (
-  DigitalMeterType  type,
-  NoteLength *      note_length,
-  NoteType *        note_type,
-  const char *      caption);
-
+  DigitalMeterType type,
+  NoteLength *     note_length,
+  NoteType *       note_type,
+  const char *     caption);
 
 #define digital_meter_widget_new_for_position( \
-  obj,drag_begin,getter,setter,drag_end,caption) \
+  obj, drag_begin, getter, setter, drag_end, \
+  caption) \
   _digital_meter_widget_new_for_position ( \
-    (void *) obj, \
-    (void (*) (void *)) drag_begin, \
+    (void *) obj, (void (*) (void *)) drag_begin, \
     (void (*) (void *, Position *)) getter, \
     (void (*) (void *, Position *)) setter, \
-    (void (*) (void *)) drag_end, \
-    caption)
+    (void (*) (void *)) drag_end, caption)
 
 /**
  * Creates a digital meter for an arbitrary position.
@@ -217,12 +218,12 @@ digital_meter_widget_new (
  *   the action.
  */
 DigitalMeterWidget *
-_digital_meter_widget_new_for_position(
+_digital_meter_widget_new_for_position (
   void * obj,
-  void (*drag_begin)(void *),
-  void (*get_val)(void *, Position *),
-  void (*set_val)(void *, Position *),
-  void (*drag_end)(void *),
+  void (*drag_begin) (void *),
+  void (*get_val) (void *, Position *),
+  void (*set_val) (void *, Position *),
+  void (*drag_end) (void *),
   const char * caption);
 
 void

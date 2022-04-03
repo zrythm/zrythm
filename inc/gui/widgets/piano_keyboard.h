@@ -27,13 +27,16 @@
 #define __GUI_WIDGETS_PIANO_KEYBOARD_H__
 
 #include <stdbool.h>
+
 #include <gtk/gtk.h>
 
 #define PIANO_KEYBOARD_WIDGET_TYPE \
   (piano_keyboard_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   PianoKeyboardWidget,
-  piano_keyboard_widget, Z, PIANO_KEYBOARD_WIDGET,
+  piano_keyboard_widget,
+  Z,
+  PIANO_KEYBOARD_WIDGET,
   GtkDrawingArea)
 
 typedef struct ChordDescriptor ChordDescriptor;
@@ -49,35 +52,35 @@ typedef struct ChordDescriptor ChordDescriptor;
  */
 typedef struct _PianoKeyboardWidget
 {
-  GtkDrawingArea       parent_instance;
+  GtkDrawingArea parent_instance;
 
   /** Number of visible keys (1-128). */
-  int                  num_keys;
+  int num_keys;
 
   /** 0-127. */
-  int                  start_key;
+  int start_key;
 
-  int                  pressed_keys[128];
-  int                  num_pressed_keys;
+  int pressed_keys[128];
+  int num_pressed_keys;
 
   /** When true, start key can change and when false
    * the keys are fixed. */
-  bool                 scrollable;
+  bool scrollable;
 
   /** Whether clicking on keys plays them. */
-  bool                 playable;
+  bool playable;
 
   /** Whether clicking on keys "enables" them. */
-  bool                 editable;
+  bool editable;
 
   /** Horizontal/vertical. */
-  GtkOrientation       orientation;
+  GtkOrientation orientation;
 
   /** Chord index, if this widget is for
    * a chord key. */
-  int                  chord_idx;
+  int chord_idx;
 
-  bool                 for_chord;
+  bool for_chord;
 
 } PianoKeyboardWidget;
 

@@ -46,18 +46,20 @@
 G_DECLARE_FINAL_TYPE (
   ProjectAssistantWidget,
   project_assistant_widget,
-  Z, PROJECT_ASSISTANT_WIDGET, GtkDialog)
+  Z,
+  PROJECT_ASSISTANT_WIDGET,
+  GtkDialog)
 
 /**
  * Project file information.
  */
 typedef struct ProjectInfo
 {
-  char *   name;
+  char * name;
   /** Full path. */
-  char *   filename;
-  gint64   modified;
-  char *   modified_str;
+  char * filename;
+  gint64 modified;
+  char * modified_str;
 } ProjectInfo;
 
 /**
@@ -66,9 +68,9 @@ typedef struct ProjectInfo
  */
 typedef struct _ProjectAssistantWidget
 {
-  GtkDialog        parent_instance;
+  GtkDialog parent_instance;
 
-  AdwViewStack *   stack;
+  AdwViewStack * stack;
 
   /** Array of ItemFactory pointers for each
    * column. */
@@ -79,16 +81,16 @@ typedef struct _ProjectAssistantWidget
   GtkColumnView *  templates_column_view;
 
   /* action buttons */
-  GtkButton *      ok_btn;
-  GtkButton *      open_from_path_btn;
-  GtkButton *      cancel_btn;
+  GtkButton * ok_btn;
+  GtkButton * open_from_path_btn;
+  GtkButton * cancel_btn;
 
-  GPtrArray *      project_infos_arr;
-  GPtrArray *      templates_arr;
+  GPtrArray * project_infos_arr;
+  GPtrArray * templates_arr;
 
-  GtkWindow *      parent;
+  GtkWindow * parent;
 
-  bool             zrythm_already_running;
+  bool zrythm_already_running;
 } ProjectAssistantWidget;
 
 /**

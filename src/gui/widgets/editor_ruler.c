@@ -17,8 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <limits.h>
-
 #include "audio/audio_region.h"
 #include "audio/engine.h"
 #include "audio/instrument_track.h"
@@ -30,9 +28,9 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_modifier_arranger.h"
-#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/ruler_marker.h"
 #include "project.h"
@@ -41,13 +39,14 @@
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
+
+#include <limits.h>
 
 #define ACTION_IS(x) \
   (self->action == UI_OVERLAY_ACTION_##x)
-#define TARGET_IS(x) \
-  (self->target == RW_TARGET_##x)
+#define TARGET_IS(x) (self->target == RW_TARGET_##x)
 
 void
 editor_ruler_on_drag_begin_no_marker_hit (
@@ -56,23 +55,20 @@ editor_ruler_on_drag_begin_no_marker_hit (
   gdouble       start_y)
 {
   Position pos;
-  ui_px_to_pos_editor (
-    start_x, &pos, 1);
-  if (!self->shift_held
-      &&
-      SNAP_GRID_ANY_SNAP (SNAP_GRID_EDITOR))
+  ui_px_to_pos_editor (start_x, &pos, 1);
+  if (
+    !self->shift_held
+    && SNAP_GRID_ANY_SNAP (SNAP_GRID_EDITOR))
     {
       position_snap (
-        &pos, &pos, NULL, NULL,
-        SNAP_GRID_EDITOR);
+        &pos, &pos, NULL, NULL, SNAP_GRID_EDITOR);
     }
   transport_move_playhead (
     TRANSPORT, &pos, F_PANIC, F_NO_SET_CUE_POINT,
     F_PUBLISH_EVENTS);
   self->drag_start_pos = pos;
   self->last_set_pos = pos;
-  self->action =
-    UI_OVERLAY_ACTION_STARTING_MOVING;
+  self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
   self->target = RW_TARGET_PLAYHEAD;
 }
 
@@ -86,21 +82,20 @@ editor_ruler_on_drag_update (
 
   if (ACTION_IS (MOVING))
     {
-      Position editor_pos;
-      Position region_local_pos;
+      Position  editor_pos;
+      Position  region_local_pos;
       ZRegion * r =
         clip_editor_get_region (CLIP_EDITOR);
-      ArrangerObject * r_obj =
-        (ArrangerObject *) r;
+      ArrangerObject * r_obj = (ArrangerObject *) r;
 
       /* convert px to position */
       ui_px_to_pos_editor (
         self->start_x + offset_x, &editor_pos, 1);
 
       /* snap if not shift held */
-      if (!self->shift_held
-          &&
-          SNAP_GRID_ANY_SNAP (SNAP_GRID_EDITOR))
+      if (
+        !self->shift_held
+        && SNAP_GRID_ANY_SNAP (SNAP_GRID_EDITOR))
         {
           position_snap (
             &self->drag_start_pos, &editor_pos,
@@ -109,8 +104,8 @@ editor_ruler_on_drag_update (
 
       position_from_ticks (
         &region_local_pos,
-        position_to_ticks (&editor_pos) -
-        position_to_ticks (&r_obj->pos));
+        position_to_ticks (&editor_pos)
+          - position_to_ticks (&r_obj->pos));
 
       if (TARGET_IS (LOOP_START))
         {
@@ -225,34 +220,33 @@ editor_ruler_on_drag_update (
         }
       else if (TARGET_IS (PLAYHEAD))
         {
-          Position timeline_start,
-                   timeline_end;
+          Position timeline_start, timeline_end;
           position_init (&timeline_start);
           position_set_to_bar (
             &timeline_end, POSITION_MAX_BAR);
 
           /* if position is acceptable */
-          if (position_is_after_or_equal (
-                &editor_pos, &timeline_start) &&
-              position_is_before_or_equal (
-                &editor_pos, &timeline_end))
+          if (
+            position_is_after_or_equal (
+              &editor_pos, &timeline_start)
+            && position_is_before_or_equal (
+              &editor_pos, &timeline_end))
             {
               transport_move_playhead (
-                TRANSPORT, &editor_pos,
-                F_PANIC, F_NO_SET_CUE_POINT,
+                TRANSPORT, &editor_pos, F_PANIC,
+                F_NO_SET_CUE_POINT,
                 F_PUBLISH_EVENTS);
               self->last_set_pos = editor_pos;
             }
 
           /*ruler_marker_widget_update_tooltip (*/
-            /*self->playhead, 1);*/
+          /*self->playhead, 1);*/
         }
     }
 }
 
 void
-editor_ruler_on_drag_end (
-  RulerWidget * self)
+editor_ruler_on_drag_end (RulerWidget * self)
 {
   /* prepare selections for edit action */
   ArrangerSelections * before_sel =
@@ -264,13 +258,11 @@ editor_ruler_on_drag_end (
   ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (r);
   ArrangerObject * r_clone_obj_before =
-    arranger_object_clone (
-      (ArrangerObject *) r);
+    arranger_object_clone ((ArrangerObject *) r);
   arranger_selections_add_object (
     before_sel, r_clone_obj_before);
   ArrangerObject * r_clone_obj_after =
-    arranger_object_clone (
-      (ArrangerObject *) r);
+    arranger_object_clone ((ArrangerObject *) r);
   arranger_selections_add_object (
     after_sel, r_clone_obj_after);
 
@@ -278,19 +270,18 @@ editor_ruler_on_drag_end (
   r_clone_obj_before->pos_member = \
     self->drag_start_pos; \
   GError * err = NULL; \
-  bool ret = \
-    arranger_selections_action_perform_edit ( \
-      before_sel, after_sel, \
-      ARRANGER_SELECTIONS_ACTION_EDIT_POS, \
-      F_NOT_ALREADY_EDITED, &err); \
+  bool ret = arranger_selections_action_perform_edit ( \
+    before_sel, after_sel, \
+    ARRANGER_SELECTIONS_ACTION_EDIT_POS, \
+    F_NOT_ALREADY_EDITED, &err); \
   if (!ret) \
     { \
       HANDLE_ERROR ( \
-        err, "%s", _("Failed to edit position")); \
+        err, "%s", _ ("Failed to edit position")); \
     }
 
-  if ((ACTION_IS (MOVING) ||
-         ACTION_IS (STARTING_MOVING)))
+  if ((ACTION_IS (MOVING)
+       || ACTION_IS (STARTING_MOVING)))
     {
       if (TARGET_IS (PLAYHEAD))
         {
@@ -325,15 +316,12 @@ editor_ruler_get_regions_in_range (
   ZRegion **    regions)
 {
   Position p1, p2;
-  ui_px_to_pos_editor (
-    x_start, &p1, true);
-  ui_px_to_pos_editor (
-    x_end, &p2, true);
+  ui_px_to_pos_editor (x_start, &p1, true);
+  ui_px_to_pos_editor (x_end, &p2, true);
   Track * track =
     clip_editor_get_track (CLIP_EDITOR);
   g_return_val_if_fail (track, 0);
 
-  return
-    track_get_regions_in_range (
-      track, &p1, &p2, regions);
+  return track_get_regions_in_range (
+    track, &p1, &p2, regions);
 }

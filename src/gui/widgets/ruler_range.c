@@ -28,17 +28,18 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (RulerRangeWidget,
-               ruler_range_widget,
-               GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (
+  RulerRangeWidget,
+  ruler_range_widget,
+  GTK_TYPE_DRAWING_AREA)
 
 static gboolean
 ruler_range_draw_cb (
-  GtkWidget *widget,
-  cairo_t *cr,
-  gpointer data)
+  GtkWidget * widget,
+  cairo_t *   cr,
+  gpointer    data)
 {
-  GtkStyleContext *context =
+  GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
   int width =
@@ -69,12 +70,12 @@ ruler_range_draw_cb (
  * Sets the appropriate cursor.
  */
 static void
-on_motion (GtkWidget * widget, GdkEventMotion *event)
+on_motion (GtkWidget * widget, GdkEventMotion * event)
 {
-  RulerRangeWidget * self = Z_RULER_RANGE_WIDGET (widget);
+  RulerRangeWidget * self =
+    Z_RULER_RANGE_WIDGET (widget);
   GtkAllocation allocation;
-  gtk_widget_get_allocation (widget,
-                             &allocation);
+  gtk_widget_get_allocation (widget, &allocation);
 
   TimelineRulerWidget * trw = MW_RULER;
   RULER_WIDGET_GET_PRIVATE (trw);
@@ -83,28 +84,34 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
     {
       if (event->x < UI_RESIZE_CURSOR_SPACE)
         {
-          self->cursor_state = UI_CURSOR_STATE_RESIZE_L;
+          self->cursor_state =
+            UI_CURSOR_STATE_RESIZE_L;
           if (rw_prv->action != UI_OVERLAY_ACTION_MOVING)
-            ui_set_cursor_from_name (widget, "w-resize");
+            ui_set_cursor_from_name (
+              widget, "w-resize");
         }
-      else if (event->x > allocation.width -
-                 UI_RESIZE_CURSOR_SPACE)
+      else if (
+        event->x
+        > allocation.width - UI_RESIZE_CURSOR_SPACE)
         {
-          self->cursor_state = UI_CURSOR_STATE_RESIZE_R;
+          self->cursor_state =
+            UI_CURSOR_STATE_RESIZE_R;
           if (rw_prv->action != UI_OVERLAY_ACTION_MOVING)
-            ui_set_cursor_from_name (widget, "e-resize");
+            ui_set_cursor_from_name (
+              widget, "e-resize");
         }
       else
         {
-          self->cursor_state = UI_CURSOR_STATE_DEFAULT;
-          if (rw_prv->action !=
-                UI_OVERLAY_ACTION_MOVING &&
-              rw_prv->action !=
-                UI_OVERLAY_ACTION_STARTING_MOVING &&
-              rw_prv->action !=
-                UI_OVERLAY_ACTION_RESIZING_L &&
-              rw_prv->action !=
-                UI_OVERLAY_ACTION_RESIZING_R)
+          self->cursor_state =
+            UI_CURSOR_STATE_DEFAULT;
+          if (
+            rw_prv->action != UI_OVERLAY_ACTION_MOVING
+            && rw_prv->action
+                 != UI_OVERLAY_ACTION_STARTING_MOVING
+            && rw_prv->action
+                 != UI_OVERLAY_ACTION_RESIZING_L
+            && rw_prv->action
+                 != UI_OVERLAY_ACTION_RESIZING_R)
             {
               ui_set_cursor_from_name (
                 widget, "default");
@@ -114,11 +121,14 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
   /* if leaving */
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      if (rw_prv->action != UI_OVERLAY_ACTION_MOVING &&
-          rw_prv->action != UI_OVERLAY_ACTION_RESIZING_L &&
-          rw_prv->action != UI_OVERLAY_ACTION_RESIZING_R)
+      if (
+        rw_prv->action != UI_OVERLAY_ACTION_MOVING
+        && rw_prv->action != UI_OVERLAY_ACTION_RESIZING_L
+        && rw_prv->action
+             != UI_OVERLAY_ACTION_RESIZING_R)
         {
-          ui_set_cursor_from_name (widget, "default");
+          ui_set_cursor_from_name (
+            widget, "default");
         }
     }
 }
@@ -127,8 +137,7 @@ RulerRangeWidget *
 ruler_range_widget_new ()
 {
   RulerRangeWidget * self =
-    g_object_new (RULER_RANGE_WIDGET_TYPE,
-                  NULL);
+    g_object_new (RULER_RANGE_WIDGET_TYPE, NULL);
 
   return self;
 }
@@ -139,8 +148,8 @@ ruler_range_widget_new ()
 static void
 ruler_range_widget_init (RulerRangeWidget * self)
 {
-  gtk_widget_add_events (GTK_WIDGET (self),
-                         GDK_ALL_EVENTS_MASK);
+  gtk_widget_add_events (
+    GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
 
   /* connect signals */
   g_signal_connect (
@@ -148,13 +157,13 @@ ruler_range_widget_init (RulerRangeWidget * self)
     G_CALLBACK (ruler_range_draw_cb), NULL);
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_motion),  self);
+    G_CALLBACK (on_motion), self);
   g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_motion),  self);
+    G_OBJECT (self), "leave-notify-event",
+    G_CALLBACK (on_motion), self);
   g_signal_connect (
-    G_OBJECT(self), "motion-notify-event",
-    G_CALLBACK (on_motion),  self);
+    G_OBJECT (self), "motion-notify-event",
+    G_CALLBACK (on_motion), self);
 }
 
 static void
@@ -162,6 +171,6 @@ ruler_range_widget_class_init (
   RulerRangeWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass,
-                                 "ruler-range");
+  gtk_widget_class_set_css_name (
+    klass, "ruler-range");
 }

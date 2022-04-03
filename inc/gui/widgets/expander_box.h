@@ -37,7 +37,8 @@
 G_DECLARE_DERIVABLE_TYPE (
   ExpanderBoxWidget,
   expander_box_widget,
-  Z, EXPANDER_BOX_WIDGET,
+  Z,
+  EXPANDER_BOX_WIDGET,
   GtkBox)
 
 typedef struct _GtkFlipper GtkFlipper;
@@ -62,26 +63,26 @@ typedef void (*ExpanderBoxRevealFunc) (
  */
 typedef struct
 {
-  GtkButton *    button;
-  GtkBox *       btn_box;
-  GtkLabel *     btn_label;
-  GtkFlipper *   btn_label_flipper;
-  GtkImage *     btn_img;
-  GtkRevealer *  revealer;
-  GtkBox *       content;
+  GtkButton *   button;
+  GtkBox *      btn_box;
+  GtkLabel *    btn_label;
+  GtkFlipper *  btn_label_flipper;
+  GtkImage *    btn_img;
+  GtkRevealer * revealer;
+  GtkBox *      content;
 
   /** Horizontal or vertical. */
   GtkOrientation orientation;
 
   ExpanderBoxRevealFunc reveal_cb;
 
-  void *                user_data;
+  void * user_data;
 
 } ExpanderBoxWidgetPrivate;
 
 typedef struct _ExpanderBoxWidgetClass
 {
-  GtkBoxClass         parent_class;
+  GtkBoxClass parent_class;
 } ExpanderBoxWidgetClass;
 
 /**
@@ -117,12 +118,10 @@ expander_box_widget_set_icon_resource (
   const char *        path)
 {
   ExpanderBoxWidgetPrivate * prv =
-     expander_box_widget_get_private (self);
+    expander_box_widget_get_private (self);
 
   resources_set_image_icon (
-    prv->btn_img,
-    icon_type,
-    path);
+    prv->btn_img, icon_type, path);
 }
 
 void
@@ -140,9 +139,9 @@ expander_box_widget_set_reveal (
 
 void
 expander_box_widget_set_reveal_callback (
-  ExpanderBoxWidget * self,
-  ExpanderBoxRevealFunc   cb,
-  void *                  user_data);
+  ExpanderBoxWidget *   self,
+  ExpanderBoxRevealFunc cb,
+  void *                user_data);
 
 void
 expander_box_widget_set_orientation (
@@ -156,8 +155,8 @@ expander_box_widget_set_vexpand (
 
 ExpanderBoxWidget *
 expander_box_widget_new (
-  const char * label,
-  const char * icon_name,
+  const char *   label,
+  const char *   icon_name,
   GtkOrientation orientation);
 
 /**

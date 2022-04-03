@@ -29,11 +29,11 @@
 #include "utils/io.h"
 #include "zrythm.h"
 
+#include <glib.h>
+
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project.h"
 #include "tests/helpers/zrythm.h"
-
-#include <glib.h>
 
 static void
 _test (
@@ -54,8 +54,8 @@ _test (
 
   /* 2. delete track */
   tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS,
-    PORT_CONNECTIONS_MGR, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
+    NULL);
 
   /* 3. undo track deletion */
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -80,23 +80,22 @@ static void
 test (void)
 {
 #ifdef HAVE_HELM
-  _test (
-    HELM_BUNDLE, HELM_URI, true, false);
+  _test (HELM_BUNDLE, HELM_URI, true, false);
 #endif
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
   test_helper_zrythm_init ();
 
-#define TEST_PREFIX "/integration/undo_redo_helm_track_creation/"
+#define TEST_PREFIX \
+  "/integration/undo_redo_helm_track_creation/"
 
   g_test_add_func (
-    TEST_PREFIX "test",
-    (GTestFunc) test);
+    TEST_PREFIX "test", (GTestFunc) test);
 
   return g_test_run ();
 }

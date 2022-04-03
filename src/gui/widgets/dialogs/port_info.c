@@ -27,8 +27,8 @@
 #include "utils/resources.h"
 #include "utils/ui.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   PortInfoDialogWidget,
@@ -36,17 +36,14 @@ G_DEFINE_TYPE (
   GTK_TYPE_DIALOG)
 
 static void
-set_values (
-  PortInfoDialogWidget * self,
-  Port *                 port)
+set_values (PortInfoDialogWidget * self, Port * port)
 {
   self->port = port;
 
   PortIdentifier * id = &port->id;
 
   char tmp[600];
-  gtk_label_set_text (
-    self->name_lbl, id->label);
+  gtk_label_set_text (self->name_lbl, id->label);
   gtk_label_set_text (
     self->group_lbl, id->port_group);
   port_get_full_designation (port, tmp);
@@ -55,21 +52,21 @@ set_values (
   gtk_label_set_text (
     self->type_lbl, port_type_strings[id->type].str);
   sprintf (
-    tmp, _("%.1f to %.1f"),
-    (double) port->minf, (double) port->maxf);
+    tmp, _ ("%.1f to %.1f"), (double) port->minf,
+    (double) port->maxf);
   gtk_label_set_text (self->range_lbl, tmp);
   sprintf (tmp, "%.1f", (double) port->deff);
   gtk_label_set_text (self->default_value_lbl, tmp);
   if (id->type == TYPE_CONTROL)
     {
-      sprintf (
-        tmp, "%f", (double) port->control);
-      gtk_label_set_text (self->current_val_lbl, tmp);
+      sprintf (tmp, "%f", (double) port->control);
+      gtk_label_set_text (
+        self->current_val_lbl, tmp);
     }
   else
     {
       gtk_label_set_text (
-        self->current_val_lbl, _("N/A"));
+        self->current_val_lbl, _ ("N/A"));
     }
   for (int i = 0;
        i < (int) CYAML_ARRAY_LEN (port_flags_bitvals);
@@ -85,9 +82,10 @@ set_values (
       gtk_box_append (
         GTK_BOX (self->flags_box), lbl);
     }
-  for (int i = 0;
-       i < (int) CYAML_ARRAY_LEN (port_flags2_bitvals);
-       i++)
+  for (
+    int i = 0;
+    i < (int) CYAML_ARRAY_LEN (port_flags2_bitvals);
+    i++)
     {
       if (!(id->flags2 & (unsigned int) (1 << i)))
         continue;
@@ -107,11 +105,10 @@ set_values (
  * Creates a new port_info dialog.
  */
 PortInfoDialogWidget *
-port_info_dialog_widget_new (
-  Port * port)
+port_info_dialog_widget_new (Port * port)
 {
-  PortInfoDialogWidget * self =
-    g_object_new (PORT_INFO_DIALOG_WIDGET_TYPE, NULL);
+  PortInfoDialogWidget * self = g_object_new (
+    PORT_INFO_DIALOG_WIDGET_TYPE, NULL);
 
   set_values (self, port);
 
@@ -149,7 +146,7 @@ port_info_dialog_widget_init (
   gtk_widget_init_template (GTK_WIDGET (self));
 
   gtk_window_set_title (
-    GTK_WINDOW (self), _("Port info"));
+    GTK_WINDOW (self), _ ("Port info"));
   gtk_window_set_icon_name (
     GTK_WINDOW (self), "zrythm");
 }

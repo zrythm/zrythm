@@ -35,11 +35,14 @@
 G_DECLARE_FINAL_TYPE (
   TimelineMinimapWidget,
   timeline_minimap_widget,
-  Z, TIMELINE_MINIMAP_WIDGET,
+  Z,
+  TIMELINE_MINIMAP_WIDGET,
   GtkWidget)
 
-typedef struct _TimelineMinimapBgWidget TimelineMinimapBgWidget;
-typedef struct _TimelineMinimapSelectionWidget TimelineMinimapSelectionWidget;
+typedef struct _TimelineMinimapBgWidget
+  TimelineMinimapBgWidget;
+typedef struct _TimelineMinimapSelectionWidget
+  TimelineMinimapSelectionWidget;
 typedef struct TimelineMinimap TimelineMinimap;
 
 /**
@@ -63,32 +66,32 @@ typedef enum TimelineMinimapAction
 
 typedef struct _TimelineMinimapWidget
 {
-  GtkWidget           parent_instance;
+  GtkWidget parent_instance;
 
-  GtkOverlay *        overlay;
+  GtkOverlay * overlay;
 
-  TimelineMinimapBgWidget * bg;
+  TimelineMinimapBgWidget *        bg;
   TimelineMinimapSelectionWidget * selection;
-  TimelineMinimapAction action;
+  TimelineMinimapAction            action;
   //GtkGestureDrag *    drag;
   //GtkGestureClick *   multipress;
   //GtkGestureClick *   right_mouse_mp;
 
   /** Last drag offsets during a drag. */
-  double              last_offset_x;
-  double              last_offset_y;
+  double last_offset_x;
+  double last_offset_y;
 
   /** Coordinates at the start of a drag action. */
-  double              start_x;
-  double              start_y;
+  double start_x;
+  double start_y;
 
   /** To be set in drag_begin(). */
-  double              start_zoom_level;
-  double              selection_start_pos;
-  double              selection_end_pos;
+  double start_zoom_level;
+  double selection_start_pos;
+  double selection_end_pos;
 
   /** Number of presses, for click controller. */
-  int                 n_press;
+  int n_press;
 } TimelineMinimapWidget;
 
 /**

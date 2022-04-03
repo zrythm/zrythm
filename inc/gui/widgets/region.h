@@ -40,11 +40,11 @@
 
 #define REGION_NAME_FONT_NO_SIZE "Sans SemiBold"
 #ifdef _WOE32
-#define REGION_NAME_FONT \
-  REGION_NAME_FONT_NO_SIZE " 7"
+#  define REGION_NAME_FONT \
+    REGION_NAME_FONT_NO_SIZE " 7"
 #else
-#define REGION_NAME_FONT \
-  REGION_NAME_FONT_NO_SIZE " 8"
+#  define REGION_NAME_FONT \
+    REGION_NAME_FONT_NO_SIZE " 8"
 #endif
 #define REGION_NAME_PADDING_R 5
 #define REGION_NAME_BOX_PADDING 2
@@ -55,7 +55,7 @@
  */
 void
 region_get_lane_full_rect (
-  ZRegion *       self,
+  ZRegion *      self,
   GdkRectangle * rect);
 
 /**
@@ -64,8 +64,7 @@ region_get_lane_full_rect (
  *
  * @param rect Arranger rectangle.
  */
-HOT
-void
+HOT void
 region_draw (
   ZRegion *      self,
   GtkSnapshot *  snapshot,

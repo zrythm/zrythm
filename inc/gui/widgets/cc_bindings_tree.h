@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   CcBindingsTreeWidget,
   cc_bindings_tree_widget,
-  Z, CC_BINDINGS_TREE_WIDGET,
+  Z,
+  CC_BINDINGS_TREE_WIDGET,
   GtkBox)
 
 /**
@@ -44,16 +45,16 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _CcBindingsTreeWidget
 {
-  GtkBox               parent_instance;
+  GtkBox parent_instance;
 
-  GtkScrolledWindow *  scroll;
+  GtkScrolledWindow * scroll;
 
   /* The column view */
-  GtkColumnView *      column_view;
+  GtkColumnView * column_view;
 
   /** Array of ItemFactory pointers for each
    * column. */
-  GPtrArray *          item_factories;
+  GPtrArray * item_factories;
 } CcBindingsTreeWidget;
 
 /**

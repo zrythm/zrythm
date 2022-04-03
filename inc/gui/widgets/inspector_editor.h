@@ -24,16 +24,17 @@
 
 #define INSPECTOR_EDITOR_WIDGET_TYPE \
   (inspector_editor_widget_get_type ())
-G_DECLARE_FINAL_TYPE (InspectorEditorWidget,
-                      inspector_editor_widget,
-                      Z,
-                      INSPECTOR_EDITOR_WIDGET,
-                      GtkBox)
+G_DECLARE_FINAL_TYPE (
+  InspectorEditorWidget,
+  inspector_editor_widget,
+  Z,
+  INSPECTOR_EDITOR_WIDGET,
+  GtkBox)
 
 typedef struct _InspectorEditorWidget
 {
-  GtkBox             parent_instance;
-  GtkLabel *          header;
+  GtkBox     parent_instance;
+  GtkLabel * header;
 } InspectorEditorWidget;
 
 /**

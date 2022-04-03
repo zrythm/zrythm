@@ -28,9 +28,9 @@
 
 #define ZRYTHM_OBJECT_MAGIC 4111481
 #define IS_ZRYTHM_OBJECT(_p) \
-  ((_p) && \
-   ((ZrythmObject *) (_p))->magic == \
-     ZRYTHM_OBJECT_MAGIC)
+  ((_p) \
+   && ((ZrythmObject *) (_p))->magic \
+        == ZRYTHM_OBJECT_MAGIC)
 
 /**
  * Base object for debugging.

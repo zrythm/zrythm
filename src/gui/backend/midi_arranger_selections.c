@@ -37,13 +37,10 @@ midi_arranger_selections_get_highest_note (
 {
   MidiNote * top_mn = mas->midi_notes[0];
   MidiNote * tmp;
-  for (int i = 0;
-       i < mas->num_midi_notes;
-       i++)
+  for (int i = 0; i < mas->num_midi_notes; i++)
     {
-        tmp = mas->midi_notes[i];
-      if (tmp->val >
-            top_mn->val)
+      tmp = mas->midi_notes[i];
+      if (tmp->val > top_mn->val)
         {
           top_mn = tmp;
         }
@@ -56,16 +53,12 @@ midi_arranger_selections_get_lowest_note (
   MidiArrangerSelections * mas)
 {
 
-  MidiNote * bot_mn =
-    mas->midi_notes[0];
+  MidiNote * bot_mn = mas->midi_notes[0];
   MidiNote * tmp;
-  for (int i = 0;
-       i < mas->num_midi_notes;
-       i++)
+  for (int i = 0; i < mas->num_midi_notes; i++)
     {
       tmp = mas->midi_notes[i];
-      if (tmp->val <
-            bot_mn->val)
+      if (tmp->val < bot_mn->val)
         {
           bot_mn = tmp;
         }
@@ -86,7 +79,7 @@ midi_arranger_selections_unlisten_note_diff (
   for (int i = 0; i < prev->num_midi_notes; i++)
     {
       MidiNote * prev_mn = prev->midi_notes[i];
-      int found = 0;
+      int        found = 0;
       for (int j = 0; j < mas->num_midi_notes; j++)
         {
           MidiNote * mn = mas->midi_notes[j];
@@ -114,13 +107,12 @@ int
 midi_arranger_selections_can_be_pasted (
   MidiArrangerSelections * ts,
   Position *               pos,
-  ZRegion *                 r)
+  ZRegion *                r)
 {
   if (!r || r->id.type != REGION_TYPE_MIDI)
     return 0;
 
-  ArrangerObject * r_obj =
-    (ArrangerObject *) r;
+  ArrangerObject * r_obj = (ArrangerObject *) r;
   if (r_obj->pos.frames + pos->frames < 0)
     return 0;
 

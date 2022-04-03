@@ -25,17 +25,17 @@
  */
 #if 0
 
-#ifndef __GUI_WIDGETS_AUTOMATION_REGION_H__
-#define __GUI_WIDGETS_AUTOMATION_REGION_H__
+#  ifndef __GUI_WIDGETS_AUTOMATION_REGION_H__
+#    define __GUI_WIDGETS_AUTOMATION_REGION_H__
 
-#include "audio/region.h"
-#include "gui/widgets/region.h"
-#include "utils/ui.h"
+#    include "audio/region.h"
+#    include "gui/widgets/region.h"
+#    include "utils/ui.h"
 
-#include <gtk/gtk.h>
+#    include <gtk/gtk.h>
 
-#define AUTOMATION_REGION_WIDGET_TYPE \
-  (automation_region_widget_get_type ())
+#    define AUTOMATION_REGION_WIDGET_TYPE \
+      (automation_region_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   AutomationRegionWidget,
   automation_region_widget,
@@ -63,5 +63,5 @@ AutomationRegionWidget *
 automation_region_widget_new (
   ZRegion * automation_region);
 
-#endif
+#  endif
 #endif

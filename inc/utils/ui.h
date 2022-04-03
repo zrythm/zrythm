@@ -35,7 +35,7 @@
 #include <gtk/gtk.h>
 
 typedef struct Position Position;
-typedef struct Port Port;
+typedef struct Port     Port;
 
 /**
  * @addtogroup utils
@@ -60,9 +60,7 @@ typedef struct Port Port;
 
 #define UI_DELETE_ICON_NAME "z-edit-delete"
 
-static const GdkRGBA UI_COLOR_BLACK = {
-  0, 0, 0, 1
-};
+static const GdkRGBA UI_COLOR_BLACK = { 0, 0, 0, 1 };
 
 typedef enum UiDetail
 {
@@ -72,17 +70,15 @@ typedef enum UiDetail
   UI_DETAIL_ULTRA_LOW,
 } UiDetail;
 
-static const char * ui_detail_str[] =
-{
-  __("High"),
-  __("Normal"),
-  __("Low"),
-  __("Ultra Low"),
+static const char * ui_detail_str[] = {
+  __ ("High"),
+  __ ("Normal"),
+  __ ("Low"),
+  __ ("Ultra Low"),
 };
 
 static inline const char *
-ui_detail_to_string (
-  UiDetail detail)
+ui_detail_to_string (UiDetail detail)
 {
   return ui_detail_str[detail];
 }
@@ -92,31 +88,31 @@ ui_detail_to_string (
  */
 typedef struct UiColors
 {
-  GdkRGBA       dark_text;
-  GdkRGBA       dark_orange;
-  GdkRGBA       bright_orange;
-  GdkRGBA       bright_text;
-  GdkRGBA       matcha;
-  GdkRGBA       bright_green;
-  GdkRGBA       darkish_green;
-  GdkRGBA       prefader_send;
-  GdkRGBA       postfader_send;
-  GdkRGBA       record_active;
-  GdkRGBA       record_checked;
-  GdkRGBA       solo_active;
-  GdkRGBA       solo_checked;
-  GdkRGBA       fader_fill_start;
-  GdkRGBA       fader_fill_end;
-  GdkRGBA       highlight_scale_bg;
-  GdkRGBA       highlight_chord_bg;
-  GdkRGBA       highlight_bass_bg;
-  GdkRGBA       highlight_both_bg;
-  GdkRGBA       highlight_scale_fg;
-  GdkRGBA       highlight_chord_fg;
-  GdkRGBA       highlight_bass_fg;
-  GdkRGBA       highlight_both_fg;
-  GdkRGBA       z_yellow;
-  GdkRGBA       z_purple;
+  GdkRGBA dark_text;
+  GdkRGBA dark_orange;
+  GdkRGBA bright_orange;
+  GdkRGBA bright_text;
+  GdkRGBA matcha;
+  GdkRGBA bright_green;
+  GdkRGBA darkish_green;
+  GdkRGBA prefader_send;
+  GdkRGBA postfader_send;
+  GdkRGBA record_active;
+  GdkRGBA record_checked;
+  GdkRGBA solo_active;
+  GdkRGBA solo_checked;
+  GdkRGBA fader_fill_start;
+  GdkRGBA fader_fill_end;
+  GdkRGBA highlight_scale_bg;
+  GdkRGBA highlight_chord_bg;
+  GdkRGBA highlight_bass_bg;
+  GdkRGBA highlight_both_bg;
+  GdkRGBA highlight_scale_fg;
+  GdkRGBA highlight_chord_fg;
+  GdkRGBA highlight_bass_fg;
+  GdkRGBA highlight_both_fg;
+  GdkRGBA z_yellow;
+  GdkRGBA z_purple;
 } UiColors;
 
 /**
@@ -144,13 +140,13 @@ typedef struct UiCursor
  */
 typedef struct UiCaches
 {
-  UiColors      colors;
+  UiColors colors;
   //UiTextures    textures;
-  UiCursor      cursors[UI_MAX_CURSORS];
-  int           num_cursors;
+  UiCursor cursors[UI_MAX_CURSORS];
+  int      num_cursors;
 
-  bool          detail_level_set;
-  UiDetail      detail_level;
+  bool     detail_level_set;
+  UiDetail detail_level;
 } UiCaches;
 
 /**
@@ -193,24 +189,22 @@ typedef struct UiCaches
 #define TARGET_ENTRY_CHORD_DESCR "CHORD_DESCR"
 
 /* */
-#define TARGET_ENTRY_TL_SELECTIONS \
-  "TL_SELECTIONS"
+#define TARGET_ENTRY_TL_SELECTIONS "TL_SELECTIONS"
 
-#define GET_ATOM(x) \
-  gdk_atom_intern (x, 1)
+#define GET_ATOM(x) gdk_atom_intern (x, 1)
 
-#define ui_add_widget_tooltip(widget,txt) \
+#define ui_add_widget_tooltip(widget, txt) \
   gtk_widget_set_tooltip_text ( \
     GTK_WIDGET (widget), txt)
 
-#define ui_set_hover_status_bar_signals(w,t) \
+#define ui_set_hover_status_bar_signals(w, t) \
   g_signal_connect ( \
     G_OBJECT (w), "enter-notify-event", \
     G_CALLBACK ( \
       ui_on_motion_set_status_bar_text_cb), \
     g_strdup (t)); \
   g_signal_connect ( \
-    G_OBJECT(w), "leave-notify-event", \
+    G_OBJECT (w), "leave-notify-event", \
     G_CALLBACK ( \
       ui_on_motion_set_status_bar_text_cb), \
     g_strdup (t));
@@ -221,7 +215,7 @@ typedef struct UiCaches
  * This should be called from threads other than
  * GTK main thread.
  */
-#define ui_show_notification_idle_printf(fmt,...) \
+#define ui_show_notification_idle_printf(fmt, ...) \
   char * text = g_strdup_printf (fmt, __VA_ARGS__); \
   g_idle_add ( \
     (GSourceFunc) ui_show_notification_idle_func, \
@@ -232,9 +226,11 @@ typedef struct UiCaches
 
 #define ui_is_widget_revealed(widget) \
   (gtk_widget_get_allocated_height ( \
-     GTK_WIDGET (widget)) > 1 || \
-   gtk_widget_get_allocated_width ( \
-     GTK_WIDGET (widget)) > 1)
+     GTK_WIDGET (widget)) \
+     > 1 \
+   || gtk_widget_get_allocated_width ( \
+        GTK_WIDGET (widget)) \
+        > 1)
 
 /**
  * Various cursor states to be shared.
@@ -320,49 +316,47 @@ typedef enum UiOverlayAction
 /**
  * Various overlay actions to be shared.
  */
-static const char * ui_overlay_strings[] =
-  {
-    "NONE",
-    "RESIZING_R",
-    "MOVING",
-    "RESIZING_L",
-    "RESIZING_L_LOOP",
-    "RESIZING_L_FADE",
-    "RESIZING_R",
-    "RESIZING_R_LOOP",
-    "RESIZING_R_FADE",
-    "RESIZING_UP",
-    "RESIZING_UP_FADE_IN",
-    "RESIZING_UP_FADE_OUT",
-    "STRETCHING_L",
-    "STRETCHING_R",
-    "STARTING_AUDITIONING",
-    "AUDITIONING",
-    "AUTOFILLING",
-    "ERASING",
-    "STARTING_ERASING",
-    "STARTING_MOVING",
-    "STARTING_MOVING_COPY",
-    "STARTING_MOVING_LINK",
-    "MOVING",
-    "MOVING_COPY",
-    "MOVING_LINK",
-    "STARTING_CHANGING_CURVE",
-    "CHANGING_CURVE",
-    "STARTING_SELECTION",
-    "SELECTING",
-    "STARTING_DELETE_SELECTION",
-    "DELETE_SELECTING",
-    "STARTING_RAMP",
-    "RAMPING",
-    "CUTTING",
-    "RENAMING",
-    "INVALID",
-  };
+static const char * ui_overlay_strings[] = {
+  "NONE",
+  "RESIZING_R",
+  "MOVING",
+  "RESIZING_L",
+  "RESIZING_L_LOOP",
+  "RESIZING_L_FADE",
+  "RESIZING_R",
+  "RESIZING_R_LOOP",
+  "RESIZING_R_FADE",
+  "RESIZING_UP",
+  "RESIZING_UP_FADE_IN",
+  "RESIZING_UP_FADE_OUT",
+  "STRETCHING_L",
+  "STRETCHING_R",
+  "STARTING_AUDITIONING",
+  "AUDITIONING",
+  "AUTOFILLING",
+  "ERASING",
+  "STARTING_ERASING",
+  "STARTING_MOVING",
+  "STARTING_MOVING_COPY",
+  "STARTING_MOVING_LINK",
+  "MOVING",
+  "MOVING_COPY",
+  "MOVING_LINK",
+  "STARTING_CHANGING_CURVE",
+  "CHANGING_CURVE",
+  "STARTING_SELECTION",
+  "SELECTING",
+  "STARTING_DELETE_SELECTION",
+  "DELETE_SELECTING",
+  "STARTING_RAMP",
+  "RAMPING",
+  "CUTTING",
+  "RENAMING",
+  "INVALID",
+};
 
 static inline const char *
-ui_get_overlay_action_string (
-  UiOverlayAction action)
+ui_get_overlay_action_string (UiOverlayAction action)
 {
   return ui_overlay_strings[action];
 }
@@ -384,53 +378,46 @@ typedef enum UiDragMode
 } UiDragMode;
 
 void
-ui_set_pointer_cursor (
-  GtkWidget * widget);
+ui_set_pointer_cursor (GtkWidget * widget);
 
 #define ui_set_pencil_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), \
-    "pencil", 3, 18);
+    GTK_WIDGET (widget), "pencil", 3, 18);
 
 #define ui_set_brush_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), \
-    "draw-brush", 3, 18);
+    GTK_WIDGET (widget), "draw-brush", 3, 18);
 
 #define ui_set_cut_clip_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), \
-    "cut-tool", 9, 6);
+    GTK_WIDGET (widget), "cut-tool", 9, 6);
 
 #define ui_set_eraser_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), \
-    "draw-eraser", 3, 6);
+    GTK_WIDGET (widget), "draw-eraser", 3, 6);
 
 #define ui_set_line_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), \
-    "draw-line", 3, 6);
+    GTK_WIDGET (widget), "draw-line", 3, 6);
 
 #define ui_set_speaker_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), \
-    "audio-volume-high", 3, 6);
+    GTK_WIDGET (widget), "audio-volume-high", 3, \
+    6);
 
 #define ui_set_hand_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), \
-    "transform-move", 10, 10);
+    GTK_WIDGET (widget), "transform-move", 10, 10);
 
 #define ui_set_left_resize_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), \
-    "object-resize-left", 0, 10);
+    GTK_WIDGET (widget), "object-resize-left", 0, \
+    10);
 
 #define ui_set_left_stretch_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), \
-    "object-stretch-left", 0, 10);
+    GTK_WIDGET (widget), "object-stretch-left", 0, \
+    10);
 
 #define ui_set_left_resize_loop_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
@@ -439,13 +426,13 @@ ui_set_pointer_cursor (
 
 #define ui_set_right_resize_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), \
-    "object-resize-right", 15, 10);
+    GTK_WIDGET (widget), "object-resize-right", \
+    15, 10);
 
 #define ui_set_right_stretch_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), \
-    "object-stretch-right", 15, 10);
+    GTK_WIDGET (widget), "object-stretch-right", \
+    15, 10);
 
 #define ui_set_right_resize_loop_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
@@ -454,13 +441,11 @@ ui_set_pointer_cursor (
 
 #define ui_set_fade_in_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), \
-    "fade-in", 11, 11);
+    GTK_WIDGET (widget), "fade-in", 11, 11);
 
 #define ui_set_fade_out_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), \
-    "fade-out", 11, 11);
+    GTK_WIDGET (widget), "fade-out", 11, 11);
 
 /**
  * Sets cursor from icon name.
@@ -502,19 +487,19 @@ ui_show_message_full (
  * Wrapper to show error message so that no casting
  * of the window is needed on the caller side.
  */
-#define ui_show_error_message(win,block,msg) \
-    ui_show_message_full ( \
-      win ? GTK_WINDOW (win) : NULL, \
-      GTK_MESSAGE_ERROR, block, \
-      "%s", msg);
+#define ui_show_error_message(win, block, msg) \
+  ui_show_message_full ( \
+    win ? GTK_WINDOW (win) : NULL, \
+    GTK_MESSAGE_ERROR, block, "%s", msg);
 
 /**
  * Type can be GTK_MESSAGE_ERROR, etc.
  */
-#define ui_show_message_printf(win,type,block,fmt,...) \
+#define ui_show_message_printf( \
+  win, type, block, fmt, ...) \
   ui_show_message_full ( \
-    win ? GTK_WINDOW (win) : NULL, \
-    type, block, fmt, __VA_ARGS__)
+    win ? GTK_WINDOW (win) : NULL, type, block, \
+    fmt, __VA_ARGS__)
 
 /**
  * Returns if \ref rect is hit or not by the
@@ -563,14 +548,14 @@ ui_is_point_in_rect_hit (
 NONNULL
 int
 ui_is_child_hit (
-  GtkWidget *   parent,
-  GtkWidget *   child,
-  const int     check_x,
-  const int     check_y,
-  const double  x,
-  const double  y,
-  const double  x_padding,
-  const double  y_padding);
+  GtkWidget *  parent,
+  GtkWidget *  child,
+  const int    check_x,
+  const int    check_y,
+  const double x,
+  const double y,
+  const double x_padding,
+  const double y_padding);
 
 /**
  * Returns the matching hit child, or NULL.
@@ -616,9 +601,7 @@ ui_px_to_pos_timeline (
  *   padding.
  */
 signed_frame_t
-ui_px_to_frames_timeline (
-  double px,
-  int    has_padding);
+ui_px_to_frames_timeline (double px, int has_padding);
 
 /**
  * Converts from pixels to frames.
@@ -629,9 +612,7 @@ ui_px_to_frames_timeline (
  *   padding.
  */
 signed_frame_t
-ui_px_to_frames_editor (
-  double px,
-  int    has_padding);
+ui_px_to_frames_editor (double px, int has_padding);
 
 /**
  * Converts position to px, optionally adding the
@@ -682,9 +663,7 @@ ui_rgb_to_hex (
   char * buf);
 
 void
-ui_gdk_rgba_to_hex (
-  GdkRGBA * color,
-  char *    buf);
+ui_gdk_rgba_to_hex (GdkRGBA * color, char * buf);
 
 /**
  * Shows a notification in the revealer.
@@ -706,50 +685,43 @@ ui_show_notification_idle_func (char * msg);
  * languages.
  */
 void
-ui_setup_language_dropdown (
-  GtkDropDown * dropdown);
+ui_setup_language_dropdown (GtkDropDown * dropdown);
 
 /**
  * Sets up an audio backends combo box.
  */
 void
-ui_setup_audio_backends_combo_box (
-  GtkComboBox * cb);
+ui_setup_audio_backends_combo_box (GtkComboBox * cb);
 
 /**
  * Sets up a MIDI backends combo box.
  */
 void
-ui_setup_midi_backends_combo_box (
-  GtkComboBox * cb);
+ui_setup_midi_backends_combo_box (GtkComboBox * cb);
 
 /**
  * Sets up a pan algorithm combo box.
  */
 void
-ui_setup_pan_algo_combo_box (
-  GtkComboBox * cb);
+ui_setup_pan_algo_combo_box (GtkComboBox * cb);
 
 /**
  * Sets up a pan law combo box.
  */
 void
-ui_setup_pan_law_combo_box (
-  GtkComboBox * cb);
+ui_setup_pan_law_combo_box (GtkComboBox * cb);
 
 /**
  * Sets up a pan law combo box.
  */
 void
-ui_setup_buffer_size_combo_box (
-  GtkComboBox * cb);
+ui_setup_buffer_size_combo_box (GtkComboBox * cb);
 
 /**
  * Sets up a pan law combo box.
  */
 void
-ui_setup_samplerate_combo_box (
-  GtkComboBox * cb);
+ui_setup_samplerate_combo_box (GtkComboBox * cb);
 
 /**
  * Sets up a pan law combo box.
@@ -762,16 +734,14 @@ ui_setup_device_name_combo_box (
  * Sets up the VST paths entry.
  */
 void
-ui_setup_vst_paths_entry (
-  GtkEntry * entry);
+ui_setup_vst_paths_entry (GtkEntry * entry);
 
 /**
  * Updates the the VST paths in the gsettings from
  * the text in the entry.
  */
 void
-ui_update_vst_paths_from_entry (
-  GtkEntry * entry);
+ui_update_vst_paths_from_entry (GtkEntry * entry);
 
 /**
  * Returns the "a locale for the language you have
@@ -792,9 +762,7 @@ ui_get_locale_not_available_string (
  * @param dest The destination color to write to.
  */
 void
-ui_get_contrast_color (
-  GdkRGBA * src,
-  GdkRGBA * dest);
+ui_get_contrast_color (GdkRGBA * src, GdkRGBA * dest);
 
 /**
  * Returns the color in-between two colors.
@@ -804,7 +772,7 @@ ui_get_contrast_color (
  */
 void
 ui_get_mid_color (
-  GdkRGBA * dest,
+  GdkRGBA *       dest,
   const GdkRGBA * c1,
   const GdkRGBA * c2,
   const float     transition);
@@ -813,20 +781,21 @@ ui_get_mid_color (
  * Returns if the 2 rectangles overlay.
  */
 NONNULL
-PURE
-static inline bool
+PURE static inline bool
 ui_rectangle_overlap (
   const GdkRectangle * const rect1,
   const GdkRectangle * const rect2)
 {
   /* if one rect is on the side of the other */
-  if (rect1->x > rect2->x + rect2->width ||
-      rect2->x > rect1->x + rect1->width)
+  if (
+    rect1->x > rect2->x + rect2->width
+    || rect2->x > rect1->x + rect1->width)
     return false;
 
   /* if one rect is above the other */
-  if (rect1->y > rect2->y + rect2->height ||
-      rect2->y > rect1->y + rect1->height)
+  if (
+    rect1->y > rect2->y + rect2->height
+    || rect2->y > rect1->y + rect1->height)
     return false;
 
   return true;
@@ -841,11 +810,11 @@ ui_rectangle_overlap (
  */
 void
 ui_get_arranger_object_color (
-  GdkRGBA *    color,
-  const bool   is_hovered,
-  const bool   is_selected,
-  const bool   is_transient,
-  const bool   is_muted);
+  GdkRGBA *  color,
+  const bool is_hovered,
+  const bool is_selected,
+  const bool is_transient,
+  const bool is_muted);
 
 /**
  * Gets a draggable value as a normalized value
@@ -858,20 +827,19 @@ ui_get_arranger_object_color (
  */
 double
 ui_get_normalized_draggable_value (
-  double       size,
-  double       cur_val,
-  double       start_px,
-  double       cur_px,
-  double       last_px,
-  double       multiplier,
-  UiDragMode   mode);
+  double     size,
+  double     cur_val,
+  double     start_px,
+  double     cur_px,
+  double     last_px,
+  double     multiplier,
+  UiDragMode mode);
 
 UiCaches *
 ui_caches_new (void);
 
 void
-ui_caches_free (
-  UiCaches * self);
+ui_caches_free (UiCaches * self);
 
 /**
  * @}

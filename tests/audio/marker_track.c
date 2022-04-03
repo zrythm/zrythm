@@ -54,7 +54,8 @@ test_add_marker (void)
 
       marker_track_add_marker (track, marker);
 
-      g_assert_true (marker == track->markers[i + 2]);
+      g_assert_true (
+        marker == track->markers[i + 2]);
 
       for (int j = 0; j < i + 2; j++)
         {
@@ -66,7 +67,7 @@ test_add_marker (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

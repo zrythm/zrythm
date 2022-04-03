@@ -27,9 +27,9 @@
 
 #include "actions/actions.h"
 #include "actions/arranger_selections.h"
-#include "actions/undo_manager.h"
-#include "actions/tracklist_selections.h"
 #include "actions/range_action.h"
+#include "actions/tracklist_selections.h"
+#include "actions/undo_manager.h"
 #include "audio/audio_function.h"
 #include "audio/audio_region.h"
 #include "audio/automation_function.h"
@@ -55,8 +55,8 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"
-#include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/bot_bar.h"
+#include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/chord_arranger.h"
@@ -66,9 +66,10 @@
 #include "gui/widgets/dialogs/about_dialog.h"
 #include "gui/widgets/dialogs/add_tracks_to_group_dialog.h"
 #include "gui/widgets/dialogs/arranger_object_info.h"
-#include "gui/widgets/dialogs/bounce_dialog.h"
 #include "gui/widgets/dialogs/bind_cc_dialog.h"
+#include "gui/widgets/dialogs/bounce_dialog.h"
 #include "gui/widgets/dialogs/create_project_dialog.h"
+#include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/dialogs/export_midi_file_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/dialogs/object_color_chooser_dialog.h"
@@ -76,19 +77,18 @@
 #include "gui/widgets/dialogs/quantize_dialog.h"
 #include "gui/widgets/dialogs/save_chord_preset_dialog.h"
 #include "gui/widgets/dialogs/string_entry_dialog.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/event_viewer.h"
-#include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/file_browser_window.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/header.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/log_viewer.h"
-#include "gui/widgets/main_window.h"
 #include "gui/widgets/main_notebook.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
-#include "gui/widgets/midi_modifier_arranger.h"
-#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/midi_editor_space.h"
+#include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/panel_file_browser.h"
 #include "gui/widgets/plugin_browser.h"
@@ -99,7 +99,7 @@
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
 #ifdef HAVE_GUILE
-#include "gui/widgets/scripting_window.h"
+#  include "gui/widgets/scripting_window.h"
 #endif
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
@@ -109,9 +109,9 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/tracklist.h"
-#include "plugins/plugin_manager.h"
 #include "plugins/collection.h"
 #include "plugins/collections.h"
+#include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/chord_preset_pack_manager.h"
 #include "settings/settings.h"
@@ -129,36 +129,32 @@
 #include "utils/system.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
-
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 static GtkWindow * file_browser_window = NULL;
 
 #define DEFINE_SIMPLE(x) \
-void \
-x ( \
-  GSimpleAction * action, \
-  GVariant *      variant, \
-  gpointer        user_data) \
+  void x ( \
+    GSimpleAction * action, GVariant * variant, \
+    gpointer user_data)
 
 void
 actions_set_app_action_enabled (
   const char * action_name,
   const bool   enabled)
 {
-  GAction * action =
-    g_action_map_lookup_action (
-      G_ACTION_MAP (zrythm_app), action_name);
+  GAction * action = g_action_map_lookup_action (
+    G_ACTION_MAP (zrythm_app), action_name);
   g_simple_action_set_enabled (
     G_SIMPLE_ACTION (action), enabled);
 }
 
 void
 activate_news (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   gtk_show_uri (
     GTK_WINDOW (MAIN_WINDOW),
@@ -168,29 +164,24 @@ activate_news (
 
 void
 activate_manual (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
-  LocalizationLanguage lang =
-    (LocalizationLanguage)
-    g_settings_get_enum (
-      S_P_UI_GENERAL, "language");
+  LocalizationLanguage lang = (LocalizationLanguage)
+    g_settings_get_enum (S_P_UI_GENERAL, "language");
   const char * lang_code =
     localization_get_string_code (lang);
 #ifdef MANUAL_PATH
-  char * path =
-    g_strdup_printf (
-      "file://%s/%s/index.html",
-      MANUAL_PATH, lang_code);
+  char * path = g_strdup_printf (
+    "file://%s/%s/index.html", MANUAL_PATH,
+    lang_code);
 #else
-  char * path =
-    g_strdup_printf (
-      "https://manual.zrythm.org/%s/index.html",
-      lang_code);
+  char * path = g_strdup_printf (
+    "https://manual.zrythm.org/%s/index.html",
+    lang_code);
 #endif
-  gtk_show_uri (
-    GTK_WINDOW (MAIN_WINDOW), path, 0);
+  gtk_show_uri (GTK_WINDOW (MAIN_WINDOW), path, 0);
   g_free (path);
 }
 
@@ -198,8 +189,7 @@ DEFINE_SIMPLE (activate_chat)
 {
   gtk_show_uri (
     GTK_WINDOW (MAIN_WINDOW),
-    "https://matrix.to/#/#zrythmdaw:matrix.org",
-    0);
+    "https://matrix.to/#/#zrythmdaw:matrix.org", 0);
 }
 
 DEFINE_SIMPLE (activate_donate)
@@ -213,8 +203,8 @@ DEFINE_SIMPLE (activate_bugreport)
 {
 #ifdef _WOE32
   ShellExecute (
-    0, (LPCSTR)"open", (LPCSTR) NEW_ISSUE_URL,
-    0, 0, SW_SHOWNORMAL);
+    0, (LPCSTR) "open", (LPCSTR) NEW_ISSUE_URL, 0,
+    0, SW_SHOWNORMAL);
 #else
   gtk_show_uri (
     GTK_WINDOW (MAIN_WINDOW), NEW_ISSUE_URL, 0);
@@ -224,9 +214,8 @@ DEFINE_SIMPLE (activate_bugreport)
 DEFINE_SIMPLE (activate_about)
 {
   GtkWindow * window =
-    GTK_WINDOW (
-      about_dialog_widget_new (
-        GTK_WINDOW (MAIN_WINDOW)));
+    GTK_WINDOW (about_dialog_widget_new (
+      GTK_WINDOW (MAIN_WINDOW)));
   gtk_window_present (window);
 }
 
@@ -237,7 +226,7 @@ DEFINE_SIMPLE (activate_about)
 void
 activate_quit (
   GSimpleAction * action,
-  GVariant      * variant,
+  GVariant *      variant,
   gpointer        user_data)
 {
   g_application_quit (G_APPLICATION (user_data));
@@ -248,9 +237,9 @@ activate_quit (
  */
 void
 activate_preferences (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   if (MAIN_WINDOW->preferences_opened)
     {
@@ -272,9 +261,9 @@ activate_preferences (
  */
 void
 activate_log (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   if (!LOG || !LOG->log_filepath)
     {
@@ -283,11 +272,11 @@ activate_log (
     }
 
   const char * cmd[3] = {
-    OPEN_DIR_CMD, LOG->log_filepath, NULL };
+    OPEN_DIR_CMD, LOG->log_filepath, NULL
+  };
 
-  int ret =
-    system_run_cmd_w_args (
-      cmd, 4000, false, NULL, false);
+  int ret = system_run_cmd_w_args (
+    cmd, 4000, false, NULL, false);
   if (ret)
     {
       g_warning (
@@ -325,34 +314,29 @@ activate_log (
  */
 void
 activate_scripting_interface (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
 #ifdef HAVE_GUILE
   ScriptingWindowWidget * widget =
     scripting_window_widget_new ();
   gtk_window_set_transient_for (
-    GTK_WINDOW (widget),
-    GTK_WINDOW (MAIN_WINDOW));
+    GTK_WINDOW (widget), GTK_WINDOW (MAIN_WINDOW));
   gtk_widget_set_visible (GTK_WIDGET (widget), 1);
 #else
-  GtkWidget * dialog =
-    gtk_message_dialog_new_with_markup (
-      GTK_WINDOW (MAIN_WINDOW),
-      GTK_DIALOG_MODAL |
-        GTK_DIALOG_DESTROY_WITH_PARENT,
-      GTK_MESSAGE_INFO,
-      GTK_BUTTONS_OK,
-      _("Scripting extensibility with "
-      "<a href=\"%s\">GNU Guile</a> "
-      "is not enabled in your %s "
-      "installation."),
-      "https://www.gnu.org/software/guile",
-      PROGRAM_NAME);
+  GtkWidget * dialog = gtk_message_dialog_new_with_markup (
+    GTK_WINDOW (MAIN_WINDOW),
+    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+    GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
+    _ ("Scripting extensibility with "
+       "<a href=\"%s\">GNU Guile</a> "
+       "is not enabled in your %s "
+       "installation."),
+    "https://www.gnu.org/software/guile",
+    PROGRAM_NAME);
   gtk_window_set_transient_for (
-    GTK_WINDOW (dialog),
-    GTK_WINDOW (MAIN_WINDOW));
+    GTK_WINDOW (dialog), GTK_WINDOW (MAIN_WINDOW));
   z_gtk_dialog_run (GTK_DIALOG (dialog), true);
 #endif
 }
@@ -361,9 +345,10 @@ activate_scripting_interface (
  * Activate audition mode.
  */
 void
-activate_audition_mode (GSimpleAction *action,
-                      GVariant      *variant,
-                      gpointer       user_data)
+activate_audition_mode (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   P_TOOL = TOOL_AUDITION;
   EVENTS_PUSH (ET_TOOL_CHANGED, NULL);
@@ -373,9 +358,10 @@ activate_audition_mode (GSimpleAction *action,
  * Activate select mode.
  */
 void
-activate_select_mode (GSimpleAction *action,
-                      GVariant      *variant,
-                      gpointer       user_data)
+activate_select_mode (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   if (P_TOOL == TOOL_SELECT_NORMAL)
     P_TOOL = TOOL_SELECT_STRETCH;
@@ -388,9 +374,10 @@ activate_select_mode (GSimpleAction *action,
  * Activate edit mode.
  */
 void
-activate_edit_mode (GSimpleAction *action,
-                      GVariant      *variant,
-                      gpointer       user_data)
+activate_edit_mode (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   P_TOOL = TOOL_EDIT;
   EVENTS_PUSH (ET_TOOL_CHANGED, NULL);
@@ -401,9 +388,9 @@ activate_edit_mode (GSimpleAction *action,
  */
 void
 activate_cut_mode (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   P_TOOL = TOOL_CUT;
   EVENTS_PUSH (ET_TOOL_CHANGED, NULL);
@@ -413,9 +400,10 @@ activate_cut_mode (
  * Activate eraser mode.
  */
 void
-activate_eraser_mode (GSimpleAction *action,
-                      GVariant      *variant,
-                      gpointer       user_data)
+activate_eraser_mode (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   P_TOOL = TOOL_ERASER;
   EVENTS_PUSH (ET_TOOL_CHANGED, NULL);
@@ -425,9 +413,10 @@ activate_eraser_mode (GSimpleAction *action,
  * Activate ramp mode.
  */
 void
-activate_ramp_mode (GSimpleAction *action,
-                      GVariant      *variant,
-                      gpointer       user_data)
+activate_ramp_mode (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   P_TOOL = TOOL_RAMP;
   EVENTS_PUSH (ET_TOOL_CHANGED, NULL);
@@ -435,7 +424,7 @@ activate_ramp_mode (GSimpleAction *action,
 
 DEFINE_SIMPLE (activate_zoom_in)
 {
-  size_t size;
+  size_t       size;
   const char * str =
     g_variant_get_string (variant, &size);
 
@@ -452,12 +441,12 @@ DEFINE_SIMPLE (activate_zoom_in)
     {
       switch (PROJECT->last_selection)
         {
-          case SELECTION_TYPE_EDITOR:
-            ruler = EDITOR_RULER;
-            break;
-          default:
-            ruler = MW_RULER;
-            break;
+        case SELECTION_TYPE_EDITOR:
+          ruler = EDITOR_RULER;
+          break;
+        default:
+          ruler = MW_RULER;
+          break;
         }
     }
 
@@ -471,7 +460,7 @@ DEFINE_SIMPLE (activate_zoom_in)
 
 DEFINE_SIMPLE (activate_zoom_out)
 {
-  size_t size;
+  size_t       size;
   const char * str =
     g_variant_get_string (variant, &size);
 
@@ -488,27 +477,26 @@ DEFINE_SIMPLE (activate_zoom_out)
     {
       switch (PROJECT->last_selection)
         {
-          case SELECTION_TYPE_EDITOR:
-            ruler = EDITOR_RULER;
-            break;
-          default:
-            ruler = MW_RULER;
-            break;
+        case SELECTION_TYPE_EDITOR:
+          ruler = EDITOR_RULER;
+          break;
+        default:
+          ruler = MW_RULER;
+          break;
         }
     }
 
   double zoom_level =
     ruler_widget_get_zoom_level (ruler)
     / RULER_ZOOM_LEVEL_MULTIPLIER;
-  ruler_widget_set_zoom_level (
-    ruler, zoom_level);
+  ruler_widget_set_zoom_level (ruler, zoom_level);
 
   EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, ruler);
 }
 
 DEFINE_SIMPLE (activate_best_fit)
 {
-  size_t size;
+  size_t       size;
   const char * str =
     g_variant_get_string (variant, &size);
 
@@ -525,12 +513,12 @@ DEFINE_SIMPLE (activate_best_fit)
     {
       switch (PROJECT->last_selection)
         {
-          case SELECTION_TYPE_EDITOR:
-            ruler = EDITOR_RULER;
-            break;
-          default:
-            ruler = MW_RULER;
-            break;
+        case SELECTION_TYPE_EDITOR:
+          ruler = EDITOR_RULER;
+          break;
+        default:
+          ruler = MW_RULER;
+          break;
         }
     }
 
@@ -549,20 +537,18 @@ DEFINE_SIMPLE (activate_best_fit)
       return;
     }
 
-  double total_ticks =
-    position_to_ticks (&pos);
+  double total_ticks = position_to_ticks (&pos);
   GtkScrolledWindow * scroll =
     ruler_widget_get_parent_scroll (ruler);
   double allocated_px =
-    (double)
-    gtk_widget_get_allocated_width (
+    (double) gtk_widget_get_allocated_width (
       GTK_WIDGET (scroll));
   double buffer_px = allocated_px / 16.0;
   double needed_px_per_tick =
     (allocated_px - buffer_px) / total_ticks;
   double new_zoom_level =
-    ruler_widget_get_zoom_level (ruler) *
-    (needed_px_per_tick / ruler->px_per_tick);
+    ruler_widget_get_zoom_level (ruler)
+    * (needed_px_per_tick / ruler->px_per_tick);
   ruler_widget_set_zoom_level (
     ruler, new_zoom_level);
 
@@ -571,7 +557,7 @@ DEFINE_SIMPLE (activate_best_fit)
 
 DEFINE_SIMPLE (activate_original_size)
 {
-  size_t size;
+  size_t       size;
   const char * str =
     g_variant_get_string (variant, &size);
 
@@ -588,12 +574,12 @@ DEFINE_SIMPLE (activate_original_size)
     {
       switch (PROJECT->last_selection)
         {
-          case SELECTION_TYPE_EDITOR:
-            ruler = EDITOR_RULER;
-            break;
-          default:
-            ruler = MW_RULER;
-            break;
+        case SELECTION_TYPE_EDITOR:
+          ruler = EDITOR_RULER;
+          break;
+        default:
+          ruler = MW_RULER;
+          break;
         }
     }
 
@@ -603,8 +589,7 @@ DEFINE_SIMPLE (activate_original_size)
 
 DEFINE_SIMPLE (activate_loop_selection)
 {
-  if (PROJECT->last_selection ==
-        SELECTION_TYPE_TIMELINE)
+  if (PROJECT->last_selection == SELECTION_TYPE_TIMELINE)
     {
       if (!arranger_selections_has_any (
             (ArrangerSelections *) TL_SELECTIONS))
@@ -615,64 +600,52 @@ DEFINE_SIMPLE (activate_loop_selection)
         (ArrangerSelections *) TL_SELECTIONS,
         &start, F_GLOBAL);
       arranger_selections_get_end_pos (
-        (ArrangerSelections *) TL_SELECTIONS,
-        &end, F_GLOBAL);
+        (ArrangerSelections *) TL_SELECTIONS, &end,
+        F_GLOBAL);
 
       position_set_to_pos (
-        &TRANSPORT->loop_start_pos,
-        &start);
+        &TRANSPORT->loop_start_pos, &start);
       position_set_to_pos (
-        &TRANSPORT->loop_end_pos,
-        &end);
+        &TRANSPORT->loop_end_pos, &end);
 
       /* FIXME is this needed? */
-      transport_update_positions (
-        TRANSPORT, true);
+      transport_update_positions (TRANSPORT, true);
 
       EVENTS_PUSH (
-        ET_TIMELINE_LOOP_MARKER_POS_CHANGED,
-        NULL);
+        ET_TIMELINE_LOOP_MARKER_POS_CHANGED, NULL);
     }
 }
 
 void
-activate_new (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_new (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
 #ifdef TRIAL_VER
   char msg[600];
   sprintf (
     msg,
-    _("Creating new projects is disabled. Please "
-    "restart %s to start a new project"),
+    _ ("Creating new projects is disabled. Please "
+       "restart %s to start a new project"),
     PROGRAM_NAME);
-  ui_show_error_message (
-    MAIN_WINDOW, false, msg);
+  ui_show_error_message (MAIN_WINDOW, false, msg);
   return;
 #endif
 
-  GtkWidget * dialog =
-    gtk_dialog_new_with_buttons (
-      _("Create new project"),
-      GTK_WINDOW (MAIN_WINDOW),
-      GTK_DIALOG_MODAL |
-        GTK_DIALOG_DESTROY_WITH_PARENT,
-      _("Yes"),
-      GTK_RESPONSE_ACCEPT,
-      _("No"),
-      GTK_RESPONSE_REJECT,
-      NULL);
-  GtkWidget * label =
-    gtk_label_new (
-      _("Any unsaved changes to the current "
-        "project will be lost. Continue?"));
+  GtkWidget * dialog = gtk_dialog_new_with_buttons (
+    _ ("Create new project"),
+    GTK_WINDOW (MAIN_WINDOW),
+    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+    _ ("Yes"), GTK_RESPONSE_ACCEPT, _ ("No"),
+    GTK_RESPONSE_REJECT, NULL);
+  GtkWidget * label = gtk_label_new (_ (
+    "Any unsaved changes to the current "
+    "project will be lost. Continue?"));
   gtk_widget_set_visible (label, true);
-  GtkWidget * content =
-    gtk_dialog_get_content_area (
-      GTK_DIALOG (dialog));
-  gtk_box_append (
-    GTK_BOX (content), label);
+  GtkWidget * content = gtk_dialog_get_content_area (
+    GTK_DIALOG (dialog));
+  gtk_box_append (GTK_BOX (content), label);
   int res =
     z_gtk_dialog_run (GTK_DIALOG (dialog), true);
   if (res == GTK_RESPONSE_ACCEPT)
@@ -689,7 +662,7 @@ run_open_dialog (GtkDialog * dialog)
     z_gtk_dialog_run (GTK_DIALOG (dialog), false);
   if (res == GTK_RESPONSE_ACCEPT)
     {
-      GtkFileChooser *chooser =
+      GtkFileChooser * chooser =
         GTK_FILE_CHOOSER (dialog);
       char * filename =
         z_gtk_file_chooser_get_filename (chooser);
@@ -706,7 +679,7 @@ DEFINE_SIMPLE (activate_open)
 #ifdef TRIAL_VER
   ui_show_error_message (
     MAIN_WINDOW, false,
-    _("Loading is disabled in the trial version"));
+    _ ("Loading is disabled in the trial version"));
   return;
 #endif
 
@@ -717,7 +690,7 @@ DEFINE_SIMPLE (activate_open)
   int res = run_open_dialog (dialog);
   if (res == GTK_RESPONSE_ACCEPT)
     {
-      char *filename =
+      char * filename =
         z_gtk_file_chooser_get_filename (
           GTK_FILE_CHOOSER (dialog));
       project_load (filename, Z_F_NOT_TEMPLATE);
@@ -730,26 +703,23 @@ DEFINE_SIMPLE (activate_open)
 
 void
 activate_save (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
 #ifdef TRIAL_VER
   ui_show_error_message (
     MAIN_WINDOW, false,
-    _("Saving is disabled in the trial version"));
+    _ ("Saving is disabled in the trial version"));
   return;
 #endif
 
-  if (!PROJECT->dir ||
-      !PROJECT->title)
+  if (!PROJECT->dir || !PROJECT->title)
     {
-      activate_save_as (
-        action, variant, user_data);
+      activate_save_as (action, variant, user_data);
       return;
     }
-  g_message (
-    "project dir: %s", PROJECT->dir);
+  g_message ("project dir: %s", PROJECT->dir);
 
   project_save (
     PROJECT, PROJECT->dir, F_NOT_BACKUP,
@@ -758,41 +728,33 @@ activate_save (
 
 void
 activate_save_as (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
 #ifdef TRIAL_VER
   ui_show_error_message (
     MAIN_WINDOW, false,
-    _("Saving is disabled in the trial version"));
+    _ ("Saving is disabled in the trial version"));
   return;
 #endif
 
-  GtkWidget *dialog;
-  GtkFileChooser *chooser;
+  GtkWidget *          dialog;
+  GtkFileChooser *     chooser;
   GtkFileChooserAction _action =
     GTK_FILE_CHOOSER_ACTION_SAVE;
   gint res;
 
-  dialog =
-    gtk_file_chooser_dialog_new (
-      _("Save Project"),
-      GTK_WINDOW (MAIN_WINDOW),
-      _action,
-      _("_Cancel"),
-      GTK_RESPONSE_CANCEL,
-      _("_Save"),
-      GTK_RESPONSE_ACCEPT,
-      NULL);
+  dialog = gtk_file_chooser_dialog_new (
+    _ ("Save Project"), GTK_WINDOW (MAIN_WINDOW),
+    _action, _ ("_Cancel"), GTK_RESPONSE_CANCEL,
+    _ ("_Save"), GTK_RESPONSE_ACCEPT, NULL);
   chooser = GTK_FILE_CHOOSER (dialog);
 
-  char * project_file_path =
-    project_get_path (
-      PROJECT, PROJECT_PATH_PROJECT_FILE, false);
+  char * project_file_path = project_get_path (
+    PROJECT, PROJECT_PATH_PROJECT_FILE, false);
   char * str =
-    io_path_get_parent_dir (
-      project_file_path);
+    io_path_get_parent_dir (project_file_path);
   g_free (project_file_path);
   z_gtk_file_chooser_set_file_from_path (
     chooser, str);
@@ -804,7 +766,7 @@ activate_save_as (
     z_gtk_dialog_run (GTK_DIALOG (dialog), false);
   if (res == GTK_RESPONSE_ACCEPT)
     {
-      char *filename;
+      char * filename;
 
       filename =
         z_gtk_file_chooser_get_filename (chooser);
@@ -823,55 +785,49 @@ DEFINE_SIMPLE (activate_minimize)
 }
 
 void
-activate_export_as (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_export_as (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   ExportDialogWidget * export =
     export_dialog_widget_new ();
   gtk_window_set_transient_for (
-    GTK_WINDOW (export),
-    GTK_WINDOW (MAIN_WINDOW));
+    GTK_WINDOW (export), GTK_WINDOW (MAIN_WINDOW));
   gtk_window_present (GTK_WINDOW (export));
 }
 
 void
 activate_export_graph (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
 #ifdef HAVE_CGRAPH
-  char * exports_dir =
-    project_get_path (
-      PROJECT, PROJECT_PATH_EXPORTS, false);
+  char * exports_dir = project_get_path (
+    PROJECT, PROJECT_PATH_EXPORTS, false);
 
-  GtkWidget *dialog, *label, *content_area;
+  GtkWidget *    dialog, *label, *content_area;
   GtkDialogFlags flags;
 
   // Create the widgets
   flags = GTK_DIALOG_DESTROY_WITH_PARENT;
-  dialog =
-    gtk_dialog_new_with_buttons (
-      _("Export routing graph"),
-      GTK_WINDOW (MAIN_WINDOW), flags,
-      _("Image (PNG)"), 1,
-      _("Image (SVG)"), 2,
-      _("Dot graph"), 3,
-      NULL);
-  content_area =
-    gtk_dialog_get_content_area (
-      GTK_DIALOG (dialog));
+  dialog = gtk_dialog_new_with_buttons (
+    _ ("Export routing graph"),
+    GTK_WINDOW (MAIN_WINDOW), flags,
+    _ ("Image (PNG)"), 1, _ ("Image (SVG)"), 2,
+    _ ("Dot graph"), 3, NULL);
+  content_area = gtk_dialog_get_content_area (
+    GTK_DIALOG (dialog));
   char lbl[600];
   sprintf (
     lbl,
-    _("The graph will be exported to "
-    "<a href=\"%s\">%s</a>\n"
-    "Please select a format to export as"),
+    _ ("The graph will be exported to "
+       "<a href=\"%s\">%s</a>\n"
+       "Please select a format to export as"),
     exports_dir, exports_dir);
   label = gtk_label_new (NULL);
-  gtk_label_set_markup (
-    GTK_LABEL (label), lbl);
+  gtk_label_set_markup (GTK_LABEL (label), lbl);
   gtk_widget_set_visible (label, true);
   gtk_label_set_justify (
     GTK_LABEL (label), GTK_JUSTIFY_CENTER);
@@ -879,82 +835,76 @@ activate_export_graph (
 
   g_signal_connect (
     G_OBJECT (label), "activate-link",
-    G_CALLBACK (z_gtk_activate_dir_link_func),
-    NULL);
+    G_CALLBACK (z_gtk_activate_dir_link_func), NULL);
 
-  gtk_box_append (
-    GTK_BOX (content_area), label);
+  gtk_box_append (GTK_BOX (content_area), label);
 
   int result =
     z_gtk_dialog_run (GTK_DIALOG (dialog), false);
-  const char * filename = NULL;
+  const char *    filename = NULL;
   GraphExportType export_type;
   switch (result)
     {
-      /* png */
-      case 1:
-        filename = "graph.png";
-        export_type = GRAPH_EXPORT_PNG;
-        break;
-      /* svg */
-      case 2:
-        filename = "graph.svg";
-        export_type = GRAPH_EXPORT_SVG;
-        break;
-      /* dot */
-      case 3:
-        filename = "graph.dot";
-        export_type = GRAPH_EXPORT_DOT;
-        break;
-      default:
-        gtk_window_destroy (GTK_WINDOW (dialog));
-        return;
+    /* png */
+    case 1:
+      filename = "graph.png";
+      export_type = GRAPH_EXPORT_PNG;
+      break;
+    /* svg */
+    case 2:
+      filename = "graph.svg";
+      export_type = GRAPH_EXPORT_SVG;
+      break;
+    /* dot */
+    case 3:
+      filename = "graph.dot";
+      export_type = GRAPH_EXPORT_DOT;
+      break;
+    default:
+      gtk_window_destroy (GTK_WINDOW (dialog));
+      return;
     }
   gtk_window_destroy (GTK_WINDOW (dialog));
 
   char * path =
-    g_build_filename (
-      exports_dir, filename, NULL);
+    g_build_filename (exports_dir, filename, NULL);
   graph_export_as_simple (export_type, path);
   g_free (exports_dir);
   g_free (path);
 
-  ui_show_notification (_("Graph exported"));
+  ui_show_notification (_ ("Graph exported"));
 #endif
 }
 
 void
-activate_properties (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_properties (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   g_message ("ZOOMING IN");
 }
 
 DEFINE_SIMPLE (activate_undo)
 {
-  if (undo_stack_is_empty (
-        UNDO_MANAGER->undo_stack))
+  if (undo_stack_is_empty (UNDO_MANAGER->undo_stack))
     return;
 
   GError * err = NULL;
   int ret = undo_manager_undo (UNDO_MANAGER, &err);
   if (ret != 0)
     {
-      HANDLE_ERROR (
-        err, "%s", _("Failed to undo"));
+      HANDLE_ERROR (err, "%s", _ ("Failed to undo"));
     }
 }
 
 static void
-handle_undo_or_redo_n (
-  int  idx,
-  bool redo)
+handle_undo_or_redo_n (int idx, bool redo)
 {
   for (int i = 0; i <= idx; i++)
     {
       GError * err = NULL;
-      int ret = 0;
+      int      ret = 0;
       if (redo)
         {
           ret =
@@ -972,13 +922,13 @@ handle_undo_or_redo_n (
             {
               HANDLE_ERROR (
                 err, "%s",
-                _("Failed to redo action"));
+                _ ("Failed to redo action"));
             }
           else
             {
               HANDLE_ERROR (
                 err, "%s",
-                _("Failed to undo action"));
+                _ ("Failed to undo action"));
             }
 
         } /* endif ret != 0 */
@@ -988,41 +938,36 @@ handle_undo_or_redo_n (
 
 DEFINE_SIMPLE (activate_undo_n)
 {
-  int idx =
-    (int) g_variant_get_int32 (variant);
+  int idx = (int) g_variant_get_int32 (variant);
   handle_undo_or_redo_n (idx, false);
 }
 
 DEFINE_SIMPLE (activate_redo)
 {
-  if (undo_stack_is_empty (
-        UNDO_MANAGER->redo_stack))
+  if (undo_stack_is_empty (UNDO_MANAGER->redo_stack))
     return;
 
   GError * err = NULL;
   int ret = undo_manager_redo (UNDO_MANAGER, &err);
   if (ret != 0)
     {
-      HANDLE_ERROR (
-        err, "%s", _("Failed to redo"));
+      HANDLE_ERROR (err, "%s", _ ("Failed to redo"));
     }
 
-  EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE,
-               NULL);
+  EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE, NULL);
 }
 
 DEFINE_SIMPLE (activate_redo_n)
 {
-  int idx =
-    (int) g_variant_get_int32 (variant);
+  int idx = (int) g_variant_get_int32 (variant);
   handle_undo_or_redo_n (idx, true);
 }
 
 void
 activate_cut (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   /* activate copy and then delete the selections */
   activate_copy (action, variant, user_data);
@@ -1038,33 +983,31 @@ activate_cut (
       if (sel && arranger_selections_has_any (sel))
         {
           GError * err = NULL;
-          bool ret =
+          bool     ret =
             arranger_selections_action_perform_delete (
               sel, &err);
           if (!ret)
             {
               HANDLE_ERROR (
                 err, "%s",
-                _("Failed to delete selections"));
+                _ ("Failed to delete selections"));
             }
         }
       break;
     case SELECTION_TYPE_INSERT:
     case SELECTION_TYPE_MIDI_FX:
-      if (mixer_selections_has_any (
-            MIXER_SELECTIONS))
+      if (mixer_selections_has_any (MIXER_SELECTIONS))
         {
           GError * err = NULL;
-          bool ret =
+          bool     ret =
             mixer_selections_action_perform_delete (
               MIXER_SELECTIONS,
-              PORT_CONNECTIONS_MGR,
-              &err);
+              PORT_CONNECTIONS_MGR, &err);
           if (!ret)
             {
               HANDLE_ERROR (
                 err, "%s",
-                _("Failed to delete selections"));
+                _ ("Failed to delete selections"));
             }
         }
       break;
@@ -1074,12 +1017,11 @@ activate_cut (
     }
 }
 
-
 void
 activate_copy (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   ArrangerSelections * sel =
     project_get_arranger_selections_for_last_selection (
@@ -1099,9 +1041,8 @@ activate_copy (
               timeline_selections_set_vis_track_indices (
                 clipboard->timeline_sel);
             }
-          char * serialized =
-            yaml_serialize (
-              clipboard, &clipboard_schema);
+          char * serialized = yaml_serialize (
+            clipboard, &clipboard_schema);
           g_return_if_fail (serialized);
           gdk_clipboard_set_text (
             DEFAULT_CLIPBOARD, serialized);
@@ -1115,15 +1056,13 @@ activate_copy (
       break;
     case SELECTION_TYPE_INSERT:
     case SELECTION_TYPE_MIDI_FX:
-      if (mixer_selections_has_any (
-            MIXER_SELECTIONS))
+      if (mixer_selections_has_any (MIXER_SELECTIONS))
         {
           Clipboard * clipboard =
             clipboard_new_for_mixer_selections (
               MIXER_SELECTIONS, F_CLONE);
-          char * serialized =
-            yaml_serialize (
-              clipboard, &clipboard_schema);
+          char * serialized = yaml_serialize (
+            clipboard, &clipboard_schema);
           g_return_if_fail (serialized);
           gdk_clipboard_set_text (
             DEFAULT_CLIPBOARD, serialized);
@@ -1140,9 +1079,8 @@ activate_copy (
         Clipboard * clipboard =
           clipboard_new_for_tracklist_selections (
             TRACKLIST_SELECTIONS, F_CLONE);
-        char * serialized =
-          yaml_serialize (
-            clipboard, &clipboard_schema);
+        char * serialized = yaml_serialize (
+          clipboard, &clipboard_schema);
         g_return_if_fail (serialized);
         gdk_clipboard_set_text (
           DEFAULT_CLIPBOARD, serialized);
@@ -1158,9 +1096,9 @@ activate_copy (
 
 void
 activate_paste (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   g_message ("paste");
 
@@ -1169,8 +1107,7 @@ activate_paste (
   if (!text)
     return;
 
-  Clipboard * clipboard =
-    (Clipboard *)
+  Clipboard * clipboard = (Clipboard *)
     yaml_deserialize (text, &clipboard_schema);
   if (!clipboard)
     {
@@ -1180,8 +1117,8 @@ activate_paste (
       return;
     }
 
-  ArrangerSelections * sel = NULL;
-  MixerSelections * mixer_sel = NULL;
+  ArrangerSelections *  sel = NULL;
+  MixerSelections *     mixer_sel = NULL;
   TracklistSelections * tracklist_sel = NULL;
   switch (clipboard->type)
     {
@@ -1250,7 +1187,7 @@ activate_paste (
   if (incompatible)
     {
       ui_show_notification (
-        _("Can't paste incompatible data"));
+        _ ("Can't paste incompatible data"));
     }
 
   clipboard_free (clipboard);
@@ -1259,7 +1196,7 @@ activate_paste (
 void
 activate_delete (
   GSimpleAction * simple_action,
-  GVariant      * variant,
+  GVariant *      variant,
   gpointer        user_data)
 {
   g_message ("%s", __func__);
@@ -1268,20 +1205,20 @@ activate_delete (
     project_get_arranger_selections_for_last_selection (
       PROJECT);
 
-  if (sel &&
-      arranger_selections_has_any (sel) &&
-      !arranger_selections_contains_undeletable_object (
-        sel))
+  if (
+    sel && arranger_selections_has_any (sel)
+    && !arranger_selections_contains_undeletable_object (
+      sel))
     {
       GError * err = NULL;
-      bool ret =
+      bool     ret =
         arranger_selections_action_perform_delete (
           sel, &err);
       if (!ret)
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Failed to delete selections"));
+            _ ("Failed to delete selections"));
         }
     }
 
@@ -1310,9 +1247,9 @@ activate_delete (
 
 void
 activate_duplicate (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   ArrangerSelections * sel =
     project_get_arranger_selections_for_last_selection (
@@ -1321,11 +1258,10 @@ activate_duplicate (
   if (sel && arranger_selections_has_any (sel))
     {
       double length =
-        arranger_selections_get_length_in_ticks (
-          sel);
+        arranger_selections_get_length_in_ticks (sel);
 
       GError * err = NULL;
-      bool ret =
+      bool     ret =
         arranger_selections_action_perform_duplicate (
           sel, length, 0, 0, 0, 0, 0,
           F_NOT_ALREADY_MOVED, &err);
@@ -1333,16 +1269,16 @@ activate_duplicate (
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Failed to duplicate selections"));
+            _ ("Failed to duplicate selections"));
         }
     }
 }
 
 void
 activate_clear_selection (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   ArrangerSelections * sel =
     project_get_arranger_selections_for_last_selection (
@@ -1372,12 +1308,12 @@ activate_clear_selection (
           IS_TRACK_AND_NONNULL (track));
         if (track_type_has_channel (track->type))
           {
-            Channel * ch =
-              track_get_channel (track);
+            Channel * ch = track_get_channel (track);
             PluginSlotType slot_type =
               PLUGIN_SLOT_INSERT;
-            if (PROJECT->last_selection ==
-                  SELECTION_TYPE_MIDI_FX)
+            if (
+              PROJECT->last_selection
+              == SELECTION_TYPE_MIDI_FX)
               {
                 slot_type = PLUGIN_SLOT_MIDI_FX;
               }
@@ -1393,9 +1329,9 @@ activate_clear_selection (
 
 void
 activate_select_all (
-  GSimpleAction *action,
-  GVariant *variant,
-  gpointer user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   ArrangerSelections * sel =
     project_get_arranger_selections_for_last_selection (
@@ -1425,12 +1361,12 @@ activate_select_all (
           IS_TRACK_AND_NONNULL (track));
         if (track_type_has_channel (track->type))
           {
-            Channel * ch =
-              track_get_channel (track);
+            Channel * ch = track_get_channel (track);
             PluginSlotType slot_type =
               PLUGIN_SLOT_INSERT;
-            if (PROJECT->last_selection ==
-                  SELECTION_TYPE_MIDI_FX)
+            if (
+              PROJECT->last_selection
+              == SELECTION_TYPE_MIDI_FX)
               {
                 slot_type = PLUGIN_SLOT_MIDI_FX;
               }
@@ -1447,7 +1383,7 @@ activate_select_all (
 void
 activate_toggle_left_panel (
   GSimpleAction * action,
-  GVariant      * variant,
+  GVariant *      variant,
   gpointer        user_data)
 {
   foldable_notebook_widget_toggle_visibility (
@@ -1455,18 +1391,20 @@ activate_toggle_left_panel (
 }
 
 void
-activate_toggle_right_panel (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_toggle_right_panel (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   foldable_notebook_widget_toggle_visibility (
     MW_RIGHT_DOCK_EDGE->right_notebook);
 }
 
 void
-activate_toggle_bot_panel (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_toggle_bot_panel (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   foldable_notebook_widget_toggle_visibility (
     MW_BOT_DOCK_EDGE->bot_notebook);
@@ -1477,9 +1415,9 @@ activate_toggle_bot_panel (GSimpleAction *action,
  */
 void
 activate_toggle_top_panel (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   g_return_if_fail (
     MW_CENTER_DOCK && MW_MAIN_NOTEBOOK);
@@ -1490,9 +1428,10 @@ activate_toggle_top_panel (
 }
 
 void
-activate_toggle_status_bar (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_toggle_status_bar (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   gtk_widget_set_visible (
     GTK_WIDGET (MW_BOT_BAR),
@@ -1502,8 +1441,7 @@ activate_toggle_status_bar (GSimpleAction *action,
 
 DEFINE_SIMPLE (activate_toggle_drum_mode)
 {
-  Track * tr =
-    clip_editor_get_track (CLIP_EDITOR);
+  Track * tr = clip_editor_get_track (CLIP_EDITOR);
   g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
   tr->drum_mode = !tr->drum_mode;
 
@@ -1536,12 +1474,12 @@ DEFINE_SIMPLE (activate_fullscreen)
 void
 activate_bind_midi_cc (
   GSimpleAction * action,
-  GVariant      * _variant,
+  GVariant *      _variant,
   gpointer        user_data)
 {
   g_return_if_fail (_variant);
 
-  gsize size;
+  gsize        size;
   const char * variant =
     g_variant_get_string (_variant, &size);
   Port * port = NULL;
@@ -1549,8 +1487,7 @@ activate_bind_midi_cc (
   g_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   BindCcDialogWidget * dialog =
-    bind_cc_dialog_widget_new (
-      port, true);
+    bind_cc_dialog_widget_new (port, true);
 
   z_gtk_dialog_run (GTK_DIALOG (dialog), true);
 }
@@ -1558,33 +1495,31 @@ activate_bind_midi_cc (
 void
 activate_delete_cc_binding (
   GSimpleAction * simple_action,
-  GVariant      * _variant,
+  GVariant *      _variant,
   gpointer        user_data)
 {
   /* get index */
-  int idx =
-    (int)
-    g_variant_get_int32 (_variant);
+  int idx = (int) g_variant_get_int32 (_variant);
 
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     midi_mapping_action_perform_unbind (idx, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _("Failed to unbind"));
+        err, "%s", _ ("Failed to unbind"));
     }
 }
 
 void
 activate_snap_to_grid (
   GSimpleAction * action,
-  GVariant      * _variant,
-  gpointer         user_data)
+  GVariant *      _variant,
+  gpointer        user_data)
 {
   g_return_if_fail (_variant);
 
-  gsize size;
+  gsize        size;
   const char * variant =
     g_variant_get_string (_variant, &size);
   if (string_is_equal (variant, "timeline"))
@@ -1605,19 +1540,19 @@ activate_snap_to_grid (
     }
   else if (string_is_equal (variant, "global"))
     {
-      if (PROJECT->last_selection ==
-            SELECTION_TYPE_TIMELINE)
+      if (
+        PROJECT->last_selection
+        == SELECTION_TYPE_TIMELINE)
         {
           GError * err = NULL;
-          bool ret =
+          bool     ret =
             arranger_selections_action_perform_quantize (
               (ArrangerSelections *) TL_SELECTIONS,
               QUANTIZE_OPTIONS_TIMELINE, &err);
           if (!ret)
             {
               HANDLE_ERROR (
-                err, "%s",
-                _("Failed to quantize"));
+                err, "%s", _ ("Failed to quantize"));
             }
         }
     }
@@ -1634,16 +1569,14 @@ activate_snap_keep_offset (
   gpointer        user_data)
 {
   g_return_if_fail (_variant);
-  gsize size;
+  gsize        size;
   const char * variant =
     g_variant_get_string (_variant, &size);
 
   if (string_is_equal (variant, "timeline"))
     {
-      SNAP_GRID_TIMELINE->
-        snap_to_grid_keep_offset =
-          !SNAP_GRID_TIMELINE->
-            snap_to_grid_keep_offset;
+      SNAP_GRID_TIMELINE->snap_to_grid_keep_offset =
+        !SNAP_GRID_TIMELINE->snap_to_grid_keep_offset;
       EVENTS_PUSH (
         ET_SNAP_GRID_OPTIONS_CHANGED,
         SNAP_GRID_TIMELINE);
@@ -1651,8 +1584,7 @@ activate_snap_keep_offset (
   else if (string_is_equal (variant, "editor"))
     {
       SNAP_GRID_EDITOR->snap_to_grid_keep_offset =
-        !SNAP_GRID_EDITOR->
-          snap_to_grid_keep_offset;
+        !SNAP_GRID_EDITOR->snap_to_grid_keep_offset;
       EVENTS_PUSH (
         ET_SNAP_GRID_OPTIONS_CHANGED,
         SNAP_GRID_EDITOR);
@@ -1668,7 +1600,7 @@ activate_snap_events (
   gpointer        user_data)
 {
   g_return_if_fail (_variant);
-  gsize size;
+  gsize        size;
   const char * variant =
     g_variant_get_string (_variant, &size);
 
@@ -1695,114 +1627,104 @@ activate_snap_events (
 DEFINE_SIMPLE (activate_create_audio_track)
 {
   GError * err = NULL;
-  bool ret =
-    track_create_empty_with_action (
-      TRACK_TYPE_AUDIO, &err);
+  bool     ret = track_create_empty_with_action (
+        TRACK_TYPE_AUDIO, &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err, "%s",
-        _("Failed to create audio track"));
+        _ ("Failed to create audio track"));
     }
 }
 
 DEFINE_SIMPLE (activate_create_midi_track)
 {
   GError * err = NULL;
-  bool ret =
-    track_create_empty_with_action (
-      TRACK_TYPE_MIDI, &err);
+  bool     ret = track_create_empty_with_action (
+        TRACK_TYPE_MIDI, &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err, "%s",
-        _("Failed to create MIDI track"));
+        _ ("Failed to create MIDI track"));
     }
 }
 
 DEFINE_SIMPLE (activate_create_audio_bus_track)
 {
   GError * err = NULL;
-  bool ret =
-    track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_BUS, &err);
+  bool     ret = track_create_empty_with_action (
+        TRACK_TYPE_AUDIO_BUS, &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err, "%s",
-        _("Failed to create audio FX track"));
+        _ ("Failed to create audio FX track"));
     }
 }
 
 DEFINE_SIMPLE (activate_create_midi_bus_track)
 {
   GError * err = NULL;
-  bool ret =
-    track_create_empty_with_action (
-      TRACK_TYPE_MIDI_BUS, &err);
+  bool     ret = track_create_empty_with_action (
+        TRACK_TYPE_MIDI_BUS, &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err, "%s",
-        _("Failed to create MIDI FX track"));
+        _ ("Failed to create MIDI FX track"));
     }
 }
 
 DEFINE_SIMPLE (activate_create_audio_group_track)
 {
   GError * err = NULL;
-  bool ret =
-    track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_GROUP, &err);
+  bool     ret = track_create_empty_with_action (
+        TRACK_TYPE_AUDIO_GROUP, &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err, "%s",
-        _("Failed to create audio group track"));
+        _ ("Failed to create audio group track"));
     }
 }
 
 DEFINE_SIMPLE (activate_create_midi_group_track)
 {
   GError * err = NULL;
-  bool ret =
-    track_create_empty_with_action (
-      TRACK_TYPE_MIDI_GROUP, &err);
+  bool     ret = track_create_empty_with_action (
+        TRACK_TYPE_MIDI_GROUP, &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err, "%s",
-        _("Failed to create MIDI group track"));
+        _ ("Failed to create MIDI group track"));
     }
 }
 
 DEFINE_SIMPLE (activate_create_folder_track)
 {
   GError * err = NULL;
-  bool ret =
-    track_create_empty_with_action (
-      TRACK_TYPE_FOLDER, &err);
+  bool     ret = track_create_empty_with_action (
+        TRACK_TYPE_FOLDER, &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err, "%s",
-        _("Failed to create folder track"));
+        _ ("Failed to create folder track"));
     }
 }
 
 DEFINE_SIMPLE (activate_duplicate_selected_tracks)
 {
   GError * err = NULL;
-  bool ret =
-    tracklist_selections_action_perform_copy (
+  bool ret = tracklist_selections_action_perform_copy (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
-    TRACKLIST_SELECTIONS->tracks[0]->pos + 1,
-    &err);
+    TRACKLIST_SELECTIONS->tracks[0]->pos + 1, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s",
-        _("Failed to duplicate tracks"));
+        err, "%s", _ ("Failed to duplicate tracks"));
     }
 }
 
@@ -1862,11 +1784,10 @@ on_delete_tracks_response (
     case GTK_RESPONSE_YES:
       {
         GError * err = NULL;
-        bool ret =
+        bool     ret =
           tracklist_selections_action_perform_delete (
             TRACKLIST_SELECTIONS,
-            PORT_CONNECTIONS_MGR,
-            &err);
+            PORT_CONNECTIONS_MGR, &err);
         if (ret)
           {
             undo_manager_clear_stacks (
@@ -1878,7 +1799,7 @@ on_delete_tracks_response (
           {
             HANDLE_ERROR (
               err, "%s",
-              _("Failed to delete tracks"));
+              _ ("Failed to delete tracks"));
           }
       }
       break;
@@ -1894,9 +1815,9 @@ on_delete_tracks_response (
 
 void
 activate_delete_selected_tracks (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   g_message ("deleting selected tracks");
 
@@ -1904,29 +1825,26 @@ activate_delete_selected_tracks (
         TRACKLIST_SELECTIONS))
     {
       ui_show_message_printf (
-        MAIN_WINDOW, GTK_MESSAGE_INFO, false,
-        "%s",
-        _("Cannot delete tracks: selection "
-        "contains an undeletable track"));
+        MAIN_WINDOW, GTK_MESSAGE_INFO, false, "%s",
+        _ ("Cannot delete tracks: selection "
+           "contains an undeletable track"));
       return;
     }
 
   if (tracklist_selections_contains_uninstantiated_plugin (
         TRACKLIST_SELECTIONS))
     {
-      GtkWidget * dialog =
-        gtk_message_dialog_new (
-          GTK_WINDOW (MAIN_WINDOW),
-          GTK_DIALOG_DESTROY_WITH_PARENT
+      GtkWidget * dialog = gtk_message_dialog_new (
+        GTK_WINDOW (MAIN_WINDOW),
+        GTK_DIALOG_DESTROY_WITH_PARENT
           | GTK_DIALOG_MODAL,
-          GTK_MESSAGE_WARNING,
-          GTK_BUTTONS_YES_NO,
-          "%s",
-          _("The selected tracks contain "
-          "uninstantiated plugins. Deleting them "
-          "will not be undoable and the undo "
-          "history will be cleared. Continue "
-          "with deletion?"));
+        GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO,
+        "%s",
+        _ ("The selected tracks contain "
+           "uninstantiated plugins. Deleting them "
+           "will not be undoable and the undo "
+           "history will be cleared. Continue "
+           "with deletion?"));
 
       g_signal_connect (
         dialog, "response",
@@ -1953,133 +1871,131 @@ DEFINE_SIMPLE (activate_pin_selected_tracks)
   g_message ("pin/unpinning selected tracks");
 
   Track * track = TRACKLIST_SELECTIONS->tracks[0];
-  bool pin = !track_is_pinned (track);
+  bool    pin = !track_is_pinned (track);
 
   GError * err = NULL;
-  bool ret;
+  bool     ret;
   if (pin)
     {
-      ret =
-        tracklist_selections_action_perform_pin (
-          TRACKLIST_SELECTIONS,
-          PORT_CONNECTIONS_MGR, &err);
+      ret = tracklist_selections_action_perform_pin (
+        TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
+        &err);
     }
   else
     {
-      ret =
-        tracklist_selections_action_perform_unpin (
-          TRACKLIST_SELECTIONS,
-          PORT_CONNECTIONS_MGR, &err);
+      ret = tracklist_selections_action_perform_unpin (
+        TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
+        &err);
     }
 
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _("Failed to pin/unpin tracks"));
+        err, "%s", _ ("Failed to pin/unpin tracks"));
     }
 }
 
 DEFINE_SIMPLE (activate_solo_selected_tracks)
 {
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     tracklist_selections_action_perform_edit_solo (
       TRACKLIST_SELECTIONS, F_SOLO, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _("Failed to solo tracks"));
+        err, "%s", _ ("Failed to solo tracks"));
     }
 }
 
 DEFINE_SIMPLE (activate_unsolo_selected_tracks)
 {
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     tracklist_selections_action_perform_edit_solo (
       TRACKLIST_SELECTIONS, F_NO_SOLO, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _("Failed to unsolo tracks"));
+        err, "%s", _ ("Failed to unsolo tracks"));
     }
 }
 
 DEFINE_SIMPLE (activate_mute_selected_tracks)
 {
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     tracklist_selections_action_perform_edit_mute (
       TRACKLIST_SELECTIONS, F_MUTE, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _("Failed to mute tracks"));
+        err, "%s", _ ("Failed to mute tracks"));
     }
 }
 
 DEFINE_SIMPLE (activate_unmute_selected_tracks)
 {
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     tracklist_selections_action_perform_edit_mute (
       TRACKLIST_SELECTIONS, F_NO_MUTE, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _("Failed to unmute tracks"));
+        err, "%s", _ ("Failed to unmute tracks"));
     }
 }
 
 DEFINE_SIMPLE (activate_listen_selected_tracks)
 {
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     tracklist_selections_action_perform_edit_listen (
       TRACKLIST_SELECTIONS, F_LISTEN, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _("Failed to listen tracks"));
+        err, "%s", _ ("Failed to listen tracks"));
     }
 }
 
 DEFINE_SIMPLE (activate_unlisten_selected_tracks)
 {
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     tracklist_selections_action_perform_edit_listen (
       TRACKLIST_SELECTIONS, F_NO_LISTEN, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _("Failed to unlisten tracks"));
+        err, "%s", _ ("Failed to unlisten tracks"));
     }
 }
 
 DEFINE_SIMPLE (activate_enable_selected_tracks)
 {
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     tracklist_selections_action_perform_edit_enable (
       TRACKLIST_SELECTIONS, F_ENABLE, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _("Failed to enable tracks"));
+        err, "%s", _ ("Failed to enable tracks"));
     }
 }
 
 DEFINE_SIMPLE (activate_disable_selected_tracks)
 {
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     tracklist_selections_action_perform_edit_enable (
       TRACKLIST_SELECTIONS, F_NO_ENABLE, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _("Failed to disable tracks"));
+        err, "%s", _ ("Failed to disable tracks"));
     }
 }
 
@@ -2152,9 +2068,7 @@ change_state_listen_notes (
 }
 
 static void
-do_quantize (
-  const char * variant,
-  bool         quick)
+do_quantize (const char * variant, bool quick)
 {
   g_debug ("quantize opts: %s", variant);
 
@@ -2167,15 +2081,14 @@ do_quantize (
       if (quick)
         {
           GError * err = NULL;
-          bool ret =
+          bool     ret =
             arranger_selections_action_perform_quantize (
               (ArrangerSelections *) TL_SELECTIONS,
               QUANTIZE_OPTIONS_TIMELINE, &err);
           if (!ret)
             {
               HANDLE_ERROR (
-                err, "%s",
-                _("Failed to quantize"));
+                err, "%s", _ ("Failed to quantize"));
             }
         }
       else
@@ -2204,14 +2117,13 @@ do_quantize (
           g_return_if_fail (sel);
 
           GError * err = NULL;
-          bool ret =
+          bool     ret =
             arranger_selections_action_perform_quantize (
               sel, QUANTIZE_OPTIONS_EDITOR, &err);
           if (!ret)
             {
               HANDLE_ERROR (
-                err, "%s",
-                _("Failed to quantize"));
+                err, "%s", _ ("Failed to quantize"));
             }
         }
       else
@@ -2230,22 +2142,22 @@ do_quantize (
     {
       ui_show_message_printf (
         MAIN_WINDOW, GTK_MESSAGE_WARNING, false,
-        _("Must select either the timeline or the "
-        "editor first. The current selection is "
-        "%s"),
-        selection_type_strings[
-          PROJECT->last_selection].str);
+        _ ("Must select either the timeline or the "
+           "editor first. The current selection is "
+           "%s"),
+        selection_type_strings[PROJECT->last_selection]
+          .str);
     }
 }
 
 void
 activate_quick_quantize (
-  GSimpleAction *action,
-  GVariant      * _variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      _variant,
+  gpointer        user_data)
 {
   g_return_if_fail (_variant);
-  gsize size;
+  gsize        size;
   const char * variant =
     g_variant_get_string (_variant, &size);
   do_quantize (variant, true);
@@ -2253,12 +2165,12 @@ activate_quick_quantize (
 
 void
 activate_quantize_options (
-  GSimpleAction *action,
-  GVariant      *_variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      _variant,
+  gpointer        user_data)
 {
   g_return_if_fail (_variant);
-  gsize size;
+  gsize        size;
   const char * variant =
     g_variant_get_string (_variant, &size);
   do_quantize (variant, false);
@@ -2266,13 +2178,13 @@ activate_quantize_options (
 
 void
 activate_mute_selection (
-  GSimpleAction *action,
-  GVariant      *_variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      _variant,
+  gpointer        user_data)
 {
   g_return_if_fail (_variant);
 
-  gsize size;
+  gsize        size;
   const char * variant =
     g_variant_get_string (_variant, &size);
   ArrangerSelections * sel = NULL;
@@ -2298,7 +2210,7 @@ activate_mute_selection (
   if (sel)
     {
       GError * err = NULL;
-      bool ret =
+      bool     ret =
         arranger_selections_action_perform_edit (
           sel, NULL,
           ARRANGER_SELECTIONS_ACTION_EDIT_MUTE,
@@ -2307,7 +2219,7 @@ activate_mute_selection (
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Failed to mute selections"));
+            _ ("Failed to mute selections"));
         }
     }
 
@@ -2322,7 +2234,7 @@ DEFINE_SIMPLE (activate_merge_selection)
     {
       ui_show_error_message (
         MAIN_WINDOW, false,
-        _("No regions selected"));
+        _ ("No regions selected"));
       return;
     }
   if (!arranger_selections_all_on_same_lane (
@@ -2330,15 +2242,15 @@ DEFINE_SIMPLE (activate_merge_selection)
     {
       ui_show_error_message (
         MAIN_WINDOW, false,
-        _("Selections must be on the same lane"));
+        _ ("Selections must be on the same lane"));
       return;
     }
   if (arranger_selections_contains_looped (
-       (ArrangerSelections *) TL_SELECTIONS))
+        (ArrangerSelections *) TL_SELECTIONS))
     {
       ui_show_error_message (
         MAIN_WINDOW, false,
-        _("Cannot merge looped regions"));
+        _ ("Cannot merge looped regions"));
       return;
     }
   if (TL_SELECTIONS->num_regions == 1)
@@ -2348,40 +2260,39 @@ DEFINE_SIMPLE (activate_merge_selection)
     }
 
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     arranger_selections_action_perform_merge (
       (ArrangerSelections *) TL_SELECTIONS, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s",
-        _("Failed to merge selections"));
+        err, "%s", _ ("Failed to merge selections"));
     }
 }
 
 void
 activate_set_timebase_master (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   g_message ("set time base master");
 }
 
 void
 activate_set_transport_client (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   g_message ("set transport client");
 }
 
 void
 activate_unlink_jack_transport (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   g_message ("unlink jack transport");
 }
@@ -2394,15 +2305,13 @@ activate_show_file_browser (
 {
   if (file_browser_window)
     {
-      gtk_window_close (
-        file_browser_window);
+      gtk_window_close (file_browser_window);
       file_browser_window = FALSE;
     }
   else
     {
-      file_browser_window =
-        GTK_WINDOW (
-          file_browser_window_widget_new ());
+      file_browser_window = GTK_WINDOW (
+        file_browser_window_widget_new ());
       g_return_if_fail (file_browser_window);
       gtk_window_set_transient_for (
         file_browser_window,
@@ -2421,9 +2330,8 @@ activate_toggle_timeline_event_viewer (
   if (!MW_TIMELINE_EVENT_VIEWER)
     return;
 
-  int new_visibility =
-    !gtk_widget_get_visible (
-       GTK_WIDGET (MW_TIMELINE_EVENT_VIEWER));
+  int new_visibility = !gtk_widget_get_visible (
+    GTK_WIDGET (MW_TIMELINE_EVENT_VIEWER));
 
   g_settings_set_boolean (
     S_UI, "timeline-event-viewer-visible",
@@ -2442,9 +2350,8 @@ activate_toggle_editor_event_viewer (
   if (!MW_EDITOR_EVENT_VIEWER_STACK)
     return;
 
-  int new_visibility =
-    !gtk_widget_get_visible (
-       GTK_WIDGET (MW_EDITOR_EVENT_VIEWER_STACK));
+  int new_visibility = !gtk_widget_get_visible (
+    GTK_WIDGET (MW_EDITOR_EVENT_VIEWER_STACK));
 
   g_settings_set_boolean (
     S_UI, "editor-event-viewer-visible",
@@ -2462,19 +2369,16 @@ DEFINE_SIMPLE (activate_insert_silence)
     return;
 
   Position start, end;
-  transport_get_range_pos (
-    TRANSPORT, true, &start);
-  transport_get_range_pos (
-    TRANSPORT, false, &end);
+  transport_get_range_pos (TRANSPORT, true, &start);
+  transport_get_range_pos (TRANSPORT, false, &end);
 
   GError * err = NULL;
-  bool ret =
-    range_action_perform_insert_silence (
-      &start, &end, &err);
+  bool ret = range_action_perform_insert_silence (
+    &start, &end, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _("Failed to insert silence"));
+        err, "%s", _ ("Failed to insert silence"));
     }
 }
 
@@ -2484,24 +2388,21 @@ DEFINE_SIMPLE (activate_remove_range)
     return;
 
   Position start, end;
-  transport_get_range_pos (
-    TRANSPORT, true, &start);
-  transport_get_range_pos (
-    TRANSPORT, false, &end);
+  transport_get_range_pos (TRANSPORT, true, &start);
+  transport_get_range_pos (TRANSPORT, false, &end);
 
   GError * err = NULL;
-  bool ret =
-    range_action_perform_remove (
-      &start, &end, &err);
+  bool     ret = range_action_perform_remove (
+        &start, &end, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s",
-        _("Failed to remove range"));
+        err, "%s", _ ("Failed to remove range"));
     }
 }
 
-DEFINE_SIMPLE (change_state_timeline_playhead_scroll_edges)
+DEFINE_SIMPLE (
+  change_state_timeline_playhead_scroll_edges)
 {
   int enabled = g_variant_get_boolean (variant);
 
@@ -2527,7 +2428,8 @@ DEFINE_SIMPLE (change_state_timeline_playhead_follow)
     ET_PLAYHEAD_SCROLL_MODE_CHANGED, NULL);
 }
 
-DEFINE_SIMPLE (change_state_editor_playhead_scroll_edges)
+DEFINE_SIMPLE (
+  change_state_editor_playhead_scroll_edges)
 {
   int enabled = g_variant_get_boolean (variant);
 
@@ -2558,8 +2460,7 @@ DEFINE_SIMPLE (change_state_editor_playhead_follow)
  * functions.
  */
 static void
-do_midi_func (
-  MidiFunctionType type)
+do_midi_func (MidiFunctionType type)
 {
   ArrangerSelections * sel =
     (ArrangerSelections *) MA_SELECTIONS;
@@ -2570,14 +2471,14 @@ do_midi_func (
     }
 
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     arranger_selections_action_perform_edit_midi_function (
       sel, type, &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err, "%s",
-        _("Failed to apply MIDI function"));
+        _ ("Failed to apply MIDI function"));
     }
 }
 
@@ -2586,8 +2487,7 @@ do_midi_func (
  * functions.
  */
 static void
-do_automation_func (
-  AutomationFunctionType type)
+do_automation_func (AutomationFunctionType type)
 {
   ArrangerSelections * sel =
     (ArrangerSelections *) AUTOMATION_SELECTIONS;
@@ -2598,14 +2498,14 @@ do_automation_func (
     }
 
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     arranger_selections_action_perform_edit_automation_function (
       sel, type, &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err, "%s",
-        _("Failed to apply automation function"));
+        _ ("Failed to apply automation function"));
     }
 }
 
@@ -2617,8 +2517,8 @@ do_automation_func (
  */
 static void
 do_audio_func (
-  const AudioFunctionType  type,
-  const char *             uri)
+  const AudioFunctionType type,
+  const char *            uri)
 {
   g_return_if_fail (
     region_find (&CLIP_EDITOR->region_id));
@@ -2635,7 +2535,7 @@ do_audio_func (
   sel = arranger_selections_clone (sel);
 
   GError * err = NULL;
-  bool ret;
+  bool     ret;
   if (!arranger_selections_validate (sel))
     {
       goto free_audio_sel_and_return;
@@ -2650,7 +2550,7 @@ do_audio_func (
     {
       HANDLE_ERROR (
         err, "%s",
-        _("Failed to apply automation function"));
+        _ ("Failed to apply automation function"));
     }
 
   zix_sem_post (&PROJECT->save_sem);
@@ -2661,7 +2561,7 @@ free_audio_sel_and_return:
 
 DEFINE_SIMPLE (activate_editor_function)
 {
-  size_t size;
+  size_t       size;
   const char * str =
     g_variant_get_string (variant, &size);
 
@@ -2680,21 +2580,23 @@ DEFINE_SIMPLE (activate_editor_function)
           }
         else if (string_is_equal (str, "current"))
           {
-            do_midi_func (
-              g_settings_get_int (
-                S_UI, "midi-function"));
+            do_midi_func (g_settings_get_int (
+              S_UI, "midi-function"));
           }
         else if (string_is_equal (str, "flam"))
           {
             do_midi_func (MIDI_FUNCTION_FLAM);
           }
-        else if (string_is_equal (str, "flip-horizontal"))
+        else if (string_is_equal (
+                   str, "flip-horizontal"))
           {
-            do_midi_func (MIDI_FUNCTION_FLIP_HORIZONTAL);
+            do_midi_func (
+              MIDI_FUNCTION_FLIP_HORIZONTAL);
           }
         else if (string_is_equal (str, "flip-vertical"))
           {
-            do_midi_func (MIDI_FUNCTION_FLIP_VERTICAL);
+            do_midi_func (
+              MIDI_FUNCTION_FLIP_VERTICAL);
           }
         else if (string_is_equal (str, "legato"))
           {
@@ -2722,9 +2624,8 @@ DEFINE_SIMPLE (activate_editor_function)
       {
         if (string_is_equal (str, "current"))
           {
-            do_automation_func (
-              g_settings_get_int (
-                S_UI, "automation-function"));
+            do_automation_func (g_settings_get_int (
+              S_UI, "automation-function"));
           }
         else if (string_is_equal (
                    str, "flip-horizontal"))
@@ -2732,8 +2633,7 @@ DEFINE_SIMPLE (activate_editor_function)
             do_automation_func (
               AUTOMATION_FUNCTION_FLIP_HORIZONTAL);
           }
-        else if (string_is_equal (
-                   str, "flip-vertical"))
+        else if (string_is_equal (str, "flip-vertical"))
           {
             do_automation_func (
               AUTOMATION_FUNCTION_FLIP_VERTICAL);
@@ -2751,7 +2651,8 @@ DEFINE_SIMPLE (activate_editor_function)
           {
             do_audio_func (
               g_settings_get_int (
-                S_UI, "audio-function"), NULL);
+                S_UI, "audio-function"),
+              NULL);
             done = true;
           }
 
@@ -2778,7 +2679,7 @@ DEFINE_SIMPLE (activate_editor_function)
 
 DEFINE_SIMPLE (activate_editor_function_lv2)
 {
-  size_t size;
+  size_t       size;
   const char * str =
     g_variant_get_string (variant, &size);
 
@@ -2810,14 +2711,13 @@ DEFINE_SIMPLE (activate_editor_function_lv2)
     }
 }
 
-DEFINE_SIMPLE (
-  activate_midi_editor_highlighting)
+DEFINE_SIMPLE (activate_midi_editor_highlighting)
 {
-  size_t size;
+  size_t       size;
   const char * str =
     g_variant_get_string (variant, &size);
 
-#define SET_HIGHLIGHT(txt,hl_type) \
+#define SET_HIGHLIGHT(txt, hl_type) \
   if (string_is_equal (str, txt)) \
     { \
       piano_roll_set_highlighting ( \
@@ -2832,25 +2732,20 @@ DEFINE_SIMPLE (
 #undef SET_HIGHLIGHT
 }
 
-DEFINE_SIMPLE (
-  activate_rename_track)
+DEFINE_SIMPLE (activate_rename_track)
 {
   g_message ("TODO - track");
 }
 
-DEFINE_SIMPLE (
-  activate_rename_arranger_object)
+DEFINE_SIMPLE (activate_rename_arranger_object)
 {
   g_debug ("rename arranger object");
 
-  if (PROJECT->last_selection ==
-        SELECTION_TYPE_TIMELINE)
+  if (PROJECT->last_selection == SELECTION_TYPE_TIMELINE)
     {
       ArrangerSelections * sel =
-        arranger_widget_get_selections (
-          MW_TIMELINE);
-      if (arranger_selections_get_num_objects (
-            sel) == 1)
+        arranger_widget_get_selections (MW_TIMELINE);
+      if (arranger_selections_get_num_objects (sel) == 1)
         {
           ArrangerObject * obj =
             arranger_selections_get_first_object (
@@ -2862,11 +2757,11 @@ DEFINE_SIMPLE (
               {
                 StringEntryDialogWidget * dialog =
                   string_entry_dialog_widget_new (
-                    _("Object name"), obj,
+                    _ ("Object name"), obj,
                     (GenericStringGetter)
-                    arranger_object_get_name,
+                      arranger_object_get_name,
                     (GenericStringSetter)
-                    arranger_object_set_name_with_action);
+                      arranger_object_set_name_with_action);
                 gtk_window_present (
                   GTK_WINDOW (dialog));
               }
@@ -2877,8 +2772,7 @@ DEFINE_SIMPLE (
         }
     }
   else if (
-    PROJECT->last_selection ==
-      SELECTION_TYPE_EDITOR)
+    PROJECT->last_selection == SELECTION_TYPE_EDITOR)
     {
       /* nothing can be renamed yet */
     }
@@ -2898,15 +2792,14 @@ DEFINE_SIMPLE (activate_go_to_start)
 {
   Position pos;
   position_init (&pos);
-  transport_set_playhead_pos (
-    TRANSPORT, &pos);
+  transport_set_playhead_pos (TRANSPORT, &pos);
 }
 
 DEFINE_SIMPLE (activate_input_bpm)
 {
   StringEntryDialogWidget * dialog =
     string_entry_dialog_widget_new (
-      _("Please enter a BPM"), P_TEMPO_TRACK,
+      _ ("Please enter a BPM"), P_TEMPO_TRACK,
       tempo_track_get_current_bpm_as_str,
       tempo_track_set_bpm_from_str);
   gtk_window_present (GTK_WINDOW (dialog));
@@ -2915,8 +2808,8 @@ DEFINE_SIMPLE (activate_input_bpm)
 DEFINE_SIMPLE (activate_tap_bpm)
 {
   ui_show_message_printf (
-    MAIN_WINDOW, GTK_MESSAGE_WARNING, false,
-    "%s", "Not implemented yet");
+    MAIN_WINDOW, GTK_MESSAGE_WARNING, false, "%s",
+    "Not implemented yet");
 }
 
 void
@@ -2938,7 +2831,7 @@ change_state_show_automation_values (
 
 DEFINE_SIMPLE (activate_nudge_selection)
 {
-  size_t size;
+  size_t       size;
   const char * str =
     g_variant_get_string (variant, &size);
 
@@ -2946,7 +2839,7 @@ DEFINE_SIMPLE (activate_nudge_selection)
     ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS;
   bool left = string_is_equal (str, "left");
   if (left)
-    ticks = - ticks;
+    ticks = -ticks;
 
   ArrangerSelections * sel =
     project_get_arranger_selections_for_last_selection (
@@ -2957,9 +2850,8 @@ DEFINE_SIMPLE (activate_nudge_selection)
   if (sel->type == ARRANGER_SELECTIONS_TYPE_AUDIO)
     {
       do_audio_func (
-        left
-        ? AUDIO_FUNCTION_NUDGE_LEFT
-        : AUDIO_FUNCTION_NUDGE_RIGHT,
+        left ? AUDIO_FUNCTION_NUDGE_LEFT
+             : AUDIO_FUNCTION_NUDGE_RIGHT,
         NULL);
       return;
     }
@@ -2974,21 +2866,19 @@ DEFINE_SIMPLE (activate_nudge_selection)
     }
 
   GError * err = NULL;
-  bool ret =
-    arranger_selections_action_perform_move (
-      sel, ticks, 0, 0, 0, 0, 0,
-      F_NOT_ALREADY_MOVED, &err);
+  bool ret = arranger_selections_action_perform_move (
+    sel, ticks, 0, 0, 0, 0, 0, F_NOT_ALREADY_MOVED,
+    &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s",
-        _("Failed to move selections"));
+        err, "%s", _ ("Failed to move selections"));
     }
 }
 
 DEFINE_SIMPLE (activate_detect_bpm)
 {
-  size_t size;
+  size_t       size;
   const char * _str =
     g_variant_get_string (variant, &size);
   ZRegion * r = NULL;
@@ -3002,10 +2892,9 @@ DEFINE_SIMPLE (activate_detect_bpm)
 
   GString * gstr = g_string_new (NULL);
   g_string_append_printf (
-    gstr, _("Detected BPM: %.2f"), bpm);
+    gstr, _ ("Detected BPM: %.2f"), bpm);
   g_string_append (gstr, "\n\n");
-  g_string_append_printf (
-    gstr, _("Candidates:"));
+  g_string_append_printf (gstr, _ ("Candidates:"));
   for (size_t i = 0; i < candidates->len; i++)
     {
       float candidate =
@@ -3015,30 +2904,25 @@ DEFINE_SIMPLE (activate_detect_bpm)
     }
   char * str = g_string_free (gstr, false);
   ui_show_message_printf (
-    MAIN_WINDOW, GTK_MESSAGE_INFO, false,
-    "%s", str);
+    MAIN_WINDOW, GTK_MESSAGE_INFO, false, "%s", str);
   g_free (str);
 }
 
 DEFINE_SIMPLE (activate_timeline_function)
 {
-  AudioFunctionType type =
-    (AudioFunctionType)
+  AudioFunctionType type = (AudioFunctionType)
     g_variant_get_int32 (variant);
 
-  for (int i = 0; i < TL_SELECTIONS->num_regions;
-       i++)
+  for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
     {
       ZRegion * r = TL_SELECTIONS->regions[i];
-      AudioSelections * sel =
-        (AudioSelections *)
+      AudioSelections * sel = (AudioSelections *)
         arranger_selections_new (
           ARRANGER_SELECTIONS_TYPE_AUDIO);
       region_identifier_copy (
         &sel->region_id, &r->id);
       sel->has_selection = true;
-      ArrangerObject * r_obj =
-        (ArrangerObject *) r;
+      ArrangerObject * r_obj = (ArrangerObject *) r;
 
       /* timeline start pos */
       position_set_to_pos (
@@ -3059,15 +2943,15 @@ DEFINE_SIMPLE (activate_timeline_function)
         }
 
       GError * err = NULL;
-      bool ret =
+      bool     ret =
         arranger_selections_action_perform_edit_audio_function (
-          (ArrangerSelections *) sel,
-          type, NULL, &err);
+          (ArrangerSelections *) sel, type, NULL,
+          &err);
       if (!ret)
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Failed to apply audio function"));
+            _ ("Failed to apply audio function"));
           break;
         }
       else
@@ -3090,8 +2974,9 @@ DEFINE_SIMPLE (activate_quick_bounce_selections)
 {
   ArrangerSelections * sel =
     (ArrangerSelections *) TL_SELECTIONS;
-  if (!arranger_selections_has_any (sel)
-      || TL_SELECTIONS->num_regions == 0)
+  if (
+    !arranger_selections_has_any (sel)
+    || TL_SELECTIONS->num_regions == 0)
     {
       g_warning ("no selections to bounce");
       return;
@@ -3107,11 +2992,10 @@ DEFINE_SIMPLE (activate_quick_bounce_selections)
     TL_SELECTIONS, settings.bounce_with_parents);
 
   /* start exporting in a new thread */
-  GThread * thread =
-    g_thread_new (
-      "bounce_thread",
-      (GThreadFunc) exporter_generic_export_thread,
-      &settings);
+  GThread * thread = g_thread_new (
+    "bounce_thread",
+    (GThreadFunc) exporter_generic_export_thread,
+    &settings);
 
   /* create a progress dialog and block */
   ExportProgressDialogWidget * progress_dialog =
@@ -3125,8 +3009,9 @@ DEFINE_SIMPLE (activate_quick_bounce_selections)
 
   g_thread_join (thread);
 
-  if (!settings.progress_info.has_error &&
-      !settings.progress_info.cancelled)
+  if (
+    !settings.progress_info.has_error
+    && !settings.progress_info.cancelled)
     {
       /* create audio track with bounced material */
       Position first_pos;
@@ -3144,8 +3029,9 @@ DEFINE_SIMPLE (activate_bounce_selections)
 {
   ArrangerSelections * sel =
     (ArrangerSelections *) TL_SELECTIONS;
-  if (!arranger_selections_has_any (sel)
-      || TL_SELECTIONS->num_regions == 0)
+  if (
+    !arranger_selections_has_any (sel)
+    || TL_SELECTIONS->num_regions == 0)
     {
       g_warning ("no selections to bounce");
       return;
@@ -3162,12 +3048,11 @@ DEFINE_SIMPLE (activate_bounce_selections)
 DEFINE_SIMPLE (activate_set_curve_algorithm)
 {
   CurveAlgorithm curve_algo =
-    (CurveAlgorithm)
-    g_variant_get_int32 (variant);
+    (CurveAlgorithm) g_variant_get_int32 (variant);
 
   g_return_if_fail (
-    AUTOMATION_SELECTIONS->num_automation_points ==
-      1);
+    AUTOMATION_SELECTIONS->num_automation_points
+    == 1);
 
   AutomationPoint * ap =
     AUTOMATION_SELECTIONS->automation_points[0];
@@ -3182,17 +3067,16 @@ DEFINE_SIMPLE (activate_set_curve_algorithm)
 
   /* perform action */
   GError * err = NULL;
-  bool ret =
-    arranger_selections_action_perform_edit (
-      sel_before,
-      (ArrangerSelections *) AUTOMATION_SELECTIONS,
-      ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
-      true, &err);
+  bool ret = arranger_selections_action_perform_edit (
+    sel_before,
+    (ArrangerSelections *) AUTOMATION_SELECTIONS,
+    ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, true,
+    &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err, "%s",
-        _("Failed to set curve algorithm"));
+        _ ("Failed to set curve algorithm"));
     }
 
   arranger_selections_free_full (sel_before);
@@ -3203,7 +3087,7 @@ handle_region_fade_algo_preset (
   const char * pset_id,
   bool         fade_in)
 {
-  GPtrArray * arr = curve_get_fade_presets ();
+  GPtrArray *       arr = curve_get_fade_presets ();
   CurveFadePreset * pset = NULL;
   for (size_t i = 0; i < arr->len; i++)
     {
@@ -3227,41 +3111,37 @@ handle_region_fade_algo_preset (
   ArrangerSelections * sel_before =
     arranger_selections_clone (
       (ArrangerSelections *) TL_SELECTIONS);
-  ZRegion * r = TL_SELECTIONS->regions[0];
+  ZRegion *        r = TL_SELECTIONS->regions[0];
   ArrangerObject * r_obj = (ArrangerObject *) r;
   if (fade_in)
     {
-      r_obj->fade_in_opts.algo =
-        curve_opts.algo;
+      r_obj->fade_in_opts.algo = curve_opts.algo;
       r_obj->fade_in_opts.curviness =
         curve_opts.curviness;
     }
   else
     {
-      r_obj->fade_out_opts.algo =
-        curve_opts.algo;
+      r_obj->fade_out_opts.algo = curve_opts.algo;
       r_obj->fade_out_opts.curviness =
         curve_opts.curviness;
     }
 
   GError * err = NULL;
-  bool ret =
-    arranger_selections_action_perform_edit (
-      sel_before,
-      (ArrangerSelections *) TL_SELECTIONS,
-      ARRANGER_SELECTIONS_ACTION_EDIT_FADES,
-      true, &err);
+  bool ret = arranger_selections_action_perform_edit (
+    sel_before, (ArrangerSelections *) TL_SELECTIONS,
+    ARRANGER_SELECTIONS_ACTION_EDIT_FADES, true,
+    &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _("Failed to edit fades"));
+        err, "%s", _ ("Failed to edit fades"));
     }
 }
 
 DEFINE_SIMPLE (
   activate_set_region_fade_in_algorithm_preset)
 {
-  size_t size;
+  size_t       size;
   const char * str =
     g_variant_get_string (variant, &size);
 
@@ -3271,7 +3151,7 @@ DEFINE_SIMPLE (
 DEFINE_SIMPLE (
   activate_set_region_fade_out_algorithm_preset)
 {
-  size_t size;
+  size_t       size;
   const char * str =
     g_variant_get_string (variant, &size);
 
@@ -3280,7 +3160,7 @@ DEFINE_SIMPLE (
 
 DEFINE_SIMPLE (activate_arranger_object_view_info)
 {
-  size_t size;
+  size_t       size;
   const char * str =
     g_variant_get_string (variant, &size);
   ArrangerObject * obj = NULL;
@@ -3324,16 +3204,16 @@ DEFINE_SIMPLE (activate_save_chord_preset)
     {
       ui_show_error_message (
         MAIN_WINDOW, false,
-        _("No custom preset packs found. Please "
-        "create a preset pack first from the "
-        "chord preset browser."));
+        _ ("No custom preset packs found. Please "
+           "create a preset pack first from the "
+           "chord preset browser."));
     }
 }
 
 DEFINE_SIMPLE (activate_load_chord_preset)
 {
   g_debug ("load chord preset");
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   int pack_idx, pset_idx;
@@ -3356,7 +3236,7 @@ DEFINE_SIMPLE (activate_load_chord_preset)
 DEFINE_SIMPLE (activate_load_chord_preset_from_scale)
 {
   g_debug ("load chord preset from scale");
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   int scale, root_note;
@@ -3369,7 +3249,7 @@ DEFINE_SIMPLE (activate_load_chord_preset_from_scale)
 
 DEFINE_SIMPLE (activate_transpose_chord_pad)
 {
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   g_debug ("transpose chord pad %s", str);
@@ -3419,38 +3299,32 @@ DEFINE_SIMPLE (activate_add_chord_preset_pack)
 
   StringEntryDialogWidget * dialog =
     string_entry_dialog_widget_new (
-      _("Preset Pack Name"), pack,
-      (GenericStringGetter)
-        chord_preset_pack_get_name,
+      _ ("Preset Pack Name"), pack,
+      (GenericStringGetter) chord_preset_pack_get_name,
       (GenericStringSetter)
         chord_preset_pack_set_name);
   g_signal_connect_after (
     G_OBJECT (dialog), "response",
-    G_CALLBACK (
-      on_chord_preset_pack_add_response),
+    G_CALLBACK (on_chord_preset_pack_add_response),
     pack);
   gtk_window_present (GTK_WINDOW (dialog));
 }
 
 DEFINE_SIMPLE (activate_delete_chord_preset_pack)
 {
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   ChordPresetPack * pack = NULL;
   sscanf (str, "%p", &pack);
   g_return_if_fail (pack);
 
-  GtkWidget * dialog =
-    gtk_message_dialog_new (
-      GTK_WINDOW (MAIN_WINDOW),
-      GTK_DIALOG_MODAL |
-        GTK_DIALOG_DESTROY_WITH_PARENT,
-      GTK_MESSAGE_QUESTION,
-      GTK_BUTTONS_YES_NO,
-      "%s",
-      _("Are you sure you want to remove this "
-      "chord preset pack?"));
+  GtkWidget * dialog = gtk_message_dialog_new (
+    GTK_WINDOW (MAIN_WINDOW),
+    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+    GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s",
+    _ ("Are you sure you want to remove this "
+       "chord preset pack?"));
   int result =
     z_gtk_dialog_run (GTK_DIALOG (dialog), true);
   if (result == GTK_RESPONSE_YES)
@@ -3462,7 +3336,7 @@ DEFINE_SIMPLE (activate_delete_chord_preset_pack)
 
 DEFINE_SIMPLE (activate_rename_chord_preset_pack)
 {
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   ChordPresetPack * pack = NULL;
@@ -3471,9 +3345,8 @@ DEFINE_SIMPLE (activate_rename_chord_preset_pack)
 
   StringEntryDialogWidget * dialog =
     string_entry_dialog_widget_new (
-      _("Preset Pack Name"), pack,
-      (GenericStringGetter)
-        chord_preset_pack_get_name,
+      _ ("Preset Pack Name"), pack,
+      (GenericStringGetter) chord_preset_pack_get_name,
       (GenericStringSetter)
         chord_preset_pack_set_name);
   gtk_window_present (GTK_WINDOW (dialog));
@@ -3481,23 +3354,19 @@ DEFINE_SIMPLE (activate_rename_chord_preset_pack)
 
 DEFINE_SIMPLE (activate_delete_chord_preset)
 {
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   ChordPreset * pset = NULL;
   sscanf (str, "%p", &pset);
   g_return_if_fail (pset);
 
-  GtkWidget * dialog =
-    gtk_message_dialog_new (
-      GTK_WINDOW (MAIN_WINDOW),
-      GTK_DIALOG_MODAL |
-        GTK_DIALOG_DESTROY_WITH_PARENT,
-      GTK_MESSAGE_QUESTION,
-      GTK_BUTTONS_YES_NO,
-      "%s",
-      _("Are you sure you want to remove this "
-      "chord preset pack?"));
+  GtkWidget * dialog = gtk_message_dialog_new (
+    GTK_WINDOW (MAIN_WINDOW),
+    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+    GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s",
+    _ ("Are you sure you want to remove this "
+       "chord preset pack?"));
   int result =
     z_gtk_dialog_run (GTK_DIALOG (dialog), true);
   if (result == GTK_RESPONSE_YES)
@@ -3509,7 +3378,7 @@ DEFINE_SIMPLE (activate_delete_chord_preset)
 
 DEFINE_SIMPLE (activate_rename_chord_preset)
 {
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   ChordPreset * pset = NULL;
@@ -3518,17 +3387,15 @@ DEFINE_SIMPLE (activate_rename_chord_preset)
 
   StringEntryDialogWidget * dialog =
     string_entry_dialog_widget_new (
-      _("Preset Name"), pset,
-      (GenericStringGetter)
-        chord_preset_get_name,
-      (GenericStringSetter)
-        chord_preset_set_name);
+      _ ("Preset Name"), pset,
+      (GenericStringGetter) chord_preset_get_name,
+      (GenericStringSetter) chord_preset_set_name);
   gtk_window_present (GTK_WINDOW (dialog));
 }
 
 DEFINE_SIMPLE (activate_reset_stereo_balance)
 {
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   Port * port = NULL;
@@ -3537,13 +3404,12 @@ DEFINE_SIMPLE (activate_reset_stereo_balance)
 
   Track * track = port_get_track (port, true);
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
-  channel_set_balance_control (
-    track->channel, 0.5);
+  channel_set_balance_control (track->channel, 0.5);
 }
 
 DEFINE_SIMPLE (activate_plugin_toggle_enabled)
 {
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   Plugin * pl = NULL;
@@ -3571,10 +3437,10 @@ on_delete_plugins_response (
     case GTK_RESPONSE_YES:
       {
         GError * err = NULL;
-        bool ret =
+        bool     ret =
           mixer_selections_action_perform_delete (
-            MIXER_SELECTIONS,
-            PORT_CONNECTIONS_MGR, &err);
+            MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
+            &err);
         if (ret)
           {
             undo_manager_clear_stacks (
@@ -3586,7 +3452,7 @@ on_delete_plugins_response (
           {
             HANDLE_ERROR (
               err, "%s",
-              _("Failed to delete plugins"));
+              _ ("Failed to delete plugins"));
           }
       }
       break;
@@ -3606,19 +3472,17 @@ DEFINE_SIMPLE (activate_mixer_selections_delete)
   if (mixer_selections_contains_uninstantiated_plugin (
         MIXER_SELECTIONS))
     {
-      GtkWidget * dialog =
-        gtk_message_dialog_new (
-          GTK_WINDOW (MAIN_WINDOW),
-          GTK_DIALOG_DESTROY_WITH_PARENT
+      GtkWidget * dialog = gtk_message_dialog_new (
+        GTK_WINDOW (MAIN_WINDOW),
+        GTK_DIALOG_DESTROY_WITH_PARENT
           | GTK_DIALOG_MODAL,
-          GTK_MESSAGE_WARNING,
-          GTK_BUTTONS_YES_NO,
-          "%s",
-          _("The selection contains "
-          "uninstantiated plugins. Deleting them "
-          "will not be undoable and the undo "
-          "history will be cleared. Continue "
-          "with deletion?"));
+        GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO,
+        "%s",
+        _ ("The selection contains "
+           "uninstantiated plugins. Deleting them "
+           "will not be undoable and the undo "
+           "history will be cleared. Continue "
+           "with deletion?"));
 
       g_signal_connect (
         dialog, "response",
@@ -3635,7 +3499,7 @@ DEFINE_SIMPLE (activate_mixer_selections_delete)
 
 DEFINE_SIMPLE (activate_reset_fader)
 {
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   Fader * fader = NULL;
@@ -3655,7 +3519,7 @@ DEFINE_SIMPLE (activate_reset_fader)
 
 DEFINE_SIMPLE (activate_reset_control)
 {
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   Port * port = NULL;
@@ -3663,20 +3527,19 @@ DEFINE_SIMPLE (activate_reset_control)
   g_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   GError * err = NULL;
-  bool ret =
-    port_action_perform_reset_control (
-      &port->id, &err);
+  bool     ret = port_action_perform_reset_control (
+        &port->id, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, _("Failed to reset %s"),
+        err, _ ("Failed to reset %s"),
         port->id.label);
     }
 }
 
 DEFINE_SIMPLE (activate_port_view_info)
 {
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   Port * port = NULL;
@@ -3691,25 +3554,23 @@ DEFINE_SIMPLE (activate_port_view_info)
 DEFINE_SIMPLE (activate_port_connection_remove)
 {
   GError * err = NULL;
-  bool ret =
-    port_connection_action_perform_disconnect (
-      &MW_PORT_CONNECTIONS_TREE->src_port->id,
-      &MW_PORT_CONNECTIONS_TREE->dest_port->id,
-      &err);
+  bool ret = port_connection_action_perform_disconnect (
+    &MW_PORT_CONNECTIONS_TREE->src_port->id,
+    &MW_PORT_CONNECTIONS_TREE->dest_port->id, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err,
-        _("Failed to disconnect %s from %s"),
+        err, _ ("Failed to disconnect %s from %s"),
         MW_PORT_CONNECTIONS_TREE->src_port->id.label,
-        MW_PORT_CONNECTIONS_TREE->dest_port->id.label);
+        MW_PORT_CONNECTIONS_TREE->dest_port->id
+          .label);
     }
 }
 
 DEFINE_SIMPLE (
   activate_panel_file_browser_add_bookmark)
 {
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   SupportedFile * sfile = NULL;
@@ -3719,36 +3580,30 @@ DEFINE_SIMPLE (
   file_manager_add_location_and_save (
     FILE_MANAGER, sfile->abs_path);
 
-  EVENTS_PUSH (
-    ET_FILE_BROWSER_BOOKMARK_ADDED, NULL);
+  EVENTS_PUSH (ET_FILE_BROWSER_BOOKMARK_ADDED, NULL);
 }
 
 DEFINE_SIMPLE (
   activate_panel_file_browser_delete_bookmark)
 {
-  g_return_if_fail (
-    MW_PANEL_FILE_BROWSER->cur_loc);
+  g_return_if_fail (MW_PANEL_FILE_BROWSER->cur_loc);
 
-  if (MW_PANEL_FILE_BROWSER->cur_loc->
-        special_location >
-          FILE_MANAGER_NONE)
+  if (
+    MW_PANEL_FILE_BROWSER->cur_loc->special_location
+    > FILE_MANAGER_NONE)
     {
       ui_show_error_message (
         MAIN_WINDOW, false,
-        _("Cannot delete standard bookmark"));
+        _ ("Cannot delete standard bookmark"));
       return;
     }
 
-  GtkWidget * dialog =
-    gtk_message_dialog_new (
-      GTK_WINDOW (MAIN_WINDOW),
-      GTK_DIALOG_MODAL |
-        GTK_DIALOG_DESTROY_WITH_PARENT,
-      GTK_MESSAGE_QUESTION,
-      GTK_BUTTONS_YES_NO,
-      "%s",
-      _("Are you sure you want to remove this "
-      "bookmark?"));
+  GtkWidget * dialog = gtk_message_dialog_new (
+    GTK_WINDOW (MAIN_WINDOW),
+    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+    GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s",
+    _ ("Are you sure you want to remove this "
+       "bookmark?"));
   int result =
     z_gtk_dialog_run (GTK_DIALOG (dialog), true);
 
@@ -3756,8 +3611,7 @@ DEFINE_SIMPLE (
     {
       file_manager_remove_location_and_save (
         FILE_MANAGER,
-        MW_PANEL_FILE_BROWSER->cur_loc->path,
-        true);
+        MW_PANEL_FILE_BROWSER->cur_loc->path, true);
 
       EVENTS_PUSH (
         ET_FILE_BROWSER_BOOKMARK_DELETED, NULL);
@@ -3792,7 +3646,7 @@ activate_plugin_setting (
 DEFINE_SIMPLE (
   activate_plugin_browser_add_to_project)
 {
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   PluginDescriptor * descr = NULL;
@@ -3810,7 +3664,7 @@ DEFINE_SIMPLE (
 DEFINE_SIMPLE (
   activate_plugin_browser_add_to_project_carla)
 {
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   PluginDescriptor * descr = NULL;
@@ -3828,7 +3682,7 @@ DEFINE_SIMPLE (
 DEFINE_SIMPLE (
   activate_plugin_browser_add_to_project_bridged_ui)
 {
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   PluginDescriptor * descr = NULL;
@@ -3846,7 +3700,7 @@ DEFINE_SIMPLE (
 DEFINE_SIMPLE (
   activate_plugin_browser_add_to_project_bridged_full)
 {
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   PluginDescriptor * descr = NULL;
@@ -3865,7 +3719,7 @@ DEFINE_SIMPLE (
   change_state_plugin_browser_toggle_generic_ui)
 {
   /*const PluginDescriptor * descr =*/
-    /*MW_PLUGIN_BROWSER->current_descriptors[0];*/
+  /*MW_PLUGIN_BROWSER->current_descriptors[0];*/
 }
 
 DEFINE_SIMPLE (
@@ -3874,7 +3728,7 @@ DEFINE_SIMPLE (
   const PluginDescriptor * descr =
     MW_PLUGIN_BROWSER->current_descriptors[0];
 
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   PluginCollection * collection = NULL;
@@ -3895,7 +3749,7 @@ DEFINE_SIMPLE (
   const PluginDescriptor * descr =
     MW_PLUGIN_BROWSER->current_descriptors[0];
 
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   PluginCollection * collection = NULL;
@@ -3912,7 +3766,7 @@ DEFINE_SIMPLE (
 
 DEFINE_SIMPLE (activate_plugin_browser_reset)
 {
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
 
@@ -3966,9 +3820,8 @@ DEFINE_SIMPLE (activate_plugin_collection_add)
 
   StringEntryDialogWidget * dialog =
     string_entry_dialog_widget_new (
-      _("Collection name"), collection,
-      (GenericStringGetter)
-        plugin_collection_get_name,
+      _ ("Collection name"), collection,
+      (GenericStringGetter) plugin_collection_get_name,
       (GenericStringSetter)
         plugin_collection_set_name);
   g_signal_connect_after (
@@ -3997,15 +3850,13 @@ DEFINE_SIMPLE (activate_plugin_collection_rename)
 
   StringEntryDialogWidget * dialog =
     string_entry_dialog_widget_new (
-      _("Collection name"), collection,
-      (GenericStringGetter)
-        plugin_collection_get_name,
+      _ ("Collection name"), collection,
+      (GenericStringGetter) plugin_collection_get_name,
       (GenericStringSetter)
         plugin_collection_set_name);
   g_signal_connect_after (
     G_OBJECT (dialog), "response",
-    G_CALLBACK (
-      on_plugin_collection_rename_response),
+    G_CALLBACK (on_plugin_collection_rename_response),
     collection);
   gtk_window_present (GTK_WINDOW (dialog));
 }
@@ -4018,19 +3869,16 @@ DEFINE_SIMPLE (activate_plugin_collection_remove)
   int result = GTK_RESPONSE_YES;
   if (collection->num_descriptors > 0)
     {
-      GtkWidget * dialog =
-        gtk_message_dialog_new (
-          GTK_WINDOW (MAIN_WINDOW),
-          GTK_DIALOG_MODAL |
-            GTK_DIALOG_DESTROY_WITH_PARENT,
-          GTK_MESSAGE_QUESTION,
-          GTK_BUTTONS_YES_NO,
-          _("This collection contains %d plugins. "
-          "Are you sure you want to remove it?"),
-          collection->num_descriptors);
-      result =
-        z_gtk_dialog_run (
-          GTK_DIALOG (dialog), true);
+      GtkWidget * dialog = gtk_message_dialog_new (
+        GTK_WINDOW (MAIN_WINDOW),
+        GTK_DIALOG_MODAL
+          | GTK_DIALOG_DESTROY_WITH_PARENT,
+        GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
+        _ ("This collection contains %d plugins. "
+           "Are you sure you want to remove it?"),
+        collection->num_descriptors);
+      result = z_gtk_dialog_run (
+        GTK_DIALOG (dialog), true);
     }
 
   if (result == GTK_RESPONSE_YES)
@@ -4049,7 +3897,7 @@ DEFINE_SIMPLE (activate_track_set_midi_channel)
   /* "{track index},{lane index or -1},"
    * "{midi channel 1-16 or 0 for lane to inherit}"
    */
-  gsize size;
+  gsize        size;
   const char * str =
     g_variant_get_string (variant, &size);
   int track_idx, lane_idx, midi_ch;
@@ -4077,28 +3925,23 @@ DEFINE_SIMPLE (activate_track_set_midi_channel)
     }
 }
 
-DEFINE_SIMPLE (
-  activate_quick_bounce_selected_tracks)
+DEFINE_SIMPLE (activate_quick_bounce_selected_tracks)
 {
-  Track * track =
-    TRACKLIST_SELECTIONS->tracks[0];
+  Track * track = TRACKLIST_SELECTIONS->tracks[0];
 
   ExportSettings settings;
   settings.mode = EXPORT_MODE_TRACKS;
   export_settings_set_bounce_defaults (
-    &settings, EXPORT_FORMAT_WAV, NULL,
-    track->name);
+    &settings, EXPORT_FORMAT_WAV, NULL, track->name);
   tracklist_selections_mark_for_bounce (
     TRACKLIST_SELECTIONS,
-    settings.bounce_with_parents,
-    F_NO_MARK_MASTER);
+    settings.bounce_with_parents, F_NO_MARK_MASTER);
 
   /* start exporting in a new thread */
-  GThread * thread =
-    g_thread_new (
-      "bounce_thread",
-      (GThreadFunc) exporter_generic_export_thread,
-      &settings);
+  GThread * thread = g_thread_new (
+    "bounce_thread",
+    (GThreadFunc) exporter_generic_export_thread,
+    &settings);
 
   /* create a progress dialog and block */
   ExportProgressDialogWidget * progress_dialog =
@@ -4112,13 +3955,13 @@ DEFINE_SIMPLE (
 
   g_thread_join (thread);
 
-  if (!settings.progress_info.has_error &&
-      !settings.progress_info.cancelled)
+  if (
+    !settings.progress_info.has_error
+    && !settings.progress_info.cancelled)
     {
       /* create audio track with bounced material */
-      Marker * m =
-        marker_track_get_start_marker (
-          P_MARKER_TRACK);
+      Marker * m = marker_track_get_start_marker (
+        P_MARKER_TRACK);
       ArrangerObject * m_obj = (ArrangerObject *) m;
       exporter_create_audio_track_after_bounce (
         &settings, &m_obj->pos);
@@ -4127,11 +3970,9 @@ DEFINE_SIMPLE (
   export_settings_free_members (&settings);
 }
 
-DEFINE_SIMPLE (
-  activate_bounce_selected_tracks)
+DEFINE_SIMPLE (activate_bounce_selected_tracks)
 {
-  Track * track =
-    TRACKLIST_SELECTIONS->tracks[0];
+  Track * track = TRACKLIST_SELECTIONS->tracks[0];
   BounceDialogWidget * dialog =
     bounce_dialog_widget_new (
       BOUNCE_DIALOG_TRACKS, track->name);
@@ -4151,15 +3992,15 @@ handle_direct_out_change (
   if (new_group)
     {
       direct_out =
-        add_tracks_to_group_dialog_widget_get_track (sel_before);
+        add_tracks_to_group_dialog_widget_get_track (
+          sel_before);
       if (!direct_out)
         return;
     }
   else
     {
-      direct_out =
-        tracklist_get_track (
-          TRACKLIST, direct_out_idx);
+      direct_out = tracklist_get_track (
+        TRACKLIST, direct_out_idx);
     }
   g_return_if_fail (direct_out);
 
@@ -4169,23 +4010,21 @@ handle_direct_out_change (
   for (int i = 0; i < sel_before->num_tracks; i++)
     {
       Track * cur_track =
-        TRACKLIST->tracks[
-          sel_before->tracks[i]->pos];
+        TRACKLIST->tracks[sel_before->tracks[i]->pos];
       if (!track_type_has_channel (cur_track->type))
         return;
 
-      if (cur_track->out_signal_type !=
-            direct_out->in_signal_type)
+      if (
+        cur_track->out_signal_type
+        != direct_out->in_signal_type)
         {
           g_message ("mismatching signal type");
           return;
         }
 
       Channel * ch = track_get_channel (cur_track);
-      g_return_if_fail (
-        IS_CHANNEL_AND_NONNULL (ch));
-      if (channel_get_output_track (ch) !=
-            direct_out)
+      g_return_if_fail (IS_CHANNEL_AND_NONNULL (ch));
+      if (channel_get_output_track (ch) != direct_out)
         {
           need_change = true;
           break;
@@ -4203,12 +4042,11 @@ handle_direct_out_change (
       /* reset the selections */
       tracklist_selections_clear (
         TRACKLIST_SELECTIONS);
-      for (int i = 0; i < sel_before->num_tracks;
-           i++)
+      for (int i = 0; i < sel_before->num_tracks; i++)
         {
           Track * cur_track =
-            TRACKLIST->tracks[
-              sel_before->tracks[i]->pos];
+            TRACKLIST
+              ->tracks[sel_before->tracks[i]->pos];
           track_select (
             cur_track, F_SELECT, F_NOT_EXCLUSIVE,
             F_NO_PUBLISH_EVENTS);
@@ -4216,15 +4054,15 @@ handle_direct_out_change (
     }
 
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     tracklist_selections_action_perform_set_direct_out (
-      TRACKLIST_SELECTIONS,
-      PORT_CONNECTIONS_MGR, direct_out, &err);
+      TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
+      direct_out, &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err, "%s",
-        _("Failed to change direct output"));
+        _ ("Failed to change direct output"));
     }
   else
     {
@@ -4241,8 +4079,7 @@ handle_direct_out_change (
 DEFINE_SIMPLE (
   activate_selected_tracks_direct_out_to)
 {
-  int direct_out_pos =
-    g_variant_get_int32 (variant);
+  int direct_out_pos = g_variant_get_int32 (variant);
   handle_direct_out_change (direct_out_pos, false);
 }
 
@@ -4255,8 +4092,7 @@ DEFINE_SIMPLE (
 DEFINE_SIMPLE (
   activate_toggle_track_passthrough_input)
 {
-  Track * track =
-    TRACKLIST_SELECTIONS->tracks[0];
+  Track * track = TRACKLIST_SELECTIONS->tracks[0];
   g_message (
     "setting track '%s' passthrough MIDI input "
     "to %d",
@@ -4268,8 +4104,7 @@ DEFINE_SIMPLE (
 /**
  * Used as a workaround for GTK bug 4422.
  */
-DEFINE_SIMPLE (
-  activate_app_action_wrapper)
+DEFINE_SIMPLE (activate_app_action_wrapper)
 {
   const char * action_name =
     g_action_get_name (G_ACTION (action));

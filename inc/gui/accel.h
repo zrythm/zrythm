@@ -26,15 +26,15 @@
 
 void
 accel_install_action_accelerator (
-  const char *     primary,
-  const char *     secondary,
-  const char *     action_name);
+  const char * primary,
+  const char * secondary,
+  const char * action_name);
 
 /**
  * Install accelerator for an action.
  */
 #define accel_install_primary_action_accelerator( \
-  primary,action_name) \
+  primary, action_name) \
   accel_install_action_accelerator ( \
     primary, NULL, action_name)
 

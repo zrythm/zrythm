@@ -31,8 +31,8 @@
 #include "utils/yaml.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 void
 mixer_selections_init_loaded (
@@ -53,8 +53,7 @@ mixer_selections_init_loaded (
 }
 
 void
-mixer_selections_init (
-  MixerSelections * self)
+mixer_selections_init (MixerSelections * self)
 {
   self->schema_version =
     MIXER_SELECTIONS_SCHEMA_VERSION;
@@ -75,8 +74,7 @@ mixer_selections_new (void)
  * Returns if there are any selections.
  */
 int
-mixer_selections_has_any (
-  MixerSelections * self)
+mixer_selections_has_any (MixerSelections * self)
 {
   return self->has_any;
 }
@@ -86,10 +84,8 @@ sort_plugins_asc_func (
   const void * _a,
   const void * _b)
 {
-  Plugin * a =
-    *(Plugin * const *) _a;
-  Plugin * b =
-    *(Plugin * const *)_b;
+  Plugin * a = *(Plugin * const *) _a;
+  Plugin * b = *(Plugin * const *) _b;
   return a->id.slot - b->id.slot;
 }
 
@@ -98,13 +94,11 @@ sort_plugins_desc_func (
   const void * _a,
   const void * _b)
 {
-  return - sort_plugins_asc_func (_a, _b);
+  return -sort_plugins_asc_func (_a, _b);
 }
 
 static int
-sort_slots_asc_func (
-  const void * _a,
-  const void * _b)
+sort_slots_asc_func (const void * _a, const void * _b)
 {
   int a = *(int const *) _a;
   int b = *(int const *) _b;
@@ -112,11 +106,9 @@ sort_slots_asc_func (
 }
 
 static int
-sort_slots_desc_func (
-  const void * _a,
-  const void * _b)
+sort_slots_desc_func (const void * _a, const void * _b)
 {
-  return - sort_slots_asc_func (_a, _b);
+  return -sort_slots_asc_func (_a, _b);
 }
 
 /**
@@ -137,14 +129,12 @@ mixer_selections_sort (
   qsort (
     self->slots, (size_t) self->num_slots,
     sizeof (int),
-    asc ?
-      sort_slots_asc_func : sort_slots_desc_func);
+    asc ? sort_slots_asc_func : sort_slots_desc_func);
   qsort (
     self->plugins, (size_t) self->num_slots,
     sizeof (Plugin *),
-    asc ?
-      sort_plugins_asc_func :
-      sort_plugins_desc_func);
+    asc ? sort_plugins_asc_func
+        : sort_plugins_desc_func);
 }
 
 /**
@@ -197,9 +187,8 @@ mixer_selections_get_track (
   if (!self->has_any)
     return NULL;
 
-  Track * track =
-    tracklist_find_track_by_name_hash (
-      TRACKLIST, self->track_name_hash);
+  Track * track = tracklist_find_track_by_name_hash (
+    TRACKLIST, self->track_name_hash);
   g_return_val_if_fail (track, NULL);
   return track;
 }
@@ -226,9 +215,9 @@ mixer_selections_add_slot (
   unsigned int name_hash =
     track_get_name_hash (track);
 
-  if (!ms->has_any
-      || name_hash != ms->track_name_hash
-      || type != ms->type)
+  if (
+    !ms->has_any || name_hash != ms->track_name_hash
+    || type != ms->type)
     {
       mixer_selections_clear (
         ms, F_NO_PUBLISH_EVENTS);
@@ -237,8 +226,8 @@ mixer_selections_add_slot (
   ms->type = type;
   ms->has_any = true;
 
-  g_debug ("adding slot %s:%s:%d",
-    track->name,
+  g_debug (
+    "adding slot %s:%s:%d", track->name,
     plugin_slot_type_strings[type].str, slot);
 
   Plugin * pl = NULL;
@@ -268,8 +257,7 @@ mixer_selections_add_slot (
       if (clone_pl)
         {
           GError * err = NULL;
-          pl_to_append =
-            plugin_clone (pl, &err);
+          pl_to_append = plugin_clone (pl, &err);
           if (!pl_to_append)
             {
               /* FIXME handle properly */
@@ -281,14 +269,13 @@ mixer_selections_add_slot (
         }
 
       array_double_append (
-        ms->slots, ms->plugins, ms->num_slots,
-        slot, pl_to_append);
+        ms->slots, ms->plugins, ms->num_slots, slot,
+        pl_to_append);
     }
 
   if (pl && plugin_is_in_active_project (pl))
     {
-      EVENTS_PUSH (
-        ET_MIXER_SELECTIONS_CHANGED, pl);
+      EVENTS_PUSH (ET_MIXER_SELECTIONS_CHANGED, pl);
     }
 }
 
@@ -309,8 +296,9 @@ mixer_selections_remove_slot (
   array_delete_primitive (
     ms->slots, ms->num_slots, slot);
 
-  if (ms->num_slots == 0 ||
-      ms->type == PLUGIN_SLOT_INSTRUMENT)
+  if (
+    ms->num_slots == 0
+    || ms->type == PLUGIN_SLOT_INSTRUMENT)
     {
       ms->has_any = 0;
       ms->track_name_hash = 0;
@@ -318,11 +306,10 @@ mixer_selections_remove_slot (
 
   if (ZRYTHM_HAVE_UI && publish_events)
     {
-      EVENTS_PUSH (ET_MIXER_SELECTIONS_CHANGED,
-                   NULL);
+      EVENTS_PUSH (
+        ET_MIXER_SELECTIONS_CHANGED, NULL);
     }
 }
-
 
 /**
  * Returns if the slot is selected or not.
@@ -369,10 +356,10 @@ mixer_selections_contains_plugin (
 
   if (ms->type == PLUGIN_SLOT_INSTRUMENT)
     {
-      if (pl->id.slot_type ==
-            PLUGIN_SLOT_INSTRUMENT &&
-          pl->id.track_name_hash ==
-            ms->track_name_hash)
+      if (
+        pl->id.slot_type == PLUGIN_SLOT_INSTRUMENT
+        && pl->id.track_name_hash
+             == ms->track_name_hash)
         {
           return true;
         }
@@ -381,8 +368,9 @@ mixer_selections_contains_plugin (
     {
       for (int i = 0; i < ms->num_slots; i++)
         {
-          if (ms->slots[i] == pl->id.slot &&
-              ms->type == pl->id.slot_type)
+          if (
+            ms->slots[i] == pl->id.slot
+            && ms->type == pl->id.slot_type)
             return true;
         }
     }
@@ -433,16 +421,13 @@ mixer_selections_get_first_plugin (
         case PLUGIN_SLOT_INSTRUMENT:
           return track->channel->instrument;
         case PLUGIN_SLOT_INSERT:
-          return
-            track->channel->inserts[
-              self->slots[0]];
+          return track->channel
+            ->inserts[self->slots[0]];
         case PLUGIN_SLOT_MIDI_FX:
-          return
-            track->channel->midi_fx[
-              self->slots[0]];
+          return track->channel
+            ->midi_fx[self->slots[0]];
         case PLUGIN_SLOT_MODULATOR:
-          return
-            track->modulators[self->slots[0]];
+          return track->modulators[self->slots[0]];
         default:
           g_return_val_if_reached (NULL);
           break;
@@ -493,13 +478,13 @@ mixer_selections_get_plugins (
               break;
             case PLUGIN_SLOT_INSERT:
               pl =
-                track->channel->inserts[
-                  self->slots[i]];
+                track->channel
+                  ->inserts[self->slots[i]];
               break;
             case PLUGIN_SLOT_MIDI_FX:
               pl =
-                track->channel->midi_fx[
-                  self->slots[i]];
+                track->channel
+                  ->midi_fx[self->slots[i]];
               break;
             case PLUGIN_SLOT_MODULATOR:
               pl = track->modulators[self->slots[i]];
@@ -520,14 +505,12 @@ mixer_selections_get_plugins (
 }
 
 bool
-mixer_selections_validate (
-  MixerSelections * self)
+mixer_selections_validate (MixerSelections * self)
 {
   if (!self->has_any)
     return true;
 
-  Track * track =
-    mixer_selections_get_track (self);
+  Track * track = mixer_selections_get_track (self);
   g_return_val_if_fail (
     IS_TRACK_AND_NONNULL (track), false);
 
@@ -541,13 +524,11 @@ mixer_selections_validate (
           break;
         case PLUGIN_SLOT_INSERT:
           pl =
-            track->channel->inserts[
-              self->slots[i]];
+            track->channel->inserts[self->slots[i]];
           break;
         case PLUGIN_SLOT_MIDI_FX:
           pl =
-            track->channel->midi_fx[
-              self->slots[i]];
+            track->channel->midi_fx[self->slots[i]];
           break;
         case PLUGIN_SLOT_MODULATOR:
           pl = track->modulators[self->slots[i]];
@@ -585,8 +566,8 @@ mixer_selections_clear (
 
   if (pub_events)
     {
-      EVENTS_PUSH (ET_MIXER_SELECTIONS_CHANGED,
-                   NULL);
+      EVENTS_PUSH (
+        ET_MIXER_SELECTIONS_CHANGED, NULL);
     }
 
   g_message ("cleared mixer selections");
@@ -603,8 +584,7 @@ mixer_selections_clone (
   MixerSelections * src,
   bool              src_is_project)
 {
-  MixerSelections * ms =
-    mixer_selections_new ();
+  MixerSelections * ms = mixer_selections_new ();
 
   int i;
 
@@ -616,10 +596,8 @@ mixer_selections_clone (
           Track * track =
             tracklist_find_track_by_name_hash (
               TRACKLIST, src->track_name_hash);
-          pl =
-            track_get_plugin_at_slot (
-              track,
-              src->type, src->slots[i]);
+          pl = track_get_plugin_at_slot (
+            track, src->type, src->slots[i]);
           g_return_val_if_fail (
             IS_PLUGIN (pl), NULL);
         }
@@ -629,8 +607,7 @@ mixer_selections_clone (
         }
 
       GError * err = NULL;
-      ms->plugins[i] =
-        plugin_clone (pl, &err);
+      ms->plugins[i] = plugin_clone (pl, &err);
       if (!ms->plugins[i])
         {
           g_warning (
@@ -696,17 +673,13 @@ mixer_selections_paste_to_slot (
   int               slot)
 {
   GError * err = NULL;
-  bool ret =
-    mixer_selections_action_perform_paste (
-      ms, PORT_CONNECTIONS_MGR,
-      type,
-      track_get_name_hash (ch->track),
-      slot, &err);
+  bool ret = mixer_selections_action_perform_paste (
+    ms, PORT_CONNECTIONS_MGR, type,
+    track_get_name_hash (ch->track), slot, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s",
-        _("Failed to paste plugins"));
+        err, "%s", _ ("Failed to paste plugins"));
     }
 }
 

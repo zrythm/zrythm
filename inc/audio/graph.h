@@ -44,24 +44,23 @@
 #ifndef __AUDIO_GRAPH_H__
 #define __AUDIO_GRAPH_H__
 
-#include <pthread.h>
-
 #include "audio/graph_node.h"
 #include "utils/types.h"
 
 #include "zix/sem.h"
+#include <pthread.h>
 
-typedef struct GraphNode GraphNode;
-typedef struct Graph Graph;
-typedef struct MPMCQueue MPMCQueue;
-typedef struct Port Port;
-typedef struct Fader Fader;
-typedef struct Track Track;
+typedef struct GraphNode       GraphNode;
+typedef struct Graph           Graph;
+typedef struct MPMCQueue       MPMCQueue;
+typedef struct Port            Port;
+typedef struct Fader           Fader;
+typedef struct Track           Track;
 typedef struct SampleProcessor SampleProcessor;
-typedef struct Plugin Plugin;
-typedef struct Position Position;
-typedef struct GraphThread GraphThread;
-typedef struct Router Router;
+typedef struct Plugin          Plugin;
+typedef struct Position        Position;
+typedef struct GraphThread     GraphThread;
+typedef struct Router          Router;
 typedef struct ModulatorMacroProcessor
   ModulatorMacroProcessor;
 
@@ -71,10 +70,10 @@ typedef struct ModulatorMacroProcessor
  * @{
  */
 
-#define mpmc_queue_push_back_node(q,x) \
+#define mpmc_queue_push_back_node(q, x) \
   mpmc_queue_push_back (q, (void *) x)
 
-#define mpmc_queue_dequeue_node(q,x) \
+#define mpmc_queue_dequeue_node(q, x) \
   mpmc_queue_dequeue (q, (void *) x)
 
 #define MAX_GRAPH_THREADS 128
@@ -85,11 +84,11 @@ typedef struct ModulatorMacroProcessor
 typedef struct Graph
 {
   /** Pointer back to router for convenience. */
-  Router *     router;
+  Router * router;
 
   /** Flag to indicate if graph is currently getting
    * destroyed. */
-  int          destroying;
+  int destroying;
 
   /** List of all graph nodes (only used for memory
    * management) */
@@ -97,9 +96,9 @@ typedef struct Graph
   GHashTable * graph_nodes;
 
   /* --- caches for current graph --- */
-  GraphNode *  bpm_node;
-  GraphNode *  beats_per_bar_node;
-  GraphNode *  beat_unit_node;
+  GraphNode * bpm_node;
+  GraphNode * beats_per_bar_node;
+  GraphNode * beat_unit_node;
 
   /** Nodes without incoming edges.
    * These run concurrently at the start of each
@@ -110,56 +109,56 @@ typedef struct Graph
   /* Terminal node reference count. */
   /** Number of graph nodes without an outgoing
    * edge. */
-  gint          n_terminal_nodes;
-  GraphNode **  terminal_nodes;
+  gint         n_terminal_nodes;
+  GraphNode ** terminal_nodes;
 
   /** Remaining unprocessed terminal nodes in this
    * cycle. */
   volatile gint terminal_refcnt;
 
   /** Synchronization with main process callback. */
-  ZixSem          callback_start;
-  ZixSem          callback_done;
+  ZixSem callback_start;
+  ZixSem callback_done;
 
   /** Wake up graph node process threads. */
-  ZixSem          trigger;
+  ZixSem trigger;
 
   /** Queue containing nodes that can be
    * processed. */
-  MPMCQueue *     trigger_queue;
+  MPMCQueue * trigger_queue;
 
   /** Number of entries in trigger queue. */
-  volatile guint  trigger_queue_size;
+  volatile guint trigger_queue_size;
 
   /** flag to exit, terminate all process-threads */
-  volatile gint     terminate;
+  volatile gint terminate;
 
   /** Number of threads waiting for work. */
-  volatile guint      idle_thread_cnt;
+  volatile guint idle_thread_cnt;
 
   /** Chain used to setup in the background.
    * This is applied and cleared by graph_rechain()
    */
   /** key = internal pointer, value = graph node. */
-  GHashTable *         setup_graph_nodes;
+  GHashTable * setup_graph_nodes;
 
-  GraphNode **         setup_init_trigger_list;
-  size_t               num_setup_init_triggers;
+  GraphNode ** setup_init_trigger_list;
+  size_t       num_setup_init_triggers;
 
   /** Used only when constructing the graph so we
    * can traverse the graph backwards to calculate
    * the playback latencies. */
-  GraphNode **         setup_terminal_nodes;
-  size_t               num_setup_terminal_nodes;
+  GraphNode ** setup_terminal_nodes;
+  size_t       num_setup_terminal_nodes;
 
   /** Dummy member to make lookups work. */
-  int                  initial_processor;
+  int initial_processor;
 
   /* ------------------------------------ */
 
-  GraphThread *        threads[MAX_GRAPH_THREADS];
-  GraphThread *        main_thread;
-  gint                 num_threads;
+  GraphThread * threads[MAX_GRAPH_THREADS];
+  GraphThread * main_thread;
+  gint          num_threads;
 
   /**
    * An array of pointers to ports that are exposed
@@ -168,17 +167,15 @@ typedef struct Graph
    * Used to clear their buffers when returning
    * early from the processing cycle.
    */
-  GPtrArray *          external_out_ports;
+  GPtrArray * external_out_ports;
 
 } Graph;
 
 void
-graph_print (
-  Graph * graph);
+graph_print (Graph * graph);
 
 void
-graph_destroy (
-  Graph * graph);
+graph_destroy (Graph * graph);
 
 GraphNode *
 graph_find_node_from_port (
@@ -263,10 +260,8 @@ graph_get_max_route_playback_latency (
  * reaches here will inform the main-thread, wait,
  * and kick off the next process cycle.
  */
-HOT
-void
-graph_on_reached_terminal_node (
-  Graph *  self);
+HOT void
+graph_on_reached_terminal_node (Graph * self);
 
 void
 graph_update_latencies (
@@ -313,29 +308,25 @@ graph_validate_with_connection (
  * @return 1 if graph started, 0 otherwise.
  */
 int
-graph_start (
-  Graph * graph);
+graph_start (Graph * graph);
 
 /**
  * Returns a new graph.
  */
 Graph *
-graph_new (
-  Router * router);
+graph_new (Router * router);
 
 /**
  * Tell all threads to terminate.
  */
 void
-graph_terminate (
-  Graph * self);
+graph_terminate (Graph * self);
 
 /**
  * Frees the graph and its members.
  */
 void
-graph_free (
-  Graph * self);
+graph_free (Graph * self);
 
 /**
  * @}

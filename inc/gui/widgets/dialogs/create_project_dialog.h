@@ -42,7 +42,8 @@ typedef struct _FileChooserButtonWidget
 G_DECLARE_FINAL_TYPE (
   CreateProjectDialogWidget,
   create_project_dialog_widget,
-  Z, CREATE_PROJECT_DIALOG_WIDGET,
+  Z,
+  CREATE_PROJECT_DIALOG_WIDGET,
   GtkDialog)
 
 /**
@@ -50,10 +51,10 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _CreateProjectDialogWidget
 {
-  GtkDialog              parent_instance;
+  GtkDialog parent_instance;
 
-  GtkButton *            ok;
-  GtkEntry *             name;
+  GtkButton *               ok;
+  GtkEntry *                name;
   FileChooserButtonWidget * fc;
 } CreateProjectDialogWidget;
 

@@ -20,8 +20,8 @@
 #include "audio/midi_note.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/digital_meter.h"
-#include "gui/widgets/midi_note.h"
 #include "gui/widgets/editor_selection_info.h"
+#include "gui/widgets/midi_note.h"
 #include "gui/widgets/selection_info.h"
 
 #include <glib/gi18n.h>
@@ -34,14 +34,13 @@ G_DEFINE_TYPE (
 void
 editor_selection_info_widget_refresh (
   EditorSelectionInfoWidget * self,
-  MidiArrangerSelections * mas)
+  MidiArrangerSelections *    mas)
 {
   ArrangerObject * obj =
     arranger_selections_get_first_object (
       (ArrangerSelections *) mas, 0);
 
-  selection_info_widget_clear (
-    self->selection_info);
+  selection_info_widget_clear (self->selection_info);
   gtk_stack_set_visible_child (
     GTK_STACK (self),
     GTK_WIDGET (self->no_selection_label));
@@ -50,17 +49,13 @@ editor_selection_info_widget_refresh (
     {
       DigitalMeterWidget * dm =
         digital_meter_widget_new_for_position (
-          obj,
-          NULL,
-          arranger_object_get_pos,
-          arranger_object_pos_setter,
-          NULL,
-          _("start position"));
+          obj, NULL, arranger_object_get_pos,
+          arranger_object_pos_setter, NULL,
+          _ ("start position"));
       digital_meter_set_draw_line (dm, 1);
 
       selection_info_widget_add_info (
-        self->selection_info,
-        NULL, GTK_WIDGET (dm));
+        self->selection_info, NULL, GTK_WIDGET (dm));
       gtk_stack_set_visible_child (
         GTK_STACK (self),
         GTK_WIDGET (self->selection_info));
@@ -80,9 +75,8 @@ static void
 editor_selection_info_widget_init (
   EditorSelectionInfoWidget * self)
 {
-  self->no_selection_label =
-    GTK_LABEL (
-      gtk_label_new (_("No object selected")));
+  self->no_selection_label = GTK_LABEL (
+    gtk_label_new (_ ("No object selected")));
   gtk_widget_set_visible (
     GTK_WIDGET (self->no_selection_label), 1);
   self->selection_info =
@@ -100,7 +94,5 @@ editor_selection_info_widget_init (
     "selection-info");
 
   gtk_widget_set_size_request (
-    GTK_WIDGET (self),
-    -1,
-    38);
+    GTK_WIDGET (self), -1, 38);
 }

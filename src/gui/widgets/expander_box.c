@@ -30,18 +30,17 @@ G_DEFINE_TYPE_WITH_PRIVATE (
 
 #define GET_PRIVATE(s) \
   ExpanderBoxWidgetPrivate * prv = \
-     expander_box_widget_get_private (s);
+    expander_box_widget_get_private (s);
 
 static void
 on_clicked (
-  GtkButton *button,
+  GtkButton *         button,
   ExpanderBoxWidget * self)
 {
   GET_PRIVATE (self);
 
   bool revealed =
-    !gtk_revealer_get_reveal_child (
-      prv->revealer);
+    !gtk_revealer_get_reveal_child (prv->revealer);
   gtk_revealer_set_reveal_child (
     prv->revealer, revealed);
   gtk_widget_set_visible (
@@ -90,8 +89,7 @@ expander_box_widget_set_label (
 {
   GET_PRIVATE (self);
 
-  gtk_label_set_text (
-    prv->btn_label, label);
+  gtk_label_set_text (prv->btn_label, label);
 }
 
 void
@@ -105,16 +103,15 @@ expander_box_widget_set_orientation (
   /* set the main orientation */
   prv->orientation = orientation;
   gtk_orientable_set_orientation (
-    GTK_ORIENTABLE (self),
-    orientation);
+    GTK_ORIENTABLE (self), orientation);
 
   /* set the orientation of the box inside the
    * expander button */
   gtk_orientable_set_orientation (
     GTK_ORIENTABLE (prv->btn_box),
-    orientation == GTK_ORIENTATION_HORIZONTAL ?
-    GTK_ORIENTATION_VERTICAL :
-    GTK_ORIENTATION_HORIZONTAL);
+    orientation == GTK_ORIENTATION_HORIZONTAL
+      ? GTK_ORIENTATION_VERTICAL
+      : GTK_ORIENTATION_HORIZONTAL);
 
   /* set the label angle */
   if (orientation == GTK_ORIENTATION_HORIZONTAL)
@@ -179,9 +176,9 @@ expander_box_widget_set_vexpand (
 
 void
 expander_box_widget_set_reveal_callback (
-  ExpanderBoxWidget * self,
-  ExpanderBoxRevealFunc   cb,
-  void *                  user_data)
+  ExpanderBoxWidget *   self,
+  ExpanderBoxRevealFunc cb,
+  void *                user_data)
 {
   GET_PRIVATE (self);
 
@@ -201,21 +198,18 @@ expander_box_widget_add_content (
 
 ExpanderBoxWidget *
 expander_box_widget_new (
-  const char * label,
-  const char * icon_name,
+  const char *   label,
+  const char *   icon_name,
   GtkOrientation orientation)
 {
-  ExpanderBoxWidget * self =
-    g_object_new (EXPANDER_BOX_WIDGET_TYPE,
-                  "visible", 1,
-                  NULL);
+  ExpanderBoxWidget * self = g_object_new (
+    EXPANDER_BOX_WIDGET_TYPE, "visible", 1, NULL);
 
   expander_box_widget_set_icon_name (
     self, icon_name);
   expander_box_widget_set_orientation (
     self, orientation);
-  expander_box_widget_set_label (
-    self, label);
+  expander_box_widget_set_label (self, label);
 
   return self;
 }
@@ -242,8 +236,7 @@ expander_box_widget_class_init (
 }
 
 static void
-expander_box_widget_init (
-  ExpanderBoxWidget * self)
+expander_box_widget_init (ExpanderBoxWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -254,18 +247,15 @@ expander_box_widget_init (
   gtk_widget_set_name (
     GTK_WIDGET (prv->btn_label),
     "expander-box-btn-rotated-label");
-  prv->btn_label_flipper =
-    GTK_FLIPPER (
-      gtk_flipper_new (
-        GTK_WIDGET (prv->btn_label)));
+  prv->btn_label_flipper = GTK_FLIPPER (
+    gtk_flipper_new (GTK_WIDGET (prv->btn_label)));
   gtk_widget_set_hexpand (
     GTK_WIDGET (prv->btn_label_flipper), true);
   gtk_widget_set_halign (
     GTK_WIDGET (prv->btn_label_flipper),
     GTK_ALIGN_START);
-  prv->btn_img =
-    GTK_IMAGE (
-      gtk_image_new_from_icon_name ("plugins"));
+  prv->btn_img = GTK_IMAGE (
+    gtk_image_new_from_icon_name ("plugins"));
   gtk_widget_set_name (
     GTK_WIDGET (prv->btn_img),
     "expander-box-btn-image");
@@ -278,11 +268,10 @@ expander_box_widget_init (
     GTK_WIDGET (prv->btn_label_flipper));
   gtk_box_append (
     GTK_BOX (box),
-    GTK_WIDGET (
-      gtk_separator_new (GTK_ORIENTATION_VERTICAL)));
+    GTK_WIDGET (gtk_separator_new (
+      GTK_ORIENTATION_VERTICAL)));
   gtk_box_append (
-    GTK_BOX (box),
-    GTK_WIDGET (prv->btn_img));
+    GTK_BOX (box), GTK_WIDGET (prv->btn_img));
   gtk_button_set_child (
     prv->button, GTK_WIDGET (box));
   prv->btn_box = GTK_BOX (box);

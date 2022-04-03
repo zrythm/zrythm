@@ -43,85 +43,70 @@
  * Brightens the color by the given amount.
  */
 void
-color_brighten (
-  GdkRGBA * src, float val);
+color_brighten (GdkRGBA * src, float val);
 
 /**
  * Brightens the color by the default amount.
  */
 void
-color_brighten_default (
-  GdkRGBA * src);
+color_brighten_default (GdkRGBA * src);
 
 /**
  * Darkens the color by the given amount.
  */
 void
-color_darken (
-  GdkRGBA * src, float val);
+color_darken (GdkRGBA * src, float val);
 
 /**
  * Darkens the color by the default amount.
  */
 void
-color_darken_default (
-  GdkRGBA * src);
+color_darken_default (GdkRGBA * src);
 
 /**
  * Returns whether the color is the same.
  */
 bool
-color_is_same (
-  GdkRGBA * src,
-  GdkRGBA * dest);
+color_is_same (GdkRGBA * src, GdkRGBA * dest);
 
 /**
  * Returns if the color is bright or not.
  */
 bool
-color_is_bright (
-  GdkRGBA * src);
+color_is_bright (GdkRGBA * src);
 
 /**
  * Returns if the color is very bright or not.
  */
 bool
-color_is_very_bright (
-  GdkRGBA * src);
+color_is_very_bright (GdkRGBA * src);
 
 /**
  * Returns if the color is very very bright or not.
  */
 bool
-color_is_very_very_bright (
-  GdkRGBA * src);
+color_is_very_very_bright (GdkRGBA * src);
 
 /**
  * Returns if the color is very dark or not.
  */
 bool
-color_is_very_dark (
-  GdkRGBA * src);
+color_is_very_dark (GdkRGBA * src);
 
 /**
  * Returns if the color is very very dark or not.
  */
 bool
-color_is_very_very_dark (
-  GdkRGBA * src);
+color_is_very_very_dark (GdkRGBA * src);
 
 void
-color_get_opposite (
-  GdkRGBA * src,
-  GdkRGBA * dest);
+color_get_opposite (GdkRGBA * src, GdkRGBA * dest);
 
 float
-color_get_brightness (
-  GdkRGBA * color);
+color_get_brightness (GdkRGBA * color);
 
 float
-color_get_darkness (
-  GdkRGBA * color);
+color_get_darkness (GdkRGBA * color);
 
 /**
  * Morphs from a to b, depending on the given amount.

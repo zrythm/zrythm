@@ -21,20 +21,18 @@
 
 #ifdef HAVE_RTAUDIO
 
-#include "audio/engine.h"
-#include "audio/engine_rtaudio.h"
-#include "audio/port.h"
-#include "audio/rtaudio_device.h"
-#include "project.h"
-#include "utils/objects.h"
-#include "utils/string.h"
+#  include "audio/engine.h"
+#  include "audio/engine_rtaudio.h"
+#  include "audio/port.h"
+#  include "audio/rtaudio_device.h"
+#  include "project.h"
+#  include "utils/objects.h"
+#  include "utils/string.h"
 
-#include <gtk/gtk.h>
+#  include <gtk/gtk.h>
 
 static void
-error_cb (
-  rtaudio_error_t err,
-  const char *    msg)
+error_cb (rtaudio_error_t err, const char * msg)
 {
   g_critical ("RtAudio error: %s", msg);
 }
@@ -65,7 +63,7 @@ myaudio_cb (
         self->audio_ring, in_buf,
         nframes * sizeof (float));
 
-#if 0
+#  if 0
       for (unsigned int i = 0; i < nframes; i++)
         {
           if (in_buf[i] > 0.08f)
@@ -74,7 +72,7 @@ myaudio_cb (
                 "have input %f", (double) in_buf[i]);
             }
         }
-#endif
+#  endif
 
       zix_sem_post (&self->audio_ring_sem);
     }
@@ -113,8 +111,7 @@ rtaudio_device_new (
       for (int i = 0; i < dev_count; i++)
         {
           rtaudio_device_info_t cur_dev_nfo =
-            rtaudio_get_device_info (
-              self->handle, i);
+            rtaudio_get_device_info (self->handle, i);
           if (string_is_equal (
                 cur_dev_nfo.name, device_name))
             {
@@ -125,16 +122,14 @@ rtaudio_device_new (
     }
   else
     {
-      dev_nfo =
-        rtaudio_get_device_info (
-          self->handle, (int) device_id);
+      dev_nfo = rtaudio_get_device_info (
+        self->handle, (int) device_id);
     }
   self->name = g_strdup (dev_nfo.name);
 
-  self->audio_ring =
-    zix_ring_new (
-      sizeof (float) *
-      (size_t) RTAUDIO_DEVICE_BUFFER_SIZE);
+  self->audio_ring = zix_ring_new (
+    sizeof (float)
+    * (size_t) RTAUDIO_DEVICE_BUFFER_SIZE);
 
   zix_sem_init (&self->audio_ring_sem, 1);
 
@@ -150,9 +145,7 @@ rtaudio_device_new (
  * @return Non-zero if error.
  */
 int
-rtaudio_device_open (
-  RtAudioDevice * self,
-  int             start)
+rtaudio_device_open (RtAudioDevice * self, int start)
 {
   g_message ("opening rtaudio device");
 
@@ -160,8 +153,7 @@ rtaudio_device_open (
     rtaudio_get_device_info (
       self->handle, (int) self->id);
   g_message (
-    "RtAudio device %d: %s",
-    self->id, dev_nfo.name);
+    "RtAudio device %d: %s", self->id, dev_nfo.name);
 
   /* prepare params */
   struct rtaudio_stream_parameters stream_params = {
@@ -171,7 +163,8 @@ rtaudio_device_open (
   };
   struct rtaudio_stream_options stream_opts = {
     .flags = RTAUDIO_FLAGS_SCHEDULE_REALTIME,
-    .num_buffers = 2, .priority = 99,
+    .num_buffers = 2,
+    .priority = 99,
     .name = "Zrythm",
   };
 
@@ -180,23 +173,23 @@ rtaudio_device_open (
   unsigned int buffer_size =
     AUDIO_ENGINE->block_length;
   /* input stream */
-  int ret =
-    rtaudio_open_stream (
-      self->handle, NULL, &stream_params,
-      RTAUDIO_FORMAT_FLOAT32, samplerate,
-      &buffer_size, (rtaudio_cb_t) myaudio_cb, self,
-      &stream_opts, (rtaudio_error_cb_t) error_cb);
+  int ret = rtaudio_open_stream (
+    self->handle, NULL, &stream_params,
+    RTAUDIO_FORMAT_FLOAT32, samplerate,
+    &buffer_size, (rtaudio_cb_t) myaudio_cb, self,
+    &stream_opts, (rtaudio_error_cb_t) error_cb);
   if (ret)
     {
       g_warning (
         "An error occurred opening the RtAudio "
-        "stream: %s", rtaudio_error (self->handle));
+        "stream: %s",
+        rtaudio_error (self->handle));
       return -1;
     }
-  g_message ("Opened %s with samplerate %u and "
-             "buffer size %u",
-             dev_nfo.name, samplerate,
-             buffer_size);
+  g_message (
+    "Opened %s with samplerate %u and "
+    "buffer size %u",
+    dev_nfo.name, samplerate, buffer_size);
   self->opened = 1;
 
   if (start)
@@ -208,45 +201,44 @@ rtaudio_device_open (
 }
 
 int
-rtaudio_device_start (
-  RtAudioDevice * self)
+rtaudio_device_start (RtAudioDevice * self)
 {
-  int ret =
-    rtaudio_start_stream (self->handle);
+  int ret = rtaudio_start_stream (self->handle);
   if (ret)
     {
       g_critical (
         "An error occurred starting the RtAudio "
-        "stream: %s", rtaudio_error (self->handle));
+        "stream: %s",
+        rtaudio_error (self->handle));
       return ret;
     }
   rtaudio_device_info_t dev_nfo =
     rtaudio_get_device_info (
       self->handle, (int) self->id);
-  g_message ("RtAudio device %s started",
-             dev_nfo.name);
+  g_message (
+    "RtAudio device %s started", dev_nfo.name);
   self->started = 1;
 
   return 0;
 }
 
 int
-rtaudio_device_stop (
-  RtAudioDevice * self)
+rtaudio_device_stop (RtAudioDevice * self)
 {
   int ret = rtaudio_stop_stream (self->handle);
   if (ret)
     {
       g_critical (
         "An error occurred stopping the RtAudio "
-        "stream: %s", rtaudio_error (self->handle));
+        "stream: %s",
+        rtaudio_error (self->handle));
       return ret;
     }
   rtaudio_device_info_t dev_nfo =
     rtaudio_get_device_info (
       self->handle, (int) self->id);
-  g_message ("RtAudio device %s stopped",
-             dev_nfo.name);
+  g_message (
+    "RtAudio device %s stopped", dev_nfo.name);
   self->started = 0;
 
   return 0;
@@ -260,7 +252,7 @@ rtaudio_device_stop (
 int
 rtaudio_device_close (
   RtAudioDevice * self,
-  int            free_device)
+  int             free_device)
 {
   g_message ("closing rtaudio device");
   rtaudio_close_stream (self->handle);
@@ -275,8 +267,7 @@ rtaudio_device_close (
 }
 
 void
-rtaudio_device_free (
-  RtAudioDevice *  self)
+rtaudio_device_free (RtAudioDevice * self)
 {
   if (self->audio_ring)
     zix_ring_free (self->audio_ring);

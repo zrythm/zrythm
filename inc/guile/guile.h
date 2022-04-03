@@ -38,9 +38,7 @@
  * Inits the guile subsystem.
  */
 int
-guile_init (
-  int     argc,
-  char ** argv);
+guile_init (int argc, char ** argv);
 
 /**
  * Defines all available modules to be used
@@ -56,16 +54,14 @@ guile_define_modules (void);
  * in Pango markup.
  */
 char *
-guile_run_script (
-  const char * script);
+guile_run_script (const char * script);
 
 /**
  * Returns whether the script succeeded based on
  * the markup.
  */
 bool
-guile_script_succeeded (
-  const char * pango_markup);
+guile_script_succeeded (const char * pango_markup);
 
 /**
  * @}

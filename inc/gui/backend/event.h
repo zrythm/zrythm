@@ -476,10 +476,10 @@ typedef enum EventType
 typedef struct ZEvent
 {
   /** Event type. */
-  EventType    type;
+  EventType type;
 
   /** Argument. */
-  void *       arg;
+  void * arg;
 
   /** Source file initialized from. */
   const char * file;
@@ -488,10 +488,10 @@ typedef struct ZEvent
   const char * func;
 
   /** Line no initialized from. */
-  int          lineno;
+  int lineno;
 
   /** Backtrace. */
-  char *       backtrace;
+  char * backtrace;
 } ZEvent;
 
 ZEvent *

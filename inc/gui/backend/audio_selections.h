@@ -38,8 +38,7 @@
 
 #define AUDIO_SELECTIONS_SCHEMA_VERSION 1
 
-#define AUDIO_SELECTIONS \
-  (PROJECT->audio_selections)
+#define AUDIO_SELECTIONS (PROJECT->audio_selections)
 
 /**
  * Selections to be used for the AudioArrangerWidget's
@@ -49,10 +48,10 @@ typedef struct AudioSelections
 {
   ArrangerSelections base;
 
-  int                schema_version;
+  int schema_version;
 
   /** Whether or not a selection exists. */
-  bool               has_selection;
+  bool has_selection;
 
   /**
    * Selected range.
@@ -66,8 +65,8 @@ typedef struct AudioSelections
    * @note These are global positions and must
    * be adjusted for the region's start position.
    */
-  Position           sel_start;
-  Position           sel_end;
+  Position sel_start;
+  Position sel_end;
 
   /**
    * Audio pool ID of the associated audio file,
@@ -75,7 +74,7 @@ typedef struct AudioSelections
    *
    * Set to -1 if unused.
    */
-  int                pool_id;
+  int pool_id;
 
   /**
    * Identifier of the current region.
@@ -83,41 +82,41 @@ typedef struct AudioSelections
    * Other types of selections don't need this
    * since their objects refer to it.
    */
-  RegionIdentifier   region_id;
+  RegionIdentifier region_id;
 
 } AudioSelections;
 
 static const cyaml_schema_field_t
-  audio_selections_fields_schema[] =
-{
-  YAML_FIELD_MAPPING_EMBEDDED (
-    AudioSelections, base,
-    arranger_selections_fields_schema),
-  YAML_FIELD_INT (
-    AudioSelections, schema_version),
-  YAML_FIELD_INT (
-    AudioSelections, has_selection),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    AudioSelections, sel_start,
-    position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    AudioSelections, sel_end,
-    position_fields_schema),
-  YAML_FIELD_INT (
-    AudioSelections, pool_id),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    AudioSelections, region_id,
-    region_identifier_fields_schema),
+  audio_selections_fields_schema[] = {
+    YAML_FIELD_MAPPING_EMBEDDED (
+      AudioSelections,
+      base,
+      arranger_selections_fields_schema),
+    YAML_FIELD_INT (AudioSelections, schema_version),
+    YAML_FIELD_INT (AudioSelections, has_selection),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      AudioSelections,
+      sel_start,
+      position_fields_schema),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      AudioSelections,
+      sel_end,
+      position_fields_schema),
+    YAML_FIELD_INT (AudioSelections, pool_id),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      AudioSelections,
+      region_id,
+      region_identifier_fields_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-audio_selections_schema = {
-  YAML_VALUE_PTR (
-    AudioSelections,
-    audio_selections_fields_schema),
-};
+  audio_selections_schema = {
+    YAML_VALUE_PTR (
+      AudioSelections,
+      audio_selections_fields_schema),
+  };
 
 /**
  * Sets whether a range selection exists and sends

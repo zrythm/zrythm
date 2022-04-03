@@ -21,10 +21,10 @@
 #define __AUDIO_PAN_H__
 
 /** The amplitude of -3dBfs (0.707945784f). */
-#define PAN_MINUS_3DB_AMP (- 0.292054216f)
+#define PAN_MINUS_3DB_AMP (-0.292054216f)
 
 /** The amplitude of -6dBfs (0.501187234f). */
-#define PAN_MINUS_6DB_AMP (- 0.498812766f)
+#define PAN_MINUS_6DB_AMP (-0.498812766f)
 
 /**
  * \file
@@ -46,17 +46,15 @@ typedef enum PanLaw
   PAN_LAW_MINUS_6DB
 } PanLaw;
 
-static const char * pan_law_str[] =
-{
+static const char * pan_law_str[] = {
   /* TRANSLATORS: decibels */
-  __("0dB"),
-  __("-3dB"),
-  __("-6dB"),
+  __ ("0dB"),
+  __ ("-3dB"),
+  __ ("-6dB"),
 };
 
 static inline const char *
-pan_law_to_string (
-  PanLaw pan_law)
+pan_law_to_string (PanLaw pan_law)
 {
   return pan_law_str[pan_law];
 }
@@ -71,16 +69,14 @@ typedef enum PanAlgorithm
   PAN_ALGORITHM_SINE_LAW
 } PanAlgorithm;
 
-static const char * pan_algorithm_str[] =
-{
-  __("Linear"),
-  __("Square Root"),
-  __("Sine"),
+static const char * pan_algorithm_str[] = {
+  __ ("Linear"),
+  __ ("Square Root"),
+  __ ("Sine"),
 };
 
 static inline const char *
-pan_algorithm_to_string (
-  PanAlgorithm pan_algo)
+pan_algorithm_to_string (PanAlgorithm pan_algo)
 {
   return pan_algorithm_str[pan_algo];
 }

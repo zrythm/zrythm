@@ -139,70 +139,74 @@ typedef enum MusicalScaleType
   NUM_SCALES,
 } MusicalScaleType;
 
-static const cyaml_strval_t
-  musical_scale_type_strings[] =
-{
-  { __("Chromatic"),      SCALE_CHROMATIC    },
-  { __("Major"),          SCALE_MAJOR        },
-  { __("Minor"),          SCALE_MINOR        },
-  { __("Ionian"),         SCALE_IONIAN       },
-  { __("Dorian"),         SCALE_DORIAN       },
-  { __("Phrygian"),       SCALE_PHRYGIAN     },
-  { __("Lydian"),         SCALE_LYDIAN       },
-  { __("Mixolydian"),     SCALE_MIXOLYDIAN   },
-  { __("Aeolian"),        SCALE_AEOLIAN      },
-  { __("Locrian"),        SCALE_LOCRIAN      },
-  { __("Melodic Minor"),  SCALE_MELODIC_MINOR },
-  { __("Harmonic Minor"), SCALE_HARMONIC_MINOR },
-  { __("Whole Tone"),  SCALE_WHOLE_TONE },
-  { __("Major Pentatonic"), SCALE_MAJOR_PENTATONIC },
-  { __("Minor Pentatonic"), SCALE_MINOR_PENTATONIC },
-  { __("Octatonic Half Whole"),  SCALE_OCTATONIC_HALF_WHOLE },
-  { __("Octatonic Whole Half"),  SCALE_OCTATONIC_WHOLE_HALF },
-  { __("Acoustic"),       SCALE_ACOUSTIC },
-  { __("Harmonic Major"), SCALE_HARMONIC_MAJOR },
-  { __("Phrygian Dominant"), SCALE_PHRYGIAN_DOMINANT },
-  { __("Major Locrian"), SCALE_MAJOR_LOCRIAN },
-  { __("Algerian"),       SCALE_ALGERIAN },
-  { __("Augmented"),       SCALE_AUGMENTED },
-  { __("Double Harmonic"),  SCALE_DOUBLE_HARMONIC },
-  { __("Chinese"),  SCALE_CHINESE },
-  { __("Diminished"),  SCALE_DIMINISHED },
-  { __("Dominant Diminished"),  SCALE_DOMINANT_DIMINISHED },
-  { __("Egyptian"),  SCALE_EGYPTIAN },
-  { __("Eight Tone Spanish"),  SCALE_EIGHT_TONE_SPANISH },
-  { __("Enigmatic"),  SCALE_ENIGMATIC },
-  { __("Geez"),  SCALE_GEEZ },
-  { __("Hindu"),  SCALE_HINDU },
-  { __("Hirajoshi"),  SCALE_HIRAJOSHI },
-  { __("Hungarian Gypsy"),  SCALE_HUNGARIAN_GYPSY },
-  { __("Insen"),  SCALE_INSEN },
-  { __("Neapolitan Major"),  SCALE_NEAPOLITAN_MAJOR },
-  { __("Neapolitan Minor"),  SCALE_NEAPOLITAN_MINOR },
-  { __("Oriental"),  SCALE_ORIENTAL },
-  { __("Romanian Minor"),  SCALE_ROMANIAN_MINOR },
-  { __("Altered"),  SCALE_ALTERED },
-  { __("Maqam"),  SCALE_MAQAM },
-  { __("Yo"),  SCALE_YO },
-  { __("Bebop Locrian"),  SCALE_BEBOP_LOCRIAN },
-  { __("Bebop Dominant"),  SCALE_BEBOP_DOMINANT },
-  { __("Bebop Major"),  SCALE_BEBOP_MAJOR },
-  { __("Super Locrian"),  SCALE_SUPER_LOCRIAN },
-  { __("Enigmatic Minor"),  SCALE_ENIGMATIC_MINOR },
-  { __("Composite"),  SCALE_COMPOSITE },
-  { __("Bhairav"),  SCALE_BHAIRAV },
-  { __("Hungarian Minor"),  SCALE_HUNGARIAN_MINOR },
-  { __("Persian"),  SCALE_PERSIAN },
-  { __("Iwato"),  SCALE_IWATO },
-  { __("Kumoi"),  SCALE_KUMOI },
-  { __("Pelog"),  SCALE_PELOG },
-  { __("Prometheus"),  SCALE_PROMETHEUS },
-  { __("Prometheus Neapolitan"),  SCALE_PROMETHEUS_NEAPOLITAN },
-  { __("Prometheus Liszt"),  SCALE_PROMETHEUS_LISZT },
-  { __("Balinese"),  SCALE_BALINESE },
-  { __("RagaTodi"),  SCALE_RAGATODI },
-  { __("Japanese 1"),  SCALE_JAPANESE1 },
-  { __("Japanese 2"),  SCALE_JAPANESE2 },
+static const cyaml_strval_t musical_scale_type_strings[] = {
+  {__ ("Chromatic"),              SCALE_CHROMATIC       },
+  { __ ("Major"),                 SCALE_MAJOR           },
+  { __ ("Minor"),                 SCALE_MINOR           },
+  { __ ("Ionian"),                SCALE_IONIAN          },
+  { __ ("Dorian"),                SCALE_DORIAN          },
+  { __ ("Phrygian"),              SCALE_PHRYGIAN        },
+  { __ ("Lydian"),                SCALE_LYDIAN          },
+  { __ ("Mixolydian"),            SCALE_MIXOLYDIAN      },
+  { __ ("Aeolian"),               SCALE_AEOLIAN         },
+  { __ ("Locrian"),               SCALE_LOCRIAN         },
+  { __ ("Melodic Minor"),         SCALE_MELODIC_MINOR   },
+  { __ ("Harmonic Minor"),        SCALE_HARMONIC_MINOR  },
+  { __ ("Whole Tone"),            SCALE_WHOLE_TONE      },
+  { __ ("Major Pentatonic"),      SCALE_MAJOR_PENTATONIC},
+  { __ ("Minor Pentatonic"),      SCALE_MINOR_PENTATONIC},
+  { __ ("Octatonic Half Whole"),
+   SCALE_OCTATONIC_HALF_WHOLE                           },
+  { __ ("Octatonic Whole Half"),
+   SCALE_OCTATONIC_WHOLE_HALF                           },
+  { __ ("Acoustic"),              SCALE_ACOUSTIC        },
+  { __ ("Harmonic Major"),        SCALE_HARMONIC_MAJOR  },
+  { __ ("Phrygian Dominant"),
+   SCALE_PHRYGIAN_DOMINANT                              },
+  { __ ("Major Locrian"),         SCALE_MAJOR_LOCRIAN   },
+  { __ ("Algerian"),              SCALE_ALGERIAN        },
+  { __ ("Augmented"),             SCALE_AUGMENTED       },
+  { __ ("Double Harmonic"),       SCALE_DOUBLE_HARMONIC },
+  { __ ("Chinese"),               SCALE_CHINESE         },
+  { __ ("Diminished"),            SCALE_DIMINISHED      },
+  { __ ("Dominant Diminished"),
+   SCALE_DOMINANT_DIMINISHED                            },
+  { __ ("Egyptian"),              SCALE_EGYPTIAN        },
+  { __ ("Eight Tone Spanish"),
+   SCALE_EIGHT_TONE_SPANISH                             },
+  { __ ("Enigmatic"),             SCALE_ENIGMATIC       },
+  { __ ("Geez"),                  SCALE_GEEZ            },
+  { __ ("Hindu"),                 SCALE_HINDU           },
+  { __ ("Hirajoshi"),             SCALE_HIRAJOSHI       },
+  { __ ("Hungarian Gypsy"),       SCALE_HUNGARIAN_GYPSY },
+  { __ ("Insen"),                 SCALE_INSEN           },
+  { __ ("Neapolitan Major"),      SCALE_NEAPOLITAN_MAJOR},
+  { __ ("Neapolitan Minor"),      SCALE_NEAPOLITAN_MINOR},
+  { __ ("Oriental"),              SCALE_ORIENTAL        },
+  { __ ("Romanian Minor"),        SCALE_ROMANIAN_MINOR  },
+  { __ ("Altered"),               SCALE_ALTERED         },
+  { __ ("Maqam"),                 SCALE_MAQAM           },
+  { __ ("Yo"),                    SCALE_YO              },
+  { __ ("Bebop Locrian"),         SCALE_BEBOP_LOCRIAN   },
+  { __ ("Bebop Dominant"),        SCALE_BEBOP_DOMINANT  },
+  { __ ("Bebop Major"),           SCALE_BEBOP_MAJOR     },
+  { __ ("Super Locrian"),         SCALE_SUPER_LOCRIAN   },
+  { __ ("Enigmatic Minor"),       SCALE_ENIGMATIC_MINOR },
+  { __ ("Composite"),             SCALE_COMPOSITE       },
+  { __ ("Bhairav"),               SCALE_BHAIRAV         },
+  { __ ("Hungarian Minor"),       SCALE_HUNGARIAN_MINOR },
+  { __ ("Persian"),               SCALE_PERSIAN         },
+  { __ ("Iwato"),                 SCALE_IWATO           },
+  { __ ("Kumoi"),                 SCALE_KUMOI           },
+  { __ ("Pelog"),                 SCALE_PELOG           },
+  { __ ("Prometheus"),            SCALE_PROMETHEUS      },
+  { __ ("Prometheus Neapolitan"),
+   SCALE_PROMETHEUS_NEAPOLITAN                          },
+  { __ ("Prometheus Liszt"),      SCALE_PROMETHEUS_LISZT},
+  { __ ("Balinese"),              SCALE_BALINESE        },
+  { __ ("RagaTodi"),              SCALE_RAGATODI        },
+  { __ ("Japanese 1"),            SCALE_JAPANESE1       },
+  { __ ("Japanese 2"),            SCALE_JAPANESE2       },
 };
 
 /**
@@ -210,13 +214,13 @@ static const cyaml_strval_t
  */
 typedef struct MusicalScale
 {
-  int                schema_version;
+  int schema_version;
 
   /** Identification of the scale (e.g. AEOLIAN). */
-  MusicalScaleType   type;
+  MusicalScaleType type;
 
   /** Root key of the scale. */
-  MusicalNote        root_key;
+  MusicalNote root_key;
 
 #if 0
   /** Flag if scale has different notes when
@@ -244,23 +248,26 @@ typedef struct MusicalScale
 } MusicalScale;
 
 static const cyaml_schema_field_t
-  musical_scale_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    MusicalScale, schema_version),
-  YAML_FIELD_ENUM (
-    MusicalScale, type, musical_scale_type_strings),
-  YAML_FIELD_ENUM (
-    MusicalScale, root_key, musical_note_strings),
+  musical_scale_fields_schema[] = {
+    YAML_FIELD_INT (MusicalScale, schema_version),
+    YAML_FIELD_ENUM (
+      MusicalScale,
+      type,
+      musical_scale_type_strings),
+    YAML_FIELD_ENUM (
+      MusicalScale,
+      root_key,
+      musical_note_strings),
 
-  CYAML_FIELD_END,
-};
+    CYAML_FIELD_END,
+  };
 
 static const cyaml_schema_value_t
   musical_scale_schema = {
-  YAML_VALUE_PTR (
-    MusicalScale, musical_scale_fields_schema),
-};
+    YAML_VALUE_PTR (
+      MusicalScale,
+      musical_scale_fields_schema),
+  };
 
 /**
  * Creates new scale using type and root note.
@@ -304,8 +311,7 @@ musical_scale_get_triad_types (
  * Clones the scale.
  */
 MusicalScale *
-musical_scale_clone (
-  MusicalScale * src);
+musical_scale_clone (MusicalScale * src);
 
 const char *
 musical_scale_type_to_string (
@@ -337,9 +343,8 @@ musical_scale_is_equal (
   MusicalScale * a,
   MusicalScale * b)
 {
-  return
-    a->type == b->type
-    && a->root_key == b->root_key;
+  return a->type == b->type
+         && a->root_key == b->root_key;
 }
 
 /**
@@ -378,15 +383,13 @@ musical_scale_contains_note (
  * MUST be free'd by caller.
  */
 char *
-musical_scale_as_string (
-  MusicalScale * scale);
+musical_scale_as_string (MusicalScale * scale);
 
 /**
  * Frees the MusicalScale.
  */
 void
-musical_scale_free (
-  MusicalScale * scale);
+musical_scale_free (MusicalScale * scale);
 
 /**
  * @}

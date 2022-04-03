@@ -20,16 +20,16 @@
 #include "actions/arranger_selections.h"
 #include "audio/quantize_options.h"
 #include "gui/widgets/bar_slider.h"
-#include "gui/widgets/digital_meter.h"
 #include "gui/widgets/dialogs/quantize_dialog.h"
+#include "gui/widgets/digital_meter.h"
 #include "project.h"
 #include "utils/error.h"
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   QuantizeDialogWidget,
@@ -38,7 +38,7 @@ G_DEFINE_TYPE (
 
 static void
 on_adjust_end_toggled (
-  GtkToggleButton * toggle,
+  GtkToggleButton *      toggle,
   QuantizeDialogWidget * self)
 {
   self->opts->adj_end =
@@ -47,7 +47,7 @@ on_adjust_end_toggled (
 
 static void
 on_adjust_start_toggled (
-  GtkToggleButton * toggle,
+  GtkToggleButton *      toggle,
   QuantizeDialogWidget * self)
 {
   self->opts->adj_start =
@@ -56,7 +56,7 @@ on_adjust_start_toggled (
 
 static void
 on_cancel_clicked (
-  GtkButton * btn,
+  GtkButton *            btn,
   QuantizeDialogWidget * self)
 {
   gtk_window_close (GTK_WINDOW (self));
@@ -64,7 +64,7 @@ on_cancel_clicked (
 
 static void
 on_quantize_clicked (
-  GtkButton * btn,
+  GtkButton *            btn,
   QuantizeDialogWidget * self)
 {
   if (QUANTIZE_OPTIONS_IS_EDITOR (self->opts))
@@ -75,21 +75,21 @@ on_quantize_clicked (
       g_return_if_fail (sel);
 
       GError * err = NULL;
-      bool ret =
+      bool     ret =
         arranger_selections_action_perform_quantize (
           sel, self->opts, &err);
       if (!ret)
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Failed to quantize editor "
-            "selections"));
+            _ ("Failed to quantize editor "
+               "selections"));
         }
     }
   else if (QUANTIZE_OPTIONS_IS_TIMELINE (self->opts))
     {
       GError * err = NULL;
-      bool ret =
+      bool     ret =
         arranger_selections_action_perform_quantize (
           (ArrangerSelections *) TL_SELECTIONS,
           self->opts, &err);
@@ -97,8 +97,8 @@ on_quantize_clicked (
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Failed to quantize timeline "
-            "selections"));
+            _ ("Failed to quantize timeline "
+               "selections"));
         }
     }
 }
@@ -107,11 +107,10 @@ on_quantize_clicked (
  * Creates a new quantize dialog.
  */
 QuantizeDialogWidget *
-quantize_dialog_widget_new (
-  QuantizeOptions * opts)
+quantize_dialog_widget_new (QuantizeOptions * opts)
 {
-  QuantizeDialogWidget * self =
-    g_object_new (QUANTIZE_DIALOG_WIDGET_TYPE, NULL);
+  QuantizeDialogWidget * self = g_object_new (
+    QUANTIZE_DIALOG_WIDGET_TYPE, NULL);
 
   self->opts = opts;
 
@@ -127,50 +126,40 @@ quantize_dialog_widget_new (
     G_OBJECT (self->adjust_end), "toggled",
     G_CALLBACK (on_adjust_end_toggled), self);
 
-  self->note_length =
-    digital_meter_widget_new (
-      DIGITAL_METER_TYPE_NOTE_LENGTH,
-      &opts->note_length,
-      &opts->note_type,
-      _("note length"));
+  self->note_length = digital_meter_widget_new (
+    DIGITAL_METER_TYPE_NOTE_LENGTH,
+    &opts->note_length, &opts->note_type,
+    _ ("note length"));
   gtk_box_append (
     GTK_BOX (self->note_length_box),
     GTK_WIDGET (self->note_length));
-  self->note_type =
-    digital_meter_widget_new (
-      DIGITAL_METER_TYPE_NOTE_TYPE,
-      &opts->note_length,
-      &opts->note_type,
-      _("note type"));
+  self->note_type = digital_meter_widget_new (
+    DIGITAL_METER_TYPE_NOTE_TYPE, &opts->note_length,
+    &opts->note_type, _ ("note type"));
   gtk_box_append (
     GTK_BOX (self->note_type_box),
     GTK_WIDGET (self->note_type));
 
   int w = 100, h = -1;
-  self->amount =
-    bar_slider_widget_new (
-      quantize_options_get_amount,
-      quantize_options_set_amount,
-      opts, 0, 100, w, h, 0, 0,
-      UI_DRAG_MODE_CURSOR, "%");
+  self->amount = bar_slider_widget_new (
+    quantize_options_get_amount,
+    quantize_options_set_amount, opts, 0, 100, w, h,
+    0, 0, UI_DRAG_MODE_CURSOR, "%");
   gtk_box_append (
     GTK_BOX (self->amount_box),
     GTK_WIDGET (self->amount));
-  self->swing =
-    bar_slider_widget_new (
-      quantize_options_get_swing,
-      quantize_options_set_swing,
-      opts, 0, 100, w, h, 0, 0,
-      UI_DRAG_MODE_CURSOR, "%");
+  self->swing = bar_slider_widget_new (
+    quantize_options_get_swing,
+    quantize_options_set_swing, opts, 0, 100, w, h,
+    0, 0, UI_DRAG_MODE_CURSOR, "%");
   gtk_box_append (
     GTK_BOX (self->swing_box),
     GTK_WIDGET (self->swing));
-  self->randomization =
-    bar_slider_widget_new (
-      quantize_options_get_randomization,
-      quantize_options_set_randomization,
-      opts, 0.f, 100.f, w, h, 0, 0,
-      UI_DRAG_MODE_CURSOR, " ticks");
+  self->randomization = bar_slider_widget_new (
+    quantize_options_get_randomization,
+    quantize_options_set_randomization, opts, 0.f,
+    100.f, w, h, 0, 0, UI_DRAG_MODE_CURSOR,
+    " ticks");
   gtk_box_append (
     GTK_BOX (self->randomization_box),
     GTK_WIDGET (self->randomization));
@@ -188,9 +177,7 @@ quantize_dialog_widget_class_init (
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, \
-    QuantizeDialogWidget, \
-    x)
+    klass, QuantizeDialogWidget, x)
 
   BIND_CHILD (cancel_btn);
   BIND_CHILD (quantize_btn);
@@ -203,11 +190,9 @@ quantize_dialog_widget_class_init (
   BIND_CHILD (randomization_box);
 
   gtk_widget_class_bind_template_callback (
-    klass,
-    on_cancel_clicked);
+    klass, on_cancel_clicked);
   gtk_widget_class_bind_template_callback (
-    klass,
-    on_quantize_clicked);
+    klass, on_quantize_clicked);
 }
 
 static void

@@ -26,33 +26,36 @@
 #ifndef __GUI_WIDGETS_ARRANGER_H__
 #define __GUI_WIDGETS_ARRANGER_H__
 
-#include "gui/widgets/main_window.h"
 #include "audio/position.h"
 #include "audio/transport.h"
+#include "gui/widgets/main_window.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
-#define ARRANGER_WIDGET_TYPE ( \
-  arranger_widget_get_type ())
+#define ARRANGER_WIDGET_TYPE \
+  (arranger_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  ArrangerWidget, arranger_widget,
-  Z, ARRANGER_WIDGET, GtkWidget)
+  ArrangerWidget,
+  arranger_widget,
+  Z,
+  ARRANGER_WIDGET,
+  GtkWidget)
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
-typedef struct MidiNote MidiNote;
-typedef struct SnapGrid SnapGrid;
-typedef struct AutomationPoint AutomationPoint;
+typedef struct MidiNote          MidiNote;
+typedef struct SnapGrid          SnapGrid;
+typedef struct AutomationPoint   AutomationPoint;
 
 typedef struct _GtkEventControllerMotion
   GtkEventControllerMotion;
-typedef struct ArrangerObject ArrangerObject;
+typedef struct ArrangerObject     ArrangerObject;
 typedef struct ArrangerSelections ArrangerSelections;
-typedef struct EditorSettings EditorSettings;
-typedef struct ObjectPool ObjectPool;
-typedef struct _RulerWidget RulerWidget;
+typedef struct EditorSettings     EditorSettings;
+typedef struct ObjectPool         ObjectPool;
+typedef struct _RulerWidget       RulerWidget;
 typedef enum ArrangerObjectType ArrangerObjectType;
-typedef enum TransportDisplay TransportDisplay;
+typedef enum TransportDisplay   TransportDisplay;
 
 /**
  * @addtogroup widgets
@@ -60,7 +63,7 @@ typedef enum TransportDisplay TransportDisplay;
  * @{
  */
 
-#define ARRANGER_WIDGET_GET_ACTION(arr,actn) \
+#define ARRANGER_WIDGET_GET_ACTION(arr, actn) \
   (arr->action == UI_OVERLAY_ACTION_##actn)
 
 typedef enum ArrangerCursor
@@ -124,31 +127,31 @@ typedef enum ArrangerWidgetHoverType
  */
 typedef struct _ArrangerWidget
 {
-  GtkWidget  parent_instance;
+  GtkWidget parent_instance;
 
   /** Type of arranger this is. */
   ArrangerWidgetType type;
 
-  GtkGestureDrag * drag;
-  GtkGestureClick * click;
-  GtkGestureClick * right_click;
+  GtkGestureDrag *           drag;
+  GtkGestureClick *          click;
+  GtkGestureClick *          right_click;
   GtkEventControllerMotion * motion_controller;
 
   /** Used when dragging. */
-  double         last_offset_x;
-  double         last_offset_y;
+  double last_offset_x;
+  double last_offset_y;
 
   UiOverlayAction action;
 
   /** X-axis coordinate at start of drag. */
-  double         start_x;
+  double start_x;
 
   /** Y-axis coordinate at start of drag. */
-  double         start_y;
+  double start_y;
 
   /** X-axis coordinate at the start of the drag,
    * in pixels. */
-  double         start_pos_px;
+  double start_pos_px;
 
   /**
    * Whether a drag update operation started.
@@ -157,22 +160,22 @@ typedef struct _ArrangerWidget
    * true or gtk_drag_check_threshold() returns
    * true.
    */
-  bool           drag_update_started;
+  bool drag_update_started;
 
   /** Whether an object exists, so we can use the
    * earliest_obj_start_pos. */
-  bool           earliest_obj_exists;
+  bool earliest_obj_exists;
 
   /** Start Position of the earliest object
    * at the start of the drag. */
-  Position       earliest_obj_start_pos;
+  Position earliest_obj_start_pos;
 
   /**
    * Fade in/out position at start.
    *
    * Used when moving fade in/out points.
    */
-  Position       fade_pos_at_start;
+  Position fade_pos_at_start;
 
   /**
    * The object that was clicked in this drag
@@ -191,7 +194,7 @@ typedef struct _ArrangerWidget
 
   /** Whether the start object was selected before
    * drag_begin. */
-  int            start_object_was_selected;
+  int start_object_was_selected;
 
   /**
    * A clone of the ArrangerSelections on drag
@@ -207,7 +210,7 @@ typedef struct _ArrangerWidget
   /**
    * Region on drag begin, if editing automation.
    */
-  ZRegion *            region_at_start;
+  ZRegion * region_at_start;
 
   /** Selections to delete, used with the eraser
    * tool. */
@@ -219,100 +222,100 @@ typedef struct _ArrangerWidget
 
   /** The absolute (not snapped) Position at the
    * start of a drag, translated from start_x. */
-  Position       start_pos;
+  Position start_pos;
 
   /** Whether playback was paused during drag
    * begin. */
-  bool           was_paused;
+  bool was_paused;
 
   /** Playhead position at start of drag. */
-  Position       playhead_pos_at_start;
+  Position playhead_pos_at_start;
 
   /** The absolute (not snapped) current diff in
    * ticks from the curr_pos to the start_pos. */
-  double         curr_ticks_diff_from_start;
+  double curr_ticks_diff_from_start;
 
   /** The adjusted diff in ticks to use for moving
    * objects starting from their cached start
    * positions. */
-  double         adj_ticks_diff;
+  double adj_ticks_diff;
 
   /** adj_ticks_diff in last cycle. */
-  double         last_adj_ticks_diff;
+  double last_adj_ticks_diff;
 
   /** The absolute (not snapped) Position as of the
    * current action. */
-  Position       curr_pos;
+  Position curr_pos;
 
-  Position       end_pos; ///< for moving regions
-  gboolean       key_is_pressed;
+  Position end_pos; ///< for moving regions
+  gboolean key_is_pressed;
 
   /** Current hovering positions. */
-  double         hover_x;
-  double         hover_y;
+  double hover_x;
+  double hover_y;
 
-  bool           hovered;
+  bool hovered;
 
   /** Number of clicks in current action. */
-  int            n_press;
+  int n_press;
 
   /** Associated SnapGrid. */
-  SnapGrid *     snap_grid;
+  SnapGrid * snap_grid;
 
   /** Whether shift button is held down. */
-  int            shift_held;
+  int shift_held;
 
   /** Whether Ctrl button is held down. */
-  int            ctrl_held;
+  int ctrl_held;
 
   /** Whether Alt is currently held down. */
-  int            alt_held;
+  int alt_held;
 
-  gint64         last_frame_time;
+  gint64 last_frame_time;
 
   /* ----- TIMELINE ------ */
 
   /** The number of visible tracks moved during a
    * moving operation between tracks up to the last
    * cycle. */
-  int            visible_track_diff;
+  int visible_track_diff;
 
   /** The number of lanes moved during a
    * moving operation between lanes, up to the last
    * cycle. */
-  int            lane_diff;
+  int lane_diff;
 
   /** Whether this TimelineArrangerWidget is for
    * the PinnedTracklist or not. */
-  int            is_pinned;
+  int is_pinned;
 
   /**
    * 1 if resizing range.
    */
-  int            resizing_range;
+  int resizing_range;
 
   /**
    * 1 if this is the first call to resize the range,
    * so range1 can be set.
    */
-  int            resizing_range_start;
+  int resizing_range_start;
 
   /** Cache for chord object height, used during
    * child size allocation. */
   /*int                  chord_obj_height; */
 
   AutomationTrack * hovered_at;
-  TrackLane *    hovered_lane;
-  Track *        hovered_track;
+  TrackLane *       hovered_lane;
+  Track *           hovered_track;
 
   /* textures used as region icons */
-  GdkTexture *   symbolic_link_texture;
-  GdkTexture *   music_note_16th_texture;
-  GdkTexture *   fork_awesome_snowflake_texture;
-  GdkTexture *   media_playlist_repeat_texture;
+  GdkTexture * symbolic_link_texture;
+  GdkTexture * music_note_16th_texture;
+  GdkTexture * fork_awesome_snowflake_texture;
+  GdkTexture * media_playlist_repeat_texture;
 
   /** Size of above textures. */
-  int            region_icon_texture_size;
+  int region_icon_texture_size;
 
   /** Cached nodes for region loop lines. */
   GskRenderNode * loop_line_node;
@@ -323,14 +326,14 @@ typedef struct _ArrangerWidget
   /* ------ MIDI (PIANO ROLL) ---- */
 
   /** The note currently hovering over */
-  int            hovered_note;
+  int hovered_note;
 
   /* ------ END MIDI (PIANO ROLL) ---- */
 
   /* ------ MIDI MODIFIER ---- */
 
   /** 1-127. */
-  int            start_vel_val;
+  int start_vel_val;
 
   /**
    * Maximum Velocity diff applied in this action.
@@ -340,14 +343,14 @@ typedef struct _ArrangerWidget
    * and it will be clamped when applying it to
    * a Velocity.
    */
-  int            vel_diff;
+  int vel_diff;
 
   /* ------ END MIDI MODIFIER ---- */
 
   /* ------- CHORD ------- */
 
   /** Index of the chord being hovered on. */
-  int            hovered_chord_index;
+  int hovered_chord_index;
 
   /* ------- END CHORD ------- */
 
@@ -358,19 +361,19 @@ typedef struct _ArrangerWidget
    *
    * Used when changing the audio region gain.
    */
-  float          fval_at_start;
+  float fval_at_start;
 
-  double         dval_at_start;
+  double dval_at_start;
 
   /* --- END AUDIO --- */
 
   /** Px the playhead was last drawn at, so we can
    * redraw this and the new px only when the
    * playhead changes position. */
-  int            last_playhead_px;
+  int last_playhead_px;
 
   /** Set to 1 to redraw. */
-  bool           redraw;
+  bool redraw;
 
   //cairo_t *      cached_cr;
 
@@ -385,19 +388,19 @@ typedef struct _ArrangerWidget
    *
    * To be set on drag begin.
    */
-  bool           can_link;
+  bool can_link;
 
   /** Whether a rectangle is highlighted for DND. */
-  bool           is_highlighted;
+  bool is_highlighted;
 
   /** The rectangle to highlight. */
-  GdkRectangle   highlight_rect;
+  GdkRectangle highlight_rect;
   //GdkRectangle   prev_highlight_rect;
   //
 
   /** Last selection rectangle, used to redraw the
    * union of the new selection and this. */
-  GdkRectangle   last_selection_rect;
+  GdkRectangle last_selection_rect;
 
   /**
    * Drag start button (primary, secondary, etc.).
@@ -405,7 +408,7 @@ typedef struct _ArrangerWidget
    * Can be tested against GDK_BUTTON_SECONDARY and
    * GDK_BUTTON_PRIMARY.
    */
-  guint          drag_start_btn;
+  guint drag_start_btn;
 
   /**
    * Whether this is the first time the widget is
@@ -414,7 +417,7 @@ typedef struct _ArrangerWidget
    * This is used for loading back the scroll
    * positions saved in the project.
    */
-  bool           first_draw;
+  bool first_draw;
 
   /** Cached setting. */
   TransportDisplay ruler_display;
@@ -425,7 +428,7 @@ typedef struct _ArrangerWidget
    * TODO move to Velocity if parallel
    * processing is needed - no need now.
    */
-  PangoLayout *  vel_layout;
+  PangoLayout * vel_layout;
 
   /**
    * Layout for drawing automation point text.
@@ -433,12 +436,12 @@ typedef struct _ArrangerWidget
    * TODO move to AutomationPoint if parallel
    * processing is needed - no need now.
    */
-  PangoLayout *  ap_layout;
+  PangoLayout * ap_layout;
 
   /**
    * Layout for drawing audio editor text.
    */
-  PangoLayout *  audio_layout;
+  PangoLayout * audio_layout;
 
   /**
    * Cached playhead x to draw.
@@ -448,21 +451,20 @@ typedef struct _ArrangerWidget
    * playhead will be drawn at the location it
    * was when the draw was queued.
    */
-  int            queued_playhead_px;
+  int queued_playhead_px;
 
   /**
    * Array of objects to draw.
    *
    * To be reused in snapshot().
    */
-  GPtrArray *    hit_objs_to_draw;
+  GPtrArray * hit_objs_to_draw;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
 } ArrangerWidget;
 
-PURE
-const char *
+PURE const char *
 arranger_widget_get_type_str (
   ArrangerWidgetType type);
 
@@ -492,16 +494,15 @@ arranger_widget_set_cursor (
 int
 arranger_widget_pos_to_px (
   ArrangerWidget * self,
-  Position * pos,
-  int        use_padding);
+  Position *       pos,
+  int              use_padding);
 
 /**
  * Gets the cursor based on the current hover
  * position.
  */
 ArrangerCursor
-arranger_widget_get_cursor (
-  ArrangerWidget * self);
+arranger_widget_get_cursor (ArrangerWidget * self);
 
 /**
  * Figures out which cursor should be used based
@@ -601,9 +602,9 @@ arranger_widget_get_hit_arranger_object (
 
 void
 arranger_widget_select_all (
-  ArrangerWidget *  self,
-  bool              select,
-  bool              fire_events);
+  ArrangerWidget * self,
+  bool             select,
+  bool             fire_events);
 
 /**
  * Returns if the arranger is in a moving-related
@@ -613,8 +614,7 @@ arranger_widget_select_all (
  * not.
  */
 NONNULL
-PURE
-bool
+PURE bool
 arranger_widget_is_in_moving_operation (
   ArrangerWidget * self);
 
@@ -737,10 +737,8 @@ arranger_widget_foreach (
   ArrangerWidgetForeachFunc func);
 
 NONNULL
-PURE
-RulerWidget *
-arranger_widget_get_ruler (
-  ArrangerWidget * self);
+PURE RulerWidget *
+arranger_widget_get_ruler (ArrangerWidget * self);
 
 /**
  * Returns whether any arranger is in the middle

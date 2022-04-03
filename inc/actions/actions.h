@@ -32,9 +32,8 @@
 
 #define DECLARE_SIMPLE(x) \
   void x ( \
-    GSimpleAction *action, \
-    GVariant      *variant, \
-    gpointer       user_data)
+    GSimpleAction * action, GVariant * variant, \
+    gpointer user_data)
 
 /**
  * @addtogroup actions
@@ -48,130 +47,133 @@ actions_set_app_action_enabled (
   const bool   enabled);
 
 void
-activate_about (GSimpleAction *action,
-                GVariant      *variant,
-                gpointer       user_data);
+activate_about (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 /**
  * Show preferences window.
  */
 void
 activate_preferences (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 /**
  * Show preferences window.
  */
 void
 activate_log (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 /**
  * Show preferences window.
  */
 void
 activate_scripting_interface (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 /**
  * Activate audition mode.
  */
 void
-activate_audition_mode (GSimpleAction *action,
-                      GVariant      *variant,
-                      gpointer       user_data);
+activate_audition_mode (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 /**
  * Activate select mode.
  */
 void
-activate_select_mode (GSimpleAction *action,
-                      GVariant      *variant,
-                      gpointer       user_data);
+activate_select_mode (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 /**
  * Activate edit mode.
  */
 void
-activate_edit_mode (GSimpleAction *action,
-                      GVariant      *variant,
-                      gpointer       user_data);
+activate_edit_mode (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 /**
  * Activate cut mode.
  */
 void
 activate_cut_mode (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 /**
  * Activate eraser mode.
  */
 void
-activate_eraser_mode (GSimpleAction *action,
-                      GVariant      *variant,
-                      gpointer       user_data);
+activate_eraser_mode (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 /**
  * Activate ramp mode.
  */
 void
-activate_ramp_mode (GSimpleAction *action,
-                      GVariant      *variant,
-                      gpointer       user_data);
+activate_ramp_mode (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 void
-activate_quit (GSimpleAction *action,
-               GVariant      *variant,
-               gpointer       user_data);
+activate_quit (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 void
-activate_zoom_in (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+activate_zoom_in (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 void
-activate_zoom_out (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+activate_zoom_out (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
-COLD
-DECLARE_SIMPLE (activate_new);
+COLD DECLARE_SIMPLE (activate_new);
 
-COLD
-DECLARE_SIMPLE (activate_minimize);
+COLD DECLARE_SIMPLE (activate_minimize);
 
-COLD
-DECLARE_SIMPLE (activate_open);
+COLD DECLARE_SIMPLE (activate_open);
 
-COLD
-void
+COLD void
 activate_save (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
-COLD
-DECLARE_SIMPLE (activate_save_as);
+COLD DECLARE_SIMPLE (activate_save_as);
 
-COLD
-DECLARE_SIMPLE (activate_export_as);
+COLD DECLARE_SIMPLE (activate_export_as);
 
-COLD
-DECLARE_SIMPLE (activate_export_graph);
+COLD DECLARE_SIMPLE (activate_export_graph);
 
 void
-activate_properties (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+activate_properties (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 DECLARE_SIMPLE (activate_undo);
 DECLARE_SIMPLE (activate_redo);
@@ -186,28 +188,31 @@ DECLARE_SIMPLE (activate_clear_selection);
 DECLARE_SIMPLE (activate_select_all);
 
 void
-activate_toggle_left_panel (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+activate_toggle_left_panel (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 void
-activate_toggle_right_panel (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+activate_toggle_right_panel (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 void
-activate_toggle_bot_panel (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+activate_toggle_bot_panel (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 /**
  * Toggle timeline visibility.
  */
 void
 activate_toggle_top_panel (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 DECLARE_SIMPLE (activate_toggle_drum_mode);
 
@@ -218,14 +223,16 @@ change_state_show_automation_values (
   gpointer        user_data);
 
 void
-activate_toggle_status_bar (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+activate_toggle_status_bar (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 void
-activate_fullscreen (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+activate_fullscreen (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 COLD DECLARE_SIMPLE (activate_news);
 COLD DECLARE_SIMPLE (activate_manual);
@@ -235,29 +242,33 @@ COLD DECLARE_SIMPLE (activate_donate);
 
 void
 activate_loop_selection (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 void
-activate_best_fit (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+activate_best_fit (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 void
-activate_original_size (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+activate_original_size (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 void
-activate_snap_to_grid (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+activate_snap_to_grid (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 void
-activate_snap_keep_offset (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+activate_snap_keep_offset (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 DECLARE_SIMPLE (activate_create_audio_track);
 DECLARE_SIMPLE (activate_create_midi_track);
@@ -282,7 +293,8 @@ DECLARE_SIMPLE (activate_enable_selected_tracks);
 DECLARE_SIMPLE (activate_disable_selected_tracks);
 DECLARE_SIMPLE (activate_change_track_color);
 DECLARE_SIMPLE (activate_track_set_midi_channel);
-DECLARE_SIMPLE (activate_quick_bounce_selected_tracks);
+DECLARE_SIMPLE (
+  activate_quick_bounce_selected_tracks);
 DECLARE_SIMPLE (activate_bounce_selected_tracks);
 DECLARE_SIMPLE (
   activate_selected_tracks_direct_out_to);
@@ -292,21 +304,22 @@ DECLARE_SIMPLE (
   activate_toggle_track_passthrough_input);
 
 void
-activate_snap_events (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+activate_snap_events (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 void
 activate_goto_prev_marker (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 void
 activate_goto_next_marker (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 DECLARE_SIMPLE (activate_play_pause);
 DECLARE_SIMPLE (activate_record_play);
@@ -343,36 +356,36 @@ change_state_listen_notes (
 
 void
 activate_quick_quantize (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 void
 activate_quantize_options (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 DECLARE_SIMPLE (activate_mute_selection);
 DECLARE_SIMPLE (activate_merge_selection);
 
 void
 activate_set_timebase_master (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 void
 activate_set_transport_client (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 void
 activate_unlink_jack_transport (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data);
 
 /**
  * All purpose menuitem callback for binding MIDI
@@ -383,20 +396,19 @@ activate_unlink_jack_transport (
 void
 activate_bind_midi_cc (
   GSimpleAction * action,
-  GVariant      * _variant,
+  GVariant *      _variant,
   gpointer        user_data);
 
 void
 activate_delete_cc_binding (
   GSimpleAction * simple_action,
-  GVariant      * _variant,
+  GVariant *      _variant,
   gpointer        user_data);
 
 COLD DECLARE_SIMPLE (activate_show_file_browser);
 DECLARE_SIMPLE (
   activate_toggle_timeline_event_viewer);
-DECLARE_SIMPLE (
-  activate_toggle_editor_event_viewer);
+DECLARE_SIMPLE (activate_toggle_editor_event_viewer);
 DECLARE_SIMPLE (activate_insert_silence);
 DECLARE_SIMPLE (activate_remove_range);
 
@@ -406,8 +418,7 @@ DECLARE_SIMPLE (
   change_state_timeline_playhead_follow);
 DECLARE_SIMPLE (
   change_state_editor_playhead_scroll_edges);
-DECLARE_SIMPLE (
-  change_state_editor_playhead_follow);
+DECLARE_SIMPLE (change_state_editor_playhead_follow);
 
 /* Editor functions. */
 DECLARE_SIMPLE (activate_editor_function);
@@ -440,7 +451,8 @@ DECLARE_SIMPLE (activate_arranger_object_view_info);
 /* chord presets */
 DECLARE_SIMPLE (activate_save_chord_preset);
 DECLARE_SIMPLE (activate_load_chord_preset);
-DECLARE_SIMPLE (activate_load_chord_preset_from_scale);
+DECLARE_SIMPLE (
+  activate_load_chord_preset_from_scale);
 DECLARE_SIMPLE (activate_transpose_chord_pad);
 DECLARE_SIMPLE (activate_add_chord_preset_pack);
 DECLARE_SIMPLE (activate_delete_chord_preset_pack);

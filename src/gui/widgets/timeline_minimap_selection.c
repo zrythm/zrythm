@@ -44,25 +44,27 @@ timeline_minimap_selection_snapshot (
     gtk_widget_get_allocated_height (widget);
 
   GskRoundedRect rounded_rect;
-  graphene_rect_t graphene_rect =
-    GRAPHENE_RECT_INIT (
-      0, PADDING, width, height - PADDING * 2);
+  graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
+    0, PADDING, width, height - PADDING * 2);
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &graphene_rect, 0);
   const float border_width = 2.f;
-  GdkRGBA border_color =
+  GdkRGBA     border_color =
     Z_GDK_RGBA_INIT (0.9, 0.9, 0.9, 0.9);
   float border_widths[] = {
     border_width, border_width, border_width,
-    border_width };
+    border_width
+  };
   GdkRGBA border_colors[] = {
     border_color, border_color, border_color,
-    border_color };
+    border_color
+  };
   GdkRGBA inside_color = {
     border_color.red / 3.f,
     border_color.green / 3.f,
     border_color.blue / 3.f,
-    border_color.alpha / 3.f, };
+    border_color.alpha / 3.f,
+  };
 
   gtk_snapshot_append_color (
     snapshot, &inside_color, &graphene_rect);
@@ -80,8 +82,7 @@ on_leave (
     Z_TIMELINE_MINIMAP_SELECTION_WIDGET (user_data);
 
   gtk_widget_unset_state_flags (
-    GTK_WIDGET (self),
-    GTK_STATE_FLAG_PRELIGHT);
+    GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT);
 }
 
 static void
@@ -94,7 +95,7 @@ on_motion (
   TimelineMinimapSelectionWidget * self =
     Z_TIMELINE_MINIMAP_SELECTION_WIDGET (user_data);
   GtkWidget * widget = GTK_WIDGET (self);
-  int width =
+  int         width =
     gtk_widget_get_allocated_width (widget);
 
   gtk_widget_set_state_flags (
@@ -102,31 +103,31 @@ on_motion (
   if (x < UI_RESIZE_CURSOR_SPACE)
     {
       self->cursor = UI_CURSOR_STATE_RESIZE_L;
-      if (self->parent->action !=
-            TIMELINE_MINIMAP_ACTION_MOVING)
+      if (
+        self->parent->action
+        != TIMELINE_MINIMAP_ACTION_MOVING)
         ui_set_cursor_from_name (widget, "w-resize");
     }
   else if (x > width - UI_RESIZE_CURSOR_SPACE)
     {
       self->cursor = UI_CURSOR_STATE_RESIZE_R;
-      if (self->parent->action !=
-            TIMELINE_MINIMAP_ACTION_MOVING)
+      if (
+        self->parent->action
+        != TIMELINE_MINIMAP_ACTION_MOVING)
         ui_set_cursor_from_name (widget, "e-resize");
     }
   else
     {
       self->cursor = UI_CURSOR_STATE_DEFAULT;
-      if (self->parent->action !=
-            TIMELINE_MINIMAP_ACTION_MOVING
-          &&
-          self->parent->action !=
-            TIMELINE_MINIMAP_ACTION_STARTING_MOVING
-          &&
-          self->parent->action !=
-            TIMELINE_MINIMAP_ACTION_RESIZING_L
-          &&
-          self->parent->action !=
-            TIMELINE_MINIMAP_ACTION_RESIZING_R)
+      if (
+        self->parent->action
+          != TIMELINE_MINIMAP_ACTION_MOVING
+        && self->parent->action
+             != TIMELINE_MINIMAP_ACTION_STARTING_MOVING
+        && self->parent->action
+             != TIMELINE_MINIMAP_ACTION_RESIZING_L
+        && self->parent->action
+             != TIMELINE_MINIMAP_ACTION_RESIZING_R)
         {
           ui_set_cursor_from_name (
             widget, "default");
@@ -162,14 +163,12 @@ static void
 timeline_minimap_selection_widget_init (
   TimelineMinimapSelectionWidget * self)
 {
-  gtk_widget_set_focusable (
-    GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (GTK_WIDGET (self), true);
 
   GtkEventController * motion_controller =
     gtk_event_controller_motion_new ();
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    motion_controller);
+    GTK_WIDGET (self), motion_controller);
   g_signal_connect (
     G_OBJECT (motion_controller), "motion",
     G_CALLBACK (on_motion), self);

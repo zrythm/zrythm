@@ -28,7 +28,7 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _InspectorWidget InspectorWidget;
+typedef struct _InspectorWidget  InspectorWidget;
 typedef struct _VisibilityWidget VisibilityWidget;
 typedef struct _FoldableNotebookWidget
   FoldableNotebookWidget;
@@ -48,7 +48,8 @@ typedef struct _InspectorPluginWidget
 G_DECLARE_FINAL_TYPE (
   LeftDockEdgeWidget,
   left_dock_edge_widget,
-  Z, LEFT_DOCK_EDGE_WIDGET,
+  Z,
+  LEFT_DOCK_EDGE_WIDGET,
   GtkWidget)
 
 #define MW_LEFT_DOCK_EDGE \
@@ -71,23 +72,23 @@ typedef enum LeftDockEdgeTab
  */
 typedef struct _LeftDockEdgeWidget
 {
-  GtkWidget               parent_instance;
+  GtkWidget                parent_instance;
   FoldableNotebookWidget * inspector_notebook;
 
   /** Track visibility. */
-  GtkBox *                visibility_box;
-  VisibilityWidget *      visibility;
+  GtkBox *           visibility_box;
+  VisibilityWidget * visibility;
 
   /** For TracklistSelections. */
-  GtkScrolledWindow *     track_inspector_scroll;
-  InspectorTrackWidget *  track_inspector;
+  GtkScrolledWindow *    track_inspector_scroll;
+  InspectorTrackWidget * track_inspector;
 
   /** For MixerSelections. */
   GtkScrolledWindow *     plugin_inspector_scroll;
   InspectorPluginWidget * plugin_inspector;
 
   /** Mouse button press handler. */
-  GtkGestureClick *  mp;
+  GtkGestureClick * mp;
 } LeftDockEdgeWidget;
 
 void

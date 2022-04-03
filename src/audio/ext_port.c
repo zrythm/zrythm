@@ -33,7 +33,7 @@
 #include "zrythm_app.h"
 
 #ifdef HAVE_JACK
-#include "weak_libjack.h"
+#  include "weak_libjack.h"
 #endif
 
 static ExtPort *
@@ -60,19 +60,14 @@ ext_port_init_loaded (
  * Returns the buffer of the external port.
  */
 float *
-ext_port_get_buffer (
-  ExtPort * self,
-  nframes_t nframes)
+ext_port_get_buffer (ExtPort * self, nframes_t nframes)
 {
   switch (self->type)
     {
 #ifdef HAVE_JACK
     case EXT_PORT_TYPE_JACK:
-      return
-        (float *)
-        jack_port_get_buffer (
-          self->jport,
-          nframes);
+      return (float *) jack_port_get_buffer (
+        self->jport, nframes);
       break;
 #endif
 #ifdef HAVE_ALSA
@@ -85,7 +80,7 @@ ext_port_get_buffer (
       g_return_val_if_reached (NULL);
       break;
     }
-g_return_val_if_reached (NULL);
+  g_return_val_if_reached (NULL);
 }
 
 /**
@@ -93,14 +88,11 @@ g_return_val_if_reached (NULL);
  * with backend type).
  */
 char *
-ext_port_get_id (
-  ExtPort * self)
+ext_port_get_id (ExtPort * self)
 {
-  return
-    g_strdup_printf (
-      "%s/%s",
-      ext_port_type_strings[self->type].str,
-      self->full_name);
+  return g_strdup_printf (
+    "%s/%s", ext_port_type_strings[self->type].str,
+    self->full_name);
 }
 
 /**
@@ -153,7 +145,7 @@ ext_port_activate (
                   g_message (
                     "skipping %s (not JACK)",
                     self->full_name);
-                  return - 1;
+                  return -1;
                 }
 
               self->port = port;
@@ -162,10 +154,9 @@ ext_port_activate (
                * JACK port */
               if (!self->jport)
                 {
-                  self->jport =
-                    jack_port_by_name (
-                      AUDIO_ENGINE->client,
-                      self->full_name);
+                  self->jport = jack_port_by_name (
+                    AUDIO_ENGINE->client,
+                    self->full_name);
                 }
               if (!self->jport)
                 {
@@ -173,7 +164,7 @@ ext_port_activate (
                     "Could not find external JACK "
                     "port '%s', skipping...",
                     self->full_name);
-                  return - 1;
+                  return -1;
                 }
               port_set_expose_to_backend (
                 self->port, true);
@@ -185,12 +176,11 @@ ext_port_activate (
                 jack_port_name (
                   JACK_PORT_T (self->port->data)));
 
-              ret =
-                jack_connect (
-                  AUDIO_ENGINE->client,
-                  jack_port_name (self->jport),
-                  jack_port_name (
-                    JACK_PORT_T (self->port->data)));
+              ret = jack_connect (
+                AUDIO_ENGINE->client,
+                jack_port_name (self->jport),
+                jack_port_name (
+                  JACK_PORT_T (self->port->data)));
               if (ret != 0 && ret != EEXIST)
                 {
                   char msg[600];
@@ -199,10 +189,9 @@ ext_port_activate (
                   g_warning (
                     "Failed connecting %s to %s:\n"
                     "%s",
-                      jack_port_name (self->jport),
-                      jack_port_name (
-                        JACK_PORT_T (
-                          self->port->data)),
+                    jack_port_name (self->jport),
+                    jack_port_name (JACK_PORT_T (
+                      self->port->data)),
                     msg);
                   return ret;
                 }
@@ -221,20 +210,19 @@ ext_port_activate (
                   return -1;
                 }
               self->port = port;
-              self->rtmidi_dev =
-                rtmidi_device_new (
-                  true, self->full_name,
-                  0, self->port);
+              self->rtmidi_dev = rtmidi_device_new (
+                true, self->full_name, 0,
+                self->port);
               if (!self->rtmidi_dev)
                 {
                   g_warning (
                     "Failed creating RtMidi device "
-                    "for %s", self->full_name);
+                    "for %s",
+                    self->full_name);
                   return -1;
                 }
-              ret =
-                rtmidi_device_open (
-                  self->rtmidi_dev, true);
+              ret = rtmidi_device_open (
+                self->rtmidi_dev, true);
               self->port->rtmidi_ins[0] =
                 self->rtmidi_dev;
               self->port->num_rtmidi_ins = 1;
@@ -257,7 +245,7 @@ ext_port_activate (
                   g_message (
                     "skipping %s (not JACK)",
                     self->full_name);
-                  return - 1;
+                  return -1;
                 }
               self->port = port;
 
@@ -265,10 +253,9 @@ ext_port_activate (
                * JACK port */
               if (!self->jport)
                 {
-                  self->jport =
-                    jack_port_by_name (
-                      AUDIO_ENGINE->client,
-                      self->full_name);
+                  self->jport = jack_port_by_name (
+                    AUDIO_ENGINE->client,
+                    self->full_name);
                 }
               if (!self->jport)
                 {
@@ -288,12 +275,11 @@ ext_port_activate (
                 jack_port_name (
                   JACK_PORT_T (self->port->data)));
 
-              ret =
-                jack_connect (
-                  AUDIO_ENGINE->client,
-                  jack_port_name (self->jport),
-                  jack_port_name (
-                    JACK_PORT_T (self->port->data)));
+              ret = jack_connect (
+                AUDIO_ENGINE->client,
+                jack_port_name (self->jport),
+                jack_port_name (
+                  JACK_PORT_T (self->port->data)));
               if (ret != 0 && ret != EEXIST)
                 return ret;
               break;
@@ -310,20 +296,18 @@ ext_port_activate (
                   g_message (
                     "skipping %s (not RtAudio)",
                     self->full_name);
-                  return - 1;
+                  return -1;
                 }
               self->port = port;
-              self->rtaudio_dev =
-                rtaudio_device_new (
-                  true, self->rtaudio_dev_name,
-                  0, self->rtaudio_channel_idx,
-                  self->port);
-              ret =
-                rtaudio_device_open (
-                  self->rtaudio_dev, true);
+              self->rtaudio_dev = rtaudio_device_new (
+                true, self->rtaudio_dev_name, 0,
+                self->rtaudio_channel_idx,
+                self->port);
+              ret = rtaudio_device_open (
+                self->rtaudio_dev, true);
               if (ret)
                 {
-                  return - 1;
+                  return -1;
                 }
               self->port->rtaudio_ins[0] =
                 self->rtaudio_dev;
@@ -380,8 +364,7 @@ ext_port_disconnect (
  * backend.
  */
 bool
-ext_port_matches_backend (
-  ExtPort * self)
+ext_port_matches_backend (ExtPort * self)
 {
   if (!self->is_midi)
     {
@@ -456,30 +439,24 @@ ext_port_matches_backend (
  * Creates an ExtPort from a JACK port.
  */
 ExtPort *
-ext_port_new_from_jack_port (
-  jack_port_t * jport)
+ext_port_new_from_jack_port (jack_port_t * jport)
 {
   ExtPort * self = _create ();
 
   self->jport = jport;
   self->full_name =
     g_strdup (jack_port_name (jport));
-  self->short_name  =
+  self->short_name =
     g_strdup (jack_port_short_name (jport));
   self->type = EXT_PORT_TYPE_JACK;
 
   char * aliases[2];
-  aliases[0] =
-    (char*)
-    malloc (
-      (size_t) jack_port_name_size ());
-  aliases[1] =
-    (char*)
-    malloc (
-      (size_t) jack_port_name_size ());
+  aliases[0] = (char *) malloc (
+    (size_t) jack_port_name_size ());
+  aliases[1] = (char *) malloc (
+    (size_t) jack_port_name_size ());
   self->num_aliases =
-    jack_port_get_aliases (
-      jport, aliases);
+    jack_port_get_aliases (jport, aliases);
 
   if (self->num_aliases == 2)
     {
@@ -522,10 +499,8 @@ get_ext_ports_from_jack (
       return;
     }
 
-  const char ** jports =
-    jack_get_ports (
-      AUDIO_ENGINE->client,
-      NULL, jtype, flags);
+  const char ** jports = jack_get_ports (
+    AUDIO_ENGINE->client, NULL, jtype, flags);
 
   if (!jports)
     return;
@@ -533,9 +508,8 @@ get_ext_ports_from_jack (
   size_t i = 0;
   while (jports[i] != NULL)
     {
-      jack_port_t * jport =
-        jack_port_by_name (
-          AUDIO_ENGINE->client, jports[i]);
+      jack_port_t * jport = jack_port_by_name (
+        AUDIO_ENGINE->client, jports[i]);
 
       ExtPort * ext_port =
         ext_port_new_from_jack_port (jport);
@@ -556,8 +530,7 @@ static ExtPort *
 ext_port_from_windows_mme_device (
   WindowsMmeDevice * dev)
 {
-  ExtPort * self =
-    calloc (1, sizeof (ExtPort));
+  ExtPort * self = calloc (1, sizeof (ExtPort));
 
   self->mme_dev = dev;
   self->full_name = g_strdup (dev->name);
@@ -605,8 +578,7 @@ get_ext_ports_from_windows_mme (
  * Creates an ExtPort from a RtMidi port.
  */
 static ExtPort *
-ext_port_from_rtmidi (
-  unsigned int id)
+ext_port_from_rtmidi (unsigned int id)
 {
   ExtPort * self = _create ();
 
@@ -634,8 +606,7 @@ get_ext_ports_from_rtmidi (
   if (flow == FLOW_OUTPUT)
     {
       unsigned int num_ports =
-        engine_rtmidi_get_num_in_ports (
-          AUDIO_ENGINE);
+        engine_rtmidi_get_num_in_ports (AUDIO_ENGINE);
       unsigned int i;
       for (i = 0; i < num_ports; i++)
         {
@@ -664,17 +635,15 @@ ext_port_from_rtaudio (
 {
   ExtPort * self = _create ();
 
-  RtAudioDevice * dev =
-    rtaudio_device_new (
-      1, NULL, id, channel_idx, NULL);
+  RtAudioDevice * dev = rtaudio_device_new (
+    1, NULL, id, channel_idx, NULL);
   self->rtaudio_id = id;
   self->rtaudio_channel_idx = channel_idx;
   self->rtaudio_is_input = is_input;
   self->rtaudio_is_duplex = is_duplex;
   self->rtaudio_dev_name = g_strdup (dev->name);
-  self->full_name =
-    g_strdup_printf (
-      "%s (in %d)", dev->name, channel_idx);
+  self->full_name = g_strdup_printf (
+    "%s (in %d)", dev->name, channel_idx);
   self->type = EXT_PORT_TYPE_RTAUDIO;
   rtaudio_device_free (dev);
 
@@ -713,10 +682,9 @@ get_ext_ports_from_rtaudio (
                   ExtPort * ext_port =
                     ext_port_from_rtaudio (
                       i, j, true, false);
-                  g_ptr_array_add (
-                    ports, ext_port);
+                  g_ptr_array_add (ports, ext_port);
                 }
-#if 0
+#  if 0
               for (unsigned int j = 0;
                    j < dev_nfo.duplex_channels; j++)
                 {
@@ -726,7 +694,7 @@ get_ext_ports_from_rtaudio (
                   (*size)++;
                   g_message ("\n\n found duplex device");
                 }
-#endif
+#  endif
             }
           else
             {
@@ -759,10 +727,9 @@ get_ext_ports_from_rtaudio (
                   ExtPort * ext_port =
                     ext_port_from_rtaudio (
                       i, j, false, false);
-                  g_ptr_array_add (
-                    ports, ext_port);
+                  g_ptr_array_add (ports, ext_port);
                 }
-#if 0
+#  if 0
               for (unsigned int j = 0;
                    j < dev_nfo.duplex_channels; j++)
                 {
@@ -772,7 +739,7 @@ get_ext_ports_from_rtaudio (
                   (*size)++;
                   g_message ("\n\n found duplex device");
                 }
-#endif
+#  endif
             }
           else
             {
@@ -852,8 +819,7 @@ ext_ports_get (
         case MIDI_BACKEND_JACK_RTMIDI:
         case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
         case MIDI_BACKEND_COREMIDI_RTMIDI:
-          get_ext_ports_from_rtmidi (
-            flow, ports);
+          get_ext_ports_from_rtmidi (flow, ports);
           break;
 #endif
         default:
@@ -874,8 +840,7 @@ ext_ports_get (
  * Prints the port info.
  */
 void
-ext_port_print (
-  ExtPort * self)
+ext_port_print (ExtPort * self)
 {
   g_message (
     "Ext port:\n"
@@ -887,8 +852,7 @@ ext_port_print (
  * Creates a shallow clone of the port.
  */
 ExtPort *
-ext_port_clone (
-  ExtPort * ext_port)
+ext_port_clone (ExtPort * ext_port)
 {
   g_return_val_if_fail (ext_port, NULL);
 
@@ -921,11 +885,9 @@ ext_port_clone (
     newport->short_name =
       g_strdup (ext_port->short_name);
   if (ext_port->alias1)
-    newport->alias1 =
-    g_strdup (ext_port->alias1);
+    newport->alias1 = g_strdup (ext_port->alias1);
   if (ext_port->alias2)
-    newport->alias2 =
-    g_strdup (ext_port->alias2);
+    newport->alias2 = g_strdup (ext_port->alias2);
   newport->num_aliases = ext_port->num_aliases;
   newport->type = ext_port->type;
 
@@ -941,8 +903,7 @@ ext_port_clone (
  * @return Whether the port is enabled.
  */
 bool
-ext_port_get_enabled (
-  ExtPort * self)
+ext_port_get_enabled (ExtPort * self)
 {
   /* TODO */
   return true;
@@ -952,9 +913,7 @@ ext_port_get_enabled (
  * Frees an array of ExtPort pointers.
  */
 void
-ext_ports_free (
-  ExtPort ** ext_ports,
-  int        size)
+ext_ports_free (ExtPort ** ext_ports, int size)
 {
   for (int i = 0; i < size; i++)
     {
@@ -968,8 +927,7 @@ ext_ports_free (
  * Frees the ext_port.
  */
 void
-ext_port_free (
-  ExtPort * self)
+ext_port_free (ExtPort * self)
 {
   g_free_and_null (self->full_name);
   g_free_and_null (self->short_name);

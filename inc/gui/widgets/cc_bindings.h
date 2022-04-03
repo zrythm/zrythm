@@ -42,7 +42,8 @@ typedef struct _CcBindingsTreeWidget
 G_DECLARE_FINAL_TYPE (
   CcBindingsWidget,
   cc_bindings_widget,
-  Z, CC_BINDINGS_WIDGET,
+  Z,
+  CC_BINDINGS_WIDGET,
   GtkBox)
 
 /**
@@ -50,7 +51,7 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _CcBindingsWidget
 {
-  GtkBox           parent_instance;
+  GtkBox parent_instance;
 
   CcBindingsTreeWidget * bindings_tree;
 } CcBindingsWidget;
@@ -59,8 +60,7 @@ CcBindingsWidget *
 cc_bindings_widget_new (void);
 
 void
-cc_bindings_widget_refresh (
-  CcBindingsWidget * self);
+cc_bindings_widget_refresh (CcBindingsWidget * self);
 
 /**
  * @}

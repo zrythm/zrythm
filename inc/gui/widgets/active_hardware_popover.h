@@ -20,7 +20,6 @@
 #ifndef __GUI_WIDGETS_ACTIVE_HARDWARE_POPOVER_H__
 #define __GUI_WIDGETS_ACTIVE_HARDWARE_POPOVER_H__
 
-
 #include <gtk/gtk.h>
 
 #define ACTIVE_HARDWARE_POPOVER_WIDGET_TYPE \
@@ -28,7 +27,8 @@
 G_DECLARE_FINAL_TYPE (
   ActiveHardwarePopoverWidget,
   active_hardware_popover_widget,
-  Z, ACTIVE_HARDWARE_POPOVER_WIDGET,
+  Z,
+  ACTIVE_HARDWARE_POPOVER_WIDGET,
   GtkPopover)
 
 typedef struct _ActiveHardwareMbWidget
@@ -36,10 +36,10 @@ typedef struct _ActiveHardwareMbWidget
 
 typedef struct _ActiveHardwarePopoverWidget
 {
-  GtkPopover              parent_instance;
+  GtkPopover               parent_instance;
   ActiveHardwareMbWidget * owner; ///< the owner
-  GtkBox *                controllers_box;
-  GtkButton *             rescan;
+  GtkBox *                 controllers_box;
+  GtkButton *              rescan;
 } ActiveHardwarePopoverWidget;
 
 /**

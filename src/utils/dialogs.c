@@ -23,14 +23,14 @@
 #include "utils/gtk.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 /**
  * Creates and returns an open project dialog.
  */
-GtkDialog * dialogs_get_open_project_dialog (
-  GtkWindow * parent)
+GtkDialog *
+dialogs_get_open_project_dialog (GtkWindow * parent)
 {
   g_return_val_if_fail (
     GTK_IS_WINDOW (parent), NULL);
@@ -38,15 +38,10 @@ GtkDialog * dialogs_get_open_project_dialog (
   GtkFileChooserAction action =
     GTK_FILE_CHOOSER_ACTION_OPEN;
 
-  GtkWidget * dialog =
-    gtk_file_chooser_dialog_new (
-      _("Open Project"), GTK_WINDOW (parent),
-      action,
-      _("_Cancel"),
-      GTK_RESPONSE_CANCEL,
-      _("_Open"),
-      GTK_RESPONSE_ACCEPT,
-      NULL);
+  GtkWidget * dialog = gtk_file_chooser_dialog_new (
+    _ ("Open Project"), GTK_WINDOW (parent), action,
+    _ ("_Cancel"), GTK_RESPONSE_CANCEL, _ ("_Open"),
+    GTK_RESPONSE_ACCEPT, NULL);
 
   z_gtk_file_chooser_set_file_from_path (
     GTK_FILE_CHOOSER (dialog), PROJECT->dir);
@@ -57,39 +52,29 @@ GtkDialog * dialogs_get_open_project_dialog (
 /**
  * Creates and returns the overwrite plugin dialog.
  */
-GtkDialog * dialogs_get_overwrite_plugin_dialog (
+GtkDialog *
+dialogs_get_overwrite_plugin_dialog (
   GtkWindow * parent)
 {
   GtkDialogFlags flags =
-    GTK_DIALOG_MODAL |
-    GTK_DIALOG_DESTROY_WITH_PARENT;
+    GTK_DIALOG_MODAL
+    | GTK_DIALOG_DESTROY_WITH_PARENT;
   GtkDialog * dialog =
-    GTK_DIALOG (
-      gtk_dialog_new_with_buttons (
-        _("Overwrite Plugin"),
-        GTK_WINDOW (MAIN_WINDOW),
-        flags,
-        _("_OK"),
-        GTK_RESPONSE_ACCEPT,
-        _("_Cancel"),
-        GTK_RESPONSE_REJECT,
-        NULL));
+    GTK_DIALOG (gtk_dialog_new_with_buttons (
+      _ ("Overwrite Plugin"),
+      GTK_WINDOW (MAIN_WINDOW), flags, _ ("_OK"),
+      GTK_RESPONSE_ACCEPT, _ ("_Cancel"),
+      GTK_RESPONSE_REJECT, NULL));
   GtkWidget * box =
     gtk_dialog_get_content_area (dialog);
-  GtkWidget * label =
-    g_object_new (
-      GTK_TYPE_LABEL,
-      "label",
-      _("A plugin already exists at the selected "
-        "slot. Overwrite it?"),
-      "margin-start", 8,
-      "margin-end", 8,
-      "margin-top", 4,
-      "margin-bottom", 8,
-      NULL);
+  GtkWidget * label = g_object_new (
+    GTK_TYPE_LABEL, "label",
+    _ ("A plugin already exists at the selected "
+       "slot. Overwrite it?"),
+    "margin-start", 8, "margin-end", 8,
+    "margin-top", 4, "margin-bottom", 8, NULL);
   gtk_widget_set_visible (label, 1);
-  gtk_box_append (
-    GTK_BOX (box), label);
+  gtk_box_append (GTK_BOX (box), label);
   return dialog;
 }
 
@@ -99,13 +84,10 @@ dialogs_get_error_instantiating_plugin_dialog (
 {
   GtkDialogFlags flags =
     GTK_DIALOG_DESTROY_WITH_PARENT;
-  GtkWidget * dialog =
-    gtk_message_dialog_new (
-      GTK_WINDOW (MAIN_WINDOW),
-      flags,
-      GTK_MESSAGE_ERROR,
-      GTK_BUTTONS_CLOSE,
-      _("Error instantiating plugin. "
-        "Please see log for details."));
+  GtkWidget * dialog = gtk_message_dialog_new (
+    GTK_WINDOW (MAIN_WINDOW), flags,
+    GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
+    _ ("Error instantiating plugin. "
+       "Please see log for details."));
   return GTK_DIALOG (dialog);
 }

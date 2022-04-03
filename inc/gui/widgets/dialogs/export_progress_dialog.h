@@ -35,7 +35,8 @@
 G_DECLARE_FINAL_TYPE (
   ExportProgressDialogWidget,
   export_progress_dialog_widget,
-  Z, EXPORT_PROGRESS_DIALOG_WIDGET,
+  Z,
+  EXPORT_PROGRESS_DIALOG_WIDGET,
   GenericProgressDialogWidget)
 
 typedef struct ExportSettings ExportSettings;
@@ -53,13 +54,13 @@ typedef struct _ExportProgressDialogWidget
 {
   GenericProgressDialogWidget parent_instance;
 
-  GtkButton *          open_directory;
+  GtkButton * open_directory;
 
   /** Whether to show the open directory button or
    * not. */
-  bool                 show_open_dir_btn;
+  bool show_open_dir_btn;
 
-  ExportSettings *     info;
+  ExportSettings * info;
 } ExportProgressDialogWidget;
 
 /**

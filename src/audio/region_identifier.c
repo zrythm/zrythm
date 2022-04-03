@@ -21,24 +21,21 @@
 #include "utils/objects.h"
 
 void
-region_identifier_init (
-  RegionIdentifier * self)
+region_identifier_init (RegionIdentifier * self)
 {
   self->schema_version =
     REGION_IDENTIFIER_SCHEMA_VERSION;
 }
 
 bool
-region_identifier_validate (
-  RegionIdentifier * self)
+region_identifier_validate (RegionIdentifier * self)
 {
   /* TODO */
   return true;
 }
 
 void
-region_identifier_free (
-  RegionIdentifier * self)
+region_identifier_free (RegionIdentifier * self)
 {
   object_zero_and_free (self);
 }

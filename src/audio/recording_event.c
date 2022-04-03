@@ -20,9 +20,7 @@
 #include "audio/recording_event.h"
 #include "utils/objects.h"
 
-static const char *
-recording_event_type_strings[] =
-{
+static const char * recording_event_type_strings[] = {
   "start track recording",
   "start automation recording",
   "MIDI",
@@ -41,8 +39,7 @@ recording_event_new (void)
 }
 
 void
-recording_event_print (
-  RecordingEvent * self)
+recording_event_print (RecordingEvent * self)
 {
   g_message (
     "%p: type %s track name hash %u", self,
@@ -51,8 +48,7 @@ recording_event_print (
 }
 
 void
-recording_event_free (
-  RecordingEvent * self)
+recording_event_free (RecordingEvent * self)
 {
   free (self);
 }

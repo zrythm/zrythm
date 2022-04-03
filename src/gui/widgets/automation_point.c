@@ -17,17 +17,17 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/audio_bus_track.h"
 #include "audio/automation_region.h"
 #include "audio/automation_track.h"
-#include "audio/audio_bus_track.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_object.h"
+#include "gui/widgets/automation_point.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/automation_point.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -49,18 +49,14 @@ automation_point_settings_changed (
 {
   const AutomationPointDrawSettings * last_settings =
     timeline
-    ? &self->last_settings_tl
-    : &self->last_settings;
+      ? &self->last_settings_tl
+      : &self->last_settings;
   bool same =
     gdk_rectangle_equal (
-      &last_settings->draw_rect,
-      draw_rect)
-    &&
-    curve_options_are_equal (
-      &last_settings->curve_opts,
-      &self->curve_opts)
-    &&
-    math_floats_equal (
+      &last_settings->draw_rect, draw_rect)
+    && curve_options_are_equal (
+      &last_settings->curve_opts, &self->curve_opts)
+    && math_floats_equal (
       last_settings->fvalue, self->fvalue);
 
   return !same;
@@ -80,9 +76,8 @@ automation_point_draw (
   GdkRectangle *    rect,
   PangoLayout *     layout)
 {
-  ArrangerObject * obj =
-    (ArrangerObject *) ap;
-  ZRegion * region =
+  ArrangerObject * obj = (ArrangerObject *) ap;
+  ZRegion *        region =
     arranger_object_get_region (obj);
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
@@ -92,18 +87,15 @@ automation_point_draw (
   ArrangerWidget * arranger =
     arranger_object_get_arranger (obj);
 
-  Track * track =
-    arranger_object_get_track (
-      (ArrangerObject *) ap);
+  Track * track = arranger_object_get_track (
+    (ArrangerObject *) ap);
   g_return_if_fail (track);
 
   /* get color */
   GdkRGBA color = track->color;
   ui_get_arranger_object_color (
-    &color,
-    arranger->hovered_object == obj,
-    automation_point_is_selected (ap), false,
-    false);
+    &color, arranger->hovered_object == obj,
+    automation_point_is_selected (ap), false, false);
 
   GdkRectangle draw_rect;
   arranger_object_get_draw_rectangle (
@@ -114,11 +106,9 @@ automation_point_draw (
         ap, &draw_rect, false))
     {
       cr_node =
-        gsk_cairo_node_new (
-          &GRAPHENE_RECT_INIT (
-            0, 0,
-            draw_rect.width + 3,
-            draw_rect.height + 3));
+        gsk_cairo_node_new (&GRAPHENE_RECT_INIT (
+          0, 0, draw_rect.width + 3,
+          draw_rect.height + 3));
 
       object_free_w_func_and_null (
         gsk_render_node_unref, ap->cairo_node);
@@ -130,10 +120,8 @@ automation_point_draw (
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          draw_rect.x - 1,
-          draw_rect.y - 1));
-      gtk_snapshot_append_node (
-        snapshot, cr_node);
+          draw_rect.x - 1, draw_rect.y - 1));
+      gtk_snapshot_append_node (snapshot, cr_node);
       gtk_snapshot_restore (snapshot);
 
       return;
@@ -143,9 +131,7 @@ automation_point_draw (
     gsk_cairo_node_get_draw_context (cr_node);
   cairo_save (cr);
   cairo_translate (
-    cr,
-    - (draw_rect.x - 1),
-    - (draw_rect.y - 1));
+    cr, -(draw_rect.x - 1), -(draw_rect.y - 1));
 
   gdk_cairo_set_source_rgba (cr, &color);
   cairo_set_line_width (cr, 2);
@@ -163,10 +149,10 @@ automation_point_draw (
        * of each point and the edges (2 of them
        * so a full AP_WIDGET_POINT_SIZE) */
       double width_for_curve =
-        obj->full_rect.width - (double) AP_WIDGET_POINT_SIZE;
+        obj->full_rect.width
+        - (double) AP_WIDGET_POINT_SIZE;
       double height_for_curve =
-        obj->full_rect.height -
-          AP_WIDGET_POINT_SIZE;
+        obj->full_rect.height - AP_WIDGET_POINT_SIZE;
 
       double draw_offset =
         draw_rect.x - obj->full_rect.x;
@@ -175,7 +161,7 @@ automation_point_draw (
       double step = 0.1;
       double this_y = 0;
       double draw_until =
-       /* FIXME this will draw all the way
+        /* FIXME this will draw all the way
         * until the end of the automation point,
         * even if it is off-screen by many
         * pixels
@@ -183,18 +169,19 @@ automation_point_draw (
         *
         * it is possible that cairo is smart about
         * it and doesn't exceed the surface size */
-       width_for_curve - step / 2.0;
+        width_for_curve - step / 2.0;
       bool has_drawing = false;
       for (double l = draw_offset; l <= draw_until;
            l += step)
         {
           double next_y =
             /* in pixels, higher values are lower */
-            1.0 -
-            automation_point_get_normalized_value_in_curve (
+            1.0
+            - automation_point_get_normalized_value_in_curve (
               ap,
               CLAMP (
-                (l + step) / width_for_curve, 0.0, 1.0));
+                (l + step) / width_for_curve, 0.0,
+                1.0));
           next_y *= height_for_curve;
 
           if (G_UNLIKELY (
@@ -202,27 +189,25 @@ automation_point_draw (
             {
               this_y =
                 /* in pixels, higher values are lower */
-                1.0 -
-                automation_point_get_normalized_value_in_curve (
+                1.0
+                - automation_point_get_normalized_value_in_curve (
                   ap, 0.0);
               this_y *= height_for_curve;
               cairo_move_to (
                 cr,
-                (l + AP_WIDGET_POINT_SIZE / 2 +
-                   obj->full_rect.x),
-                (this_y + AP_WIDGET_POINT_SIZE / 2 +
-                   obj->full_rect.y));
+                (l + AP_WIDGET_POINT_SIZE / 2
+                 + obj->full_rect.x),
+                (this_y + AP_WIDGET_POINT_SIZE / 2
+                 + obj->full_rect.y));
             }
           else
             {
               cairo_line_to (
                 cr,
-                (l + step +
-                 AP_WIDGET_POINT_SIZE / 2 +
-                 obj->full_rect.x),
-                (next_y +
-                  AP_WIDGET_POINT_SIZE / 2 +
-                  obj->full_rect.y));
+                (l + step + AP_WIDGET_POINT_SIZE / 2
+                 + obj->full_rect.x),
+                (next_y + AP_WIDGET_POINT_SIZE / 2
+                 + obj->full_rect.y));
             }
           this_y = next_y;
 
@@ -234,29 +219,28 @@ automation_point_draw (
       if (G_UNLIKELY (!has_drawing))
         {
           this_y =
-            1.0 -
-            automation_point_get_normalized_value_in_curve (
+            1.0
+            - automation_point_get_normalized_value_in_curve (
               ap, 0.0);
           this_y *= height_for_curve;
           double next_y =
-            1.0 -
-            automation_point_get_normalized_value_in_curve (
+            1.0
+            - automation_point_get_normalized_value_in_curve (
               ap, 1.0);
           next_y *= height_for_curve;
           cairo_move_to (
             cr,
-            (draw_offset + AP_WIDGET_POINT_SIZE / 2 +
-               obj->full_rect.x),
-            (this_y + AP_WIDGET_POINT_SIZE / 2 +
-               obj->full_rect.y));
+            (draw_offset + AP_WIDGET_POINT_SIZE / 2
+             + obj->full_rect.x),
+            (this_y + AP_WIDGET_POINT_SIZE / 2
+             + obj->full_rect.y));
           cairo_line_to (
             cr,
-            (draw_offset + step +
-             AP_WIDGET_POINT_SIZE / 2 +
-             obj->full_rect.x),
-            (next_y +
-              AP_WIDGET_POINT_SIZE / 2 +
-              obj->full_rect.y));
+            (draw_offset + step
+             + AP_WIDGET_POINT_SIZE / 2
+             + obj->full_rect.x),
+            (next_y + AP_WIDGET_POINT_SIZE / 2
+             + obj->full_rect.y));
         }
 
       cairo_stroke (cr);
@@ -264,15 +248,13 @@ automation_point_draw (
 
   /* draw circle */
   cairo_arc (
-    cr,
-    obj->full_rect.x + AP_WIDGET_POINT_SIZE / 2,
+    cr, obj->full_rect.x + AP_WIDGET_POINT_SIZE / 2,
     upslope
-    ?
-      ((obj->full_rect.y + obj->full_rect.height) -
-       AP_WIDGET_POINT_SIZE / 2)
-    : (obj->full_rect.y + AP_WIDGET_POINT_SIZE / 2),
-    AP_WIDGET_POINT_SIZE / 2,
-    0, 2 * G_PI);
+      ? (
+        (obj->full_rect.y + obj->full_rect.height)
+        - AP_WIDGET_POINT_SIZE / 2)
+      : (obj->full_rect.y + AP_WIDGET_POINT_SIZE / 2),
+    AP_WIDGET_POINT_SIZE / 2, 0, 2 * G_PI);
   cairo_set_source_rgba (cr, 0, 0, 0, 1);
   cairo_fill_preserve (cr);
   gdk_cairo_set_source_rgba (cr, &color);
@@ -282,45 +264,48 @@ automation_point_draw (
     {
       char text[500];
       sprintf (
-        text, "%d/%d (%f)",
-        ap->index,
+        text, "%d/%d (%f)", ap->index,
         region->num_aps,
         (double) ap->normalized_val);
-      if (arranger->action != UI_OVERLAY_ACTION_NONE
-          && !obj->transient)
+      if (
+        arranger->action != UI_OVERLAY_ACTION_NONE
+        && !obj->transient)
         {
           strcat (text, " - t");
         }
       cairo_set_source_rgba (cr, 1, 1, 1, 1);
       cairo_move_to (
         cr,
-      (obj->full_rect.x + AP_WIDGET_POINT_SIZE / 2),
-      upslope ?
-        ((obj->full_rect.y + obj->full_rect.height) -
-         AP_WIDGET_POINT_SIZE / 2) :
-        (obj->full_rect.y + AP_WIDGET_POINT_SIZE / 2));
+        (obj->full_rect.x + AP_WIDGET_POINT_SIZE / 2),
+        upslope
+          ? (
+            (obj->full_rect.y + obj->full_rect.height)
+            - AP_WIDGET_POINT_SIZE / 2)
+          : (
+            obj->full_rect.y
+            + AP_WIDGET_POINT_SIZE / 2));
       cairo_show_text (cr, text);
     }
-  else if (g_settings_get_boolean (
-             S_UI, "show-automation-values") &&
-           !(arranger->action !=
-               UI_OVERLAY_ACTION_NONE
-             && !obj->transient))
+  else if (
+    g_settings_get_boolean (
+      S_UI, "show-automation-values")
+    && !(
+      arranger->action != UI_OVERLAY_ACTION_NONE
+      && !obj->transient))
     {
       char text[50];
-      sprintf (
-        text, "%f", (double) ap->fvalue);
+      sprintf (text, "%f", (double) ap->fvalue);
       cairo_set_source_rgba (cr, 1, 1, 1, 1);
       z_cairo_draw_text_full (
         cr, GTK_WIDGET (arranger), layout, text,
-        (obj->full_rect.x +
-           AP_WIDGET_POINT_SIZE / 2),
-        upslope ?
-          ((obj->full_rect.y +
-              obj->full_rect.height) -
-                AP_WIDGET_POINT_SIZE / 2) :
-          (obj->full_rect.y +
-             AP_WIDGET_POINT_SIZE / 2));
+        (obj->full_rect.x + AP_WIDGET_POINT_SIZE / 2),
+        upslope
+          ? (
+            (obj->full_rect.y + obj->full_rect.height)
+            - AP_WIDGET_POINT_SIZE / 2)
+          : (
+            obj->full_rect.y
+            + AP_WIDGET_POINT_SIZE / 2));
     }
 
   cairo_restore (cr);
@@ -330,10 +315,8 @@ automation_point_draw (
   gtk_snapshot_translate (
     snapshot,
     &GRAPHENE_POINT_INIT (
-      draw_rect.x - 1,
-      draw_rect.y - 1));
-  gtk_snapshot_append_node (
-    snapshot, cr_node);
+      draw_rect.x - 1, draw_rect.y - 1));
+  gtk_snapshot_append_node (snapshot, cr_node);
   gtk_snapshot_restore (snapshot);
 
   ap->last_settings.fvalue = ap->fvalue;
@@ -372,12 +355,12 @@ automation_point_is_point_hit (
     {
       bool curves_up =
         automation_point_curves_up (self);
-      if (x_ok &&
-          curves_up ?
-            (obj->full_rect.y + obj->full_rect.height) -
-              y < AP_WIDGET_POINT_SIZE :
-            y - obj->full_rect.y <
-               AP_WIDGET_POINT_SIZE)
+      if (
+        x_ok && curves_up
+          ? (obj->full_rect.y + obj->full_rect.height)
+                - y
+              < AP_WIDGET_POINT_SIZE
+          : y - obj->full_rect.y < AP_WIDGET_POINT_SIZE)
         return true;
     }
 
@@ -409,14 +392,13 @@ automation_point_is_curve_hit (
   /* subtract from 1 because cairo draws in the
    * opposite direction */
   double curve_val =
-    1.0 -
-    automation_point_get_normalized_value_in_curve (
+    1.0
+    - automation_point_get_normalized_value_in_curve (
       self,
-      (x - obj->full_rect.x) /
-        obj->full_rect.width);
+      (x - obj->full_rect.x) / obj->full_rect.width);
   curve_val =
-    obj->full_rect.y +
-    curve_val * obj->full_rect.height;
+    obj->full_rect.y
+    + curve_val * obj->full_rect.height;
 
   if (fabs (curve_val - y) <= delta_from_curve)
     return true;

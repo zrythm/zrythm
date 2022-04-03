@@ -41,7 +41,8 @@ typedef struct _ChordPadWidget ChordPadWidget;
 G_DECLARE_FINAL_TYPE (
   ChordPadPanelWidget,
   chord_pad_panel_widget,
-  Z, CHORD_PAD_PANEL_WIDGET,
+  Z,
+  CHORD_PAD_PANEL_WIDGET,
   GtkGrid)
 
 #define MW_CHORD_PAD_PANEL \
@@ -59,14 +60,14 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _ChordPadPanelWidget
 {
-  GtkGrid          parent_instance;
+  GtkGrid parent_instance;
 
-  GtkGrid *        chords_grid;
+  GtkGrid * chords_grid;
 
-  GtkButton *      save_preset_btn;
-  GtkMenuButton *  load_preset_btn;
-  GtkButton *      transpose_up_btn;
-  GtkButton *      transpose_down_btn;
+  GtkButton *     save_preset_btn;
+  GtkMenuButton * load_preset_btn;
+  GtkButton *     transpose_up_btn;
+  GtkButton *     transpose_down_btn;
 
   /** Chords inside the grid. */
   ChordPadWidget * chords[12];

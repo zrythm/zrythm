@@ -38,7 +38,8 @@
 G_DECLARE_FINAL_TYPE (
   FileBrowserFiltersWidget,
   file_browser_filters_widget,
-  Z, FILE_BROWSER_FILTERS_WIDGET,
+  Z,
+  FILE_BROWSER_FILTERS_WIDGET,
   GtkBox)
 
 /**
@@ -60,15 +61,15 @@ typedef enum FileBrowserFilterType
  */
 typedef struct _FileBrowserFiltersWidget
 {
-  GtkBox               parent_instance;
+  GtkBox parent_instance;
 
   GtkToggleButton * toggle_audio;
   GtkToggleButton * toggle_midi;
   GtkToggleButton * toggle_presets;
 
   /** Callbacks. */
-  GtkWidget *          owner;
-  GenericCallback      refilter_files;
+  GtkWidget *     owner;
+  GenericCallback refilter_files;
 } FileBrowserFiltersWidget;
 
 /**

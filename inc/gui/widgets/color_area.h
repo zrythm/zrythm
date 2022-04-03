@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   ColorAreaWidget,
   color_area_widget,
-  Z, COLOR_AREA_WIDGET,
+  Z,
+  COLOR_AREA_WIDGET,
   GtkWidget)
 
 /**
@@ -56,21 +57,21 @@ typedef struct Track Track;
 
 typedef struct _ColorAreaWidget
 {
-  GtkWidget         parent_instance;
+  GtkWidget parent_instance;
 
   /** Color pointer to set/read value. */
-  GdkRGBA           color;
+  GdkRGBA color;
 
   /** The type. */
-  ColorAreaType     type;
+  ColorAreaType type;
 
   /** Track, if track. */
-  Track *           track;
+  Track * track;
 
-  bool              hovered;
+  bool hovered;
 
   /** Used during drawing. */
-  GPtrArray *       parents;
+  GPtrArray * parents;
 } ColorAreaWidget;
 
 /**
@@ -103,6 +104,6 @@ color_area_widget_setup_track (
 void
 color_area_widget_set_color (
   ColorAreaWidget * widget,
-  GdkRGBA * color);
+  GdkRGBA *         color);
 
 #endif

@@ -20,19 +20,19 @@
 #ifndef __GUI_WIDGETS_MIDI_ARRANGER_H__
 #define __GUI_WIDGETS_MIDI_ARRANGER_H__
 
+#include "audio/position.h"
 #include "gui/backend/tool.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
-#include "audio/position.h"
 
 #include <gtk/gtk.h>
 
 typedef struct _ArrangerWidget ArrangerWidget;
-typedef struct MidiNote MidiNote;
-typedef struct SnapGrid SnapGrid;
+typedef struct MidiNote        MidiNote;
+typedef struct SnapGrid        SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
-typedef struct ZRegion MidiRegion;
-typedef struct Channel Channel;
+typedef struct ZRegion         MidiRegion;
+typedef struct Channel         Channel;
 
 /**
  * @addtogroup widgets
@@ -56,9 +56,9 @@ typedef struct Channel Channel;
 void
 midi_arranger_widget_create_note (
   ArrangerWidget * self,
-  Position * pos,
-  int                  note,
-  ZRegion * region);
+  Position *       pos,
+  int              note,
+  ZRegion *        region);
 
 /**
  * Called during drag_update in the parent when

@@ -27,7 +27,8 @@
 G_DECLARE_FINAL_TYPE (
   HelpToolbarWidget,
   help_toolbar_widget,
-  Z, HELP_TOOLBAR_WIDGET,
+  Z,
+  HELP_TOOLBAR_WIDGET,
   GtkBox)
 
 /**
@@ -39,13 +40,13 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _HelpToolbarWidget
 {
-  GtkBox         parent_instance;
-  GtkButton *    about;
-  GtkButton *    chat;
-  GtkButton *    manual;
-  GtkButton *    shortcuts;
-  GtkButton *    donate_btn;
-  GtkButton *    report_a_bug_btn;
+  GtkBox      parent_instance;
+  GtkButton * about;
+  GtkButton * chat;
+  GtkButton * manual;
+  GtkButton * shortcuts;
+  GtkButton * donate_btn;
+  GtkButton * report_a_bug_btn;
 } HelpToolbarWidget;
 
 #endif

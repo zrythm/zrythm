@@ -39,10 +39,10 @@
 #include "audio/region.h"
 #include "audio/region_link_group_manager.h"
 #include "audio/tracklist.h"
-#include "gui/backend/clip_editor.h"
 #include "gui/backend/audio_selections.h"
 #include "gui/backend/automation_selections.h"
 #include "gui/backend/chord_selections.h"
+#include "gui/backend/clip_editor.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/mixer_selections.h"
 #include "gui/backend/timeline.h"
@@ -51,11 +51,11 @@
 #include "plugins/plugin.h"
 #include "zrythm.h"
 
-#include "ext/zix/zix/sem.h"
-
 #include <gtk/gtk.h>
 
-typedef struct Timeline Timeline;
+#include "ext/zix/zix/sem.h"
+
+typedef struct Timeline  Timeline;
 typedef struct Transport Transport;
 typedef struct Tracklist Tracklist;
 typedef struct TracklistSelections
@@ -69,17 +69,19 @@ typedef struct TracklistSelections
 
 #define PROJECT_SCHEMA_VERSION 1
 
-#define PROJECT                 ZRYTHM->project
-#define DEFAULT_PROJECT_NAME    "Untitled Project"
-#define PROJECT_FILE            "project.zpj"
-#define PROJECT_BACKUPS_DIR     "backups"
-#define PROJECT_PLUGINS_DIR     "plugins"
+#define PROJECT ZRYTHM->project
+#define DEFAULT_PROJECT_NAME "Untitled Project"
+#define PROJECT_FILE "project.zpj"
+#define PROJECT_BACKUPS_DIR "backups"
+#define PROJECT_PLUGINS_DIR "plugins"
 #define PROJECT_PLUGIN_STATES_DIR "states"
-#define PROJECT_PLUGIN_EXT_COPIES_DIR "ext_file_copies"
-#define PROJECT_PLUGIN_EXT_LINKS_DIR "ext_file_links"
-#define PROJECT_EXPORTS_DIR     "exports"
-#define PROJECT_STEMS_DIR       "stems"
-#define PROJECT_POOL_DIR        "pool"
+#define PROJECT_PLUGIN_EXT_COPIES_DIR \
+  "ext_file_copies"
+#define PROJECT_PLUGIN_EXT_LINKS_DIR \
+  "ext_file_links"
+#define PROJECT_EXPORTS_DIR "exports"
+#define PROJECT_STEMS_DIR "stems"
+#define PROJECT_POOL_DIR "pool"
 
 typedef enum ProjectPath
 {
@@ -137,16 +139,14 @@ typedef enum SelectionType
   SELECTION_TYPE_EDITOR,
 } SelectionType;
 
-static const cyaml_strval_t
-selection_type_strings[] =
-{
-  { "Tracklist", SELECTION_TYPE_TRACKLIST },
-  { "Timeline", SELECTION_TYPE_TIMELINE },
-  { "Insert", SELECTION_TYPE_INSERT },
-  { "MIDI FX", SELECTION_TYPE_MIDI_FX },
-  { "Instrument", SELECTION_TYPE_INSTRUMENT },
-  { "Modulator", SELECTION_TYPE_MODULATOR },
-  { "Editor", SELECTION_TYPE_EDITOR },
+static const cyaml_strval_t selection_type_strings[] = {
+  {"Tracklist",   SELECTION_TYPE_TRACKLIST },
+  { "Timeline",   SELECTION_TYPE_TIMELINE  },
+  { "Insert",     SELECTION_TYPE_INSERT    },
+  { "MIDI FX",    SELECTION_TYPE_MIDI_FX   },
+  { "Instrument", SELECTION_TYPE_INSTRUMENT},
+  { "Modulator",  SELECTION_TYPE_MODULATOR },
+  { "Editor",     SELECTION_TYPE_EDITOR    },
 };
 
 /**
@@ -170,16 +170,16 @@ typedef enum ProjectCompressionFlag
  */
 typedef struct Project
 {
-  int               schema_version;
+  int schema_version;
 
   /** Project title. */
-  char *            title;
+  char * title;
 
   /** Datetime string to add to the project file. */
-  char *            datetime_str;
+  char * datetime_str;
 
   /** Path to save the project in. */
-  char *            dir;
+  char * dir;
 
   /**
    * Backup dir to save the project during
@@ -188,23 +188,23 @@ typedef struct Project
    * For example, \ref Project.dir
    * /backups/myproject.bak3.
    */
-  char *            backup_dir;
+  char * backup_dir;
 
-  UndoManager *     undo_manager;
+  UndoManager * undo_manager;
 
-  Tracklist *       tracklist;
+  Tracklist * tracklist;
 
   /** Backend for the widget. */
-  ClipEditor *      clip_editor;
+  ClipEditor * clip_editor;
 
   /** Timeline widget backend. */
-  Timeline *        timeline;
+  Timeline * timeline;
 
   /** Snap/Grid info for the timeline. */
-  SnapGrid *        snap_grid_timeline;
+  SnapGrid * snap_grid_timeline;
 
   /** Snap/Grid info for the editor. */
-  SnapGrid *        snap_grid_editor;
+  SnapGrid * snap_grid_editor;
 
   /** Quantize info for the timeline. */
   QuantizeOptions * quantize_opts_timeline;
@@ -250,8 +250,8 @@ typedef struct Project
   MixerSelections * mixer_selections;
 
   /** Zoom levels. TODO & move to clip_editor */
-  double            timeline_zoom;
-  double            piano_roll_zoom;
+  double timeline_zoom;
+  double piano_roll_zoom;
 
   /** Manager for region link groups. */
   RegionLinkGroupManager * region_link_group_manager;
@@ -261,16 +261,16 @@ typedef struct Project
   /**
    * The audio backend
    */
-  AudioEngine *     audio_engine;
+  AudioEngine * audio_engine;
 
   /** MIDI bindings. */
-  MidiMappings *    midi_mappings;
+  MidiMappings * midi_mappings;
 
   /**
    * Currently selected tool (select - normal,
    * select - stretch, edit, delete, ramp, audition)
    */
-  Tool              tool;
+  Tool tool;
 
   /**
    * Whether the current is currently being loaded
@@ -280,7 +280,7 @@ typedef struct Project
    * state and should be set to false after the
    * project is loaded.
    */
-  bool              loading_from_backup;
+  bool loading_from_backup;
 
   /**
    * If a project is currently loaded or not.
@@ -289,102 +289,115 @@ typedef struct Project
    * tear down when loading a new project while
    * another one is loaded.
    */
-  bool              loaded;
+  bool loaded;
 
   /**
    * The last thing selected in the GUI.
    *
    * Used in inspector_widget_refresh.
    */
-  SelectionType     last_selection;
+  SelectionType last_selection;
 
   /** Zrythm version, for serialization */
-  char *            version;
+  char * version;
 
   /** Semaphore used to block saving. */
-  ZixSem            save_sem;
+  ZixSem save_sem;
 
-  gint64            last_autosave_time;
+  gint64 last_autosave_time;
 } Project;
 
-static const cyaml_schema_field_t
-  project_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    Project, schema_version),
-  YAML_FIELD_STRING_PTR (
-    Project, title),
-  YAML_FIELD_STRING_PTR (
-    Project, datetime_str),
-  YAML_FIELD_STRING_PTR (
-    Project, version),
+static const cyaml_schema_field_t project_fields_schema[] = {
+  YAML_FIELD_INT (Project, schema_version),
+  YAML_FIELD_STRING_PTR (Project, title),
+  YAML_FIELD_STRING_PTR (Project, datetime_str),
+  YAML_FIELD_STRING_PTR (Project, version),
   YAML_FIELD_MAPPING_PTR (
-    Project, tracklist, tracklist_fields_schema),
+    Project,
+    tracklist,
+    tracklist_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, clip_editor,
+    Project,
+    clip_editor,
     clip_editor_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, timeline,
+    Project,
+    timeline,
     timeline_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, snap_grid_timeline,
+    Project,
+    snap_grid_timeline,
     snap_grid_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, snap_grid_editor,
+    Project,
+    snap_grid_editor,
     snap_grid_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, quantize_opts_timeline,
+    Project,
+    quantize_opts_timeline,
     quantize_options_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, quantize_opts_editor,
+    Project,
+    quantize_opts_editor,
     quantize_options_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, audio_engine, engine_fields_schema),
+    Project,
+    audio_engine,
+    engine_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, mixer_selections,
+    Project,
+    mixer_selections,
     mixer_selections_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, timeline_selections,
+    Project,
+    timeline_selections,
     timeline_selections_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, midi_arranger_selections,
+    Project,
+    midi_arranger_selections,
     midi_arranger_selections_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, chord_selections,
+    Project,
+    chord_selections,
     chord_selections_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, automation_selections,
+    Project,
+    automation_selections,
     automation_selections_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, audio_selections,
+    Project,
+    audio_selections,
     audio_selections_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, tracklist_selections,
+    Project,
+    tracklist_selections,
     tracklist_selections_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, region_link_group_manager,
+    Project,
+    region_link_group_manager,
     region_link_group_manager_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, port_connections_manager,
+    Project,
+    port_connections_manager,
     port_connections_manager_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, midi_mappings,
+    Project,
+    midi_mappings,
     midi_mappings_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Project, undo_manager,
+    Project,
+    undo_manager,
     undo_manager_fields_schema),
   YAML_FIELD_ENUM (
-    Project, last_selection,
+    Project,
+    last_selection,
     selection_type_strings),
 
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-  project_schema =
-{
-  YAML_VALUE_PTR (
-    Project, project_fields_schema),
+static const cyaml_schema_value_t project_schema = {
+  YAML_VALUE_PTR (Project, project_fields_schema),
 };
 
 /**
@@ -396,17 +409,17 @@ typedef struct ProjectSaveData
   Project * project;
 
   /** Full path to save to. */
-  char *    project_file_path;
+  char * project_file_path;
 
-  bool      is_backup;
+  bool is_backup;
 
   /** To be set to true when the thread finishes. */
-  bool      finished;
+  bool finished;
 
-  bool      show_notification;
+  bool show_notification;
 
   /** Whether an error occurred during saving. */
-  bool      has_error;
+  bool has_error;
 
   GenericProgressInfo progress_info;
 } ProjectSaveData;
@@ -434,8 +447,7 @@ project_get_arranger_selections_for_last_selection (
  * @param start_engine Whether to also start the
  *   engine after creating the project.
  */
-COLD
-Project *
+COLD Project *
 project_create_default (
   Project *    self,
   const char * prj_dir,
@@ -451,8 +463,7 @@ project_create_default (
  *
  * @return 0 if successful, non-zero otherwise.
  */
-COLD
-int
+COLD int
 project_load (
   const char * filename,
   const bool   is_template);
@@ -488,8 +499,7 @@ project_save (
  * again.
  */
 int
-project_autosave_cb (
-  void * data);
+project_autosave_cb (void * data);
 
 /**
  * Returns the requested project path as a newly
@@ -502,9 +512,9 @@ MALLOC
 NONNULL
 char *
 project_get_path (
-  Project *     self,
-  ProjectPath   path,
-  bool          backup);
+  Project *   self,
+  ProjectPath path,
+  bool        backup);
 
 /**
  * Initializes the selections in the project.
@@ -513,8 +523,7 @@ project_get_path (
  * Not meant to be used anywhere besides
  * tests and project.c
  */
-COLD
-void
+COLD void
 project_init_selections (Project * self);
 
 /**
@@ -544,10 +553,10 @@ _project_compress (
   ProjectCompressionFlag src_type,
   GError **              error);
 
-#define project_compress(a,b,c,d,e,f,error) \
+#define project_compress(a, b, c, d, e, f, error) \
   _project_compress (true, a, b, c, d, e, f, error)
 
-#define project_decompress(a,b,c,d,e,f,error) \
+#define project_decompress(a, b, c, d, e, f, error) \
   _project_compress (false, a, b, c, d, e, f, error)
 
 /**
@@ -574,17 +583,13 @@ project_get_existing_yaml (
  */
 NONNULL
 Project *
-project_clone (
-  const Project * src,
-  bool            for_backup);
+project_clone (const Project * src, bool for_backup);
 
 /**
  * Creates an empty project object.
  */
-COLD
-Project *
-project_new (
-  Zrythm * zrythm);
+COLD Project *
+project_new (Zrythm * zrythm);
 
 /**
  * Tears down the project.

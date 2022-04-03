@@ -39,10 +39,10 @@
 
 #ifdef _WOE32
 
-#ifndef __AUDIO_WINDOWS_MMCSS_H__
-#define __AUDIO_WINDOWS_MMCSS_H__
+#  ifndef __AUDIO_WINDOWS_MMCSS_H__
+#    define __AUDIO_WINDOWS_MMCSS_H__
 
-#include <windows.h>
+#    include <windows.h>
 
 typedef enum AVRT_PRIORITY
 {
@@ -53,7 +53,8 @@ typedef enum AVRT_PRIORITY
   AVRT_PRIORITY_CRITICAL
 } AVRT_PRIORITY;
 
-enum error_codes {
+enum error_codes
+{
   ERROR_INVALID_TASK_NAME = 1550,
   ERROR_INVALID_TASK_INDEX = 1551
 };
@@ -67,16 +68,15 @@ windows_mmcss_deinitialize (void);
 int
 windows_mmcss_set_thread_characteristics (
   const char * task_name,
-  HANDLE * task_handle);
+  HANDLE *     task_handle);
 
 int
 windows_mmcss_revert_thread_characteristics (
   HANDLE task_handle);
 
-int
-windows_mmcss_set_thread_priority (
+int windows_mmcss_set_thread_priority (
   HANDLE,
   AVRT_PRIORITY);
 
-#endif // __AUDIO_WINDOWS_MMCSS_H__
-#endif // _WOE32
+#  endif // __AUDIO_WINDOWS_MMCSS_H__
+#endif   // _WOE32

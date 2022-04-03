@@ -47,10 +47,10 @@ typedef struct AudioClip AudioClip;
  */
 typedef struct UndoManager
 {
-  int           schema_version;
+  int schema_version;
 
-  UndoStack *   undo_stack;
-  UndoStack *   redo_stack;
+  UndoStack * undo_stack;
+  UndoStack * redo_stack;
 
   /**
    * Whether the redo stack is currently locked.
@@ -58,31 +58,31 @@ typedef struct UndoManager
    * This is used as a hack when cancelling arranger
    * drags.
    */
-  bool          redo_stack_locked;
+  bool redo_stack_locked;
 
   /** Semaphore for performing actions. */
-  ZixSem        action_sem;
+  ZixSem action_sem;
 } UndoManager;
 
 static const cyaml_schema_field_t
-  undo_manager_fields_schema[] =
-{
-  YAML_FIELD_INT (UndoManager, schema_version),
-  YAML_FIELD_MAPPING_PTR (
-    UndoManager, undo_stack,
-    undo_stack_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    UndoManager, redo_stack,
-    undo_stack_fields_schema),
+  undo_manager_fields_schema[] = {
+    YAML_FIELD_INT (UndoManager, schema_version),
+    YAML_FIELD_MAPPING_PTR (
+      UndoManager,
+      undo_stack,
+      undo_stack_fields_schema),
+    YAML_FIELD_MAPPING_PTR (
+      UndoManager,
+      redo_stack,
+      undo_stack_fields_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t
-  undo_manager_schema =
-{
+static const cyaml_schema_value_t undo_manager_schema = {
   YAML_VALUE_PTR (
-    UndoManager, undo_manager_fields_schema),
+    UndoManager,
+    undo_manager_fields_schema),
 };
 
 /**
@@ -91,8 +91,7 @@ static const cyaml_schema_value_t
  */
 NONNULL
 void
-undo_manager_init_loaded (
-  UndoManager * self);
+undo_manager_init_loaded (UndoManager * self);
 
 /**
  * Inits the undo manager by creating the undo/redo
@@ -126,7 +125,7 @@ undo_manager_redo (
  *
  * @return Non-zero if error.
  */
-NONNULL_ARGS (1,2)
+NONNULL_ARGS (1, 2)
 int
 undo_manager_perform (
   UndoManager *    self,
@@ -138,22 +137,20 @@ undo_manager_perform (
  * GError **.
  */
 #define UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR( \
-  action,err,...) \
+  action, err, ...) \
   { \
-  g_return_val_if_fail ( \
-    router_is_processing_thread (ROUTER) \
-    == false, false); \
-  UndoableAction * ua = \
-    action (__VA_ARGS__); \
-  if (ua) \
-    { \
-      int ret = \
-        undo_manager_perform ( \
+    g_return_val_if_fail ( \
+      router_is_processing_thread (ROUTER) == false, \
+      false); \
+    UndoableAction * ua = action (__VA_ARGS__); \
+    if (ua) \
+      { \
+        int ret = undo_manager_perform ( \
           UNDO_MANAGER, ua, err); \
-      if (ret == 0) \
-        return true; \
-    } \
-  return false; \
+        if (ret == 0) \
+          return true; \
+      } \
+    return false; \
   }
 
 /**
@@ -183,8 +180,7 @@ undo_manager_get_plugins (
  */
 NONNULL
 UndoableAction *
-undo_manager_get_last_action (
-  UndoManager * self);
+undo_manager_get_last_action (UndoManager * self);
 
 /**
  * Clears the undo and redo stacks.
@@ -197,13 +193,11 @@ undo_manager_clear_stacks (
 
 NONNULL
 UndoManager *
-undo_manager_clone (
-  const UndoManager * src);
+undo_manager_clone (const UndoManager * src);
 
 NONNULL
 void
-undo_manager_free (
-  UndoManager * self);
+undo_manager_free (UndoManager * self);
 
 /**
  * @}

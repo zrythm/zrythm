@@ -30,13 +30,12 @@
 static void
 test_symlink (void)
 {
-  char * filepath =
-    g_build_filename (
-      TESTS_SRCDIR,
-      "test_start_with_signal.mp3", NULL);
+  char * filepath = g_build_filename (
+    TESTS_SRCDIR, "test_start_with_signal.mp3",
+    NULL);
 
-  char * tmp_dir =
-    g_dir_make_tmp ("zrythm_symlink_dir_XXXXXX", NULL);
+  char * tmp_dir = g_dir_make_tmp (
+    "zrythm_symlink_dir_XXXXXX", NULL);
   g_assert_nonnull (tmp_dir);
   char * target =
     g_build_filename (tmp_dir, "target.mp3", NULL);
@@ -49,7 +48,7 @@ test_symlink (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
@@ -61,4 +60,3 @@ main (int argc, char *argv[])
 
   return g_test_run ();
 }
-

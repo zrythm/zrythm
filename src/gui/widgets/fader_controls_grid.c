@@ -47,16 +47,16 @@ G_DEFINE_TYPE (
 static bool
 update_meter_reading (
   FaderControlsGridWidget * widget,
-  GdkFrameClock * frame_clock,
-  gpointer        user_data)
+  GdkFrameClock *           frame_clock,
+  gpointer                  user_data)
 {
   g_return_val_if_fail (
     GTK_IS_WIDGET (widget), G_SOURCE_REMOVE);
 
-  if (!MAIN_WINDOW ||
-      !gtk_widget_get_mapped (
-        GTK_WIDGET (widget)) ||
-      !widget->track)
+  if (
+    !MAIN_WINDOW
+    || !gtk_widget_get_mapped (GTK_WIDGET (widget))
+    || !widget->track)
     {
       return G_SOURCE_CONTINUE;
     }
@@ -66,7 +66,7 @@ update_meter_reading (
       return G_SOURCE_REMOVE;
     }
 
-  double prev = widget->meter_reading_val;
+  double  prev = widget->meter_reading_val;
   Track * track = widget->track;
   g_warn_if_fail (IS_TRACK (track));
   Channel * channel =
@@ -80,10 +80,9 @@ update_meter_reading (
       return G_SOURCE_CONTINUE;
     }
 
-  float amp =
-    MAX (
-      widget->meter_l->meter->prev_max,
-      widget->meter_r->meter->prev_max);
+  float amp = MAX (
+    widget->meter_l->meter->prev_max,
+    widget->meter_r->meter->prev_max);
 
   double peak_val = (double) math_amp_to_dbfs (amp);
 
@@ -95,7 +94,7 @@ update_meter_reading (
   else
     {
       char format_str[400];
-      strcpy (format_str, _("Peak"));
+      strcpy (format_str, _ ("Peak"));
       strcat (format_str, ":\n<small>");
       if (peak_val < -10.)
         {
@@ -143,8 +142,8 @@ setup_balance_control (
       self->balance_control =
         balance_control_widget_new (
           channel_get_balance_control,
-          channel_set_balance_control,
-          ch, ch->fader->balance, 12);
+          channel_set_balance_control, ch,
+          ch->fader->balance, 12);
       gtk_box_append (
         self->balance_box,
         GTK_WIDGET (self->balance_control));
@@ -156,8 +155,7 @@ setup_balance_control (
 }
 
 static void
-setup_meter (
-  FaderControlsGridWidget * self)
+setup_meter (FaderControlsGridWidget * self)
 {
   Track * track = self->track;
   if (!track)
@@ -174,8 +172,7 @@ setup_meter (
     {
     case TYPE_EVENT:
       meter_widget_setup (
-        self->meter_l,
-        ch->midi_out, 14);
+        self->meter_l, ch->midi_out, 14);
       gtk_widget_set_margin_start (
         GTK_WIDGET (self->meter_l), 5);
       gtk_widget_set_margin_end (
@@ -185,11 +182,9 @@ setup_meter (
       break;
     case TYPE_AUDIO:
       meter_widget_setup (
-        self->meter_l,
-        ch->stereo_out->l, 12);
+        self->meter_l, ch->stereo_out->l, 12);
       meter_widget_setup (
-        self->meter_r,
-        ch->stereo_out->r, 12);
+        self->meter_r, ch->stereo_out->r, 12);
       gtk_widget_set_visible (
         GTK_WIDGET (self->meter_r), true);
       break;
@@ -199,8 +194,7 @@ setup_meter (
 }
 
 static void
-setup_fader (
-  FaderControlsGridWidget * self)
+setup_fader (FaderControlsGridWidget * self)
 {
   if (track_type_has_channel (self->track->type))
     {
@@ -252,15 +246,13 @@ fader_controls_grid_widget_tear_down (
 FaderControlsGridWidget *
 fader_controls_grid_widget_new (void)
 {
-  FaderControlsGridWidget * self =
-    g_object_new (
-      FADER_CONTROLS_GRID_WIDGET_TYPE, NULL);
+  FaderControlsGridWidget * self = g_object_new (
+    FADER_CONTROLS_GRID_WIDGET_TYPE, NULL);
 
-  self->tick_cb =
-    gtk_widget_add_tick_callback (
-      GTK_WIDGET (self),
-      (GtkTickCallback) update_meter_reading,
-      self, NULL);
+  self->tick_cb = gtk_widget_add_tick_callback (
+    GTK_WIDGET (self),
+    (GtkTickCallback) update_meter_reading, self,
+    NULL);
 
   return self;
 }
@@ -272,8 +264,8 @@ fader_controls_grid_finalize (
   fader_controls_grid_widget_tear_down (self);
 
   G_OBJECT_CLASS (
-    fader_controls_grid_widget_parent_class)->
-      finalize (G_OBJECT (self));
+    fader_controls_grid_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 static void
@@ -294,8 +286,7 @@ static void
 fader_controls_grid_widget_class_init (
   FaderControlsGridWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "fader_controls_grid.ui");
 
@@ -313,9 +304,7 @@ fader_controls_grid_widget_class_init (
 
 #undef BIND_CHILD
 
-  GObjectClass * oklass =
-    G_OBJECT_CLASS (klass);
-  oklass->finalize =
-    (GObjectFinalizeFunc)
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->finalize = (GObjectFinalizeFunc)
     fader_controls_grid_finalize;
 }

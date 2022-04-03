@@ -49,11 +49,11 @@ struct _GtkFlipper
 {
   GtkWidget parent_instance;
 
-  GtkWidget *child;
+  GtkWidget * child;
 
-  guint flip_horizontal :1;
-  guint flip_vertical :1;
-  guint rotate :1;
+  guint flip_horizontal : 1;
+  guint flip_vertical : 1;
+  guint rotate : 1;
 };
 
 enum
@@ -69,12 +69,14 @@ enum
 
 G_DEFINE_TYPE (GtkFlipper, gtk_flipper, GTK_TYPE_WIDGET)
 
-static GParamSpec *properties[N_PROPS] = { NULL, };
+static GParamSpec * properties[N_PROPS] = {
+  NULL,
+};
 
 static GtkSizeRequestMode
-gtk_flipper_get_request_mode (GtkWidget *widget)
+gtk_flipper_get_request_mode (GtkWidget * widget)
 {
-  GtkFlipper *self = GTK_FLIPPER (widget);
+  GtkFlipper *       self = GTK_FLIPPER (widget);
   GtkSizeRequestMode mode;
 
   if (!self->child)
@@ -99,31 +101,33 @@ gtk_flipper_get_request_mode (GtkWidget *widget)
 
 #define OPPOSITE_ORIENTATION(x) \
   ((x) == GTK_ORIENTATION_VERTICAL \
-   ? GTK_ORIENTATION_HORIZONTAL \
-   : GTK_ORIENTATION_VERTICAL)
+     ? GTK_ORIENTATION_HORIZONTAL \
+     : GTK_ORIENTATION_VERTICAL)
 
 static void
-gtk_flipper_measure (GtkWidget      *widget,
-                     GtkOrientation  orientation,
-                     int             for_size,
-                     int            *minimum,
-                     int            *natural,
-                     int            *minimum_baseline,
-                     int            *natural_baseline)
+gtk_flipper_measure (
+  GtkWidget *    widget,
+  GtkOrientation orientation,
+  int            for_size,
+  int *          minimum,
+  int *          natural,
+  int *          minimum_baseline,
+  int *          natural_baseline)
 {
-  GtkFlipper *self = GTK_FLIPPER (widget);
+  GtkFlipper * self = GTK_FLIPPER (widget);
 
   if (self->rotate)
     {
-      orientation = OPPOSITE_ORIENTATION (orientation);
+      orientation =
+        OPPOSITE_ORIENTATION (orientation);
     }
 
-  if (self->child && gtk_widget_get_visible (self->child))
-    gtk_widget_measure (self->child,
-                        orientation,
-                        for_size,
-                        minimum, natural,
-                        minimum_baseline, natural_baseline);
+  if (
+    self->child
+    && gtk_widget_get_visible (self->child))
+    gtk_widget_measure (
+      self->child, orientation, for_size, minimum,
+      natural, minimum_baseline, natural_baseline);
 
   if (self->rotate || self->flip_vertical)
     {
@@ -133,27 +137,34 @@ gtk_flipper_measure (GtkWidget      *widget,
 }
 
 static void
-gtk_flipper_size_allocate (GtkWidget *widget,
-                           int        width,
-                           int        height,
-                           int        baseline)
+gtk_flipper_size_allocate (
+  GtkWidget * widget,
+  int         width,
+  int         height,
+  int         baseline)
 {
-  GtkFlipper *self = GTK_FLIPPER (widget);
-  GskTransform *transform = NULL;
+  GtkFlipper *   self = GTK_FLIPPER (widget);
+  GskTransform * transform = NULL;
 
-  if (!self->child || !gtk_widget_get_visible (self->child))
+  if (
+    !self->child
+    || !gtk_widget_get_visible (self->child))
     return;
 
   if (self->flip_horizontal)
     {
-      transform = gsk_transform_translate (transform, &GRAPHENE_POINT_INIT (width, 0));
-      transform = gsk_transform_scale (transform, -1, 1);
+      transform = gsk_transform_translate (
+        transform, &GRAPHENE_POINT_INIT (width, 0));
+      transform =
+        gsk_transform_scale (transform, -1, 1);
     }
 
   if (self->flip_vertical)
     {
-      transform = gsk_transform_translate (transform, &GRAPHENE_POINT_INIT (0, height));
-      transform = gsk_transform_scale (transform, 1, -1);
+      transform = gsk_transform_translate (
+        transform, &GRAPHENE_POINT_INIT (0, height));
+      transform =
+        gsk_transform_scale (transform, 1, -1);
       baseline = -1;
     }
 
@@ -162,32 +173,41 @@ gtk_flipper_size_allocate (GtkWidget *widget,
       int tmp = width;
       width = height;
       height = tmp;
-      transform = gsk_transform_rotate (transform, 90);
-      transform = gsk_transform_translate (transform, &GRAPHENE_POINT_INIT (0, -height));
+      transform =
+        gsk_transform_rotate (transform, 90);
+      transform = gsk_transform_translate (
+        transform,
+        &GRAPHENE_POINT_INIT (0, -height));
       baseline = -1;
     }
 
-  gtk_widget_allocate (self->child, width, height, baseline, transform);
+  gtk_widget_allocate (
+    self->child, width, height, baseline, transform);
 }
 
 static void
-gtk_flipper_compute_expand (GtkWidget *widget,
-                            gboolean  *hexpand,
-                            gboolean  *vexpand)
+gtk_flipper_compute_expand (
+  GtkWidget * widget,
+  gboolean *  hexpand,
+  gboolean *  vexpand)
 {
-  GtkFlipper *self = GTK_FLIPPER (widget);
+  GtkFlipper * self = GTK_FLIPPER (widget);
 
   if (self->child)
     {
       if (self->rotate)
         {
-          *hexpand = gtk_widget_compute_expand (self->child, GTK_ORIENTATION_HORIZONTAL);
-          *vexpand = gtk_widget_compute_expand (self->child, GTK_ORIENTATION_VERTICAL);
+          *hexpand = gtk_widget_compute_expand (
+            self->child, GTK_ORIENTATION_HORIZONTAL);
+          *vexpand = gtk_widget_compute_expand (
+            self->child, GTK_ORIENTATION_VERTICAL);
         }
       else
         {
-          *hexpand = gtk_widget_compute_expand (self->child, GTK_ORIENTATION_VERTICAL);
-          *vexpand = gtk_widget_compute_expand (self->child, GTK_ORIENTATION_HORIZONTAL);
+          *hexpand = gtk_widget_compute_expand (
+            self->child, GTK_ORIENTATION_VERTICAL);
+          *vexpand = gtk_widget_compute_expand (
+            self->child, GTK_ORIENTATION_HORIZONTAL);
         }
     }
   else
@@ -198,22 +218,25 @@ gtk_flipper_compute_expand (GtkWidget *widget,
 }
 
 static void
-gtk_flipper_dispose (GObject *object)
+gtk_flipper_dispose (GObject * object)
 {
-  GtkFlipper *self = GTK_FLIPPER (object);
+  GtkFlipper * self = GTK_FLIPPER (object);
 
-  g_clear_pointer (&self->child, gtk_widget_unparent);
+  g_clear_pointer (
+    &self->child, gtk_widget_unparent);
 
-  G_OBJECT_CLASS (gtk_flipper_parent_class)->dispose (object);
+  G_OBJECT_CLASS (gtk_flipper_parent_class)
+    ->dispose (object);
 }
 
 static void
-gtk_flipper_get_property (GObject    *object,
-                          guint       property_id,
-                          GValue     *value,
-                          GParamSpec *pspec)
+gtk_flipper_get_property (
+  GObject *    object,
+  guint        property_id,
+  GValue *     value,
+  GParamSpec * pspec)
 {
-  GtkFlipper *self = GTK_FLIPPER (object);
+  GtkFlipper * self = GTK_FLIPPER (object);
 
   switch (property_id)
     {
@@ -222,11 +245,13 @@ gtk_flipper_get_property (GObject    *object,
       break;
 
     case PROP_FLIP_HORIZONTAL:
-      g_value_set_boolean (value, self->flip_horizontal);
+      g_value_set_boolean (
+        value, self->flip_horizontal);
       break;
 
     case PROP_FLIP_VERTICAL:
-      g_value_set_boolean (value, self->flip_vertical);
+      g_value_set_boolean (
+        value, self->flip_vertical);
       break;
 
     case PROP_ROTATE:
@@ -234,69 +259,82 @@ gtk_flipper_get_property (GObject    *object,
       break;
 
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (
+        object, property_id, pspec);
       break;
     }
 }
 
 static void
-gtk_flipper_set_property (GObject      *object,
-                          guint         property_id,
-                          const GValue *value,
-                          GParamSpec   *pspec)
+gtk_flipper_set_property (
+  GObject *      object,
+  guint          property_id,
+  const GValue * value,
+  GParamSpec *   pspec)
 {
-  GtkFlipper *self = GTK_FLIPPER (object);
+  GtkFlipper * self = GTK_FLIPPER (object);
 
   switch (property_id)
     {
     case PROP_CHILD:
-      gtk_flipper_set_child (self, g_value_get_object (value));
+      gtk_flipper_set_child (
+        self, g_value_get_object (value));
       break;
 
     case PROP_FLIP_HORIZONTAL:
-      gtk_flipper_set_flip_horizontal (self, g_value_get_boolean (value));
+      gtk_flipper_set_flip_horizontal (
+        self, g_value_get_boolean (value));
       break;
 
     case PROP_FLIP_VERTICAL:
-      gtk_flipper_set_flip_vertical (self, g_value_get_boolean (value));
+      gtk_flipper_set_flip_vertical (
+        self, g_value_get_boolean (value));
       break;
 
     case PROP_ROTATE:
-      gtk_flipper_set_rotate (self, g_value_get_boolean (value));
+      gtk_flipper_set_rotate (
+        self, g_value_get_boolean (value));
       break;
 
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (
+        object, property_id, pspec);
       break;
     }
 }
 
 static void
-gtk_flipper_class_init (GtkFlipperClass *klass)
+gtk_flipper_class_init (GtkFlipperClass * klass)
 {
-  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  GtkWidgetClass * widget_class =
+    GTK_WIDGET_CLASS (klass);
+  GObjectClass * gobject_class =
+    G_OBJECT_CLASS (klass);
 
-  widget_class->get_request_mode = gtk_flipper_get_request_mode;
+  widget_class->get_request_mode =
+    gtk_flipper_get_request_mode;
   widget_class->measure = gtk_flipper_measure;
-  widget_class->size_allocate = gtk_flipper_size_allocate;
-  widget_class->compute_expand = gtk_flipper_compute_expand;
+  widget_class->size_allocate =
+    gtk_flipper_size_allocate;
+  widget_class->compute_expand =
+    gtk_flipper_compute_expand;
 
   gobject_class->dispose = gtk_flipper_dispose;
-  gobject_class->get_property = gtk_flipper_get_property;
-  gobject_class->set_property = gtk_flipper_set_property;
+  gobject_class->get_property =
+    gtk_flipper_get_property;
+  gobject_class->set_property =
+    gtk_flipper_set_property;
 
   /**
    * GtkFlipper:child: (attributes org.gtk.Property.get=gtk_flipper_get_child org.gtk.Property.set=gtk_flipper_set_child)
    *
    * The child to display
    */
-  properties[PROP_CHILD] =
-    g_param_spec_object ("child",
-                         "Child",
-                         "the child to display",
-                         GTK_TYPE_WIDGET,
-                         G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+  properties[PROP_CHILD] = g_param_spec_object (
+    "child", "Child", "the child to display",
+    GTK_TYPE_WIDGET,
+    G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY
+      | G_PARAM_STATIC_STRINGS);
 
   /**
    * GtkFlipper:flip-horizontal: (attributes org.gtk.Property.get=gtk_flipper_get_flip_horizontal org.gtk.Property.set=gtk_flipper_set_flip_horizontal)
@@ -304,43 +342,43 @@ gtk_flipper_class_init (GtkFlipperClass *klass)
    * If the flipper should automatically begin playing.
    */
   properties[PROP_FLIP_HORIZONTAL] =
-    g_param_spec_boolean ("flip-horizontal",
-                          "Flip horizontal",
-                          "Swap the left and right of the child",
-                          FALSE,
-                          G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+    g_param_spec_boolean (
+      "flip-horizontal", "Flip horizontal",
+      "Swap the left and right of the child", FALSE,
+      G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY
+        | G_PARAM_STATIC_STRINGS);
 
   /**
    * GtkFlipper:flip-vertical: (attributes org.gtk.Property.get=gtk_flipper_get_flip_vertical org.gtk.Property.set=gtk_flipper_set_flip_vertical)
    *
    * If the flipper should automatically begin playing.
    */
-  properties[PROP_FLIP_VERTICAL] =
-    g_param_spec_boolean ("flip-vertical",
-                          "Flip vertical",
-                          "Swap the top and bottom of the child",
-                          FALSE,
-                          G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+  properties[PROP_FLIP_VERTICAL] = g_param_spec_boolean (
+    "flip-vertical", "Flip vertical",
+    "Swap the top and bottom of the child", FALSE,
+    G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY
+      | G_PARAM_STATIC_STRINGS);
 
   /**
    * GtkFlipper:rotate: (attributes org.gtk.Property.get=gtk_flipper_get_rotate org.gtk.Property.set=gtk_flipper_set_rotate)
    *
    * Rotates the child by 90° if set. This is applied after any flipping.
    */
-  properties[PROP_ROTATE] =
-    g_param_spec_boolean ("rotate",
-                          "Rotate",
-                          "Rotate the child clockwise by 90°",
-                          FALSE,
-                          G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+  properties[PROP_ROTATE] = g_param_spec_boolean (
+    "rotate", "Rotate",
+    "Rotate the child clockwise by 90°", FALSE,
+    G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY
+      | G_PARAM_STATIC_STRINGS);
 
-  g_object_class_install_properties (gobject_class, N_PROPS, properties);
+  g_object_class_install_properties (
+    gobject_class, N_PROPS, properties);
 
-  gtk_widget_class_set_css_name (widget_class, "flipper");
+  gtk_widget_class_set_css_name (
+    widget_class, "flipper");
 }
 
 static void
-gtk_flipper_init (GtkFlipper *self)
+gtk_flipper_init (GtkFlipper * self)
 {
 }
 
@@ -353,11 +391,10 @@ gtk_flipper_init (GtkFlipper *self)
  * Returns: a new `GtkFlipper`
  */
 GtkWidget *
-gtk_flipper_new (GtkWidget *child)
+gtk_flipper_new (GtkWidget * child)
 {
-  return g_object_new (GTK_TYPE_FLIPPER,
-                       "child", child,
-                       NULL);
+  return g_object_new (
+    GTK_TYPE_FLIPPER, "child", child, NULL);
 }
 
 /**
@@ -369,9 +406,10 @@ gtk_flipper_new (GtkWidget *child)
  * Returns: (transfer none) (nullable): The child
  */
 GtkWidget *
-gtk_flipper_get_child (GtkFlipper *self)
+gtk_flipper_get_child (GtkFlipper * self)
 {
-  g_return_val_if_fail (GTK_IS_FLIPPER (self), FALSE);
+  g_return_val_if_fail (
+    GTK_IS_FLIPPER (self), FALSE);
 
   return self->child;
 }
@@ -384,26 +422,31 @@ gtk_flipper_get_child (GtkFlipper *self)
  * Sets the child to display.
  */
 void
-gtk_flipper_set_child (GtkFlipper *self,
-                       GtkWidget  *child)
+gtk_flipper_set_child (
+  GtkFlipper * self,
+  GtkWidget *  child)
 {
   g_return_if_fail (GTK_IS_FLIPPER (self));
-  g_return_if_fail (child == NULL || GTK_IS_WIDGET (child));
+  g_return_if_fail (
+    child == NULL || GTK_IS_WIDGET (child));
 
   if (self->child == child)
     return;
 
-  g_clear_pointer (&self->child, gtk_widget_unparent);
+  g_clear_pointer (
+    &self->child, gtk_widget_unparent);
 
   if (child)
     {
       self->child = child;
-      gtk_widget_set_parent (self->child, GTK_WIDGET (self));
+      gtk_widget_set_parent (
+        self->child, GTK_WIDGET (self));
     }
 
   gtk_widget_queue_resize (GTK_WIDGET (self));
 
-  g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_CHILD]);
+  g_object_notify_by_pspec (
+    G_OBJECT (self), properties[PROP_CHILD]);
 }
 
 /**
@@ -415,9 +458,10 @@ gtk_flipper_set_child (GtkFlipper *self,
  * Returns: %TRUE if the child should flip horizontally
  */
 gboolean
-gtk_flipper_get_flip_horizontal (GtkFlipper *self)
+gtk_flipper_get_flip_horizontal (GtkFlipper * self)
 {
-  g_return_val_if_fail (GTK_IS_FLIPPER (self), FALSE);
+  g_return_val_if_fail (
+    GTK_IS_FLIPPER (self), FALSE);
 
   return self->flip_horizontal;
 }
@@ -432,8 +476,9 @@ gtk_flipper_get_flip_horizontal (GtkFlipper *self)
  * The flipping is applied before rotating.
  */
 void
-gtk_flipper_set_flip_horizontal (GtkFlipper *self,
-                                 gboolean    flip_horizontal)
+gtk_flipper_set_flip_horizontal (
+  GtkFlipper * self,
+  gboolean     flip_horizontal)
 {
   g_return_if_fail (GTK_IS_FLIPPER (self));
 
@@ -446,7 +491,9 @@ gtk_flipper_set_flip_horizontal (GtkFlipper *self,
 
   gtk_widget_queue_allocate (GTK_WIDGET (self));
 
-  g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_FLIP_HORIZONTAL]);
+  g_object_notify_by_pspec (
+    G_OBJECT (self),
+    properties[PROP_FLIP_HORIZONTAL]);
 }
 
 /**
@@ -458,9 +505,10 @@ gtk_flipper_set_flip_horizontal (GtkFlipper *self,
  * Returns: %TRUE if the child should flip vertically
  */
 gboolean
-gtk_flipper_get_flip_vertical (GtkFlipper *self)
+gtk_flipper_get_flip_vertical (GtkFlipper * self)
 {
-  g_return_val_if_fail (GTK_IS_FLIPPER (self), FALSE);
+  g_return_val_if_fail (
+    GTK_IS_FLIPPER (self), FALSE);
 
   return self->flip_vertical;
 }
@@ -475,8 +523,9 @@ gtk_flipper_get_flip_vertical (GtkFlipper *self)
  * The flipping is applied before rotating.
  */
 void
-gtk_flipper_set_flip_vertical (GtkFlipper *self,
-                               gboolean    flip_vertical)
+gtk_flipper_set_flip_vertical (
+  GtkFlipper * self,
+  gboolean     flip_vertical)
 {
   g_return_if_fail (GTK_IS_FLIPPER (self));
 
@@ -489,7 +538,8 @@ gtk_flipper_set_flip_vertical (GtkFlipper *self,
 
   gtk_widget_queue_allocate (GTK_WIDGET (self));
 
-  g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_FLIP_VERTICAL]);
+  g_object_notify_by_pspec (
+    G_OBJECT (self), properties[PROP_FLIP_VERTICAL]);
 }
 
 /**
@@ -501,9 +551,10 @@ gtk_flipper_set_flip_vertical (GtkFlipper *self,
  * Returns: %TRUE if the child should rotate
  */
 gboolean
-gtk_flipper_get_rotate (GtkFlipper *self)
+gtk_flipper_get_rotate (GtkFlipper * self)
 {
-  g_return_val_if_fail (GTK_IS_FLIPPER (self), FALSE);
+  g_return_val_if_fail (
+    GTK_IS_FLIPPER (self), FALSE);
 
   return self->rotate;
 }
@@ -518,8 +569,9 @@ gtk_flipper_get_rotate (GtkFlipper *self)
  * The rotation is done after any eventual flipping.
  */
 void
-gtk_flipper_set_rotate (GtkFlipper *self,
-                        gboolean    rotate)
+gtk_flipper_set_rotate (
+  GtkFlipper * self,
+  gboolean     rotate)
 {
   g_return_if_fail (GTK_IS_FLIPPER (self));
 
@@ -532,5 +584,6 @@ gtk_flipper_set_rotate (GtkFlipper *self,
 
   gtk_widget_queue_resize (GTK_WIDGET (self));
 
-  g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_ROTATE]);
+  g_object_notify_by_pspec (
+    G_OBJECT (self), properties[PROP_ROTATE]);
 }

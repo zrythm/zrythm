@@ -41,12 +41,11 @@
 #define MARKER_WIDGET_TRIANGLE_W 10
 
 #define marker_is_selected(r) \
-  arranger_object_is_selected ( \
-    (ArrangerObject *) r)
+  arranger_object_is_selected ((ArrangerObject *) r)
 
 #define marker_is_deletable(m) \
-  ((m)->type != MARKER_TYPE_START && \
-   (m)->type != MARKER_TYPE_END)
+  ((m)->type != MARKER_TYPE_START \
+   && (m)->type != MARKER_TYPE_END)
 
 /**
  * Marker type.
@@ -61,12 +60,10 @@ typedef enum MarkerType
   MARKER_TYPE_CUSTOM,
 } MarkerType;
 
-static const cyaml_strval_t
-marker_type_strings[] =
-{
-  { "start",     MARKER_TYPE_START    },
-  { "end",       MARKER_TYPE_END   },
-  { "custom",    MARKER_TYPE_CUSTOM   },
+static const cyaml_strval_t marker_type_strings[] = {
+  {"start",   MARKER_TYPE_START },
+  { "end",    MARKER_TYPE_END   },
+  { "custom", MARKER_TYPE_CUSTOM},
 };
 
 /**
@@ -75,73 +72,61 @@ marker_type_strings[] =
 typedef struct Marker
 {
   /** Base struct. */
-  ArrangerObject  base;
+  ArrangerObject base;
 
-  int             schema_version;
+  int schema_version;
 
   /** Marker type. */
-  MarkerType        type;
+  MarkerType type;
 
   /** Name of Marker to be displayed in the UI. */
-  char *            name;
+  char * name;
 
   /** Escaped name for drawing. */
-  char *            escaped_name;
+  char * escaped_name;
 
   /** Position of the marker track this marker is
    * in. */
-  unsigned int      track_name_hash;
+  unsigned int track_name_hash;
 
   /** Index in the track. */
-  int               index;
+  int index;
 
   /** Cache layout for drawing the name. */
-  PangoLayout *      layout;
+  PangoLayout * layout;
 } Marker;
 
-static const cyaml_schema_field_t
-  marker_fields_schema[] =
-{
+static const cyaml_schema_field_t marker_fields_schema[] = {
   YAML_FIELD_MAPPING_EMBEDDED (
-    Marker, base,
+    Marker,
+    base,
     arranger_object_fields_schema),
-  YAML_FIELD_STRING_PTR (
-    Marker, name),
-  YAML_FIELD_UINT (
-    Marker, track_name_hash),
-  YAML_FIELD_INT (
-    Marker, index),
-  YAML_FIELD_ENUM (
-    Marker, type, marker_type_strings),
+  YAML_FIELD_STRING_PTR (Marker, name),
+  YAML_FIELD_UINT (Marker, track_name_hash),
+  YAML_FIELD_INT (Marker, index),
+  YAML_FIELD_ENUM (Marker, type, marker_type_strings),
 
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-marker_schema = {
-  YAML_VALUE_PTR (
-    Marker, marker_fields_schema),
+static const cyaml_schema_value_t marker_schema = {
+  YAML_VALUE_PTR (Marker, marker_fields_schema),
 };
 
 /**
  * Creates a Marker.
  */
 Marker *
-marker_new (
-  const char * name);
+marker_new (const char * name);
 
 /**
  * Returns if the two Marker's are equal.
  */
 int
-marker_is_equal (
-  Marker * a,
-  Marker * b);
+marker_is_equal (Marker * a, Marker * b);
 
 void
-marker_set_index (
-  Marker * self,
-  int      index);
+marker_set_index (Marker * self, int index);
 
 /**
  * Sets the Track of the Marker.
@@ -152,8 +137,7 @@ marker_set_track_name_hash (
   unsigned int track_name_hash);
 
 Marker *
-marker_find_by_name (
-  const char * name);
+marker_find_by_name (const char * name);
 
 /**
  * @}

@@ -19,8 +19,8 @@
 
 #include "audio/engine.h"
 #include "audio/engine_dummy.h"
-#include "audio/router.h"
 #include "audio/port.h"
+#include "audio/router.h"
 #include "audio/tempo_track.h"
 #include "project.h"
 #include "zrythm_app.h"
@@ -57,8 +57,7 @@ process_cb (gpointer data)
 }
 
 int
-engine_dummy_setup (
-  AudioEngine * self)
+engine_dummy_setup (AudioEngine * self)
 {
   /* Set audio engine properties */
   self->midi_buf_size = 4096;
@@ -95,8 +94,7 @@ engine_dummy_setup (
 }
 
 int
-engine_dummy_midi_setup (
-  AudioEngine * self)
+engine_dummy_midi_setup (AudioEngine * self)
 {
   g_message ("Setting up dummy MIDI engine");
 
@@ -117,16 +115,14 @@ engine_dummy_activate (
       self->stop_dummy_audio_thread = false;
 
       int beats_per_bar =
-        tempo_track_get_beats_per_bar (
-          P_TEMPO_TRACK);
+        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
       engine_update_frames_per_tick (
         self, beats_per_bar,
         tempo_track_get_current_bpm (P_TEMPO_TRACK),
         self->sample_rate, true, true, false);
 
-      self->dummy_audio_thread =
-        g_thread_new (
-          "process_cb", process_cb, self);
+      self->dummy_audio_thread = g_thread_new (
+        "process_cb", process_cb, self);
     }
   else
     {
@@ -142,7 +138,6 @@ engine_dummy_activate (
 }
 
 void
-engine_dummy_tear_down (
-  AudioEngine * self)
+engine_dummy_tear_down (AudioEngine * self)
 {
 }

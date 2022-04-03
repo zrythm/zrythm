@@ -45,7 +45,7 @@ typedef struct CairoCaches
    * Icon surface dictionary:
    *   icon name: cairo_surface_t
    */
-  Dictionary *  icon_surface_dict;
+  Dictionary * icon_surface_dict;
 } CairoCaches;
 
 #define CAIRO_CACHES (ZRYTHM->cairo_caches)
@@ -115,18 +115,26 @@ z_cairo_rounded_rectangle (
   double degrees = G_PI / 180.0;
 
   cairo_new_sub_path (cr);
-  cairo_arc (cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);
-  cairo_arc (cr, x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);
-  cairo_arc (cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);
-  cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);
+  cairo_arc (
+    cr, x + width - radius, y + radius, radius,
+    -90 * degrees, 0 * degrees);
+  cairo_arc (
+    cr, x + width - radius, y + height - radius,
+    radius, 0 * degrees, 90 * degrees);
+  cairo_arc (
+    cr, x + radius, y + height - radius, radius,
+    90 * degrees, 180 * degrees);
+  cairo_arc (
+    cr, x + radius, y + radius, radius,
+    180 * degrees, 270 * degrees);
   cairo_close_path (cr);
 }
 
 #define z_cairo_get_text_extents_for_widget( \
-  _widget,_layout,_text,_width,_height) \
+  _widget, _layout, _text, _width, _height) \
   _z_cairo_get_text_extents_for_widget ( \
-    (GtkWidget *) _widget, _layout, _text, \
-    _width, _height)
+    (GtkWidget *) _widget, _layout, _text, _width, \
+    _height)
 
 /**
  * Gets the width of the given text in pixels
@@ -140,19 +148,19 @@ z_cairo_rounded_rectangle (
  */
 void
 _z_cairo_get_text_extents_for_widget (
-  GtkWidget *  widget,
+  GtkWidget *   widget,
   PangoLayout * layout,
-  const char * text,
-  int *        width,
-  int *        height);
+  const char *  text,
+  int *         width,
+  int *         height);
 
 /**
  * Draw text with default padding.
  */
-#define z_cairo_draw_text(cr,widget,layout,text) \
+#define z_cairo_draw_text(cr, widget, layout, text) \
   z_cairo_draw_text_full ( \
-    cr, widget, layout, text, Z_CAIRO_TEXT_PADDING, \
-    Z_CAIRO_TEXT_PADDING)
+    cr, widget, layout, text, \
+    Z_CAIRO_TEXT_PADDING, Z_CAIRO_TEXT_PADDING)
 
 /**
  * Draws the given text using the given font
@@ -201,10 +209,10 @@ z_cairo_get_surface_from_icon_name (
  */
 PangoLayout *
 z_cairo_create_pango_layout_from_string (
-  GtkWidget *  widget,
-  const char * font,
+  GtkWidget *        widget,
+  const char *       font,
   PangoEllipsizeMode ellipsize_mode,
-  int          ellipsize_padding);
+  int                ellipsize_padding);
 
 /**
  * Creates a PangoLayout to be cached in widgets
@@ -212,17 +220,17 @@ z_cairo_create_pango_layout_from_string (
  */
 PangoLayout *
 z_cairo_create_pango_layout_from_description (
-  GtkWidget *  widget,
+  GtkWidget *            widget,
   PangoFontDescription * descr,
-  PangoEllipsizeMode ellipsize_mode,
-  int          ellipsize_padding);
+  PangoEllipsizeMode     ellipsize_mode,
+  int                    ellipsize_padding);
 
 /**
  * Creates a PangoLayout with default settings.
  */
 PangoLayout *
 z_cairo_create_default_pango_layout (
-  GtkWidget *  widget);
+  GtkWidget * widget);
 
 /**
  * Resets a surface and cairo_t with a new surface
@@ -247,8 +255,7 @@ CairoCaches *
 z_cairo_caches_new (void);
 
 void
-z_cairo_caches_free (
-  CairoCaches * self);
+z_cairo_caches_free (CairoCaches * self);
 
 /**
  * @}

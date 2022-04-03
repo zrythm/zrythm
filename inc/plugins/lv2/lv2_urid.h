@@ -80,7 +80,7 @@ typedef struct Lv2URIDs
 LV2_URID
 lv2_urid_map_uri (
   LV2_URID_Map_Handle handle,
-  const char*         uri);
+  const char *        uri);
 
 /**
  * URID feature unmap implementation.

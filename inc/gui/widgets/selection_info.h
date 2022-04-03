@@ -36,7 +36,8 @@
 G_DECLARE_DERIVABLE_TYPE (
   SelectionInfoWidget,
   selection_info_widget,
-  Z, SELECTION_INFO_WIDGET,
+  Z,
+  SELECTION_INFO_WIDGET,
   GtkGrid)
 
 #define SELECTION_INFO_WIDGET_GET_PRIVATE(self) \
@@ -52,9 +53,9 @@ G_DECLARE_DERIVABLE_TYPE (
  */
 typedef struct _SelectionInfoWidgetPrivate
 {
-  GtkWidget *   labels[14];
-  GtkWidget *   widgets[14];
-  int           num_items;
+  GtkWidget * labels[14];
+  GtkWidget * widgets[14];
+  int         num_items;
 } SelectionInfoWidgetPrivate;
 
 typedef struct _SelectionInfoWidgetClass
@@ -63,7 +64,7 @@ typedef struct _SelectionInfoWidgetClass
 } SelectionInfoWidgetClass;
 
 #define selection_info_widget_add_info_with_text( \
-  _self,_txt,_widget) \
+  _self, _txt, _widget) \
   GtkWidget * _lbl = gtk_label_new (_txt); \
   gtk_widget_set_visible (_lbl, 1); \
   selection_info_widget_add_info ( \

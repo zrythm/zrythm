@@ -21,15 +21,16 @@
 
 #include <math.h>
 
-#include "audio/engine_dummy.h"
 #include "audio/audio_track.h"
+#include "audio/engine_dummy.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include <glib.h>
+
 #include "tests/helpers/zrythm.h"
 
-#include <glib.h>
 #include <locale.h>
 
 static void
@@ -38,11 +39,11 @@ test_update_snap_points (void)
   test_helper_zrythm_init ();
 
   SnapGrid sg;
-  gint64 before, after;
+  gint64   before, after;
 
   snap_grid_init (
-    &sg, SNAP_GRID_TYPE_TIMELINE,
-    NOTE_LENGTH_1_128, false);
+    &sg, SNAP_GRID_TYPE_TIMELINE, NOTE_LENGTH_1_128,
+    false);
 
 #define TEST_WITH_MAX_BARS(x) \
   before = g_get_monotonic_time (); \
@@ -60,7 +61,7 @@ test_update_snap_points (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

@@ -23,9 +23,10 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (KnobWithNameWidget,
-               knob_with_name_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  KnobWithNameWidget,
+  knob_with_name_widget,
+  GTK_TYPE_BOX)
 
 /**
  * Returns a new instance.
@@ -35,19 +36,17 @@ G_DEFINE_TYPE (KnobWithNameWidget,
  */
 KnobWithNameWidget *
 knob_with_name_widget_new (
-  void *         obj,
+  void *              obj,
   GenericStringGetter name_getter,
   GenericStringSetter name_setter,
-  KnobWidget *   knob,
-  GtkOrientation orientation,
-  bool           label_before,
-  int            spacing)
+  KnobWidget *        knob,
+  GtkOrientation      orientation,
+  bool                label_before,
+  int                 spacing)
 {
-  KnobWithNameWidget * self =
-    g_object_new (
-      KNOB_WITH_NAME_WIDGET_TYPE,
-      "orientation", orientation,
-      "spacing", 2, NULL);
+  KnobWithNameWidget * self = g_object_new (
+    KNOB_WITH_NAME_WIDGET_TYPE, "orientation",
+    orientation, "spacing", 2, NULL);
 
   EditableLabelWidget * label =
     editable_label_widget_new (
@@ -56,20 +55,16 @@ knob_with_name_widget_new (
   if (label_before)
     {
       gtk_box_append (
-        GTK_BOX (self),
-        GTK_WIDGET (label));
+        GTK_BOX (self), GTK_WIDGET (label));
       gtk_box_append (
-        GTK_BOX (self),
-        GTK_WIDGET (knob));
+        GTK_BOX (self), GTK_WIDGET (knob));
     }
   else
     {
       gtk_box_append (
-        GTK_BOX (self),
-        GTK_WIDGET (knob));
+        GTK_BOX (self), GTK_WIDGET (knob));
       gtk_box_append (
-        GTK_BOX (self),
-        GTK_WIDGET (label));
+        GTK_BOX (self), GTK_WIDGET (label));
     }
 
   return self;

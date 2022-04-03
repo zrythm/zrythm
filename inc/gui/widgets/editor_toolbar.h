@@ -29,16 +29,19 @@
 #define EDITOR_TOOLBAR_WIDGET_TYPE \
   (editor_toolbar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  EditorToolbarWidget, editor_toolbar_widget,
-  Z, EDITOR_TOOLBAR_WIDGET, GtkWidget)
+  EditorToolbarWidget,
+  editor_toolbar_widget,
+  Z,
+  EDITOR_TOOLBAR_WIDGET,
+  GtkWidget)
 
 #define MW_EDITOR_TOOLBAR \
   MW_CLIP_EDITOR->editor_toolbar
 
-typedef struct _ToolboxWidget ToolboxWidget;
-typedef struct _QuantizeMbWidget QuantizeMbWidget;
+typedef struct _ToolboxWidget     ToolboxWidget;
+typedef struct _QuantizeMbWidget  QuantizeMbWidget;
 typedef struct _QuantizeBoxWidget QuantizeBoxWidget;
-typedef struct _SnapBoxWidget SnapBoxWidget;
+typedef struct _SnapBoxWidget     SnapBoxWidget;
 typedef struct _ButtonWithMenuWidget
   ButtonWithMenuWidget;
 typedef struct _PlayheadScrollButtonsWidget
@@ -52,34 +55,34 @@ typedef struct _ZoomButtonsWidget ZoomButtonsWidget;
  */
 typedef struct _EditorToolbarWidget
 {
-  GtkWidget           parent_instance;
+  GtkWidget parent_instance;
 
   GtkScrolledWindow * scroll;
 
-  GtkComboBoxText *   chord_highlighting;
-  SnapBoxWidget *     snap_box;
-  QuantizeBoxWidget * quantize_box;
-  GtkButton *         event_viewer_toggle;
-  GtkStack *          functions_btn_stack;
+  GtkComboBoxText *      chord_highlighting;
+  SnapBoxWidget *        snap_box;
+  QuantizeBoxWidget *    quantize_box;
+  GtkButton *            event_viewer_toggle;
+  GtkStack *             functions_btn_stack;
   ButtonWithMenuWidget * midi_functions_btn;
   ButtonWithMenuWidget * audio_functions_btn;
   ButtonWithMenuWidget * automation_functions_btn;
-  GtkButton *         audio_apply_function_btn;
-  GtkButton *         midi_apply_function_btn;
-  GtkButton *         automation_apply_function_btn;
+  GtkButton *            audio_apply_function_btn;
+  GtkButton *            midi_apply_function_btn;
+  GtkButton * automation_apply_function_btn;
 
-  GtkSeparator *      sep_after_chord_highlight;
-  GtkBox *            chord_highlight_box;
+  GtkSeparator * sep_after_chord_highlight;
+  GtkBox *       chord_highlight_box;
 
   VelocitySettingsWidget * velocity_settings;
-  GtkSeparator *      sep_after_velocity_settings;
+  GtkSeparator * sep_after_velocity_settings;
 
   PlayheadScrollButtonsWidget * playhead_scroll;
-  ZoomButtonsWidget * zoom_buttons;
+  ZoomButtonsWidget *           zoom_buttons;
 
-  GMenuModel *        midi_functions_menu;
-  GMenuModel *        automation_functions_menu;
-  GMenuModel *        audio_functions_menu;
+  GMenuModel * midi_functions_menu;
+  GMenuModel * automation_functions_menu;
+  GMenuModel * audio_functions_menu;
 } EditorToolbarWidget;
 
 /**

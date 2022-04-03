@@ -17,8 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <string.h>
-
 #include "audio/engine.h"
 #include "audio/ext_port.h"
 #include "audio/hardware_processor.h"
@@ -34,14 +32,17 @@
 
 #include <gtk/gtk.h>
 
+#include <string.h>
+
 G_DEFINE_TYPE (
   ActiveHardwarePopoverWidget,
   active_hardware_popover_widget,
   GTK_TYPE_POPOVER)
 
 static void
-on_closed (ActiveHardwarePopoverWidget *self,
-               gpointer    user_data)
+on_closed (
+  ActiveHardwarePopoverWidget * self,
+  gpointer                      user_data)
 {
   active_hardware_mb_widget_refresh (self->owner);
 }
@@ -68,9 +69,9 @@ get_controllers (
 #endif
 
   HardwareProcessor * processor =
-    self->owner->input ?
-      AUDIO_ENGINE->hw_in_processor :
-      AUDIO_ENGINE->hw_out_processor;
+    self->owner->input
+      ? AUDIO_ENGINE->hw_in_processor
+      : AUDIO_ENGINE->hw_out_processor;
 
   /* force a rescan just in case */
   hardware_processor_rescan_ext_ports (processor);
@@ -82,9 +83,9 @@ get_controllers (
        i++)
     {
       ExtPort * port =
-        self->owner->is_midi ?
-          processor->ext_midi_ports[i] :
-          processor->ext_audio_ports[i];
+        self->owner->is_midi
+          ? processor->ext_midi_ports[i]
+          : processor->ext_audio_ports[i];
       controllers[(*num_controllers)++] =
         ext_port_get_id (port);
 
@@ -102,14 +103,13 @@ get_controllers (
 static GtkWidget *
 find_checkbutton (
   ActiveHardwarePopoverWidget * self,
-  const char * label)
+  const char *                  label)
 {
-  for (GtkWidget * child =
-         gtk_widget_get_first_child (
-           GTK_WIDGET (self->controllers_box));
-       child != NULL;
-       child =
-         gtk_widget_get_next_sibling (child))
+  for (
+    GtkWidget * child = gtk_widget_get_first_child (
+      GTK_WIDGET (self->controllers_box));
+    child != NULL;
+    child = gtk_widget_get_next_sibling (child))
     {
       if (!GTK_IS_CHECK_BUTTON (child))
         continue;
@@ -127,15 +127,13 @@ find_checkbutton (
   return NULL;
 }
 
-
 static void
-setup (
-  ActiveHardwarePopoverWidget * self)
+setup (ActiveHardwarePopoverWidget * self)
 {
-  int max_controllers = 6000;
-  char * controllers[max_controllers];
-  int num_controllers = 0;
-  int i;
+  int         max_controllers = 6000;
+  char *      controllers[max_controllers];
+  int         num_controllers = 0;
+  int         i;
   GtkWidget * chkbtn;
 
   /* remove pre-existing controllers */
@@ -148,19 +146,16 @@ setup (
     max_controllers);
   for (i = 0; i < num_controllers; i++)
     {
-      chkbtn =
-        gtk_check_button_new_with_label (
-          controllers[i]);
+      chkbtn = gtk_check_button_new_with_label (
+        controllers[i]);
       gtk_widget_set_visible (chkbtn, 1);
-      gtk_box_append (
-        self->controllers_box, chkbtn);
+      gtk_box_append (self->controllers_box, chkbtn);
     }
 
   /* fetch saved controllers and tick them if they
    * exist */
-  gchar ** saved_controllers =
-    g_settings_get_strv (
-      self->owner->settings, self->owner->key);
+  gchar ** saved_controllers = g_settings_get_strv (
+    self->owner->settings, self->owner->key);
   char * tmp;
   i = 0;
   while ((tmp = saved_controllers[i]) != NULL)
@@ -185,7 +180,7 @@ setup (
 
 static void
 on_rescan (
-  GtkButton * btn,
+  GtkButton *                   btn,
   ActiveHardwarePopoverWidget * self)
 {
   setup (self);
@@ -195,9 +190,8 @@ ActiveHardwarePopoverWidget *
 active_hardware_popover_widget_new (
   ActiveHardwareMbWidget * owner)
 {
-  ActiveHardwarePopoverWidget * self =
-    g_object_new (
-      ACTIVE_HARDWARE_POPOVER_WIDGET_TYPE, NULL);
+  ActiveHardwarePopoverWidget * self = g_object_new (
+    ACTIVE_HARDWARE_POPOVER_WIDGET_TYPE, NULL);
 
   self->owner = owner;
 

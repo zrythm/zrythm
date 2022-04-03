@@ -24,9 +24,10 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include <glib.h>
+
 #include "tests/helpers/project.h"
 
-#include <glib.h>
 #include <locale.h>
 
 static void
@@ -34,18 +35,14 @@ test_new_track (void)
 {
   test_helper_zrythm_init ();
 
-  Track * track =
-    track_new (
-      TRACK_TYPE_INSTRUMENT,
-      TRACKLIST->num_tracks,
-      "Test Instrument Track 1",
-      F_WITH_LANE);
+  Track * track = track_new (
+    TRACK_TYPE_INSTRUMENT, TRACKLIST->num_tracks,
+    "Test Instrument Track 1", F_WITH_LANE);
   g_assert_true (IS_TRACK_AND_NONNULL (track));
 
   g_assert_nonnull (track->name);
 
-  object_free_w_func_and_null (
-    track_free, track);
+  object_free_w_func_and_null (track_free, track);
 
   test_helper_zrythm_cleanup ();
 }
@@ -98,7 +95,7 @@ test_get_direct_folder_parent (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

@@ -26,7 +26,8 @@
 #include "zrythm_app.h"
 
 G_DEFINE_TYPE (
-  TracklistHeaderWidget, tracklist_header_widget,
+  TracklistHeaderWidget,
+  tracklist_header_widget,
   GTK_TYPE_GRID)
 
 void
@@ -34,22 +35,19 @@ tracklist_header_widget_refresh_track_count (
   TracklistHeaderWidget * self)
 {
   char buf[40];
-  int num_visible =
-    tracklist_get_num_visible_tracks (
-      TRACKLIST, 1);
+  int  num_visible =
+    tracklist_get_num_visible_tracks (TRACKLIST, 1);
   sprintf (
     buf, "%d/%d", num_visible,
     TRACKLIST->num_tracks);
-  gtk_label_set_text (
-    self->track_count_lbl, buf);
+  gtk_label_set_text (self->track_count_lbl, buf);
 }
 
 void
 tracklist_header_widget_setup (
   TracklistHeaderWidget * self)
 {
-  tracklist_header_widget_refresh_track_count (
-    self);
+  tracklist_header_widget_refresh_track_count (self);
 }
 
 static void
@@ -58,7 +56,6 @@ tracklist_header_widget_init (
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }
-
 
 static void
 tracklist_header_widget_class_init (

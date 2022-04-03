@@ -19,9 +19,6 @@
 
 #include "zrythm-test-config.h"
 
-#include "helpers/plugin_manager.h"
-#include "helpers/zrythm.h"
-
 #include "audio/graph.h"
 #include "audio/graph_export.h"
 #include "project.h"
@@ -29,18 +26,19 @@
 
 #include <glib.h>
 
+#include "helpers/plugin_manager.h"
+#include "helpers/zrythm.h"
+
 static void
 test_svg_export (void)
 {
 #ifdef HAVE_CGRAPH
   test_helper_zrythm_init ();
 
-  char * tmp_dir =
-    g_dir_make_tmp (
-      "zrythm_graph_export_XXXXXX", NULL);
+  char * tmp_dir = g_dir_make_tmp (
+    "zrythm_graph_export_XXXXXX", NULL);
   char * filepath =
-    g_build_filename (
-      tmp_dir, "test.svg", NULL);
+    g_build_filename (tmp_dir, "test.svg", NULL);
 
   graph_export_as_simple (
     GRAPH_EXPORT_SVG, filepath);
@@ -55,7 +53,7 @@ test_svg_export (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

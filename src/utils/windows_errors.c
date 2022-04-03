@@ -19,11 +19,11 @@
 
 #ifdef _WOE32
 
-#include "utils/windows_errors.h"
+#  include "utils/windows_errors.h"
 
-#include <gtk/gtk.h>
+#  include <gtk/gtk.h>
 
-#if 0
+#  if 0
 void
 windows_errors_print_mmresult (
   MMRESULT res)
@@ -59,24 +59,22 @@ windows_errors_print_mmresult (
       break;
     }
 }
-#endif
+#  endif
 
 void
-windows_errors_get_last_error_str (
-		char * str)
+windows_errors_get_last_error_str (char * str)
 {
-      DWORD error_id =
-        GetLastError ();
-      LPSTR buf = NULL;
-      FormatMessageA (
-        FORMAT_MESSAGE_ALLOCATE_BUFFER |
-          FORMAT_MESSAGE_FROM_SYSTEM |
-          FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL, error_id,
-        MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPSTR) &buf, 0, NULL);
-      strcpy (str, buf);
-      LocalFree (buf);
+  DWORD error_id = GetLastError ();
+  LPSTR buf = NULL;
+  FormatMessageA (
+    FORMAT_MESSAGE_ALLOCATE_BUFFER
+      | FORMAT_MESSAGE_FROM_SYSTEM
+      | FORMAT_MESSAGE_IGNORE_INSERTS,
+    NULL, error_id,
+    MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT),
+    (LPSTR) &buf, 0, NULL);
+  strcpy (str, buf);
+  LocalFree (buf);
 }
 
 #endif // _WOE32

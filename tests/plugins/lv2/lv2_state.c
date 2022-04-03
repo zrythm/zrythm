@@ -25,18 +25,18 @@
 #include "plugins/lv2_plugin.h"
 #include "utils/string.h"
 
+#include <glib.h>
+
 #include "tests/helpers/plugin_manager.h"
 
 #include <lv2/presets/presets.h>
-
-#include <glib.h>
 
 /* handled by lilv */
 #if 0
 static void
 test_path_features (void)
 {
-#ifdef HAVE_LSP_MULTISAMPLER_24_DO
+#  ifdef HAVE_LSP_MULTISAMPLER_24_DO
   test_helper_zrythm_init ();
 
   test_plugin_manager_create_tracks_from_plugin (
@@ -66,12 +66,12 @@ test_path_features (void)
       new_absolute_path, absolute_path));
 
   test_helper_zrythm_cleanup ();
-#endif
+#  endif
 }
 #endif
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

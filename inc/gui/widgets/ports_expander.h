@@ -32,8 +32,8 @@
 #include <gtk/gtk.h>
 
 typedef struct _EditableLabelWidget
-  EditableLabelWidget;
-typedef struct Track Track;
+                      EditableLabelWidget;
+typedef struct Track  Track;
 typedef struct Plugin Plugin;
 
 #define PORTS_EXPANDER_WIDGET_TYPE \
@@ -41,7 +41,8 @@ typedef struct Plugin Plugin;
 G_DECLARE_FINAL_TYPE (
   PortsExpanderWidget,
   ports_expander_widget,
-  Z, PORTS_EXPANDER_WIDGET,
+  Z,
+  PORTS_EXPANDER_WIDGET,
   TwoColExpanderBoxWidget);
 
 /**
@@ -75,10 +76,10 @@ typedef struct _PortsExpanderWidget
   PortOwnerType owner_type;
 
   /** Plugin, in case of owner type Plugin. */
-  Plugin *      plugin;
+  Plugin * plugin;
 
   /** Track, in case of owner type Track. */
-  Track *       track;
+  Track * track;
 } PortsExpanderWidget;
 
 /**
@@ -94,9 +95,9 @@ ports_expander_widget_refresh (
 void
 ports_expander_widget_setup_plugin (
   PortsExpanderWidget * self,
-  PortFlow      flow,
-  PortType      type,
-  Plugin *      pl);
+  PortFlow              flow,
+  PortType              type,
+  Plugin *              pl);
 
 /**
  * Sets up the PortsExpanderWidget for Track ports.

@@ -33,10 +33,11 @@
 G_DECLARE_FINAL_TYPE (
   ClipEditorInnerWidget,
   clip_editor_inner_widget,
-  Z, CLIP_EDITOR_INNER_WIDGET,
+  Z,
+  CLIP_EDITOR_INNER_WIDGET,
   GtkBox)
 
-typedef struct _RulerWidget RulerWidget;
+typedef struct _RulerWidget     RulerWidget;
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct _MidiEditorSpaceWidget
   MidiEditorSpaceWidget;
@@ -46,9 +47,8 @@ typedef struct _ChordEditorSpaceWidget
   ChordEditorSpaceWidget;
 typedef struct _AutomationEditorSpaceWidget
   AutomationEditorSpaceWidget;
-typedef struct _ArrangerWidget ArrangerWidget;
-typedef struct _RotatedLabelWidget
-  RotatedLabelWidget;
+typedef struct _ArrangerWidget     ArrangerWidget;
+typedef struct _RotatedLabelWidget RotatedLabelWidget;
 
 /**
  * @addtogroup widgets
@@ -75,7 +75,7 @@ clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
  */
 typedef struct _ClipEditorInnerWidget
 {
-  GtkBox               parent_instance;
+  GtkBox parent_instance;
 
   ColorAreaWidget *    color_bar;
   GtkBox *             bot_of_arranger_toolbar;
@@ -90,9 +90,9 @@ typedef struct _ClipEditorInnerWidget
   /* ==== Piano Roll (Midi Editor) ==== */
 
   /** Toggle between drum mode and normal mode. */
-  GtkToggleButton *    toggle_notation;
-  GtkToggleButton *    toggle_listen_notes;
-  GtkToggleButton *    show_automation_values;
+  GtkToggleButton * toggle_notation;
+  GtkToggleButton * toggle_listen_notes;
+  GtkToggleButton * show_automation_values;
 
   MidiEditorSpaceWidget * midi_editor_space;
 
@@ -107,8 +107,7 @@ typedef struct _ClipEditorInnerWidget
 
   /* ==== Chord Editor ==== */
 
-  ChordEditorSpaceWidget *
-    chord_editor_space;
+  ChordEditorSpaceWidget * chord_editor_space;
 
   /* ==== End Chord Editor ==== */
 
@@ -120,7 +119,7 @@ typedef struct _ClipEditorInnerWidget
 
   /** Size group for keeping the whole ruler and
    * each timeline the same width. */
-  GtkSizeGroup *       ruler_arranger_hsize_group;
+  GtkSizeGroup * ruler_arranger_hsize_group;
 
 } ClipEditorInnerWidget;
 

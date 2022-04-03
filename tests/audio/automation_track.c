@@ -20,17 +20,18 @@
 #include "zrythm-test-config.h"
 
 #include "actions/arranger_selections.h"
-#include "audio/channel.h"
 #include "audio/automation_region.h"
 #include "audio/automation_track.h"
+#include "audio/channel.h"
 #include "audio/master_track.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "zrythm.h"
 
+#include <glib.h>
+
 #include "tests/helpers/zrythm.h"
 
-#include <glib.h>
 #include <locale.h>
 
 static void
@@ -54,11 +55,10 @@ test_set_at_index (void)
   Position start, end;
   position_set_to_bar (&start, 2);
   position_set_to_bar (&end, 4);
-  ZRegion * region =
-    automation_region_new (
-      &start, &end, track_get_name_hash (master),
-      first_vis_at->index, 0);
-  track_add_region  (
+  ZRegion * region = automation_region_new (
+    &start, &end, track_get_name_hash (master),
+    first_vis_at->index, 0);
+  track_add_region (
     master, region, first_vis_at, -1, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
@@ -71,8 +71,7 @@ test_set_at_index (void)
     CLIP_EDITOR, region, F_NO_PUBLISH_EVENTS);
 
   AutomationTrack * first_invisible_at =
-    automation_tracklist_get_first_invisible_at (
-      atl);
+    automation_tracklist_get_first_invisible_at (atl);
   automation_tracklist_set_at_index (
     atl, first_invisible_at, first_vis_at->index,
     F_NO_PUSH_DOWN);
@@ -84,7 +83,7 @@ test_set_at_index (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

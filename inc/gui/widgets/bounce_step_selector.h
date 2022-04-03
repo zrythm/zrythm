@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   BounceStepSelectorWidget,
   bounce_step_selector_widget,
-  Z, BOUNCE_STEP_SELECTOR_WIDGET,
+  Z,
+  BOUNCE_STEP_SELECTOR_WIDGET,
   GtkBox)
 
 /**

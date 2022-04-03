@@ -31,9 +31,9 @@
 #include "utils/yaml.h"
 
 typedef struct AutomationTrack AutomationTrack;
-typedef struct Track Track;
-typedef struct Automatable Automatable;
-typedef struct AutomationLane AutomationLane;
+typedef struct Track           Track;
+typedef struct Automatable     Automatable;
+typedef struct AutomationLane  AutomationLane;
 
 /**
  * @addtogroup audio
@@ -50,7 +50,7 @@ typedef struct AutomationLane AutomationLane;
  */
 typedef struct AutomationTracklist
 {
-  int               schema_version;
+  int schema_version;
 
   /**
    * Automation tracks in this automation
@@ -70,13 +70,13 @@ typedef struct AutomationTracklist
    * selected.
    */
   AutomationTrack ** ats;
-  int               num_ats;
+  int                num_ats;
 
   /**
    * Allocated size for the automation track
    * pointer array.
    */
-  size_t            ats_size;
+  size_t ats_size;
 
   /**
    * Cache of automation tracks in record mode,
@@ -87,35 +87,35 @@ typedef struct AutomationTracklist
    * AutomationTracklist.num_ats.
    */
   AutomationTrack ** ats_in_record_mode;
-  int               num_ats_in_record_mode;
+  int                num_ats_in_record_mode;
 
   /**
    * Pointer back to the track.
    *
    * This should be set during initialization.
    */
-  Track *           track;
+  Track * track;
 } AutomationTracklist;
 
 static const cyaml_schema_field_t
-  automation_tracklist_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    AutomationTracklist, schema_version),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-    AutomationTracklist, ats,
-    automation_track_schema),
+  automation_tracklist_fields_schema[] = {
+    YAML_FIELD_INT (
+      AutomationTracklist,
+      schema_version),
+    YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+      AutomationTracklist,
+      ats,
+      automation_track_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-  automation_tracklist_schema =
-{
-  YAML_VALUE_PTR (
-    AutomationTracklist,
-    automation_tracklist_fields_schema),
-};
+  automation_tracklist_schema = {
+    YAML_VALUE_PTR (
+      AutomationTracklist,
+      automation_tracklist_fields_schema),
+  };
 
 void
 automation_tracklist_init (
@@ -125,10 +125,7 @@ automation_tracklist_init (
 /**
  * Inits a loaded AutomationTracklist.
  */
-COLD
-NONNULL_ARGS (1)
-void
-automation_tracklist_init_loaded (
+COLD NONNULL_ARGS (1) void automation_tracklist_init_loaded (
   AutomationTracklist * self,
   Track *               track);
 

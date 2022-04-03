@@ -30,27 +30,24 @@ test_find_plugins (void)
   PluginSetting * setting;
   (void) setting;
 #ifdef HAVE_MDA_AMBIENCE
-  setting =
-    test_plugin_manager_get_plugin_setting (
-      MDA_AMBIENCE_BUNDLE, MDA_AMBIENCE_URI, false);
+  setting = test_plugin_manager_get_plugin_setting (
+    MDA_AMBIENCE_BUNDLE, MDA_AMBIENCE_URI, false);
   g_assert_nonnull (setting);
 #endif
 #ifdef HAVE_AMS_LFO
-  setting =
-    test_plugin_manager_get_plugin_setting (
-      AMS_LFO_BUNDLE, AMS_LFO_URI, false);
+  setting = test_plugin_manager_get_plugin_setting (
+    AMS_LFO_BUNDLE, AMS_LFO_URI, false);
   g_assert_nonnull (setting);
 #endif
 #ifdef HAVE_HELM
-  setting =
-    test_plugin_manager_get_plugin_setting (
-      HELM_BUNDLE, HELM_URI, false);
+  setting = test_plugin_manager_get_plugin_setting (
+    HELM_BUNDLE, HELM_URI, false);
   g_assert_nonnull (setting);
 #endif
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

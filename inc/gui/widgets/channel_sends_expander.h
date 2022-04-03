@@ -35,10 +35,11 @@
 G_DECLARE_FINAL_TYPE (
   ChannelSendsExpanderWidget,
   channel_sends_expander_widget,
-  Z, CHANNEL_SENDS_EXPANDER_WIDGET,
+  Z,
+  CHANNEL_SENDS_EXPANDER_WIDGET,
   ExpanderBoxWidget);
 
-typedef struct Track Track;
+typedef struct Track              Track;
 typedef struct _ChannelSendWidget ChannelSendWidget;
 
 /**
@@ -65,19 +66,19 @@ typedef struct _ChannelSendsExpanderWidget
 
   /** Scrolled window for the vbox inside. */
   GtkScrolledWindow * scroll;
-  GtkViewport *     viewport;
+  GtkViewport *       viewport;
 
   /** VBox containing each slot. */
-  GtkBox *          box;
+  GtkBox * box;
 
   /** 1 box for each item. */
-  GtkBox *          strip_boxes[STRIP_SIZE];
+  GtkBox * strip_boxes[STRIP_SIZE];
 
   /** Send slots. */
   ChannelSendWidget * slots[STRIP_SIZE];
 
   /** Owner track. */
-  Track *           track;
+  Track * track;
 } ChannelSendsExpanderWidget;
 
 /**

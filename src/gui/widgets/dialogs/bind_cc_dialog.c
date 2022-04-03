@@ -18,17 +18,17 @@
  */
 
 #include "audio/engine.h"
-#include "utils/midi.h"
 #include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "project.h"
 #include "utils/error.h"
 #include "utils/io.h"
+#include "utils/midi.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   BindCcDialogWidget,
@@ -37,7 +37,7 @@ G_DEFINE_TYPE (
 
 static void
 on_ok_clicked (
-  GtkButton * btn,
+  GtkButton *          btn,
   BindCcDialogWidget * self)
 {
   if (self->perform_action)
@@ -45,14 +45,14 @@ on_ok_clicked (
       if (self->cc[0])
         {
           GError * err = NULL;
-          bool ret =
+          bool     ret =
             midi_mapping_action_perform_bind (
-            self->cc, NULL, self->port, &err);
+              self->cc, NULL, self->port, &err);
           if (!ret)
             {
               HANDLE_ERROR (
                 err, "%s",
-                _("Failed to bind mapping"));
+                _ ("Failed to bind mapping"));
             }
         }
     }
@@ -63,7 +63,7 @@ on_ok_clicked (
 
 static void
 on_cancel_clicked (
-  GtkButton * btn,
+  GtkButton *          btn,
   BindCcDialogWidget * self)
 {
   gtk_dialog_response (
@@ -82,13 +82,13 @@ tick_cb (
         self->cc, AUDIO_ENGINE->last_cc,
         sizeof (midi_byte_t) * 3);
       char ctrl_change[60];
-      int ctrl_change_ch =
+      int  ctrl_change_ch =
         midi_ctrl_change_get_ch_and_description (
           AUDIO_ENGINE->last_cc, ctrl_change);
 
       bool port_is_toggle =
-        self->port &&
-        self->port->id.flags & PORT_FLAG_TOGGLE;
+        self->port
+        && self->port->id.flags & PORT_FLAG_TOGGLE;
 
       gtk_widget_set_sensitive (
         GTK_WIDGET (self->ok_btn), true);
@@ -97,20 +97,17 @@ tick_cb (
         {
           char str[100];
           sprintf (
-            str, "<b>Ch%d - %s</b>",
-            ctrl_change_ch, ctrl_change);
-          gtk_label_set_markup (
-            self->lbl, str);
+            str, "<b>Ch%d - %s</b>", ctrl_change_ch,
+            ctrl_change);
+          gtk_label_set_markup (self->lbl, str);
         }
       else if (port_is_toggle)
         {
           char str[100];
           sprintf (
-            str,
-            "<b>%02X %02X %02X</b>",
+            str, "<b>%02X %02X %02X</b>",
             self->cc[0], self->cc[1], self->cc[2]);
-          gtk_label_set_markup (
-            self->lbl, str);
+          gtk_label_set_markup (self->lbl, str);
         }
       else
         {
@@ -118,9 +115,8 @@ tick_cb (
           sprintf (
             str,
             "<b><span foreground='red'>%s</span></b>",
-            _("Not a control change event"));
-          gtk_label_set_markup (
-            self->lbl, str);
+            _ ("Not a control change event"));
+          gtk_label_set_markup (self->lbl, str);
 
           gtk_widget_set_sensitive (
             GTK_WIDGET (self->ok_btn), false);
@@ -148,14 +144,12 @@ bind_cc_dialog_widget_new (
 }
 
 static void
-finalize (
-  BindCcDialogWidget * self)
+finalize (BindCcDialogWidget * self)
 {
   AUDIO_ENGINE->capture_cc = 0;
 
-  G_OBJECT_CLASS (
-    bind_cc_dialog_widget_parent_class)->
-      finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (bind_cc_dialog_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 static void
@@ -175,8 +169,7 @@ bind_cc_dialog_widget_class_init (
   BIND_CHILD (lbl);
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
-  oklass->finalize =
-    (GObjectFinalizeFunc) finalize;
+  oklass->finalize = (GObjectFinalizeFunc) finalize;
 }
 
 static void
@@ -191,8 +184,7 @@ bind_cc_dialog_widget_init (
   AUDIO_ENGINE->last_cc[2] = 0;
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self),
-    (GtkTickCallback) tick_cb,
+    GTK_WIDGET (self), (GtkTickCallback) tick_cb,
     self, NULL);
 
   g_signal_connect (

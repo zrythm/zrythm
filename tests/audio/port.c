@@ -172,15 +172,12 @@ test_get_hash (void)
 {
   test_helper_zrythm_init ();
 
-  Port * port1 =
-    port_new_with_type (
-      TYPE_AUDIO, FLOW_OUTPUT, "test-port");
-  Port * port2 =
-    port_new_with_type (
-      TYPE_AUDIO, FLOW_OUTPUT, "test-port");
-  Port * port3 =
-    port_new_with_type (
-      TYPE_AUDIO, FLOW_OUTPUT, "test-port3");
+  Port * port1 = port_new_with_type (
+    TYPE_AUDIO, FLOW_OUTPUT, "test-port");
+  Port * port2 = port_new_with_type (
+    TYPE_AUDIO, FLOW_OUTPUT, "test-port");
+  Port * port3 = port_new_with_type (
+    TYPE_AUDIO, FLOW_OUTPUT, "test-port3");
 
   unsigned int hash1 = port_get_hash (port1);
   unsigned int hash2 = port_get_hash (port2);
@@ -204,7 +201,7 @@ test_get_hash (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

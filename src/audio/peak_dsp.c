@@ -37,8 +37,8 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <stdlib.h>
 #include <math.h>
+#include <stdlib.h>
 
 #include "audio/peak_dsp.h"
 
@@ -49,18 +49,21 @@
  * @param n Number of samples.
  */
 void
-peak_dsp_process (
-  PeakDsp * self,
-  float * p, int n)
+peak_dsp_process (PeakDsp * self, float * p, int n)
 {
-  float  s = 0.f, t;
+  float s = 0.f, t;
 
   if (self->fpp != n)
     {
       /*const float fall = 15.f;*/
       const float fall = 5.f;
-      const float tme = (float) n / self->fsamp; // period time in seconds
-      self->fall = powf (10.f, -0.05f * fall * tme); // per period fallback multiplier
+      const float tme =
+        (float) n
+        / self->fsamp; // period time in seconds
+      self->fall = powf (
+        10.f,
+        -0.05f * fall
+          * tme); // per period fallback multiplier
       self->fpp = n;
     }
 
@@ -75,14 +78,16 @@ peak_dsp_process (
         {
           max = fabsf (s);
         }
-      if (t < max) t = max;             // Update digital peak.
+      if (t < max)
+        t = max; // Update digital peak.
     }
 
-  if (!isfinite(t)) t = 0;
+  if (!isfinite (t))
+    t = 0;
 
   if (self->flag) // Display thread has read the rms value.
     {
-      self->rms  = max;
+      self->rms = max;
       self->flag = false;
     }
   else
@@ -106,16 +111,16 @@ peak_dsp_process (
     }
   else
     {
-      self->peak *= self->fall;     // else let the peak value fall back,
-      self->peak += 1e-10f;    // and avoid denormals.
+      self->peak *=
+        self->fall; // else let the peak value fall back,
+      self->peak += 1e-10f; // and avoid denormals.
     }
 }
 
 float
-peak_dsp_read_f (
-  PeakDsp * self)
+peak_dsp_read_f (PeakDsp * self)
 {
-  float rv= self->rms;
+  float rv = self->rms;
   self->flag = true; // Resets _rms in next process().
   return rv;
 }
@@ -123,16 +128,16 @@ peak_dsp_read_f (
 void
 peak_dsp_read (
   PeakDsp * self,
-  float * rms, float * peak)
+  float *   rms,
+  float *   peak)
 {
   *rms = self->rms;
   *peak = self->peak;
-  self->flag = true;  // Resets _rms in next process().
+  self->flag = true; // Resets _rms in next process().
 }
 
 void
-peak_dsp_reset (
-  PeakDsp * self)
+peak_dsp_reset (PeakDsp * self)
 {
   self->rms = self->peak = .0f;
   self->cnt = 0;
@@ -143,29 +148,26 @@ peak_dsp_reset (
  * Init with the samplerate.
  */
 void
-peak_dsp_init (
-  PeakDsp * self,
-  float     samplerate)
+peak_dsp_init (PeakDsp * self, float samplerate)
 {
   /*const float hold = 0.5f;*/
   const float hold = 1.5f;
   self->fsamp = samplerate;
 
-  self->hold = (int)(hold * samplerate + 0.5f); // number of samples to hold peak
+  self->hold =
+    (int) (hold * samplerate + 0.5f); // number of samples to hold peak
 }
 
 PeakDsp *
 peak_dsp_new (void)
 {
-  PeakDsp * self =
-    calloc (1, sizeof (PeakDsp));
+  PeakDsp * self = calloc (1, sizeof (PeakDsp));
 
   return self;
 }
 
 void
-peak_dsp_free (
-  PeakDsp * self)
+peak_dsp_free (PeakDsp * self)
 {
   free (self);
 }

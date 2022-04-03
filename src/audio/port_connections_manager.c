@@ -26,8 +26,7 @@
 #include "zrythm_app.h"
 
 static void
-free_connections (
-  void * data)
+free_connections (void * data)
 {
   GPtrArray * arr = (GPtrArray *) data;
   g_ptr_array_unref (arr);
@@ -49,8 +48,7 @@ add_or_replace_connection (
       GPtrArray * prev_connections = connections;
       connections = g_ptr_array_new ();
       g_ptr_array_extend (
-        connections, prev_connections, NULL,
-        NULL);
+        connections, prev_connections, NULL, NULL);
       /* the old array will be freed automatically
        * by the hash table when replacing */
     }
@@ -102,18 +100,14 @@ port_connections_manager_regenerate_hashtables (
    * for guint used in the hash func. currently
    * this doesn't affect any major platform but
    * it's not standards compliant */
-  self->src_ht =
-    g_hash_table_new_full (
-      port_identifier_get_hash,
-      port_identifier_is_equal_func,
-      port_identifier_free_func,
-      free_connections);
-  self->dest_ht =
-    g_hash_table_new_full (
-      port_identifier_get_hash,
-      port_identifier_is_equal_func,
-      port_identifier_free_func,
-      free_connections);
+  self->src_ht = g_hash_table_new_full (
+    port_identifier_get_hash,
+    port_identifier_is_equal_func,
+    port_identifier_free_func, free_connections);
+  self->dest_ht = g_hash_table_new_full (
+    port_identifier_get_hash,
+    port_identifier_is_equal_func,
+    port_identifier_free_func, free_connections);
 
   for (int i = 0; i < self->num_connections; i++)
     {
@@ -142,7 +136,8 @@ port_connections_manager_init_loaded (
 {
   self->connections_size =
     (size_t) self->num_connections;
-  port_connections_manager_regenerate_hashtables (self);
+  port_connections_manager_regenerate_hashtables (
+    self);
 }
 
 PortConnectionsManager *
@@ -154,11 +149,11 @@ port_connections_manager_new (void)
     PORT_CONNECTIONS_MANAGER_SCHEMA_VERSION;
 
   self->connections_size = 64;
-  self->connections =
-    object_new_n (
-      self->connections_size, PortConnection *);
+  self->connections = object_new_n (
+    self->connections_size, PortConnection *);
 
-  port_connections_manager_regenerate_hashtables (self);
+  port_connections_manager_regenerate_hashtables (
+    self);
 
   return self;
 }
@@ -184,27 +179,24 @@ port_connections_manager_predicate_is_send_of (
   if (track->out_signal_type == TYPE_AUDIO)
     {
       StereoPorts * self_stereo =
-        channel_send_is_prefader (send) ?
-          track->channel->prefader->stereo_out :
-          track->channel->fader->stereo_out;
+        channel_send_is_prefader (send)
+          ? track->channel->prefader->stereo_out
+          : track->channel->fader->stereo_out;
 
-      return
-        port_identifier_is_equal (
-          conn->src_id, &self_stereo->l->id)
-        ||
-        port_identifier_is_equal (
-          conn->src_id, &self_stereo->r->id);
+      return port_identifier_is_equal (
+               conn->src_id, &self_stereo->l->id)
+             || port_identifier_is_equal (
+               conn->src_id, &self_stereo->r->id);
     }
   else if (track->out_signal_type == TYPE_EVENT)
     {
       Port * self_port =
-        channel_send_is_prefader (send) ?
-          track->channel->prefader->midi_out :
-          track->channel->fader->midi_out;
+        channel_send_is_prefader (send)
+          ? track->channel->prefader->midi_out
+          : track->channel->fader->midi_out;
 
-      return
-        port_identifier_is_equal (
-          conn->src_id, &self_port->id);
+      return port_identifier_is_equal (
+        conn->src_id, &self_port->id);
     }
 
   g_return_val_if_reached (false);
@@ -230,12 +222,10 @@ port_connections_manager_get_sources_or_dests (
 {
   g_return_val_if_fail (
     self->dest_ht && self->src_ht, 0);
-  g_return_val_if_fail (
-    ZRYTHM_APP_IS_GTK_THREAD, 0);
-  GPtrArray * res =
-    g_hash_table_lookup (
-      /* note: we look at the opposite hashtable */
-      (sources ? self->dest_ht : self->src_ht), id);
+  g_return_val_if_fail (ZRYTHM_APP_IS_GTK_THREAD, 0);
+  GPtrArray * res = g_hash_table_lookup (
+    /* note: we look at the opposite hashtable */
+    (sources ? self->dest_ht : self->src_ht), id);
 
   if (!res)
     return 0;
@@ -266,13 +256,13 @@ port_connections_manager_get_source_or_dest (
   bool                           sources)
 {
   GPtrArray * conns = g_ptr_array_new ();
-  int num_conns =
+  int         num_conns =
     port_connections_manager_get_sources_or_dests (
       self, conns, id, sources);
   if (num_conns != 1)
     {
       size_t sz = 2000;
-      char buf[sz];
+      char   buf[sz];
       port_identifier_print_to_str (id, buf, sz);
       g_critical (
         "expected 1 %s, found %d "
@@ -297,13 +287,11 @@ port_connections_manager_find_connection (
 {
   for (int i = 0; i < self->num_connections; i++)
     {
-      PortConnection * conn =
-        self->connections[i];
-      if (port_identifier_is_equal (
-            conn->src_id, src)
-          &&
-          port_identifier_is_equal (
-            conn->dest_id, dest))
+      PortConnection * conn = self->connections[i];
+      if (
+        port_identifier_is_equal (conn->src_id, src)
+        && port_identifier_is_equal (
+          conn->dest_id, dest))
         {
           return conn;
         }
@@ -333,17 +321,16 @@ port_connections_manager_ensure_connect (
 
   for (int i = 0; i < self->num_connections; i++)
     {
-      PortConnection * conn =
-        self->connections[i];
-      if (port_identifier_is_equal (
-            conn->src_id, src)
-          &&
-          port_identifier_is_equal (
-            conn->dest_id, dest))
+      PortConnection * conn = self->connections[i];
+      if (
+        port_identifier_is_equal (conn->src_id, src)
+        && port_identifier_is_equal (
+          conn->dest_id, dest))
         {
           port_connection_update (
             conn, multiplier, locked, enabled);
-          port_connections_manager_regenerate_hashtables (self);
+          port_connections_manager_regenerate_hashtables (
+            self);
           return conn;
         }
     }
@@ -351,17 +338,15 @@ port_connections_manager_ensure_connect (
   array_double_size_if_full (
     self->connections, self->num_connections,
     self->connections_size, PortConnection *);
-  PortConnection * conn =
-    port_connection_new (
-      src, dest, multiplier, locked, enabled);
+  PortConnection * conn = port_connection_new (
+    src, dest, multiplier, locked, enabled);
   self->connections[self->num_connections++] = conn;
 
   if (self == PORT_CONNECTIONS_MGR)
     {
       size_t sz = 800;
-      char buf[sz];
-      port_connection_print_to_str (
-        conn, buf, sz);
+      char   buf[sz];
+      port_connection_print_to_str (conn, buf, sz);
       g_debug (
         "New connection: <%s>; "
         "have %d connections",
@@ -384,23 +369,24 @@ remove_connection (
   for (int i = idx; i < self->num_connections - 1;
        i++)
     {
-      self->connections[i] = self->connections[i + 1];
+      self->connections[i] =
+        self->connections[i + 1];
     }
   self->num_connections--;
 
   if (self == PORT_CONNECTIONS_MGR)
     {
       size_t sz = 800;
-      char buf[sz];
-      port_connection_print_to_str (
-        conn, buf, sz);
+      char   buf[sz];
+      port_connection_print_to_str (conn, buf, sz);
       g_debug (
         "Disconnected <%s>; "
         "have %d connections",
         buf, self->num_connections);
     }
 
-  port_connections_manager_regenerate_hashtables (self);
+  port_connections_manager_regenerate_hashtables (
+    self);
 
   object_free_w_func_and_null (
     port_connection_free, conn);
@@ -423,13 +409,11 @@ port_connections_manager_ensure_disconnect (
 
   for (int i = 0; i < self->num_connections; i++)
     {
-      PortConnection * conn =
-        self->connections[i];
-      if (port_identifier_is_equal (
-            conn->src_id, src)
-          &&
-          port_identifier_is_equal (
-            conn->dest_id, dest))
+      PortConnection * conn = self->connections[i];
+      if (
+        port_identifier_is_equal (conn->src_id, src)
+        && port_identifier_is_equal (
+          conn->dest_id, dest))
         {
           remove_connection (self, i);
           return true;
@@ -452,11 +436,11 @@ port_connections_manager_ensure_disconnect_all (
 
   for (int i = 0; i < self->num_connections; i++)
     {
-      PortConnection * conn =
-        self->connections[i];
-      if (port_identifier_is_equal (conn->src_id, pi)
-          ||
-          port_identifier_is_equal (conn->dest_id, pi))
+      PortConnection * conn = self->connections[i];
+      if (
+        port_identifier_is_equal (conn->src_id, pi)
+        || port_identifier_is_equal (
+          conn->dest_id, pi))
         {
           remove_connection (self, i);
         }
@@ -477,8 +461,7 @@ port_connections_manager_contains_connection (
 }
 
 static void
-clear (
-  PortConnectionsManager * self)
+clear (PortConnectionsManager * self)
 {
   for (int i = 0; i < self->num_connections; i++)
     {
@@ -501,11 +484,9 @@ port_connections_manager_reset (
 {
   clear (self);
 
-  self->connections =
-    g_realloc_n (
-      self->connections,
-      (size_t) src->num_connections,
-      sizeof (PortConnection *));
+  self->connections = g_realloc_n (
+    self->connections, (size_t) src->num_connections,
+    sizeof (PortConnection *));
   self->connections_size =
     (size_t) src->num_connections;
   for (int i = 0; i < src->num_connections; i++)
@@ -515,20 +496,21 @@ port_connections_manager_reset (
     }
   self->num_connections = src->num_connections;
 
-  port_connections_manager_regenerate_hashtables (self);
+  port_connections_manager_regenerate_hashtables (
+    self);
 }
 
 void
-port_connections_manager_print_ht (
-  GHashTable * ht)
+port_connections_manager_print_ht (GHashTable * ht)
 {
   GHashTableIter iter;
-  gpointer key, value;
+  gpointer       key, value;
   g_hash_table_iter_init (&iter, ht);
   GString * gstr = g_string_new (NULL);
-  size_t sz = 800;
-  char buf[sz];
-  while (g_hash_table_iter_next (&iter, &key, &value))
+  size_t    sz = 800;
+  char      buf[sz];
+  while (
+    g_hash_table_iter_next (&iter, &key, &value))
     {
       const PortIdentifier * pi =
         (const PortIdentifier *) key;
@@ -539,7 +521,8 @@ port_connections_manager_print_ht (
         {
           PortConnection * conn =
             g_ptr_array_index (conns, i);
-          port_connection_print_to_str (conn, buf, sz);
+          port_connection_print_to_str (
+            conn, buf, sz);
           g_string_append_printf (
             gstr, "  %s\n", buf);
         }
@@ -559,8 +542,8 @@ port_connections_manager_print (
   for (int i = 0; i < self->num_connections; i++)
     {
       PortConnection * conn = self->connections[i];
-      size_t sz = 400;
-      char buf[sz];
+      size_t           sz = 400;
+      char             buf[sz];
       port_connection_print_to_str (conn, buf, sz);
       g_string_append_printf (
         gstr, "[%d] %s\n", i, buf);
@@ -580,11 +563,9 @@ port_connections_manager_clone (
   PortConnectionsManager * self =
     port_connections_manager_new ();
 
-  self->connections =
-    g_realloc_n (
-      self->connections,
-      (size_t) src->num_connections,
-      sizeof (PortConnection *));
+  self->connections = g_realloc_n (
+    self->connections, (size_t) src->num_connections,
+    sizeof (PortConnection *));
   self->connections_size =
     (size_t) src->num_connections;
   for (int i = 0; i < src->num_connections; i++)
@@ -594,7 +575,8 @@ port_connections_manager_clone (
     }
   self->num_connections = src->num_connections;
 
-  port_connections_manager_regenerate_hashtables (self);
+  port_connections_manager_regenerate_hashtables (
+    self);
 
   return self;
 }

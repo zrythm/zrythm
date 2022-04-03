@@ -51,28 +51,22 @@ object_color_chooser_dialog_widget_run (
   GtkColorChooserDialog * dialog = NULL;
   if (track)
     {
-      char * str =
-        g_strdup_printf (_("%s color"), track->name);
-      dialog =
-        GTK_COLOR_CHOOSER_DIALOG (
-          gtk_color_chooser_dialog_new (
-            str, parent));
+      char * str = g_strdup_printf (
+        _ ("%s color"), track->name);
+      dialog = GTK_COLOR_CHOOSER_DIALOG (
+        gtk_color_chooser_dialog_new (str, parent));
       gtk_color_chooser_set_rgba (
-        GTK_COLOR_CHOOSER (dialog),
-        &track->color);
+        GTK_COLOR_CHOOSER (dialog), &track->color);
       gtk_color_chooser_set_use_alpha (
         GTK_COLOR_CHOOSER (dialog), false);
       g_free (str);
     }
   else if (region)
     {
-      char * str =
-        g_strdup_printf (
-          _("%s color"), region->name);
-      dialog =
-        GTK_COLOR_CHOOSER_DIALOG (
-          gtk_color_chooser_dialog_new (
-            str, parent));
+      char * str = g_strdup_printf (
+        _ ("%s color"), region->name);
+      dialog = GTK_COLOR_CHOOSER_DIALOG (
+        gtk_color_chooser_dialog_new (str, parent));
     }
   else if (sel)
     {
@@ -80,13 +74,11 @@ object_color_chooser_dialog_widget_run (
       g_return_val_if_fail (
         IS_TRACK_AND_NONNULL (tr), false);
 
-      dialog =
-        GTK_COLOR_CHOOSER_DIALOG (
-          gtk_color_chooser_dialog_new (
-            _("Track color"), parent));
+      dialog = GTK_COLOR_CHOOSER_DIALOG (
+        gtk_color_chooser_dialog_new (
+          _ ("Track color"), parent));
       gtk_color_chooser_set_rgba (
-        GTK_COLOR_CHOOSER (dialog),
-        &tr->color);
+        GTK_COLOR_CHOOSER (dialog), &tr->color);
       gtk_color_chooser_set_use_alpha (
         GTK_COLOR_CHOOSER (dialog), false);
     }
@@ -122,8 +114,7 @@ object_color_chooser_dialog_widget_run (
           GdkRGBA cur_color = track->color;
 
           /* if changed, apply the change */
-          if (!color_is_same (
-                &sel_color, &cur_color))
+          if (!color_is_same (&sel_color, &cur_color))
             {
               track_set_color (
                 track, &sel_color, F_UNDOABLE,
@@ -133,14 +124,14 @@ object_color_chooser_dialog_widget_run (
       else if (sel)
         {
           GError * err = NULL;
-          bool ret =
+          bool     ret =
             tracklist_selections_action_perform_edit_color (
-            sel, &sel_color, &err);
+              sel, &sel_color, &err);
           if (!ret)
             {
               HANDLE_ERROR (
                 err, "%s",
-                _("Failed to change color"));
+                _ ("Failed to change color"));
             }
         }
     }

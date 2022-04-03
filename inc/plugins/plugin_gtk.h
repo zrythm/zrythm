@@ -41,14 +41,14 @@ typedef struct Plugin Plugin;
  */
 typedef struct PluginGtkController
 {
-  GtkSpinButton* spin;
-  GtkWidget*     control;
+  GtkSpinButton * spin;
+  GtkWidget *     control;
 
   /** Port this control is for. */
-  Port *         port;
+  Port * port;
 
   /** Pointer back to plugin. */
-  Plugin *       plugin;
+  Plugin * plugin;
 } PluginGtkController;
 
 #if 0
@@ -63,12 +63,12 @@ typedef struct PluginGtkPresetMenu
 
 typedef struct PluginGtkPresetRecord
 {
-  Plugin*     plugin;
+  Plugin * plugin;
   /**
    * This will be a LilvNode * for LV2 and an
    * absolute path for carla.
    */
-  void *      preset;
+  void * preset;
 } PluginGtkPresetRecord;
 
 /**
@@ -76,8 +76,7 @@ typedef struct PluginGtkPresetRecord
  * either wrap plugin UIs or create generic UIs in.
  */
 void
-plugin_gtk_create_window (
-  Plugin * plugin);
+plugin_gtk_create_window (Plugin * plugin);
 
 /**
  * Opens the generic UI of the plugin.
@@ -97,16 +96,14 @@ plugin_gtk_open_generic_ui (
  */
 NONNULL
 int
-plugin_gtk_update_plugin_ui (
-  Plugin * pl);
+plugin_gtk_update_plugin_ui (Plugin * pl);
 
 /**
  * Closes the plugin's UI (either LV2 wrapped with
  * suil, generic or LV2 external).
  */
 int
-plugin_gtk_close_ui (
-  Plugin* plugin);
+plugin_gtk_close_ui (Plugin * plugin);
 
 void
 plugin_gtk_set_window_title (
@@ -115,10 +112,10 @@ plugin_gtk_set_window_title (
 
 void
 plugin_gtk_add_control_row (
-  GtkWidget*  table,
-  int         row,
-  const char* name,
-  PluginGtkController* controller);
+  GtkWidget *           table,
+  int                   row,
+  const char *          name,
+  PluginGtkController * controller);
 
 #if 0
 void
@@ -139,9 +136,11 @@ plugin_gtk_on_save_preset_activate (
 
 gint
 plugin_gtk_menu_cmp (
-  gconstpointer a, gconstpointer b, gpointer data);
+  gconstpointer a,
+  gconstpointer b,
+  gpointer      data);
 
-#if  0
+#if 0
 PluginGtkPresetMenu*
 plugin_gtk_preset_menu_new (
   const char* label);
@@ -185,7 +184,7 @@ plugin_gtk_setup_plugin_presets_list_box (
  * @param preformatted Whether the text is
  *   preformatted.
  */
-GtkWidget*
+GtkWidget *
 plugin_gtk_new_label (
   const char * text,
   bool         title,

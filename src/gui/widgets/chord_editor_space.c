@@ -21,16 +21,16 @@
 #include "audio/region.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/chord_editor_space.h"
-#include "gui/widgets/chord_key.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_arranger.h"
+#include "gui/widgets/chord_editor_space.h"
+#include "gui/widgets/chord_key.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
-#include "gui/widgets/main_window.h"
-#include "gui/widgets/chord_arranger.h"
 #include "gui/widgets/editor_ruler.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
 #include "utils/gtk.h"
@@ -51,8 +51,7 @@ G_DEFINE_TYPE (
  * initialized.
  */
 static void
-link_scrolls (
-  ChordEditorSpaceWidget * self)
+link_scrolls (ChordEditorSpaceWidget * self)
 {
   /* link note keys v scroll to arranger v scroll */
   if (self->chord_keys_scroll)
@@ -80,17 +79,16 @@ link_scrolls (
 void
 chord_editor_space_widget_update_size_group (
   ChordEditorSpaceWidget * self,
-  int                     visible)
+  int                      visible)
 {
   clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
     MW_CLIP_EDITOR_INNER,
-    GTK_WIDGET (self->left_box),
-    visible);
+    GTK_WIDGET (self->left_box), visible);
 }
 
 static void
 on_realize (
-  GtkWidget * widget,
+  GtkWidget *              widget,
   ChordEditorSpaceWidget * self)
 {
 }
@@ -99,19 +97,17 @@ int
 chord_editor_space_widget_get_chord_height (
   ChordEditorSpaceWidget * self)
 {
-  return
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self->chord_keys[0]));
+  return gtk_widget_get_allocated_height (
+    GTK_WIDGET (self->chord_keys[0]));
 }
 
 int
 chord_editor_space_widget_get_all_chords_height (
   ChordEditorSpaceWidget * self)
 {
-  return
-    CHORD_EDITOR->num_chords *
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self->chord_keys[0]));
+  return CHORD_EDITOR->num_chords
+         * gtk_widget_get_allocated_height (
+           GTK_WIDGET (self->chord_keys[0]));
 }
 
 void
@@ -125,11 +121,9 @@ void
 chord_editor_space_widget_refresh_chords (
   ChordEditorSpaceWidget * self)
 {
-  for (int j = 0;
-       j < CHORD_EDITOR->num_chords; j++)
+  for (int j = 0; j < CHORD_EDITOR->num_chords; j++)
     {
-      chord_key_widget_refresh (
-        self->chord_keys[j]);
+      chord_key_widget_refresh (self->chord_keys[j]);
     }
 }
 
@@ -148,17 +142,14 @@ chord_editor_space_widget_setup (
   for (int i = 0; i < CHORD_EDITOR->num_chords; i++)
     {
       self->chord_keys[i] = chord_key_widget_new (i);
-      GtkBox * box =
-        GTK_BOX (
-          gtk_box_new (
-            GTK_ORIENTATION_HORIZONTAL, 0));
+      GtkBox * box = GTK_BOX (gtk_box_new (
+        GTK_ORIENTATION_HORIZONTAL, 0));
       gtk_box_append (
         box, GTK_WIDGET (self->chord_keys[i]));
       gtk_widget_add_css_class (
         GTK_WIDGET (box), "chord_key");
       gtk_box_append (
-        self->chord_keys_box,
-        GTK_WIDGET (box));
+        self->chord_keys_box, GTK_WIDGET (box));
       self->chord_key_boxes[i] = box;
     }
 
@@ -171,8 +162,7 @@ chord_editor_space_widget_init (
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->arranger->type =
-    ARRANGER_WIDGET_TYPE_CHORD;
+  self->arranger->type = ARRANGER_WIDGET_TYPE_CHORD;
 
   self->arranger_and_keys_vsize_group =
     gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
@@ -185,7 +175,7 @@ chord_editor_space_widget_init (
 
   g_signal_connect (
     G_OBJECT (self), "realize",
-    G_CALLBACK (on_realize),  self);
+    G_CALLBACK (on_realize), self);
 }
 
 static void

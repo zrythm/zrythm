@@ -37,17 +37,18 @@
 G_DECLARE_FINAL_TYPE (
   RangeActionButtonsWidget,
   range_action_buttons_widget,
-  Z, RANGE_ACTION_BUTTONS_WIDGET,
+  Z,
+  RANGE_ACTION_BUTTONS_WIDGET,
   GtkBox)
 
 typedef struct _SnapGridWidget SnapGridWidget;
-typedef struct SnapGrid SnapGrid;
+typedef struct SnapGrid        SnapGrid;
 
 typedef struct _RangeActionButtonsWidget
 {
-  GtkBox    parent_instance;
-  GtkButton *     insert_silence;
-  GtkButton *     remove;
+  GtkBox      parent_instance;
+  GtkButton * insert_silence;
+  GtkButton * remove;
 } RangeActionButtonsWidget;
 
 /**

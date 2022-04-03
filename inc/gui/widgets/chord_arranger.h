@@ -20,22 +20,22 @@
 #ifndef __GUI_WIDGETS_CHORD_ARRANGER_H__
 #define __GUI_WIDGETS_CHORD_ARRANGER_H__
 
+#include "audio/position.h"
 #include "gui/backend/tool.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
-#include "audio/position.h"
 
 #include <gtk/gtk.h>
 
 #define MW_CHORD_ARRANGER \
   MW_CHORD_EDITOR_SPACE->arranger
 
-typedef struct ChordObject ChordObject;
+typedef struct ChordObject        ChordObject;
 typedef struct _ChordObjectWidget ChordObjectWidget;
-typedef struct SnapGrid SnapGrid;
-typedef struct AutomationPoint AutomationPoint;
-typedef struct ZRegion ChordRegion;
-typedef struct Channel Channel;
+typedef struct SnapGrid           SnapGrid;
+typedef struct AutomationPoint    AutomationPoint;
+typedef struct ZRegion            ChordRegion;
+typedef struct Channel            Channel;
 
 /**
  * @addtogroup widgets
@@ -47,8 +47,7 @@ typedef struct Channel Channel;
  * Returns the chord index at y.
  */
 int
-chord_arranger_widget_get_chord_at_y (
-  double y);
+chord_arranger_widget_get_chord_at_y (double y);
 
 /**
  * Called on drag begin in parent when background is double
@@ -57,9 +56,9 @@ chord_arranger_widget_get_chord_at_y (
 void
 chord_arranger_widget_create_chord (
   ArrangerWidget * self,
-  const Position *      pos,
-  int                   chord_index,
-  ZRegion *              region);
+  const Position * pos,
+  int              chord_index,
+  ZRegion *        region);
 
 /**
  * @}

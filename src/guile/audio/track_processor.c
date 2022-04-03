@@ -20,23 +20,24 @@
 #include "guile/modules.h"
 
 #ifndef SNARF_MODE
-#include "audio/track_processor.h"
-#include "project.h"
+#  include "audio/track_processor.h"
+#  include "project.h"
 #endif
 
 SCM_DEFINE (
   s_track_processor_get_stereo_in,
-  "track-processor-get-stereo-in", 1, 0, 0,
+  "track-processor-get-stereo-in",
+  1,
+  0,
+  0,
   (SCM track_processor),
   "Returns the stereo in ports instance of the track processor.")
 #define FUNC_NAME s_
 {
-  TrackProcessor * tp =
-    (TrackProcessor *)
+  TrackProcessor * tp = (TrackProcessor *)
     scm_to_pointer (track_processor);
 
-  return
-    scm_from_pointer (tp->stereo_in, NULL);
+  return scm_from_pointer (tp->stereo_in, NULL);
 }
 #undef FUNC_NAME
 
@@ -44,7 +45,7 @@ static void
 init_module (void * data)
 {
 #ifndef SNARF_MODE
-#include "audio_track_processor.x"
+#  include "audio_track_processor.x"
 #endif
 
   scm_c_export (

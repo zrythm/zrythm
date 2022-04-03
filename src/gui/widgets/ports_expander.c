@@ -30,9 +30,10 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (PortsExpanderWidget,
-               ports_expander_widget,
-               TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
+G_DEFINE_TYPE (
+  PortsExpanderWidget,
+  ports_expander_widget,
+  TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
 
 /**
  * Refreshes each field.
@@ -52,17 +53,19 @@ ports_expander_widget_refresh (
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
-                self->plugin &&
-                  self->plugin->setting->descr->
-                    num_ctrl_ins > 0);
+                self->plugin
+                  && self->plugin->setting->descr
+                         ->num_ctrl_ins
+                       > 0);
             }
           else if (self->flow == FLOW_OUTPUT)
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
-                self->plugin &&
-                  self->plugin->setting->descr->
-                    num_ctrl_outs > 0);
+                self->plugin
+                  && self->plugin->setting->descr
+                         ->num_ctrl_outs
+                       > 0);
             }
         }
       else if (self->type == TYPE_AUDIO)
@@ -71,17 +74,19 @@ ports_expander_widget_refresh (
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
-                self->plugin &&
-                  self->plugin->setting->descr->
-                    num_audio_ins > 0);
+                self->plugin
+                  && self->plugin->setting->descr
+                         ->num_audio_ins
+                       > 0);
             }
           else if (self->flow == FLOW_OUTPUT)
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
-                self->plugin &&
-                  self->plugin->setting->descr->
-                    num_audio_outs > 0);
+                self->plugin
+                  && self->plugin->setting->descr
+                         ->num_audio_outs
+                       > 0);
             }
         }
       else if (self->type == TYPE_EVENT)
@@ -90,17 +95,19 @@ ports_expander_widget_refresh (
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
-                self->plugin &&
-                  self->plugin->setting->descr->
-                    num_midi_ins > 0);
+                self->plugin
+                  && self->plugin->setting->descr
+                         ->num_midi_ins
+                       > 0);
             }
           else if (self->flow == FLOW_OUTPUT)
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
-                self->plugin &&
-                  self->plugin->setting->descr->
-                    num_midi_outs > 0);
+                self->plugin
+                  && self->plugin->setting->descr
+                         ->num_midi_outs
+                       > 0);
             }
         }
       else if (self->type == TYPE_CV)
@@ -109,17 +116,17 @@ ports_expander_widget_refresh (
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
-                self->plugin &&
-                  self->plugin->setting->descr->
-                    num_cv_ins > 0);
+                self->plugin
+                  && self->plugin->setting->descr->num_cv_ins
+                       > 0);
             }
           else if (self->flow == FLOW_OUTPUT)
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
-                self->plugin &&
-                  self->plugin->setting->descr->
-                    num_cv_outs > 0);
+                self->plugin
+                  && self->plugin->setting->descr->num_cv_outs
+                       > 0);
             }
         }
     }
@@ -135,20 +142,16 @@ set_icon_from_port_type (
 {
   if (type == TYPE_AUDIO)
     expander_box_widget_set_icon_name (
-      Z_EXPANDER_BOX_WIDGET (self),
-      "signal-audio");
+      Z_EXPANDER_BOX_WIDGET (self), "signal-audio");
   else if (type == TYPE_CV)
     expander_box_widget_set_icon_name (
-      Z_EXPANDER_BOX_WIDGET (self),
-      "signal-cv");
+      Z_EXPANDER_BOX_WIDGET (self), "signal-cv");
   else if (type == TYPE_EVENT)
     expander_box_widget_set_icon_name (
-      Z_EXPANDER_BOX_WIDGET (self),
-      "audio-midi");
+      Z_EXPANDER_BOX_WIDGET (self), "audio-midi");
   else if (type == TYPE_CONTROL)
     expander_box_widget_set_icon_name (
-      Z_EXPANDER_BOX_WIDGET (self),
-      "configure");
+      Z_EXPANDER_BOX_WIDGET (self), "configure");
 }
 
 /**
@@ -157,9 +160,9 @@ set_icon_from_port_type (
 void
 ports_expander_widget_setup_plugin (
   PortsExpanderWidget * self,
-  PortFlow      flow,
-  PortType      type,
-  Plugin *      pl)
+  PortFlow              flow,
+  PortType              type,
+  Plugin *              pl)
 {
   self->flow = flow;
   self->type = type;
@@ -172,34 +175,25 @@ ports_expander_widget_setup_plugin (
   /* set name and icon */
   char fullstr[200];
 
-  if (type == TYPE_CONTROL &&
-      flow == FLOW_INPUT)
-    strcpy (fullstr, _("Controls"));
-  else if (type == TYPE_CONTROL &&
-      flow == FLOW_OUTPUT)
-    strcpy (fullstr, _("Control Outs"));
-  else if (type == TYPE_AUDIO &&
-           flow == FLOW_INPUT)
-    strcpy (fullstr, _("Audio Ins"));
-  else if (type == TYPE_AUDIO &&
-      flow == FLOW_OUTPUT)
-    strcpy (fullstr, _("Audio Outs"));
-  else if (type == TYPE_EVENT &&
-      flow == FLOW_INPUT)
-    strcpy (fullstr, _("MIDI Ins"));
-  else if (type == TYPE_EVENT &&
-      flow == FLOW_OUTPUT)
-    strcpy (fullstr, _("MIDI Outs"));
-  else if (type == TYPE_CV &&
-      flow == FLOW_INPUT)
-    strcpy (fullstr, _("CV Ins"));
-  else if (type == TYPE_CV &&
-      flow == FLOW_OUTPUT)
-    strcpy (fullstr, _("CV Outs"));
+  if (type == TYPE_CONTROL && flow == FLOW_INPUT)
+    strcpy (fullstr, _ ("Controls"));
+  else if (type == TYPE_CONTROL && flow == FLOW_OUTPUT)
+    strcpy (fullstr, _ ("Control Outs"));
+  else if (type == TYPE_AUDIO && flow == FLOW_INPUT)
+    strcpy (fullstr, _ ("Audio Ins"));
+  else if (type == TYPE_AUDIO && flow == FLOW_OUTPUT)
+    strcpy (fullstr, _ ("Audio Outs"));
+  else if (type == TYPE_EVENT && flow == FLOW_INPUT)
+    strcpy (fullstr, _ ("MIDI Ins"));
+  else if (type == TYPE_EVENT && flow == FLOW_OUTPUT)
+    strcpy (fullstr, _ ("MIDI Outs"));
+  else if (type == TYPE_CV && flow == FLOW_INPUT)
+    strcpy (fullstr, _ ("CV Ins"));
+  else if (type == TYPE_CV && flow == FLOW_OUTPUT)
+    strcpy (fullstr, _ ("CV Outs"));
 
   expander_box_widget_set_label (
-    Z_EXPANDER_BOX_WIDGET (self),
-    fullstr);
+    Z_EXPANDER_BOX_WIDGET (self), fullstr);
 
   set_icon_from_port_type (self, type);
 
@@ -210,11 +204,10 @@ ports_expander_widget_setup_plugin (
   /* set scrollbar options */
   two_col_expander_box_widget_set_scroll_policy (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-    GTK_POLICY_NEVER,
-    GTK_POLICY_AUTOMATIC);
+    GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
   two_col_expander_box_widget_set_min_max_size (
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-    -1, -1, -1, 120);
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), -1, -1,
+    -1, 120);
 
   TwoColExpanderBoxWidgetPrivate * prv =
     two_col_expander_box_widget_get_private (
@@ -226,115 +219,121 @@ ports_expander_widget_setup_plugin (
     g_array_new (false, true, sizeof (Port *));
 
   InspectorPortWidget * ip;
-  Port * port;
-  PortIdentifier * pi;
-  if (pl && type == TYPE_CONTROL &&
-      flow == FLOW_INPUT)
+  Port *                port;
+  PortIdentifier *      pi;
+  if (pl && type == TYPE_CONTROL && flow == FLOW_INPUT)
     {
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           port = pl->in_ports[i];
           pi = &port->id;
-          if (pi->type != TYPE_CONTROL ||
-              pi->flags & PORT_FLAG_NOT_ON_GUI)
+          if (
+            pi->type != TYPE_CONTROL
+            || pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
           g_array_append_val (ports, port);
         }
     }
-  else if (pl && type == TYPE_CONTROL &&
-           flow == FLOW_OUTPUT)
+  else if (
+    pl && type == TYPE_CONTROL
+    && flow == FLOW_OUTPUT)
     {
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           port = pl->out_ports[i];
           pi = &port->id;
-          if (pi->type != TYPE_CONTROL ||
-              pi->flags & PORT_FLAG_NOT_ON_GUI)
+          if (
+            pi->type != TYPE_CONTROL
+            || pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
           g_array_append_val (ports, port);
         }
     }
-  else if (pl && type == TYPE_CV &&
-           flow == FLOW_INPUT)
+  else if (pl && type == TYPE_CV && flow == FLOW_INPUT)
     {
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           port = pl->in_ports[i];
           pi = &port->id;
-          if (pi->type != TYPE_CV ||
-              pi->flags & PORT_FLAG_NOT_ON_GUI)
+          if (
+            pi->type != TYPE_CV
+            || pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
           g_array_append_val (ports, port);
         }
     }
-  else if (pl && type == TYPE_CV &&
-           flow == FLOW_OUTPUT)
+  else if (pl && type == TYPE_CV && flow == FLOW_OUTPUT)
     {
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           port = pl->out_ports[i];
           pi = &port->id;
-          if (pi->type != TYPE_CV ||
-              pi->flags & PORT_FLAG_NOT_ON_GUI)
+          if (
+            pi->type != TYPE_CV
+            || pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
           g_array_append_val (ports, port);
         }
     }
-  else if (pl && type == TYPE_AUDIO &&
-           flow == FLOW_INPUT)
+  else if (
+    pl && type == TYPE_AUDIO && flow == FLOW_INPUT)
     {
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           port = pl->in_ports[i];
           pi = &port->id;
-          if (pi->type != TYPE_AUDIO ||
-              pi->flags & PORT_FLAG_NOT_ON_GUI)
+          if (
+            pi->type != TYPE_AUDIO
+            || pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
           g_array_append_val (ports, port);
         }
     }
-  else if (pl && type == TYPE_AUDIO &&
-           flow == FLOW_OUTPUT)
+  else if (
+    pl && type == TYPE_AUDIO && flow == FLOW_OUTPUT)
     {
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           port = pl->out_ports[i];
           pi = &port->id;
-          if (pi->type != TYPE_AUDIO ||
-              pi->flags & PORT_FLAG_NOT_ON_GUI)
+          if (
+            pi->type != TYPE_AUDIO
+            || pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
           g_array_append_val (ports, port);
         }
     }
-  else if (pl && type == TYPE_EVENT &&
-           flow == FLOW_INPUT)
+  else if (
+    pl && type == TYPE_EVENT && flow == FLOW_INPUT)
     {
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           port = pl->in_ports[i];
           pi = &port->id;
-          if (pi->type != TYPE_EVENT ||
-              pi->flags & PORT_FLAG_NOT_ON_GUI)
+          if (
+            pi->type != TYPE_EVENT
+            || pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
           g_array_append_val (ports, port);
         }
     }
-  else if (pl && type == TYPE_EVENT &&
-           flow == FLOW_OUTPUT)
+  else if (
+    pl && type == TYPE_EVENT && flow == FLOW_OUTPUT)
     {
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           port = pl->out_ports[i];
           pi = &port->id;
-          if (pi->type != TYPE_EVENT ||
-              pi->flags & PORT_FLAG_NOT_ON_GUI)
+          if (
+            pi->type != TYPE_EVENT
+            || pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
           g_array_append_val (ports, port);
@@ -346,15 +345,14 @@ ports_expander_widget_setup_plugin (
   g_debug ("adding ports...");
 
 #define ADD_SINGLE(x) \
-  ip = \
-    inspector_port_widget_new (x); \
+  ip = inspector_port_widget_new (x); \
   two_col_expander_box_widget_add_single ( \
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), \
     GTK_WIDGET (ip))
 
   /* Add ports in group order */
   const char * last_group = NULL;
-  int num_ports = (int) ports->len;
+  int          num_ports = (int) ports->len;
   for (int i = 0; i < num_ports; ++i)
     {
       port = g_array_index (ports, Port *, i);
@@ -365,7 +363,7 @@ ports_expander_widget_setup_plugin (
       if (!string_is_equal (group, last_group))
         {
           const char * group_name =
-            group ? group : _("Ungrouped");
+            group ? group : _ ("Ungrouped");
           GtkWidget * group_label =
             gtk_label_new (group_name);
           gtk_widget_set_name (
@@ -376,8 +374,7 @@ ports_expander_widget_setup_plugin (
           gtk_widget_add_css_class (
             group_label, "port-group-lbl");
           gtk_widget_set_visible (group_label, true);
-          gtk_widget_set_margin_top (
-            group_label, 3);
+          gtk_widget_set_margin_top (group_label, 3);
           gtk_widget_set_margin_bottom (
             group_label, 3);
           two_col_expander_box_widget_add_single (
@@ -414,7 +411,7 @@ ports_expander_widget_setup_track (
   self->track = tr;
 
   /*PortType in_type =*/
-    /*self->track->in_signal_type;*/
+  /*self->track->in_signal_type;*/
   PortType out_type;
   if (tr)
     out_type = self->track->out_signal_type;
@@ -426,28 +423,26 @@ ports_expander_widget_setup_track (
     case PE_TRACK_PORT_TYPE_CONTROLS:
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self),
-        _("Controls"));
+        _ ("Controls"));
       self->flow = FLOW_INPUT;
       self->type = TYPE_CONTROL;
       break;
     case PE_TRACK_PORT_TYPE_SENDS:
       expander_box_widget_set_label (
-        Z_EXPANDER_BOX_WIDGET (self),
-        _("Sends"));
+        Z_EXPANDER_BOX_WIDGET (self), _ ("Sends"));
       self->flow = FLOW_OUTPUT;
       self->type = out_type;
       break;
     case PE_TRACK_PORT_TYPE_STEREO_IN:
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self),
-        _("Stereo In"));
+        _ ("Stereo In"));
       self->flow = FLOW_INPUT;
       self->owner_type = PORT_OWNER_TYPE_TRACK;
       break;
     case PE_TRACK_PORT_TYPE_MIDI_IN:
       expander_box_widget_set_label (
-        Z_EXPANDER_BOX_WIDGET (self),
-        _("MIDI In"));
+        Z_EXPANDER_BOX_WIDGET (self), _ ("MIDI In"));
       self->owner_type = PORT_OWNER_TYPE_TRACK;
       self->flow = FLOW_INPUT;
       self->type = TYPE_EVENT;
@@ -455,7 +450,7 @@ ports_expander_widget_setup_track (
     case PE_TRACK_PORT_TYPE_MIDI_OUT:
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self),
-        _("MIDI Out"));
+        _ ("MIDI Out"));
       self->owner_type = PORT_OWNER_TYPE_TRACK;
       self->flow = FLOW_OUTPUT;
       self->type = TYPE_EVENT;
@@ -475,12 +470,10 @@ ports_expander_widget_setup_track (
     GTK_WIDGET (prv->content), 1);
 
 #define ADD_SINGLE(x) \
-  ip = \
-    inspector_port_widget_new (x); \
+  ip = inspector_port_widget_new (x); \
   two_col_expander_box_widget_add_single ( \
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), \
     GTK_WIDGET (ip))
-
 
   if (tr)
     {
@@ -514,18 +507,14 @@ ports_expander_widget_setup_track (
           break;
           break;
         case PE_TRACK_PORT_TYPE_STEREO_IN:
-          ADD_SINGLE (
-            tr->processor->stereo_in->l);
-          ADD_SINGLE (
-            tr->processor->stereo_in->r);
+          ADD_SINGLE (tr->processor->stereo_in->l);
+          ADD_SINGLE (tr->processor->stereo_in->r);
           break;
         case PE_TRACK_PORT_TYPE_MIDI_IN:
-          ADD_SINGLE (
-            tr->processor->midi_in);
+          ADD_SINGLE (tr->processor->midi_in);
           break;
         case PE_TRACK_PORT_TYPE_MIDI_OUT:
-          ADD_SINGLE (
-            tr->channel->midi_out);
+          ADD_SINGLE (tr->channel->midi_out);
           break;
         }
     }
@@ -544,6 +533,6 @@ ports_expander_widget_init (
   PortsExpanderWidget * self)
 {
   /*two_col_expander_box_widget_add_single (*/
-    /*Z_TWO_COL_EXPANDER_BOX_WIDGET (self),*/
-    /*GTK_WIDGET (self->name));*/
+  /*Z_TWO_COL_EXPANDER_BOX_WIDGET (self),*/
+  /*GTK_WIDGET (self->name));*/
 }

@@ -36,22 +36,23 @@
 
 #include "zrythm-config.h"
 
-#include <errno.h>
 #include <stdbool.h>
 #include <stdlib.h>
+
+#include <errno.h>
 #include <string.h>
 #ifdef __linux__
-#include <fcntl.h>
-#include <linux/fs.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#  include <fcntl.h>
+#  include <linux/fs.h>
+#  include <sys/ioctl.h>
+#  include <sys/stat.h>
+#  include <sys/types.h>
 #endif
 
 #ifdef _WOE32
-#include <windows.h>
+#  include <windows.h>
 #else
-#include <unistd.h>
+#  include <unistd.h>
 #endif
 
 #include "utils/file.h"
@@ -64,51 +65,66 @@ file_path_relative_to (
   const char * path,
   const char * base)
 {
-  const size_t path_len = strlen(path);
-  const size_t base_len = strlen(base);
-  const size_t min_len  = (path_len < base_len) ? path_len : base_len;
+  const size_t path_len = strlen (path);
+  const size_t base_len = strlen (base);
+  const size_t min_len =
+    (path_len < base_len) ? path_len : base_len;
 
   // Find the last separator common to both paths
   size_t last_shared_sep = 0;
-  for (size_t i = 0; i < min_len && path[i] == base[i]; ++i) {
-    if (path[i] == G_DIR_SEPARATOR) {
-      last_shared_sep = i;
+  for (size_t i = 0;
+       i < min_len && path[i] == base[i]; ++i)
+    {
+      if (path[i] == G_DIR_SEPARATOR)
+        {
+          last_shared_sep = i;
+        }
     }
-  }
 
-  if (last_shared_sep == 0) {
-    // No common components, return path
-    return g_strdup(path);
-  }
+  if (last_shared_sep == 0)
+    {
+      // No common components, return path
+      return g_strdup (path);
+    }
 
   // Find the number of up references ("..") required
   size_t up = 0;
-  for (size_t i = last_shared_sep + 1; i < base_len; ++i) {
-    if (base[i] == G_DIR_SEPARATOR) {
-      ++up;
+  for (size_t i = last_shared_sep + 1; i < base_len;
+       ++i)
+    {
+      if (base[i] == G_DIR_SEPARATOR)
+        {
+          ++up;
+        }
     }
-  }
 
 #ifdef _WOE32
-  const bool use_slash = strchr(path, '/');
+  const bool use_slash = strchr (path, '/');
 #else
   static const bool use_slash = true;
 #endif
 
   // Write up references
-  const size_t suffix_len = path_len - last_shared_sep;
+  const size_t suffix_len =
+    path_len - last_shared_sep;
   char * rel =
     g_malloc0_n (1, suffix_len + (up * 3) + 1);
-  for (size_t i = 0; i < up; ++i) {
-    if (use_slash) {
-      memcpy(rel + (i * 3), "../", 3);
-    } else {
-      memcpy(rel + (i * 3), "..\\", 3);
+  for (size_t i = 0; i < up; ++i)
+    {
+      if (use_slash)
+        {
+          memcpy (rel + (i * 3), "../", 3);
+        }
+      else
+        {
+          memcpy (rel + (i * 3), "..\\", 3);
+        }
     }
-  }
 
   // Write suffix
-  memcpy(rel + (up * 3), path + last_shared_sep + 1, suffix_len);
+  memcpy (
+    rel + (up * 3), path + last_shared_sep + 1,
+    suffix_len);
   return rel;
 }
 
@@ -119,13 +135,10 @@ file_symlink (
 {
   int ret = 0;
 #ifdef _WOE32
-  ret =
-    !CreateHardLink (
-      new_path, old_path, 0);
+  ret = !CreateHardLink (new_path, old_path, 0);
 #else
-  char * target =
-    file_path_relative_to (
-      old_path, new_path);
+  char *            target =
+    file_path_relative_to (old_path, new_path);
   ret = symlink (target, new_path);
 #endif
 
@@ -138,9 +151,7 @@ file_symlink (
  * @return Non-zero on error.
  */
 int
-file_reflink (
-  const char * dest,
-  const char * src)
+file_reflink (const char * dest, const char * src)
 {
 #ifdef __linux__
   int src_fd = g_open (src, O_RDONLY);

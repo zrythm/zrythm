@@ -46,13 +46,14 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+
 #include <audec/audec.h>
 
-#include <gtk/gtk.h>
-#include <glib/gi18n.h>
-
 G_DEFINE_TYPE (
-  FileBrowserWidget, file_browser_widget,
+  FileBrowserWidget,
+  file_browser_widget,
   GTK_TYPE_BOX)
 
 enum
@@ -70,7 +71,7 @@ update_file_info_label (
 {
   gtk_label_set_markup (
     self->file_info,
-    label ? label : _("No file selected"));
+    label ? label : _ ("No file selected"));
 
   return G_SOURCE_REMOVE;
 }
@@ -81,7 +82,7 @@ update_file_info_label (
  */
 static void
 on_file_chooser_file_activated (
-  GtkFileChooser *chooser,
+  GtkFileChooser *    chooser,
   FileBrowserWidget * self)
 {
   GFile * gfile =
@@ -97,28 +98,25 @@ on_file_chooser_file_activated (
     file->type, abs_path);
 
   GError * err = NULL;
-  bool ret = true;
+  bool     ret = true;
   switch (file->type)
     {
     case FILE_TYPE_WAV:
     case FILE_TYPE_OGG:
     case FILE_TYPE_FLAC:
     case FILE_TYPE_MP3:
-      ret =
-        tracklist_selections_action_perform_create (
-          TRACK_TYPE_AUDIO, NULL, file,
-          TRACKLIST->num_tracks, PLAYHEAD, 1, -1,
-          &err);
+      ret = tracklist_selections_action_perform_create (
+        TRACK_TYPE_AUDIO, NULL, file,
+        TRACKLIST->num_tracks, PLAYHEAD, 1, -1,
+        &err);
       break;
     case FILE_TYPE_MIDI:
-      ret =
-        tracklist_selections_action_perform_create (
-          TRACK_TYPE_MIDI, NULL, file,
-          TRACKLIST->num_tracks,
-          PLAYHEAD,
-          /* the number of tracks
+      ret = tracklist_selections_action_perform_create (
+        TRACK_TYPE_MIDI, NULL, file,
+        TRACKLIST->num_tracks, PLAYHEAD,
+        /* the number of tracks
            * to create depends on the MIDI file */
-          -1, -1, &err);
+        -1, -1, &err);
       break;
     default:
       break;
@@ -128,7 +126,7 @@ on_file_chooser_file_activated (
     {
       HANDLE_ERROR (
         err,
-        _("Failed to create track for file '%s'"),
+        _ ("Failed to create track for file '%s'"),
         abs_path);
     }
 
@@ -141,7 +139,7 @@ on_file_chooser_file_activated (
  */
 static void
 on_file_chooser_selection_changed (
-  GtkFileChooser *chooser,
+  GtkFileChooser *    chooser,
   FileBrowserWidget * self)
 {
   if (self->selected_file)
@@ -150,7 +148,7 @@ on_file_chooser_selection_changed (
         {
           supported_file_free (
             (SupportedFile *)
-            self->selected_file->obj);
+              self->selected_file->obj);
           self->selected_file->obj = NULL;
         }
       object_free_w_func_and_null (
@@ -175,8 +173,7 @@ on_file_chooser_selection_changed (
     supported_file_new_from_path (abs_path);
   WrappedObjectWithChangeSignal * wrapped_obj =
     wrapped_object_with_change_signal_new (
-      file,
-      WRAPPED_OBJECT_TYPE_SUPPORTED_FILE);
+      file, WRAPPED_OBJECT_TYPE_SUPPORTED_FILE);
 
   char * label =
     supported_file_get_info_text_for_label (file);
@@ -184,9 +181,10 @@ on_file_chooser_selection_changed (
 
   g_free (abs_path);
 
-  if (g_settings_get_boolean (
-        S_UI_FILE_BROWSER, "autoplay") &&
-      supported_file_should_autoplay (file))
+  if (
+    g_settings_get_boolean (
+      S_UI_FILE_BROWSER, "autoplay")
+    && supported_file_should_autoplay (file))
     {
       sample_processor_queue_file (
         SAMPLE_PROCESSOR, file);
@@ -196,8 +194,7 @@ on_file_chooser_selection_changed (
 }
 
 static WrappedObjectWithChangeSignal *
-get_selected_file (
-  GtkWidget * widget)
+get_selected_file (GtkWidget * widget)
 {
   FileBrowserWidget * self =
     Z_FILE_BROWSER_WIDGET (widget);
@@ -275,8 +272,7 @@ file_filter_func (
 #endif
 
 static void
-refilter_files (
-  FileBrowserWidget * self)
+refilter_files (FileBrowserWidget * self)
 {
   /* TODO use MIME-based filtering */
 #if 0
@@ -293,23 +289,20 @@ refilter_files (
 
 static int
 on_map_event (
-  GtkStack * stack,
-  GdkEvent * event,
+  GtkStack *          stack,
+  GdkEvent *          event,
   FileBrowserWidget * self)
 {
   /*g_message ("FILE MAP EVENT");*/
-  if (gtk_widget_get_mapped (
-        GTK_WIDGET (self)))
+  if (gtk_widget_get_mapped (GTK_WIDGET (self)))
     {
       self->start_saving_pos = 1;
       self->first_time_position_set_time =
         g_get_monotonic_time ();
 
       /* set divider position */
-      int divider_pos =
-        g_settings_get_int (
-          S_UI,
-          "browser-divider-position");
+      int divider_pos = g_settings_get_int (
+        S_UI, "browser-divider-position");
       gtk_paned_set_position (
         GTK_PANED (self), divider_pos);
       self->first_time_position_set = 1;
@@ -332,10 +325,9 @@ file_browser_widget_new ()
   gtk_label_set_xalign (self->file_info, 0);
 
   /* create file chooser */
-  self->file_chooser =
-    GTK_FILE_CHOOSER_WIDGET (
-      gtk_file_chooser_widget_new (
-        GTK_FILE_CHOOSER_ACTION_OPEN));
+  self->file_chooser = GTK_FILE_CHOOSER_WIDGET (
+    gtk_file_chooser_widget_new (
+      GTK_FILE_CHOOSER_ACTION_OPEN));
   gtk_widget_set_visible (
     GTK_WIDGET (self->file_chooser), true);
   refilter_files (self);
@@ -345,17 +337,15 @@ file_browser_widget_new ()
        i < FILE_MANAGER->locations->len; i++)
     {
       FileBrowserLocation * loc =
-        (FileBrowserLocation *)
-        g_ptr_array_index (
+        (FileBrowserLocation *) g_ptr_array_index (
           FILE_MANAGER->locations, i);
 
-      if (loc->special_location ==
-            FILE_MANAGER_NONE)
+      if (loc->special_location == FILE_MANAGER_NONE)
         {
           GFile * gfile =
             g_file_new_for_path (loc->path);
           GError * err = NULL;
-          bool ret =
+          bool     ret =
             gtk_file_chooser_add_shortcut_folder (
               GTK_FILE_CHOOSER (self->file_chooser),
               gfile, &err);
@@ -371,9 +361,8 @@ file_browser_widget_new ()
     }
 
   /* choose current location from settings */
-  GFile * gfile =
-    g_file_new_for_path (
-      FILE_MANAGER->selection->path);
+  GFile * gfile = g_file_new_for_path (
+    FILE_MANAGER->selection->path);
   gtk_file_chooser_set_file (
     GTK_FILE_CHOOSER (self->file_chooser), gfile,
     NULL);
@@ -383,8 +372,7 @@ file_browser_widget_new ()
     GTK_BOX (self->file_chooser_box),
     GTK_WIDGET (self->file_chooser));
   g_signal_connect (
-    G_OBJECT (self->file_chooser),
-    "file-activated",
+    G_OBJECT (self->file_chooser), "file-activated",
     G_CALLBACK (on_file_chooser_file_activated),
     self);
   g_signal_connect (
@@ -394,13 +382,11 @@ file_browser_widget_new ()
     self);
 
   file_auditioner_controls_widget_setup (
-    self->auditioner_controls,
-    GTK_WIDGET (self), true,
-    get_selected_file,
+    self->auditioner_controls, GTK_WIDGET (self),
+    true, get_selected_file,
     (GenericCallback) refilter_files);
   file_browser_filters_widget_setup (
-    self->filters_toolbar,
-    GTK_WIDGET (self),
+    self->filters_toolbar, GTK_WIDGET (self),
     (GenericCallback) refilter_files);
 
   g_signal_connect (
@@ -414,16 +400,13 @@ static void
 file_browser_widget_class_init (
   FileBrowserWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "file_browser.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, \
-    FileBrowserWidget, \
-    x)
+    klass, FileBrowserWidget, x)
 
   BIND_CHILD (browser_bot);
   BIND_CHILD (file_chooser_box);
@@ -439,8 +422,7 @@ file_browser_widget_init (FileBrowserWidget * self)
 {
   g_type_ensure (
     FILE_AUDITIONER_CONTROLS_WIDGET_TYPE);
-  g_type_ensure (
-    FILE_BROWSER_FILTERS_WIDGET_TYPE);
+  g_type_ensure (FILE_BROWSER_FILTERS_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

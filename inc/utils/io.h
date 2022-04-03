@@ -119,8 +119,7 @@ io_file_get_last_modified_datetime_as_str (
  */
 NONNULL
 int
-io_remove (
-  const char * path);
+io_remove (const char * path);
 
 /**
  * Removes a dir, optionally forcing deletion.
@@ -131,9 +130,7 @@ io_remove (
  */
 NONNULL
 int
-io_rmdir (
-  const char * path,
-  bool         force);
+io_rmdir (const char * path, bool force);
 
 /**
  * Returns a list of the files in the given
@@ -143,7 +140,7 @@ io_rmdir (
  *   must be free'd with g_strfreev(), or NULL if
  *   no files were found.
  */
-#define io_get_files_in_dir(dir,allow_empty) \
+#define io_get_files_in_dir(dir, allow_empty) \
   io_get_files_in_dir_ending_in ( \
     dir, 0, NULL, allow_empty)
 
@@ -201,8 +198,7 @@ io_get_next_available_filepath (
  */
 NONNULL
 void
-io_open_directory (
-  const char * path);
+io_open_directory (const char * path);
 
 /**
  * Returns a clone of the given string after
@@ -210,19 +206,16 @@ io_open_directory (
  */
 NONNULL
 void
-io_escape_dir_name (
-  char *       dest,
-  const char * dir);
+io_escape_dir_name (char * dest, const char * dir);
 
 #define io_write_file g_file_set_contents
 
 #ifdef _WOE32
 char *
-io_get_registry_string_val (
-  const char * path);
+io_get_registry_string_val (const char * path);
 #endif
 
-#if defined (__APPLE__) && defined (INSTALLER_VER)
+#if defined(__APPLE__) && defined(INSTALLER_VER)
 /**
  * Gets the bundle path on MacOS.
  *
@@ -230,8 +223,7 @@ io_get_registry_string_val (
  */
 NONNULL
 int
-io_get_bundle_path (
-  char * bundle_path);
+io_get_bundle_path (char * bundle_path);
 #endif
 
 /**

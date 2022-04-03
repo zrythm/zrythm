@@ -44,7 +44,7 @@ G_DEFINE_TYPE (
 
 static void
 on_bank_changed (
-  GtkComboBox * cb,
+  GtkComboBox *                    cb,
   PluginPropertiesExpanderWidget * self)
 {
   if (!self->plugin)
@@ -102,16 +102,14 @@ on_load_preset_clicked (
   const PluginSetting * setting =
     self->plugin->setting;
 
-  GtkWidget* dialog =
-    gtk_file_chooser_dialog_new (
-    _("Load Preset"),
-    self->plugin->window ?
-      self->plugin->window :
-      GTK_WINDOW (MAIN_WINDOW),
-      GTK_FILE_CHOOSER_ACTION_OPEN,
-    _("_Cancel"), GTK_RESPONSE_REJECT,
-    _("_Load"), GTK_RESPONSE_ACCEPT,
-    NULL);
+  GtkWidget * dialog = gtk_file_chooser_dialog_new (
+    _ ("Load Preset"),
+    self->plugin->window
+      ? self->plugin->window
+      : GTK_WINDOW (MAIN_WINDOW),
+    GTK_FILE_CHOOSER_ACTION_OPEN, _ ("_Cancel"),
+    GTK_RESPONSE_REJECT, _ ("_Load"),
+    GTK_RESPONSE_ACCEPT, NULL);
   GFile * gfile =
     g_file_new_for_path (g_get_home_dir ());
   gtk_file_chooser_set_current_folder (
@@ -119,36 +117,34 @@ on_load_preset_clicked (
   g_object_unref (gfile);
   gtk_dialog_set_default_response (
     GTK_DIALOG (dialog), GTK_RESPONSE_ACCEPT);
-  if (z_gtk_dialog_run (GTK_DIALOG(dialog), false) !=
-        GTK_RESPONSE_ACCEPT)
+  if (
+    z_gtk_dialog_run (GTK_DIALOG (dialog), false)
+    != GTK_RESPONSE_ACCEPT)
     {
       gtk_window_destroy (GTK_WINDOW (dialog));
       return;
     }
 
-  gfile =
-    gtk_file_chooser_get_file (
-      GTK_FILE_CHOOSER (dialog));
+  gfile = gtk_file_chooser_get_file (
+    GTK_FILE_CHOOSER (dialog));
   char * path = g_file_get_path (gfile);
   g_object_unref (gfile);
 
   GError * err = NULL;
-  bool applied = false;
+  bool     applied = false;
   if (setting->open_with_carla)
     {
 #ifdef HAVE_CARLA
-      applied =
-        carla_native_plugin_load_state (
-          self->plugin->carla, path, &err);
+      applied = carla_native_plugin_load_state (
+        self->plugin->carla, path, &err);
 #else
       g_return_if_reached ();
 #endif
     }
   else if (setting->descr->protocol == PROT_LV2)
     {
-      applied =
-        lv2_state_apply_preset (
-          self->plugin->lv2, NULL, path, &err);
+      applied = lv2_state_apply_preset (
+        self->plugin->lv2, NULL, path, &err);
     }
   g_free (path);
 
@@ -160,7 +156,7 @@ on_load_preset_clicked (
   else
     {
       HANDLE_ERROR (
-        err, "%s", _("Failed to apply preset"));
+        err, "%s", _ ("Failed to apply preset"));
     }
 
   gtk_window_destroy (GTK_WINDOW (dialog));
@@ -189,10 +185,8 @@ plugin_properties_expander_widget_refresh (
     }
   else
     {
-      gtk_label_set_text (
-        self->name, _("None"));
-      gtk_label_set_text (
-        self->type, _("None"));
+      gtk_label_set_text (self->name, _ ("None"));
+      gtk_label_set_text (self->type, _ ("None"));
     }
 
   g_signal_handler_block (
@@ -215,43 +209,40 @@ plugin_properties_expander_widget_refresh (
 void
 plugin_properties_expander_widget_setup (
   PluginPropertiesExpanderWidget * self,
-  Plugin *      pl)
+  Plugin *                         pl)
 {
   self->plugin = pl;
 
   /* set name and icon */
   expander_box_widget_set_label (
     Z_EXPANDER_BOX_WIDGET (self),
-    _("Plugin Properties"));
+    _ ("Plugin Properties"));
 
   GtkWidget * lbl;
 
 #define CREATE_LABEL(x) \
-  lbl = \
-    plugin_gtk_new_label ( \
-      x, true, false, 0.f, 0.5f); \
+  lbl = plugin_gtk_new_label ( \
+    x, true, false, 0.f, 0.5f); \
   gtk_widget_add_css_class ( \
     lbl, "inspector_label"); \
   gtk_widget_set_margin_start (lbl, 2); \
   gtk_widget_set_visible (lbl, 1)
 
-  CREATE_LABEL (_("Name"));
+  CREATE_LABEL (_ ("Name"));
   gtk_widget_set_visible (lbl, TRUE);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), lbl);
-  self->name =
-    GTK_LABEL (gtk_label_new ("dist"));
+  self->name = GTK_LABEL (gtk_label_new ("dist"));
   gtk_widget_set_visible (
     GTK_WIDGET (self->name), TRUE);
-  gtk_label_set_xalign (
-    self->name, 0);
+  gtk_label_set_xalign (self->name, 0);
   gtk_widget_set_margin_start (
     GTK_WIDGET (self->name), 4);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->name));
 
-  CREATE_LABEL (_("Type"));
+  CREATE_LABEL (_ ("Type"));
   gtk_widget_set_visible (lbl, TRUE);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), lbl);
@@ -259,15 +250,14 @@ plugin_properties_expander_widget_setup (
     GTK_LABEL (gtk_label_new ("Instrument"));
   gtk_widget_set_visible (
     GTK_WIDGET (self->type), TRUE);
-  gtk_label_set_xalign (
-    self->type, 0);
+  gtk_label_set_xalign (self->type, 0);
   gtk_widget_set_margin_start (
     GTK_WIDGET (self->type), 4);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->type));
 
-  CREATE_LABEL (_("Banks"));
+  CREATE_LABEL (_ ("Banks"));
   gtk_widget_set_visible (lbl, true);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), lbl);
@@ -278,56 +268,50 @@ plugin_properties_expander_widget_setup (
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->banks));
-  self->bank_changed_handler =
-    g_signal_connect (
-      G_OBJECT (self->banks), "changed",
-      G_CALLBACK (on_bank_changed), self);
+  self->bank_changed_handler = g_signal_connect (
+    G_OBJECT (self->banks), "changed",
+    G_CALLBACK (on_bank_changed), self);
 
-  CREATE_LABEL (_("Presets"));
+  CREATE_LABEL (_ ("Presets"));
   gtk_widget_set_visible (lbl, true);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), lbl);
-  self->presets =
-    GTK_LIST_BOX (gtk_list_box_new ());
+  self->presets = GTK_LIST_BOX (gtk_list_box_new ());
   gtk_widget_set_visible (
     GTK_WIDGET (self->presets), true);
-  GtkScrolledWindow * scroll =
-    GTK_SCROLLED_WINDOW (
-      gtk_scrolled_window_new ());
+  GtkScrolledWindow * scroll = GTK_SCROLLED_WINDOW (
+    gtk_scrolled_window_new ());
   gtk_scrolled_window_set_min_content_height (
     scroll, 86);
   gtk_scrolled_window_set_policy (
     scroll, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-  gtk_widget_set_visible (
-    GTK_WIDGET (scroll), true);
+  gtk_widget_set_visible (GTK_WIDGET (scroll), true);
   gtk_scrolled_window_set_child (
     scroll, GTK_WIDGET (self->presets));
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (scroll));
-  self->pset_changed_handler =
-    g_signal_connect (
-      G_OBJECT (self->presets),
-      "selected-rows-changed",
-      G_CALLBACK (on_preset_changed), self);
+  self->pset_changed_handler = g_signal_connect (
+    G_OBJECT (self->presets),
+    "selected-rows-changed",
+    G_CALLBACK (on_preset_changed), self);
 
   self->save_preset_btn =
     z_gtk_button_new_with_icon_and_text (
-      "document-save-as", _("Save"), true,
+      "document-save-as", _ ("Save"), true,
       GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->save_preset_btn),
-    _("Save preset"));
+    _ ("Save preset"));
   self->load_preset_btn =
     z_gtk_button_new_with_icon_and_text (
-      "document-open", _("Load"), true,
+      "document-open", _ ("Load"), true,
       GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->load_preset_btn),
-    _("Load preset"));
+    _ ("Load preset"));
   GtkWidget * box =
-    gtk_box_new (
-      GTK_ORIENTATION_HORIZONTAL, 2);
+    gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_visible (box, true);
   gtk_box_append (
     GTK_BOX (box),
@@ -360,6 +344,6 @@ plugin_properties_expander_widget_init (
   PluginPropertiesExpanderWidget * self)
 {
   /*two_col_expander_box_widget_add_single (*/
-    /*Z_TWO_COL_EXPANDER_BOX_WIDGET (self),*/
-    /*GTK_WIDGET (self->name));*/
+  /*Z_TWO_COL_EXPANDER_BOX_WIDGET (self),*/
+  /*GTK_WIDGET (self->name));*/
 }

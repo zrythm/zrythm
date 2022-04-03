@@ -38,16 +38,14 @@ error_handle_prv (
 
   if (err)
     {
-      char * tmp =
-        g_strdup_vprintf (format, args);
-      char * str =
-        g_strdup_printf (
-          _("%s\n---Backtrace---\n%s"),
-          tmp, err->message);
+      char * tmp = g_strdup_vprintf (format, args);
+      char * str = g_strdup_printf (
+        _ ("%s\n---Backtrace---\n%s"), tmp,
+        err->message);
       g_free (tmp);
       ui_show_message_printf (
-        MAIN_WINDOW, GTK_MESSAGE_ERROR, true,
-        "%s", str);
+        MAIN_WINDOW, GTK_MESSAGE_ERROR, true, "%s",
+        str);
       g_free (str);
       g_error_free (err);
     }
@@ -76,9 +74,8 @@ error_propagate_prefixed_prv (
   va_start (args, format);
 
   /* separate errors by new line */
-  char * tmp =
-    g_strdup_vprintf (format, args);
-  char full_str[strlen (tmp) + 10];
+  char * tmp = g_strdup_vprintf (format, args);
+  char   full_str[strlen (tmp) + 10];
   sprintf (full_str, "%s\n", tmp);
   g_free (tmp);
 

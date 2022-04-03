@@ -35,16 +35,13 @@ pcg_rand_new (void);
 
 /* unsigned float [0..1] */
 float
-pcg_rand_uf (
-  PCGRand * self);
+pcg_rand_uf (PCGRand * self);
 
 /* signed float [-1..+1] */
 float
-pcg_rand_sf (
-  PCGRand * self);
+pcg_rand_sf (PCGRand * self);
 
 uint32_t
-pcg_rand_u32 (
-  PCGRand * self);
+pcg_rand_u32 (PCGRand * self);
 
 #endif

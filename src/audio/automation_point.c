@@ -48,8 +48,7 @@
 #include "zrythm_app.h"
 
 static AutomationPoint *
-_create_new (
-  const Position *        pos)
+_create_new (const Position * pos)
 {
   AutomationPoint * self =
     object_new (AutomationPoint);
@@ -57,20 +56,17 @@ _create_new (
   self->schema_version =
     AUTOMATION_POINT_SCHEMA_VERSION;
 
-  ArrangerObject * obj =
-    (ArrangerObject *) self;
+  ArrangerObject * obj = (ArrangerObject *) self;
   arranger_object_init (obj);
   obj->pos = *pos;
   obj->type = ARRANGER_OBJECT_TYPE_AUTOMATION_POINT;
   curve_opts_init (&self->curve_opts);
   self->curve_opts.curviness = 0;
   self->curve_opts.algo =
-    ZRYTHM_TESTING ?
-      CURVE_ALGORITHM_SUPERELLIPSE :
-      (CurveAlgorithm)
-      g_settings_get_enum (
-        S_P_EDITING_AUTOMATION,
-        "curve-algorithm");
+    ZRYTHM_TESTING
+      ? CURVE_ALGORITHM_SUPERELLIPSE
+      : (CurveAlgorithm) g_settings_get_enum (
+        S_P_EDITING_AUTOMATION, "curve-algorithm");
 
   self->index = -1;
 
@@ -95,12 +91,13 @@ automation_point_set_region_and_index (
   ap->index = index;
 
   /* set the info to the transient too */
-  if ((ZRYTHM_HAVE_UI || ZRYTHM_TESTING) &&
-      PROJECT->loaded && obj->transient &&
-      arranger_object_should_orig_be_visible (
-        obj, NULL))
+  if (
+    (ZRYTHM_HAVE_UI || ZRYTHM_TESTING)
+    && PROJECT->loaded && obj->transient
+    && arranger_object_should_orig_be_visible (
+      obj, NULL))
     {
-      ArrangerObject * trans_obj = obj->transient;
+      ArrangerObject *  trans_obj = obj->transient;
       AutomationPoint * trans_ap =
         (AutomationPoint *) trans_obj;
       region_identifier_copy (
@@ -114,15 +111,12 @@ automation_point_is_equal (
   AutomationPoint * a,
   AutomationPoint * b)
 {
-  ArrangerObject * a_obj =
-    (ArrangerObject *) a;
-  ArrangerObject * b_obj =
-    (ArrangerObject *) b;
-  return
-    position_is_equal_ticks (
-      &a_obj->pos, &b_obj->pos) &&
-    math_floats_equal_epsilon (
-      a->fvalue, b->fvalue, 0.001f);
+  ArrangerObject * a_obj = (ArrangerObject *) a;
+  ArrangerObject * b_obj = (ArrangerObject *) b;
+  return position_is_equal_ticks (
+           &a_obj->pos, &b_obj->pos)
+         && math_floats_equal_epsilon (
+           a->fvalue, b->fvalue, 0.001f);
 }
 
 /**
@@ -131,12 +125,11 @@ automation_point_is_equal (
  */
 AutomationPoint *
 automation_point_new_float (
-  const float         value,
-  const float         normalized_val,
-  const Position *    pos)
+  const float      value,
+  const float      normalized_val,
+  const Position * pos)
 {
-  AutomationPoint * self =
-    _create_new (pos);
+  AutomationPoint * self = _create_new (pos);
 
   if (ZRYTHM_TESTING)
     {
@@ -155,12 +148,10 @@ automation_point_new_float (
  * curves upwards as you move right on the x axis.
  */
 bool
-automation_point_curves_up (
-  AutomationPoint * self)
+automation_point_curves_up (AutomationPoint * self)
 {
-  ZRegion * region =
-    arranger_object_get_region (
-      (ArrangerObject *) self);
+  ZRegion * region = arranger_object_get_region (
+    (ArrangerObject *) self);
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
       region, self, true, true);
@@ -190,8 +181,7 @@ automation_point_set_fvalue (
 {
   g_return_if_fail (self);
 
-  Port * port =
-    automation_point_get_port (self);
+  Port * port = automation_point_get_port (self);
   g_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   if (ZRYTHM_TESTING)
@@ -202,13 +192,12 @@ automation_point_set_fvalue (
   float normalized_val;
   if (is_normalized)
     {
-      g_message ("received normalized val %f",
+      g_message (
+        "received normalized val %f",
         (double) real_val);
-      normalized_val =
-        CLAMP (real_val, 0.f, 1.f);
-      real_val =
-        control_port_normalized_val_to_real (
-          port, normalized_val);
+      normalized_val = CLAMP (real_val, 0.f, 1.f);
+      real_val = control_port_normalized_val_to_real (
+        port, normalized_val);
     }
   else
     {
@@ -230,9 +219,8 @@ automation_point_set_fvalue (
       math_assert_nonnann (self->normalized_val);
     }
 
-  ZRegion * region =
-    arranger_object_get_region (
-      (ArrangerObject *) self);
+  ZRegion * region = arranger_object_get_region (
+    (ArrangerObject *) self);
   g_return_if_fail (region);
 
   /* don't set value - wait for engine to process
@@ -244,8 +232,7 @@ automation_point_set_fvalue (
 
   if (pub_events)
     {
-      EVENTS_PUSH (
-        ET_ARRANGER_OBJECT_CHANGED, self);
+      EVENTS_PUSH (ET_ARRANGER_OBJECT_CHANGED, self);
     }
 }
 
@@ -265,9 +252,8 @@ automation_point_get_normalized_value_in_curve (
   g_return_val_if_fail (
     self && x >= 0.0 && x <= 1.0, 0.0);
 
-  ZRegion * region =
-    arranger_object_get_region (
-      (ArrangerObject *) self);
+  ZRegion * region = arranger_object_get_region (
+    (ArrangerObject *) self);
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
       region, self, true, true);
@@ -280,9 +266,8 @@ automation_point_get_normalized_value_in_curve (
 
   int start_higher =
     next_ap->normalized_val < self->normalized_val;
-  dy =
-    curve_get_normalized_y (
-      x, &self->curve_opts, start_higher);
+  dy = curve_get_normalized_y (
+    x, &self->curve_opts, start_higher);
   return dy;
 }
 

@@ -29,6 +29,7 @@
 #define __AUDIO_CURVE_H__
 
 #include <stdbool.h>
+
 #include "utils/yaml.h"
 
 /**
@@ -106,19 +107,13 @@ typedef enum CurveAlgorithm
   NUM_CURVE_ALGORITHMS,
 } CurveAlgorithm;
 
-static const cyaml_strval_t
-  curve_algorithm_strings[] =
-{
-  { __("Exponent"),
-    CURVE_ALGORITHM_EXPONENT },
-  { __("Superellipse"),
-    CURVE_ALGORITHM_SUPERELLIPSE },
-  { __("Vital"),
-    CURVE_ALGORITHM_VITAL },
-  { __("Pulse"),
-    CURVE_ALGORITHM_PULSE },
-  { __("Logarithmic"),
-    CURVE_ALGORITHM_LOGARITHMIC },
+static const cyaml_strval_t curve_algorithm_strings[] = {
+  {__ ("Exponent"),      CURVE_ALGORITHM_EXPONENT   },
+  { __ ("Superellipse"),
+   CURVE_ALGORITHM_SUPERELLIPSE                     },
+  { __ ("Vital"),        CURVE_ALGORITHM_VITAL      },
+  { __ ("Pulse"),        CURVE_ALGORITHM_PULSE      },
+  { __ ("Logarithmic"),  CURVE_ALGORITHM_LOGARITHMIC},
 };
 
 /**
@@ -126,48 +121,46 @@ static const cyaml_strval_t
  */
 typedef struct CurveOptions
 {
-  int            schema_version;
+  int schema_version;
   /** Curve algorithm to use. */
   CurveAlgorithm algo;
 
   /** Curviness between -1 and 1, where < 0 tils
    * downwards, > 0 tilts upwards and 0 is a
    * straight line. */
-  double         curviness;
+  double curviness;
 } CurveOptions;
 
 static const cyaml_schema_field_t
-  curve_options_fields_schema[] =
-{
-  YAML_FIELD_INT (CurveOptions, schema_version),
-  YAML_FIELD_ENUM (
-    CurveOptions, algo,
-    curve_algorithm_strings),
-  YAML_FIELD_FLOAT (
-    CurveOptions, curviness),
+  curve_options_fields_schema[] = {
+    YAML_FIELD_INT (CurveOptions, schema_version),
+    YAML_FIELD_ENUM (
+      CurveOptions,
+      algo,
+      curve_algorithm_strings),
+    YAML_FIELD_FLOAT (CurveOptions, curviness),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-  curve_options_schema =
-{
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    CurveOptions, curve_options_fields_schema),
-};
+  curve_options_schema = {
+    CYAML_VALUE_MAPPING (
+      CYAML_FLAG_POINTER,
+      CurveOptions,
+      curve_options_fields_schema),
+  };
 
 typedef struct CurveFadePreset
 {
-  char * id;
-  char * label;
+  char *       id;
+  char *       label;
   CurveOptions opts;
 } CurveFadePreset;
 
 NONNULL
 void
-curve_opts_init (
-  CurveOptions * opts);
+curve_opts_init (CurveOptions * opts);
 
 /**
  * Returns an array of CurveFadePreset.
@@ -193,16 +186,13 @@ curve_algorithm_get_localized_name (
  * @param opts Curve options.
  * @param start_higher Start at higher point.
  */
-HOT
-NONNULL
-double
+HOT NONNULL double
 curve_get_normalized_y (
   double         x,
   CurveOptions * opts,
   int            start_higher);
 
-PURE
-bool
+PURE bool
 curve_options_are_equal (
   const CurveOptions * a,
   const CurveOptions * b);

@@ -25,46 +25,47 @@
 #define SNAP_GRID_WIDGET_TYPE \
   (snap_grid_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  SnapGridWidget, snap_grid_widget,
-  Z, SNAP_GRID_WIDGET,
+  SnapGridWidget,
+  snap_grid_widget,
+  Z,
+  SNAP_GRID_WIDGET,
   GtkBox)
 
 typedef struct _SnapGridPopoverWidget
-  SnapGridPopoverWidget;
+                        SnapGridPopoverWidget;
 typedef struct SnapGrid SnapGrid;
 
 typedef struct _SnapGridWidget
 {
-  GtkBox             parent_instance;
+  GtkBox parent_instance;
 
-  GtkMenuButton *    menu_btn;
+  GtkMenuButton * menu_btn;
 
   /** The box. */
-  GtkBox *           box;
+  GtkBox * box;
 
   /** Image to show next to the label. */
-  GtkImage *         img;
+  GtkImage * img;
 
   /** Label to show. */
-  GtkLabel *         label;
+  GtkLabel * label;
 
   /** Popover. */
   SnapGridPopoverWidget * popover;
 
   /** Popover content holder. */
-  GtkBox *           content;
+  GtkBox * content;
 
   /** Associated snap grid options. */
-  SnapGrid *         snap_grid;
+  SnapGrid * snap_grid;
 } SnapGridWidget;
 
 void
 snap_grid_widget_setup (
   SnapGridWidget * self,
-  SnapGrid * snap_grid);
+  SnapGrid *       snap_grid);
 
 void
-snap_grid_widget_refresh (
-  SnapGridWidget * self);
+snap_grid_widget_refresh (SnapGridWidget * self);
 
 #endif

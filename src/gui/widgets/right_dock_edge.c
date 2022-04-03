@@ -34,7 +34,8 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  RightDockEdgeWidget, right_dock_edge_widget,
+  RightDockEdgeWidget,
+  right_dock_edge_widget,
   GTK_TYPE_BOX)
 
 static void
@@ -68,8 +69,7 @@ right_dock_edge_widget_setup (
       self->right_notebook);
   int page_num =
     g_settings_get_int (S_UI, "right-panel-tab");
-  gtk_notebook_set_current_page (
-    notebook, page_num);
+  gtk_notebook_set_current_page (notebook, page_num);
 
   g_signal_connect (
     G_OBJECT (notebook), "switch-page",
@@ -86,7 +86,7 @@ right_dock_edge_widget_init (
 
   self->right_notebook->pos_in_paned = GTK_POS_RIGHT;
 
-  GtkBox * box;
+  GtkBox *      box;
   GtkNotebook * notebook =
     foldable_notebook_widget_get_notebook (
       self->right_notebook);
@@ -94,76 +94,66 @@ right_dock_edge_widget_init (
   /* add plugin browser */
   self->plugin_browser =
     plugin_browser_widget_new ();
-  box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   self->plugin_browser_box = box;
   gtk_box_append (
     GTK_BOX (box),
     GTK_WIDGET (self->plugin_browser));
   foldable_notebook_widget_add_page (
     self->right_notebook, GTK_WIDGET (box),
-    "plugin-solid", _("Plugins"),
-    _("Plugin browser"));
+    "plugin-solid", _ ("Plugins"),
+    _ ("Plugin browser"));
 
   /* add file browser */
   self->file_browser =
     panel_file_browser_widget_new ();
-  box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   self->file_browser_box = box;
   gtk_box_append (
-    GTK_BOX (box),
-    GTK_WIDGET (self->file_browser));
+    GTK_BOX (box), GTK_WIDGET (self->file_browser));
   foldable_notebook_widget_add_page (
     self->right_notebook, GTK_WIDGET (box),
-    "folder-music-line", _("Files"),
-    _("File browser"));
+    "folder-music-line", _ ("Files"),
+    _ ("File browser"));
 
   /* add control room */
   self->monitor_section =
     monitor_section_widget_new ();
-  box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   self->monitor_section_box = box;
   gtk_box_append (
     GTK_BOX (box),
     GTK_WIDGET (self->monitor_section));
   foldable_notebook_widget_add_page (
     self->right_notebook, GTK_WIDGET (box),
-    "speaker", _("Monitor"),
-    _("Monitor section"));
+    "speaker", _ ("Monitor"), _ ("Monitor section"));
 
   /* add chord preset browser */
   self->chord_pack_browser =
     chord_pack_browser_widget_new ();
-  box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   self->chord_pack_browser_box = box;
   gtk_box_append (
     GTK_BOX (box),
     GTK_WIDGET (self->chord_pack_browser));
   foldable_notebook_widget_add_page (
     self->right_notebook, GTK_WIDGET (box),
-    "minuet-chords", _("Chords"),
-    _("Chord preset browser"));
+    "minuet-chords", _ ("Chords"),
+    _ ("Chord preset browser"));
 
   /* add file browser button */
-  GtkButton * tb =
-    GTK_BUTTON (
-      gtk_button_new_from_icon_name ("hdd"));
+  GtkButton * tb = GTK_BUTTON (
+    gtk_button_new_from_icon_name ("hdd"));
   gtk_widget_set_tooltip_text (
-    GTK_WIDGET (tb),
-    _("Show file browser"));
+    GTK_WIDGET (tb), _ ("Show file browser"));
   gtk_actionable_set_action_name (
-    GTK_ACTIONABLE (tb),
-    "app.show-file-browser");
+    GTK_ACTIONABLE (tb), "app.show-file-browser");
   gtk_notebook_set_action_widget (
-    notebook, GTK_WIDGET (tb),
-    GTK_PACK_END);
+    notebook, GTK_WIDGET (tb), GTK_PACK_END);
 
   gtk_notebook_set_current_page (notebook, 0);
 }
@@ -172,8 +162,7 @@ static void
 right_dock_edge_widget_class_init (
   RightDockEdgeWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "right_dock_edge.ui");
 
@@ -182,9 +171,7 @@ right_dock_edge_widget_class_init (
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, \
-    RightDockEdgeWidget, \
-    x)
+    klass, RightDockEdgeWidget, x)
 
   BIND_CHILD (right_notebook);
 }

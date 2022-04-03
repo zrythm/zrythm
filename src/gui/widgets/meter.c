@@ -20,8 +20,8 @@
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "audio/meter.h"
-#include "gui/widgets/meter.h"
 #include "gui/widgets/fader.h"
+#include "gui/widgets/meter.h"
 #include "project.h"
 #include "utils/color.h"
 #include "utils/gtk.h"
@@ -31,7 +31,9 @@
 #include "zrythm_app.h"
 
 G_DEFINE_TYPE (
-  MeterWidget, meter_widget, GTK_TYPE_WIDGET)
+  MeterWidget,
+  meter_widget,
+  GTK_TYPE_WIDGET)
 
 static void
 meter_snapshot (
@@ -63,26 +65,26 @@ meter_snapshot (
   float width_without_padding =
     (float) (width - self->padding * 2);
 
-  GdkRGBA bar_color = { 0, 0, 0, 1 };
-  float intensity = meter_val;
+  GdkRGBA     bar_color = { 0, 0, 0, 1 };
+  float       intensity = meter_val;
   const float intensity_inv = 1.f - intensity;
   bar_color.red =
-    intensity_inv * self->end_color.red +
-    intensity * self->start_color.red;
+    intensity_inv * self->end_color.red
+    + intensity * self->start_color.red;
   bar_color.green =
-    intensity_inv * self->end_color.green +
-    intensity * self->start_color.green;
+    intensity_inv * self->end_color.green
+    + intensity * self->start_color.green;
   bar_color.blue =
-    intensity_inv * self->end_color.blue  +
-    intensity * self->start_color.blue;
+    intensity_inv * self->end_color.blue
+    + intensity * self->start_color.blue;
 
   graphene_rect_t graphene_rect =
     GRAPHENE_RECT_INIT (0, 0, width, height);
 
   GdkRGBA color4;
   color_morph (
-    &UI_COLORS->bright_green, &bar_color,
-    0.5f, &color4);
+    &UI_COLORS->bright_green, &bar_color, 0.5f,
+    &color4);
   color4.alpha = 1.f;
 
   /* use gradient */
@@ -98,7 +100,8 @@ meter_snapshot (
   stop5.offset = 1;
   stop5.color = UI_COLORS->darkish_green;
   GskColorStop stops[] = {
-    stop1, stop2, stop3, stop4, stop5 };
+    stop1, stop2, stop3, stop4, stop5
+  };
 
   /* used to stretch the gradient a little bit to
    * make it look alive */
@@ -157,12 +160,14 @@ meter_snapshot (
   /* draw border line */
   const float border_width = 1.f;
   GdkRGBA border_color = { 0.1f, 0.1f, 0.1f, 0.8f };
-  float border_widths[] = {
+  float   border_widths[] = {
     border_width, border_width, border_width,
-    border_width };
+    border_width
+  };
   GdkRGBA border_colors[] = {
     border_color, border_color, border_color,
-    border_color };
+    border_color
+  };
   GskRoundedRect rounded_rect;
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &graphene_rect, 0);
@@ -171,12 +176,11 @@ meter_snapshot (
     border_colors);
 }
 
-
 static void
-on_crossing (GtkWidget * widget, GdkEvent *event)
+on_crossing (GtkWidget * widget, GdkEvent * event)
 {
   MeterWidget * self = Z_METER_WIDGET (widget);
-  GdkEventType type =
+  GdkEventType  type =
     gdk_event_get_event_type (event);
   if (type == GDK_ENTER_NOTIFY)
     {
@@ -184,35 +188,36 @@ on_crossing (GtkWidget * widget, GdkEvent *event)
     }
   else if (type == GDK_LEAVE_NOTIFY)
     {
-        self->hover = 0;
+      self->hover = 0;
     }
-  gtk_widget_queue_draw(widget);
+  gtk_widget_queue_draw (widget);
 }
 
 static gboolean
 tick_cb (
-  GtkWidget * widget,
+  GtkWidget *     widget,
   GdkFrameClock * frame_clock,
-  MeterWidget * self)
+  MeterWidget *   self)
 {
-  if (gtk_widget_get_mapped (GTK_WIDGET (self))
-      && AUDIO_ENGINE->activated
-      && engine_get_run (AUDIO_ENGINE))
+  if (
+    gtk_widget_get_mapped (GTK_WIDGET (self))
+    && AUDIO_ENGINE->activated
+    && engine_get_run (AUDIO_ENGINE))
     {
       meter_get_value (
         self->meter, AUDIO_VALUE_FADER,
-        &self->meter_val,
-        &self->meter_peak);
+        &self->meter_val, &self->meter_peak);
     }
   else
     {
       /* not mapped, skipping dsp */
     }
 
-  if (!math_floats_equal (
-        self->meter_val, self->last_meter_val) ||
-      !math_floats_equal (
-        self->meter_peak, self->last_meter_peak))
+  if (
+    !math_floats_equal (
+      self->meter_val, self->last_meter_val)
+    || !math_floats_equal (
+      self->meter_peak, self->last_meter_peak))
     {
       gtk_widget_queue_draw (widget);
     }
@@ -263,9 +268,9 @@ meter_timeout (
  */
 void
 meter_widget_setup (
-  MeterWidget *      self,
-  Port *             port,
-  int                width)
+  MeterWidget * self,
+  Port *        port,
+  int           width)
 {
   if (self->meter)
     {
@@ -304,20 +309,17 @@ meter_widget_setup (
 
   char buf[1200];
   port_get_full_designation (port, buf);
-  g_message (
-    "meter widget set up for %s", buf);
+  g_message ("meter widget set up for %s", buf);
 }
 
 static void
-finalize (
-  MeterWidget * self)
+finalize (MeterWidget * self)
 {
   object_free_w_func_and_null (
     meter_free, self->meter);
 
-  G_OBJECT_CLASS (
-    meter_widget_parent_class)->
-      finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (meter_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 static void

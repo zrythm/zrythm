@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   TimelineBotBoxWidget,
   timeline_bot_box_widget,
-  Z, TIMELINE_BOT_BOX_WIDGET,
+  Z,
+  TIMELINE_BOT_BOX_WIDGET,
   GtkBox)
 
 typedef struct _TimelineMinimapWidget
@@ -50,10 +51,10 @@ typedef struct _TimelineMinimapWidget
 
 typedef struct _TimelineBotBoxWidget
 {
-  GtkBox                   parent_instance;
-  GtkBox *                 left_tb;
-  GtkButton *              instrument_add;
-  TimelineMinimapWidget *  timeline_minimap;
+  GtkBox                  parent_instance;
+  GtkBox *                left_tb;
+  GtkButton *             instrument_add;
+  TimelineMinimapWidget * timeline_minimap;
 } TimelineBotBoxWidget;
 
 /**

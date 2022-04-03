@@ -31,15 +31,18 @@
 #include <gtk/gtk.h>
 
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored \
+  "-Wdeprecated-declarations"
 #include <gtksourceview/gtksource.h>
 #pragma GCC diagnostic pop
 
 #define LOG_VIEWER_WIDGET_TYPE \
   (log_viewer_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  LogViewerWidget, log_viewer_widget,
-  Z, LOG_VIEWER_WIDGET,
+  LogViewerWidget,
+  log_viewer_widget,
+  Z,
+  LOG_VIEWER_WIDGET,
   GtkWindow)
 
 /**
@@ -53,11 +56,11 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _LogViewerWidget
 {
-  GtkWindow         parent_instance;
+  GtkWindow parent_instance;
 
   GtkScrolledWindow * scrolled_win;
-  GtkBox *          source_view_box;
-  GtkSourceView *   src_view;
+  GtkBox *            source_view_box;
+  GtkSourceView *     src_view;
 
 } LogViewerWidget;
 

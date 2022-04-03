@@ -45,21 +45,20 @@
 
 #define hw_processor_is_in_active_project(self) \
   (self->engine \
-   && \
-   engine_is_in_active_project ((self)->engine))
+   && engine_is_in_active_project ((self)->engine))
 
 /**
  * Hardware processor.
  */
 typedef struct HardwareProcessor
 {
-  int             schema_version;
+  int schema_version;
 
   /**
    * Whether this is the processor at the start of
    * the graph (input) or at the end (output).
    */
-  bool            is_input;
+  bool is_input;
 
   /**
    * Ports selected by the user in the preferences
@@ -70,87 +69,82 @@ typedef struct HardwareProcessor
    *
    * This is only for inputs.
    */
-  char **         selected_midi_ports;
-  int             num_selected_midi_ports;
-  char **         selected_audio_ports;
-  int             num_selected_audio_ports;
+  char ** selected_midi_ports;
+  int     num_selected_midi_ports;
+  char ** selected_audio_ports;
+  int     num_selected_audio_ports;
 
   /**
    * All known external ports.
    */
-  ExtPort **      ext_audio_ports;
-  int             num_ext_audio_ports;
-  size_t          ext_audio_ports_size;
-  ExtPort **      ext_midi_ports;
-  int             num_ext_midi_ports;
-  size_t          ext_midi_ports_size;
+  ExtPort ** ext_audio_ports;
+  int        num_ext_audio_ports;
+  size_t     ext_audio_ports_size;
+  ExtPort ** ext_midi_ports;
+  int        num_ext_midi_ports;
+  size_t     ext_midi_ports_size;
 
   /**
    * Ports to be used by Zrythm, corresponding to the
    * external ports.
    */
-  Port **         audio_ports;
-  int             num_audio_ports;
-  Port **         midi_ports;
-  int             num_midi_ports;
+  Port ** audio_ports;
+  int     num_audio_ports;
+  Port ** midi_ports;
+  int     num_midi_ports;
 
   /** Whether set up already. */
-  bool            setup;
+  bool setup;
 
   /** Whether currently active. */
-  bool            activated;
+  bool activated;
 
-  guint           rescan_timeout_id;
+  guint rescan_timeout_id;
 
   /** Pointer to owner engine, if any. */
-  AudioEngine *   engine;
+  AudioEngine * engine;
 
 } HardwareProcessor;
 
 static const cyaml_schema_field_t
-hardware_processor_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    HardwareProcessor, schema_version),
-  YAML_FIELD_INT (
-    HardwareProcessor, is_input),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    HardwareProcessor, ext_audio_ports,
-    ext_port_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    HardwareProcessor, ext_midi_ports,
-    ext_port_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    HardwareProcessor, audio_ports,
-    port_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    HardwareProcessor, midi_ports,
-    port_schema),
+  hardware_processor_fields_schema[] = {
+    YAML_FIELD_INT (HardwareProcessor, schema_version),
+    YAML_FIELD_INT (HardwareProcessor, is_input),
+    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+      HardwareProcessor,
+      ext_audio_ports,
+      ext_port_schema),
+    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+      HardwareProcessor,
+      ext_midi_ports,
+      ext_port_schema),
+    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+      HardwareProcessor,
+      audio_ports,
+      port_schema),
+    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+      HardwareProcessor,
+      midi_ports,
+      port_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-hardware_processor_schema =
-{
-  YAML_VALUE_PTR (
-    HardwareProcessor,
-    hardware_processor_fields_schema),
-};
+  hardware_processor_schema = {
+    YAML_VALUE_PTR (
+      HardwareProcessor,
+      hardware_processor_fields_schema),
+  };
 
-COLD
-NONNULL_ARGS (1)
-void
-hardware_processor_init_loaded (
+COLD NONNULL_ARGS (1) void hardware_processor_init_loaded (
   HardwareProcessor * self,
   AudioEngine *       engine);
 
 /**
  * Returns a new empty instance.
  */
-COLD
-WARN_UNUSED_RESULT
-HardwareProcessor *
+COLD WARN_UNUSED_RESULT HardwareProcessor *
 hardware_processor_new (
   bool          input,
   AudioEngine * engine);
@@ -189,8 +183,7 @@ hardware_processor_find_port (
  * @return Non-zero on fail.
  */
 int
-hardware_processor_setup (
-  HardwareProcessor * self);
+hardware_processor_setup (HardwareProcessor * self);
 
 /**
  * Starts or stops the ports.
@@ -220,8 +213,7 @@ hardware_processor_clone (
   const HardwareProcessor * src);
 
 void
-hardware_processor_free (
-  HardwareProcessor * self);
+hardware_processor_free (HardwareProcessor * self);
 
 /**
  * @}

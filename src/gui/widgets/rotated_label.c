@@ -17,9 +17,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <math.h>
 
 #include "gui/widgets/rotated_label.h"
 #include "utils/gtk.h"
@@ -33,8 +33,7 @@ G_DEFINE_TYPE (
   GTK_TYPE_WIDGET)
 
 static void
-queue_changes (
-  RotatedLabelWidget * self)
+queue_changes (RotatedLabelWidget * self)
 {
   gtk_widget_queue_allocate (GTK_WIDGET (self));
   gtk_widget_queue_resize (GTK_WIDGET (self));
@@ -66,12 +65,10 @@ rotated_label_widget_setup (
 }
 
 RotatedLabelWidget *
-rotated_label_widget_new (
-  float angle)
+rotated_label_widget_new (float angle)
 {
   RotatedLabelWidget * self =
-    g_object_new (
-      ROTATED_LABEL_WIDGET_TYPE, NULL);
+    g_object_new (ROTATED_LABEL_WIDGET_TYPE, NULL);
 
   rotated_label_widget_setup (self, angle);
 
@@ -80,34 +77,36 @@ rotated_label_widget_new (
 
 static void
 on_measure (
-  GtkWidget* widget,
+  GtkWidget *    widget,
   GtkOrientation orientation,
-  int for_size,
-  int* min,
-  int* nat,
-  int* min_baseline,
-  int* nat_baseline)
+  int            for_size,
+  int *          min,
+  int *          nat,
+  int *          min_baseline,
+  int *          nat_baseline)
 {
-  GtkWidget *child;
+  GtkWidget * child;
 
   for (child = gtk_widget_get_first_child (widget);
        child;
-       child = gtk_widget_get_next_sibling (child)) {
-    int child_min = 0;
-    int child_nat = 0;
-    int child_min_baseline = -1;
-    int child_nat_baseline = -1;
+       child = gtk_widget_get_next_sibling (child))
+    {
+      int child_min = 0;
+      int child_nat = 0;
+      int child_min_baseline = -1;
+      int child_nat_baseline = -1;
 
-    if (!gtk_widget_should_layout (child))
-      continue;
+      if (!gtk_widget_should_layout (child))
+        continue;
 
-    gtk_widget_measure (child, !orientation, for_size,
-                        &child_min, &child_nat,
-                        &child_min_baseline, &child_nat_baseline);
+      gtk_widget_measure (
+        child, !orientation, for_size, &child_min,
+        &child_nat, &child_min_baseline,
+        &child_nat_baseline);
 
-    *min = MAX (*min, child_min);
-    *nat = MAX (*nat, child_nat);
-  }
+      *min = MAX (*min, child_min);
+      *nat = MAX (*nat, child_nat);
+    }
 
   *min_baseline = -1;
   *nat_baseline = -1;
@@ -126,38 +125,32 @@ on_size_allocate (
   /* NOTE this only handles 0 or -90 degrees */
   GskTransform * transform =
     gsk_transform_rotate (NULL, self->angle);
-  transform =
-    gsk_transform_translate (
-      transform,
-      &GRAPHENE_POINT_INIT (- height, 0));
+  transform = gsk_transform_translate (
+    transform, &GRAPHENE_POINT_INIT (-height, 0));
   gtk_widget_allocate (
-    GTK_WIDGET (self->lbl),
-    height, width, -1, transform);
+    GTK_WIDGET (self->lbl), height, width, -1,
+    transform);
 }
 
 static GtkSizeRequestMode
-on_get_request_mode (
-  GtkWidget * widget)
+on_get_request_mode (GtkWidget * widget)
 {
   return GTK_SIZE_REQUEST_CONSTANT_SIZE;
 }
 
 static void
-on_dispose (
-  GObject * object)
+on_dispose (GObject * object)
 {
   RotatedLabelWidget * self =
     Z_ROTATED_LABEL_WIDGET (object);
   gtk_widget_unparent (GTK_WIDGET (self->lbl));
 
-  G_OBJECT_CLASS (
-    rotated_label_widget_parent_class)->
-      dispose (object);
+  G_OBJECT_CLASS (rotated_label_widget_parent_class)
+    ->dispose (object);
 }
 
 static void
-rotated_label_widget_init (
-  RotatedLabelWidget * self)
+rotated_label_widget_init (RotatedLabelWidget * self)
 {
   self->lbl = GTK_LABEL (gtk_label_new (""));
   gtk_widget_set_parent (
@@ -171,7 +164,8 @@ static void
 rotated_label_widget_class_init (
   RotatedLabelWidgetClass * _klass)
 {
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (_klass);
   wklass->measure = on_measure;
   wklass->get_request_mode = on_get_request_mode;
   wklass->size_allocate = on_size_allocate;

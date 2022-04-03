@@ -37,7 +37,8 @@
 G_DECLARE_FINAL_TYPE (
   FileAuditionerControlsWidget,
   file_auditioner_controls_widget,
-  Z, FILE_AUDITIONER_CONTROLS_WIDGET,
+  Z,
+  FILE_AUDITIONER_CONTROLS_WIDGET,
   GtkBox)
 
 typedef struct _VolumeWidget VolumeWidget;
@@ -50,15 +51,15 @@ typedef struct _WrappedObjectWithChangeSignal
  * @{
  */
 
-typedef WrappedObjectWithChangeSignal * (*SelectedFileGetter) (
-  GtkWidget * widget);
+typedef WrappedObjectWithChangeSignal * (
+  *SelectedFileGetter) (GtkWidget * widget);
 
 /**
  * File auditioner controls used in file browsers.
  */
 typedef struct _FileAuditionerControlsWidget
 {
-  GtkBox               parent_instance;
+  GtkBox parent_instance;
 
   /**
    * True if these controls are for files.
@@ -66,19 +67,19 @@ typedef struct _FileAuditionerControlsWidget
    * This adds some more settings like the ability
    * to show hidden files.
    */
-  bool                 for_files;
+  bool for_files;
 
-  GtkButton *          play_btn;
-  GtkButton *          stop_btn;
-  GtkMenuButton *      file_settings_btn;
-  VolumeWidget *       volume;
+  GtkButton *     play_btn;
+  GtkButton *     stop_btn;
+  GtkMenuButton * file_settings_btn;
+  VolumeWidget *  volume;
 
-  GtkDropDown *        instrument_dropdown;
+  GtkDropDown * instrument_dropdown;
 
   /** Callbacks. */
-  GtkWidget *          owner;
-  SelectedFileGetter   selected_file_getter;
-  GenericCallback      refilter_files;
+  GtkWidget *        owner;
+  SelectedFileGetter selected_file_getter;
+  GenericCallback    refilter_files;
 } FileAuditionerControlsWidget;
 
 /**
@@ -89,8 +90,8 @@ file_auditioner_controls_widget_setup (
   FileAuditionerControlsWidget * self,
   GtkWidget *                    owner,
   bool                           for_files,
-  SelectedFileGetter             selected_file_getter,
-  GenericCallback                refilter_files_cb);
+  SelectedFileGetter selected_file_getter,
+  GenericCallback    refilter_files_cb);
 
 /**
  * @}

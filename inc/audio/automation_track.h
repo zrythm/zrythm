@@ -37,12 +37,11 @@
 
 typedef struct Port Port;
 typedef struct _AutomationTrackWidget
-  AutomationTrackWidget;
+                     AutomationTrackWidget;
 typedef struct Track Track;
 typedef struct AutomationTracklist
   AutomationTracklist;
-typedef struct CustomButtonWidget
-  CustomButtonWidget;
+typedef struct CustomButtonWidget CustomButtonWidget;
 typedef struct AutomationModeWidget
   AutomationModeWidget;
 
@@ -67,13 +66,11 @@ typedef enum AutomationMode
   NUM_AUTOMATION_MODES,
 } AutomationMode;
 
-static const cyaml_strval_t
-automation_mode_strings[] =
-{
-  { "Read",     AUTOMATION_MODE_READ    },
-  { "Rec",    AUTOMATION_MODE_RECORD   },
-  { "Off",      AUTOMATION_MODE_OFF   },
-  { "<invalid>",   NUM_AUTOMATION_MODES   },
+static const cyaml_strval_t automation_mode_strings[] = {
+  {"Read",       AUTOMATION_MODE_READ  },
+  { "Rec",       AUTOMATION_MODE_RECORD},
+  { "Off",       AUTOMATION_MODE_OFF   },
+  { "<invalid>", NUM_AUTOMATION_MODES  },
 };
 
 typedef enum AutomationRecordMode
@@ -84,65 +81,64 @@ typedef enum AutomationRecordMode
 } AutomationRecordMode;
 
 static const cyaml_strval_t
-automation_record_mode_strings[] =
-{
-  { "Touch",     AUTOMATION_RECORD_MODE_TOUCH    },
-  { "Latch",    AUTOMATION_RECORD_MODE_LATCH   },
-  { "<invalid>",   NUM_AUTOMATION_RECORD_MODES   },
+  automation_record_mode_strings[] = {
+    {"Touch",      AUTOMATION_RECORD_MODE_TOUCH},
+    { "Latch",     AUTOMATION_RECORD_MODE_LATCH},
+    { "<invalid>", NUM_AUTOMATION_RECORD_MODES },
 };
 
 typedef struct AutomationTrack
 {
-  int               schema_version;
+  int schema_version;
 
   /** Index in parent AutomationTracklist. */
-  int               index;
+  int index;
 
   /** Identifier of the Port this AutomationTrack
    * is for. */
-  PortIdentifier    port_id;
+  PortIdentifier port_id;
 
   /** Whether it has been created by the user
    * yet or not. */
-  bool              created;
+  bool created;
 
   /** The automation Region's. */
-  ZRegion **        regions;
-  int               num_regions;
-  size_t            regions_size;
+  ZRegion ** regions;
+  int        num_regions;
+  size_t     regions_size;
 
   /**
    * Whether visible or not.
    *
    * Being created is a precondition for this.
    */
-  bool              visible;
+  bool visible;
 
   /** Y local to track. */
-  int               y;
+  int y;
 
   /** Position of multipane handle. */
-  double            height;
+  double height;
 
   /** Last value recorded in this automation
    * track. */
-  float             last_recorded_value;
+  float last_recorded_value;
 
   /** Automation mode. */
-  AutomationMode    automation_mode;
+  AutomationMode automation_mode;
 
   /** Automation record mode, when
    * \ref AutomationTrack.automation_mode is
    * set to record. */
-  AutomationRecordMode    record_mode;
+  AutomationRecordMode record_mode;
 
   /** To be set to true when recording starts
    * (when the first change is received) and
    * false when recording ends. */
-  bool                 recording_started;
+  bool recording_started;
 
   /** Region currently recording to. */
-  ZRegion *           recording_region;
+  ZRegion * recording_region;
 
   /**
    * This is a flag to let the recording manager
@@ -153,7 +149,7 @@ typedef struct AutomationTrack
    * AutomationTrack.recording_region
    * takes a cycle or 2 to become non-NULL.
    */
-  bool                recording_start_sent;
+  bool recording_start_sent;
 
   /**
    * This must only be set by the RecordingManager
@@ -163,7 +159,7 @@ typedef struct AutomationTrack
    * See \ref
    * RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING.
    */
-  bool                recording_paused;
+  bool recording_paused;
 
   /** Buttons used by the track widget */
   CustomButtonWidget * top_right_buttons[8];
@@ -184,46 +180,40 @@ typedef struct AutomationTrack
   AutomationTracklist * atl;
 
   /** Cache used during DSP. */
-  Port *               port;
+  Port * port;
 } AutomationTrack;
 
 static const cyaml_schema_field_t
-  automation_track_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    AutomationTrack, schema_version),
-  YAML_FIELD_INT (
-    AutomationTrack, index),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    AutomationTrack, port_id,
-    port_identifier_fields_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    AutomationTrack, regions, region_schema),
-  YAML_FIELD_INT (
-    AutomationTrack, created),
-  YAML_FIELD_ENUM (
-    AutomationTrack, automation_mode,
-    automation_mode_strings),
-  YAML_FIELD_INT (
-    AutomationTrack, visible),
-  YAML_FIELD_FLOAT (
-    AutomationTrack, height),
+  automation_track_fields_schema[] = {
+    YAML_FIELD_INT (AutomationTrack, schema_version),
+    YAML_FIELD_INT (AutomationTrack, index),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      AutomationTrack,
+      port_id,
+      port_identifier_fields_schema),
+    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+      AutomationTrack,
+      regions,
+      region_schema),
+    YAML_FIELD_INT (AutomationTrack, created),
+    YAML_FIELD_ENUM (
+      AutomationTrack,
+      automation_mode,
+      automation_mode_strings),
+    YAML_FIELD_INT (AutomationTrack, visible),
+    YAML_FIELD_FLOAT (AutomationTrack, height),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-  automation_track_schema =
-{
-  YAML_VALUE_PTR (
-    AutomationTrack,
-    automation_track_fields_schema),
-};
+  automation_track_schema = {
+    YAML_VALUE_PTR (
+      AutomationTrack,
+      automation_track_fields_schema),
+  };
 
-COLD
-NONNULL_ARGS (1)
-void
-automation_track_init_loaded (
+COLD NONNULL_ARGS (1) void automation_track_init_loaded (
   AutomationTrack *     self,
   AutomationTracklist * atl);
 
@@ -233,13 +223,11 @@ automation_track_init_loaded (
  */
 NONNULL
 AutomationTrack *
-automation_track_new (
-  Port * port);
+automation_track_new (Port * port);
 
 NONNULL
 bool
-automation_track_validate (
-  AutomationTrack * self);
+automation_track_validate (AutomationTrack * self);
 
 /**
  * Gets the automation mode as a localized string.
@@ -255,7 +243,7 @@ automation_mode_get_localized (
 void
 automation_record_mode_get_localized (
   AutomationRecordMode mode,
-  char *         buf);
+  char *               buf);
 
 /**
  * @note This is expensive and should only be used
@@ -278,8 +266,7 @@ automation_track_find_from_port_id (
  * @param track The track that owns the port, if
  *   known.
  */
-HOT
-AutomationTrack *
+HOT AutomationTrack *
 automation_track_find_from_port (
   Port *  port,
   Track * track,
@@ -297,8 +284,8 @@ automation_track_swap_record_mode (
   AutomationTrack * self)
 {
   self->record_mode =
-    (self->record_mode + 1) %
-      NUM_AUTOMATION_RECORD_MODES;
+    (self->record_mode + 1)
+    % NUM_AUTOMATION_RECORD_MODES;
 }
 
 NONNULL
@@ -314,9 +301,7 @@ automation_track_get_automation_tracklist (
  *   g_get_monotonic_time() passed here to ensure
  *   the same timestamp is used in sequential calls.
  */
-HOT
-NONNULL
-bool
+HOT NONNULL bool
 automation_track_should_read_automation (
   AutomationTrack * at,
   gint64            cur_time);
@@ -343,9 +328,7 @@ automation_track_should_read_automation (
  *   recording inside a region regardless of whether
  *   we should create/edit automation points or not.
  */
-HOT
-NONNULL
-bool
+HOT NONNULL bool
 automation_track_should_be_recording (
   const AutomationTrack * const at,
   const gint64                  cur_time,
@@ -361,7 +344,7 @@ NONNULL
 void
 automation_track_add_region (
   AutomationTrack * self,
-  ZRegion *          region);
+  ZRegion *         region);
 
 /**
  * Inserts an automation ZRegion to the
@@ -383,7 +366,7 @@ automation_track_insert_region (
  */
 //int
 //automation_track_get_visible_y_offset (
-  //AutomationTrack * self);
+//AutomationTrack * self);
 
 /**
  * Updates each position in each child of the
@@ -415,13 +398,11 @@ automation_track_set_index (
  */
 NONNULL
 AutomationTrack *
-automation_track_clone (
-  AutomationTrack * src);
+automation_track_clone (AutomationTrack * src);
 
 NONNULL
 Track *
-automation_track_get_track (
-  AutomationTrack * self);
+automation_track_get_track (AutomationTrack * self);
 
 /**
  * Returns the automation point before the Position
@@ -477,8 +458,7 @@ automation_track_remove_region (
  */
 NONNULL
 void
-automation_track_clear (
-  AutomationTrack * self);
+automation_track_clear (AutomationTrack * self);
 
 /**
  * Returns the actual parameter value at the given
@@ -530,13 +510,11 @@ automation_track_get_last_region (
 
 NONNULL
 void
-automation_track_set_caches (
-  AutomationTrack * self);
+automation_track_set_caches (AutomationTrack * self);
 
 NONNULL
 bool
-automation_track_verify (
-  AutomationTrack * self);
+automation_track_verify (AutomationTrack * self);
 
 /**
  * Frees the automation track.

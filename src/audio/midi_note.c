@@ -45,10 +45,10 @@
 MidiNote *
 midi_note_new (
   RegionIdentifier * region_id,
-  Position *   start_pos,
-  Position *   end_pos,
-  uint8_t      val,
-  uint8_t      vel)
+  Position *         start_pos,
+  Position *         end_pos,
+  uint8_t            val,
+  uint8_t            vel)
 {
   g_return_val_if_fail (region_id, NULL);
 
@@ -57,8 +57,7 @@ midi_note_new (
   self->schema_version = MIDI_NOTE_SCHEMA_VERSION;
   self->magic = MIDI_NOTE_MAGIC;
 
-  ArrangerObject * obj =
-    (ArrangerObject *) self;
+  ArrangerObject * obj = (ArrangerObject *) self;
   arranger_object_init (obj);
   obj->pos = *start_pos;
   obj->end_pos = *end_pos;
@@ -67,8 +66,7 @@ midi_note_new (
   region_identifier_copy (
     &obj->region_id, region_id);
   self->val = val;
-  self->vel =
-    velocity_new (self, vel);
+  self->vel = velocity_new (self, vel);
 
   return self;
 }
@@ -92,11 +90,10 @@ midi_note_set_region_and_index (
  * For debugging.
  */
 void
-midi_note_print (
-  MidiNote * mn)
+midi_note_print (MidiNote * mn)
 {
   ArrangerObject * obj = (ArrangerObject *) mn;
-  char start_pos_str[300];
+  char             start_pos_str[300];
   position_to_string (&obj->pos, start_pos_str);
   char end_pos_str[300];
   position_to_string (&obj->end_pos, end_pos_str);
@@ -112,19 +109,15 @@ midi_note_print (
  *   off if 0.
  */
 void
-midi_note_listen (
-  MidiNote * mn,
-  bool       listen)
+midi_note_listen (MidiNote * mn, bool listen)
 {
   /*g_message (*/
-    /*"%s: %" PRIu8 " listen %d", __func__,*/
-    /*mn->val, listen);*/
+  /*"%s: %" PRIu8 " listen %d", __func__,*/
+  /*mn->val, listen);*/
 
-  ArrangerObject * obj =
-    (ArrangerObject *) mn;
+  ArrangerObject * obj = (ArrangerObject *) mn;
 
-  Track * track =
-    arranger_object_get_track (obj);
+  Track * track = arranger_object_get_track (obj);
   g_return_if_fail (
     track && track->processor->midi_in);
   MidiEvents * events =
@@ -133,29 +126,29 @@ midi_note_listen (
   if (listen)
     {
       /* if note is on but pitch changed */
-      if (mn->currently_listened &&
-          mn->val != mn->last_listened_val)
+      if (
+        mn->currently_listened
+        && mn->val != mn->last_listened_val)
         {
           /* create midi note off */
           /*g_message (*/
-            /*"%s: adding note off for %" PRIu8,*/
-            /*__func__, mn->last_listened_val);*/
+          /*"%s: adding note off for %" PRIu8,*/
+          /*__func__, mn->last_listened_val);*/
           midi_events_add_note_off (
-            events, 1, mn->last_listened_val,
-            0, 1);
+            events, 1, mn->last_listened_val, 0, 1);
 
           /* create note on at the new value */
           /*g_message (*/
-            /*"%s: adding note on for %" PRIu8,*/
-            /*__func__, mn->val);*/
+          /*"%s: adding note on for %" PRIu8,*/
+          /*__func__, mn->val);*/
           midi_events_add_note_on (
-            events, 1, mn->val, mn->vel->vel,
-            0, 1);
+            events, 1, mn->val, mn->vel->vel, 0, 1);
           mn->last_listened_val = mn->val;
         }
       /* if note is on and pitch is the same */
-      else if (mn->currently_listened &&
-               mn->val == mn->last_listened_val)
+      else if (
+        mn->currently_listened
+        && mn->val == mn->last_listened_val)
         {
           /* do nothing */
         }
@@ -164,11 +157,10 @@ midi_note_listen (
         {
           /* turn it on */
           /*g_message (*/
-            /*"%s: adding note on for %" PRIu8,*/
-            /*__func__, mn->val);*/
+          /*"%s: adding note on for %" PRIu8,*/
+          /*__func__, mn->val);*/
           midi_events_add_note_on (
-            events, 1, mn->val, mn->vel->vel,
-            0, 1);
+            events, 1, mn->val, mn->vel->vel, 0, 1);
           mn->last_listened_val = mn->val;
           mn->currently_listened = 1;
         }
@@ -178,11 +170,10 @@ midi_note_listen (
     {
       /* create midi note off */
       /*g_message (*/
-        /*"%s: adding note off for %" PRIu8,*/
-        /*__func__, mn->last_listened_val);*/
+      /*"%s: adding note off for %" PRIu8,*/
+      /*__func__, mn->last_listened_val);*/
       midi_events_add_note_off (
-        events, 1, mn->last_listened_val,
-        0, 1);
+        events, 1, mn->last_listened_val, 0, 1);
       mn->currently_listened = 0;
       mn->last_listened_val = 255;
     }
@@ -192,23 +183,19 @@ midi_note_listen (
  * Returns 1 if the MidiNote's match, 0 if not.
  */
 int
-midi_note_is_equal (
-  MidiNote * src,
-  MidiNote * dest)
+midi_note_is_equal (MidiNote * src, MidiNote * dest)
 {
-  ArrangerObject * src_obj =
-    (ArrangerObject *) src;
+  ArrangerObject * src_obj = (ArrangerObject *) src;
   ArrangerObject * dest_obj =
     (ArrangerObject *) dest;
-  return
-    position_is_equal_ticks (
-      &src_obj->pos, &dest_obj->pos) &&
-    position_is_equal_ticks (
-      &src_obj->end_pos, &dest_obj->end_pos) &&
-    src->val == dest->val &&
-    src->muted == dest->muted &&
-    region_identifier_is_equal (
-      &src_obj->region_id, &dest_obj->region_id);
+  return position_is_equal_ticks (
+           &src_obj->pos, &dest_obj->pos)
+         && position_is_equal_ticks (
+           &src_obj->end_pos, &dest_obj->end_pos)
+         && src->val == dest->val
+         && src->muted == dest->muted
+         && region_identifier_is_equal (
+           &src_obj->region_id, &dest_obj->region_id);
 }
 
 /**
@@ -224,15 +211,11 @@ midi_note_get_global_start_pos (
 {
   ArrangerObject * self_obj =
     (ArrangerObject *) self;
-  ArrangerObject * region_obj =
-    (ArrangerObject *)
+  ArrangerObject * region_obj = (ArrangerObject *)
     arranger_object_get_region (self_obj);
-  position_set_to_pos (
-    pos, &self_obj->pos);
+  position_set_to_pos (pos, &self_obj->pos);
   position_add_ticks (
-    pos,
-    position_to_ticks (
-      &region_obj->pos));
+    pos, position_to_ticks (&region_obj->pos));
 }
 
 /**
@@ -249,14 +232,12 @@ midi_note_get_val_as_string (
   const int        use_markup)
 {
   const char * note_str =
-    chord_descriptor_note_to_string (
-      self->val % 12);
+    chord_descriptor_note_to_string (self->val % 12);
   const int note_val = self->val / 12 - 1;
   if (use_markup)
     {
       sprintf (
-        buf, "%s<sup>%d</sup>",
-        note_str, note_val);
+        buf, "%s<sup>%d</sup>", note_str, note_val);
       if (DEBUGGING)
         {
           char tmp[50];
@@ -266,9 +247,7 @@ midi_note_get_val_as_string (
     }
   else
     {
-      sprintf (
-        buf, "%s%d",
-        note_str, note_val);
+      sprintf (buf, "%s%d", note_str, note_val);
     }
 }
 
@@ -292,13 +271,12 @@ midi_note_set_val (
   g_return_if_fail (val < 128);
 
   /* if currently playing set a note off event. */
-  if (midi_note_hit (
-        midi_note, PLAYHEAD->frames) &&
-      TRANSPORT_IS_ROLLING)
+  if (
+    midi_note_hit (midi_note, PLAYHEAD->frames)
+    && TRANSPORT_IS_ROLLING)
     {
-      ZRegion * region =
-        arranger_object_get_region (
-          (ArrangerObject *) midi_note);
+      ZRegion * region = arranger_object_get_region (
+        (ArrangerObject *) midi_note);
       ArrangerObject * r_obj =
         (ArrangerObject *) region;
       g_return_if_fail (r_obj);
@@ -313,8 +291,8 @@ midi_note_set_val (
       uint8_t midi_ch =
         midi_region_get_midi_ch (region);
       midi_events_add_note_off (
-        midi_events, midi_ch,
-        midi_note->val, 0, F_QUEUED);
+        midi_events, midi_ch, midi_note->val, 0,
+        F_QUEUED);
       zix_sem_post (&midi_events->access_sem);
     }
 
@@ -328,17 +306,15 @@ midi_note_set_val (
  */
 void
 midi_note_shift_pitch (
-  MidiNote *    self,
-  const int     delta)
+  MidiNote * self,
+  const int  delta)
 {
   self->val = (uint8_t) ((int) self->val + delta);
-  midi_note_set_val (
-    self, self->val);
+  midi_note_set_val (self, self->val);
 }
 
 ZRegion *
-midi_note_get_region (
-  MidiNote * self)
+midi_note_get_region (MidiNote * self)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   return region_find (&obj->region_id);
@@ -353,9 +329,8 @@ midi_note_hit (
   MidiNote *           self,
   const signed_frame_t gframes)
 {
-  ZRegion * region =
-    arranger_object_get_region (
-      (ArrangerObject *) self);
+  ZRegion * region = arranger_object_get_region (
+    (ArrangerObject *) self);
   ArrangerObject * region_obj =
     (ArrangerObject *) region;
 
@@ -375,8 +350,9 @@ midi_note_hit (
   /* FIXME ok? it was < and >= before */
   ArrangerObject * midi_note_obj =
     (ArrangerObject *) self;
-  if (midi_note_obj->pos.frames <= local_pos &&
-      midi_note_obj->end_pos.frames > local_pos)
+  if (
+    midi_note_obj->pos.frames <= local_pos
+    && midi_note_obj->end_pos.frames > local_pos)
     return 1;
 
   return 0;

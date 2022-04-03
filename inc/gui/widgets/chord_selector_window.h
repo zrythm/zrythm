@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   ChordSelectorWindowWidget,
   chord_selector_window_widget,
-  Z, CHORD_SELECTOR_WINDOW_WIDGET,
+  Z,
+  CHORD_SELECTOR_WINDOW_WIDGET,
   GtkWindow)
 
 /**
@@ -51,9 +52,9 @@ typedef struct ScaleObject ScaleObject;
  */
 typedef struct _ChordSelectorWindowWidget
 {
-  GtkWindow         parent_instance;
+  GtkWindow parent_instance;
 
-  GtkNotebook *     notebook;
+  GtkNotebook * notebook;
 
   GtkFlowBox *      diatonic_flowbox;
   GtkFlowBoxChild * diatonic_i;
@@ -129,17 +130,17 @@ typedef struct _ChordSelectorWindowWidget
   /** All of the above in an array. */
   GtkFlowBoxChild * creator_bass_notes[12];
 
-  GtkCheckButton *  creator_visibility_all;
-  GtkCheckButton *  creator_visibility_in_scale;
+  GtkCheckButton * creator_visibility_all;
+  GtkCheckButton * creator_visibility_in_scale;
 
   /** ScaleObject at the chord's position. */
-  ScaleObject *     scale;
+  ScaleObject * scale;
 
   /** Temporary copy of the chord descriptor. */
   ChordDescriptor * descr_clone;
 
   /** The index of the chord in the chord editor. */
-  int               chord_idx;
+  int chord_idx;
 
 } ChordSelectorWindowWidget;
 

@@ -37,7 +37,8 @@
 G_DECLARE_FINAL_TYPE (
   EditorSelectionInfoWidget,
   editor_selection_info_widget,
-  Z, EDITOR_SELECTION_INFO_WIDGET,
+  Z,
+  EDITOR_SELECTION_INFO_WIDGET,
   GtkStack);
 
 #define MW_MAS_INFO \
@@ -45,7 +46,7 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _SelectionInfoWidget
   SelectionInfoWidget;
-typedef struct MidiArrangerSelections   \
+typedef struct MidiArrangerSelections
   MidiArrangerSelections;
 
 /**
@@ -66,6 +67,6 @@ typedef struct _EditorSelectionInfoWidget
 void
 editor_selection_info_widget_refresh (
   EditorSelectionInfoWidget * self,
-  MidiArrangerSelections * mas);
+  MidiArrangerSelections *    mas);
 
 #endif

@@ -35,20 +35,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdlib.h>
 
-#include "utils/objects.h"
 #include "utils/mpmc_queue.h"
+#include "utils/objects.h"
 
 CONST
 static size_t
-power_of_two_size (
-  size_t sz)
+power_of_two_size (size_t sz)
 {
   int32_t power_of_two;
-  for (power_of_two = 1;
-       1U << power_of_two < sz; ++power_of_two);
+  for (power_of_two = 1; 1U << power_of_two < sz;
+       ++power_of_two)
+    ;
   return 1U << power_of_two;
 }
 
@@ -59,8 +59,8 @@ mpmc_queue_reserve (
 {
   buffer_size = power_of_two_size (buffer_size);
   g_return_if_fail (
-    (buffer_size >= 2) &&
-    ((buffer_size & (buffer_size - 1)) == 0));
+    (buffer_size >= 2)
+    && ((buffer_size & (buffer_size - 1)) == 0));
 
   if (self->buffer_mask >= buffer_size - 1)
     return;
@@ -68,8 +68,7 @@ mpmc_queue_reserve (
   if (self->buffer)
     free (self->buffer);
 
-  self->buffer =
-    object_new_n (buffer_size, cell_t);
+  self->buffer = object_new_n (buffer_size, cell_t);
   self->buffer_mask = buffer_size - 1;
 
   mpmc_queue_clear (self);
@@ -86,8 +85,7 @@ mpmc_queue_new (void)
 }
 
 void
-mpmc_queue_free (
-  MPMCQueue * self)
+mpmc_queue_free (MPMCQueue * self)
 {
   free (self->buffer);
 
@@ -95,14 +93,12 @@ mpmc_queue_free (
 }
 
 void
-mpmc_queue_clear (
-  MPMCQueue * self)
+mpmc_queue_clear (MPMCQueue * self)
 {
   for (size_t i = 0; i <= self->buffer_mask; ++i)
     {
       g_atomic_int_set (
-        &self->buffer[i].sequence,
-        (guint) i);
+        &self->buffer[i].sequence, (guint) i);
     }
   g_atomic_int_set (&self->enqueue_pos, 0);
   g_atomic_int_set (&self->dequeue_pos, 0);
@@ -113,20 +109,20 @@ mpmc_queue_push_back (
   MPMCQueue *  self,
   void * const data)
 {
-  cell_t* cell;
-  gint pos =
-    g_atomic_int_get (&self->enqueue_pos);
+  cell_t * cell;
+  gint pos = g_atomic_int_get (&self->enqueue_pos);
   for (;;)
     {
-      cell = &self->buffer[(size_t) pos & self->buffer_mask];
+      cell =
+        &self->buffer
+           [(size_t) pos & self->buffer_mask];
       guint seq =
         (guint) g_atomic_int_get (&cell->sequence);
-      intptr_t dif = (intptr_t)seq - (intptr_t)pos;
+      intptr_t dif = (intptr_t) seq - (intptr_t) pos;
       if (dif == 0)
         {
           if (g_atomic_int_compare_and_exchange (
-                &self->enqueue_pos, pos,
-                (pos + 1)))
+                &self->enqueue_pos, pos, (pos + 1)))
             {
               break;
             }
@@ -148,28 +144,23 @@ mpmc_queue_push_back (
 }
 
 int
-mpmc_queue_dequeue (
-  MPMCQueue * self,
-  void **     data)
+mpmc_queue_dequeue (MPMCQueue * self, void ** data)
 {
   cell_t * cell;
-  gint pos =
-    g_atomic_int_get (&self->dequeue_pos);
+  gint pos = g_atomic_int_get (&self->dequeue_pos);
   for (;;)
     {
       cell =
-        &self->buffer[
-          (size_t) pos & self->buffer_mask];
+        &self->buffer
+           [(size_t) pos & self->buffer_mask];
       guint seq =
-        (guint)
-        g_atomic_int_get (&cell->sequence);
+        (guint) g_atomic_int_get (&cell->sequence);
       intptr_t dif =
-        (intptr_t)seq - (intptr_t) (pos + 1);
+        (intptr_t) seq - (intptr_t) (pos + 1);
       if (dif == 0)
         {
           if (g_atomic_int_compare_and_exchange (
-                &self->dequeue_pos, pos,
-                (pos + 1)))
+                &self->dequeue_pos, pos, (pos + 1)))
             break;
         }
       else if (dif < 0)

@@ -49,7 +49,7 @@ G_DEFINE_TYPE (
 
 static void
 on_play_clicked (
-  GtkButton *          toolbutton,
+  GtkButton *                    toolbutton,
   FileAuditionerControlsWidget * self)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
@@ -76,7 +76,7 @@ on_play_clicked (
 
 static void
 on_stop_clicked (
-  GtkButton *          toolbutton,
+  GtkButton *                    toolbutton,
   FileAuditionerControlsWidget * self)
 {
   sample_processor_stop_file_playback (
@@ -85,10 +85,10 @@ on_stop_clicked (
 
 static void
 on_settings_menu_items_changed (
-  GMenuModel *             model,
-  int                      position,
-  int                      removed,
-  int                      added,
+  GMenuModel *                   model,
+  int                            position,
+  int                            removed,
+  int                            added,
   FileAuditionerControlsWidget * self)
 {
   self->refilter_files (self->owner);
@@ -96,9 +96,9 @@ on_settings_menu_items_changed (
 
 static void
 on_instrument_changed (
-  GObject    *   gobject,
-  GParamSpec *   pspec,
-  void *         data)
+  GObject *    gobject,
+  GParamSpec * pspec,
+  void *       data)
 {
   GtkDropDown * dropdown = GTK_DROP_DOWN (gobject);
   WrappedObjectWithChangeSignal * wrapped_obj =
@@ -107,11 +107,11 @@ on_instrument_changed (
   const PluginDescriptor * descr =
     (PluginDescriptor *) wrapped_obj->obj;
 
-  if (SAMPLE_PROCESSOR->instrument_setting &&
-      plugin_descriptor_is_same_plugin (
-         SAMPLE_PROCESSOR->instrument_setting->
-           descr,
-         descr))
+  if (
+    SAMPLE_PROCESSOR->instrument_setting
+    && plugin_descriptor_is_same_plugin (
+      SAMPLE_PROCESSOR->instrument_setting->descr,
+      descr))
     return;
 
   EngineState state;
@@ -128,8 +128,7 @@ on_instrument_changed (
 
   /* set setting */
   PluginSetting * existing_setting =
-    plugin_settings_find (
-      S_PLUGIN_SETTINGS, descr);
+    plugin_settings_find (S_PLUGIN_SETTINGS, descr);
   if (existing_setting)
     {
       SAMPLE_PROCESSOR->instrument_setting =
@@ -145,10 +144,9 @@ on_instrument_changed (
     SAMPLE_PROCESSOR->instrument_setting);
 
   /* save setting */
-  char * setting_yaml =
-    yaml_serialize (
-      SAMPLE_PROCESSOR->instrument_setting,
-      &plugin_setting_schema);
+  char * setting_yaml = yaml_serialize (
+    SAMPLE_PROCESSOR->instrument_setting,
+    &plugin_setting_schema);
   g_settings_set_string (
     S_UI_FILE_BROWSER, "instrument", setting_yaml);
   g_free (setting_yaml);
@@ -163,21 +161,18 @@ static void
 setup_instrument_dropdown (
   FileAuditionerControlsWidget * self)
 {
-  GListStore * store =
-    g_list_store_new (
-      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+  GListStore * store = g_list_store_new (
+    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
   /* populate instruments */
   int selected = -1;
   int num_added = 0;
   for (size_t i = 0;
-       i < PLUGIN_MANAGER->plugin_descriptors->
-         len;
+       i < PLUGIN_MANAGER->plugin_descriptors->len;
        i++)
     {
-      PluginDescriptor * descr =
-        g_ptr_array_index (
-          PLUGIN_MANAGER->plugin_descriptors, i);
+      PluginDescriptor * descr = g_ptr_array_index (
+        PLUGIN_MANAGER->plugin_descriptors, i);
       if (plugin_descriptor_is_instrument (descr))
         {
           WrappedObjectWithChangeSignal * wrapped_descr =
@@ -187,12 +182,12 @@ setup_instrument_dropdown (
           g_list_store_append (store, wrapped_descr);
 
           /* set selected instrument */
-          if (SAMPLE_PROCESSOR->instrument_setting
-              &&
-              plugin_descriptor_is_same_plugin (
-                SAMPLE_PROCESSOR->
-                  instrument_setting->descr,
-                descr))
+          if (
+            SAMPLE_PROCESSOR->instrument_setting
+            && plugin_descriptor_is_same_plugin (
+              SAMPLE_PROCESSOR->instrument_setting
+                ->descr,
+              descr))
             {
               selected = num_added;
             }
@@ -202,15 +197,13 @@ setup_instrument_dropdown (
     }
 
   gtk_drop_down_set_model (
-    self->instrument_dropdown,
-    G_LIST_MODEL (store));
+    self->instrument_dropdown, G_LIST_MODEL (store));
 
-  GtkExpression * expr =
-    gtk_cclosure_expression_new (
-      G_TYPE_STRING, NULL, 0, NULL,
-      G_CALLBACK (
-        wrapped_object_with_change_signal_get_display_name),
-      NULL, NULL);
+  GtkExpression * expr = gtk_cclosure_expression_new (
+    G_TYPE_STRING, NULL, 0, NULL,
+    G_CALLBACK (
+      wrapped_object_with_change_signal_get_display_name),
+    NULL, NULL);
   gtk_drop_down_set_expression (
     self->instrument_dropdown, expr);
 
@@ -236,8 +229,8 @@ file_auditioner_controls_widget_setup (
   FileAuditionerControlsWidget * self,
   GtkWidget *                    owner,
   bool                           for_files,
-  SelectedFileGetter             selected_file_getter,
-  GenericCallback                refilter_files_cb)
+  SelectedFileGetter selected_file_getter,
+  GenericCallback    refilter_files_cb)
 {
   self->owner = owner;
   self->selected_file_getter = selected_file_getter;
@@ -249,19 +242,18 @@ file_auditioner_controls_widget_setup (
   self->for_files = for_files;
   GMenu * menu = g_menu_new ();
   g_menu_append (
-    menu, _("Autoplay"), "settings-btn.autoplay");
+    menu, _ ("Autoplay"), "settings-btn.autoplay");
   if (for_files)
     {
       g_menu_append (
-        menu, _("Show unsupported files"),
+        menu, _ ("Show unsupported files"),
         "settings-btn.show-unsupported-files");
       g_menu_append (
-        menu, _("Show hidden files"),
+        menu, _ ("Show hidden files"),
         "settings-btn.show-hidden-files");
     }
   gtk_menu_button_set_menu_model (
-    self->file_settings_btn,
-    G_MENU_MODEL (menu));
+    self->file_settings_btn, G_MENU_MODEL (menu));
   g_signal_connect (
     menu, "items-changed",
     G_CALLBACK (on_settings_menu_items_changed),
@@ -314,23 +306,19 @@ file_auditioner_controls_widget_init (
   /* set menu */
   GSimpleActionGroup * action_group =
     g_simple_action_group_new ();
-  GAction * action =
-    g_settings_create_action (
-      S_UI_FILE_BROWSER, "autoplay");
+  GAction * action = g_settings_create_action (
+    S_UI_FILE_BROWSER, "autoplay");
   g_action_map_add_action (
     G_ACTION_MAP (action_group), action);
-  action =
-    g_settings_create_action (
-      S_UI_FILE_BROWSER, "show-unsupported-files");
+  action = g_settings_create_action (
+    S_UI_FILE_BROWSER, "show-unsupported-files");
   g_action_map_add_action (
     G_ACTION_MAP (action_group), action);
-  action =
-    g_settings_create_action (
-      S_UI_FILE_BROWSER, "show-hidden-files");
+  action = g_settings_create_action (
+    S_UI_FILE_BROWSER, "show-hidden-files");
   g_action_map_add_action (
     G_ACTION_MAP (action_group), action);
   gtk_widget_insert_action_group (
     GTK_WIDGET (self->file_settings_btn),
-    "settings-btn",
-    G_ACTION_GROUP (action_group));
+    "settings-btn", G_ACTION_GROUP (action_group));
 }

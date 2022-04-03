@@ -29,11 +29,10 @@
 #include "audio/region.h"
 #include "utils/yaml.h"
 
-typedef struct _TrackLaneWidget TrackLaneWidget;
-typedef struct Tracklist Tracklist;
-typedef struct CustomButtonWidget
-  CustomButtonWidget;
-typedef void MIDI_FILE;
+typedef struct _TrackLaneWidget   TrackLaneWidget;
+typedef struct Tracklist          Tracklist;
+typedef struct CustomButtonWidget CustomButtonWidget;
+typedef void                      MIDI_FILE;
 
 /**
  * @addtogroup audio
@@ -48,8 +47,7 @@ typedef void MIDI_FILE;
 
 #define track_lane_is_in_active_project(self) \
   (self->track \
-   && \
-   track_is_in_active_project (self->track))
+   && track_is_in_active_project (self->track))
 
 /**
  * A TrackLane belongs to a Track (can have many
@@ -60,33 +58,33 @@ typedef void MIDI_FILE;
  */
 typedef struct TrackLane
 {
-  int                 schema_version;
+  int schema_version;
 
   /** Position in the Track. */
-  int                 pos;
+  int pos;
 
   /** Name of lane, e.g. "Lane 1". */
-  char *              name;
+  char * name;
 
   /** TrackLaneWidget for this lane. */
   //TrackLaneWidget *   widget;
 
   /** Y local to track. */
-  int                 y;
+  int y;
 
   /** Position of handle. */
-  double              height;
+  double height;
 
   /** Muted or not. */
-  int                 mute;
+  int mute;
 
   /** Soloed or not. */
-  int                 solo;
+  int solo;
 
   /** Regions in this track. */
-  ZRegion **          regions;
-  int                 num_regions;
-  size_t              regions_size;
+  ZRegion ** regions;
+  int        num_regions;
+  size_t     regions_size;
 
   /**
    * MIDI channel, if MIDI lane, starting at 1.
@@ -94,45 +92,39 @@ typedef struct TrackLane
    * If this is set to 0, the value will be
    * inherited from the Track.
    */
-  uint8_t             midi_ch;
+  uint8_t midi_ch;
 
   /** Buttons used by the track widget. */
   CustomButtonWidget * buttons[8];
-  int                 num_buttons;
+  int                  num_buttons;
 
   /** Owner track. */
-  Track *             track;
+  Track * track;
 
 } TrackLane;
 
 static const cyaml_schema_field_t
-track_lane_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    TrackLane, schema_version),
-  YAML_FIELD_INT (
-    TrackLane, pos),
-  YAML_FIELD_STRING_PTR (
-    TrackLane, name),
-  YAML_FIELD_FLOAT (
-    TrackLane, height),
-  YAML_FIELD_INT (
-    TrackLane, mute),
-  YAML_FIELD_INT (
-    TrackLane, solo),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-    TrackLane, regions, region_schema),
-  YAML_FIELD_UINT (
-    TrackLane, midi_ch),
+  track_lane_fields_schema[] = {
+    YAML_FIELD_INT (TrackLane, schema_version),
+    YAML_FIELD_INT (TrackLane, pos),
+    YAML_FIELD_STRING_PTR (TrackLane, name),
+    YAML_FIELD_FLOAT (TrackLane, height),
+    YAML_FIELD_INT (TrackLane, mute),
+    YAML_FIELD_INT (TrackLane, solo),
+    YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+      TrackLane,
+      regions,
+      region_schema),
+    YAML_FIELD_UINT (TrackLane, midi_ch),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t
-track_lane_schema = {
+static const cyaml_schema_value_t track_lane_schema = {
   CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-    TrackLane, track_lane_fields_schema),
+    TrackLane,
+    track_lane_fields_schema),
 };
 
 void
@@ -150,9 +142,7 @@ track_lane_init_loaded (
  *   this lane will be placed in.
  */
 TrackLane *
-track_lane_new (
-  Track * track,
-  int     pos);
+track_lane_new (Track * track, int pos);
 
 /**
  * Inserts a ZRegion to the given TrackLane at the
@@ -184,16 +174,14 @@ track_lane_remove_region (
  * Unselects all arranger objects.
  */
 void
-track_lane_unselect_all (
-  TrackLane * self);
+track_lane_unselect_all (TrackLane * self);
 
 /**
  * Removes all objects recursively from the track
  * lane.
  */
 void
-track_lane_clear (
-  TrackLane * self);
+track_lane_clear (TrackLane * self);
 
 /**
  * Rename the lane.
@@ -233,8 +221,7 @@ track_lane_set_soloed (
 
 NONNULL
 bool
-track_lane_get_soloed (
-  const TrackLane * const self);
+track_lane_get_soloed (const TrackLane * const self);
 
 /**
  * Sets track lane muted, updates UI and optionally
@@ -254,12 +241,10 @@ track_lane_set_muted (
 
 NONNULL
 bool
-track_lane_get_muted (
-  const TrackLane * const self);
+track_lane_get_muted (const TrackLane * const self);
 
 const char *
-track_lane_get_name (
-  TrackLane * self);
+track_lane_get_name (TrackLane * self);
 
 /**
  * Updates the positions in each child recursively.
@@ -279,8 +264,7 @@ track_lane_update_positions (
  * objects recursively.
  */
 void
-track_lane_update_track_name_hash (
-  TrackLane *   self);
+track_lane_update_track_name_hash (TrackLane * self);
 
 /**
  * Clones the TrackLane.
@@ -315,13 +299,11 @@ track_lane_write_to_midi_file (
 
 NONNULL
 Tracklist *
-track_lane_get_tracklist (
-  const TrackLane * self);
+track_lane_get_tracklist (const TrackLane * self);
 
 NONNULL
 Track *
-track_lane_get_track (
-  const TrackLane * self);
+track_lane_get_track (const TrackLane * self);
 
 /**
  * Calculates a unique index for this lane.
@@ -336,8 +318,7 @@ track_lane_calculate_lane_idx (
  */
 NONNULL
 void
-track_lane_free (
-  TrackLane * lane);
+track_lane_free (TrackLane * lane);
 
 /**
  * @}

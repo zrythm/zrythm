@@ -29,13 +29,14 @@
 #include "zrythm-config.h"
 
 #include <stdint.h>
-#include <string.h>
 
 #include "utils/types.h"
+
 #include "zix/sem.h"
+#include <string.h>
 
 #ifdef HAVE_JACK
-#include "weak_libjack.h"
+#  include "weak_libjack.h"
 #endif
 
 #include <gtk/gtk.h>
@@ -60,20 +61,20 @@ typedef struct MidiEvent
 {
   /** Time of the MIDI event, in frames from the
    * start of the current cycle. */
-  midi_time_t    time;
+  midi_time_t time;
 
   /** Time using g_get_monotonic_time (). */
-  gint64         systime;
+  gint64 systime;
 
   /** Raw MIDI data. */
-  midi_byte_t    raw_buffer[3];
+  midi_byte_t raw_buffer[3];
 
-  size_t         raw_buffer_sz;
+  size_t raw_buffer_sz;
 
 } MidiEvent;
 
 typedef struct MidiEvents MidiEvents;
-typedef struct Port Port;
+typedef struct Port       Port;
 
 /**
  * Container for passing midi events through ports.
@@ -85,7 +86,7 @@ typedef struct MidiEvents
   volatile int num_events;
 
   /** Events to use in this cycle. */
-  MidiEvent  events[MAX_MIDI_EVENTS];
+  MidiEvent events[MAX_MIDI_EVENTS];
 
   /**
    * For queueing events from the GUI or from ALSA
@@ -97,11 +98,11 @@ typedef struct MidiEvents
    *
    * Also has other uses.
    */
-  MidiEvent  queued_events[MAX_MIDI_EVENTS];
+  MidiEvent    queued_events[MAX_MIDI_EVENTS];
   volatile int num_queued_events;
 
   /** Semaphore for exclusive read/write. */
-  ZixSem     access_sem;
+  ZixSem access_sem;
 
 } MidiEvents;
 
@@ -119,8 +120,7 @@ typedef struct MidiEventHeader
  * Inits the MidiEvents struct.
  */
 void
-midi_events_init (
-  MidiEvents * self);
+midi_events_init (MidiEvents * self);
 
 /**
  * Allocates and inits a MidiEvents struct.
@@ -132,9 +132,7 @@ midi_events_new (void);
  * Copies the members from one MidiEvent to another.
  */
 static inline void
-midi_event_copy (
-  MidiEvent * dest,
-  MidiEvent * src)
+midi_event_copy (MidiEvent * dest, MidiEvent * src)
 {
   memcpy (dest, src, sizeof (MidiEvent));
 }
@@ -146,20 +144,17 @@ midi_event_set_velocity (
   midi_byte_t vel);
 
 void
-midi_event_print (
-  const MidiEvent * ev);
+midi_event_print (const MidiEvent * ev);
 
-PURE
-static inline bool
+PURE static inline bool
 midi_events_are_equal (
   const MidiEvent * src,
   const MidiEvent * dest)
 {
-  return
-    dest->time == src->time
-    && dest->raw_buffer[0] == src->raw_buffer[0]
-    && dest->raw_buffer[1] == src->raw_buffer[1]
-    && dest->raw_buffer[2] == src->raw_buffer[2];
+  return dest->time == src->time
+         && dest->raw_buffer[0] == src->raw_buffer[0]
+         && dest->raw_buffer[1] == src->raw_buffer[1]
+         && dest->raw_buffer[2] == src->raw_buffer[2];
 }
 
 void
@@ -264,11 +259,11 @@ midi_events_add_note_offs_from_chord_descr (
  */
 void
 midi_events_add_cc_volume (
-  MidiEvents *      self,
-  midi_byte_t       channel,
-  midi_byte_t       volume,
-  midi_time_t       time,
-  bool              queued);
+  MidiEvents * self,
+  midi_byte_t  channel,
+  midi_byte_t  volume,
+  midi_time_t  time,
+  bool         queued);
 
 /**
  * Returrns if the MidiEvents have any note on
@@ -361,9 +356,7 @@ midi_events_add_all_notes_off (
   bool         queued);
 
 void
-midi_events_panic (
-  MidiEvents * self,
-  bool         queued);
+midi_events_panic (MidiEvents * self, bool queued);
 
 NONNULL
 void
@@ -397,8 +390,7 @@ midi_events_clear_duplicates (
  * Copies the queue contents to the original struct
  */
 void
-midi_events_dequeue (
-  MidiEvents * midi_events);
+midi_events_dequeue (MidiEvents * midi_events);
 
 /**
  * Returns if a note on event for the given note
@@ -461,15 +453,13 @@ midi_events_delete_event (
  *   of main events.
  */
 void
-midi_events_panic_all (
-  const bool queued);
+midi_events_panic_all (const bool queued);
 
 /**
  * Frees the MIDI events.
  */
 void
-midi_events_free (
-  MidiEvents * self);
+midi_events_free (MidiEvents * self);
 
 /**
  * @}

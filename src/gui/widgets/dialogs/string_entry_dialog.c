@@ -20,8 +20,8 @@
 #include "actions/arranger_selections.h"
 #include "audio/marker.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/main_window.h"
 #include "gui/widgets/dialogs/string_entry_dialog.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/marker.h"
 #include "project.h"
 #include "utils/flags.h"
@@ -30,8 +30,8 @@
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   StringEntryDialogWidget,
@@ -43,15 +43,14 @@ G_DEFINE_TYPE (
  */
 static void
 on_response (
-  GtkDialog *          dialog,
-  gint                 response,
+  GtkDialog *               dialog,
+  gint                      response,
   StringEntryDialogWidget * self)
 {
   if (response == GTK_RESPONSE_ACCEPT)
     {
-      const char * text =
-        gtk_editable_get_text (
-          GTK_EDITABLE (self->entry));
+      const char * text = gtk_editable_get_text (
+        GTK_EDITABLE (self->entry));
 
       self->setter (self->obj, text);
     }
@@ -61,12 +60,11 @@ on_response (
 
 static void
 on_entry_activate (
-  GtkEntry * btn,
+  GtkEntry *                btn,
   StringEntryDialogWidget * self)
 {
   gtk_dialog_response (
-    GTK_DIALOG (self),
-    GTK_RESPONSE_ACCEPT);
+    GTK_DIALOG (self), GTK_RESPONSE_ACCEPT);
 }
 
 /**
@@ -79,12 +77,10 @@ string_entry_dialog_widget_new (
   GenericStringGetter getter,
   GenericStringSetter setter)
 {
-  StringEntryDialogWidget * self =
-    g_object_new (
-      STRING_ENTRY_DIALOG_WIDGET_TYPE,
-      "icon-name", "zrythm",
-      "title", _("Please enter a value"),
-      NULL);
+  StringEntryDialogWidget * self = g_object_new (
+    STRING_ENTRY_DIALOG_WIDGET_TYPE, "icon-name",
+    "zrythm", "title", _ ("Please enter a value"),
+    NULL);
 
   self->obj = obj;
   self->getter = getter;
@@ -103,8 +99,7 @@ string_entry_dialog_widget_new (
 }
 
 static const char *
-str_get (
-  char ** str)
+str_get (char ** str)
 {
   if (*str)
     {
@@ -117,9 +112,7 @@ str_get (
 }
 
 static void
-str_set (
-  char **      str,
-  const char * in_str)
+str_set (char ** str, const char * in_str)
 {
   if (*str)
     {
@@ -138,13 +131,12 @@ str_set (
  */
 char *
 string_entry_dialog_widget_new_return_string (
-  const char *        label)
+  const char * label)
 {
-  char * str = NULL;
+  char *                    str = NULL;
   StringEntryDialogWidget * self =
     string_entry_dialog_widget_new (
-      label, &str,
-      (GenericStringGetter) str_get,
+      label, &str, (GenericStringGetter) str_get,
       (GenericStringSetter) str_set);
   z_gtk_dialog_run (GTK_DIALOG (self), true);
 
@@ -161,9 +153,7 @@ string_entry_dialog_widget_class_init (
 
 #define BIND_CHILD(child) \
   gtk_widget_class_bind_template_child ( \
-    klass, \
-    StringEntryDialogWidget, \
-    child)
+    klass, StringEntryDialogWidget, child)
 
   BIND_CHILD (ok);
   BIND_CHILD (cancel);
@@ -182,7 +172,7 @@ string_entry_dialog_widget_init (
   g_signal_connect (
     G_OBJECT (self->entry), "activate",
     G_CALLBACK (on_entry_activate), self);
-   g_signal_connect (
+  g_signal_connect (
     G_OBJECT (self), "response",
     G_CALLBACK (on_response), self);
 }

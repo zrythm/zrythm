@@ -17,15 +17,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "guile/modules.h"
 #include <string.h>
 
-#include "guile/modules.h"
-
 #ifndef SNARF_MODE
-#include "zrythm-config.h"
-#include "plugins/plugin_manager.h"
-#include "project.h"
-#include "zrythm.h"
+#  include "zrythm-config.h"
+
+#  include "plugins/plugin_manager.h"
+#  include "project.h"
+#  include "zrythm.h"
 #endif
 
 /**
@@ -40,7 +40,11 @@ get_ptr (void)
 #endif
 
 SCM_DEFINE (
-  s_zrythm_get_ver, "zrythm-get-ver", 0, 0, 0,
+  s_zrythm_get_ver,
+  "zrythm-get-ver",
+  0,
+  0,
+  0,
   (),
   "Return the "
 #ifdef SNARF_MODE
@@ -53,40 +57,46 @@ SCM_DEFINE (
 {
   char ver[1000];
   zrythm_get_version_with_capabilities (ver, false);
-  return
-    scm_from_stringn (
-      ver, strlen (ver), "UTF8",
-      SCM_FAILED_CONVERSION_QUESTION_MARK);
+  return scm_from_stringn (
+    ver, strlen (ver), "UTF8",
+    SCM_FAILED_CONVERSION_QUESTION_MARK);
 }
 #undef FUNC_NAME
 
 SCM_DEFINE (
   s_zrythm_get_plugin_manager,
-  "zrythm-get-plugin-manager", 0, 0, 0,
+  "zrythm-get-plugin-manager",
+  0,
+  0,
+  0,
   (),
   "Return the PluginManager instance.")
 #define FUNC_NAME s_
 {
-  return
-    scm_from_pointer (PLUGIN_MANAGER, NULL);
+  return scm_from_pointer (PLUGIN_MANAGER, NULL);
 }
 #undef FUNC_NAME
 
 SCM_DEFINE (
   s_zrythm_get_project,
-  "zrythm-get-project", 0, 0, 0,
+  "zrythm-get-project",
+  0,
+  0,
+  0,
   (),
   "Return the currently loaded Project instance.")
 #define FUNC_NAME s_
 {
-  return
-    scm_from_pointer (PROJECT, NULL);
+  return scm_from_pointer (PROJECT, NULL);
 }
 #undef FUNC_NAME
 
 SCM_DEFINE (
   s_zrythm_null,
-  "zrythm-null", 0, 0, 0,
+  "zrythm-null",
+  0,
+  0,
+  0,
   (),
   "Returns a NULL pointer.")
 #define FUNC_NAME s_
@@ -97,7 +107,10 @@ SCM_DEFINE (
 
 SCM_DEFINE (
   s_zrythm_message,
-  "zrythm-message", 1, 0, 0,
+  "zrythm-message",
+  1,
+  0,
+  0,
   (SCM message),
   "Writes the message to the log.")
 #define FUNC_NAME s_
@@ -112,20 +125,16 @@ static void
 init_module (void * data)
 {
 #ifndef SNARF_MODE
-#include "zrythm.x"
+#  include "zrythm.x"
 #endif
   scm_c_export (
-    "zrythm-get-ver",
-    "zrythm-get-plugin-manager",
-    "zrythm-get-project",
-    "zrythm-message",
-    "zrythm-null",
-    NULL);
+    "zrythm-get-ver", "zrythm-get-plugin-manager",
+    "zrythm-get-project", "zrythm-message",
+    "zrythm-null", NULL);
 }
 
 void
 guile_zrythm_define_module (void)
 {
-  scm_c_define_module (
-    "zrythm", init_module, NULL);
+  scm_c_define_module ("zrythm", init_module, NULL);
 }

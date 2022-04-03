@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   ArrangerObjectInfoDialogWidget,
   arranger_object_info_dialog_widget,
-  Z, ARRANGER_OBJECT_INFO_DIALOG_WIDGET,
+  Z,
+  ARRANGER_OBJECT_INFO_DIALOG_WIDGET,
   GtkDialog)
 
 typedef struct ArrangerObject ArrangerObject;
@@ -49,13 +50,13 @@ typedef struct ArrangerObject ArrangerObject;
  */
 typedef struct _ArrangerObjectInfoDialogWidget
 {
-  GtkDialog            parent_instance;
+  GtkDialog parent_instance;
 
-  GtkLabel *           name_lbl;
-  GtkLabel *           type_lbl;
-  GtkLabel *           owner_lbl;
+  GtkLabel * name_lbl;
+  GtkLabel * type_lbl;
+  GtkLabel * owner_lbl;
 
-  ArrangerObject *     obj;
+  ArrangerObject * obj;
 } ArrangerObjectInfoDialogWidget;
 
 /**

@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   ChannelSendWidget,
   channel_send_widget,
-  Z, CHANNEL_SEND_WIDGET,
+  Z,
+  CHANNEL_SEND_WIDGET,
   GtkWidget)
 
 typedef struct ChannelSend ChannelSend;
@@ -48,31 +49,31 @@ typedef struct _ChannelSendSelectorWidget
 
 typedef struct _ChannelSendWidget
 {
-  GtkWidget           parent_instance;
+  GtkWidget parent_instance;
 
   /** Owner. */
-  ChannelSend *       send;
+  ChannelSend * send;
 
-  GtkGestureClick *   click;
-  GtkGestureDrag *    drag;
+  GtkGestureClick * click;
+  GtkGestureDrag *  drag;
 
-  double              start_x;
-  double              last_offset_x;
+  double start_x;
+  double last_offset_x;
 
-  float               send_amount_at_start;
+  float send_amount_at_start;
 
   /** For multipress. */
-  int                 n_press;
+  int n_press;
 
   GtkGestureClick * right_mouse_mp;
 
   /** Cache tooltip string. */
-  char *              cache_tooltip;
+  char * cache_tooltip;
 
   /** Layout cache for empty slot. */
-  PangoLayout *       empty_slot_layout;
+  PangoLayout * empty_slot_layout;
   /** Layout cache for name. */
-  PangoLayout *       name_layout;
+  PangoLayout * name_layout;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
@@ -85,8 +86,7 @@ typedef struct _ChannelSendWidget
  * the given value.
  */
 ChannelSendWidget *
-channel_send_widget_new (
-  ChannelSend * send);
+channel_send_widget_new (ChannelSend * send);
 
 /**
  * @}

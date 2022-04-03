@@ -34,48 +34,48 @@
 #include "audio/port_identifier.h"
 #include "plugins/lv2/lv2_evbuf.h"
 #include "utils/types.h"
-#include "zix/sem.h"
 
+#include "zix/sem.h"
 #include <lilv/lilv.h>
 
 #ifdef HAVE_JACK
-#include "weak_libjack.h"
+#  include "weak_libjack.h"
 #endif
 
 #ifdef HAVE_RTMIDI
-#include <rtmidi_c.h>
+#  include <rtmidi_c.h>
 #endif
 
 #ifdef HAVE_RTAUDIO
-#include <rtaudio_c.h>
+#  include <rtaudio_c.h>
 #endif
 
-typedef struct Plugin Plugin;
-typedef struct MidiEvents MidiEvents;
-typedef struct Fader Fader;
-typedef struct ZixRingImpl ZixRing;
+typedef struct Plugin           Plugin;
+typedef struct MidiEvents       MidiEvents;
+typedef struct Fader            Fader;
+typedef struct ZixRingImpl      ZixRing;
 typedef struct WindowsMmeDevice WindowsMmeDevice;
-typedef struct Channel Channel;
-typedef struct AudioEngine AudioEngine;
-typedef struct Track Track;
-typedef struct PortConnection PortConnection;
-typedef struct TrackProcessor TrackProcessor;
+typedef struct Channel          Channel;
+typedef struct AudioEngine      AudioEngine;
+typedef struct Track            Track;
+typedef struct PortConnection   PortConnection;
+typedef struct TrackProcessor   TrackProcessor;
 typedef struct ModulatorMacroProcessor
-  ModulatorMacroProcessor;
+                            ModulatorMacroProcessor;
 typedef struct RtMidiDevice RtMidiDevice;
-typedef struct RtAudioDevice RtAudioDevice;
+typedef struct RtAudioDevice   RtAudioDevice;
 typedef struct AutomationTrack AutomationTrack;
-typedef struct TruePeakDsp TruePeakDsp;
-typedef struct ExtPort ExtPort;
-typedef struct AudioClip AudioClip;
-typedef struct ChannelSend ChannelSend;
-typedef struct Transport Transport;
+typedef struct TruePeakDsp     TruePeakDsp;
+typedef struct ExtPort         ExtPort;
+typedef struct AudioClip       AudioClip;
+typedef struct ChannelSend     ChannelSend;
+typedef struct Transport       Transport;
 typedef struct PluginGtkController
   PluginGtkController;
 typedef struct EngineProcessTimeInfo
-  EngineProcessTimeInfo;
+                          EngineProcessTimeInfo;
 typedef enum PanAlgorithm PanAlgorithm;
-typedef enum PanLaw PanLaw;
+typedef enum PanLaw       PanLaw;
 
 /**
  * @addtogroup audio
@@ -89,8 +89,7 @@ typedef enum PanLaw PanLaw;
 #define PORT_MAGIC 456861194
 #define IS_PORT(_p) \
   (((Port *) (_p))->magic == PORT_MAGIC)
-#define IS_PORT_AND_NONNULL(x) \
-  ((x) && IS_PORT (x))
+#define IS_PORT_AND_NONNULL(x) ((x) && IS_PORT (x))
 
 #define TIME_TO_RESET_PEAK 4800000
 
@@ -101,45 +100,32 @@ typedef enum PanLaw PanLaw;
 #define PORT_NOT_OWNED -1
 
 #define port_is_owner_active( \
-  self,_owner_type,owner) \
+  self, _owner_type, owner) \
   ((self->id.owner_type == _owner_type) \
    && (self->owner != NULL) \
-   && \
-   owner##_is_in_active_project ( \
-     self->owner))
+   && owner##_is_in_active_project (self->owner))
 
 #define port_is_in_active_project(self) \
   (port_is_owner_active ( \
-     self, PORT_OWNER_TYPE_AUDIO_ENGINE, \
-     engine) \
-   || \
-   port_is_owner_active ( \
-     self, PORT_OWNER_TYPE_PLUGIN, \
-     plugin) \
-   || \
-   port_is_owner_active ( \
+     self, PORT_OWNER_TYPE_AUDIO_ENGINE, engine) \
+   || port_is_owner_active ( \
+     self, PORT_OWNER_TYPE_PLUGIN, plugin) \
+   || port_is_owner_active ( \
      self, PORT_OWNER_TYPE_TRACK, track) \
-   || \
-   port_is_owner_active ( \
+   || port_is_owner_active ( \
      self, PORT_OWNER_TYPE_CHANNEL, track) \
-   || \
-   port_is_owner_active ( \
+   || port_is_owner_active ( \
      self, PORT_OWNER_TYPE_FADER, fader) \
-   || \
-   port_is_owner_active ( \
+   || port_is_owner_active ( \
      self, PORT_OWNER_TYPE_CHANNEL_SEND, \
      channel_send) \
-   || \
-   port_is_owner_active ( \
-     self, PORT_OWNER_TYPE_TRACK_PROCESSOR, \
-     track) \
-   || \
-   port_is_owner_active ( \
+   || port_is_owner_active ( \
+     self, PORT_OWNER_TYPE_TRACK_PROCESSOR, track) \
+   || port_is_owner_active ( \
      self, \
      PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR, \
      modulator_macro_processor) \
-   || \
-   port_is_owner_active ( \
+   || port_is_owner_active ( \
      self, PORT_OWNER_TYPE_HW, ext_port))
 
 /**
@@ -171,8 +157,7 @@ typedef struct PortScalePoint
   char * label;
 } PortScalePoint;
 
-PURE
-int
+PURE int
 port_scale_point_cmp (
   const void * _a,
   const void * _b);
@@ -185,23 +170,22 @@ port_scale_point_new (
 
 NONNULL
 void
-port_scale_point_free (
-  PortScalePoint * self);
+port_scale_point_free (PortScalePoint * self);
 
 /**
  * Must ONLY be created via port_new()
  */
 typedef struct Port
 {
-  int                 schema_version;
+  int schema_version;
 
-  PortIdentifier      id;
+  PortIdentifier id;
 
   /**
    * Flag to indicate that this port is exposed
    * to the backend.
    */
-  int                 exposed_to_backend;
+  int exposed_to_backend;
 
   /**
    * Buffer to be reallocated every time the buffer
@@ -209,42 +193,42 @@ typedef struct Port
    *
    * The buffer size is AUDIO_ENGINE->block_length.
    */
-  float *             buf;
+  float * buf;
 
   /**
    * Contains raw MIDI data (MIDI ports only)
    */
-  MidiEvents *        midi_events;
+  MidiEvents * midi_events;
 
   /** Caches filled when recalculating the
    * graph. */
-  struct Port **      srcs;
-  int                 num_srcs;
-  size_t              srcs_size;
+  struct Port ** srcs;
+  int            num_srcs;
+  size_t         srcs_size;
 
   /** Caches filled when recalculating the
    * graph. */
-  struct Port **      dests;
-  int                 num_dests;
-  size_t              dests_size;
+  struct Port ** dests;
+  int            num_dests;
+  size_t         dests_size;
 
   /** Caches filled when recalculating the
    * graph. */
   const PortConnection ** src_connections;
-  int                 num_src_connections;
-  size_t              src_connections_size;
+  int                     num_src_connections;
+  size_t                  src_connections_size;
 
   /** Caches filled when recalculating the
    * graph. */
   const PortConnection ** dest_connections;
-  int                 num_dest_connections;
-  size_t              dest_connections_size;
+  int                     num_dest_connections;
+  size_t                  dest_connections_size;
 
   /**
    * Indicates whether data or lv2_port should be
    * used.
    */
-  PortInternalType    internal_type;
+  PortInternalType internal_type;
 
   /**
    * Minimum, maximum and zero values for this
@@ -253,8 +237,8 @@ typedef struct Port
    * Note that for audio, this is the amp (0 - 2)
    * and not the actual values.
    */
-  float               minf;
-  float               maxf;
+  float minf;
+  float maxf;
 
   /**
    * The zero position of the port.
@@ -263,14 +247,14 @@ typedef struct Port
    * be the middle. In audio ports, this will be
    * 0 amp (silence), etc.
    */
-  float               zerof;
+  float zerof;
 
   /** Default value, only used for controls. */
-  float               deff;
+  float deff;
 
   /** Index of the control parameter (for Carla
    * plugin ports). */
-  int                carla_param_id;
+  int carla_param_id;
 
   /**
    * Pointer to arbitrary data.
@@ -280,7 +264,7 @@ typedef struct Port
    * FIXME just add the various data structs here
    * and remove this ambiguity.
    */
-  void *              data;
+  void * data;
 
 #ifdef _WOE32
   /**
@@ -291,16 +275,16 @@ typedef struct Port
    * AudioEngine.mme_out_devs and must not be
    * allocated or free'd.
    */
-  WindowsMmeDevice *  mme_connections[40];
-  int                 num_mme_connections;
+  WindowsMmeDevice * mme_connections[40];
+  int                num_mme_connections;
 #else
-  void *              mme_connections[40];
-  int                 num_mme_connections;
+  void * mme_connections[40];
+  int    num_mme_connections;
 #endif
 
   /** Semaphore for changing the connections
    * atomically. */
-  ZixSem              mme_connections_sem;
+  ZixSem mme_connections_sem;
 
   /**
    * Last time the port finished dequeueing
@@ -308,7 +292,7 @@ typedef struct Port
    *
    * Used for some backends only.
    */
-  gint64              last_midi_dequeue;
+  gint64 last_midi_dequeue;
 
 #ifdef HAVE_RTMIDI
   /**
@@ -317,17 +301,17 @@ typedef struct Port
    * Each RtMidi port represents a device, and this
    * Port can be connected to multiple devices.
    */
-  RtMidiDevice *      rtmidi_ins[128];
-  int                 num_rtmidi_ins;
+  RtMidiDevice * rtmidi_ins[128];
+  int            num_rtmidi_ins;
 
   /** RtMidi pointers for output ports. */
-  RtMidiDevice *      rtmidi_outs[128];
-  int                 num_rtmidi_outs;
+  RtMidiDevice * rtmidi_outs[128];
+  int            num_rtmidi_outs;
 #else
-  void *      rtmidi_ins[128];
-  int                 num_rtmidi_ins;
-  void *      rtmidi_outs[128];
-  int                 num_rtmidi_outs;
+  void * rtmidi_ins[128];
+  int    num_rtmidi_ins;
+  void * rtmidi_outs[128];
+  int    num_rtmidi_outs;
 #endif
 
 #ifdef HAVE_RTAUDIO
@@ -336,16 +320,16 @@ typedef struct Port
    *
    * Each port can have multiple RtAudio devices.
    */
-  RtAudioDevice *    rtaudio_ins[128];
-  int                num_rtaudio_ins;
+  RtAudioDevice * rtaudio_ins[128];
+  int             num_rtaudio_ins;
 #else
-  void *    rtaudio_ins[128];
-  int                num_rtaudio_ins;
+  void * rtaudio_ins[128];
+  int    num_rtaudio_ins;
 #endif
 
   /** Scale points. */
-  PortScalePoint **  scale_points;
-  int                num_scale_points;
+  PortScalePoint ** scale_points;
+  int               num_scale_points;
 
   /**
    * The control value if control port, otherwise
@@ -358,14 +342,14 @@ typedef struct Port
    * This value will be snapped (eg, if integer or
    * toggle).
    */
-  float               control;
+  float control;
 
   /** Unsnapped value, used by widgets. */
-  float               unsnapped_control;
+  float unsnapped_control;
 
   /** Flag that the value of the port changed from
    * reading automation. */
-  bool                value_changed_from_reading;
+  bool value_changed_from_reading;
 
   /**
    * Last timestamp the control changed.
@@ -373,22 +357,22 @@ typedef struct Port
    * This is used when recording automation in
    * "touch" mode.
    */
-  gint64              last_change;
+  gint64 last_change;
 
   /** Pointer to owner plugin, if any. */
-  Plugin *            plugin;
+  Plugin * plugin;
 
   /** Pointer to owner transport, if any. */
-  Transport *         transport;
+  Transport * transport;
 
   /** Pointer to owner channel send, if any. */
-  ChannelSend *       channel_send;
+  ChannelSend * channel_send;
 
   /** Pointer to owner engine, if any. */
-  AudioEngine *       engine;
+  AudioEngine * engine;
 
   /** Pointer to owner fader, if any. */
-  Fader *             fader;
+  Fader * fader;
 
   /**
    * Pointer to owner track, if any.
@@ -396,7 +380,7 @@ typedef struct Port
    * Also used for channel and track processor
    * ports.
    */
-  Track *             track;
+  Track * track;
 
   /** Pointer to owner modulator macro processor,
    * if any. */
@@ -409,10 +393,10 @@ typedef struct Port
    * plugin doesn't exist yet in its supposed slot).
    * FIXME delete
    */
-  Plugin *            tmp_plugin;
+  Plugin * tmp_plugin;
 
   /** used when loading projects FIXME needed? */
-  int                 initialized;
+  int initialized;
 
   /**
    * For control ports, when a modulator is
@@ -422,7 +406,7 @@ typedef struct Port
    * Automation in AutomationTrack's will overwrite
    * this value.
    */
-  float               base_value;
+  float base_value;
 
   /**
    * Capture latency.
@@ -431,7 +415,7 @@ typedef struct Port
    * Compensation and Anywhere-to-Anywhere Signal
    * Routing Systems".
    */
-  long                capture_latency;
+  long capture_latency;
 
   /**
    * Playback latency.
@@ -440,10 +424,10 @@ typedef struct Port
    * Compensation and Anywhere-to-Anywhere Signal
    * Routing Systems".
    */
-  long                playback_latency;
+  long playback_latency;
 
   /** Port undergoing deletion. */
-  int                 deleting;
+  int deleting;
 
   /**
    * Flag to indicate if the ring buffers below
@@ -454,15 +438,15 @@ typedef struct Port
    * 1, and when unmapped (invisible) it should
    * be set to 0.
    */
-  bool                write_ring_buffers;
+  bool write_ring_buffers;
 
   /** Whether the port has midi events not yet
    * processed by the UI. */
-  volatile int        has_midi_events;
+  volatile int has_midi_events;
 
   /** Used by the UI to detect when unprocessed
    * MIDI events exist. */
-  gint64              last_midi_event_time;
+  gint64 last_midi_event_time;
 
   /**
    * Ring buffer for saving the contents of the
@@ -475,7 +459,7 @@ typedef struct Port
    *
    * This is also used for CV.
    */
-  ZixRing *           audio_ring;
+  ZixRing * audio_ring;
 
   /**
    * Ring buffer for saving MIDI events to be
@@ -490,14 +474,14 @@ typedef struct Port
    * so this wont be a problem for now, but we
    * should have one ring for each reader.
    */
-  ZixRing *           midi_ring;
+  ZixRing * midi_ring;
 
   /** Max amplitude during processing, if audio
    * (fabsf). */
-  float               peak;
+  float peak;
 
   /** Last time \ref Port.max_amp was set. */
-  gint64              peak_timestamp;
+  gint64 peak_timestamp;
 
   /**
    * Last known MIDI status byte received.
@@ -507,19 +491,19 @@ typedef struct Port
    *
    * Not needed for JACK.
    */
-  midi_byte_t         last_midi_status;
+  midi_byte_t last_midi_status;
 
   /* --- ported from Lv2Port --- */
 
   /** LV2 port. */
-  const LilvPort* lilv_port;
+  const LilvPort * lilv_port;
 
   /** Float for LV2 control ports, declared type for
    * LV2 parameters. */
-  LV2_URID        value_type;
+  LV2_URID value_type;
 
   /** For MIDI ports, otherwise NULL. */
-  LV2_Evbuf *     evbuf;
+  LV2_Evbuf * evbuf;
 
   /**
    * Control widget, if applicable.
@@ -534,11 +518,11 @@ typedef struct Port
    *
    * Used by LV2 plugin ports.
    */
-  size_t          min_buf_size;
+  size_t min_buf_size;
 
   /** Port index in the lilv plugin, if
    * non-parameter. */
-  int             lilv_port_index;
+  int lilv_port_index;
 
   /**
    * Whether the port received a UI event from
@@ -549,7 +533,7 @@ typedef struct Port
    *
    * @note for control ports only.
    */
-  bool            received_ui_event;
+  bool received_ui_event;
 
   /**
    * The last known control value sent to the UI
@@ -560,13 +544,13 @@ typedef struct Port
    *
    * @seealso lv2_ui_send_control_val_event_from_plugin_to_ui().
    */
-  float           last_sent_control;
+  float last_sent_control;
 
   /** Whether this value was set via automation. */
-  bool            automating;
+  bool automating;
 
   /** True for event, false for atom. */
-  bool            old_api;
+  bool old_api;
 
   /* --- end Lv2Port --- */
 
@@ -575,30 +559,27 @@ typedef struct Port
    *
    * To be set at runtime only (not serialized).
    */
-  AutomationTrack *   at;
+  AutomationTrack * at;
 
   /** Pointer to ExtPort, if hw. */
-  ExtPort *           ext_port;
+  ExtPort * ext_port;
 
   /** Magic number to identify that this is a
    * Port. */
-  int                 magic;
+  int magic;
 
   /** Last allocated buffer size (used for audio
    * ports). */
-  size_t              last_buf_sz;
+  size_t last_buf_sz;
 } Port;
 
-static const cyaml_schema_field_t
-port_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    Port, schema_version),
+static const cyaml_schema_field_t port_fields_schema[] = {
+  YAML_FIELD_INT (Port, schema_version),
   YAML_FIELD_MAPPING_EMBEDDED (
-    Port, id,
+    Port,
+    id,
     port_identifier_fields_schema),
-  YAML_FIELD_INT (
-    Port, exposed_to_backend),
+  YAML_FIELD_INT (Port, exposed_to_backend),
   YAML_FIELD_FLOAT (Port, control),
   YAML_FIELD_FLOAT (Port, minf),
   YAML_FIELD_FLOAT (Port, maxf),
@@ -609,11 +590,8 @@ port_fields_schema[] =
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-port_schema =
-{
-  YAML_VALUE_PTR_NULLABLE (
-    Port, port_fields_schema),
+static const cyaml_schema_value_t port_schema = {
+  YAML_VALUE_PTR_NULLABLE (Port, port_fields_schema),
 };
 
 /**
@@ -623,31 +601,30 @@ port_schema =
  */
 typedef struct StereoPorts
 {
-  int          schema_version;
-  Port *       l;
-  Port *       r;
+  int    schema_version;
+  Port * l;
+  Port * r;
 } StereoPorts;
 
 static const cyaml_schema_field_t
-  stereo_ports_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    StereoPorts, schema_version),
-  YAML_FIELD_MAPPING_PTR (
-    StereoPorts, l,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    StereoPorts, r,
-    port_fields_schema),
+  stereo_ports_fields_schema[] = {
+    YAML_FIELD_INT (StereoPorts, schema_version),
+    YAML_FIELD_MAPPING_PTR (
+      StereoPorts,
+      l,
+      port_fields_schema),
+    YAML_FIELD_MAPPING_PTR (
+      StereoPorts,
+      r,
+      port_fields_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t
-  stereo_ports_schema =
-{
+static const cyaml_schema_value_t stereo_ports_schema = {
   YAML_VALUE_PTR (
-    StereoPorts, stereo_ports_fields_schema),
+    StereoPorts,
+    stereo_ports_fields_schema),
 };
 
 /**
@@ -659,9 +636,7 @@ static const cyaml_schema_value_t
  */
 NONNULL
 void
-port_init_loaded (
-  Port *        self,
-  void *        owner);
+port_init_loaded (Port * self, void * owner);
 
 void
 port_set_owner (
@@ -724,8 +699,7 @@ port_new_with_type_and_owner (
  */
 NONNULL
 void
-port_allocate_bufs (
-  Port * self);
+port_allocate_bufs (Port * self);
 
 /**
  * Frees buffers.
@@ -735,16 +709,14 @@ port_allocate_bufs (
  */
 NONNULL
 void
-port_free_bufs (
-  Port * self);
+port_free_bufs (Port * self);
 
 /**
  * Creates blank stereo ports.
  */
 NONNULL
 StereoPorts *
-stereo_ports_new_from_existing (
-  Port * l, Port * r);
+stereo_ports_new_from_existing (Port * l, Port * r);
 
 /**
  * Creates stereo ports for generic use.
@@ -778,17 +750,14 @@ stereo_ports_connect (
 
 NONNULL
 void
-stereo_ports_disconnect (
-  StereoPorts * self);
+stereo_ports_disconnect (StereoPorts * self);
 
 StereoPorts *
-stereo_ports_clone (
-  const StereoPorts * src);
+stereo_ports_clone (const StereoPorts * src);
 
 NONNULL
 void
-stereo_ports_free (
-  StereoPorts * self);
+stereo_ports_free (StereoPorts * self);
 
 /**
  * Function to get a port's value from its string
@@ -801,9 +770,9 @@ stereo_ports_free (
 const void *
 port_get_value_from_symbol (
   const char * port_sym,
-  void       * user_data,
-  uint32_t   * size,
-  uint32_t   * type);
+  void *       user_data,
+  uint32_t *   size,
+  uint32_t *   type);
 
 #ifdef HAVE_JACK
 /**
@@ -836,8 +805,7 @@ port_receive_audio_data_from_jack (
  */
 NONNULL
 bool
-port_has_sound (
-  Port * self);
+port_has_sound (Port * self);
 
 /**
  * Copies a full designation of \p self in the
@@ -852,16 +820,14 @@ port_get_full_designation (
 
 NONNULL
 void
-port_print_full_designation (
-  Port * const self);
+port_print_full_designation (Port * const self);
 
 /**
  * Gathers all ports in the project and appends them
  * in the given array.
  */
 void
-port_get_all (
-  GPtrArray * ports);
+port_get_all (GPtrArray * ports);
 
 NONNULL
 Track *
@@ -901,8 +867,7 @@ port_update_identifier (
  */
 NONNULL
 void
-port_prepare_rtmidi_events (
-  Port * self);
+port_prepare_rtmidi_events (Port * self);
 
 /**
  * Sums the inputs coming in from RtMidi
@@ -911,7 +876,7 @@ port_prepare_rtmidi_events (
 NONNULL
 void
 port_sum_data_from_rtmidi (
-  Port * self,
+  Port *          self,
   const nframes_t start_frame,
   const nframes_t nframes);
 #endif
@@ -923,8 +888,7 @@ port_sum_data_from_rtmidi (
  */
 NONNULL
 void
-port_prepare_rtaudio_data (
-  Port * self);
+port_prepare_rtaudio_data (Port * self);
 
 /**
  * Sums the inputs coming in from RtAudio
@@ -933,7 +897,7 @@ port_prepare_rtaudio_data (
 NONNULL
 void
 port_sum_data_from_rtaudio (
-  Port * self,
+  Port *          self,
   const nframes_t start_frame,
   const nframes_t nframes);
 #endif
@@ -943,8 +907,7 @@ port_sum_data_from_rtaudio (
  */
 NONNULL
 void
-port_disconnect_hw_inputs (
-  Port * self);
+port_disconnect_hw_inputs (Port * self);
 
 /**
  * Sets whether to expose the port to the backend
@@ -955,26 +918,21 @@ port_disconnect_hw_inputs (
  */
 NONNULL
 void
-port_set_expose_to_backend (
-  Port * self,
-  int    expose);
+port_set_expose_to_backend (Port * self, int expose);
 
 /**
  * Returns if the port is exposed to the backend.
  */
 NONNULL
-PURE
-int
-port_is_exposed_to_backend (
-  const Port * self);
+PURE int
+port_is_exposed_to_backend (const Port * self);
 
 /**
  * Renames the port on the backend side.
  */
 NONNULL
 void
-port_rename_backend (
-  Port * self);
+port_rename_backend (Port * self);
 
 #ifdef HAVE_ALSA
 
@@ -983,8 +941,7 @@ port_rename_backend (
  * sequencer port ID.
  */
 Port *
-port_find_by_alsa_seq_id (
-  const int id);
+port_find_by_alsa_seq_id (const int id);
 #endif
 
 /**
@@ -1020,11 +977,10 @@ port_set_control_value (
  *   normalized or not.
  */
 NONNULL
-HOT
-float
+HOT float
 port_get_control_value (
-  Port *      self,
-  const bool  normalize);
+  Port *     self,
+  const bool normalize);
 
 /**
  * Connects @ref a and @ref b with default
@@ -1032,7 +988,7 @@ port_get_control_value (
  * - enabled
  * - multiplier 1.0
  */
-#define port_connect(a,b,locked) \
+#define port_connect(a, b, locked) \
   port_connections_manager_ensure_connect ( \
     PORT_CONNECTIONS_MGR, &((a)->id), &((b)->id), \
     1.f, locked, true)
@@ -1040,7 +996,7 @@ port_get_control_value (
 /**
  * Removes the connection between the given ports.
  */
-#define port_disconnect(a,b) \
+#define port_disconnect(a, b) \
   port_connections_manager_ensure_disconnect ( \
     PORT_CONNECTIONS_MGR, &((a)->id), &((b)->id))
 
@@ -1050,8 +1006,7 @@ port_get_control_value (
  */
 NONNULL
 int
-port_get_num_unlocked_srcs (
-  const Port * self);
+port_get_num_unlocked_srcs (const Port * self);
 
 /**
  * Returns the number of unlocked (user-editable)
@@ -1059,8 +1014,7 @@ port_get_num_unlocked_srcs (
  */
 NONNULL
 int
-port_get_num_unlocked_dests (
-  const Port * self);
+port_get_num_unlocked_dests (const Port * self);
 
 /**
  * Updates the track name hash on a track port and
@@ -1085,9 +1039,9 @@ port_update_track_name_hash (
 NONNULL
 static inline void
 port_apply_fader (
-  Port *    port,
-  float     amp,
-  nframes_t start_frame,
+  Port *          port,
+  float           amp,
+  nframes_t       start_frame,
   const nframes_t nframes)
 {
   nframes_t end = start_frame + nframes;
@@ -1104,15 +1058,13 @@ port_apply_fader (
  * @param noroll Clear the port buffer in this
  *   range.
  */
-HOT
-NONNULL
-void
+HOT NONNULL void
 port_process (
   Port *                      port,
   const EngineProcessTimeInfo time_nfo,
   const bool                  noroll);
 
-#define ports_connected(a,b) \
+#define ports_connected(a, b) \
   (port_connections_manager_find_connection ( \
      PORT_CONNECTIONS_MGR, &(a)->id, &(b)->id) \
    != NULL)
@@ -1126,7 +1078,7 @@ NONNULL
 bool
 ports_can_be_connected (
   const Port * src,
-  const Port *dest);
+  const Port * dest);
 
 /**
  * Disconnects all the given ports.
@@ -1160,9 +1112,7 @@ port_copy_metadata_from_project (
  */
 NONNULL
 void
-port_copy_values (
-  Port *       self,
-  const Port * other);
+port_copy_values (Port * self, const Port * other);
 
 /**
  * Reverts the data on the corresponding project
@@ -1183,28 +1133,19 @@ port_restore_from_non_project (
 /**
  * Clears the audio/cv port buffer.
  */
-HOT
-NONNULL
-OPTIMIZE_O3
-void
+HOT NONNULL OPTIMIZE_O3 void
 port_clear_audio_cv_buffer (Port * port);
 
 /**
  * Clears the MIDI port buffer.
  */
-HOT
-NONNULL
-OPTIMIZE_O3
-void
+HOT NONNULL OPTIMIZE_O3 void
 port_clear_midi_buffer (Port * port);
 
 /**
  * Clears the port buffer.
  */
-HOT
-NONNULL
-OPTIMIZE_O3
-void
+HOT NONNULL OPTIMIZE_O3 void
 port_clear_buffer (Port * port);
 
 /**
@@ -1219,11 +1160,12 @@ port_disconnect_all (Port * port);
  */
 NONNULL
 void
-port_apply_pan_stereo (Port *       l,
-                       Port *       r,
-                       float        pan,
-                       PanLaw       pan_law,
-                       PanAlgorithm pan_algo);
+port_apply_pan_stereo (
+  Port *       l,
+  Port *       r,
+  float        pan,
+  PanLaw       pan_law,
+  PanAlgorithm pan_algo);
 
 /**
  * Applies the pan to the given port.
@@ -1235,11 +1177,11 @@ port_apply_pan_stereo (Port *       l,
 NONNULL
 void
 port_apply_pan (
-  Port *       port,
-  float        pan,
-  PanLaw       pan_law,
-  PanAlgorithm pan_algo,
-  nframes_t start_frame,
+  Port *          port,
+  float           pan,
+  PanLaw          pan_law,
+  PanAlgorithm    pan_algo,
+  nframes_t       start_frame,
   const nframes_t nframes);
 
 /**
@@ -1247,15 +1189,13 @@ port_apply_pan (
  */
 NONNULL
 uint32_t
-port_get_hash (
-  const void * ptr);
+port_get_hash (const void * ptr);
 
 /**
  * To be used during serialization.
  */
 Port *
-port_clone (
-  const Port * src);
+port_clone (const Port * src);
 
 /**
  * Deletes port, doing required cleanup and updating counters.

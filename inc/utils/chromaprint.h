@@ -30,13 +30,13 @@
 
 #ifdef HAVE_CHROMAPRINT
 
-#include <stdarg.h>
-#include <stdbool.h>
+#  include <stdarg.h>
+#  include <stdbool.h>
 
-#include "utils/types.h"
-#include "utils/yaml.h"
+#  include "utils/types.h"
+#  include "utils/yaml.h"
 
-#include <chromaprint.h>
+#  include <chromaprint.h>
 
 /**
  * @addtogroup utils

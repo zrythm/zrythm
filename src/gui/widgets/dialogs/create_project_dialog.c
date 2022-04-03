@@ -34,19 +34,15 @@ G_DEFINE_TYPE (
   GTK_TYPE_DIALOG)
 
 static void
-respond (
-  CreateProjectDialogWidget * self)
+respond (CreateProjectDialogWidget * self)
 {
   /* get the zrythm project name */
-  char * str =
-    g_settings_get_string (
-      S_GENERAL, "last-project-dir");
-  ZRYTHM->create_project_path =
-    g_build_filename (
-      str,
-      gtk_editable_get_text (
-        GTK_EDITABLE (self->name)),
-      NULL);
+  char * str = g_settings_get_string (
+    S_GENERAL, "last-project-dir");
+  ZRYTHM->create_project_path = g_build_filename (
+    str,
+    gtk_editable_get_text (GTK_EDITABLE (self->name)),
+    NULL);
   g_free (str);
 
   /* TODO validate */
@@ -57,7 +53,7 @@ respond (
 
 static void
 on_name_activate (
-  GtkEntry *entry,
+  GtkEntry *                  entry,
   CreateProjectDialogWidget * self)
 {
   respond (self);
@@ -65,7 +61,7 @@ on_name_activate (
 
 static void
 on_ok_clicked (
-  GtkButton * btn,
+  GtkButton *                 btn,
   CreateProjectDialogWidget * self)
 {
   respond (self);
@@ -73,7 +69,7 @@ on_ok_clicked (
 
 static void
 on_cancel_clicked (
-  GtkButton * btn,
+  GtkButton *                 btn,
   CreateProjectDialogWidget * self)
 {
   gtk_dialog_response (
@@ -82,28 +78,27 @@ on_cancel_clicked (
 
 static void
 on_name_changed (
-  GtkEditable *editable,
+  GtkEditable *               editable,
   CreateProjectDialogWidget * self)
 {
   gtk_widget_set_sensitive (
     GTK_WIDGET (self->ok),
-    strlen (
-      gtk_editable_get_text (
-        GTK_EDITABLE (self->name))) > 0);
+    strlen (gtk_editable_get_text (
+      GTK_EDITABLE (self->name)))
+      > 0);
 }
 
 static void
 on_fc_file_set (
-  GtkNativeDialog *           dialog,
-  gint                        response_id,
-  gpointer                    user_data)
+  GtkNativeDialog * dialog,
+  gint              response_id,
+  gpointer          user_data)
 {
   GtkFileChooser * file_chooser =
     GTK_FILE_CHOOSER (dialog);
   GFile * file =
     gtk_file_chooser_get_file (file_chooser);
-  char * str =
-    g_file_get_path (file);
+  char * str = g_file_get_path (file);
   g_settings_set_string (
     S_GENERAL, "last-project-dir", str);
   g_free (str);
@@ -112,31 +107,25 @@ on_fc_file_set (
 CreateProjectDialogWidget *
 create_project_dialog_widget_new ()
 {
-  CreateProjectDialogWidget * self =
-    g_object_new (
-      CREATE_PROJECT_DIALOG_WIDGET_TYPE,
-      "title", _("Create New Project"),
-      "icon-name", "zrythm",
-      NULL);
+  CreateProjectDialogWidget * self = g_object_new (
+    CREATE_PROJECT_DIALOG_WIDGET_TYPE, "title",
+    _ ("Create New Project"), "icon-name", "zrythm",
+    NULL);
 
-  char * str =
-    g_settings_get_string (
-      S_GENERAL, "last-project-dir");
+  char * str = g_settings_get_string (
+    S_GENERAL, "last-project-dir");
   file_chooser_button_widget_set_path (
     self->fc, str);
 
   /* get next available "Untitled Project" */
   char * untitled_project =
-    g_strdup (_("Untitled Project"));
+    g_strdup (_ ("Untitled Project"));
   char * tmp =
-    g_build_filename (
-      str, untitled_project, NULL);
-  char * dir =
-    io_get_next_available_filepath (tmp);
+    g_build_filename (str, untitled_project, NULL);
+  char * dir = io_get_next_available_filepath (tmp);
   g_free (tmp);
   g_free (untitled_project);
-  untitled_project =
-    g_path_get_basename (dir);
+  untitled_project = g_path_get_basename (dir);
   g_free (dir);
   g_free (str);
   gtk_editable_set_text (
@@ -160,10 +149,9 @@ create_project_dialog_widget_init (
   gtk_widget_init_template (GTK_WIDGET (self));
 
   file_chooser_button_widget_setup (
-    self->fc,
-    GTK_WINDOW (self),
-    _("Select parent directory to save the project "
-    "in"),
+    self->fc, GTK_WINDOW (self),
+    _ ("Select parent directory to save the project "
+       "in"),
     GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
   file_chooser_button_widget_set_response_callback (
     self->fc, G_CALLBACK (on_fc_file_set), self,
@@ -180,9 +168,7 @@ create_project_dialog_widget_class_init (
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, \
-    CreateProjectDialogWidget, \
-    x)
+    klass, CreateProjectDialogWidget, x)
 
   BIND_CHILD (ok);
   BIND_CHILD (fc);

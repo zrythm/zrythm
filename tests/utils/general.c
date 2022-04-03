@@ -44,7 +44,7 @@ test_uint_from_bitfield (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

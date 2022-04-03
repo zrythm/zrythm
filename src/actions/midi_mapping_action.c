@@ -52,9 +52,9 @@ midi_mapping_action_new_enable (
   undoable_action_init (ua, UA_MIDI_MAPPING);
 
   self->type =
-    enable ?
-      MIDI_MAPPING_ACTION_ENABLE :
-      MIDI_MAPPING_ACTION_DISABLE;
+    enable
+      ? MIDI_MAPPING_ACTION_ENABLE
+      : MIDI_MAPPING_ACTION_DISABLE;
   self->idx = idx;
 
   return ua;
@@ -137,8 +137,8 @@ midi_mapping_action_perform_enable (
   GError ** error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    midi_mapping_action_new_enable,
-    error, idx, enable, error);
+    midi_mapping_action_new_enable, error, idx,
+    enable, error);
 }
 
 /**
@@ -146,14 +146,14 @@ midi_mapping_action_perform_enable (
  */
 bool
 midi_mapping_action_perform_bind (
-  midi_byte_t *  buf,
-  ExtPort *      device_port,
-  Port *         dest_port,
-  GError **      error)
+  midi_byte_t * buf,
+  ExtPort *     device_port,
+  Port *        dest_port,
+  GError **     error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    midi_mapping_action_new_bind,
-    error, buf, device_port, dest_port, error);
+    midi_mapping_action_new_bind, error, buf,
+    device_port, dest_port, error);
 }
 
 /**
@@ -165,20 +165,17 @@ midi_mapping_action_perform_unbind (
   GError ** error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    midi_mapping_action_new_unbind,
-    error, idx, error);
+    midi_mapping_action_new_unbind, error, idx,
+    error);
 }
 
 static void
-bind_or_unbind (
-  MidiMappingAction * self,
-  bool                bind)
+bind_or_unbind (MidiMappingAction * self, bool bind)
 {
   if (bind)
     {
-      Port * port =
-        port_find_from_identifier (
-          &self->dest_port_id);
+      Port * port = port_find_from_identifier (
+        &self->dest_port_id);
       self->idx = MIDI_MAPPINGS->num_mappings;
       midi_mappings_bind_device (
         MIDI_MAPPINGS, self->buf, self->dev_port,
@@ -277,16 +274,16 @@ midi_mapping_action_stringize (
   switch (self->type)
     {
     case MIDI_MAPPING_ACTION_ENABLE:
-      return g_strdup (_("MIDI mapping enable"));
+      return g_strdup (_ ("MIDI mapping enable"));
       break;
     case MIDI_MAPPING_ACTION_DISABLE:
-      return g_strdup (_("MIDI mapping disable"));
+      return g_strdup (_ ("MIDI mapping disable"));
       break;
     case MIDI_MAPPING_ACTION_BIND:
-      return g_strdup (_("MIDI mapping bind"));
+      return g_strdup (_ ("MIDI mapping bind"));
       break;
     case MIDI_MAPPING_ACTION_UNBIND:
-      return g_strdup (_("MIDI mapping unbind"));
+      return g_strdup (_ ("MIDI mapping unbind"));
       break;
     default:
       g_warn_if_reached ();
@@ -297,8 +294,7 @@ midi_mapping_action_stringize (
 }
 
 void
-midi_mapping_action_free (
-  MidiMappingAction * self)
+midi_mapping_action_free (MidiMappingAction * self)
 {
   object_free_w_func_and_null (
     ext_port_free, self->dev_port);

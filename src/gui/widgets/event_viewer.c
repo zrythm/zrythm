@@ -54,13 +54,12 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  EventViewerWidget, event_viewer_widget,
+  EventViewerWidget,
+  event_viewer_widget,
   GTK_TYPE_BOX)
 
 static void
-add_from_object (
-  GPtrArray *      arr,
-  ArrangerObject * obj)
+add_from_object (GPtrArray * arr, ArrangerObject * obj)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     wrapped_object_with_change_signal_new (
@@ -76,16 +75,14 @@ add_from_object (
       arranger, objs_arr); \
     for (size_t i = 0; i < objs_arr->len; i++) \
       { \
-        ArrangerObject * obj = \
-          (ArrangerObject *) \
+        ArrangerObject * obj = (ArrangerObject *) \
           g_ptr_array_index (objs_arr, i); \
         add_from_object (ptr_array, obj); \
       } \
   }
 
 static void
-refresh_timeline_model (
-  EventViewerWidget * self)
+refresh_timeline_model (EventViewerWidget * self)
 {
   GListStore * store =
     z_gtk_column_view_get_list_store (
@@ -99,8 +96,7 @@ refresh_timeline_model (
 }
 
 static void
-refresh_midi_model (
-  EventViewerWidget * self)
+refresh_midi_model (EventViewerWidget * self)
 {
   GListStore * store =
     z_gtk_column_view_get_list_store (
@@ -113,8 +109,7 @@ refresh_midi_model (
 }
 
 static void
-refresh_chord_model (
-  EventViewerWidget * self)
+refresh_chord_model (EventViewerWidget * self)
 {
   GListStore * store =
     z_gtk_column_view_get_list_store (
@@ -127,8 +122,7 @@ refresh_chord_model (
 }
 
 static void
-refresh_automation_model (
-  EventViewerWidget * self)
+refresh_automation_model (EventViewerWidget * self)
 {
   GListStore * store =
     z_gtk_column_view_get_list_store (
@@ -143,8 +137,7 @@ refresh_automation_model (
 #undef ADD_FOREACH_IN_ARRANGER
 
 static void
-refresh_audio_model (
-  EventViewerWidget * self)
+refresh_audio_model (EventViewerWidget * self)
 {
   GListStore * store =
     z_gtk_column_view_get_list_store (
@@ -156,8 +149,7 @@ refresh_audio_model (
 }
 
 static void
-refresh_editor_model (
-  EventViewerWidget * self)
+refresh_editor_model (EventViewerWidget * self)
 {
   switch (self->type)
     {
@@ -179,8 +171,7 @@ refresh_editor_model (
 }
 
 static ArrangerSelections *
-get_arranger_selections (
-  EventViewerWidget * self)
+get_arranger_selections (EventViewerWidget * self)
 {
   switch (self->type)
     {
@@ -189,15 +180,12 @@ get_arranger_selections (
     case EVENT_VIEWER_TYPE_MIDI:
       return (ArrangerSelections *) MA_SELECTIONS;
     case EVENT_VIEWER_TYPE_AUDIO:
-      return
-        (ArrangerSelections *) AUDIO_SELECTIONS;
+      return (ArrangerSelections *) AUDIO_SELECTIONS;
     case EVENT_VIEWER_TYPE_CHORD:
-      return
-        (ArrangerSelections *) CHORD_SELECTIONS;
+      return (ArrangerSelections *) CHORD_SELECTIONS;
     case EVENT_VIEWER_TYPE_AUTOMATION:
-      return
-        (ArrangerSelections *)
-        AUTOMATION_SELECTIONS;
+      return (
+        ArrangerSelections *) AUTOMATION_SELECTIONS;
     }
 
   g_return_val_if_reached (NULL);
@@ -221,8 +209,7 @@ mark_selected_objects_as_selected (
   arranger_selections_get_all_objects (
     sel, objs_arr);
   GListModel * list = G_LIST_MODEL (sel_model);
-  guint num_items =
-    g_list_model_get_n_items (list);
+  guint num_items = g_list_model_get_n_items (list);
   for (guint i = 0; i < num_items; i++)
     {
       WrappedObjectWithChangeSignal * wrapped_obj =
@@ -233,8 +220,7 @@ mark_selected_objects_as_selected (
 
       for (size_t j = 0; j < objs_arr->len; j++)
         {
-          ArrangerObject * obj =
-            (ArrangerObject *)
+          ArrangerObject * obj = (ArrangerObject *)
             g_ptr_array_index (objs_arr, j);
 
           if (obj != iter_obj)
@@ -268,8 +254,8 @@ event_viewer_widget_refresh (
         {
         case EVENT_VIEWER_TYPE_TIMELINE:
           if (!g_settings_get_boolean (
-                 S_UI,
-                 "timeline-event-viewer-visible"))
+                S_UI,
+                "timeline-event-viewer-visible"))
             return;
 
           refresh_timeline_model (self);
@@ -279,7 +265,7 @@ event_viewer_widget_refresh (
         case EVENT_VIEWER_TYPE_CHORD:
         case EVENT_VIEWER_TYPE_AUTOMATION:
           if (!g_settings_get_boolean (
-                 S_UI, "editor-event-viewer-visible"))
+                S_UI, "editor-event-viewer-visible"))
             return;
 
           refresh_editor_model (self);
@@ -303,7 +289,7 @@ event_viewer_widget_refresh (
               arranger_selections_add_object (
                 self->last_selections,
                 (ArrangerObject *)
-                g_ptr_array_index (objs_arr, i));
+                  g_ptr_array_index (objs_arr, i));
             }
           g_ptr_array_unref (objs_arr);
         }
@@ -363,11 +349,9 @@ event_viewer_widget_refresh_for_selections (
             self->last_selections, cached_objs_arr);
           for (size_t i = 0; i < objs_arr->len; i++)
             {
-              ArrangerObject * a =
-                (ArrangerObject *)
+              ArrangerObject * a = (ArrangerObject *)
                 g_ptr_array_index (objs_arr, i);
-              ArrangerObject * b =
-                (ArrangerObject *)
+              ArrangerObject * b = (ArrangerObject *)
                 g_ptr_array_index (
                   cached_objs_arr, i);
               if (a != b)
@@ -403,8 +387,7 @@ event_viewer_widget_refresh_for_arranger (
     {
     case ARRANGER_WIDGET_TYPE_TIMELINE:
       event_viewer_widget_refresh (
-        MW_TIMELINE_EVENT_VIEWER,
-        selections_only);
+        MW_TIMELINE_EVENT_VIEWER, selections_only);
       break;
     case ARRANGER_WIDGET_TYPE_MIDI:
     case ARRANGER_WIDGET_TYPE_MIDI_MODIFIER:
@@ -472,21 +455,19 @@ selection_func (
 #endif
 
 static char *
-get_obj_name (
-  void * data)
+get_obj_name (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
   ArrangerObject * obj =
     (ArrangerObject *) wrapped_obj->obj;
 
-  return
-    arranger_object_gen_human_readable_name (obj);
+  return arranger_object_gen_human_readable_name (
+    obj);
 }
 
 static char *
-get_obj_type (
-  void * data)
+get_obj_type (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
@@ -495,13 +476,11 @@ get_obj_type (
 
   const char * untranslated_type =
     arranger_object_stringize_type (obj->type);
-  return g_strdup (_(untranslated_type));
+  return g_strdup (_ (untranslated_type));
 }
 
 static double
-get_obj_pos_dbl (
-  void * data,
-  void * param)
+get_obj_pos_dbl (void * data, void * param)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
@@ -519,32 +498,27 @@ get_obj_pos_dbl (
 }
 
 static guint
-get_midi_note_pitch (
-  void * data)
+get_midi_note_pitch (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
-  MidiNote * mn =
-    (MidiNote *) wrapped_obj->obj;
+  MidiNote * mn = (MidiNote *) wrapped_obj->obj;
 
   return mn->val;
 }
 
 static guint
-get_midi_note_velocity (
-  void * data)
+get_midi_note_velocity (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
-  MidiNote * mn =
-    (MidiNote *) wrapped_obj->obj;
+  MidiNote * mn = (MidiNote *) wrapped_obj->obj;
 
   return mn->vel->vel;
 }
 
 static int
-get_automation_point_idx (
-  void * data)
+get_automation_point_idx (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
@@ -555,8 +529,7 @@ get_automation_point_idx (
 }
 
 static float
-get_automation_point_value (
-  void * data)
+get_automation_point_value (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
@@ -567,8 +540,7 @@ get_automation_point_value (
 }
 
 static double
-get_automation_point_curviness (
-  void * data)
+get_automation_point_curviness (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
@@ -579,8 +551,7 @@ get_automation_point_curviness (
 }
 
 static char *
-get_automation_point_curve_type_str (
-  void * data)
+get_automation_point_curve_type_str (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
@@ -595,8 +566,7 @@ get_automation_point_curve_type_str (
 }
 
 static void
-add_timeline_columns (
-  EventViewerWidget * self)
+add_timeline_columns (EventViewerWidget * self)
 {
   /* remove existing columns and factories */
   z_gtk_column_view_remove_all_columnes (
@@ -605,386 +575,313 @@ add_timeline_columns (
     self->item_factories, 0,
     self->item_factories->len);
 
-  GtkSorter * sorter;
+  GtkSorter *     sorter;
   GtkExpression * expression;
 
   /* column for name */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_STRING, NULL, 0, NULL,
-      G_CALLBACK (get_obj_name), NULL, NULL);
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_STRING, NULL, 0, NULL,
+    G_CALLBACK (get_obj_name), NULL, NULL);
   sorter =
-    GTK_SORTER (
-      gtk_string_sorter_new (expression));
+    GTK_SORTER (gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
-    ITEM_FACTORY_TEXT, Z_F_EDITABLE,
-    Z_F_RESIZABLE, sorter, _("Name"));
+    ITEM_FACTORY_TEXT, Z_F_EDITABLE, Z_F_RESIZABLE,
+    sorter, _ ("Name"));
 
   /* column for type */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_STRING, NULL, 0, NULL,
-      G_CALLBACK (get_obj_type), NULL, NULL);
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_STRING, NULL, 0, NULL,
+    G_CALLBACK (get_obj_type), NULL, NULL);
   sorter =
-    GTK_SORTER (
-      gtk_string_sorter_new (expression));
+    GTK_SORTER (gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_TEXT, Z_F_NOT_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Type"));
+    Z_F_RESIZABLE, sorter, _ ("Type"));
 
   /* column for start pos */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_DOUBLE, NULL, 0, NULL,
-      G_CALLBACK (get_obj_pos_dbl),
-      GUINT_TO_POINTER (
-        ARRANGER_OBJECT_POSITION_TYPE_START),
-      NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_DOUBLE, NULL, 0, NULL,
+    G_CALLBACK (get_obj_pos_dbl),
+    GUINT_TO_POINTER (
+      ARRANGER_OBJECT_POSITION_TYPE_START),
+    NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_POSITION, Z_F_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Start"));
+    Z_F_RESIZABLE, sorter, _ ("Start"));
 
   /* column for clip start pos */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_DOUBLE, NULL, 0, NULL,
-      G_CALLBACK (get_obj_pos_dbl),
-      GUINT_TO_POINTER (
-        ARRANGER_OBJECT_POSITION_TYPE_CLIP_START),
-      NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_DOUBLE, NULL, 0, NULL,
+    G_CALLBACK (get_obj_pos_dbl),
+    GUINT_TO_POINTER (
+      ARRANGER_OBJECT_POSITION_TYPE_CLIP_START),
+    NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_POSITION, Z_F_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Clip start"));
+    Z_F_RESIZABLE, sorter, _ ("Clip start"));
 
   /* column for loop start pos */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_DOUBLE, NULL, 0, NULL,
-      G_CALLBACK (get_obj_pos_dbl),
-      GUINT_TO_POINTER (
-        ARRANGER_OBJECT_POSITION_TYPE_LOOP_START),
-      NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_DOUBLE, NULL, 0, NULL,
+    G_CALLBACK (get_obj_pos_dbl),
+    GUINT_TO_POINTER (
+      ARRANGER_OBJECT_POSITION_TYPE_LOOP_START),
+    NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_POSITION, Z_F_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Loop start"));
+    Z_F_RESIZABLE, sorter, _ ("Loop start"));
 
   /* column for loop end pos */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_DOUBLE, NULL, 0, NULL,
-      G_CALLBACK (get_obj_pos_dbl),
-      GUINT_TO_POINTER (
-        ARRANGER_OBJECT_POSITION_TYPE_LOOP_END),
-      NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_DOUBLE, NULL, 0, NULL,
+    G_CALLBACK (get_obj_pos_dbl),
+    GUINT_TO_POINTER (
+      ARRANGER_OBJECT_POSITION_TYPE_LOOP_END),
+    NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_POSITION, Z_F_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Loop end"));
+    Z_F_RESIZABLE, sorter, _ ("Loop end"));
 
   /* column for fade in pos */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_DOUBLE, NULL, 0, NULL,
-      G_CALLBACK (get_obj_pos_dbl),
-      GUINT_TO_POINTER (
-        ARRANGER_OBJECT_POSITION_TYPE_FADE_IN),
-      NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_DOUBLE, NULL, 0, NULL,
+    G_CALLBACK (get_obj_pos_dbl),
+    GUINT_TO_POINTER (
+      ARRANGER_OBJECT_POSITION_TYPE_FADE_IN),
+    NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_POSITION, Z_F_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Fade in"));
+    Z_F_RESIZABLE, sorter, _ ("Fade in"));
 
   /* column for fade out pos */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_DOUBLE, NULL, 0, NULL,
-      G_CALLBACK (get_obj_pos_dbl),
-      GUINT_TO_POINTER (
-        ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT),
-      NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_DOUBLE, NULL, 0, NULL,
+    G_CALLBACK (get_obj_pos_dbl),
+    GUINT_TO_POINTER (
+      ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT),
+    NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_POSITION, Z_F_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Fade out"));
+    Z_F_RESIZABLE, sorter, _ ("Fade out"));
 
   /* column for end pos */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_DOUBLE, NULL, 0, NULL,
-      G_CALLBACK (get_obj_pos_dbl),
-      GUINT_TO_POINTER (
-        ARRANGER_OBJECT_POSITION_TYPE_END),
-      NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_DOUBLE, NULL, 0, NULL,
+    G_CALLBACK (get_obj_pos_dbl),
+    GUINT_TO_POINTER (
+      ARRANGER_OBJECT_POSITION_TYPE_END),
+    NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_POSITION, Z_F_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("End"));
+    Z_F_RESIZABLE, sorter, _ ("End"));
 }
 
 static void
-append_midi_columns (
-  EventViewerWidget * self)
+append_midi_columns (EventViewerWidget * self)
 {
-  GtkSorter * sorter;
+  GtkSorter *     sorter;
   GtkExpression * expression;
 
   /* column for note name */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_STRING, NULL, 0, NULL,
-      G_CALLBACK (get_obj_name),
-      NULL, NULL);
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_STRING, NULL, 0, NULL,
+    G_CALLBACK (get_obj_name), NULL, NULL);
   sorter =
-    GTK_SORTER (
-      gtk_string_sorter_new (expression));
+    GTK_SORTER (gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_TEXT, Z_F_NOT_EDITABLE,
-    Z_F_RESIZABLE, NULL,
-    _("Note"));
+    Z_F_RESIZABLE, NULL, _ ("Note"));
 
   /* column for pitch */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_UINT, NULL, 0, NULL,
-      G_CALLBACK (get_midi_note_pitch),
-      NULL, NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_UINT, NULL, 0, NULL,
+    G_CALLBACK (get_midi_note_pitch), NULL, NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_INTEGER, Z_F_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Pitch"));
+    Z_F_RESIZABLE, sorter, _ ("Pitch"));
 
   /* column for velocity */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_UINT, NULL, 0, NULL,
-      G_CALLBACK (get_midi_note_velocity),
-      NULL, NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_UINT, NULL, 0, NULL,
+    G_CALLBACK (get_midi_note_velocity), NULL, NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_INTEGER, Z_F_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Velocity"));
+    Z_F_RESIZABLE, sorter, _ ("Velocity"));
 
   /* column for start pos */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_DOUBLE, NULL, 0, NULL,
-      G_CALLBACK (get_obj_pos_dbl),
-      GUINT_TO_POINTER (
-        ARRANGER_OBJECT_POSITION_TYPE_START),
-      NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_DOUBLE, NULL, 0, NULL,
+    G_CALLBACK (get_obj_pos_dbl),
+    GUINT_TO_POINTER (
+      ARRANGER_OBJECT_POSITION_TYPE_START),
+    NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_POSITION, Z_F_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Start"));
+    Z_F_RESIZABLE, sorter, _ ("Start"));
 
   /* column for end pos */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_DOUBLE, NULL, 0, NULL,
-      G_CALLBACK (get_obj_pos_dbl),
-      GUINT_TO_POINTER (
-        ARRANGER_OBJECT_POSITION_TYPE_END),
-      NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_DOUBLE, NULL, 0, NULL,
+    G_CALLBACK (get_obj_pos_dbl),
+    GUINT_TO_POINTER (
+      ARRANGER_OBJECT_POSITION_TYPE_END),
+    NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_POSITION, Z_F_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("End"));
+    Z_F_RESIZABLE, sorter, _ ("End"));
 }
 
 static void
-append_chord_columns (
-  EventViewerWidget * self)
+append_chord_columns (EventViewerWidget * self)
 {
-  GtkSorter * sorter;
+  GtkSorter *     sorter;
   GtkExpression * expression;
 
   /* column for name */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_STRING, NULL, 0, NULL,
-      G_CALLBACK (get_obj_name),
-      NULL, NULL);
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_STRING, NULL, 0, NULL,
+    G_CALLBACK (get_obj_name), NULL, NULL);
   sorter =
-    GTK_SORTER (
-      gtk_string_sorter_new (expression));
+    GTK_SORTER (gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_TEXT, Z_F_NOT_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Name"));
+    Z_F_RESIZABLE, sorter, _ ("Name"));
 
   /* column for start pos */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_DOUBLE, NULL, 0, NULL,
-      G_CALLBACK (get_obj_pos_dbl),
-      GUINT_TO_POINTER (
-        ARRANGER_OBJECT_POSITION_TYPE_START),
-      NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_DOUBLE, NULL, 0, NULL,
+    G_CALLBACK (get_obj_pos_dbl),
+    GUINT_TO_POINTER (
+      ARRANGER_OBJECT_POSITION_TYPE_START),
+    NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_POSITION, Z_F_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Position"));
+    Z_F_RESIZABLE, sorter, _ ("Position"));
 }
 
 static void
-append_automation_columns (
-  EventViewerWidget * self)
+append_automation_columns (EventViewerWidget * self)
 {
-  GtkSorter * sorter;
+  GtkSorter *     sorter;
   GtkExpression * expression;
 
   /* column for index */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_INT, NULL, 0, NULL,
-      G_CALLBACK (get_automation_point_idx),
-      NULL, NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_INT, NULL, 0, NULL,
+    G_CALLBACK (get_automation_point_idx), NULL,
+    NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_INTEGER, Z_F_NOT_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Index"));
+    Z_F_RESIZABLE, sorter, _ ("Index"));
 
   /* column for start pos */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_DOUBLE, NULL, 0, NULL,
-      G_CALLBACK (get_obj_pos_dbl),
-      GUINT_TO_POINTER (
-        ARRANGER_OBJECT_POSITION_TYPE_START),
-      NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_DOUBLE, NULL, 0, NULL,
+    G_CALLBACK (get_obj_pos_dbl),
+    GUINT_TO_POINTER (
+      ARRANGER_OBJECT_POSITION_TYPE_START),
+    NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_POSITION, Z_F_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Position"));
+    Z_F_RESIZABLE, sorter, _ ("Position"));
 
   /* column for value */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_FLOAT, NULL, 0, NULL,
-      G_CALLBACK (get_automation_point_value),
-      NULL, NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_FLOAT, NULL, 0, NULL,
+    G_CALLBACK (get_automation_point_value), NULL,
+    NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
-    ITEM_FACTORY_TEXT, Z_F_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Value"));
+    ITEM_FACTORY_TEXT, Z_F_EDITABLE, Z_F_RESIZABLE,
+    sorter, _ ("Value"));
 
   /* column for curve type */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_STRING, NULL, 0, NULL,
-      G_CALLBACK (
-        get_automation_point_curve_type_str),
-      NULL, NULL);
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_STRING, NULL, 0, NULL,
+    G_CALLBACK (get_automation_point_curve_type_str),
+    NULL, NULL);
   sorter =
-    GTK_SORTER (
-      gtk_string_sorter_new (expression));
+    GTK_SORTER (gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_TEXT, Z_F_NOT_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Curve type"));
+    Z_F_RESIZABLE, sorter, _ ("Curve type"));
 
   /* column for curviness */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_DOUBLE, NULL, 0, NULL,
-      G_CALLBACK (get_automation_point_curviness),
-      NULL, NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_DOUBLE, NULL, 0, NULL,
+    G_CALLBACK (get_automation_point_curviness),
+    NULL, NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
-    ITEM_FACTORY_TEXT, Z_F_EDITABLE,
-    Z_F_RESIZABLE, sorter,
-    _("Curviness"));
+    ITEM_FACTORY_TEXT, Z_F_EDITABLE, Z_F_RESIZABLE,
+    sorter, _ ("Curviness"));
 }
 
 static void
-append_audio_columns (
-  EventViewerWidget * self)
+append_audio_columns (EventViewerWidget * self)
 {
   /* column for start pos */
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_POSITION, Z_F_EDITABLE,
-    Z_F_RESIZABLE, NULL,
-    _("Start"));
+    Z_F_RESIZABLE, NULL, _ ("Start"));
 
   /* column for end pos */
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_POSITION, Z_F_EDITABLE,
-    Z_F_RESIZABLE, NULL,
-    _("End"));
+    Z_F_RESIZABLE, NULL, _ ("End"));
 }
 
 /**
@@ -1032,30 +929,25 @@ EventViewerWidget *
 event_viewer_widget_new (void)
 {
   EventViewerWidget * self =
-    g_object_new (
-      EVENT_VIEWER_WIDGET_TYPE, NULL);
+    g_object_new (EVENT_VIEWER_WIDGET_TYPE, NULL);
 
   return self;
 }
 
 static void
-event_viewer_finalize (
-  EventViewerWidget * self)
+event_viewer_finalize (EventViewerWidget * self)
 {
   g_ptr_array_unref (self->item_factories);
 
   object_free_w_func_and_null (
-    arranger_selections_free,
-    self->last_selections);
+    arranger_selections_free, self->last_selections);
 
-  G_OBJECT_CLASS (
-    event_viewer_widget_parent_class)->
-      finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (event_viewer_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 static void
-event_viewer_widget_init (
-  EventViewerWidget * self)
+event_viewer_widget_init (EventViewerWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -1065,9 +957,8 @@ event_viewer_widget_init (
     g_ptr_array_new_with_free_func (
       item_factory_free_func);
 
-  GListStore * store =
-    g_list_store_new (
-      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+  GListStore * store = g_list_store_new (
+    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
   /* make sortable */
   GtkSorter * sorter =
@@ -1078,20 +969,17 @@ event_viewer_widget_init (
       G_LIST_MODEL (store), sorter);
 
   GtkMultiSelection * sel =
-    GTK_MULTI_SELECTION (
-      gtk_multi_selection_new (
-        G_LIST_MODEL (sort_list_model)));
+    GTK_MULTI_SELECTION (gtk_multi_selection_new (
+      G_LIST_MODEL (sort_list_model)));
   gtk_column_view_set_model (
     self->column_view, GTK_SELECTION_MODEL (sel));
 }
-
 
 static void
 event_viewer_widget_class_init (
   EventViewerWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "event_viewer.ui");
   gtk_widget_class_set_css_name (
@@ -1105,8 +993,7 @@ event_viewer_widget_class_init (
 
 #undef BIND_CHILD
 
-  GObjectClass * oklass =
-    G_OBJECT_CLASS (klass);
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize =
     (GObjectFinalizeFunc) event_viewer_finalize;
 }

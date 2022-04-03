@@ -46,15 +46,13 @@ hash_get_from_file (
   HashAlgorithm algo);
 
 uint32_t
-hash_get_from_file_simple (
-  const char *  filepath);
+hash_get_from_file_simple (const char * filepath);
 
 void *
 hash_create_state (void);
 
 void
-hash_free_state (
-  void * in_state);
+hash_free_state (void * in_state);
 
 uint32_t
 hash_get_for_struct_full (

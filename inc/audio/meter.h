@@ -33,9 +33,9 @@
 #include <gtk/gtk.h>
 
 typedef struct TruePeakDsp TruePeakDsp;
-typedef struct KMeterDsp KMeterDsp;
-typedef struct PeakDsp PeakDsp;
-typedef struct Port Port;
+typedef struct KMeterDsp   KMeterDsp;
+typedef struct PeakDsp     PeakDsp;
+typedef struct Port        Port;
 
 /**
  * @addtogroup audio
@@ -63,47 +63,46 @@ typedef enum MeterAlgorithm
 typedef struct Meter
 {
   /** Port associated with this meter. */
-  Port *          port;
+  Port * port;
 
   /** True peak processor. */
-  TruePeakDsp *   true_peak_processor;
-  TruePeakDsp *   true_peak_max_processor;
+  TruePeakDsp * true_peak_processor;
+  TruePeakDsp * true_peak_max_processor;
 
   /** Current true peak. */
-  float           true_peak;
-  float           true_peak_max;
+  float true_peak;
+  float true_peak_max;
 
   /** K RMS processor, if K meter. */
-  KMeterDsp *     kmeter_processor;
+  KMeterDsp * kmeter_processor;
 
-  PeakDsp *       peak_processor;
+  PeakDsp * peak_processor;
 
   /**
    * Algorithm to use.
    *
    * Auto by default.
    */
-  MeterAlgorithm  algorithm;
+  MeterAlgorithm algorithm;
 
   /** Previous max, used when holding the max
    * value. */
-  float           prev_max;
+  float prev_max;
 
   /** Last meter value (in amplitude), used to
    * show a falloff and avoid sudden dips. */
-  float           last_amp;
+  float last_amp;
 
   /** Time the last val was taken at (last draw
    * time). */
-  gint64          last_draw_time;
+  gint64 last_draw_time;
 
-  gint64          last_midi_trigger_time;
+  gint64 last_midi_trigger_time;
 
 } Meter;
 
 Meter *
-meter_new_for_port (
-  Port * port);
+meter_new_for_port (Port * port);
 
 /**
  * Get the current meter value.
@@ -119,7 +118,6 @@ meter_get_value (
   float *          max);
 
 void
-meter_free (
-  Meter * self);
+meter_free (Meter * self);
 
 #endif

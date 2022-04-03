@@ -34,8 +34,8 @@
 typedef struct _EditableLabelWidget
   EditableLabelWidget;
 typedef struct _PluginPresetSelectorWidget
-  PluginPresetSelectorWidget;
-typedef struct Track Track;
+                      PluginPresetSelectorWidget;
+typedef struct Track  Track;
 typedef struct Plugin Plugin;
 
 #define PLUGIN_PROPERTIES_EXPANDER_WIDGET_TYPE \
@@ -43,7 +43,8 @@ typedef struct Plugin Plugin;
 G_DECLARE_FINAL_TYPE (
   PluginPropertiesExpanderWidget,
   plugin_properties_expander_widget,
-  Z, PLUGIN_PROPERTIES_EXPANDER_WIDGET,
+  Z,
+  PLUGIN_PROPERTIES_EXPANDER_WIDGET,
   TwoColExpanderBoxWidget);
 
 /**
@@ -61,22 +62,22 @@ typedef struct _PluginPropertiesExpanderWidget
   TwoColExpanderBoxWidget parent_instance;
 
   /** Plugin name. */
-  GtkLabel *    name;
+  GtkLabel * name;
 
   /** Plugin class. */
-  GtkLabel *    type;
+  GtkLabel * type;
 
   GtkComboBoxText * banks;
-  GtkListBox *  presets;
+  GtkListBox *      presets;
 
-  GtkButton *   save_preset_btn;
-  GtkButton *   load_preset_btn;
+  GtkButton * save_preset_btn;
+  GtkButton * load_preset_btn;
 
   /** Currently selected plugin. */
-  Plugin *      plugin;
+  Plugin * plugin;
 
-  gulong        bank_changed_handler;
-  gulong        pset_changed_handler;
+  gulong bank_changed_handler;
+  gulong pset_changed_handler;
 } PluginPropertiesExpanderWidget;
 
 /**
@@ -93,7 +94,7 @@ plugin_properties_expander_widget_refresh (
 void
 plugin_properties_expander_widget_setup (
   PluginPropertiesExpanderWidget * self,
-  Plugin *      pl);
+  Plugin *                         pl);
 
 /**
  * @}

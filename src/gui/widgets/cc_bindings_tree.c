@@ -30,8 +30,8 @@
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   CcBindingsTreeWidget,
@@ -84,7 +84,7 @@ show_context_menu (
 
 static void
 on_right_click (
-  GtkGestureClick * gesture,
+  GtkGestureClick *      gesture,
   gint                   n_press,
   gdouble                x_dbl,
   gdouble                y_dbl,
@@ -156,24 +156,18 @@ cc_bindings_tree_widget_refresh (
 }
 
 static void
-generate_column_view (
-  CcBindingsTreeWidget * self)
+generate_column_view (CcBindingsTreeWidget * self)
 {
   self->item_factories =
     g_ptr_array_new_with_free_func (
       item_factory_free_func);
 
-  GListStore * store =
-    g_list_store_new (
-      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
-  GtkMultiSelection * sel =
-    GTK_MULTI_SELECTION (
-      gtk_multi_selection_new (
-        G_LIST_MODEL (store)));
-  self->column_view =
-    GTK_COLUMN_VIEW (
-      gtk_column_view_new (
-        GTK_SELECTION_MODEL (sel)));
+  GListStore * store = g_list_store_new (
+    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+  GtkMultiSelection * sel = GTK_MULTI_SELECTION (
+    gtk_multi_selection_new (G_LIST_MODEL (store)));
+  self->column_view = GTK_COLUMN_VIEW (
+    gtk_column_view_new (GTK_SELECTION_MODEL (sel)));
   gtk_scrolled_window_set_child (
     self->scroll, GTK_WIDGET (self->column_view));
 
@@ -181,7 +175,7 @@ generate_column_view (
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_TOGGLE, Z_F_EDITABLE,
-    Z_F_RESIZABLE, NULL, _("On"));
+    Z_F_RESIZABLE, NULL, _ ("On"));
 
 #if 0
   /* column for device */
@@ -199,13 +193,13 @@ generate_column_view (
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_TEXT, Z_F_NOT_EDITABLE,
-    Z_F_RESIZABLE, NULL, _("Note/Control"));
+    Z_F_RESIZABLE, NULL, _ ("Note/Control"));
 
   /* column for path */
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_TEXT, Z_F_NOT_EDITABLE,
-    Z_F_RESIZABLE, NULL, _("Destination"));
+    Z_F_RESIZABLE, NULL, _ ("Destination"));
 
 #if 0
   /* column for min */
@@ -236,8 +230,7 @@ generate_column_view (
     GTK_WIDGET (self->column_view),
     GTK_EVENT_CONTROLLER (mp));
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (mp),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (mp), "pressed",
     G_CALLBACK (on_right_click), self);
@@ -246,9 +239,8 @@ generate_column_view (
 CcBindingsTreeWidget *
 cc_bindings_tree_widget_new ()
 {
-  CcBindingsTreeWidget * self =
-    g_object_new (
-      CC_BINDINGS_TREE_WIDGET_TYPE, NULL);
+  CcBindingsTreeWidget * self = g_object_new (
+    CC_BINDINGS_TREE_WIDGET_TYPE, NULL);
 
   return self;
 }
@@ -260,16 +252,15 @@ cc_bindings_tree_finalize (
   g_ptr_array_unref (self->item_factories);
 
   G_OBJECT_CLASS (
-    cc_bindings_tree_widget_parent_class)->
-      finalize (G_OBJECT (self));
+    cc_bindings_tree_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 static void
 cc_bindings_tree_widget_class_init (
   CcBindingsTreeWidgetClass * klass)
 {
-  GObjectClass * oklass =
-    G_OBJECT_CLASS (klass);
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize =
     (GObjectFinalizeFunc) cc_bindings_tree_finalize;
 }
@@ -278,9 +269,8 @@ static void
 cc_bindings_tree_widget_init (
   CcBindingsTreeWidget * self)
 {
-  self->scroll =
-    GTK_SCROLLED_WINDOW (
-      gtk_scrolled_window_new ());
+  self->scroll = GTK_SCROLLED_WINDOW (
+    gtk_scrolled_window_new ());
   gtk_box_append (
     GTK_BOX (self), GTK_WIDGET (self->scroll));
   gtk_widget_set_hexpand (

@@ -19,8 +19,8 @@
 
 #include "audio/fader.h"
 #include "audio/graph.h"
-#include "audio/graph_node.h"
 #include "audio/graph_export.h"
+#include "audio/graph_node.h"
 #include "audio/port.h"
 #include "audio/router.h"
 #include "audio/track.h"
@@ -30,8 +30,8 @@
 #include "utils/objects.h"
 
 #ifdef HAVE_CGRAPH
-#include <graphviz/cgraph.h>
-#include <graphviz/gvc.h>
+#  include <graphviz/cgraph.h>
+#  include <graphviz/gvc.h>
 #endif
 
 #ifdef HAVE_CGRAPH
@@ -41,7 +41,7 @@ typedef struct ANode
   GraphNode * node;
 
   /** Subgraph the node is a part of. */
-  Agraph_t *  graph;
+  Agraph_t * graph;
 } ANode;
 
 static ANode *
@@ -51,8 +51,7 @@ anode_new (void)
 }
 
 static void
-anode_free (
-  ANode * anode)
+anode_free (ANode * anode)
 {
   object_zero_and_free (anode);
 }
@@ -63,8 +62,7 @@ get_graph_from_node (
   GraphNode *  node)
 {
   ANode * anode =
-    (ANode *)
-    g_hash_table_lookup (anodes, node);
+    (ANode *) g_hash_table_lookup (anodes, node);
   if (anode && anode->node->id == node->id)
     return anode->graph;
   g_warning (
@@ -105,14 +103,15 @@ get_parent_graph (
             {
               Track * tr =
                 port_get_track (node->port, true);
-              if (node->port->id.flags &
-                    PORT_FLAG_MODULATOR_MACRO)
+              if (
+                node->port->id.flags
+                & PORT_FLAG_MODULATOR_MACRO)
                 {
                   parent_node =
                     graph_find_node_from_modulator_macro_processor (
                       node->graph,
-                      tr->modulator_macros[
-                        node->port->id.port_index]);
+                      tr->modulator_macros
+                        [node->port->id.port_index]);
                 }
               else
                 {
@@ -125,15 +124,14 @@ get_parent_graph (
           case PORT_OWNER_TYPE_CHANNEL_SEND:
             {
               Track * tr =
-                port_get_track (
-                  node->port, true);
+                port_get_track (node->port, true);
               g_return_val_if_fail (
                 IS_TRACK_AND_NONNULL (tr), NULL);
               g_return_val_if_fail (
                 tr->channel, NULL);
               ChannelSend * send =
-                tr->channel->sends[
-                  node->port->id.port_index];
+                tr->channel
+                  ->sends[node->port->id.port_index];
               g_return_val_if_fail (send, NULL);
               parent_node =
                 graph_find_node_from_channel_send (
@@ -142,17 +140,17 @@ get_parent_graph (
             break;
           case PORT_OWNER_TYPE_FADER:
             {
-              if (node->port->id.flags2 &
-                    PORT_FLAG2_MONITOR_FADER)
+              if (
+                node->port->id.flags2
+                & PORT_FLAG2_MONITOR_FADER)
                 {
                   parent_node =
                     graph_find_node_from_fader (
-                      node->graph,
-                      MONITOR_FADER);
+                      node->graph, MONITOR_FADER);
                 }
               else if (
-                node->port->id.flags2 &
-                  PORT_FLAG2_SAMPLE_PROCESSOR_FADER)
+                node->port->id.flags2
+                & PORT_FLAG2_SAMPLE_PROCESSOR_FADER)
                 {
                   parent_node =
                     graph_find_node_from_fader (
@@ -161,11 +159,11 @@ get_parent_graph (
                 }
               else
                 {
-                  Track * tr =
-                    port_get_track (
-                      node->port, true);
-                  if (node->port->id.flags2 &
-                        PORT_FLAG2_PREFADER)
+                  Track * tr = port_get_track (
+                    node->port, true);
+                  if (
+                    node->port->id.flags2
+                    & PORT_FLAG2_PREFADER)
                     parent_node =
                       graph_find_node_from_prefader (
                         node->graph,
@@ -198,9 +196,7 @@ get_parent_graph (
   if (!parent_node)
     return NULL;
 
-  return
-    get_graph_from_node (
-      anodes, parent_node);
+  return get_graph_from_node (anodes, parent_node);
 }
 
 static Agnode_t *
@@ -214,17 +210,17 @@ create_anode (
   if (!aparent_graph)
     aparent_graph = aroot_graph;
 
-  char * plain_node_name = graph_node_get_name (node);
-  char * node_name =
-    g_strdup_printf (
-      "%s\np:%d (%d) c:%d",
-      plain_node_name, node->playback_latency,
-      node->route_playback_latency, 0);
-    /*g_strdup_printf (*/
-      /*"%s i:%d t:%d init refcount: %d",*/
-      /*plain_node_name,*/
-      /*node->initial, node->terminal,*/
-      /*node->init_refcount);*/
+  char * plain_node_name =
+    graph_node_get_name (node);
+  char * node_name = g_strdup_printf (
+    "%s\np:%d (%d) c:%d", plain_node_name,
+    node->playback_latency,
+    node->route_playback_latency, 0);
+  /*g_strdup_printf (*/
+  /*"%s i:%d t:%d init refcount: %d",*/
+  /*plain_node_name,*/
+  /*node->initial, node->terminal,*/
+  /*node->init_refcount);*/
   g_free (plain_node_name);
   Agnode_t * anode =
     agnode (aparent_graph, node_name, true);
@@ -236,26 +232,22 @@ create_anode (
         case TYPE_AUDIO:
           agsafeset (
             anode, (char *) "color",
-            (char *) "crimson",
-            (char *) "black");
+            (char *) "crimson", (char *) "black");
           break;
         case TYPE_EVENT:
           agsafeset (
             anode, (char *) "color",
-            (char *) "navy",
-            (char *) "black");
+            (char *) "navy", (char *) "black");
           break;
         case TYPE_CONTROL:
           agsafeset (
             anode, (char *) "color",
-            (char *) "darkviolet",
-            (char *) "black");
+            (char *) "darkviolet", (char *) "black");
           break;
         case TYPE_CV:
           agsafeset (
             anode, (char *) "color",
-            (char *) "darkgreen",
-            (char *) "black");
+            (char *) "darkgreen", (char *) "black");
           break;
         default:
           break;
@@ -282,14 +274,14 @@ fill_anodes (
 
   /* fill nodes */
   GHashTableIter iter;
-  gpointer key, value;
+  gpointer       key, value;
   g_hash_table_iter_init (
     &iter, graph->setup_graph_nodes);
-  while (g_hash_table_iter_next (
-           &iter, &key, &value))
+  while (
+    g_hash_table_iter_next (&iter, &key, &value))
     {
       GraphNode * node = (GraphNode *) value;
-      ANode * anode = anode_new ();
+      ANode *     anode = anode_new ();
       anode->node = node;
       g_hash_table_insert (anodes, node, anode);
       get_graph_from_node (anodes, node);
@@ -298,17 +290,16 @@ fill_anodes (
   /* create top clusters (tracks, sample processor,
    * monitor fader) */
   g_hash_table_iter_init (&iter, anodes);
-  while (g_hash_table_iter_next (
-           &iter, &key, &value))
+  while (
+    g_hash_table_iter_next (&iter, &key, &value))
     {
       GraphNode * node = (GraphNode *) key;
-      ANode * anode = (ANode *) value;
+      ANode *     anode = (ANode *) value;
 
-      if (node->type != ROUTE_NODE_TYPE_TRACK &&
-          node->type !=
-            ROUTE_NODE_TYPE_SAMPLE_PROCESSOR &&
-          node->type !=
-            ROUTE_NODE_TYPE_MONITOR_FADER)
+      if (
+        node->type != ROUTE_NODE_TYPE_TRACK
+        && node->type != ROUTE_NODE_TYPE_SAMPLE_PROCESSOR
+        && node->type != ROUTE_NODE_TYPE_MONITOR_FADER)
         {
           continue;
         }
@@ -325,18 +316,19 @@ fill_anodes (
 
   /* create track subclusters */
   g_hash_table_iter_init (&iter, anodes);
-  while (g_hash_table_iter_next (
-           &iter, &key, &value))
+  while (
+    g_hash_table_iter_next (&iter, &key, &value))
     {
       GraphNode * node = (GraphNode *) key;
-      ANode * anode = (ANode *) value;
+      ANode *     anode = (ANode *) value;
 
-      if (node->type != ROUTE_NODE_TYPE_PLUGIN &&
-          node->type != ROUTE_NODE_TYPE_FADER &&
-          node->type != ROUTE_NODE_TYPE_PREFADER &&
-          node->type != ROUTE_NODE_TYPE_CHANNEL_SEND &&
-          node->type !=
-            ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR)
+      if (
+        node->type != ROUTE_NODE_TYPE_PLUGIN
+        && node->type != ROUTE_NODE_TYPE_FADER
+        && node->type != ROUTE_NODE_TYPE_PREFADER
+        && node->type != ROUTE_NODE_TYPE_CHANNEL_SEND
+        && node->type
+             != ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR)
         continue;
 
       GraphNode * parent_node;
@@ -345,29 +337,25 @@ fill_anodes (
         case ROUTE_NODE_TYPE_PLUGIN:
           {
             Plugin * pl = node->pl;
-            Track * tr =  plugin_get_track (pl);
-            parent_node =
-              graph_find_node_from_track (
-                node->graph, tr, true);
+            Track *  tr = plugin_get_track (pl);
+            parent_node = graph_find_node_from_track (
+              node->graph, tr, true);
           }
           break;
         case ROUTE_NODE_TYPE_FADER:
           {
             Fader * fader = node->fader;
-            Track * tr =  fader_get_track (fader);
-            parent_node =
-              graph_find_node_from_track (
-                node->graph, tr, true);
+            Track * tr = fader_get_track (fader);
+            parent_node = graph_find_node_from_track (
+              node->graph, tr, true);
           }
           break;
         case ROUTE_NODE_TYPE_PREFADER:
           {
             Fader * prefader = node->prefader;
-            Track * tr =
-              fader_get_track (prefader);
-            parent_node =
-              graph_find_node_from_track (
-                node->graph, tr, true);
+            Track * tr = fader_get_track (prefader);
+            parent_node = graph_find_node_from_track (
+              node->graph, tr, true);
           }
           break;
         case ROUTE_NODE_TYPE_CHANNEL_SEND:
@@ -378,9 +366,8 @@ fill_anodes (
               channel_send_get_track (send);
             g_return_if_fail (
               IS_TRACK_AND_NONNULL (tr));
-            parent_node =
-              graph_find_node_from_track (
-                node->graph, tr, true);
+            parent_node = graph_find_node_from_track (
+              node->graph, tr, true);
           }
           break;
         case ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
@@ -390,9 +377,8 @@ fill_anodes (
             Track * tr =
               modulator_macro_processor_get_track (
                 mmp);
-            parent_node =
-              graph_find_node_from_track (
-                node->graph, tr, true);
+            parent_node = graph_find_node_from_track (
+              node->graph, tr, true);
           }
           break;
         default:
@@ -400,11 +386,9 @@ fill_anodes (
         }
 
       Agraph_t * aparent_graph =
-        get_parent_graph (
-          anodes, parent_node);
+        get_parent_graph (anodes, parent_node);
       g_warn_if_fail (aparent_graph);
-      char * node_name =
-        graph_node_get_name (node);
+      char * node_name = graph_node_get_name (node);
       sprintf (
         cluster_name, "cluster_%s", node_name);
       anode->graph =
@@ -417,48 +401,43 @@ fill_anodes (
 
 static void
 export_as_graphviz_type (
-  Graph *         graph,
-  const char *    export_path,
-  const char *    type)
+  Graph *      graph,
+  const char * export_path,
+  const char * type)
 {
-  GVC_t * gvc = gvContext();
-  Agraph_t * agraph =
-    agopen (
-      (char *) "routing_graph", Agstrictdirected,
-      NULL);
+  GVC_t *    gvc = gvContext ();
+  Agraph_t * agraph = agopen (
+    (char *) "routing_graph", Agstrictdirected,
+    NULL);
 
   /* fill anodes with subgraphs */
   /* Hash table of
    * key: (GraphNode *), value: (ANode *) */
-  GHashTable * anodes =
-    g_hash_table_new_full (
-      g_direct_hash, g_direct_equal, NULL,
-      (GDestroyNotify) anode_free);
+  GHashTable * anodes = g_hash_table_new_full (
+    g_direct_hash, g_direct_equal, NULL,
+    (GDestroyNotify) anode_free);
   fill_anodes (graph, agraph, anodes);
 
   /* create graph */
   GHashTableIter iter;
-  gpointer key, value;
+  gpointer       key, value;
   g_hash_table_iter_init (&iter, anodes);
-  while (g_hash_table_iter_next (
-           &iter, &key, &value))
+  while (
+    g_hash_table_iter_next (&iter, &key, &value))
     {
       GraphNode * node = (GraphNode *) key;
 
       Agnode_t * anode =
-        create_anode (
-          agraph, node, anodes);
+        create_anode (agraph, node, anodes);
       for (int j = 0; j < node->n_childnodes; j++)
         {
           GraphNode * child = node->childnodes[j];
-          Agnode_t * achildnode =
-            create_anode (
-              agraph, child, anodes);
+          Agnode_t *  achildnode =
+            create_anode (agraph, child, anodes);
 
           /* create edge */
-          Agedge_t * edge =
-            agedge (
-              agraph, anode, achildnode, NULL, true);
+          Agedge_t * edge = agedge (
+            agraph, anode, achildnode, NULL, true);
           if (node->type == ROUTE_NODE_TYPE_PORT)
             {
               char * color =
@@ -467,24 +446,22 @@ export_as_graphviz_type (
                 edge, (char *) "color", color,
                 (char *) "black");
             }
-          else if (child->type ==
-                     ROUTE_NODE_TYPE_PORT)
+          else if (child->type == ROUTE_NODE_TYPE_PORT)
             {
-              char * color =
-                agget (achildnode, (char *) "color");
+              char * color = agget (
+                achildnode, (char *) "color");
               agsafeset (
                 edge, (char *) "color",
-                (char *) color,
-                (char *) "black");
+                (char *) color, (char *) "black");
             }
         }
     }
 
   gvLayout (gvc, agraph, "dot");
   gvRenderFilename (gvc, agraph, type, export_path);
-  gvFreeLayout(gvc, agraph);
+  gvFreeLayout (gvc, agraph);
   agclose (agraph);
-  gvFreeContext(gvc);
+  gvFreeContext (gvc);
   object_free_w_func_and_null (
     g_hash_table_unref, anodes);
 }

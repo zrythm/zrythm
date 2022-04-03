@@ -56,8 +56,7 @@ z_curl_get_page_contents (
  * @return Newly allocated string or NULL if fail.
  */
 char *
-z_curl_get_page_contents_default (
-  const char * url);
+z_curl_get_page_contents_default (const char * url);
 
 /**
  * Posts the given JSON to the URL without any

@@ -24,11 +24,10 @@
 
 #ifdef HAVE_RTMIDI
 
-#include <stdint.h>
+#  include <stdint.h>
 
-#include "zix/ring.h"
-
-#include <rtmidi_c.h>
+#  include "zix/ring.h"
+#  include <rtmidi_c.h>
 
 typedef struct Port Port;
 
@@ -38,7 +37,7 @@ typedef struct Port Port;
  * @{
  */
 
-#define MIDI_BUFFER_SIZE 32768
+#  define MIDI_BUFFER_SIZE 32768
 
 /**
  * For readability when passing 0/1 for input
@@ -53,38 +52,38 @@ enum RtMidiDeviceFlow
 typedef struct RtMidiDevice
 {
   /** 1 for input, 0 for output. */
-  int           is_input;
+  int is_input;
 
   /** Index (device index from RtMidi). */
-  unsigned int  id;
+  unsigned int id;
 
-  char *        name;
+  char * name;
 
   /** Whether opened or not. */
-  int           opened;
+  int opened;
 
   /** Whether started (running) or not. */
-  int           started;
+  int started;
 
   /* ---- INPUT ---- */
-  RtMidiInPtr   in_handle;
+  RtMidiInPtr in_handle;
 
   /* ---- OUTPUT ---- */
-  RtMidiOutPtr  out_handle;
+  RtMidiOutPtr out_handle;
 
   /** Associated port. */
-  Port *        port;
+  Port * port;
 
   /** MIDI event ring buffer. */
-  ZixRing *     midi_ring;
+  ZixRing * midi_ring;
 
   /** Events enqueued at the beginning of each
    * processing cycle from the ring. */
-  MidiEvents *  events;
+  MidiEvents * events;
 
   /** Semaphore for blocking writing events while
    * events are being read. */
-  ZixSem        midi_ring_sem;
+  ZixSem midi_ring_sem;
 
 } RtMidiDevice;
 
@@ -108,9 +107,7 @@ rtmidi_device_new (
  * @return Non-zero if error.
  */
 int
-rtmidi_device_open (
-  RtMidiDevice * dev,
-  int            start);
+rtmidi_device_open (RtMidiDevice * dev, int start);
 
 /**
  * Close the RtMidiDevice.
@@ -118,21 +115,16 @@ rtmidi_device_open (
  * @param free Also free the memory.
  */
 int
-rtmidi_device_close (
-  RtMidiDevice * self,
-  int            free);
+rtmidi_device_close (RtMidiDevice * self, int free);
 
 int
-rtmidi_device_start (
-  RtMidiDevice * self);
+rtmidi_device_start (RtMidiDevice * self);
 
 int
-rtmidi_device_stop (
-  RtMidiDevice * self);
+rtmidi_device_stop (RtMidiDevice * self);
 
 void
-rtmidi_device_free (
-  RtMidiDevice *  self);
+rtmidi_device_free (RtMidiDevice * self);
 
 /**
  * @}

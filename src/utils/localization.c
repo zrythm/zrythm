@@ -25,14 +25,11 @@
  */
 
 #include "zrythm-config.h"
-#include "po/zrythm-locales.h"
-
-#include <locale.h>
 
 #include "gui/widgets/main_window.h"
 #include "settings/settings.h"
-#include "utils/localization.h"
 #include "utils/io.h"
+#include "utils/localization.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -40,12 +37,15 @@
 
 #include <glib/gi18n.h>
 
+#include "po/zrythm-locales.h"
+#include <locale.h>
+
 #ifdef _WOE32
-#define CODESET "1252"
-#define ALT_CODESET "1252"
+#  define CODESET "1252"
+#  define ALT_CODESET "1252"
 #else
-#define CODESET "UTF-8"
-#define ALT_CODESET "UTF8"
+#  define CODESET "UTF-8"
+#  define ALT_CODESET "UTF8"
 #endif
 
 /**
@@ -57,8 +57,7 @@ localization_get_localized_name (
   LocalizationLanguage lang)
 {
   g_return_val_if_fail (
-    lang >= 0 && lang < NUM_LL_LANGUAGES,
-    NULL);
+    lang >= 0 && lang < NUM_LL_LANGUAGES, NULL);
 
   return language_strings[lang];
 }
@@ -72,8 +71,7 @@ localization_get_string_code (
   LocalizationLanguage lang)
 {
   g_return_val_if_fail (
-    lang >= 0 && lang < NUM_LL_LANGUAGES,
-    NULL);
+    lang >= 0 && lang < NUM_LL_LANGUAGES, NULL);
 
   return language_codes[lang];
 }
@@ -87,8 +85,7 @@ localization_get_string_w_code (
   LocalizationLanguage lang)
 {
   g_return_val_if_fail (
-    lang >= 0 && lang < NUM_LL_LANGUAGES,
-    NULL);
+    lang >= 0 && lang < NUM_LL_LANGUAGES, NULL);
 
   return language_strings_w_codes[lang];
 }
@@ -113,20 +110,18 @@ localization_get_language_strings_w_codes (void)
 
 static char *
 get_match (
- char **      installed_locales,
- int          num_installed_locales,
- const char * prefix,
- const char * codeset)
+  char **      installed_locales,
+  int          num_installed_locales,
+  const char * prefix,
+  const char * codeset)
 {
   GString * codeset_gstring;
   codeset_gstring = g_string_new (codeset);
-  char * upper =
-    g_string_free (
-      g_string_ascii_up (codeset_gstring), 0);
+  char * upper = g_string_free (
+    g_string_ascii_up (codeset_gstring), 0);
   codeset_gstring = g_string_new (codeset);
-  char * lower =
-    g_string_free (
-      g_string_ascii_down (codeset_gstring), 0);
+  char * lower = g_string_free (
+    g_string_ascii_down (codeset_gstring), 0);
   char * first_upper = g_strdup (lower);
   first_upper[0] = g_ascii_toupper (lower[0]);
 
@@ -134,15 +129,14 @@ get_match (
   for (int i = 0; i < num_installed_locales; i++)
     {
       char * installed_locale = installed_locales[i];
-      if (g_str_has_prefix (
-            installed_locale, prefix))
+      if (g_str_has_prefix (installed_locale, prefix))
         {
-          if (g_str_has_suffix (
-                installed_locale, upper) ||
-              g_str_has_suffix (
-                installed_locale, lower) ||
-              g_str_has_suffix (
-                installed_locale, first_upper))
+          if (
+            g_str_has_suffix (installed_locale, upper)
+            || g_str_has_suffix (
+              installed_locale, lower)
+            || g_str_has_suffix (
+              installed_locale, first_upper))
             {
               ret = installed_locales[i];
               break;
@@ -174,10 +168,10 @@ localization_locale_exists (
 #endif
 
   /* get available locales on the system */
-  FILE *fp;
-  char path[1035];
+  FILE * fp;
+  char   path[1035];
   char * installed_locales[8000];
-  int num_installed_locales = 0;
+  int    num_installed_locales = 0;
 
   /* Open the command for reading. */
   fp = popen ("locale -a", "r");
@@ -188,72 +182,69 @@ localization_locale_exists (
     }
 
   /* Read the output a line at a time - output it. */
-  while (fgets(path, sizeof(path)-1, fp) != NULL) {
-    installed_locales[num_installed_locales++] =
-      g_strdup_printf (
-        "%s", g_strchomp (path));
-  }
+  while (fgets (path, sizeof (path) - 1, fp) != NULL)
+    {
+      installed_locales[num_installed_locales++] =
+        g_strdup_printf ("%s", g_strchomp (path));
+    }
 
   /* close */
   pclose (fp);
 
-#define IS_MATCH(caps,code) \
+#define IS_MATCH(caps, code) \
   case LL_##caps: \
-    match = \
-      get_match ( \
-        installed_locales, num_installed_locales, \
-        code, CODESET); \
+    match = get_match ( \
+      installed_locales, num_installed_locales, \
+      code, CODESET); \
     if (!match) \
       { \
-        match = \
-          get_match ( \
-            installed_locales, \
-            num_installed_locales, \
-            code, ALT_CODESET); \
+        match = get_match ( \
+          installed_locales, num_installed_locales, \
+          code, ALT_CODESET); \
       } \
     break
 
   char * match = NULL;
   switch (lang)
     {
-    IS_MATCH (AF_ZA, "af_ZA");
-    IS_MATCH (AR, "ar_");
-    IS_MATCH (CA, "ca_");
-    /*IS_MATCH (CS, "cs_");*/
-    /*IS_MATCH (DA, "da_");*/
-    IS_MATCH (DE, "de_");
-    /* break order here */
-    IS_MATCH (EN_GB, "en_GB");
-    IS_MATCH (EN, "en_");
-    IS_MATCH (EL, "el_");
-    IS_MATCH (ES, "es_");
-    /*IS_MATCH (ET, "et_");*/
-    IS_MATCH (FA, "fa_");
-    /*IS_MATCH (FI, "fi_");*/
-    IS_MATCH (FR, "fr_");
-    /*IS_MATCH (GD, "gd_");*/
-    IS_MATCH (GL, "gl_");
-    IS_MATCH (HE, "he_");
-    IS_MATCH (HI, "hi_");
-    IS_MATCH (HU, "hu_");
-    IS_MATCH (ID, "id_");
-    IS_MATCH (IT, "it_");
-    IS_MATCH (JA, "ja_");
-    IS_MATCH (KO, "ko_");
-    IS_MATCH (NB_NO, "nb_NO");
-    IS_MATCH (NL, "nl_");
-    IS_MATCH (PL, "pl_");
-    /* break order here */
-    IS_MATCH (PT_BR, "pt_BR");
-    IS_MATCH (PT, "pt_");
-    IS_MATCH (RU, "ru_");
-    IS_MATCH (TH, "th_");
-    IS_MATCH (TR, "tr_");
-    IS_MATCH (SV, "sv_");
-    IS_MATCH (UK, "uk_");
-    IS_MATCH (VI, "vi_");
-    IS_MATCH (ZH_CN, "zh_CN");
-    IS_MATCH (ZH_TW, "zh_TW");
+      IS_MATCH (AF_ZA, "af_ZA");
+      IS_MATCH (AR, "ar_");
+      IS_MATCH (CA, "ca_");
+      /*IS_MATCH (CS, "cs_");*/
+      /*IS_MATCH (DA, "da_");*/
+      IS_MATCH (DE, "de_");
+      /* break order here */
+      IS_MATCH (EN_GB, "en_GB");
+      IS_MATCH (EN, "en_");
+      IS_MATCH (EL, "el_");
+      IS_MATCH (ES, "es_");
+      /*IS_MATCH (ET, "et_");*/
+      IS_MATCH (FA, "fa_");
+      /*IS_MATCH (FI, "fi_");*/
+      IS_MATCH (FR, "fr_");
+      /*IS_MATCH (GD, "gd_");*/
+      IS_MATCH (GL, "gl_");
+      IS_MATCH (HE, "he_");
+      IS_MATCH (HI, "hi_");
+      IS_MATCH (HU, "hu_");
+      IS_MATCH (ID, "id_");
+      IS_MATCH (IT, "it_");
+      IS_MATCH (JA, "ja_");
+      IS_MATCH (KO, "ko_");
+      IS_MATCH (NB_NO, "nb_NO");
+      IS_MATCH (NL, "nl_");
+      IS_MATCH (PL, "pl_");
+      /* break order here */
+      IS_MATCH (PT_BR, "pt_BR");
+      IS_MATCH (PT, "pt_");
+      IS_MATCH (RU, "ru_");
+      IS_MATCH (TH, "th_");
+      IS_MATCH (TR, "tr_");
+      IS_MATCH (SV, "sv_");
+      IS_MATCH (UK, "uk_");
+      IS_MATCH (VI, "vi_");
+      IS_MATCH (ZH_CN, "zh_CN");
+      IS_MATCH (ZH_TW, "zh_TW");
     case NUM_LL_LANGUAGES:
       g_return_val_if_reached (NULL);
     }
@@ -287,25 +278,23 @@ localization_init (
   bool print_debug_messages,
   bool queue_error_if_not_installed)
 {
-  char * code = NULL;
+  char *               code = NULL;
   LocalizationLanguage lang;
   if (use_locale)
     {
       code = g_strdup (setlocale (LC_ALL, NULL));
       g_message (
         "Initing localization with system locale "
-        "%s", code);
+        "%s",
+        code);
     }
   else
     {
       /* get selected locale */
-      GSettings * prefs =
-        g_settings_new (
-          GSETTINGS_ZRYTHM_PREFIX
-          ".preferences.ui.general");
-      lang =
-        g_settings_get_enum (
-          prefs, "language");
+      GSettings * prefs = g_settings_new (
+        GSETTINGS_ZRYTHM_PREFIX
+        ".preferences.ui.general");
+      lang = g_settings_get_enum (prefs, "language");
       g_object_unref (G_OBJECT (prefs));
 
       if (print_debug_messages)
@@ -320,7 +309,8 @@ localization_init (
         {
           if (print_debug_messages)
             {
-              g_message ("setting locale to default");
+              g_message (
+                "setting locale to default");
             }
           setlocale (LC_ALL, "C");
           return 1;
@@ -337,8 +327,8 @@ localization_init (
       if (print_debug_messages)
         {
           g_message (
-            "setting locale to %s (found %s)",
-            code, match);
+            "setting locale to %s (found %s)", code,
+            match);
         }
 #if defined(_WOE32) || defined(__APPLE__)
       char buf[120];
@@ -351,45 +341,40 @@ localization_init (
     {
       if (!use_locale)
         {
-          char * msg =
-            g_strdup_printf (
-              "No locale for \"%s\" is "
-              "installed, using default",
-              language_strings[lang]);
+          char * msg = g_strdup_printf (
+            "No locale for \"%s\" is "
+            "installed, using default",
+            language_strings[lang]);
           if (queue_error_if_not_installed)
             {
-              zrythm_app->startup_errors[
-                zrythm_app->num_startup_errors++] =
-                  msg;
+              zrythm_app->startup_errors
+                [zrythm_app->num_startup_errors++] =
+                msg;
             }
           g_warning ("%s", msg);
         }
       setlocale (LC_ALL, "C");
     }
 
-  /* bind text domain */
-#if defined (_WOE32) && defined (INSTALLER_VER)
+    /* bind text domain */
+#if defined(_WOE32) && defined(INSTALLER_VER)
   const char * windows_localedir = "share/locale";
   bindtextdomain (
     GETTEXT_PACKAGE, windows_localedir);
-  bindtextdomain (
-    "libadwaita", windows_localedir);
+  bindtextdomain ("libadwaita", windows_localedir);
 #else
   char * localedir =
-    zrythm_get_dir (
-      ZRYTHM_DIR_SYSTEM_LOCALEDIR);
-  bindtextdomain (
-    GETTEXT_PACKAGE, localedir);
-  bindtextdomain (
-    "libadwaita", localedir);
-  g_debug ("setting textdomain: %s, %s",
-    GETTEXT_PACKAGE, localedir);
+    zrythm_get_dir (ZRYTHM_DIR_SYSTEM_LOCALEDIR);
+  bindtextdomain (GETTEXT_PACKAGE, localedir);
+  bindtextdomain ("libadwaita", localedir);
+  g_debug (
+    "setting textdomain: %s, %s", GETTEXT_PACKAGE,
+    localedir);
   g_free (localedir);
 #endif
 
   /* set domain codeset */
-  bind_textdomain_codeset (
-    GETTEXT_PACKAGE, CODESET);
+  bind_textdomain_codeset (GETTEXT_PACKAGE, CODESET);
 
   /* set current domain */
   textdomain (GETTEXT_PACKAGE);

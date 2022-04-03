@@ -35,13 +35,16 @@
 #define SNAP_BOX_WIDGET_TYPE \
   (snap_box_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  SnapBoxWidget, snap_box_widget,
-  Z, SNAP_BOX_WIDGET, GtkBox)
+  SnapBoxWidget,
+  snap_box_widget,
+  Z,
+  SNAP_BOX_WIDGET,
+  GtkBox)
 
 #define MW_SNAP_BOX MW_HOME_TOOLBAR->snap_box
 
 typedef struct _SnapGridWidget SnapGridWidget;
-typedef struct SnapGrid SnapGrid;
+typedef struct SnapGrid        SnapGrid;
 
 typedef struct _SnapBoxWidget
 {
@@ -53,8 +56,7 @@ typedef struct _SnapBoxWidget
 } SnapBoxWidget;
 
 void
-snap_box_widget_refresh (
-  SnapBoxWidget * self);
+snap_box_widget_refresh (SnapBoxWidget * self);
 
 void
 snap_box_widget_setup (

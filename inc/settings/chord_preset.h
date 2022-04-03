@@ -31,7 +31,6 @@
 #include <stdbool.h>
 
 #include "audio/chord_descriptor.h"
-
 #include "utils/yaml.h"
 
 typedef struct ChordPresetPack ChordPresetPack;
@@ -49,10 +48,10 @@ typedef struct ChordPresetPack ChordPresetPack;
  */
 typedef struct ChordPreset
 {
-  int               schema_version;
+  int schema_version;
 
   /** Preset name. */
-  char *            name;
+  char * name;
 
   /** Chord descriptors. */
   ChordDescriptor * descr[12];
@@ -62,31 +61,30 @@ typedef struct ChordPreset
 } ChordPreset;
 
 static const cyaml_schema_field_t
-chord_preset_fields_schema[] =
-{
-  YAML_FIELD_INT (ChordPreset, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-    ChordPreset, descr, chord_descriptor_schema, 12),
-  YAML_FIELD_STRING_PTR (ChordPreset, name),
+  chord_preset_fields_schema[] = {
+    YAML_FIELD_INT (ChordPreset, schema_version),
+    YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
+      ChordPreset,
+      descr,
+      chord_descriptor_schema,
+      12),
+    YAML_FIELD_STRING_PTR (ChordPreset, name),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t
-chord_preset_schema =
-{
+static const cyaml_schema_value_t chord_preset_schema = {
   YAML_VALUE_PTR (
-    ChordPreset, chord_preset_fields_schema),
+    ChordPreset,
+    chord_preset_fields_schema),
 };
 
 ChordPreset *
-chord_preset_new (
-  const char * name);
+chord_preset_new (const char * name);
 
 NONNULL
 ChordPreset *
-chord_preset_clone (
-  const ChordPreset * src);
+chord_preset_clone (const ChordPreset * src);
 
 /**
  * Gets informational text.
@@ -98,8 +96,7 @@ chord_preset_get_info_text (
   const ChordPreset * self);
 
 const char *
-chord_preset_get_name (
-  const ChordPreset * self);
+chord_preset_get_name (const ChordPreset * self);
 
 void
 chord_preset_set_name (
@@ -115,8 +112,7 @@ chord_preset_generate_context_menu (
  */
 NONNULL
 void
-chord_preset_free (
-  ChordPreset * self);
+chord_preset_free (ChordPreset * self);
 
 /**
  * @}

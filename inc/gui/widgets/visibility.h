@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   VisibilityWidget,
   visibility_widget,
-  Z, VISIBILITY_WIDGET,
+  Z,
+  VISIBILITY_WIDGET,
   GtkBox)
 
 #define MW_VISIBILITY MW_LEFT_DOCK_EDGE->visibility
@@ -43,7 +44,7 @@ typedef struct _TrackVisibilityTreeWidget
 
 typedef struct _VisibilityWidget
 {
-  GtkBox                  parent_instance;
+  GtkBox parent_instance;
   /** For MixerSelections. */
   TrackVisibilityTreeWidget * track_visibility;
 
@@ -65,8 +66,7 @@ visibility_widget_new (void);
  * stack to show.
  */
 void
-visibility_widget_refresh (
-  VisibilityWidget * self);
+visibility_widget_refresh (VisibilityWidget * self);
 
 /**
  * @}

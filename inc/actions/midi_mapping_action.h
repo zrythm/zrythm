@@ -41,16 +41,11 @@ typedef enum MidiMappingActionType
 } MidiMappingActionType;
 
 static const cyaml_strval_t
-  midi_mapping_action_type_strings[] =
-{
-  { "Bind",
-    MIDI_MAPPING_ACTION_BIND },
-  { "Unbind",
-    MIDI_MAPPING_ACTION_UNBIND },
-  { "Enable",
-    MIDI_MAPPING_ACTION_ENABLE },
-  { "Disable",
-    MIDI_MAPPING_ACTION_DISABLE },
+  midi_mapping_action_type_strings[] = {
+    {"Bind",     MIDI_MAPPING_ACTION_BIND   },
+    { "Unbind",  MIDI_MAPPING_ACTION_UNBIND },
+    { "Enable",  MIDI_MAPPING_ACTION_ENABLE },
+    { "Disable", MIDI_MAPPING_ACTION_DISABLE},
 };
 
 /**
@@ -58,49 +53,53 @@ static const cyaml_strval_t
  */
 typedef struct MidiMappingAction
 {
-  UndoableAction  parent_instance;
+  UndoableAction parent_instance;
 
   /** Index of mapping, if enable/disable. */
-  int             idx;
+  int idx;
 
   /** Action type. */
   MidiMappingActionType type;
 
-  PortIdentifier  dest_port_id;
+  PortIdentifier dest_port_id;
 
-  ExtPort *       dev_port;
+  ExtPort * dev_port;
 
-  midi_byte_t     buf[3];
+  midi_byte_t buf[3];
 
 } MidiMappingAction;
 
 static const cyaml_schema_field_t
-  midi_mapping_action_fields_schema[] =
-{
-  YAML_FIELD_MAPPING_EMBEDDED (
-    MidiMappingAction, parent_instance,
-    undoable_action_fields_schema),
-  YAML_FIELD_INT (MidiMappingAction, idx),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    MidiMappingAction, dest_port_id,
-    port_identifier_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    MidiMappingAction, dev_port,
-    ext_port_fields_schema),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-    MidiMappingAction, buf,
-    uint8_t_schema, 3),
+  midi_mapping_action_fields_schema[] = {
+    YAML_FIELD_MAPPING_EMBEDDED (
+      MidiMappingAction,
+      parent_instance,
+      undoable_action_fields_schema),
+    YAML_FIELD_INT (MidiMappingAction, idx),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      MidiMappingAction,
+      dest_port_id,
+      port_identifier_fields_schema),
+    YAML_FIELD_MAPPING_PTR_OPTIONAL (
+      MidiMappingAction,
+      dev_port,
+      ext_port_fields_schema),
+    YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
+      MidiMappingAction,
+      buf,
+      uint8_t_schema,
+      3),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-  midi_mapping_action_schema =
-{
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER, MidiMappingAction,
-    midi_mapping_action_fields_schema),
-};
+  midi_mapping_action_schema = {
+    CYAML_VALUE_MAPPING (
+      CYAML_FLAG_POINTER,
+      MidiMappingAction,
+      midi_mapping_action_fields_schema),
+  };
 
 void
 midi_mapping_action_init_loaded (
@@ -122,10 +121,10 @@ midi_mapping_action_new_enable (
 WARN_UNUSED_RESULT
 UndoableAction *
 midi_mapping_action_new_bind (
-  midi_byte_t *  buf,
-  ExtPort *      device_port,
-  Port *         dest_port,
-  GError **      error);
+  midi_byte_t * buf,
+  ExtPort *     device_port,
+  Port *        dest_port,
+  GError **     error);
 
 /**
  * Creates a new action.
@@ -155,10 +154,10 @@ midi_mapping_action_perform_enable (
  */
 bool
 midi_mapping_action_perform_bind (
-  midi_byte_t *  buf,
-  ExtPort *      device_port,
-  Port *         dest_port,
-  GError **      error);
+  midi_byte_t * buf,
+  ExtPort *     device_port,
+  Port *        dest_port,
+  GError **     error);
 
 /**
  * Wrapper of midi_mapping_action_new_unbind().
@@ -183,8 +182,7 @@ midi_mapping_action_stringize (
   MidiMappingAction * self);
 
 void
-midi_mapping_action_free (
-  MidiMappingAction * self);
+midi_mapping_action_free (MidiMappingAction * self);
 
 /**
  * @}

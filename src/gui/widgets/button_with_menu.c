@@ -17,9 +17,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <math.h>
 
 #include "gui/widgets/button_with_menu.h"
 #include "utils/gtk.h"
@@ -77,22 +77,20 @@ button_with_menu_widget_setup (
   const char *           btn_tooltip_text,
   const char *           menu_tooltip_text)
 {
-  gtk_box_set_homogeneous (
-    GTK_BOX (self), false);
+  gtk_box_set_homogeneous (GTK_BOX (self), false);
 
-  gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (btn));
+  gtk_box_append (GTK_BOX (self), GTK_WIDGET (btn));
 
   /* add arrow */
   self->menu_btn =
     GTK_MENU_BUTTON (gtk_menu_button_new ());
   gtk_menu_button_set_icon_name (
     GTK_MENU_BUTTON (self->menu_btn),
-    downward_arrow ?
-      "arrow-down-small" : "arrow-up-small");
+    downward_arrow
+      ? "arrow-down-small"
+      : "arrow-up-small");
   gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->menu_btn));
+    GTK_BOX (self), GTK_WIDGET (self->menu_btn));
   /* TODO write CSS rule to set image size to 6 */
   gtk_widget_add_css_class (
     GTK_WIDGET (self->menu_btn), "arrow-button");
@@ -125,26 +123,23 @@ button_with_menu_widget_setup (
 ButtonWithMenuWidget *
 button_with_menu_widget_new (void)
 {
-  return
-    g_object_new (
-      BUTTON_WITH_MENU_WIDGET_TYPE, NULL);
+  return g_object_new (
+    BUTTON_WITH_MENU_WIDGET_TYPE, NULL);
 }
 
 static void
-finalize (
-  ButtonWithMenuWidget * self)
+finalize (ButtonWithMenuWidget * self)
 {
   G_OBJECT_CLASS (
-    button_with_menu_widget_parent_class)->
-      finalize (G_OBJECT (self));
+    button_with_menu_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 static void
 button_with_menu_widget_init (
   ButtonWithMenuWidget * self)
 {
-  gtk_widget_set_focusable (
-    GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (GTK_WIDGET (self), true);
 }
 
 static void

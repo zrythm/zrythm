@@ -26,27 +26,29 @@
 #ifndef __ZRYTHM_APP_H__
 #define __ZRYTHM_APP_H__
 
-#include "zix/sem.h"
-
 #include <gtk/gtk.h>
+
+#include "zix/sem.h"
 
 #define ZRYTHM_APP_TYPE (zrythm_app_get_type ())
 G_DECLARE_FINAL_TYPE (
-  ZrythmApp, zrythm_app, ZRYTHM, APP,
+  ZrythmApp,
+  zrythm_app,
+  ZRYTHM,
+  APP,
   GtkApplication)
 
 #define ZRYTHM_APP_IS_GTK_THREAD \
-  (zrythm_app && \
-   zrythm_app->gtk_thread == g_thread_self ())
+  (zrythm_app \
+   && zrythm_app->gtk_thread == g_thread_self ())
 
-typedef struct _MainWindowWidget MainWindowWidget;
-typedef struct _SplashWindowWidget
-  SplashWindowWidget;
+typedef struct _MainWindowWidget   MainWindowWidget;
+typedef struct _SplashWindowWidget SplashWindowWidget;
 typedef struct _FirstRunAssistantWidget
   FirstRunAssistantWidget;
 typedef struct _ProjectAssistantWidget
-  ProjectAssistantWidget;
-typedef struct Zrythm Zrythm;
+                        ProjectAssistantWidget;
+typedef struct Zrythm   Zrythm;
 typedef struct UiCaches UiCaches;
 
 /**
@@ -81,13 +83,13 @@ zrythm_app_ui_message_free (
  */
 struct _ZrythmApp
 {
-  GtkApplication     parent;
+  GtkApplication parent;
 
   /**
    * Default settings (got from
    * gtk_settings_get_default()).
    */
-  GtkSettings *      default_settings;
+  GtkSettings * default_settings;
 
   /** Main window. */
   MainWindowWidget * main_window;
@@ -98,24 +100,24 @@ struct _ZrythmApp
    * This is stored for identification purposes
    * in other threads.
    */
-  GThread *          gtk_thread;
+  GThread * gtk_thread;
 
-  UiCaches *         ui_caches;
+  UiCaches * ui_caches;
 
   /** Initialization thread. */
-  GThread *          init_thread;
+  GThread * init_thread;
 
   /** Semaphore for setting the progress in the
    * splash screen from a non-gtk thread. */
-  ZixSem             progress_status_lock;
+  ZixSem progress_status_lock;
 
   /** Flag to set when initialization has
    * finished. */
-  bool               init_finished;
+  bool init_finished;
 
   /** Status text to be used in the splash
    * screen. */
-  char               status[800];
+  char status[800];
 
   /** Splash screen. */
   SplashWindowWidget * splash;
@@ -126,52 +128,52 @@ struct _ZrythmApp
   /** Project selector. */
   //ProjectAssistantWidget * assistant;
 
-  bool               have_svg_loader;
+  bool have_svg_loader;
 
   /** Audio backend passed with --audio-backend=,
    * if any. */
-  char *             audio_backend;
+  char * audio_backend;
 
   /** MIDI backend passed with --audio-backend=,
    * if any. */
-  char *             midi_backend;
+  char * midi_backend;
 
   /** Buffer size passed with --buf-size=, if any. */
-  int                buf_size;
+  int buf_size;
 
   /** Samplerate passed with --samplerate=, if
    * any. */
-  int                samplerate;
+  int samplerate;
 
   /** Messages to show when the main window is
    * shown. */
   /* FIXME delete this. it does the same thing as
    * the queue below */
-  char *             startup_errors[24];
-  int                num_startup_errors;
+  char * startup_errors[24];
+  int    num_startup_errors;
 
   /** Output file passed with --output. */
-  char *             output_file;
+  char * output_file;
 
   /** Whether to pretty-print. */
-  bool               pretty_print;
+  bool pretty_print;
 
   /** CLI args. */
-  int                argc;
-  char **            argv;
+  int     argc;
+  char ** argv;
 
   /** AppImage runtime path, if AppImage build. */
-  char *             appimage_runtime_path;
+  char * appimage_runtime_path;
 
   /** Flag used to only show the RT priority
    * message once. */
-  bool               rt_priority_message_shown;
+  bool rt_priority_message_shown;
 
   /**
    * Queue for messages to be shown when the project
    * loads.
    */
-  GAsyncQueue *      project_load_message_queue;
+  GAsyncQueue * project_load_message_queue;
 };
 
 /**
@@ -185,9 +187,7 @@ extern ZrythmApp * zrythm_app;
  * This also initializes the Zrythm struct.
  */
 ZrythmApp *
-zrythm_app_new (
-  int           argc,
-  const char ** argv);
+zrythm_app_new (int argc, const char ** argv);
 
 /**
  * Sets the current status and progress percentage
@@ -212,8 +212,7 @@ zrythm_app_set_font_scale (
  * startup.
  */
 void
-zrythm_app_check_for_updates (
-  ZrythmApp * self);
+zrythm_app_check_for_updates (ZrythmApp * self);
 
 /**
  * Unlike the init thread, this will run in the

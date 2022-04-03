@@ -42,15 +42,14 @@
 #include "audio/engine.h"
 #include "audio/engine_alsa.h"
 #ifdef HAVE_JACK
-#include "audio/engine_jack.h"
+#  include "audio/engine_jack.h"
 #endif
 #ifdef HAVE_PORT_AUDIO
-#include "audio/engine_pa.h"
+#  include "audio/engine_pa.h"
 #endif
 #include "audio/graph.h"
 #include "audio/graph_thread.h"
 #include "audio/master_track.h"
-#include "utils/midi.h"
 #include "audio/midi_track.h"
 #include "audio/pan.h"
 #include "audio/port.h"
@@ -61,8 +60,9 @@
 #include "audio/track_processor.h"
 #include "project.h"
 #include "utils/arrays.h"
-#include "utils/flags.h"
 #include "utils/env.h"
+#include "utils/flags.h"
+#include "utils/midi.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_utils.h"
 #include "utils/objects.h"
@@ -70,7 +70,7 @@
 #include "zrythm_app.h"
 
 #ifdef HAVE_JACK
-#include "weak_libjack.h"
+#  include "weak_libjack.h"
 #endif
 
 /**
@@ -81,8 +81,7 @@ nframes_t
 router_get_max_route_playback_latency (
   Router * router)
 {
-  g_return_val_if_fail (
-    router && router->graph, 0);
+  g_return_val_if_fail (router && router->graph, 0);
   router->max_route_playback_latency =
     graph_get_max_route_playback_latency (
       router->graph, false);
@@ -100,8 +99,8 @@ router_start_cycle (
 {
   g_return_if_fail (self && self->graph);
   g_return_if_fail (
-    time_nfo.local_offset + time_nfo.nframes <=
-      AUDIO_ENGINE->nframes);
+    time_nfo.local_offset + time_nfo.nframes
+    <= AUDIO_ENGINE->nframes);
 
   /* only set the kickoff thread when not called
    * from the gtk thread (sometimes this is called
@@ -118,16 +117,16 @@ router_start_cycle (
     }
 
   self->global_offset =
-    self->max_route_playback_latency -
-    AUDIO_ENGINE->remaining_latency_preroll;
+    self->max_route_playback_latency
+    - AUDIO_ENGINE->remaining_latency_preroll;
   memcpy (
     &self->time_nfo, &time_nfo,
     sizeof (EngineProcessTimeInfo));
 
   /* read control port change events */
-  while (zix_ring_read_space (
-           self->ctrl_port_change_queue)
-             >= sizeof (ControlPortChange))
+  while (
+    zix_ring_read_space (self->ctrl_port_change_queue)
+    >= sizeof (ControlPortChange))
     {
       ControlPortChange change = { 0 };
       zix_ring_read (
@@ -139,8 +138,7 @@ router_start_cycle (
             P_TEMPO_TRACK, change.real_val, 0.f,
             true, F_PUBLISH_EVENTS);
         }
-      else if (change.flag2 &
-                 PORT_FLAG2_BEATS_PER_BAR)
+      else if (change.flag2 & PORT_FLAG2_BEATS_PER_BAR)
         {
           tempo_track_set_beats_per_bar (
             P_TEMPO_TRACK, change.ival);
@@ -183,9 +181,7 @@ router_start_cycle (
  * @param soft If true, only readjusts latencies.
  */
 void
-router_recalc_graph (
-  Router * self,
-  bool     soft)
+router_recalc_graph (Router * self, bool soft)
 {
   g_message (
     "Recalculating%s...", soft ? " (soft)" : "");
@@ -212,7 +208,7 @@ router_recalc_graph (
         g_atomic_int_get (&AUDIO_ENGINE->run);
       g_atomic_int_set (&AUDIO_ENGINE->run, 0);
       while (g_atomic_int_get (
-               &AUDIO_ENGINE->cycle_running))
+        &AUDIO_ENGINE->cycle_running))
         {
           g_usleep (100);
         }
@@ -236,9 +232,10 @@ router_queue_control_port_change (
   Router *                  self,
   const ControlPortChange * change)
 {
-  if (zix_ring_write_space (
-        self->ctrl_port_change_queue) <
-          sizeof (ControlPortChange))
+  if (
+    zix_ring_write_space (
+      self->ctrl_port_change_queue)
+    < sizeof (ControlPortChange))
     {
       zix_ring_skip (
         self->ctrl_port_change_queue,
@@ -264,9 +261,8 @@ router_new (void)
 
   zix_sem_init (&self->graph_access, 1);
 
-  self->ctrl_port_change_queue =
-    zix_ring_new (
-      sizeof (ControlPortChange) * (size_t) 24);
+  self->ctrl_port_change_queue = zix_ring_new (
+    sizeof (ControlPortChange) * (size_t) 24);
 
   g_message ("done");
 
@@ -282,9 +278,8 @@ bool
 router_is_processing_kickoff_thread (
   const Router * const self)
 {
-  return
-    g_thread_self () ==
-      self->process_kickoff_thread;
+  return g_thread_self ()
+         == self->process_kickoff_thread;
 }
 
 /**
@@ -298,8 +293,7 @@ router_is_processing_thread (
   if (!self->graph)
     return false;
 
-  for (int j = 0;
-       j < self->graph->num_threads; j++)
+  for (int j = 0; j < self->graph->num_threads; j++)
     {
       if (pthread_equal (
             pthread_self (),
@@ -307,19 +301,18 @@ router_is_processing_thread (
         return true;
     }
 
-  if (self->graph->main_thread
-      &&
-      pthread_equal (
-        pthread_self (),
-        self->graph->main_thread->pthread))
+  if (
+    self->graph->main_thread
+    && pthread_equal (
+      pthread_self (),
+      self->graph->main_thread->pthread))
     return true;
 
   return false;
 }
 
 void
-router_free (
-  Router * self)
+router_free (Router * self)
 {
   g_debug ("%s: freeing...", __func__);
 

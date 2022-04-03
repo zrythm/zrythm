@@ -21,8 +21,8 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/main_window.h"
 #include "gui/widgets/main_notebook.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap_bg.h"
 #include "gui/widgets/timeline_panel.h"
@@ -33,7 +33,8 @@
 
 G_DEFINE_TYPE (
   TimelineMinimapBgWidget,
-  timeline_minimap_bg_widget, GTK_TYPE_WIDGET)
+  timeline_minimap_bg_widget,
+  GTK_TYPE_WIDGET)
 
 static void
 timeline_minimap_bg_snapshot (
@@ -41,7 +42,7 @@ timeline_minimap_bg_snapshot (
   GtkSnapshot * snapshot)
 {
   /*TimelineMinimapBgWidget * self =*/
-    /*Z_TIMELINE_MINIMAP_BG_WIDGET (widget);*/
+  /*Z_TIMELINE_MINIMAP_BG_WIDGET (widget);*/
 
   int width =
     gtk_widget_get_allocated_width (widget);
@@ -58,23 +59,18 @@ timeline_minimap_bg_snapshot (
     return;
 
   Marker * start =
-    marker_track_get_start_marker (
-      P_MARKER_TRACK);
+    marker_track_get_start_marker (P_MARKER_TRACK);
   ArrangerObject * start_obj =
     (ArrangerObject *) start;
   Marker * end =
-    marker_track_get_end_marker (
-      P_MARKER_TRACK);
-  ArrangerObject * end_obj =
-    (ArrangerObject *) end;
-  int song_px =
-    ui_pos_to_px_timeline (
-      &end_obj->pos, 1) -
-    ui_pos_to_px_timeline (
-      &start_obj->pos, 1);
+    marker_track_get_end_marker (P_MARKER_TRACK);
+  ArrangerObject * end_obj = (ArrangerObject *) end;
+  int              song_px =
+    ui_pos_to_px_timeline (&end_obj->pos, 1)
+    - ui_pos_to_px_timeline (&start_obj->pos, 1);
   /*int region_px;*/
 
-  int total_track_height = 0;
+  int     total_track_height = 0;
   Track * track;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
@@ -94,18 +90,16 @@ timeline_minimap_bg_snapshot (
         continue;
 
       double wy;
-      gtk_widget_translate_coordinates(
+      gtk_widget_translate_coordinates (
         GTK_WIDGET (track->widget),
-        GTK_WIDGET (MW_TIMELINE),
-        0, 0, NULL, &wy);
-      track_height =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (track->widget));
+        GTK_WIDGET (MW_TIMELINE), 0, 0, NULL, &wy);
+      track_height = gtk_widget_get_allocated_height (
+        GTK_WIDGET (track->widget));
 
       GdkRGBA color = track->color;
       color.alpha = 0.6f;
 
-      TrackLane * lane;
+      TrackLane *      lane;
       ArrangerObject * r_obj;
       for (int j = 0; j < track->num_lanes; j++)
         {
@@ -116,26 +110,25 @@ timeline_minimap_bg_snapshot (
               r_obj =
                 (ArrangerObject *) lane->regions[k];
 
-              int px_start =
-                ui_pos_to_px_timeline (
-                  &r_obj->pos, 1);
-              int px_end =
-                ui_pos_to_px_timeline (
-                  &r_obj->end_pos, 1);
-              int px_length =
-                px_end - px_start;
+              int px_start = ui_pos_to_px_timeline (
+                &r_obj->pos, 1);
+              int px_end = ui_pos_to_px_timeline (
+                &r_obj->end_pos, 1);
+              int px_length = px_end - px_start;
 
               gtk_snapshot_append_color (
                 snapshot, &color,
                 &GRAPHENE_RECT_INIT (
-                  ((float) px_start /
-                   (float) song_px) * width,
-                  ((float) wy /
-                     (float) total_track_height) * height,
-                  ((float) px_length /
-                    (float) song_px) * width,
-                  ((float) track_height /
-                    (float) total_track_height) * height));
+                  ((float) px_start / (float) song_px)
+                    * width,
+                  ((float) wy
+                   / (float) total_track_height)
+                    * height,
+                  ((float) px_length / (float) song_px)
+                    * width,
+                  ((float) track_height
+                   / (float) total_track_height)
+                    * height));
             }
         }
     }
@@ -155,9 +148,8 @@ timeline_minimap_bg_tick_cb (
 TimelineMinimapBgWidget *
 timeline_minimap_bg_widget_new ()
 {
-  TimelineMinimapBgWidget * self =
-    g_object_new (
-      TIMELINE_MINIMAP_BG_WIDGET_TYPE, NULL);
+  TimelineMinimapBgWidget * self = g_object_new (
+    TIMELINE_MINIMAP_BG_WIDGET_TYPE, NULL);
 
   return self;
 }
@@ -177,7 +169,6 @@ timeline_minimap_bg_widget_init (
   TimelineMinimapBgWidget * self)
 {
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self),
-    timeline_minimap_bg_tick_cb,
+    GTK_WIDGET (self), timeline_minimap_bg_tick_cb,
     self, NULL);
 }

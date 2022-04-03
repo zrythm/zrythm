@@ -40,7 +40,7 @@ G_DECLARE_FINAL_TYPE (
   TwoColExpanderBoxWidget);
 
 typedef struct _EditableLabelWidget
-  EditableLabelWidget;
+                     EditableLabelWidget;
 typedef struct Track Track;
 typedef struct _RouteTargetSelectorWidget
   RouteTargetSelectorWidget;
@@ -61,21 +61,21 @@ typedef struct _TrackPropertiesExpanderWidget
    *
    * This should take up the whole row.
    */
-  EditableLabelWidget *   name;
+  EditableLabelWidget * name;
 
   RouteTargetSelectorWidget * direct_out;
 
   /** Instrument slot, for instrument tracks. */
-  ChannelSlotWidget *     instrument_slot;
+  ChannelSlotWidget * instrument_slot;
 
-  GtkLabel *              instrument_label;
+  GtkLabel * instrument_label;
 
   /* TODO midi inputs, etc. See Instrument Track
    * Inspector from cubase manual. */
 
   /** Track the TrackPropertiesExpanderWidget is
    * associated with. */
-  Track *                 track;
+  Track * track;
 } TrackPropertiesExpanderWidget;
 
 /**
@@ -92,7 +92,7 @@ track_properties_expander_widget_refresh (
 void
 track_properties_expander_widget_setup (
   TrackPropertiesExpanderWidget * self,
-  Track *                             track);
+  Track *                         track);
 
 /**
  * @}

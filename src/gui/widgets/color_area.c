@@ -18,8 +18,8 @@
  */
 
 #include "audio/track.h"
-#include "gui/widgets/dialogs/object_color_chooser_dialog.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/dialogs/object_color_chooser_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "utils/cairo.h"
@@ -32,7 +32,8 @@
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
-  ColorAreaWidget, color_area_widget,
+  ColorAreaWidget,
+  color_area_widget,
   GTK_TYPE_WIDGET)
 
 /**
@@ -97,8 +98,7 @@ color_area_snapshot (
         }
       else
         {
-          self->parents =
-            g_ptr_array_sized_new (8);
+          self->parents = g_ptr_array_sized_new (8);
         }
       track_add_folder_parents (
         track, self->parents, false);
@@ -110,12 +110,9 @@ color_area_snapshot (
             g_ptr_array_index (self->parents, i);
 
           double start_y =
-            ((double) i /
-             (double) len) *
-            (double) height;
-          double h =
-            (double) height /
-            (double) len;
+            ((double) i / (double) len)
+            * (double) height;
+          double h = (double) height / (double) len;
 
           color = parent_track->color;
           if (self->hovered)
@@ -125,23 +122,22 @@ color_area_snapshot (
             &GRAPHENE_RECT_INIT (
               0, (float) start_y, width, (float) h));
         }
-
     }
 }
 
 static void
 multipress_pressed (
   GtkGestureClick * gesture,
-  gint                   n_press,
-  gdouble                x,
-  gdouble                y,
-  ColorAreaWidget *      self)
+  gint              n_press,
+  gdouble           x,
+  gdouble           y,
+  ColorAreaWidget * self)
 {
   if (n_press == 1 && self->track)
     {
       object_color_chooser_dialog_widget_run (
-        GTK_WINDOW (MAIN_WINDOW),
-        self->track, NULL, NULL);
+        GTK_WINDOW (MAIN_WINDOW), self->track, NULL,
+        NULL);
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
@@ -177,7 +173,7 @@ on_leave (
 void
 color_area_widget_setup_generic (
   ColorAreaWidget * self,
-  GdkRGBA * color)
+  GdkRGBA *         color)
 {
   self->color = *color;
   gtk_widget_queue_draw (GTK_WIDGET (self));
@@ -209,7 +205,7 @@ color_area_widget_setup_track (
 void
 color_area_widget_set_color (
   ColorAreaWidget * self,
-  GdkRGBA * color)
+  GdkRGBA *         color)
 {
   self->color = *color;
 
@@ -217,42 +213,37 @@ color_area_widget_set_color (
 }
 
 static void
-finalize (
-  ColorAreaWidget * self)
+finalize (ColorAreaWidget * self)
 {
   object_free_w_func_and_null (
     g_ptr_array_unref, self->parents);
 
-  G_OBJECT_CLASS (
-    color_area_widget_parent_class)->
-      finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (color_area_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 static void
 color_area_widget_init (ColorAreaWidget * self)
 {
-  gtk_widget_set_focusable (
-    GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (GTK_WIDGET (self), true);
 
   GtkGestureClick * mp =
-    GTK_GESTURE_CLICK (
-      gtk_gesture_click_new ());
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   g_signal_connect (
     G_OBJECT (mp), "pressed",
     G_CALLBACK (multipress_pressed), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (mp));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (mp));
 
   GtkEventControllerMotion * motion_controller =
     GTK_EVENT_CONTROLLER_MOTION (
       gtk_event_controller_motion_new ());
   g_signal_connect (
     G_OBJECT (motion_controller), "enter",
-    G_CALLBACK (on_enter),  self);
+    G_CALLBACK (on_enter), self);
   g_signal_connect (
     G_OBJECT (motion_controller), "leave",
-    G_CALLBACK (on_leave),  self);
+    G_CALLBACK (on_leave), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (motion_controller));
@@ -267,8 +258,6 @@ color_area_widget_class_init (
   gtk_widget_class_set_css_name (
     wklass, "color-area");
 
-  GObjectClass * oklass =
-    G_OBJECT_CLASS (klass);
-  oklass->finalize =
-    (GObjectFinalizeFunc) finalize;
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->finalize = (GObjectFinalizeFunc) finalize;
 }

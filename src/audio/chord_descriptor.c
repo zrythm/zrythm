@@ -18,19 +18,18 @@
  */
 
 #include <stdlib.h>
-#include <string.h>
 
 #include "audio/chord_descriptor.h"
 #include "utils/midi.h"
 #include "utils/objects.h"
 
+#include <string.h>
+
 /**
  * @param notes 36 notes.
  */
 static void
-invert_chord (
-  int * notes,
-  int   inversion)
+invert_chord (int * notes, int inversion)
 {
   if (inversion > 0)
     {
@@ -49,7 +48,7 @@ invert_chord (
     }
   else if (inversion < 0)
     {
-      for (int i = 0; i < - inversion; i++)
+      for (int i = 0; i < -inversion; i++)
         {
           for (int j = 35; j >= 0; j--)
             {
@@ -133,7 +132,9 @@ chord_descriptor_update_notes (
     case CHORD_ACC_NONE:
       break;
     case CHORD_ACC_7:
-      self->notes[12 + self->root_note + min_seventh_sems] = 1;
+      self->notes
+        [12 + self->root_note + min_seventh_sems] =
+        1;
       break;
     case CHORD_ACC_j7:
       self->notes[12 + self->root_note + 11] = 1;
@@ -168,11 +169,13 @@ chord_descriptor_update_notes (
     }
 
   /* add the 7th to accents > 7 */
-  if (self->accent >= CHORD_ACC_b9 &&
-      self->accent <= CHORD_ACC_6_13)
+  if (
+    self->accent >= CHORD_ACC_b9
+    && self->accent <= CHORD_ACC_6_13)
     {
-      self->notes[
-        12 + self->root_note + min_seventh_sems] = 1;
+      self->notes
+        [12 + self->root_note + min_seventh_sems] =
+        1;
     }
 
   invert_chord (&self->notes[12], self->inversion);
@@ -183,12 +186,12 @@ chord_descriptor_update_notes (
  */
 ChordDescriptor *
 chord_descriptor_new (
-  MusicalNote            root,
-  int                    has_bass,
-  MusicalNote            bass,
-  ChordType              type,
-  ChordAccent            accent,
-  int                    inversion)
+  MusicalNote root,
+  int         has_bass,
+  MusicalNote bass,
+  ChordType   type,
+  ChordAccent accent,
+  int         inversion)
 {
   ChordDescriptor * self =
     object_new (ChordDescriptor);
@@ -213,13 +216,11 @@ chord_descriptor_new (
  * Clones the given ChordDescriptor.
  */
 ChordDescriptor *
-chord_descriptor_clone (
-  const ChordDescriptor * src)
+chord_descriptor_clone (const ChordDescriptor * src)
 {
-  ChordDescriptor * cd =
-    chord_descriptor_new (
-      src->root_note, src->has_bass, src->bass_note,
-      src->type, src->accent, src->inversion);
+  ChordDescriptor * cd = chord_descriptor_new (
+    src->root_note, src->has_bass, src->bass_note,
+    src->type, src->accent, src->inversion);
 
   return cd;
 }
@@ -237,8 +238,7 @@ chord_descriptor_copy (
  * Returns the musical note as a string (eg. "C3").
  */
 const char *
-chord_descriptor_note_to_string (
-  MusicalNote note)
+chord_descriptor_note_to_string (MusicalNote note)
 {
   return midi_get_note_name ((midi_byte_t) note);
 }
@@ -302,8 +302,7 @@ chord_descriptor_is_key_in_chord (
 
   for (int i = 0; i < 36; i++)
     {
-      if (chord->notes[i] == 1 &&
-          i % 12 == (int) key)
+      if (chord->notes[i] == 1 && i % 12 == (int) key)
         return true;
     }
   return false;
@@ -346,8 +345,9 @@ chord_descriptor_to_string (
         chord_descriptor_chord_accent_to_string (
           chord->accent));
     }
-  if (chord->has_bass &&
-      (chord->bass_note != chord->root_note))
+  if (
+    chord->has_bass
+    && (chord->bass_note != chord->root_note))
     {
       strcat (str, "/");
       strcat (

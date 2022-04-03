@@ -31,7 +31,7 @@
 #include <gtk/gtk.h>
 
 typedef struct PluginSettings PluginSettings;
-typedef struct UserShortcuts UserShortcuts;
+typedef struct UserShortcuts  UserShortcuts;
 
 /**
  * @addtogroup project Settings
@@ -52,8 +52,7 @@ typedef struct UserShortcuts UserShortcuts;
 #define S_UI_PANELS SETTINGS->ui_panels
 #define S_UI_PLUGIN_BROWSER \
   SETTINGS->ui_plugin_browser
-#define S_UI_FILE_BROWSER \
-  SETTINGS->ui_file_browser
+#define S_UI_FILE_BROWSER SETTINGS->ui_file_browser
 #define S_TRANSPORT SETTINGS->transport
 
 /* ---- end standard settings ---- */
@@ -85,24 +84,23 @@ typedef struct UserShortcuts UserShortcuts;
 
 /* ---- end preferences ---- */
 
-#define S_IS_DEBUG (g_settings_get_int ( \
-  S_GENERAL, "debug"))
+#define S_IS_DEBUG \
+  (g_settings_get_int (S_GENERAL, "debug"))
 
-#define S_SET_ENUM(settings,key,val) \
+#define S_SET_ENUM(settings, key, val) \
   g_settings_set_enum (settings, key, val)
 
-#define S_GET_ENUM(settings,key) \
+#define S_GET_ENUM(settings, key) \
   g_settings_get_enum (settings, key)
 
-#define S_UI_SET_ENUM(key,val) \
+#define S_UI_SET_ENUM(key, val) \
   S_SET_ENUM (S_UI, key, val)
 
-#define S_UI_GET_ENUM(key) \
-  S_GET_ENUM (S_UI, key)
+#define S_UI_GET_ENUM(key) S_GET_ENUM (S_UI, key)
 
 #define S_PLUGIN_SETTINGS SETTINGS->plugin_settings
 
-#define S_USER_SHORTCUTS  SETTINGS->user_shortcuts
+#define S_USER_SHORTCUTS SETTINGS->user_shortcuts
 
 typedef struct Settings
 {
@@ -181,8 +179,7 @@ settings_reset_to_factory (
  * Prints the current settings.
  */
 void
-settings_print (
-  int pretty_print);
+settings_print (int pretty_print);
 
 /**
  * Returns whether the "as" key contains the given
@@ -201,7 +198,7 @@ settings_strv_contains_str (
 NONNULL
 void
 settings_append_to_strv (
-  GSettings * settings,
+  GSettings *  settings,
   const char * key,
   const char * val,
   bool         ignore_if_duplicate);
@@ -232,8 +229,7 @@ settings_get_default_value_double (
  * Frees settings.
  */
 void
-settings_free (
-  Settings * self);
+settings_free (Settings * self);
 
 /**
  * @}

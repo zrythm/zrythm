@@ -32,7 +32,7 @@
 #include "utils/yaml.h"
 
 typedef struct ChordDescriptor ChordDescriptor;
-typedef struct ChordPreset ChordPreset;
+typedef struct ChordPreset     ChordPreset;
 
 /**
  * @addtogroup gui_backend
@@ -51,7 +51,7 @@ typedef struct ChordPreset ChordPreset;
  */
 typedef struct ChordEditor
 {
-  int              schema_version;
+  int schema_version;
 
   /**
    * The chords to show on the left.
@@ -62,29 +62,29 @@ typedef struct ChordEditor
   ChordDescriptor * chords[128];
   int               num_chords;
 
-  EditorSettings  editor_settings;
+  EditorSettings editor_settings;
 } ChordEditor;
 
 static const cyaml_schema_field_t
-chord_editor_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    ChordEditor, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    ChordEditor, chords, chord_descriptor_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ChordEditor, editor_settings,
-    editor_settings_fields_schema),
+  chord_editor_fields_schema[] = {
+    YAML_FIELD_INT (ChordEditor, schema_version),
+    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+      ChordEditor,
+      chords,
+      chord_descriptor_schema),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      ChordEditor,
+      editor_settings,
+      editor_settings_fields_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t
-chord_editor_schema =
-{
+static const cyaml_schema_value_t chord_editor_schema = {
   CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-    ChordEditor, chord_editor_fields_schema),
+    ChordEditor,
+    chord_editor_fields_schema),
 };
 
 /**
@@ -92,19 +92,16 @@ chord_editor_schema =
  * loaded.
  */
 void
-chord_editor_init_loaded (
-  ChordEditor * self);
+chord_editor_init_loaded (ChordEditor * self);
 
 /**
  * Initializes the ChordEditor.
  */
 void
-chord_editor_init (
-  ChordEditor * self);
+chord_editor_init (ChordEditor * self);
 
 ChordEditor *
-chord_editor_clone (
-  ChordEditor * src);
+chord_editor_clone (ChordEditor * src);
 
 void
 chord_editor_apply_single_chord (
@@ -127,10 +124,10 @@ chord_editor_apply_preset (
 
 void
 chord_editor_apply_preset_from_scale (
-  ChordEditor *     self,
-  MusicalScaleType  scale,
-  MusicalNote       root_note,
-  bool              undoable);
+  ChordEditor *    self,
+  MusicalScaleType scale,
+  MusicalNote      root_note,
+  bool             undoable);
 
 void
 chord_editor_transpose_chords (
@@ -147,7 +144,7 @@ NONNULL
 ChordDescriptor *
 chord_editor_get_chord_from_note_number (
   const ChordEditor * self,
-  midi_byte_t   note_number);
+  midi_byte_t         note_number);
 
 NONNULL
 int
@@ -159,8 +156,7 @@ ChordEditor *
 chord_editor_new (void);
 
 void
-chord_editor_free (
-  ChordEditor * self);
+chord_editor_free (ChordEditor * self);
 
 /**
  * @}

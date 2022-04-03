@@ -20,8 +20,7 @@
 #include "plugins/plugin_identifier.h"
 
 void
-plugin_identifier_init (
-  PluginIdentifier * self)
+plugin_identifier_init (PluginIdentifier * self)
 {
   memset (self, 0, sizeof (PluginIdentifier));
   self->schema_version =
@@ -34,12 +33,13 @@ plugin_identifier_validate (
   const PluginIdentifier * self)
 {
   g_return_val_if_fail (
-    self->schema_version ==
-      PLUGIN_IDENTIFIER_SCHEMA_VERSION,
+    self->schema_version
+      == PLUGIN_IDENTIFIER_SCHEMA_VERSION,
     false);
   g_return_val_if_fail (
     plugin_identifier_validate_slot_type_slot_combo (
-      self->slot_type, self->slot), false);
+      self->slot_type, self->slot),
+    false);
   return true;
 }
 
@@ -52,18 +52,15 @@ plugin_identifier_validate_slot_type_slot_combo (
   PluginSlotType slot_type,
   int            slot)
 {
-  return
-    (slot_type == PLUGIN_SLOT_INSTRUMENT &&
-       slot == -1) ||
-    (slot_type == PLUGIN_SLOT_INVALID &&
-       slot == -1) ||
-    (slot_type != PLUGIN_SLOT_INSTRUMENT &&
-       slot >= 0);
+  return (slot_type == PLUGIN_SLOT_INSTRUMENT
+          && slot == -1)
+         || (slot_type == PLUGIN_SLOT_INVALID && slot == -1)
+         || (slot_type != PLUGIN_SLOT_INSTRUMENT && slot >= 0);
 }
 
 void
 plugin_identifier_copy (
-  PluginIdentifier * dest,
+  PluginIdentifier *       dest,
   const PluginIdentifier * src)
 {
   g_return_if_fail (

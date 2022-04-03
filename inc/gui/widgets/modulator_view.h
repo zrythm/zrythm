@@ -33,16 +33,16 @@
 G_DECLARE_FINAL_TYPE (
   ModulatorViewWidget,
   modulator_view_widget,
-  Z, MODULATOR_VIEW_WIDGET,
+  Z,
+  MODULATOR_VIEW_WIDGET,
   GtkBox)
 
 typedef struct _ModulatorWidget ModulatorWidget;
 typedef struct _ModulatorMacroWidget
   ModulatorMacroWidget;
-typedef struct _ColorAreaWidget ColorAreaWidget;
-typedef struct Track Track;
-typedef struct _RotatedLabelWidget
-  RotatedLabelWidget;
+typedef struct _ColorAreaWidget    ColorAreaWidget;
+typedef struct Track               Track;
+typedef struct _RotatedLabelWidget RotatedLabelWidget;
 
 /**
  * @addtogroup widgets
@@ -66,13 +66,13 @@ typedef struct _RotatedLabelWidget
  */
 typedef struct _ModulatorViewWidget
 {
-  GtkBox            parent_instance;
-  GtkBox *          modulators_box;
-  GtkBox *          macros_box;
-  ColorAreaWidget * color;
-  RotatedLabelWidget * track_name;
-  Track *           track;
-  ModulatorWidget * modulators[14];
+  GtkBox                 parent_instance;
+  GtkBox *               modulators_box;
+  GtkBox *               macros_box;
+  ColorAreaWidget *      color;
+  RotatedLabelWidget *   track_name;
+  Track *                track;
+  ModulatorWidget *      modulators[14];
   ModulatorMacroWidget * macros[8];
 } ModulatorViewWidget;
 

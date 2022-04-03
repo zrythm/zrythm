@@ -45,8 +45,8 @@
 NONNULL
 void
 midi_note_draw (
-  MidiNote *       self,
-  GtkSnapshot *    snapshot);
+  MidiNote *    self,
+  GtkSnapshot * snapshot);
 
 NONNULL
 void

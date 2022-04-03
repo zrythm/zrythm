@@ -37,10 +37,10 @@
  *
  * The arguments must be strings (char *).
  */
-PURE
-int
+PURE int
 sort_alphabetical_func (
-  const void *a, const void *b);
+  const void * a,
+  const void * b);
 
 /**
  * @}

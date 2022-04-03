@@ -29,8 +29,8 @@
 
 #include <stdint.h>
 
-#include "audio/scale.h"
 #include "audio/position.h"
+#include "audio/scale.h"
 #include "gui/backend/arranger_object.h"
 #include "utils/yaml.h"
 
@@ -45,8 +45,7 @@ typedef struct MusicalScale MusicalScale;
 #define SCALE_OBJECT_SCHEMA_VERSION 1
 
 #define scale_object_is_selected(r) \
-  arranger_object_is_selected ( \
-    (ArrangerObject *) r)
+  arranger_object_is_selected ((ArrangerObject *) r)
 
 #define SCALE_OBJECT_MAGIC 13187994
 #define IS_SCALE_OBJECT(tr) \
@@ -59,47 +58,46 @@ typedef struct MusicalScale MusicalScale;
 typedef struct ScaleObject
 {
   /** Base struct. */
-  ArrangerObject  base;
+  ArrangerObject base;
 
-  int             schema_version;
+  int schema_version;
 
-  MusicalScale *  scale;
+  MusicalScale * scale;
 
-  int             index;
+  int index;
 
-  int             magic;
+  int magic;
 
   /** Cache layout for drawing the name. */
-  PangoLayout *   layout;
+  PangoLayout * layout;
 } ScaleObject;
 
 static const cyaml_schema_field_t
-  scale_object_fields_schema[] =
-{
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ScaleObject, base,
-    arranger_object_fields_schema),
-  YAML_FIELD_INT (
-    ScaleObject, index),
-  YAML_FIELD_MAPPING_PTR (
-    ScaleObject, scale,
-    musical_scale_fields_schema),
+  scale_object_fields_schema[] = {
+    YAML_FIELD_MAPPING_EMBEDDED (
+      ScaleObject,
+      base,
+      arranger_object_fields_schema),
+    YAML_FIELD_INT (ScaleObject, index),
+    YAML_FIELD_MAPPING_PTR (
+      ScaleObject,
+      scale,
+      musical_scale_fields_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t
-scale_object_schema = {
+static const cyaml_schema_value_t scale_object_schema = {
   YAML_VALUE_PTR (
-    ScaleObject, scale_object_fields_schema),
+    ScaleObject,
+    scale_object_fields_schema),
 };
 
 /**
  * Creates a ScaleObject.
  */
 ScaleObject *
-scale_object_new (
-  MusicalScale * descr);
+scale_object_new (MusicalScale * descr);
 
 void
 scale_object_set_index (

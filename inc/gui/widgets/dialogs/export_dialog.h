@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   ExportDialogWidget,
   export_dialog_widget,
-  Z, EXPORT_DIALOG_WIDGET,
+  Z,
+  EXPORT_DIALOG_WIDGET,
   GtkDialog)
 
 /**
@@ -53,31 +54,31 @@ typedef enum ExportFilenamePattern
  */
 typedef struct _ExportDialogWidget
 {
-  GtkDialog            parent_instance;
-  GtkButton *          cancel_button;
-  GtkButton *          export_button;
-  GtkEntry *           export_artist;
-  GtkEntry *           export_title;
-  GtkEntry *           export_genre;
-  GtkComboBox *        filename_pattern;
-  GtkToggleButton *    time_range_song;
-  GtkToggleButton *    time_range_loop;
-  GtkToggleButton *    time_range_custom;
-  GtkComboBox *        format;
-  GtkComboBox *        bit_depth;
-  GtkCheckButton *     lanes_as_tracks;
-  GtkToggleButton *    dither;
-  GtkLabel *           output_label;
+  GtkDialog         parent_instance;
+  GtkButton *       cancel_button;
+  GtkButton *       export_button;
+  GtkEntry *        export_artist;
+  GtkEntry *        export_title;
+  GtkEntry *        export_genre;
+  GtkComboBox *     filename_pattern;
+  GtkToggleButton * time_range_song;
+  GtkToggleButton * time_range_loop;
+  GtkToggleButton * time_range_custom;
+  GtkComboBox *     format;
+  GtkComboBox *     bit_depth;
+  GtkCheckButton *  lanes_as_tracks;
+  GtkToggleButton * dither;
+  GtkLabel *        output_label;
 
-  GtkTreeView *        tracks_treeview;
-  GtkTreeModel *       tracks_model;
+  GtkTreeView *  tracks_treeview;
+  GtkTreeModel * tracks_model;
 
   /** Underlying model of @ref
    * ExportDialogWidget.tracks_model. */
-  GtkTreeStore *       tracks_store;
+  GtkTreeStore * tracks_store;
 
-  GtkToggleButton *    mixdown_toggle;
-  GtkToggleButton *    stems_toggle;
+  GtkToggleButton * mixdown_toggle;
+  GtkToggleButton * stems_toggle;
 } ExportDialogWidget;
 
 /**

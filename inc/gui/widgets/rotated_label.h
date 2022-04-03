@@ -35,7 +35,8 @@
 G_DECLARE_FINAL_TYPE (
   RotatedLabelWidget,
   rotated_label_widget,
-  Z, ROTATED_LABEL_WIDGET,
+  Z,
+  ROTATED_LABEL_WIDGET,
   GtkWidget)
 
 /**
@@ -49,11 +50,11 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _RotatedLabelWidget
 {
-  GtkWidget        parent_instance;
+  GtkWidget parent_instance;
 
-  GtkLabel *       lbl;
+  GtkLabel * lbl;
 
-  float            angle;
+  float angle;
 } RotatedLabelWidget;
 
 void
@@ -71,8 +72,7 @@ rotated_label_widget_setup (
   float                angle);
 
 RotatedLabelWidget *
-rotated_label_widget_new (
-  float angle);
+rotated_label_widget_new (float angle);
 
 /**
  * @}

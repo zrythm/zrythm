@@ -25,8 +25,8 @@
 #include "audio/master_track.h"
 #include "audio/midi_file.h"
 #include "audio/router.h"
-#include "audio/tracklist.h"
 #include "audio/track.h"
+#include "audio/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
@@ -104,8 +104,7 @@ tracklist_select_all (
       Track * track = self->tracks[i];
 
       track_select (
-        track, select, F_NOT_EXCLUSIVE,
-        fire_events);
+        track, select, F_NOT_EXCLUSIVE, fire_events);
 
       if (!select && i == self->num_tracks - 1)
         {
@@ -142,12 +141,11 @@ tracklist_get_visible_tracks (
  */
 int
 tracklist_get_visible_track_diff (
-  Tracklist * self,
-  const Track *     src,
-  const Track *     dest)
+  Tracklist *   self,
+  const Track * src,
+  const Track * dest)
 {
-  g_return_val_if_fail (
-    src && dest, 0);
+  g_return_val_if_fail (src && dest, 0);
 
   int count = 0;
   if (src->pos < dest->pos)
@@ -177,8 +175,7 @@ tracklist_get_visible_track_diff (
 }
 
 int
-tracklist_contains_master_track (
-  Tracklist * self)
+tracklist_contains_master_track (Tracklist * self)
 {
   for (int i = 0; self->num_tracks; i++)
     {
@@ -190,8 +187,7 @@ tracklist_contains_master_track (
 }
 
 int
-tracklist_contains_chord_track (
-  Tracklist * self)
+tracklist_contains_chord_track (Tracklist * self)
 {
   for (int i = 0; self->num_tracks; i++)
     {
@@ -203,8 +199,7 @@ tracklist_contains_chord_track (
 }
 
 void
-tracklist_print_tracks (
-  Tracklist * self)
+tracklist_print_tracks (Tracklist * self)
 {
   g_message ("----- tracklist tracks ------");
   Track * track;
@@ -228,8 +223,8 @@ tracklist_print_tracks (
           g_message (
             "[%03d] %s%s (pos %d, parents %d, "
             "size %d)",
-            i, parent_str, track->name,
-            track->pos, parents->len, track->size);
+            i, parent_str, track->name, track->pos,
+            parents->len, track->size);
           g_ptr_array_unref (parents);
         }
       else
@@ -241,19 +236,16 @@ tracklist_print_tracks (
 }
 
 static void
-swap_tracks (
-  Tracklist * self,
-  int         src,
-  int         dest)
+swap_tracks (Tracklist * self, int src, int dest)
 {
   self->swapping_tracks = true;
 
   Track * src_track = self->tracks[src];
   Track * dest_track = self->tracks[dest];
-  g_debug ("swapping tracks %s [%d] and %s [%d]...",
+  g_debug (
+    "swapping tracks %s [%d] and %s [%d]...",
     src_track ? src_track->name : "(null)", src,
-    dest_track ? dest_track->name : "(null)",
-    dest);
+    dest_track ? dest_track->name : "(null)", dest);
 
   /* move src somewhere temporarily */
   self->tracks[src] = NULL;
@@ -321,8 +313,7 @@ tracklist_insert_track (
       track_append_ports (track, ports, true);
       for (size_t i = 0; i < ports->len; i++)
         {
-          Port * port =
-            g_ptr_array_index (ports, i);
+          Port * port = g_ptr_array_index (ports, i);
           port->id.flags2 |=
             PORT_FLAG2_SAMPLE_PROCESSOR_TRACK;
         }
@@ -334,8 +325,7 @@ tracklist_insert_track (
    * position */
   if (pos != self->num_tracks - 1)
     {
-      for (int i = self->num_tracks - 1; i > pos;
-           i--)
+      for (int i = self->num_tracks - 1; i > pos; i--)
         {
           swap_tracks (self, i, i - 1);
         }
@@ -343,14 +333,14 @@ tracklist_insert_track (
 
   track->pos = pos;
 
-  if (tracklist_is_in_active_project (self)
-      /* auditioner doesn't need automation */
-      && !tracklist_is_auditioner (self))
+  if (
+    tracklist_is_in_active_project (self)
+    /* auditioner doesn't need automation */
+    && !tracklist_is_auditioner (self))
     {
       /* make the track the only selected track */
       tracklist_selections_select_single (
-        TRACKLIST_SELECTIONS, track,
-        publish_events);
+        TRACKLIST_SELECTIONS, track, publish_events);
 
       /* set automation track on ports */
       AutomationTracklist * atl =
@@ -360,7 +350,7 @@ tracklist_insert_track (
           for (int i = 0; i < atl->num_ats; i++)
             {
               AutomationTrack * at = atl->ats[i];
-              Port * port =
+              Port *            port =
                 port_find_from_identifier (
                   &at->port_id);
               g_return_if_fail (
@@ -376,8 +366,9 @@ tracklist_insert_track (
     }
 
   /* if audio output route to master */
-  if (track->out_signal_type == TYPE_AUDIO &&
-      track->type != TRACK_TYPE_MASTER)
+  if (
+    track->out_signal_type == TYPE_AUDIO
+    && track->type != TRACK_TYPE_MASTER)
     {
       group_target_track_add_child (
         self->master_track,
@@ -406,16 +397,15 @@ tracklist_insert_track (
               if (ch->has_output)
                 {
                   g_return_if_fail (
-                    ch->output_name_hash !=
-                      track_get_name_hash (
-                        cur_track));
+                    ch->output_name_hash
+                    != track_get_name_hash (
+                      cur_track));
                 }
             }
         }
     }
 
-  if (ZRYTHM_HAVE_UI
-      && !tracklist_is_auditioner (self))
+  if (ZRYTHM_HAVE_UI && !tracklist_is_auditioner (self))
     {
       /* generate track widget */
       track->widget = track_widget_new (track);
@@ -438,8 +428,7 @@ tracklist_insert_track (
 }
 
 ChordTrack *
-tracklist_get_chord_track (
-  const Tracklist * self)
+tracklist_get_chord_track (const Tracklist * self)
 {
   Track * track;
   for (int i = 0; i < self->num_tracks; i++)
@@ -491,11 +480,10 @@ tracklist_find_track_by_name_hash (
   Tracklist *  self,
   unsigned int hash)
 {
-  if (G_LIKELY (
-        tracklist_is_in_active_project (self))
-        && ROUTER
-        && router_is_processing_thread (ROUTER)
-        && !tracklist_is_auditioner (self))
+  if (
+    G_LIKELY (tracklist_is_in_active_project (self))
+    && ROUTER && router_is_processing_thread (ROUTER)
+    && !tracklist_is_auditioner (self))
     {
       for (int i = 0; i < self->num_tracks; i++)
         {
@@ -526,8 +514,8 @@ tracklist_append_track (
   int         recalc_graph)
 {
   tracklist_insert_track (
-    self, track, self->num_tracks,
-    publish_events, recalc_graph);
+    self, track, self->num_tracks, publish_events,
+    recalc_graph);
 }
 
 /**
@@ -548,15 +536,15 @@ tracklist_multiply_track_heights (
     {
       Track * tr = self->tracks[i];
 
-      if (visible_only &&
-          !track_get_should_be_visible (tr))
+      if (
+        visible_only
+        && !track_get_should_be_visible (tr))
         continue;
 
-      bool ret =
-        track_multiply_heights (
-          tr, multiplier, visible_only, check_only);
+      bool ret = track_multiply_heights (
+        tr, multiplier, visible_only, check_only);
       /*g_debug ("%s can multiply %d",*/
-        /*tr->name, ret);*/
+      /*tr->name, ret);*/
 
       if (!ret)
         {
@@ -578,9 +566,7 @@ tracklist_multiply_track_heights (
  * the index is invalid.
  */
 Track *
-tracklist_get_track (
-  Tracklist * self,
-  int         idx)
+tracklist_get_track (Tracklist * self, int idx)
 {
   if (idx < 0 || idx >= self->num_tracks)
     {
@@ -600,11 +586,9 @@ tracklist_get_track_pos (
   Tracklist * self,
   Track *     track)
 {
-  return
-    array_index_of (
-      (void **) self->tracks,
-      self->num_tracks,
-      (void *) track);
+  return array_index_of (
+    (void **) self->tracks, self->num_tracks,
+    (void *) track);
 }
 
 /**
@@ -626,15 +610,13 @@ tracklist_get_track_by_type (
 }
 
 bool
-tracklist_validate (
-  Tracklist * self)
+tracklist_validate (Tracklist * self)
 {
   for (int i = 0; i < self->num_tracks; i++)
     {
       Track * track = self->tracks[i];
       g_return_val_if_fail (
-        track
-        && track_is_in_active_project (track),
+        track && track_is_in_active_project (track),
         false);
 
       if (!track_validate (track))
@@ -642,8 +624,8 @@ tracklist_validate (
 
       /* validate size */
       g_return_val_if_fail (
-        track->pos + track->size <=
-          self->num_tracks, false);
+        track->pos + track->size <= self->num_tracks,
+        false);
 
       /* validate connections */
       if (track->channel)
@@ -678,20 +660,21 @@ tracklist_get_last_pos (
     {
       tr = self->tracks[i];
 
-      if (pin_opt ==
-            TRACKLIST_PIN_OPTION_PINNED_ONLY &&
-          !track_is_pinned (tr))
+      if (
+        pin_opt == TRACKLIST_PIN_OPTION_PINNED_ONLY
+        && !track_is_pinned (tr))
         {
           continue;
         }
-      if (pin_opt ==
-            TRACKLIST_PIN_OPTION_UNPINNED_ONLY &&
-          track_is_pinned (tr))
+      if (
+        pin_opt == TRACKLIST_PIN_OPTION_UNPINNED_ONLY
+        && track_is_pinned (tr))
         {
           continue;
         }
-      if (visible_only &&
-          !track_get_should_be_visible (tr))
+      if (
+        visible_only
+        && !track_get_should_be_visible (tr))
         {
           continue;
         }
@@ -711,19 +694,17 @@ tracklist_get_last_pos (
  * @param visible_only Only consider visible
  *   Track's.
  */
-Track*
+Track *
 tracklist_get_last_track (
   Tracklist *              self,
   const TracklistPinOption pin_opt,
   const int                visible_only)
 {
-  int idx =
-    tracklist_get_last_pos (
-      self, pin_opt, visible_only);
+  int idx = tracklist_get_last_pos (
+    self, pin_opt, visible_only);
   g_return_val_if_fail (
     idx >= 0 && idx < self->num_tracks, NULL);
-  Track * tr =
-    self->tracks[idx];
+  Track * tr = self->tracks[idx];
 
   return tr;
 }
@@ -793,8 +774,9 @@ tracklist_get_first_visible_track (
   for (int i = 0; i < self->num_tracks; i++)
     {
       tr = self->tracks[i];
-      if (track_get_should_be_visible (tr) &&
-          track_is_pinned (tr) == pinned)
+      if (
+        track_get_should_be_visible (tr)
+        && track_is_pinned (tr) == pinned)
         {
           return self->tracks[i];
         }
@@ -813,7 +795,7 @@ tracklist_get_prev_visible_track (
 {
   Track * tr;
   for (int i =
-       tracklist_get_track_pos (self, track) - 1;
+         tracklist_get_track_pos (self, track) - 1;
        i >= 0; i--)
     {
       tr = self->tracks[i];
@@ -837,7 +819,7 @@ tracklist_get_next_visible_track (
 {
   Track * tr;
   for (int i =
-       tracklist_get_track_pos (self, track) + 1;
+         tracklist_get_track_pos (self, track) + 1;
        i < self->num_tracks; i++)
     {
       tr = self->tracks[i];
@@ -877,9 +859,9 @@ tracklist_remove_track (
     "free track %d - pub events %d - "
     "recalc graph %d - "
     "num tracks before deletion: %d",
-    __func__, track->pos, track->name,
-    rm_pl, free_track, publish_events,
-    recalc_graph, self->num_tracks);
+    __func__, track->pos, track->name, rm_pl,
+    free_track, publish_events, recalc_graph,
+    self->num_tracks);
 
   Track * prev_visible = NULL;
   Track * next_visible = NULL;
@@ -896,13 +878,11 @@ tracklist_remove_track (
   /* remove/deselect all objects */
   track_clear (track);
 
-  int idx =
-    array_index_of (
-      self->tracks, self->num_tracks, track);
+  int idx = array_index_of (
+    self->tracks, self->num_tracks, track);
   g_warn_if_fail (track->pos == idx);
 
-  track_disconnect (
-    track, rm_pl, F_NO_RECALC_GRAPH);
+  track_disconnect (track, rm_pl, F_NO_RECALC_GRAPH);
 
   /* move track to the end */
   int end_pos = self->num_tracks - 1;
@@ -913,15 +893,15 @@ tracklist_remove_track (
   if (!tracklist_is_auditioner (self))
     {
       tracklist_selections_remove_track (
-        TRACKLIST_SELECTIONS, track,
-        publish_events);
+        TRACKLIST_SELECTIONS, track, publish_events);
     }
 
   array_delete (
     self->tracks, self->num_tracks, track);
 
-  if (tracklist_is_in_active_project (self)
-      && !tracklist_is_auditioner (self))
+  if (
+    tracklist_is_in_active_project (self)
+    && !tracklist_is_auditioner (self))
     {
       /* if it was the only track selected, select
        * the next one */
@@ -931,8 +911,9 @@ tracklist_remove_track (
           if (prev_visible || next_visible)
             {
               track_to_select =
-                next_visible ?
-                  next_visible : prev_visible;
+                next_visible
+                  ? next_visible
+                  : prev_visible;
             }
           else
             {
@@ -990,8 +971,8 @@ tracklist_move_track (
   bool        recalc_graph)
 {
   g_message (
-    "%s: %s from %d to %d",
-    __func__, track->name, track->pos, pos);
+    "%s: %s from %d to %d", __func__, track->name,
+    track->pos, pos);
 
   if (pos == track->pos)
     return;
@@ -999,28 +980,27 @@ tracklist_move_track (
   bool move_higher = pos < track->pos;
 
   Track * prev_visible =
-    tracklist_get_prev_visible_track (
-      self, track);
+    tracklist_get_prev_visible_track (self, track);
   Track * next_visible =
-    tracklist_get_next_visible_track (
-      self, track);
+    tracklist_get_next_visible_track (self, track);
 
-  int idx =
-    array_index_of (
-      self->tracks, self->num_tracks, track);
-  g_warn_if_fail (
-    track->pos == idx);
+  int idx = array_index_of (
+    self->tracks, self->num_tracks, track);
+  g_warn_if_fail (track->pos == idx);
 
-  if (tracklist_is_in_active_project (self)
-      && !tracklist_is_auditioner (self))
+  if (
+    tracklist_is_in_active_project (self)
+    && !tracklist_is_auditioner (self))
     {
       /* clear the editor region if it exists and
        * belongs to this track */
       ZRegion * region =
         clip_editor_get_region (CLIP_EDITOR);
-      if (region &&
-          arranger_object_get_track (
-            (ArrangerObject *) region) == track)
+      if (
+        region
+        && arranger_object_get_track (
+             (ArrangerObject *) region)
+             == track)
         {
           clip_editor_set_region (
             CLIP_EDITOR, NULL, publish_events);
@@ -1030,18 +1010,17 @@ tracklist_move_track (
       track_unselect_all (track);
 
       tracklist_selections_remove_track (
-        TRACKLIST_SELECTIONS, track,
-        publish_events);
+        TRACKLIST_SELECTIONS, track, publish_events);
 
       /* if it was the only track selected, select
        * the next one */
-      if (TRACKLIST_SELECTIONS->num_tracks == 0 &&
-          (prev_visible || next_visible))
+      if (
+        TRACKLIST_SELECTIONS->num_tracks == 0
+        && (prev_visible || next_visible))
         {
           tracklist_selections_add_track (
             TRACKLIST_SELECTIONS,
-            next_visible ?
-              next_visible : prev_visible,
+            next_visible ? next_visible : prev_visible,
             publish_events);
         }
     }
@@ -1069,13 +1048,13 @@ tracklist_move_track (
         }
     }
 
-  if (tracklist_is_in_active_project (self)
-      && !tracklist_is_auditioner (self))
+  if (
+    tracklist_is_in_active_project (self)
+    && !tracklist_is_auditioner (self))
     {
       /* make the track the only selected track */
       tracklist_selections_select_single (
-        TRACKLIST_SELECTIONS, track,
-        publish_events);
+        TRACKLIST_SELECTIONS, track, publish_events);
     }
 
   if (recalc_graph)
@@ -1088,8 +1067,7 @@ tracklist_move_track (
       EVENTS_PUSH (ET_TRACKS_MOVED, NULL);
     }
 
-  g_debug (
-    "%s: finished moving track", __func__);
+  g_debug ("%s: finished moving track", __func__);
 }
 
 /**
@@ -1105,9 +1083,9 @@ tracklist_track_name_is_unique (
 {
   for (int i = 0; i < self->num_tracks; i++)
     {
-      if (string_is_equal (
-            name, self->tracks[i]->name) &&
-          self->tracks[i] != track_to_skip)
+      if (
+        string_is_equal (name, self->tracks[i]->name)
+        && self->tracks[i] != track_to_skip)
         return false;
     }
   return true;
@@ -1117,8 +1095,7 @@ tracklist_track_name_is_unique (
  * Returns if the tracklist has soloed tracks.
  */
 bool
-tracklist_has_soloed (
-  const Tracklist * self)
+tracklist_has_soloed (const Tracklist * self)
 {
   Track * track;
   for (int i = 0; i < self->num_tracks; i++)
@@ -1136,8 +1113,7 @@ tracklist_has_soloed (
  */
 NONNULL
 bool
-tracklist_has_listened (
-  const Tracklist * self)
+tracklist_has_listened (const Tracklist * self)
 {
   Track * track;
   for (int i = 0; i < self->num_tracks; i++)
@@ -1159,8 +1135,9 @@ tracklist_get_num_muted_tracks (
     {
       Track * track = self->tracks[i];
 
-      if (track_type_has_channel (track->type) &&
-          track_get_muted (track))
+      if (
+        track_type_has_channel (track->type)
+        && track_get_muted (track))
         {
           count++;
         }
@@ -1178,8 +1155,9 @@ tracklist_get_num_soloed_tracks (
     {
       Track * track = self->tracks[i];
 
-      if (track_type_has_channel (track->type) &&
-          track_get_soloed (track))
+      if (
+        track_type_has_channel (track->type)
+        && track_get_soloed (track))
         {
           count++;
         }
@@ -1197,8 +1175,9 @@ tracklist_get_num_listened_tracks (
     {
       Track * track = self->tracks[i];
 
-      if (track_type_has_channel (track->type) &&
-          track_get_listened (track))
+      if (
+        track_type_has_channel (track->type)
+        && track_get_listened (track))
         {
           count++;
         }
@@ -1221,8 +1200,7 @@ tracklist_get_plugins (
   for (int i = 0; i < self->num_tracks; i++)
     {
       total +=
-        track_get_plugins (
-          self->tracks[i], arr);
+        track_get_plugins (self->tracks[i], arr);
     }
 
   return total;
@@ -1259,8 +1237,7 @@ tracklist_get_num_visible_tracks (
     {
       Track * track = self->tracks[i];
 
-      if (track_get_should_be_visible (track) ==
-            visible)
+      if (track_get_should_be_visible (track) == visible)
         ret++;
     }
 
@@ -1275,8 +1252,7 @@ tracklist_get_num_visible_tracks (
  * engine.
  */
 void
-tracklist_expose_ports_to_backend (
-  Tracklist * self)
+tracklist_expose_ports_to_backend (Tracklist * self)
 {
   g_return_if_fail (self);
 
@@ -1333,7 +1309,7 @@ tracklist_handle_file_drop (
       g_return_if_fail (uri_list);
 
       char * uri = NULL;
-      int i = 0;
+      int    i = 0;
       while ((uri = uri_list[i++]) != NULL)
         {
           /* strip "file://" */
@@ -1342,12 +1318,11 @@ tracklist_handle_file_drop (
             continue;
 
           GError * err = NULL;
-          char * filepath =
+          char *   filepath =
             g_filename_from_uri (uri, NULL, &err);
           if (err)
             {
-              g_warning (
-                "%s", err->message);
+              g_warning ("%s", err->message);
             }
 
           if (filepath)
@@ -1364,7 +1339,7 @@ tracklist_handle_file_drop (
   if (file_arr->len == 0)
     {
       ui_show_error_message (
-        MAIN_WINDOW, true, _("No file was found"));
+        MAIN_WINDOW, true, _ ("No file was found"));
 
       goto free_file_array_and_return;
     }
@@ -1375,15 +1350,13 @@ tracklist_handle_file_drop (
         g_ptr_array_index (file_arr, i);
 
       TrackType track_type = 0;
-      if (supported_file_type_is_supported (
-            file->type) &&
-          supported_file_type_is_audio (
-            file->type))
+      if (
+        supported_file_type_is_supported (file->type)
+        && supported_file_type_is_audio (file->type))
         {
           track_type = TRACK_TYPE_AUDIO;
         }
-      else if (supported_file_type_is_midi (
-                 file->type))
+      else if (supported_file_type_is_midi (file->type))
         {
           track_type = TRACK_TYPE_MIDI;
         }
@@ -1392,10 +1365,8 @@ tracklist_handle_file_drop (
           char * descr =
             supported_file_type_get_description (
               file->type);
-          char * msg =
-            g_strdup_printf (
-              _("Unsupported file type %s"),
-              descr);
+          char * msg = g_strdup_printf (
+            _ ("Unsupported file type %s"), descr);
           g_free (descr);
           ui_show_error_message (
             MAIN_WINDOW, true, msg);
@@ -1416,8 +1387,8 @@ tracklist_handle_file_drop (
                 {
                   ui_show_error_message (
                     MAIN_WINDOW, true,
-                    _("This MIDI file contains "
-                    "no data"));
+                    _ ("This MIDI file contains "
+                       "no data"));
                 }
               goto free_file_array_and_return;
             }
@@ -1433,21 +1404,22 @@ tracklist_handle_file_drop (
                 {
                   ui_show_error_message (
                     MAIN_WINDOW, true,
-                    _("Can only drop 1 file at a "
-                    "time on existing tracks"));
+                    _ ("Can only drop 1 file at a "
+                       "time on existing tracks"));
                   goto free_file_array_and_return;
                 }
 
               if (track_type == TRACK_TYPE_MIDI)
                 {
-                  if (track->type != TRACK_TYPE_MIDI &&
-                      track->type !=
-                        TRACK_TYPE_INSTRUMENT)
+                  if (
+                    track->type != TRACK_TYPE_MIDI
+                    && track->type
+                         != TRACK_TYPE_INSTRUMENT)
                     {
                       ui_show_error_message (
                         MAIN_WINDOW, true,
-                        _("Can only drop MIDI files on "
-                        "MIDI/instrument tracks"));
+                        _ ("Can only drop MIDI files on "
+                           "MIDI/instrument tracks"));
                       goto free_file_array_and_return;
                     }
 
@@ -1456,29 +1428,34 @@ tracklist_handle_file_drop (
                       char msg[600];
                       sprintf (
                         msg,
-                        _("This MIDI file contains %d "
-                        "tracks. It cannot be dropped "
-                        "into an existing track"),
+                        _ (
+                          "This MIDI file contains %d "
+                          "tracks. It cannot be dropped "
+                          "into an existing track"),
                         num_nonempty_midi_tracks);
                       ui_show_error_message (
                         MAIN_WINDOW, true, msg);
                       goto free_file_array_and_return;
                     }
                 }
-              else if (track_type == TRACK_TYPE_AUDIO &&
-                  track->type != TRACK_TYPE_AUDIO)
+              else if (
+                track_type == TRACK_TYPE_AUDIO
+                && track->type != TRACK_TYPE_AUDIO)
                 {
                   ui_show_error_message (
                     MAIN_WINDOW, true,
-                    _("Can only drop audio files on "
-                    "audio tracks"));
+                    _ ("Can only drop audio files on "
+                       "audio tracks"));
                   goto free_file_array_and_return;
                 }
 
               int lane_pos =
-                lane ? lane->pos :
-                (track->num_lanes == 1 ?
-                 0 : track->num_lanes - 2);
+                lane
+                  ? lane->pos
+                  : (
+                    track->num_lanes == 1
+                      ? 0
+                      : track->num_lanes - 2);
               int idx_in_lane =
                 track->lanes[lane_pos]->num_regions;
               ZRegion * region = NULL;
@@ -1487,14 +1464,11 @@ tracklist_handle_file_drop (
                 case TRACK_TYPE_AUDIO:
                   /* create audio region in audio
                    * track */
-                  region =
-                    audio_region_new (
-                      -1, file->abs_path, true, NULL,
-                      0, NULL,
-                      0, 0, pos,
-                      track_get_name_hash (track),
-                      lane_pos,
-                      idx_in_lane);
+                  region = audio_region_new (
+                    -1, file->abs_path, true, NULL,
+                    0, NULL, 0, 0, pos,
+                    track_get_name_hash (track),
+                    lane_pos, idx_in_lane);
                   break;
                 case TRACK_TYPE_MIDI:
                   region =
@@ -1514,19 +1488,19 @@ tracklist_handle_file_drop (
                     F_GEN_NAME, F_PUBLISH_EVENTS);
                   arranger_object_select (
                     (ArrangerObject *) region,
-                    F_SELECT,
-                    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+                    F_SELECT, F_NO_APPEND,
+                    F_NO_PUBLISH_EVENTS);
 
                   GError * err = NULL;
-                  bool ret =
+                  bool     ret =
                     arranger_selections_action_perform_create (
                       TL_SELECTIONS, &err);
                   if (!ret)
                     {
                       HANDLE_ERROR (
                         err, "%s",
-                        _("Failed to create arranger "
-                        "objects"));
+                        _ ("Failed to create arranger "
+                           "objects"));
                     }
                 }
               else
@@ -1539,10 +1513,9 @@ tracklist_handle_file_drop (
           else /* else if no track given */
             {
               GError * err = NULL;
-              bool ret =
-                track_create_with_action (
-                  track_type, NULL, file, pos,
-                  self->num_tracks, 1, &err);
+              bool ret = track_create_with_action (
+                track_type, NULL, file, pos,
+                self->num_tracks, 1, &err);
               if (ret)
                 {
                   UndoableAction * ua =
@@ -1554,7 +1527,7 @@ tracklist_handle_file_drop (
                 {
                   HANDLE_ERROR (
                     err, "%s",
-                    _("Failed to create track"));
+                    _ ("Failed to create track"));
                   goto free_file_array_and_return;
                 }
             }
@@ -1574,29 +1547,27 @@ free_file_array_and_return:
 static void
 move_after_copying_or_moving_inside (
   TracklistSelections * after_tls,
-  int  diff_between_track_below_and_parent)
+  int diff_between_track_below_and_parent)
 {
   Track * lowest_cloned_track =
-    tracklist_selections_get_lowest_track (
-      after_tls);
+    tracklist_selections_get_lowest_track (after_tls);
   int lowest_cloned_track_pos =
     lowest_cloned_track->pos;
 
   GError * err = NULL;
-  bool ret =
-    tracklist_selections_action_perform_move (
-      after_tls, PORT_CONNECTIONS_MGR,
-      lowest_cloned_track_pos +
-        diff_between_track_below_and_parent,
-      &err);
+  bool ret = tracklist_selections_action_perform_move (
+    after_tls, PORT_CONNECTIONS_MGR,
+    lowest_cloned_track_pos
+      + diff_between_track_below_and_parent,
+    &err);
   object_free_w_func_and_null (
     tracklist_selections_free, after_tls);
   if (!ret)
     {
       HANDLE_ERROR (
         err, "%s",
-        _("Failed to move tracks after "
-        "copying or moving inside folder"));
+        _ ("Failed to move tracks after "
+           "copying or moving inside folder"));
       return;
     }
   UndoableAction * ua =
@@ -1639,8 +1610,8 @@ tracklist_handle_move_or_copy (
       if (next)
         pos = next->pos;
       /* else if last track, move to end */
-      else if (this_track->pos ==
-                 TRACKLIST->num_tracks - 1)
+      else if (
+        this_track->pos == TRACKLIST->num_tracks - 1)
         pos = TRACKLIST->num_tracks;
       /* else if last visible track but not last
        * track */
@@ -1668,16 +1639,16 @@ tracklist_handle_move_or_copy (
       if (location == TRACK_WIDGET_HIGHLIGHT_INSIDE)
         {
           GError * err = NULL;
-          bool ret =
+          bool     ret =
             tracklist_selections_action_perform_copy_inside (
               TRACKLIST_SELECTIONS,
-              PORT_CONNECTIONS_MGR,
-              this_track->pos, &err);
+              PORT_CONNECTIONS_MGR, this_track->pos,
+              &err);
           if (!ret)
             {
               HANDLE_ERROR (
                 err, "%s",
-                _("Failed to copy tracks inside"));
+                _ ("Failed to copy tracks inside"));
               return;
             }
         }
@@ -1706,27 +1677,26 @@ tracklist_handle_move_or_copy (
               if (track_below_parent)
                 {
                   diff_between_track_below_and_parent =
-                    track_below->pos -
-                      track_below_parent->pos;
+                    track_below->pos
+                    - track_below_parent->pos;
                 }
 
               /* first copy inside new parent */
-              if (track_below_parent &&
-                  track_below_parent != cur_parent)
+              if (
+                track_below_parent
+                && track_below_parent != cur_parent)
                 {
                   GError * err = NULL;
-                  bool ret =
+                  bool     ret =
                     tracklist_selections_action_perform_copy_inside (
-                      tls,
-                      PORT_CONNECTIONS_MGR,
-                      track_below_parent->pos,
-                      &err);
+                      tls, PORT_CONNECTIONS_MGR,
+                      track_below_parent->pos, &err);
                   if (!ret)
                     {
                       HANDLE_ERROR (
                         err, "%s",
-                        _("Failed to copy track "
-                        "inside"));
+                        _ ("Failed to copy track "
+                           "inside"));
                       return;
                     }
 
@@ -1736,18 +1706,17 @@ tracklist_handle_move_or_copy (
                   for (int j = 1; j <= num_tls; j++)
                     {
                       err = NULL;
-                      Track * clone_tr =
-                        track_clone (
-                          TRACKLIST->tracks[
-                            track_below_parent->pos +
-                              j],
-                          &err);
+                      Track * clone_tr = track_clone (
+                        TRACKLIST->tracks
+                          [track_below_parent->pos
+                           + j],
+                        &err);
                       if (!clone_tr)
                         {
                           HANDLE_ERROR (
                             err, "%s",
-                            _("Failed to clone "
-                            "track"));
+                            _ ("Failed to clone "
+                               "track"));
                           return;
                         }
                       tracklist_selections_add_track (
@@ -1763,23 +1732,22 @@ tracklist_handle_move_or_copy (
           if (!copied_inside)
             {
               GError * err = NULL;
-              bool ret =
+              bool     ret =
                 tracklist_selections_action_perform_copy (
-                  tls, PORT_CONNECTIONS_MGR,
-                  pos, &err);
+                  tls, PORT_CONNECTIONS_MGR, pos,
+                  &err);
               if (!ret)
                 {
                   HANDLE_ERROR (
                     err, "%s",
-                    _("Failed to copy tracks"));
+                    _ ("Failed to copy tracks"));
                   return;
                 }
             }
           /* else if copied inside and there is
            * a track difference, also move */
           else if (
-            diff_between_track_below_and_parent !=
-              0)
+            diff_between_track_below_and_parent != 0)
             {
               move_after_copying_or_moving_inside (
                 after_tls,
@@ -1798,8 +1766,8 @@ tracklist_handle_move_or_copy (
                 {
                   ui_show_error_message (
                     MAIN_WINDOW, true,
-                    _("Cannot drag folder into "
-                    "itself"));
+                    _ ("Cannot drag folder into "
+                       "itself"));
                 }
               return;
             }
@@ -1808,7 +1776,7 @@ tracklist_handle_move_or_copy (
           else
             {
               GError * err = NULL;
-              bool ret =
+              bool     ret =
                 tracklist_selections_action_perform_move_inside (
                   TRACKLIST_SELECTIONS,
                   PORT_CONNECTIONS_MGR,
@@ -1817,8 +1785,8 @@ tracklist_handle_move_or_copy (
                 {
                   HANDLE_ERROR (
                     err, "%s",
-                    _("Failed to move track "
-                    "inside folder"));
+                    _ ("Failed to move track "
+                       "inside folder"));
                   return;
                 }
             }
@@ -1848,27 +1816,26 @@ tracklist_handle_move_or_copy (
               if (track_below_parent)
                 {
                   diff_between_track_below_and_parent =
-                    track_below->pos -
-                      track_below_parent->pos;
+                    track_below->pos
+                    - track_below_parent->pos;
                 }
 
               /* first move inside new parent */
-              if (track_below_parent &&
-                  track_below_parent != cur_parent)
+              if (
+                track_below_parent
+                && track_below_parent != cur_parent)
                 {
                   GError * err = NULL;
-                  bool ret =
+                  bool     ret =
                     tracklist_selections_action_perform_move_inside (
-                      tls,
-                      PORT_CONNECTIONS_MGR,
-                      track_below_parent->pos,
-                      &err);
+                      tls, PORT_CONNECTIONS_MGR,
+                      track_below_parent->pos, &err);
                   if (!ret)
                     {
                       HANDLE_ERROR (
                         err, "%s",
-                        _("Failed to move track "
-                        "inside folder"));
+                        _ ("Failed to move track "
+                           "inside folder"));
                       return;
                     }
 
@@ -1878,18 +1845,17 @@ tracklist_handle_move_or_copy (
                   for (int j = 1; j <= num_tls; j++)
                     {
                       err = NULL;
-                      Track * clone_tr =
-                        track_clone (
-                          TRACKLIST->tracks[
-                            track_below_parent->pos +
-                              j],
-                          &err);
+                      Track * clone_tr = track_clone (
+                        TRACKLIST->tracks
+                          [track_below_parent->pos
+                           + j],
+                        &err);
                       if (!clone_tr)
                         {
                           HANDLE_ERROR (
                             err, "%s",
-                            _("Failed to clone "
-                            "track"));
+                            _ ("Failed to clone "
+                               "track"));
                           return;
                         }
                       tracklist_selections_add_track (
@@ -1905,23 +1871,22 @@ tracklist_handle_move_or_copy (
           if (!moved_inside)
             {
               GError * err = NULL;
-              bool ret =
+              bool     ret =
                 tracklist_selections_action_perform_move (
-                  tls, PORT_CONNECTIONS_MGR,
-                  pos, &err);
+                  tls, PORT_CONNECTIONS_MGR, pos,
+                  &err);
               if (!ret)
                 {
                   HANDLE_ERROR (
                     err, "%s",
-                    _("Failed to move tracks"));
+                    _ ("Failed to move tracks"));
                   return;
                 }
             }
           /* else if moved inside and there is
            * a track difference, also move */
           else if (
-            diff_between_track_below_and_parent !=
-              0)
+            diff_between_track_below_and_parent != 0)
             {
               move_after_copying_or_moving_inside (
                 after_tls,
@@ -1961,8 +1926,7 @@ tracklist_get_total_bars (
 }
 
 void
-tracklist_set_caches (
-  Tracklist * self)
+tracklist_set_caches (Tracklist * self)
 {
   for (int i = 0; i < self->num_tracks; i++)
     {
@@ -1978,8 +1942,7 @@ tracklist_set_caches (
  *   tracklist of the project in use.
  */
 Tracklist *
-tracklist_clone (
-  Tracklist * src)
+tracklist_clone (Tracklist * src)
 {
   Tracklist * self = object_new (Tracklist);
   self->schema_version = TRACKLIST_SCHEMA_VERSION;
@@ -1990,10 +1953,9 @@ tracklist_clone (
   self->num_tracks = src->num_tracks;
   for (int i = 0; i < src->num_tracks; i++)
     {
-      Track * track = src->tracks[i];
+      Track *  track = src->tracks[i];
       GError * err = NULL;
-      self->tracks[i] =
-        track_clone (track, &err);
+      self->tracks[i] = track_clone (track, &err);
       g_return_val_if_fail (self->tracks[i], NULL);
     }
 
@@ -2019,8 +1981,7 @@ tracklist_new (
 }
 
 void
-tracklist_free (
-  Tracklist * self)
+tracklist_free (Tracklist * self)
 {
   g_message ("%s: freeing...", __func__);
 
@@ -2042,8 +2003,7 @@ tracklist_free (
   if (self->tempo_track)
     {
       tracklist_remove_track (
-        self, self->tempo_track, F_REMOVE_PL,
-        F_FREE,
+        self, self->tempo_track, F_REMOVE_PL, F_FREE,
         F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
       self->tempo_track = NULL;
     }

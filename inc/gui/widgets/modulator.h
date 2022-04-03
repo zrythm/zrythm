@@ -32,7 +32,7 @@
 #include <gtk/gtk.h>
 
 typedef struct _ModulatorInnerWidget
-  ModulatorInnerWidget;
+                         ModulatorInnerWidget;
 typedef struct Modulator Modulator;
 
 /**
@@ -46,7 +46,8 @@ typedef struct Modulator Modulator;
 G_DECLARE_FINAL_TYPE (
   ModulatorWidget,
   modulator_widget,
-  Z, MODULATOR_WIDGET,
+  Z,
+  MODULATOR_WIDGET,
   TwoColExpanderBoxWidget)
 
 /**
@@ -54,21 +55,19 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _ModulatorWidget
 {
-  TwoColExpanderBoxWidget  parent_instance;
+  TwoColExpanderBoxWidget parent_instance;
 
   ModulatorInnerWidget * inner;
 
   /** Pointer back to the Modulator. */
-  Plugin *          modulator;
+  Plugin * modulator;
 } ModulatorWidget;
 
 void
-modulator_widget_refresh (
-  ModulatorWidget * self);
+modulator_widget_refresh (ModulatorWidget * self);
 
 ModulatorWidget *
-modulator_widget_new (
-  Plugin * modulator);
+modulator_widget_new (Plugin * modulator);
 
 /**
  * @}

@@ -18,15 +18,16 @@
  */
 
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/timeline_bot_box.h"
-#include "gui/widgets/main_window.h"
 #include "gui/widgets/left_dock_edge.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/timeline_bot_box.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "utils/resources.h"
 
-G_DEFINE_TYPE (TimelineBotBoxWidget,
-               timeline_bot_box_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  TimelineBotBoxWidget,
+  timeline_bot_box_widget,
+  GTK_TYPE_BOX)
 
 static void
 timeline_bot_box_widget_init (
@@ -41,13 +42,11 @@ timeline_bot_box_widget_init (
     self->instrument_add, "add");
 }
 
-
 static void
 timeline_bot_box_widget_class_init (
   TimelineBotBoxWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "timeline_bot_box.ui");
 
@@ -56,9 +55,7 @@ timeline_bot_box_widget_class_init (
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, \
-    TimelineBotBoxWidget, \
-    x)
+    klass, TimelineBotBoxWidget, x)
 
   BIND_CHILD (left_tb);
   BIND_CHILD (instrument_add);

@@ -58,12 +58,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "zrythm-config.h"
 
 #ifndef _WOE32
-#include <sys/resource.h>
+#  include <sys/resource.h>
 #endif
 
 #if !defined _WOE32 && defined __GLIBC__
-#include <limits.h>
-#include <dlfcn.h>
+#  include <dlfcn.h>
+#  include <limits.h>
 #endif
 
 #include "audio/engine.h"
@@ -79,7 +79,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "zrythm_app.h"
 
 #ifdef HAVE_JACK
-#include "weak_libjack.h"
+#  include "weak_libjack.h"
 #endif
 
 #include <glib/gi18n.h>
@@ -92,8 +92,8 @@ static void *
 worker_thread (void * arg)
 {
   GraphThread * thread = (GraphThread *) arg;
-  Graph * graph = thread->graph;
-  GraphNode* to_run = NULL;
+  Graph *       graph = thread->graph;
+  GraphNode *   to_run = NULL;
 
   /* initialize data for g_thread_self so no
    * allocation is done later on */
@@ -153,21 +153,18 @@ worker_thread (void * arg)
            * threads.
            * This thread as not yet decreased
            * _trigger_queue_size. */
-          guint idle_cnt =
-            (guint)
-            g_atomic_int_get (
-              &graph->idle_thread_cnt);
+          guint idle_cnt = (guint) g_atomic_int_get (
+            &graph->idle_thread_cnt);
           guint work_avail =
-            (guint)
-            g_atomic_int_get (
+            (guint) g_atomic_int_get (
               &graph->trigger_queue_size);
           guint wakeup =
             MIN (idle_cnt + 1, work_avail);
 #ifdef DEBUG_THREADS
           g_message (
             "[%d]: Waking up %u idle threads (idle count %u), work available -> %u",
-            thread->id, wakeup - 1,
-            idle_cnt, work_avail);
+            thread->id, wakeup - 1, idle_cnt,
+            work_avail);
 #endif
 
           for (guint i = 1; i < wakeup; ++i)
@@ -179,11 +176,9 @@ worker_thread (void * arg)
       while (!to_run)
         {
           /* wait for work, fall asleep */
-          g_atomic_int_inc (
+          g_atomic_int_inc (&graph->idle_thread_cnt);
+          int idle_thread_cnt = g_atomic_int_get (
             &graph->idle_thread_cnt);
-          int idle_thread_cnt =
-            g_atomic_int_get (
-              &graph->idle_thread_cnt);
 #ifdef DEBUG_THREADS
           g_message (
             "[%d]: no node to run. just increased "
@@ -223,8 +218,7 @@ worker_thread (void * arg)
 
           /* try to find some work to do */
           mpmc_queue_dequeue_node (
-            graph->trigger_queue,
-            &to_run);
+            graph->trigger_queue, &to_run);
         }
 
       /* process graph-node */
@@ -254,12 +248,12 @@ static void *
 main_thread (void * arg)
 {
   GraphThread * thread = (GraphThread *) arg;
-  Graph * self = thread->graph;
+  Graph *       self = thread->graph;
 
   /* Wait until all worker threads are active */
   while (
-    g_atomic_int_get (&self->idle_thread_cnt) !=
-      self->num_threads)
+    g_atomic_int_get (&self->idle_thread_cnt)
+    != self->num_threads)
     {
       sched_yield ();
     }
@@ -281,8 +275,7 @@ main_thread (void * arg)
   /* bootstrap trigger-list.
    * (later this is done by
    * Graph_reached_terminal_node)*/
-  for (size_t i = 0;
-       i < self->n_init_triggers; ++i)
+  for (size_t i = 0; i < self->n_init_triggers; ++i)
     {
       g_atomic_int_inc (&self->trigger_queue_size);
       /*g_message ("[main] pushing back node %d during bootstrap", i);*/
@@ -304,11 +297,11 @@ get_stack_size (void)
 
   size_t pt_min_stack = 16384;
 
-#ifdef PTHREAD_STACK_MIN
+#  ifdef PTHREAD_STACK_MIN
   pt_min_stack = PTHREAD_STACK_MIN;
-#endif
+#  endif
 
-  void* handle = dlopen (NULL, RTLD_LAZY);
+  void * handle = dlopen (NULL, RTLD_LAZY);
 
   /* This function is internal (it has a GLIBC_PRIVATE) version, but
    * available via weak symbol, or dlsym, and returns
@@ -316,17 +309,20 @@ get_stack_size (void)
    * GLRO(dl_pagesize) + __static_tls_size + PTHREAD_STACK_MIN
    */
 
-  size_t (*__pthread_get_minstack) (const pthread_attr_t* attr) =
-      (size_t (*) (const pthread_attr_t*))dlsym (handle, "__pthread_get_minstack");
+  size_t (*__pthread_get_minstack) (
+    const pthread_attr_t * attr) =
+    (size_t (*) (const pthread_attr_t *)) dlsym (
+      handle, "__pthread_get_minstack");
 
-  if (__pthread_get_minstack != NULL) {
-    pthread_attr_t attr;
-    pthread_attr_init (&attr);
-    rv = __pthread_get_minstack (&attr);
-    g_return_val_if_fail (rv >= pt_min_stack, 0);
-    rv -= pt_min_stack;
-    pthread_attr_destroy (&attr);
-  }
+  if (__pthread_get_minstack != NULL)
+    {
+      pthread_attr_t attr;
+      pthread_attr_init (&attr);
+      rv = __pthread_get_minstack (&attr);
+      g_return_val_if_fail (rv >= pt_min_stack, 0);
+      rv -= pt_min_stack;
+      pthread_attr_destroy (&attr);
+    }
   dlclose (handle);
 #endif
   return rv;
@@ -338,17 +334,17 @@ get_stack_size (void)
  * 0 if not enough permissions to set the priority.
  */
 static int
-get_absolute_rt_priority (
-  int priority)
+get_absolute_rt_priority (int priority)
 {
   /* POSIX requires a spread of at least 32 steps
    * between min..max */
   const int p_min =
     sched_get_priority_min (SCHED_FIFO); // Linux: 1
-  const int p_max =
-    sched_get_priority_max (SCHED_FIFO); // Linux: 99
-  g_debug ("min %d max %d requested %d",
-    p_min, p_max, priority);
+  const int p_max = sched_get_priority_max (
+    SCHED_FIFO); // Linux: 99
+  g_debug (
+    "min %d max %d requested %d", p_min, p_max,
+    priority);
 
   if (priority == 0)
     {
@@ -421,25 +417,25 @@ graph_thread_new (
   pthread_attr_init (&attributes);
   int res;
 
-  res =
-    pthread_attr_setdetachstate (
-      &attributes, PTHREAD_CREATE_JOINABLE);
+  res = pthread_attr_setdetachstate (
+    &attributes, PTHREAD_CREATE_JOINABLE);
   if (res)
     {
       g_critical (
         "Cannot request joinable thread creation "
-        "for thread res = %d", res);
+        "for thread res = %d",
+        res);
       return NULL;
     }
 
-  res =
-    pthread_attr_setscope (
-      &attributes, PTHREAD_SCOPE_SYSTEM);
+  res = pthread_attr_setscope (
+    &attributes, PTHREAD_SCOPE_SYSTEM);
   if (res)
     {
       g_critical (
         "Cannot set scheduling scope for thread "
-        "res = %d", res);
+        "res = %d",
+        res);
       return NULL;
     }
 
@@ -447,29 +443,28 @@ graph_thread_new (
 
   int priority = -22; /* RT priority (from ardour) */
 #ifdef HAVE_JACK
-  if (AUDIO_ENGINE->audio_backend ==
-        AUDIO_BACKEND_JACK)
+  if (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK)
     {
       realtime =
         jack_is_realtime (AUDIO_ENGINE->client);
       int jack_priority =
         jack_client_real_time_priority (
           AUDIO_ENGINE->client);
-      g_debug ("JACK thread priority: %d",
-        jack_priority);
+      g_debug (
+        "JACK thread priority: %d", jack_priority);
       priority = jack_priority - 2;
       (void) priority;
     }
 #endif
 
-  res =
-    pthread_attr_setinheritsched (
-      &attributes, PTHREAD_EXPLICIT_SCHED);
+  res = pthread_attr_setinheritsched (
+    &attributes, PTHREAD_EXPLICIT_SCHED);
   if (res)
     {
       g_critical (
         "Cannot request explicit scheduling "
-        "res = %d", res);
+        "res = %d",
+        res);
       return NULL;
     }
 
@@ -483,14 +478,14 @@ graph_thread_new (
         {
           /* this throws error on windows:
            * res = 129 */
-          res =
-            pthread_attr_setschedpolicy (
-              &attributes, SCHED_FIFO);
+          res = pthread_attr_setschedpolicy (
+            &attributes, SCHED_FIFO);
           if (res)
             {
               g_critical (
                 "Cannot set RR scheduling class "
-                "for RT thread res = %d", res);
+                "for RT thread res = %d",
+                res);
               return NULL;
             }
           struct sched_param rt_param;
@@ -498,14 +493,14 @@ graph_thread_new (
           rt_param.sched_priority = priority;
           g_debug ("priority: %d", priority);
 
-          res =
-            pthread_attr_setschedparam (
-              &attributes, &rt_param);
+          res = pthread_attr_setschedparam (
+            &attributes, &rt_param);
           if (res)
             {
               g_critical (
                 "Cannot set scheduling priority for RT "
-                "thread res = %d", res);
+                "thread res = %d",
+                res);
               return NULL;
             }
         }
@@ -513,16 +508,16 @@ graph_thread_new (
         is_main && ZRYTHM_HAVE_UI && !ZRYTHM_TESTING
         && !zrythm_app->rt_priority_message_shown)
         {
-          char * str =
-            g_strdup_printf (
-              _("Your user does not have "
+          char * str = g_strdup_printf (
+            _ (
+              "Your user does not have "
               "enough privileges to allow %s "
               "to set the scheduling priority "
               "of threads. Please refer to "
               "the 'Getting Started' "
               "section in the "
               "user manual for details."),
-              PROGRAM_NAME);
+            PROGRAM_NAME);
           ZrythmAppUiMessage * ui_msg =
             zrythm_app_ui_message_new (
               GTK_MESSAGE_WARNING, str);
@@ -537,15 +532,14 @@ graph_thread_new (
 #endif /* __linux__ */
 
 #ifdef __APPLE__
-#define THREAD_STACK_SIZE 0x80000 // 512kB
+#  define THREAD_STACK_SIZE 0x80000 // 512kB
 #else
-#define THREAD_STACK_SIZE 0x20000 // 128kB
+#  define THREAD_STACK_SIZE 0x20000 // 128kB
 #endif
 
-  res =
-    pthread_attr_setstacksize (
-      &attributes,
-      THREAD_STACK_SIZE + get_stack_size ());
+  res = pthread_attr_setstacksize (
+    &attributes,
+    THREAD_STACK_SIZE + get_stack_size ());
   if (res)
     {
       g_critical (
@@ -554,16 +548,14 @@ graph_thread_new (
       return NULL;
     }
 
-  res =
-    pthread_create (
-      &self->pthread, &attributes,
-      is_main ? &main_thread : &worker_thread,
-      self);
+  res = pthread_create (
+    &self->pthread, &attributes,
+    is_main ? &main_thread : &worker_thread, self);
   if (res)
     {
       g_critical (
-        "Cannot create thread res = %d (%s)",
-        res, strerror (res));
+        "Cannot create thread res = %d (%s)", res,
+        strerror (res));
       return NULL;
     }
 

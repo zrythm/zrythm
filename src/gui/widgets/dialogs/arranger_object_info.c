@@ -24,8 +24,8 @@
 #include "utils/resources.h"
 #include "utils/ui.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   ArrangerObjectInfoDialogWidget,
@@ -39,7 +39,7 @@ set_values (
 {
   self->obj = obj;
 
-  char tmp[600];
+  char         tmp[600];
   const char * name = arranger_object_get_name (obj);
   if (name)
     {
@@ -106,7 +106,7 @@ arranger_object_info_dialog_widget_init (
   gtk_widget_init_template (GTK_WIDGET (self));
 
   gtk_window_set_title (
-    GTK_WINDOW (self), _("Arranger object info"));
+    GTK_WINDOW (self), _ ("Arranger object info"));
   gtk_window_set_icon_name (
     GTK_WINDOW (self), "zrythm");
 }

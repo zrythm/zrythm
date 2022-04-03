@@ -39,7 +39,7 @@ G_DEFINE_TYPE (
 
 static void
 on_midi_channels_changed (
-  GtkComboBox * widget,
+  GtkComboBox *              widget,
   TrackInputExpanderWidget * self)
 {
   const char * id =
@@ -76,9 +76,7 @@ on_midi_channels_changed (
       char * str;
       for (int i = 0; i < 16; i++)
         {
-          str =
-            g_strdup_printf (
-              "%d", i + 1);
+          str = g_strdup_printf ("%d", i + 1);
           if (string_is_equal (str, id))
             {
               ch->midi_channels[i] = 1;
@@ -135,8 +133,7 @@ on_ext_input_changed (
         {
           ch->all_midi_ins = 0;
           ext_ports_free (
-            ch->ext_midi_ins,
-            ch->num_ext_midi_ins);
+            ch->ext_midi_ins, ch->num_ext_midi_ins);
           ch->num_ext_midi_ins = 0;
         }
       else if (left)
@@ -161,8 +158,7 @@ on_ext_input_changed (
       if (midi)
         {
           ext_ports_free (
-            ch->ext_midi_ins,
-            ch->num_ext_midi_ins);
+            ch->ext_midi_ins, ch->num_ext_midi_ins);
           ch->all_midi_ins = 0;
         }
       else if (left)
@@ -189,9 +185,9 @@ on_ext_input_changed (
            i++)
         {
           ExtPort * port =
-            midi?
-              HW_IN_PROCESSOR->ext_midi_ports[i] :
-              HW_IN_PROCESSOR->ext_audio_ports[i];
+            midi
+              ? HW_IN_PROCESSOR->ext_midi_ports[i]
+              : HW_IN_PROCESSOR->ext_audio_ports[i];
 
           char * port_id = ext_port_get_id (port);
           if (string_is_equal (port_id, id))
@@ -224,7 +220,7 @@ on_ext_input_changed (
 
 static void
 on_midi_input_changed (
-  GtkComboBox * widget,
+  GtkComboBox *              widget,
   TrackInputExpanderWidget * self)
 {
   on_ext_input_changed (self, widget, 1, 0);
@@ -232,7 +228,7 @@ on_midi_input_changed (
 
 static void
 on_stereo_l_input_changed (
-  GtkComboBox * widget,
+  GtkComboBox *              widget,
   TrackInputExpanderWidget * self)
 {
   on_ext_input_changed (self, widget, 0, 1);
@@ -240,7 +236,7 @@ on_stereo_l_input_changed (
 
 static void
 on_stereo_r_input_changed (
-  GtkComboBox * widget,
+  GtkComboBox *              widget,
   TrackInputExpanderWidget * self)
 {
   on_ext_input_changed (self, widget, 0, 0);
@@ -248,15 +244,15 @@ on_stereo_r_input_changed (
 
 static int
 row_separator_func (
-  GtkTreeModel *model,
-  GtkTreeIter *iter,
+  GtkTreeModel *             model,
+  GtkTreeIter *              iter,
   TrackInputExpanderWidget * self)
 {
   GValue a = G_VALUE_INIT;
   /*g_value_init (&a, G_TYPE_STRING);*/
   gtk_tree_model_get_value (model, iter, 0, &a);
   const char * val = g_value_get_string (&a);
-  int ret;
+  int          ret;
   if (val && string_is_equal (val, "separator"))
     ret = 1;
   else
@@ -292,15 +288,15 @@ setup_ext_ins_cb (
 
   if (midi)
     gtk_combo_box_text_append (
-      GTK_COMBO_BOX_TEXT (cb),
-      "all", _("All MIDI Inputs"));
+      GTK_COMBO_BOX_TEXT (cb), "all",
+      _ ("All MIDI Inputs"));
   else
     gtk_combo_box_text_append (
-      GTK_COMBO_BOX_TEXT (cb),
-      "all", _("All Audio Inputs"));
+      GTK_COMBO_BOX_TEXT (cb), "all",
+      _ ("All Audio Inputs"));
   gtk_combo_box_text_append (
-    GTK_COMBO_BOX_TEXT (cb),
-    "separator", "separator");
+    GTK_COMBO_BOX_TEXT (cb), "separator",
+    "separator");
 
   /* get all inputs */
   for (int i = 0;
@@ -311,9 +307,8 @@ setup_ext_ins_cb (
        i++)
     {
       ExtPort * port =
-        midi?
-          HW_IN_PROCESSOR->ext_midi_ports[i] :
-          HW_IN_PROCESSOR->ext_audio_ports[i];
+        midi ? HW_IN_PROCESSOR->ext_midi_ports[i]
+             : HW_IN_PROCESSOR->ext_audio_ports[i];
 
       char * label;
       if (port->num_aliases == 2)
@@ -332,44 +327,38 @@ setup_ext_ins_cb (
 
       char * port_id = ext_port_get_id (port);
       gtk_combo_box_text_append (
-        GTK_COMBO_BOX_TEXT (cb),
-        port_id, label);
+        GTK_COMBO_BOX_TEXT (cb), port_id, label);
       g_free (port_id);
     }
 
   gtk_combo_box_text_append (
-    GTK_COMBO_BOX_TEXT (cb),
-    "separator", "separator");
+    GTK_COMBO_BOX_TEXT (cb), "separator",
+    "separator");
   if (midi)
     {
       gtk_combo_box_text_append (
-        GTK_COMBO_BOX_TEXT (cb),
-        "none", _("No inputs"));
+        GTK_COMBO_BOX_TEXT (cb), "none",
+        _ ("No inputs"));
       gtk_widget_set_tooltip_text (
         GTK_WIDGET (cb),
-        _("MIDI inputs for recording"));
+        _ ("MIDI inputs for recording"));
     }
   else
     {
       gtk_combo_box_text_append (
-        GTK_COMBO_BOX_TEXT (cb),
-        "none",
-        left ?
-          _("No left input") :
-          _("No right input"));
-      char * str =
-        g_strdup_printf (
-          _("Audio input (%s) for recording"),
-          /* TRANSLATORS: Left and Right */
-          left ? _("L") : _("R"));
+        GTK_COMBO_BOX_TEXT (cb), "none",
+        left ? _ ("No left input")
+             : _ ("No right input"));
+      char * str = g_strdup_printf (
+        _ ("Audio input (%s) for recording"),
+        /* TRANSLATORS: Left and Right */
+        left ? _ ("L") : _ ("R"));
       gtk_widget_set_tooltip_text (
-        GTK_WIDGET (cb),
-        str);
+        GTK_WIDGET (cb), str);
       g_free (str);
     }
 
-  gtk_widget_set_visible (
-    GTK_WIDGET (cb), 1);
+  gtk_widget_set_visible (GTK_WIDGET (cb), 1);
 
   GValue a = G_VALUE_INIT;
   g_value_init (&a, G_TYPE_STRING);
@@ -398,9 +387,8 @@ setup_ext_ins_cb (
         g_value_set_string (&a, "none");
       else
         {
-          char * port_id =
-            ext_port_get_id (
-              ch->ext_stereo_l_ins[0]);
+          char * port_id = ext_port_get_id (
+            ch->ext_stereo_l_ins[0]);
           g_value_set_string (&a, port_id);
           g_free (port_id);
         }
@@ -413,17 +401,14 @@ setup_ext_ins_cb (
         g_value_set_string (&a, "none");
       else
         {
-          char * port_id =
-            ext_port_get_id (
-              ch->ext_stereo_r_ins[0]);
+          char * port_id = ext_port_get_id (
+            ch->ext_stereo_r_ins[0]);
           g_value_set_string (&a, port_id);
           g_free (port_id);
         }
     }
   g_object_set_property (
-    G_OBJECT (cb),
-    "active-id",
-    &a);
+    G_OBJECT (cb), "active-id", &a);
 
   g_value_unset (&a);
 }
@@ -438,35 +423,33 @@ setup_midi_channels_cb (
     GTK_COMBO_BOX_TEXT (cb));
 
   gtk_combo_box_text_append (
-    GTK_COMBO_BOX_TEXT (cb),
-    "all", _("All Channels"));
+    GTK_COMBO_BOX_TEXT (cb), "all",
+    _ ("All Channels"));
   gtk_combo_box_text_append (
-    GTK_COMBO_BOX_TEXT (cb),
-    "separator", "separator");
+    GTK_COMBO_BOX_TEXT (cb), "separator",
+    "separator");
 
-  char * id, * lbl;
+  char *id, *lbl;
   for (int i = 0; i < 16; i++)
     {
       id = g_strdup_printf ("%d", i + 1);
-      lbl = g_strdup_printf (_("Channel %s"), id);
+      lbl = g_strdup_printf (_ ("Channel %s"), id);
 
       gtk_combo_box_text_append (
-        GTK_COMBO_BOX_TEXT (cb),
-        id, lbl);
+        GTK_COMBO_BOX_TEXT (cb), id, lbl);
 
       g_free (id);
       g_free (lbl);
     }
 
   gtk_combo_box_text_append (
-    GTK_COMBO_BOX_TEXT (cb),
-    "separator", "separator");
+    GTK_COMBO_BOX_TEXT (cb), "separator",
+    "separator");
   gtk_combo_box_text_append (
-    GTK_COMBO_BOX_TEXT (cb),
-    "none", _("No channel"));
+    GTK_COMBO_BOX_TEXT (cb), "none",
+    _ ("No channel"));
 
-  gtk_widget_set_visible (
-    GTK_WIDGET (cb), 1);
+  gtk_widget_set_visible (GTK_WIDGET (cb), 1);
 
   GValue a = G_VALUE_INIT;
   g_value_init (&a, G_TYPE_STRING);
@@ -483,27 +466,23 @@ setup_midi_channels_cb (
           if (ch->midi_channels[i])
             {
               id = g_strdup_printf ("%d", i + 1);
-              g_value_set_string (
-                &a, id);
+              g_value_set_string (&a, id);
               g_free (id);
               found = 1;
               break;
             }
         }
       if (!found)
-        g_value_set_string (
-          &a, "none");
+        g_value_set_string (&a, "none");
     }
   g_object_set_property (
-    G_OBJECT (cb),
-    "active-id",
-    &a);
+    G_OBJECT (cb), "active-id", &a);
 
   g_value_unset (&a);
 
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (cb),
-    _("MIDI channel to filter to"));
+    _ ("MIDI channel to filter to"));
 }
 
 static void
@@ -511,8 +490,9 @@ on_mono_toggled (
   GtkToggleButton *          btn,
   TrackInputExpanderWidget * self)
 {
-  if (!self->track ||
-      self->track->type != TRACK_TYPE_AUDIO)
+  if (
+    !self->track
+    || self->track->type != TRACK_TYPE_AUDIO)
     return;
 
   bool new_val = gtk_toggle_button_get_active (btn);
@@ -561,8 +541,9 @@ track_input_expander_widget_refresh (
       return;
     }
 
-  if (track->type == TRACK_TYPE_MIDI ||
-      track->type == TRACK_TYPE_INSTRUMENT)
+  if (
+    track->type == TRACK_TYPE_MIDI
+    || track->type == TRACK_TYPE_INSTRUMENT)
     {
       gtk_widget_set_visible (
         GTK_WIDGET (self->midi_input), 1);
@@ -575,8 +556,7 @@ track_input_expander_widget_refresh (
       setup_midi_channels_cb (self);
 
       expander_box_widget_set_icon_name (
-        Z_EXPANDER_BOX_WIDGET (self),
-        "midi-insert");
+        Z_EXPANDER_BOX_WIDGET (self), "midi-insert");
     }
   else if (track->type == TRACK_TYPE_AUDIO)
     {
@@ -591,13 +571,11 @@ track_input_expander_widget_refresh (
       setup_ext_ins_cb (self, 0, 0);
 
       Port * port = track->processor->input_gain;
-      self->gain =
-        knob_widget_new_simple (
-          control_port_get_val,
-          control_port_get_default_val,
-          control_port_set_real_val_w_events,
-          port, port->minf, port->maxf, 24,
-          port->zerof);
+      self->gain = knob_widget_new_simple (
+        control_port_get_val,
+        control_port_get_default_val,
+        control_port_set_real_val_w_events, port,
+        port->minf, port->maxf, 24, port->zerof);
       gtk_box_append (
         GTK_BOX (self->gain_box),
         GTK_WIDGET (self->gain));
@@ -645,8 +623,7 @@ track_input_expander_widget_init (
     GTK_WIDGET (self->midi_input));
   gtk_combo_box_set_row_separator_func (
     self->midi_input,
-    (GtkTreeViewRowSeparatorFunc)
-      row_separator_func,
+    (GtkTreeViewRowSeparatorFunc) row_separator_func,
     self, NULL);
   g_signal_connect (
     self->midi_input, "changed",
@@ -659,8 +636,7 @@ track_input_expander_widget_init (
     GTK_WIDGET (self->midi_channels));
   gtk_combo_box_set_row_separator_func (
     self->midi_channels,
-    (GtkTreeViewRowSeparatorFunc)
-      row_separator_func,
+    (GtkTreeViewRowSeparatorFunc) row_separator_func,
     self, NULL);
   g_signal_connect (
     self->midi_channels, "changed",
@@ -687,19 +663,17 @@ track_input_expander_widget_init (
     GTK_WIDGET (self->stereo_l_input),
     GTK_WIDGET (self->mono));
   GtkWidget * parent_box =
-    gtk_widget_get_parent (
-      GTK_WIDGET (self->mono));
+    gtk_widget_get_parent (GTK_WIDGET (self->mono));
   (void) parent_box;
   /*gtk_box_set_child_packing (*/
-    /*GTK_BOX (parent_box),*/
-    /*GTK_WIDGET (self->mono), F_NO_EXPAND,*/
-    /*F_FILL, 1, GTK_PACK_START);*/
+  /*GTK_BOX (parent_box),*/
+  /*GTK_WIDGET (self->mono), F_NO_EXPAND,*/
+  /*F_FILL, 1, GTK_PACK_START);*/
   gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self->mono), _("Mono"));
+    GTK_WIDGET (self->mono), _ ("Mono"));
   gtk_combo_box_set_row_separator_func (
     self->stereo_l_input,
-    (GtkTreeViewRowSeparatorFunc)
-      row_separator_func,
+    (GtkTreeViewRowSeparatorFunc) row_separator_func,
     self, NULL);
   g_signal_connect (
     self->stereo_l_input, "changed",
@@ -710,28 +684,25 @@ track_input_expander_widget_init (
   gtk_size_group_add_widget (
     self->audio_input_size_group,
     GTK_WIDGET (self->stereo_r_input));
-  self->gain_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  self->gain_box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
   gtk_widget_set_visible (
     GTK_WIDGET (self->gain_box), true);
   two_col_expander_box_widget_add_pair (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->stereo_r_input),
     GTK_WIDGET (self->gain_box));
-  parent_box =
-    gtk_widget_get_parent (
-      GTK_WIDGET (self->gain_box));
+  parent_box = gtk_widget_get_parent (
+    GTK_WIDGET (self->gain_box));
   /*gtk_box_set_child_packing (*/
-    /*GTK_BOX (parent_box),*/
-    /*GTK_WIDGET (self->gain_box), F_NO_EXPAND,*/
-    /*F_FILL, 2, GTK_PACK_START);*/
+  /*GTK_BOX (parent_box),*/
+  /*GTK_WIDGET (self->gain_box), F_NO_EXPAND,*/
+  /*F_FILL, 2, GTK_PACK_START);*/
   gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self->gain_box), _("Gain"));
+    GTK_WIDGET (self->gain_box), _ ("Gain"));
   gtk_combo_box_set_row_separator_func (
     self->stereo_r_input,
-    (GtkTreeViewRowSeparatorFunc)
-      row_separator_func,
+    (GtkTreeViewRowSeparatorFunc) row_separator_func,
     self, NULL);
   g_signal_connect (
     self->stereo_r_input, "changed",
@@ -739,8 +710,7 @@ track_input_expander_widget_init (
 
   /* set name and icon */
   expander_box_widget_set_label (
-    Z_EXPANDER_BOX_WIDGET (self),
-    _("Inputs"));
+    Z_EXPANDER_BOX_WIDGET (self), _ ("Inputs"));
   expander_box_widget_set_orientation (
     Z_EXPANDER_BOX_WIDGET (self),
     GTK_ORIENTATION_VERTICAL);
@@ -756,8 +726,7 @@ track_input_expander_widget_init (
 
   /* add css classes */
   GtkStyleContext * context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self));
+    gtk_widget_get_style_context (GTK_WIDGET (self));
   gtk_style_context_add_class (
     context, "track-input-expander");
 }

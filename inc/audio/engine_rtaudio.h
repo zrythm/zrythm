@@ -24,7 +24,7 @@
 
 #ifdef HAVE_RTAUDIO
 
-#include <rtaudio_c.h>
+#  include <rtaudio_c.h>
 
 typedef struct AudioEngine AudioEngine;
 
@@ -38,8 +38,7 @@ typedef struct AudioEngine AudioEngine;
  * Set up the engine.
  */
 int
-engine_rtaudio_setup (
-  AudioEngine * self);
+engine_rtaudio_setup (AudioEngine * self);
 
 void
 engine_rtaudio_activate (
@@ -47,8 +46,7 @@ engine_rtaudio_activate (
   bool          activate);
 
 rtaudio_t
-engine_rtaudio_create_rtaudio (
-  AudioEngine * self);
+engine_rtaudio_create_rtaudio (AudioEngine * self);
 
 /**
  * Returns a list of names inside \ref names that
@@ -72,15 +70,13 @@ engine_rtaudio_get_device_names (
  * to it.
  */
 int
-engine_rtaudio_test (
-  GtkWindow * win);
+engine_rtaudio_test (GtkWindow * win);
 
 /**
  * Closes the engine.
  */
 void
-engine_rtaudio_tear_down (
-  AudioEngine * engine);
+engine_rtaudio_tear_down (AudioEngine * engine);
 
 /**
  * @}

@@ -21,8 +21,8 @@
 #include <stdlib.h>
 
 #include "audio/engine.h"
-#include "audio/quantize_options.h"
 #include "audio/position.h"
+#include "audio/quantize_options.h"
 #include "audio/snap_grid.h"
 #include "audio/transport.h"
 #include "project.h"
@@ -43,35 +43,27 @@ quantize_options_update_quantize_points (
   Position tmp, end_pos;
   position_init (&tmp);
   position_set_to_bar (
-    &end_pos,
-    TRANSPORT->total_bars + 1);
+    &end_pos, TRANSPORT->total_bars + 1);
   self->num_q_points = 0;
   position_set_to_pos (
-    &self->q_points[self->num_q_points++],
-    &tmp);
+    &self->q_points[self->num_q_points++], &tmp);
   long ticks =
     snap_grid_get_ticks_from_length_and_type (
-      self->note_length,
-      self->note_type);
+      self->note_length, self->note_type);
   long swing_offset =
-    (long)
-    (((float) self->swing / 100.f) *
-    (float) ticks / 2.f);
+    (long) (((float) self->swing / 100.f) * (float) ticks / 2.f);
   while (position_is_before (&tmp, &end_pos))
     {
-      position_add_ticks (
-        &tmp, ticks);
+      position_add_ticks (&tmp, ticks);
 
       /* delay every second point by swing */
       if ((self->num_q_points + 1) % 2 == 0)
         {
-          position_add_ticks (
-            &tmp, swing_offset);
+          position_add_ticks (&tmp, swing_offset);
         }
 
       position_set_to_pos (
-        &self->q_points[self->num_q_points++],
-        &tmp);
+        &self->q_points[self->num_q_points++], &tmp);
     }
 }
 
@@ -93,15 +85,13 @@ quantize_options_init (
 }
 
 float
-quantize_options_get_swing (
-  QuantizeOptions * self)
+quantize_options_get_swing (QuantizeOptions * self)
 {
   return self->swing;
 }
 
 float
-quantize_options_get_amount (
-  QuantizeOptions * self)
+quantize_options_get_amount (QuantizeOptions * self)
 {
   return self->amount;
 }
@@ -149,45 +139,36 @@ quantize_options_stringize (
   NoteLength note_length,
   NoteType   note_type)
 {
-  return
-    snap_grid_stringize_length_and_type (
-      note_length, note_type);
+  return snap_grid_stringize_length_and_type (
+    note_length, note_type);
 }
 
 static Position *
-get_prev_point (
-  QuantizeOptions * self,
-  Position *        pos)
+get_prev_point (QuantizeOptions * self, Position * pos)
 {
   g_return_val_if_fail (
     pos->frames >= 0 && pos->ticks >= 0, NULL);
 
   Position * prev_point =
-    (Position *)
-    algorithms_binary_search_nearby (
+    (Position *) algorithms_binary_search_nearby (
       pos, self->q_points,
-      (size_t) self->num_q_points,
-      sizeof (Position), position_cmp_func,
-      true, true);
+      (size_t) self->num_q_points, sizeof (Position),
+      position_cmp_func, true, true);
 
   return prev_point;
 }
 
 static Position *
-get_next_point (
-  QuantizeOptions * self,
-  Position *        pos)
+get_next_point (QuantizeOptions * self, Position * pos)
 {
   g_return_val_if_fail (
     pos->frames >= 0 && pos->ticks >= 0, NULL);
 
   Position * next_point =
-    (Position *)
-    algorithms_binary_search_nearby (
+    (Position *) algorithms_binary_search_nearby (
       pos, self->q_points,
-      (size_t) self->num_q_points,
-      sizeof (Position), position_cmp_func,
-      false, true);
+      (size_t) self->num_q_points, sizeof (Position),
+      position_cmp_func, false, true);
 
   return next_point;
 }
@@ -208,24 +189,23 @@ quantize_options_quantize_position (
   QuantizeOptions * self,
   Position *        pos)
 {
-  Position * prev_point =
-    get_prev_point (self, pos);
-  Position * next_point =
-    get_next_point (self, pos);
-  g_return_val_if_fail (
-    prev_point && next_point, 0);
+  Position * prev_point = get_prev_point (self, pos);
+  Position * next_point = get_next_point (self, pos);
+  g_return_val_if_fail (prev_point && next_point, 0);
 
   const double upper = self->rand_ticks;
-  const double lower = - self->rand_ticks;
-  double rand_double =
+  const double lower = -self->rand_ticks;
+  double       rand_double =
     (double) pcg_rand_u32 (ZRYTHM->rand);
   double rand_ticks =
-    fmod (rand_double, (upper - lower + 1.0)) + lower;
+    fmod (rand_double, (upper - lower + 1.0))
+    + lower;
 
   /* if previous point is closer */
   double diff;
-  if (pos->ticks - prev_point->ticks <=
-      next_point->ticks - pos->ticks)
+  if (
+    pos->ticks - prev_point->ticks
+    <= next_point->ticks - pos->ticks)
     {
       diff = prev_point->ticks - pos->ticks;
     }
@@ -236,8 +216,7 @@ quantize_options_quantize_position (
     }
 
   /* multiply by amount */
-  diff =
-    (diff * (double) (self->amount / 100.f));
+  diff = (diff * (double) (self->amount / 100.f));
 
   /* add random ticks */
   diff += rand_ticks;
@@ -252,8 +231,7 @@ quantize_options_quantize_position (
  * Clones the QuantizeOptions.
  */
 QuantizeOptions *
-quantize_options_clone (
-  const QuantizeOptions * src)
+quantize_options_clone (const QuantizeOptions * src)
 {
   QuantizeOptions * opts =
     object_new (QuantizeOptions);
@@ -288,8 +266,7 @@ quantize_options_new (void)
  * Free's the QuantizeOptions.
  */
 void
-quantize_options_free (
-  QuantizeOptions * self)
+quantize_options_free (QuantizeOptions * self)
 {
   object_zero_and_free (self);
 }

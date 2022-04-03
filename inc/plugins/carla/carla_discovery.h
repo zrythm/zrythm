@@ -30,10 +30,10 @@
 
 #ifdef HAVE_CARLA
 
-#include "plugins/plugin_descriptor.h"
-#include "settings/plugin_settings.h"
+#  include "plugins/plugin_descriptor.h"
+#  include "settings/plugin_settings.h"
 
-#include <CarlaUtils.h>
+#  include <CarlaUtils.h>
 
 typedef struct PluginDescriptor PluginDescriptor;
 

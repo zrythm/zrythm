@@ -32,9 +32,9 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "plugins/lv2_plugin.h"
 #include "plugins/lv2/lv2_gtk.h"
 #include "plugins/lv2/lv2_ui.h"
+#include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "zrythm.h"
@@ -48,24 +48,19 @@ static const bool debug = true;
  * Returns if the UI of the plugin is resizable.
  */
 bool
-lv2_ui_is_resizable (
-  Lv2Plugin* plugin)
+lv2_ui_is_resizable (Lv2Plugin * plugin)
 {
   g_return_val_if_fail (
     plugin->plugin->setting->ui_uri, false);
 
-  LilvNode * s =
-    lilv_new_uri (
-      LILV_WORLD, plugin->plugin->setting->ui_uri);
-  LilvNode * p =
-    lilv_new_uri (
-      LILV_WORLD, LV2_CORE__optionalFeature);
+  LilvNode * s = lilv_new_uri (
+    LILV_WORLD, plugin->plugin->setting->ui_uri);
+  LilvNode * p = lilv_new_uri (
+    LILV_WORLD, LV2_CORE__optionalFeature);
   LilvNode * fs =
-    lilv_new_uri (
-      LILV_WORLD, LV2_UI__fixedSize);
+    lilv_new_uri (LILV_WORLD, LV2_UI__fixedSize);
   LilvNode * nrs =
-    lilv_new_uri (
-      LILV_WORLD, LV2_UI__noUserResize);
+    lilv_new_uri (LILV_WORLD, LV2_UI__noUserResize);
 
   LilvNodes * fs_matches =
     lilv_world_find_nodes (LILV_WORLD, s, p, fs);
@@ -89,17 +84,16 @@ lv2_ui_is_resizable (
 static uint32_t
 get_port_index (
   SuilController controller,
-  const char* symbol)
+  const char *   symbol)
 {
-	Lv2Plugin* const  plugin = (Lv2Plugin*)controller;
-  Port * port =
-    plugin_get_port_by_symbol (
-      plugin->plugin, symbol);
+  Lv2Plugin * const plugin =
+    (Lv2Plugin *) controller;
+  Port * port = plugin_get_port_by_symbol (
+    plugin->plugin, symbol);
 
-	return
-    port && port->lilv_port_index >= 0 ?
-    (uint32_t) port->lilv_port_index :
-    LV2UI_INVALID_PORT_INDEX;
+  return port && port->lilv_port_index >= 0
+           ? (uint32_t) port->lilv_port_index
+           : LV2UI_INVALID_PORT_INDEX;
 }
 
 /**
@@ -115,37 +109,36 @@ REALTIME
 void
 lv2_ui_read_and_apply_events (
   Lv2Plugin * plugin,
-  uint32_t nframes)
+  uint32_t    nframes)
 {
   /*if (!lv2_plugin_has_custom_ui (plugin))*/
-    /*{*/
-      /*return;*/
-    /*}*/
+  /*{*/
+  /*return;*/
+  /*}*/
 
   Lv2ControlChange ev;
-  const size_t space =
-    zix_ring_read_space (
-      plugin->ui_to_plugin_events);
+  const size_t     space = zix_ring_read_space (
+        plugin->ui_to_plugin_events);
   for (size_t i = 0; i < space;
-       i += sizeof(ev) + ev.size)
+       i += sizeof (ev) + ev.size)
     {
       zix_ring_read (
-        plugin->ui_to_plugin_events,
-        (char*)&ev, sizeof(ev));
+        plugin->ui_to_plugin_events, (char *) &ev,
+        sizeof (ev));
       char body[ev.size];
-      if (zix_ring_read (
-            plugin->ui_to_plugin_events, body,
-            ev.size) !=
-          ev.size)
+      if (
+        zix_ring_read (
+          plugin->ui_to_plugin_events, body, ev.size)
+        != ev.size)
         {
           g_critical (
             "Error reading from UI ring buffer");
           break;
         }
       g_return_if_fail (
-        (int) ev.index >= 0 &&
-        (int) ev.index <
-          plugin->plugin->num_lilv_ports);
+        (int) ev.index >= 0
+        && (int) ev.index
+             < plugin->plugin->num_lilv_ports);
       Port * port =
         plugin->plugin->lilv_ports[ev.index];
 
@@ -159,7 +152,7 @@ lv2_ui_read_and_apply_events (
           assert (ev.size == sizeof (float));
           g_return_if_fail (port);
           port_set_control_value (
-            port, * (float *) body, 0, 0);
+            port, *(float *) body, 0, 0);
           port->received_ui_event = 1;
 
 #if 0
@@ -174,17 +167,17 @@ lv2_ui_read_and_apply_events (
             have_custom_ui);
 #endif
         }
-      else if (ev.protocol ==
-                 PM_URIDS.atom_eventTransfer)
+      else if (
+        ev.protocol == PM_URIDS.atom_eventTransfer)
         {
           LV2_Evbuf_Iterator e =
             lv2_evbuf_end (port->evbuf);
-          const LV2_Atom* const atom =
-            (const LV2_Atom*)body;
+          const LV2_Atom * const atom =
+            (const LV2_Atom *) body;
           lv2_evbuf_write (
             &e, nframes, 0, atom->type, atom->size,
-            (const uint8_t*)
-              LV2_ATOM_BODY_CONST(atom));
+            (const uint8_t *) LV2_ATOM_BODY_CONST (
+              atom));
 
 #if 0
           /* note: should not be printing in the
@@ -215,11 +208,12 @@ lv2_ui_read_and_apply_events (
  */
 void
 lv2_ui_send_control_val_event_from_plugin_to_ui (
-  Lv2Plugin *  lv2_plugin,
-  Port *       port)
+  Lv2Plugin * lv2_plugin,
+  Port *      port)
 {
-  if (!lv2_plugin->plugin->visible ||
-      lv2_plugin->plugin->instantiation_failed)
+  if (
+    !lv2_plugin->plugin->visible
+    || lv2_plugin->plugin->instantiation_failed)
     return;
 
 #if 0
@@ -230,20 +224,20 @@ lv2_ui_send_control_val_event_from_plugin_to_ui (
     port->lilv_port_index);
 #endif
 
-  char buf[sizeof(Lv2ControlChange) +
-    sizeof(float)];
-  Lv2ControlChange* ev =
-    (Lv2ControlChange*)buf;
+  char
+    buf[sizeof (Lv2ControlChange) + sizeof (float)];
+  Lv2ControlChange * ev = (Lv2ControlChange *) buf;
   ev->index = (uint32_t) port->lilv_port_index;
   ev->protocol = 0;
-  ev->size = sizeof(float);
-  *(float*)ev->body = port->control;
+  ev->size = sizeof (float);
+  *(float *) ev->body = port->control;
   port->automating = 0;
 
-  if (zix_ring_write (
-        lv2_plugin->plugin_to_ui_events,
-        buf, sizeof(buf)) <
-      sizeof(buf))
+  if (
+    zix_ring_write (
+      lv2_plugin->plugin_to_ui_events, buf,
+      sizeof (buf))
+    < sizeof (buf))
     {
       PluginDescriptor * descr =
         lv2_plugin->plugin->setting->descr;
@@ -273,29 +267,27 @@ lv2_ui_send_event_from_plugin_to_ui (
   const void * body)
 {
   /* TODO: Be more disciminate about what to send */
-  char evbuf[
-    sizeof (Lv2ControlChange) +
-    sizeof (LV2_Atom)];
-  Lv2ControlChange* ev = (Lv2ControlChange*) evbuf;
+  char evbuf
+    [sizeof (Lv2ControlChange) + sizeof (LV2_Atom)];
+  Lv2ControlChange * ev = (Lv2ControlChange *) evbuf;
   ev->index = port_index;
   ev->protocol = PM_URIDS.atom_eventTransfer;
-  ev->size =
-    (uint32_t) sizeof (LV2_Atom) + size;
+  ev->size = (uint32_t) sizeof (LV2_Atom) + size;
 
-  LV2_Atom* atom = (LV2_Atom*)ev->body;
+  LV2_Atom * atom = (LV2_Atom *) ev->body;
   atom->type = type;
   atom->size = (uint32_t) size;
 
-  if (zix_ring_write_space (
-        plugin->plugin_to_ui_events) >=
-      sizeof(evbuf) + size)
+  if (
+    zix_ring_write_space (plugin->plugin_to_ui_events)
+    >= sizeof (evbuf) + size)
     {
       zix_ring_write (
         plugin->plugin_to_ui_events, evbuf,
-        sizeof(evbuf));
+        sizeof (evbuf));
       zix_ring_write (
         plugin->plugin_to_ui_events,
-        (const char*)body, size);
+        (const char *) body, size);
       return 1;
     }
   else
@@ -318,15 +310,16 @@ lv2_ui_send_event_from_plugin_to_ui (
  */
 void
 lv2_ui_send_event_from_ui_to_plugin (
-  Lv2Plugin *    plugin,
-  uint32_t       port_index,
-  uint32_t       buffer_size,
-  uint32_t       protocol,
-  const void*    buffer)
+  Lv2Plugin *  plugin,
+  uint32_t     port_index,
+  uint32_t     buffer_size,
+  uint32_t     protocol,
+  const void * buffer)
 {
-  if ((int) port_index < 0 ||
-      (int) port_index >=
-        plugin->plugin->num_lilv_ports)
+  if (
+    (int) port_index < 0
+    || (int) port_index
+         >= plugin->plugin->num_lilv_ports)
     {
       g_warning (
         "UI write to out of range port index %d",
@@ -348,8 +341,9 @@ lv2_ui_send_event_from_ui_to_plugin (
     }
 #endif
 
-  if (protocol != 0 &&
-      protocol != PM_URIDS.atom_eventTransfer)
+  if (
+    protocol != 0
+    && protocol != PM_URIDS.atom_eventTransfer)
     {
       g_warning (
         "UI write with unsupported protocol %d (%s)",
@@ -359,68 +353,58 @@ lv2_ui_send_event_from_ui_to_plugin (
     }
 
   /* also see https://git.open-music-kontrollers.ch/lv2/sherlock.lv2/tree/atom_inspector_nk.c#n39 */
-  if (debug &&
-      protocol == PM_URIDS.atom_eventTransfer)
+  if (debug && protocol == PM_URIDS.atom_eventTransfer)
     {
-      const LV2_Atom* atom =
-        (const LV2_Atom*)buffer;
+      const LV2_Atom * atom =
+        (const LV2_Atom *) buffer;
       g_debug (
         "[atom] type <%s>, %d bytes",
         plugin->unmap.unmap (
           plugin->unmap.handle, atom->type),
         atom->size);
-      char * str  =
-        sratom_to_turtle (
-          plugin->sratom,
-          &plugin->unmap,
-          "plugin:",
-          NULL, NULL,
-          atom->type,
-          atom->size,
-          LV2_ATOM_BODY_CONST (atom));
+      char * str = sratom_to_turtle (
+        plugin->sratom, &plugin->unmap,
+        "plugin:", NULL, NULL, atom->type,
+        atom->size, LV2_ATOM_BODY_CONST (atom));
       g_message (
         "## UI => Plugin (%u bytes) ##\n%s",
         atom->size, str);
-      free(str);
+      free (str);
     }
 
-  char buf[sizeof(Lv2ControlChange) + buffer_size];
-  Lv2ControlChange* ev = (Lv2ControlChange*)buf;
-  ev->index    = port_index;
+  char buf[sizeof (Lv2ControlChange) + buffer_size];
+  Lv2ControlChange * ev = (Lv2ControlChange *) buf;
+  ev->index = port_index;
   ev->protocol = protocol;
-  ev->size     = buffer_size;
+  ev->size = buffer_size;
   memcpy (ev->body, buffer, buffer_size);
   zix_ring_write (
     plugin->ui_to_plugin_events, buf,
-    (uint32_t) sizeof(buf));
+    (uint32_t) sizeof (buf));
 }
 
 /**
  * Instantiates the plugin UI.
  */
 void
-lv2_ui_instantiate (
-  Lv2Plugin *  plugin)
+lv2_ui_instantiate (Lv2Plugin * plugin)
 {
-  plugin->suil_host =
-    suil_host_new (
-      (SuilPortWriteFunc)
+  plugin->suil_host = suil_host_new (
+    (SuilPortWriteFunc)
       lv2_ui_send_event_from_ui_to_plugin,
-      get_port_index, NULL, NULL);
+    get_port_index, NULL, NULL);
   plugin->external_ui_widget = NULL;
 
-  char * bundle_uri =
-    lv2_plugin_get_ui_bundle_uri (
-      plugin->plugin->setting->descr->uri,
-      plugin->plugin->setting->ui_uri);
+  char * bundle_uri = lv2_plugin_get_ui_bundle_uri (
+    plugin->plugin->setting->descr->uri,
+    plugin->plugin->setting->ui_uri);
   g_return_if_fail (bundle_uri);
-  char * binary_uri =
-    lv2_plugin_get_ui_binary_uri (
-      plugin->plugin->setting->descr->uri,
-      plugin->plugin->setting->ui_uri);
-  char* bundle_path =
+  char * binary_uri = lv2_plugin_get_ui_binary_uri (
+    plugin->plugin->setting->descr->uri,
+    plugin->plugin->setting->ui_uri);
+  char * bundle_path =
     lilv_file_uri_parse (bundle_uri, NULL);
-  char* binary_path =
+  char * binary_path =
     lilv_file_uri_parse (binary_uri, NULL);
 
   /*
@@ -431,15 +415,14 @@ lv2_ui_instantiate (
    * to call the data_access method in ext_data to
    * receive data from the plugin instance.
    */
-  const LV2_Feature data_feature =
-    {
-      LV2_DATA_ACCESS_URI, &plugin->ext_data_feature,
-    };
+  const LV2_Feature data_feature = {
+    LV2_DATA_ACCESS_URI,
+    &plugin->ext_data_feature,
+  };
 
-  const LV2_Feature idle_feature =
-    {
-      LV2_UI__idleInterface, NULL
-    };
+  const LV2_Feature idle_feature = {
+    LV2_UI__idleInterface, NULL
+  };
 
   /**
    * Instance access feature.
@@ -477,7 +460,7 @@ lv2_ui_instantiate (
         .data = &plugin->extui,
       };
 
-      const LV2_Feature* ui_features[] = {
+      const LV2_Feature * ui_features[] = {
         &plugin->map_feature,
         &plugin->unmap_feature,
         &instance_feature,
@@ -490,18 +473,14 @@ lv2_ui_instantiate (
         NULL
       };
 
-      char * ui_class =
-        lv2_plugin_get_ui_class (
-          plugin->plugin->setting->descr->uri,
-          plugin->plugin->setting->ui_uri);
-      plugin->suil_instance =
-        suil_instance_new (
-          plugin->suil_host, plugin,
-          ui_class,
-          plugin->plugin->setting->descr->uri,
-          plugin->plugin->setting->ui_uri,
-          ui_class,
-          bundle_path, binary_path, ui_features);
+      char * ui_class = lv2_plugin_get_ui_class (
+        plugin->plugin->setting->descr->uri,
+        plugin->plugin->setting->ui_uri);
+      plugin->suil_instance = suil_instance_new (
+        plugin->suil_host, plugin, ui_class,
+        plugin->plugin->setting->descr->uri,
+        plugin->plugin->setting->ui_uri, ui_class,
+        bundle_path, binary_path, ui_features);
       g_free (ui_class);
 
       if (plugin->suil_instance)
@@ -517,7 +496,7 @@ lv2_ui_instantiate (
     }
   else
     {
-      const LV2_Feature* ui_features[] = {
+      const LV2_Feature * ui_features[] = {
         &plugin->map_feature,
         &plugin->unmap_feature,
         &instance_feature,
@@ -528,21 +507,14 @@ lv2_ui_instantiate (
         NULL,
       };
 
-      char * ui_class =
-        lv2_plugin_get_ui_class (
-          plugin->plugin->setting->descr->uri,
-          plugin->plugin->setting->ui_uri);
-      plugin->suil_instance =
-        suil_instance_new (
-          plugin->suil_host,
-          plugin,
-          LV2_UI__Gtk4UI,
-          plugin->plugin->setting->descr->uri,
-          plugin->plugin->setting->ui_uri,
-          ui_class,
-          bundle_path,
-          binary_path,
-          ui_features);
+      char * ui_class = lv2_plugin_get_ui_class (
+        plugin->plugin->setting->descr->uri,
+        plugin->plugin->setting->ui_uri);
+      plugin->suil_instance = suil_instance_new (
+        plugin->suil_host, plugin, LV2_UI__Gtk4UI,
+        plugin->plugin->setting->descr->uri,
+        plugin->plugin->setting->ui_uri, ui_class,
+        bundle_path, binary_path, ui_features);
       g_free (ui_class);
     }
 
@@ -566,20 +538,19 @@ lv2_ui_instantiate (
  * external UIs.
  */
 void
-lv2_ui_init (
-  Lv2Plugin* plugin)
+lv2_ui_init (Lv2Plugin * plugin)
 {
   // Set initial control port values
   for (int i = 0;
        i < plugin->plugin->num_lilv_ports; ++i)
     {
       Port * port = plugin->plugin->lilv_ports[i];
-      if (port->id.type == TYPE_CONTROL &&
-          !(port->id.flags & PORT_FLAG_IS_PROPERTY))
+      if (
+        port->id.type == TYPE_CONTROL
+        && !(port->id.flags & PORT_FLAG_IS_PROPERTY))
         {
           lv2_gtk_ui_port_event (
-            plugin, (uint32_t) i,
-            sizeof(float), 0,
+            plugin, (uint32_t) i, sizeof (float), 0,
             &port->control);
         }
     }
@@ -590,20 +561,18 @@ lv2_ui_init (
        * parameters/etc */
       LV2_Atom_Forge * forge = &plugin->main_forge;
       LV2_Atom_Forge_Frame frame;
-      uint8_t buf[1024];
+      uint8_t              buf[1024];
       lv2_atom_forge_set_buffer (
-        forge, buf, sizeof(buf));
+        forge, buf, sizeof (buf));
       lv2_atom_forge_object (
         forge, &frame, 0, PM_URIDS.patch_Get);
 
-      const LV2_Atom* atom =
+      const LV2_Atom * atom =
         lv2_atom_forge_deref (forge, frame.ref);
       lv2_ui_send_event_from_ui_to_plugin (
-        plugin,
-        (uint32_t) plugin->control_in,
+        plugin, (uint32_t) plugin->control_in,
         lv2_atom_total_size (atom),
-        PM_URIDS.atom_eventTransfer,
-        atom);
+        PM_URIDS.atom_eventTransfer, atom);
       lv2_atom_forge_pop (forge, &frame);
     }
 }

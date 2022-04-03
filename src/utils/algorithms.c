@@ -45,23 +45,22 @@ algorithms_binary_search_nearby (
   size_t first = 0;
   size_t last = nmemb;
   size_t middle = (first + last) / 2;
-  bool pivot_is_before, pivot_succ_is_before;
+  bool   pivot_is_before, pivot_succ_is_before;
   const void * pivot;
   const void * pivot_succ;
 
   /* return if no objects */
   if (first == last)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
 
   /* search loops, exit if pos is not in array */
   void * ret = NULL;
   while (first <= last)
     {
       pivot =
-        (void *)
-        (((const char *) base) + (middle * size));
+        (void *) (((const char *) base) + (middle * size));
       pivot_succ = NULL;
       pivot_succ_is_before = 0;
 
@@ -78,14 +77,10 @@ algorithms_binary_search_nearby (
             return (void *) pivot;
           else if (return_prev)
             ret =
-              (void *)
-              (((const char *) base)
-               + ((middle - 1) * size));
+              (void *) (((const char *) base) + ((middle - 1) * size));
           else
             ret =
-              (void *)
-              (((const char *) base)
-               + ((middle + 1) * size));
+              (void *) (((const char *) base) + ((middle + 1) * size));
           return ret;
         }
 
@@ -93,35 +88,36 @@ algorithms_binary_search_nearby (
       if (middle < last)
         {
           pivot_succ =
-            (void *)
-            (((const char *) base)
-             + ((middle + 1) * size));
+            (void *) (((const char *) base) + ((middle + 1) * size));
           pivot_succ_is_before =
             cmp_func (pivot_succ, key) <= 0;
         }
-      pivot_is_before =
-        cmp_func (pivot, key) <= 0;
+      pivot_is_before = cmp_func (pivot, key) <= 0;
 
       /* if pivot and pivot_succ are before pos,
        * search in the second half on next iteration */
       if (pivot_is_before && pivot_succ_is_before)
-      {
-        first = middle + 1;
-      }
+        {
+          first = middle + 1;
+        }
       /* else if key is between pivot and pivot_succ */
       else if (pivot_is_before)
-      {
-        if (return_prev) {
-          return (void *) pivot;
-        } else {
-          return (void *) pivot_succ;
+        {
+          if (return_prev)
+            {
+              return (void *) pivot;
+            }
+          else
+            {
+              return (void *) pivot_succ;
+            }
         }
-      }
       /* else if pivot_succ and pivot are behind pos,
        * search in the first half on next iteration */
-      else {
-        last = middle;
-      }
+      else
+        {
+          last = middle;
+        }
 
       /* recalculate middle position */
       middle = (first + last) / 2;

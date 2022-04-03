@@ -24,7 +24,6 @@
  */
 
 #include <stdlib.h>
-#include <string.h>
 
 #include "utils/arrays.h"
 #include "utils/mem.h"
@@ -33,6 +32,8 @@
 #include "zrythm.h"
 
 #include <glib.h>
+
+#include <string.h>
 
 /**
  * Returns 1 if element exists in array, 0 if not.
@@ -69,9 +70,9 @@ _array_contains_cmp (
   void ** array,
   int     size,
   void *  element,
-  int (*cmp)(void *, void *),
-  int     equal_val,
-  int     pointers)
+  int (*cmp) (void *, void *),
+  int equal_val,
+  int pointers)
 {
   for (int i = 0; i < size; i++)
     {
@@ -94,7 +95,10 @@ _array_contains_cmp (
  * -1 if not.
  */
 int
-_array_index_of (void ** array, int size, void * element)
+_array_index_of (
+  void ** array,
+  int     size,
+  void *  element)
 {
   for (int i = 0; i < size; i++)
     {
@@ -114,15 +118,13 @@ _array_index_of (void ** array, int size, void * element)
  */
 void
 _array_dynamic_swap (
-  void ***  arr1,
+  void *** arr1,
   size_t * sz1,
-  void ***  arr2,
+  void *** arr2,
   size_t * sz2)
 {
-  g_return_if_fail (
-    arr1 && arr2 && *arr1 && *arr2);
-  int is_1_larger =
-    *sz1 > *sz2;
+  g_return_if_fail (arr1 && arr2 && *arr1 && *arr2);
+  int is_1_larger = *sz1 > *sz2;
 
   void *** large_arr;
   size_t * large_sz;
@@ -144,9 +146,8 @@ _array_dynamic_swap (
     }
 
   /* resize the small array */
-  *small_arr =
-    realloc (
-      *small_arr, *large_sz * sizeof (void *));
+  *small_arr = realloc (
+    *small_arr, *large_sz * sizeof (void *));
 
   /* copy the elements of the small array in tmp */
   void * tmp[*small_sz > 0 ? *small_sz : 1];
@@ -159,9 +160,8 @@ _array_dynamic_swap (
     sizeof (void *) * *large_sz);
 
   /* resize large array */
-  *large_arr =
-    realloc (
-      *large_arr, *small_sz * sizeof (void *));
+  *large_arr = realloc (
+    *large_arr, *small_sz * sizeof (void *));
 
   /* copy the elements from temp to large array */
   memcpy (
@@ -233,35 +233,37 @@ _array_double_size_if_full (
     }
   else
     {
-      *arr_ptr =
-        object_realloc_n_sizeof (
-          *arr_ptr, *max_sz * el_size,
-          new_sz * el_size);
+      *arr_ptr = object_realloc_n_sizeof (
+        *arr_ptr, *max_sz * el_size,
+        new_sz * el_size);
     }
   *max_sz = new_sz;
 }
 
 static int
-alphaBetize (const void *a, const void *b)
+alphaBetize (const void * a, const void * b)
 {
   const char * aa = (const char *) a;
   const char * bb = (const char *) b;
-  int r = strcasecmp(aa, bb);
-  if (r) return r;
+  int          r = strcasecmp (aa, bb);
+  if (r)
+    return r;
   /* if equal ignoring case, use opposite of strcmp()
    * result to get lower before upper */
-  return -strcmp(aa, bb); /* aka: return strcmp(b, a); */
+  return -strcmp (
+    aa, bb); /* aka: return strcmp(b, a); */
 }
 
 void
-array_sort_alphabetically (char ** array,
-                           int     size,
-                           int     case_sensitive)
+array_sort_alphabetically (
+  char ** array,
+  int     size,
+  int     case_sensitive)
 {
   if (!case_sensitive)
     qsort (
-      array, (size_t) size,
-      sizeof (char *), alphaBetize);
+      array, (size_t) size, sizeof (char *),
+      alphaBetize);
 }
 
 /**
@@ -271,12 +273,12 @@ array_sort_alphabetically (char ** array,
  * @param size Size of each element
  *   (@code sizeof (arr[0]) @endcode).
  */
-void array_shuffle (
-  void *array, size_t n, size_t size)
+void
+array_shuffle (void * array, size_t n, size_t size)
 {
-  char tmp[size];
-  char *arr = array;
-  size_t stride = size * sizeof(char);
+  char   tmp[size];
+  char * arr = array;
+  size_t stride = size * sizeof (char);
 
   if (n > 1)
     {
@@ -284,16 +286,14 @@ void array_shuffle (
       for (i = 0; i < n - 1; ++i)
         {
           size_t rnd =
-            (size_t)
-            ((double) pcg_rand_uf (ZRYTHM->rand) *
-             (double) RAND_MAX);
+            (size_t) ((double) pcg_rand_uf (ZRYTHM->rand) * (double) RAND_MAX);
           size_t j =
             i + rnd / (RAND_MAX / (n - i) + 1);
 
           memcpy (tmp, arr + j * stride, size);
           memcpy (
-            arr + j * stride,
-            arr + i * stride, size);
+            arr + j * stride, arr + i * stride,
+            size);
           memcpy (arr + i * stride, tmp, size);
         }
     }
@@ -302,13 +302,11 @@ void array_shuffle (
 static int
 cmp_float_func (const void * a, const void * b)
 {
-  return ( *(float*)a - *(float*)b ) < 0.f ? -1 : 1;
+  return (*(float *) a - *(float *) b) < 0.f ? -1 : 1;
 }
 
 void
-array_sort_float (
-  float * array,
-  int     size)
+array_sort_float (float * array, int size)
 {
   qsort (
     array, (size_t) size, sizeof (long),
@@ -318,13 +316,11 @@ array_sort_float (
 static int
 cmp_long_func (const void * a, const void * b)
 {
-  return ( *(long*)a - *(long*)b );
+  return (*(long *) a - *(long *) b);
 }
 
 void
-array_sort_long (
-  long * array,
-  int     size)
+array_sort_long (long * array, int size)
 {
   qsort (
     array, (size_t) size, sizeof (long),
@@ -335,9 +331,7 @@ array_sort_long (
  * Gets the count of a NULL-terminated array.
  */
 size_t
-_array_get_count (
-  void ** array,
-  size_t  element_size)
+_array_get_count (void ** array, size_t element_size)
 {
   size_t arr_size = 0;
   size_t byte_size = 0;

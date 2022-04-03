@@ -17,7 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <limits.h>
 #include <math.h>
 
 #include "audio/engine.h"
@@ -45,10 +44,11 @@
 
 #include <gtk/gtk.h>
 
+#include <limits.h>
+
 #define ACTION_IS(x) \
   (self->action == UI_OVERLAY_ACTION_##x)
-#define TARGET_IS(x) \
-  (self->target == RW_TARGET_##x)
+#define TARGET_IS(x) (self->target == RW_TARGET_##x)
 
 #define RESIZE_HANDLE_WIDTH 4
 
@@ -60,13 +60,13 @@ on_drag_begin_range_hit (
 {
   /*Position range_start, range_end;*/
   /*transport_get_range_pos (*/
-    /*TRANSPORT, true, &range_start);*/
+  /*TRANSPORT, true, &range_start);*/
   /*transport_get_range_pos (*/
-    /*TRANSPORT, false, &range_end);*/
+  /*TRANSPORT, false, &range_end);*/
   /*double range_start_px =*/
-    /*ui_pos_to_px_timeline (&range_start, true);*/
+  /*ui_pos_to_px_timeline (&range_start, true);*/
   /*double range_end_px =*/
-    /*ui_pos_to_px_timeline (&range_end, true);*/
+  /*ui_pos_to_px_timeline (&range_end, true);*/
 
   /* check if resize l or resize r */
   bool resize_l = false;
@@ -107,21 +107,20 @@ on_drag_begin_range_hit (
 }
 
 void
-timeline_ruler_on_drag_end (
-  RulerWidget * self)
+timeline_ruler_on_drag_end (RulerWidget * self)
 {
   /* hide tooltips */
   /*if (self->target == RW_TARGET_PLAYHEAD)*/
-    /*ruler_marker_widget_update_tooltip (*/
-      /*self->playhead, 0);*/
-  if ((ACTION_IS (MOVING) ||
-         ACTION_IS (STARTING_MOVING)) &&
-      self->target == RW_TARGET_PLAYHEAD)
+  /*ruler_marker_widget_update_tooltip (*/
+  /*self->playhead, 0);*/
+  if (
+    (ACTION_IS (MOVING)
+     || ACTION_IS (STARTING_MOVING))
+    && self->target == RW_TARGET_PLAYHEAD)
     {
       /* set cue point */
       position_set_to_pos (
-        &TRANSPORT->cue_pos,
-        &self->last_set_pos);
+        &TRANSPORT->cue_pos, &self->last_set_pos);
 
       EVENTS_PUSH (
         ET_PLAYHEAD_POS_CHANGED_MANUALLY, NULL);
@@ -139,10 +138,10 @@ timeline_ruler_on_drag_begin_no_marker_hit (
   if (start_y > (height * 1) / 4)
     {
       Position pos;
-      ui_px_to_pos_timeline (
-        start_x, &pos, 1);
-      if (!self->shift_held
-          && SNAP_GRID_ANY_SNAP (SNAP_GRID_TIMELINE))
+      ui_px_to_pos_timeline (start_x, &pos, 1);
+      if (
+        !self->shift_held
+        && SNAP_GRID_ANY_SNAP (SNAP_GRID_TIMELINE))
         {
           position_snap (
             &pos, &pos, NULL, NULL,
@@ -170,11 +169,13 @@ timeline_ruler_on_drag_begin_no_marker_hit (
         TRANSPORT, false, &last_range);
       bool range_hit =
         position_is_after_or_equal (
-          &cur_pos, &first_range) &&
-        position_is_before_or_equal (
+          &cur_pos, &first_range)
+        && position_is_before_or_equal (
           &cur_pos, &last_range);
 
-      g_message ("%s: has range %d range hit %d", __func__, TRANSPORT->has_range, range_hit);
+      g_message (
+        "%s: has range %d range hit %d", __func__,
+        TRANSPORT->has_range, range_hit);
       position_print (&first_range);
       position_print (&last_range);
       position_print (&cur_pos);
@@ -194,10 +195,10 @@ timeline_ruler_on_drag_begin_no_marker_hit (
             UI_OVERLAY_ACTION_RESIZING_R;
           ui_px_to_pos_timeline (
             start_x, &TRANSPORT->range_1, true);
-          if (!self->shift_held
-              &&
-              SNAP_GRID_ANY_SNAP (
-                SNAP_GRID_TIMELINE))
+          if (
+            !self->shift_held
+            && SNAP_GRID_ANY_SNAP (
+              SNAP_GRID_TIMELINE))
             {
               position_snap (
                 &TRANSPORT->range_1,
@@ -228,16 +229,14 @@ timeline_ruler_on_drag_update (
         {
           Position tmp;
           ui_px_to_pos_timeline (
-            self->start_x + offset_x,
-            &tmp, true);
+            self->start_x + offset_x, &tmp, true);
           const Position * start_pos;
-          const bool snap = !self->shift_held;
-          bool range1 = true;
-          if ((self->range1_first
-               && ACTION_IS (RESIZING_L))
-              ||
-              (!self->range1_first
-               && !ACTION_IS (RESIZING_L)))
+          const bool       snap = !self->shift_held;
+          bool             range1 = true;
+          if (
+            (self->range1_first
+             && ACTION_IS (RESIZING_L))
+            || (!self->range1_first && !ACTION_IS (RESIZING_L)))
             {
               start_pos = &self->range1_start_pos;
               range1 = true;
@@ -265,14 +264,12 @@ timeline_ruler_on_drag_update (
           if (offset_x < 0)
             {
               /*g_message ("offset %f", offset_x);*/
-              ticks_diff = - ticks_diff;
+              ticks_diff = -ticks_diff;
             }
-          double r1_ticks =
-            position_to_ticks (
-              (&TRANSPORT->range_1));
-          double r2_ticks =
-            position_to_ticks (
-              (&TRANSPORT->range_2));
+          double r1_ticks = position_to_ticks (
+            (&TRANSPORT->range_1));
+          double r2_ticks = position_to_ticks (
+            (&TRANSPORT->range_2));
           {
             double r1_start_ticks =
               position_to_ticks (
@@ -280,7 +277,7 @@ timeline_ruler_on_drag_update (
             double r2_start_ticks =
               position_to_ticks (
                 (&self->range2_start_pos));
-          /*g_message ("ticks diff before %f r1 start ticks %f r2 start ticks %f", ticks_diff, r1_start_ticks, r2_start_ticks);*/
+            /*g_message ("ticks diff before %f r1 start ticks %f r2 start ticks %f", ticks_diff, r1_start_ticks, r2_start_ticks);*/
             if (r1_start_ticks + ticks_diff < 0.0)
               {
                 ticks_diff -=
@@ -293,9 +290,9 @@ timeline_ruler_on_drag_update (
               }
           }
           double ticks_length =
-            self->range1_first ?
-            r2_ticks - r1_ticks :
-            r1_ticks - r2_ticks;
+            self->range1_first
+              ? r2_ticks - r1_ticks
+              : r1_ticks - r2_ticks;
 
           /*g_message ("ticks diff %f", ticks_diff);*/
 
@@ -306,10 +303,10 @@ timeline_ruler_on_drag_update (
                 &self->range1_start_pos);
               position_add_ticks (
                 &TRANSPORT->range_1, ticks_diff);
-              if (!self->shift_held
-                  &&
-                  SNAP_GRID_ANY_SNAP (
-                    SNAP_GRID_TIMELINE))
+              if (
+                !self->shift_held
+                && SNAP_GRID_ANY_SNAP (
+                  SNAP_GRID_TIMELINE))
                 {
                   position_snap (
                     &self->range1_start_pos,
@@ -320,8 +317,7 @@ timeline_ruler_on_drag_update (
                 &TRANSPORT->range_2,
                 &TRANSPORT->range_1);
               position_add_ticks (
-                &TRANSPORT->range_2,
-                ticks_length);
+                &TRANSPORT->range_2, ticks_length);
             }
           else /* range_2 first */
             {
@@ -330,10 +326,10 @@ timeline_ruler_on_drag_update (
                 &self->range2_start_pos);
               position_add_ticks (
                 &TRANSPORT->range_2, ticks_diff);
-              if (!self->shift_held
-                  &&
-                  SNAP_GRID_ANY_SNAP (
-                    SNAP_GRID_TIMELINE))
+              if (
+                !self->shift_held
+                && SNAP_GRID_ANY_SNAP (
+                  SNAP_GRID_TIMELINE))
                 {
                   position_snap (
                     &self->range2_start_pos,
@@ -344,18 +340,16 @@ timeline_ruler_on_drag_update (
                 &TRANSPORT->range_1,
                 &TRANSPORT->range_2);
               position_add_ticks (
-                &TRANSPORT->range_1,
-                ticks_length);
+                &TRANSPORT->range_1, ticks_length);
             }
-          EVENTS_PUSH (ET_RANGE_SELECTION_CHANGED,
-                       NULL);
+          EVENTS_PUSH (
+            ET_RANGE_SELECTION_CHANGED, NULL);
         }
       else /* not range */
         {
           /* set some useful positions */
           Position tmp;
-          Position timeline_start,
-                   timeline_end;
+          Position timeline_start, timeline_end;
           position_init (&timeline_start);
           position_init (&timeline_end);
           position_set_to_bar (
@@ -363,49 +357,50 @@ timeline_ruler_on_drag_update (
 
           /* convert px to position */
           ui_px_to_pos_timeline (
-            self->start_x + offset_x,
-            &tmp, F_HAS_PADDING);
+            self->start_x + offset_x, &tmp,
+            F_HAS_PADDING);
 
           /* snap if not shift held */
-          if (!self->shift_held
-              &&
-              SNAP_GRID_ANY_SNAP (
-                SNAP_GRID_TIMELINE))
+          if (
+            !self->shift_held
+            && SNAP_GRID_ANY_SNAP (
+              SNAP_GRID_TIMELINE))
             {
               position_snap (
                 &self->drag_start_pos, &tmp, NULL,
-                NULL,
-                SNAP_GRID_TIMELINE);
+                NULL, SNAP_GRID_TIMELINE);
             }
 
           if (self->target == RW_TARGET_PLAYHEAD)
             {
               /* if position is acceptable */
-              if (position_is_after_or_equal (
-                    &tmp, &timeline_start) &&
-                  position_is_before_or_equal (
-                    &tmp, &timeline_end))
+              if (
+                position_is_after_or_equal (
+                  &tmp, &timeline_start)
+                && position_is_before_or_equal (
+                  &tmp, &timeline_end))
                 {
                   transport_move_playhead (
-                    TRANSPORT, &tmp,
-                    F_PANIC, F_NO_SET_CUE_POINT,
+                    TRANSPORT, &tmp, F_PANIC,
+                    F_NO_SET_CUE_POINT,
                     F_PUBLISH_EVENTS);
                   self->last_set_pos = tmp;
                 }
 
               /*ruler_marker_widget_update_tooltip (*/
-                /*self->playhead, 1);*/
+              /*self->playhead, 1);*/
             }
-          else if (self->target ==
-                     RW_TARGET_PUNCH_IN)
+          else if (self->target == RW_TARGET_PUNCH_IN)
             {
               g_message ("moving punch in");
               /* if position is acceptable */
-              if (position_compare (
-                    &tmp, &timeline_start) >= 0 &&
-                  position_compare (
-                    &tmp,
-                    &TRANSPORT->punch_out_pos) < 0)
+              if (
+                position_compare (
+                  &tmp, &timeline_start)
+                  >= 0
+                && position_compare (
+                     &tmp, &TRANSPORT->punch_out_pos)
+                     < 0)
                 {
                   position_set_to_pos (
                     &TRANSPORT->punch_in_pos, &tmp);
@@ -419,11 +414,12 @@ timeline_ruler_on_drag_update (
           else if (self->target == RW_TARGET_PUNCH_OUT)
             {
               /* if position is acceptable */
-              if (position_compare (
-                    &tmp, &timeline_end) <= 0 &&
-                  position_compare (
-                    &tmp,
-                    &TRANSPORT->punch_in_pos) > 0)
+              if (
+                position_compare (&tmp, &timeline_end)
+                  <= 0
+                && position_compare (
+                     &tmp, &TRANSPORT->punch_in_pos)
+                     > 0)
                 {
                   position_set_to_pos (
                     &TRANSPORT->punch_out_pos, &tmp);
@@ -434,18 +430,21 @@ timeline_ruler_on_drag_update (
                     NULL);
                 }
             }
-          else if (self->target ==
-                     RW_TARGET_LOOP_START)
+          else if (self->target == RW_TARGET_LOOP_START)
             {
               g_message ("moving loop start");
               /* if position is acceptable */
-              if (position_compare (
-                    &tmp, &timeline_start) >= 0 &&
-                  position_compare (
-                    &tmp, &TRANSPORT->loop_end_pos) < 0)
+              if (
+                position_compare (
+                  &tmp, &timeline_start)
+                  >= 0
+                && position_compare (
+                     &tmp, &TRANSPORT->loop_end_pos)
+                     < 0)
                 {
                   position_set_to_pos (
-                    &TRANSPORT->loop_start_pos, &tmp);
+                    &TRANSPORT->loop_start_pos,
+                    &tmp);
                   transport_update_positions (
                     TRANSPORT, true);
                   EVENTS_PUSH (
@@ -453,15 +452,15 @@ timeline_ruler_on_drag_update (
                     NULL);
                 }
             }
-          else if (self->target ==
-                     RW_TARGET_LOOP_END)
+          else if (self->target == RW_TARGET_LOOP_END)
             {
               /* if position is acceptable */
-              if (position_compare (
-                    &tmp, &timeline_end) <= 0 &&
-                  position_compare (
-                    &tmp,
-                    &TRANSPORT->loop_start_pos) > 0)
+              if (
+                position_compare (&tmp, &timeline_end)
+                  <= 0
+                && position_compare (
+                     &tmp, &TRANSPORT->loop_start_pos)
+                     > 0)
                 {
                   position_set_to_pos (
                     &TRANSPORT->loop_end_pos, &tmp);

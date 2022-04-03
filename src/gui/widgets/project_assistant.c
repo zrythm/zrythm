@@ -18,8 +18,8 @@
  */
 
 #include "gui/backend/wrapped_object_with_change_signal.h"
-#include "gui/widgets/item_factory.h"
 #include "gui/widgets/dialogs/create_project_dialog.h"
+#include "gui/widgets/item_factory.h"
 #include "gui/widgets/project_assistant.h"
 #include "project.h"
 #include "utils/arrays.h"
@@ -36,7 +36,7 @@
 
 #include <glib/gi18n.h>
 
-#define FILE_NOT_FOUND_STR _("<File not found>")
+#define FILE_NOT_FOUND_STR _ ("<File not found>")
 
 G_DEFINE_TYPE (
   ProjectAssistantWidget,
@@ -63,9 +63,8 @@ project_info_new (
         }
       else
         {
-          self->modified_str =
-            datetime_epoch_to_str (
-              self->modified, NULL);
+          self->modified_str = datetime_epoch_to_str (
+            self->modified, NULL);
         }
     }
   else
@@ -79,8 +78,7 @@ project_info_new (
 }
 
 static void
-project_info_free (
-  ProjectInfo * self)
+project_info_free (ProjectInfo * self)
 {
   g_free_and_null (self->name);
   g_free_and_null (self->filename);
@@ -90,20 +88,17 @@ project_info_free (
 }
 
 static void
-project_info_destroy_func (
-  void * data)
+project_info_destroy_func (void * data)
 {
   project_info_free ((ProjectInfo *) data);
 }
 
 static ProjectInfo *
-get_selected_project (
-  ProjectAssistantWidget * self)
+get_selected_project (ProjectAssistantWidget * self)
 {
-  GtkSingleSelection * sel =
-    GTK_SINGLE_SELECTION (
-      gtk_column_view_get_model (
-        self->recent_projects_column_view));
+  GtkSingleSelection * sel = GTK_SINGLE_SELECTION (
+    gtk_column_view_get_model (
+      self->recent_projects_column_view));
   GObject * gobj =
     gtk_single_selection_get_selected_item (sel);
   if (!gobj)
@@ -118,13 +113,11 @@ get_selected_project (
 }
 
 static ProjectInfo *
-get_selected_template (
-  ProjectAssistantWidget * self)
+get_selected_template (ProjectAssistantWidget * self)
 {
-  GtkSingleSelection * sel =
-    GTK_SINGLE_SELECTION (
-      gtk_column_view_get_model (
-        self->templates_column_view));
+  GtkSingleSelection * sel = GTK_SINGLE_SELECTION (
+    gtk_column_view_get_model (
+      self->templates_column_view));
   GObject * gobj =
     gtk_single_selection_get_selected_item (sel);
   if (!gobj)
@@ -140,9 +133,9 @@ get_selected_template (
 
 static void
 on_visible_child_name_changed (
-  GObject *      gobject,
-  GParamSpec *   pspec,
-  gpointer       user_data)
+  GObject *    gobject,
+  GParamSpec * pspec,
+  gpointer     user_data)
 {
   ProjectAssistantWidget * self =
     (ProjectAssistantWidget *) user_data;
@@ -154,15 +147,14 @@ on_visible_child_name_changed (
   if (string_is_equal (child_name, "open-recent"))
     {
       gtk_button_set_label (
-        self->ok_btn, _("_Open Selected"));
+        self->ok_btn, _ ("_Open Selected"));
       gtk_widget_set_visible (
         GTK_WIDGET (self->open_from_path_btn), true);
     }
-  else if (
-    string_is_equal (child_name, "create-new"))
+  else if (string_is_equal (child_name, "create-new"))
     {
       gtk_button_set_label (
-        self->ok_btn, _("_Create"));
+        self->ok_btn, _ ("_Create"));
       gtk_widget_set_visible (
         GTK_WIDGET (self->open_from_path_btn),
         false);
@@ -213,8 +205,7 @@ on_template_selection_changed (
 }
 
 static void
-refresh_projects (
-  ProjectAssistantWidget * self)
+refresh_projects (ProjectAssistantWidget * self)
 {
   GListStore * store =
     z_gtk_column_view_get_list_store (
@@ -225,8 +216,7 @@ refresh_projects (
        i < self->project_infos_arr->len; i++)
     {
       ProjectInfo * nfo =
-        (ProjectInfo *)
-        g_ptr_array_index (
+        (ProjectInfo *) g_ptr_array_index (
           self->project_infos_arr, i);
       WrappedObjectWithChangeSignal * wrapped_nfo =
         wrapped_object_with_change_signal_new (
@@ -239,21 +229,18 @@ refresh_projects (
 }
 
 static void
-refresh_templates (
-  ProjectAssistantWidget * self)
+refresh_templates (ProjectAssistantWidget * self)
 {
   GListStore * store =
     z_gtk_column_view_get_list_store (
       self->templates_column_view);
 
   GPtrArray * wrapped_projects = g_ptr_array_new ();
-  for (size_t i = 0;
-       i < self->templates_arr->len; i++)
+  for (size_t i = 0; i < self->templates_arr->len;
+       i++)
     {
-      ProjectInfo * nfo =
-        (ProjectInfo *)
-        g_ptr_array_index (
-          self->templates_arr, i);
+      ProjectInfo * nfo = (ProjectInfo *)
+        g_ptr_array_index (self->templates_arr, i);
       WrappedObjectWithChangeSignal * wrapped_nfo =
         wrapped_object_with_change_signal_new (
           nfo, WRAPPED_OBJECT_TYPE_PROJECT_INFO);
@@ -292,7 +279,7 @@ post_finish (
       else
         {
           /*gtk_window_close (*/
-            /*GTK_WINDOW (data->assistant));*/
+          /*GTK_WINDOW (data->assistant));*/
           g_message (
             "activating zrythm_app.load_project");
           g_action_group_activate_action (
@@ -316,17 +303,15 @@ create_project_dialog_response_cb (
     quit = true;
 
   g_message (
-    "%s (%s): creating project %s",
-    __func__, __FILE__,
-    ZRYTHM->create_project_path);
+    "%s (%s): creating project %s", __func__,
+    __FILE__, ZRYTHM->create_project_path);
 
-  GtkWindow * parent =
-    gtk_window_get_transient_for (
-      GTK_WINDOW (dialog));
+  GtkWindow * parent = gtk_window_get_transient_for (
+    GTK_WINDOW (dialog));
   post_finish (
     Z_IS_PROJECT_ASSISTANT_WIDGET (parent)
-    ? Z_PROJECT_ASSISTANT_WIDGET (parent)
-    : NULL,
+      ? Z_PROJECT_ASSISTANT_WIDGET (parent)
+      : NULL,
     zrythm_already_running, quit);
   gtk_window_destroy (GTK_WINDOW (dialog));
 }
@@ -404,9 +389,8 @@ project_assistant_widget_present (
   bool        show_create_new_project,
   bool        zrythm_already_running)
 {
-  ProjectAssistantWidget * self =
-    g_object_new (
-      PROJECT_ASSISTANT_WIDGET_TYPE, NULL);
+  ProjectAssistantWidget * self = g_object_new (
+    PROJECT_ASSISTANT_WIDGET_TYPE, NULL);
 
   self->zrythm_already_running =
     zrythm_already_running;
@@ -481,8 +465,7 @@ on_response (
           if (selected_template->filename[0] == '-')
             {
               ZRYTHM->open_filename = NULL;
-              g_message (
-                "Creating blank project");
+              g_message ("Creating blank project");
             }
           else
             {
@@ -495,14 +478,14 @@ on_response (
             }
         }
       /* else if we are loading a project */
-      else if (
-        string_is_equal (child_name, "open-recent"))
+      else if (string_is_equal (
+                 child_name, "open-recent"))
         {
           if (!selected_project)
             {
               ui_show_error_message (
                 self, false,
-                _("No project selected"));
+                _ ("No project selected"));
               return;
             }
           ZRYTHM->open_filename =
@@ -519,16 +502,15 @@ on_response (
       {
         GtkFileChooserNative * native =
           gtk_file_chooser_native_new (
-            _("Select Project File"),
+            _ ("Select Project File"),
             GTK_WINDOW (self),
             GTK_FILE_CHOOSER_ACTION_OPEN,
-            _("_Open"), _("_Cancel"));
+            _ ("_Open"), _ ("_Cancel"));
         GtkFileFilter * filter =
           gtk_file_filter_new ();
         gtk_file_filter_add_mime_type (
           filter, "application/x-zrythm-project");
-        gtk_file_filter_add_suffix (
-          filter, "zpj");
+        gtk_file_filter_add_suffix (filter, "zpj");
         gtk_file_chooser_add_filter (
           GTK_FILE_CHOOSER (native), filter);
         g_signal_connect (
@@ -557,8 +539,9 @@ on_response (
 
       /* if window already destroyed, set transient
        * to splash screen instead */
-      if (response_id == GTK_RESPONSE_DELETE_EVENT
-          || response_id == GTK_RESPONSE_CLOSE)
+      if (
+        response_id == GTK_RESPONSE_DELETE_EVENT
+        || response_id == GTK_RESPONSE_CLOSE)
         {
           gtk_window_set_transient_for (
             GTK_WINDOW (create_prj_dialog),
@@ -580,8 +563,7 @@ on_response (
 }
 
 static char *
-get_prj_name (
-  void * data)
+get_prj_name (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
@@ -592,8 +574,7 @@ get_prj_name (
 }
 
 static char *
-get_prj_path (
-  void * data)
+get_prj_path (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
@@ -604,8 +585,7 @@ get_prj_path (
 }
 
 static gint64
-get_prj_last_modified (
-  void * data)
+get_prj_last_modified (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
@@ -616,27 +596,22 @@ get_prj_last_modified (
 }
 
 static void
-set_column_view_model (
-  GtkColumnView * column_view)
+set_column_view_model (GtkColumnView * column_view)
 {
-  GListStore * store;
-  GtkSorter * sorter;
-  GtkSortListModel * sort_list_model;
+  GListStore *         store;
+  GtkSorter *          sorter;
+  GtkSortListModel *   sort_list_model;
   GtkSingleSelection * sel;
 
-  store =
-    g_list_store_new (
-      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
-  sorter =
-    gtk_column_view_get_sorter (column_view);
+  store = g_list_store_new (
+    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+  sorter = gtk_column_view_get_sorter (column_view);
   sorter = g_object_ref (sorter);
-  sort_list_model =
-    gtk_sort_list_model_new (
-      G_LIST_MODEL (store), sorter);
+  sort_list_model = gtk_sort_list_model_new (
+    G_LIST_MODEL (store), sorter);
   sel =
-    GTK_SINGLE_SELECTION (
-      gtk_single_selection_new (
-        G_LIST_MODEL (sort_list_model)));
+    GTK_SINGLE_SELECTION (gtk_single_selection_new (
+      G_LIST_MODEL (sort_list_model)));
   gtk_column_view_set_model (
     column_view, GTK_SELECTION_MODEL (sel));
 }
@@ -647,50 +622,43 @@ add_column_view_columns (
   GtkColumnView *          column_view,
   GPtrArray *              item_factories)
 {
-  GtkSorter * sorter;
+  GtkSorter *     sorter;
   GtkExpression * expression;
 
   /* name */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_STRING, NULL, 0, NULL,
-      G_CALLBACK (get_prj_name), NULL, NULL);
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_STRING, NULL, 0, NULL,
+    G_CALLBACK (get_prj_name), NULL, NULL);
   sorter =
-    GTK_SORTER (
-      gtk_string_sorter_new (expression));
+    GTK_SORTER (gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
-    column_view, item_factories,
-    ITEM_FACTORY_TEXT, Z_F_NOT_EDITABLE,
-    Z_F_RESIZABLE, sorter,
+    column_view, item_factories, ITEM_FACTORY_TEXT,
+    Z_F_NOT_EDITABLE, Z_F_RESIZABLE, sorter,
     column_view == self->recent_projects_column_view
-    ? _("Name") : _("Template Name"));
+      ? _ ("Name")
+      : _ ("Template Name"));
 
   /* path */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_STRING, NULL, 0, NULL,
-      G_CALLBACK (get_prj_path), NULL, NULL);
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_STRING, NULL, 0, NULL,
+    G_CALLBACK (get_prj_path), NULL, NULL);
   sorter =
-    GTK_SORTER (
-      gtk_string_sorter_new (expression));
+    GTK_SORTER (gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
-    column_view, item_factories,
-    ITEM_FACTORY_TEXT, Z_F_NOT_EDITABLE,
-    Z_F_RESIZABLE, sorter, _("Path"));
+    column_view, item_factories, ITEM_FACTORY_TEXT,
+    Z_F_NOT_EDITABLE, Z_F_RESIZABLE, sorter,
+    _ ("Path"));
 
   /* last modified */
-  expression =
-    gtk_cclosure_expression_new (
-      G_TYPE_INT64, NULL, 0, NULL,
-      G_CALLBACK (get_prj_last_modified),
-      NULL, NULL);
-  sorter =
-    GTK_SORTER (
-      gtk_numeric_sorter_new (expression));
+  expression = gtk_cclosure_expression_new (
+    G_TYPE_INT64, NULL, 0, NULL,
+    G_CALLBACK (get_prj_last_modified), NULL, NULL);
+  sorter = GTK_SORTER (
+    gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
     column_view, item_factories,
     ITEM_FACTORY_POSITION, Z_F_NOT_EDITABLE,
-    Z_F_RESIZABLE, sorter, _("Last Modified"));
+    Z_F_RESIZABLE, sorter, _ ("Last Modified"));
 }
 
 static void
@@ -699,20 +667,18 @@ project_assistant_finalize (
 {
   g_ptr_array_unref (
     self->recent_projects_item_factories);
-  g_ptr_array_unref (
-    self->templates_item_factories);
+  g_ptr_array_unref (self->templates_item_factories);
 
   G_OBJECT_CLASS (
-    project_assistant_widget_parent_class)->
-      finalize (G_OBJECT (self));
+    project_assistant_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 static void
 project_assistant_widget_class_init (
   ProjectAssistantWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "project_assistant.ui");
   gtk_widget_class_set_css_name (
@@ -731,10 +697,8 @@ project_assistant_widget_class_init (
 
 #undef BIND_CHILD
 
-  GObjectClass * oklass =
-    G_OBJECT_CLASS (klass);
-  oklass->finalize =
-    (GObjectFinalizeFunc)
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->finalize = (GObjectFinalizeFunc)
     project_assistant_finalize;
 }
 
@@ -760,16 +724,13 @@ project_assistant_widget_init (
   set_column_view_model (
     self->templates_column_view);
   GtkSelectionModel * sel;
-  sel =
-    gtk_column_view_get_model (
-      self->recent_projects_column_view);
+  sel = gtk_column_view_get_model (
+    self->recent_projects_column_view);
   g_signal_connect (
     sel, "selection-changed",
-    G_CALLBACK (on_project_selection_changed),
-    self);
-  sel =
-    gtk_column_view_get_model (
-      self->templates_column_view);
+    G_CALLBACK (on_project_selection_changed), self);
+  sel = gtk_column_view_get_model (
+    self->templates_column_view);
   g_signal_connect (
     sel, "selection-changed",
     G_CALLBACK (on_template_selection_changed),
@@ -777,12 +738,10 @@ project_assistant_widget_init (
 
   /* add columns */
   add_column_view_columns (
-    self,
-    self->recent_projects_column_view,
+    self, self->recent_projects_column_view,
     self->recent_projects_item_factories);
   add_column_view_columns (
-    self,
-    self->templates_column_view,
+    self, self->templates_column_view,
     self->templates_item_factories);
 
   self->project_infos_arr =
@@ -801,10 +760,8 @@ project_assistant_widget_init (
       char * project_name =
         g_path_get_basename (dir);
 
-      ProjectInfo * prj_nfo =
-        project_info_new (
-          project_name,
-          ZRYTHM->recent_projects[i]);
+      ProjectInfo * prj_nfo = project_info_new (
+        project_name, ZRYTHM->recent_projects[i]);
       g_ptr_array_add (
         self->project_infos_arr, prj_nfo);
 
@@ -815,20 +772,18 @@ project_assistant_widget_init (
   /* fill templates */
   {
     ProjectInfo * blank_template =
-      project_info_new (
-        _("Blank project"), NULL);
+      project_info_new (_ ("Blank project"), NULL);
     g_ptr_array_add (
       self->templates_arr, blank_template);
   }
   int count = 0;
   char * template;
-  while ((template = ZRYTHM->templates[count]) != NULL)
+  while (
+    (template = ZRYTHM->templates[count]) != NULL)
     {
-      char * name =
-        g_path_get_basename (template);
-      char * filename =
-        g_build_filename (
-          template, PROJECT_FILE, NULL);
+      char * name = g_path_get_basename (template);
+      char * filename = g_build_filename (
+        template, PROJECT_FILE, NULL);
 
       ProjectInfo * template_nfo =
         project_info_new (name, filename);
@@ -865,8 +820,8 @@ project_assistant_widget_init (
     self);
 
   g_signal_connect (
-    self, "response",
-    G_CALLBACK (on_response), self);
+    self, "response", G_CALLBACK (on_response),
+    self);
 
   gtk_window_set_focus (
     GTK_WINDOW (self),

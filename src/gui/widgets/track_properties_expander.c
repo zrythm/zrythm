@@ -30,9 +30,10 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (TrackPropertiesExpanderWidget,
-               track_properties_expander_widget,
-               TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
+G_DEFINE_TYPE (
+  TrackPropertiesExpanderWidget,
+  track_properties_expander_widget,
+  TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
 
 /**
  * Refreshes each field.
@@ -50,15 +51,15 @@ track_properties_expander_widget_refresh (
       g_return_if_fail (self->direct_out);
       route_target_selector_widget_refresh (
         self->direct_out,
-        track_type_has_channel (track->type) ?
-          track->channel : NULL);
+        track_type_has_channel (track->type)
+          ? track->channel
+          : NULL);
 
       editable_label_widget_setup (
         self->name, track,
-        (GenericStringGetter)
-        track_get_name,
+        (GenericStringGetter) track_get_name,
         (GenericStringSetter)
-        track_set_name_with_action);
+          track_set_name_with_action);
 
       bool is_instrument =
         track->type == TRACK_TYPE_INSTRUMENT;
@@ -90,26 +91,22 @@ track_properties_expander_widget_setup (
   GtkWidget * lbl;
 
 #define CREATE_LABEL(x) \
-  lbl = \
-    plugin_gtk_new_label ( \
-      x, true, false, 0.f, 0.5f); \
+  lbl = plugin_gtk_new_label ( \
+    x, true, false, 0.f, 0.5f); \
   gtk_widget_add_css_class ( \
     lbl, "inspector_label"); \
   gtk_widget_set_margin_start (lbl, 2); \
   gtk_widget_set_visible (lbl, 1)
 
   /* add track name */
-  self->name =
-    editable_label_widget_new (
-      NULL, NULL, NULL, 11);
-  gtk_label_set_xalign (
-    self->name->label, 0);
+  self->name = editable_label_widget_new (
+    NULL, NULL, NULL, 11);
+  gtk_label_set_xalign (self->name->label, 0);
   gtk_widget_set_margin_start (
     GTK_WIDGET (self->name->label), 4);
-  CREATE_LABEL (_("Track Name"));
+  CREATE_LABEL (_ ("Track Name"));
   two_col_expander_box_widget_add_single (
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-    lbl);
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), lbl);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->name));
@@ -118,12 +115,10 @@ track_properties_expander_widget_setup (
 
   /* add direct out */
   self->direct_out =
-    route_target_selector_widget_new (
-      track->channel);
-  CREATE_LABEL (_("Direct Out"));
+    route_target_selector_widget_new (track->channel);
+  CREATE_LABEL (_ ("Direct Out"));
   two_col_expander_box_widget_add_single (
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-    lbl);
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), lbl);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->direct_out));
@@ -131,10 +126,9 @@ track_properties_expander_widget_setup (
   /* add instrument slot */
   self->instrument_slot =
     channel_slot_widget_new_instrument ();
-  CREATE_LABEL (_("Instrument"));
+  CREATE_LABEL (_ ("Instrument"));
   two_col_expander_box_widget_add_single (
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-    lbl);
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), lbl);
   self->instrument_label = GTK_LABEL (lbl);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
@@ -145,7 +139,7 @@ track_properties_expander_widget_setup (
   /* set name and icon */
   expander_box_widget_set_label (
     Z_EXPANDER_BOX_WIDGET (self),
-    _("Track Properties"));
+    _ ("Track Properties"));
   expander_box_widget_set_icon_name (
     Z_EXPANDER_BOX_WIDGET (self), "info");
   expander_box_widget_set_orientation (

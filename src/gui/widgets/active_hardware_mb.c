@@ -26,12 +26,12 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include <glib/gi18n.h>
-
 G_DEFINE_TYPE (
-  ActiveHardwareMbWidget, active_hardware_mb_widget,
+  ActiveHardwareMbWidget,
+  active_hardware_mb_widget,
   GTK_TYPE_WIDGET)
 
 static void
@@ -76,15 +76,13 @@ active_hardware_mb_widget_save_settings (
   ActiveHardwareMbWidget * self)
 {
   char * controllers[40];
-  int num_controllers = 0;
+  int    num_controllers = 0;
 
-  for (GtkWidget * child =
-         gtk_widget_get_first_child (
-           GTK_WIDGET (
-             self->popover->controllers_box));
-       child != NULL;
-       child =
-         gtk_widget_get_next_sibling (child))
+  for (
+    GtkWidget * child = gtk_widget_get_first_child (
+      GTK_WIDGET (self->popover->controllers_box));
+    child != NULL;
+    child = gtk_widget_get_next_sibling (child))
     {
       if (!GTK_IS_CHECK_BUTTON (child))
         continue;
@@ -93,17 +91,15 @@ active_hardware_mb_widget_save_settings (
         GTK_CHECK_BUTTON (child);
       if (gtk_check_button_get_active (chkbtn))
         {
-          controllers[num_controllers++] =
-            g_strdup (
-              gtk_check_button_get_label (chkbtn));
+          controllers[num_controllers++] = g_strdup (
+            gtk_check_button_get_label (chkbtn));
         }
     }
   controllers[num_controllers] = NULL;
 
-  int res =
-    g_settings_set_strv (
-      self->settings, self->key,
-      (const char * const*) controllers);
+  int res = g_settings_set_strv (
+    self->settings, self->key,
+    (const char * const *) controllers);
   g_return_if_fail (res == 1);
 }
 
@@ -122,17 +118,16 @@ active_hardware_mb_widget_setup (
 
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->mbutton),
-    is_input ?
-      _("Click to enable inputs") :
-      _("Click to enable outputs"));
+    is_input
+      ? _ ("Click to enable inputs")
+      : _ ("Click to enable outputs"));
 }
 
 ActiveHardwareMbWidget *
 active_hardware_mb_widget_new (void)
 {
-  ActiveHardwareMbWidget * self =
-    g_object_new (
-      ACTIVE_HARDWARE_MB_WIDGET_TYPE, NULL);
+  ActiveHardwareMbWidget * self = g_object_new (
+    ACTIVE_HARDWARE_MB_WIDGET_TYPE, NULL);
 
   return self;
 }
@@ -159,9 +154,8 @@ active_hardware_mb_widget_init (
     GTK_WIDGET (self->mbutton), GTK_WIDGET (self));
 
   gtk_menu_button_set_label (
-    self->mbutton, _("Select..."));
+    self->mbutton, _ ("Select..."));
 
   gtk_menu_button_set_create_popup_func (
-    self->mbutton, on_create_popover, self,
-    NULL);
+    self->mbutton, on_create_popover, self, NULL);
 }

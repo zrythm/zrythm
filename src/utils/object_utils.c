@@ -26,7 +26,8 @@
 /** Time to wait in seconds for object deletion. */
 #define TIME_TO_WAIT_SEC 20
 /** Time to wait in microseconds. */
-#define TIME_TO_WAIT_USEC (TIME_TO_WAIT_SEC * 1000000)
+#define TIME_TO_WAIT_USEC \
+  (TIME_TO_WAIT_SEC * 1000000)
 
 /**
  * Type to be used in the stacks.
@@ -34,11 +35,11 @@
 typedef struct FreeElement
 {
   /** Time the element was added to the stack. */
-  gint64       time_added;
+  gint64 time_added;
   /** The object to be deleted. */
-  void *       obj;
+  void * obj;
   /** The delete function. */
-  void         (*dfunc) (void *);
+  void (*dfunc) (void *);
 
   /** File. */
   const char * file;
@@ -47,28 +48,25 @@ typedef struct FreeElement
   const char * func;
 
   /** Line. */
-  int          line;
+  int line;
 } FreeElement;
 
 static gboolean
-free_later_source (
-  ObjectUtils * self)
+free_later_source (ObjectUtils * self)
 {
   zix_sem_wait (&self->free_stack_for_source_lock);
 
   /* it might change so get its size at this
    * point. */
-  int ssize =
-    MIN (
-      stack_size (self->free_stack_for_source), 28);
+  int ssize = MIN (
+    stack_size (self->free_stack_for_source), 28);
 
   FreeElement * el;
   for (int i = 0; i < ssize; i++)
     {
       /* peek the element at 0 */
-      el =
-        (FreeElement *)
-        stack_pop (self->free_stack_for_source);
+      el = (FreeElement *) stack_pop (
+        self->free_stack_for_source);
       el->dfunc (el->obj);
       free (el);
     }
@@ -83,17 +81,16 @@ add_all_elements_to_source_stack (
   ObjectUtils * self,
   bool          check_time)
 {
-  gint64 curr_time =
-    g_get_monotonic_time ();
+  gint64 curr_time = g_get_monotonic_time ();
 
   FreeElement * el = NULL;
   while (mpmc_queue_dequeue (
-           self->free_queue, (void **) &el))
+    self->free_queue, (void **) &el))
     {
       /* if enough time has passed */
-      if (!check_time ||
-          (curr_time - el->time_added >
-             TIME_TO_WAIT_USEC))
+      if (
+        !check_time
+        || (curr_time - el->time_added > TIME_TO_WAIT_USEC))
         {
           zix_sem_wait (
             &self->free_stack_for_source_lock);
@@ -117,8 +114,7 @@ add_all_elements_to_source_stack (
  * needs to be deleted, it is deferred to
  * the source above. */
 static gpointer
-free_later_thread_func (
-  ObjectUtils * self)
+free_later_thread_func (ObjectUtils * self)
 {
   while (true)
     {
@@ -153,8 +149,8 @@ free_later_thread_func (
  */
 void
 _free_later (
-  void *       object,
-  void         (*dfunc) (void *),
+  void * object,
+  void (*dfunc) (void *),
   const char * file,
   const char * func,
   int          line)
@@ -202,14 +198,11 @@ object_utils_new ()
   zix_sem_init (
     &self->free_stack_for_source_lock, 1);
 
-  self->source_id =
-    g_timeout_add (
-      1000, (GSourceFunc) free_later_source, self);
-  self->free_later_thread =
-    g_thread_new (
-      "obj_utils_free_later",
-      (GThreadFunc) free_later_thread_func,
-      self);
+  self->source_id = g_timeout_add (
+    1000, (GSourceFunc) free_later_source, self);
+  self->free_later_thread = g_thread_new (
+    "obj_utils_free_later",
+    (GThreadFunc) free_later_thread_func, self);
 
   return self;
 
@@ -217,8 +210,7 @@ object_utils_new ()
 }
 
 void
-object_utils_free (
-  ObjectUtils * self)
+object_utils_free (ObjectUtils * self)
 {
   g_message (
     "%s: Freeing object utils...", __func__);
@@ -230,8 +222,8 @@ object_utils_free (
 
   /* free all pending objects */
   add_all_elements_to_source_stack (self, false);
-  while (!stack_is_empty (
-           self->free_stack_for_source))
+  while (
+    !stack_is_empty (self->free_stack_for_source))
     {
       free_later_source (self);
     }

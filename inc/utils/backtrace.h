@@ -51,15 +51,18 @@ _backtrace_get (
   bool         with_lines,
   bool         write_to_file);
 
-#define backtrace_get(prefix,max_lines,write_to_file) \
+#define backtrace_get( \
+  prefix, max_lines, write_to_file) \
   _backtrace_get ( \
     NULL, prefix, max_lines, false, write_to_file)
 
-#define backtrace_get_with_lines(prefix,max_lines,write_to_file) \
+#define backtrace_get_with_lines( \
+  prefix, max_lines, write_to_file) \
   _backtrace_get ( \
-    (ZRYTHM && ZRYTHM->exe_path) ? \
-      ZRYTHM->exe_path : NULL, prefix, \
-    max_lines, \
+    (ZRYTHM && ZRYTHM->exe_path) \
+      ? ZRYTHM->exe_path \
+      : NULL, \
+    prefix, max_lines, \
     ZRYTHM && ZRYTHM->exe_path ? true : false, \
     write_to_file)
 

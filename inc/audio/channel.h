@@ -39,14 +39,14 @@
 #include <gdk/gdk.h>
 
 #ifdef HAVE_JACK
-#include "weak_libjack.h"
+#  include "weak_libjack.h"
 #endif
 
 typedef struct AutomationTrack AutomationTrack;
-typedef struct _ChannelWidget ChannelWidget;
-typedef struct Track Track;
-typedef struct _TrackWidget TrackWidget;
-typedef struct ExtPort ExtPort;
+typedef struct _ChannelWidget  ChannelWidget;
+typedef struct Track           Track;
+typedef struct _TrackWidget    TrackWidget;
+typedef struct ExtPort         ExtPort;
 
 /**
  * @addtogroup audio
@@ -63,8 +63,10 @@ typedef struct ExtPort ExtPort;
 #define IS_CHANNEL_AND_NONNULL(x) \
   (x && IS_CHANNEL (x))
 
-#define FOREACH_STRIP for (int i = 0; i < STRIP_SIZE; i++)
-#define FOREACH_AUTOMATABLE(ch) for (int i = 0; i < ch->num_automatables; i++)
+#define FOREACH_STRIP \
+  for (int i = 0; i < STRIP_SIZE; i++)
+#define FOREACH_AUTOMATABLE(ch) \
+  for (int i = 0; i < ch->num_automatables; i++)
 #define MAX_FADER_AMP 1.42f
 
 #define channel_is_in_active_project(self) \
@@ -78,19 +80,19 @@ typedef struct ExtPort ExtPort;
  */
 typedef struct Channel
 {
-  int              schema_version;
+  int schema_version;
   /**
    * The MIDI effect strip on instrument/MIDI tracks.
    *
    * This is processed before the instrument/inserts.
    */
-  Plugin *         midi_fx[STRIP_SIZE];
+  Plugin * midi_fx[STRIP_SIZE];
 
   /** The channel insert strip. */
-  Plugin *         inserts[STRIP_SIZE];
+  Plugin * inserts[STRIP_SIZE];
 
   /** The instrument plugin, if instrument track. */
-  Plugin *         instrument;
+  Plugin * instrument;
 
   /**
    * The sends strip.
@@ -100,7 +102,7 @@ typedef struct Channel
    *
    * @note See CHANNEL_SEND_POST_FADER_START_SLOT.
    */
-  ChannelSend *    sends[STRIP_SIZE];
+  ChannelSend * sends[STRIP_SIZE];
 
   /**
    * External MIDI inputs that are currently
@@ -113,12 +115,12 @@ typedef struct Channel
    *
    * If all_midi_ins is enabled, these are ignored.
    */
-  ExtPort *        ext_midi_ins[EXT_PORTS_MAX];
-  int              num_ext_midi_ins;
+  ExtPort * ext_midi_ins[EXT_PORTS_MAX];
+  int       num_ext_midi_ins;
 
   /** If 1, the channel will connect to all MIDI ins
    * found. */
-  int              all_midi_ins;
+  int all_midi_ins;
 
   /**
    * External audio L inputs that are currently
@@ -132,12 +134,12 @@ typedef struct Channel
    * If all_stereo_l_ins is enabled, these are
    * ignored.
    */
-  ExtPort *        ext_stereo_l_ins[EXT_PORTS_MAX];
-  int              num_ext_stereo_l_ins;
+  ExtPort * ext_stereo_l_ins[EXT_PORTS_MAX];
+  int       num_ext_stereo_l_ins;
 
   /** If 1, the channel will connect to all
    * stereo L ins found. */
-  int              all_stereo_l_ins;
+  int all_stereo_l_ins;
 
   /**
    * External audio R inputs that are currently
@@ -151,12 +153,12 @@ typedef struct Channel
    * If all_stereo_r_ins is enabled, these are
    * ignored.
    */
-  ExtPort *        ext_stereo_r_ins[EXT_PORTS_MAX];
-  int              num_ext_stereo_r_ins;
+  ExtPort * ext_stereo_r_ins[EXT_PORTS_MAX];
+  int       num_ext_stereo_r_ins;
 
   /** If 1, the channel will connect to all
    * stereo R ins found. */
-  int              all_stereo_r_ins;
+  int all_stereo_r_ins;
 
   /**
    * 1 or 0 flags for each channel to enable it or
@@ -165,36 +167,36 @@ typedef struct Channel
    * If all_midi_channels is enabled, this is
    * ignored.
    */
-  int              midi_channels[16];
+  int midi_channels[16];
 
   /** If 1, the channel will accept MIDI messages
    * from all MIDI channels.
    */
-  int              all_midi_channels;
+  int all_midi_channels;
 
   /** The channel fader. */
-  Fader *          fader;
+  Fader * fader;
 
   /**
    * Prefader.
    *
    * The last plugin should connect to this.
    */
-  Fader *          prefader;
+  Fader * prefader;
 
   /**
    * MIDI output for sending MIDI signals to other
    * destinations, such as other channels when
    * directly routed (eg MIDI track to ins track).
    */
-  Port *           midi_out;
+  Port * midi_out;
 
   /*
    * Ports for direct (track-to-track) routing with
    * the exception of master, which will route the
    * output to monitor in.
    */
-  StereoPorts *    stereo_out;
+  StereoPorts * stereo_out;
 
   /**
    * Whether or not output_pos corresponds to
@@ -202,90 +204,96 @@ typedef struct Channel
    *
    * If not, the channel is routed to the engine.
    */
-  int              has_output;
+  int has_output;
 
   /** Output track. */
-  unsigned int     output_name_hash;
+  unsigned int output_name_hash;
 
   /** Track associated with this channel. */
-  int              track_pos;
+  int track_pos;
 
   /** Channel widget width - reserved for future
    * use. */
-  int              width;
+  int width;
 
   /** This must be set to CHANNEL_MAGIC. */
-  int              magic;
+  int magic;
 
   /** The channel widget. */
-  ChannelWidget *  widget;
+  ChannelWidget * widget;
 
   /** Pointer to owner track. */
-  Track *          track;
+  Track * track;
 } Channel;
 
-static const cyaml_schema_field_t
-channel_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    Channel, schema_version),
+static const cyaml_schema_field_t channel_fields_schema[] = {
+  YAML_FIELD_INT (Channel, schema_version),
   YAML_FIELD_SEQUENCE_FIXED (
-    Channel, midi_fx,
-    plugin_schema, STRIP_SIZE),
+    Channel,
+    midi_fx,
+    plugin_schema,
+    STRIP_SIZE),
   YAML_FIELD_SEQUENCE_FIXED (
-    Channel, inserts,
-    plugin_schema, STRIP_SIZE),
+    Channel,
+    inserts,
+    plugin_schema,
+    STRIP_SIZE),
   YAML_FIELD_SEQUENCE_FIXED (
-    Channel, sends,
-    channel_send_schema, STRIP_SIZE),
+    Channel,
+    sends,
+    channel_send_schema,
+    STRIP_SIZE),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Channel, instrument, plugin_fields_schema),
+    Channel,
+    instrument,
+    plugin_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Channel, prefader,
+    Channel,
+    prefader,
     fader_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Channel, fader, fader_fields_schema),
+    Channel,
+    fader,
+    fader_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Channel, midi_out,
+    Channel,
+    midi_out,
     port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Channel, stereo_out,
+    Channel,
+    stereo_out,
     stereo_ports_fields_schema),
-  YAML_FIELD_UINT (
-    Channel, has_output),
-  YAML_FIELD_UINT (
-    Channel, output_name_hash),
-  YAML_FIELD_INT (
-    Channel, track_pos),
+  YAML_FIELD_UINT (Channel, has_output),
+  YAML_FIELD_UINT (Channel, output_name_hash),
+  YAML_FIELD_INT (Channel, track_pos),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    Channel, ext_midi_ins,
+    Channel,
+    ext_midi_ins,
     ext_port_schema),
-  YAML_FIELD_INT (
-    Channel, all_midi_ins),
+  YAML_FIELD_INT (Channel, all_midi_ins),
   YAML_FIELD_SEQUENCE_FIXED (
-    Channel, midi_channels, int_schema, 16),
+    Channel,
+    midi_channels,
+    int_schema,
+    16),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    Channel, ext_stereo_l_ins,
+    Channel,
+    ext_stereo_l_ins,
     ext_port_schema),
-  YAML_FIELD_INT (
-    Channel, all_stereo_l_ins),
+  YAML_FIELD_INT (Channel, all_stereo_l_ins),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    Channel, ext_stereo_r_ins,
+    Channel,
+    ext_stereo_r_ins,
     ext_port_schema),
-  YAML_FIELD_INT (
-    Channel, all_stereo_r_ins),
-  YAML_FIELD_INT (
-    Channel, all_midi_channels),
+  YAML_FIELD_INT (Channel, all_stereo_r_ins),
+  YAML_FIELD_INT (Channel, all_midi_channels),
   YAML_FIELD_INT (Channel, width),
 
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-channel_schema =
-{
-  YAML_VALUE_PTR (
-    Channel, channel_fields_schema),
+static const cyaml_schema_value_t channel_schema = {
+  YAML_VALUE_PTR (Channel, channel_fields_schema),
 };
 
 NONNULL
@@ -323,16 +331,14 @@ channel_append_ports (
 
 NONNULL
 void
-channel_set_magic (
-  Channel * self);
+channel_set_magic (Channel * self);
 
 /**
  * Exposes the channel's ports to the backend.
  */
 NONNULL
 void
-channel_expose_ports_to_backend (
-  Channel * ch);
+channel_expose_ports_to_backend (Channel * ch);
 
 /**
  * Connects the channel's ports.
@@ -340,8 +346,7 @@ channel_expose_ports_to_backend (
  * This should only be called on project tracks.
  */
 void
-channel_connect (
-  Channel * ch);
+channel_connect (Channel * ch);
 
 NONNULL
 void
@@ -351,11 +356,11 @@ NONNULL
 float
 channel_get_phase (void * channel);
 
-
 NONNULL
 void
 channel_set_balance_control (
-  void * _channel, float pan);
+  void * _channel,
+  float  pan);
 
 /**
  * Adds to (or subtracts from) the pan.
@@ -363,7 +368,8 @@ channel_set_balance_control (
 NONNULL
 void
 channel_add_balance_control (
-  void * _channel, float pan);
+  void * _channel,
+  float  pan);
 
 NONNULL
 float
@@ -394,8 +400,7 @@ channel_prepare_process (Channel * channel);
  */
 NONNULL
 Channel *
-channel_new (
-  Track * track);
+channel_new (Track * track);
 
 /**
  * The process function prototype.
@@ -434,25 +439,23 @@ channel_process (Channel * channel);
 NONNULL
 bool
 channel_add_plugin (
-  Channel * channel,
+  Channel *      channel,
   PluginSlotType slot_type,
-  int       pos,
-  Plugin *  plugin,
-  bool      confirm,
-  bool      moving_plugin,
-  bool      gen_automatables,
-  bool      recalc_graph,
-  bool      pub_events);
+  int            pos,
+  Plugin *       plugin,
+  bool           confirm,
+  bool           moving_plugin,
+  bool           gen_automatables,
+  bool           recalc_graph,
+  bool           pub_events);
 
 NONNULL
 Track *
-channel_get_track (
-  Channel * self);
+channel_get_track (Channel * self);
 
 NONNULL
 Track *
-channel_get_output_track (
-  Channel * self);
+channel_get_output_track (Channel * self);
 
 /**
  * Called when the input has changed for Midi,
@@ -460,8 +463,7 @@ channel_get_output_track (
  */
 NONNULL
 void
-channel_reconnect_ext_input_ports (
-  Channel * ch);
+channel_reconnect_ext_input_ports (Channel * ch);
 
 /**
  * Convenience function to get the automation track
@@ -470,9 +472,8 @@ channel_reconnect_ext_input_ports (
 NONNULL
 AutomationTrack *
 channel_get_automation_track (
-  Channel *       channel,
-  PortFlags       port_flags);
-
+  Channel * channel,
+  PortFlags port_flags);
 
 /**
  * Removes a plugin at pos from the channel.
@@ -514,17 +515,14 @@ channel_update_track_name_hash (
 
 NONNULL
 int
-channel_get_plugins (
-  Channel * self,
-  Plugin ** pls);
+channel_get_plugins (Channel * self, Plugin ** pls);
 
 /**
  * Gets whether mono compatibility is enabled.
  */
 NONNULL
 bool
-channel_get_mono_compat_enabled (
-  Channel * self);
+channel_get_mono_compat_enabled (Channel * self);
 
 /**
  * Sets whether mono compatibility is enabled.
@@ -551,8 +549,7 @@ channel_select_all (
  */
 NONNULL
 void
-channel_set_caches (
-  Channel * self);
+channel_set_caches (Channel * self);
 
 /**
  * Clones the channel recursively.
@@ -565,7 +562,7 @@ channel_set_caches (
  * @bool src_is_project Whether \ref ch is a project
  *   channel.
  */
-NONNULL_ARGS (1,2)
+NONNULL_ARGS (1, 2)
 Channel *
 channel_clone (
   Channel * ch,

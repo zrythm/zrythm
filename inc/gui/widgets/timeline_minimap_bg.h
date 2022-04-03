@@ -33,12 +33,13 @@
 G_DECLARE_FINAL_TYPE (
   TimelineMinimapBgWidget,
   timeline_minimap_bg_widget,
-  Z, TIMELINE_MINIMAP_BG_WIDGET,
+  Z,
+  TIMELINE_MINIMAP_BG_WIDGET,
   GtkWidget)
 
 typedef struct _TimelineMinimapBgWidget
 {
-  GtkWidget        parent_instance;
+  GtkWidget parent_instance;
 } TimelineMinimapBgWidget;
 
 TimelineMinimapBgWidget *

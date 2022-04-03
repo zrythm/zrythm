@@ -17,17 +17,17 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/engine.h"
 #include "audio/audio_function.h"
 #include "audio/audio_region.h"
+#include "audio/engine.h"
 #include "gui/backend/arranger_selections.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
-#include "plugins/lv2_plugin.h"
 #include "plugins/lv2/lv2_ui.h"
-#include "plugins/plugin_manager.h"
+#include "plugins/lv2_plugin.h"
 #include "plugins/plugin_gtk.h"
+#include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/debug.h"
@@ -47,7 +47,8 @@ typedef enum
 
 #define Z_AUDIO_AUDIO_FUNCTION_ERROR \
   z_audio_audio_function_error_quark ()
-GQuark z_audio_audio_function_error_quark (void);
+GQuark
+z_audio_audio_function_error_quark (void);
 G_DEFINE_QUARK (
   z-audio-audio-function-error-quark, z_audio_audio_function_error)
 
@@ -78,11 +79,9 @@ audio_function_get_detailed_action_for_type (
   const char *      base_action)
 {
   char * target =
-    audio_function_get_action_target_for_type (
-      type);
+    audio_function_get_action_target_for_type (type);
   char * ret =
-    g_strdup_printf (
-      "%s::%s", base_action, target);
+    g_strdup_printf ("%s::%s", base_action, target);
   g_free (target);
 
   return ret;
@@ -142,24 +141,22 @@ apply_plugin (
   g_return_val_if_fail (setting, -1);
   setting->force_generic_ui = true;
   GError * err = NULL;
-  Plugin * pl =
-    plugin_new_from_setting (
-      setting, 0, PLUGIN_SLOT_INSERT, 0, &err);
+  Plugin * pl = plugin_new_from_setting (
+    setting, 0, PLUGIN_SLOT_INSERT, 0, &err);
   if (!IS_PLUGIN_AND_NONNULL (pl))
     {
       PROPAGATE_PREFIXED_ERROR (
         error, err, "%s",
-        _("Failed to create plugin"));
+        _ ("Failed to create plugin"));
       return -1;
     }
   pl->is_function = true;
-  int ret =
-    plugin_instantiate (pl, NULL, &err);
+  int ret = plugin_instantiate (pl, NULL, &err);
   if (ret != 0)
     {
       PROPAGATE_PREFIXED_ERROR (
         error, err, "%s",
-        _("Failed to instantiate plugin"));
+        _ ("Failed to instantiate plugin"));
       return -1;
     }
   ret = plugin_activate (pl, true);
@@ -167,28 +164,23 @@ apply_plugin (
   plugin_setting_free (setting);
 
   /* create window */
-  pl->window =
-    GTK_WINDOW (gtk_dialog_new ());
-  gtk_window_set_title (
-    pl->window, descr->name);
-  gtk_window_set_icon_name (
-    pl->window, "zrythm");
+  pl->window = GTK_WINDOW (gtk_dialog_new ());
+  gtk_window_set_title (pl->window, descr->name);
+  gtk_window_set_icon_name (pl->window, "zrythm");
   /*gtk_window_set_role (*/
-    /*pl->window, "plugin_ui");*/
+  /*pl->window, "plugin_ui");*/
   gtk_window_set_modal (pl->window, true);
   /*gtk_window_set_attached_to (*/
-    /*pl->window, GTK_WIDGET (MAIN_WINDOW));*/
+  /*pl->window, GTK_WIDGET (MAIN_WINDOW));*/
 
   /* add vbox for stacking elements */
-  pl->vbox =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  pl->vbox = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   GtkWidget * container =
     gtk_dialog_get_content_area (
       GTK_DIALOG (pl->window));
   gtk_box_append (
-    GTK_BOX (container),
-    GTK_WIDGET (pl->vbox));
+    GTK_BOX (container), GTK_WIDGET (pl->vbox));
 
 #if 0
   /* add menu bar */
@@ -199,11 +191,9 @@ apply_plugin (
 
   /* Create/show alignment to contain UI (whether
    * custom or generic) */
-  pl->ev_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
-  gtk_box_append (
-    pl->vbox, GTK_WIDGET (pl->ev_box));
+  pl->ev_box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  gtk_box_append (pl->vbox, GTK_WIDGET (pl->ev_box));
   gtk_widget_set_vexpand (
     GTK_WIDGET (pl->ev_box), true);
 
@@ -211,9 +201,8 @@ apply_plugin (
   plugin_gtk_open_generic_ui (
     pl, F_NO_PUBLISH_EVENTS);
 
-  ret =
-    z_gtk_dialog_run (
-      GTK_DIALOG (pl->window), false);
+  ret = z_gtk_dialog_run (
+    GTK_DIALOG (pl->window), false);
 
   Port * l_in = NULL;
   Port * r_in = NULL;
@@ -271,13 +260,11 @@ apply_plugin (
         {
           g_return_val_if_fail (l_in, -1);
           g_return_val_if_fail (r_in, -1);
-          l_in->buf[j] =
-            frames[(i + j) * channels];
+          l_in->buf[j] = frames[(i + j) * channels];
           r_in->buf[j] =
             frames[(i + j) * channels + 1];
         }
-      lv2_ui_read_and_apply_events (
-        pl->lv2, step);
+      lv2_ui_read_and_apply_events (pl->lv2, step);
       lilv_instance_run (pl->lv2->instance, step);
       for (size_t j = 0; j < step; j++)
         {
@@ -309,8 +296,7 @@ apply_plugin (
 
   /* handle latency */
   i = 0;
-  step =
-    MIN (AUDIO_ENGINE->block_length, latency);
+  step = MIN (AUDIO_ENGINE->block_length, latency);
   while (i < latency)
     {
       for (size_t j = 0; j < step; j++)
@@ -320,14 +306,13 @@ apply_plugin (
           l_in->buf[j] = 0.f;
           r_in->buf[j] = 0.f;
         }
-      lv2_ui_read_and_apply_events (
-        pl->lv2, step);
+      lv2_ui_read_and_apply_events (pl->lv2, step);
       lilv_instance_run (pl->lv2->instance, step);
       for (size_t j = 0; j < step; j++)
         {
           long actual_j =
-            (long) (i + j + num_frames) -
-            (long) latency;
+            (long) (i + j + num_frames)
+            - (long) latency;
           g_return_val_if_fail (actual_j >= 0, -1);
 #if 0
           g_message (
@@ -385,26 +370,26 @@ audio_function_apply (
 
   ZRegion * r = region_find (&audio_sel->region_id);
   g_return_val_if_fail (r, -1);
-  Track * tr =
-    arranger_object_get_track ((ArrangerObject *) r);
+  Track * tr = arranger_object_get_track (
+    (ArrangerObject *) r);
   g_return_val_if_fail (tr, -1);
-  AudioClip * orig_clip =  audio_region_get_clip (r);
+  AudioClip * orig_clip = audio_region_get_clip (r);
   g_return_val_if_fail (orig_clip, -1);
 
   Position init_pos;
   position_init (&init_pos);
-  if (position_is_before (
-        &audio_sel->sel_start, &r->base.pos) ||
-      position_is_after (
-        &audio_sel->sel_end, &r->base.end_pos))
+  if (
+    position_is_before (
+      &audio_sel->sel_start, &r->base.pos)
+    || position_is_after (
+      &audio_sel->sel_end, &r->base.end_pos))
     {
       position_print (&audio_sel->sel_start);
       position_print (&audio_sel->sel_end);
       g_set_error_literal (
-        error,
-        Z_AUDIO_AUDIO_FUNCTION_ERROR,
+        error, Z_AUDIO_AUDIO_FUNCTION_ERROR,
         Z_AUDIO_AUDIO_FUNCTION_ERROR_INVALID_POSITIONS,
-        _("Invalid positions - skipping function"));
+        _ ("Invalid positions - skipping function"));
       return -1;
     }
 
@@ -412,12 +397,9 @@ audio_function_apply (
   Position start, end;
   position_set_to_pos (
     &start, &audio_sel->sel_start);
-  position_set_to_pos (
-    &end, &audio_sel->sel_end);
-  position_add_frames (
-    &start, - r->base.pos.frames);
-  position_add_frames (
-    &end, - r->base.pos.frames);
+  position_set_to_pos (&end, &audio_sel->sel_end);
+  position_add_frames (&start, -r->base.pos.frames);
+  position_add_frames (&end, -r->base.pos.frames);
 
   /* create a copy of the frames to be replaced */
   unsigned_frame_t num_frames =
@@ -425,19 +407,18 @@ audio_function_apply (
 
   /* interleaved frames */
   channels_t channels = orig_clip->channels;
-  float src_frames[num_frames * channels];
-  float frames[num_frames * channels];
+  float      src_frames[num_frames * channels];
+  float      frames[num_frames * channels];
   dsp_copy (
     &frames[0],
-    &orig_clip->frames[
-      start.frames * (long) channels],
+    &orig_clip
+       ->frames[start.frames * (long) channels],
     num_frames * channels);
   dsp_copy (
     &src_frames[0], &frames[0],
     num_frames * channels);
 
-  unsigned_frame_t nudge_frames =
-    (unsigned_frame_t)
+  unsigned_frame_t nudge_frames = (unsigned_frame_t)
     position_get_frames_from_ticks (
       ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS);
   unsigned_frame_t nudge_frames_all_channels =
@@ -445,8 +426,8 @@ audio_function_apply (
   unsigned_frame_t num_frames_excl_nudge;
 
   g_debug (
-    "num frames %lu, nudge_frames %lu",
-    num_frames, nudge_frames);
+    "num frames %lu, nudge_frames %lu", num_frames,
+    nudge_frames);
   z_return_val_if_fail_cmp (nudge_frames, >, 0, -1);
 
   switch (type)
@@ -458,10 +439,8 @@ audio_function_apply (
     case AUDIO_FUNCTION_NORMALIZE_PEAK:
       /* peak-normalize */
       {
-        float abs_peak =
-          dsp_abs_max (
-            &frames[0],
-            num_frames * channels);
+        float abs_peak = dsp_abs_max (
+          &frames[0], num_frames * channels);
         dsp_mul_k2 (
           &frames[0], 1.f / abs_peak,
           num_frames * channels);
@@ -491,10 +470,8 @@ audio_function_apply (
         &src_frames[nudge_frames_all_channels],
         channels * num_frames_excl_nudge);
       dsp_fill (
-        &frames[
-          channels * num_frames_excl_nudge],
-        0.f,
-        nudge_frames_all_channels);
+        &frames[channels * num_frames_excl_nudge],
+        0.f, nudge_frames_all_channels);
       break;
     case AUDIO_FUNCTION_NUDGE_RIGHT:
       g_return_val_if_fail (
@@ -505,8 +482,7 @@ audio_function_apply (
         &frames[nudge_frames], &src_frames[0],
         channels * num_frames_excl_nudge);
       dsp_fill (
-        &frames[0], 0.f,
-        nudge_frames_all_channels);
+        &frames[0], 0.f, nudge_frames_all_channels);
       break;
     case AUDIO_FUNCTION_REVERSE:
       for (size_t i = 0; i < num_frames; i++)
@@ -514,10 +490,11 @@ audio_function_apply (
           for (size_t j = 0; j < channels; j++)
             {
               frames[i * channels + j] =
-                orig_clip->frames[
-                  ((size_t) start.frames +
-                   ((num_frames - i) - 1)) *
-                    channels + j];
+                orig_clip->frames
+                  [((size_t) start.frames
+                    + ((num_frames - i) - 1))
+                     * channels
+                   + j];
             }
         }
       break;
@@ -534,17 +511,15 @@ audio_function_apply (
         dsp_copy (
           &frames[0], &tmp_clip->frames[0],
           MIN (
-            num_frames,
-            (size_t) tmp_clip->num_frames) *
-          channels);
-        if ((size_t) tmp_clip->num_frames
-            < num_frames)
+            num_frames, (size_t) tmp_clip->num_frames)
+            * channels);
+        if ((size_t) tmp_clip->num_frames < num_frames)
           {
             dsp_fill (
               &frames[0], 0.f,
               (num_frames
                - (size_t) tmp_clip->num_frames)
-              * channels);
+                * channels);
           }
       }
       break;
@@ -552,14 +527,13 @@ audio_function_apply (
       {
         g_return_val_if_fail (uri, -1);
         GError * err = NULL;
-        int ret =
-          apply_plugin (
-            uri, frames, num_frames, channels, &err);
+        int      ret = apply_plugin (
+               uri, frames, num_frames, channels, &err);
         if (ret != 0)
           {
             PROPAGATE_PREFIXED_ERROR (
               error, err, "%s",
-              _("Failed to apply plugin"));
+              _ ("Failed to apply plugin"));
             return ret;
           }
       }
@@ -584,14 +558,13 @@ audio_function_apply (
   g_free (tmp);
 #endif
 
-  AudioClip * clip =
-    audio_clip_new_from_float_array (
-      &frames[0], num_frames,
-      channels, BIT_DEPTH_32, orig_clip->name);
+  AudioClip * clip = audio_clip_new_from_float_array (
+    &frames[0], num_frames, channels, BIT_DEPTH_32,
+    orig_clip->name);
   audio_pool_add_clip (AUDIO_POOL, clip);
   g_message (
-    "writing %s to pool (id %d)",
-    clip->name, clip->pool_id);
+    "writing %s to pool (id %d)", clip->name,
+    clip->pool_id);
   audio_clip_write_to_pool (
     clip, false, F_NOT_BACKUP);
 
@@ -605,9 +578,9 @@ audio_function_apply (
         num_frames, F_NO_DUPLICATE_CLIP);
     }
 
-  if (!ZRYTHM_TESTING
-      && type != AUDIO_FUNCTION_INVALID
-      && type != AUDIO_FUNCTION_CUSTOM_PLUGIN)
+  if (
+    !ZRYTHM_TESTING && type != AUDIO_FUNCTION_INVALID
+    && type != AUDIO_FUNCTION_CUSTOM_PLUGIN)
     {
       /* set last action */
       g_settings_set_int (

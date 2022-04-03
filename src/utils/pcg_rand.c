@@ -24,12 +24,12 @@
  * Adapted for airwindows (c) 2021 by Robin Gareus <robin@gareus.org>
  */
 
-#include <time.h>
-
 #include "utils/objects.h"
 #include "utils/pcg_rand.h"
 
 #include <glib.h>
+
+#include <time.h>
 
 typedef struct PCGRand
 {
@@ -41,8 +41,8 @@ PCGRand *
 pcg_rand_new (void)
 {
   PCGRand * self = object_new (PCGRand);
-  int foo = 0;
-  uint64_t initseq = (uint64_t) (intptr_t) &foo;
+  int       foo = 0;
+  uint64_t  initseq = (uint64_t) (intptr_t) &foo;
   self->_state = 0;
   self->_inc = (initseq << 1) | 1;
   pcg_rand_u32 (self);
@@ -55,23 +55,20 @@ pcg_rand_new (void)
 
 /* unsigned float [0..1] */
 float
-pcg_rand_uf (
-  PCGRand * self)
+pcg_rand_uf (PCGRand * self)
 {
   return pcg_rand_u32 (self) / 4294967295.f;
 }
 
 /* signed float [-1..+1] */
 float
-pcg_rand_sf (
-  PCGRand * self)
+pcg_rand_sf (PCGRand * self)
 {
   return (pcg_rand_u32 (self) / 2147483647.5f) - 1.f;
 }
 
 uint32_t
-pcg_rand_u32 (
-  PCGRand * self)
+pcg_rand_u32 (PCGRand * self)
 {
   uint64_t oldstate = self->_state;
   self->_state =
@@ -79,7 +76,6 @@ pcg_rand_u32 (
   uint32_t xorshifted =
     ((oldstate >> 18u) ^ oldstate) >> 27u;
   uint32_t rot = oldstate >> 59u;
-  return
-    (xorshifted >> rot) |
-    (xorshifted << ((-rot) & 31));
+  return (xorshifted >> rot)
+         | (xorshifted << ((-rot) & 31));
 }

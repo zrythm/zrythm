@@ -24,7 +24,8 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  ZoomButtonsWidget, zoom_buttons_widget,
+  ZoomButtonsWidget,
+  zoom_buttons_widget,
   GTK_TYPE_BOX)
 
 void
@@ -37,7 +38,7 @@ zoom_buttons_widget_setup (
 
   char detailed_action[700];
 
-#define SET_ACTION(name,widget) \
+#define SET_ACTION(name, widget) \
   sprintf ( \
     detailed_action, "app." name "::%s", type); \
   gtk_actionable_set_detailed_action_name ( \
@@ -56,17 +57,17 @@ zoom_buttons_widget_init (ZoomButtonsWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-#define SET_TOOLTIP(x,action,tooltip) \
+#define SET_TOOLTIP(x, action, tooltip) \
   z_gtk_widget_set_tooltip_for_action ( \
-    GTK_WIDGET (self->x), "app." action "::global", \
-    tooltip)
+    GTK_WIDGET (self->x), \
+    "app." action "::global", tooltip)
 
-  SET_TOOLTIP (zoom_in, "zoom-in", _("Zoom In"));
-  SET_TOOLTIP (zoom_out, "zoom-out", _("Zoom Out"));
+  SET_TOOLTIP (zoom_in, "zoom-in", _ ("Zoom In"));
+  SET_TOOLTIP (zoom_out, "zoom-out", _ ("Zoom Out"));
   SET_TOOLTIP (
     original_size, "original-size",
-    _("Original Size"));
-  SET_TOOLTIP (best_fit, "best-fit", _("Best Fit"));
+    _ ("Original Size"));
+  SET_TOOLTIP (best_fit, "best-fit", _ ("Best Fit"));
 
 #undef SET_TOOLTIP
 }

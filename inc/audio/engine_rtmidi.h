@@ -35,15 +35,13 @@ typedef struct AudioEngine AudioEngine;
  * to it.
  */
 int
-engine_rtmidi_test (
-  GtkWindow * win);
+engine_rtmidi_test (GtkWindow * win);
 
 /**
  * Refreshes the list of external ports.
  */
 void
-engine_rtmidi_rescan_ports (
-  AudioEngine * self);
+engine_rtmidi_rescan_ports (AudioEngine * self);
 
 /**
  * Sets up the MIDI engine to use Rtmidi.
@@ -51,15 +49,13 @@ engine_rtmidi_rescan_ports (
  * @param loading Loading a Project or not.
  */
 int
-engine_rtmidi_setup (
-  AudioEngine * self);
+engine_rtmidi_setup (AudioEngine * self);
 
 /**
  * Gets the number of input ports (devices).
  */
 unsigned int
-engine_rtmidi_get_num_in_ports (
-  AudioEngine * self);
+engine_rtmidi_get_num_in_ports (AudioEngine * self);
 
 /**
  * Creates an input port, optionally opening it with
@@ -74,8 +70,7 @@ engine_rtmidi_create_in_port (
   const char *  label);
 
 void
-engine_rtmidi_tear_down (
-  AudioEngine * self);
+engine_rtmidi_tear_down (AudioEngine * self);
 
 int
 engine_rtmidi_activate (

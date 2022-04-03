@@ -24,10 +24,10 @@
 #include "plugins/carla/carla_discovery.h"
 #include "utils/math.h"
 
+#include <glib.h>
+
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm.h"
-
-#include <glib.h>
 
 static void
 test_mock_au_plugin_scan (void)
@@ -37,14 +37,12 @@ test_mock_au_plugin_scan (void)
 #ifdef HAVE_CARLA
   g_message ("Scanning AU plugins...");
   unsigned int au_count = 45;
-  GError * err = NULL;
-  char * contents = NULL;
-  char * filename =
-    g_build_filename (
-      TESTS_SRCDIR, "au_plugins.txt", NULL);
-  bool success =
-    g_file_get_contents (
-      filename, &contents, NULL, &err);
+  GError *     err = NULL;
+  char *       contents = NULL;
+  char *       filename = g_build_filename (
+          TESTS_SRCDIR, "au_plugins.txt", NULL);
+  bool success = g_file_get_contents (
+    filename, &contents, NULL, &err);
   g_assert_true (success);
   char * all_plugins = contents;
   g_message ("all plugins %s", all_plugins);
@@ -58,11 +56,10 @@ test_mock_au_plugin_scan (void)
       if (descriptor)
         {
           g_assert_cmpuint (
-            strlen (descriptor->category_str),
-            >, 1);
+            strlen (descriptor->category_str), >, 1);
           g_assert_cmpuint (
-            strlen (descriptor->category_str),
-            <, 40);
+            strlen (descriptor->category_str), <,
+            40);
 
           g_message (
             "Scanned AU plugin %s",
@@ -70,8 +67,7 @@ test_mock_au_plugin_scan (void)
         }
       else
         {
-          g_message (
-            "Skipped AU plugin at %u", i);
+          g_message ("Skipped AU plugin at %u", i);
         }
 
       plugin_descriptor_free (descriptor);
@@ -87,7 +83,8 @@ test_parse_plugin_info (void)
   test_helper_zrythm_init ();
 
 #ifdef HAVE_CARLA
-  const char * str = "\
+  const char * str =
+    "\
 carla-discovery::init::-----------\n\
 \n\
 carla-discovery::build::2\n\
@@ -188,7 +185,8 @@ carla-discovery::end::------------";
   descr =
     z_carla_discovery_create_au_descriptor_from_string (
       str, 0);
-  g_assert_cmpstr (descr->name, ==, "SurgeEffectsBank");
+  g_assert_cmpstr (
+    descr->name, ==, "SurgeEffectsBank");
   g_assert_true (descr->has_custom_ui);
   plugin_descriptor_free (descr);
   descr =
@@ -203,7 +201,7 @@ carla-discovery::end::------------";
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

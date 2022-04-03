@@ -30,13 +30,16 @@
 #define BALANCE_CONTROL_WIDGET_TYPE \
   (balance_control_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  BalanceControlWidget, balance_control_widget,
-  Z, BALANCE_CONTROL_WIDGET, GtkWidget)
+  BalanceControlWidget,
+  balance_control_widget,
+  Z,
+  BALANCE_CONTROL_WIDGET,
+  GtkWidget)
 
 typedef struct _BalanceControlWidget
 {
-  GtkWidget          parent_instance;
-  GtkGestureDrag *   drag;
+  GtkWidget        parent_instance;
+  GtkGestureDrag * drag;
 
   /** Getter. */
   GenericFloatGetter getter;
@@ -45,27 +48,27 @@ typedef struct _BalanceControlWidget
   GenericFloatSetter setter;
 
   /** Object to call get/set with. */
-  void *             object;
-  double             last_x;
-  double             last_y;
-  GtkWindow *        tooltip_win;
-  GtkLabel *         tooltip_label;
-  GdkRGBA            start_color;
-  GdkRGBA            end_color;
+  void *      object;
+  double      last_x;
+  double      last_y;
+  GtkWindow * tooltip_win;
+  GtkLabel *  tooltip_label;
+  GdkRGBA     start_color;
+  GdkRGBA     end_color;
 
   /** Currently hovered or not. */
-  int                hovered;
+  int hovered;
 
   /** Currently being dragged or not. */
-  int                dragged;
+  int dragged;
 
   /** BalanceControlgo layout for drawing text. */
-  PangoLayout *      layout;
+  PangoLayout * layout;
 
   /** Balance at start of drag. */
-  float              balance_at_start;
+  float balance_at_start;
 
-  Port *             port;
+  Port * port;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;

@@ -48,13 +48,13 @@ channel_send_action_init_loaded (
  */
 UndoableAction *
 channel_send_action_new (
-  ChannelSend *         send,
-  ChannelSendActionType type,
-  Port *                port,
-  StereoPorts *         stereo,
-  float                 amount,
+  ChannelSend *                  send,
+  ChannelSendActionType          type,
+  Port *                         port,
+  StereoPorts *                  stereo,
+  float                          amount,
   const PortConnectionsManager * port_connections_mgr,
-  GError **             error)
+  GError **                      error)
 {
   ChannelSendAction * self =
     object_new (ChannelSendAction);
@@ -120,18 +120,17 @@ channel_send_action_clone (
  */
 bool
 channel_send_action_perform (
-  ChannelSend *         send,
-  ChannelSendActionType type,
-  Port *                port,
-  StereoPorts *         stereo,
-  float                 amount,
+  ChannelSend *                  send,
+  ChannelSendActionType          type,
+  Port *                         port,
+  StereoPorts *                  stereo,
+  float                          amount,
   const PortConnectionsManager * port_connections_mgr,
-  GError **             error)
+  GError **                      error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    channel_send_action_new,
-    error, send, type, port, stereo, amount,
-    port_connections_mgr, error);
+    channel_send_action_new, error, send, type, port,
+    stereo, amount, port_connections_mgr, error);
 }
 
 static bool
@@ -161,7 +160,7 @@ connect_or_disconnect (
                   port_find_from_identifier (
                     self->midi_id);
                 GError * err = NULL;
-                bool connected =
+                bool     connected =
                   channel_send_connect_midi (
                     send, port, F_NO_RECALC_GRAPH,
                     F_VALIDATE, &err);
@@ -169,34 +168,32 @@ connect_or_disconnect (
                   {
                     PROPAGATE_PREFIXED_ERROR (
                       error, err, "%s",
-                      _("Failed to connect MIDI "
-                      "send"));
+                      _ ("Failed to connect MIDI "
+                         "send"));
                     return false;
                   }
               }
               break;
             case TYPE_AUDIO:
               {
-                Port * l =
-                  port_find_from_identifier (
-                    self->l_id);
-                Port * r =
-                  port_find_from_identifier (
-                    self->r_id);
+                Port * l = port_find_from_identifier (
+                  self->l_id);
+                Port * r = port_find_from_identifier (
+                  self->r_id);
                 GError * err = NULL;
-                bool connected =
+                bool     connected =
                   channel_send_connect_stereo (
                     send, NULL, l, r,
-                    self->type ==
-                      CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN,
-                    F_NO_RECALC_GRAPH,
-                    F_VALIDATE, &err);
+                    self->type
+                      == CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN,
+                    F_NO_RECALC_GRAPH, F_VALIDATE,
+                    &err);
                 if (!connected)
                   {
                     PROPAGATE_PREFIXED_ERROR (
                       error, err, "%s",
-                      _("Failed to connect audio "
-                      "send"));
+                      _ ("Failed to connect audio "
+                         "send"));
                     return false;
                   }
               }
@@ -230,7 +227,7 @@ channel_send_action_do (
 
   bool need_restore_and_recalc = false;
 
-  bool successful = false;
+  bool     successful = false;
   GError * err = NULL;
   switch (self->type)
     {
@@ -238,21 +235,18 @@ channel_send_action_do (
     case CHANNEL_SEND_ACTION_CONNECT_STEREO:
     case CHANNEL_SEND_ACTION_CHANGE_PORTS:
     case CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
-      successful =
-        connect_or_disconnect (
-          self, true, true, &err);
+      successful = connect_or_disconnect (
+        self, true, true, &err);
       need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_DISCONNECT:
-      successful =
-        connect_or_disconnect (
-          self, false, true, &err);
+      successful = connect_or_disconnect (
+        self, false, true, &err);
       need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
       successful = true;
-      channel_send_set_amount (
-        send, self->amount);
+      channel_send_set_amount (send, self->amount);
       break;
     default:
       break;
@@ -264,7 +258,7 @@ channel_send_action_do (
 
       PROPAGATE_PREFIXED_ERROR (
         error, err,
-        _("Failed to perform channel send action: %s"),
+        _ ("Failed to perform channel send action: %s"),
         err->message);
       return -1;
     }
@@ -298,23 +292,21 @@ channel_send_action_undo (
 
   bool need_restore_and_recalc = false;
 
-  bool successful = false;
+  bool     successful = false;
   GError * err = NULL;
   switch (self->type)
     {
     case CHANNEL_SEND_ACTION_CONNECT_MIDI:
     case CHANNEL_SEND_ACTION_CONNECT_STEREO:
     case CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
-      successful =
-        connect_or_disconnect (
-          self, false, true, &err);
+      successful = connect_or_disconnect (
+        self, false, true, &err);
       need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_CHANGE_PORTS:
     case CHANNEL_SEND_ACTION_DISCONNECT:
-      successful =
-        connect_or_disconnect (
-          self, true, false, &err);
+      successful = connect_or_disconnect (
+        self, true, false, &err);
       need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
@@ -332,7 +324,7 @@ channel_send_action_undo (
 
       PROPAGATE_PREFIXED_ERROR (
         error, err,
-        _("Failed to perform channel send action: %s"),
+        _ ("Failed to perform channel send action: %s"),
         err->message);
       return -1;
     }
@@ -361,25 +353,24 @@ channel_send_action_stringize (
   switch (self->type)
     {
     case CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
-      return g_strdup (_("Connect sidechain"));
+      return g_strdup (_ ("Connect sidechain"));
     case CHANNEL_SEND_ACTION_CONNECT_STEREO:
-      return g_strdup (_("Connect stereo"));
+      return g_strdup (_ ("Connect stereo"));
     case CHANNEL_SEND_ACTION_CONNECT_MIDI:
-      return g_strdup (_("Connect MIDI"));
+      return g_strdup (_ ("Connect MIDI"));
     case CHANNEL_SEND_ACTION_DISCONNECT:
-      return g_strdup (_("Disconnect"));
+      return g_strdup (_ ("Disconnect"));
     case CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
-      return g_strdup (_("Change amount"));
+      return g_strdup (_ ("Change amount"));
     case CHANNEL_SEND_ACTION_CHANGE_PORTS:
-      return g_strdup (_("Change ports"));
+      return g_strdup (_ ("Change ports"));
     }
   g_return_val_if_reached (
-    g_strdup (_("Channel send connection")));
+    g_strdup (_ ("Channel send connection")));
 }
 
 void
-channel_send_action_free (
-  ChannelSendAction * self)
+channel_send_action_free (ChannelSendAction * self)
 {
   object_free_w_func_and_null (
     channel_send_free, self->send_before);

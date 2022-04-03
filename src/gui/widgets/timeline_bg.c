@@ -23,7 +23,6 @@
  * Timeline background inheriting from arranger_bg.
  */
 
-#include "zrythm.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
@@ -46,6 +45,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
@@ -68,28 +68,27 @@ timeline_bg_widget_draw (
       Z_ARRANGER_BG_WIDGET (self));
 
   /* handle horizontal drawing for tracks */
-  GtkWidget * tw_widget;
-  gint track_start_offset;
-  Track * track;
+  GtkWidget *   tw_widget;
+  gint          track_start_offset;
+  Track *       track;
   TrackWidget * tw;
-  int line_y, i, j;
-  int is_unpinned_timeline =
-    prv->arranger ==
-      (ArrangerWidget *) (MW_TIMELINE);
+  int           line_y, i, j;
+  int           is_unpinned_timeline =
+    prv->arranger
+    == (ArrangerWidget *) (MW_TIMELINE);
   int is_pinned_timeline =
-    prv->arranger ==
-      (ArrangerWidget *) (MW_PINNED_TIMELINE);
+    prv->arranger
+    == (ArrangerWidget *) (MW_PINNED_TIMELINE);
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
 
       /* skip tracks in the other timeline (pinned/
        * non-pinned) */
-      if (!track->visible ||
-          (is_unpinned_timeline &&
-           track->pinned) ||
-          (is_pinned_timeline &&
-           !track->pinned))
+      if (
+        !track->visible
+        || (is_unpinned_timeline && track->pinned)
+        || (is_pinned_timeline && !track->pinned))
         continue;
 
       /* draw line below widget */
@@ -104,20 +103,21 @@ timeline_bg_widget_draw (
       gtk_widget_translate_coordinates (
         tw_widget,
         GTK_WIDGET (
-          is_pinned_timeline ?
-          MW_TRACKLIST->pinned_box :
-          MW_TRACKLIST->unpinned_box),
+          is_pinned_timeline
+            ? MW_TRACKLIST->pinned_box
+            : MW_TRACKLIST->unpinned_box),
         0, 0, NULL, &track_start_offset);
 
       line_y =
         track_start_offset + full_track_height;
 
-      if (line_y >= rect->y &&
-          line_y < rect->y + rect->height)
+      if (
+        line_y >= rect->y
+        && line_y < rect->y + rect->height)
         {
           z_cairo_draw_horizontal_line (
-            cr, line_y - rect->y, 0,
-            rect->width, 1.0);
+            cr, line_y - rect->y, 0, rect->width,
+            1.0);
         }
 
       int total_height = track->main_height;
@@ -134,15 +134,15 @@ timeline_bg_widget_draw (
               TrackLane * lane = track->lanes[j];
 
               /* horizontal line above lane */
-              if (OFFSET_PLUS_TOTAL_HEIGHT >
-                    rect->y &&
-                  OFFSET_PLUS_TOTAL_HEIGHT  <
-                    rect->y + rect->height)
+              if (
+                OFFSET_PLUS_TOTAL_HEIGHT > rect->y
+                && OFFSET_PLUS_TOTAL_HEIGHT
+                     < rect->y + rect->height)
                 {
                   z_cairo_draw_horizontal_line (
                     cr,
-                    OFFSET_PLUS_TOTAL_HEIGHT -
-                      rect->y,
+                    OFFSET_PLUS_TOTAL_HEIGHT
+                      - rect->y,
                     0, rect->width, 0.4);
                 }
 
@@ -170,15 +170,15 @@ timeline_bg_widget_draw (
 
               /* horizontal line above automation
                * track */
-              if (OFFSET_PLUS_TOTAL_HEIGHT >
-                    rect->y &&
-                  OFFSET_PLUS_TOTAL_HEIGHT  <
-                    rect->y + rect->height)
+              if (
+                OFFSET_PLUS_TOTAL_HEIGHT > rect->y
+                && OFFSET_PLUS_TOTAL_HEIGHT
+                     < rect->y + rect->height)
                 {
                   z_cairo_draw_horizontal_line (
                     cr,
-                    OFFSET_PLUS_TOTAL_HEIGHT -
-                      rect->y,
+                    OFFSET_PLUS_TOTAL_HEIGHT
+                      - rect->y,
                     0, rect->width, 0.2);
                 }
 
@@ -194,41 +194,38 @@ timeline_bg_widget_draw (
 
               int y_px =
                 automation_track_get_y_px_from_normalized_val (
-                  at,
-                  normalized_val);
+                  at, normalized_val);
 
               /* line at current val */
               cairo_set_source_rgba (
-                cr,
-                track->color.red,
+                cr, track->color.red,
                 track->color.green,
-                track->color.blue,
-                0.3);
+                track->color.blue, 0.3);
               cairo_set_line_width (cr, 1);
               cairo_move_to (
                 cr, 0,
-                (OFFSET_PLUS_TOTAL_HEIGHT + y_px) -
-                  rect->y);
+                (OFFSET_PLUS_TOTAL_HEIGHT + y_px)
+                  - rect->y);
               cairo_line_to (
                 cr, rect->width,
-                (OFFSET_PLUS_TOTAL_HEIGHT + y_px) -
-                  rect->y);
+                (OFFSET_PLUS_TOTAL_HEIGHT + y_px)
+                  - rect->y);
               cairo_stroke (cr);
 
               /* show shade under the line */
               /*cairo_set_source_rgba (*/
-                /*cr,*/
-                /*track->color.red,*/
-                /*track->color.green,*/
-                /*track->color.blue,*/
-                /*0.06);*/
+              /*cr,*/
+              /*track->color.red,*/
+              /*track->color.green,*/
+              /*track->color.blue,*/
+              /*0.06);*/
               /*cairo_rectangle (*/
-                /*cr,*/
-                /*0,*/
-                /*(OFFSET_PLUS_TOTAL_HEIGHT + y_px) -*/
-                  /*rect->y,*/
-                /*rect->width,*/
-                /*at->height - y_px);*/
+              /*cr,*/
+              /*0,*/
+              /*(OFFSET_PLUS_TOTAL_HEIGHT + y_px) -*/
+              /*rect->y,*/
+              /*rect->width,*/
+              /*at->height - y_px);*/
               /*cairo_fill (cr);*/
 
               total_height += at->height;
@@ -239,9 +236,9 @@ timeline_bg_widget_draw (
 
 /*static gboolean*/
 /*on_motion (TimelineBgWidget * self,*/
-           /*GdkEventMotion *event)*/
+/*GdkEventMotion *event)*/
 /*{*/
-  /*return FALSE;*/
+/*return FALSE;*/
 /*}*/
 
 TimelineBgWidget *
@@ -250,8 +247,7 @@ timeline_bg_widget_new (
   ArrangerWidget * arranger)
 {
   TimelineBgWidget * self =
-    g_object_new (TIMELINE_BG_WIDGET_TYPE,
-                  NULL);
+    g_object_new (TIMELINE_BG_WIDGET_TYPE, NULL);
 
   ARRANGER_BG_WIDGET_GET_PRIVATE (self);
   ab_prv->ruler = ruler;
@@ -267,9 +263,8 @@ timeline_bg_widget_class_init (
 }
 
 static void
-timeline_bg_widget_init (TimelineBgWidget *self )
+timeline_bg_widget_init (TimelineBgWidget * self)
 {
   gtk_widget_add_events (
-    GTK_WIDGET (self),
-    GDK_ALL_EVENTS_MASK);
+    GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
 }

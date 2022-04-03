@@ -29,19 +29,16 @@
 #include "zrythm_app.h"
 
 void
-chord_editor_init (
-  ChordEditor * self)
+chord_editor_init (ChordEditor * self)
 {
-  self->schema_version =
-    CHORD_EDITOR_SCHEMA_VERSION;
+  self->schema_version = CHORD_EDITOR_SCHEMA_VERSION;
 
   self->num_chords = 0;
   for (int i = 0; i < 12; i++)
     {
-      self->chords[i] =
-        chord_descriptor_new (
-          NOTE_C + i, 1, NOTE_C + i, CHORD_TYPE_MAJ,
-          CHORD_ACC_NONE, 0);
+      self->chords[i] = chord_descriptor_new (
+        NOTE_C + i, 1, NOTE_C + i, CHORD_TYPE_MAJ,
+        CHORD_ACC_NONE, 0);
       self->num_chords++;
     }
 
@@ -49,13 +46,10 @@ chord_editor_init (
 }
 
 ChordEditor *
-chord_editor_clone (
-  ChordEditor * src)
+chord_editor_clone (ChordEditor * src)
 {
-  ChordEditor * self =
-    object_new (ChordEditor);
-  self->schema_version =
-    CHORD_EDITOR_SCHEMA_VERSION;
+  ChordEditor * self = object_new (ChordEditor);
+  self->schema_version = CHORD_EDITOR_SCHEMA_VERSION;
 
   for (int i = 0; i < src->num_chords; i++)
     {
@@ -79,9 +73,8 @@ chord_editor_apply_single_chord (
   if (undoable)
     {
       GError * err = NULL;
-      bool ret =
-        chord_action_perform (
-          NULL, NULL, chord, idx, &err);
+      bool     ret = chord_action_perform (
+            NULL, NULL, chord, idx, &err);
       g_return_if_fail (ret);
     }
   else
@@ -102,10 +95,9 @@ chord_editor_apply_chords (
   if (undoable)
     {
       GError * err = NULL;
-      bool ret =
-        chord_action_perform (
-          (const ChordDescriptor **) self->chords,
-          chords, NULL, -1, &err);
+      bool     ret = chord_action_perform (
+            (const ChordDescriptor **) self->chords,
+            chords, NULL, -1, &err);
       g_return_if_fail (ret);
     }
   else
@@ -135,10 +127,10 @@ chord_editor_apply_preset (
 
 void
 chord_editor_apply_preset_from_scale (
-  ChordEditor *     self,
-  MusicalScaleType  scale,
-  MusicalNote       root_note,
-  bool              undoable)
+  ChordEditor *    self,
+  MusicalScaleType scale,
+  MusicalNote      root_note,
+  bool             undoable)
 {
   g_debug (
     "applying preset from scale %s, root note %s",
@@ -149,31 +141,26 @@ chord_editor_apply_preset_from_scale (
   const bool * notes =
     musical_scale_get_notes (scale, true);
   int cur_chord = 0;
-  ChordDescriptor * new_chords[CHORD_EDITOR_NUM_CHORDS];
+  ChordDescriptor *
+    new_chords[CHORD_EDITOR_NUM_CHORDS];
   for (int i = 0; i < 12; i++)
     {
       /* skip notes not in scale */
       if (!notes[i])
         continue;
 
-      new_chords[cur_chord++] =
-        chord_descriptor_new (
-          (MusicalNote)
-          ((int) root_note + i),
-          false,
-          (MusicalNote)
-          ((int) root_note + i),
-          triads[cur_chord],
-          CHORD_ACC_NONE, 0);
+      new_chords[cur_chord++] = chord_descriptor_new (
+        (MusicalNote) ((int) root_note + i), false,
+        (MusicalNote) ((int) root_note + i),
+        triads[cur_chord], CHORD_ACC_NONE, 0);
     }
 
   /* fill remaining chords with default data */
   while (cur_chord < CHORD_EDITOR_NUM_CHORDS)
     {
-      new_chords[cur_chord++] =
-        chord_descriptor_new (
-          NOTE_C, false, NOTE_C, CHORD_TYPE_NONE,
-          CHORD_ACC_NONE, 0);
+      new_chords[cur_chord++] = chord_descriptor_new (
+        NOTE_C, false, NOTE_C, CHORD_TYPE_NONE,
+        CHORD_ACC_NONE, 0);
     }
 
   chord_editor_apply_chords (
@@ -192,7 +179,8 @@ chord_editor_transpose_chords (
   bool          up,
   bool          undoable)
 {
-  ChordDescriptor * new_chords[CHORD_EDITOR_NUM_CHORDS];
+  ChordDescriptor *
+    new_chords[CHORD_EDITOR_NUM_CHORDS];
   for (int i = 0; i < 12; i++)
     {
       new_chords[i] =
@@ -201,11 +189,9 @@ chord_editor_transpose_chords (
 
       int add = (up ? 1 : 11);
       descr->root_note =
-        (MusicalNote)
-        ((int) descr->root_note + add);
+        (MusicalNote) ((int) descr->root_note + add);
       descr->bass_note =
-        (MusicalNote)
-        ((int) descr->bass_note + add);
+        (MusicalNote) ((int) descr->bass_note + add);
 
       descr->root_note = descr->root_note % 12;
       descr->bass_note = descr->bass_note % 12;
@@ -229,7 +215,7 @@ chord_editor_transpose_chords (
 ChordDescriptor *
 chord_editor_get_chord_from_note_number (
   const ChordEditor * self,
-  midi_byte_t   note_number)
+  midi_byte_t         note_number)
 {
   if (note_number < 60 || note_number >= 72)
     return NULL;
@@ -254,8 +240,7 @@ chord_editor_get_chord_index (
 ChordEditor *
 chord_editor_new (void)
 {
-  ChordEditor * self =
-    object_new (ChordEditor);
+  ChordEditor * self = object_new (ChordEditor);
   self->schema_version =
     AUDIO_CLIP_EDITOR_SCHEMA_VERSION;
 
@@ -263,8 +248,7 @@ chord_editor_new (void)
 }
 
 void
-chord_editor_free (
-  ChordEditor * self)
+chord_editor_free (ChordEditor * self)
 {
   for (int i = 0; i < self->num_chords; i++)
     {

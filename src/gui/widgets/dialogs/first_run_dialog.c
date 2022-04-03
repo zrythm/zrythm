@@ -35,19 +35,19 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
-#include "utils/localization.h"
 #include "utils/io.h"
+#include "utils/localization.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#include <adwaita.h>
 #include <glib/gi18n.h>
 
-#include <adwaita.h>
-
 G_DEFINE_TYPE (
-  FirstRunDialogWidget, first_run_dialog_widget,
+  FirstRunDialogWidget,
+  first_run_dialog_widget,
   GTK_TYPE_DIALOG)
 
 /**
@@ -55,14 +55,12 @@ G_DEFINE_TYPE (
  * run.
  */
 static void *
-scan_plugins_after_first_run_thread (
-  gpointer data)
+scan_plugins_after_first_run_thread (gpointer data)
 {
   g_message ("scanning...");
 
   plugin_manager_scan_plugins (
-    ZRYTHM->plugin_manager,
-    0.7, &ZRYTHM->progress);
+    ZRYTHM->plugin_manager, 0.7, &ZRYTHM->progress);
 
   zrythm_app->init_finished = true;
 
@@ -83,18 +81,16 @@ first_run_dialog_widget_ok (
   zrythm_app->init_finished = false;
 
   /* start plugin scanning in another thread */
-  zrythm_app->init_thread =
-    g_thread_new (
-      "scan_plugins_after_first_run_thread",
-      (GThreadFunc)
-      scan_plugins_after_first_run_thread,
-      zrythm_app);
+  zrythm_app->init_thread = g_thread_new (
+    "scan_plugins_after_first_run_thread",
+    (GThreadFunc) scan_plugins_after_first_run_thread,
+    zrythm_app);
 
   /* set a source func in the main GTK thread to
    * check when scanning finished */
   g_idle_add (
-    (GSourceFunc)
-    zrythm_app_prompt_for_project_func, zrythm_app);
+    (GSourceFunc) zrythm_app_prompt_for_project_func,
+    zrythm_app);
 
   g_message ("queued prompt for project");
 }
@@ -103,8 +99,7 @@ void
 first_run_dialog_widget_reset (
   FirstRunDialogWidget * self)
 {
-  char * dir =
-    zrythm_get_default_user_dir ();
+  char * dir = zrythm_get_default_user_dir ();
   g_message ("reset to %s", dir);
   file_chooser_button_widget_set_path (
     self->fc_btn, dir);
@@ -123,14 +118,13 @@ first_run_dialog_widget_reset (
 
 static void
 on_language_changed (
-  GObject    *           gobject,
+  GObject *              gobject,
   GParamSpec *           pspec,
   FirstRunDialogWidget * self)
 {
   GtkDropDown * dropdown = self->language_dropdown;
 
-  LocalizationLanguage lang =
-    (LocalizationLanguage)
+  LocalizationLanguage lang = (LocalizationLanguage)
     gtk_drop_down_get_selected (dropdown);
 
   g_message (
@@ -175,36 +169,28 @@ on_file_set (
   gint                   response_id,
   FirstRunDialogWidget * self)
 {
-  GFile * file =
-    gtk_file_chooser_get_file (
-      GTK_FILE_CHOOSER (file_chooser_native));
-  char * str =
-    g_file_get_path (file);
+  GFile * file = gtk_file_chooser_get_file (
+    GTK_FILE_CHOOSER (file_chooser_native));
+  char * str = g_file_get_path (file);
   g_settings_set_string (
     S_P_GENERAL_PATHS, "zrythm-dir", str);
-  char * str2 =
-    g_build_filename (
-      str, ZRYTHM_PROJECTS_DIR, NULL);
+  char * str2 = g_build_filename (
+    str, ZRYTHM_PROJECTS_DIR, NULL);
   g_settings_set_string (
     S_GENERAL, "last-project-dir", str);
   g_free (str);
   g_free (str2);
 }
 
-
 /**
  * Returns a new instance.
  */
 FirstRunDialogWidget *
-first_run_dialog_widget_new (
-  GtkWindow * parent)
+first_run_dialog_widget_new (GtkWindow * parent)
 {
-  FirstRunDialogWidget * self =
-    g_object_new (
-      FIRST_RUN_DIALOG_WIDGET_TYPE,
-      "icon-name", "zrythm",
-      "title", _("Setup Zrythm"),
-      NULL);
+  FirstRunDialogWidget * self = g_object_new (
+    FIRST_RUN_DIALOG_WIDGET_TYPE, "icon-name",
+    "zrythm", "title", _ ("Setup Zrythm"), NULL);
 
   gtk_window_set_transient_for (
     GTK_WINDOW (self), parent);
@@ -213,22 +199,19 @@ first_run_dialog_widget_new (
 }
 
 static void
-dispose (
-  FirstRunDialogWidget * self)
+dispose (FirstRunDialogWidget * self)
 {
   G_OBJECT_CLASS (
-    first_run_dialog_widget_parent_class)->
-      dispose (G_OBJECT (self));
+    first_run_dialog_widget_parent_class)
+    ->dispose (G_OBJECT (self));
 }
 
 static void
 first_run_dialog_widget_init (
   FirstRunDialogWidget * self)
 {
-  GtkBox * content_area =
-    GTK_BOX (
-      gtk_dialog_get_content_area (
-        GTK_DIALOG (self)));
+  GtkBox * content_area = GTK_BOX (
+    gtk_dialog_get_content_area (GTK_DIALOG (self)));
 
   self->lang_error_txt =
     GTK_LABEL (gtk_label_new (""));
@@ -247,24 +230,21 @@ first_run_dialog_widget_init (
     ADW_PREFERENCES_GROUP (
       adw_preferences_group_new ());
   adw_preferences_group_set_title (
-    pref_group, _("Initial Configuration"));
+    pref_group, _ ("Initial Configuration"));
   gtk_box_append (
     content_area, GTK_WIDGET (pref_page));
-  adw_preferences_page_add (
-    pref_page, pref_group);
+  adw_preferences_page_add (pref_page, pref_group);
 
   AdwActionRow * row;
 
   /* setup languages */
-  row =
-    ADW_ACTION_ROW (adw_action_row_new ());
+  row = ADW_ACTION_ROW (adw_action_row_new ());
   adw_preferences_row_set_title (
-    ADW_PREFERENCES_ROW (row), _("Language"));
+    ADW_PREFERENCES_ROW (row), _ ("Language"));
   adw_action_row_set_subtitle (
-    row, _("Preferred language"));
+    row, _ ("Preferred language"));
   self->language_dropdown =
-    GTK_DROP_DOWN (
-      gtk_drop_down_new (NULL, NULL));
+    GTK_DROP_DOWN (gtk_drop_down_new (NULL, NULL));
   ui_setup_language_dropdown (
     self->language_dropdown);
   g_signal_connect (
@@ -278,19 +258,15 @@ first_run_dialog_widget_init (
     pref_group, GTK_WIDGET (row));
 
   /* set zrythm dir */
-  row =
-    ADW_ACTION_ROW (adw_action_row_new ());
+  row = ADW_ACTION_ROW (adw_action_row_new ());
   adw_preferences_row_set_title (
-    ADW_PREFERENCES_ROW (row), _("User path"));
+    ADW_PREFERENCES_ROW (row), _ ("User path"));
   adw_action_row_set_subtitle (
-    row, _("Location to save user files"));
-  self->fc_btn =
-    file_chooser_button_widget_new (
-      NULL,
-      _("Select a directory"),
-      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
-  char * dir =
-    zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
+    row, _ ("Location to save user files"));
+  self->fc_btn = file_chooser_button_widget_new (
+    NULL, _ ("Select a directory"),
+    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+  char * dir = zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
   file_chooser_button_widget_set_path (
     self->fc_btn, dir);
   file_chooser_button_widget_set_response_callback (
@@ -313,20 +289,18 @@ first_run_dialog_widget_init (
   engine_set_default_backends (false);
 
   /* set the last project dir to the default one */
-  char * projects_dir  =
-    g_build_filename (
-      dir, ZRYTHM_PROJECTS_DIR, NULL);
+  char * projects_dir = g_build_filename (
+    dir, ZRYTHM_PROJECTS_DIR, NULL);
   g_settings_set_string (
     S_GENERAL, "last-project-dir", projects_dir);
   g_free (dir);
   g_free (projects_dir);
 
   gtk_dialog_add_buttons (
-    GTK_DIALOG (self),
-    _("_Cancel"), GTK_RESPONSE_CANCEL,
-    _("_Reset"), FIRST_RUN_DIALOG_RESET_RESPONSE,
-    _("_OK"), GTK_RESPONSE_OK,
-    NULL);
+    GTK_DIALOG (self), _ ("_Cancel"),
+    GTK_RESPONSE_CANCEL, _ ("_Reset"),
+    FIRST_RUN_DIALOG_RESET_RESPONSE, _ ("_OK"),
+    GTK_RESPONSE_OK, NULL);
 
   gtk_widget_set_size_request (
     GTK_WIDGET (self), 520, 160);
@@ -336,8 +310,6 @@ static void
 first_run_dialog_widget_class_init (
   FirstRunDialogWidgetClass * _klass)
 {
-  GObjectClass * oklass =
-    G_OBJECT_CLASS (_klass);
-  oklass->dispose =
-    (GObjectFinalizeFunc) dispose;
+  GObjectClass * oklass = G_OBJECT_CLASS (_klass);
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
 }

@@ -105,15 +105,15 @@ test_new_midi_note ()
 #endif
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
 #define TEST_PREFIX "/audio/midi_note/"
 
   /*g_test_add_func (*/
-    /*TEST_PREFIX "test new midi note",*/
-    /*(GTestFunc) test_new_midi_note);*/
+  /*TEST_PREFIX "test new midi note",*/
+  /*(GTestFunc) test_new_midi_note);*/
 
   return g_test_run ();
 }

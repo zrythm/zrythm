@@ -25,11 +25,11 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
-#include "gui/widgets/main_window.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/main_notebook.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
-#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap.h"
@@ -44,7 +44,8 @@
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
-  TimelineMinimapWidget, timeline_minimap_widget,
+  TimelineMinimapWidget,
+  timeline_minimap_widget,
   GTK_TYPE_WIDGET)
 
 /**
@@ -56,10 +57,10 @@ timeline_minimap_widget_px_to_pos (
   Position *              pos,
   int                     px)
 {
-  double width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  double width = gtk_widget_get_allocated_width (
+    GTK_WIDGET (self));
   double ratio = (double) px / width;
-  int px_in_ruler =
+  int    px_in_ruler =
     (int) (MW_RULER->total_px * ratio);
   ui_px_to_pos_timeline (px_in_ruler, pos, 1);
 }
@@ -69,9 +70,8 @@ move_selection_x (
   TimelineMinimapWidget * self,
   double                  offset_x)
 {
-  double width =
-    gtk_widget_get_allocated_width (
-      GTK_WIDGET (self));
+  double width = gtk_widget_get_allocated_width (
+    GTK_WIDGET (self));
 
   double new_wx =
     self->selection_start_pos + offset_x;
@@ -79,9 +79,8 @@ move_selection_x (
   double ratio = new_wx / width;
   double ruler_px = MW_RULER->total_px * ratio;
   GtkAdjustment * adj =
-    gtk_scrollable_get_hadjustment (
-      GTK_SCROLLABLE (
-        MW_TIMELINE_PANEL->ruler_viewport));
+    gtk_scrollable_get_hadjustment (GTK_SCROLLABLE (
+      MW_TIMELINE_PANEL->ruler_viewport));
   gtk_adjustment_set_value (adj, ruler_px);
 }
 
@@ -90,35 +89,32 @@ resize_selection_l (
   TimelineMinimapWidget * self,
   double                  offset_x)
 {
-  double width =
-    gtk_widget_get_allocated_width (
-      GTK_WIDGET (self));
+  double width = gtk_widget_get_allocated_width (
+    GTK_WIDGET (self));
 
   double new_l =
     self->selection_start_pos + offset_x;
   double old_selection_width =
-    self->selection_end_pos -
-      self->selection_start_pos;
+    self->selection_end_pos
+    - self->selection_start_pos;
   double new_selection_width =
     self->selection_end_pos - new_l;
 
   /** update zoom level */
   double ratio =
     new_selection_width / old_selection_width;
-  int zoom_level_set =
-    ruler_widget_set_zoom_level (
-      Z_RULER_WIDGET (MW_RULER),
-      self->start_zoom_level / ratio);
+  int zoom_level_set = ruler_widget_set_zoom_level (
+    Z_RULER_WIDGET (MW_RULER),
+    self->start_zoom_level / ratio);
   /*zoom_level_set =*/
-    /*ruler_widget_set_zoom_level (*/
-      /*Z_RULER_WIDGET (EDITOR_RULER),*/
-      /*self->start_zoom_level / ratio);*/
+  /*ruler_widget_set_zoom_level (*/
+  /*Z_RULER_WIDGET (EDITOR_RULER),*/
+  /*self->start_zoom_level / ratio);*/
 
   if (zoom_level_set)
     {
       /* set alignment */
-      ratio =
-        new_l / width;
+      ratio = new_l / width;
       double ruler_px = MW_RULER->total_px * ratio;
       GtkAdjustment * adj =
         gtk_scrollable_get_hadjustment (
@@ -136,55 +132,46 @@ resize_selection_r (
   TimelineMinimapWidget * self,
   double                  offset_x)
 {
-  double width =
-    gtk_widget_get_allocated_width (
-      GTK_WIDGET (self));
+  double width = gtk_widget_get_allocated_width (
+    GTK_WIDGET (self));
 
-  double new_r =
-    self->selection_end_pos + offset_x;
+  double new_r = self->selection_end_pos + offset_x;
   double old_selection_width =
-    self->selection_end_pos -
-      self->selection_start_pos;
+    self->selection_end_pos
+    - self->selection_start_pos;
   double new_selection_width =
     new_r - self->selection_start_pos;
 
   /** update zoom level */
   double ratio =
     new_selection_width / old_selection_width;
-  int zoom_level_set =
-    ruler_widget_set_zoom_level (
-      Z_RULER_WIDGET (MW_RULER),
-      self->start_zoom_level / ratio);
+  int zoom_level_set = ruler_widget_set_zoom_level (
+    Z_RULER_WIDGET (MW_RULER),
+    self->start_zoom_level / ratio);
   /*zoom_level_set =*/
-    /*ruler_widget_set_zoom_level (*/
-      /*Z_RULER_WIDGET (EDITOR_RULER),*/
-      /*self->start_zoom_level / ratio);*/
+  /*ruler_widget_set_zoom_level (*/
+  /*Z_RULER_WIDGET (EDITOR_RULER),*/
+  /*self->start_zoom_level / ratio);*/
 
   if (zoom_level_set)
     {
       /* set alignment */
-      ratio =
-        self->selection_start_pos / width;
+      ratio = self->selection_start_pos / width;
       double ruler_px = MW_RULER->total_px * ratio;
       GtkAdjustment * adj =
         gtk_scrollable_get_hadjustment (
           GTK_SCROLLABLE (
             MW_TIMELINE_PANEL->ruler_viewport));
-      gtk_adjustment_set_value (adj,
-                                ruler_px);
+      gtk_adjustment_set_value (adj, ruler_px);
 
       EVENTS_PUSH (
         ET_RULER_VIEWPORT_CHANGED, MW_RULER);
     }
-
 }
 
 static void
-move_y (
-  TimelineMinimapWidget * self,
-  int                     offset_y)
+move_y (TimelineMinimapWidget * self, int offset_y)
 {
-
 }
 
 /**
@@ -193,24 +180,23 @@ move_y (
  */
 static gboolean
 get_child_position (
-  GtkOverlay   *overlay,
-  GtkWidget    *widget,
-  GdkRectangle *allocation,
-  gpointer      user_data)
+  GtkOverlay *   overlay,
+  GtkWidget *    widget,
+  GdkRectangle * allocation,
+  gpointer       user_data)
 {
   TimelineMinimapWidget * self =
     Z_TIMELINE_MINIMAP_WIDGET (user_data);
 
   if (Z_IS_TIMELINE_MINIMAP_SELECTION_WIDGET (widget))
     {
-      if (MAIN_WINDOW &&
-          MW_CENTER_DOCK &&
-          MW_TIMELINE_PANEL &&
-          MW_TIMELINE_PANEL->ruler_viewport)
+      if (
+        MAIN_WINDOW && MW_CENTER_DOCK
+        && MW_TIMELINE_PANEL
+        && MW_TIMELINE_PANEL->ruler_viewport)
         {
-          int width =
-            gtk_widget_get_allocated_width (
-              GTK_WIDGET (self));
+          int width = gtk_widget_get_allocated_width (
+            GTK_WIDGET (self));
           int height =
             gtk_widget_get_allocated_height (
               GTK_WIDGET (self));
@@ -253,11 +239,11 @@ show_context_menu (TimelineMinimapWidget * self)
 
 static void
 on_right_click (
-  GtkGestureClick *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
-  gpointer              user_data)
+  GtkGestureClick * gesture,
+  gint              n_press,
+  gdouble           x,
+  gdouble           y,
+  gpointer          user_data)
 {
   TimelineMinimapWidget * self =
     Z_TIMELINE_MINIMAP_WIDGET (user_data);
@@ -276,11 +262,11 @@ on_right_click (
  */
 static void
 on_click (
-  GtkGestureClick *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
-  gpointer              user_data)
+  GtkGestureClick * gesture,
+  gint              n_press,
+  gdouble           x,
+  gdouble           y,
+  gpointer          user_data)
 {
   TimelineMinimapWidget * self =
     Z_TIMELINE_MINIMAP_WIDGET (user_data);
@@ -291,9 +277,9 @@ on_click (
 static void
 drag_begin (
   GtkGestureDrag * gesture,
-  gdouble         start_x,
-  gdouble         start_y,
-  gpointer        user_data)
+  gdouble          start_x,
+  gdouble          start_y,
+  gpointer         user_data)
 {
   TimelineMinimapWidget * self =
     Z_TIMELINE_MINIMAP_WIDGET (user_data);
@@ -305,23 +291,23 @@ drag_begin (
     gtk_widget_grab_focus (GTK_WIDGET (self));
 
   /*GdkModifierType state =*/
-    /*gtk_event_controller_get_current_event_state (*/
-      /*GTK_EVENT_CONTROLLER (gesture));*/
+  /*gtk_event_controller_get_current_event_state (*/
+  /*GTK_EVENT_CONTROLLER (gesture));*/
 
-  int is_hit =
-    ui_is_child_hit (
-      GTK_WIDGET (self),
-      GTK_WIDGET (self->selection),
-      1, 1, start_x, start_y, 0, 0);
+  int is_hit = ui_is_child_hit (
+    GTK_WIDGET (self), GTK_WIDGET (self->selection),
+    1, 1, start_x, start_y, 0, 0);
   if (is_hit)
     {
       /* update arranger action */
-      if (self->selection->cursor ==
-            UI_CURSOR_STATE_RESIZE_L)
+      if (
+        self->selection->cursor
+        == UI_CURSOR_STATE_RESIZE_L)
         self->action =
           TIMELINE_MINIMAP_ACTION_RESIZING_L;
-      else if (self->selection->cursor ==
-                 UI_CURSOR_STATE_RESIZE_R)
+      else if (
+        self->selection->cursor
+        == UI_CURSOR_STATE_RESIZE_R)
         self->action =
           TIMELINE_MINIMAP_ACTION_RESIZING_R;
       else
@@ -336,13 +322,12 @@ drag_begin (
       double wx, wy;
       gtk_widget_translate_coordinates (
         GTK_WIDGET (self->selection),
-        GTK_WIDGET (self),
-        0, 0, &wx, &wy);
+        GTK_WIDGET (self), 0, 0, &wx, &wy);
       self->selection_start_pos = wx;
       self->selection_end_pos =
-        wx +
-          gtk_widget_get_allocated_width (
-            GTK_WIDGET (self->selection));
+        wx
+        + gtk_widget_get_allocated_width (
+          GTK_WIDGET (self->selection));
 
       self->start_zoom_level =
         ruler_widget_get_zoom_level (MW_RULER);
@@ -350,9 +335,9 @@ drag_begin (
       /* motion handler was causing drag update
        * to not get called */
       /*g_signal_handlers_disconnect_by_func (*/
-        /*G_OBJECT (self->selection->drawing_area),*/
-        /*timeline_minimap_selection_widget_on_motion,*/
-        /*self->selection);*/
+      /*G_OBJECT (self->selection->drawing_area),*/
+      /*timeline_minimap_selection_widget_on_motion,*/
+      /*self->selection);*/
     }
   else /* nothing hit */
     {
@@ -375,34 +360,35 @@ drag_begin (
 static void
 drag_update (
   GtkGestureDrag * gesture,
-  gdouble         offset_x,
-  gdouble         offset_y,
-  gpointer        user_data)
+  gdouble          offset_x,
+  gdouble          offset_y,
+  gpointer         user_data)
 {
   TimelineMinimapWidget * self =
     Z_TIMELINE_MINIMAP_WIDGET (user_data);
 
-  if (self->action ==
-        TIMELINE_MINIMAP_ACTION_STARTING_MOVING)
+  if (
+    self->action
+    == TIMELINE_MINIMAP_ACTION_STARTING_MOVING)
     {
       self->action = TIMELINE_MINIMAP_ACTION_MOVING;
     }
 
   /* handle x */
-  if (self->action ==
-        TIMELINE_MINIMAP_ACTION_RESIZING_L)
+  if (self->action == TIMELINE_MINIMAP_ACTION_RESIZING_L)
     {
       resize_selection_l (self, offset_x);
     }
-  else if (self->action ==
-             TIMELINE_MINIMAP_ACTION_RESIZING_R)
+  else if (
+    self->action
+    == TIMELINE_MINIMAP_ACTION_RESIZING_R)
     {
       resize_selection_r (self, offset_x);
     }
 
   /* if moving the selection */
-  else if (self->action ==
-             TIMELINE_MINIMAP_ACTION_MOVING)
+  else if (
+    self->action == TIMELINE_MINIMAP_ACTION_MOVING)
     {
       move_selection_x (self, offset_x);
 
@@ -422,10 +408,11 @@ drag_update (
 }
 
 static void
-drag_end (GtkGestureDrag *gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
+drag_end (
+  GtkGestureDrag * gesture,
+  gdouble          offset_x,
+  gdouble          offset_y,
+  gpointer         user_data)
 {
   TimelineMinimapWidget * self =
     Z_TIMELINE_MINIMAP_WIDGET (user_data);
@@ -464,15 +451,13 @@ timeline_minimap_tick_cb (
 }
 
 static void
-dispose (
-  TimelineMinimapWidget * self)
+dispose (TimelineMinimapWidget * self)
 {
-  gtk_widget_unparent (
-    GTK_WIDGET (self->overlay));
+  gtk_widget_unparent (GTK_WIDGET (self->overlay));
 
   G_OBJECT_CLASS (
-    timeline_minimap_widget_parent_class)->
-      dispose (G_OBJECT (self));
+    timeline_minimap_widget_parent_class)
+    ->dispose (G_OBJECT (self));
 }
 
 static void
@@ -485,18 +470,15 @@ timeline_minimap_widget_class_init (
   gtk_widget_class_set_layout_manager_type (
     klass, GTK_TYPE_BIN_LAYOUT);
 
-  GObjectClass * oklass =
-    G_OBJECT_CLASS (klass);
-  oklass->dispose =
-    (GObjectFinalizeFunc) dispose;
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
 }
 
 static void
 timeline_minimap_widget_init (
   TimelineMinimapWidget * self)
 {
-  self->overlay =
-    GTK_OVERLAY (gtk_overlay_new ());
+  self->overlay = GTK_OVERLAY (gtk_overlay_new ());
   gtk_widget_set_parent (
     GTK_WIDGET (self->overlay), GTK_WIDGET (self));
   gtk_widget_set_name (
@@ -509,20 +491,19 @@ timeline_minimap_widget_init (
   self->selection =
     timeline_minimap_selection_widget_new (self);
   gtk_overlay_add_overlay (
-    self->overlay,
-    GTK_WIDGET (self->selection));
+    self->overlay, GTK_WIDGET (self->selection));
 
   GtkGestureDrag * drag =
     GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
-    G_OBJECT(drag), "drag-begin",
-    G_CALLBACK (drag_begin),  self);
+    G_OBJECT (drag), "drag-begin",
+    G_CALLBACK (drag_begin), self);
   g_signal_connect (
-    G_OBJECT(drag), "drag-update",
-    G_CALLBACK (drag_update),  self);
+    G_OBJECT (drag), "drag-update",
+    G_CALLBACK (drag_update), self);
   g_signal_connect (
-    G_OBJECT(drag), "drag-end",
-    G_CALLBACK (drag_end),  self);
+    G_OBJECT (drag), "drag-end",
+    G_CALLBACK (drag_end), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self->overlay),
     GTK_EVENT_CONTROLLER (drag));
@@ -553,7 +534,6 @@ timeline_minimap_widget_init (
     G_CALLBACK (get_child_position), self);
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self),
-    timeline_minimap_tick_cb,
+    GTK_WIDGET (self), timeline_minimap_tick_cb,
     self, NULL);
 }

@@ -29,13 +29,11 @@
  * Creates a Marker.
  */
 Marker *
-marker_new (
-  const char * name)
+marker_new (const char * name)
 {
   Marker * self = object_new (Marker);
 
-  ArrangerObject * obj =
-    (ArrangerObject *) self;
+  ArrangerObject * obj = (ArrangerObject *) self;
   obj->type = ARRANGER_OBJECT_TYPE_MARKER;
 
   self->name = g_strdup (name);
@@ -51,9 +49,7 @@ marker_new (
 }
 
 void
-marker_set_index (
-  Marker * self,
-  int      index)
+marker_set_index (Marker * self, int index)
 {
   self->index = index;
 }
@@ -70,8 +66,7 @@ marker_set_track_name_hash (
 }
 
 Marker *
-marker_find_by_name (
-  const char * name)
+marker_find_by_name (const char * name)
 {
   for (int i = 0; i < P_MARKER_TRACK->num_markers;
        i++)
@@ -90,15 +85,10 @@ marker_find_by_name (
  * Returns if the two Marker's are equal.
  */
 int
-marker_is_equal (
-  Marker * a,
-  Marker * b)
+marker_is_equal (Marker * a, Marker * b)
 {
-  ArrangerObject * obj_a =
-    (ArrangerObject *) a;
-  ArrangerObject * obj_b =
-    (ArrangerObject *) b;
-  return
-    position_is_equal (&obj_a->pos, &obj_b->pos) &&
-    string_is_equal (a->name, b->name);
+  ArrangerObject * obj_a = (ArrangerObject *) a;
+  ArrangerObject * obj_b = (ArrangerObject *) b;
+  return position_is_equal (&obj_a->pos, &obj_b->pos)
+         && string_is_equal (a->name, b->name);
 }

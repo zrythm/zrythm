@@ -17,13 +17,14 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <float.h>
 #include <math.h>
 
 #include "utils/math.h"
 #include "utils/string.h"
 
 #include <gtk/gtk.h>
+
+#include <float.h>
 
 /**
  * Gets the RMS of the given signal as amplitude
@@ -35,17 +36,15 @@ math_calculate_rms_amp (
   const nframes_t nframes)
 {
   sample_t sum = 0, sample = 0;
-  for (unsigned int i = 0;
-       i < nframes; i += MATH_RMS_FRAMES)
-  {
-    sample = buf[i];
-    sum += (sample * sample);
-  }
-  return
-    sqrtf (
-      sum /
-      ((sample_t) nframes /
-         (sample_t) MATH_RMS_FRAMES));
+  for (unsigned int i = 0; i < nframes;
+       i += MATH_RMS_FRAMES)
+    {
+      sample = buf[i];
+      sum += (sample * sample);
+    }
+  return sqrtf (
+    sum
+    / ((sample_t) nframes / (sample_t) MATH_RMS_FRAMES));
 }
 
 /**
@@ -59,9 +58,8 @@ math_calculate_rms_db (
   sample_t *      buf,
   const nframes_t nframes)
 {
-  return
-    math_amp_to_dbfs (
-      math_calculate_rms_amp (buf, nframes));
+  return math_amp_to_dbfs (
+    math_calculate_rms_amp (buf, nframes));
 }
 
 /**
@@ -72,20 +70,18 @@ math_calculate_rms_db (
  * @return Whether the value is valid (nonnan).
  */
 bool
-math_assert_nonnann (
-  float x)
+math_assert_nonnann (float x)
 {
-  char * val =
-    g_strdup_printf ("%f", (double) x);
-  if (isnan (x) ||
-      string_contains_substr (val, "nan"))
+  char * val = g_strdup_printf ("%f", (double) x);
+  if (isnan (x) || string_contains_substr (val, "nan"))
     {
       g_critical ("nan");
       g_free (val);
       return false;
     }
-  if (!isfinite (x) ||
-      string_contains_substr (val, "inf"))
+  if (
+    !isfinite (x)
+    || string_contains_substr (val, "inf"))
     {
       g_critical ("inf");
       g_free (val);

@@ -43,18 +43,18 @@
 
 typedef struct KMeterDsp
 {
-  float   z1;          // filter state
-  float   z2;          // filter state
-  float   rms;         // max rms value since last read()
-  float   peak;        // max peak value since last read()
-  int     cnt;       // digital peak hold counter
-  int     fpp;       // frames per period
-  float   fall;        // peak fallback
-  bool    flag;        // flag set by read(), resets _rms
+  float z1;   // filter state
+  float z2;   // filter state
+  float rms;  // max rms value since last read()
+  float peak; // max peak value since last read()
+  int   cnt;  // digital peak hold counter
+  int   fpp;  // frames per period
+  float fall; // peak fallback
+  bool  flag; // flag set by read(), resets _rms
 
-  float   omega;       // ballistics filter constant.
-  int     hold;        // peak hold timeoute
-  float   fsamp;       // sample-rate
+  float omega; // ballistics filter constant.
+  int   hold;  // peak hold timeoute
+  float fsamp; // sample-rate
 } KMeterDsp;
 
 /**
@@ -66,35 +66,32 @@ typedef struct KMeterDsp
 void
 kmeter_dsp_process (
   KMeterDsp * self,
-  float *p, int n);
+  float *     p,
+  int         n);
 
 float
-kmeter_dsp_read_f (
-  KMeterDsp * self);
+kmeter_dsp_read_f (KMeterDsp * self);
 
 void
 kmeter_dsp_read (
   KMeterDsp * self,
-  float * rms, float * peak);
+  float *     rms,
+  float *     peak);
 
 void
-kmeter_dsp_reset (
-  KMeterDsp * self);
+kmeter_dsp_reset (KMeterDsp * self);
 
 /**
  * Init with the samplerate.
  */
 void
-kmeter_dsp_init (
-  KMeterDsp * self,
-  float samplerate);
+kmeter_dsp_init (KMeterDsp * self, float samplerate);
 
 MALLOC
 KMeterDsp *
 kmeter_dsp_new (void);
 
 void
-kmeter_dsp_free (
-  KMeterDsp * self);
+kmeter_dsp_free (KMeterDsp * self);
 
 #endif

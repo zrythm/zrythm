@@ -49,64 +49,64 @@ typedef struct AutomationTrack AutomationTrack;
 typedef struct AutomationModeWidget
 {
   /** X/y relative to parent drawing area. */
-  double             x;
-  double             y;
+  double x;
+  double y;
 
   /** Total width/height. */
-  int                width;
-  int                height;
+  int width;
+  int height;
 
   /** Width of each button, including padding. */
   //int                widths[NUM_AUTOMATION_MODES];
 
-  int                text_widths[NUM_AUTOMATION_MODES];
-  int                text_heights[NUM_AUTOMATION_MODES];
-  int                max_text_height;
+  int text_widths[NUM_AUTOMATION_MODES];
+  int text_heights[NUM_AUTOMATION_MODES];
+  int max_text_height;
 
-  int                has_hit_mode;
+  int has_hit_mode;
 
   /** Currently hit mode. */
-  AutomationMode     hit_mode;
+  AutomationMode hit_mode;
 
   /** Default color. */
-  GdkRGBA      def_color;
+  GdkRGBA def_color;
 
   /** Hovered color. */
-  GdkRGBA      hovered_color;
+  GdkRGBA hovered_color;
 
   /** Toggled color. */
-  GdkRGBA      toggled_colors[NUM_AUTOMATION_MODES];
+  GdkRGBA toggled_colors[NUM_AUTOMATION_MODES];
 
   /** Held color (used after clicking and before
    * releasing). */
-  GdkRGBA      held_colors[NUM_AUTOMATION_MODES];
+  GdkRGBA held_colors[NUM_AUTOMATION_MODES];
 
   /** Aspect ratio for the rounded rectangle. */
-  double       aspect;
+  double aspect;
 
   /** Corner curvature radius for the rounded
    * rectangle. */
-  double       corner_radius;
+  double corner_radius;
 
   /** Used to update caches if state changed. */
-  CustomButtonWidgetState last_states[
-    NUM_AUTOMATION_MODES];
+  CustomButtonWidgetState
+    last_states[NUM_AUTOMATION_MODES];
 
   /** Used during drawing. */
-  CustomButtonWidgetState current_states[
-    NUM_AUTOMATION_MODES];
+  CustomButtonWidgetState
+    current_states[NUM_AUTOMATION_MODES];
 
   /** Used during transitions. */
-  GdkRGBA            last_colors[NUM_AUTOMATION_MODES];
+  GdkRGBA last_colors[NUM_AUTOMATION_MODES];
 
   /** Cache layout for drawing text. */
-  PangoLayout *      layout;
+  PangoLayout * layout;
 
   /** Owner. */
-  AutomationTrack *  owner;
+  AutomationTrack * owner;
 
   /** Frames left for a transition in color. */
-  int                transition_frames;
+  int transition_frames;
 
 } AutomationModeWidget;
 
@@ -115,8 +115,8 @@ typedef struct AutomationModeWidget
  */
 AutomationModeWidget *
 automation_mode_widget_new (
-  int             height,
-  PangoLayout *   layout,
+  int               height,
+  PangoLayout *     layout,
   AutomationTrack * owner);
 
 void

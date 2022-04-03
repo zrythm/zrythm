@@ -32,10 +32,10 @@
 #include "gui/backend/arranger_object.h"
 #include "utils/types.h"
 
-typedef struct Port Port;
+typedef struct Port            Port;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct _AutomationPointWidget
-AutomationPointWidget;
+  AutomationPointWidget;
 
 /**
  * @addtogroup audio
@@ -48,16 +48,16 @@ AutomationPointWidget;
 #define AP_WIDGET_POINT_SIZE 6
 
 #define automation_point_is_selected(r) \
-  arranger_object_is_selected ( \
-    (ArrangerObject *) r)
+  arranger_object_is_selected ((ArrangerObject *) r)
 
 /**
  * Used for caching.
  */
-typedef struct AutomationPointDrawSettings {
-  float           fvalue;
-  CurveOptions    curve_opts;
-  GdkRectangle    draw_rect;
+typedef struct AutomationPointDrawSettings
+{
+  float        fvalue;
+  CurveOptions curve_opts;
+  GdkRectangle draw_rect;
 } AutomationPointDrawSettings;
 
 /**
@@ -66,20 +66,20 @@ typedef struct AutomationPointDrawSettings {
 typedef struct AutomationPoint
 {
   /** Base struct. */
-  ArrangerObject  base;
+  ArrangerObject base;
 
-  int             schema_version;
+  int schema_version;
 
   /** Float value (real). */
-  float           fvalue;
+  float fvalue;
 
   /** Normalized value (0 to 1) used as a cache. */
-  float           normalized_val;
+  float normalized_val;
 
-  CurveOptions    curve_opts;
+  CurveOptions curve_opts;
 
   /** Index in the region. */
-  int             index;
+  int index;
 
   /** Last settings used for drawing in editor. */
   AutomationPointDrawSettings last_settings;
@@ -97,32 +97,29 @@ typedef struct AutomationPoint
 } AutomationPoint;
 
 static const cyaml_schema_field_t
-automation_point_fields_schema[] =
-{
-  YAML_FIELD_MAPPING_EMBEDDED (
-    AutomationPoint, base,
-    arranger_object_fields_schema),
-  YAML_FIELD_INT (
-    AutomationPoint, schema_version),
-  YAML_FIELD_FLOAT (
-    AutomationPoint, fvalue),
-  YAML_FIELD_FLOAT (
-    AutomationPoint, normalized_val),
-  YAML_FIELD_INT (
-    AutomationPoint, index),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    AutomationPoint, curve_opts,
-    curve_options_fields_schema),
+  automation_point_fields_schema[] = {
+    YAML_FIELD_MAPPING_EMBEDDED (
+      AutomationPoint,
+      base,
+      arranger_object_fields_schema),
+    YAML_FIELD_INT (AutomationPoint, schema_version),
+    YAML_FIELD_FLOAT (AutomationPoint, fvalue),
+    YAML_FIELD_FLOAT (AutomationPoint, normalized_val),
+    YAML_FIELD_INT (AutomationPoint, index),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      AutomationPoint,
+      curve_opts,
+      curve_options_fields_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-  automation_point_schema =
-{
-  YAML_VALUE_PTR (
-    AutomationPoint, automation_point_fields_schema),
-};
+  automation_point_schema = {
+    YAML_VALUE_PTR (
+      AutomationPoint,
+      automation_point_fields_schema),
+  };
 
 /**
  * Creates an AutomationPoint in the given
@@ -130,9 +127,9 @@ static const cyaml_schema_value_t
  */
 AutomationPoint *
 automation_point_new_float (
-  const float         value,
-  const float         normalized_val,
-  const Position *    pos);
+  const float      value,
+  const float      normalized_val,
+  const Position * pos);
 
 /**
  * Sets the value from given real or normalized
@@ -156,7 +153,7 @@ automation_point_set_fvalue (
 void
 automation_point_set_region_and_index (
   AutomationPoint * _ap,
-  ZRegion *          region,
+  ZRegion *         region,
   int               index);
 
 /**
@@ -167,8 +164,7 @@ automation_point_set_region_and_index (
  * @param ap The start point (0, 0).
  * @param x Normalized x.
  */
-HOT
-double
+HOT double
 automation_point_get_normalized_value_in_curve (
   AutomationPoint * ap,
   double            x);
@@ -197,8 +193,7 @@ AutomationTrack *
 automation_point_get_automation_track (
   const AutomationPoint * const self);
 
-PURE
-int
+PURE int
 automation_point_is_equal (
   AutomationPoint * a,
   AutomationPoint * b);
@@ -209,8 +204,7 @@ automation_point_is_equal (
  */
 NONNULL
 bool
-automation_point_curves_up (
-  AutomationPoint * self);
+automation_point_curves_up (AutomationPoint * self);
 
 /**
  * @}

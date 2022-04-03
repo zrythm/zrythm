@@ -19,35 +19,34 @@
 
 #include "zrythm-test-config.h"
 
-#include <lilv/lilv.h>
-
 #include "audio/fader.h"
 #include "audio/midi_event.h"
 #include "audio/router.h"
 #include "utils/math.h"
-#include "ext/whereami/whereami.h"
+
+#include <glib.h>
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm.h"
 
-#include <glib.h>
+#include "ext/whereami/whereami.h"
+#include <lilv/lilv.h>
 
 static void
 on_finished_conversion_from_zpj_to_yaml (void)
 {
   char * exe_path = NULL;
-  int dirname_length, length;
-  length =
-    wai_getExecutablePath (
-      NULL, 0, &dirname_length);
+  int    dirname_length, length;
+  length = wai_getExecutablePath (
+    NULL, 0, &dirname_length);
   if (length > 0)
-  {
-    exe_path =
-      (char *) malloc ((size_t) length + 1);
-    wai_getExecutablePath (
-      exe_path, length, &dirname_length);
-    exe_path[length] = '\0';
-  }
+    {
+      exe_path =
+        (char *) malloc ((size_t) length + 1);
+      wai_getExecutablePath (
+        exe_path, length, &dirname_length);
+      exe_path[length] = '\0';
+    }
   g_assert_nonnull (exe_path);
 
   char project_zpj[600];
@@ -67,15 +66,13 @@ on_finished_conversion_from_zpj_to_yaml (void)
   sprintf (arg1, "--yaml-to-zpj=%s", project_yaml);
   sprintf (arg2, "--output=%s", project_zpj);
 
-  int argc = 3;
-  char * argv_after[] = {
-    exe_path, arg1, arg2 };
+  int    argc = 3;
+  char * argv_after[] = { exe_path, arg1, arg2 };
 
-  ZrythmApp * app =
-    zrythm_app_new (argc, (const char **) argv_after);
-  int ret =
-    g_application_run (
-      G_APPLICATION (app), argc, argv_after);
+  ZrythmApp * app = zrythm_app_new (
+    argc, (const char **) argv_after);
+  int ret = g_application_run (
+    G_APPLICATION (app), argc, argv_after);
   g_assert_cmpint (ret, ==, 0);
   g_object_unref (app);
 
@@ -90,18 +87,17 @@ test_project_conversion (void)
   atexit (on_finished_conversion_from_zpj_to_yaml);
 
   char * exe_path = NULL;
-  int dirname_length, length;
-  length =
-    wai_getExecutablePath (
-      NULL, 0, &dirname_length);
+  int    dirname_length, length;
+  length = wai_getExecutablePath (
+    NULL, 0, &dirname_length);
   if (length > 0)
-  {
-    exe_path =
-      (char *) malloc ((size_t) length + 1);
-    wai_getExecutablePath (
-      exe_path, length, &dirname_length);
-    exe_path[length] = '\0';
-  }
+    {
+      exe_path =
+        (char *) malloc ((size_t) length + 1);
+      wai_getExecutablePath (
+        exe_path, length, &dirname_length);
+      exe_path[length] = '\0';
+    }
   g_assert_nonnull (exe_path);
 
   char project_zpj[600];
@@ -116,15 +112,13 @@ test_project_conversion (void)
   char arg2[900];
   sprintf (arg2, "--output=%s", project_yaml);
 
-  int argc = 3;
-  char * argv[] = {
-    exe_path, arg1, arg2 };
+  int    argc = 3;
+  char * argv[] = { exe_path, arg1, arg2 };
 
   ZrythmApp * app =
     zrythm_app_new (argc, (const char **) argv);
-  int ret =
-    g_application_run (
-      G_APPLICATION (app), argc, argv);
+  int ret = g_application_run (
+    G_APPLICATION (app), argc, argv);
   g_assert_cmpint (ret, ==, 0);
   g_object_unref (app);
 
@@ -134,14 +128,12 @@ test_project_conversion (void)
   sprintf (arg2, "--output=%s", project_zpj);
 
   argc = 3;
-  char * argv_after[] = {
-    exe_path, arg1, arg2 };
+  char * argv_after[] = { exe_path, arg1, arg2 };
 
-  app =
-    zrythm_app_new (argc, (const char **) argv_after);
-  ret =
-    g_application_run (
-      G_APPLICATION (app), argc, argv_after);
+  app = zrythm_app_new (
+    argc, (const char **) argv_after);
+  ret = g_application_run (
+    G_APPLICATION (app), argc, argv_after);
   g_assert_cmpint (ret, ==, 0);
   g_object_unref (app);
 
@@ -149,7 +141,7 @@ test_project_conversion (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

@@ -35,7 +35,8 @@
 G_DECLARE_FINAL_TYPE (
   ProjectProgressDialogWidget,
   project_progress_dialog_widget,
-  Z, PROJECT_PROGRESS_DIALOG_WIDGET,
+  Z,
+  PROJECT_PROGRESS_DIALOG_WIDGET,
   GenericProgressDialogWidget)
 
 typedef struct ProjectSaveData ProjectSaveData;
@@ -53,7 +54,7 @@ typedef struct _ProjectProgressDialogWidget
 {
   GenericProgressDialogWidget parent_instance;
 
-  ProjectSaveData *  project_save_data;
+  ProjectSaveData * project_save_data;
 } ProjectProgressDialogWidget;
 
 /**
@@ -61,7 +62,7 @@ typedef struct _ProjectProgressDialogWidget
  */
 ProjectProgressDialogWidget *
 project_progress_dialog_widget_new (
-  ProjectSaveData *  project_save_data);
+  ProjectSaveData * project_save_data);
 
 /**
  * @}

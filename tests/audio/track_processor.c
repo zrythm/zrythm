@@ -27,10 +27,11 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include <glib.h>
+
 #include "tests/helpers/project.h"
 #include "tests/helpers/zrythm.h"
 
-#include <glib.h>
 #include <locale.h>
 
 /**
@@ -49,18 +50,19 @@ test_process_master (void)
 
   g_message ("testing...");
 
-  for (nframes_t i = 0; i < AUDIO_ENGINE->block_length;
-       i++)
+  for (nframes_t i = 0;
+       i < AUDIO_ENGINE->block_length; i++)
     {
-      P_MASTER_TRACK->processor->stereo_in->l->buf[i] =
-        (float) (i + 1);
+      P_MASTER_TRACK->processor->stereo_in->l
+        ->buf[i] = (float) (i + 1);
     }
 
-  nframes_t local_offset = 60;
+  nframes_t             local_offset = 60;
   EngineProcessTimeInfo time_nfo = {
     .g_start_frame = 0,
     .local_offset = 0,
-    .nframes = local_offset, };
+    .nframes = local_offset,
+  };
   track_processor_process (
     P_MASTER_TRACK->processor, &time_nfo);
   time_nfo.g_start_frame = local_offset;
@@ -71,12 +73,11 @@ test_process_master (void)
     P_MASTER_TRACK->processor, &time_nfo);
 
   for (nframes_t i = 0;
-       i < AUDIO_ENGINE->block_length;
-       i++)
+       i < AUDIO_ENGINE->block_length; i++)
     {
       g_assert_cmpfloat_with_epsilon (
-        P_MASTER_TRACK->processor->stereo_out->l->
-          buf[i],
+        P_MASTER_TRACK->processor->stereo_out->l
+          ->buf[i],
         (float) (i + 1), 0.000001f);
     }
 
@@ -84,7 +85,7 @@ test_process_master (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

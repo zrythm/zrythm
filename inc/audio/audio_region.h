@@ -32,11 +32,11 @@
 #include "utils/types.h"
 
 typedef struct _RegionWidget RegionWidget;
-typedef struct Channel Channel;
-typedef struct Track Track;
-typedef struct ZRegion AudioRegion;
-typedef struct AudioClip AudioClip;
-typedef struct StereoPorts StereoPorts;
+typedef struct Channel       Channel;
+typedef struct Track         Track;
+typedef struct ZRegion       AudioRegion;
+typedef struct AudioClip     AudioClip;
+typedef struct StereoPorts   StereoPorts;
 
 /**
  * @addtogroup audio
@@ -46,7 +46,7 @@ typedef struct StereoPorts StereoPorts;
 
 #if 0
 /** Default fade to inject when playing back. */
-#define AUDIO_REGION_DEFAULT_FADE_MS 1
+#  define AUDIO_REGION_DEFAULT_FADE_MS 1
 #endif
 
 /**
@@ -115,8 +115,7 @@ audio_region_update_channel_caches (
  * Region.
  */
 AudioClip *
-audio_region_get_clip (
-  const ZRegion * self);
+audio_region_get_clip (const ZRegion * self);
 
 /**
  * Sets the clip ID on the region and updates any
@@ -153,9 +152,7 @@ audio_region_replace_frames (
  * @param stereo_ports StereoPorts to fill.
  */
 REALTIME
-HOT
-NONNULL
-void
+HOT NONNULL void
 audio_region_fill_stereo_ports (
   ZRegion *                           self,
   const EngineProcessTimeInfo * const time_nfo,
@@ -167,8 +164,7 @@ audio_region_detect_bpm (
   GArray *  candidates);
 
 bool
-audio_region_validate (
-  ZRegion * self);
+audio_region_validate (ZRegion * self);
 
 /**
  * Frees members only but not the audio region itself.

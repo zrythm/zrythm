@@ -31,8 +31,11 @@
 #define RIGHT_DOCK_EDGE_WIDGET_TYPE \
   (right_dock_edge_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  RightDockEdgeWidget, right_dock_edge_widget,
-  Z, RIGHT_DOCK_EDGE_WIDGET, GtkBox)
+  RightDockEdgeWidget,
+  right_dock_edge_widget,
+  Z,
+  RIGHT_DOCK_EDGE_WIDGET,
+  GtkBox)
 
 /**
  * @addtogroup widgets
@@ -60,14 +63,14 @@ typedef struct _RightDockEdgeWidget
   GtkBox                   parent_instance;
   FoldableNotebookWidget * right_notebook;
 
-  GtkBox *                 plugin_browser_box;
-  PluginBrowserWidget *    plugin_browser;
+  GtkBox *              plugin_browser_box;
+  PluginBrowserWidget * plugin_browser;
 
   GtkBox *                 file_browser_box;
   PanelFileBrowserWidget * file_browser;
 
-  GtkBox *                 monitor_section_box;
-  MonitorSectionWidget *   monitor_section;
+  GtkBox *               monitor_section_box;
+  MonitorSectionWidget * monitor_section;
 
   GtkBox *                 chord_pack_browser_box;
   ChordPackBrowserWidget * chord_pack_browser;

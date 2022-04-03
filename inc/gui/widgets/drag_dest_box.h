@@ -41,12 +41,11 @@ typedef struct Channel Channel;
 G_DECLARE_FINAL_TYPE (
   DragDestBoxWidget,
   drag_dest_box_widget,
-  Z, DRAG_DEST_BOX_WIDGET,
+  Z,
+  DRAG_DEST_BOX_WIDGET,
   GtkBox)
-#define TRACKLIST_DRAG_DEST_BOX \
-  MW_TRACKLIST->ddbox
-#define MIXER_DRAG_DEST_BOX \
-  MW_MIXER->ddbox
+#define TRACKLIST_DRAG_DEST_BOX MW_TRACKLIST->ddbox
+#define MIXER_DRAG_DEST_BOX MW_MIXER->ddbox
 
 typedef enum DragDestBoxType
 {
@@ -61,11 +60,11 @@ typedef enum DragDestBoxType
  */
 typedef struct _DragDestBoxWidget
 {
-  GtkBox             parent_instance;
-  GtkGestureDrag *   drag;
-  GtkGestureClick *  click;
-  GtkGestureClick *  right_click;
-  DragDestBoxType    type;
+  GtkBox            parent_instance;
+  GtkGestureDrag *  drag;
+  GtkGestureClick * click;
+  GtkGestureClick * right_click;
+  DragDestBoxType   type;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;

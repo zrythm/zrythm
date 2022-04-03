@@ -22,15 +22,15 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
-#include "utils/objects.h"
 #include "utils/cairo.h"
 #include "utils/gtk.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
-#include "ext/zix/zix/ring.h"
-
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
+
+#include "ext/zix/zix/ring.h"
 
 G_DEFINE_TYPE (
   PrerollCountSelectorWidget,
@@ -40,13 +40,12 @@ G_DEFINE_TYPE (
 static void
 block_all_handlers (
   PrerollCountSelectorWidget * self,
-  bool                       block)
+  bool                         block)
 {
   if (block)
     {
       g_signal_handler_block (
-        self->none_toggle,
-        self->none_toggle_id);
+        self->none_toggle, self->none_toggle_id);
       g_signal_handler_block (
         self->one_bar_toggle,
         self->one_bar_toggle_id);
@@ -60,8 +59,7 @@ block_all_handlers (
   else
     {
       g_signal_handler_unblock (
-        self->none_toggle,
-        self->none_toggle_id);
+        self->none_toggle, self->none_toggle_id);
       g_signal_handler_unblock (
         self->one_bar_toggle,
         self->one_bar_toggle_id);
@@ -89,7 +87,8 @@ on_btn_toggled (
   gtk_toggle_button_set_active (
     self->four_bars_toggle, false);
 
-  PrerollCountBars new_bars = PREROLL_COUNT_BARS_NONE;
+  PrerollCountBars new_bars =
+    PREROLL_COUNT_BARS_NONE;
   if (btn == self->none_toggle)
     {
       gtk_toggle_button_set_active (
@@ -115,14 +114,16 @@ on_btn_toggled (
       new_bars = PREROLL_COUNT_BARS_FOUR;
     }
 
-  if (self->type ==
-        PREROLL_COUNT_SELECTOR_METRONOME_COUNTIN)
+  if (
+    self->type
+    == PREROLL_COUNT_SELECTOR_METRONOME_COUNTIN)
     {
       g_settings_set_enum (
         S_TRANSPORT, "metronome-countin", new_bars);
     }
-  else if (self->type ==
-             PREROLL_COUNT_SELECTOR_RECORD_PREROLL)
+  else if (
+    self->type
+    == PREROLL_COUNT_SELECTOR_RECORD_PREROLL)
     {
       g_settings_set_enum (
         S_TRANSPORT, "recording-preroll", new_bars);
@@ -137,47 +138,40 @@ PrerollCountSelectorWidget *
 preroll_count_selector_widget_new (
   PrerollCountSelectorType type)
 {
-  PrerollCountSelectorWidget * self =
-    g_object_new (
-      PREROLL_COUNT_SELECTOR_WIDGET_TYPE,
-      "orientation", GTK_ORIENTATION_HORIZONTAL,
-      "visible", true,
-      NULL);
+  PrerollCountSelectorWidget * self = g_object_new (
+    PREROLL_COUNT_SELECTOR_WIDGET_TYPE,
+    "orientation", GTK_ORIENTATION_HORIZONTAL,
+    "visible", true, NULL);
 
   self->type = type;
 
-#define CREATE(x,lbl) \
-  self->x##_toggle = \
-    GTK_TOGGLE_BUTTON ( \
-      gtk_toggle_button_new_with_label (lbl)); \
+#define CREATE(x, lbl) \
+  self->x##_toggle = GTK_TOGGLE_BUTTON ( \
+    gtk_toggle_button_new_with_label (lbl)); \
   gtk_widget_set_visible ( \
     GTK_WIDGET (self->x##_toggle), true); \
   gtk_box_append ( \
-    GTK_BOX (self), \
-    GTK_WIDGET (self->x##_toggle)); \
-  self->x##_toggle_id = \
-    g_signal_connect ( \
-      G_OBJECT (self->x##_toggle), "toggled", \
-      G_CALLBACK (on_btn_toggled), self)
+    GTK_BOX (self), GTK_WIDGET (self->x##_toggle)); \
+  self->x##_toggle_id = g_signal_connect ( \
+    G_OBJECT (self->x##_toggle), "toggled", \
+    G_CALLBACK (on_btn_toggled), self)
 
-  CREATE (none, _(preroll_count_bars_str[0]));
-  CREATE (one_bar, _(preroll_count_bars_str[1]));
-  CREATE (two_bars, _(preroll_count_bars_str[2]));
-  CREATE (four_bars, _(preroll_count_bars_str[3]));
+  CREATE (none, _ (preroll_count_bars_str[0]));
+  CREATE (one_bar, _ (preroll_count_bars_str[1]));
+  CREATE (two_bars, _ (preroll_count_bars_str[2]));
+  CREATE (four_bars, _ (preroll_count_bars_str[3]));
 
   PrerollCountBars preroll_type =
     PREROLL_COUNT_BARS_NONE;
   switch (type)
     {
     case PREROLL_COUNT_SELECTOR_METRONOME_COUNTIN:
-      preroll_type =
-        g_settings_get_enum (
-          S_TRANSPORT, "metronome-countin");
+      preroll_type = g_settings_get_enum (
+        S_TRANSPORT, "metronome-countin");
       break;
     case PREROLL_COUNT_SELECTOR_RECORD_PREROLL:
-      preroll_type =
-        g_settings_get_enum (
-          S_TRANSPORT, "recording-preroll");
+      preroll_type = g_settings_get_enum (
+        S_TRANSPORT, "recording-preroll");
       break;
     }
 

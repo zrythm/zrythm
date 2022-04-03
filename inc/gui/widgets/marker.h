@@ -43,16 +43,13 @@
  * Recreates the pango layouts for drawing.
  */
 void
-marker_recreate_pango_layouts (
-  Marker * self);
+marker_recreate_pango_layouts (Marker * self);
 
 /**
  * Draws the given marker.
  */
 void
-marker_draw (
-  Marker *      self,
-  GtkSnapshot * snapshot);
+marker_draw (Marker * self, GtkSnapshot * snapshot);
 
 /**
  * @}

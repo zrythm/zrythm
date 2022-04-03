@@ -29,8 +29,8 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 /**
  * @addtogroup widgets
@@ -38,54 +38,57 @@
  * @{
  */
 
-G_DEFINE_TYPE (RulerMarkerWidget,
-               ruler_marker_widget,
-               GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (
+  RulerMarkerWidget,
+  ruler_marker_widget,
+  GTK_TYPE_DRAWING_AREA)
 /**
  * Sets the appropriate cursor.
  */
 static void
-on_motion (GtkWidget * widget,
-           GdkEventMotion *event,
-           RulerMarkerWidget * self)
+on_motion (
+  GtkWidget *         widget,
+  GdkEventMotion *    event,
+  RulerMarkerWidget * self)
 {
   GtkAllocation allocation;
-  gtk_widget_get_allocation (widget,
-                             &allocation);
+  gtk_widget_get_allocation (widget, &allocation);
 
   RULER_WIDGET_GET_PRIVATE (self->ruler);
 
   if (event->type == GDK_MOTION_NOTIFY)
     {
-      if (self->type ==
-            RULER_MARKER_TYPE_LOOP_START ||
-          self->type ==
-            RULER_MARKER_TYPE_CLIP_START)
+      if (
+        self->type == RULER_MARKER_TYPE_LOOP_START
+        || self->type == RULER_MARKER_TYPE_CLIP_START)
         {
           self->cursor_state =
             UI_CURSOR_STATE_RESIZE_L;
-          ui_set_cursor_from_name (widget, "w-resize");
+          ui_set_cursor_from_name (
+            widget, "w-resize");
         }
-      else if (self->type ==
-                 RULER_MARKER_TYPE_LOOP_END)
+      else if (self->type == RULER_MARKER_TYPE_LOOP_END)
         {
           self->cursor_state =
             UI_CURSOR_STATE_RESIZE_R;
-          ui_set_cursor_from_name (widget, "e-resize");
+          ui_set_cursor_from_name (
+            widget, "e-resize");
         }
       else
         {
-          self->cursor_state = UI_CURSOR_STATE_DEFAULT;
-          if (rw_prv->action !=
-                UI_OVERLAY_ACTION_MOVING &&
-              rw_prv->action !=
-                UI_OVERLAY_ACTION_STARTING_MOVING &&
-              rw_prv->action !=
-                UI_OVERLAY_ACTION_RESIZING_L &&
-              rw_prv->action !=
-                UI_OVERLAY_ACTION_RESIZING_R)
+          self->cursor_state =
+            UI_CURSOR_STATE_DEFAULT;
+          if (
+            rw_prv->action != UI_OVERLAY_ACTION_MOVING
+            && rw_prv->action
+                 != UI_OVERLAY_ACTION_STARTING_MOVING
+            && rw_prv->action
+                 != UI_OVERLAY_ACTION_RESIZING_L
+            && rw_prv->action
+                 != UI_OVERLAY_ACTION_RESIZING_R)
             {
-              ui_set_cursor_from_name (widget, "default");
+              ui_set_cursor_from_name (
+                widget, "default");
             }
         }
       switch (self->type)
@@ -105,11 +108,14 @@ on_motion (GtkWidget * widget,
   /*[> if leaving <]*/
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      if (rw_prv->action != UI_OVERLAY_ACTION_MOVING &&
-          rw_prv->action != UI_OVERLAY_ACTION_RESIZING_L &&
-          rw_prv->action != UI_OVERLAY_ACTION_RESIZING_R)
+      if (
+        rw_prv->action != UI_OVERLAY_ACTION_MOVING
+        && rw_prv->action != UI_OVERLAY_ACTION_RESIZING_L
+        && rw_prv->action
+             != UI_OVERLAY_ACTION_RESIZING_R)
         {
-          ui_set_cursor_from_name (widget, "default");
+          ui_set_cursor_from_name (
+            widget, "default");
         }
     }
 }
@@ -130,7 +136,7 @@ ruler_marker_widget_update_tooltip (
   if (show)
     {
       char tooltip[50];
-      int set = 0;
+      int  set = 0;
       if (self->type == RULER_MARKER_TYPE_PLAYHEAD)
         {
           position_to_string (PLAYHEAD, tooltip);
@@ -142,21 +148,19 @@ ruler_marker_widget_update_tooltip (
           gtk_label_set_text (
             self->tooltip_label, tooltip);
           gtk_window_present (self->tooltip_win);
-
         }
     }
   else
-    gtk_widget_hide (
-      GTK_WIDGET (self->tooltip_win));
+    gtk_widget_hide (GTK_WIDGET (self->tooltip_win));
 }
 
 RulerMarkerWidget *
-ruler_marker_widget_new (RulerWidget * ruler,
-                         RulerMarkerType type)
+ruler_marker_widget_new (
+  RulerWidget *   ruler,
+  RulerMarkerType type)
 {
   RulerMarkerWidget * self =
-    g_object_new (RULER_MARKER_WIDGET_TYPE,
-                  NULL);
+    g_object_new (RULER_MARKER_WIDGET_TYPE, NULL);
 
   self->type = type;
   self->ruler = ruler;
@@ -166,7 +170,7 @@ ruler_marker_widget_new (RulerWidget * ruler,
   if (type == RULER_MARKER_TYPE_PLAYHEAD)
     {
       gtk_widget_set_tooltip_text (
-        GTK_WIDGET (self), _("Playhead"));
+        GTK_WIDGET (self), _ ("Playhead"));
     }
 
   gtk_widget_add_events (
@@ -178,18 +182,16 @@ ruler_marker_widget_new (RulerWidget * ruler,
 static void
 ruler_marker_widget_init (RulerMarkerWidget * self)
 {
-  gtk_widget_add_events (GTK_WIDGET (self),
-                         GDK_ALL_EVENTS_MASK);
+  gtk_widget_add_events (
+    GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
 
-  gtk_widget_set_visible (GTK_WIDGET (self),
-                          1);
+  gtk_widget_set_visible (GTK_WIDGET (self), 1);
 
   /* set tooltip window */
   self->tooltip_win =
     GTK_WINDOW (gtk_window_new (GTK_WINDOW_POPUP));
   gtk_window_set_type_hint (
-    self->tooltip_win,
-    GDK_WINDOW_TYPE_HINT_TOOLTIP);
+    self->tooltip_win, GDK_WINDOW_TYPE_HINT_TOOLTIP);
   self->tooltip_label =
     GTK_LABEL (gtk_label_new ("label"));
   gtk_widget_set_visible (
@@ -206,13 +208,13 @@ ruler_marker_widget_init (RulerMarkerWidget * self)
     G_CALLBACK (ruler_marker_draw_cb), self);
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_motion),  self);
+    G_CALLBACK (on_motion), self);
   g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_motion),  self);
+    G_OBJECT (self), "leave-notify-event",
+    G_CALLBACK (on_motion), self);
   g_signal_connect (
-    G_OBJECT(self), "motion-notify-event",
-    G_CALLBACK (on_motion),  self);
+    G_OBJECT (self), "motion-notify-event",
+    G_CALLBACK (on_motion), self);
 }
 
 static void
@@ -220,8 +222,8 @@ ruler_marker_widget_class_init (
   RulerMarkerWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass,
-                                 "ruler-marker");
+  gtk_widget_class_set_css_name (
+    klass, "ruler-marker");
 }
 
 /**

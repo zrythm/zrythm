@@ -45,25 +45,23 @@ typedef enum ChordActionType
 } ChordActionType;
 
 static const cyaml_strval_t
-  chord_action_type_strings[] =
-{
-  { "Single", CHORD_ACTION_SINGLE },
-  { "All", CHORD_ACTION_ALL },
+  chord_action_type_strings[] = {
+    {"Single", CHORD_ACTION_SINGLE},
+    { "All",   CHORD_ACTION_ALL   },
 };
-
 
 /**
  * Action for chord pad changes.
  */
 typedef struct ChordAction
 {
-  UndoableAction  parent_instance;
+  UndoableAction parent_instance;
 
   ChordActionType type;
 
   ChordDescriptor * chord_before;
   ChordDescriptor * chord_after;
-  int             chord_idx;
+  int               chord_idx;
 
   /** Chords before the change. */
   ChordDescriptor ** chords_before;
@@ -74,41 +72,47 @@ typedef struct ChordAction
 } ChordAction;
 
 static const cyaml_schema_field_t
-  chord_action_fields_schema[] =
-{
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ChordAction, parent_instance,
-    undoable_action_fields_schema),
-  YAML_FIELD_ENUM (
-    ChordAction, type, chord_action_type_strings),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    ChordAction, chord_before,
-    chord_descriptor_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    ChordAction, chord_after,
-    chord_descriptor_fields_schema),
-  YAML_FIELD_INT (ChordAction, chord_idx),
-  YAML_FIELD_DYN_FIXED_SIZE_PTR_ARRAY_OPT (
-    ChordAction, chords_before,
-    chord_descriptor_schema, CHORD_EDITOR_NUM_CHORDS),
-  YAML_FIELD_DYN_FIXED_SIZE_PTR_ARRAY_OPT (
-    ChordAction, chords_after,
-    chord_descriptor_schema, CHORD_EDITOR_NUM_CHORDS),
+  chord_action_fields_schema[] = {
+    YAML_FIELD_MAPPING_EMBEDDED (
+      ChordAction,
+      parent_instance,
+      undoable_action_fields_schema),
+    YAML_FIELD_ENUM (
+      ChordAction,
+      type,
+      chord_action_type_strings),
+    YAML_FIELD_MAPPING_PTR_OPTIONAL (
+      ChordAction,
+      chord_before,
+      chord_descriptor_fields_schema),
+    YAML_FIELD_MAPPING_PTR_OPTIONAL (
+      ChordAction,
+      chord_after,
+      chord_descriptor_fields_schema),
+    YAML_FIELD_INT (ChordAction, chord_idx),
+    YAML_FIELD_DYN_FIXED_SIZE_PTR_ARRAY_OPT (
+      ChordAction,
+      chords_before,
+      chord_descriptor_schema,
+      CHORD_EDITOR_NUM_CHORDS),
+    YAML_FIELD_DYN_FIXED_SIZE_PTR_ARRAY_OPT (
+      ChordAction,
+      chords_after,
+      chord_descriptor_schema,
+      CHORD_EDITOR_NUM_CHORDS),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t
-  chord_action_schema =
-{
+static const cyaml_schema_value_t chord_action_schema = {
   CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER, ChordAction,
+    CYAML_FLAG_POINTER,
+    ChordAction,
     chord_action_fields_schema),
 };
 
 void
-chord_action_init_loaded (
-  ChordAction * self);
+chord_action_init_loaded (ChordAction * self);
 
 /**
  * Creates a new action.
@@ -128,8 +132,7 @@ chord_action_new (
 
 NONNULL
 ChordAction *
-chord_action_clone (
-  const ChordAction * src);
+chord_action_clone (const ChordAction * src);
 
 /**
  * Wrapper to create action and perform it.
@@ -143,9 +146,7 @@ chord_action_perform (
   GError **                error);
 
 int
-chord_action_do (
-  ChordAction * self,
-  GError **     error);
+chord_action_do (ChordAction * self, GError ** error);
 
 int
 chord_action_undo (
@@ -153,12 +154,10 @@ chord_action_undo (
   GError **     error);
 
 char *
-chord_action_stringize (
-  ChordAction * self);
+chord_action_stringize (ChordAction * self);
 
 void
-chord_action_free (
-  ChordAction * self);
+chord_action_free (ChordAction * self);
 
 /**
  * @}

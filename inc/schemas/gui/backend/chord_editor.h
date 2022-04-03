@@ -28,39 +28,37 @@
 
 #include "audio/chord_descriptor.h"
 #include "gui/backend/editor_settings.h"
-
 #include "utils/yaml.h"
 
 typedef struct ChordEditor_v1
 {
-  int              schema_version;
+  int                  schema_version;
   ChordDescriptor_v1 * chords[128];
-  int               num_chords;
-  EditorSettings_v1  editor_settings;
+  int                  num_chords;
+  EditorSettings_v1    editor_settings;
 } ChordEditor_v1;
 
 static const cyaml_schema_field_t
-chord_editor_fields_schema_v1[] =
-{
-  YAML_FIELD_INT (
-    ChordEditor_v1, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    ChordEditor_v1, chords,
-    chord_descriptor_schema_v1),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ChordEditor_v1, editor_settings,
-    editor_settings_fields_schema_v1),
+  chord_editor_fields_schema_v1[] = {
+    YAML_FIELD_INT (ChordEditor_v1, schema_version),
+    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+      ChordEditor_v1,
+      chords,
+      chord_descriptor_schema_v1),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      ChordEditor_v1,
+      editor_settings,
+      editor_settings_fields_schema_v1),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-chord_editor_schema_v1 =
-{
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    ChordEditor_v1, chord_editor_fields_schema_v1),
-};
+  chord_editor_schema_v1 = {
+    CYAML_VALUE_MAPPING (
+      CYAML_FLAG_POINTER,
+      ChordEditor_v1,
+      chord_editor_fields_schema_v1),
+  };
 
 #endif
-

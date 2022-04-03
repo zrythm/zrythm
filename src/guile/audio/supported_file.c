@@ -20,13 +20,16 @@
 #include "guile/modules.h"
 
 #ifndef SNARF_MODE
-#include "audio/supported_file.h"
-#include "project.h"
+#  include "audio/supported_file.h"
+#  include "project.h"
 #endif
 
 SCM_DEFINE (
   s_supported_file_new_from_path,
-  "supported-file-new-from-path", 1, 0, 0,
+  "supported-file-new-from-path",
+  1,
+  0,
+  0,
   (SCM path),
   "Returns an instance of SupportedFile.")
 #define FUNC_NAME s_
@@ -35,8 +38,7 @@ SCM_DEFINE (
     supported_file_new_from_path (
       scm_to_pointer (path));
 
-  return
-    scm_from_pointer (file, NULL);
+  return scm_from_pointer (file, NULL);
 }
 #undef FUNC_NAME
 
@@ -44,7 +46,7 @@ static void
 init_module (void * data)
 {
 #ifndef SNARF_MODE
-#include "audio_supported_file.x"
+#  include "audio_supported_file.x"
 #endif
 
   scm_c_export (

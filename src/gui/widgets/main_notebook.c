@@ -36,18 +36,17 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  MainNotebookWidget, main_notebook_widget,
+  MainNotebookWidget,
+  main_notebook_widget,
   GTK_TYPE_BOX)
 
 void
 main_notebook_widget_setup (
   MainNotebookWidget * self)
 {
-  timeline_panel_widget_setup (
-    self->timeline_panel);
+  timeline_panel_widget_setup (self->timeline_panel);
   event_viewer_widget_setup (
-    self->event_viewer,
-    EVENT_VIEWER_TYPE_TIMELINE);
+    self->event_viewer, EVENT_VIEWER_TYPE_TIMELINE);
 
   /* make detachable */
   GtkNotebook * notebook =
@@ -84,8 +83,7 @@ main_notebook_widget_tear_down (
 }
 
 static void
-main_notebook_widget_init (
-  MainNotebookWidget * self)
+main_notebook_widget_init (MainNotebookWidget * self)
 {
   self->foldable_notebook =
     foldable_notebook_widget_new (
@@ -98,9 +96,8 @@ main_notebook_widget_init (
     foldable_notebook_widget_get_notebook (
       self->foldable_notebook);
 
-  self->timeline_plus_event_viewer_paned =
-    GTK_PANED (
-      gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
+  self->timeline_plus_event_viewer_paned = GTK_PANED (
+    gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
   gtk_paned_set_shrink_start_child (
     self->timeline_plus_event_viewer_paned, false);
   gtk_paned_set_shrink_end_child (
@@ -115,45 +112,41 @@ main_notebook_widget_init (
   gtk_paned_set_start_child (
     self->timeline_plus_event_viewer_paned,
     GTK_WIDGET (self->timeline_panel));
-  self->event_viewer =
-    event_viewer_widget_new ();
+  self->event_viewer = event_viewer_widget_new ();
   gtk_paned_set_end_child (
     self->timeline_plus_event_viewer_paned,
     GTK_WIDGET (self->event_viewer));
 
-  self->port_connections_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  self->port_connections_box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
 
-  self->cc_bindings_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  self->cc_bindings_box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
 
-  self->scenes_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  self->scenes_box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
 
   /* add tabs */
   foldable_notebook_widget_add_page (
     self->foldable_notebook,
     GTK_WIDGET (
       self->timeline_plus_event_viewer_paned),
-    "roadmap", _("Timeline"), _("Timeline"));
+    "roadmap", _ ("Timeline"), _ ("Timeline"));
   foldable_notebook_widget_add_page (
     self->foldable_notebook,
     GTK_WIDGET (self->port_connections_box),
-    "connector", _("Connections"),
-    _("Port connections"));
+    "connector", _ ("Connections"),
+    _ ("Port connections"));
   foldable_notebook_widget_add_page (
     self->foldable_notebook,
     GTK_WIDGET (self->cc_bindings_box),
-    "signal-midi", _("Bindings"),
-    _("MIDI CC bindings"));
+    "signal-midi", _ ("Bindings"),
+    _ ("MIDI CC bindings"));
   foldable_notebook_widget_add_page (
     self->foldable_notebook,
     GTK_WIDGET (self->scenes_box),
-    "carousel-horizontal", _("Scenes"),
-    _("Scenes (live view)"));
+    "carousel-horizontal", _ ("Scenes"),
+    _ ("Scenes (live view)"));
 
   /* add action widget */
   self->end_stack = GTK_STACK (gtk_stack_new ());
@@ -186,8 +179,7 @@ static void
 main_notebook_widget_class_init (
   MainNotebookWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "main-notebook");
 }

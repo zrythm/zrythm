@@ -18,7 +18,6 @@
  */
 
 #include <math.h>
-#include <unistd.h>
 
 #include "audio/engine.h"
 #include "project.h"
@@ -27,11 +26,12 @@
 #include "utils/vamp.h"
 
 #include <audec/audec.h>
-#include <sndfile.h>
 #include <samplerate.h>
+#include <sndfile.h>
+#include <unistd.h>
 
 #if defined(__FreeBSD__)
-#include <sys/sysctl.h>
+#  include <sys/sysctl.h>
 #endif
 
 static int num_cores = 0;
@@ -81,17 +81,16 @@ audio_audec_log_func (
  */
 int
 audio_write_raw_file (
-  float *          buff,
-  size_t           frames_already_written,
-  size_t           nframes,
-  uint32_t         samplerate,
-  bool             flac,
-  BitDepth         bit_depth,
-  channels_t       channels,
-  const char *     filename)
+  float *      buff,
+  size_t       frames_already_written,
+  size_t       nframes,
+  uint32_t     samplerate,
+  bool         flac,
+  BitDepth     bit_depth,
+  channels_t   channels,
+  const char * filename)
 {
-  g_return_val_if_fail (
-    samplerate < 10000000, -1);
+  g_return_val_if_fail (samplerate < 10000000, -1);
 
   g_debug (
     "writing raw file: already written %ld, "
@@ -111,25 +110,22 @@ audio_write_raw_file (
   switch (bit_depth)
     {
     case BIT_DEPTH_16:
-      info.format =
-        info.format | SF_FORMAT_PCM_16;
+      info.format = info.format | SF_FORMAT_PCM_16;
       break;
     case BIT_DEPTH_24:
-      info.format =
-        info.format | SF_FORMAT_PCM_24;
+      info.format = info.format | SF_FORMAT_PCM_24;
       break;
     case BIT_DEPTH_32:
       g_return_val_if_fail (!flac, -1);
-      info.format =
-        info.format | SF_FORMAT_PCM_32;
+      info.format = info.format | SF_FORMAT_PCM_32;
       break;
     }
   info.seekable = 1;
   info.sections = 1;
 
   bool write_chunk =
-    (frames_already_written > 0) &&
-    g_file_test (filename, G_FILE_TEST_IS_REGULAR);
+    (frames_already_written > 0)
+    && g_file_test (filename, G_FILE_TEST_IS_REGULAR);
 
   if (flac && write_chunk)
     {
@@ -137,9 +133,8 @@ audio_write_raw_file (
       return -1;
     }
 
-  SNDFILE * sndfile =
-    sf_open (
-      filename, flac ? SFM_WRITE : SFM_RDWR, &info);
+  SNDFILE * sndfile = sf_open (
+    filename, flac ? SFM_WRITE : SFM_RDWR, &info);
   if (!sndfile)
     {
       g_critical (
@@ -153,10 +148,9 @@ audio_write_raw_file (
       size_t seek_to =
         write_chunk ? frames_already_written : 0;
       g_debug ("seeking to %zu", seek_to);
-      int ret =
-        sf_seek (
-          sndfile, (sf_count_t) seek_to,
-          SEEK_SET | SFM_WRITE);
+      int ret = sf_seek (
+        sndfile, (sf_count_t) seek_to,
+        SEEK_SET | SFM_WRITE);
       if (ret == -1 || ret != (int) seek_to)
         {
           g_critical (
@@ -166,9 +160,8 @@ audio_write_raw_file (
     }
 
   g_debug ("nframes = %zu", nframes);
-  sf_count_t count =
-    sf_writef_float (
-      sndfile, buff, (sf_count_t) nframes);
+  sf_count_t count = sf_writef_float (
+    sndfile, buff, (sf_count_t) nframes);
   if (count != (sf_count_t) nframes)
     {
       g_critical (
@@ -193,19 +186,16 @@ audio_write_raw_file (
  * file.
  */
 unsigned_frame_t
-audio_get_num_frames (
-  const char * filepath)
+audio_get_num_frames (const char * filepath)
 {
   SF_INFO sfinfo;
   memset (&sfinfo, 0, sizeof (sfinfo));
-  sfinfo.format =
-    sfinfo.format | SF_FORMAT_PCM_16;
+  sfinfo.format = sfinfo.format | SF_FORMAT_PCM_16;
   SNDFILE * sndfile =
     sf_open (filepath, SFM_READ, &sfinfo);
   if (!sndfile)
     {
-      const char * err_str =
-        sf_strerror (sndfile);
+      const char * err_str = sf_strerror (sndfile);
       g_critical ("sndfile null: %s", err_str);
       return 0;
     }
@@ -232,11 +222,11 @@ audio_frames_equal (
   for (size_t i = 0; i < num_frames; i++)
     {
       if (!math_floats_equal_epsilon (
-             src1[i], src2[i], epsilon))
+            src1[i], src2[i], epsilon))
         {
           g_debug (
-            "[%zu] %f != %f",
-            i, (double) src1[i], (double) src2[i]);
+            "[%zu] %f != %f", i, (double) src1[i],
+            (double) src2[i]);
           return false;
         }
     }
@@ -247,9 +237,7 @@ audio_frames_equal (
  * Returns whether the frame buffer is empty (zero).
  */
 bool
-audio_frames_empty (
-  float * src,
-  size_t  num_frames)
+audio_frames_empty (float * src, size_t num_frames)
 {
   for (size_t i = 0; i < num_frames; i++)
     {
@@ -264,13 +252,11 @@ audio_frames_empty (
 }
 
 bool
-audio_file_is_silent (
-  const char * filepath)
+audio_file_is_silent (const char * filepath)
 {
   SF_INFO sfinfo;
   memset (&sfinfo, 0, sizeof (sfinfo));
-  sfinfo.format =
-    sfinfo.format | SF_FORMAT_PCM_16;
+  sfinfo.format = sfinfo.format | SF_FORMAT_PCM_16;
   SNDFILE * sndfile =
     sf_open (filepath, SFM_READ, &sfinfo);
   g_return_val_if_fail (
@@ -285,8 +271,7 @@ audio_file_is_silent (
   g_return_val_if_fail (
     frames_read == sfinfo.frames, true);
   g_debug (
-    "read %ld frames for %s", frames_read,
-    filepath);
+    "read %ld frames for %s", frames_read, filepath);
 
   bool is_empty =
     audio_frames_empty (data, (size_t) buf_size);
@@ -310,10 +295,9 @@ audio_detect_bpm (
   unsigned int samplerate,
   GArray *     candidates)
 {
-  ZVampPlugin * plugin =
-    vamp_get_plugin (
-      Z_VAMP_PLUGIN_FIXED_TEMPO_ESTIMATOR,
-      (float) samplerate);
+  ZVampPlugin * plugin = vamp_get_plugin (
+    Z_VAMP_PLUGIN_FIXED_TEMPO_ESTIMATOR,
+    (float) samplerate);
   size_t step_sz =
     vamp_plugin_get_preferred_step_size (plugin);
   size_t block_sz =
@@ -328,18 +312,18 @@ audio_detect_bpm (
   vamp_plugin_output_list_print (outputs);
   vamp_plugin_output_list_free (outputs);
 
-  long cur_timestamp = 0;
+  long  cur_timestamp = 0;
   float bpm = 0.f;
-  while ((cur_timestamp + (long) block_sz) <
-           (long) num_frames)
+  while (
+    (cur_timestamp + (long) block_sz)
+    < (long) num_frames)
     {
       float * frames[] = {
         &src[cur_timestamp],
       };
       ZVampFeatureSet * feature_set =
         vamp_plugin_process (
-          plugin,
-          (const float * const*) frames,
+          plugin, (const float * const *) frames,
           cur_timestamp, samplerate);
       const ZVampFeatureList * fl =
         vamp_feature_set_get_list_for_output (
@@ -381,8 +365,8 @@ audio_detect_bpm (
 
       if (candidates)
         {
-          for (size_t i = 0; i < feature->num_values;
-               i++)
+          for (size_t i = 0;
+               i < feature->num_values; i++)
             {
               g_array_append_val (
                 candidates, feature->values[i]);
@@ -405,38 +389,36 @@ audio_get_num_cores ()
 
 #ifdef _WOE32
   SYSTEM_INFO sysinfo;
-  GetSystemInfo(&sysinfo);
+  GetSystemInfo (&sysinfo);
   num_cores = (int) sysinfo.dwNumberOfProcessors;
 #endif
 
 #if defined(__linux__) || defined(__APPLE__)
-  num_cores =
-    (int) sysconf (_SC_NPROCESSORS_ONLN);
+  num_cores = (int) sysconf (_SC_NPROCESSORS_ONLN);
 #endif
 
 #ifdef __FreeBSD__
-  int mib[4];
-  size_t len = sizeof(num_cores);
+  int    mib[4];
+  size_t len = sizeof (num_cores);
 
   /* set the mib for hw.ncpu */
   mib[0] = CTL_HW;
   mib[1] = HW_NCPU;
 
   /* get the number of CPUs from the system */
-  sysctl(mib, 2, &num_cores, &len, NULL, 0);
+  sysctl (mib, 2, &num_cores, &len, NULL, 0);
 
   if (num_cores < 1)
-  {
+    {
       mib[1] = HW_NCPU;
-      sysctl(mib, 2, &num_cores, &len, NULL, 0);
+      sysctl (mib, 2, &num_cores, &len, NULL, 0);
       if (num_cores < 1)
-          num_cores = 1;
-  }
+        num_cores = 1;
+    }
 #endif
 
   g_message (
-      "Number of CPU cores found: %d",
-      num_cores);
+    "Number of CPU cores found: %d", num_cores);
 
   return num_cores;
 }

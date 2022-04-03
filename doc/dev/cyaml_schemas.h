@@ -265,5 +265,3 @@
  * if the struct will be used directly in another
  * struct (not as a pointer).
  */
-
-

@@ -21,15 +21,15 @@
 #include "audio/region.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
-#include "gui/widgets/main_window.h"
-#include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/editor_ruler.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
 #include "utils/gtk.h"
@@ -48,8 +48,7 @@ G_DEFINE_TYPE (
  * initialized.
  */
 static void
-link_scrolls (
-  AutomationEditorSpaceWidget * self)
+link_scrolls (AutomationEditorSpaceWidget * self)
 {
   /* link ruler h scroll to arranger h scroll */
   if (MW_CLIP_EDITOR_INNER->ruler_scroll)
@@ -67,12 +66,11 @@ link_scrolls (
 void
 automation_editor_space_widget_update_size_group (
   AutomationEditorSpaceWidget * self,
-  int                     visible)
+  int                           visible)
 {
   clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
     MW_CLIP_EDITOR_INNER,
-    GTK_WIDGET (self->left_box),
-    visible);
+    GTK_WIDGET (self->left_box), visible);
 }
 
 void
@@ -81,7 +79,7 @@ automation_editor_space_widget_refresh (
 {
   link_scrolls (self);
   /*automation_editor_legend_widget_refresh (*/
-    /*self->legend);*/
+  /*self->legend);*/
 }
 
 void
@@ -96,7 +94,7 @@ automation_editor_space_widget_setup (
         SNAP_GRID_EDITOR);
 
       /*automation_editor_legend_widget_setup (*/
-        /*self->legend);*/
+      /*self->legend);*/
     }
 
   automation_editor_space_widget_refresh (self);
@@ -107,7 +105,7 @@ automation_editor_space_widget_init (
   AutomationEditorSpaceWidget * self)
 {
   /*g_type_ensure (*/
-    /*AUTOMATION_EDITOR_LEGEND_WIDGET_TYPE);*/
+  /*AUTOMATION_EDITOR_LEGEND_WIDGET_TYPE);*/
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -119,11 +117,9 @@ static void
 automation_editor_space_widget_class_init (
   AutomationEditorSpaceWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
-    klass,
-    "automation_editor_space.ui");
+    klass, "automation_editor_space.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

@@ -28,7 +28,7 @@
 
 #ifdef HAVE_CHANGELOG
 
-#include <gtk/gtk.h>
+#  include <gtk/gtk.h>
 
 /**
  * @addtogroup widgets
@@ -40,8 +40,7 @@
  * Creates and displays the changelog dialog.
  */
 void
-changelog_dialog_widget_run (
-  GtkWindow * parent);
+changelog_dialog_widget_run (GtkWindow * parent);
 
 /**
  * @}

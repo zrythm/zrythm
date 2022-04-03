@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   PianoRollKeysWidget,
   piano_roll_keys_widget,
-  Z, PIANO_ROLL_KEYS_WIDGET,
+  Z,
+  PIANO_ROLL_KEYS_WIDGET,
   GtkWidget)
 
 /**
@@ -51,23 +52,23 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _PianoRollKeysWidget
 {
-  GtkWidget            parent_instance;
+  GtkWidget parent_instance;
 
   /** Start key pressed. */
-  int                  start_key;
+  int start_key;
 
   /** Last key hovered during a press. */
-  int                  last_key;
+  int last_key;
 
   /** Last hovered key. */
-  int                  last_hovered_key;
+  int last_hovered_key;
 
   /**
    * Note in the middle of the arranger (0-127).
    *
    * This will be used to scroll to each refresh.
    */
-  int                  last_mid_note;
+  int last_mid_note;
 
   /**
    * Note pressed.
@@ -75,7 +76,7 @@ typedef struct _PianoRollKeysWidget
    * Used for note presses (see
    * MidiEditorSpaceKeyWidget).
    */
-  int                  note_pressed;
+  int note_pressed;
 
   /**
    * Note released.
@@ -83,19 +84,19 @@ typedef struct _PianoRollKeysWidget
    * Used for note presses (see
    * MidiEditorSpaceKeyWidget).
    */
-  int                  note_released;
+  int note_released;
 
   /** Pixel height of each key, determined by the
    * zoom level. */
-  double               px_per_key;
+  double px_per_key;
 
   /** Pixel height of all keys combined. */
-  double               total_key_px;
+  double total_key_px;
 
   GtkGestureClick * multipress;
 
   /** Cache layout for drawing the name. */
-  PangoLayout *      layout;
+  PangoLayout * layout;
 } PianoRollKeysWidget;
 
 /**

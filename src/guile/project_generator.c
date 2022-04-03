@@ -17,12 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "guile/guile.h"
-#include "guile/project_generator.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "zrythm.h"
+
+#include "guile/guile.h"
+#include "guile/project_generator.h"
 
 /**
  * Generates a Zrythm project from the script
@@ -50,13 +51,11 @@ guile_project_generator_generate_project_from_string (
     }
 
   /* create the project at a temporary path */
-  char * tmp_path =
-    g_dir_make_tmp (
-      "zrythm_guile_prj_gen_XXXXXX", NULL);
-  Project * prj =
-    project_create_default (
-      use_tmp_project ? PROJECT : NULL,
-      tmp_path, true, true);
+  char * tmp_path = g_dir_make_tmp (
+    "zrythm_guile_prj_gen_XXXXXX", NULL);
+  Project * prj = project_create_default (
+    use_tmp_project ? PROJECT : NULL, tmp_path,
+    true, true);
 
   /* save the project at the given path */
   project_save (
@@ -71,8 +70,7 @@ guile_project_generator_generate_project_from_string (
   PROJECT = prj;
 
   /* run the script to fill in the project */
-  char * markup =
-    (char *) guile_run_script (script);
+  char * markup = (char *) guile_run_script (script);
   g_message ("\nResult:\n%s", markup);
 
   if (!guile_script_succeeded (markup))
@@ -114,9 +112,9 @@ guile_project_generator_generate_project_from_file (
   const char * filepath,
   const char * prj_path)
 {
-  GError *err = NULL;
-  char * contents;
-  gsize contents_len;
+  GError * err = NULL;
+  char *   contents;
+  gsize    contents_len;
   g_file_get_contents (
     filepath, &contents, &contents_len, &err);
   if (err)
@@ -126,7 +124,6 @@ guile_project_generator_generate_project_from_file (
       return -1;
     }
 
-  return
-      guile_project_generator_generate_project_from_string (
-      contents, prj_path);
+  return guile_project_generator_generate_project_from_string (
+    contents, prj_path);
 }

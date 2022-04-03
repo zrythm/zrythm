@@ -40,9 +40,9 @@
 
 #define P_CHORD_TRACK (TRACKLIST->chord_track)
 
-typedef struct ChordObject ChordObject;
+typedef struct ChordObject       ChordObject;
 typedef struct _ChordTrackWidget ChordTrackWidget;
-typedef struct MusicalScale MusicalScale;
+typedef struct MusicalScale      MusicalScale;
 
 typedef struct Track ChordTrack;
 
@@ -50,15 +50,13 @@ typedef struct Track ChordTrack;
  * Creates a new chord Track.
  */
 ChordTrack *
-chord_track_new (
-  int track_pos);
+chord_track_new (int track_pos);
 
 /**
  * Inits a chord track (e.g. when cloning).
  */
 void
-chord_track_init (
-  Track * track);
+chord_track_init (Track * track);
 
 /**
  * Inserts a chord region to the Track at the given
@@ -105,8 +103,7 @@ chord_track_remove_region (
   ZRegion *    region);
 
 bool
-chord_track_validate (
-  Track * self);
+chord_track_validate (Track * self);
 
 /**
  * Returns the current chord.
@@ -120,7 +117,7 @@ chord_track_validate (
  */
 ChordObject *
 chord_track_get_chord_at_pos (
-  const Track * ct,
+  const Track *    ct,
   const Position * pos);
 
 /**
@@ -135,7 +132,7 @@ chord_track_get_chord_at_pos (
  */
 ScaleObject *
 chord_track_get_scale_at_pos (
-  const Track * ct,
+  const Track *    ct,
   const Position * pos);
 
 /**
@@ -144,8 +141,7 @@ chord_track_get_scale_at_pos (
  * Mainly used in testing.
  */
 void
-chord_track_clear (
-  ChordTrack * self);
+chord_track_clear (ChordTrack * self);
 
 /**
  * @}

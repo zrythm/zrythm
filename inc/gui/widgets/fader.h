@@ -28,11 +28,13 @@
 
 #include <gtk/gtk.h>
 
-#define FADER_WIDGET_TYPE \
-  (fader_widget_get_type ())
+#define FADER_WIDGET_TYPE (fader_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  FaderWidget, fader_widget,
-  Z, FADER_WIDGET, GtkWidget)
+  FaderWidget,
+  fader_widget,
+  Z,
+  FADER_WIDGET,
+  GtkWidget)
 
 typedef struct Fader Fader;
 
@@ -46,20 +48,20 @@ typedef struct Fader Fader;
  */
 typedef struct _FaderWidget
 {
-  GtkWidget          parent_instance;
-  GtkGestureDrag *   drag;
-  Fader *            fader;
-  double             last_x;
-  double             last_y;
-  bool               hover;
-  bool               dragging;
+  GtkWidget        parent_instance;
+  GtkGestureDrag * drag;
+  Fader *          fader;
+  double           last_x;
+  double           last_y;
+  bool             hover;
+  bool             dragging;
   //GtkWindow *        tooltip_win;
   //GtkLabel *         tooltip_label;
-  GdkRGBA            start_color;
-  GdkRGBA            end_color;
+  GdkRGBA start_color;
+  GdkRGBA end_color;
 
   /** Value at start. */
-  float              amp_at_start;
+  float amp_at_start;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;

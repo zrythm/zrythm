@@ -21,16 +21,17 @@
 
 #include <math.h>
 
-#include "guile/guile.h"
 #include "utils/flags.h"
 #include "zrythm.h"
+
+#include <glib.h>
 
 #include "tests/helpers/project.h"
 #include "tests/helpers/zrythm.h"
 
-#include <glib.h>
+#include "guile/guile.h"
 
-int num_args = 0;
+int     num_args = 0;
 char ** args = NULL;
 
 static void
@@ -42,12 +43,10 @@ test_run_script (void)
 
   g_message ("running <%s>", args[1]);
   char * content = NULL;
-  bool ret =
-    g_file_get_contents (
+  bool   ret = g_file_get_contents (
       args[1], &content, NULL, NULL);
   g_assert_true (ret);
-  char * res =
-    guile_run_script (content);
+  char * res = guile_run_script (content);
   g_message ("%s", res);
   g_assert_true (guile_script_succeeded (res));
 
@@ -55,7 +54,7 @@ test_run_script (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
@@ -70,4 +69,3 @@ main (int argc, char *argv[])
 
   return g_test_run ();
 }
-

@@ -35,7 +35,8 @@
 G_DECLARE_FINAL_TYPE (
   FaderControlsExpanderWidget,
   fader_controls_expander_widget,
-  Z, FADER_CONTROLS_EXPANDER_WIDGET,
+  Z,
+  FADER_CONTROLS_EXPANDER_WIDGET,
   ExpanderBoxWidget);
 
 typedef struct Track Track;
@@ -60,7 +61,7 @@ typedef struct _FaderControlsExpanderWidget
   FaderControlsGridWidget * grid;
 
   /** Owner track. */
-  Track *           track;
+  Track * track;
 } FaderControlsExpanderWidget;
 
 /**
@@ -76,7 +77,7 @@ fader_controls_expander_widget_refresh (
 void
 fader_controls_expander_widget_setup (
   FaderControlsExpanderWidget * self,
-  Track *                     track);
+  Track *                       track);
 
 /**
  * Prepare for finalization.

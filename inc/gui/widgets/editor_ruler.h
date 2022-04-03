@@ -54,18 +54,17 @@ editor_ruler_widget_draw_markers (
 void
 editor_ruler_on_drag_begin_no_marker_hit (
   RulerWidget * self,
-  gdouble             start_x,
-  gdouble             start_y);
+  gdouble       start_x,
+  gdouble       start_y);
 
 void
 editor_ruler_on_drag_update (
   RulerWidget * self,
-  gdouble             offset_x,
-  gdouble             offset_y);
+  gdouble       offset_x,
+  gdouble       offset_y);
 
 void
-editor_ruler_on_drag_end (
-  RulerWidget * self);
+editor_ruler_on_drag_end (RulerWidget * self);
 
 int
 editor_ruler_get_regions_in_range (

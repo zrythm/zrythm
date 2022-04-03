@@ -30,24 +30,28 @@ typedef struct Port Port;
  * @{
  */
 
-#define VOLUME_WIDGET_TYPE (volume_widget_get_type ())
+#define VOLUME_WIDGET_TYPE \
+  (volume_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  VolumeWidget, volume_widget,
-  Z, VOLUME_WIDGET, GtkDrawingArea)
+  VolumeWidget,
+  volume_widget,
+  Z,
+  VOLUME_WIDGET,
+  GtkDrawingArea)
 
 typedef struct _VolumeWidget
 {
-  GtkDrawingArea    parent_instance;
+  GtkDrawingArea parent_instance;
 
   /** Control port to change. */
-  Port *            port;
+  Port * port;
 
-  bool              hover;
+  bool hover;
 
-  GtkGestureDrag *  drag;
+  GtkGestureDrag * drag;
 
-  double            last_x;
-  double            last_y;
+  double last_x;
+  double last_y;
 } VolumeWidget;
 
 void
@@ -56,8 +60,7 @@ volume_widget_setup (
   Port *         port);
 
 VolumeWidget *
-volume_widget_new (
-  Port * port);
+volume_widget_new (Port * port);
 
 /**
  * @}

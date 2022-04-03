@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   ScaleSelectorWindowWidget,
   scale_selector_window_widget,
-  Z, SCALE_SELECTOR_WINDOW_WIDGET,
+  Z,
+  SCALE_SELECTOR_WINDOW_WIDGET,
   GtkWindow)
 
 /**
@@ -42,7 +43,7 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-typedef struct ScaleObject ScaleObject;
+typedef struct ScaleObject  ScaleObject;
 typedef struct MusicalScale MusicalScale;
 
 /**
@@ -51,7 +52,7 @@ typedef struct MusicalScale MusicalScale;
  */
 typedef struct _ScaleSelectorWindowWidget
 {
-  GtkWindow         parent_instance;
+  GtkWindow parent_instance;
 
   GtkFlowBox *      creator_root_note_flowbox;
   GtkFlowBoxChild * creator_root_note_c;
@@ -70,8 +71,8 @@ typedef struct _ScaleSelectorWindowWidget
   /** All of the above in an array. */
   GtkFlowBoxChild * creator_root_notes[12];
 
-  GtkFlowBox *      creator_type_flowbox;
-  GtkFlowBox *      creator_type_other_flowbox;
+  GtkFlowBox * creator_type_flowbox;
+  GtkFlowBox * creator_type_other_flowbox;
 
   /** All of the above in an array. */
   GtkFlowBoxChild * creator_types[NUM_SCALES];

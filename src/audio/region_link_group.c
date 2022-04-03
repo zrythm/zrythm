@@ -34,8 +34,7 @@ region_link_group_init_loaded (
 }
 
 RegionLinkGroup *
-region_link_group_new (
-  int               idx)
+region_link_group_new (int idx)
 {
   RegionLinkGroup * self =
     object_new (RegionLinkGroup);
@@ -96,14 +95,14 @@ void
 region_link_group_remove_region (
   RegionLinkGroup * self,
   ZRegion *         region,
-  bool              autoremove_last_region_and_group,
-  bool              update_identifier)
+  bool autoremove_last_region_and_group,
+  bool update_identifier)
 {
   g_return_if_fail (
-    IS_REGION_LINK_GROUP (self) &&
-    IS_REGION (region) && self->num_ids > 0 &&
-    self->group_idx <
-      REGION_LINK_GROUP_MANAGER->num_groups);
+    IS_REGION_LINK_GROUP (self)
+    && IS_REGION (region) && self->num_ids > 0
+    && self->group_idx
+         < REGION_LINK_GROUP_MANAGER->num_groups);
 
   g_message (
     "removing region '%s' from link group %d "
@@ -143,8 +142,8 @@ region_link_group_remove_region (
       else if (self->num_ids == 0)
         {
           g_warn_if_fail (
-            REGION_LINK_GROUP_MANAGER->num_groups >
-            0);
+            REGION_LINK_GROUP_MANAGER->num_groups
+            > 0);
           region_link_group_manager_remove_group (
             REGION_LINK_GROUP_MANAGER,
             self->group_idx);
@@ -170,17 +169,16 @@ region_link_group_update (
 {
   for (int i = 0; i < self->num_ids; i++)
     {
-      ZRegion * region =
-        region_find (&self->ids[i]);
+      ZRegion * region = region_find (&self->ids[i]);
       g_return_if_fail (
         IS_REGION_AND_NONNULL (region));
 
       if (region_identifier_is_equal (
-           &self->ids[i], &main_region->id))
+            &self->ids[i], &main_region->id))
         continue;
 
-      g_message ("[%s] updating %d (%d %s)",
-        __func__, i,
+      g_message (
+        "[%s] updating %d (%d %s)", __func__, i,
         region->id.idx, region->name);
 
       /* delete and readd all children */
@@ -190,13 +188,11 @@ region_link_group_update (
 }
 
 bool
-region_link_group_validate (
-  RegionLinkGroup * self)
+region_link_group_validate (RegionLinkGroup * self)
 {
   for (int i = 0; i < self->num_ids; i++)
     {
-      ZRegion * region =
-        region_find (&self->ids[i]);
+      ZRegion * region = region_find (&self->ids[i]);
       g_return_val_if_fail (
         IS_REGION_AND_NONNULL (region), false);
       RegionLinkGroup * link_group =
@@ -209,11 +205,10 @@ region_link_group_validate (
 }
 
 void
-region_link_group_print (
-  RegionLinkGroup * self)
+region_link_group_print (RegionLinkGroup * self)
 {
-  char * str =
-    yaml_serialize (self, &region_link_group_schema);
+  char * str = yaml_serialize (
+    self, &region_link_group_schema);
   g_message ("%s", str);
   g_free (str);
 }
@@ -243,8 +238,7 @@ region_link_group_move (
 #endif
 
 RegionLinkGroup *
-region_link_group_clone (
-  const RegionLinkGroup * src)
+region_link_group_clone (const RegionLinkGroup * src)
 {
   RegionLinkGroup * self =
     object_new (RegionLinkGroup);
@@ -253,9 +247,8 @@ region_link_group_clone (
   self->magic = REGION_LINK_GROUP_MAGIC;
 
   self->group_idx = src->group_idx;
-  self->ids =
-    object_new_n (
-      (size_t) src->num_ids, RegionIdentifier);
+  self->ids = object_new_n (
+    (size_t) src->num_ids, RegionIdentifier);
   for (int i = 0; i < src->num_ids; i++)
     {
       region_identifier_copy (
@@ -267,8 +260,7 @@ region_link_group_clone (
 }
 
 void
-region_link_group_free (
-  RegionLinkGroup * self)
+region_link_group_free (RegionLinkGroup * self)
 {
   object_zero_and_free (self->ids);
 

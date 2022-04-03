@@ -50,23 +50,23 @@ typedef struct EventManager
   /**
    * Event queue, mainly for GUI events.
    */
-  MPMCQueue *        mqueue;
+  MPMCQueue * mqueue;
 
   /**
    * Object pool of event structs to avoid real time
    * allocation.
    */
-  ObjectPool *       obj_pool;
+  ObjectPool * obj_pool;
 
   /** ID of the event processing source func. */
-  guint              process_source_id;
+  guint process_source_id;
 
   /** A soft recalculation of the routing graph
    * is pending. */
-  bool               pending_soft_recalc;
+  bool pending_soft_recalc;
 
   /** Events array to use during processing. */
-  GPtrArray *        events_arr;
+  GPtrArray * events_arr;
 } EventManager;
 
 #define EVENT_MANAGER (ZRYTHM->event_manager)
@@ -76,63 +76,59 @@ typedef struct EventManager
 
 #define EVENT_MANAGER_MAX_EVENTS 4000
 
-#define event_queue_push_back_event(q,x) \
+#define event_queue_push_back_event(q, x) \
   mpmc_queue_push_back (q, (void *) x)
 
-#define event_queue_dequeue_event(q,x) \
+#define event_queue_dequeue_event(q, x) \
   mpmc_queue_dequeue (q, (void *) x)
 
 /**
  * Push events.
  */
-#define EVENTS_PUSH(et,_arg) \
-  if (ZRYTHM_HAVE_UI && EVENT_MANAGER && \
-      EVENT_QUEUE && \
-      (!PROJECT || !AUDIO_ENGINE || \
-       !AUDIO_ENGINE->exporting)) \
+#define EVENTS_PUSH(et, _arg) \
+  if ( \
+    ZRYTHM_HAVE_UI && EVENT_MANAGER && EVENT_QUEUE \
+    && (!PROJECT || !AUDIO_ENGINE || !AUDIO_ENGINE->exporting)) \
     { \
-      ZEvent * _ev = \
-        (ZEvent *) \
-        object_pool_get (EVENT_MANAGER->obj_pool); \
+      ZEvent * _ev = (ZEvent *) object_pool_get ( \
+        EVENT_MANAGER->obj_pool); \
       _ev->file = __FILE__; \
       _ev->func = __func__; \
       _ev->lineno = __LINE__; \
       _ev->type = (et); \
       _ev->arg = (void *) (_arg); \
-      if (zrythm_app->gtk_thread == \
-            g_thread_self ()  \
-          /* skip backtrace for now */ \
-          && false) \
+      if ( \
+        zrythm_app->gtk_thread \
+          == g_thread_self () /* skip backtrace for now */ \
+        && false) \
         { \
           _ev->backtrace = \
             backtrace_get ("", 40, false); \
         } \
       /* don't print events that are called \
        * continuously */ \
-      if ((et) != ET_PLAYHEAD_POS_CHANGED && \
-            g_thread_self () == \
-              zrythm_app->gtk_thread) \
+      if ( \
+        (et) != ET_PLAYHEAD_POS_CHANGED \
+        && g_thread_self () \
+             == zrythm_app->gtk_thread) \
         { \
           g_debug ( \
-            "pushing UI event " #et \
-            " (%s:%d)", __func__, __LINE__); \
+            "pushing UI event " #et " (%s:%d)", \
+            __func__, __LINE__); \
         } \
       event_queue_push_back_event ( \
         EVENT_QUEUE, _ev); \
     }
 
 /* runs the event logic now */
-#define EVENTS_PUSH_NOW(et,_arg) \
-  if (ZRYTHM_HAVE_UI && EVENT_MANAGER \
-      && EVENT_QUEUE \
-      && zrythm_app->gtk_thread \
-        == g_thread_self () \
-      && (!PROJECT || !AUDIO_ENGINE || \
-          !AUDIO_ENGINE->exporting)) \
+#define EVENTS_PUSH_NOW(et, _arg) \
+  if ( \
+    ZRYTHM_HAVE_UI && EVENT_MANAGER && EVENT_QUEUE \
+    && zrythm_app->gtk_thread == g_thread_self () \
+    && (!PROJECT || !AUDIO_ENGINE || !AUDIO_ENGINE->exporting)) \
     { \
-      ZEvent * _ev = \
-        (ZEvent *) \
-        object_pool_get (EVENT_MANAGER->obj_pool); \
+      ZEvent * _ev = (ZEvent *) object_pool_get ( \
+        EVENT_MANAGER->obj_pool); \
       _ev->file = __FILE__; \
       _ev->func = __func__; \
       _ev->lineno = __LINE__; \
@@ -150,7 +146,8 @@ typedef struct EventManager
         { \
           g_debug ( \
             "processing UI event now " #et \
-            " (%s:%d)", __func__, __LINE__); \
+            " (%s:%d)", \
+            __func__, __LINE__); \
         } \
       event_manager_process_event ( \
         EVENT_MANAGER, _ev); \
@@ -170,15 +167,13 @@ event_manager_new (void);
  * Starts accepting events.
  */
 void
-event_manager_start_events (
-  EventManager * self);
+event_manager_start_events (EventManager * self);
 
 /**
  * Stops events from getting fired.
  */
 void
-event_manager_stop_events (
-  EventManager * self);
+event_manager_stop_events (EventManager * self);
 
 /**
  * Processes the given event.
@@ -197,8 +192,7 @@ event_manager_process_event (
  * Must only be called from the GTK thread.
  */
 void
-event_manager_process_now (
-  EventManager * self);
+event_manager_process_now (EventManager * self);
 
 /**
  * Removes events where the arg matches the
@@ -210,8 +204,7 @@ event_manager_remove_events_for_obj (
   void *         obj);
 
 void
-event_manager_free (
-  EventManager * self);
+event_manager_free (EventManager * self);
 
 /**
  * @}

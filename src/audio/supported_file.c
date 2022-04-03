@@ -25,40 +25,36 @@
 #include "utils/objects.h"
 #include "utils/string.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 /**
  * Creates a new SupportedFile from the given absolute
  * path.
  */
 SupportedFile *
-supported_file_new_from_path (
-  const char * path)
+supported_file_new_from_path (const char * path)
 {
   SupportedFile * self = object_new (SupportedFile);
 
   g_debug (
     "creating new SupportedFile for %s", path);
   self->abs_path = g_strdup (path);
-  self->type =
-    supported_file_get_type (path);
-  self->label =
-    g_path_get_basename (path);
+  self->type = supported_file_get_type (path);
+  self->label = g_path_get_basename (path);
 
   g_warn_if_fail (
-    self->type >= FILE_TYPE_MIDI &&
-    self->type < NUM_FILE_TYPES);
+    self->type >= FILE_TYPE_MIDI
+    && self->type < NUM_FILE_TYPES);
 
   return self;
 }
 
 SupportedFile *
-supported_file_new_from_uri (
-  const char * uri)
+supported_file_new_from_uri (const char * uri)
 {
   GError * err = NULL;
-  char * path =
+  char *   path =
     g_filename_from_uri (uri, NULL, &err);
   if (!path)
     {
@@ -79,15 +75,15 @@ supported_file_new_from_uri (
  * Returns if the given type is supported.
  */
 int
-supported_file_type_is_supported (
-  ZFileType type)
+supported_file_type_is_supported (ZFileType type)
 {
   if (supported_file_type_is_audio (type))
     {
-      if (type == FILE_TYPE_FLAC ||
-          type == FILE_TYPE_OGG ||
-          type == FILE_TYPE_WAV ||
-          type == FILE_TYPE_MP3)
+      if (
+        type == FILE_TYPE_FLAC
+        || type == FILE_TYPE_OGG
+        || type == FILE_TYPE_WAV
+        || type == FILE_TYPE_MP3)
         return 1;
     }
   if (supported_file_type_is_midi (type))
@@ -100,22 +96,18 @@ supported_file_type_is_supported (
  * Returns if the SupportedFile is an audio file.
  */
 int
-supported_file_type_is_audio (
-  ZFileType type)
+supported_file_type_is_audio (ZFileType type)
 {
-  return
-    type == FILE_TYPE_MP3 ||
-    type == FILE_TYPE_FLAC ||
-    type == FILE_TYPE_OGG ||
-    type == FILE_TYPE_WAV;
+  return type == FILE_TYPE_MP3 || type == FILE_TYPE_FLAC
+         || type == FILE_TYPE_OGG
+         || type == FILE_TYPE_WAV;
 }
 
 /**
  * Returns if the SupportedFile is a midi file.
  */
 int
-supported_file_type_is_midi (
-  ZFileType type)
+supported_file_type_is_midi (ZFileType type)
 {
   return type == FILE_TYPE_MIDI;
 }
@@ -124,8 +116,7 @@ supported_file_type_is_midi (
  * Clones the given SupportedFile.
  */
 SupportedFile *
-supported_file_clone (
-  SupportedFile * src)
+supported_file_clone (SupportedFile * src)
 {
   SupportedFile * dest = object_new (SupportedFile);
 
@@ -144,8 +135,7 @@ supported_file_clone (
  * Example: wav -> "Wave file".
  */
 char *
-supported_file_type_get_description (
-  ZFileType type)
+supported_file_type_get_description (ZFileType type)
 {
   switch (type)
     {
@@ -182,32 +172,27 @@ supported_file_type_get_description (
  * Returns the file type of the given file path.
  */
 ZFileType
-supported_file_get_type (
-  const char * file)
+supported_file_get_type (const char * file)
 {
   const char * ext = io_file_get_ext (file);
-  ZFileType type = FILE_TYPE_OTHER;
+  ZFileType    type = FILE_TYPE_OTHER;
 
   if (g_file_test (file, G_FILE_TEST_IS_DIR))
     type = FILE_TYPE_DIR;
   else if (string_is_equal (ext, ""))
     type = FILE_TYPE_OTHER;
   else if (
-      string_is_equal_ignore_case (ext, "MID") ||
-      string_is_equal_ignore_case (ext, "MIDI") ||
-      string_is_equal_ignore_case (ext, "SMF"))
+    string_is_equal_ignore_case (ext, "MID")
+    || string_is_equal_ignore_case (ext, "MIDI")
+    || string_is_equal_ignore_case (ext, "SMF"))
     type = FILE_TYPE_MIDI;
-  else if (
-      string_is_equal_ignore_case (ext, "mp3"))
+  else if (string_is_equal_ignore_case (ext, "mp3"))
     type = FILE_TYPE_MP3;
-  else if (
-      string_is_equal_ignore_case (ext, "flac"))
+  else if (string_is_equal_ignore_case (ext, "flac"))
     type = FILE_TYPE_FLAC;
-  else if (
-      string_is_equal_ignore_case (ext, "ogg"))
+  else if (string_is_equal_ignore_case (ext, "ogg"))
     type = FILE_TYPE_OGG;
-  else if (
-      string_is_equal_ignore_case (ext, "wav"))
+  else if (string_is_equal_ignore_case (ext, "wav"))
     type = FILE_TYPE_WAV;
   else
     type = FILE_TYPE_OTHER;
@@ -220,8 +205,7 @@ supported_file_get_type (
  * filetype.
  */
 const char *
-supported_file_type_get_ext (
-  ZFileType type)
+supported_file_type_get_ext (ZFileType type)
 {
   switch (type)
     {
@@ -265,15 +249,15 @@ supported_file_should_autoplay (
   bool autoplay = true;
 
   /* no autoplay if not audio/MIDI */
-  if (!supported_file_type_is_audio (self->type) &&
-      !supported_file_type_is_midi (self->type))
+  if (
+    !supported_file_type_is_audio (self->type)
+    && !supported_file_type_is_midi (self->type))
     return false;
 
   if (supported_file_type_is_audio (self->type))
     {
       AudioEncoder * enc =
-        audio_encoder_new_from_file (
-          self->abs_path);
+        audio_encoder_new_from_file (self->abs_path);
       if (!enc)
         return false;
 
@@ -295,43 +279,36 @@ supported_file_get_info_text_for_label (
   const SupportedFile * self)
 {
   char * file_type_label =
-    supported_file_type_get_description (
-      self->type);
+    supported_file_type_get_description (self->type);
   char * label = NULL;
-  if (supported_file_type_is_audio (
-        self->type))
+  if (supported_file_type_is_audio (self->type))
     {
       AudioEncoder * enc =
-        audio_encoder_new_from_file (
-          self->abs_path);
+        audio_encoder_new_from_file (self->abs_path);
       if (!enc)
         {
           g_free (file_type_label);
-          return
-            g_strdup (_("Failed opening file"));
+          return g_strdup (
+            _ ("Failed opening file"));
         }
 
-      label =
-        g_markup_printf_escaped (
-          _("<b>%s</b>\n"
-          "Sample rate: %d\n"
-          "Length: %ld s %ld ms | BPM: %.1f\n"
-          "Channel(s): %d | Bitrate: %'d.%d kb/s\n"
-          "Bit depth: %d bits"),
-          self->label,
-          enc->nfo.sample_rate,
-          enc->nfo.length / 1000,
-          enc->nfo.length % 1000,
-          (double) enc->nfo.bpm,
-          enc->nfo.channels,
-          enc->nfo.bit_rate / 1000,
-          (enc->nfo.bit_rate % 1000) / 100,
-          enc->nfo.bit_depth);
+      label = g_markup_printf_escaped (
+        _ ("<b>%s</b>\n"
+           "Sample rate: %d\n"
+           "Length: %ld s %ld ms | BPM: %.1f\n"
+           "Channel(s): %d | Bitrate: %'d.%d kb/s\n"
+           "Bit depth: %d bits"),
+        self->label, enc->nfo.sample_rate,
+        enc->nfo.length / 1000,
+        enc->nfo.length % 1000,
+        (double) enc->nfo.bpm, enc->nfo.channels,
+        enc->nfo.bit_rate / 1000,
+        (enc->nfo.bit_rate % 1000) / 100,
+        enc->nfo.bit_depth);
       audio_encoder_free (enc);
     }
   else
-    label =
-      g_markup_printf_escaped (
+    label = g_markup_printf_escaped (
       "<b>%s</b>\n"
       "Type: %s",
       self->label, file_type_label);
@@ -376,8 +353,7 @@ supported_file_get_icon_name (
  * Frees the instance and all its members.
  */
 void
-supported_file_free (
-  SupportedFile * self)
+supported_file_free (SupportedFile * self)
 {
   if (self->abs_path)
     g_free (self->abs_path);

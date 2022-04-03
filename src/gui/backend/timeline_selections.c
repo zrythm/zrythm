@@ -17,8 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <limits.h>
-
 #include "audio/chord_track.h"
 #include "audio/engine.h"
 #include "audio/marker_track.h"
@@ -43,6 +41,8 @@
 
 #include <gtk/gtk.h>
 
+#include <limits.h>
+
 /**
  * Creates a new TimelineSelections instance for
  * the given range.
@@ -57,21 +57,19 @@ timeline_selections_new_for_range (
   bool       clone_objs)
 {
   TimelineSelections * self =
-    (TimelineSelections *)
-    arranger_selections_new (
+    (TimelineSelections *) arranger_selections_new (
       ARRANGER_SELECTIONS_TYPE_TIMELINE);
 
 #define ADD_OBJ(obj) \
   if (arranger_object_is_hit ( \
-        (ArrangerObject *) (obj), \
-        start_pos, end_pos)) \
+        (ArrangerObject *) (obj), start_pos, \
+        end_pos)) \
     { \
       ArrangerObject * _obj = \
         (ArrangerObject *) (obj); \
       if (clone_objs) \
         { \
-          _obj =  \
-          arranger_object_clone (_obj); \
+          _obj = arranger_object_clone (_obj); \
         } \
       arranger_selections_add_object ( \
         (ArrangerSelections *) self, _obj); \
@@ -131,16 +129,15 @@ Track *
 timeline_selections_get_last_track (
   TimelineSelections * ts)
 {
-  int track_pos = -1;
+  int     track_pos = -1;
   Track * track = NULL;
-  int tmp_pos;
+  int     tmp_pos;
   Track * tmp_track;
 
 #define CHECK_POS(_track) \
   tmp_track = _track; \
-  tmp_pos = \
-    tracklist_get_track_pos ( \
-      TRACKLIST, tmp_track); \
+  tmp_pos = tracklist_get_track_pos ( \
+    TRACKLIST, tmp_track); \
   if (tmp_pos > track_pos) \
     { \
       track_pos = tmp_pos; \
@@ -170,16 +167,15 @@ Track *
 timeline_selections_get_first_track (
   TimelineSelections * ts)
 {
-  int track_pos = INT_MAX;
+  int     track_pos = INT_MAX;
   Track * track = NULL;
-  int tmp_pos;
+  int     tmp_pos;
   Track * tmp_track;
 
 #define CHECK_POS(_track) \
   tmp_track = _track; \
-  tmp_pos = \
-    tracklist_get_track_pos ( \
-      TRACKLIST, tmp_track); \
+  tmp_pos = tracklist_get_track_pos ( \
+    TRACKLIST, tmp_track); \
   if (tmp_pos < track_pos) \
     { \
       track_pos = tmp_pos; \
@@ -215,8 +211,7 @@ timeline_selections_get_first_track (
  * Used during pasting.
  */
 static int
-get_lowest_track_pos (
-  TimelineSelections * ts)
+get_lowest_track_pos (TimelineSelections * ts)
 {
   int track_pos = INT_MAX;
 
@@ -227,9 +222,8 @@ get_lowest_track_pos (
   for (int i = 0; i < ts->num_regions; i++)
     {
       ZRegion * r = ts->regions[i];
-      Track * tr =
-        tracklist_find_track_by_name_hash (
-          TRACKLIST, r->id.track_name_hash);
+      Track * tr = tracklist_find_track_by_name_hash (
+        TRACKLIST, r->id.track_name_hash);
       if (tr->pos < track_pos)
         {
           track_pos = tr->pos;
@@ -260,14 +254,14 @@ void
 timeline_selections_set_vis_track_indices (
   TimelineSelections * ts)
 {
-  int i;
+  int     i;
   Track * highest_tr =
     timeline_selections_get_first_track (ts);
 
   for (i = 0; i < ts->num_regions; i++)
     {
       ZRegion * r = ts->regions[i];
-      Track * region_track =
+      Track *   region_track =
         arranger_object_get_track (
           (ArrangerObject *) r);
       ts->region_track_vis_index =
@@ -298,7 +292,7 @@ get_track_poses (
   for (i = 0; i < ts->num_regions; i++)
     {
       ZRegion * r = ts->regions[i];
-      Track * region_track =
+      Track *   region_track =
         arranger_object_get_track (
           (ArrangerObject *) r);
       if (!array_contains_int (
@@ -340,19 +334,19 @@ timeline_selections_can_be_pasted (
   Position *           pos,
   const int            idx)
 {
-  int i, j;
+  int       i, j;
   ZRegion * r;
   /*Marker * m;*/
   /*ScaleObject * s;*/
-  int lowest_track_pos =
-    get_lowest_track_pos (ts);
+  int lowest_track_pos = get_lowest_track_pos (ts);
   Track * cur_track =
     TRACKLIST_SELECTIONS->tracks[0];
   int poses[800];
   int num_poses = 0;
   get_track_poses (ts, poses, &num_poses);
-  if (!cur_track || num_poses <= 0
-      || lowest_track_pos == INT_MAX)
+  if (
+    !cur_track || num_poses <= 0
+    || lowest_track_pos == INT_MAX)
     return false;
 
   /*check if enough visible tracks exist and the*/
@@ -387,8 +381,8 @@ timeline_selections_can_be_pasted (
           if (region_track->pos != ts_pos)
             continue;
 
-           /*check if this track can host this*/
-           /*region*/
+          /*check if this track can host this*/
+          /*region*/
           if (!track_type_can_host_region_type (
                 tr->type, r->id.type))
             {
@@ -400,13 +394,15 @@ timeline_selections_can_be_pasted (
         }
 
       /* check for chord track/marker track too */
-      if (ts->num_scale_objects > 0 &&
-          ts_pos == ts->chord_track_vis_index &&
-          tr->type != TRACK_TYPE_CHORD)
+      if (
+        ts->num_scale_objects > 0
+        && ts_pos == ts->chord_track_vis_index
+        && tr->type != TRACK_TYPE_CHORD)
         return false;
-      if (ts->num_markers > 0 &&
-          ts_pos == ts->marker_track_vis_index &&
-          tr->type != TRACK_TYPE_MARKER)
+      if (
+        ts->num_markers > 0
+        && ts_pos == ts->marker_track_vis_index
+        && tr->type != TRACK_TYPE_MARKER)
         return false;
     }
 
@@ -551,7 +547,7 @@ timeline_selections_paste_to_pos (
         (ArrangerObject *) clone, F_SELECT,
         F_APPEND);
     }
-#undef DIFF
+#  undef DIFF
 }
 #endif
 
@@ -569,8 +565,7 @@ timeline_selections_mark_for_bounce (
   for (int i = 0; i < ts->num_regions; i++)
     {
       ZRegion * r = ts->regions[i];
-      Track * track =
-        arranger_object_get_track (
+      Track *   track = arranger_object_get_track (
           (ArrangerObject *) r);
       g_return_if_fail (track);
 
@@ -600,12 +595,11 @@ timeline_selections_move_regions_to_new_lanes (
   /* store selected regions because they will be
    * deselected during moving */
   ZRegion * regions[600];
-  int num_regions = 0;
+  int       num_regions = 0;
   ZRegion * region;
   for (int i = 0; i < self->num_regions; i++)
     {
-      regions[num_regions++] =
-        self->regions[i];
+      regions[num_regions++] = self->regions[i];
     }
 
   /* check that:
@@ -622,8 +616,9 @@ timeline_selections_move_regions_to_new_lanes (
           break;
         }
     }
-  if (self->num_scale_objects > 0 ||
-      self->num_markers > 0)
+  if (
+    self->num_scale_objects > 0
+    || self->num_markers > 0)
     {
       compatible = false;
     }
@@ -639,15 +634,12 @@ timeline_selections_move_regions_to_new_lanes (
       g_return_val_if_fail (region && lane, -1);
 
       TrackLane * lane_to_move_to = NULL;
-      int new_lane_pos =
-        lane->pos +  diff;
-      g_return_val_if_fail (
-        new_lane_pos >= 0, -1);
+      int         new_lane_pos = lane->pos + diff;
+      g_return_val_if_fail (new_lane_pos >= 0, -1);
       Track * track = track_lane_get_track (lane);
       track_create_missing_lanes (
         track, new_lane_pos);
-      lane_to_move_to =
-        track->lanes[new_lane_pos];
+      lane_to_move_to = track->lanes[new_lane_pos];
       g_warn_if_fail (lane_to_move_to);
 
       region_move_to_lane (
@@ -684,14 +676,13 @@ timeline_selections_move_regions_to_new_tracks (
 
   /* store selected regions because they will be
    * deselected during moving */
-  ZRegion * regions[600];
-  int num_regions = 0;
-  ZRegion * region;
+  ZRegion *        regions[600];
+  int              num_regions = 0;
+  ZRegion *        region;
   ArrangerObject * r_obj;
   for (int i = 0; i < self->num_regions; i++)
     {
-      regions[num_regions++] =
-        self->regions[i];
+      regions[num_regions++] = self->regions[i];
     }
 
   /* check that all regions can be moved to a
@@ -705,14 +696,12 @@ timeline_selections_move_regions_to_new_tracks (
         arranger_object_get_track (r_obj);
       Track * visible =
         tracklist_get_visible_track_after_delta (
-          TRACKLIST,
-          region_track,
-          vis_track_diff);
+          TRACKLIST, region_track, vis_track_diff);
       if (
-        !visible ||
-        !track_type_is_compatible_for_moving (
-           region_track->type,
-           visible->type) ||
+        !visible
+        || !track_type_is_compatible_for_moving (
+          region_track->type, visible->type)
+        ||
         /* do not allow moving automation tracks
          * to other tracks for now */
         region->id.type == REGION_TYPE_AUTOMATION)
@@ -737,9 +726,7 @@ timeline_selections_move_regions_to_new_tracks (
       g_warn_if_fail (region && region_track);
       Track * track_to_move_to =
         tracklist_get_visible_track_after_delta (
-          TRACKLIST,
-          region_track,
-          vis_track_diff);
+          TRACKLIST, region_track, vis_track_diff);
       g_warn_if_fail (track_to_move_to);
 
       region_move_to_track (
@@ -761,7 +748,7 @@ timeline_selections_set_index_in_prev_lane (
 {
   for (int i = 0; i < self->num_regions; i++)
     {
-      ZRegion * r = self->regions[i];
+      ZRegion *        r = self->regions[i];
       ArrangerObject * r_obj = (ArrangerObject *) r;
       r_obj->index_in_prev_lane = r->id.idx;
     }
@@ -771,10 +758,9 @@ bool
 timeline_selections_contains_only_regions (
   const TimelineSelections * self)
 {
-  return
-    self->num_regions > 0
-    && self->num_scale_objects == 0
-    && self->num_markers == 0 ;
+  return self->num_regions > 0
+         && self->num_scale_objects == 0
+         && self->num_markers == 0;
 }
 
 bool
@@ -782,7 +768,8 @@ timeline_selections_contains_only_region_types (
   const TimelineSelections * self,
   RegionType                 types)
 {
-  if (!timeline_selections_contains_only_regions (self))
+  if (!timeline_selections_contains_only_regions (
+        self))
     return false;
 
   for (int i = 0; i < self->num_regions; i++)
@@ -805,15 +792,14 @@ timeline_selections_export_to_midi_file (
   const bool                 export_full_regions,
   const bool                 lanes_as_tracks)
 {
-  MIDI_FILE *mf;
+  MIDI_FILE * mf;
 
   if ((mf = midiFileCreate (full_path, TRUE)))
     {
       /* Write tempo information out to track 1 */
       midiSongAddTempo (
         mf, 1,
-        (int)
-        tempo_track_get_current_bpm (
+        (int) tempo_track_get_current_bpm (
           P_TEMPO_TRACK));
 
       /* All data is written out to tracks not
@@ -831,8 +817,7 @@ timeline_selections_export_to_midi_file (
 
       /* common time: 4 crochet beats, per bar */
       int beats_per_bar =
-        tempo_track_get_beats_per_bar (
-          P_TEMPO_TRACK);
+        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
       midiSongAddSimpleTimeSig (
         mf, 1, beats_per_bar,
         math_round_double_to_signed_32 (
@@ -840,15 +825,14 @@ timeline_selections_export_to_midi_file (
 
       TimelineSelections * sel_clone =
         (TimelineSelections *)
-        arranger_selections_clone (
-          (ArrangerSelections *) self);
+          arranger_selections_clone (
+            (ArrangerSelections *) self);
       arranger_selections_sort_by_indices (
         (ArrangerSelections *) sel_clone, false);
 
-      int last_midi_track_pos = -1;
+      int          last_midi_track_pos = -1;
       MidiEvents * events = NULL;
-      for (int i = 0; i < sel_clone->num_regions;
-           i++)
+      for (int i = 0; i < sel_clone->num_regions; i++)
         {
           const ZRegion * r = sel_clone->regions[i];
 
@@ -859,15 +843,13 @@ timeline_selections_export_to_midi_file (
               Track * track =
                 arranger_object_get_track (
                   (const ArrangerObject *) r);
-              g_return_val_if_fail (
-                track, false);
+              g_return_val_if_fail (track, false);
               char midi_track_name[1000];
               if (lanes_as_tracks)
                 {
                   TrackLane * lane =
                     region_get_lane (r);
-                  g_return_val_if_fail (
-                    lane, false);
+                  g_return_val_if_fail (lane, false);
                   sprintf (
                     midi_track_name, "%s - %s",
                     track->name, lane->name);
@@ -882,8 +864,8 @@ timeline_selections_export_to_midi_file (
                   midi_track_pos = track->pos;
                 }
               midiTrackAddText (
-                mf, midi_track_pos,
-                textTrackName, midi_track_name);
+                mf, midi_track_pos, textTrackName,
+                midi_track_name);
             }
 
           if (last_midi_track_pos == midi_track_pos)
@@ -896,8 +878,7 @@ timeline_selections_export_to_midi_file (
               if (events)
                 {
                   midi_events_write_to_midi_file (
-                    events, mf,
-                    last_midi_track_pos);
+                    events, mf, last_midi_track_pos);
                   object_free_w_func_and_null (
                     midi_events_free, events);
                 }
@@ -908,8 +889,7 @@ timeline_selections_export_to_midi_file (
 
           /* append to the current events */
           midi_region_add_events (
-            r, events, true,
-            export_full_regions);
+            r, events, true, export_full_regions);
           last_midi_track_pos = midi_track_pos;
         }
 
@@ -917,8 +897,7 @@ timeline_selections_export_to_midi_file (
       if (events)
         {
           midi_events_write_to_midi_file (
-            events, mf,
-            last_midi_track_pos);
+            events, mf, last_midi_track_pos);
           object_free_w_func_and_null (
             midi_events_free, events);
         }

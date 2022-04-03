@@ -29,7 +29,9 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  ChordPadPanelWidget, chord_pad_panel_widget, GTK_TYPE_GRID)
+  ChordPadPanelWidget,
+  chord_pad_panel_widget,
+  GTK_TYPE_GRID)
 
 void
 chord_pad_panel_widget_setup (
@@ -45,7 +47,7 @@ void
 chord_pad_panel_widget_refresh_load_preset_menu (
   ChordPadPanelWidget * self)
 {
-  GMenu * menu = g_menu_new ();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
   /* --- predefined --- */
@@ -57,8 +59,7 @@ chord_pad_panel_widget_refresh_load_preset_menu (
 
       /* ignore scales with unimplemented triads */
       const ChordType * triad_types =
-        musical_scale_get_triad_types (
-          type, true);
+        musical_scale_get_triad_types (type, true);
       if (triad_types[0] == CHORD_TYPE_NONE)
         continue;
 
@@ -71,12 +72,12 @@ chord_pad_panel_widget_refresh_load_preset_menu (
             action,
             "app.load-chord-preset-from-scale::%d,%d",
             i, j);
-          menuitem =
-            z_gtk_create_menu_item (
-              chord_descriptor_note_to_string (
-                (MusicalNote) j),
-              "minuet-chords", action);
-          g_menu_append_item (scale_submenu, menuitem);
+          menuitem = z_gtk_create_menu_item (
+            chord_descriptor_note_to_string (
+              (MusicalNote) j),
+            "minuet-chords", action);
+          g_menu_append_item (
+            scale_submenu, menuitem);
         }
       g_menu_append_submenu (
         scales_submenu,
@@ -84,15 +85,15 @@ chord_pad_panel_widget_refresh_load_preset_menu (
         G_MENU_MODEL (scale_submenu));
     }
   g_menu_append_submenu (
-    predefined_menu, _("From scale"),
+    predefined_menu, _ ("From scale"),
     G_MENU_MODEL (scales_submenu));
   g_menu_append_section (
-    menu, _("Predefined"),
+    menu, _ ("Predefined"),
     G_MENU_MODEL (predefined_menu));
 
   /* --- packs --- */
   GMenu * packs_menu = g_menu_new ();
-  int num_packs =
+  int     num_packs =
     chord_preset_pack_manager_get_num_packs (
       CHORD_PRESET_PACK_MANAGER);
   for (int i = 0; i < num_packs; i++)
@@ -108,20 +109,19 @@ chord_pad_panel_widget_refresh_load_preset_menu (
 
           char action[800];
           sprintf (
-            action,
-            "app.load-chord-preset::%d,%d",
+            action, "app.load-chord-preset::%d,%d",
             i, j);
-          menuitem =
-            z_gtk_create_menu_item (
-              pset->name, "minuet-chords", action);
-          g_menu_append_item (pack_submenu, menuitem);
+          menuitem = z_gtk_create_menu_item (
+            pset->name, "minuet-chords", action);
+          g_menu_append_item (
+            pack_submenu, menuitem);
         }
       g_menu_append_submenu (
         packs_menu, pack->name,
         G_MENU_MODEL (pack_submenu));
     }
   g_menu_append_section (
-    menu, _("Preset Packs"),
+    menu, _ ("Preset Packs"),
     G_MENU_MODEL (packs_menu));
 
   gtk_menu_button_set_menu_model (
@@ -143,9 +143,8 @@ chord_pad_panel_widget_refresh (
 ChordPadPanelWidget *
 chord_pad_panel_widget_new (void)
 {
-  ChordPadPanelWidget * self =
-    g_object_new (
-      CHORD_PAD_PANEL_WIDGET_TYPE, NULL);
+  ChordPadPanelWidget * self = g_object_new (
+    CHORD_PAD_PANEL_WIDGET_TYPE, NULL);
 
   return self;
 }
@@ -180,7 +179,8 @@ chord_pad_panel_widget_init (
   /* chord pads */
   for (int i = 0; i < 12; i++)
     {
-      ChordPadWidget * chord = chord_pad_widget_new ();
+      ChordPadWidget * chord =
+        chord_pad_widget_new ();
       self->chords[i] = chord;
       gtk_grid_attach (
         self->chords_grid, GTK_WIDGET (chord),
@@ -196,8 +196,7 @@ chord_pad_panel_widget_class_init (
   resources_set_class_template (
     klass, "chord_pad_panel.ui");
 
-  gtk_widget_class_set_css_name (
-    klass, "chord-pad");
+  gtk_widget_class_set_css_name (klass, "chord-pad");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

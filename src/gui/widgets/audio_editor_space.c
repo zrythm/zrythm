@@ -21,15 +21,15 @@
 #include "audio/region.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_editor_space.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
-#include "gui/widgets/main_window.h"
-#include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/editor_ruler.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
 #include "utils/gtk.h"
@@ -48,15 +48,13 @@ G_DEFINE_TYPE (
  * initialized.
  */
 static void
-link_scrolls (
-  AudioEditorSpaceWidget * self)
+link_scrolls (AudioEditorSpaceWidget * self)
 {
   /* link ruler h scroll to arranger h scroll */
   if (MW_CLIP_EDITOR_INNER->ruler_scroll)
     {
-      g_return_if_fail (
-        GTK_IS_WIDGET (
-          MW_CLIP_EDITOR_INNER->ruler_scroll));
+      g_return_if_fail (GTK_IS_WIDGET (
+        MW_CLIP_EDITOR_INNER->ruler_scroll));
       gtk_scrolled_window_set_hadjustment (
         MW_CLIP_EDITOR_INNER->ruler_scroll,
         gtk_scrolled_window_get_hadjustment (
@@ -71,12 +69,11 @@ link_scrolls (
 void
 audio_editor_space_widget_update_size_group (
   AudioEditorSpaceWidget * self,
-  int                     visible)
+  int                      visible)
 {
   clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
     MW_CLIP_EDITOR_INNER,
-    GTK_WIDGET (self->left_box),
-    visible);
+    GTK_WIDGET (self->left_box), visible);
 }
 
 void
@@ -107,8 +104,7 @@ audio_editor_space_widget_init (
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->arranger->type =
-    ARRANGER_WIDGET_TYPE_AUDIO;
+  self->arranger->type = ARRANGER_WIDGET_TYPE_AUDIO;
 }
 
 static void
@@ -117,8 +113,7 @@ audio_editor_space_widget_class_init (
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
-    klass,
-    "audio_editor_space.ui");
+    klass, "audio_editor_space.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

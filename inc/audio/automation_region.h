@@ -30,11 +30,11 @@
 
 #include "audio/region.h"
 
-typedef struct Track Track;
-typedef struct Position Position;
+typedef struct Track           Track;
+typedef struct Position        Position;
 typedef struct AutomationPoint AutomationPoint;
 typedef struct AutomationCurve AutomationCurve;
-typedef struct ZRegion ZRegion;
+typedef struct ZRegion         ZRegion;
 
 /**
  * @addtogroup audio
@@ -57,20 +57,18 @@ automation_region_new (
  * Prints the automation in this Region.
  */
 void
-automation_region_print_automation (
-  ZRegion * self);
+automation_region_print_automation (ZRegion * self);
 
-PURE
-int
+PURE int
 automation_region_sort_func (
-  const void * _a, const void * _b);
+  const void * _a,
+  const void * _b);
 
 /**
  * Forces sort of the automation points.
  */
 void
-automation_region_force_sort (
-  ZRegion * self);
+automation_region_force_sort (ZRegion * self);
 
 /**
  * Adds an AutomationPoint to the Region.
@@ -86,8 +84,7 @@ automation_region_add_ap (
  * one.
  */
 NONNULL
-PURE
-AutomationPoint *
+PURE AutomationPoint *
 automation_region_get_prev_ap (
   ZRegion *         self,
   AutomationPoint * ap);
@@ -102,8 +99,7 @@ automation_region_get_prev_ap (
  *   of each object. This only matters if \ref
  *   check_positions is true.
  */
-HOT
-AutomationPoint *
+HOT AutomationPoint *
 automation_region_get_next_ap (
   ZRegion *         self,
   AutomationPoint * ap,
@@ -131,9 +127,9 @@ automation_region_remove_ap (
  */
 void
 automation_region_get_aps_since_last_recorded (
-  ZRegion *          self,
-  Position *         pos,
-  GPtrArray *        aps);
+  ZRegion *   self,
+  Position *  pos,
+  GPtrArray * aps);
 
 /**
  * Returns an automation point found within +/-
@@ -151,8 +147,7 @@ automation_region_get_ap_around (
 
 NONNULL
 bool
-automation_region_validate (
-  ZRegion * self);
+automation_region_validate (ZRegion * self);
 
 /**
  * Frees members only but not the ZRegion itself.
@@ -161,8 +156,7 @@ automation_region_validate (
  */
 NONNULL
 void
-automation_region_free_members (
-  ZRegion * self);
+automation_region_free_members (ZRegion * self);
 
 /**
  * @}

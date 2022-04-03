@@ -27,7 +27,6 @@
 #define __AUDIO_MODULATOR_MACRO_PROCESSOR_H__
 
 #include "audio/port.h"
-
 #include "utils/yaml.h"
 
 typedef struct Track Track;
@@ -40,7 +39,8 @@ typedef struct Track Track;
 
 #define MODULATOR_MACRO_PROCESSOR_SCHEMA_VERSION 1
 
-#define modulator_macro_processor_is_in_active_project(self) \
+#define modulator_macro_processor_is_in_active_project( \
+  self) \
   (self->track \
    && track_is_in_active_project (self->track))
 
@@ -54,7 +54,7 @@ typedef struct Track Track;
  */
 typedef struct ModulatorMacroProcessor
 {
-  int               schema_version;
+  int schema_version;
 
   /**
    * Name to be shown in the modulators tab.
@@ -62,10 +62,10 @@ typedef struct ModulatorMacroProcessor
    * @note This is only cosmetic and should not be
    * used anywhere during processing.
    */
-  char *            name;
+  char * name;
 
   /** CV input port for connecting CV signals to. */
-  Port  *           cv_in;
+  Port * cv_in;
 
   /**
    * CV output after macro is applied.
@@ -73,42 +73,46 @@ typedef struct ModulatorMacroProcessor
    * This can be routed to other parameters to apply
    * the macro.
    */
-  Port *            cv_out;
+  Port * cv_out;
 
   /** Control port controlling the amount. */
-  Port *            macro;
+  Port * macro;
 
   /** Pointer to owner track, if any. */
-  Track *           track;
+  Track * track;
 
 } ModulatorMacroProcessor;
 
 static const cyaml_schema_field_t
-modulator_macro_processor_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    ModulatorMacroProcessor, schema_version),
-  YAML_FIELD_STRING_PTR (
-    ModulatorMacroProcessor, name),
-  YAML_FIELD_MAPPING_PTR (
-    ModulatorMacroProcessor, cv_in,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    ModulatorMacroProcessor, cv_out,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    ModulatorMacroProcessor, macro,
-    port_fields_schema),
+  modulator_macro_processor_fields_schema[] = {
+    YAML_FIELD_INT (
+      ModulatorMacroProcessor,
+      schema_version),
+    YAML_FIELD_STRING_PTR (
+      ModulatorMacroProcessor,
+      name),
+    YAML_FIELD_MAPPING_PTR (
+      ModulatorMacroProcessor,
+      cv_in,
+      port_fields_schema),
+    YAML_FIELD_MAPPING_PTR (
+      ModulatorMacroProcessor,
+      cv_out,
+      port_fields_schema),
+    YAML_FIELD_MAPPING_PTR (
+      ModulatorMacroProcessor,
+      macro,
+      port_fields_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-modulator_macro_processor_schema = {
-  YAML_VALUE_PTR (
-    ModulatorMacroProcessor,
-    modulator_macro_processor_fields_schema),
-};
+  modulator_macro_processor_schema = {
+    YAML_VALUE_PTR (
+      ModulatorMacroProcessor,
+      modulator_macro_processor_fields_schema),
+  };
 
 static inline const char *
 modulator_macro_processor_get_name (
@@ -117,8 +121,7 @@ modulator_macro_processor_get_name (
   return self->name;
 }
 
-COLD
-void
+COLD void
 modulator_macro_processor_init_loaded (
   ModulatorMacroProcessor * self,
   Track *                   track);

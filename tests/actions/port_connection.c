@@ -20,8 +20,8 @@
 #include "zrythm-test-config.h"
 
 #include "actions/port_connection_action.h"
-#include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
+#include "actions/undoable_action.h"
 #include "audio/audio_region.h"
 #include "audio/automation_region.h"
 #include "audio/chord_region.h"
@@ -34,13 +34,13 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include <glib.h>
+
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project.h"
 
-#include <glib.h>
-
 #ifdef HAVE_CARLA
-#ifdef HAVE_AMS_LFO
+#  ifdef HAVE_AMS_LFO
 static void
 test_modulator_connection (
   const char * pl_bundle,
@@ -68,22 +68,23 @@ test_modulator_connection (
   /* create a modulator */
   mixer_selections_action_perform_create (
     PLUGIN_SLOT_MODULATOR,
-    track_get_name_hash (P_MODULATOR_TRACK),
-    0, setting, 1, NULL);
+    track_get_name_hash (P_MODULATOR_TRACK), 0,
+    setting, 1, NULL);
   plugin_setting_free (setting);
 
   ModulatorMacroProcessor * macro =
     P_MODULATOR_TRACK->modulator_macros[0];
-  Plugin * pl = P_MODULATOR_TRACK->modulators[0];
-  Port * pl_cv_port = NULL;
-  Port * pl_control_port = NULL;
+  Plugin *    pl = P_MODULATOR_TRACK->modulators[0];
+  Port *      pl_cv_port = NULL;
+  Port *      pl_control_port = NULL;
   GPtrArray * ports = g_ptr_array_new ();
   plugin_append_ports (pl, ports);
   for (size_t i = 0; i < ports->len; i++)
     {
       Port * port = g_ptr_array_index (ports, i);
-      if (port->id.type == TYPE_CV &&
-          port->id.flow == FLOW_OUTPUT)
+      if (
+        port->id.type == TYPE_CV
+        && port->id.flow == FLOW_OUTPUT)
         {
           pl_cv_port = port;
           if (pl_control_port)
@@ -91,8 +92,9 @@ test_modulator_connection (
               break;
             }
         }
-      else if (port->id.type == TYPE_CONTROL &&
-               port->id.flow == FLOW_INPUT)
+      else if (
+        port->id.type == TYPE_CONTROL
+        && port->id.flow == FLOW_INPUT)
         {
           pl_control_port = port;
           if (pl_cv_port)
@@ -117,20 +119,18 @@ test_modulator_connection (
     G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
     "*ports cannot be connected*");
   g_test_expect_message (
-    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
-    "*FAILED*");
+    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*FAILED*");
   g_test_expect_message (
     G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
     "*action not performed*");
   /*g_test_expect_message (*/
-    /*G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,*/
-    /*"*failed to perform action*");*/
+  /*G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,*/
+  /*"*failed to perform action*");*/
 
   /* connect the macro button to the plugin's
    * control input */
   port_connection_action_perform_connect (
-    &macro->cv_out->id, &pl_control_port->id,
-    NULL);
+    &macro->cv_out->id, &pl_control_port->id, NULL);
 
   /* let the engine run */
   g_usleep (1000000);
@@ -181,14 +181,12 @@ _test_port_connection (
        * plugin */
       track_create_empty_with_action (
         TRACK_TYPE_AUDIO_BUS, NULL);
-      Track * last_track =
-        tracklist_get_last_track (
-          TRACKLIST, TRACKLIST_PIN_OPTION_BOTH,
-          false);
+      Track * last_track = tracklist_get_last_track (
+        TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
       mixer_selections_action_perform_create (
         PLUGIN_SLOT_INSERT,
-        track_get_name_hash (last_track),
-        0, setting, 1, NULL);
+        track_get_name_hash (last_track), 0,
+        setting, 1, NULL);
     }
 
   plugin_setting_free (setting);
@@ -198,18 +196,18 @@ _test_port_connection (
 
   /* connect a plugin CV out to the track's
    * balance */
-  Port * src_port1 = NULL;
-  Port * src_port2 = NULL;
+  Port *      src_port1 = NULL;
+  Port *      src_port2 = NULL;
   GPtrArray * ports = g_ptr_array_new ();
   track_append_ports (
     src_track, ports, F_INCLUDE_PLUGINS);
   for (size_t i = 0; i < ports->len; i++)
     {
       Port * port = g_ptr_array_index (ports, i);
-      if (port->id.owner_type ==
-            PORT_OWNER_TYPE_PLUGIN &&
-          port->id.type == TYPE_CV &&
-          port->id.flow == FLOW_OUTPUT)
+      if (
+        port->id.owner_type == PORT_OWNER_TYPE_PLUGIN
+        && port->id.type == TYPE_CV
+        && port->id.flow == FLOW_OUTPUT)
         {
           if (src_port1)
             {
@@ -234,9 +232,9 @@ _test_port_connection (
   for (size_t i = 0; i < ports->len; i++)
     {
       Port * port = g_ptr_array_index (ports, i);
-      if (port->id.owner_type ==
-            PORT_OWNER_TYPE_FADER &&
-          port->id.flags & PORT_FLAG_STEREO_BALANCE)
+      if (
+        port->id.owner_type == PORT_OWNER_TYPE_FADER
+        && port->id.flags & PORT_FLAG_STEREO_BALANCE)
         {
           dest_port = port;
           break;
@@ -279,20 +277,16 @@ _test_port_connection (
   g_assert_cmpint (src_port2->num_dests, ==, 1);
   g_assert_nonnull (
     port_connections_manager_find_connection (
-      PORT_CONNECTIONS_MGR,
-      &src_port1->id, &dest_port->id));
+      PORT_CONNECTIONS_MGR, &src_port1->id,
+      &dest_port->id));
   g_assert_nonnull (
     port_connections_manager_find_connection (
-      PORT_CONNECTIONS_MGR,
-      &src_port2->id, &dest_port->id));
-  g_assert_true (
-    dest_port->srcs[0] == src_port1);
-  g_assert_true (
-    dest_port == src_port1->dests[0]);
-  g_assert_true (
-    dest_port->srcs[1] == src_port2);
-  g_assert_true (
-    dest_port == src_port2->dests[0]);
+      PORT_CONNECTIONS_MGR, &src_port2->id,
+      &dest_port->id));
+  g_assert_true (dest_port->srcs[0] == src_port1);
+  g_assert_true (dest_port == src_port1->dests[0]);
+  g_assert_true (dest_port->srcs[1] == src_port2);
+  g_assert_true (dest_port == src_port2->dests[0]);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
@@ -300,8 +294,8 @@ _test_port_connection (
   /* let the engine run */
   g_usleep (1000000);
 }
-#endif /* HAVE_AMS_LFO */
-#endif /* HAVE_CARLA */
+#  endif /* HAVE_AMS_LFO */
+#endif   /* HAVE_CARLA */
 
 static void
 test_port_connection (void)
@@ -309,19 +303,19 @@ test_port_connection (void)
   test_helper_zrythm_init ();
 
 #ifdef HAVE_AMS_LFO
-#ifdef HAVE_CARLA
+#  ifdef HAVE_CARLA
   _test_port_connection (
     AMS_LFO_BUNDLE, AMS_LFO_URI, true, false);
   test_modulator_connection (
     AMS_LFO_BUNDLE, AMS_LFO_URI, true, false);
-#endif /* HAVE_CARLA */
-#endif /* HAVE_AMS_LFO */
+#  endif /* HAVE_CARLA */
+#endif   /* HAVE_AMS_LFO */
 
   test_helper_zrythm_cleanup ();
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
@@ -333,4 +327,3 @@ main (int argc, char *argv[])
 
   return g_test_run ();
 }
-

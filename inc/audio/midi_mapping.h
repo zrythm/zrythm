@@ -27,8 +27,8 @@
 #define __AUDIO_MIDI_MAPPING_H__
 
 #include "audio/ext_port.h"
-#include "utils/midi.h"
 #include "audio/port.h"
+#include "utils/midi.h"
 
 typedef struct _WrappedObjectWithChangeSignal
   WrappedObjectWithChangeSignal;
@@ -49,14 +49,14 @@ typedef struct _WrappedObjectWithChangeSignal
  */
 typedef struct MidiMapping
 {
-  int            schema_version;
+  int schema_version;
 
   /** Raw MIDI signal. */
-  midi_byte_t    key[3];
+  midi_byte_t key[3];
 
   /** The device that this connection will be mapped
    * for. */
-  ExtPort *      device_port;
+  ExtPort * device_port;
 
   /** Destination. */
   PortIdentifier dest_id;
@@ -67,40 +67,40 @@ typedef struct MidiMapping
    * @note This pointer is not owned by this
    *   instance.
    */
-  Port *         dest;
+  Port * dest;
 
   /** Whether this binding is enabled. */
-  volatile int   enabled;
+  volatile int enabled;
 
   /** Used in Gtk. */
   WrappedObjectWithChangeSignal * gobj;
 } MidiMapping;
 
 static const cyaml_schema_field_t
-midi_mapping_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    MidiMapping, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-    MidiMapping, key,
-    uint8_t_schema, 3),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    MidiMapping, device_port,
-    ext_port_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    MidiMapping, dest_id,
-    port_identifier_fields_schema),
-  YAML_FIELD_INT (
-    MidiMapping, enabled),
+  midi_mapping_fields_schema[] = {
+    YAML_FIELD_INT (MidiMapping, schema_version),
+    YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
+      MidiMapping,
+      key,
+      uint8_t_schema,
+      3),
+    YAML_FIELD_MAPPING_PTR_OPTIONAL (
+      MidiMapping,
+      device_port,
+      ext_port_fields_schema),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      MidiMapping,
+      dest_id,
+      port_identifier_fields_schema),
+    YAML_FIELD_INT (MidiMapping, enabled),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t
-  midi_mapping_schema =
-{
+static const cyaml_schema_value_t midi_mapping_schema = {
   YAML_VALUE_PTR (
-    MidiMapping, midi_mapping_fields_schema),
+    MidiMapping,
+    midi_mapping_fields_schema),
 };
 
 #if 0
@@ -117,38 +117,37 @@ static const cyaml_schema_value_t
  */
 typedef struct MidiMappings
 {
-  int             schema_version;
+  int schema_version;
 
-  MidiMapping **  mappings;
-  size_t          mappings_size;
-  int             num_mappings;
+  MidiMapping ** mappings;
+  size_t         mappings_size;
+  int            num_mappings;
 } MidiMappings;
 
 static const cyaml_schema_field_t
-midi_mappings_fields_schema[] =
-{
-  YAML_FIELD_INT (MidiMappings, schema_version),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    MidiMappings, mappings,
-    midi_mapping_schema),
+  midi_mappings_fields_schema[] = {
+    YAML_FIELD_INT (MidiMappings, schema_version),
+    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+      MidiMappings,
+      mappings,
+      midi_mapping_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-midi_mappings_schema =
-{
-  YAML_VALUE_PTR (
-    MidiMappings, midi_mappings_fields_schema),
-};
+  midi_mappings_schema = {
+    YAML_VALUE_PTR (
+      MidiMappings,
+      midi_mappings_fields_schema),
+  };
 
 /**
  * Initializes the MidiMappings after a Project
  * is loaded.
  */
 void
-midi_mappings_init_loaded (
-  MidiMappings * self);
+midi_mappings_init_loaded (MidiMappings * self);
 
 /**
  * Returns a newly allocated MidiMappings.
@@ -157,13 +156,13 @@ MidiMappings *
 midi_mappings_new (void);
 
 #define midi_mappings_bind_device( \
-  self,buf,dev_port,dest_port,fire_events) \
+  self, buf, dev_port, dest_port, fire_events) \
   midi_mappings_bind_at ( \
     self, buf, dev_port, dest_port, \
     (self)->num_mappings, fire_events)
 
 #define midi_mappings_bind_track( \
-  self,buf,dest_port,fire_events) \
+  self, buf, dest_port, fire_events) \
   midi_mappings_bind_at ( \
     self, buf, NULL, dest_port, \
     (self)->num_mappings, fire_events)
@@ -213,12 +212,10 @@ midi_mapping_get_index (
 
 NONNULL
 MidiMapping *
-midi_mapping_clone (
-  const MidiMapping * src);
+midi_mapping_clone (const MidiMapping * src);
 
 void
-midi_mapping_free (
-  MidiMapping * self);
+midi_mapping_free (MidiMapping * self);
 
 /**
  * Applies the events to the appropriate mapping.
@@ -257,12 +254,10 @@ midi_mappings_get_for_port (
   int *          size);
 
 MidiMappings *
-midi_mappings_clone (
-  const MidiMappings * src);
+midi_mappings_clone (const MidiMappings * src);
 
 void
-midi_mappings_free (
-  MidiMappings * self);
+midi_mappings_free (MidiMappings * self);
 
 /**
  * @}

@@ -38,8 +38,8 @@
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 int
 snap_grid_get_ticks_from_length_and_type (
@@ -98,14 +98,12 @@ snap_grid_get_ticks_from_length_and_type (
       break;
     case NOTE_TYPE_DOTTED:
       ticks = 3 * ticks;
-      g_return_val_if_fail (
-        ticks % 2 == 0, -1);
+      g_return_val_if_fail (ticks % 2 == 0, -1);
       ticks = ticks / 2;
       break;
     case NOTE_TYPE_TRIPLET:
       ticks = 2 * ticks;
-      g_return_val_if_fail (
-        ticks % 3 == 0, -1);
+      g_return_val_if_fail (ticks % 3 == 0, -1);
       ticks = ticks / 3;
       break;
     }
@@ -117,8 +115,7 @@ snap_grid_get_ticks_from_length_and_type (
  * Gets a snap point's length in ticks.
  */
 int
-snap_grid_get_snap_ticks (
-  const SnapGrid * self)
+snap_grid_get_snap_ticks (const SnapGrid * self)
 {
   if (self->snap_adaptive)
     {
@@ -140,93 +137,83 @@ snap_grid_get_snap_ticks (
 
       /* get intervals used in drawing */
       int sixteenth_interval =
-        ruler_widget_get_sixteenth_interval (
-          ruler);
+        ruler_widget_get_sixteenth_interval (ruler);
       int beat_interval =
-        ruler_widget_get_beat_interval (
-          ruler);
-      int bar_interval =
-        (int)
-        MAX ((RW_PX_TO_HIDE_BEATS) /
-             (double) ruler->px_per_bar, 1.0);
+        ruler_widget_get_beat_interval (ruler);
+      int bar_interval = (int) MAX (
+        (RW_PX_TO_HIDE_BEATS)
+          / (double) ruler->px_per_bar,
+        1.0);
 
       /* attempt to snap at smallest interval */
       if (sixteenth_interval > 0)
         {
-          return
-            sixteenth_interval *
-            snap_grid_get_ticks_from_length_and_type (
-              NOTE_LENGTH_1_16, self->snap_note_type);
+          return sixteenth_interval
+                 * snap_grid_get_ticks_from_length_and_type (
+                   NOTE_LENGTH_1_16,
+                   self->snap_note_type);
         }
       else if (beat_interval > 0)
         {
-          return
-            beat_interval *
-            snap_grid_get_ticks_from_length_and_type (
-              NOTE_LENGTH_BEAT, self->snap_note_type);
+          return beat_interval
+                 * snap_grid_get_ticks_from_length_and_type (
+                   NOTE_LENGTH_BEAT,
+                   self->snap_note_type);
         }
       else
         {
-          return
-            bar_interval *
-            snap_grid_get_ticks_from_length_and_type (
-              NOTE_LENGTH_BAR, self->snap_note_type);
+          return bar_interval
+                 * snap_grid_get_ticks_from_length_and_type (
+                   NOTE_LENGTH_BAR,
+                   self->snap_note_type);
         }
     }
   else
     {
-      return
-        snap_grid_get_ticks_from_length_and_type (
-          self->snap_note_length,
-          self->snap_note_type);
+      return snap_grid_get_ticks_from_length_and_type (
+        self->snap_note_length,
+        self->snap_note_type);
     }
 }
 
 double
-snap_grid_get_snap_frames (
-  const SnapGrid * self)
+snap_grid_get_snap_frames (const SnapGrid * self)
 {
   int snap_ticks = snap_grid_get_snap_ticks (self);
-  return
-    AUDIO_ENGINE->frames_per_tick
-    * (double) snap_ticks;
+  return AUDIO_ENGINE->frames_per_tick
+         * (double) snap_ticks;
 }
 
 /**
  * Gets a the default length in ticks.
  */
 int
-snap_grid_get_default_ticks (
-  SnapGrid * self)
+snap_grid_get_default_ticks (SnapGrid * self)
 {
   if (self->length_type == NOTE_LENGTH_LINK)
     {
       return snap_grid_get_snap_ticks (self);
     }
-  else if (self->length_type ==
-             NOTE_LENGTH_LAST_OBJECT)
+  else if (self->length_type == NOTE_LENGTH_LAST_OBJECT)
     {
       double last_obj_length = 0.0;
       if (self->type == SNAP_GRID_TYPE_TIMELINE)
         {
-          last_obj_length =
-            g_settings_get_double (
-              S_UI, "timeline-last-object-length");
+          last_obj_length = g_settings_get_double (
+            S_UI, "timeline-last-object-length");
         }
       else if (self->type == SNAP_GRID_TYPE_EDITOR)
         {
-          last_obj_length =
-            g_settings_get_double (
-              S_UI, "editor-last-object-length");
+          last_obj_length = g_settings_get_double (
+            S_UI, "editor-last-object-length");
         }
       return (int) last_obj_length;
     }
   else
     {
-      return
-        snap_grid_get_ticks_from_length_and_type (
-          self->default_note_length,
-          self->default_note_type);
+      return snap_grid_get_ticks_from_length_and_type (
+        self->default_note_length,
+        self->default_note_type);
     }
 }
 
@@ -249,15 +236,13 @@ snap_grid_init (
 }
 
 static const char *
-get_note_type_str (
-  NoteType type)
+get_note_type_str (NoteType type)
 {
   return note_type_short_strings[type].str;
 }
 
 static const char *
-get_note_length_str (
-  NoteLength length)
+get_note_length_str (NoteLength length)
 {
   return note_length_strings[length].str;
 }
@@ -273,8 +258,7 @@ snap_grid_stringize_length_and_type (
   NoteLength note_length,
   NoteType   note_type)
 {
-  const char * c =
-    get_note_type_str (note_type);
+  const char * c = get_note_type_str (note_type);
   const char * first_part =
     get_note_length_str (note_length);
 
@@ -288,19 +272,17 @@ snap_grid_stringize_length_and_type (
  * Must be free'd.
  */
 char *
-snap_grid_stringize (
-  SnapGrid * self)
+snap_grid_stringize (SnapGrid * self)
 {
   if (self->snap_adaptive)
     {
-      return g_strdup (_("Adaptive"));
+      return g_strdup (_ ("Adaptive"));
     }
   else
     {
-      return
-        snap_grid_stringize_length_and_type (
-          self->snap_note_length,
-          self->snap_note_type);
+      return snap_grid_stringize_length_and_type (
+        self->snap_note_length,
+        self->snap_note_type);
     }
 }
 
@@ -329,23 +311,20 @@ snap_grid_get_nearby_snap_point (
     fmod (pos->ticks, snap_ticks);
   if (return_prev)
     {
-      position_add_ticks (
-        ret_pos, - ticks_from_prev);
+      position_add_ticks (ret_pos, -ticks_from_prev);
     }
   else
     {
       double ticks_to_next =
         snap_ticks - ticks_from_prev;
-      position_add_ticks (
-        ret_pos, ticks_to_next);
+      position_add_ticks (ret_pos, ticks_to_next);
     }
 
   return true;
 }
 
 SnapGrid *
-snap_grid_clone (
-  SnapGrid * src)
+snap_grid_clone (SnapGrid * src)
 {
   SnapGrid * self = object_new (SnapGrid);
   self->schema_version = SNAP_GRID_SCHEMA_VERSION;
@@ -356,8 +335,7 @@ snap_grid_clone (
   self->snap_adaptive = src->snap_adaptive;
   self->default_note_length =
     src->default_note_length;
-  self->default_note_type =
-    src->default_note_type;
+  self->default_note_type = src->default_note_type;
   self->default_adaptive = src->default_adaptive;
   self->length_type = src->length_type;
   self->snap_to_grid = src->snap_to_grid;
@@ -378,8 +356,7 @@ snap_grid_new (void)
 }
 
 void
-snap_grid_free (
-  SnapGrid * self)
+snap_grid_free (SnapGrid * self)
 {
   object_zero_and_free (self);
 }

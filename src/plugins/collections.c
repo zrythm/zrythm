@@ -30,31 +30,24 @@ get_plugin_collections_file_path (void)
     zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
   g_return_val_if_fail (zrythm_dir, NULL);
 
-  return
-    g_build_filename (
-      zrythm_dir,
-      "plugin_collections.yaml", NULL);
+  return g_build_filename (
+    zrythm_dir, "plugin_collections.yaml", NULL);
 }
 
 void
 plugin_collections_serialize_to_file (
   PluginCollections * self)
 {
-  g_message (
-    "Serializing plugin collections...");
-  char * yaml =
-    yaml_serialize (
-      self, &plugin_collections_schema);
+  g_message ("Serializing plugin collections...");
+  char * yaml = yaml_serialize (
+    self, &plugin_collections_schema);
   g_return_if_fail (yaml);
-  GError *err = NULL;
-  char * path =
-    get_plugin_collections_file_path ();
+  GError * err = NULL;
+  char * path = get_plugin_collections_file_path ();
   g_return_if_fail (path && strlen (path) > 2);
   g_message (
-    "Writing plugin collections to %s...",
-    path);
-  g_file_set_contents (
-    path, yaml, -1, &err);
+    "Writing plugin collections to %s...", path);
+  g_file_set_contents (path, yaml, -1, &err);
   if (err != NULL)
     {
       g_warning (
@@ -71,8 +64,7 @@ plugin_collections_serialize_to_file (
 }
 
 static bool
-is_yaml_our_version (
-  const char * yaml)
+is_yaml_our_version (const char * yaml)
 {
   bool same_version = false;
   char version_str[120];
@@ -99,14 +91,14 @@ is_yaml_our_version (
 PluginCollections *
 plugin_collections_new (void)
 {
-  GError *err = NULL;
-  char * path =
-    get_plugin_collections_file_path ();
+  GError * err = NULL;
+  char * path = get_plugin_collections_file_path ();
   if (!file_exists (path))
     {
       g_message (
         "Plugin collections file at %s does "
-        "not exist", path);
+        "not exist",
+        path);
 return_new_instance:
       g_free (path);
       PluginCollections * self =
@@ -121,7 +113,8 @@ return_new_instance:
     {
       g_critical (
         "Failed to create PluginCollections "
-        "from %s", path);
+        "from %s",
+        path);
       g_free (err);
       g_free (yaml);
       g_free (path);
@@ -135,9 +128,8 @@ return_new_instance:
       g_message (
         "Found old plugin collections file version. "
         "Backing up file and creating a new one.");
-      GFile * file =
-        g_file_new_for_path (path);
-      char * backup_path =
+      GFile * file = g_file_new_for_path (path);
+      char *  backup_path =
         g_strdup_printf ("%s.bak", path);
       GFile * backup_file =
         g_file_new_for_path (backup_path);
@@ -151,14 +143,14 @@ return_new_instance:
     }
 
   PluginCollections * self =
-    (PluginCollections *)
-    yaml_deserialize (
+    (PluginCollections *) yaml_deserialize (
       yaml, &plugin_collections_schema);
   if (!self)
     {
       g_critical (
         "Failed to deserialize "
-        "PluginCollections from %s", path);
+        "PluginCollections from %s",
+        path);
       g_free (err);
       g_free (yaml);
       g_free (path);
@@ -195,8 +187,7 @@ plugin_collections_add (
 
   if (serialize)
     {
-      plugin_collections_serialize_to_file (
-        self);
+      plugin_collections_serialize_to_file (self);
     }
 }
 
@@ -213,8 +204,7 @@ plugin_collections_remove (
   bool                serialize)
 {
   bool found = false;
-  for (int i = self->num_collections - 1; i >= 0;
-       i--)
+  for (int i = self->num_collections - 1; i >= 0; i--)
     {
       PluginCollection * collection =
         self->collections[i];
@@ -237,14 +227,12 @@ plugin_collections_remove (
 
   if (serialize)
     {
-      plugin_collections_serialize_to_file (
-        self);
+      plugin_collections_serialize_to_file (self);
     }
 }
 
 void
-plugin_collections_free (
-  PluginCollections * self)
+plugin_collections_free (PluginCollections * self)
 {
   for (int i = 0; i < self->num_collections; i++)
     {

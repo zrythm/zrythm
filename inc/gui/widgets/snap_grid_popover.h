@@ -28,9 +28,8 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _DigitalMeterWidget
-  DigitalMeterWidget;
-typedef struct _SnapGridWidget SnapGridWidget;
+typedef struct _DigitalMeterWidget DigitalMeterWidget;
+typedef struct _SnapGridWidget     SnapGridWidget;
 
 /**
  * @addtogroup widgets
@@ -43,7 +42,8 @@ typedef struct _SnapGridWidget SnapGridWidget;
 G_DECLARE_FINAL_TYPE (
   SnapGridPopoverWidget,
   snap_grid_popover_widget,
-  Z, SNAP_GRID_POPOVER_WIDGET,
+  Z,
+  SNAP_GRID_POPOVER_WIDGET,
   GtkPopover)
 
 /**
@@ -51,42 +51,42 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _SnapGridPopoverWidget
 {
-  GtkPopover         parent_instance;
+  GtkPopover parent_instance;
 
   /** Owner button. */
-  SnapGridWidget *   owner;
+  SnapGridWidget * owner;
 
   /* --- snap --- */
-  GtkBox *           snap_length_box;
+  GtkBox *             snap_length_box;
   DigitalMeterWidget * snap_length_dm;
-  GtkBox *           snap_type_box;
+  GtkBox *             snap_type_box;
   //DigitalMeterWidget * snap_type_dm;
-  GtkToggleButton *  snap_triplet_toggle;
-  gulong             snap_triplet_toggle_handler;
-  GtkToggleButton *  snap_dotted_toggle;
-  gulong             snap_dotted_toggle_handler;
-  GtkCheckButton *   snap_adaptive;
-  gulong             snap_adaptive_handler;
+  GtkToggleButton * snap_triplet_toggle;
+  gulong            snap_triplet_toggle_handler;
+  GtkToggleButton * snap_dotted_toggle;
+  gulong            snap_dotted_toggle_handler;
+  GtkCheckButton *  snap_adaptive;
+  gulong            snap_adaptive_handler;
 
   /* --- default --- */
-  GtkBox *           default_length_box;
+  GtkBox *             default_length_box;
   DigitalMeterWidget * default_length_dm;
-  GtkBox *           default_type_box;
+  GtkBox *             default_type_box;
   //DigitalMeterWidget * default_type_dm;
-  GtkToggleButton *  default_triplet_toggle;
-  gulong             default_triplet_toggle_handler;
-  GtkToggleButton *  default_dotted_toggle;
-  gulong             default_dotted_toggle_handler;
-  GtkCheckButton *   default_adaptive;
-  gulong             default_adaptive_handler;
+  GtkToggleButton * default_triplet_toggle;
+  gulong            default_triplet_toggle_handler;
+  GtkToggleButton * default_dotted_toggle;
+  gulong            default_dotted_toggle_handler;
+  GtkCheckButton *  default_adaptive;
+  gulong            default_adaptive_handler;
 
   /** Toggle to link snap to default. */
-  GtkToggleButton *  link_toggle;
-  gulong             link_handler;
+  GtkToggleButton * link_toggle;
+  gulong            link_handler;
 
   /** Toggle to use last object's length. */
-  GtkToggleButton *  last_object_toggle;
-  gulong             last_object_handler;
+  GtkToggleButton * last_object_toggle;
+  gulong            last_object_handler;
 
 } SnapGridPopoverWidget;
 

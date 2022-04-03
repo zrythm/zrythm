@@ -45,21 +45,18 @@ G_DEFINE_TYPE (
 
 static void
 toggles_changed (
-  GtkToggleButton *      btn,
+  GtkToggleButton *          btn,
   FileBrowserFiltersWidget * self)
 {
   if (gtk_toggle_button_get_active (btn))
     {
       /* block signals, unset all, unblock */
       g_signal_handlers_block_by_func (
-        self->toggle_audio,
-        toggles_changed, self);
+        self->toggle_audio, toggles_changed, self);
       g_signal_handlers_block_by_func (
-        self->toggle_midi,
-        toggles_changed, self);
+        self->toggle_midi, toggles_changed, self);
       g_signal_handlers_block_by_func (
-        self->toggle_presets,
-        toggles_changed, self);
+        self->toggle_presets, toggles_changed, self);
 
       if (btn == self->toggle_audio)
         {
@@ -93,14 +90,11 @@ toggles_changed (
         }
 
       g_signal_handlers_unblock_by_func (
-        self->toggle_audio,
-        toggles_changed, self);
+        self->toggle_audio, toggles_changed, self);
       g_signal_handlers_unblock_by_func (
-        self->toggle_midi,
-        toggles_changed, self);
+        self->toggle_midi, toggles_changed, self);
       g_signal_handlers_unblock_by_func (
-        self->toggle_presets,
-        toggles_changed, self);
+        self->toggle_presets, toggles_changed, self);
     }
   else
     {

@@ -46,18 +46,19 @@
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
-  BotBarWidget, bot_bar_widget, GTK_TYPE_WIDGET)
+  BotBarWidget,
+  bot_bar_widget,
+  GTK_TYPE_WIDGET)
 
-#define PLAYHEAD_CAPTION \
-  _("Playhead")
+#define PLAYHEAD_CAPTION _ ("Playhead")
 #define PLAYHEAD_JACK_MASTER_CAPTION \
-  _("Playhead [Jack Timebase Master]")
+  _ ("Playhead [Jack Timebase Master]")
 #define PLAYHEAD_JACK_CLIENT_CAPTION \
-  _("Playhead [Jack Client]")
+  _ ("Playhead [Jack Client]")
 
 #if 0
 static void
@@ -89,16 +90,15 @@ on_playhead_display_type_changed (
 #ifdef HAVE_JACK
 static void
 activate_jack_mode (
-  GSimpleAction *action,
-  GVariant      *_variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      _variant,
+  gpointer        user_data)
 {
-  BotBarWidget * self =
-    Z_BOT_BAR_WIDGET (user_data);
+  BotBarWidget * self = Z_BOT_BAR_WIDGET (user_data);
 
   g_return_if_fail (_variant);
 
-  gsize size;
+  gsize        size;
   const char * variant =
     g_variant_get_string (_variant, &size);
   g_simple_action_set_state (action, _variant);
@@ -107,10 +107,8 @@ activate_jack_mode (
       engine_jack_set_transport_type (
         AUDIO_ENGINE,
         AUDIO_ENGINE_JACK_TIMEBASE_MASTER);
-      gtk_widget_set_visible (
-        self->master_img, 1);
-      gtk_widget_set_visible (
-        self->client_img, 0);
+      gtk_widget_set_visible (self->master_img, 1);
+      gtk_widget_set_visible (self->client_img, 0);
       gtk_widget_set_tooltip_text (
         GTK_WIDGET (self->digital_transport),
         PLAYHEAD_JACK_MASTER_CAPTION);
@@ -120,10 +118,8 @@ activate_jack_mode (
       engine_jack_set_transport_type (
         AUDIO_ENGINE,
         AUDIO_ENGINE_JACK_TRANSPORT_CLIENT);
-      gtk_widget_set_visible (
-        self->master_img, 0);
-      gtk_widget_set_visible (
-        self->client_img, 1);
+      gtk_widget_set_visible (self->master_img, 0);
+      gtk_widget_set_visible (self->client_img, 1);
       gtk_widget_set_tooltip_text (
         GTK_WIDGET (self->digital_transport),
         PLAYHEAD_JACK_CLIENT_CAPTION);
@@ -133,10 +129,8 @@ activate_jack_mode (
       engine_jack_set_transport_type (
         AUDIO_ENGINE,
         AUDIO_ENGINE_NO_JACK_TRANSPORT);
-      gtk_widget_set_visible (
-        self->master_img, 0);
-      gtk_widget_set_visible (
-        self->client_img, 0);
+      gtk_widget_set_visible (self->master_img, 0);
+      gtk_widget_set_visible (self->client_img, 0);
       gtk_widget_set_tooltip_text (
         GTK_WIDGET (self->digital_transport),
         PLAYHEAD_CAPTION);
@@ -149,25 +143,23 @@ activate_jack_mode (
 static void
 on_bpm_right_click (
   GtkGestureClick * gesture,
-  gint                   n_press,
-  gdouble                x,
-  gdouble                y,
-  BotBarWidget *         self)
+  gint              n_press,
+  gdouble           x,
+  gdouble           y,
+  BotBarWidget *    self)
 {
   if (n_press != 1)
     return;
 
-  GMenu * menu = g_menu_new();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
-  menuitem =
-    z_gtk_create_menu_item (
-      _("Input"), NULL, "app.input-bpm");
+  menuitem = z_gtk_create_menu_item (
+    _ ("Input"), NULL, "app.input-bpm");
   g_menu_append_item (menu, menuitem);
-  menuitem =
-    z_gtk_create_menu_item (
-      /* TRANSLATORS: tap tempo */
-      _("Tap"), NULL, "app.tap-bpm");
+  menuitem = z_gtk_create_menu_item (
+    /* TRANSLATORS: tap tempo */
+    _ ("Tap"), NULL, "app.tap-bpm");
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
@@ -176,11 +168,11 @@ on_bpm_right_click (
 
 static void
 on_transport_playhead_right_click (
-  GtkGestureClick *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
-  BotBarWidget *      self)
+  GtkGestureClick * gesture,
+  gint              n_press,
+  gdouble           x,
+  gdouble           y,
+  BotBarWidget *    self)
 {
   if (n_press != 1)
     return;
@@ -192,40 +184,40 @@ on_transport_playhead_right_click (
       S_UI, "transport-display");
 
   g_action_map_add_action (
-    G_ACTION_MAP (action_group),
-    display_action);
+    G_ACTION_MAP (action_group), display_action);
 
   GMenu * menu = g_menu_new ();
   g_menu_append (
-    menu, _("Transport display"),
+    menu, _ ("Transport display"),
     "bot-bar.transport-display");
 
   /* TODO fire event on change */
 
   /* jack transport related */
 #ifdef HAVE_JACK
-  if (AUDIO_ENGINE->audio_backend ==
-        AUDIO_BACKEND_JACK)
+  if (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK)
     {
       GMenu * jack_section = g_menu_new ();
 
       g_menu_append (
         jack_section,
-        _("Become JACK Transport master"),
+        _ ("Become JACK Transport master"),
         "bot-bar.jack-mode::become-master");
       g_menu_append (
-        jack_section, _("Sync to JACK Transport"),
+        jack_section, _ ("Sync to JACK Transport"),
         "bot-bar.jack-mode::sync");
       g_menu_append (
-        jack_section, _("Unlink JACK Transport"),
+        jack_section, _ ("Unlink JACK Transport"),
         "bot-bar.jack-mode::unlink");
 
       const char * jack_modes[] = {
-        "'become-master'", "'sync'", "'unlink'", };
+        "'become-master'",
+        "'sync'",
+        "'unlink'",
+      };
       GActionEntry actions[] = {
-        { "jack-mode",
-          activate_jack_mode, "s",
-          jack_modes[AUDIO_ENGINE->transport_type] },
+        {"jack-mode", activate_jack_mode, "s",
+         jack_modes[AUDIO_ENGINE->transport_type]},
       };
       g_action_map_add_action_entries (
         G_ACTION_MAP (action_group), actions,
@@ -254,14 +246,13 @@ bot_bar_widget_refresh (BotBarWidget * self)
       /* FIXME */
       return;
       /*gtk_overlay_set_child (*/
-        /*self->playhead_overlay, NULL);*/
+      /*self->playhead_overlay, NULL);*/
     }
   self->digital_transport =
     digital_meter_widget_new_for_position (
-      TRANSPORT, NULL,
-      transport_get_playhead_pos,
+      TRANSPORT, NULL, transport_get_playhead_pos,
       transport_set_playhead_pos, NULL,
-      _("playhead"));
+      _ ("playhead"));
   self->digital_transport->is_transport = true;
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->digital_transport),
@@ -273,56 +264,46 @@ bot_bar_widget_refresh (BotBarWidget * self)
     GTK_WIDGET (self->digital_transport));
 
 #ifdef HAVE_JACK
-  if (AUDIO_ENGINE->audio_backend ==
-        AUDIO_BACKEND_JACK)
+  if (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK)
     {
-      int size = 8;
+      int          size = 8;
       GdkDisplay * display =
         gdk_display_get_default ();
       GtkIconTheme * icon_theme =
         gtk_icon_theme_get_for_display (display);
       GtkIconPaintable * icon_paintable =
         gtk_icon_theme_lookup_icon (
-          icon_theme, "jack-transport-client",
-          NULL, size, 1, GTK_TEXT_DIR_NONE,
+          icon_theme, "jack-transport-client", NULL,
+          size, 1, GTK_TEXT_DIR_NONE,
           GTK_ICON_LOOKUP_PRELOAD);
-      GtkWidget * img =
-        gtk_image_new_from_paintable (
-          GDK_PAINTABLE (icon_paintable));
-      gtk_widget_set_halign (
-        img, GTK_ALIGN_END);
-      gtk_widget_set_valign (
-        img, GTK_ALIGN_START);
+      GtkWidget * img = gtk_image_new_from_paintable (
+        GDK_PAINTABLE (icon_paintable));
+      gtk_widget_set_halign (img, GTK_ALIGN_END);
+      gtk_widget_set_valign (img, GTK_ALIGN_START);
       gtk_widget_set_visible (img, true);
       gtk_widget_set_tooltip_text (
-        img,
-        _("JACK Transport client"));
+        img, _ ("JACK Transport client"));
       gtk_overlay_add_overlay (
         self->playhead_overlay, img);
       self->client_img = img;
-      icon_paintable =
-        gtk_icon_theme_lookup_icon (
-          icon_theme, "jack-timebase-master",
-          NULL, size, 1, GTK_TEXT_DIR_NONE,
-          GTK_ICON_LOOKUP_PRELOAD);
-      img =
-        gtk_image_new_from_paintable (
-          GDK_PAINTABLE (icon_paintable));
-      gtk_widget_set_halign (
-        img, GTK_ALIGN_END);
-      gtk_widget_set_valign (
-        img, GTK_ALIGN_START);
-      gtk_widget_set_margin_end (
-        img, size + 2);
+      icon_paintable = gtk_icon_theme_lookup_icon (
+        icon_theme, "jack-timebase-master", NULL,
+        size, 1, GTK_TEXT_DIR_NONE,
+        GTK_ICON_LOOKUP_PRELOAD);
+      img = gtk_image_new_from_paintable (
+        GDK_PAINTABLE (icon_paintable));
+      gtk_widget_set_halign (img, GTK_ALIGN_END);
+      gtk_widget_set_valign (img, GTK_ALIGN_START);
+      gtk_widget_set_margin_end (img, size + 2);
       gtk_widget_set_visible (img, true);
       gtk_widget_set_tooltip_text (
-        img,
-        _("JACK Timebase master"));
+        img, _ ("JACK Timebase master"));
       gtk_overlay_add_overlay (
         self->playhead_overlay, img);
       self->master_img = img;
-      if (AUDIO_ENGINE->transport_type ==
-            AUDIO_ENGINE_JACK_TRANSPORT_CLIENT)
+      if (
+        AUDIO_ENGINE->transport_type
+        == AUDIO_ENGINE_JACK_TRANSPORT_CLIENT)
         {
           gtk_widget_set_visible (
             self->master_img, 0);
@@ -332,8 +313,9 @@ bot_bar_widget_refresh (BotBarWidget * self)
             GTK_WIDGET (self->digital_transport),
             PLAYHEAD_JACK_CLIENT_CAPTION);
         }
-      else if (AUDIO_ENGINE->transport_type ==
-                 AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
+      else if (
+        AUDIO_ENGINE->transport_type
+        == AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
         {
           gtk_widget_set_visible (
             self->master_img, 1);
@@ -347,8 +329,7 @@ bot_bar_widget_refresh (BotBarWidget * self)
 #endif
 
   GtkGestureClick * right_mp =
-    GTK_GESTURE_CLICK (
-      gtk_gesture_click_new ());
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_widget_add_controller (
     GTK_WIDGET (self->digital_transport),
     GTK_EVENT_CONTROLLER (right_mp));
@@ -367,7 +348,7 @@ bot_bar_widget_refresh (BotBarWidget * self)
 
 static bool
 activate_link (
-  GtkWidget   * label,
+  GtkWidget *   label,
   const gchar * uri,
   gpointer      data)
 {
@@ -391,19 +372,19 @@ activate_link (
       g_debug ("change buf size pressed");
       char * str =
         string_entry_dialog_widget_new_return_string (
-          _("New buffer size"));
+          _ ("New buffer size"));
       if (str)
         {
           unsigned long long int buf_sz =
             strtoull (str, NULL, 10);
           g_free (str);
-          if (buf_sz == 0ULL ||
-              (buf_sz == ULLONG_MAX &&
-               errno == ERANGE))
+          if (
+            buf_sz == 0ULL
+            || (buf_sz == ULLONG_MAX && errno == ERANGE))
             {
               ui_show_error_message (
                 MAIN_WINDOW, false,
-                _("Failed reading value"));
+                _ ("Failed reading value"));
             }
           else
             {
@@ -419,16 +400,16 @@ activate_link (
 feature_unavailable:
   ui_show_error_message (
     MAIN_WINDOW, false,
-    _("This feature is not available at the "
-    "moment"));
+    _ ("This feature is not available at the "
+       "moment"));
   return false;
 }
 
 static void
 on_text_pushed (
-  GtkStatusbar *statusbar,
-  guint         context_id,
-  gchar        *text,
+  GtkStatusbar * statusbar,
+  guint          context_id,
+  gchar *        text,
   BotBarWidget * self)
 {
   gtk_label_set_markup (self->label, text);
@@ -438,50 +419,45 @@ on_text_pushed (
  * Updates the content of the status bar.
  */
 void
-bot_bar_widget_update_status (
-  BotBarWidget * self)
+bot_bar_widget_update_status (BotBarWidget * self)
 {
   gtk_statusbar_remove_all (
-    MW_STATUS_BAR,
-    MW_BOT_BAR->context_id);
+    MW_STATUS_BAR, MW_BOT_BAR->context_id);
 
   char color_prefix[60];
   sprintf (
-    color_prefix,
-    "<span foreground=\"%s\">",
+    color_prefix, "<span foreground=\"%s\">",
     self->hex_color);
   char color_suffix[40] = "</span>";
   char green_prefix[60];
   sprintf (
-    green_prefix,
-    "<span foreground=\"%s\">",
+    green_prefix, "<span foreground=\"%s\">",
     self->green_hex);
   char red_prefix[60];
   sprintf (
-    red_prefix,
-    "<span foreground=\"%s\">",
+    red_prefix, "<span foreground=\"%s\">",
     self->red_hex);
 
   /* TODO show xruns on status */
 
   const char * audio_pipewire_str = "";
   const char * midi_pipewire_str = "";
-  if (AUDIO_ENGINE->audio_backend ==
-        AUDIO_BACKEND_JACK)
+  if (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK)
     {
 #ifdef HAVE_JACK
       audio_pipewire_str =
-        engine_jack_is_pipewire (AUDIO_ENGINE) ?
-          " (pw)" : "";
+        engine_jack_is_pipewire (AUDIO_ENGINE)
+          ? " (pw)"
+          : "";
 #endif
     }
-  if (AUDIO_ENGINE->midi_backend ==
-        MIDI_BACKEND_JACK)
+  if (AUDIO_ENGINE->midi_backend == MIDI_BACKEND_JACK)
     {
 #ifdef HAVE_JACK
       midi_pipewire_str =
-        engine_jack_is_pipewire (AUDIO_ENGINE) ?
-          " (pw)" : "";
+        engine_jack_is_pipewire (AUDIO_ENGINE)
+          ? " (pw)"
+          : "";
 #endif
     }
 
@@ -500,43 +476,38 @@ bot_bar_widget_update_status (
     "%s: %s%d Hz%s | "
     "<a href=\"%s\">%s</a>"
     "</span>",
-    _("Audio"),
-    color_prefix,
+    _ ("Audio"), color_prefix,
     engine_audio_backend_to_string (
       AUDIO_ENGINE->audio_backend),
-    audio_pipewire_str,
-    color_suffix,
-    "MIDI",
+    audio_pipewire_str, color_suffix, "MIDI",
     color_prefix,
     engine_midi_backend_to_string (
       AUDIO_ENGINE->midi_backend),
-    midi_pipewire_str,
-    color_suffix,
-    _("Status"),
-    AUDIO_ENGINE->activated ?
-      green_prefix : red_prefix,
-    AUDIO_ENGINE->activated ? _("On") : _("Off"),
+    midi_pipewire_str, color_suffix, _ ("Status"),
+    AUDIO_ENGINE->activated ? green_prefix : red_prefix,
+    AUDIO_ENGINE->activated ? _ ("On") : _ ("Off"),
     color_suffix,
     /* TRANSLATORS: buffer size, please keep the
      * translation short */
-    _("Buf sz"),
-    color_prefix,
-    AUDIO_ENGINE->activated ?
-      AUDIO_ENGINE->block_length : 0,
+    _ ("Buf sz"), color_prefix,
+    AUDIO_ENGINE->activated
+      ? AUDIO_ENGINE->block_length
+      : 0,
     color_suffix,
 #ifndef _WOE32
     /* TRANSLATORS: verb - change buffer size */
-    _("change"),
+    _ ("change"),
 #endif
     /* TRANSLATORS: sample rate */
-    _("Rate"),
-    color_prefix,
-    AUDIO_ENGINE->activated ?
-      AUDIO_ENGINE->sample_rate : 0,
+    _ ("Rate"), color_prefix,
+    AUDIO_ENGINE->activated
+      ? AUDIO_ENGINE->sample_rate
+      : 0,
     color_suffix,
     AUDIO_ENGINE->activated ? "disable" : "enable",
-    AUDIO_ENGINE->activated ?
-      _("Disable") : _("Enable"));
+    AUDIO_ENGINE->activated
+      ? _ ("Disable")
+      : _ ("Enable"));
 
   g_debug ("new status: %s", str);
 
@@ -554,8 +525,7 @@ on_metronome_volume_changed (
 }
 
 static void
-setup_metronome (
-  BotBarWidget * self)
+setup_metronome (BotBarWidget * self)
 {
   /* setup metronome button */
   self->metronome_btn =
@@ -567,10 +537,8 @@ setup_metronome (
     "app.toggle-metronome");
   button_with_menu_widget_setup (
     self->metronome,
-    GTK_BUTTON (self->metronome_btn),
-    NULL,
-    false, 38, _("Metronome"),
-    _("Metronome options"));
+    GTK_BUTTON (self->metronome_btn), NULL, false,
+    38, _ ("Metronome"), _ ("Metronome options"));
 
   /* create popover for changing metronome options */
   GtkPopover * popover =
@@ -581,39 +549,34 @@ setup_metronome (
   gtk_popover_set_child (popover, grid);
 
   /* volume */
-  GtkWidget * label = gtk_label_new (_("Volume"));
+  GtkWidget * label = gtk_label_new (_ ("Volume"));
   gtk_grid_attach (
-    GTK_GRID (grid), GTK_WIDGET (label),
-    0, 0, 1, 1);
+    GTK_GRID (grid), GTK_WIDGET (label), 0, 0, 1, 1);
   GtkScale * scale =
-    GTK_SCALE (
-      gtk_scale_new_with_range (
-        GTK_ORIENTATION_HORIZONTAL, 0.f, 2.f, 0.1f));
+    GTK_SCALE (gtk_scale_new_with_range (
+      GTK_ORIENTATION_HORIZONTAL, 0.f, 2.f, 0.1f));
   gtk_widget_set_size_request (
     GTK_WIDGET (scale), 120, -1);
   g_signal_connect (
     scale, "value-changed",
-    G_CALLBACK (on_metronome_volume_changed),
-    self);
+    G_CALLBACK (on_metronome_volume_changed), self);
   gtk_range_set_value (
     GTK_RANGE (scale), METRONOME->volume);
   gtk_widget_set_visible (GTK_WIDGET (scale), true);
   gtk_grid_attach (
-    GTK_GRID (grid), GTK_WIDGET (scale),
-    1, 0, 1, 1);
+    GTK_GRID (grid), GTK_WIDGET (scale), 1, 0, 1, 1);
 
   /* countin */
-  label = gtk_label_new (_("Count-in"));
+  label = gtk_label_new (_ ("Count-in"));
   gtk_widget_set_visible (label, true);
   gtk_grid_attach (
-    GTK_GRID (grid), GTK_WIDGET (label),
-    0, 1, 1, 1);
+    GTK_GRID (grid), GTK_WIDGET (label), 0, 1, 1, 1);
   PrerollCountSelectorWidget * preroll_count =
     preroll_count_selector_widget_new (
       PREROLL_COUNT_SELECTOR_METRONOME_COUNTIN);
   gtk_grid_attach (
-    GTK_GRID (grid), GTK_WIDGET (preroll_count),
-    1, 1, 1, 1);
+    GTK_GRID (grid), GTK_WIDGET (preroll_count), 1,
+    1, 1, 1);
 
   gtk_menu_button_set_popover (
     self->metronome->menu_btn, GTK_WIDGET (popover));
@@ -623,14 +586,12 @@ setup_metronome (
  * Sets up the bot bar.
  */
 void
-bot_bar_widget_setup (
-  BotBarWidget * self)
+bot_bar_widget_setup (BotBarWidget * self)
 {
   bot_bar_widget_refresh (self);
 
   GtkGestureClick * right_mp =
-    GTK_GESTURE_CLICK (
-      gtk_gesture_click_new ());
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (right_mp),
     GDK_BUTTON_SECONDARY);
@@ -643,17 +604,15 @@ bot_bar_widget_setup (
 }
 
 static void
-dispose (
-  BotBarWidget * self)
+dispose (BotBarWidget * self)
 {
   gtk_widget_unparent (
     GTK_WIDGET (self->popover_menu));
   gtk_widget_unparent (
     GTK_WIDGET (self->center_box));
 
-  G_OBJECT_CLASS (
-    bot_bar_widget_parent_class)->
-      dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (bot_bar_widget_parent_class)
+    ->dispose (G_OBJECT (self));
 }
 
 static void
@@ -666,9 +625,8 @@ bot_bar_widget_init (BotBarWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->popover_menu =
-    GTK_POPOVER_MENU (
-      gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu = GTK_POPOVER_MENU (
+    gtk_popover_menu_new_from_model (NULL));
   gtk_widget_set_parent (
     GTK_WIDGET (self->popover_menu),
     GTK_WIDGET (self));
@@ -683,13 +641,11 @@ bot_bar_widget_init (BotBarWidget * self)
   setup_metronome (self);
 
   /* setup digital meters */
-  self->digital_bpm =
-    digital_meter_widget_new (
-      DIGITAL_METER_TYPE_BPM, NULL, NULL, _("bpm"));
-  self->digital_timesig =
-    digital_meter_widget_new (
-      DIGITAL_METER_TYPE_TIMESIG, NULL,
-      NULL, _("time sig."));
+  self->digital_bpm = digital_meter_widget_new (
+    DIGITAL_METER_TYPE_BPM, NULL, NULL, _ ("bpm"));
+  self->digital_timesig = digital_meter_widget_new (
+    DIGITAL_METER_TYPE_TIMESIG, NULL, NULL,
+    _ ("time sig."));
   gtk_box_append (
     self->digital_meters,
     GTK_WIDGET (self->digital_bpm));
@@ -697,21 +653,15 @@ bot_bar_widget_init (BotBarWidget * self)
     self->digital_meters,
     GTK_WIDGET (self->digital_timesig));
 
-  cpu_widget_setup (
-    self->cpu_load);
+  cpu_widget_setup (self->cpu_load);
 
-  self->context_id =
-    gtk_statusbar_get_context_id (
-      self->status_bar,
-      "Main context");
+  self->context_id = gtk_statusbar_get_context_id (
+    self->status_bar, "Main context");
 
-  self->label =
-    GTK_LABEL (gtk_label_new (""));
+  self->label = GTK_LABEL (gtk_label_new (""));
   gtk_label_set_markup (self->label, "");
-  GtkBox * box =
-    GTK_BOX (
-      gtk_widget_get_first_child (
-        GTK_WIDGET (self->status_bar)));
+  GtkBox * box = GTK_BOX (gtk_widget_get_first_child (
+    GTK_WIDGET (self->status_bar)));
   z_gtk_widget_remove_all_children (
     GTK_WIDGET (box));
   gtk_box_append (
@@ -730,11 +680,9 @@ bot_bar_widget_class_init (
   BotBarWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "bot_bar.ui");
+  resources_set_class_template (klass, "bot_bar.ui");
 
-  gtk_widget_class_set_css_name (
-    klass, "bot-bar");
+  gtk_widget_class_set_css_name (klass, "bot-bar");
 
 #define BIND_CHILD(child) \
   gtk_widget_class_bind_template_child ( \
@@ -753,8 +701,6 @@ bot_bar_widget_class_init (
   gtk_widget_class_set_layout_manager_type (
     klass, GTK_TYPE_BIN_LAYOUT);
 
-  GObjectClass * oklass =
-    G_OBJECT_CLASS (klass);
-  oklass->dispose =
-    (GObjectFinalizeFunc) dispose;
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
 }

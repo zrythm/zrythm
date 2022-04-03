@@ -22,15 +22,15 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
-#include "utils/objects.h"
 #include "utils/cairo.h"
 #include "utils/gtk.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
-#include "ext/zix/zix/ring.h"
-
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
+
+#include "ext/zix/zix/ring.h"
 
 G_DEFINE_TYPE (
   BounceStepSelectorWidget,
@@ -70,7 +70,7 @@ block_all_handlers (
 
 static void
 on_before_inserts_toggled (
-  GtkToggleButton *    btn,
+  GtkToggleButton *          btn,
   BounceStepSelectorWidget * self)
 {
   g_settings_set_enum (
@@ -88,7 +88,7 @@ on_before_inserts_toggled (
 
 static void
 on_pre_fader_toggled (
-  GtkToggleButton *    btn,
+  GtkToggleButton *          btn,
   BounceStepSelectorWidget * self)
 {
   g_settings_set_enum (
@@ -106,7 +106,7 @@ on_pre_fader_toggled (
 
 static void
 on_post_fader_toggled (
-  GtkToggleButton *    btn,
+  GtkToggleButton *          btn,
   BounceStepSelectorWidget * self)
 {
   g_settings_set_enum (
@@ -128,33 +128,28 @@ on_post_fader_toggled (
 BounceStepSelectorWidget *
 bounce_step_selector_widget_new (void)
 {
-  BounceStepSelectorWidget * self =
-    g_object_new (
-      BOUNCE_STEP_SELECTOR_WIDGET_TYPE,
-      "orientation", GTK_ORIENTATION_VERTICAL,
-      NULL);
+  BounceStepSelectorWidget * self = g_object_new (
+    BOUNCE_STEP_SELECTOR_WIDGET_TYPE, "orientation",
+    GTK_ORIENTATION_VERTICAL, NULL);
 
   gtk_widget_set_visible (GTK_WIDGET (self), true);
 
-#define CREATE(x,n,icon) \
+#define CREATE(x, n, icon) \
   self->x##_toggle = \
     z_gtk_toggle_button_new_with_icon_and_text ( \
-      icon, _(bounce_step_str[n]), false, \
+      icon, _ (bounce_step_str[n]), false, \
       GTK_ORIENTATION_HORIZONTAL, 4); \
   gtk_box_append ( \
-    GTK_BOX (self), \
-    GTK_WIDGET (self->x##_toggle)); \
-  self->x##_toggle_id = \
-    g_signal_connect ( \
-      G_OBJECT (self->x##_toggle), "toggled", \
-      G_CALLBACK (on_##x##_toggled), self)
+    GTK_BOX (self), GTK_WIDGET (self->x##_toggle)); \
+  self->x##_toggle_id = g_signal_connect ( \
+    G_OBJECT (self->x##_toggle), "toggled", \
+    G_CALLBACK (on_##x##_toggled), self)
 
   CREATE (before_inserts, 0, "audio-insert");
   CREATE (pre_fader, 1, "effect");
   CREATE (post_fader, 2, "fader");
 
-  BounceStep step =
-    (BounceStep)
+  BounceStep step = (BounceStep)
     g_settings_get_enum (S_UI, "bounce-step");
   switch (step)
     {

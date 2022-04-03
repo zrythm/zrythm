@@ -36,8 +36,7 @@
 #include "zrythm_app.h"
 
 void
-audio_track_init (
-  Track * self)
+audio_track_init (Track * self)
 {
   self->type = TRACK_TYPE_AUDIO;
   gdk_rgba_parse (&self->color, "#19664c");
@@ -45,10 +44,8 @@ audio_track_init (
     /* signal-audio also works */
     g_strdup ("view-media-visualization");
 
-  self->rt_stretcher =
-    stretcher_new_rubberband (
-      AUDIO_ENGINE->sample_rate, 2, 1.0,
-      1.0, true);
+  self->rt_stretcher = stretcher_new_rubberband (
+    AUDIO_ENGINE->sample_rate, 2, 1.0, 1.0, true);
 }
 
 void

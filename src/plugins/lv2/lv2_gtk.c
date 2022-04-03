@@ -40,10 +40,10 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
-#include "plugins/lv2_plugin.h"
 #include "plugins/lv2/lv2_gtk.h"
 #include "plugins/lv2/lv2_state.h"
 #include "plugins/lv2/lv2_ui.h"
+#include "plugins/lv2_plugin.h"
 #include "plugins/plugin_gtk.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
@@ -56,21 +56,20 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include <glib/gi18n.h>
 #include <lv2/patch/patch.h>
 #include <lv2/port-props/port-props.h>
 #include <lv2/presets/presets.h>
 #include <suil/suil.h>
 
 void
-lv2_gtk_on_save_activate (
-  Lv2Plugin * plugin)
+lv2_gtk_on_save_activate (Lv2Plugin * plugin)
 {
   return;
 
-# if 0
+#if 0
   GtkWidget* dialog = gtk_file_chooser_dialog_new(
     _("Save State"),
     plugin->plugin->window,
@@ -189,44 +188,42 @@ lv2_gtk_add_preset_to_menu (
  */
 void
 lv2_gtk_on_save_preset_activate (
-  GtkWidget*   widget,
+  GtkWidget *  widget,
   Lv2Plugin *  plugin,
   const char * path,
   const char * uri,
   bool         add_prefix)
 {
-  LilvNode* plug_name =
+  LilvNode * plug_name =
     lilv_plugin_get_name (plugin->lilv_plugin);
-  const char* prefix = "";
-  const char* sep = "";
+  const char * prefix = "";
+  const char * sep = "";
   if (add_prefix)
     {
-      prefix = lilv_node_as_string(plug_name);
+      prefix = lilv_node_as_string (plug_name);
       sep = "_";
     }
 
-  char* dirname = g_path_get_dirname(path);
-  char* basename = g_path_get_basename(path);
-  char* sym = string_symbolify (basename);
-  char* sprefix = string_symbolify (prefix);
-  char* bundle =
-    g_strjoin (NULL, sprefix, sep, sym,
-               ".preset.lv2/", NULL);
-  char* file =
-    g_strjoin (NULL, sym, ".ttl", NULL);
-  char* dir =
+  char * dirname = g_path_get_dirname (path);
+  char * basename = g_path_get_basename (path);
+  char * sym = string_symbolify (basename);
+  char * sprefix = string_symbolify (prefix);
+  char * bundle = g_strjoin (
+    NULL, sprefix, sep, sym, ".preset.lv2/", NULL);
+  char * file = g_strjoin (NULL, sym, ".ttl", NULL);
+  char * dir =
     g_build_filename (dirname, bundle, NULL);
 
   lv2_state_save_preset (
-    plugin, dir, (strlen(uri) ? uri : NULL),
+    plugin, dir, (strlen (uri) ? uri : NULL),
     basename, file);
 
   // Reload bundle into the world
-  LilvNode* ldir =
+  LilvNode * ldir =
     lilv_new_file_uri (LILV_WORLD, NULL, dir);
-  lilv_world_unload_bundle(LILV_WORLD, ldir);
-  lilv_world_load_bundle(LILV_WORLD, ldir);
-  lilv_node_free(ldir);
+  lilv_world_unload_bundle (LILV_WORLD, ldir);
+  lilv_world_load_bundle (LILV_WORLD, ldir);
+  lilv_node_free (ldir);
 
 #if 0
   // Rebuild preset menu and update window title
@@ -239,14 +236,14 @@ lv2_gtk_on_save_preset_activate (
     }
 #endif
 
-  g_free(dir);
-  g_free(file);
-  g_free(bundle);
-  free(sprefix);
-  free(sym);
-  g_free(basename);
-  g_free(dirname);
-  lilv_node_free(plug_name);
+  g_free (dir);
+  g_free (file);
+  g_free (bundle);
+  free (sprefix);
+  free (sym);
+  g_free (basename);
+  g_free (dirname);
+  lilv_node_free (plug_name);
 }
 
 #if 0
@@ -304,28 +301,26 @@ lv2_gtk_on_delete_preset_activate (
 
 static int
 patch_set_get (
-  Lv2Plugin *            plugin,
-  const LV2_Atom_Object* obj,
-  const LV2_Atom_URID**  property,
-  const LV2_Atom**       value)
+  Lv2Plugin *             plugin,
+  const LV2_Atom_Object * obj,
+  const LV2_Atom_URID **  property,
+  const LV2_Atom **       value)
 {
   lv2_atom_object_get (
-    obj,
-    PM_URIDS.patch_property,
-    (const LV2_Atom*)property,
-    PM_URIDS.patch_value,
-    value, 0);
+    obj, PM_URIDS.patch_property,
+    (const LV2_Atom *) property,
+    PM_URIDS.patch_value, value, 0);
   if (!*property)
     {
       g_warning (
         "patch:Set message with no property");
       return 1;
     }
-  else if ((*property)->atom.type !=
-           plugin->main_forge.URID)
+  else if (
+    (*property)->atom.type
+    != plugin->main_forge.URID)
     {
-      g_warning (
-        "patch:Set property is not a URID");
+      g_warning ("patch:Set property is not a URID");
       return 1;
     }
 
@@ -333,28 +328,23 @@ patch_set_get (
 }
 
 static int
-patch_put_get(
-  Lv2Plugin*                   plugin,
-  const LV2_Atom_Object*  obj,
-  const LV2_Atom_Object** body)
+patch_put_get (
+  Lv2Plugin *              plugin,
+  const LV2_Atom_Object *  obj,
+  const LV2_Atom_Object ** body)
 {
   lv2_atom_object_get (
-    obj,
-    PM_URIDS.patch_body,
-    (const LV2_Atom*)body,
-    0);
+    obj, PM_URIDS.patch_body,
+    (const LV2_Atom *) body, 0);
   if (!*body)
     {
-      g_warning (
-        "patch:Put message with no body");
+      g_warning ("patch:Put message with no body");
       return 1;
     }
   else if (!lv2_atom_forge_is_object_type (
-              &plugin->main_forge,
-              (*body)->atom.type))
+             &plugin->main_forge, (*body)->atom.type))
     {
-      g_warning (
-        "patch:Put body is not an object");
+      g_warning ("patch:Put body is not an object");
       return 1;
     }
 
@@ -425,10 +415,8 @@ lv2_gtk_ui_port_event (
       if (port->widget)
         {
           plugin_gtk_generic_set_widget_value (
-            pl, port->widget,
-            buffer_size,
-            lv2_plugin->main_forge.Float,
-            buffer);
+            pl, port->widget, buffer_size,
+            lv2_plugin->main_forge.Float, buffer);
           return;
         }
       else
@@ -437,46 +425,41 @@ lv2_gtk_ui_port_event (
           return;
         }
     }
-  else if (protocol !=
-             PM_URIDS.atom_eventTransfer)
+  else if (protocol != PM_URIDS.atom_eventTransfer)
     {
       g_warning ("Unknown port event protocol");
       return;
     }
 
-  const LV2_Atom* atom = (const LV2_Atom*)buffer;
+  const LV2_Atom * atom = (const LV2_Atom *) buffer;
   if (lv2_atom_forge_is_object_type (
         &lv2_plugin->main_forge, atom->type))
     {
       lv2_plugin->updating = true;
-      const LV2_Atom_Object* obj =
-        (const LV2_Atom_Object*)buffer;
-      if (obj->body.otype ==
-          PM_URIDS.patch_Set)
+      const LV2_Atom_Object * obj =
+        (const LV2_Atom_Object *) buffer;
+      if (obj->body.otype == PM_URIDS.patch_Set)
         {
-          const LV2_Atom_URID* property = NULL;
-          const LV2_Atom*      value    = NULL;
+          const LV2_Atom_URID * property = NULL;
+          const LV2_Atom *      value = NULL;
           if (!patch_set_get (
-                 lv2_plugin, obj, &property,
-                 &value))
+                lv2_plugin, obj, &property, &value))
             {
               property_changed (
                 lv2_plugin, property->body, value);
             }
         }
-      else if (obj->body.otype ==
-               PM_URIDS.patch_Put)
+      else if (obj->body.otype == PM_URIDS.patch_Put)
         {
-          const LV2_Atom_Object* body = NULL;
-          if (!patch_put_get(
-                 lv2_plugin, obj, &body))
+          const LV2_Atom_Object * body = NULL;
+          if (!patch_put_get (lv2_plugin, obj, &body))
             {
               LV2_ATOM_OBJECT_FOREACH (body, prop)
-                {
-                  property_changed (
-                    lv2_plugin, prop->key,
-                    &prop->value);
-                }
+              {
+                property_changed (
+                  lv2_plugin, prop->key,
+                  &prop->value);
+              }
             }
         }
       else
@@ -486,16 +469,14 @@ lv2_gtk_ui_port_event (
 }
 
 void
-on_external_ui_closed (
-  void * controller)
+on_external_ui_closed (void * controller)
 {
   g_message ("External LV2 UI closed");
-  Lv2Plugin* self = (Lv2Plugin *) controller;
+  Lv2Plugin * self = (Lv2Plugin *) controller;
   plugin_gtk_close_ui (self->plugin);
   self->plugin->visible = 0;
   EVENTS_PUSH (
-    ET_PLUGIN_VISIBILITY_CHANGED,
-    self->plugin);
+    ET_PLUGIN_VISIBILITY_CHANGED, self->plugin);
 }
 
 /**
@@ -505,8 +486,7 @@ on_external_ui_closed (
  * Use plugin_gtk_*() for generic UIs.
  */
 int
-lv2_gtk_open_ui (
-  Lv2Plugin* plugin)
+lv2_gtk_open_ui (Lv2Plugin * plugin)
 {
   if (plugin->has_external_ui)
     {
@@ -521,8 +501,7 @@ lv2_gtk_open_ui (
     {
       if (plugin->has_external_ui)
         {
-          g_message (
-            "Instantiating external UI...");
+          g_message ("Instantiating external UI...");
 
           plugin->extui.ui_closed =
             on_external_ui_closed;
@@ -538,8 +517,9 @@ lv2_gtk_open_ui (
     }
 
   /* present the window */
-  if (plugin->has_external_ui &&
-      plugin->external_ui_widget)
+  if (
+    plugin->has_external_ui
+    && plugin->external_ui_widget)
     {
       g_message ("showing external LV2 UI");
       plugin->external_ui_widget->show (
@@ -549,10 +529,9 @@ lv2_gtk_open_ui (
   else if (plugin->suil_instance)
     {
       g_message ("Creating suil window for UI...");
-      GtkWidget* widget =
-        GTK_WIDGET (
-          suil_instance_get_widget (
-            plugin->suil_instance));
+      GtkWidget * widget =
+        GTK_WIDGET (suil_instance_get_widget (
+          plugin->suil_instance));
 
       /* suil already adds the widget to the
        * container in win_in_gtk3 but it doesn't
@@ -572,15 +551,14 @@ lv2_gtk_open_ui (
     {
       ui_show_message_printf (
         MAIN_WINDOW, GTK_MESSAGE_ERROR, false,
-        _("Failed to open LV2 UI for %s"),
+        _ ("Failed to open LV2 UI for %s"),
         plugin->plugin->setting->descr->name);
       return -1;
     }
 
   if (!plugin->has_external_ui)
     {
-      g_return_val_if_fail (
-        plugin->lilv_plugin, -1);
+      g_return_val_if_fail (plugin->lilv_plugin, -1);
     }
 
   lv2_ui_init (plugin);
@@ -597,15 +575,15 @@ lv2_gtk_open_ui (
     "Update frequency (Hz): %.01f",
     (double) plugin->plugin->ui_update_hz);
   g_return_val_if_fail (
-    plugin->plugin->ui_update_hz >=
-      PLUGIN_MIN_REFRESH_RATE, -1);
+    plugin->plugin->ui_update_hz
+      >= PLUGIN_MIN_REFRESH_RATE,
+    -1);
 
-  plugin->plugin->update_ui_source_id =
-    g_timeout_add (
-      (int)
-      (1000.f / plugin->plugin->ui_update_hz),
-      (GSourceFunc) plugin_gtk_update_plugin_ui,
-      plugin->plugin);
+  plugin->plugin
+    ->update_ui_source_id = g_timeout_add (
+    (int) (1000.f / plugin->plugin->ui_update_hz),
+    (GSourceFunc) plugin_gtk_update_plugin_ui,
+    plugin->plugin);
 
   return 0;
 }

@@ -69,8 +69,8 @@ typedef struct cell_t
  */
 typedef struct MPMCQueue
 {
-  cell_t *    buffer;
-  size_t      buffer_mask;
+  cell_t * buffer;
+  size_t   buffer_mask;
 
   volatile guint enqueue_pos;
   volatile guint dequeue_pos;
@@ -88,27 +88,19 @@ mpmc_queue_reserve (
 
 NONNULL
 void
-mpmc_queue_free (
-  MPMCQueue * self);
+mpmc_queue_free (MPMCQueue * self);
 
 NONNULL
 void
-mpmc_queue_clear (
-  MPMCQueue * self);
+mpmc_queue_clear (MPMCQueue * self);
 
-HOT
-NONNULL
-int
+HOT NONNULL int
 mpmc_queue_push_back (
   MPMCQueue *  self,
   void * const data);
 
-HOT
-NONNULL
-int
-mpmc_queue_dequeue (
-  MPMCQueue * self,
-  void **     data);
+HOT NONNULL int
+mpmc_queue_dequeue (MPMCQueue * self, void ** data);
 
 /**
  * @}

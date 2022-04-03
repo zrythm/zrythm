@@ -24,10 +24,11 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include <glib.h>
+
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project.h"
 
-#include <glib.h>
 #include <locale.h>
 
 static void
@@ -35,9 +36,8 @@ test_queue_file (void)
 {
   test_helper_zrythm_init ();
 
-  char * filepath =
-    g_build_filename (
-      TESTS_SRCDIR, "test.wav", NULL);
+  char * filepath = g_build_filename (
+    TESTS_SRCDIR, "test.wav", NULL);
   SupportedFile * file =
     supported_file_new_from_path (filepath);
   g_free (filepath);
@@ -66,9 +66,8 @@ test_queue_midi_and_roll_transport (void)
     test_plugin_manager_get_plugin_setting (
       HELM_BUNDLE, HELM_URI, false);
 
-  char * filepath =
-    g_build_filename (
-      TESTS_SRCDIR, "1_track_with_data.mid", NULL);
+  char * filepath = g_build_filename (
+    TESTS_SRCDIR, "1_track_with_data.mid", NULL);
   SupportedFile * file =
     supported_file_new_from_path (filepath);
   g_free (filepath);
@@ -104,7 +103,7 @@ test_queue_midi_and_roll_transport (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

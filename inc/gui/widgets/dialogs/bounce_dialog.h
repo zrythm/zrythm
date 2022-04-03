@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   BounceDialogWidget,
   bounce_dialog_widget,
-  Z, BOUNCE_DIALOG_WIDGET,
+  Z,
+  BOUNCE_DIALOG_WIDGET,
   GtkDialog)
 
 typedef struct _BounceStepSelectorWidget
@@ -59,22 +60,22 @@ typedef enum BounceDialogWidgetType
  */
 typedef struct _BounceDialogWidget
 {
-  GtkDialog            parent_instance;
-  GtkButton *          cancel_btn;
-  GtkButton *          bounce_btn;
-  GtkCheckButton *     bounce_with_parents;
-  GtkCheckButton *     disable_after_bounce;
-  GtkBox *             bounce_step_box;
+  GtkDialog                  parent_instance;
+  GtkButton *                cancel_btn;
+  GtkButton *                bounce_btn;
+  GtkCheckButton *           bounce_with_parents;
+  GtkCheckButton *           disable_after_bounce;
+  GtkBox *                   bounce_step_box;
   BounceStepSelectorWidget * bounce_step_selector;
-  GtkSpinButton *      tail_spin;
+  GtkSpinButton *            tail_spin;
 
   BounceDialogWidgetType type;
 
   /** Whether to bounce to file instead of on a new
    * audio track (TODO, or make it a gsetting). */
-  int                  bounce_to_file;
+  int bounce_to_file;
 
-  char *               bounce_name;
+  char * bounce_name;
 } BounceDialogWidget;
 
 /**

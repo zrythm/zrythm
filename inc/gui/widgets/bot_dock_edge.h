@@ -35,13 +35,14 @@
 G_DECLARE_FINAL_TYPE (
   BotDockEdgeWidget,
   bot_dock_edge_widget,
-  Z, BOT_DOCK_EDGE_WIDGET,
+  Z,
+  BOT_DOCK_EDGE_WIDGET,
   GtkBox)
 
 #define MW_BOT_DOCK_EDGE \
-   MW_CENTER_DOCK->bot_dock_edge
+  MW_CENTER_DOCK->bot_dock_edge
 
-typedef struct _MixerWidget MixerWidget;
+typedef struct _MixerWidget      MixerWidget;
 typedef struct _ClipEditorWidget ClipEditorWidget;
 typedef struct _ModulatorViewWidget
   ModulatorViewWidget;
@@ -62,14 +63,14 @@ typedef struct _ChordPadPanelWidget
  */
 typedef struct _BotDockEdgeWidget
 {
-  GtkBox              parent_instance;
+  GtkBox                   parent_instance;
   FoldableNotebookWidget * bot_notebook;
 
   /** Wrapper. */
-  GtkBox *            modulator_view_box;
+  GtkBox *              modulator_view_box;
   ModulatorViewWidget * modulator_view;
 
-  GtkPaned *          clip_editor_plus_event_viewer_paned;
+  GtkPaned * clip_editor_plus_event_viewer_paned;
 
   /** Event viewers. */
   GtkStack *          event_viewer_stack;
@@ -79,18 +80,18 @@ typedef struct _BotDockEdgeWidget
   EventViewerWidget * event_viewer_audio;
 
   /** Wrapper. */
-  GtkBox *            clip_editor_box;
-  ClipEditorWidget *  clip_editor;
+  GtkBox *           clip_editor_box;
+  ClipEditorWidget * clip_editor;
 
   /** Wrapper. */
-  GtkBox *            mixer_box;
-  MixerWidget *       mixer;
+  GtkBox *      mixer_box;
+  MixerWidget * mixer;
 
   /** Chord pads. */
-  GtkBox *            chord_pad_panel_box;
+  GtkBox *              chord_pad_panel_box;
   ChordPadPanelWidget * chord_pad_panel;
 
-  GtkButton *         toggle_top_panel;
+  GtkButton * toggle_top_panel;
 } BotDockEdgeWidget;
 
 void

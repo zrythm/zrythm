@@ -33,10 +33,13 @@
 #define EVENT_VIEWER_WIDGET_TYPE \
   (event_viewer_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  EventViewerWidget, event_viewer_widget,
-  Z, EVENT_VIEWER_WIDGET, GtkBox)
+  EventViewerWidget,
+  event_viewer_widget,
+  Z,
+  EVENT_VIEWER_WIDGET,
+  GtkBox)
 
-typedef struct _ArrangerWidget ArrangerWidget;
+typedef struct _ArrangerWidget    ArrangerWidget;
 typedef struct ArrangerSelections ArrangerSelections;
 
 /**
@@ -69,27 +72,27 @@ typedef enum EventViewerType
 
 typedef struct _EventViewerWidget
 {
-  GtkBox                 parent_instance;
+  GtkBox parent_instance;
 
   /** The tree view. */
-  GtkColumnView *        column_view;
+  GtkColumnView * column_view;
 
   /** Array of ItemFactory pointers for each
    * column. */
-  GPtrArray *            item_factories;
+  GPtrArray * item_factories;
 
   /** Type. */
-  EventViewerType        type;
+  EventViewerType type;
 
   /** Used by the editor EV to check if it should
    * readd the columns. */
-  RegionType             region_type;
+  RegionType region_type;
 
   /** Clone of last selections used. */
-  ArrangerSelections *   last_selections;
+  ArrangerSelections * last_selections;
 
   /** Temporary flag. */
-  bool                   marking_selected_objs;
+  bool marking_selected_objs;
 } EventViewerWidget;
 
 /**

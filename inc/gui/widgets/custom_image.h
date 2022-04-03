@@ -45,8 +45,10 @@
 #define CUSTOM_IMAGE_WIDGET_TYPE \
   (custom_image_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  CustomImageWidget, custom_image_widget,
-  Z, CUSTOM_IMAGE_WIDGET,
+  CustomImageWidget,
+  custom_image_widget,
+  Z,
+  CUSTOM_IMAGE_WIDGET,
   GtkWidget)
 
 /**
@@ -57,9 +59,9 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _CustomImageWidget
 {
-  GtkWidget       parent_instance;
+  GtkWidget parent_instance;
 
-  GdkTexture *    texture;
+  GdkTexture * texture;
 
   graphene_rect_t bounds;
 } CustomImageWidget;

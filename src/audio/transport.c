@@ -26,20 +26,20 @@
 #include "audio/midi_event.h"
 #include "audio/tempo_track.h"
 #include "audio/transport.h"
-#include "project.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/digital_meter.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
-#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/top_bar.h"
+#include "project.h"
 #include "settings/settings.h"
 #include "utils/debug.h"
 #include "utils/flags.h"
@@ -56,8 +56,7 @@
 #define BARS_END_BUFFER 4
 
 static void
-init_common (
-  Transport * self)
+init_common (Transport * self)
 {
   self->schema_version = TRANSPORT_SCHEMA_VERSION;
 
@@ -65,25 +64,29 @@ init_common (
   self->play_state = PLAYSTATE_PAUSED;
 
   self->loop =
-    ZRYTHM_TESTING ? true :
-    g_settings_get_boolean (
-      S_TRANSPORT, "loop");
+    ZRYTHM_TESTING
+      ? true
+      : g_settings_get_boolean (S_TRANSPORT, "loop");
   self->metronome_enabled =
-    ZRYTHM_TESTING ? true :
-    g_settings_get_boolean (
-      S_TRANSPORT, "metronome-enabled");
+    ZRYTHM_TESTING
+      ? true
+      : g_settings_get_boolean (
+        S_TRANSPORT, "metronome-enabled");
   self->punch_mode =
-    ZRYTHM_TESTING ? true :
-    g_settings_get_boolean (
-      S_TRANSPORT, "punch-mode");
+    ZRYTHM_TESTING
+      ? true
+      : g_settings_get_boolean (
+        S_TRANSPORT, "punch-mode");
   self->start_playback_on_midi_input =
-    ZRYTHM_TESTING ? false :
-    g_settings_get_boolean (
-      S_TRANSPORT, "start-on-midi-input");
+    ZRYTHM_TESTING
+      ? false
+      : g_settings_get_boolean (
+        S_TRANSPORT, "start-on-midi-input");
   self->recording_mode =
-    ZRYTHM_TESTING ? RECORDING_MODE_TAKES :
-    g_settings_get_enum (
-      S_TRANSPORT, "recording-mode");
+    ZRYTHM_TESTING
+      ? RECORDING_MODE_TAKES
+      : g_settings_get_enum (
+        S_TRANSPORT, "recording-mode");
 
   zix_sem_init (&self->paused, 0);
 }
@@ -111,11 +114,9 @@ transport_init_loaded (
   if (tempo_track)
     {
       int beats_per_bar =
-        tempo_track_get_beats_per_bar (
-          tempo_track);
+        tempo_track_get_beats_per_bar (tempo_track);
       int beat_unit =
-        tempo_track_get_beat_unit (
-          tempo_track);
+        tempo_track_get_beat_unit (tempo_track);
       transport_update_caches (
         self, beats_per_bar, beat_unit);
     }
@@ -137,16 +138,13 @@ transport_init_loaded (
  * Create a new transport.
  */
 Transport *
-transport_new (
-  AudioEngine * engine)
+transport_new (AudioEngine * engine)
 {
-  g_message (
-    "%s: Creating transport...", __func__);
+  g_message ("%s: Creating transport...", __func__);
 
   Transport * self = object_new (Transport);
   self->audio_engine = engine;
-  self->schema_version =
-    TRANSPORT_SCHEMA_VERSION;
+  self->schema_version = TRANSPORT_SCHEMA_VERSION;
 
   if (engine)
     {
@@ -155,20 +153,19 @@ transport_new (
 
   // set initial total number of beats
   // this is applied to the ruler
-  self->total_bars =
-    TRANSPORT_DEFAULT_TOTAL_BARS;
+  self->total_bars = TRANSPORT_DEFAULT_TOTAL_BARS;
 
   g_return_val_if_fail (
     engine->sample_rate > 0, NULL);
 
   /* hack to allow setting positions */
   /*double frames_per_tick_before =*/
-    /*AUDIO_ENGINE->frames_per_tick;*/
+  /*AUDIO_ENGINE->frames_per_tick;*/
   /*if (math_doubles_equal (*/
-        /*frames_per_tick_before, 0))*/
-    /*{*/
-      /*AUDIO_ENGINE->frames_per_tick = 512;*/
-    /*}*/
+  /*frames_per_tick_before, 0))*/
+  /*{*/
+  /*AUDIO_ENGINE->frames_per_tick = 512;*/
+  /*}*/
 
   /* set positions */
   position_init (&self->playhead_pos);
@@ -182,68 +179,56 @@ transport_new (
 
   double ticks_per_bar =
     TICKS_PER_QUARTER_NOTE * 4.0;
-  self->loop_end_pos.ticks =
-    4 * ticks_per_bar;
-  self->punch_in_pos.ticks =
-    2 * ticks_per_bar;
-  self->punch_out_pos.ticks =
-    4 * ticks_per_bar;
+  self->loop_end_pos.ticks = 4 * ticks_per_bar;
+  self->punch_in_pos.ticks = 2 * ticks_per_bar;
+  self->punch_out_pos.ticks = 4 * ticks_per_bar;
 
   self->range_1.ticks = 1 * ticks_per_bar;
   self->range_2.ticks = 1 * ticks_per_bar;
 
   /*if (math_doubles_equal (*/
-        /*frames_per_tick_before, 0))*/
-    /*{*/
-      /*AUDIO_ENGINE->frames_per_tick = 0;*/
-    /*}*/
+  /*frames_per_tick_before, 0))*/
+  /*{*/
+  /*AUDIO_ENGINE->frames_per_tick = 0;*/
+  /*}*/
 
   /* create ports */
-  self->roll =
-    port_new_with_type (
-      TYPE_EVENT, FLOW_INPUT, "Roll");
+  self->roll = port_new_with_type (
+    TYPE_EVENT, FLOW_INPUT, "Roll");
   self->roll->id.sym = g_strdup ("roll");
   port_set_owner (
     self->roll, PORT_OWNER_TYPE_TRANSPORT, self);
   self->roll->id.flags |= PORT_FLAG_TOGGLE;
-  self->roll->id.flags2 |=
-    PORT_FLAG2_TRANSPORT_ROLL;
+  self->roll->id.flags2 |= PORT_FLAG2_TRANSPORT_ROLL;
 
-  self->stop =
-    port_new_with_type (
-      TYPE_EVENT, FLOW_INPUT, "Stop");
+  self->stop = port_new_with_type (
+    TYPE_EVENT, FLOW_INPUT, "Stop");
   self->stop->id.sym = g_strdup ("stop");
   port_set_owner (
     self->stop, PORT_OWNER_TYPE_TRANSPORT, self);
   self->stop->id.flags |= PORT_FLAG_TOGGLE;
-  self->stop->id.flags2 |=
-    PORT_FLAG2_TRANSPORT_STOP;
+  self->stop->id.flags2 |= PORT_FLAG2_TRANSPORT_STOP;
 
-  self->backward =
-    port_new_with_type (
-      TYPE_EVENT, FLOW_INPUT, "Backward");
+  self->backward = port_new_with_type (
+    TYPE_EVENT, FLOW_INPUT, "Backward");
   self->backward->id.sym = g_strdup ("backward");
   port_set_owner (
-    self->backward, PORT_OWNER_TYPE_TRANSPORT,
-    self);
+    self->backward, PORT_OWNER_TYPE_TRANSPORT, self);
   self->backward->id.flags |= PORT_FLAG_TOGGLE;
   self->backward->id.flags2 |=
     PORT_FLAG2_TRANSPORT_BACKWARD;
 
-  self->forward =
-    port_new_with_type (
-      TYPE_EVENT, FLOW_INPUT, "Forward");
+  self->forward = port_new_with_type (
+    TYPE_EVENT, FLOW_INPUT, "Forward");
   self->forward->id.sym = g_strdup ("forward");
   port_set_owner (
-    self->forward, PORT_OWNER_TYPE_TRANSPORT,
-    self);
+    self->forward, PORT_OWNER_TYPE_TRANSPORT, self);
   self->forward->id.flags |= PORT_FLAG_TOGGLE;
   self->forward->id.flags2 |=
     PORT_FLAG2_TRANSPORT_FORWARD;
 
-  self->loop_toggle =
-    port_new_with_type (
-      TYPE_EVENT, FLOW_INPUT, "Loop toggle");
+  self->loop_toggle = port_new_with_type (
+    TYPE_EVENT, FLOW_INPUT, "Loop toggle");
   self->loop_toggle->id.sym =
     g_strdup ("loop_toggle");
   port_set_owner (
@@ -253,11 +238,9 @@ transport_new (
   self->loop_toggle->id.flags2 |=
     PORT_FLAG2_TRANSPORT_LOOP_TOGGLE;
 
-  self->rec_toggle =
-    port_new_with_type (
-      TYPE_EVENT, FLOW_INPUT, "Rec toggle");
-  self->rec_toggle->id.sym =
-    g_strdup ("rec_toggle");
+  self->rec_toggle = port_new_with_type (
+    TYPE_EVENT, FLOW_INPUT, "Rec toggle");
+  self->rec_toggle->id.sym = g_strdup ("rec_toggle");
   port_set_owner (
     self->rec_toggle, PORT_OWNER_TYPE_TRANSPORT,
     self);
@@ -274,13 +257,10 @@ transport_new (
  * Clones the transport values.
  */
 Transport *
-transport_clone (
-  const Transport * src)
+transport_clone (const Transport * src)
 {
-  Transport * self =
-    object_new (Transport);
-  self->schema_version =
-    TRANSPORT_SCHEMA_VERSION;
+  Transport * self = object_new (Transport);
+  self->schema_version = TRANSPORT_SCHEMA_VERSION;
 
   self->total_bars = src->total_bars;
   self->has_range = src->has_range;
@@ -305,7 +285,7 @@ transport_clone (
 
 #define CLONE_PORT_IF_EXISTS(x) \
   if (src->x) \
-    self->x = port_clone (src->x)
+  self->x = port_clone (src->x)
 
   CLONE_PORT_IF_EXISTS (roll);
   CLONE_PORT_IF_EXISTS (stop);
@@ -364,8 +344,8 @@ transport_prepare_audio_regions_for_stretch (
                     arranger_object_get_length_in_ticks (
                       (ArrangerObject *) region);
                 } // foreach region
-            } // foreach lane
-        } // foreach track
+            }     // foreach lane
+        }         // foreach track
     }
 }
 
@@ -399,18 +379,20 @@ transport_stretch_regions (
 
           /* don't stretch audio regions with
            * musical mode off */
-          if (region->id.type == REGION_TYPE_AUDIO
-              && !region_get_musical_mode (region)
-              && !force)
+          if (
+            region->id.type == REGION_TYPE_AUDIO
+            && !region_get_musical_mode (region)
+            && !force)
             continue;
 
           ArrangerObject * r_obj =
             (ArrangerObject *) region;
           double ratio =
-            with_fixed_ratio ? time_ratio :
-            arranger_object_get_length_in_ticks (
-              r_obj) /
-            region->before_length;
+            with_fixed_ratio
+              ? time_ratio
+              : arranger_object_get_length_in_ticks (
+                  r_obj)
+                  / region->before_length;
           region_stretch (region, ratio);
         }
     }
@@ -436,16 +418,17 @@ transport_stretch_regions (
                   /* don't stretch regions with
                    * musical mode off */
                   if (!region_get_musical_mode (
-                         region))
+                        region))
                     continue;
 
                   ArrangerObject * r_obj =
                     (ArrangerObject *) region;
                   double ratio =
-                    with_fixed_ratio ? time_ratio :
-                    arranger_object_get_length_in_ticks (
-                      r_obj) /
-                    region->before_length;
+                    with_fixed_ratio
+                      ? time_ratio
+                      : arranger_object_get_length_in_ticks (
+                          r_obj)
+                          / region->before_length;
                   region_stretch (region, ratio);
                 }
             }
@@ -479,7 +462,7 @@ transport_set_start_playback_on_midi_input (
 
 void
 transport_set_recording_mode (
-  Transport * self,
+  Transport *            self,
   TransportRecordingMode mode)
 {
   self->recording_mode = mode;
@@ -508,8 +491,7 @@ transport_update_caches (
    * it means it is a 1/2th note, so multiply 1/2
    * with the ticks per note
    */
-  self->ticks_per_beat =
-    3840 / beat_unit;
+  self->ticks_per_beat = 3840 / beat_unit;
   self->ticks_per_bar =
     self->ticks_per_beat * beats_per_bar;
   self->sixteenths_per_beat = 16 / beat_unit;
@@ -546,9 +528,10 @@ transport_request_pause (
 
   TRANSPORT->playhead_before_pause =
     self->playhead_pos;
-  if (!ZRYTHM_TESTING &&
-      g_settings_get_boolean (
-        S_TRANSPORT, "return-to-cue"))
+  if (
+    !ZRYTHM_TESTING
+    && g_settings_get_boolean (
+      S_TRANSPORT, "return-to-cue"))
     {
       transport_move_playhead (
         self, &self->cue_pos, F_PANIC,
@@ -588,15 +571,14 @@ transport_request_roll (
   if (!ZRYTHM_TESTING)
     {
       /* handle countin */
-      PrerollCountBars bars =
-        g_settings_get_enum (
-          S_TRANSPORT, "metronome-countin");
+      PrerollCountBars bars = g_settings_get_enum (
+        S_TRANSPORT, "metronome-countin");
       int num_bars =
         transport_preroll_count_bars_enum_to_int (
           bars);
       double frames_per_bar =
-        AUDIO_ENGINE->frames_per_tick *
-        (double) TRANSPORT->ticks_per_bar;
+        AUDIO_ENGINE->frames_per_tick
+        * (double) TRANSPORT->ticks_per_bar;
       self->countin_frames_remaining =
         (long) ((double) num_bars * frames_per_bar);
       if (self->metronome_enabled)
@@ -608,16 +590,15 @@ transport_request_roll (
       if (self->recording)
         {
           /* handle preroll */
-          bars =
-            g_settings_get_enum (
-              S_TRANSPORT, "recording-preroll");
+          bars = g_settings_get_enum (
+            S_TRANSPORT, "recording-preroll");
           num_bars =
             transport_preroll_count_bars_enum_to_int (
               bars);
           Position pos;
           position_set_to_pos (
             &pos, &self->playhead_pos);
-          position_add_bars (&pos, - num_bars);
+          position_add_bars (&pos, -num_bars);
           position_print (&pos);
           if (pos.frames < 0)
             position_init (&pos);
@@ -640,7 +621,6 @@ transport_request_roll (
         &AUDIO_ENGINE->port_operation_lock);
     }
 }
-
 
 /**
  * Moves the playhead by the time corresponding to
@@ -665,8 +645,7 @@ transport_set_playhead_pos (
   Transport * self,
   Position *  pos)
 {
-  position_set_to_pos (
-    &self->playhead_pos, pos);
+  position_set_to_pos (&self->playhead_pos, pos);
   EVENTS_PUSH (
     ET_PLAYHEAD_POS_CHANGED_MANUALLY, NULL);
 }
@@ -691,8 +670,7 @@ transport_get_playhead_pos (
 {
   g_return_if_fail (self && pos);
 
-  position_set_to_pos (
-    pos, &self->playhead_pos);
+  position_set_to_pos (pos, &self->playhead_pos);
 }
 
 /**
@@ -717,11 +695,11 @@ transport_move_playhead (
   int i, j, k, l;
   /* send MIDI note off on currently playing timeline
    * objects */
-  Track * track;
-  ZRegion * region;
-  MidiNote * midi_note;
+  Track *      track;
+  ZRegion *    region;
+  MidiNote *   midi_note;
   MidiEvents * midi_events;
-  TrackLane * lane;
+  TrackLane *  lane;
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
@@ -730,8 +708,7 @@ transport_move_playhead (
         {
           lane = track->lanes[k];
 
-          for (l = 0;
-               l < lane->num_regions; l++)
+          for (l = 0; l < lane->num_regions; l++)
             {
               region = lane->regions[l];
 
@@ -740,8 +717,7 @@ transport_move_playhead (
                 continue;
 
               for (j = 0;
-                   j < region->num_midi_notes;
-                   j++)
+                   j < region->num_midi_notes; j++)
                 {
                   midi_note = region->midi_notes[j];
 
@@ -749,16 +725,14 @@ transport_move_playhead (
                         midi_note, PLAYHEAD->frames))
                     {
                       midi_events =
-                        track->processor->
-                          piano_roll->
-                            midi_events;
+                        track->processor->piano_roll
+                          ->midi_events;
 
                       zix_sem_wait (
                         &midi_events->access_sem);
                       midi_events_add_note_off (
                         midi_events, 1,
-                        midi_note->val,
-                        0, 1);
+                        midi_note->val, 0, 1);
                       zix_sem_post (
                         &midi_events->access_sem);
                     }
@@ -805,14 +779,13 @@ transport_set_metronome_enabled (
  * Returns the PPQN (Parts/Ticks Per Quarter Note).
  */
 double
-transport_get_ppqn (
-  Transport * self)
+transport_get_ppqn (Transport * self)
 {
   int beat_unit =
     tempo_track_get_beat_unit (P_TEMPO_TRACK);
   double res =
-    self->ticks_per_beat *
-    ((double) beat_unit / 4.0);
+    self->ticks_per_beat
+    * ((double) beat_unit / 4.0);
   return res;
 }
 
@@ -845,29 +818,24 @@ transport_update_positions (
 #define GATHER_MARKERS \
   /* gather all markers */ \
   Position markers[60]; \
-  int num_markers = 0, i; \
-  for (i = 0; \
-       i < P_MARKER_TRACK->num_markers; i++) \
+  int      num_markers = 0, i; \
+  for (i = 0; i < P_MARKER_TRACK->num_markers; i++) \
     { \
       ArrangerObject * m_obj = \
         (ArrangerObject *) \
-        P_MARKER_TRACK->markers[i]; \
-       position_set_to_pos ( \
-          &markers[num_markers++], \
-          &m_obj->pos); \
+          P_MARKER_TRACK->markers[i]; \
+      position_set_to_pos ( \
+        &markers[num_markers++], &m_obj->pos); \
     } \
   position_set_to_pos ( \
-    &markers[num_markers++], \
-    &self->cue_pos); \
+    &markers[num_markers++], &self->cue_pos); \
   position_set_to_pos ( \
     &markers[num_markers++], \
     &self->loop_start_pos); \
   position_set_to_pos ( \
-    &markers[num_markers++], \
-    &self->loop_end_pos); \
+    &markers[num_markers++], &self->loop_end_pos); \
   position_set_to_pos ( \
-    &markers[num_markers++], \
-    &POSITION_START); \
+    &markers[num_markers++], &POSITION_START); \
   position_sort_array ( \
     markers, (size_t) num_markers)
 
@@ -883,35 +851,31 @@ foreach_arranger_handle_playhead_auto_scroll (
  * Moves the playhead to the prev Marker.
  */
 void
-transport_goto_prev_marker (
-  Transport * self)
+transport_goto_prev_marker (Transport * self)
 {
   GATHER_MARKERS;
 
   for (i = num_markers - 1; i >= 0; i--)
     {
-      if (position_is_before (
-            &markers[i], &self->playhead_pos) &&
-          TRANSPORT_IS_ROLLING &&
-          i > 0 &&
-          (position_to_ms (&self->playhead_pos) -
-             position_to_ms (&markers[i])) <
-           180)
+      if (
+        position_is_before (
+          &markers[i], &self->playhead_pos)
+        && TRANSPORT_IS_ROLLING && i > 0
+        && (position_to_ms (&self->playhead_pos)
+            - position_to_ms (&markers[i]))
+             < 180)
         {
           transport_move_playhead (
             self, &markers[i - 1], F_PANIC,
-            F_SET_CUE_POINT,
-            F_PUBLISH_EVENTS);
+            F_SET_CUE_POINT, F_PUBLISH_EVENTS);
           break;
         }
-      else if (
-        position_is_before (
-          &markers[i], &self->playhead_pos))
+      else if (position_is_before (
+                 &markers[i], &self->playhead_pos))
         {
           transport_move_playhead (
-            self, &markers[i],
-            F_PANIC, F_SET_CUE_POINT,
-            F_PUBLISH_EVENTS);
+            self, &markers[i], F_PANIC,
+            F_SET_CUE_POINT, F_PUBLISH_EVENTS);
           break;
         }
     }
@@ -927,8 +891,7 @@ transport_goto_prev_marker (
  * Moves the playhead to the next Marker.
  */
 void
-transport_goto_next_marker (
-  Transport * self)
+transport_goto_next_marker (Transport * self)
 {
   GATHER_MARKERS;
 
@@ -1036,27 +999,27 @@ transport_position_add_frames (
 
   /* if start frames were before the loop-end point
    * and the new frames are after (loop crossed) */
-  if (TRANSPORT_IS_LOOPING &&
-      pos_before_adding.frames <
-        self->loop_end_pos.frames &&
-      pos->frames >=
-        self->loop_end_pos.frames)
+  if (
+    TRANSPORT_IS_LOOPING
+    && pos_before_adding.frames
+         < self->loop_end_pos.frames
+    && pos->frames >= self->loop_end_pos.frames)
     {
       /* adjust the new frames */
       position_add_ticks (
         pos,
-        self->loop_start_pos.ticks -
-          self->loop_end_pos.ticks);
+        self->loop_start_pos.ticks
+          - self->loop_end_pos.ticks);
 
       g_warn_if_fail (
         pos->frames < self->loop_end_pos.frames);
     }
 
   /*long new_global_frames =*/
-    /*transport_frames_add_frames (*/
-      /*self, pos->frames, frames);*/
+  /*transport_frames_add_frames (*/
+  /*self, pos->frames, frames);*/
   /*position_from_frames (*/
-    /*pos, new_global_frames);*/
+  /*pos, new_global_frames);*/
 
   /* set the frames manually again because
    * position_from_frames rounds them */
@@ -1085,9 +1048,8 @@ transport_get_range_pos (
   bool        first,
   Position *  pos)
 {
-  bool range1_first =
-    position_is_before_or_equal (
-      &self->range_1, &self->range_2);
+  bool range1_first = position_is_before_or_equal (
+    &self->range_1, &self->range_2);
 
   if (first)
     {
@@ -1134,13 +1096,11 @@ transport_set_range (
   position_init (&init_pos);
   if (position_is_before (pos, &init_pos))
     {
-      position_set_to_pos (
-        pos_to_set, &init_pos);
+      position_set_to_pos (pos_to_set, &init_pos);
     }
   else
     {
-      position_set_to_pos (
-        pos_to_set, pos);
+      position_set_to_pos (pos_to_set, pos);
     }
 
   if (snap)
@@ -1156,9 +1116,8 @@ transport_position_is_inside_punch_range (
   Transport * self,
   Position *  pos)
 {
-  return
-    pos->frames >= self->punch_in_pos.frames &&
-    pos->frames < self->punch_out_pos.frames;
+  return pos->frames >= self->punch_in_pos.frames
+         && pos->frames < self->punch_out_pos.frames;
 }
 
 /**
@@ -1185,8 +1144,7 @@ transport_recalculate_total_bars (
         sel, objs_arr);
       for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj =
-            (ArrangerObject *)
+          ArrangerObject * obj = (ArrangerObject *)
             g_ptr_array_index (objs_arr, i);
           Position pos;
           if (arranger_object_type_has_length (
@@ -1235,8 +1193,8 @@ transport_update_total_bars (
   bool        fire_events)
 {
   g_return_if_fail (
-    self &&
-    total_bars >= TRANSPORT_DEFAULT_TOTAL_BARS);
+    self
+    && total_bars >= TRANSPORT_DEFAULT_TOTAL_BARS);
 
   if (self->total_bars == total_bars)
     return;
@@ -1269,10 +1227,9 @@ transport_move_backward (
     }
 
   Position pos;
-  bool ret =
-    snap_grid_get_nearby_snap_point (
-      &pos, SNAP_GRID_TIMELINE,
-      &self->playhead_pos, true);
+  bool     ret = snap_grid_get_nearby_snap_point (
+        &pos, SNAP_GRID_TIMELINE, &self->playhead_pos,
+        true);
   g_return_if_fail (ret);
   transport_move_playhead (
     self, &pos, F_PANIC, F_SET_CUE_POINT,
@@ -1304,10 +1261,9 @@ transport_move_forward (
     }
 
   Position pos;
-  bool ret =
-    snap_grid_get_nearby_snap_point (
-      &pos, SNAP_GRID_TIMELINE,
-      &self->playhead_pos, false);
+  bool     ret = snap_grid_get_nearby_snap_point (
+        &pos, SNAP_GRID_TIMELINE, &self->playhead_pos,
+        false);
   g_return_if_fail (ret);
   transport_move_playhead (
     self, &pos, F_PANIC, F_SET_CUE_POINT,
@@ -1356,8 +1312,7 @@ transport_set_recording (
 }
 
 void
-transport_free (
-  Transport * self)
+transport_free (Transport * self)
 {
   zix_sem_destroy (&self->paused);
 

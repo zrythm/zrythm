@@ -22,8 +22,8 @@
 #include "audio/fade.h"
 #include "audio/marker_track.h"
 #include "gui/backend/arranger_object.h"
-#include "gui/widgets/arranger_object.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/arranger_object.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -54,8 +54,7 @@
 
 #include <glib/gi18n-lib.h>
 
-#define TYPE(x) \
-  ARRANGER_OBJECT_TYPE_##x
+#define TYPE(x) ARRANGER_OBJECT_TYPE_##x
 
 /**
  * Returns if the current position is for resizing
@@ -95,12 +94,9 @@ arranger_object_is_resize_r (
   long size_frames =
     self->end_pos.frames - self->pos.frames;
   Position pos;
-  position_from_frames (
-    &pos, size_frames);
-  int width_px =
-    arranger_widget_pos_to_px (
-      arranger_object_get_arranger (self),
-      &pos, 0);
+  position_from_frames (&pos, size_frames);
+  int width_px = arranger_widget_pos_to_px (
+    arranger_object_get_arranger (self), &pos, 0);
 
   if (x > width_px - UI_RESIZE_CURSOR_SPACE)
     {
@@ -163,16 +159,16 @@ arranger_object_is_fade (
       if (in)
         {
           ret =
-            x >= fade_in_px - fade_pt_halfwidth &&
-            x <= fade_in_px + fade_pt_halfwidth &&
-            y <= fade_pt_halfwidth;
+            x >= fade_in_px - fade_pt_halfwidth
+            && x <= fade_in_px + fade_pt_halfwidth
+            && y <= fade_pt_halfwidth;
         }
       else
         {
           ret =
-            x >= fade_out_px - fade_pt_halfwidth &&
-            x <= fade_out_px + fade_pt_halfwidth &&
-            y <= fade_pt_halfwidth;
+            x >= fade_out_px - fade_pt_halfwidth
+            && x <= fade_out_px + fade_pt_halfwidth
+            && y <= fade_pt_halfwidth;
         }
     }
   else if (only_outer)
@@ -237,24 +233,26 @@ arranger_object_is_resize_up (
       if (y < VELOCITY_RESIZE_THRESHOLD)
         return 1;
     }
-  else if (self->type ==
-             ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
+  else if (
+    self->type
+    == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
     {
       AutomationPoint * ap =
-        (AutomationPoint*) self;
-      int curve_up =
-        automation_point_curves_up (ap);
+        (AutomationPoint *) self;
+      int curve_up = automation_point_curves_up (ap);
       if (curve_up)
         {
-          if (x > AP_WIDGET_POINT_SIZE ||
-              self->full_rect.height - y >
-                AP_WIDGET_POINT_SIZE)
+          if (
+            x > AP_WIDGET_POINT_SIZE
+            || self->full_rect.height - y
+                 > AP_WIDGET_POINT_SIZE)
             return 1;
         }
       else
         {
-          if (x > AP_WIDGET_POINT_SIZE ||
-              y > AP_WIDGET_POINT_SIZE)
+          if (
+            x > AP_WIDGET_POINT_SIZE
+            || y > AP_WIDGET_POINT_SIZE)
             return 1;
         }
     }
@@ -272,17 +270,17 @@ arranger_object_is_resize_loop (
   ArrangerObject * self,
   const int        y)
 {
-  if (!arranger_object_type_has_length (
-        self->type) ||
-      !arranger_object_type_can_loop (
-        self->type))
+  if (
+    !arranger_object_type_has_length (self->type)
+    || !arranger_object_type_can_loop (self->type))
     return 0;
 
   if (self->type == ARRANGER_OBJECT_TYPE_REGION)
     {
       ZRegion * r = (ZRegion *) self;
-      if (r->id.type == REGION_TYPE_AUDIO &&
-          P_TOOL != TOOL_SELECT_STRETCH)
+      if (
+        r->id.type == REGION_TYPE_AUDIO
+        && P_TOOL != TOOL_SELECT_STRETCH)
         {
           return 1;
         }
@@ -294,8 +292,8 @@ arranger_object_is_resize_loop (
 
       /* TODO */
       int height_px = 60;
-        /*gtk_widget_get_allocated_height (*/
-          /*GTK_WIDGET (self));*/
+      /*gtk_widget_get_allocated_height (*/
+      /*GTK_WIDGET (self));*/
 
       if (y > height_px / 2)
         {
@@ -388,12 +386,11 @@ get_automation_point_y (
   /* ratio of current value in the range */
   float ap_ratio = ap->normalized_val;
 
-  int allocated_h =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (arranger));
+  int allocated_h = gtk_widget_get_allocated_height (
+    GTK_WIDGET (arranger));
   int point =
-    allocated_h -
-    (int) (ap_ratio * (float) allocated_h);
+    allocated_h
+    - (int) (ap_ratio * (float) allocated_h);
   return point;
 }
 
@@ -410,15 +407,12 @@ arranger_object_get_full_rect_x_for_region_child (
   ArrangerObject * region_obj =
     (ArrangerObject *) region;
 
-  double region_start_ticks =
-    region_obj->pos.ticks;
+  double region_start_ticks = region_obj->pos.ticks;
   Position tmp;
 
   /* use absolute position */
   position_from_ticks (
-    &tmp,
-    region_start_ticks +
-      self->pos.ticks);
+    &tmp, region_start_ticks + self->pos.ticks);
   return ui_pos_to_px_editor (&tmp, 1);
 }
 
@@ -430,13 +424,13 @@ arranger_object_set_full_rectangle (
   ArrangerWidget * arranger)
 {
   g_return_if_fail (
-    Z_IS_ARRANGER_WIDGET (arranger) &&
-    IS_ARRANGER_OBJECT (self));
+    Z_IS_ARRANGER_WIDGET (arranger)
+    && IS_ARRANGER_OBJECT (self));
 
 #define WARN_IF_HAS_NEGATIVE_DIMENSIONS \
   if (self->full_rect.x < 0) \
     { \
-      int diff = - self->full_rect.x; \
+      int diff = -self->full_rect.x; \
       self->full_rect.x = 0; \
       self->full_rect.width -= diff; \
       if (self->full_rect.width < 1) \
@@ -445,16 +439,15 @@ arranger_object_set_full_rectangle (
         } \
     } \
   g_warn_if_fail ( \
-    self->full_rect.x >= 0 && \
-    self->full_rect.y >= 0 && \
-    self->full_rect.width >= 0 && \
-    self->full_rect.height >= 0)
+    self->full_rect.x >= 0 && self->full_rect.y >= 0 \
+    && self->full_rect.width >= 0 \
+    && self->full_rect.height >= 0)
 
   switch (self->type)
     {
     case TYPE (CHORD_OBJECT):
       {
-        ChordObject * co = (ChordObject *) self;
+        ChordObject *     co = (ChordObject *) self;
         ChordDescriptor * descr =
           chord_object_get_chord_descriptor (co);
 
@@ -466,15 +459,15 @@ arranger_object_set_full_rectangle (
         double region_start_ticks =
           region_obj->pos.ticks;
         Position tmp;
-        int adj_px_per_key =
+        int      adj_px_per_key =
           chord_editor_space_widget_get_chord_height (
-            MW_CHORD_EDITOR_SPACE) + 1;
+            MW_CHORD_EDITOR_SPACE)
+          + 1;
 
         /* use absolute position */
         position_from_ticks (
           &tmp,
-          region_start_ticks +
-          self->pos.ticks);
+          region_start_ticks + self->pos.ticks);
         self->full_rect.x =
           ui_pos_to_px_editor (&tmp, 1);
         self->full_rect.y =
@@ -487,14 +480,14 @@ arranger_object_set_full_rectangle (
         chord_object_recreate_pango_layouts (
           (ChordObject *) self);
         self->full_rect.width =
-          self->textw +
-          CHORD_OBJECT_WIDGET_TRIANGLE_W +
-          Z_CAIRO_TEXT_PADDING * 2;
+          self->textw
+          + CHORD_OBJECT_WIDGET_TRIANGLE_W
+          + Z_CAIRO_TEXT_PADDING * 2;
 
         self->full_rect.width =
-          self->textw +
-          CHORD_OBJECT_WIDGET_TRIANGLE_W +
-          Z_CAIRO_TEXT_PADDING * 2;
+          self->textw
+          + CHORD_OBJECT_WIDGET_TRIANGLE_W
+          + Z_CAIRO_TEXT_PADDING * 2;
 
         self->full_rect.height = adj_px_per_key;
 
@@ -516,17 +509,16 @@ arranger_object_set_full_rectangle (
         Position tmp;
         position_from_ticks (
           &tmp,
-          region_start_ticks +
-          self->pos.ticks);
+          region_start_ticks + self->pos.ticks);
         self->full_rect.x =
-          ui_pos_to_px_editor (&tmp, 1) -
-            AP_WIDGET_POINT_SIZE / 2;
+          ui_pos_to_px_editor (&tmp, 1)
+          - AP_WIDGET_POINT_SIZE / 2;
 
         AutomationPoint * next_ap =
           automation_region_get_next_ap (
             region, ap, true,
-            arranger->action ==
-              UI_OVERLAY_ACTION_MOVING_COPY);
+            arranger->action
+              == UI_OVERLAY_ACTION_MOVING_COPY);
 
         if (next_ap)
           {
@@ -537,30 +529,27 @@ arranger_object_set_full_rectangle (
              * start AP to the next ap. */
             position_from_ticks (
               &tmp,
-              next_obj->pos.ticks -
-                self->pos.ticks);
+              next_obj->pos.ticks - self->pos.ticks);
 
             /* width is the relative position in px
              * plus half an AP_WIDGET_POINT_SIZE for
              * each side */
             self->full_rect.width =
-              AP_WIDGET_POINT_SIZE +
-              ui_pos_to_px_editor (&tmp, 0);
+              AP_WIDGET_POINT_SIZE
+              + ui_pos_to_px_editor (&tmp, 0);
 
             g_warn_if_fail (
               self->full_rect.width >= 0);
 
             int cur_y =
               get_automation_point_y (ap, arranger);
-            int next_y =
-              get_automation_point_y (
-                next_ap, arranger);
+            int next_y = get_automation_point_y (
+              next_ap, arranger);
 
-            self->full_rect.y =
-              MAX (
-                (cur_y > next_y ? next_y : cur_y) -
-                  AP_WIDGET_POINT_SIZE / 2,
-                0);
+            self->full_rect.y = MAX (
+              (cur_y > next_y ? next_y : cur_y)
+                - AP_WIDGET_POINT_SIZE / 2,
+              0);
 
             /* make sure y is not negative */
 
@@ -568,18 +557,18 @@ arranger_object_set_full_rectangle (
              * px between the two points plus half an
              * AP_WIDGET_POINT_SIZE for each side */
             self->full_rect.height =
-              (cur_y > next_y ?
-               cur_y - next_y :
-               next_y - cur_y) + AP_WIDGET_POINT_SIZE;
+              (cur_y > next_y
+                 ? cur_y - next_y
+                 : next_y - cur_y)
+              + AP_WIDGET_POINT_SIZE;
             WARN_IF_HAS_NEGATIVE_DIMENSIONS;
           }
         else
           {
-            self->full_rect.y =
-              MAX (
-                get_automation_point_y (
-                   ap, arranger) -
-                AP_WIDGET_POINT_SIZE / 2, 0);
+            self->full_rect.y = MAX (
+              get_automation_point_y (ap, arranger)
+                - AP_WIDGET_POINT_SIZE / 2,
+              0);
 
             self->full_rect.width =
               AP_WIDGET_POINT_SIZE;
@@ -588,13 +577,12 @@ arranger_object_set_full_rectangle (
 
             WARN_IF_HAS_NEGATIVE_DIMENSIONS;
           }
-        }
+      }
       break;
     case TYPE (REGION):
       {
-        ZRegion * region =
-          (ZRegion *) self;
-        Track * track =
+        ZRegion * region = (ZRegion *) self;
+        Track *   track =
           arranger_object_get_track (self);
 
 #if 0
@@ -603,16 +591,13 @@ arranger_object_set_full_rectangle (
 #endif
 
         self->full_rect.x =
-          ui_pos_to_px_timeline (
-            &self->pos, true);
+          ui_pos_to_px_timeline (&self->pos, true);
         Position tmp;
         position_from_ticks (
           &tmp,
-          self->end_pos.ticks -
-            self->pos.ticks);
+          self->end_pos.ticks - self->pos.ticks);
         self->full_rect.width =
-          ui_pos_to_px_timeline (
-            &tmp, false) - 1;
+          ui_pos_to_px_timeline (&tmp, false) - 1;
         if (self->full_rect.width < 1)
           {
             self->full_rect.width = 1;
@@ -621,10 +606,10 @@ arranger_object_set_full_rectangle (
         double wx = 0, wy = 0;
         if (track->widget)
           {
-            gtk_widget_translate_coordinates(
+            gtk_widget_translate_coordinates (
               (GtkWidget *) (track->widget),
-              (GtkWidget *) (arranger),
-              0, 0, &wx, &wy);
+              (GtkWidget *) (arranger), 0, 0, &wx,
+              &wy);
             /* for some reason it returns a few
              * negatives at first */
             if (wy < 0)
@@ -641,36 +626,35 @@ arranger_object_set_full_rectangle (
              * scales would require, plus some
              * padding */
             self->full_rect.height =
-              (int) track->main_height -
-                (self->texth +
-                 Z_CAIRO_TEXT_PADDING * 4);
+              (int) track->main_height
+              - (self->texth + Z_CAIRO_TEXT_PADDING * 4);
 
             WARN_IF_HAS_NEGATIVE_DIMENSIONS;
           }
-        else if (region->id.type ==
-                   REGION_TYPE_AUTOMATION)
+        else if (
+          region->id.type == REGION_TYPE_AUTOMATION)
           {
             AutomationTrack * at =
               region_get_automation_track (region);
             g_return_if_fail (at);
-            if (!at->created ||
-                !track->automation_visible)
+            if (
+              !at->created
+              || !track->automation_visible)
               return;
 
             if (track->widget)
               {
-                gtk_widget_translate_coordinates(
+                gtk_widget_translate_coordinates (
                   (GtkWidget *) (track->widget),
-                  (GtkWidget *) (arranger),
-                  0, 0, &wx, &wy);
+                  (GtkWidget *) (arranger), 0, 0,
+                  &wx, &wy);
                 /* for some reason it returns a few
                  * negatives at first */
                 if (wy < 0)
                   wy = 0;
               }
 
-            self->full_rect.y =
-              (int) wy + at->y;
+            self->full_rect.y = (int) wy + at->y;
             self->full_rect.height =
               (int) at->height;
 
@@ -692,7 +676,7 @@ arranger_object_set_full_rectangle (
     case TYPE (MIDI_NOTE):
       {
         MidiNote * mn = (MidiNote *) self;
-        ZRegion * region =
+        ZRegion *  region =
           arranger_object_get_region (self);
         g_return_if_fail (region);
         ArrangerObject * region_obj =
@@ -703,22 +687,20 @@ arranger_object_set_full_rectangle (
         double region_start_ticks =
           region_obj->pos.ticks;
         Position tmp;
-        double adj_px_per_key =
+        double   adj_px_per_key =
           MW_PIANO_ROLL_KEYS->px_per_key + 1.0;
 
         /* use absolute position */
         position_from_ticks (
           &tmp,
-          region_start_ticks +
-            self->pos.ticks);
+          region_start_ticks + self->pos.ticks);
         self->full_rect.x =
           ui_pos_to_px_editor (&tmp, 1);
         const MidiNoteDescriptor * descr =
           piano_roll_find_midi_note_descriptor_by_val (
-           PIANO_ROLL, track->drum_mode, mn->val);
+            PIANO_ROLL, track->drum_mode, mn->val);
         self->full_rect.y =
-          (int)
-          (adj_px_per_key * (127 - descr->value));
+          (int) (adj_px_per_key * (127 - descr->value));
 
         self->full_rect.height =
           (int) adj_px_per_key;
@@ -736,11 +718,11 @@ arranger_object_set_full_rectangle (
             /* use absolute position */
             position_from_ticks (
               &tmp,
-              region_start_ticks +
-              self->end_pos.ticks);
+              region_start_ticks
+                + self->end_pos.ticks);
             self->full_rect.width =
-              ui_pos_to_px_editor (
-                &tmp, 1) - self->full_rect.x;
+              ui_pos_to_px_editor (&tmp, 1)
+              - self->full_rect.x;
 
             WARN_IF_HAS_NEGATIVE_DIMENSIONS;
           }
@@ -753,11 +735,10 @@ arranger_object_set_full_rectangle (
         double wx = 0, wy = 0;
         if (track->widget)
           {
-            gtk_widget_translate_coordinates(
+            gtk_widget_translate_coordinates (
               (GtkWidget *) (track->widget),
-              (GtkWidget *) (arranger),
-              0, 0,
-              &wx, &wy);
+              (GtkWidget *) (arranger), 0, 0, &wx,
+              &wy);
             /* for some reason it returns a few
              * negatives at first */
             if (wy < 0)
@@ -765,20 +746,19 @@ arranger_object_set_full_rectangle (
           }
 
         self->full_rect.x =
-          ui_pos_to_px_timeline (
-            &self->pos, 1);
+          ui_pos_to_px_timeline (&self->pos, 1);
         scale_object_recreate_pango_layouts (
           (ScaleObject *) self);
         self->full_rect.width =
-          self->textw +
-          SCALE_OBJECT_WIDGET_TRIANGLE_W +
-          Z_CAIRO_TEXT_PADDING * 2;
+          self->textw
+          + SCALE_OBJECT_WIDGET_TRIANGLE_W
+          + Z_CAIRO_TEXT_PADDING * 2;
 
         int obj_height =
           self->texth + Z_CAIRO_TEXT_PADDING * 2;
         self->full_rect.y =
-          ((int) wy + (int) track->main_height) -
-            obj_height;
+          ((int) wy + (int) track->main_height)
+          - obj_height;
         self->full_rect.height = obj_height;
 
         WARN_IF_HAS_NEGATIVE_DIMENSIONS;
@@ -791,11 +771,10 @@ arranger_object_set_full_rectangle (
         double wx = 0, wy = 0;
         if (track->widget)
           {
-            gtk_widget_translate_coordinates(
+            gtk_widget_translate_coordinates (
               (GtkWidget *) (track->widget),
-              (GtkWidget *) (arranger),
-              0, 0,
-              &wx, &wy);
+              (GtkWidget *) (arranger), 0, 0, &wx,
+              &wy);
             /* for some reason it returns a few
              * negatives at first */
             if (wy < 0)
@@ -803,20 +782,18 @@ arranger_object_set_full_rectangle (
           }
 
         self->full_rect.x =
-          ui_pos_to_px_timeline (
-            &self->pos, 1);
+          ui_pos_to_px_timeline (&self->pos, 1);
         marker_recreate_pango_layouts (
           (Marker *) self);
         self->full_rect.width =
-          self->textw + MARKER_WIDGET_TRIANGLE_W +
-          Z_CAIRO_TEXT_PADDING * 2;
+          self->textw + MARKER_WIDGET_TRIANGLE_W
+          + Z_CAIRO_TEXT_PADDING * 2;
 
         int global_y_start =
           (int) wy + (int) track->main_height;
-        int obj_height =
-          MIN (
-            (int) track->main_height,
-            self->texth + Z_CAIRO_TEXT_PADDING * 2);
+        int obj_height = MIN (
+          (int) track->main_height,
+          self->texth + Z_CAIRO_TEXT_PADDING * 2);
         self->full_rect.y =
           global_y_start - obj_height;
         self->full_rect.height = obj_height;
@@ -829,8 +806,7 @@ arranger_object_set_full_rectangle (
         /* use transient or non transient note
          * depending on which is visible */
         Velocity * vel = (Velocity *) self;
-        MidiNote * mn =
-          velocity_get_midi_note (vel);
+        MidiNote * mn = velocity_get_midi_note (vel);
         g_return_if_fail (mn);
         ArrangerObject * mn_obj =
           (ArrangerObject *) mn;
@@ -846,8 +822,7 @@ arranger_object_set_full_rectangle (
         Position tmp;
         position_from_ticks (
           &tmp,
-          region_start_ticks +
-          mn_obj->pos.ticks);
+          region_start_ticks + mn_obj->pos.ticks);
         self->full_rect.x =
           ui_pos_to_px_editor (&tmp, 1);
 
@@ -856,14 +831,11 @@ arranger_object_set_full_rectangle (
          * start of MIDI note */
         self->full_rect.x -= VELOCITY_WIDTH / 2;
 
-        int height =
-          gtk_widget_get_allocated_height (
-            GTK_WIDGET (arranger));
+        int height = gtk_widget_get_allocated_height (
+          GTK_WIDGET (arranger));
 
         int vel_px =
-          (int)
-          ((float) height *
-            ((float) vel->vel / 127.f));
+          (int) ((float) height * ((float) vel->vel / 127.f));
         self->full_rect.y = height - vel_px;
 
         self->full_rect.width = VELOCITY_WIDTH;
@@ -872,8 +844,7 @@ arranger_object_set_full_rectangle (
         WARN_IF_HAS_NEGATIVE_DIMENSIONS;
 
         /* adjust for circle radius */
-        self->full_rect.height +=
-          VELOCITY_WIDTH / 2;
+        self->full_rect.height += VELOCITY_WIDTH / 2;
         self->full_rect.y -= VELOCITY_WIDTH / 2;
       }
       break;
@@ -883,8 +854,9 @@ arranger_object_set_full_rectangle (
     }
 
   bool drum_mode = false;
-  if (self->type == TYPE (MIDI_NOTE)
-      || self->type == TYPE (VELOCITY))
+  if (
+    self->type == TYPE (MIDI_NOTE)
+    || self->type == TYPE (VELOCITY))
     {
       Track * track =
         arranger_object_get_track (self);
@@ -893,15 +865,13 @@ arranger_object_set_full_rectangle (
       drum_mode = track->drum_mode;
     }
 
-  if ((self->full_rect.x < 0 &&
-         self->type != TYPE (MIDI_NOTE) &&
-         !drum_mode) ||
-      (self->full_rect.y < 0 &&
-         self->type != TYPE (VELOCITY)) ||
-      (self->full_rect.y < - VELOCITY_WIDTH / 2 &&
-       self->type == TYPE (VELOCITY)) ||
-      self->full_rect.width < 0 ||
-      self->full_rect.height < 0)
+  if (
+    (self->full_rect.x < 0
+     && self->type != TYPE (MIDI_NOTE) && !drum_mode)
+    || (self->full_rect.y < 0 && self->type != TYPE (VELOCITY))
+    || (self->full_rect.y < -VELOCITY_WIDTH / 2 && self->type == TYPE (VELOCITY))
+    || self->full_rect.width < 0
+    || self->full_rect.height < 0)
     {
       g_message ("Object:");
       arranger_object_print (self);
@@ -910,8 +880,7 @@ arranger_object_set_full_rectangle (
         "negative dimensions: (%d,%d) w: %d h: %d. "
         "This should not happen. A rendering error "
         "is expected to occur.",
-        self,
-        self->full_rect.x, self->full_rect.y,
+        self, self->full_rect.x, self->full_rect.y,
         self->full_rect.width,
         self->full_rect.height);
     }
@@ -950,39 +919,32 @@ arranger_object_get_draw_rectangle (
   GdkRectangle *   full_rect,
   GdkRectangle *   draw_rect)
 {
-  g_return_val_if_fail (
-    full_rect->width > 0, false);
+  g_return_val_if_fail (full_rect->width > 0, false);
 
-  if (!ui_rectangle_overlap (
-        parent_rect, full_rect))
+  if (!ui_rectangle_overlap (parent_rect, full_rect))
     return 0;
 
-  draw_rect->x =
-    MAX (full_rect->x, parent_rect->x);
-  draw_rect->width =
-    MIN (
-      (parent_rect->x + parent_rect->width) -
-        draw_rect->x,
-      (full_rect->x + full_rect->width) -
-      draw_rect->x);
+  draw_rect->x = MAX (full_rect->x, parent_rect->x);
+  draw_rect->width = MIN (
+    (parent_rect->x + parent_rect->width)
+      - draw_rect->x,
+    (full_rect->x + full_rect->width) - draw_rect->x);
   g_warn_if_fail (draw_rect->width >= 0);
-  draw_rect->y =
-    MAX (full_rect->y, parent_rect->y);
-  draw_rect->height =
-    MIN (
-      (parent_rect->y + parent_rect->height) -
-        draw_rect->y,
-      (full_rect->y + full_rect->height) -
-      draw_rect->y);
+  draw_rect->y = MAX (full_rect->y, parent_rect->y);
+  draw_rect->height = MIN (
+    (parent_rect->y + parent_rect->height)
+      - draw_rect->y,
+    (full_rect->y + full_rect->height)
+      - draw_rect->y);
   g_warn_if_fail (draw_rect->height >= 0);
 
   return 1;
   /*g_message ("full rect: (%d, %d) w: %d h: %d",*/
-    /*full_rect->x, full_rect->y,*/
-    /*full_rect->width, full_rect->height);*/
+  /*full_rect->x, full_rect->y,*/
+  /*full_rect->width, full_rect->height);*/
   /*g_message ("draw rect: (%d, %d) w: %d h: %d",*/
-    /*draw_rect->x, draw_rect->y,*/
-    /*draw_rect->width, draw_rect->height);*/
+  /*draw_rect->x, draw_rect->y,*/
+  /*draw_rect->width, draw_rect->height);*/
 }
 
 /**
@@ -996,7 +958,7 @@ void
 arranger_object_draw (
   ArrangerObject * self,
   ArrangerWidget * arranger,
-  GtkSnapshot *  snapshot,
+  GtkSnapshot *    snapshot,
   GdkRectangle *   rect)
 {
 #if 0
@@ -1017,12 +979,10 @@ arranger_object_draw (
         arranger->ap_layout);
       break;
     case TYPE (REGION):
-      region_draw (
-        (ZRegion *) self, snapshot, rect);
+      region_draw ((ZRegion *) self, snapshot, rect);
       break;
     case TYPE (MIDI_NOTE):
-      midi_note_draw (
-        (MidiNote *) self, snapshot);
+      midi_note_draw ((MidiNote *) self, snapshot);
       break;
     case TYPE (MARKER):
       marker_draw ((Marker *) self, snapshot);
@@ -1036,8 +996,7 @@ arranger_object_draw (
         (ChordObject *) self, snapshot);
       break;
     case TYPE (VELOCITY):
-      velocity_draw (
-        (Velocity *) self, snapshot);
+      velocity_draw ((Velocity *) self, snapshot);
       break;
     default:
       g_warn_if_reached ();
@@ -1069,23 +1028,21 @@ arranger_object_should_orig_be_visible (
 
   if (!arranger)
     {
-      arranger =
-        arranger_object_get_arranger (self);
+      arranger = arranger_object_get_arranger (self);
       g_return_val_if_fail (arranger, false);
     }
 
   /* check trans/non-trans visibility */
-  if (ARRANGER_WIDGET_GET_ACTION (
-        arranger, MOVING) ||
-      ARRANGER_WIDGET_GET_ACTION (
-        arranger, CREATING_MOVING))
+  if (
+    ARRANGER_WIDGET_GET_ACTION (arranger, MOVING)
+    || ARRANGER_WIDGET_GET_ACTION (
+      arranger, CREATING_MOVING))
     {
       return false;
     }
   else if (
-    ARRANGER_WIDGET_GET_ACTION (
-      arranger, MOVING_COPY) ||
-    ARRANGER_WIDGET_GET_ACTION (
+    ARRANGER_WIDGET_GET_ACTION (arranger, MOVING_COPY)
+    || ARRANGER_WIDGET_GET_ACTION (
       arranger, MOVING_LINK))
     {
       return true;

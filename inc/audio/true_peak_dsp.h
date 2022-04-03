@@ -45,18 +45,18 @@
 
 typedef struct TruePeakDsp
 {
-  float      m;
-  float      p;
-  float      z1;
-  float      z2;
-  bool       res;
-  float     *buf;
+  float           m;
+  float           p;
+  float           z1;
+  float           z2;
+  bool            res;
+  float *         buf;
   ZitaResampler * src;
 
-  float   w1;  // attack filter coefficient
-  float   w2;  // attack filter coefficient
-  float   w3;  // release filter coefficient
-  float   g;   // gain factor
+  float w1; // attack filter coefficient
+  float w2; // attack filter coefficient
+  float w3; // release filter coefficient
+  float g;  // gain factor
 } TruePeakDsp;
 
 /**
@@ -68,25 +68,26 @@ typedef struct TruePeakDsp
 void
 true_peak_dsp_process (
   TruePeakDsp * self,
-  float *p, int n);
+  float *       p,
+  int           n);
 
 void
 true_peak_dsp_process_max (
   TruePeakDsp * self,
-  float *p, int n);
+  float *       p,
+  int           n);
 
 float
-true_peak_dsp_read_f (
-  TruePeakDsp * self);
+true_peak_dsp_read_f (TruePeakDsp * self);
 
 void
 true_peak_dsp_read (
   TruePeakDsp * self,
-  float * m, float * p);
+  float *       m,
+  float *       p);
 
 void
-true_peak_dsp_reset (
-  TruePeakDsp * self);
+true_peak_dsp_reset (TruePeakDsp * self);
 
 /**
  * Init with the samplerate.
@@ -94,13 +95,12 @@ true_peak_dsp_reset (
 void
 true_peak_dsp_init (
   TruePeakDsp * self,
-  float samplerate);
+  float         samplerate);
 
 TruePeakDsp *
 true_peak_dsp_new (void);
 
 void
-true_peak_dsp_free (
-  TruePeakDsp * self);
+true_peak_dsp_free (TruePeakDsp * self);
 
 #endif

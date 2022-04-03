@@ -37,14 +37,12 @@ get_user_packs_path (void)
     zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
   g_return_val_if_fail (zrythm_dir, NULL);
 
-  return
-    g_build_filename (
-      zrythm_dir, USER_PACKS_DIR_NAME, NULL);
+  return g_build_filename (
+    zrythm_dir, USER_PACKS_DIR_NAME, NULL);
 }
 
 static bool
-is_yaml_our_version (
-  const char * yaml)
+is_yaml_our_version (const char * yaml)
 {
   bool same_version = false;
   char version_str[120];
@@ -66,18 +64,17 @@ is_yaml_our_version (
 }
 
 static void
-add_standard_packs (
-  ChordPresetPackManager * self)
+add_standard_packs (ChordPresetPackManager * self)
 {
-#define ADD_SIMPLE_CHORD(i,root,chord_type) \
-  pset->descr[i] = \
-    chord_descriptor_new ( \
-      root, false, root, chord_type, \
-      CHORD_ACC_NONE, 0);
+#define ADD_SIMPLE_CHORD(i, root, chord_type) \
+  pset->descr[i] = chord_descriptor_new ( \
+    root, false, root, chord_type, CHORD_ACC_NONE, \
+    0);
 
 #define ADD_SIMPLE_CHORDS( \
-  n0,t0,n1,t1,n2,t2,n3,t3,n4,t4,n5,t5,n6,t6, \
-  n7,t7,n8,t8,n9,t9,n10,t10,n11,t11) \
+  n0, t0, n1, t1, n2, t2, n3, t3, n4, t4, n5, t5, \
+  n6, t6, n7, t7, n8, t8, n9, t9, n10, t10, n11, \
+  t11) \
   ADD_SIMPLE_CHORD (0, n0, t0); \
   ADD_SIMPLE_CHORD (1, n1, t1); \
   ADD_SIMPLE_CHORD (2, n2, t2); \
@@ -92,106 +89,77 @@ add_standard_packs (
   ADD_SIMPLE_CHORD (11, n11, t11)
 
 #define ADD_SIMPLE_4CHORDS( \
-  n0,t0,n1,t1,n2,t2,n3,t3) \
+  n0, t0, n1, t1, n2, t2, n3, t3) \
   ADD_SIMPLE_CHORDS ( \
-    n0, t0, n1, t1, n2, t2, n3, t3, \
-    NOTE_C, CHORD_TYPE_NONE, \
-    NOTE_C, CHORD_TYPE_NONE, \
-    NOTE_C, CHORD_TYPE_NONE, \
-    NOTE_C, CHORD_TYPE_NONE, \
-    NOTE_C, CHORD_TYPE_NONE, \
-    NOTE_C, CHORD_TYPE_NONE, \
-    NOTE_C, CHORD_TYPE_NONE, \
-    NOTE_C, CHORD_TYPE_NONE)
+    n0, t0, n1, t1, n2, t2, n3, t3, NOTE_C, \
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE, \
+    NOTE_C, CHORD_TYPE_NONE, NOTE_C, \
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE, \
+    NOTE_C, CHORD_TYPE_NONE, NOTE_C, \
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE)
 
   ChordPresetPack * pack;
-  ChordPreset * pset;
+  ChordPreset *     pset;
 
   /* --- euro pop pack --- */
   pack =
-    chord_preset_pack_new (_("Euro Pop"), true);
+    chord_preset_pack_new (_ ("Euro Pop"), true);
 
-  pset =
-    chord_preset_new (_("4 Chord Song"));
+  pset = chord_preset_new (_ ("4 Chord Song"));
   ADD_SIMPLE_CHORDS (
-    NOTE_A, CHORD_TYPE_MIN,
-    NOTE_C, CHORD_TYPE_MAJ,
-    NOTE_F, CHORD_TYPE_MAJ,
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE);
+    NOTE_A, CHORD_TYPE_MIN, NOTE_C, CHORD_TYPE_MAJ,
+    NOTE_F, CHORD_TYPE_MAJ, NOTE_G, CHORD_TYPE_MAJ,
+    NOTE_G, CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE);
   pset->descr[4]->accent = CHORD_ACC_7;
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
   /* Johann Pachelbel, My Chemical Romance */
-  pset =
-    chord_preset_new (_("Canon in D"));
+  pset = chord_preset_new (_ ("Canon in D"));
   ADD_SIMPLE_CHORDS (
-    NOTE_D, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MAJ,
-    NOTE_B, CHORD_TYPE_MIN,
-    NOTE_FS, CHORD_TYPE_MIN,
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_D, CHORD_TYPE_MAJ,
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_D, CHORD_TYPE_MAJ, NOTE_A, CHORD_TYPE_MAJ,
+    NOTE_B, CHORD_TYPE_MIN, NOTE_FS, CHORD_TYPE_MIN,
+    NOTE_G, CHORD_TYPE_MAJ, NOTE_D, CHORD_TYPE_MAJ,
+    NOTE_G, CHORD_TYPE_MAJ, NOTE_A, CHORD_TYPE_MAJ,
+    NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE,
     NOTE_C, CHORD_TYPE_NONE);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
-  pset =
-    chord_preset_new (_("Love Progression"));
+  pset = chord_preset_new (_ ("Love Progression"));
   ADD_SIMPLE_4CHORDS (
-    NOTE_C, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MIN,
-    NOTE_F, CHORD_TYPE_MAJ,
-    NOTE_G, CHORD_TYPE_MAJ);
+    NOTE_C, CHORD_TYPE_MAJ, NOTE_A, CHORD_TYPE_MIN,
+    NOTE_F, CHORD_TYPE_MAJ, NOTE_G, CHORD_TYPE_MAJ);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
-  pset =
-    chord_preset_new (_("Pop Chords 1"));
+  pset = chord_preset_new (_ ("Pop Chords 1"));
   ADD_SIMPLE_CHORDS (
-    NOTE_C, CHORD_TYPE_MAJ,
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MIN,
-    NOTE_F, CHORD_TYPE_MAJ,
-    NOTE_E, CHORD_TYPE_MAJ,
-    NOTE_B, CHORD_TYPE_MAJ,
-    NOTE_CS, CHORD_TYPE_MIN,
-    NOTE_A, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_MAJ, NOTE_G, CHORD_TYPE_MAJ,
+    NOTE_A, CHORD_TYPE_MIN, NOTE_F, CHORD_TYPE_MAJ,
+    NOTE_E, CHORD_TYPE_MAJ, NOTE_B, CHORD_TYPE_MAJ,
+    NOTE_CS, CHORD_TYPE_MIN, NOTE_A, CHORD_TYPE_MAJ,
+    NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE,
     NOTE_C, CHORD_TYPE_NONE);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
   pset =
-    chord_preset_new (_("Most Often Used Chords"));
+    chord_preset_new (_ ("Most Often Used Chords"));
   ADD_SIMPLE_CHORDS (
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_F, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MIN,
-    NOTE_D, CHORD_TYPE_MIN,
-    NOTE_E, CHORD_TYPE_MIN,
-    NOTE_E, CHORD_TYPE_MAJ,
-    NOTE_D, CHORD_TYPE_MAJ,
-    NOTE_AS, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE);
+    NOTE_G, CHORD_TYPE_MAJ, NOTE_F, CHORD_TYPE_MAJ,
+    NOTE_C, CHORD_TYPE_MAJ, NOTE_A, CHORD_TYPE_MIN,
+    NOTE_D, CHORD_TYPE_MIN, NOTE_E, CHORD_TYPE_MIN,
+    NOTE_E, CHORD_TYPE_MAJ, NOTE_D, CHORD_TYPE_MAJ,
+    NOTE_AS, CHORD_TYPE_MAJ, NOTE_A, CHORD_TYPE_MAJ,
+    NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
@@ -200,43 +168,31 @@ add_standard_packs (
   /* --- j/k pop --- */
 
   pack =
-    chord_preset_pack_new (_("Eastern Pop"), true);
+    chord_preset_pack_new (_ ("Eastern Pop"), true);
 
   /* fight together */
-  pset =
-    chord_preset_new (_("Together"));
+  pset = chord_preset_new (_ ("Together"));
   ADD_SIMPLE_CHORDS (
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MAJ,
-    NOTE_D, CHORD_TYPE_MAJ,
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MAJ,
-    NOTE_B, CHORD_TYPE_MIN,
-    NOTE_D, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_G, CHORD_TYPE_MAJ, NOTE_A, CHORD_TYPE_MAJ,
+    NOTE_D, CHORD_TYPE_MAJ, NOTE_G, CHORD_TYPE_MAJ,
+    NOTE_A, CHORD_TYPE_MAJ, NOTE_B, CHORD_TYPE_MIN,
+    NOTE_D, CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE,
     NOTE_C, CHORD_TYPE_NONE);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
   /* gee */
-  pset =
-    chord_preset_new (_("GG"));
+  pset = chord_preset_new (_ ("GG"));
   ADD_SIMPLE_CHORDS (
-    NOTE_A, CHORD_TYPE_MAJ,
-    NOTE_FS, CHORD_TYPE_MIN,
-    NOTE_GS, CHORD_TYPE_MIN,
-    NOTE_GS, CHORD_TYPE_MIN,
-    NOTE_CS, CHORD_TYPE_MIN,
-    NOTE_CS, CHORD_TYPE_MIN,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE);
+    NOTE_A, CHORD_TYPE_MAJ, NOTE_FS, CHORD_TYPE_MIN,
+    NOTE_GS, CHORD_TYPE_MIN, NOTE_GS,
+    CHORD_TYPE_MIN, NOTE_CS, CHORD_TYPE_MIN, NOTE_CS,
+    CHORD_TYPE_MIN, NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE);
   pset->descr[0]->accent = CHORD_ACC_7;
   pset->descr[3]->accent = CHORD_ACC_7;
   pset->descr[5]->accent = CHORD_ACC_7;
@@ -244,20 +200,14 @@ add_standard_packs (
   chord_preset_free (pset);
 
   /* yuriyurarararayuruyuri */
-  pset =
-    chord_preset_new (_("Daijiken"));
+  pset = chord_preset_new (_ ("Daijiken"));
   ADD_SIMPLE_CHORDS (
-    NOTE_DS, CHORD_TYPE_MAJ,
-    NOTE_AS, CHORD_TYPE_MIN,
-    NOTE_F, CHORD_TYPE_MAJ,
-    NOTE_AS, CHORD_TYPE_MIN,
-    NOTE_GS, CHORD_TYPE_MAJ,
-    NOTE_DS, CHORD_TYPE_MAJ,
-    NOTE_G, CHORD_TYPE_MIN,
-    NOTE_F, CHORD_TYPE_MIN,
-    NOTE_AS, CHORD_TYPE_MAJ,
-    NOTE_GS, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_MIN,
+    NOTE_DS, CHORD_TYPE_MAJ, NOTE_AS,
+    CHORD_TYPE_MIN, NOTE_F, CHORD_TYPE_MAJ, NOTE_AS,
+    CHORD_TYPE_MIN, NOTE_GS, CHORD_TYPE_MAJ,
+    NOTE_DS, CHORD_TYPE_MAJ, NOTE_G, CHORD_TYPE_MIN,
+    NOTE_F, CHORD_TYPE_MIN, NOTE_AS, CHORD_TYPE_MAJ,
+    NOTE_GS, CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_MIN,
     NOTE_C, CHORD_TYPE_MAJ);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
@@ -266,16 +216,13 @@ add_standard_packs (
 
   /* --- dance --- */
 
-  pack =
-    chord_preset_pack_new (_("Dance"), true);
+  pack = chord_preset_pack_new (_ ("Dance"), true);
 
   /* the idolm@ster 2 */
-  pset = chord_preset_new (_("Idol 1"));
+  pset = chord_preset_new (_ ("Idol 1"));
   ADD_SIMPLE_4CHORDS (
-    NOTE_C, CHORD_TYPE_MAJ,
-    NOTE_D, CHORD_TYPE_MAJ,
-    NOTE_B, CHORD_TYPE_MIN,
-    NOTE_E, CHORD_TYPE_MIN);
+    NOTE_C, CHORD_TYPE_MAJ, NOTE_D, CHORD_TYPE_MAJ,
+    NOTE_B, CHORD_TYPE_MIN, NOTE_E, CHORD_TYPE_MIN);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
@@ -283,67 +230,47 @@ add_standard_packs (
 
   /* --- ballad --- */
 
-  pack =
-    chord_preset_pack_new (_("Ballad"), true);
+  pack = chord_preset_pack_new (_ ("Ballad"), true);
 
   /* snow halation */
-  pset =
-    chord_preset_new ("Snow Halation");
+  pset = chord_preset_new ("Snow Halation");
   ADD_SIMPLE_CHORDS (
-    NOTE_D, CHORD_TYPE_MAJ,
-    NOTE_E, CHORD_TYPE_MAJ,
-    NOTE_CS, CHORD_TYPE_MIN,
-    NOTE_FS, CHORD_TYPE_MIN,
-    NOTE_B, CHORD_TYPE_MIN,
-    NOTE_CS, CHORD_TYPE_MAJ,
-    NOTE_E, CHORD_TYPE_MAJ,
-    NOTE_CS, CHORD_TYPE_MIN,
-    NOTE_CS, CHORD_TYPE_MAJ,
-    NOTE_B, CHORD_TYPE_MAJ,
-    NOTE_E, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MAJ);
+    NOTE_D, CHORD_TYPE_MAJ, NOTE_E, CHORD_TYPE_MAJ,
+    NOTE_CS, CHORD_TYPE_MIN, NOTE_FS, CHORD_TYPE_MIN,
+    NOTE_B, CHORD_TYPE_MIN, NOTE_CS, CHORD_TYPE_MAJ,
+    NOTE_E, CHORD_TYPE_MAJ, NOTE_CS, CHORD_TYPE_MIN,
+    NOTE_CS, CHORD_TYPE_MAJ, NOTE_B, CHORD_TYPE_MAJ,
+    NOTE_E, CHORD_TYPE_MAJ, NOTE_A, CHORD_TYPE_MAJ);
   pset->descr[4]->accent = CHORD_ACC_7;
   pset->descr[5]->accent = CHORD_ACC_7;
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
   /* connect */
-  pset =
-    chord_preset_new (_("Connection"));
+  pset = chord_preset_new (_ ("Connection"));
   ADD_SIMPLE_CHORDS (
-    NOTE_B, CHORD_TYPE_MAJ,
-    NOTE_CS, CHORD_TYPE_MAJ,
-    NOTE_AS, CHORD_TYPE_MIN,
-    NOTE_DS, CHORD_TYPE_MIN,
-    NOTE_GS, CHORD_TYPE_MIN,
-    NOTE_B, CHORD_TYPE_MAJ,
-    NOTE_CS, CHORD_TYPE_MAJ,
-    NOTE_DS, CHORD_TYPE_MAJ,
-    NOTE_GS, CHORD_TYPE_MAJ,
-    NOTE_AS, CHORD_TYPE_MAJ,
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_MIN);
+    NOTE_B, CHORD_TYPE_MAJ, NOTE_CS, CHORD_TYPE_MAJ,
+    NOTE_AS, CHORD_TYPE_MIN, NOTE_DS,
+    CHORD_TYPE_MIN, NOTE_GS, CHORD_TYPE_MIN, NOTE_B,
+    CHORD_TYPE_MAJ, NOTE_CS, CHORD_TYPE_MAJ,
+    NOTE_DS, CHORD_TYPE_MAJ, NOTE_GS,
+    CHORD_TYPE_MAJ, NOTE_AS, CHORD_TYPE_MAJ, NOTE_G,
+    CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_MIN);
   pset->descr[8]->accent = CHORD_ACC_7;
   pset->descr[10]->accent = CHORD_ACC_7;
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
   /* secret base */
-  pset =
-    chord_preset_new (_("Secret Base"));
+  pset = chord_preset_new (_ ("Secret Base"));
   ADD_SIMPLE_CHORDS (
-    NOTE_B, CHORD_TYPE_MAJ,
-    NOTE_CS, CHORD_TYPE_MAJ,
-    NOTE_DS, CHORD_TYPE_MIN,
-    NOTE_CS, CHORD_TYPE_MAJ,
-    NOTE_B, CHORD_TYPE_MAJ,
-    NOTE_CS, CHORD_TYPE_MAJ,
-    NOTE_FS, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE);
+    NOTE_B, CHORD_TYPE_MAJ, NOTE_CS, CHORD_TYPE_MAJ,
+    NOTE_DS, CHORD_TYPE_MIN, NOTE_CS,
+    CHORD_TYPE_MAJ, NOTE_B, CHORD_TYPE_MAJ, NOTE_CS,
+    CHORD_TYPE_MAJ, NOTE_FS, CHORD_TYPE_MAJ, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE);
   pset->descr[2]->accent = CHORD_ACC_7;
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
@@ -353,35 +280,26 @@ add_standard_packs (
   /* --- eurodance --- */
 
   pack =
-    chord_preset_pack_new (_("Eurodance"), true);
+    chord_preset_pack_new (_ ("Eurodance"), true);
 
   /* what is love */
-  pset =
-    chord_preset_new ("What is Love");
+  pset = chord_preset_new ("What is Love");
   ADD_SIMPLE_4CHORDS (
-    NOTE_G, CHORD_TYPE_MIN,
-    NOTE_AS, CHORD_TYPE_MAJ,
-    NOTE_D, CHORD_TYPE_MIN,
-    NOTE_F, CHORD_TYPE_MAJ);
+    NOTE_G, CHORD_TYPE_MIN, NOTE_AS, CHORD_TYPE_MAJ,
+    NOTE_D, CHORD_TYPE_MIN, NOTE_F, CHORD_TYPE_MAJ);
   pset->descr[2]->accent = CHORD_ACC_7;
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
   /* blue */
-  pset =
-    chord_preset_new ("Blue");
+  pset = chord_preset_new ("Blue");
   ADD_SIMPLE_CHORDS (
-    NOTE_G, CHORD_TYPE_MIN,
-    NOTE_F, CHORD_TYPE_MAJ,
-    NOTE_DS, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_MIN,
-    NOTE_C, CHORD_TYPE_MAJ,
-    NOTE_D, CHORD_TYPE_MIN,
-    NOTE_GS, CHORD_TYPE_MAJ,
-    NOTE_AS, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_G, CHORD_TYPE_MIN, NOTE_F, CHORD_TYPE_MAJ,
+    NOTE_DS, CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_MIN,
+    NOTE_C, CHORD_TYPE_MAJ, NOTE_D, CHORD_TYPE_MIN,
+    NOTE_GS, CHORD_TYPE_MAJ, NOTE_AS,
+    CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE,
     NOTE_C, CHORD_TYPE_NONE);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
@@ -391,115 +309,81 @@ add_standard_packs (
   /* --- eurobeat --- */
 
   pack =
-    chord_preset_pack_new (_("Eurobeat"), true);
+    chord_preset_pack_new (_ ("Eurobeat"), true);
 
-  pset =
-    chord_preset_new ("Burning Night");
+  pset = chord_preset_new ("Burning Night");
   ADD_SIMPLE_CHORDS (
-    NOTE_CS, CHORD_TYPE_MAJ,
-    NOTE_DS, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_MIN,
-    NOTE_F, CHORD_TYPE_MIN,
-    NOTE_AS, CHORD_TYPE_MIN,
-    NOTE_B, CHORD_TYPE_DIM,
-    NOTE_C, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE);
+    NOTE_CS, CHORD_TYPE_MAJ, NOTE_DS,
+    CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_MIN, NOTE_F,
+    CHORD_TYPE_MIN, NOTE_AS, CHORD_TYPE_MIN, NOTE_B,
+    CHORD_TYPE_DIM, NOTE_C, CHORD_TYPE_MAJ, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
   /* believe */
-  pset = chord_preset_new (_("Future"));
+  pset = chord_preset_new (_ ("Future"));
   ADD_SIMPLE_CHORDS (
-    NOTE_F, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_MAJ,
-    NOTE_D, CHORD_TYPE_MIN,
-    NOTE_AS, CHORD_TYPE_MAJ,
-    NOTE_G, CHORD_TYPE_MIN,
-    NOTE_A, CHORD_TYPE_MAJ,
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_D, CHORD_TYPE_MAJ,
-    NOTE_FS, CHORD_TYPE_MIN,
-    NOTE_B, CHORD_TYPE_MIN,
-    NOTE_E, CHORD_TYPE_MIN,
-    NOTE_C, CHORD_TYPE_NONE);
+    NOTE_F, CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_MAJ,
+    NOTE_D, CHORD_TYPE_MIN, NOTE_AS, CHORD_TYPE_MAJ,
+    NOTE_G, CHORD_TYPE_MIN, NOTE_A, CHORD_TYPE_MAJ,
+    NOTE_G, CHORD_TYPE_MAJ, NOTE_D, CHORD_TYPE_MAJ,
+    NOTE_FS, CHORD_TYPE_MIN, NOTE_B, CHORD_TYPE_MIN,
+    NOTE_E, CHORD_TYPE_MIN, NOTE_C, CHORD_TYPE_NONE);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
   /* get me power */
   pset = chord_preset_new ("2 Power");
   ADD_SIMPLE_CHORDS (
-    NOTE_B, CHORD_TYPE_MIN,
-    NOTE_E, CHORD_TYPE_MIN,
-    NOTE_D, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MAJ,
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_MAJ,
-    NOTE_FS, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MIN,
-    NOTE_D, CHORD_TYPE_MIN,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE);
+    NOTE_B, CHORD_TYPE_MIN, NOTE_E, CHORD_TYPE_MIN,
+    NOTE_D, CHORD_TYPE_MAJ, NOTE_A, CHORD_TYPE_MAJ,
+    NOTE_G, CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_MAJ,
+    NOTE_FS, CHORD_TYPE_MAJ, NOTE_A, CHORD_TYPE_MIN,
+    NOTE_D, CHORD_TYPE_MIN, NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
   /* night of fire */
   pset = chord_preset_new ("Night of Fire");
   ADD_SIMPLE_CHORDS (
-    NOTE_DS, CHORD_TYPE_MIN,
-    NOTE_B, CHORD_TYPE_MAJ,
-    NOTE_CS, CHORD_TYPE_MAJ,
-    NOTE_FS, CHORD_TYPE_MAJ,
-    NOTE_CS, CHORD_TYPE_MAJ,
-    NOTE_DS, CHORD_TYPE_MIN,
-    NOTE_FS, CHORD_TYPE_MAJ,
-    NOTE_GS, CHORD_TYPE_MAJ,
-    NOTE_B, CHORD_TYPE_MAJ,
-    NOTE_GS, CHORD_TYPE_MIN,
-    NOTE_AS, CHORD_TYPE_MIN,
-    NOTE_CS, CHORD_TYPE_MAJ);
+    NOTE_DS, CHORD_TYPE_MIN, NOTE_B, CHORD_TYPE_MAJ,
+    NOTE_CS, CHORD_TYPE_MAJ, NOTE_FS,
+    CHORD_TYPE_MAJ, NOTE_CS, CHORD_TYPE_MAJ,
+    NOTE_DS, CHORD_TYPE_MIN, NOTE_FS,
+    CHORD_TYPE_MAJ, NOTE_GS, CHORD_TYPE_MAJ, NOTE_B,
+    CHORD_TYPE_MAJ, NOTE_GS, CHORD_TYPE_MIN, NOTE_AS,
+    CHORD_TYPE_MIN, NOTE_CS, CHORD_TYPE_MAJ);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
   /* super fever night */
   pset = chord_preset_new ("Super Fever Night");
   ADD_SIMPLE_CHORDS (
-    NOTE_B, CHORD_TYPE_MIN,
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MAJ,
-    NOTE_B, CHORD_TYPE_MIN,
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MAJ,
-    NOTE_D, CHORD_TYPE_MAJ,
-    NOTE_E, CHORD_TYPE_MAJ,
-    NOTE_FS, CHORD_TYPE_MIN,
-    NOTE_FS, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE);
+    NOTE_B, CHORD_TYPE_MIN, NOTE_G, CHORD_TYPE_MAJ,
+    NOTE_A, CHORD_TYPE_MAJ, NOTE_B, CHORD_TYPE_MIN,
+    NOTE_G, CHORD_TYPE_MAJ, NOTE_A, CHORD_TYPE_MAJ,
+    NOTE_D, CHORD_TYPE_MAJ, NOTE_E, CHORD_TYPE_MAJ,
+    NOTE_FS, CHORD_TYPE_MIN, NOTE_FS,
+    CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE);
   pset->descr[4]->accent = CHORD_ACC_7;
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
   /* break in2 the nite */
-  pset =
-    chord_preset_new ("Step in2 the Night");
+  pset = chord_preset_new ("Step in2 the Night");
   ADD_SIMPLE_CHORDS (
-    NOTE_D, CHORD_TYPE_MIN,
-    NOTE_F, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_MAJ,
-    NOTE_D, CHORD_TYPE_MIN,
-    NOTE_AS, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_MAJ,
-    NOTE_D, CHORD_TYPE_MIN,
-    NOTE_G, CHORD_TYPE_MIN,
-    NOTE_F, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MIN,
-    NOTE_C, CHORD_TYPE_NONE);
+    NOTE_D, CHORD_TYPE_MIN, NOTE_F, CHORD_TYPE_MAJ,
+    NOTE_C, CHORD_TYPE_MAJ, NOTE_D, CHORD_TYPE_MIN,
+    NOTE_AS, CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_MAJ,
+    NOTE_D, CHORD_TYPE_MIN, NOTE_G, CHORD_TYPE_MIN,
+    NOTE_F, CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_MAJ,
+    NOTE_A, CHORD_TYPE_MIN, NOTE_C, CHORD_TYPE_NONE);
   pset->descr[4]->inversion = -2;
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
@@ -508,23 +392,17 @@ add_standard_packs (
 
   /* --- progressive trance --- */
 
-  pack =
-    chord_preset_pack_new (
-      _("Progressive Trance"), true);
+  pack = chord_preset_pack_new (
+    _ ("Progressive Trance"), true);
 
-  pset = chord_preset_new (_("Sajek Valley"));
+  pset = chord_preset_new (_ ("Sajek Valley"));
   ADD_SIMPLE_CHORDS (
-    NOTE_A, CHORD_TYPE_MIN,
-    NOTE_D, CHORD_TYPE_MIN,
-    NOTE_F, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_MAJ,
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_D, CHORD_TYPE_MIN,
-    NOTE_E, CHORD_TYPE_MIN,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_A, CHORD_TYPE_MIN, NOTE_D, CHORD_TYPE_MIN,
+    NOTE_F, CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_MAJ,
+    NOTE_G, CHORD_TYPE_MAJ, NOTE_D, CHORD_TYPE_MIN,
+    NOTE_E, CHORD_TYPE_MIN, NOTE_C, CHORD_TYPE_NONE,
+    NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE,
     NOTE_C, CHORD_TYPE_NONE);
   pset->descr[1]->accent = CHORD_ACC_7;
   pset->descr[3]->inversion = 1;
@@ -535,98 +413,66 @@ add_standard_packs (
 
   /* --- rock --- */
 
-  pack =
-    chord_preset_pack_new (_("Rock"), true);
+  pack = chord_preset_pack_new (_ ("Rock"), true);
 
-  pset =
-    chord_preset_new (_("Overdrive"));
+  pset = chord_preset_new (_ ("Overdrive"));
   ADD_SIMPLE_CHORDS (
-    NOTE_FS, CHORD_TYPE_MAJ,
-    NOTE_GS, CHORD_TYPE_MAJ,
-    NOTE_AS, CHORD_TYPE_MIN,
-    NOTE_AS, CHORD_TYPE_MAJ,
-    NOTE_FS, CHORD_TYPE_MAJ,
-    NOTE_GS, CHORD_TYPE_MAJ,
-    NOTE_AS, CHORD_TYPE_MIN,
-    NOTE_CS, CHORD_TYPE_MAJ,
-    NOTE_GS, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE);
+    NOTE_FS, CHORD_TYPE_MAJ, NOTE_GS,
+    CHORD_TYPE_MAJ, NOTE_AS, CHORD_TYPE_MIN,
+    NOTE_AS, CHORD_TYPE_MAJ, NOTE_FS,
+    CHORD_TYPE_MAJ, NOTE_GS, CHORD_TYPE_MAJ, NOTE_AS,
+    CHORD_TYPE_MIN, NOTE_CS, CHORD_TYPE_MAJ, NOTE_GS,
+    CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
   /* kokoro */
-  pset =
-    chord_preset_new (_("Heart"));
+  pset = chord_preset_new (_ ("Heart"));
   ADD_SIMPLE_CHORDS (
-    NOTE_FS, CHORD_TYPE_MAJ,
-    NOTE_F, CHORD_TYPE_MIN,
-    NOTE_AS, CHORD_TYPE_MIN,
-    NOTE_DS, CHORD_TYPE_MIN,
-    NOTE_GS, CHORD_TYPE_MAJ,
-    NOTE_CS, CHORD_TYPE_MAJ,
-    NOTE_FS, CHORD_TYPE_MAJ,
-    NOTE_FS, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE);
+    NOTE_FS, CHORD_TYPE_MAJ, NOTE_F, CHORD_TYPE_MIN,
+    NOTE_AS, CHORD_TYPE_MIN, NOTE_DS,
+    CHORD_TYPE_MIN, NOTE_GS, CHORD_TYPE_MAJ,
+    NOTE_CS, CHORD_TYPE_MAJ, NOTE_FS,
+    CHORD_TYPE_MAJ, NOTE_FS, CHORD_TYPE_MAJ, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
-  pset =
-    chord_preset_new (_("Pray"));
+  pset = chord_preset_new (_ ("Pray"));
   ADD_SIMPLE_CHORDS (
-    NOTE_B, CHORD_TYPE_MIN,
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_D, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MAJ,
-    NOTE_E, CHORD_TYPE_MAJ,
-    NOTE_B, CHORD_TYPE_MAJ,
-    NOTE_CS, CHORD_TYPE_MIN,
-    NOTE_CS, CHORD_TYPE_MAJ,
-    NOTE_DS, CHORD_TYPE_MAJ,
-    NOTE_GS, CHORD_TYPE_MIN,
-    NOTE_FS, CHORD_TYPE_MAJ,
-    NOTE_E, CHORD_TYPE_MAJ);
+    NOTE_B, CHORD_TYPE_MIN, NOTE_G, CHORD_TYPE_MAJ,
+    NOTE_D, CHORD_TYPE_MAJ, NOTE_A, CHORD_TYPE_MAJ,
+    NOTE_E, CHORD_TYPE_MAJ, NOTE_B, CHORD_TYPE_MAJ,
+    NOTE_CS, CHORD_TYPE_MIN, NOTE_CS,
+    CHORD_TYPE_MAJ, NOTE_DS, CHORD_TYPE_MAJ,
+    NOTE_GS, CHORD_TYPE_MIN, NOTE_FS,
+    CHORD_TYPE_MAJ, NOTE_E, CHORD_TYPE_MAJ);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
   /* no thank you */
-  pset =
-    chord_preset_new (_("Thank You"));
+  pset = chord_preset_new (_ ("Thank You"));
   ADD_SIMPLE_CHORDS (
-    NOTE_E, CHORD_TYPE_MIN,
-    NOTE_D, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MAJ,
-    NOTE_C, CHORD_TYPE_MAJ,
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_A, CHORD_TYPE_MIN,
-    NOTE_B, CHORD_TYPE_MIN,
-    NOTE_C, CHORD_TYPE_MAJ,
-    NOTE_D, CHORD_TYPE_MAJ,
-    NOTE_G, CHORD_TYPE_MAJ,
-    NOTE_B, CHORD_TYPE_MIN,
-    NOTE_E, CHORD_TYPE_MIN);
+    NOTE_E, CHORD_TYPE_MIN, NOTE_D, CHORD_TYPE_MAJ,
+    NOTE_A, CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_MAJ,
+    NOTE_G, CHORD_TYPE_MAJ, NOTE_A, CHORD_TYPE_MIN,
+    NOTE_B, CHORD_TYPE_MIN, NOTE_C, CHORD_TYPE_MAJ,
+    NOTE_D, CHORD_TYPE_MAJ, NOTE_G, CHORD_TYPE_MAJ,
+    NOTE_B, CHORD_TYPE_MIN, NOTE_E, CHORD_TYPE_MIN);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
   /* boulevard of broken dreams */
-  pset =
-    chord_preset_new ("Broken Dreams");
+  pset = chord_preset_new ("Broken Dreams");
   ADD_SIMPLE_CHORDS (
-    NOTE_F, CHORD_TYPE_MIN,
-    NOTE_GS, CHORD_TYPE_MAJ,
-    NOTE_DS, CHORD_TYPE_MAJ,
-    NOTE_AS, CHORD_TYPE_MAJ,
-    NOTE_CS, CHORD_TYPE_MAJ,
-    NOTE_GS, CHORD_TYPE_MAJ,
-    NOTE_DS, CHORD_TYPE_MAJ,
-    NOTE_F, CHORD_TYPE_MIN,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
-    NOTE_C, CHORD_TYPE_NONE,
+    NOTE_F, CHORD_TYPE_MIN, NOTE_GS, CHORD_TYPE_MAJ,
+    NOTE_DS, CHORD_TYPE_MAJ, NOTE_AS,
+    CHORD_TYPE_MAJ, NOTE_CS, CHORD_TYPE_MAJ, NOTE_GS,
+    CHORD_TYPE_MAJ, NOTE_DS, CHORD_TYPE_MAJ, NOTE_F,
+    CHORD_TYPE_MIN, NOTE_C, CHORD_TYPE_NONE, NOTE_C,
+    CHORD_TYPE_NONE, NOTE_C, CHORD_TYPE_NONE,
     NOTE_C, CHORD_TYPE_NONE);
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
@@ -643,15 +489,13 @@ add_standard_packs (
  *   packs.
  */
 ChordPresetPackManager *
-chord_preset_pack_manager_new (
-  bool scan_for_packs)
+chord_preset_pack_manager_new (bool scan_for_packs)
 {
   ChordPresetPackManager * self =
     object_new (ChordPresetPackManager);
 
-  self->pset_packs =
-    g_ptr_array_new_with_free_func (
-      chord_preset_pack_destroy_cb);
+  self->pset_packs = g_ptr_array_new_with_free_func (
+    chord_preset_pack_destroy_cb);
 
   /* add standard preset packs */
   add_standard_packs (self);
@@ -670,21 +514,22 @@ chord_preset_pack_manager_new (
       if (pack_paths)
         {
           char * pack_path = NULL;
-          int i = 0;
+          int    i = 0;
           while ((pack_path = pack_paths[i++]))
             {
-              if (!g_file_test (
-                     pack_path, G_FILE_TEST_EXISTS)
-                  ||
-                  g_file_test (
-                     pack_path, G_FILE_TEST_IS_DIR))
+              if (
+                !g_file_test (
+                  pack_path, G_FILE_TEST_EXISTS)
+                || g_file_test (
+                  pack_path, G_FILE_TEST_IS_DIR))
                 {
                   continue;
                 }
 
-              g_debug ("checking file %s", pack_path);
+              g_debug (
+                "checking file %s", pack_path);
 
-              char * yaml = NULL;
+              char *   yaml = NULL;
               GError * err = NULL;
               g_file_get_contents (
                 pack_path, &yaml, NULL, &err);
@@ -692,7 +537,8 @@ chord_preset_pack_manager_new (
                 {
                   g_warning (
                     "Failed to read yaml "
-                    "from %s", pack_path);
+                    "from %s",
+                    pack_path);
                   continue;
                 }
 
@@ -707,23 +553,23 @@ chord_preset_pack_manager_new (
                 }
 
               ChordPresetPack * pack =
-                (ChordPresetPack *)
-                yaml_deserialize (
+                (ChordPresetPack *) yaml_deserialize (
                   yaml, &chord_preset_pack_schema);
               g_return_val_if_fail (pack, NULL);
               if (!pack->presets)
                 {
                   pack->presets_size = 12;
-                  pack->presets =
-                    object_new_n (
-                      pack->presets_size, ChordPreset *);
+                  pack->presets = object_new_n (
+                    pack->presets_size,
+                    ChordPreset *);
                 }
               else
                 {
                   pack->presets_size =
                     (size_t) pack->num_presets;
                 }
-              g_ptr_array_add (self->pset_packs, pack);
+              g_ptr_array_add (
+                self->pset_packs, pack);
 
               g_free (yaml);
             }
@@ -751,9 +597,8 @@ chord_preset_pack_manager_get_pack_at (
   const ChordPresetPackManager * self,
   int                            idx)
 {
-  return
-    (ChordPresetPack *)
-    g_ptr_array_index (self->pset_packs, idx);
+  return (ChordPresetPack *) g_ptr_array_index (
+    self->pset_packs, idx);
 }
 
 /**
@@ -796,8 +641,7 @@ chord_preset_pack_manager_get_pack_for_preset (
 {
   for (size_t i = 0; i < self->pset_packs->len; i++)
     {
-      ChordPresetPack * pack =
-        (ChordPresetPack *)
+      ChordPresetPack * pack = (ChordPresetPack *)
         g_ptr_array_index (self->pset_packs, i);
 
       if (chord_preset_pack_contains_preset (
@@ -817,8 +661,7 @@ chord_preset_pack_manager_get_pack_index (
 {
   for (size_t i = 0; i < self->pset_packs->len; i++)
     {
-      ChordPresetPack * cur_pack =
-        (ChordPresetPack *)
+      ChordPresetPack * cur_pack = (ChordPresetPack *)
         g_ptr_array_index (self->pset_packs, i);
       if (cur_pack == pack)
         return i;
@@ -876,8 +719,7 @@ chord_preset_pack_manager_delete_preset (
   if (!pack)
     return;
 
-  chord_preset_pack_delete_preset (
-    pack, pset);
+  chord_preset_pack_delete_preset (pack, pset);
 
   if (serialize)
     chord_preset_pack_manager_serialize (self);
@@ -898,8 +740,7 @@ chord_preset_pack_manager_serialize (
 
   for (size_t i = 0; i < self->pset_packs->len; i++)
     {
-      ChordPresetPack * pack =
-        (ChordPresetPack *)
+      ChordPresetPack * pack = (ChordPresetPack *)
         g_ptr_array_index (self->pset_packs, i);
       if (pack->is_standard)
         continue;
@@ -907,17 +748,14 @@ chord_preset_pack_manager_serialize (
       g_return_if_fail (
         pack->name && strlen (pack->name) > 0);
 
-      char * pack_dir =
-        g_build_filename (
-          main_path, pack->name, NULL);
+      char * pack_dir = g_build_filename (
+        main_path, pack->name, NULL);
       io_mkdir (pack_dir);
-      char * pack_yaml =
-        yaml_serialize (
-          pack, &chord_preset_pack_schema);
+      char * pack_yaml = yaml_serialize (
+        pack, &chord_preset_pack_schema);
       g_return_if_fail (pack_yaml);
-      char * pack_path =
-        g_build_filename (
-          pack_dir, USER_PACK_FILENAME, NULL);
+      char * pack_path = g_build_filename (
+        pack_dir, USER_PACK_FILENAME, NULL);
       GError * err = NULL;
       g_file_set_contents (
         pack_path, pack_yaml, -1, &err);

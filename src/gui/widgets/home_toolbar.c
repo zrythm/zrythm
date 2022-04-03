@@ -37,7 +37,8 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  HomeToolbarWidget, home_toolbar_widget,
+  HomeToolbarWidget,
+  home_toolbar_widget,
   GTK_TYPE_BOX)
 
 static void
@@ -50,9 +51,8 @@ refresh_undo_or_redo_button (
   ButtonWithMenuWidget * btn_w_menu =
     redo ? self->redo : self->undo;
   UndoStack * stack =
-    redo ?
-      UNDO_MANAGER->redo_stack :
-      UNDO_MANAGER->undo_stack;
+    redo ? UNDO_MANAGER->redo_stack
+         : UNDO_MANAGER->undo_stack;
   GtkButton * btn =
     redo ? self->redo_btn : self->undo_btn;
 
@@ -65,7 +65,7 @@ refresh_undo_or_redo_button (
     GTK_ACTIONABLE (btn), (tooltip))
 
   const char * undo_or_redo_str =
-    redo ? _("Redo") : _("Undo");
+    redo ? _ ("Redo") : _ ("Undo");
   GMenu * menu = NULL;
   if (undo_stack_is_empty (stack))
     {
@@ -82,31 +82,28 @@ refresh_undo_or_redo_button (
       for (int i = 0; i < max_actions;)
         {
           UndoableAction * ua =
-            stack->stack->elements[
-              g_atomic_int_get (
-                &stack->stack->top) - i];
+            stack->stack->elements
+              [g_atomic_int_get (&stack->stack->top)
+               - i];
 
           char * action_str =
             undoable_action_to_string (ua);
 
           char tmp[600];
           sprintf (
-            tmp, "app.%s_n",
-            redo ? "redo" : "undo");
-          menuitem =
-            z_gtk_create_menu_item (
-              action_str, NULL, tmp);
+            tmp, "app.%s_n", redo ? "redo" : "undo");
+          menuitem = z_gtk_create_menu_item (
+            action_str, NULL, tmp);
           g_menu_item_set_action_and_target_value (
-            menuitem, tmp,
-            g_variant_new_int32 (i));
+            menuitem, tmp, g_variant_new_int32 (i));
           g_menu_append_item (menu, menuitem);
 
           if (i == 0)
             {
               char tooltip[800];
               sprintf (
-                tooltip, "%s %s",
-                undo_or_redo_str, action_str);
+                tooltip, "%s %s", undo_or_redo_str,
+                action_str);
               if (ua->num_actions > 1)
                 {
                   char num_actions_str[100];
@@ -145,8 +142,7 @@ home_toolbar_widget_refresh_undo_redo_buttons (
 }
 
 void
-home_toolbar_widget_setup (
-  HomeToolbarWidget * self)
+home_toolbar_widget_setup (HomeToolbarWidget * self)
 {
   /* FIXME activate/deactivate actions instead */
   home_toolbar_widget_refresh_undo_redo_buttons (
@@ -156,8 +152,7 @@ home_toolbar_widget_setup (
 }
 
 static void
-home_toolbar_widget_init (
-  HomeToolbarWidget * self)
+home_toolbar_widget_init (HomeToolbarWidget * self)
 {
   g_type_ensure (BUTTON_WITH_MENU_WIDGET_TYPE);
 
@@ -166,38 +161,27 @@ home_toolbar_widget_init (
 #define SET_TOOLTIP(x, tooltip) \
   z_gtk_set_tooltip_for_actionable ( \
     GTK_ACTIONABLE (self->x), tooltip)
+  SET_TOOLTIP (cut, _ ("Cut"));
+  SET_TOOLTIP (copy, _ ("Copy"));
+  SET_TOOLTIP (paste, _ ("Paste"));
+  SET_TOOLTIP (duplicate, _ ("Duplicate"));
+  SET_TOOLTIP (delete, _ ("Delete"));
   SET_TOOLTIP (
-    cut, _("Cut"));
-  SET_TOOLTIP (
-    copy, _("Copy"));
-  SET_TOOLTIP (
-    paste, _("Paste"));
-  SET_TOOLTIP (
-    duplicate, _("Duplicate"));
-  SET_TOOLTIP (
-    delete, _("Delete"));
-  SET_TOOLTIP (
-    clear_selection, _("Clear selection"));
-  SET_TOOLTIP (
-    select_all, _("Select all"));
-  SET_TOOLTIP (
-    loop_selection, _("Loop selection"));
-  SET_TOOLTIP (
-    nudge_left, _("Nudge left"));
-  SET_TOOLTIP (
-    nudge_right, _("Nudge right"));
+    clear_selection, _ ("Clear selection"));
+  SET_TOOLTIP (select_all, _ ("Select all"));
+  SET_TOOLTIP (loop_selection, _ ("Loop selection"));
+  SET_TOOLTIP (nudge_left, _ ("Nudge left"));
+  SET_TOOLTIP (nudge_right, _ ("Nudge right"));
 #undef SET_TOOLTIP
 
-  self->undo_btn =
-    GTK_BUTTON (
-      gtk_button_new_from_icon_name ("edit-undo"));
+  self->undo_btn = GTK_BUTTON (
+    gtk_button_new_from_icon_name ("edit-undo"));
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->undo_btn), "app.undo");
   gtk_widget_set_visible (
     GTK_WIDGET (self->undo_btn), true);
-  self->redo_btn =
-    GTK_BUTTON (
-      gtk_button_new_from_icon_name ("edit-redo"));
+  self->redo_btn = GTK_BUTTON (
+    gtk_button_new_from_icon_name ("edit-redo"));
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->redo_btn), "app.redo");
   gtk_widget_set_visible (
@@ -205,11 +189,11 @@ home_toolbar_widget_init (
 
   /* setup button with menu widget */
   button_with_menu_widget_setup (
-    self->undo, GTK_BUTTON (self->undo_btn),
-    NULL, true, 34, _("Undo"), _("Undo..."));
+    self->undo, GTK_BUTTON (self->undo_btn), NULL,
+    true, 34, _ ("Undo"), _ ("Undo..."));
   button_with_menu_widget_setup (
-    self->redo, GTK_BUTTON (self->redo_btn),
-    NULL, true, 34, _("Redo"), _("Redo..."));
+    self->redo, GTK_BUTTON (self->redo_btn), NULL,
+    true, 34, _ ("Redo"), _ ("Redo..."));
 }
 
 static void

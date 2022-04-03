@@ -38,9 +38,7 @@
  * @param def Default value to return if not found.
  */
 char *
-env_get_string (
-  const char * key,
-  const char * def);
+env_get_string (const char * key, const char * def);
 
 /**
  * Returns an int for the given environment variable
@@ -50,9 +48,7 @@ env_get_string (
  * @param def Default value to return if not found.
  */
 int
-env_get_int (
-  const char * key,
-  int          def);
+env_get_int (const char * key, int def);
 
 /**
  * @}

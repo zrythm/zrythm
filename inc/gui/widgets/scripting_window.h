@@ -29,7 +29,8 @@
 #include <gtk/gtk.h>
 
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored \
+  "-Wdeprecated-declarations"
 #include <gtksourceview/gtksource.h>
 #pragma GCC diagnostic pop
 
@@ -38,7 +39,8 @@
 G_DECLARE_FINAL_TYPE (
   ScriptingWindowWidget,
   scripting_window_widget,
-  Z, SCRIPTING_WINDOW_WIDGET,
+  Z,
+  SCRIPTING_WINDOW_WIDGET,
   GtkWindow)
 
 /**
@@ -52,12 +54,12 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _ScriptingWindowWidget
 {
-  GtkWindow            parent_instance;
-  GtkButton *          execute_btn;
-  GtkLabel *           output;
-  GtkViewport *        source_viewport;
-  GtkSourceView *      editor;
-  GtkSourceBuffer *    buffer;
+  GtkWindow         parent_instance;
+  GtkButton *       execute_btn;
+  GtkLabel *        output;
+  GtkViewport *     source_viewport;
+  GtkSourceView *   editor;
+  GtkSourceBuffer * buffer;
 } ScriptingWindowWidget;
 
 /**

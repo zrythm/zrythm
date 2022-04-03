@@ -31,12 +31,12 @@
 #include "audio/sample_playback.h"
 #include "utils/types.h"
 
-typedef enum MetronomeType MetronomeType;
+typedef enum MetronomeType   MetronomeType;
 typedef struct SupportedFile SupportedFile;
-typedef struct Tracklist Tracklist;
+typedef struct Tracklist     Tracklist;
 typedef struct PluginSetting PluginSetting;
-typedef struct MidiEvents MidiEvents;
-typedef struct ChordPreset ChordPreset;
+typedef struct MidiEvents    MidiEvents;
+typedef struct ChordPreset   ChordPreset;
 
 /**
  * @addtogroup audio
@@ -51,8 +51,8 @@ typedef struct ChordPreset ChordPreset;
 
 #define sample_processor_is_in_active_project(self) \
   (self->audio_engine \
-   && \
-   engine_is_in_active_project (self->audio_engine))
+   && engine_is_in_active_project ( \
+     self->audio_engine))
 
 /**
  * A processor to be used in the routing graph for
@@ -62,26 +62,26 @@ typedef struct ChordPreset ChordPreset;
  */
 typedef struct SampleProcessor
 {
-  int               schema_version;
+  int schema_version;
 
   /** An array of samples currently being played. */
-  SamplePlayback    current_samples[256];
-  int               num_current_samples;
+  SamplePlayback current_samples[256];
+  int            num_current_samples;
 
   /** Tracklist for file auditioning. */
-  Tracklist *       tracklist;
+  Tracklist * tracklist;
 
   /** Instrument for MIDI auditioning. */
-  PluginSetting *   instrument_setting;
+  PluginSetting * instrument_setting;
 
-  MidiEvents *      midi_events;
+  MidiEvents * midi_events;
 
   /** Fader connected to the main output. */
-  Fader *           fader;
+  Fader * fader;
 
   /** Playhead for the tracklist (used when
    * auditioning files). */
-  Position          playhead;
+  Position playhead;
 
   /**
    * Position the file ends at.
@@ -89,47 +89,41 @@ typedef struct SampleProcessor
    * Once this position is reached,
    * SampleProcessor.roll will be set to false.
    */
-  Position          file_end_pos;
+  Position file_end_pos;
 
   /** Whether to roll or not. */
-  bool              roll;
+  bool roll;
 
   /** Pointer to owner audio engin, if any. */
-  AudioEngine *     audio_engine;
+  AudioEngine * audio_engine;
 } SampleProcessor;
 
 static const cyaml_schema_field_t
-sample_processor_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    SampleProcessor, schema_version),
-  YAML_FIELD_MAPPING_PTR (
-    SampleProcessor, fader,
-    fader_fields_schema),
+  sample_processor_fields_schema[] = {
+    YAML_FIELD_INT (SampleProcessor, schema_version),
+    YAML_FIELD_MAPPING_PTR (
+      SampleProcessor,
+      fader,
+      fader_fields_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-sample_processor_schema =
-{
-  YAML_VALUE_PTR (
-    SampleProcessor,
-    sample_processor_fields_schema),
-};
+  sample_processor_schema = {
+    YAML_VALUE_PTR (
+      SampleProcessor,
+      sample_processor_fields_schema),
+  };
 
 /**
  * Initializes a SamplePlayback with a sample to
  * play back.
  */
-COLD
-WARN_UNUSED_RESULT
-SampleProcessor *
-sample_processor_new (
-  AudioEngine * engine);
+COLD WARN_UNUSED_RESULT SampleProcessor *
+sample_processor_new (AudioEngine * engine);
 
-COLD
-void
+COLD void
 sample_processor_init_loaded (
   SampleProcessor * self,
   AudioEngine *     engine);
@@ -214,22 +208,19 @@ sample_processor_queue_chord_preset (
  */
 void
 sample_processor_stop_file_playback (
-  SampleProcessor *     self);
+  SampleProcessor * self);
 
 void
-sample_processor_disconnect (
-  SampleProcessor * self);
+sample_processor_disconnect (SampleProcessor * self);
 
 /**
  * To be used for serialization.
  */
 SampleProcessor *
-sample_processor_clone (
-  const SampleProcessor * src);
+sample_processor_clone (const SampleProcessor * src);
 
 void
-sample_processor_free (
-  SampleProcessor * self);
+sample_processor_free (SampleProcessor * self);
 
 /**
  * @}

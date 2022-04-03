@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   TrackVisibilityTreeWidget,
   track_visibility_tree_widget,
-  Z, TRACK_VISIBILITY_TREE_WIDGET,
+  Z,
+  TRACK_VISIBILITY_TREE_WIDGET,
   GtkBox)
 
 /**
@@ -47,13 +48,13 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _TrackVisibilityTreeWidget
 {
-  GtkBox               parent_instance;
+  GtkBox parent_instance;
 
-  GtkScrolledWindow *  scroll;
+  GtkScrolledWindow * scroll;
 
   /* The tree views */
-  GtkTreeView *        tree;
-  GtkTreeModel *       tree_model;
+  GtkTreeView *  tree;
+  GtkTreeModel * tree_model;
 } TrackVisibilityTreeWidget;
 
 /**

@@ -19,8 +19,6 @@
 
 #include "audio/channel.h"
 #include "audio/track.h"
-#include "plugins/plugin.h"
-#include "plugins/lv2_plugin.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
@@ -28,8 +26,10 @@
 #include "gui/widgets/folder_channel.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
-#include "gui/widgets/tracklist.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/tracklist.h"
+#include "plugins/lv2_plugin.h"
+#include "plugins/plugin.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
@@ -38,13 +38,12 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  MixerWidget, mixer_widget, GTK_TYPE_BOX)
+G_DEFINE_TYPE (MixerWidget, mixer_widget, GTK_TYPE_BOX)
 
 void
 mixer_widget_soft_refresh (MixerWidget * self)
 {
-  Track * track;
+  Track *   track;
   Channel * ch;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
@@ -97,8 +96,8 @@ mixer_widget_hard_refresh (MixerWidget * self)
   z_gtk_widget_remove_all_children (
     GTK_WIDGET (self->channels_box));
   g_return_if_fail (
-    gtk_widget_get_parent (
-      GTK_WIDGET (self->ddbox)) == NULL);
+    gtk_widget_get_parent (GTK_WIDGET (self->ddbox))
+    == NULL);
 
   /* add all channels */
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -108,8 +107,9 @@ mixer_widget_hard_refresh (MixerWidget * self)
       if (!track_get_should_be_visible (track))
         continue;
 
-      if (track_type_is_foldable (track->type) &&
-          track->type != TRACK_TYPE_MASTER)
+      if (
+        track_type_is_foldable (track->type)
+        && track->type != TRACK_TYPE_MASTER)
         {
           if (!track->folder_ch_widget)
             {
@@ -137,9 +137,10 @@ mixer_widget_hard_refresh (MixerWidget * self)
 
       channel_widget_refresh (ch->widget);
 
-      if (track->type != TRACK_TYPE_MASTER &&
-          !gtk_widget_get_parent (
-            GTK_WIDGET (ch->widget))) /* not master */
+      if (
+        track->type != TRACK_TYPE_MASTER
+        && !gtk_widget_get_parent (
+          GTK_WIDGET (ch->widget))) /* not master */
         {
           gtk_box_append (
             self->channels_box,
@@ -154,8 +155,7 @@ mixer_widget_hard_refresh (MixerWidget * self)
 
   /* re-add dummy box for dnd */
   gtk_box_append (
-    self->channels_box,
-    GTK_WIDGET (self->ddbox));
+    self->channels_box, GTK_WIDGET (self->ddbox));
 
   /* unref refed widgets */
   for (size_t i = 0; i < refed_widgets->len; i++)
@@ -206,8 +206,7 @@ mixer_widget_new (void)
 }
 
 static void
-mixer_widget_class_init (
-  MixerWidgetClass * _klass)
+mixer_widget_class_init (MixerWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "mixer.ui");
@@ -232,10 +231,8 @@ mixer_widget_init (MixerWidget * self)
 
   /* add dummy box for dnd */
   self->ddbox = drag_dest_box_widget_new (
-    GTK_ORIENTATION_HORIZONTAL,
-    0,
+    GTK_ORIENTATION_HORIZONTAL, 0,
     DRAG_DEST_BOX_TYPE_MIXER);
   gtk_box_append (
-    self->channels_box,
-    GTK_WIDGET (self->ddbox));
+    self->channels_box, GTK_WIDGET (self->ddbox));
 }

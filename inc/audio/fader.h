@@ -30,13 +30,13 @@
 #include "utils/types.h"
 #include "utils/yaml.h"
 
-typedef struct StereoPorts StereoPorts;
-typedef struct Port Port;
-typedef struct Channel Channel;
-typedef struct AudioEngine AudioEngine;
-typedef struct ControlRoom ControlRoom;
+typedef struct StereoPorts     StereoPorts;
+typedef struct Port            Port;
+typedef struct Channel         Channel;
+typedef struct AudioEngine     AudioEngine;
+typedef struct ControlRoom     ControlRoom;
 typedef struct SampleProcessor SampleProcessor;
-typedef struct PortIdentifier PortIdentifier;
+typedef struct PortIdentifier  PortIdentifier;
 
 /**
  * @addtogroup audio
@@ -90,15 +90,13 @@ typedef enum FaderType
   FADER_TYPE_GENERIC,
 } FaderType;
 
-static const cyaml_strval_t
-fader_type_strings[] =
-{
-  { "none",           FADER_TYPE_NONE    },
-  { "monitor", FADER_TYPE_MONITOR   },
-  { "sample processor", FADER_TYPE_SAMPLE_PROCESSOR },
-  { "audio channel",  FADER_TYPE_AUDIO_CHANNEL   },
-  { "midi channel",   FADER_TYPE_MIDI_CHANNEL   },
-  { "generic",        FADER_TYPE_GENERIC   },
+static const cyaml_strval_t fader_type_strings[] = {
+  {"none",              FADER_TYPE_NONE            },
+  { "monitor",          FADER_TYPE_MONITOR         },
+  { "sample processor", FADER_TYPE_SAMPLE_PROCESSOR},
+  { "audio channel",    FADER_TYPE_AUDIO_CHANNEL   },
+  { "midi channel",     FADER_TYPE_MIDI_CHANNEL    },
+  { "generic",          FADER_TYPE_GENERIC         },
 };
 
 typedef enum MidiFaderMode
@@ -110,12 +108,10 @@ typedef enum MidiFaderMode
   MIDI_FADER_MODE_CC_VOLUME,
 } MidiFaderMode;
 
-static const cyaml_strval_t
-midi_fader_mode_strings[] =
-{
-  { "vel_multiplier",
-    MIDI_FADER_MODE_VEL_MULTIPLIER    },
-  { "cc_volume", MIDI_FADER_MODE_CC_VOLUME   },
+static const cyaml_strval_t midi_fader_mode_strings[] = {
+  {"vel_multiplier",
+   MIDI_FADER_MODE_VEL_MULTIPLIER             },
+  { "cc_volume",     MIDI_FADER_MODE_CC_VOLUME},
 };
 
 /**
@@ -128,18 +124,18 @@ midi_fader_mode_strings[] =
  */
 typedef struct Fader
 {
-  int              schema_version;
+  int schema_version;
 
   /**
    * Volume in dBFS. (-inf ~ +6)
    */
-  float            volume;
+  float volume;
 
   /** Used by the phase knob (0.0 ~ 360.0). */
-  float            phase;
+  float phase;
 
   /** 0.0 ~ 1.0 for widgets. */
-  float            fader_val;
+  float fader_val;
 
   /**
    * Value of \ref amp during last processing.
@@ -148,142 +144,152 @@ typedef struct Fader
    *
    * TODO
    */
-  float            last_cc_volume;
+  float last_cc_volume;
 
   /**
    * A control port that controls the volume in
    * amplitude (0.0 ~ 1.5)
    */
-  Port *           amp;
+  Port * amp;
 
   /** A control Port that controls the balance
    * (0.0 ~ 1.0) 0.5 is center. */
-  Port *           balance;
+  Port * balance;
 
   /**
    * Control port for muting the (channel)
    * fader.
    */
-  Port *           mute;
+  Port * mute;
 
   /** Soloed or not. */
-  Port *           solo;
+  Port * solo;
 
   /** Listened or not. */
-  Port *           listen;
+  Port * listen;
 
   /** Whether mono compatibility switch is
    * enabled. */
-  Port *           mono_compat_enabled;
+  Port * mono_compat_enabled;
 
   /**
    * L & R audio input ports, if audio.
    */
-  StereoPorts *    stereo_in;
+  StereoPorts * stereo_in;
 
   /**
    * L & R audio output ports, if audio.
    */
-  StereoPorts *    stereo_out;
+  StereoPorts * stereo_out;
 
   /**
    * MIDI in port, if MIDI.
    */
-  Port *           midi_in;
+  Port * midi_in;
 
   /**
    * MIDI out port, if MIDI.
    */
-  Port *           midi_out;
+  Port * midi_out;
 
   /**
    * Current dBFS after processing each output port.
    *
    * Transient variables only used by the GUI.
    */
-  float            l_port_db;
-  float            r_port_db;
+  float l_port_db;
+  float r_port_db;
 
-  FaderType        type;
+  FaderType type;
 
   /** MIDI fader mode. */
-  MidiFaderMode    midi_mode;
+  MidiFaderMode midi_mode;
 
   /** Whether this is a passthrough fader (like
    * a prefader). */
-  bool             passthrough;
+  bool passthrough;
 
   /** Pointer to owner track, if any. */
-  Track *          track;
+  Track * track;
 
   /** Pointer to owner control room, if any. */
-  ControlRoom *    control_room;
+  ControlRoom * control_room;
 
   /** Pointer to owner sample processor, if any. */
   SampleProcessor * sample_processor;
 
-  int              magic;
+  int magic;
 
-  bool             is_project;
+  bool is_project;
 
   /* TODO Caches to be set when recalculating the
    * graph. */
-  bool             implied_soloed;
-  bool             soloed;
+  bool implied_soloed;
+  bool soloed;
 } Fader;
 
-static const cyaml_schema_field_t
-fader_fields_schema[] =
-{
+static const cyaml_schema_field_t fader_fields_schema[] = {
   YAML_FIELD_INT (Fader, schema_version),
+  YAML_FIELD_ENUM (Fader, type, fader_type_strings),
+  YAML_FIELD_FLOAT (Fader, volume),
+  YAML_FIELD_MAPPING_PTR (
+    Fader,
+    amp,
+    port_fields_schema),
+  YAML_FIELD_FLOAT (Fader, phase),
+  YAML_FIELD_MAPPING_PTR (
+    Fader,
+    balance,
+    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    Fader,
+    mute,
+    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    Fader,
+    solo,
+    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    Fader,
+    listen,
+    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    Fader,
+    mono_compat_enabled,
+    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Fader,
+    midi_in,
+    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Fader,
+    midi_out,
+    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Fader,
+    stereo_in,
+    stereo_ports_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Fader,
+    stereo_out,
+    stereo_ports_fields_schema),
   YAML_FIELD_ENUM (
-    Fader, type, fader_type_strings),
-  YAML_FIELD_FLOAT (
-    Fader, volume),
-  YAML_FIELD_MAPPING_PTR (
-    Fader, amp, port_fields_schema),
-  YAML_FIELD_FLOAT (
-    Fader, phase),
-  YAML_FIELD_MAPPING_PTR (
-    Fader, balance, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Fader, mute, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Fader, solo, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Fader, listen, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Fader, mono_compat_enabled, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Fader, midi_in, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Fader, midi_out, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Fader, stereo_in, stereo_ports_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Fader, stereo_out, stereo_ports_fields_schema),
-  YAML_FIELD_ENUM (
-    Fader, midi_mode, midi_fader_mode_strings),
-  YAML_FIELD_INT (
-    Fader, passthrough),
+    Fader,
+    midi_mode,
+    midi_fader_mode_strings),
+  YAML_FIELD_INT (Fader, passthrough),
 
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-fader_schema =
-{
-  YAML_VALUE_PTR (
-    Fader, fader_fields_schema),
+static const cyaml_schema_value_t fader_schema = {
+  YAML_VALUE_PTR (Fader, fader_fields_schema),
 };
 
 /**
  * Inits fader after a project is loaded.
  */
-COLD
-NONNULL_ARGS (1)
-void
-fader_init_loaded (
+COLD NONNULL_ARGS (1) void fader_init_loaded (
   Fader *           self,
   Track *           track,
   ControlRoom *     control_room,
@@ -297,8 +303,7 @@ fader_init_loaded (
  * @param type The FaderType.
  * @param ch Channel, if this is a channel Fader.
  */
-COLD
-Fader *
+COLD Fader *
 fader_new (
   FaderType         type,
   bool              passthrough,
@@ -324,9 +329,7 @@ fader_append_ports (
  * Sets the amplitude of the fader. (0.0 to 2.0)
  */
 void
-fader_set_amp (
-  void * self,
-  float   amp);
+fader_set_amp (void * self, float amp);
 
 /**
  * Sets the amp value with an undoable action.
@@ -346,9 +349,7 @@ fader_set_amp_with_action (
  * of the fader (clamped at 0.0 to 2.0).
  */
 void
-fader_add_amp (
-  void * self,
-  float   amp);
+fader_add_amp (void * self, float amp);
 
 NONNULL
 void
@@ -372,20 +373,14 @@ fader_set_muted (
  * Returns if the fader is muted.
  */
 NONNULL
-PURE
-bool
-fader_get_muted (
-  const Fader * const self);
+PURE bool
+fader_get_muted (const Fader * const self);
 
 /**
  * Returns if the track is soloed.
  */
-HOT
-NONNULL
-PURE
-bool
-fader_get_soloed (
-  const Fader * const self);
+HOT NONNULL PURE bool
+fader_get_soloed (const Fader * const self);
 
 /**
  * Returns whether the fader is not soloed on its
@@ -394,8 +389,7 @@ fader_get_soloed (
  * etc.) is soloed.
  */
 bool
-fader_get_implied_soloed (
-  Fader * self);
+fader_get_implied_soloed (Fader * self);
 
 /**
  * Returns whether the fader is listened.
@@ -428,17 +422,14 @@ fader_set_soloed (
  * FIXME is void * necessary? do it in the caller.
  */
 NONNULL
-PURE
-float
-fader_get_amp (
-  void * self);
+PURE float
+fader_get_amp (void * self);
 
 /**
  * Gets whether mono compatibility is enabled.
  */
 bool
-fader_get_mono_compat_enabled (
-  Fader * self);
+fader_get_mono_compat_enabled (Fader * self);
 
 /**
  * Sets whether mono compatibility is enabled.
@@ -450,55 +441,42 @@ fader_set_mono_compat_enabled (
   bool    fire_events);
 
 float
-fader_get_fader_val (
-  void * self);
+fader_get_fader_val (void * self);
 
 float
-fader_get_default_fader_val (
-  void * self);
+fader_get_default_fader_val (void * self);
 
 void
-fader_db_string_getter (
-  void * obj,
-  char * buf);
+fader_db_string_getter (void * obj, char * buf);
 
 Channel *
-fader_get_channel (
-  Fader * self);
+fader_get_channel (Fader * self);
 
 NONNULL
 Track *
-fader_get_track (
-  Fader * self);
+fader_get_track (Fader * self);
 
 void
-fader_update_volume_and_fader_val (
-  Fader * self);
+fader_update_volume_and_fader_val (Fader * self);
 
 /**
  * Clears all buffers.
  */
-HOT
-NONNULL
-void
-fader_clear_buffers (
-  Fader * self);
+HOT NONNULL void
+fader_clear_buffers (Fader * self);
 
 /**
  * Sets the fader levels from a normalized value
  * 0.0-1.0 (such as in widgets).
  */
 void
-fader_set_fader_val (
-  Fader * self,
-  float   fader_val);
+fader_set_fader_val (Fader * self, float fader_val);
 
 /**
  * Disconnects all ports connected to the fader.
  */
 void
-fader_disconnect_all (
-  Fader * self);
+fader_disconnect_all (Fader * self);
 
 /**
  * Copy the fader values from source to dest.
@@ -506,16 +484,13 @@ fader_disconnect_all (
  * Used when cloning channels.
  */
 void
-fader_copy_values (
-  Fader * src,
-  Fader * dest);
+fader_copy_values (Fader * src, Fader * dest);
 
 /**
  * Process the Fader.
  */
 NONNULL
-HOT
-void
+HOT void
 fader_process (
   Fader *                             self,
   const EngineProcessTimeInfo * const time_nfo);
@@ -531,15 +506,13 @@ fader_update_track_pos (
 #endif
 
 Fader *
-fader_clone (
-  const Fader * src);
+fader_clone (const Fader * src);
 
 /**
  * Frees the fader members.
  */
 void
-fader_free (
-  Fader * self);
+fader_free (Fader * self);
 
 /**
  * @}

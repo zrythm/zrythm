@@ -24,10 +24,10 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include <glib.h>
+
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project.h"
-
-#include <glib.h>
 
 static void
 test_load_project_bpm (void)
@@ -41,7 +41,7 @@ test_load_project_bpm (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

@@ -21,8 +21,8 @@
 
 #ifdef HAVE_SDL
 
-#ifndef __AUDIO_ENGINE_SDL_H__
-#define __AUDIO_ENGINE_SDL_H__
+#  ifndef __AUDIO_ENGINE_SDL_H__
+#    define __AUDIO_ENGINE_SDL_H__
 
 typedef struct AudioEngine AudioEngine;
 
@@ -36,8 +36,7 @@ typedef struct AudioEngine AudioEngine;
  * Set up Port Audio.
  */
 int
-engine_sdl_setup (
-  AudioEngine * self);
+engine_sdl_setup (AudioEngine * self);
 
 /**
  * Returns a list of names inside \ref names that
@@ -61,8 +60,7 @@ engine_sdl_get_device_names (
  * to it.
  */
 int
-engine_sdl_test (
-  GtkWindow * win);
+engine_sdl_test (GtkWindow * win);
 
 void
 engine_sdl_activate (
@@ -73,12 +71,11 @@ engine_sdl_activate (
  * Closes Port Audio.
  */
 void
-engine_sdl_tear_down (
-  AudioEngine * engine);
+engine_sdl_tear_down (AudioEngine * engine);
 
 /**
  * @}
  */
 
-#endif
+#  endif
 #endif // HAVE_SDL

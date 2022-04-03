@@ -22,14 +22,17 @@
 
 #include <stdbool.h>
 
-#include <gtk/gtk.h>
 #include <adwaita.h>
+#include <gtk/gtk.h>
 
 #define HEADER_WIDGET_TYPE \
   (header_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  HeaderWidget, header_widget,
-  Z, HEADER_WIDGET, GtkBox)
+  HeaderWidget,
+  header_widget,
+  Z,
+  HEADER_WIDGET,
+  GtkBox)
 
 /**
  * \file
@@ -46,10 +49,8 @@ typedef struct _ViewToolbarWidget ViewToolbarWidget;
 typedef struct _HelpToolbarWidget HelpToolbarWidget;
 typedef struct _MidiActivityBarWidget
   MidiActivityBarWidget;
-typedef struct _LiveWaveformWidget
-  LiveWaveformWidget;
-typedef struct _RotatedLabelWidget
-  RotatedLabelWidget;
+typedef struct _LiveWaveformWidget LiveWaveformWidget;
+typedef struct _RotatedLabelWidget RotatedLabelWidget;
 
 /**
  * Header notebook to be used at the very top of the
@@ -57,15 +58,15 @@ typedef struct _RotatedLabelWidget
  */
 typedef struct _HeaderWidget
 {
-  GtkBox                  parent_instance;
+  GtkBox parent_instance;
 
   /** Notebook toolbars. */
-  HomeToolbarWidget *     home_toolbar;
-  ProjectToolbarWidget *  project_toolbar;
-  ViewToolbarWidget *     view_toolbar;
-  HelpToolbarWidget *     help_toolbar;
+  HomeToolbarWidget *    home_toolbar;
+  ProjectToolbarWidget * project_toolbar;
+  ViewToolbarWidget *    view_toolbar;
+  HelpToolbarWidget *    help_toolbar;
 
-  AdwViewStack *          stack;
+  AdwViewStack * stack;
 
   LiveWaveformWidget *    live_waveform;
   MidiActivityBarWidget * midi_activity;
@@ -73,17 +74,16 @@ typedef struct _HeaderWidget
 } HeaderWidget;
 
 void
-header_widget_refresh (
-  HeaderWidget * self);
+header_widget_refresh (HeaderWidget * self);
 
 void
 header_widget_setup (
   HeaderWidget * self,
-  const char * title);
+  const char *   title);
 
 void
 header_widget_set_subtitle (
   HeaderWidget * self,
-  const char * subtitle);
+  const char *   subtitle);
 
 #endif

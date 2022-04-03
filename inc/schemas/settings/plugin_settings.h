@@ -30,9 +30,9 @@
 
 #include <stdbool.h>
 
-#include "schemas/plugins/plugin_descriptor.h"
-
 #include "utils/yaml.h"
+
+#include "schemas/plugins/plugin_descriptor.h"
 
 typedef enum CarlaBridgeMode_v1
 {
@@ -42,74 +42,72 @@ typedef enum CarlaBridgeMode_v1
 } CarlaBridgeMode_v1;
 
 static const cyaml_strval_t
-carla_bridge_mode_strings_v1[] =
-{
-  { "None", CARLA_BRIDGE_NONE_v1 },
-  { "UI",   CARLA_BRIDGE_UI_v1   },
-  { "Full", CARLA_BRIDGE_FULL_v1 },
+  carla_bridge_mode_strings_v1[] = {
+    {"None",  CARLA_BRIDGE_NONE_v1},
+    { "UI",   CARLA_BRIDGE_UI_v1  },
+    { "Full", CARLA_BRIDGE_FULL_v1},
 };
 
 typedef struct PluginSetting_v1
 {
-  int                schema_version;
+  int                   schema_version;
   PluginDescriptor_v1 * descr;
-  bool               open_with_carla;
-  bool               force_generic_ui;
+  bool                  open_with_carla;
+  bool                  force_generic_ui;
   CarlaBridgeMode_v1    bridge_mode;
-  char *             ui_uri;
+  char *                ui_uri;
 } PluginSetting_v1;
 
 typedef struct PluginSettings_v3
 {
-  int             schema_version;
+  int                schema_version;
   PluginSetting_v1 * settings[90000];
-  int             num_settings;
+  int                num_settings;
 } PluginSettings_v3;
 
 static const cyaml_schema_field_t
-plugin_setting_fields_schema_v1[] =
-{
-  YAML_FIELD_INT (PluginSetting_v1, schema_version),
-  YAML_FIELD_MAPPING_PTR (
-    PluginSetting_v1, descr,
-    plugin_descriptor_fields_schema_v1),
-  YAML_FIELD_INT (PluginSetting_v1, open_with_carla),
-  YAML_FIELD_INT (PluginSetting_v1, force_generic_ui),
-  YAML_FIELD_ENUM (
-    PluginSetting_v1, bridge_mode,
-    carla_bridge_mode_strings_v1),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    PluginSetting_v1, ui_uri),
+  plugin_setting_fields_schema_v1[] = {
+    YAML_FIELD_INT (PluginSetting_v1, schema_version),
+    YAML_FIELD_MAPPING_PTR (
+      PluginSetting_v1,
+      descr,
+      plugin_descriptor_fields_schema_v1),
+    YAML_FIELD_INT (PluginSetting_v1, open_with_carla),
+    YAML_FIELD_INT (PluginSetting_v1, force_generic_ui),
+    YAML_FIELD_ENUM (
+      PluginSetting_v1,
+      bridge_mode,
+      carla_bridge_mode_strings_v1),
+    YAML_FIELD_STRING_PTR_OPTIONAL (
+      PluginSetting_v1,
+      ui_uri),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-plugin_setting_schema_v1 =
-{
-  YAML_VALUE_PTR (
-    PluginSetting_v1,
-    plugin_setting_fields_schema_v1),
-};
+  plugin_setting_schema_v1 = {
+    YAML_VALUE_PTR (
+      PluginSetting_v1,
+      plugin_setting_fields_schema_v1),
+  };
 
 static const cyaml_schema_field_t
-plugin_settings_fields_schema_v3[] =
-{
-  YAML_FIELD_INT (
-    PluginSettings_v3, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    PluginSettings_v3, settings,
-    plugin_setting_schema_v1),
+  plugin_settings_fields_schema_v3[] = {
+    YAML_FIELD_INT (PluginSettings_v3, schema_version),
+    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+      PluginSettings_v3,
+      settings,
+      plugin_setting_schema_v1),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-plugin_settings_schema_v3 =
-{
-  YAML_VALUE_PTR (
-    PluginSettings_v3,
-    plugin_settings_fields_schema_v3),
-};
+  plugin_settings_schema_v3 = {
+    YAML_VALUE_PTR (
+      PluginSettings_v3,
+      plugin_settings_fields_schema_v3),
+  };
 
 #endif

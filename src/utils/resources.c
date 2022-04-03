@@ -42,14 +42,14 @@ get_icon_type_str (IconType icon_type)
 }
 
 GtkWidget *
-resources_get_icon (IconType     icon_type,
-                    const char * filename)
+resources_get_icon (
+  IconType     icon_type,
+  const char * filename)
 {
   char * icon_dir = get_icon_type_str (icon_type);
-  char * path =
-    g_strdup_printf (
-      "%s/%s/%s", RESOURCES_ICON_PATH, icon_dir,
-      filename);
+  char * path = g_strdup_printf (
+    "%s/%s/%s", RESOURCES_ICON_PATH, icon_dir,
+    filename);
   g_free (icon_dir);
   GtkWidget * icon =
     gtk_image_new_from_resource (path);
@@ -65,10 +65,9 @@ resources_set_image_icon (
   const char * filename)
 {
   char * icon_dir = get_icon_type_str (icon_type);
-  char * path =
-    g_strdup_printf (
-      "%s/%s/%s", RESOURCES_ICON_PATH, icon_dir,
-      filename);
+  char * path = g_strdup_printf (
+    "%s/%s/%s", RESOURCES_ICON_PATH, icon_dir,
+    filename);
   g_free (icon_dir);
   gtk_image_set_from_resource (img, path);
   g_free (path);
@@ -112,12 +111,10 @@ resources_add_icon_to_button (
  * @return bytes or NULL if error.
  */
 GBytes *
-resources_get_gl_shader_data (
-  const char * path)
+resources_get_gl_shader_data (const char * path)
 {
   GError * err = NULL;
-  char * str =
-    g_strdup_printf (
+  char *   str = g_strdup_printf (
       "%s/%s", RESOURCES_GL_SHADERS_PATH, path);
   GBytes * data =
     g_resources_lookup_data (str, 0, &err);

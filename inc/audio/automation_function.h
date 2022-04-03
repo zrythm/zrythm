@@ -45,10 +45,11 @@ typedef enum AutomationFunctionType
 } AutomationFunctionType;
 
 static const cyaml_strval_t
-  automation_function_type_strings[] =
-{
-  { __("Flip H"), AUTOMATION_FUNCTION_FLIP_HORIZONTAL },
-  { __("Flip V"), AUTOMATION_FUNCTION_FLIP_VERTICAL },
+  automation_function_type_strings[] = {
+    {__ ("Flip H"),
+     AUTOMATION_FUNCTION_FLIP_HORIZONTAL},
+    { __ ("Flip V"),
+     AUTOMATION_FUNCTION_FLIP_VERTICAL  },
 };
 
 static inline const char *

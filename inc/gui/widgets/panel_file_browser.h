@@ -29,7 +29,7 @@ typedef struct _FileAuditionerControlsWidget
 typedef struct FileBrowserLocation
   FileBrowserLocation;
 typedef struct _FileBrowserFiltersWidget
-  FileBrowserFiltersWidget;
+                           FileBrowserFiltersWidget;
 typedef struct ItemFactory ItemFactory;
 
 /**
@@ -41,26 +41,29 @@ typedef struct ItemFactory ItemFactory;
 #define PANEL_FILE_BROWSER_WIDGET_TYPE \
   (panel_file_browser_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  PanelFileBrowserWidget, panel_file_browser_widget,
-  Z, PANEL_FILE_BROWSER_WIDGET, GtkBox)
+  PanelFileBrowserWidget,
+  panel_file_browser_widget,
+  Z,
+  PANEL_FILE_BROWSER_WIDGET,
+  GtkBox)
 
 #define MW_PANEL_FILE_BROWSER \
   MW_RIGHT_DOCK_EDGE->file_browser
 
 typedef struct _PanelFileBrowserWidget
 {
-  GtkBox               parent_instance;
+  GtkBox parent_instance;
 
-  GtkPaned *           paned;
+  GtkPaned * paned;
 
-  GtkBox *             browser_top;
-  GtkBox *             browser_bot;
+  GtkBox * browser_top;
+  GtkBox * browser_bot;
 
-  GtkTreeView *        bookmarks_tree_view;
-  GtkTreeModel *       bookmarks_tree_model;
+  GtkTreeView *  bookmarks_tree_view;
+  GtkTreeModel * bookmarks_tree_model;
 
-  GtkLabel *           file_info;
-  ZFileType            selected_type;
+  GtkLabel * file_info;
+  ZFileType  selected_type;
 
   GtkCustomFilter *    files_filter;
   GtkFilterListModel * files_filter_model;
@@ -69,8 +72,8 @@ typedef struct _PanelFileBrowserWidget
   GtkListView *        files_list_view;
 
   /** Array of SupportedFile. */
-  GPtrArray *          selected_locations;
-  GPtrArray *          selected_files;
+  GPtrArray * selected_locations;
+  GPtrArray * selected_files;
 
   FileBrowserFiltersWidget * filters_toolbar;
 
@@ -78,9 +81,9 @@ typedef struct _PanelFileBrowserWidget
 
   /** Temp. */
   const FileBrowserLocation * cur_loc;
-  const SupportedFile * cur_file;
+  const SupportedFile *       cur_file;
 
-  bool                 first_draw;
+  bool first_draw;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;

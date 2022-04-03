@@ -26,22 +26,23 @@
 
 #define INSPECTOR_MIDI_WIDGET_TYPE \
   (inspector_midi_widget_get_type ())
-G_DECLARE_FINAL_TYPE (InspectorMidiWidget,
-                      inspector_midi_widget,
-                      Z,
-                      INSPECTOR_MIDI_WIDGET,
-                      GtkGrid)
+G_DECLARE_FINAL_TYPE (
+  InspectorMidiWidget,
+  inspector_midi_widget,
+  Z,
+  INSPECTOR_MIDI_WIDGET,
+  GtkGrid)
 
 typedef struct MidiNote MidiNote;
 
 typedef struct _InspectorMidiWidget
 {
-  GtkGrid             parent_instance;
-  GtkLabel *          header;
-  GtkBox *            position_box;
-  GtkBox *            length_box;
-  GtkColorButton *    color;
-  GtkToggleButton *   mute_toggle;
+  GtkGrid           parent_instance;
+  GtkLabel *        header;
+  GtkBox *          position_box;
+  GtkBox *          length_box;
+  GtkColorButton *  color;
+  GtkToggleButton * mute_toggle;
 } InspectorMidiWidget;
 
 void

@@ -46,7 +46,7 @@
  */
 typedef struct PortConnection
 {
-  int              schema_version;
+  int schema_version;
 
   PortIdentifier * src_id;
   PortIdentifier * dest_id;
@@ -57,7 +57,7 @@ typedef struct PortConnection
    * Range: 0 to 1.
    * Default: 1.
    */
-  float            multiplier;
+  float multiplier;
 
   /**
    * Whether the connection can be removed or the
@@ -67,7 +67,7 @@ typedef struct PortConnection
    * only used to deter the user from breaking
    * necessary connections.
    */
-  bool             locked;
+  bool locked;
 
   /**
    * Whether the connection is enabled.
@@ -75,37 +75,37 @@ typedef struct PortConnection
    * @note The user can disable port connections only
    * if they are not locked.
    */
-  bool             enabled;
+  bool enabled;
 
   /** Used for CV -> control port connections. */
-  float            base_value;
+  float base_value;
 } PortConnection;
 
 static const cyaml_schema_field_t
-port_connection_fields_schema[] =
-{
-  YAML_FIELD_INT (PortConnection, schema_version),
-  YAML_FIELD_MAPPING_PTR (
-    PortConnection, src_id,
-    port_identifier_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    PortConnection, dest_id,
-    port_identifier_fields_schema),
-  YAML_FIELD_FLOAT (PortConnection, multiplier),
-  YAML_FIELD_INT (PortConnection, locked),
-  YAML_FIELD_INT (PortConnection, enabled),
-  YAML_FIELD_FLOAT (PortConnection, base_value),
+  port_connection_fields_schema[] = {
+    YAML_FIELD_INT (PortConnection, schema_version),
+    YAML_FIELD_MAPPING_PTR (
+      PortConnection,
+      src_id,
+      port_identifier_fields_schema),
+    YAML_FIELD_MAPPING_PTR (
+      PortConnection,
+      dest_id,
+      port_identifier_fields_schema),
+    YAML_FIELD_FLOAT (PortConnection, multiplier),
+    YAML_FIELD_INT (PortConnection, locked),
+    YAML_FIELD_INT (PortConnection, enabled),
+    YAML_FIELD_FLOAT (PortConnection, base_value),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-port_connection_schema =
-{
-  YAML_VALUE_PTR (
-    PortConnection,
-    port_connection_fields_schema),
-};
+  port_connection_schema = {
+    YAML_VALUE_PTR (
+      PortConnection,
+      port_connection_fields_schema),
+  };
 
 PortConnection *
 port_connection_new (
@@ -124,8 +124,7 @@ port_connection_update (
   bool             enabled);
 
 NONNULL
-PURE
-bool
+PURE bool
 port_connection_is_send (
   const PortConnection * self);
 
@@ -138,24 +137,21 @@ port_connection_print_to_str (
 
 NONNULL
 void
-port_connection_print (
-  const PortConnection * self);
+port_connection_print (const PortConnection * self);
 
 /**
  * To be used during serialization.
  */
 NONNULL
 PortConnection *
-port_connection_clone (
-  const PortConnection * src);
+port_connection_clone (const PortConnection * src);
 
 /**
  * Deletes port, doing required cleanup and updating counters.
  */
 NONNULL
 void
-port_connection_free (
-  PortConnection * self);
+port_connection_free (PortConnection * self);
 
 /**
  * @}

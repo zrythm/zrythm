@@ -32,8 +32,8 @@
 #include "utils/yaml.h"
 
 typedef struct ArrangerObject ArrangerObject;
-typedef struct Position Position;
-typedef struct AudioClip AudioClip;
+typedef struct Position       Position;
+typedef struct AudioClip      AudioClip;
 typedef enum ArrangerSelectionsActionEditType
   ArrangerSelectionsActionEditType;
 
@@ -47,8 +47,8 @@ typedef enum ArrangerSelectionsActionEditType
 
 #define ARRANGER_SELECTIONS_MAGIC 35867752
 #define IS_ARRANGER_SELECTIONS(x) \
-  (((ArrangerSelections *) x)->magic == \
-   ARRANGER_SELECTIONS_MAGIC)
+  (((ArrangerSelections *) x)->magic \
+   == ARRANGER_SELECTIONS_MAGIC)
 #define IS_ARRANGER_SELECTIONS_AND_NONNULL(x) \
   (x && IS_ARRANGER_SELECTIONS (x))
 #define ARRANGER_SELECTIONS(x) \
@@ -67,50 +67,43 @@ typedef enum ArrangerSelectionsType
 } ArrangerSelectionsType;
 
 static const cyaml_strval_t
-arranger_selections_type_strings[] =
-{
-  { "None",
-    ARRANGER_SELECTIONS_TYPE_NONE    },
-  { "Chord",
-    ARRANGER_SELECTIONS_TYPE_CHORD    },
-  { "Timeline",
-    ARRANGER_SELECTIONS_TYPE_TIMELINE   },
-  { "MIDI",
-    ARRANGER_SELECTIONS_TYPE_MIDI },
-  { "Automation",
-    ARRANGER_SELECTIONS_TYPE_AUTOMATION   },
-  { "Audio",
-    ARRANGER_SELECTIONS_TYPE_AUDIO   },
+  arranger_selections_type_strings[] = {
+    {"None",        ARRANGER_SELECTIONS_TYPE_NONE    },
+    { "Chord",      ARRANGER_SELECTIONS_TYPE_CHORD   },
+    { "Timeline",   ARRANGER_SELECTIONS_TYPE_TIMELINE},
+    { "MIDI",       ARRANGER_SELECTIONS_TYPE_MIDI    },
+    { "Automation",
+     ARRANGER_SELECTIONS_TYPE_AUTOMATION             },
+    { "Audio",      ARRANGER_SELECTIONS_TYPE_AUDIO   },
 };
 
 typedef struct ArrangerSelections
 {
-  int                    schema_version;
+  int schema_version;
 
   /** Type of selections. */
   ArrangerSelectionsType type;
 
-  int                    magic;
+  int magic;
 } ArrangerSelections;
 
 static const cyaml_schema_field_t
-arranger_selections_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    ArrangerSelections, schema_version),
-  YAML_FIELD_ENUM (
-    ArrangerSelections, type,
-    arranger_selections_type_strings),
+  arranger_selections_fields_schema[] = {
+    YAML_FIELD_INT (ArrangerSelections, schema_version),
+    YAML_FIELD_ENUM (
+      ArrangerSelections,
+      type,
+      arranger_selections_type_strings),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-arranger_selections_schema = {
-  YAML_VALUE_PTR (
-    ArrangerSelections,
-    arranger_selections_fields_schema),
-};
+  arranger_selections_schema = {
+    YAML_VALUE_PTR (
+      ArrangerSelections,
+      arranger_selections_fields_schema),
+  };
 
 typedef enum ArrangerSelectionsProperty
 {
@@ -321,8 +314,8 @@ arranger_selections_add_to_region (
 NONNULL
 void
 arranger_selections_add_ticks (
-  ArrangerSelections *     self,
-  const double             ticks);
+  ArrangerSelections * self,
+  const double         ticks);
 
 /**
  * Returns whether all the selections are on the
@@ -379,8 +372,7 @@ arranger_selections_free_members (
  */
 NONNULL
 void
-arranger_selections_free (
-  ArrangerSelections * self);
+arranger_selections_free (ArrangerSelections * self);
 
 /**
  * Frees all the objects as well.

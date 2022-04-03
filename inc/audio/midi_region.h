@@ -26,21 +26,21 @@
 #ifndef __AUDIO_MIDI_REGION_H__
 #define __AUDIO_MIDI_REGION_H__
 
-#include <stddef.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #include "utils/types.h"
 
-typedef struct Track Track;
-typedef struct Position Position;
-typedef struct MidiNote MidiNote;
-typedef struct ZRegion ZRegion;
-typedef struct MidiEvents MidiEvents;
+typedef struct Track           Track;
+typedef struct Position        Position;
+typedef struct MidiNote        MidiNote;
+typedef struct ZRegion         ZRegion;
+typedef struct MidiEvents      MidiEvents;
 typedef struct ChordDescriptor ChordDescriptor;
-typedef struct Velocity Velocity;
-typedef ZRegion MidiRegion;
-typedef void MIDI_FILE;
+typedef struct Velocity        Velocity;
+typedef ZRegion                MidiRegion;
+typedef void                   MIDI_FILE;
 
 /**
  * @addtogroup audio
@@ -97,7 +97,7 @@ midi_region_new_from_chord_descr (
  * @param pub_events Publish UI events or not.
  */
 #define midi_region_add_midi_note( \
-  region,midi_note,pub_events) \
+  region, midi_note, pub_events) \
   midi_region_insert_midi_note ( \
     region, midi_note, \
     ((ZRegion *) (region))->num_midi_notes, \
@@ -170,8 +170,8 @@ void
 midi_region_fill_midi_events (
   ZRegion *                           self,
   const EngineProcessTimeInfo * const time_nfo,
-  bool                                note_off_at_end,
-  MidiEvents *                        midi_events);
+  bool         note_off_at_end,
+  MidiEvents * midi_events);
 
 /**
  * Prints the MidiNotes in the Region.
@@ -179,36 +179,31 @@ midi_region_fill_midi_events (
  * Used for debugging.
  */
 void
-midi_region_print_midi_notes (
-  ZRegion * self);
+midi_region_print_midi_notes (ZRegion * self);
 
 /**
  * Gets first midi note
  */
 MidiNote *
-midi_region_get_first_midi_note (
-	ZRegion * region);
+midi_region_get_first_midi_note (ZRegion * region);
 
 /**
  * Gets last midi note
  */
 MidiNote *
-midi_region_get_last_midi_note (
-	ZRegion * region);
+midi_region_get_last_midi_note (ZRegion * region);
 
 /**
  * Gets highest midi note
  */
 MidiNote *
-midi_region_get_highest_midi_note (
-	ZRegion * region);
+midi_region_get_highest_midi_note (ZRegion * region);
 
 /**
  * Gets lowest midi note
  */
 MidiNote *
-midi_region_get_lowest_midi_note (
-	ZRegion * region);
+midi_region_get_lowest_midi_note (ZRegion * region);
 
 /**
  * Removes the MIDI note from the Region.
@@ -228,9 +223,7 @@ midi_region_remove_midi_note (
  * completely.
  */
 void
-midi_region_remove_all_midi_notes (
-  ZRegion * region);
-
+midi_region_remove_all_midi_notes (ZRegion * region);
 
 /**
  * Returns the midi note at given position with the given
@@ -240,9 +233,9 @@ midi_region_remove_all_midi_notes (
  */
 //MidiNote *
 //midi_region_get_midi_note_at (
-  //ZRegion * self,
-  //Position *   pos,
-  //int          pitch);
+//ZRegion * self,
+//Position *   pos,
+//int          pitch);
 
 /**
  * Exports the ZRegion to an existing MIDI file
@@ -265,7 +258,7 @@ midi_region_remove_all_midi_notes (
  *   track/lane position in the MIDI data. The
  *   MIDI track will be set to 1 if false.
  */
-NONNULL_ARGS (1,2)
+NONNULL_ARGS (1, 2)
 void
 midi_region_write_to_midi_file (
   const ZRegion * self,
@@ -295,8 +288,7 @@ midi_region_export_to_midi_file (
  * be played on, starting from 1.
  */
 uint8_t
-midi_region_get_midi_ch (
-  const ZRegion * self);
+midi_region_get_midi_ch (const ZRegion * self);
 
 /**
  * Returns whether the given note is not muted and starts within any
@@ -349,8 +341,7 @@ midi_region_get_velocities_in_range (
  * Regions should be free'd using region_free.
  */
 void
-midi_region_free_members (
-  ZRegion * self);
+midi_region_free_members (ZRegion * self);
 
 /**
  * @}

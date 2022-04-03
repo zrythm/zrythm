@@ -53,14 +53,14 @@ typedef struct Track Track;
  */
 typedef struct AudioPool
 {
-  int            schema_version;
+  int schema_version;
 
   /**
    * Audio clips.
    *
    * May contain NULLs.
    */
-  AudioClip **   clips;
+  AudioClip ** clips;
 
   /**
    * Clip counter.
@@ -70,36 +70,32 @@ typedef struct AudioPool
    * make identifying and managing clips easier
    * by their IDs.
    */
-  int            num_clips;
+  int num_clips;
 
   /** Array sizes. */
-  size_t         clips_size;
+  size_t clips_size;
 } AudioPool;
 
 static const cyaml_schema_field_t
-audio_pool_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    AudioPool, schema_version),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-    AudioPool, clips, audio_clip_schema),
+  audio_pool_fields_schema[] = {
+    YAML_FIELD_INT (AudioPool, schema_version),
+    YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+      AudioPool,
+      clips,
+      audio_clip_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t
-audio_pool_schema =
-{
-  YAML_VALUE_PTR (
-    AudioPool, audio_pool_fields_schema),
+static const cyaml_schema_value_t audio_pool_schema = {
+  YAML_VALUE_PTR (AudioPool, audio_pool_fields_schema),
 };
 
 /**
  * Inits after loading a project.
  */
 void
-audio_pool_init_loaded (
-  AudioPool * self);
+audio_pool_init_loaded (AudioPool * self);
 
 /**
  * Creates a new audio pool.
@@ -138,9 +134,7 @@ audio_pool_duplicate_clip (
  * Returns the clip for the given ID.
  */
 AudioClip *
-audio_pool_get_clip (
-  AudioPool * self,
-  int         clip_id);
+audio_pool_get_clip (AudioPool * self, int clip_id);
 
 /**
  * Removes the clip with the given ID from the pool
@@ -200,8 +194,7 @@ audio_pool_gen_name_for_recording_clip (
  * change in the project (eg, object added/removed).
  */
 void
-audio_pool_reload_clip_frame_bufs (
-  AudioPool * self);
+audio_pool_reload_clip_frame_bufs (AudioPool * self);
 
 /**
  * Writes all the clips to disk.
@@ -219,16 +212,13 @@ audio_pool_write_to_disk (
  * To be used during serialization.
  */
 AudioPool *
-audio_pool_clone (
-  const AudioPool * src);
+audio_pool_clone (const AudioPool * src);
 
 void
-audio_pool_print (
-  const AudioPool * const self);
+audio_pool_print (const AudioPool * const self);
 
 void
-audio_pool_free (
-  AudioPool * self);
+audio_pool_free (AudioPool * self);
 
 /**
  * @}

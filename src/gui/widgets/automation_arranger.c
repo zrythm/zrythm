@@ -25,13 +25,13 @@
  */
 
 #include "actions/arranger_selections.h"
-#include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
+#include "actions/undoable_action.h"
+#include "audio/audio_bus_track.h"
+#include "audio/audio_track.h"
 #include "audio/automation_region.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
-#include "audio/audio_track.h"
-#include "audio/audio_bus_track.h"
 #include "audio/channel.h"
 #include "audio/chord_object.h"
 #include "audio/chord_track.h"
@@ -45,9 +45,9 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "audio/transport.h"
+#include "gui/backend/automation_selections.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/backend/automation_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"
@@ -62,13 +62,12 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/marker.h"
 #include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_note.h"
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/pinned_tracklist.h"
-#include "gui/widgets/midi_note.h"
 #include "gui/widgets/region.h"
-#include "gui/widgets/scale_object.h"
 #include "gui/widgets/ruler.h"
-#include "gui/widgets/automation_arranger.h"
+#include "gui/widgets/scale_object.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
@@ -83,8 +82,8 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 /**
  * Create an AutomationPointat the given Position
@@ -119,13 +118,10 @@ automation_arranger_widget_create_ap (
   /* get local pos */
   Position local_pos;
   position_from_ticks (
-    &local_pos,
-    pos->ticks -
-    region_obj->pos.ticks);
+    &local_pos, pos->ticks - region_obj->pos.ticks);
 
-  int height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
+  int height = gtk_widget_get_allocated_height (
+    GTK_WIDGET (self));
   /* do height - because it's uside down */
   float normalized_val =
     (float) ((height - start_y) / height);
@@ -136,16 +132,13 @@ automation_arranger_widget_create_ap (
    * outside the widget */
   normalized_val = CLAMP (normalized_val, 0.f, 1.f);
 
-  float value =
-    control_port_normalized_val_to_real (
-      port, normalized_val);
+  float value = control_port_normalized_val_to_real (
+    port, normalized_val);
 
   /* create a new ap */
-  AutomationPoint * ap =
-    automation_point_new_float (
-      value, normalized_val, &local_pos);
-  ArrangerObject * ap_obj =
-    (ArrangerObject *) ap;
+  AutomationPoint * ap = automation_point_new_float (
+    value, normalized_val, &local_pos);
+  ArrangerObject * ap_obj = (ArrangerObject *) ap;
 
   /* set it as start object */
   self->start_object = ap_obj;
@@ -160,8 +153,7 @@ automation_arranger_widget_create_ap (
     ARRANGER_OBJECT_POSITION_TYPE_START,
     F_NO_VALIDATE);
 
-  EVENTS_PUSH (
-    ET_ARRANGER_OBJECT_CREATED, ap);
+  EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, ap);
   arranger_object_select (
     ap_obj, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
@@ -176,17 +168,17 @@ automation_arranger_widget_resize_curves (
   double           offset_y)
 {
   double diff = offset_y - self->last_offset_y;
-  diff = - diff;
+  diff = -diff;
   diff = diff / 120.0;
-  for (int i = 0;
-       i < AUTOMATION_SELECTIONS->num_automation_points; i++)
+  for (
+    int i = 0;
+    i < AUTOMATION_SELECTIONS->num_automation_points;
+    i++)
     {
       AutomationPoint * ap =
         AUTOMATION_SELECTIONS->automation_points[i];
-      double new_curve_val =
-        CLAMP (
-          ap->curve_opts.curviness + diff,
-          - 1.0, 1.0);
+      double new_curve_val = CLAMP (
+        ap->curve_opts.curviness + diff, -1.0, 1.0);
       automation_point_set_curviness (
         ap, new_curve_val);
     }
@@ -213,7 +205,7 @@ automation_arranger_widget_show_context_menu (
   double           x,
   double           y)
 {
-  GMenu * menu = g_menu_new ();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
   ArrangerObject * obj =
@@ -235,20 +227,17 @@ automation_arranger_widget_show_context_menu (
           char tmp[200];
           /* TODO change action state so that
            * selected algorithm shows as selected */
-          sprintf (
-            tmp, "app.set-curve-algorithm");
-          menuitem =
-            z_gtk_create_menu_item (
-              name, NULL, tmp);
+          sprintf (tmp, "app.set-curve-algorithm");
+          menuitem = z_gtk_create_menu_item (
+            name, NULL, tmp);
           g_menu_item_set_action_and_target_value (
-            menuitem, tmp,
-            g_variant_new_int32 (i));
+            menuitem, tmp, g_variant_new_int32 (i));
           g_menu_append_item (
             curve_algorithm_submenu, menuitem);
         }
 
       g_menu_append_section (
-        menu, _("Curve algorithm"),
+        menu, _ ("Curve algorithm"),
         G_MENU_MODEL (curve_algorithm_submenu));
     }
 
@@ -267,24 +256,21 @@ automation_arranger_move_hit_aps (
   double           x,
   double           y)
 {
-  int height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
+  int height = gtk_widget_get_allocated_height (
+    GTK_WIDGET (self));
 
   /* get snapped x */
   Position pos;
-  arranger_widget_px_to_pos (
-    self, x, &pos, true);
-  if (!self->shift_held &&
-      SNAP_GRID_ANY_SNAP (self->snap_grid))
+  arranger_widget_px_to_pos (self, x, &pos, true);
+  if (
+    !self->shift_held
+    && SNAP_GRID_ANY_SNAP (self->snap_grid))
     {
       position_snap (
-        &self->earliest_obj_start_pos,
-        &pos, NULL, NULL,
-        self->snap_grid);
-      x =
-        arranger_widget_pos_to_px (
-          self, &pos, true);
+        &self->earliest_obj_start_pos, &pos, NULL,
+        NULL, self->snap_grid);
+      x = arranger_widget_pos_to_px (
+        self, &pos, true);
     }
 
   /* move any hit automation points */

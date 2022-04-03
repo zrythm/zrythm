@@ -24,30 +24,34 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (InspectorApWidget, inspector_ap_widget, GTK_TYPE_GRID)
-
+G_DEFINE_TYPE (
+  InspectorApWidget,
+  inspector_ap_widget,
+  GTK_TYPE_GRID)
 
 static void
-inspector_ap_widget_class_init (InspectorApWidgetClass * klass)
+inspector_ap_widget_class_init (
+  InspectorApWidgetClass * klass)
 {
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/org/zrythm/ui/inspector_ap.ui");
+  gtk_widget_class_set_template_from_resource (
+    GTK_WIDGET_CLASS (klass),
+    "/org/zrythm/ui/inspector_ap.ui");
 
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorApWidget,
-                                        position_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorApWidget,
-                                        length_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorApWidget,
-                                        color);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorApWidget,
-                                        mute_toggle);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorApWidget,
-                                        header);
+  gtk_widget_class_bind_template_child (
+    GTK_WIDGET_CLASS (klass), InspectorApWidget,
+    position_box);
+  gtk_widget_class_bind_template_child (
+    GTK_WIDGET_CLASS (klass), InspectorApWidget,
+    length_box);
+  gtk_widget_class_bind_template_child (
+    GTK_WIDGET_CLASS (klass), InspectorApWidget,
+    color);
+  gtk_widget_class_bind_template_child (
+    GTK_WIDGET_CLASS (klass), InspectorApWidget,
+    mute_toggle);
+  gtk_widget_class_bind_template_child (
+    GTK_WIDGET_CLASS (klass), InspectorApWidget,
+    header);
 }
 
 static void
@@ -57,9 +61,10 @@ inspector_ap_widget_init (InspectorApWidget * self)
 }
 
 void
-inspector_ap_widget_show_aps (InspectorApWidget * self,
-                                      AutomationPoint **               aps,
-                                      int                     num_aps)
+inspector_ap_widget_show_aps (
+  InspectorApWidget * self,
+  AutomationPoint **  aps,
+  int                 num_aps)
 {
   if (num_aps == 1)
     {
@@ -67,14 +72,11 @@ inspector_ap_widget_show_aps (InspectorApWidget * self,
     }
   else
     {
-      char * string = g_strdup_printf ("Aps (%d)", num_aps);
+      char * string =
+        g_strdup_printf ("Aps (%d)", num_aps);
       gtk_label_set_text (self->header, string);
       g_free (string);
 
-      for (int i = 0; i < num_aps; i++)
-      {
-
-      }
+      for (int i = 0; i < num_aps; i++) { }
     }
 }
-

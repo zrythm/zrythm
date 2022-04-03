@@ -37,7 +37,8 @@
 G_DECLARE_FINAL_TYPE (
   PlayheadScrollButtonsWidget,
   playhead_scroll_buttons_widget,
-  Z, PLAYHEAD_SCROLL_BUTTONS_WIDGET,
+  Z,
+  PLAYHEAD_SCROLL_BUTTONS_WIDGET,
   GtkWidget)
 
 #define MW_PLAYHEAD_SCROLL_BUTTONS \

@@ -36,7 +36,7 @@
 
 #include <glib.h>
 
-typedef struct Port Port;
+typedef struct Port           Port;
 typedef struct PortIdentifier PortIdentifier;
 typedef struct PortConnection PortConnection;
 
@@ -56,7 +56,7 @@ typedef struct PortConnection PortConnection;
  */
 typedef struct PortConnectionsManager
 {
-  int               schema_version;
+  int schema_version;
 
   /** Connections. */
   PortConnection ** connections;
@@ -71,7 +71,7 @@ typedef struct PortConnectionsManager
    * Value: A pointer to a PortConnection from
    *   PortConnectionsManager.connections.
    */
-  GHashTable *      src_ht;
+  GHashTable * src_ht;
 
   /**
    * Hashtable to speedup lookup by destination port
@@ -81,28 +81,28 @@ typedef struct PortConnectionsManager
    * Value: A pointer to a PortConnection from
    *   PortConnectionsManager.connections.
    */
-  GHashTable *      dest_ht;
+  GHashTable * dest_ht;
 } PortConnectionsManager;
 
 static const cyaml_schema_field_t
-port_connections_manager_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    PortConnectionsManager, schema_version),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    PortConnectionsManager, connections,
-    port_connection_schema),
+  port_connections_manager_fields_schema[] = {
+    YAML_FIELD_INT (
+      PortConnectionsManager,
+      schema_version),
+    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+      PortConnectionsManager,
+      connections,
+      port_connection_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-port_connections_manager_schema =
-{
-  YAML_VALUE_PTR (
-    PortConnectionsManager,
-    port_connections_manager_fields_schema),
-};
+  port_connections_manager_schema = {
+    YAML_VALUE_PTR (
+      PortConnectionsManager,
+      port_connections_manager_fields_schema),
+  };
 
 NONNULL
 void
@@ -136,7 +136,7 @@ port_connections_manager_regenerate_hashtables (
  *
  * @return The number of ports found.
  */
-NONNULL_ARGS (1,3)
+NONNULL_ARGS (1, 3)
 int
 port_connections_manager_get_sources_or_dests (
   const PortConnectionsManager * self,
@@ -204,7 +204,8 @@ port_connections_manager_ensure_connect (
   bool                     locked,
   bool                     enabled);
 
-#define port_connections_manager_ensure_connect_from_connection(self,conn) \
+#define port_connections_manager_ensure_connect_from_connection( \
+  self, conn) \
   port_connections_manager_ensure_connect ( \
     self, conn->src_id, conn->dest_id, \
     conn->multiplier, conn->locked, conn->enabled)
@@ -247,8 +248,7 @@ port_connections_manager_contains_connection (
   const PortConnection * const   conn);
 
 void
-port_connections_manager_print_ht (
-  GHashTable * ht);
+port_connections_manager_print_ht (GHashTable * ht);
 
 void
 port_connections_manager_print (

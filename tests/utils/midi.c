@@ -19,12 +19,13 @@
 
 #include "zrythm-test-config.h"
 
-#include "helpers/project.h"
-#include "helpers/zrythm.h"
 #include "project.h"
 #include "utils/math.h"
 #include "utils/midi.h"
 #include "zrythm.h"
+
+#include "helpers/project.h"
+#include "helpers/zrythm.h"
 
 static void
 test_msb_lsb_conversions (void)
@@ -33,19 +34,19 @@ test_msb_lsb_conversions (void)
   midi_byte_t lsb;
   /* second byte */
   midi_byte_t msb;
-  midi_get_bytes_from_combined (
-    12280, &lsb, &msb);
+  midi_get_bytes_from_combined (12280, &lsb, &msb);
   g_assert_cmpint (lsb, ==, 120);
   g_assert_cmpint (msb, ==, 95);
 
   midi_byte_t buf[] = {
-    MIDI_CH1_PITCH_WHEEL_RANGE, 120, 95 };
+    MIDI_CH1_PITCH_WHEEL_RANGE, 120, 95
+  };
   g_assert_cmpuint (
     midi_get_14_bit_value (buf), ==, 12280);
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

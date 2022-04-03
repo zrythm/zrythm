@@ -42,7 +42,8 @@ typedef struct _PortConnectionsTreeWidget
 G_DECLARE_FINAL_TYPE (
   PortConnectionsWidget,
   port_connections_widget,
-  Z, PORT_CONNECTIONS_WIDGET,
+  Z,
+  PORT_CONNECTIONS_WIDGET,
   GtkBox)
 
 #define MW_PORT_CONNECTIONS \
@@ -53,7 +54,7 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _PortConnectionsWidget
 {
-  GtkBox           parent_instance;
+  GtkBox parent_instance;
 
   PortConnectionsTreeWidget * bindings_tree;
 } PortConnectionsWidget;

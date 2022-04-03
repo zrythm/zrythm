@@ -33,12 +33,13 @@
 G_DECLARE_FINAL_TYPE (
   QuantizeDialogWidget,
   quantize_dialog_widget,
-  Z, QUANTIZE_DIALOG_WIDGET,
+  Z,
+  QUANTIZE_DIALOG_WIDGET,
   GtkDialog)
 
-typedef struct QuantizeOptions QuantizeOptions;
+typedef struct QuantizeOptions     QuantizeOptions;
 typedef struct _DigitalMeterWidget DigitalMeterWidget;
-typedef struct _BarSliderWidget BarSliderWidget;
+typedef struct _BarSliderWidget    BarSliderWidget;
 
 /**
  * @addtogroup widgets
@@ -64,15 +65,14 @@ typedef struct _QuantizeDialogWidget
   BarSliderWidget *    swing;
   BarSliderWidget *    randomization;
 
-  QuantizeOptions *    opts;
+  QuantizeOptions * opts;
 } QuantizeDialogWidget;
 
 /**
  * Creates an quantize dialog widget and displays it.
  */
 QuantizeDialogWidget *
-quantize_dialog_widget_new (
-  QuantizeOptions * opts);
+quantize_dialog_widget_new (QuantizeOptions * opts);
 
 /**
  * @}

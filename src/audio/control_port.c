@@ -36,8 +36,7 @@
  * Get the current real value of the control.
  */
 float
-control_port_get_val (
-  Port * self)
+control_port_get_val (Port * self)
 {
   return self->control;
 }
@@ -46,12 +45,10 @@ control_port_get_val (
  * Get the current real value of the control.
  */
 float
-control_port_get_normalized_val (
-  Port * self)
+control_port_get_normalized_val (Port * self)
 {
-  return
-    control_port_real_val_to_normalized (
-      self, self->control);
+  return control_port_real_val_to_normalized (
+    self, self->control);
 }
 
 /**
@@ -59,8 +56,7 @@ control_port_get_normalized_val (
  * control.
  */
 float
-control_port_get_unsnapped_val (
-  Port * self)
+control_port_get_unsnapped_val (Port * self)
 {
   return self->unsnapped_control;
 }
@@ -69,8 +65,7 @@ control_port_get_unsnapped_val (
  * Get the default real value of the control.
  */
 float
-control_port_get_default_val (
-  Port * self)
+control_port_get_default_val (Port * self)
 {
   return self->deff;
 }
@@ -79,9 +74,7 @@ control_port_get_default_val (
  * Get the default real value of the control.
  */
 void
-control_port_set_real_val (
-  Port * self,
-  float  val)
+control_port_set_real_val (Port * self, float val)
 {
   g_return_if_fail (IS_PORT (self));
   port_set_control_value (
@@ -100,8 +93,7 @@ control_port_set_real_val_w_events (
 {
   g_return_if_fail (IS_PORT (self));
   port_set_control_value (
-    self, val, F_NOT_NORMALIZED,
-    F_PUBLISH_EVENTS);
+    self, val, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
 }
 
 void
@@ -120,19 +112,17 @@ control_port_set_toggled (
  * Gets the control value for an integer port.
  */
 int
-control_port_get_int (
-  Port * self)
+control_port_get_int (Port * self)
 {
-  return
-    control_port_get_int_from_val (self->control);
+  return control_port_get_int_from_val (
+    self->control);
 }
 
 /**
  * Gets the control value for an integer port.
  */
 int
-control_port_get_int_from_val (
-  float val)
+control_port_get_int_from_val (float val)
 {
   return math_round_float_to_signed_32 (val);
 }
@@ -142,14 +132,12 @@ control_port_get_int_from_val (
  * returns 0.f or 1.f).
  */
 float
-control_port_get_snapped_val (
-  Port * self)
+control_port_get_snapped_val (Port * self)
 {
   float val = control_port_get_val (self);
 
-  return
-    control_port_get_snapped_val_from_val (
-      self, val);
+  return control_port_get_snapped_val_from_val (
+    self, val);
 }
 
 /**
@@ -164,14 +152,12 @@ control_port_get_snapped_val_from_val (
   PortFlags flags = self->id.flags;
   if (flags & PORT_FLAG_TOGGLE)
     {
-      return
-        control_port_is_val_toggled (val) ?
-          1.f : 0.f;
+      return control_port_is_val_toggled (val) ? 1.f : 0.f;
     }
   else if (flags & PORT_FLAG_INTEGER)
     {
-      return
-        (float) control_port_get_int_from_val (val);
+      return (float) control_port_get_int_from_val (
+        val);
     }
 
   return val;
@@ -193,31 +179,31 @@ control_port_normalized_val_to_real (
         {
           /* make sure none of the values is 0 */
           float minf =
-            math_floats_equal (self->minf, 0.f) ?
-            1e-20f : self->minf;
+            math_floats_equal (self->minf, 0.f)
+              ? 1e-20f
+              : self->minf;
           float maxf =
-            math_floats_equal (self->maxf, 0.f) ?
-            1e-20f : self->maxf;
+            math_floats_equal (self->maxf, 0.f)
+              ? 1e-20f
+              : self->maxf;
           normalized_val =
-            math_floats_equal (normalized_val, 0.f) ?
-            1e-20f : normalized_val;
+            math_floats_equal (normalized_val, 0.f)
+              ? 1e-20f
+              : normalized_val;
 
           /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
-          return
-            minf *
-              powf (maxf / minf, normalized_val);
+          return minf
+                 * powf (maxf / minf, normalized_val);
         }
       else if (id->flags & PORT_FLAG_TOGGLE)
         {
-          return
-            normalized_val >= 0.001f ? 1.f : 0.f;
+          return normalized_val >= 0.001f ? 1.f : 0.f;
         }
       else
         {
-          return
-            self->minf +
-            normalized_val *
-              (self->maxf - self->minf);
+          return self->minf
+                 + normalized_val
+                     * (self->maxf - self->minf);
         }
     }
   else if (id->flags & PORT_FLAG_TOGGLE)
@@ -226,15 +212,14 @@ control_port_normalized_val_to_real (
     }
   else if (id->flags & PORT_FLAG_CHANNEL_FADER)
     {
-      return
-        (float) math_get_amp_val_from_fader (
-          normalized_val);
+      return (float) math_get_amp_val_from_fader (
+        normalized_val);
     }
   else
     {
-      return
-        self->minf +
-        normalized_val * (self->maxf - self->minf);
+      return self->minf
+             + normalized_val
+                 * (self->maxf - self->minf);
     }
   g_return_val_if_reached (normalized_val);
 }
@@ -260,19 +245,21 @@ control_port_real_val_to_normalized (
         {
           /* make sure none of the values is 0 */
           float minf =
-            math_floats_equal (self->minf, 0.f) ?
-            1e-20f : self->minf;
+            math_floats_equal (self->minf, 0.f)
+              ? 1e-20f
+              : self->minf;
           float maxf =
-            math_floats_equal (self->maxf, 0.f) ?
-            1e-20f : self->maxf;
+            math_floats_equal (self->maxf, 0.f)
+              ? 1e-20f
+              : self->maxf;
           real_val =
-            math_floats_equal (real_val, 0.f) ?
-            1e-20f : real_val;
+            math_floats_equal (real_val, 0.f)
+              ? 1e-20f
+              : real_val;
 
           /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
-          return
-            logf (real_val / minf) /
-            logf (maxf / minf);
+          return logf (real_val / minf)
+                 / logf (maxf / minf);
         }
       else if (self->id.flags & PORT_FLAG_TOGGLE)
         {
@@ -281,9 +268,8 @@ control_port_real_val_to_normalized (
       else
         {
           float sizef = self->maxf - self->minf;
-          return
-            (sizef - (self->maxf - real_val)) /
-            sizef;
+          return (sizef - (self->maxf - real_val))
+                 / sizef;
         }
     }
   else if (id->flags & PORT_FLAG_TOGGLE)
@@ -292,16 +278,13 @@ control_port_real_val_to_normalized (
     }
   else if (id->flags & PORT_FLAG_CHANNEL_FADER)
     {
-      return
-        (float)
-        math_get_fader_val_from_amp (real_val);
+      return (float) math_get_fader_val_from_amp (
+        real_val);
     }
   else
     {
       float sizef = self->maxf - self->minf;
-      return
-        (sizef - (self->maxf - real_val)) /
-        sizef;
+      return (sizef - (self->maxf - real_val)) / sizef;
     }
   g_return_val_if_reached (0.f);
 }
@@ -331,7 +314,7 @@ control_port_set_val_from_normalized (
         control_port_normalized_val_to_real (
           self, val);
       if (!math_floats_equal (
-             self->control, real_val))
+            self->control, real_val))
         {
           EVENTS_PUSH (
             ET_AUTOMATION_VALUE_CHANGED, self);
@@ -348,45 +331,44 @@ control_port_set_val_from_normalized (
       float real_val =
         control_port_normalized_val_to_real (
           self, val);
-      if (!math_floats_equal (self->control, real_val))
+      if (!math_floats_equal (
+            self->control, real_val))
         {
           EVENTS_PUSH (
             ET_AUTOMATION_VALUE_CHANGED, self);
           self->control =
-            control_port_is_val_toggled (real_val) ?
-              1.f : 0.f;
+            control_port_is_val_toggled (real_val)
+              ? 1.f
+              : 0.f;
         }
 
       if (id->flags & PORT_FLAG_FADER_MUTE)
         {
           Track * track = port_get_track (self, 1);
           track_set_muted (
-            track,
-            control_port_is_toggled (self),
+            track, control_port_is_toggled (self),
             F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
             F_PUBLISH_EVENTS);
         }
     }
   else if (id->flags & PORT_FLAG_CHANNEL_FADER)
     {
-      Track * track = port_get_track (self, 1);
+      Track *   track = port_get_track (self, 1);
       Channel * ch = track_get_channel (track);
       g_return_if_fail (ch);
       if (!math_floats_equal (
-            fader_get_fader_val (
-              ch->fader), val))
+            fader_get_fader_val (ch->fader), val))
         {
           EVENTS_PUSH (
             ET_AUTOMATION_VALUE_CHANGED, self);
         }
       fader_set_amp (
         ch->fader,
-        (float)
-        math_get_amp_val_from_fader (val));
+        (float) math_get_amp_val_from_fader (val));
     }
   else if (id->flags & PORT_FLAG_STEREO_BALANCE)
     {
-      Track * track = port_get_track (self, true);
+      Track *   track = port_get_track (self, true);
       Channel * ch = track_get_channel (track);
       g_return_if_fail (ch);
       if (!math_floats_equal (
@@ -400,15 +382,13 @@ control_port_set_val_from_normalized (
   else if (id->flags & PORT_FLAG_MIDI_AUTOMATABLE)
     {
       float real_val =
-        self->minf +
-        val * (self->maxf - self->minf);
+        self->minf + val * (self->maxf - self->minf);
       if (!math_floats_equal (val, self->control))
         {
           EVENTS_PUSH (
             ET_AUTOMATION_VALUE_CHANGED, self);
         }
-      port_set_control_value (
-        self, real_val, 0, 0);
+      port_set_control_value (self, real_val, 0, 0);
     }
   else if (id->flags & PORT_FLAG_AUTOMATABLE)
     {

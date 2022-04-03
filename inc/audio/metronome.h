@@ -56,28 +56,28 @@ typedef enum MetronomeType
 typedef struct Metronome
 {
   /** Absolute path of the "emphasis" sample. */
-  char *     emphasis_path;
+  char * emphasis_path;
 
   /** Absolute path of the "normal" sample. */
-  char *     normal_path;
+  char * normal_path;
 
   /** The emphasis sample. */
-  float *    emphasis;
+  float * emphasis;
 
   /** Size per channel. */
-  size_t     emphasis_size;
+  size_t emphasis_size;
 
   channels_t emphasis_channels;
 
   /** The normal sample. */
-  float *    normal;
+  float * normal;
 
   /** Size per channel. */
-  size_t     normal_size;
+  size_t normal_size;
 
   channels_t normal_channels;
 
-  float      volume;
+  float volume;
 } Metronome;
 
 /**
@@ -89,9 +89,7 @@ metronome_new (void);
 
 NONNULL
 void
-metronome_set_volume (
-  Metronome * self,
-  float       volume);
+metronome_set_volume (Metronome * self, float volume);
 
 /**
  * Queues metronome events (if any) within the
@@ -102,14 +100,13 @@ metronome_set_volume (
 NONNULL
 void
 metronome_queue_events (
- AudioEngine *   self,
- const nframes_t loffset,
- const nframes_t nframes);
+  AudioEngine *   self,
+  const nframes_t loffset,
+  const nframes_t nframes);
 
 NONNULL
 void
-metronome_free (
-  Metronome * self);
+metronome_free (Metronome * self);
 
 /**
  * @}

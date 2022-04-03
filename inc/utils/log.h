@@ -25,8 +25,8 @@
 #include <gtk/gtk.h>
 
 typedef struct _LogViewerWidget LogViewerWidget;
-typedef struct MPMCQueue MPMCQueue;
-typedef struct ObjectPool ObjectPool;
+typedef struct MPMCQueue        MPMCQueue;
+typedef struct ObjectPool       ObjectPool;
 
 /**
  * @addtogroup utils
@@ -48,19 +48,19 @@ typedef struct Log
 #endif
 
   /** Current log file path. */
-  char *          log_filepath;
+  char * log_filepath;
 
   /** Message queue, for when messages are sent
    * from a non-gtk thread. */
-  MPMCQueue *     mqueue;
+  MPMCQueue * mqueue;
 
   /** Object pool for the queue. */
-  ObjectPool *    obj_pool;
+  ObjectPool * obj_pool;
 
   /** Used by the writer func. */
-  char *          log_domains;
+  char * log_domains;
 
-  bool            initialized;
+  bool initialized;
 
   /**
    * Whether to use structured log when writing
@@ -68,20 +68,20 @@ typedef struct Log
    *
    * Used during tests.
    */
-  bool            use_structured_for_console;
+  bool use_structured_for_console;
 
   /**
    * Minimum log level for the console.
    *
    * Used during tests.
    */
-  GLogLevelFlags  min_log_level_for_test_console;
+  GLogLevelFlags min_log_level_for_test_console;
 
   /** Currently opened log viewer. */
   LogViewerWidget * viewer;
 
   /** ID of the source function. */
-  guint           writer_source_id;
+  guint writer_source_id;
 
   /**
    * Last timestamp a bug report popup was shown.
@@ -89,7 +89,7 @@ typedef struct Log
    * This is used to avoid showing too many error popups
    * at once.
    */
-  gint64          last_popup_time;
+  gint64 last_popup_time;
 } Log;
 
 /** Global variable, available to all files. */
@@ -104,17 +104,14 @@ extern Log * zlog;
  */
 NONNULL
 void
-log_init_writer_idle (
-  Log *        self,
-  unsigned int secs);
+log_init_writer_idle (Log * self, unsigned int secs);
 
 /**
  * Idle callback.
  */
 NONNULL
 int
-log_idle_cb (
-  Log * self);
+log_idle_cb (Log * self);
 
 /**
  * Returns the last \ref n lines as a newly
@@ -127,9 +124,7 @@ log_idle_cb (
  */
 NONNULL
 char *
-log_get_last_n_lines (
-  Log * self,
-  int   n);
+log_get_last_n_lines (Log * self, int n);
 
 /**
  * Generates a compressed log file (for sending with
@@ -137,7 +132,7 @@ log_get_last_n_lines (
  *
  * @return Whether successful.
  */
-NONNULL_ARGS (1,2,3)
+NONNULL_ARGS (1, 2, 3)
 bool
 log_generate_compressed_file (
   Log *     self,
@@ -180,8 +175,7 @@ log_new (void);
  */
 NONNULL
 void
-log_free (
-  Log * self);
+log_free (Log * self);
 
 /**
  * @}

@@ -19,9 +19,9 @@
 
 #include "audio/midi_file.h"
 
-#include <ext/midilib/src/midifile.h>
-
 #include <gtk/gtk.h>
+
+#include <ext/midilib/src/midifile.h>
 
 /**
  * Returns whether the given track in the midi file
@@ -41,8 +41,8 @@ midi_file_track_has_data (
   int ev;
   g_debug ("reading MIDI Track %d", track_idx);
   bool have_data = false;
-  while (midiReadGetNextMessage (
-           mf, track_idx, &msg))
+  while (
+    midiReadGetNextMessage (mf, track_idx, &msg))
     {
       if (msg.bImpliedMsg)
         {
@@ -53,7 +53,7 @@ midi_file_track_has_data (
           ev = msg.iType;
         }
 
-      switch(ev)
+      switch (ev)
         {
         case msgNoteOff:
         case msgMetaEvent:
@@ -90,8 +90,7 @@ midi_file_get_num_tracks (
   const char * abs_path,
   bool         non_empty_only)
 {
-  MIDI_FILE * mf =
-    midiFileOpen (abs_path);
+  MIDI_FILE * mf = midiFileOpen (abs_path);
   g_return_val_if_fail (mf, -1);
 
   int actual_num = 0;
@@ -100,10 +99,10 @@ midi_file_get_num_tracks (
   g_debug ("%s: num tracks = %d", abs_path, num);
 
   if (!non_empty_only)
-  {
-    midiFileClose (mf);
-    return num;
-  }
+    {
+      midiFileClose (mf);
+      return num;
+    }
 
   for (int i = 0; i < num; i++)
     {

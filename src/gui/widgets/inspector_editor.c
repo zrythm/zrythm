@@ -20,13 +20,13 @@
 #include "gui/widgets/inspector_editor.h"
 #include "utils/resources.h"
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include <glib/gi18n.h>
-
-G_DEFINE_TYPE (InspectorEditorWidget,
-               inspector_editor_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  InspectorEditorWidget,
+  inspector_editor_widget,
+  GTK_TYPE_BOX)
 
 void
 inspector_editor_widget_show (
@@ -38,11 +38,9 @@ static void
 inspector_editor_widget_class_init (
   InspectorEditorWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "inspector_editor.ui");
-
 }
 
 static void
@@ -51,4 +49,3 @@ inspector_editor_widget_init (
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }
-

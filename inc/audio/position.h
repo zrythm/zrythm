@@ -45,15 +45,15 @@
 #define TICKS_PER_SIXTEENTH_NOTE_DBL 240.0
 #define position_add_sixteenths(_pos, _s) \
   position_add_ticks ( \
-    (_pos), (_s) * TICKS_PER_SIXTEENTH_NOTE)
+    (_pos), (_s) *TICKS_PER_SIXTEENTH_NOTE)
 #define position_add_beats(_pos, _b) \
   g_warn_if_fail (TRANSPORT->ticks_per_beat > 0); \
   position_add_ticks ( \
-    (_pos), (_b) * TRANSPORT->ticks_per_beat)
+    (_pos), (_b) *TRANSPORT->ticks_per_beat)
 #define position_add_bars(_pos, _b) \
   g_warn_if_fail (TRANSPORT->ticks_per_bar > 0); \
   position_add_ticks ( \
-    (_pos), (_b) * TRANSPORT->ticks_per_bar)
+    (_pos), (_b) *TRANSPORT->ticks_per_bar)
 #define position_snap_simple(pos, sg) \
   position_snap (NULL, pos, NULL, NULL, sg)
 
@@ -63,7 +63,7 @@
  * Whether the position starts on or after f1 and
  * before f2.
  */
-#define position_between_frames_excl2(pos,f1,f2) \
+#define position_between_frames_excl2(pos, f1, f2) \
   ((pos)->frames >= f1 && (pos)->frames < f2)
 
 /**
@@ -73,27 +73,27 @@
  * 0 = equal
  * positive = p2 is earlier
  */
-#define position_compare(p1,p2) \
+#define position_compare(p1, p2) \
   ((p1)->frames - (p2)->frames)
 
 /** Checks if _pos is before _cmp. */
-#define position_is_before(_pos,_cmp) \
+#define position_is_before(_pos, _cmp) \
   (position_compare (_pos, _cmp) < 0)
 
 /** Checks if _pos is before or equal to _cmp. */
-#define position_is_before_or_equal(_pos,_cmp) \
+#define position_is_before_or_equal(_pos, _cmp) \
   (position_compare (_pos, _cmp) <= 0)
 
 /** Checks if _pos is equal to _cmp. */
-#define position_is_equal(_pos,_cmp) \
+#define position_is_equal(_pos, _cmp) \
   (position_compare (_pos, _cmp) == 0)
 
 /** Checks if _pos is after _cmp. */
-#define position_is_after(_pos,_cmp) \
+#define position_is_after(_pos, _cmp) \
   (position_compare (_pos, _cmp) > 0)
 
 /** Checks if _pos is after or equal to _cmp. */
-#define position_is_after_or_equal(_pos,_cmp) \
+#define position_is_after_or_equal(_pos, _cmp) \
   (position_compare (_pos, _cmp) >= 0)
 
 #define position_is_positive(pos) \
@@ -106,32 +106,33 @@
  * 0 = equal
  * positive = p2 is earlier
  */
-#define position_compare_ticks(p1,p2) \
+#define position_compare_ticks(p1, p2) \
   ((p1)->ticks - (p2)->ticks)
 
-#define position_is_equal_ticks(p1,p2) \
-  (fabs (position_compare_ticks (p1, p2)) <= \
-     DBL_EPSILON)
+#define position_is_equal_ticks(p1, p2) \
+  (fabs (position_compare_ticks (p1, p2)) \
+   <= DBL_EPSILON)
 
 /** Returns if _pos is after or equal to _start and
  * before _end. */
-#define position_is_between(_pos,_start,_end) \
-  (position_is_after_or_equal (_pos, _start) && \
-   position_is_before (_pos, _end))
+#define position_is_between(_pos, _start, _end) \
+  (position_is_after_or_equal (_pos, _start) \
+   && position_is_before (_pos, _end))
 
 /** Returns if _pos is after _start and
  * before _end. */
-#define position_is_between_excl_start(_pos,_start,_end) \
-  (position_is_after (_pos, _start) && \
-   position_is_before (_pos, _end))
+#define position_is_between_excl_start( \
+  _pos, _start, _end) \
+  (position_is_after (_pos, _start) \
+   && position_is_before (_pos, _end))
 
 /** Returns minimum of p1 and p2 */
-#define position_min(p1,p2) \
-  (position_compare(p1,p2) < 0 ? p1 : p2)
+#define position_min(p1, p2) \
+  (position_compare (p1, p2) < 0 ? p1 : p2)
 
 /** Returns maximum of p1 and p2 */
-#define position_max(p1,p2) \
-  (position_compare(p1,p2) > 0 ? p1 : p2)
+#define position_max(p1, p2) \
+  (position_compare (p1, p2) > 0 ? p1 : p2)
 
 /** Inits the default position on the stack. */
 #define POSITION_INIT_ON_STACK(name) \
@@ -146,8 +147,8 @@
   *(__pos) = POSITION_START
 
 typedef struct SnapGrid SnapGrid;
-typedef struct Track Track;
-typedef struct ZRegion ZRegion;
+typedef struct Track    Track;
+typedef struct ZRegion  ZRegion;
 
 /**
  * A Position is made up of
@@ -155,60 +156,48 @@ typedef struct ZRegion ZRegion;
  */
 typedef struct Position
 {
-  int            schema_version;
+  int schema_version;
 
   /** Precise total number of ticks. */
-  double         ticks;
+  double ticks;
 
   /** Position in frames (samples). */
   signed_frame_t frames;
 } Position;
 
 static const cyaml_schema_field_t
-  position_fields_schema[] =
-{
-  YAML_FIELD_INT (Position, schema_version),
-  YAML_FIELD_FLOAT (Position, ticks),
-  YAML_FIELD_INT (Position, frames),
+  position_fields_schema[] = {
+    YAML_FIELD_INT (Position, schema_version),
+    YAML_FIELD_FLOAT (Position, ticks),
+    YAML_FIELD_INT (Position, frames),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t
-  position_schema =
-{
-  YAML_VALUE_PTR (
-    Position, position_fields_schema),
+static const cyaml_schema_value_t position_schema = {
+  YAML_VALUE_PTR (Position, position_fields_schema),
 };
 
 /** Start Position to be used in calculations. */
-static const Position POSITION_START =
-{
+static const Position POSITION_START = {
   .schema_version = POSITION_SCHEMA_VERSION,
   .ticks = 0.0,
   .frames = 0
 };
 
 static inline int
-position_cmp_func (
-  const void * _a,
-  const void * _b)
+position_cmp_func (const void * _a, const void * _b)
 {
-  const Position * a =
-    (Position const *) _a;
-  const Position * b =
-    (Position const *) _b;
-  return
-    position_compare (a, b);
+  const Position * a = (Position const *) _a;
+  const Position * b = (Position const *) _b;
+  return position_compare (a, b);
 }
 
 /**
  * Sets position to given bar.
  */
 void
-position_set_to_bar (
-  Position * self,
-  int        bar);
+position_set_to_bar (Position * self, int bar);
 
 /**
  * Sorts an array of Position's.
@@ -223,7 +212,7 @@ position_sort_array (
  *
  * Assumes each position is Position *.
  */
-#define position_set_to_pos(_pos,_target) \
+#define position_set_to_pos(_pos, _target) \
   *(_pos) = *(_target)
 
 /**
@@ -231,8 +220,7 @@ position_sort_array (
  * the rest of the fields, and makes sure the
  * frames are still accurate.
  */
-HOT
-void
+HOT void
 position_add_frames (
   Position *           pos,
   const signed_frame_t frames);
@@ -250,9 +238,7 @@ position_from_seconds (
   Position * position,
   double     secs);
 
-HOT
-NONNULL
-void
+HOT NONNULL void
 position_from_frames (
   Position *           pos,
   const signed_frame_t frames);
@@ -260,36 +246,24 @@ position_from_frames (
 /**
  * Sets position to the given total tick count.
  */
-HOT
-NONNULL
-void
-position_from_ticks (
-  Position * pos,
-  double     ticks);
+HOT NONNULL void
+position_from_ticks (Position * pos, double ticks);
 
 NONNULL
 void
-position_from_bars (
-  Position * pos,
-  int        bars);
+position_from_bars (Position * pos, int bars);
 
-HOT
-NONNULL
-void
-position_add_ticks (
-  Position * self,
-  double     ticks);
+HOT NONNULL void
+position_add_ticks (Position * self, double ticks);
 
 /**
  * Returns the Position in milliseconds.
  */
 signed_ms_t
-position_to_ms (
-  const Position * pos);
+position_to_ms (const Position * pos);
 
 signed_frame_t
-position_ms_to_frames (
-  const signed_ms_t ms);
+position_ms_to_frames (const signed_ms_t ms);
 
 void
 position_add_ms (
@@ -297,9 +271,7 @@ position_add_ms (
   const signed_ms_t ms);
 
 void
-position_add_minutes (
-  Position * pos,
-  int        mins);
+position_add_minutes (Position * pos, int mins);
 
 void
 position_add_seconds (
@@ -329,8 +301,8 @@ void
 position_snap (
   const Position * start_pos,
   Position *       pos,
-  Track    *       track,
-  ZRegion   *      region,
+  Track *          track,
+  ZRegion *        region,
   const SnapGrid * sg);
 
 /**
@@ -346,15 +318,13 @@ position_snap (
 void
 position_set_min_size (
   const Position * start_pos,
-  Position * end_pos,
-  SnapGrid * snap);
+  Position *       end_pos,
+  SnapGrid *       snap);
 
 /**
  * Updates ticks.
  */
-HOT
-NONNULL
-void
+HOT NONNULL void
 position_update_ticks_from_frames (
   Position * position);
 
@@ -362,15 +332,12 @@ position_update_ticks_from_frames (
  * Converts ticks to frames.
  */
 signed_frame_t
-position_get_frames_from_ticks (
-  double ticks);
+position_get_frames_from_ticks (double ticks);
 
 /**
  * Updates frames.
  */
-HOT
-NONNULL
-void
+HOT NONNULL void
 position_update_frames_from_ticks (
   Position * position);
 
@@ -382,9 +349,7 @@ position_update_frames_from_ticks (
  *   (false).
  */
 static inline void
-position_update (
-  Position * self,
-  bool       from_ticks)
+position_update (Position * self, bool from_ticks)
 {
   if (from_ticks)
     position_update_frames_from_ticks (self);
@@ -428,8 +393,7 @@ position_get_ticks_diff (
  */
 NONNULL
 char *
-position_to_string_alloc (
-  const Position * pos);
+position_to_string_alloc (const Position * pos);
 
 NONNULL
 void
@@ -444,9 +408,7 @@ position_to_string_full (
  */
 NONNULL
 void
-position_to_string (
-  const Position * pos,
-  char *           buf);
+position_to_string (const Position * pos, char * buf);
 
 /**
  * Parses a position from the given string.
@@ -456,17 +418,14 @@ position_to_string (
 NONNULL
 WARN_UNUSED_RESULT
 bool
-position_parse (
-  Position *   pos,
-  const char * str);
+position_parse (Position * pos, const char * str);
 
 /**
  * Prints the Position in the "0.0.0.0" form.
  */
 NONNULL
 void
-position_print (
-  const Position * pos);
+position_print (const Position * pos);
 
 NONNULL
 void
@@ -484,7 +443,7 @@ NONNULL
 int
 position_get_total_bars (
   const Position * pos,
-  bool  include_current);
+  bool             include_current);
 
 /**
  * Returns the total number of beats.
@@ -496,7 +455,7 @@ NONNULL
 int
 position_get_total_beats (
   const Position * pos,
-  bool  include_current);
+  bool             include_current);
 
 /**
  * Returns the total number of sixteenths not
@@ -515,8 +474,7 @@ position_get_total_sixteenths (
  */
 NONNULL
 void
-position_change_sign (
-  Position * pos);
+position_change_sign (Position * pos);
 
 /**
  * Gets the bars of the position.
@@ -531,7 +489,7 @@ NONNULL
 int
 position_get_bars (
   const Position * pos,
-  bool  start_at_one);
+  bool             start_at_one);
 
 /**
  * Gets the beats of the position.
@@ -546,7 +504,7 @@ NONNULL
 int
 position_get_beats (
   const Position * pos,
-  bool  start_at_one);
+  bool             start_at_one);
 
 /**
  * Gets the sixteenths of the position.
@@ -561,7 +519,7 @@ NONNULL
 int
 position_get_sixteenths (
   const Position * pos,
-  bool  start_at_one);
+  bool             start_at_one);
 
 /**
  * Gets the ticks of the position.
@@ -571,13 +529,11 @@ position_get_sixteenths (
  */
 NONNULL
 double
-position_get_ticks (
-  const Position * pos);
+position_get_ticks (const Position * pos);
 
 NONNULL
 bool
-position_validate (
-  const Position * pos);
+position_validate (const Position * pos);
 
 /**
  * @}

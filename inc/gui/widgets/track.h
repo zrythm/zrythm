@@ -30,18 +30,20 @@
 
 #include <gtk/gtk.h>
 
-#define TRACK_WIDGET_TYPE \
-  (track_widget_get_type ())
+#define TRACK_WIDGET_TYPE (track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  TrackWidget, track_widget, Z, TRACK_WIDGET,
+  TrackWidget,
+  track_widget,
+  Z,
+  TRACK_WIDGET,
   GtkWidget)
 
 typedef struct _ArrangerWidget ArrangerWidget;
 typedef struct AutomationModeWidget
   AutomationModeWidget;
 typedef struct CustomButtonWidget CustomButtonWidget;
-typedef struct _MeterWidget MeterWidget;
-typedef struct Track Track;
+typedef struct _MeterWidget       MeterWidget;
+typedef struct Track              Track;
 typedef struct _TrackCanvasWidget TrackCanvasWidget;
 
 /**
@@ -60,10 +62,11 @@ typedef struct _TrackCanvasWidget TrackCanvasWidget;
 #define TRACK_BUTTON_PADDING_FROM_EDGE 3
 
 #define TRACK_BOT_BUTTONS_SHOULD_BE_VISIBLE(height) \
-  (height >= \
-     (TRACK_BUTTON_SIZE + \
-        TRACK_BUTTON_PADDING_FROM_EDGE) * 2 + \
-     TRACK_BUTTON_PADDING)
+  (height \
+   >= (TRACK_BUTTON_SIZE \
+       + TRACK_BUTTON_PADDING_FROM_EDGE) \
+          * 2 \
+        + TRACK_BUTTON_PADDING)
 
 #define TRACK_COLOR_AREA_WIDTH 18
 
@@ -78,7 +81,8 @@ typedef struct _TrackCanvasWidget TrackCanvasWidget;
 #define TRACK_ICON_NAME_SHOW_TRACK_LANES \
   "format-justify-fill"
 #define TRACK_ICON_NAME_LOCK "document-decrypt"
-#define TRACK_ICON_NAME_FREEZE "fork-awesome-snowflake-o"
+#define TRACK_ICON_NAME_FREEZE \
+  "fork-awesome-snowflake-o"
 #define TRACK_ICON_NAME_PLUS "add"
 #define TRACK_ICON_NAME_MINUS "remove"
 #define TRACK_ICON_NAME_BUS "effect"
@@ -88,11 +92,13 @@ typedef struct _TrackCanvasWidget TrackCanvasWidget;
 #define TRACK_ICON_NAME_MIDI "instrument"
 #define TRACK_ICON_NAME_TEMPO "filename-bpm-amarok"
 #define TRACK_ICON_NAME_MODULATOR "modulator"
-#define TRACK_ICON_NAME_FOLD "fluentui-folder-regular"
-#define TRACK_ICON_NAME_FOLD_OPEN "fluentui-folder-open-regular"
+#define TRACK_ICON_NAME_FOLD \
+  "fluentui-folder-regular"
+#define TRACK_ICON_NAME_FOLD_OPEN \
+  "fluentui-folder-open-regular"
 #define TRACK_ICON_NAME_MONITOR_AUDIO "audition"
 
-#define TRACK_ICON_IS(x,name) \
+#define TRACK_ICON_IS(x, name) \
   (string_is_equal (x, TRACK_ICON_NAME_##name))
 
 #define TRACK_CB_ICON_IS(name) \
@@ -128,14 +134,14 @@ typedef enum TrackWidgetResizeTarget
  */
 typedef struct _TrackWidget
 {
-  GtkWidget         parent_instance;
+  GtkWidget parent_instance;
 
   /** Main box containing the drawing area and the
    * meters on the right. */
-  GtkBox *          main_box;
+  GtkBox * main_box;
 
   /** Group colors. */
-  GtkBox *          group_colors_box;
+  GtkBox * group_colors_box;
 
   GtkGestureDrag *  drag;
   GtkGestureClick * click;
@@ -144,11 +150,11 @@ typedef struct _TrackWidget
   GtkGestureClick * right_click;
 
   /** If drag update was called at least once. */
-  int               dragged;
+  int dragged;
 
   /** Number of clicks, used when selecting/moving/
    * dragging channels. */
-  int               n_press;
+  int n_press;
 
   /**
    * Set between enter-leave signals.
@@ -158,7 +164,7 @@ typedef struct _TrackWidget
    * hovering over other overlayed widgets (buttons,
    * etc.).
    */
-  bool              bg_hovered;
+  bool bg_hovered;
 
   /**
    * Whether color area is currently hoverred.
@@ -167,7 +173,7 @@ typedef struct _TrackWidget
    * \ref TrackWidget.bg_hovered. The color area
    * is considered part of the BG.
    */
-  bool              color_area_hovered;
+  bool color_area_hovered;
 
   /**
    * Whether the icon in the color area is
@@ -177,7 +183,7 @@ typedef struct _TrackWidget
    * \ref TrackWidget.color_area_hovered. The
    * icon is considered part of the color area.
    */
-  bool              icon_hovered;
+  bool icon_hovered;
 
   /**
    * Set when the drag should resize instead of dnd.
@@ -185,49 +191,49 @@ typedef struct _TrackWidget
    * This is used to determine if we should resize
    * on drag begin.
    */
-  int               resize;
+  int resize;
 
   /** Set during the whole resizing action. */
-  int               resizing;
+  int resizing;
 
   /** Resize target type (track/at/lane). */
-  TrackWidgetResizeTarget  resize_target_type;
+  TrackWidgetResizeTarget resize_target_type;
 
   /** The object to resize. */
-  void *            resize_target;
+  void * resize_target;
 
   /** Associated Track. */
-  Track *           track;
+  Track * track;
 
   /** Control held down on drag begin. */
-  int               ctrl_held_at_start;
+  int ctrl_held_at_start;
 
   /** Used for highlighting. */
-  GtkBox *          highlight_top_box;
-  GtkBox *          highlight_bot_box;
+  GtkBox * highlight_top_box;
+  GtkBox * highlight_bot_box;
 
   /** Whether to highlight inside the track (eg,
    * when dragging inside foldable tracks). */
-  bool              highlight_inside;
+  bool highlight_inside;
 
   /** The track selection processing was done in
    * the dnd callbacks, so no need to do it in
    * drag_end. */
-  int               selected_in_dnd;
+  int selected_in_dnd;
 
   /** For drag actions. */
-  double            start_x;
-  double            start_y;
-  double            last_offset_y;
+  double start_x;
+  double start_y;
+  double last_offset_y;
 
   /** Used during hovering to remember the last
    * known cursor position. */
-  double            last_x;
-  double            last_y;
+  double last_x;
+  double last_y;
 
   /** Used when mouse button is held down to
    * mark buttons as clicked. */
-  int               button_pressed;
+  int button_pressed;
 
   /** Currently clicked button. */
   CustomButtonWidget * clicked_button;
@@ -235,7 +241,7 @@ typedef struct _TrackWidget
   /** Currently clicked automation mode button. */
   AutomationModeWidget * clicked_am;
 
-  TrackCanvasWidget *  canvas;
+  TrackCanvasWidget * canvas;
 
   /**
    * Signal handler IDs for tracks that have them.
@@ -249,28 +255,28 @@ typedef struct _TrackWidget
 
   /** Buttons to be drawin in order. */
   CustomButtonWidget * top_buttons[8];
-  int               num_top_buttons;
+  int                  num_top_buttons;
   CustomButtonWidget * bot_buttons[8];
-  int               num_bot_buttons;
+  int                  num_bot_buttons;
 
-  MeterWidget *     meter_l;
-  MeterWidget *     meter_r;
+  MeterWidget * meter_l;
+  MeterWidget * meter_r;
 
   /**
    * Current tooltip text.
    */
-  char *            tooltip_text;
+  char * tooltip_text;
 
   /** Last MIDI event trigger time, for MIDI
    * ports. */
-  gint64            last_midi_out_trigger_time;
+  gint64 last_midi_out_trigger_time;
 
   /** Set to 1 to redraw. */
-  int               redraw;
+  int redraw;
 
   /** Whether the track was armed for recording
    * at the start of the current action. */
-  bool              was_armed;
+  bool was_armed;
 
   /** Cairo caches. */
   cairo_t *         cached_cr;
@@ -280,7 +286,7 @@ typedef struct _TrackWidget
   GtkPopoverMenu * popover_menu;
 
   /** Popover for changing the track name. */
-  GtkPopover *     track_name_popover;
+  GtkPopover * track_name_popover;
 } TrackWidget;
 
 const char *
@@ -301,7 +307,7 @@ track_widget_new (Track * track);
 void
 track_widget_set_name (
   TrackWidget * self,
-  const char * name);
+  const char *  name);
 
 /**
  * Callback when automation button is toggled.
@@ -321,8 +327,7 @@ track_widget_on_show_lanes_toggled (
  * Callback when record button is toggled.
  */
 void
-track_widget_on_record_toggled (
-  TrackWidget * self);
+track_widget_on_record_toggled (TrackWidget * self);
 
 /**
  * Returns if cursor is in the range select "half".
@@ -339,16 +344,14 @@ track_widget_is_cursor_in_range_select_half (
  * Updates the track icons.
  */
 void
-track_widget_update_icons (
-  TrackWidget * self);
+track_widget_update_icons (TrackWidget * self);
 
 /**
  * Updates the full track size and redraws the
  * track.
  */
 void
-track_widget_update_size (
-  TrackWidget * self);
+track_widget_update_size (TrackWidget * self);
 
 /**
  * Returns the highlight location based on y
@@ -387,8 +390,7 @@ track_widget_get_local_y (
  * Causes a redraw of the meters only.
  */
 void
-track_widget_redraw_meters (
-  TrackWidget * self);
+track_widget_redraw_meters (TrackWidget * self);
 
 /**
  * Re-fills TrackWidget.group_colors_box.

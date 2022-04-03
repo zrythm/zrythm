@@ -35,7 +35,8 @@
 G_DECLARE_FINAL_TYPE (
   FileBrowserWidget,
   file_browser_widget,
-  Z, FILE_BROWSER_WIDGET,
+  Z,
+  FILE_BROWSER_WIDGET,
   GtkBox)
 
 typedef struct _FileAuditionerControlsWidget
@@ -59,16 +60,16 @@ typedef struct _WrappedObjectWithChangeSignal
  */
 typedef struct _FileBrowserWidget
 {
-  GtkBox               parent_instance;
-  GtkBox *             browser_top;
-  GtkBox *             browser_bot;
-  GtkLabel *           file_info;
-  ZFileType            selected_type;
+  GtkBox     parent_instance;
+  GtkBox *   browser_top;
+  GtkBox *   browser_bot;
+  GtkLabel * file_info;
+  ZFileType  selected_type;
 
   FileBrowserFiltersWidget * filters_toolbar;
 
   /** The file chooser. */
-  GtkBox *              file_chooser_box;
+  GtkBox *               file_chooser_box;
   GtkFileChooserWidget * file_chooser;
 
   FileAuditionerControlsWidget * auditioner_controls;
@@ -84,9 +85,9 @@ typedef struct _FileBrowserWidget
    * overwritten by something random within 300 ms
    * of widget creation.
    */
-  int                  start_saving_pos;
-  int                  first_time_position_set;
-  gint64               first_time_position_set_time;
+  int    start_saving_pos;
+  int    first_time_position_set;
+  gint64 first_time_position_set_time;
 } FileBrowserWidget;
 
 /**

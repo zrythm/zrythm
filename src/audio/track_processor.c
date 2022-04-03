@@ -45,8 +45,7 @@
 #include <glib/gi18n.h>
 
 static void
-init_common (
-  TrackProcessor * self)
+init_common (TrackProcessor * self)
 {
   if (self->midi_cc[0])
     {
@@ -66,15 +65,14 @@ init_common (
                * [2] (unused) = control */
               midi_byte_t buf[3];
               buf[0] =
-                (midi_byte_t)
-                (MIDI_CH1_CTRL_CHANGE | (midi_byte_t) i);
+                (midi_byte_t) (MIDI_CH1_CTRL_CHANGE | (midi_byte_t) i);
               buf[1] = (midi_byte_t) j;
               buf[2] = 0;
 
               /* bind */
               midi_mappings_bind_track (
-                self->cc_mappings, buf,
-                cc_port, F_NO_PUBLISH_EVENTS);
+                self->cc_mappings, buf, cc_port,
+                F_NO_PUBLISH_EVENTS);
             }
         }
     }
@@ -101,7 +99,7 @@ track_processor_init_loaded (
   object_free_w_func_and_null (
     g_ptr_array_unref, ports)
 
-  init_common (self);
+    init_common (self);
 }
 
 /**
@@ -117,16 +115,13 @@ track_processor_init_loaded (
  *   new.
  */
 static void
-init_midi_port (
-  TrackProcessor * self,
-  int              in)
+init_midi_port (TrackProcessor * self, int in)
 {
   if (in)
     {
-      self->midi_in =
-        port_new_with_type_and_owner (
-          TYPE_EVENT, FLOW_INPUT, "TP MIDI in",
-          PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+      self->midi_in = port_new_with_type_and_owner (
+        TYPE_EVENT, FLOW_INPUT, "TP MIDI in",
+        PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       self->midi_in->id.sym =
         g_strdup ("track_processor_midi_in");
       g_warn_if_fail (IS_PORT (self->midi_in));
@@ -135,10 +130,9 @@ init_midi_port (
     }
   else
     {
-      self->midi_out =
-        port_new_with_type_and_owner (
-          TYPE_EVENT, FLOW_OUTPUT, "TP MIDI out",
-          PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+      self->midi_out = port_new_with_type_and_owner (
+        TYPE_EVENT, FLOW_OUTPUT, "TP MIDI out",
+        PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       self->midi_out->id.sym =
         g_strdup ("track_processor_midi_out");
       g_warn_if_fail (IS_PORT (self->midi_out));
@@ -146,14 +140,12 @@ init_midi_port (
 }
 
 static void
-init_midi_cc_ports (
-  TrackProcessor * self,
-  int              loading)
+init_midi_cc_ports (TrackProcessor * self, int loading)
 {
-#define INIT_MIDI_PORT(x,idx) \
+#define INIT_MIDI_PORT(x, idx) \
   x->id.flags |= PORT_FLAG_MIDI_AUTOMATABLE; \
   x->id.flags |= PORT_FLAG_AUTOMATABLE; \
-  x->id.port_index = idx; \
+  x->id.port_index = idx;
 
   char name[400];
   for (int i = 0; i < 16; i++)
@@ -166,25 +158,20 @@ init_midi_cc_ports (
           sprintf (
             name, "Ch%d %s", channel,
             midi_get_controller_name (j));
-          Port * cc =
-            port_new_with_type_and_owner (
-              TYPE_CONTROL, FLOW_INPUT, name,
-              PORT_OWNER_TYPE_TRACK_PROCESSOR,
-              self);
+          Port * cc = port_new_with_type_and_owner (
+            TYPE_CONTROL, FLOW_INPUT, name,
+            PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
           INIT_MIDI_PORT (cc, i * 128 + j);
-          cc->id.sym =
-            g_strdup_printf (
-              "midi_controller_ch%d_%d",
-              channel, j + 1);
+          cc->id.sym = g_strdup_printf (
+            "midi_controller_ch%d_%d", channel,
+            j + 1);
           self->midi_cc[i * 128 + j] = cc;
         }
 
-      sprintf (
-        name, "Ch%d Pitch bend", i + 1);
-      Port * cc =
-        port_new_with_type_and_owner (
-          TYPE_CONTROL, FLOW_INPUT, name,
-          PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+      sprintf (name, "Ch%d Pitch bend", i + 1);
+      Port * cc = port_new_with_type_and_owner (
+        TYPE_CONTROL, FLOW_INPUT, name,
+        PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       cc->id.sym =
         g_strdup_printf ("ch%d_pitch_bend", i + 1);
       INIT_MIDI_PORT (cc, i);
@@ -197,27 +184,22 @@ init_midi_cc_ports (
 
       sprintf (
         name, "Ch%d Poly key pressure", i + 1);
-      cc =
-        port_new_with_type_and_owner (
-          TYPE_CONTROL, FLOW_INPUT, name,
-          PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
-      cc->id.sym =
-        g_strdup_printf (
-          "ch%d_poly_key_pressure", i + 1);
+      cc = port_new_with_type_and_owner (
+        TYPE_CONTROL, FLOW_INPUT, name,
+        PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+      cc->id.sym = g_strdup_printf (
+        "ch%d_poly_key_pressure", i + 1);
       INIT_MIDI_PORT (cc, i);
       cc->id.flags2 |=
         PORT_FLAG2_MIDI_POLY_KEY_PRESSURE;
       self->poly_key_pressure[i] = cc;
 
-      sprintf (
-        name, "Ch%d Channel pressure", i + 1);
-      cc =
-        port_new_with_type_and_owner (
-          TYPE_CONTROL, FLOW_INPUT, name,
-          PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
-      cc->id.sym =
-        g_strdup_printf (
-          "ch%d_channel_pressure", i + 1);
+      sprintf (name, "Ch%d Channel pressure", i + 1);
+      cc = port_new_with_type_and_owner (
+        TYPE_CONTROL, FLOW_INPUT, name,
+        PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+      cc->id.sym = g_strdup_printf (
+        "ch%d_channel_pressure", i + 1);
       INIT_MIDI_PORT (cc, i);
       cc->id.flags2 |=
         PORT_FLAG2_MIDI_CHANNEL_PRESSURE;
@@ -240,28 +222,24 @@ init_midi_cc_ports (
  *   new.
  */
 static void
-init_stereo_out_ports (
-  TrackProcessor * self,
-  bool             in)
+init_stereo_out_ports (TrackProcessor * self, bool in)
 {
-  Port * l, * r;
+  Port *         l, *r;
   StereoPorts ** sp =
     in ? &self->stereo_in : &self->stereo_out;
   PortFlow flow = in ? FLOW_INPUT : FLOW_OUTPUT;
 
-  l =
-    port_new_with_type_and_owner (
-      TYPE_AUDIO, flow,
-      in ? "TP Stereo in L" : "TP Stereo out L",
-      PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+  l = port_new_with_type_and_owner (
+    TYPE_AUDIO, flow,
+    in ? "TP Stereo in L" : "TP Stereo out L",
+    PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
   l->id.sym =
     g_strdup ("track_processor_stereo_out_l");
 
-  r =
-    port_new_with_type_and_owner (
-      TYPE_AUDIO, flow,
-      in ? "TP Stereo in R" : "TP Stereo out R",
-      PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+  r = port_new_with_type_and_owner (
+    TYPE_AUDIO, flow,
+    in ? "TP Stereo in R" : "TP Stereo out R",
+    PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
   r->id.sym =
     g_strdup ("track_processor_stereo_out_r");
 
@@ -279,8 +257,7 @@ init_stereo_out_ports (
  * track.
  */
 TrackProcessor *
-track_processor_new (
-  Track *          tr)
+track_processor_new (Track * tr)
 {
   TrackProcessor * self =
     object_new (TrackProcessor);
@@ -292,22 +269,21 @@ track_processor_new (
   self->l_port_db = 0.f;
   self->r_port_db = 0.f;
 
-  switch  (tr->in_signal_type)
+  switch (tr->in_signal_type)
     {
     case TYPE_EVENT:
       init_midi_port (self, 0);
       init_midi_port (self, 1);
 
       /* set up piano roll port */
-      if (track_type_has_piano_roll (tr->type) ||
-          tr->type == TRACK_TYPE_CHORD)
+      if (
+        track_type_has_piano_roll (tr->type)
+        || tr->type == TRACK_TYPE_CHORD)
         {
           self->piano_roll =
             port_new_with_type_and_owner (
-              TYPE_EVENT, FLOW_INPUT,
-              "TP Piano Roll",
-              PORT_OWNER_TYPE_TRACK_PROCESSOR,
-              self);
+              TYPE_EVENT, FLOW_INPUT, "TP Piano Roll",
+              PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
           self->piano_roll->id.sym =
             g_strdup ("track_processor_piano_roll");
           self->piano_roll->id.flags =
@@ -323,26 +299,21 @@ track_processor_new (
       init_stereo_out_ports (self, true);
       if (tr->type == TRACK_TYPE_AUDIO)
         {
-          self->mono =
-            port_new_with_type_and_owner (
-              TYPE_CONTROL, FLOW_INPUT,
-              "TP Mono Toggle",
-              PORT_OWNER_TYPE_TRACK_PROCESSOR,
-              self);
-          self->mono->id.sym =
-            g_strdup (
-              "track_processor_mono_toggle");
+          self->mono = port_new_with_type_and_owner (
+            TYPE_CONTROL, FLOW_INPUT,
+            "TP Mono Toggle",
+            PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+          self->mono->id.sym = g_strdup (
+            "track_processor_mono_toggle");
           self->mono->id.flags |= PORT_FLAG_TOGGLE;
           self->mono->id.flags |= PORT_FLAG_TP_MONO;
           self->input_gain =
             port_new_with_type_and_owner (
               TYPE_CONTROL, FLOW_INPUT,
               "TP Input Gain",
-              PORT_OWNER_TYPE_TRACK_PROCESSOR,
-              self);
+              PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
           self->input_gain->id.sym =
-            g_strdup (
-              "track_processor_input_gain");
+            g_strdup ("track_processor_input_gain");
           self->input_gain->minf = 0.f;
           self->input_gain->maxf = 4.f;
           self->input_gain->zerof = 0.f;
@@ -360,14 +331,12 @@ track_processor_new (
 
   if (tr->type == TRACK_TYPE_AUDIO)
     {
-      self->output_gain =
-        port_new_with_type_and_owner (
-          TYPE_CONTROL, FLOW_INPUT,
-          "TP Output Gain",
-          PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
+      self
+        ->output_gain = port_new_with_type_and_owner (
+        TYPE_CONTROL, FLOW_INPUT, "TP Output Gain",
+        PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       self->output_gain->id.sym =
-        g_strdup (
-          "track_processor_output_gain");
+        g_strdup ("track_processor_output_gain");
       self->output_gain->minf = 0.f;
       self->output_gain->maxf = 4.f;
       self->output_gain->zerof = 0.f;
@@ -380,12 +349,10 @@ track_processor_new (
 
       self->monitor_audio =
         port_new_with_type_and_owner (
-          TYPE_CONTROL, FLOW_INPUT,
-          "Monitor audio",
+          TYPE_CONTROL, FLOW_INPUT, "Monitor audio",
           PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       self->monitor_audio->id.sym =
-        g_strdup (
-          "track_processor_monitor_audio");
+        g_strdup ("track_processor_monitor_audio");
       self->monitor_audio->id.flags |=
         PORT_FLAG_TOGGLE;
       self->monitor_audio->id.flags2 |=
@@ -475,11 +442,10 @@ track_processor_append_ports (
  * Clears all buffers.
  */
 void
-track_processor_clear_buffers (
-  TrackProcessor * self)
+track_processor_clear_buffers (TrackProcessor * self)
 {
   /*Track * track =*/
-    /*track_processor_get_track (self);*/
+  /*track_processor_get_track (self);*/
 
   if (self->stereo_in)
     {
@@ -513,8 +479,7 @@ void
 track_processor_disconnect_all (
   TrackProcessor * self)
 {
-  Track * track =
-    track_processor_get_track (self);
+  Track * track = track_processor_get_track (self);
   g_return_if_fail (track);
 
   switch (track->in_signal_type)
@@ -545,8 +510,9 @@ track_processor_get_track (
   const TrackProcessor * self)
 {
   g_return_val_if_fail (
-    IS_TRACK_PROCESSOR (self) &&
-      IS_TRACK (self->track), NULL);
+    IS_TRACK_PROCESSOR (self)
+      && IS_TRACK (self->track),
+    NULL);
 
   return self->track;
 }
@@ -557,7 +523,7 @@ track_processor_get_track (
  */
 static void
 handle_recording (
-  const TrackProcessor * self,
+  const TrackProcessor *              self,
   const EngineProcessTimeInfo * const time_nfo)
 {
 #if 0
@@ -567,7 +533,7 @@ handle_recording (
 
   unsigned_frame_t split_points[6];
   unsigned_frame_t each_nframes[6];
-  int num_split_points = 1;
+  int              num_split_points = 1;
 
   unsigned_frame_t start_frames =
     time_nfo->g_start_frame;
@@ -584,9 +550,10 @@ handle_recording (
   each_nframes[0] = time_nfo->nframes;
   if (TRANSPORT->loop)
     {
-      if ((unsigned_frame_t)
-          TRANSPORT->loop_end_pos.frames ==
-            end_frames)
+      if (
+        (unsigned_frame_t)
+          TRANSPORT->loop_end_pos.frames
+        == end_frames)
         {
           loop_hit = true;
           num_split_points = 3;
@@ -594,23 +561,23 @@ handle_recording (
           /* adjust start slot until loop end */
           each_nframes[0] =
             (unsigned_frame_t)
-            TRANSPORT->loop_end_pos.frames -
-            start_frames;
+              TRANSPORT->loop_end_pos.frames
+            - start_frames;
           /*loop_end_idx = 0;*/
 
           /* add loop end pause */
           split_points[1] =
             (unsigned_frame_t)
-            TRANSPORT->loop_end_pos.frames;
+              TRANSPORT->loop_end_pos.frames;
           each_nframes[1] = 0;
 
           /* add part after looping */
           split_points[2] =
             (unsigned_frame_t)
-            TRANSPORT->loop_start_pos.frames;
+              TRANSPORT->loop_start_pos.frames;
           each_nframes[2] =
-            (unsigned_frame_t)
-            time_nfo->nframes - each_nframes[0];
+            (unsigned_frame_t) time_nfo->nframes
+            - each_nframes[0];
         }
     }
   if (TRANSPORT->punch_mode)
@@ -635,12 +602,12 @@ handle_recording (
               /* add punch in pos */
               split_points[1] =
                 (unsigned_frame_t)
-                TRANSPORT->punch_in_pos.frames;
+                  TRANSPORT->punch_in_pos.frames;
               each_nframes[1] =
                 (unsigned_frame_t)
-                TRANSPORT->loop_end_pos.frames -
-                (unsigned_frame_t)
-                TRANSPORT->punch_in_pos.frames;
+                  TRANSPORT->loop_end_pos.frames
+                - (unsigned_frame_t)
+                    TRANSPORT->punch_in_pos.frames;
               /*loop_end_idx = 1;*/
 
               /* adjust num frames for initial
@@ -665,18 +632,18 @@ handle_recording (
 
                   /* add punch out pos */
                   split_points[2] =
-                    (unsigned_frame_t)
-                    TRANSPORT->punch_out_pos.frames;
+                    (unsigned_frame_t) TRANSPORT
+                      ->punch_out_pos.frames;
                   each_nframes[2] =
                     (unsigned_frame_t)
-                    TRANSPORT->loop_end_pos.frames -
-                    (unsigned_frame_t)
-                    TRANSPORT->punch_out_pos.frames;
+                      TRANSPORT->loop_end_pos.frames
+                    - (unsigned_frame_t) TRANSPORT
+                        ->punch_out_pos.frames;
 
                   /* add pause */
                   split_points[3] =
-                    split_points[2] +
-                    each_nframes[2];
+                    split_points[2]
+                    + each_nframes[2];
                   each_nframes[3] = 0;
                   /*loop_end_idx = 2;*/
 
@@ -696,19 +663,19 @@ handle_recording (
 
                   /* add punch out pos */
                   split_points[1] =
-                    (unsigned_frame_t)
-                    TRANSPORT->punch_out_pos.frames;
+                    (unsigned_frame_t) TRANSPORT
+                      ->punch_out_pos.frames;
                   each_nframes[1] =
                     (unsigned_frame_t)
-                    TRANSPORT->loop_end_pos.frames -
-                    (unsigned_frame_t)
-                    TRANSPORT->punch_out_pos.frames;
+                      TRANSPORT->loop_end_pos.frames
+                    - (unsigned_frame_t) TRANSPORT
+                        ->punch_out_pos.frames;
                   /*loop_end_idx = 1;*/
 
                   /* add pause */
                   split_points[2] =
-                    split_points[1] +
-                    each_nframes[1];
+                    split_points[1]
+                    + each_nframes[1];
                   each_nframes[2] = 0;
 
                   /* adjust num frames for init
@@ -730,11 +697,11 @@ handle_recording (
               /* add punch in pos */
               split_points[1] =
                 (unsigned_frame_t)
-                TRANSPORT->punch_in_pos.frames;
+                  TRANSPORT->punch_in_pos.frames;
               each_nframes[1] =
-                end_frames -
-                (unsigned_frame_t)
-                TRANSPORT->punch_in_pos.frames;
+                end_frames
+                - (unsigned_frame_t)
+                    TRANSPORT->punch_in_pos.frames;
 
               /* adjust num frames for initial
                * pos */
@@ -752,17 +719,17 @@ handle_recording (
 
                   /* add punch out pos */
                   split_points[2] =
-                    (unsigned_frame_t)
-                    TRANSPORT->punch_out_pos.frames;
+                    (unsigned_frame_t) TRANSPORT
+                      ->punch_out_pos.frames;
                   each_nframes[2] =
-                    end_frames -
-                    (unsigned_frame_t)
-                    TRANSPORT->punch_out_pos.frames;
+                    end_frames
+                    - (unsigned_frame_t) TRANSPORT
+                        ->punch_out_pos.frames;
 
                   /* add pause */
                   split_points[3] =
-                    split_points[2] +
-                    each_nframes[2];
+                    split_points[2]
+                    + each_nframes[2];
                   each_nframes[3] = 0;
 
                   /* adjust num frames for punch in
@@ -775,23 +742,22 @@ handle_recording (
 
                   /* add punch out pos */
                   split_points[1] =
-                    (unsigned_frame_t)
-                    TRANSPORT->punch_out_pos.frames;
+                    (unsigned_frame_t) TRANSPORT
+                      ->punch_out_pos.frames;
                   each_nframes[1] =
-                    end_frames -
-                    (unsigned_frame_t)
-                    TRANSPORT->punch_out_pos.frames;
+                    end_frames
+                    - (unsigned_frame_t) TRANSPORT
+                        ->punch_out_pos.frames;
 
                   /* add pause */
                   split_points[2] =
-                    split_points[1] +
-                    each_nframes[1];
+                    split_points[1]
+                    + each_nframes[1];
                   each_nframes[2] = 0;
 
                   /* adjust num frames for init
                    * pos */
-                  each_nframes[0] -=
-                    each_nframes[1];
+                  each_nframes[0] -= each_nframes[1];
                 }
             }
         }
@@ -808,7 +774,7 @@ handle_recording (
       split_point = split_points[i];
 
       /*is_loop_end_idx =*/
-        /*loop_hit && i == loop_end_idx;*/
+      /*loop_hit && i == loop_end_idx;*/
 
 #if 0
       g_message ("sending %ld for %ld frames",
@@ -818,7 +784,8 @@ handle_recording (
       EngineProcessTimeInfo cur_time_nfo = {
         .g_start_frame = split_point,
         .local_offset = 0,
-        .nframes = each_nframes[i], };
+        .nframes = each_nframes[i],
+      };
       recording_manager_handle_recording (
         RECORDING_MANAGER, self, &cur_time_nfo);
     }
@@ -837,24 +804,22 @@ add_events_from_midi_cc_control_ports (
   for (int i = 0; i < 16; i++)
     {
       /* starting from 1 */
-      int channel = i + 1;
+      int    channel = i + 1;
       Port * cc = NULL;
-      int offset = i * 128;
+      int    offset = i * 128;
       for (int j = 0; j < 128; j++)
         {
           cc = self->midi_cc[offset + j];
-          if (G_LIKELY (
-                math_floats_equal (
-                  cc->last_sent_control,
-                  cc->control)))
+          if (G_LIKELY (math_floats_equal (
+                cc->last_sent_control, cc->control)))
             continue;
 
           midi_events_add_control_change (
-            self->midi_out->midi_events,
-            channel, (midi_byte_t) j,
+            self->midi_out->midi_events, channel,
+            (midi_byte_t) j,
             (midi_byte_t)
-            math_round_float_to_signed_32 (
-              cc->control * 127.f),
+              math_round_float_to_signed_32 (
+                cc->control * 127.f),
             local_offset, false);
           cc->last_sent_control = cc->control;
         }
@@ -864,15 +829,14 @@ add_events_from_midi_cc_control_ports (
             cc->last_sent_control, cc->control))
         {
           midi_events_add_pitchbend (
-            self->midi_out->midi_events,
-            channel,
+            self->midi_out->midi_events, channel,
             math_round_float_to_signed_32 (
               cc->control),
             local_offset, false);
           cc->last_sent_control = cc->control;
         }
 
-      /* TODO */
+        /* TODO */
 #if 0
       cc = self->poly_key_pressure[i];
       midi_events_add_pitchbend (
@@ -939,22 +903,21 @@ track_processor_process (
     }
 
   /* set the piano roll contents to midi out */
-  if (track_type_has_piano_roll (tr->type) ||
-      tr->type == TRACK_TYPE_CHORD)
+  if (
+    track_type_has_piano_roll (tr->type)
+    || tr->type == TRACK_TYPE_CHORD)
     {
       Port * pr = self->piano_roll;
 
       /* panic MIDI if necessary */
-      if (g_atomic_int_get (
-            &AUDIO_ENGINE->panic))
+      if (g_atomic_int_get (&AUDIO_ENGINE->panic))
         {
-          midi_events_panic (
-            pr->midi_events, 1);
+          midi_events_panic (pr->midi_events, 1);
         }
       /* get events from track if playing */
-      else if (TRANSPORT->play_state ==
-                 PLAYSTATE_ROLLING ||
-               track_is_auditioner (tr))
+      else if (
+        TRANSPORT->play_state == PLAYSTATE_ROLLING
+        || track_is_auditioner (tr))
         {
           /* fill midi events from piano roll
            * data */
@@ -997,8 +960,7 @@ track_processor_process (
       /* append the midi events from piano roll to
        * MIDI out */
       midi_events_append (
-        self->midi_out->midi_events,
-        pr->midi_events,
+        self->midi_out->midi_events, pr->midi_events,
         local_offset, nframes, false);
 
 #if 0
@@ -1022,8 +984,9 @@ track_processor_process (
 
   /* if currently active track on the piano roll,
    * fetch events */
-  if (tr->in_signal_type == TYPE_EVENT
-      && CLIP_EDITOR->has_region)
+  if (
+    tr->in_signal_type == TYPE_EVENT
+    && CLIP_EDITOR->has_region)
     {
       Track * clip_editor_track =
         clip_editor_get_track (CLIP_EDITOR);
@@ -1035,23 +998,21 @@ track_processor_process (
             {
               midi_events_append_w_filter (
                 self->midi_in->midi_events,
-                AUDIO_ENGINE->
-                  midi_editor_manual_press->
-                    midi_events,
+                AUDIO_ENGINE
+                  ->midi_editor_manual_press
+                  ->midi_events,
                 tr->channel->midi_channels,
-                local_offset,
-                nframes, F_NOT_QUEUED);
+                local_offset, nframes, F_NOT_QUEUED);
             }
           /* otherwise append normally */
           else
             {
               midi_events_append (
                 self->midi_in->midi_events,
-                AUDIO_ENGINE->
-                  midi_editor_manual_press->
-                    midi_events,
-                local_offset, nframes,
-                F_NOT_QUEUED);
+                AUDIO_ENGINE
+                  ->midi_editor_manual_press
+                  ->midi_events,
+                local_offset, nframes, F_NOT_QUEUED);
             }
         }
     }
@@ -1069,29 +1030,37 @@ track_processor_process (
             &self->stereo_out->l->buf[local_offset],
             &self->stereo_in->l->buf[local_offset],
             1.f,
-            self->input_gain ?
-              self->input_gain->control : 1.f,
+            self->input_gain
+              ? self->input_gain->control
+              : 1.f,
             nframes);
 
-          if (self->mono &&
-              control_port_is_toggled (self->mono))
+          if (
+            self->mono
+            && control_port_is_toggled (self->mono))
             {
               dsp_mix2 (
-                &self->stereo_out->r->buf[local_offset],
-                &self->stereo_in->l->buf[local_offset],
+                &self->stereo_out->r
+                   ->buf[local_offset],
+                &self->stereo_in->l
+                   ->buf[local_offset],
                 1.f,
-                self->input_gain ?
-                  self->input_gain->control : 1.f,
+                self->input_gain
+                  ? self->input_gain->control
+                  : 1.f,
                 nframes);
             }
           else
             {
               dsp_mix2 (
-                &self->stereo_out->r->buf[local_offset],
-                &self->stereo_in->r->buf[local_offset],
+                &self->stereo_out->r
+                   ->buf[local_offset],
+                &self->stereo_in->r
+                   ->buf[local_offset],
                 1.f,
-                self->input_gain ?
-                  self->input_gain->control : 1.f,
+                self->input_gain
+                  ? self->input_gain->control
+                  : 1.f,
                 nframes);
             }
         }
@@ -1122,8 +1091,7 @@ track_processor_process (
           midi_events_transform_chord_and_append (
             self->midi_out->midi_events,
             self->midi_in->midi_events,
-            local_offset,
-            nframes, F_NOT_QUEUED);
+            local_offset, nframes, F_NOT_QUEUED);
         }
       /* else if not chord track, simply pass the
        * input MIDI data to the output port */
@@ -1132,8 +1100,7 @@ track_processor_process (
           midi_events_append (
             self->midi_out->midi_events,
             self->midi_in->midi_events,
-            local_offset,
-            nframes, F_NOT_QUEUED);
+            local_offset, nframes, F_NOT_QUEUED);
         }
       break;
     default:
@@ -1255,18 +1222,20 @@ track_processor_connect_to_prefader (
   g_return_if_fail (IS_FADER (prefader));
 
   /* connect only if signals match */
-  if (tr->in_signal_type == TYPE_AUDIO &&
-      tr->out_signal_type == TYPE_AUDIO)
+  if (
+    tr->in_signal_type == TYPE_AUDIO
+    && tr->out_signal_type == TYPE_AUDIO)
     {
       port_connect (
-        self->stereo_out->l,
-        prefader->stereo_in->l, 1);
+        self->stereo_out->l, prefader->stereo_in->l,
+        1);
       port_connect (
-        self->stereo_out->r,
-        prefader->stereo_in->r, 1);
+        self->stereo_out->r, prefader->stereo_in->r,
+        1);
     }
-  if (tr->in_signal_type == TYPE_EVENT &&
-      tr->out_signal_type == TYPE_EVENT)
+  if (
+    tr->in_signal_type == TYPE_EVENT
+    && tr->out_signal_type == TYPE_EVENT)
     {
       port_connect (
         self->midi_out, prefader->midi_in, 1);
@@ -1280,12 +1249,12 @@ track_processor_connect_to_prefader (
 void
 track_processor_disconnect_from_plugin (
   TrackProcessor * self,
-  Plugin         * pl)
+  Plugin *         pl)
 {
   Track * tr = track_processor_get_track (self);
   g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
 
-  Port * in_port;
+  Port *   in_port;
   PortType type = tr->in_signal_type;
 
   for (int i = 0; i < pl->num_in_ports; i++)
@@ -1294,22 +1263,17 @@ track_processor_disconnect_from_plugin (
 
       if (type == TYPE_AUDIO)
         {
-          if (in_port->id.type !=
-                TYPE_AUDIO)
+          if (in_port->id.type != TYPE_AUDIO)
             continue;
 
           if (ports_connected (
-                self->stereo_out->l,
-                in_port))
+                self->stereo_out->l, in_port))
             port_disconnect (
-              self->stereo_out->l,
-              in_port);
+              self->stereo_out->l, in_port);
           if (ports_connected (
-                self->stereo_out->r,
-                in_port))
+                self->stereo_out->r, in_port))
             port_disconnect (
-              self->stereo_out->r,
-              in_port);
+              self->stereo_out->r, in_port);
         }
       else if (type == TYPE_EVENT)
         {
@@ -1331,12 +1295,12 @@ track_processor_disconnect_from_plugin (
 void
 track_processor_connect_to_plugin (
   TrackProcessor * self,
-  Plugin         * pl)
+  Plugin *         pl)
 {
   Track * tr = track_processor_get_track (self);
   g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
 
-  int last_index, num_ports_to_connect, i;
+  int    last_index, num_ports_to_connect, i;
   Port * in_port;
 
   if (tr->in_signal_type == TYPE_EVENT)
@@ -1345,8 +1309,9 @@ track_processor_connect_to_plugin (
       for (i = 0; i < pl->num_in_ports; i++)
         {
           in_port = pl->in_ports[i];
-          if (in_port->id.type == TYPE_EVENT &&
-              in_port->id.flow == FLOW_INPUT)
+          if (
+            in_port->id.type == TYPE_EVENT
+            && in_port->id.flow == FLOW_INPUT)
             {
               port_connect (
                 self->midi_out, in_port, 1);
@@ -1377,8 +1342,7 @@ track_processor_connect_to_plugin (
       last_index = 0;
       for (i = 0; i < num_ports_to_connect; i++)
         {
-          for (;
-               last_index < pl->num_in_ports;
+          for (; last_index < pl->num_in_ports;
                last_index++)
             {
               in_port = pl->in_ports[last_index];
@@ -1410,8 +1374,7 @@ track_processor_connect_to_plugin (
  * Frees the members of the TrackProcessor.
  */
 void
-track_processor_free (
-  TrackProcessor * self)
+track_processor_free (TrackProcessor * self)
 {
   object_free_w_func_and_null (
     midi_mappings_free, self->cc_mappings);
@@ -1463,8 +1426,7 @@ track_processor_free (
   if (cc) \
     { \
       port_disconnect_all (cc); \
-      object_free_w_func_and_null ( \
-        port_free, cc); \
+      object_free_w_func_and_null (port_free, cc); \
     }
 
   for (int i = 0; i < 16; i++)

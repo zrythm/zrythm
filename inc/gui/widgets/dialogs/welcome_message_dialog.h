@@ -38,8 +38,7 @@
  * Creates and returns the welcome dialog.
  */
 GtkDialog *
-welcome_message_dialog_new (
-  GtkWindow * parent);
+welcome_message_dialog_new (GtkWindow * parent);
 
 /**
  * @}

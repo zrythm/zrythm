@@ -23,9 +23,9 @@
 #include "audio/position.h"
 #include "audio/track.h"
 #include "audio/transport.h"
+#include "gui/backend/audio_selections.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/backend/audio_selections.h"
 #include "gui/widgets/midi_region.h"
 #include "project.h"
 #include "utils/arrays.h"
@@ -61,14 +61,13 @@ audio_selections_set_has_range (
 bool
 audio_selections_can_be_pasted (
   AudioSelections * ts,
-  Position *             pos,
-  ZRegion *              r)
+  Position *        pos,
+  ZRegion *         r)
 {
   if (!r || r->id.type != REGION_TYPE_AUDIO)
     return false;
 
-  ArrangerObject * r_obj =
-    (ArrangerObject *) r;
+  ArrangerObject * r_obj = (ArrangerObject *) r;
   if (r_obj->pos.frames + pos->frames < 0)
     return false;
 

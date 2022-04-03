@@ -32,12 +32,12 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/drag_dest_box.h"
-#include "gui/widgets/main_window.h"
 #include "gui/widgets/main_notebook.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/timeline_panel.h"
-#include "gui/widgets/tracklist.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
@@ -47,32 +47,34 @@
 #include "zrythm_app.h"
 
 G_DEFINE_TYPE (
-  TracklistWidget, tracklist_widget, GTK_TYPE_BOX)
+  TracklistWidget,
+  tracklist_widget,
+  GTK_TYPE_BOX)
 
 static void
 on_dnd_leave (
-  GtkDropTarget * drop_target,
+  GtkDropTarget *   drop_target,
   TracklistWidget * self)
 {
   Track * track;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
-      if (track_get_should_be_visible (track) &&
-          track->widget)
+      if (
+        track_get_should_be_visible (track)
+        && track->widget)
         {
           track_widget_do_highlight (
             track->widget, 0, 0, 0);
         }
-
     }
 }
 
 static GdkDragAction
 on_dnd_motion (
-  GtkDropTarget * drop_target,
-  gdouble         x,
-  gdouble         y,
+  GtkDropTarget *   drop_target,
+  gdouble           x,
+  gdouble           y,
   TracklistWidget * self)
 {
   TrackWidget * hit_tw = NULL;
@@ -88,8 +90,8 @@ on_dnd_motion (
 
       if (ui_is_child_hit (
             GTK_WIDGET (self),
-            GTK_WIDGET (track->widget),
-            1, 1, x, y, 0, 1))
+            GTK_WIDGET (track->widget), 1, 1, x, y,
+            0, 1))
         {
           hit_tw = track->widget;
         }
@@ -104,13 +106,11 @@ on_dnd_motion (
     {
       GtkAllocation allocation;
       gtk_widget_get_allocation (
-        GTK_WIDGET (hit_tw),
-        &allocation);
+        GTK_WIDGET (hit_tw), &allocation);
 
       double wx, wy;
       gtk_widget_translate_coordinates (
-        GTK_WIDGET (self),
-        GTK_WIDGET (hit_tw),
+        GTK_WIDGET (self), GTK_WIDGET (hit_tw),
         (int) x, (int) y, &wx, &wy);
       track_widget_do_highlight (
         hit_tw, (int) wx, (int) wy, 1);
@@ -137,8 +137,7 @@ on_dnd_drop (
 
   WrappedObjectWithChangeSignal * wrapped_obj =
     g_value_get_object (value);
-  if (wrapped_obj->type !=
-        WRAPPED_OBJECT_TYPE_TRACK)
+  if (wrapped_obj->type != WRAPPED_OBJECT_TYPE_TRACK)
     {
       g_message ("dropped object not a track");
       return false;
@@ -159,8 +158,8 @@ on_dnd_drop (
 
       if (ui_is_child_hit (
             GTK_WIDGET (self),
-            GTK_WIDGET (track->widget),
-            1, 1, x, y, 0, 1))
+            GTK_WIDGET (track->widget), 1, 1, x, y,
+            0, 1))
         {
           hit_tw = track->widget;
         }
@@ -183,14 +182,12 @@ on_dnd_drop (
 
   GtkAllocation allocation;
   gtk_widget_get_allocation (
-    GTK_WIDGET (hit_tw),
-    &allocation);
+    GTK_WIDGET (hit_tw), &allocation);
 
   double wx, wy;
   gtk_widget_translate_coordinates (
-    GTK_WIDGET (self),
-    GTK_WIDGET (hit_tw),
-    (int) x, (int) y, &wx, &wy);
+    GTK_WIDGET (self), GTK_WIDGET (hit_tw), (int) x,
+    (int) y, &wx, &wy);
 
   /* determine position to move to */
   TrackWidgetHighlight location =
@@ -205,26 +202,26 @@ on_dnd_drop (
 
 TrackWidget *
 tracklist_widget_get_hit_track (
-  TracklistWidget *  self,
+  TracklistWidget * self,
   double            x,
   double            y)
 {
   /* go through each child */
-  for(int i = 0;
-      i < self->tracklist->num_tracks; i++)
+  for (int i = 0; i < self->tracklist->num_tracks;
+       i++)
     {
       Track * track = self->tracklist->tracks[i];
-      if (!track_get_should_be_visible (track) ||
-          track_is_pinned (track))
+      if (
+        !track_get_should_be_visible (track)
+        || track_is_pinned (track))
         continue;
 
       TrackWidget * tw = track->widget;
 
       /* return it if hit */
       if (ui_is_child_hit (
-            GTK_WIDGET (self),
-            GTK_WIDGET (tw),
-            0, 1, x, y, 0, 0))
+            GTK_WIDGET (self), GTK_WIDGET (tw), 0,
+            1, x, y, 0, 0))
         return tw;
     }
   return NULL;
@@ -233,13 +230,12 @@ tracklist_widget_get_hit_track (
 static gboolean
 on_key_pressed (
   GtkEventControllerKey * key_controller,
-  guint keyval,
-  guint keycode,
-  GdkModifierType state,
-  TracklistWidget * self)
+  guint                   keyval,
+  guint                   keycode,
+  GdkModifierType         state,
+  TracklistWidget *       self)
 {
-  if (state & GDK_CONTROL_MASK &&
-      keyval == GDK_KEY_a)
+  if (state & GDK_CONTROL_MASK && keyval == GDK_KEY_a)
     {
       tracklist_selections_select_all (
         TRACKLIST_SELECTIONS, 1);
@@ -262,12 +258,11 @@ tracklist_widget_handle_vertical_zoom_scroll (
   GdkModifierType state =
     gtk_event_controller_get_current_event_state (
       GTK_EVENT_CONTROLLER (scroll_controller));
-  if (!(state & GDK_CONTROL_MASK &&
-        state & GDK_SHIFT_MASK))
+  if (!(state & GDK_CONTROL_MASK
+        && state & GDK_SHIFT_MASK))
     return;
 
-  GtkScrolledWindow * scroll =
-    self->unpinned_scroll;
+  GtkScrolledWindow * scroll = self->unpinned_scroll;
 
   double y = self->hover_y;
   double delta_y = dy;
@@ -297,30 +292,26 @@ tracklist_widget_handle_vertical_zoom_scroll (
       size_after = size_before * multiplier;
     }
 
-  bool can_resize =
-    tracklist_multiply_track_heights (
-      self->tracklist,
-      delta_y > 0 ?
-        1 / multiplier : multiplier,
-      false, true, false);
+  bool can_resize = tracklist_multiply_track_heights (
+    self->tracklist,
+    delta_y > 0 ? 1 / multiplier : multiplier,
+    false, true, false);
   g_debug ("can resize: %d", can_resize);
   if (can_resize)
     {
       tracklist_multiply_track_heights (
         self->tracklist,
-        delta_y > 0 ?
-          1 / multiplier : multiplier,
+        delta_y > 0 ? 1 / multiplier : multiplier,
         false, false, true);
 
       /* get updated adjustment and set its value
        at the same offset as before */
-      adj =
-        gtk_scrolled_window_get_vadjustment (scroll);
+      adj = gtk_scrolled_window_get_vadjustment (
+        scroll);
       gtk_adjustment_set_value (
         adj, adj_perc * size_after - diff);
 
-      EVENTS_PUSH (
-        ET_TRACKS_RESIZED, self);
+      EVENTS_PUSH (ET_TRACKS_RESIZED, self);
     }
 }
 
@@ -337,8 +328,8 @@ on_scroll (
   GdkModifierType state =
     gtk_event_controller_get_current_event_state (
       GTK_EVENT_CONTROLLER (scroll_controller));
-  if (!(state & GDK_CONTROL_MASK &&
-        state & GDK_SHIFT_MASK))
+  if (!(state & GDK_CONTROL_MASK
+        && state & GDK_SHIFT_MASK))
     return false;
 
   tracklist_widget_handle_vertical_zoom_scroll (
@@ -361,8 +352,7 @@ on_motion (
 }
 
 static void
-refresh_track_widget (
-  Track *           track)
+refresh_track_widget (Track * track)
 {
   /* create widget */
   if (!GTK_IS_WIDGET (track->widget))
@@ -372,8 +362,7 @@ refresh_track_widget (
     (GtkWidget *) track->widget,
     track_get_should_be_visible (track));
 
-  track_widget_recreate_group_colors (
-    track->widget);
+  track_widget_recreate_group_colors (track->widget);
   track_widget_update_icons (track->widget);
   track_widget_update_size (track->widget);
 }
@@ -432,8 +421,8 @@ tracklist_widget_hard_refresh (
 
   /* re-add ddbox */
   g_return_if_fail (
-    gtk_widget_get_parent (
-      GTK_WIDGET (self->ddbox)) == NULL);
+    gtk_widget_get_parent (GTK_WIDGET (self->ddbox))
+    == NULL);
   gtk_box_append (
     GTK_BOX (self->unpinned_box),
     GTK_WIDGET (self->ddbox));
@@ -449,7 +438,7 @@ tracklist_widget_hard_refresh (
  */
 void
 tracklist_widget_update_track_visibility (
-  TracklistWidget *self)
+  TracklistWidget * self)
 {
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
@@ -470,7 +459,7 @@ tracklist_widget_update_track_visibility (
 void
 tracklist_widget_setup (
   TracklistWidget * self,
-  Tracklist * tracklist)
+  Tracklist *       tracklist)
 {
   g_return_if_fail (tracklist);
 
@@ -496,8 +485,7 @@ tracklist_widget_setup (
     GTK_WIDGET (self->unpinned_box));
   gtk_size_group_add_widget (
     self->unpinned_size_group,
-    GTK_WIDGET (
-      MW_TIMELINE_PANEL->timeline));
+    GTK_WIDGET (MW_TIMELINE_PANEL->timeline));
 
   self->setup = true;
 }
@@ -506,8 +494,7 @@ tracklist_widget_setup (
  * Prepare for finalization.
  */
 void
-tracklist_widget_tear_down (
-  TracklistWidget * self)
+tracklist_widget_tear_down (TracklistWidget * self)
 {
   g_message ("tearing down %p...", self);
 
@@ -523,36 +510,29 @@ tracklist_widget_tear_down (
 static void
 tracklist_widget_init (TracklistWidget * self)
 {
-  gtk_box_set_spacing (
-    GTK_BOX (self), 1);
+  gtk_box_set_spacing (GTK_BOX (self), 1);
 
   /** add pinned box */
-  self->pinned_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 1));
+  self->pinned_box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_VERTICAL, 1));
   gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->pinned_box));
+    GTK_BOX (self), GTK_WIDGET (self->pinned_box));
   gtk_widget_set_name (
     GTK_WIDGET (self->pinned_box),
     "tracklist-pinned-box");
   gtk_widget_set_margin_bottom (
     GTK_WIDGET (self->pinned_box), 3);
 
-  self->unpinned_scroll =
-    GTK_SCROLLED_WINDOW (
-      gtk_scrolled_window_new ());
+  self->unpinned_scroll = GTK_SCROLLED_WINDOW (
+    gtk_scrolled_window_new ());
   gtk_widget_set_name (
     GTK_WIDGET (self->unpinned_scroll),
     "tracklist-unpinned-scroll");
   gtk_scrolled_window_set_policy (
-    self->unpinned_scroll,
-    GTK_POLICY_NEVER,
+    self->unpinned_scroll, GTK_POLICY_NEVER,
     GTK_POLICY_EXTERNAL);
-  self->unpinned_box =
-    GTK_BOX (
-      gtk_box_new (
-        GTK_ORIENTATION_VERTICAL, 1));
+  self->unpinned_box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_VERTICAL, 1));
   gtk_widget_set_name (
     GTK_WIDGET (self->unpinned_box),
     "tracklist-unpinned-box");
@@ -572,36 +552,31 @@ tracklist_widget_init (TracklistWidget * self)
 
   /* create the drag dest box and bump its reference
    * so it doesn't get deleted. */
-  self->ddbox =
-    drag_dest_box_widget_new (
-      GTK_ORIENTATION_VERTICAL,
-      0,
-      DRAG_DEST_BOX_TYPE_TRACKLIST);
+  self->ddbox = drag_dest_box_widget_new (
+    GTK_ORIENTATION_VERTICAL, 0,
+    DRAG_DEST_BOX_TYPE_TRACKLIST);
   gtk_widget_set_name (
     GTK_WIDGET (self->ddbox), "tracklist-ddbox");
 
   gtk_orientable_set_orientation (
-    GTK_ORIENTABLE (self),
-    GTK_ORIENTATION_VERTICAL);
+    GTK_ORIENTABLE (self), GTK_ORIENTATION_VERTICAL);
 
   /* set as drag dest for track (the track will
    * be moved based on which half it was dropped in,
    * top or bot) */
-  GtkDropTarget * drop_target =
-    gtk_drop_target_new (
-      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
-      GDK_ACTION_MOVE | GDK_ACTION_COPY);
-  gtk_drop_target_set_preload (
-    drop_target, true);
+  GtkDropTarget * drop_target = gtk_drop_target_new (
+    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
+    GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  gtk_drop_target_set_preload (drop_target, true);
   g_signal_connect (
-    drop_target, "drop",
-    G_CALLBACK (on_dnd_drop), self);
+    drop_target, "drop", G_CALLBACK (on_dnd_drop),
+    self);
   g_signal_connect (
     drop_target, "motion",
     G_CALLBACK (on_dnd_motion), self);
   g_signal_connect (
-    drop_target, "leave",
-    G_CALLBACK (on_dnd_leave), self);
+    drop_target, "leave", G_CALLBACK (on_dnd_leave),
+    self);
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (drop_target));
@@ -632,7 +607,7 @@ tracklist_widget_init (TracklistWidget * self)
       gtk_event_controller_motion_new ());
   g_signal_connect (
     G_OBJECT (motion_controller), "motion",
-    G_CALLBACK (on_motion),  self);
+    G_CALLBACK (on_motion), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (motion_controller));
@@ -646,8 +621,6 @@ static void
 tracklist_widget_class_init (
   TracklistWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "tracklist");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass, "tracklist");
 }

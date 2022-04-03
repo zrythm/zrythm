@@ -20,9 +20,9 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "audio/scale_object.h"
 #include "audio/chord_track.h"
 #include "audio/position.h"
+#include "audio/scale_object.h"
 #include "gui/backend/arranger_object.h"
 #include "project.h"
 #include "utils/flags.h"
@@ -32,17 +32,14 @@
  * Creates a ScaleObject.
  */
 ScaleObject *
-scale_object_new (
-  MusicalScale * descr)
+scale_object_new (MusicalScale * descr)
 {
   ScaleObject * self = object_new (ScaleObject);
 
   self->magic = SCALE_OBJECT_MAGIC;
-  self->schema_version =
-    SCALE_OBJECT_SCHEMA_VERSION;
+  self->schema_version = SCALE_OBJECT_SCHEMA_VERSION;
 
-  ArrangerObject * obj =
-    (ArrangerObject *) self;
+  ArrangerObject * obj = (ArrangerObject *) self;
   obj->type = ARRANGER_OBJECT_TYPE_SCALE_OBJECT;
 
   self->scale = descr;
@@ -53,9 +50,7 @@ scale_object_new (
 }
 
 void
-scale_object_set_index (
-  ScaleObject * self,
-  int           index)
+scale_object_set_index (ScaleObject * self, int index)
 {
   self->index = index;
 }
@@ -65,13 +60,11 @@ scale_object_is_equal (
   ScaleObject * a,
   ScaleObject * b)
 {
-  ArrangerObject * obj_a =
-    (ArrangerObject *) a;
-  ArrangerObject * obj_b =
-    (ArrangerObject *) b;
-  return
-    position_is_equal_ticks (
-      &obj_a->pos, &obj_b->pos) &&
-    a->index == b->index &&
-    musical_scale_is_equal (a->scale, b->scale);
+  ArrangerObject * obj_a = (ArrangerObject *) a;
+  ArrangerObject * obj_b = (ArrangerObject *) b;
+  return position_is_equal_ticks (
+           &obj_a->pos, &obj_b->pos)
+         && a->index == b->index
+         && musical_scale_is_equal (
+           a->scale, b->scale);
 }

@@ -21,25 +21,25 @@
 
 #if 0
 
-#ifdef HAVE_ALSA
+#  ifdef HAVE_ALSA
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+#    include <math.h>
+#    include <stdio.h>
+#    include <stdlib.h>
 
-#include "audio/engine.h"
-#include "audio/engine_alsa.h"
-#include "utils/midi.h"
-#include "audio/port.h"
-#include "project.h"
-#include "utils/ui.h"
+#    include "audio/engine.h"
+#    include "audio/engine_alsa.h"
+#    include "audio/port.h"
+#    include "project.h"
+#    include "utils/midi.h"
+#    include "utils/ui.h"
 
-#include <alsa/asoundlib.h>
-#include <pthread.h>
+#    include <glib/gi18n.h>
 
-#include <glib/gi18n.h>
+#    include <alsa/asoundlib.h>
+#    include <pthread.h>
 
-#define POLY 10
+#    define POLY 10
 
 static int
 set_sw_params (AudioEngine * self)
@@ -570,6 +570,6 @@ engine_alsa_midi_setup (
   return 0;
 }
 
-#endif
+#  endif
 
 #endif

@@ -36,21 +36,20 @@
  * gi18n.h is included.
  */
 void
-lv2_log_set_printf_funcs (
-  LV2_Log_Log * log);
+lv2_log_set_printf_funcs (LV2_Log_Log * log);
 
 int
 lv2_log_vprintf (
   LV2_Log_Handle handle,
   LV2_URID       type,
-  const char*    fmt,
+  const char *   fmt,
   va_list        ap);
 
 int
 lv2_log_printf (
   LV2_Log_Handle handle,
   LV2_URID       type,
-  const char*    fmt,
+  const char *   fmt,
   ...);
 
 /**

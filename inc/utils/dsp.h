@@ -39,26 +39,20 @@
 #include <glib.h>
 
 #ifdef HAVE_LSP_DSP
-#include <lsp-plug.in/dsp/dsp.h>
+#  include <lsp-plug.in/dsp/dsp.h>
 #endif
 
 /**
  * Fill the buffer with the given value.
  */
-HOT
-NONNULL
-void
-dsp_fill (
-  float * buf,
-  float   val,
-  size_t  size);
+HOT NONNULL void
+dsp_fill (float * buf, float val, size_t size);
 
 /**
  * Clamp the buffer to min/max.
  */
 NONNULL
-HOT
-static inline void
+HOT static inline void
 dsp_limit1 (
   float * buf,
   float   minf,
@@ -83,8 +77,7 @@ dsp_limit1 (
 }
 
 NONNULL
-HOT
-void
+HOT void
 dsp_copy (
   float *       dest,
   const float * src,
@@ -94,12 +87,8 @@ dsp_copy (
  * Scale: dst[i] = dst[i] * k.
  */
 NONNULL
-HOT
-void
-dsp_mul_k2 (
-  float * dest,
-  float   k,
-  size_t  size);
+HOT void
+dsp_mul_k2 (float * dest, float k, size_t size);
 
 /**
  * Gets the maximum absolute value of the buffer (as
@@ -108,9 +97,7 @@ dsp_mul_k2 (
 NONNULL
 WARN_UNUSED_RESULT
 static inline float
-dsp_abs_max (
-  float * buf,
-  size_t  size)
+dsp_abs_max (float * buf, size_t size)
 {
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
@@ -139,9 +126,7 @@ dsp_abs_max (
  *
  * @return Whether the peak changed.
  */
-HOT
-NONNULL
-static inline bool
+HOT NONNULL static inline bool
 dsp_abs_max_with_existing_peak (
   float * buf,
   float * cur_peak,
@@ -152,8 +137,7 @@ dsp_abs_max_with_existing_peak (
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      new_peak =
-        lsp_dsp_abs_max (buf, size);
+      new_peak = lsp_dsp_abs_max (buf, size);
     }
   else
     {
@@ -182,25 +166,20 @@ dsp_abs_max_with_existing_peak (
  */
 NONNULL
 float
-dsp_min (
-  float * buf,
-  size_t  size);
+dsp_min (float * buf, size_t size);
 
 /**
  * Gets the maximum of the buffer.
  */
 NONNULL
 float
-dsp_max (
-  float * buf,
-  size_t  size);
+dsp_max (float * buf, size_t size);
 
 /**
  * Calculate dst[i] = dst[i] + src[i].
  */
 NONNULL
-HOT
-void
+HOT void
 dsp_add2 (
   float *       dest,
   const float * src,
@@ -210,8 +189,7 @@ dsp_add2 (
  * Calculate dest[i] = dest[i] * k1 + src[i] * k2.
  */
 NONNULL
-HOT
-static inline void
+HOT static inline void
 dsp_mix2 (
   float *       dest,
   const float * src,
@@ -256,9 +234,7 @@ dsp_mix_add2 (
  */
 NONNULL
 void
-dsp_linear_fade_in (
-  float * dest,
-  size_t  size);
+dsp_linear_fade_in (float * dest, size_t size);
 
 /**
  * Calculate linear fade in by multiplying from
@@ -266,9 +242,7 @@ dsp_linear_fade_in (
  */
 NONNULL
 void
-dsp_linear_fade_out (
-  float * dest,
-  size_t  size);
+dsp_linear_fade_out (float * dest, size_t size);
 
 /**
  * Makes the two signals mono.

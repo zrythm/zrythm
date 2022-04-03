@@ -33,10 +33,11 @@
 G_DECLARE_FINAL_TYPE (
   ChannelSlotWidget,
   channel_slot_widget,
-  Z, CHANNEL_SLOT_WIDGET,
+  Z,
+  CHANNEL_SLOT_WIDGET,
   GtkWidget)
 
-typedef struct Plugin Plugin;
+typedef struct Plugin  Plugin;
 typedef struct Channel Channel;
 
 /**
@@ -47,12 +48,12 @@ typedef struct Channel Channel;
 
 typedef struct _ChannelSlotWidget
 {
-  GtkWidget         parent_instance;
+  GtkWidget parent_instance;
 
-  PluginSlotType    type;
+  PluginSlotType type;
 
   /** The Track this belongs to. */
-  Track *           track;
+  Track * track;
 
   /** The Channel slot index. */
   int               slot_index;
@@ -65,25 +66,25 @@ typedef struct _ChannelSlotWidget
    *
    * If this changes, the tooltip is changed.
    */
-  char *            pl_name;
+  char * pl_name;
 
   /** For multipress. */
-  int               n_press;
+  int n_press;
 
   GtkGestureClick * right_mouse_mp;
 
   /** Layout cache for empty slot. */
-  PangoLayout *     empty_slot_layout;
+  PangoLayout * empty_slot_layout;
   /** Layout cache for plugin name. */
-  PangoLayout *     pl_name_layout;
+  PangoLayout * pl_name_layout;
 
   /** Cache to check if the selection state was
    * changed. */
-  bool              was_selected;
+  bool was_selected;
 
   /** Whether to open the plugin inspector on click
    * or not. */
-  bool              open_plugin_inspector_on_click;
+  bool open_plugin_inspector_on_click;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
@@ -102,10 +103,10 @@ channel_slot_widget_new_instrument (void);
  */
 ChannelSlotWidget *
 channel_slot_widget_new (
-  int       slot_index,
-  Track *   track,
+  int            slot_index,
+  Track *        track,
   PluginSlotType type,
-  bool      open_plugin_inspector_on_click);
+  bool           open_plugin_inspector_on_click);
 
 void
 channel_slot_widget_set_instrument (

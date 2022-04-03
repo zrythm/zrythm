@@ -39,17 +39,16 @@
 
 #ifdef _WOE32
 
-#ifndef __AUDIO_WINDOWS_MME_DEVICE_H__
-#define __AUDIO_WINDOWS_MME_DEVICE_H__
+#  ifndef __AUDIO_WINDOWS_MME_DEVICE_H__
+#    define __AUDIO_WINDOWS_MME_DEVICE_H__
 
-#include <stdint.h>
+#    include <stdint.h>
 
-#include <windows.h>
-
-#include "zix/ring.h"
+#    include "zix/ring.h"
+#    include <windows.h>
 
 typedef struct AudioEngine AudioEngine;
-typedef struct MidiEvent MidiEvent;
+typedef struct MidiEvent   MidiEvent;
 
 /**
  * @addtogroup audio
@@ -57,8 +56,8 @@ typedef struct MidiEvent MidiEvent;
  * @{
  */
 
-#define MIDI_BUFFER_SIZE 32768
-#define SYSEX_BUFFER_SIZE 32768
+#    define MIDI_BUFFER_SIZE 32768
+#    define SYSEX_BUFFER_SIZE 32768
 
 /**
  * For readability when passing 0/1 for input
@@ -73,42 +72,40 @@ enum WindowsMmeDeviceFlow
 typedef struct WindowsMmeDevice
 {
   /** 1 for input, 0 for output. */
-  int           is_input;
+  int is_input;
 
   /** Index. */
-  int           id;
+  int id;
 
-  unsigned int  manufacturer_id;
-  unsigned int  product_id;
-  unsigned int  driver_ver_major;
-  unsigned int  driver_ver_minor;
+  unsigned int manufacturer_id;
+  unsigned int product_id;
+  unsigned int driver_ver_major;
+  unsigned int driver_ver_minor;
 
-  char *        name;
+  char * name;
 
   /** Whether opened or not. */
-  int           opened;
+  int opened;
 
   /** Whether started (running) or not. */
-  int           started;
+  int started;
 
   /* ---- INPUT ---- */
-  HMIDIIN       in_handle;
-  MIDIHDR       sysex_header;
+  HMIDIIN in_handle;
+  MIDIHDR sysex_header;
 
   /* ---- OUTPUT ---- */
-  HMIDIOUT      out_handle;
+  HMIDIOUT out_handle;
 
   /** MIDI event ring buffer. */
-  ZixRing *     midi_ring;
+  ZixRing * midi_ring;
 
-  uint8_t       sysex_buffer[SYSEX_BUFFER_SIZE];
+  uint8_t sysex_buffer[SYSEX_BUFFER_SIZE];
 
 } WindowsMmeDevice;
 
 WindowsMmeDevice *
-windows_mme_device_new (
-  int           input,
-  int           index);
+windows_mme_device_new (int input, int index);
 
 /**
  * Opens a device allocated with
@@ -134,12 +131,10 @@ windows_mme_device_close (
   int                free);
 
 int
-windows_mme_device_start (
-  WindowsMmeDevice * self);
+windows_mme_device_start (WindowsMmeDevice * self);
 
 int
-windows_mme_device_stop (
-  WindowsMmeDevice * self);
+windows_mme_device_stop (WindowsMmeDevice * self);
 
 /**
  * MIDI in signal handler.
@@ -195,11 +190,11 @@ windows_mme_device_dequeue_midi_event_struct (
 int
 windows_mme_device_dequeue_midi_event (
   WindowsMmeDevice * self,
-  uint64_t   timestamp_start,
-  uint64_t   timestamp_end,
-  uint64_t * timestamp,
-  uint8_t *  midi_data,
-  size_t *   data_size);
+  uint64_t           timestamp_start,
+  uint64_t           timestamp_end,
+  uint64_t *         timestamp,
+  uint8_t *          midi_data,
+  size_t *           data_size);
 
 /**
  * Prints info about the device at the given ID
@@ -210,12 +205,11 @@ windows_mme_device_print_info (
   WindowsMmeDevice * dev);
 
 void
-windows_mme_device_free (
-  WindowsMmeDevice * dev);
+windows_mme_device_free (WindowsMmeDevice * dev);
 
 /**
  * @}
  */
 
-#endif
+#  endif
 #endif // _WOE32

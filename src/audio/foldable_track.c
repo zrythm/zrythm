@@ -21,10 +21,10 @@
 
 #include "audio/foldable_track.h"
 #include "audio/track.h"
-#include "utils/arrays.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "project.h"
+#include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
@@ -32,8 +32,7 @@
 #include "zrythm_app.h"
 
 void
-foldable_track_init (
-  Track * self)
+foldable_track_init (Track * self)
 {
   if (self->type == TRACK_TYPE_FOLDER)
     {
@@ -57,10 +56,9 @@ foldable_track_is_status (
   bool has_channel_tracks = false;
   for (int i = 1; i < self->size; i++)
     {
-      int pos = self->pos + i;
+      int     pos = self->pos + i;
       Track * child =
-        tracklist_get_track (
-          self->tracklist, pos);
+        tracklist_get_track (self->tracklist, pos);
       g_return_val_if_fail (
         IS_TRACK_AND_NONNULL (child), false);
 
@@ -124,9 +122,7 @@ foldable_track_is_direct_child (
  * @p self.
  */
 bool
-foldable_track_is_child (
-  Track * self,
-  Track * child)
+foldable_track_is_child (Track * self, Track * child)
 {
   GPtrArray * parents = g_ptr_array_new ();
   track_add_folder_parents (child, parents, false);
@@ -154,25 +150,23 @@ foldable_track_is_child (
  * foldable track.
  */
 void
-foldable_track_add_to_size (
-  Track * self,
-  int     delta)
+foldable_track_add_to_size (Track * self, int delta)
 {
   GPtrArray * parents = g_ptr_array_new ();
   track_add_folder_parents (self, parents, false);
 
   self->size += delta;
   g_debug (
-    "new %s size: %d (added %d)",
-    self->name, self->size, delta);
+    "new %s size: %d (added %d)", self->name,
+    self->size, delta);
   for (size_t i = 0; i < parents->len; i++)
     {
       Track * parent =
         g_ptr_array_index (parents, i);
       parent->size += delta;
       g_debug (
-        "new %s size: %d (added %d)",
-        parent->name, parent->size, delta);
+        "new %s size: %d (added %d)", parent->name,
+        parent->size, delta);
     }
   g_ptr_array_unref (parents);
 }

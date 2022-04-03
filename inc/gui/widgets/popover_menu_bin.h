@@ -31,8 +31,11 @@
 #define POPOVER_MENU_BIN_WIDGET_TYPE \
   (popover_menu_bin_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  PopoverMenuBinWidget, popover_menu_bin_widget,
-  Z, POPOVER_MENU_BIN_WIDGET, GtkWidget)
+  PopoverMenuBinWidget,
+  popover_menu_bin_widget,
+  Z,
+  POPOVER_MENU_BIN_WIDGET,
+  GtkWidget)
 
 /**
  * @addtogroup widgets
@@ -46,11 +49,11 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _PopoverMenuBinWidget
 {
-  GtkWidget        parent_instance;
+  GtkWidget parent_instance;
 
-  GtkWidget *      child;
+  GtkWidget * child;
 
-  GMenuModel *     menu_model;
+  GMenuModel * menu_model;
 
   /** Context menu. */
   GtkPopoverMenu * popover_menu;

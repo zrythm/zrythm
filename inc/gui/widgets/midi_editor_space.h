@@ -31,8 +31,10 @@
 #define MIDI_EDITOR_SPACE_WIDGET_TYPE \
   (midi_editor_space_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  MidiEditorSpaceWidget, midi_editor_space_widget,
-  Z, MIDI_EDITOR_SPACE_WIDGET,
+  MidiEditorSpaceWidget,
+  midi_editor_space_widget,
+  Z,
+  MIDI_EDITOR_SPACE_WIDGET,
   GtkWidget)
 
 typedef struct _ArrangerWidget ArrangerWidget;
@@ -54,35 +56,35 @@ typedef struct _PianoRollKeysWidget
  */
 typedef struct _MidiEditorSpaceWidget
 {
-  GtkWidget            parent_instance;
+  GtkWidget parent_instance;
 
-  GtkPaned *           midi_arranger_velocity_paned;
+  GtkPaned * midi_arranger_velocity_paned;
 
-  GtkScrolledWindow *  piano_roll_keys_scroll;
-  GtkViewport *        piano_roll_keys_viewport;
+  GtkScrolledWindow * piano_roll_keys_scroll;
+  GtkViewport *       piano_roll_keys_viewport;
 
-  GtkBox *             midi_notes_box;
+  GtkBox * midi_notes_box;
 
   PianoRollKeysWidget * piano_roll_keys;
 
   /** Piano roll. */
-  GtkBox *             midi_arranger_box;
-  GtkScrolledWindow *  arranger_scroll;
-  GtkViewport *        arranger_viewport;
-  ArrangerWidget *     arranger;
-  GtkScrolledWindow *  modifier_arranger_scroll;
-  GtkViewport *        modifier_arranger_viewport;
-  ArrangerWidget *     modifier_arranger;
+  GtkBox *            midi_arranger_box;
+  GtkScrolledWindow * arranger_scroll;
+  GtkViewport *       arranger_viewport;
+  ArrangerWidget *    arranger;
+  GtkScrolledWindow * modifier_arranger_scroll;
+  GtkViewport *       modifier_arranger_viewport;
+  ArrangerWidget *    modifier_arranger;
 
-  GtkScrollbar *       arranger_hscrollbar;
-  GtkScrollbar *       arranger_vscrollbar;
+  GtkScrollbar * arranger_hscrollbar;
+  GtkScrollbar * arranger_vscrollbar;
 
-  GtkBox *             midi_vel_chooser_box;
-  GtkComboBoxText *    midi_modifier_chooser;
+  GtkBox *          midi_vel_chooser_box;
+  GtkComboBoxText * midi_modifier_chooser;
 
   /** Vertical size goup for the keys and the
    * arranger. */
-  GtkSizeGroup *       arranger_and_keys_vsize_group;
+  GtkSizeGroup * arranger_and_keys_vsize_group;
 } MidiEditorSpaceWidget;
 
 void

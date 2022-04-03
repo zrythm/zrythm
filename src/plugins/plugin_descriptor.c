@@ -24,16 +24,16 @@
 #include "plugins/collection.h"
 #include "plugins/collections.h"
 #include "plugins/lv2_plugin.h"
+#include "plugins/plugin.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_manager.h"
-#include "plugins/plugin.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 #include <lv2/instance-access/instance-access.h>
 
@@ -49,18 +49,17 @@ plugin_descriptor_new (void)
 }
 
 const char *
-plugin_protocol_to_str (
-  PluginProtocol prot)
+plugin_protocol_to_str (PluginProtocol prot)
 {
   for (size_t i = 0;
        i < G_N_ELEMENTS (plugin_protocol_strings);
        i++)
     {
-      if (plugin_protocol_strings[i].val ==
-            (int64_t) prot)
+      if (
+        plugin_protocol_strings[i].val
+        == (int64_t) prot)
         {
-          return
-            plugin_protocol_strings[i].str;
+          return plugin_protocol_strings[i].str;
         }
     }
   g_return_val_if_reached (NULL);
@@ -113,8 +112,7 @@ plugin_descriptor_clone (
   return self;
 }
 
-#define IS_CAT(x) \
-  (descr->category == PC_##x)
+#define IS_CAT(x) (descr->category == PC_##x)
 
 /**
  * Returns if the Plugin is an instrument or not.
@@ -123,8 +121,9 @@ bool
 plugin_descriptor_is_instrument (
   const PluginDescriptor * const descr)
 {
-  if (descr->num_midi_ins == 0 ||
-      descr->num_audio_outs == 0)
+  if (
+    descr->num_midi_ins == 0
+    || descr->num_audio_outs == 0)
     {
       return false;
     }
@@ -139,10 +138,10 @@ plugin_descriptor_is_instrument (
         /* if VSTs are instruments their category
          * must be INSTRUMENT, otherwise they are
          * not */
-        descr->protocol != PROT_VST &&
-        descr->category == ZPLUGIN_CATEGORY_NONE &&
-        descr->num_midi_ins > 0 &&
-        descr->num_audio_outs > 0;
+        descr->protocol != PROT_VST
+        && descr->category == ZPLUGIN_CATEGORY_NONE
+        && descr->num_midi_ins > 0
+        && descr->num_audio_outs > 0;
     }
 }
 
@@ -205,18 +204,9 @@ int
 plugin_descriptor_is_modulator (
   const PluginDescriptor * const descr)
 {
-  return
-    (descr->category == ZPLUGIN_CATEGORY_NONE ||
-     (descr->category > ZPLUGIN_CATEGORY_NONE &&
-      (IS_CAT (ENVELOPE) ||
-       IS_CAT (GENERATOR) ||
-       IS_CAT (CONSTANT) ||
-       IS_CAT (OSCILLATOR) ||
-       IS_CAT (MODULATOR) ||
-       IS_CAT (UTILITY) ||
-       IS_CAT (CONVERTER) ||
-       IS_CAT (FUNCTION)))) &&
-    descr->num_cv_outs > 0;
+  return (descr->category == ZPLUGIN_CATEGORY_NONE
+          || (descr->category > ZPLUGIN_CATEGORY_NONE && (IS_CAT (ENVELOPE) || IS_CAT (GENERATOR) || IS_CAT (CONSTANT) || IS_CAT (OSCILLATOR) || IS_CAT (MODULATOR) || IS_CAT (UTILITY) || IS_CAT (CONVERTER) || IS_CAT (FUNCTION))))
+         && descr->num_cv_outs > 0;
 }
 
 /**
@@ -247,9 +237,9 @@ plugin_descriptor_string_to_category (
 {
   ZPluginCategory category = ZPLUGIN_CATEGORY_NONE;
 
-#define CHECK_CAT(term,cat) \
+#define CHECK_CAT(term, cat) \
   if (g_strrstr (str, term)) \
-    category = PC_##cat
+  category = PC_##cat
 
   /* add category */
   CHECK_CAT ("Delay", DELAY);
@@ -304,9 +294,9 @@ plugin_descriptor_category_to_string (
   ZPluginCategory category)
 {
 
-#define RET_STRING(term,cat) \
+#define RET_STRING(term, cat) \
   if (category == PC_##cat) \
-    return g_strdup (term)
+  return g_strdup (term)
 
   /* add category */
   RET_STRING ("Delay", DELAY);
@@ -381,9 +371,8 @@ plugin_descriptor_is_valid_for_slot_type (
       return self->num_midi_outs > 0;
       break;
     case PLUGIN_SLOT_INSTRUMENT:
-      return
-        track_type == TRACK_TYPE_INSTRUMENT &&
-        plugin_descriptor_is_instrument (self);
+      return track_type == TRACK_TYPE_INSTRUMENT
+             && plugin_descriptor_is_instrument (self);
     default:
       break;
     }
@@ -400,12 +389,11 @@ plugin_descriptor_is_same_plugin (
   const PluginDescriptor * a,
   const PluginDescriptor * b)
 {
-  return a->arch == b->arch &&
-    a->protocol == b->protocol &&
-    string_is_equal (a->path, b->path) &&
-    string_is_equal (a->uri, b->uri) &&
-    a->unique_id == b->unique_id &&
-    a->ghash == b->ghash;
+  return a->arch == b->arch && a->protocol == b->protocol
+         && string_is_equal (a->path, b->path)
+         && string_is_equal (a->uri, b->uri)
+         && a->unique_id == b->unique_id
+         && a->ghash == b->ghash;
 }
 
 /**
@@ -420,17 +408,16 @@ plugin_descriptor_has_custom_ui (
     {
     case PROT_LV2:
       {
-        return
-          lv2_plugin_pick_most_preferable_ui (
-            self->uri, NULL, NULL, true);
+        return lv2_plugin_pick_most_preferable_ui (
+          self->uri, NULL, NULL, true);
       }
       break;
     case PROT_VST:
     case PROT_VST3:
     case PROT_AU:
 #ifdef HAVE_CARLA
-      return
-        carla_native_plugin_has_custom_ui (self);
+      return carla_native_plugin_has_custom_ui (
+        self);
 #else
       return false;
 #endif
@@ -463,12 +450,11 @@ plugin_descriptor_get_min_bridge_mode (
       lilv_node_free (lv2_uri);
       LilvUIs * uis =
         lilv_plugin_get_uis (lilv_plugin);
-      const LilvUI * picked_ui;
+      const LilvUI *   picked_ui;
       const LilvNode * picked_ui_type;
-      bool needs_bridging =
-        lv2_plugin_pick_ui (
-          uis, LV2_PLUGIN_UI_FOR_BRIDGING,
-          &picked_ui, &picked_ui_type);
+      bool needs_bridging = lv2_plugin_pick_ui (
+        uis, LV2_PLUGIN_UI_FOR_BRIDGING, &picked_ui,
+        &picked_ui_type);
       if (needs_bridging)
         {
           const LilvNode * ui_uri =
@@ -476,28 +462,27 @@ plugin_descriptor_get_min_bridge_mode (
           LilvNodes * ui_required_features =
             lilv_world_find_nodes (
               LILV_WORLD, ui_uri,
-              PM_GET_NODE (
-                LV2_CORE__requiredFeature),
+              PM_GET_NODE (LV2_CORE__requiredFeature),
               NULL);
-          if (lilv_nodes_contains (
-                ui_required_features,
-                PM_GET_NODE (LV2_DATA_ACCESS_URI)) ||
-              lilv_nodes_contains (
-                ui_required_features,
-                PM_GET_NODE (
-                  LV2_INSTANCE_ACCESS_URI)) ||
-              lilv_node_equals (
-                picked_ui_type,
-                PM_GET_NODE (LV2_UI__Qt4UI)) ||
-              lilv_node_equals (
-                picked_ui_type,
-                PM_GET_NODE (LV2_UI__Qt5UI)) ||
-              lilv_node_equals (
-                picked_ui_type,
-                PM_GET_NODE (LV2_UI__GtkUI)) ||
-              lilv_node_equals (
-                picked_ui_type,
-                PM_GET_NODE (LV2_UI__Gtk3UI)))
+          if (
+            lilv_nodes_contains (
+              ui_required_features,
+              PM_GET_NODE (LV2_DATA_ACCESS_URI))
+            || lilv_nodes_contains (
+              ui_required_features,
+              PM_GET_NODE (LV2_INSTANCE_ACCESS_URI))
+            || lilv_node_equals (
+              picked_ui_type,
+              PM_GET_NODE (LV2_UI__Qt4UI))
+            || lilv_node_equals (
+              picked_ui_type,
+              PM_GET_NODE (LV2_UI__Qt5UI))
+            || lilv_node_equals (
+              picked_ui_type,
+              PM_GET_NODE (LV2_UI__GtkUI))
+            || lilv_node_equals (
+              picked_ui_type,
+              PM_GET_NODE (LV2_UI__Gtk3UI)))
             {
               return CARLA_BRIDGE_FULL;
             }
@@ -537,18 +522,15 @@ plugin_descriptor_get_icon_name (
     {
       return "instrument";
     }
-  else if (plugin_descriptor_is_modulator (
-             self))
+  else if (plugin_descriptor_is_modulator (self))
     {
       return "modulator";
     }
-  else if (plugin_descriptor_is_midi_modifier (
-             self))
+  else if (plugin_descriptor_is_midi_modifier (self))
     {
       return "signal-midi";
     }
-  else if (plugin_descriptor_is_effect (
-             self))
+  else if (plugin_descriptor_is_effect (self))
     {
       return "bars";
     }
@@ -565,7 +547,7 @@ plugin_descriptor_generate_context_menu (
   GMenu * menu = g_menu_new ();
 
   GMenuItem * menuitem;
-  char tmp[600];
+  char        tmp[600];
 
   /* TODO */
 #if 0
@@ -588,27 +570,25 @@ plugin_descriptor_generate_context_menu (
     tmp,
     "app.plugin-browser-add-to-project-carla::%p",
     self);
-  menuitem =
-    z_gtk_create_menu_item (
-      _("Add to project"), NULL, tmp);
+  menuitem = z_gtk_create_menu_item (
+    _ ("Add to project"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
   PluginSetting * new_setting =
     plugin_setting_new_default (self);
-  if (self->has_custom_ui &&
-      self->min_bridge_mode ==
-        CARLA_BRIDGE_NONE &&
-      !new_setting->force_generic_ui)
+  if (
+    self->has_custom_ui
+    && self->min_bridge_mode == CARLA_BRIDGE_NONE
+    && !new_setting->force_generic_ui)
     {
       sprintf (
         tmp,
         "app.plugin-browser-add-to-project-"
         "bridged-ui::%p",
         self);
-      menuitem =
-        z_gtk_create_menu_item (
-          _("Add to project (bridged UI)"), NULL,
-          tmp);
+      menuitem = z_gtk_create_menu_item (
+        _ ("Add to project (bridged UI)"), NULL,
+        tmp);
       g_menu_append_item (menu, menuitem);
     }
   plugin_setting_free (new_setting);
@@ -618,10 +598,8 @@ plugin_descriptor_generate_context_menu (
     "app.plugin-browser-add-to-project-bridged-"
     "full::%p",
     self);
-  menuitem =
-    z_gtk_create_menu_item (
-      _("Add to project (bridged full)"), NULL,
-      tmp);
+  menuitem = z_gtk_create_menu_item (
+    _ ("Add to project (bridged full)"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 #endif
 
@@ -641,11 +619,11 @@ plugin_descriptor_generate_context_menu (
 
   /* add to collection */
   GMenu * add_collections_submenu = g_menu_new ();
-  int num_added = 0;
-  for (int i = 0;
-       i < PLUGIN_MANAGER->collections->
-         num_collections;
-       i++)
+  int     num_added = 0;
+  for (
+    int i = 0;
+    i < PLUGIN_MANAGER->collections->num_collections;
+    i++)
     {
       PluginCollection * coll =
         PLUGIN_MANAGER->collections->collections[i];
@@ -659,9 +637,8 @@ plugin_descriptor_generate_context_menu (
         tmp,
         "app.plugin-browser-add-to-collection::%p",
         coll);
-      menuitem =
-        z_gtk_create_menu_item (
-          coll->name, NULL, tmp);
+      menuitem = z_gtk_create_menu_item (
+        coll->name, NULL, tmp);
       g_menu_append_item (
         add_collections_submenu, menuitem);
       num_added++;
@@ -669,24 +646,21 @@ plugin_descriptor_generate_context_menu (
   if (num_added > 0)
     {
       g_menu_append_section (
-        menu, _("Add to collection"),
-        G_MENU_MODEL (
-          add_collections_submenu));
+        menu, _ ("Add to collection"),
+        G_MENU_MODEL (add_collections_submenu));
     }
   else
     {
-      g_object_unref (
-        add_collections_submenu);
+      g_object_unref (add_collections_submenu);
     }
 
   /* remove from collection */
-  GMenu * remove_collections_submenu =
-    g_menu_new ();
+  GMenu * remove_collections_submenu = g_menu_new ();
   num_added = 0;
-  for (int i = 0;
-       i < PLUGIN_MANAGER->collections->
-         num_collections;
-       i++)
+  for (
+    int i = 0;
+    i < PLUGIN_MANAGER->collections->num_collections;
+    i++)
     {
       PluginCollection * coll =
         PLUGIN_MANAGER->collections->collections[i];
@@ -700,9 +674,8 @@ plugin_descriptor_generate_context_menu (
         tmp,
         "app.plugin-browser-remove-from-collection::%p",
         coll);
-      menuitem =
-        z_gtk_create_menu_item (
-          coll->name, NULL, tmp);
+      menuitem = z_gtk_create_menu_item (
+        coll->name, NULL, tmp);
       g_menu_append_item (
         remove_collections_submenu, menuitem);
       num_added++;
@@ -710,7 +683,7 @@ plugin_descriptor_generate_context_menu (
   if (num_added > 0)
     {
       g_menu_append_section (
-        menu, _("Remove from collection"),
+        menu, _ ("Remove from collection"),
         G_MENU_MODEL (remove_collections_submenu));
     }
   else
@@ -722,8 +695,7 @@ plugin_descriptor_generate_context_menu (
 }
 
 void
-plugin_descriptor_free (
-  PluginDescriptor * self)
+plugin_descriptor_free (PluginDescriptor * self)
 {
   g_free_and_null (self->author);
   g_free_and_null (self->name);

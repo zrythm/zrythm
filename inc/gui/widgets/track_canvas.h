@@ -31,30 +31,33 @@
 #define TRACK_CANVAS_WIDGET_TYPE \
   (track_canvas_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  TrackCanvasWidget, track_canvas_widget,
-  Z, TRACK_CANVAS_WIDGET, GtkWidget)
+  TrackCanvasWidget,
+  track_canvas_widget,
+  Z,
+  TRACK_CANVAS_WIDGET,
+  GtkWidget)
 
 typedef struct _TrackWidget TrackWidget;
 
 typedef struct _TrackCanvasWidget
 {
-  GtkWidget         parent_instance;
+  GtkWidget parent_instance;
 
-  TrackWidget *     parent;
+  TrackWidget * parent;
 
   /** Layout for drawing the name. */
-  PangoLayout *     layout;
+  PangoLayout * layout;
 
   /** Layout for automation value. */
-  PangoLayout *     automation_value_layout;
+  PangoLayout * automation_value_layout;
 
   /** Used for recreating the pango layout. */
-  int               last_width;
-  int               last_height;
+  int last_width;
+  int last_height;
 
-  char *            last_track_icon_name;
+  char * last_track_icon_name;
 
-  GdkTexture *      track_icon;
+  GdkTexture * track_icon;
 } TrackCanvasWidget;
 
 void

@@ -35,11 +35,12 @@
 G_DECLARE_FINAL_TYPE (
   StringEntryDialogWidget,
   string_entry_dialog_widget,
-  Z, STRING_ENTRY_DIALOG_WIDGET,
+  Z,
+  STRING_ENTRY_DIALOG_WIDGET,
   GtkDialog)
 
 typedef struct _MarkerWidget MarkerWidget;
-typedef struct Marker Marker;
+typedef struct Marker        Marker;
 
 /**
  * @addtogroup widgets
@@ -52,7 +53,7 @@ typedef struct Marker Marker;
  */
 typedef struct _StringEntryDialogWidget
 {
-  GtkDialog   parent_instance;
+  GtkDialog parent_instance;
 
   GtkEntry *  entry;
   GtkButton * ok;
@@ -61,7 +62,7 @@ typedef struct _StringEntryDialogWidget
 
   GenericStringGetter getter;
   GenericStringSetter setter;
-  void *      obj;
+  void *              obj;
 
 } StringEntryDialogWidget;
 
@@ -81,7 +82,7 @@ string_entry_dialog_widget_new (
  */
 char *
 string_entry_dialog_widget_new_return_string (
-  const char *        label);
+  const char * label);
 
 /**
  * @}

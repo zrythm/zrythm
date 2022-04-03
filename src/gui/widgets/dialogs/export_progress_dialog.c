@@ -36,8 +36,8 @@
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   ExportProgressDialogWidget,
@@ -46,7 +46,7 @@ G_DEFINE_TYPE (
 
 static void
 on_open_directory_clicked (
-  GtkButton * btn,
+  GtkButton *                  btn,
   ExportProgressDialogWidget * self)
 {
   char * dir = io_get_dir (self->info->file_uri);
@@ -67,23 +67,23 @@ export_progress_dialog_widget_new (
   g_type_ensure (
     GENERIC_PROGRESS_DIALOG_WIDGET_TYPE);
 
-  ExportProgressDialogWidget * self =
-    g_object_new (
-      EXPORT_PROGRESS_DIALOG_WIDGET_TYPE, NULL);
+  ExportProgressDialogWidget * self = g_object_new (
+    EXPORT_PROGRESS_DIALOG_WIDGET_TYPE, NULL);
 
-  GenericProgressDialogWidget * generic_progress_dialog =
-    Z_GENERIC_PROGRESS_DIALOG_WIDGET (self);
+  GenericProgressDialogWidget *
+    generic_progress_dialog =
+      Z_GENERIC_PROGRESS_DIALOG_WIDGET (self);
 
   self->info = info;
   strcpy (
     info->progress_info.label_str,
-    _("Exporting..."));
+    _ ("Exporting..."));
   strcpy (
     info->progress_info.label_done_str,
-    _("Exported"));
+    _ ("Exported"));
 
   generic_progress_dialog_widget_setup (
-    generic_progress_dialog, _("Export Progress"),
+    generic_progress_dialog, _ ("Export Progress"),
     &info->progress_info, autoclose, cancelable);
 
   self->show_open_dir_btn = show_open_dir_btn;
@@ -91,15 +91,15 @@ export_progress_dialog_widget_new (
   if (show_open_dir_btn)
     {
       self->open_directory =
-        GTK_BUTTON (
-          gtk_button_new_with_label (
-            _("Open Directory")));
+        GTK_BUTTON (gtk_button_new_with_label (
+          _ ("Open Directory")));
       gtk_widget_set_tooltip_text (
         GTK_WIDGET (self->open_directory),
-        _("Opens the containing directory"));
+        _ ("Opens the containing directory"));
       g_signal_connect (
         G_OBJECT (self->open_directory), "clicked",
-        G_CALLBACK (on_open_directory_clicked), self);
+        G_CALLBACK (on_open_directory_clicked),
+        self);
 
       generic_progress_dialog_add_button (
         generic_progress_dialog,

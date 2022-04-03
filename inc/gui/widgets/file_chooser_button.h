@@ -27,7 +27,8 @@
 G_DECLARE_FINAL_TYPE (
   FileChooserButtonWidget,
   file_chooser_button_widget,
-  Z, FILE_CHOOSER_BUTTON_WIDGET,
+  Z,
+  FILE_CHOOSER_BUTTON_WIDGET,
   GtkBox)
 
 /**
@@ -38,18 +39,18 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _FileChooserButtonWidget
 {
-  GtkBox         parent_instance;
+  GtkBox parent_instance;
 
-  GtkButton *    button;
+  GtkButton * button;
 
   /* TODO free */
-  char *         title;
+  char * title;
 
-  char *         current_dir;
-  char *         path;
+  char * current_dir;
+  char * path;
 
   GtkFileChooserAction action;
-  GtkWindow *    parent;
+  GtkWindow *          parent;
 
   GCallback      response_cb;
   gpointer       user_data;

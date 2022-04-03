@@ -5,6 +5,7 @@ Language: Cpp
 AccessModifierOffset: -2
 # FIXME set to BlockIndent on clang-format 14
 AlignAfterOpenBracket: AlwaysBreak
+AlignArrayOfStructures: Left
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: true
 AlignEscapedNewlines: DontAlign
@@ -18,7 +19,7 @@ AllowShortFunctionsOnASingleLine: Inline
 AllowShortIfStatementsOnASingleLine: Never
 AlwaysBreakAfterReturnType: TopLevel
 AlwaysBreakBeforeMultilineStrings: true
-AttributeMacros: ['COLD', 'NONNULL_ARGS', 'NONNULL', 'HOT', 'WARN_UNUSED_RESULT']
+AttributeMacros: ['COLD', 'NONNULL_ARGS', 'NONNULL', 'HOT', 'WARN_UNUSED_RESULT', 'PURE']
 BinPackArguments: true
 BinPackParameters: false
 BreakBeforeBraces: Custom
@@ -46,13 +47,14 @@ BreakConstructorInitializers: AfterColon
 BreakStringLiterals: false
 ContinuationIndentWidth: 2
 ColumnLimit: 52
+Cpp11BracedListStyle: false
 ForEachMacros: ['LILV_FOREACH']
 IncludeBlocks: Regroup
 IncludeCategories:
   - Regex:           '^"(zrythm-|zrythm-test-)config\.h"$'
     Priority:        -5
     CaseSensitive:   true
-  - Regex:           '^<(signal|stdlib|math)\.h>$'
+  - Regex:           '^<(signal|std.+|math)\.h>$'
     Priority:        -2
     CaseSensitive:   true
   - Regex:           '^"((audio|actions|plugins|settings|utils|gui)/.*|zrythm\.h|zrythm_app\.h|project\.h)'
@@ -97,6 +99,7 @@ SpaceInEmptyBlock: true
 SpaceInEmptyParentheses: false
 SpacesInCStyleCastParentheses: false
 SpacesInConditionalStatement: false
+SpacesInContainerLiterals: true
 SpacesInLineCommentPrefix:
   Minimum: 1
   Maximum: -1
@@ -105,6 +108,7 @@ SpacesInSquareBrackets: false
 Standard: c++11
 StatementMacros: []
 TabWidth: 2
+TypenameMacros: []
 UseTab: Never
-WhitespaceSensitiveMacros: ['_']
+WhitespaceSensitiveMacros: ['G_DEFINE_QUARK']
 ...

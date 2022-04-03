@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   PortConnectionsPopoverWidget,
   port_connections_popover_widget,
-  Z, PORT_CONNECTIONS_POPOVER_WIDGET,
+  Z,
+  PORT_CONNECTIONS_POPOVER_WIDGET,
   GtkPopover)
 
 typedef struct Port Port;
@@ -48,22 +49,22 @@ typedef struct _PortSelectorPopoverWidget
 
 typedef struct _PortConnectionsPopoverWidget
 {
-  GtkPopover       parent_instance;
+  GtkPopover parent_instance;
 
   /** The port. */
-  Port *           port;
+  Port * port;
 
   /** The main vertical box containing everything. */
-  GtkBox *         main_box;
+  GtkBox * main_box;
 
   /** Title to show at the top, e.g. "INPUTS". */
-  GtkLabel *       title;
+  GtkLabel * title;
 
   /** Box containing the ports. */
-  GtkBox *         ports_box;
+  GtkBox * ports_box;
 
   /** Button to add connection. */
-  GtkButton *      add;
+  GtkButton * add;
 
   //PortSelectorPopoverWidget * port_selector_popover;
 } PortConnectionsPopoverWidget;

@@ -17,20 +17,21 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/widgets/port_connections.h"
-#include "gui/widgets/port_connections_tree.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/port_connections.h"
+#include "gui/widgets/port_connections_tree.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
-  PortConnectionsWidget, port_connections_widget,
+  PortConnectionsWidget,
+  port_connections_widget,
   GTK_TYPE_BOX)
 
 /**
@@ -47,9 +48,8 @@ port_connections_widget_refresh (
 PortConnectionsWidget *
 port_connections_widget_new ()
 {
-  PortConnectionsWidget * self =
-    g_object_new (
-      PORT_CONNECTIONS_WIDGET_TYPE, NULL);
+  PortConnectionsWidget * self = g_object_new (
+    PORT_CONNECTIONS_WIDGET_TYPE, NULL);
 
   self->bindings_tree =
     port_connections_tree_widget_new ();

@@ -20,8 +20,7 @@
 #include "gui/backend/editor_settings.h"
 
 void
-editor_settings_init (
-  EditorSettings * self)
+editor_settings_init (EditorSettings * self)
 {
   self->schema_version =
     EDITOR_SETTINGS_SCHEMA_VERSION;

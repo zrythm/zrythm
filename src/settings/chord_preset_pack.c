@@ -42,8 +42,8 @@ chord_preset_pack_new (
     CHORD_PRESET_PACK_SCHEMA_VERSION;
   self->name = g_strdup (name);
   self->presets_size = 12;
-  self->presets =
-    object_new_n (self->presets_size, ChordPreset *);
+  self->presets = object_new_n (
+    self->presets_size, ChordPreset *);
   self->is_standard = is_standard;
 
   return self;
@@ -139,44 +139,39 @@ chord_preset_pack_generate_context_menu (
   if (self->is_standard)
     return NULL;
 
-  GMenu * menu = g_menu_new ();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
-  char action[800];
+  char        action[800];
 
   /* rename */
   sprintf (
     action, "app.rename-chord-preset-pack::%p",
     self);
-  menuitem =
-    z_gtk_create_menu_item (
-      _("_Rename"), "edit-rename", action);
+  menuitem = z_gtk_create_menu_item (
+    _ ("_Rename"), "edit-rename", action);
   g_menu_append_item (menu, menuitem);
 
   /* delete */
   sprintf (
     action, "app.delete-chord-preset-pack::%p",
     self);
-  menuitem =
-    z_gtk_create_menu_item (
-      _("_Delete"), "edit-delete", action);
+  menuitem = z_gtk_create_menu_item (
+    _ ("_Delete"), "edit-delete", action);
   g_menu_append_item (menu, menuitem);
 
   return G_MENU_MODEL (menu);
 }
 
 ChordPresetPack *
-chord_preset_pack_clone (
-  const ChordPresetPack * src)
+chord_preset_pack_clone (const ChordPresetPack * src)
 {
-  ChordPresetPack * self =
-    chord_preset_pack_new (
-      src->name, src->is_standard);
+  ChordPresetPack * self = chord_preset_pack_new (
+    src->name, src->is_standard);
 
-  self->presets =
-    object_realloc_n (
-      self->presets, self->presets_size,
-      MAX (1, (size_t) src->num_presets),
-      ChordPreset *);
+  self->presets = object_realloc_n (
+    self->presets, self->presets_size,
+    MAX (1, (size_t) src->num_presets),
+    ChordPreset *);
   for (int i = 0; i < src->num_presets; i++)
     {
       self->presets[i] =
@@ -188,8 +183,7 @@ chord_preset_pack_clone (
 }
 
 void
-chord_preset_pack_free (
-  ChordPresetPack * self)
+chord_preset_pack_free (ChordPresetPack * self)
 {
   object_free_w_func_and_null (g_free, self->name);
 
@@ -204,9 +198,7 @@ chord_preset_pack_free (
 }
 
 void
-chord_preset_pack_destroy_cb (
-  void * self)
+chord_preset_pack_destroy_cb (void * self)
 {
-  chord_preset_pack_free (
-    (ChordPresetPack *) self);
+  chord_preset_pack_free ((ChordPresetPack *) self);
 }

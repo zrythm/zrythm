@@ -32,13 +32,13 @@
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
-G_DEFINE_TYPE (TopBarWidget,
-               top_bar_widget,
-               GTK_TYPE_BOX)
-
+G_DEFINE_TYPE (
+  TopBarWidget,
+  top_bar_widget,
+  GTK_TYPE_BOX)
 
 void
 top_bar_widget_refresh (TopBarWidget * self)
@@ -46,7 +46,8 @@ top_bar_widget_refresh (TopBarWidget * self)
 }
 
 static void
-top_bar_widget_class_init (TopBarWidgetClass * _klass)
+top_bar_widget_class_init (
+  TopBarWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "top_bar.ui");

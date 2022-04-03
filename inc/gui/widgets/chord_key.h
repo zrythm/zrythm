@@ -29,8 +29,11 @@
 #define CHORD_KEY_WIDGET_TYPE \
   (chord_key_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  ChordKeyWidget, chord_key_widget,
-  Z, CHORD_KEY_WIDGET, GtkGrid)
+  ChordKeyWidget,
+  chord_key_widget,
+  Z,
+  CHORD_KEY_WIDGET,
+  GtkGrid)
 
 typedef struct _PianoKeyboardWidget
   PianoKeyboardWidget;
@@ -47,33 +50,31 @@ typedef struct _PianoKeyboardWidget
 */
 typedef struct _ChordKeyWidget
 {
-  GtkGrid           parent_instance;
+  GtkGrid parent_instance;
 
   /** The chord this widget is for. */
-  int               chord_idx;
+  int chord_idx;
 
-  GtkLabel *        chord_lbl;
-  GtkBox *          piano_box;
+  GtkLabel *            chord_lbl;
+  GtkBox *              piano_box;
   PianoKeyboardWidget * piano;
-  GtkBox *          btn_box;
-  GtkButton *       choose_chord_btn;
-  GtkButton *       invert_prev_btn;
-  GtkButton *       invert_next_btn;
+  GtkBox *              btn_box;
+  GtkButton *           choose_chord_btn;
+  GtkButton *           invert_prev_btn;
+  GtkButton *           invert_next_btn;
 
   GtkGestureClick * multipress;
 } ChordKeyWidget;
 
 void
-chord_key_widget_refresh (
-  ChordKeyWidget * self);
+chord_key_widget_refresh (ChordKeyWidget * self);
 
 /**
  * Creates a ChordKeyWidget for the given
  * MIDI note descriptor.
  */
 ChordKeyWidget *
-chord_key_widget_new (
-  int               idx);
+chord_key_widget_new (int idx);
 
 /**
  * @}

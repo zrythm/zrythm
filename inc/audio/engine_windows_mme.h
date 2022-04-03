@@ -21,14 +21,14 @@
 
 #ifdef _WOE32
 
-#ifndef __AUDIO_ENGINE_WINDOWS_MME_H__
-#define __AUDIO_ENGINE_WINDOWS_MME_H__
+#  ifndef __AUDIO_ENGINE_WINDOWS_MME_H__
+#    define __AUDIO_ENGINE_WINDOWS_MME_H__
 
-#include <windows.h>
+#    include <gtk/gtk.h>
 
-#include <gtk/gtk.h>
+#    include <windows.h>
 
-typedef struct AudioEngine AudioEngine;
+typedef struct AudioEngine      AudioEngine;
 typedef struct WindowsMmeDevice WindowsMmeDevice;
 
 /**
@@ -41,8 +41,7 @@ typedef struct WindowsMmeDevice WindowsMmeDevice;
  * Returns the number of MIDI devices available.
  */
 int
-engine_windows_mme_get_num_devices (
-  int input);
+engine_windows_mme_get_num_devices (int input);
 
 /**
  * Gets the error text for a MIDI input error.
@@ -68,8 +67,7 @@ engine_windows_mme_print_error (
  * Initialize Port MIDI.
  */
 int
-engine_windows_mme_setup (
-  AudioEngine * self);
+engine_windows_mme_setup (AudioEngine * self);
 
 /**
  * Starts all previously scanned devices.
@@ -92,8 +90,7 @@ engine_windows_mme_rescan_devices (
   int           start);
 
 int
-engine_windows_mme_tear_down (
-  AudioEngine * self);
+engine_windows_mme_tear_down (AudioEngine * self);
 
 /**
  * Tests if the engine is working properly.
@@ -104,12 +101,11 @@ engine_windows_mme_tear_down (
  * to it.
  */
 int
-engine_windows_mme_test (
-  GtkWindow * win);
+engine_windows_mme_test (GtkWindow * win);
 
 /**
  * @}
  */
 
-#endif
+#  endif
 #endif // _WOE32

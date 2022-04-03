@@ -31,8 +31,11 @@
 #define MIDI_ACTIVITY_BAR_WIDGET_TYPE \
   (midi_activity_bar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  MidiActivityBarWidget, midi_activity_bar_widget,
-  Z, MIDI_ACTIVITY_BAR_WIDGET, GtkWidget)
+  MidiActivityBarWidget,
+  midi_activity_bar_widget,
+  Z,
+  MIDI_ACTIVITY_BAR_WIDGET,
+  GtkWidget)
 
 typedef struct Track Track;
 
@@ -58,10 +61,10 @@ typedef enum MidiActivityBarAnimation
 
 typedef struct _MidiActivityBarWidget
 {
-  GtkWidget      parent_instance;
+  GtkWidget parent_instance;
 
   /** Track associated with this widget. */
-  Track  *       track;
+  Track * track;
 
   MidiActivityBarType type;
 
@@ -69,10 +72,10 @@ typedef struct _MidiActivityBarWidget
 
   /** System time at last trigger, so we know
    * how to draw the bar (for fading down). */
-  gint64         last_trigger_time;
+  gint64 last_trigger_time;
 
   /** Draw border or not. */
-  int            draw_border;
+  int draw_border;
 
 } MidiActivityBarWidget;
 
@@ -90,7 +93,7 @@ midi_activity_bar_widget_setup_track (
  */
 void
 midi_activity_bar_widget_set_animation (
-  MidiActivityBarWidget * self,
+  MidiActivityBarWidget *  self,
   MidiActivityBarAnimation animation);
 
 /**

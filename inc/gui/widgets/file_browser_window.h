@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   FileBrowserWindowWidget,
   file_browser_window_widget,
-  Z, FILE_BROWSER_WINDOW_WINDOW_WIDGET,
+  Z,
+  FILE_BROWSER_WINDOW_WINDOW_WIDGET,
   GtkWindow)
 
 typedef struct _FileBrowserWidget FileBrowserWidget;
@@ -49,9 +50,9 @@ typedef struct _FileBrowserWidget FileBrowserWidget;
  */
 typedef struct _FileBrowserWindowWidget
 {
-  GtkWindow              parent_instance;
+  GtkWindow parent_instance;
 
-  FileBrowserWidget *    file_browser;
+  FileBrowserWidget * file_browser;
 } FileBrowserWindowWidget;
 
 /**

@@ -26,10 +26,10 @@
 #ifndef __AUDIO_CONTROL_PORT_H__
 #define __AUDIO_CONTROL_PORT_H__
 
+#include <stdbool.h>
+
 #include "audio/port_identifier.h"
 #include "audio/tempo_track.h"
-
-#include <stdbool.h>
 
 typedef struct Port Port;
 
@@ -47,7 +47,7 @@ typedef struct ControlPortChange
    *
    * @seealso PORT_FLAG_BPM.
    */
-  PortFlags     flag1;
+  PortFlags flag1;
 
   /**
    * Flag to identify the port the change is for.
@@ -55,15 +55,15 @@ typedef struct ControlPortChange
    * @seealso PORT_FLAG2_BEATS_PER_BAR and
    *   PORT_FLAG2_BEAT_UNIT.
    */
-  PortFlags2    flag2;
+  PortFlags2 flag2;
 
   /** Real (not normalized) value to set. */
-  float         real_val;
+  float real_val;
 
   /** Integer val. */
-  int           ival;
+  int ival;
 
-  BeatUnit      beat_unit;
+  BeatUnit beat_unit;
 
 } ControlPortChange;
 
@@ -83,8 +83,7 @@ typedef struct ControlPortChange
  *   used in widgets.
  */
 NONNULL
-PURE
-float
+PURE float
 control_port_normalized_val_to_real (
   const Port * const self,
   float              normalized_val);
@@ -99,8 +98,7 @@ control_port_normalized_val_to_real (
  *   used in widgets.
  */
 NONNULL
-PURE
-float
+PURE float
 control_port_real_val_to_normalized (
   const Port * const self,
   float              real_val);
@@ -121,24 +119,20 @@ control_port_real_val_to_normalized (
  * Gets the control value for an integer port.
  */
 int
-control_port_get_int (
-  Port * self);
+control_port_get_int (Port * self);
 
 /**
  * Gets the control value for an integer port.
  */
-PURE
-int
-control_port_get_int_from_val (
-  float val);
+PURE int
+control_port_get_int_from_val (float val);
 
 /**
  * Returns the snapped value (eg, if toggle,
  * returns 0.f or 1.f).
  */
 float
-control_port_get_snapped_val (
-  Port * self);
+control_port_get_snapped_val (Port * self);
 
 /**
  * Returns the snapped value (eg, if toggle,
@@ -154,43 +148,33 @@ control_port_get_snapped_val_from_val (
  *
  * TODO "normalize" parameter.
  */
-PURE
-float
-control_port_get_val (
-  Port * self);
+PURE float
+control_port_get_val (Port * self);
 
 /**
  * Get the current normalized value of the control.
  */
-PURE
-float
-control_port_get_normalized_val (
-  Port * self);
+PURE float
+control_port_get_normalized_val (Port * self);
 
 /**
  * Get the current real unsnapped value of the
  * control.
  */
-PURE
-float
-control_port_get_unsnapped_val (
-  Port * self);
+PURE float
+control_port_get_unsnapped_val (Port * self);
 
 /**
  * Get the default real value of the control.
  */
-PURE
-float
-control_port_get_default_val (
-  Port * self);
+PURE float
+control_port_get_default_val (Port * self);
 
 /**
  * Get the default real value of the control.
  */
 void
-control_port_set_real_val (
-  Port * self,
-  float  val);
+control_port_set_real_val (Port * self, float val);
 
 /**
  * Get the default real value of the control and
@@ -222,9 +206,7 @@ control_port_set_toggled (
  *   automating field to true, which will cause the
  *   plugin to receive a UI event for this change.
  */
-HOT
-NONNULL
-void
+HOT NONNULL void
 control_port_set_val_from_normalized (
   Port * self,
   float  val,

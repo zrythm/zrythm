@@ -60,8 +60,7 @@ object_pool_new (
  *   for debugging purposes.
  */
 int
-object_pool_get_num_available (
-  ObjectPool * self)
+object_pool_get_num_available (ObjectPool * self)
 {
   zix_sem_wait (&self->access_sem);
   int num_available = self->num_obj_available;
@@ -74,16 +73,15 @@ object_pool_get_num_available (
  * Returns an available object.
  */
 void *
-object_pool_get (
-  ObjectPool * self)
+object_pool_get (ObjectPool * self)
 {
   void * ret = NULL;
   zix_sem_wait (&self->access_sem);
   if (self->num_obj_available > 0)
     {
       ret =
-        self->obj_available[
-          --self->num_obj_available];
+        self
+          ->obj_available[--self->num_obj_available];
     }
   zix_sem_post (&self->access_sem);
 
@@ -95,9 +93,7 @@ object_pool_get (
  * Puts an object back in the pool.
  */
 void
-object_pool_return (
-  ObjectPool * self,
-  void *       obj)
+object_pool_return (ObjectPool * self, void * obj)
 {
   zix_sem_wait (&self->access_sem);
   int fail = 0;
@@ -105,9 +101,8 @@ object_pool_return (
     fail = 1;
   else
     {
-      self->obj_available[
-        self->num_obj_available++] =
-          obj;
+      self->obj_available[self->num_obj_available++] =
+        obj;
     }
   zix_sem_post (&self->access_sem);
   g_return_if_fail (fail == 0);
@@ -117,8 +112,7 @@ object_pool_return (
  * Frees the pool and all its objects.
  */
 void
-object_pool_free (
-  ObjectPool * self)
+object_pool_free (ObjectPool * self)
 {
   zix_sem_wait (&self->access_sem);
   if (self->num_obj_available != self->max_objects)

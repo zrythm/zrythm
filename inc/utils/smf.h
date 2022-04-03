@@ -35,6 +35,6 @@
  */
 //void
 //smf_load_region (const char    * file,   ///< file to load
-                 //ZRegion *  midi_region); ///< region to save midi notes in
+//ZRegion *  midi_region); ///< region to save midi notes in
 
 //#endif

@@ -26,7 +26,8 @@
  * @{
  */
 
-#define z_return_val_if_fail_cmp(a,comparator,b,val) \
+#define z_return_val_if_fail_cmp( \
+  a, comparator, b, val) \
   if (!(G_LIKELY (a comparator b))) \
     { \
       g_critical ( \
@@ -35,10 +36,10 @@
       return val; \
     }
 
-#define z_return_if_fail_cmp(a,comparator,b) \
+#define z_return_if_fail_cmp(a, comparator, b) \
   z_return_val_if_fail_cmp (a, comparator, b, )
 
-#define z_warn_if_fail_cmp(a,comparator,b) \
+#define z_warn_if_fail_cmp(a, comparator, b) \
   if (!(G_LIKELY (a comparator b))) \
     { \
       g_warning ( \

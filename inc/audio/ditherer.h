@@ -59,9 +59,7 @@ typedef struct Ditherer
 } Ditherer;
 
 void
-ditherer_reset (
-  Ditherer * self,
-  int        num_bits);
+ditherer_reset (Ditherer * self, int num_bits);
 
 /**
  * Dither given audio.

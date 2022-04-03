@@ -33,7 +33,8 @@
 G_DECLARE_FINAL_TYPE (
   PortInfoDialogWidget,
   port_info_dialog_widget,
-  Z, PORT_INFO_DIALOG_WIDGET,
+  Z,
+  PORT_INFO_DIALOG_WIDGET,
   GtkDialog)
 
 typedef struct Port Port;
@@ -49,31 +50,30 @@ typedef struct Port Port;
  */
 typedef struct _PortInfoDialogWidget
 {
-  GtkDialog            parent_instance;
+  GtkDialog parent_instance;
 
-  GtkLabel *           name_lbl;
-  GtkLabel *           group_lbl;
-  GtkLabel *           full_designation_lbl;
-  GtkLabel *           type_lbl;
-  GtkLabel *           range_lbl;
-  GtkLabel *           current_val_lbl;
-  GtkLabel *           default_value_lbl;
+  GtkLabel * name_lbl;
+  GtkLabel * group_lbl;
+  GtkLabel * full_designation_lbl;
+  GtkLabel * type_lbl;
+  GtkLabel * range_lbl;
+  GtkLabel * current_val_lbl;
+  GtkLabel * default_value_lbl;
 
-  GtkBox *             flags_box;
+  GtkBox * flags_box;
 
   /* TODO */
-  GtkBox *             scale_points_box;
+  GtkBox * scale_points_box;
 
   /** The port this is about. */
-  Port *               port;
+  Port * port;
 } PortInfoDialogWidget;
 
 /**
  * Creates an port_info dialog widget and displays it.
  */
 PortInfoDialogWidget *
-port_info_dialog_widget_new (
-  Port * port);
+port_info_dialog_widget_new (Port * port);
 
 /**
  * @}

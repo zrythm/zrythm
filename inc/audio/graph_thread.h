@@ -47,14 +47,15 @@
 #include "zrythm-config.h"
 
 #include <stdbool.h>
-#include <pthread.h>
 
 #include "utils/types.h"
 
 #include <gtk/gtk.h>
 
+#include <pthread.h>
+
 #ifdef HAVE_LSP_DSP
-#include <lsp-plug.in/dsp/dsp.h>
+#  include <lsp-plug.in/dsp/dsp.h>
 #endif
 
 typedef struct Graph Graph;
@@ -67,7 +68,7 @@ typedef struct Graph Graph;
 
 typedef struct GraphThread
 {
-  pthread_t         pthread;
+  pthread_t pthread;
 
   /**
    * Thread index in zrythm.
@@ -75,10 +76,10 @@ typedef struct GraphThread
    * The main thread will be -1 and the rest in
    * sequence starting from 0.
    */
-  int               id;
+  int id;
 
   /** Pointer back to the graph. */
-  Graph *           graph;
+  Graph * graph;
 
 #ifdef HAVE_LSP_DSP
   /** LSP DSP context. */

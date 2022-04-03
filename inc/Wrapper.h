@@ -17,4 +17,5 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-void show_on_top(void);
+void
+show_on_top (void);

@@ -19,17 +19,17 @@
 
 #include "zrythm-test-config.h"
 
-#include <lilv/lilv.h>
-
 #include "audio/fader.h"
 #include "audio/midi_event.h"
 #include "audio/router.h"
 #include "utils/math.h"
 
+#include <glib.h>
+
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm.h"
 
-#include <glib.h>
+#include <lilv/lilv.h>
 
 static void
 _test_loading_non_existing_plugin (
@@ -88,10 +88,10 @@ get_skew_duty_port (void)
   Track * track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * pl = track->channel->instrument;
-  Port * port = NULL;
+  Port *   port = NULL;
   for (int i = 0; i < pl->num_in_ports; i++)
     {
-      Port * cur_port =  pl->in_ports[i];
+      Port * cur_port = pl->in_ports[i];
       if (string_is_equal (
             cur_port->id.label, "OscA Skew/Duty"))
         {
@@ -108,10 +108,9 @@ test_loading_fully_bridged_plugin (void)
   test_helper_zrythm_init ();
 
 #ifdef HAVE_CARLA
-#ifdef HAVE_CHIPWAVE
+#  ifdef HAVE_CHIPWAVE
   test_plugin_manager_create_tracks_from_plugin (
-    CHIPWAVE_BUNDLE, CHIPWAVE_URI, true, true,
-    1);
+    CHIPWAVE_BUNDLE, CHIPWAVE_URI, true, true, 1);
 
   Port * port = get_skew_duty_port ();
   g_return_if_fail (port);
@@ -132,7 +131,7 @@ test_loading_fully_bridged_plugin (void)
   g_return_if_fail (port);
   g_assert_cmpfloat_with_epsilon (
     port->control, val_after, 0.0001f);
-#endif
+#  endif
 #endif
 
   test_helper_zrythm_cleanup ();
@@ -144,19 +143,18 @@ test_loading_plugins_needing_bridging (void)
   test_helper_zrythm_init ();
 
 #ifdef HAVE_CARLA
-#ifdef HAVE_CALF_MONOSYNTH
+#  ifdef HAVE_CALF_MONOSYNTH
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       CALF_MONOSYNTH_BUNDLE, CALF_MONOSYNTH_URI,
       false);
   g_return_if_fail (setting);
-  g_assert_true (
-    setting->open_with_carla);
+  g_assert_true (setting->open_with_carla);
   g_assert_true (
     setting->bridge_mode == CARLA_BRIDGE_FULL);
 
   test_project_save_and_reload ();
-#endif
+#  endif
 #endif
 
   test_helper_zrythm_cleanup ();
@@ -169,11 +167,11 @@ test_bypass_state_after_project_load (void)
   test_helper_zrythm_init ();
 
   for (int i = 0;
-#ifdef HAVE_CARLA
+#  ifdef HAVE_CARLA
        i < 2;
-#else
+#  else
        i < 1;
-#endif
+#  endif
        i++)
     {
       /* create fx track */
@@ -188,8 +186,7 @@ test_bypass_state_after_project_load (void)
       /* set bypass */
       plugin_set_enabled (
         pl, F_NOT_ENABLED, F_NO_PUBLISH_EVENTS);
-      g_assert_false (
-        plugin_is_enabled (pl, false));
+      g_assert_false (plugin_is_enabled (pl, false));
 
       /* reload project */
       test_project_save_and_reload ();
@@ -208,7 +205,7 @@ test_bypass_state_after_project_load (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
@@ -217,7 +214,8 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/plugins/plugin/"
 
   g_test_add_func (
-    TEST_PREFIX "test bypass state after project load",
+    TEST_PREFIX
+    "test bypass state after project load",
     (GTestFunc) test_bypass_state_after_project_load);
 #if 0
   /* test does not work with carla */
@@ -229,8 +227,10 @@ main (int argc, char *argv[])
     TEST_PREFIX "test loading fully bridged plugin",
     (GTestFunc) test_loading_fully_bridged_plugin);
   g_test_add_func (
-    TEST_PREFIX "test loading plugins needing bridging",
-    (GTestFunc) test_loading_plugins_needing_bridging);
+    TEST_PREFIX
+    "test loading plugins needing bridging",
+    (GTestFunc)
+      test_loading_plugins_needing_bridging);
 
   (void) test_loading_non_existing_plugin;
 

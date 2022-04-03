@@ -19,14 +19,13 @@
 
 #ifdef _WOE32
 
-#ifndef __UTILS_WINDOWS_ERRORS_H__
-#define __UTILS_WINDOWS_ERRORS_H__
+#  ifndef __UTILS_WINDOWS_ERRORS_H__
+#    define __UTILS_WINDOWS_ERRORS_H__
 
-#include <windows.h>
+#    include <windows.h>
 
 void
-windows_errors_get_last_error_str (
-		char * str);
+windows_errors_get_last_error_str (char * str);
 
-#endif
+#  endif
 #endif // _WOE32

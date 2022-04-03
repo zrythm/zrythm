@@ -55,42 +55,43 @@ typedef enum EditTracksActionType
  */
 typedef struct TracklistSelections
 {
-  int                  schema_version;
+  int schema_version;
 
   /** Selected Tracks. */
-  Track *              tracks[600];
-  int                  num_tracks;
+  Track * tracks[600];
+  int     num_tracks;
 
   /** Whether these are the project selections. */
-  bool                 is_project;
+  bool is_project;
 
   /**
    * Flag to free tracks even if these are the
    * project selections (e.g. when temporarily
    * cloning the project to save).
    */
-  bool                 free_tracks;
+  bool free_tracks;
 } TracklistSelections;
 
 static const cyaml_schema_field_t
-  tracklist_selections_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    TracklistSelections, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    TracklistSelections, tracks, track_schema),
-  YAML_FIELD_INT (
-    TracklistSelections, is_project),
+  tracklist_selections_fields_schema[] = {
+    YAML_FIELD_INT (
+      TracklistSelections,
+      schema_version),
+    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+      TracklistSelections,
+      tracks,
+      track_schema),
+    YAML_FIELD_INT (TracklistSelections, is_project),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-tracklist_selections_schema = {
-  YAML_VALUE_PTR (
-    TracklistSelections,
-    tracklist_selections_fields_schema),
-};
+  tracklist_selections_schema = {
+    YAML_VALUE_PTR (
+      TracklistSelections,
+      tracklist_selections_fields_schema),
+  };
 
 void
 tracklist_selections_init_loaded (
@@ -101,8 +102,7 @@ tracklist_selections_init_loaded (
  *   the project selections (as opposed to clones).
  */
 TracklistSelections *
-tracklist_selections_new (
-  bool  is_project);
+tracklist_selections_new (bool is_project);
 
 /**
  * Clone the struct for copying, undoing, etc.

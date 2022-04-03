@@ -24,18 +24,19 @@
 
 #define INSPECTOR_CHORD_WIDGET_TYPE \
   (inspector_chord_widget_get_type ())
-G_DECLARE_FINAL_TYPE (InspectorChordWidget,
-                      inspector_chord_widget,
-                      Z,
-                      INSPECTOR_CHORD_WIDGET,
-                      GtkGrid)
+G_DECLARE_FINAL_TYPE (
+  InspectorChordWidget,
+  inspector_chord_widget,
+  Z,
+  INSPECTOR_CHORD_WIDGET,
+  GtkGrid)
 
 typedef struct ChordObject ChordObject;
 
 typedef struct _InspectorChordWidget
 {
-  GtkGrid             parent_instance;
-  GtkLabel *          header;
+  GtkGrid    parent_instance;
+  GtkLabel * header;
   //GtkBox *            position_box;
   //GtkBox *            length_box;
   //GtkColorButton *    color;
@@ -45,7 +46,7 @@ typedef struct _InspectorChordWidget
 void
 inspector_chord_widget_show_chords (
   InspectorChordWidget * self,
-  ChordObject **               chords,
+  ChordObject **         chords,
   int                    num_chords);
 
 #endif

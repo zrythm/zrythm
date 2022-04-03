@@ -32,19 +32,21 @@
 
 #define RULER_RANGE_WIDGET_TYPE \
   (ruler_range_widget_get_type ())
-G_DECLARE_FINAL_TYPE (RulerRangeWidget,
-                      ruler_range_widget,
-                      Z,
-                      RULER_RANGE_WIDGET,
-                      GtkDrawingArea)
+G_DECLARE_FINAL_TYPE (
+  RulerRangeWidget,
+  ruler_range_widget,
+  Z,
+  RULER_RANGE_WIDGET,
+  GtkDrawingArea)
 #define TIMELINE_RULER_RANGE \
   (ruler_widget_get_private ( \
-    Z_RULER_WIDGET (MW_RULER))->range)
+     Z_RULER_WIDGET (MW_RULER)) \
+     ->range)
 
 typedef struct _RulerRangeWidget
 {
-  GtkDrawingArea          parent_instance;
-  UiCursorState           cursor_state;
+  GtkDrawingArea parent_instance;
+  UiCursorState  cursor_state;
 } RulerRangeWidget;
 
 RulerRangeWidget *

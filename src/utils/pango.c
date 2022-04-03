@@ -62,10 +62,10 @@ z_pango_create_layout_from_description (
       PangoLayout * pangoLayout =
         pango_layout_new (context);
 
-      FcPattern * pattern = FcPatternCreate ();
-      FcObjectSet *os =
+      FcPattern *   pattern = FcPatternCreate ();
+      FcObjectSet * os =
         FcObjectSetBuild (FC_FAMILY, NULL);
-      FcFontSet *fs =
+      FcFontSet * fs =
         FcFontList (fc_config, pattern, os);
       FcPatternDestroy (pattern);
       FcObjectSetDestroy (os);
@@ -75,7 +75,7 @@ z_pango_create_layout_from_description (
             FcNameUnparse (fs->fonts[i]);
           PangoFontDescription * desc =
             pango_font_description_from_string (
-              (gchar*) font_name);
+              (gchar *) font_name);
           pango_font_map_load_font (
             PANGO_FONT_MAP (font_map), context,
             desc);
@@ -93,9 +93,8 @@ z_pango_create_layout_from_description (
   else
     {
 #endif
-      layout =
-        gtk_widget_create_pango_layout (
-          widget, NULL);
+      layout = gtk_widget_create_pango_layout (
+        widget, NULL);
 #ifdef HAVE_BUNDLED_DSEG
     }
 #endif

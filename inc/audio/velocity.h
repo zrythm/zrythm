@@ -33,7 +33,7 @@
 
 #include <cyaml/cyaml.h>
 
-typedef struct MidiNote MidiNote;
+typedef struct MidiNote        MidiNote;
 typedef struct _VelocityWidget VelocityWidget;
 
 /**
@@ -45,8 +45,7 @@ typedef struct _VelocityWidget VelocityWidget;
 #define VELOCITY_SCHEMA_VERSION 1
 
 #define velocity_is_selected(r) \
-  arranger_object_is_selected ( \
-    (ArrangerObject *) r)
+  arranger_object_is_selected ((ArrangerObject *) r)
 
 /**
  * Default velocity.
@@ -59,38 +58,33 @@ typedef struct _VelocityWidget VelocityWidget;
 typedef struct Velocity
 {
   /** Base struct. */
-  ArrangerObject  base;
+  ArrangerObject base;
 
-  int             schema_version;
+  int schema_version;
 
   /** Velocity value (0-127). */
-  uint8_t         vel;
+  uint8_t vel;
 
   /** Velocity at drag begin - used for ramp
    * actions only. */
-  uint8_t         vel_at_start;
+  uint8_t vel_at_start;
 
   /** Pointer back to the MIDI note. */
-  MidiNote *      midi_note;
+  MidiNote * midi_note;
 } Velocity;
 
 static const cyaml_schema_field_t
-velocity_fields_schema[] =
-{
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Velocity, base,
-    arranger_object_fields_schema),
-  YAML_FIELD_INT (Velocity, schema_version),
-  YAML_FIELD_UINT (Velocity, vel),
-  CYAML_FIELD_END
-};
+  velocity_fields_schema[] = {
+    YAML_FIELD_MAPPING_EMBEDDED (
+      Velocity,
+      base,
+      arranger_object_fields_schema),
+    YAML_FIELD_INT (Velocity, schema_version),
+    YAML_FIELD_UINT (Velocity, vel), CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t
-  velocity_schema =
-{
-  YAML_VALUE_PTR (
-    Velocity,
-    velocity_fields_schema),
+static const cyaml_schema_value_t velocity_schema = {
+  YAML_VALUE_PTR (Velocity, velocity_fields_schema),
 };
 
 /**
@@ -113,18 +107,14 @@ velocity_set_midi_note (
  * Returns 1 if the Velocity's match, 0 if not.
  */
 int
-velocity_is_equal (
-  Velocity * src,
-  Velocity * dest);
+velocity_is_equal (Velocity * src, Velocity * dest);
 
 /**
  * Changes the Velocity by the given amount of
  * values (delta).
  */
 void
-velocity_shift (
-  Velocity * self,
-  const int  delta);
+velocity_shift (Velocity * self, const int delta);
 
 /**
  * Sets the velocity to the given value.
@@ -133,24 +123,19 @@ velocity_shift (
  * and will be clamped.
  */
 void
-velocity_set_val (
-  Velocity *    self,
-  const int     val);
+velocity_set_val (Velocity * self, const int val);
 
 /**
  * Returns the owner MidiNote.
  */
 MidiNote *
-velocity_get_midi_note (
-  const Velocity * const self);
+velocity_get_midi_note (const Velocity * const self);
 
 const char *
-velocity_setting_enum_to_str (
-  guint index);
+velocity_setting_enum_to_str (guint index);
 
 guint
-velocity_setting_str_to_enum (
-  const char * str);
+velocity_setting_str_to_enum (const char * str);
 
 /**
  * @}

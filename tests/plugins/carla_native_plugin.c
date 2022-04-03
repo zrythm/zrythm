@@ -21,20 +21,20 @@
 
 #include "audio/fader.h"
 #include "audio/router.h"
-#include "plugins/carla_native_plugin.h"
 #include "plugins/carla/carla_discovery.h"
+#include "plugins/carla_native_plugin.h"
 #include "utils/math.h"
+
+#include <glib.h>
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm.h"
 
-#include <glib.h>
-
 static void
 test_mono_plugin (void)
 {
-#if defined (HAVE_CARLA) \
-  && defined (HAVE_LSP_COMPRESSOR_MONO)
+#if defined(HAVE_CARLA) \
+  && defined(HAVE_LSP_COMPRESSOR_MONO)
 
   test_helper_zrythm_init ();
 
@@ -44,42 +44,37 @@ test_mono_plugin (void)
   g_usleep (1000000);
 
   /* create an audio track */
-  char * filepath =
-    g_build_filename (
-      TESTS_SRCDIR, "test.wav", NULL);
+  char * filepath = g_build_filename (
+    TESTS_SRCDIR, "test.wav", NULL);
   SupportedFile * file =
     supported_file_new_from_path (filepath);
-  Track * audio_track =
-    track_create_with_action (
-      TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
-      TRACKLIST->num_tracks, 1, NULL);
+  Track * audio_track = track_create_with_action (
+    TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+    TRACKLIST->num_tracks, 1, NULL);
   supported_file_free (file);
 
   /* hard pan right */
-  GError * err = NULL;
+  GError *         err = NULL;
   UndoableAction * ua =
     tracklist_selections_action_new_edit_single_float (
-      EDIT_TRACK_ACTION_TYPE_PAN,
-      audio_track, 0.5f, 1.f, false, &err);
+      EDIT_TRACK_ACTION_TYPE_PAN, audio_track, 0.5f,
+      1.f, false, &err);
   undo_manager_perform (UNDO_MANAGER, ua, NULL);
 
   /* add a mono insert */
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
-    LSP_COMPRESSOR_MONO_BUNDLE,
-    LSP_COMPRESSOR_MONO_URI,
-    true);
+      LSP_COMPRESSOR_MONO_BUNDLE,
+      LSP_COMPRESSOR_MONO_URI, true);
   g_return_if_fail (setting);
 
-  bool ret =
-    mixer_selections_action_perform_create (
-      PLUGIN_SLOT_INSERT,
-      track_get_name_hash (audio_track), 0,
-      setting, 1, NULL);
+  bool ret = mixer_selections_action_perform_create (
+    PLUGIN_SLOT_INSERT,
+    track_get_name_hash (audio_track), 0, setting,
+    1, NULL);
   g_assert_true (ret);
 
-  Plugin * pl =
-    audio_track->channel->inserts[0];
+  Plugin * pl = audio_track->channel->inserts[0];
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
   engine_process (
@@ -91,8 +86,7 @@ test_mono_plugin (void)
 
   /* bounce */
   ExportSettings settings;
-  memset (
-    &settings, 0, sizeof (ExportSettings));
+  memset (&settings, 0, sizeof (ExportSettings));
   export_settings_set_bounce_defaults (
     &settings, EXPORT_FORMAT_WAV, NULL, __func__);
   settings.time_range = TIME_RANGE_LOOP;
@@ -100,16 +94,13 @@ test_mono_plugin (void)
   settings.mode = EXPORT_MODE_FULL;
 
   GPtrArray * conns =
-    exporter_prepare_tracks_for_export (
-      &settings);
+    exporter_prepare_tracks_for_export (&settings);
 
   /* start exporting in a new thread */
-  GThread * thread =
-    g_thread_new (
-      "bounce_thread",
-      (GThreadFunc)
-      exporter_generic_export_thread,
-      &settings);
+  GThread * thread = g_thread_new (
+    "bounce_thread",
+    (GThreadFunc) exporter_generic_export_thread,
+    &settings);
 
   g_thread_join (thread);
 
@@ -117,8 +108,7 @@ test_mono_plugin (void)
     &settings, conns);
 
   g_assert_false (
-    audio_file_is_silent (
-      settings.file_uri));
+    audio_file_is_silent (settings.file_uri));
 
   export_settings_free_members (&settings);
 
@@ -126,15 +116,14 @@ test_mono_plugin (void)
 #endif
 }
 
-
 #if 0
 static void
 test_has_custom_ui (void)
 {
   test_helper_zrythm_init ();
 
-#ifdef HAVE_CARLA
-#ifdef HAVE_HELM
+#  ifdef HAVE_CARLA
+#    ifdef HAVE_HELM
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       HELM_BUNDLE, HELM_URI, false);
@@ -142,8 +131,8 @@ test_has_custom_ui (void)
   g_assert_true (
     carla_native_plugin_has_custom_ui (
       setting->descr));
-#endif
-#endif
+#    endif
+#  endif
 
   test_helper_zrythm_cleanup ();
 }
@@ -162,7 +151,7 @@ test_crash_handling (void)
 
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
-    SIGABRT_BUNDLE_URI, SIGABRT_URI, true);
+      SIGABRT_BUNDLE_URI, SIGABRT_URI, true);
   g_return_if_fail (setting);
   setting->bridge_mode = CARLA_BRIDGE_FULL;
 
@@ -172,8 +161,8 @@ test_crash_handling (void)
     TRACKLIST->num_tracks, NULL);
 
   Plugin * pl =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1]->
-      channel->inserts[0];
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1]
+      ->channel->inserts[0];
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
   engine_process (
@@ -193,8 +182,7 @@ test_crash_handling (void)
 static void
 test_process (void)
 {
-#if defined (HAVE_TEST_SIGNAL) && \
-  defined (HAVE_CARLA)
+#if defined(HAVE_TEST_SIGNAL) && defined(HAVE_CARLA)
 
   test_helper_zrythm_init ();
 
@@ -213,13 +201,14 @@ test_process (void)
   g_usleep (1000000);
 
   /* run plugin and check that output is filled */
-  Port * out = pl->out_ports[0];
-  nframes_t local_offset = 60;
+  Port *                out = pl->out_ports[0];
+  nframes_t             local_offset = 60;
   EngineProcessTimeInfo time_nfo = {
     .g_start_frame = 0,
-    .local_offset = 0, .nframes = local_offset };
-  carla_native_plugin_process (
-    pl->carla, &time_nfo);
+    .local_offset = 0,
+    .nframes = local_offset
+  };
+  carla_native_plugin_process (pl->carla, &time_nfo);
   for (nframes_t i = 1; i < local_offset; i++)
     {
       g_assert_true (fabsf (out->buf[i]) > 1e-10f);
@@ -228,8 +217,7 @@ test_process (void)
   time_nfo.local_offset = local_offset;
   time_nfo.nframes =
     AUDIO_ENGINE->block_length - local_offset;
-  carla_native_plugin_process (
-    pl->carla, &time_nfo);
+  carla_native_plugin_process (pl->carla, &time_nfo);
   for (nframes_t i = local_offset;
        i < AUDIO_ENGINE->block_length; i++)
     {
@@ -241,7 +229,7 @@ test_process (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

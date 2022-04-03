@@ -17,11 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <math.h>
-#include <unistd.h>
-#include <stdlib.h>
-
 #include "zrythm-config.h"
+
+#include <math.h>
+#include <stdlib.h>
 
 #include "audio/audio_track.h"
 #include "audio/automation_track.h"
@@ -36,16 +35,14 @@
 #include "audio/master_track.h"
 #include "audio/midi_event.h"
 #include "audio/midi_track.h"
-#include "audio/router.h"
 #include "audio/pan.h"
 #include "audio/port_connections_manager.h"
+#include "audio/router.h"
 #include "audio/rtmidi_device.h"
 #include "audio/track.h"
 #include "audio/track_processor.h"
 #include "audio/transport.h"
 #include "audio/windows_mme_device.h"
-#include "plugins/lv2_plugin.h"
-#include "plugins/lv2/lv2_gtk.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -54,6 +51,8 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "plugins/lv2/lv2_gtk.h"
+#include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/dialogs.h"
@@ -66,17 +65,17 @@
 #include "utils/stoat.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
+
+#include <unistd.h>
 
 /**
  * Connect ports in the case of !prev && !next.
  */
 NONNULL
 static void
-connect_no_prev_no_next (
-  Channel * ch,
-  Plugin *  pl)
+connect_no_prev_no_next (Channel * ch, Plugin * pl)
 {
   g_debug ("connect no prev no next");
 
@@ -164,8 +163,7 @@ connect_prev_no_next (
    * ----------------------------------------- */
   /* prev plugin is connected to channel stereo out.
    * disconnect it */
-  plugin_disconnect_from_prefader (
-    prev_pl, ch);
+  plugin_disconnect_from_prefader (prev_pl, ch);
 
   /* -------------------------------------------
    * connect input ports
@@ -173,16 +171,14 @@ connect_prev_no_next (
 
   /* connect previous plugin's outs to
    * plugin */
-  plugin_connect_to_plugin (
-    prev_pl, pl);
+  plugin_connect_to_plugin (prev_pl, pl);
 
   /* --------------------------------------
    * connect output ports
    * ------------------------------------*/
 
   /* connect plugin output ports to stereo_out */
-  plugin_connect_to_prefader (
-    pl, ch);
+  plugin_connect_to_prefader (pl, ch);
 }
 
 /**
@@ -203,8 +199,7 @@ connect_prev_next (
    * ----------------------------------------- */
   /* prev plugin is connected to the next pl.
    * disconnect them */
-  plugin_disconnect_from_plugin (
-    prev_pl, next_pl);
+  plugin_disconnect_from_plugin (prev_pl, next_pl);
 
   /* -------------------------------------------
    * connect input ports
@@ -212,8 +207,7 @@ connect_prev_next (
 
   /* connect previous plugin's audio outs to
    * plugin */
-  plugin_connect_to_plugin (
-    prev_pl, pl);
+  plugin_connect_to_plugin (prev_pl, pl);
 
   /* ------------------------------------------
    * Connect output ports
@@ -221,8 +215,7 @@ connect_prev_next (
 
   /* connect plugin's audio outs to next
    * plugin */
-  plugin_connect_to_plugin (
-    pl, next_pl);
+  plugin_connect_to_plugin (pl, next_pl);
 }
 
 /**
@@ -230,9 +223,7 @@ connect_prev_next (
  */
 NONNULL
 static void
-disconnect_no_prev_no_next (
-  Channel * ch,
-  Plugin *  pl)
+disconnect_no_prev_no_next (Channel * ch, Plugin * pl)
 {
   Track * track = channel_get_track (ch);
   g_return_if_fail (track);
@@ -250,8 +241,7 @@ disconnect_no_prev_no_next (
    * ------------------------------------*/
 
   /* disconnect plugin from stereo out */
-  plugin_disconnect_from_prefader (
-    pl, ch);
+  plugin_disconnect_from_prefader (pl, ch);
 
   /* -----------------------------------------
    * connect ports
@@ -289,8 +279,7 @@ disconnect_no_prev_next (
 
   /* disconnect plugin's midi & audio outs from next
    * plugin */
-  plugin_disconnect_from_plugin (
-    pl, next_pl);
+  plugin_disconnect_from_plugin (pl, next_pl);
 
   /* -----------------------------------------
    * connect ports
@@ -317,8 +306,7 @@ disconnect_prev_no_next (
 
   /* disconnect previous plugin's audio outs from
    * plugin */
-  plugin_disconnect_from_plugin (
-    prev_pl, pl);
+  plugin_disconnect_from_plugin (prev_pl, pl);
 
   /* --------------------------------------
    * Disconnect output ports
@@ -326,16 +314,14 @@ disconnect_prev_no_next (
 
   /* disconnect plugin output ports from stereo
    * out */
-  plugin_disconnect_from_prefader (
-    pl, ch);
+  plugin_disconnect_from_prefader (pl, ch);
 
   /* -----------------------------------------
    * connect ports
    * ----------------------------------------- */
   /* prev plugin should be connected to channel
    * stereo out. connect it */
-  plugin_connect_to_prefader (
-    prev_pl, ch);
+  plugin_connect_to_prefader (prev_pl, ch);
 }
 
 /**
@@ -355,8 +341,7 @@ disconnect_prev_next (
 
   /* disconnect previous plugin's audio outs from
    * plugin */
-  plugin_disconnect_from_plugin (
-    prev_pl, pl);
+  plugin_disconnect_from_plugin (prev_pl, pl);
 
   /* ------------------------------------------
    * Disconnect output ports
@@ -364,16 +349,14 @@ disconnect_prev_next (
 
   /* disconnect plugin's audio outs from next
    * plugin */
-  plugin_disconnect_from_plugin (
-    pl, next_pl);
+  plugin_disconnect_from_plugin (pl, next_pl);
 
   /* -----------------------------------------
    * connect ports
    * ----------------------------------------- */
   /* prev plugin should be connected to the next pl.
    * connect them */
-  plugin_connect_to_plugin (
-    prev_pl, next_pl);
+  plugin_connect_to_plugin (prev_pl, next_pl);
 }
 
 /**
@@ -386,15 +369,13 @@ void
 channel_prepare_process (Channel * self)
 {
   Plugin * plugin;
-  int j;
-  Track * tr = channel_get_track (self);
+  int      j;
+  Track *  tr = channel_get_track (self);
   PortType out_type = tr->out_signal_type;
 
   /* clear buffers */
-  track_processor_clear_buffers (
-    tr->processor);
-  fader_clear_buffers (
-    self->prefader);
+  track_processor_clear_buffers (tr->processor);
+  fader_clear_buffers (self->prefader);
   fader_clear_buffers (self->fader);
 
   if (out_type == TYPE_AUDIO)
@@ -445,9 +426,7 @@ channel_prepare_process (Channel * self)
 }
 
 void
-channel_init_loaded (
-  Channel * self,
-  Track *   track)
+channel_init_loaded (Channel * self, Track * track)
 {
   g_debug ("initing channel");
 
@@ -460,11 +439,9 @@ channel_init_loaded (
 
   fader_init_loaded (
     self->prefader, track, NULL, NULL);
-  fader_init_loaded (
-    self->fader, track, NULL, NULL);
+  fader_init_loaded (self->fader, track, NULL, NULL);
 
-  PortType out_type =
-    track->out_signal_type;
+  PortType out_type = track->out_signal_type;
 
   switch (out_type)
     {
@@ -486,15 +463,14 @@ channel_init_loaded (
       break;
     }
 
-#define INIT_PLUGIN(pl,_slot,_slot_type) \
+#define INIT_PLUGIN(pl, _slot, _slot_type) \
   if (pl) \
     { \
       pl->id.track_name_hash = \
         track_get_name_hash (self->track); \
       pl->id.slot = _slot; \
       pl->id.slot_type = _slot_type; \
-      plugin_init_loaded ( \
-        pl, self->track, NULL); \
+      plugin_init_loaded (pl, self->track, NULL); \
     }
 
   /* init plugins */
@@ -523,11 +499,10 @@ channel_init_loaded (
 }
 
 void
-channel_set_magic (
-  Channel * self)
+channel_set_magic (Channel * self)
 {
   Plugin * plugins[120];
-  int num_plugins =
+  int      num_plugins =
     channel_get_plugins (self, plugins);
 
   for (int i = 0; i < num_plugins; i++)
@@ -541,8 +516,7 @@ channel_set_magic (
  * Exposes the channel's ports to the backend.
  */
 void
-channel_expose_ports_to_backend (
-  Channel * ch)
+channel_expose_ports_to_backend (Channel * ch)
 {
   Track * tr = channel_get_track (ch);
 
@@ -552,33 +526,29 @@ channel_expose_ports_to_backend (
 
   g_message ("%s: %s", __func__, tr->name);
 
-  if (tr->in_signal_type ==
-        TYPE_AUDIO)
+  if (tr->in_signal_type == TYPE_AUDIO)
     {
       port_set_expose_to_backend (
-        tr->processor->stereo_in->l , true);
+        tr->processor->stereo_in->l, true);
       port_set_expose_to_backend (
-        tr->processor->stereo_in->r , true);
+        tr->processor->stereo_in->r, true);
     }
-  if (tr->in_signal_type ==
-        TYPE_EVENT)
+  if (tr->in_signal_type == TYPE_EVENT)
     {
       port_set_expose_to_backend (
-        tr->processor->midi_in , true);
+        tr->processor->midi_in, true);
     }
-  if (tr->out_signal_type ==
-        TYPE_AUDIO)
+  if (tr->out_signal_type == TYPE_AUDIO)
     {
       port_set_expose_to_backend (
-        ch->stereo_out->l , true);
+        ch->stereo_out->l, true);
       port_set_expose_to_backend (
-        ch->stereo_out->r , true);
+        ch->stereo_out->r, true);
     }
-  if (tr->out_signal_type ==
-        TYPE_EVENT)
+  if (tr->out_signal_type == TYPE_EVENT)
     {
       port_set_expose_to_backend (
-        ch->midi_out , true);
+        ch->midi_out, true);
     }
 }
 
@@ -587,8 +557,7 @@ channel_expose_ports_to_backend (
  * Instrument or Audio tracks.
  */
 void
-channel_reconnect_ext_input_ports (
-  Channel * self)
+channel_reconnect_ext_input_ports (Channel * self)
 {
   Track * track = channel_get_track (self);
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
@@ -603,9 +572,10 @@ channel_reconnect_ext_input_ports (
   g_debug (
     "reconnecting ext inputs for %s", track->name);
 
-  if (track->type == TRACK_TYPE_INSTRUMENT
-      || track->type == TRACK_TYPE_MIDI
-      || track->type == TRACK_TYPE_CHORD)
+  if (
+    track->type == TRACK_TYPE_INSTRUMENT
+    || track->type == TRACK_TYPE_MIDI
+    || track->type == TRACK_TYPE_CHORD)
     {
       Port * midi_in = track->processor->midi_in;
 
@@ -620,14 +590,13 @@ channel_reconnect_ext_input_ports (
       if (self->all_midi_ins)
         {
           for (int i = 0;
-               i <
-                 HW_IN_PROCESSOR->
-                   num_selected_midi_ports;
+               i < HW_IN_PROCESSOR
+                     ->num_selected_midi_ports;
                i++)
             {
               char * port_id =
-                HW_IN_PROCESSOR->
-                  selected_midi_ports[i];
+                HW_IN_PROCESSOR
+                  ->selected_midi_ports[i];
               Port * source =
                 hardware_processor_find_port (
                   HW_IN_PROCESSOR, port_id);
@@ -639,9 +608,9 @@ channel_reconnect_ext_input_ports (
                   continue;
                 }
               port_connections_manager_ensure_connect (
-                PORT_CONNECTIONS_MGR,
-                &source->id, &midi_in->id,
-                1.f, F_LOCKED, F_ENABLE);
+                PORT_CONNECTIONS_MGR, &source->id,
+                &midi_in->id, 1.f, F_LOCKED,
+                F_ENABLE);
             }
         }
       /* else if not all stereo ins selected */
@@ -650,9 +619,8 @@ channel_reconnect_ext_input_ports (
           for (int i = 0;
                i < self->num_ext_midi_ins; i++)
             {
-              char * port_id =
-                ext_port_get_id (
-                  self->ext_midi_ins[i]);
+              char * port_id = ext_port_get_id (
+                self->ext_midi_ins[i]);
               Port * source =
                 hardware_processor_find_port (
                   HW_IN_PROCESSOR, port_id);
@@ -666,9 +634,9 @@ channel_reconnect_ext_input_ports (
                 }
               g_free (port_id);
               port_connections_manager_ensure_connect (
-                PORT_CONNECTIONS_MGR,
-                &source->id, &midi_in->id,
-                1.f, F_LOCKED, F_ENABLE);
+                PORT_CONNECTIONS_MGR, &source->id,
+                &midi_in->id, 1.f, F_LOCKED,
+                F_ENABLE);
             }
         }
     }
@@ -677,10 +645,8 @@ channel_reconnect_ext_input_ports (
       /* if the project was loaded with another
        * backend, the port might not be exposed
        * yet, so expose it */
-      Port * l =
-        track->processor->stereo_in->l;
-      Port * r =
-        track->processor->stereo_in->r;
+      Port * l = track->processor->stereo_in->l;
+      Port * r = track->processor->stereo_in->r;
       port_set_expose_to_backend (l, true);
       port_set_expose_to_backend (r, true);
 
@@ -691,14 +657,13 @@ channel_reconnect_ext_input_ports (
       if (self->all_stereo_l_ins)
         {
           for (int i = 0;
-               i <
-                 HW_IN_PROCESSOR->
-                   num_selected_audio_ports;
+               i < HW_IN_PROCESSOR
+                     ->num_selected_audio_ports;
                i++)
             {
               char * port_id =
-                HW_IN_PROCESSOR->
-                  selected_audio_ports[i];
+                HW_IN_PROCESSOR
+                  ->selected_audio_ports[i];
               Port * source =
                 hardware_processor_find_port (
                   HW_IN_PROCESSOR, port_id);
@@ -710,9 +675,8 @@ channel_reconnect_ext_input_ports (
                   continue;
                 }
               port_connections_manager_ensure_connect (
-                PORT_CONNECTIONS_MGR,
-                &source->id, &l->id,
-                1.f, F_LOCKED, F_ENABLE);
+                PORT_CONNECTIONS_MGR, &source->id,
+                &l->id, 1.f, F_LOCKED, F_ENABLE);
             }
         }
       else
@@ -723,9 +687,8 @@ channel_reconnect_ext_input_ports (
           for (int i = 0;
                i < self->num_ext_stereo_l_ins; i++)
             {
-              char * port_id =
-                ext_port_get_id (
-                  self->ext_stereo_l_ins[i]);
+              char * port_id = ext_port_get_id (
+                self->ext_stereo_l_ins[i]);
               Port * source =
                 hardware_processor_find_port (
                   HW_IN_PROCESSOR, port_id);
@@ -739,23 +702,21 @@ channel_reconnect_ext_input_ports (
                 }
               g_free (port_id);
               port_connections_manager_ensure_connect (
-                PORT_CONNECTIONS_MGR,
-                &source->id, &l->id,
-                1.f, F_LOCKED, F_ENABLE);
+                PORT_CONNECTIONS_MGR, &source->id,
+                &l->id, 1.f, F_LOCKED, F_ENABLE);
             }
         } /* endif all audio ins for L */
 
       if (self->all_stereo_r_ins)
         {
           for (int i = 0;
-               i <
-                 HW_IN_PROCESSOR->
-                   num_selected_audio_ports;
+               i < HW_IN_PROCESSOR
+                     ->num_selected_audio_ports;
                i++)
             {
               char * port_id =
-                HW_IN_PROCESSOR->
-                  selected_audio_ports[i];
+                HW_IN_PROCESSOR
+                  ->selected_audio_ports[i];
               Port * source =
                 hardware_processor_find_port (
                   HW_IN_PROCESSOR, port_id);
@@ -767,22 +728,21 @@ channel_reconnect_ext_input_ports (
                   continue;
                 }
               port_connections_manager_ensure_connect (
-                PORT_CONNECTIONS_MGR,
-                &source->id, &r->id,
-                1.f, F_LOCKED, F_ENABLE);
+                PORT_CONNECTIONS_MGR, &source->id,
+                &r->id, 1.f, F_LOCKED, F_ENABLE);
             }
         }
       /* else if not all audio ins for R */
       else
         {
           g_debug (
-            "%d R HW ins", self->num_ext_stereo_r_ins);
+            "%d R HW ins",
+            self->num_ext_stereo_r_ins);
           for (int i = 0;
                i < self->num_ext_stereo_r_ins; i++)
             {
-              char * port_id =
-                ext_port_get_id (
-                  self->ext_stereo_r_ins[i]);
+              char * port_id = ext_port_get_id (
+                self->ext_stereo_r_ins[i]);
               Port * source =
                 hardware_processor_find_port (
                   HW_IN_PROCESSOR, port_id);
@@ -796,9 +756,8 @@ channel_reconnect_ext_input_ports (
                 }
               g_free (port_id);
               port_connections_manager_ensure_connect (
-                PORT_CONNECTIONS_MGR,
-                &source->id, &r->id,
-                1.f, F_LOCKED, F_ENABLE);
+                PORT_CONNECTIONS_MGR, &source->id,
+                &r->id, 1.f, F_LOCKED, F_ENABLE);
             }
         } /* endif all audio ins for R */
     }
@@ -811,26 +770,24 @@ channel_reconnect_ext_input_ports (
  */
 void
 channel_add_balance_control (
-  void * _channel, float pan)
+  void * _channel,
+  float  pan)
 {
   Channel * channel = (Channel *) _channel;
 
   port_set_control_value (
     channel->fader->balance,
     CLAMP (
-      channel->fader->balance->control + pan,
-      0.f, 1.f),
+      channel->fader->balance->control + pan, 0.f,
+      1.f),
     0, 0);
 }
-
 
 /**
  * Sets fader to 0.0.
  */
 void
-channel_reset_fader (
-  Channel * self,
-  bool      fire_events)
+channel_reset_fader (Channel * self, bool fire_events)
 {
   fader_set_amp (self->fader, 1.0f);
 
@@ -845,11 +802,9 @@ channel_reset_fader (
  * Gets whether mono compatibility is enabled.
  */
 bool
-channel_get_mono_compat_enabled (
-  Channel * self)
+channel_get_mono_compat_enabled (Channel * self)
 {
-  return
-    fader_get_mono_compat_enabled (self->fader);
+  return fader_get_mono_compat_enabled (self->fader);
 }
 
 /**
@@ -866,8 +821,7 @@ channel_set_mono_compat_enabled (
 }
 
 static void
-channel_connect_plugins (
-  Channel * self)
+channel_connect_plugins (Channel * self)
 {
   g_return_if_fail (
     channel_is_in_active_project (self));
@@ -880,7 +834,7 @@ channel_connect_plugins (
       for (int j = 0; j < STRIP_SIZE; j++)
         {
           Plugin * plugin = NULL;
-          int slot = j;
+          int      slot = j;
           if (i == 0)
             {
               slot_type = PLUGIN_SLOT_MIDI_FX;
@@ -899,8 +853,9 @@ channel_connect_plugins (
           if (!plugin)
             continue;
 
-          if (!plugin->instantiated
-              && !plugin->instantiation_failed)
+          if (
+            !plugin->instantiated
+            && !plugin->instantiation_failed)
             {
               /* TODO handle error */
               plugin_instantiate (
@@ -939,16 +894,20 @@ channel_connect_plugins (
             }
 
           Plugin * next_pl = NULL;
-          for (int k =
-                 (slot_type == PLUGIN_SLOT_INSTRUMENT ?
-                    0 : slot + 1); k < STRIP_SIZE; k++)
+          for (
+            int k =
+              (slot_type == PLUGIN_SLOT_INSTRUMENT
+                 ? 0
+                 : slot + 1);
+            k < STRIP_SIZE; k++)
             {
               next_pl = next_plugins[k];
               if (next_pl)
                 break;
             }
-          if (!next_pl &&
-              slot_type == PLUGIN_SLOT_MIDI_FX)
+          if (
+            !next_pl
+            && slot_type == PLUGIN_SLOT_MIDI_FX)
             {
               if (self->instrument)
                 next_pl = self->instrument;
@@ -968,8 +927,8 @@ channel_connect_plugins (
            * (if any) */
           if (slot_type == PLUGIN_SLOT_INSTRUMENT)
             {
-              for (int k = STRIP_SIZE - 1;
-                   k >= 0; k--)
+              for (int k = STRIP_SIZE - 1; k >= 0;
+                   k--)
                 {
                   prev_pl = prev_plugins[k];
                   if (prev_pl)
@@ -991,14 +950,14 @@ channel_connect_plugins (
           /* if still not found and slot is insert,
            * check instrument or MIDI FX where
            * applicable */
-          if (!prev_pl &&
-              slot_type == PLUGIN_SLOT_INSERT)
+          if (!prev_pl && slot_type == PLUGIN_SLOT_INSERT)
             {
               if (self->instrument)
                 prev_pl = self->instrument;
               else
                 {
-                  for (int k = STRIP_SIZE - 1; k >= 0; k--)
+                  for (int k = STRIP_SIZE - 1;
+                       k >= 0; k--)
                     {
                       prev_pl = self->midi_fx[k];
                       if (prev_pl)
@@ -1007,16 +966,16 @@ channel_connect_plugins (
                 }
             }
 
-          if (prev_pl
-              && !prev_pl->instantiated
-              && !prev_pl->instantiation_failed)
+          if (
+            prev_pl && !prev_pl->instantiated
+            && !prev_pl->instantiation_failed)
             {
               plugin_instantiate (
                 prev_pl, NULL, NULL);
             }
-          if (next_pl
-              && !next_pl->instantiated
-              && !next_pl->instantiation_failed)
+          if (
+            next_pl && !next_pl->instantiated
+            && !next_pl->instantiation_failed)
             {
               plugin_instantiate (
                 next_pl, NULL, NULL);
@@ -1024,8 +983,7 @@ channel_connect_plugins (
 
           if (!prev_pl && !next_pl)
             {
-              connect_no_prev_no_next (
-                self, plugin);
+              connect_no_prev_no_next (self, plugin);
             }
           else if (!prev_pl && next_pl)
             {
@@ -1054,8 +1012,7 @@ channel_connect_plugins (
  * This should only be called on project tracks.
  */
 void
-channel_connect (
-  Channel * ch)
+channel_connect (Channel * ch)
 {
   Track * tr = channel_get_track (ch);
   g_return_if_fail (tr);
@@ -1067,21 +1024,20 @@ channel_connect (
   g_message ("connecting channel...");
 
   /* set default output */
-  if (tr->type == TRACK_TYPE_MASTER
-      && !track_is_auditioner (tr))
+  if (
+    tr->type == TRACK_TYPE_MASTER
+    && !track_is_auditioner (tr))
     {
       ch->output_name_hash = 0;
       ch->has_output = 0;
       port_connections_manager_ensure_connect (
-        PORT_CONNECTIONS_MGR,
-        &ch->stereo_out->l->id,
-        &MONITOR_FADER->stereo_in->l->id,
-        1.f, F_LOCKED, F_ENABLE);
+        PORT_CONNECTIONS_MGR, &ch->stereo_out->l->id,
+        &MONITOR_FADER->stereo_in->l->id, 1.f,
+        F_LOCKED, F_ENABLE);
       port_connections_manager_ensure_connect (
-        PORT_CONNECTIONS_MGR,
-        &ch->stereo_out->r->id,
-        &MONITOR_FADER->stereo_in->r->id,
-        1.f, F_LOCKED, F_ENABLE);
+        PORT_CONNECTIONS_MGR, &ch->stereo_out->r->id,
+        &MONITOR_FADER->stereo_in->r->id, 1.f,
+        F_LOCKED, F_ENABLE);
     }
 
   if (tr->out_signal_type == TYPE_AUDIO)
@@ -1091,35 +1047,34 @@ channel_connect (
       port_connections_manager_ensure_connect (
         PORT_CONNECTIONS_MGR,
         &ch->prefader->stereo_out->l->id,
-        &ch->fader->stereo_in->l->id,
-        1.f, F_LOCKED, F_ENABLE);
+        &ch->fader->stereo_in->l->id, 1.f, F_LOCKED,
+        F_ENABLE);
       port_connections_manager_ensure_connect (
         PORT_CONNECTIONS_MGR,
         &ch->prefader->stereo_out->r->id,
-        &ch->fader->stereo_in->r->id,
-        1.f, F_LOCKED, F_ENABLE);
+        &ch->fader->stereo_in->r->id, 1.f, F_LOCKED,
+        F_ENABLE);
       port_connections_manager_ensure_connect (
         PORT_CONNECTIONS_MGR,
         &ch->fader->stereo_out->l->id,
-        &ch->stereo_out->l->id,
-        1.f, F_LOCKED, F_ENABLE);
+        &ch->stereo_out->l->id, 1.f, F_LOCKED,
+        F_ENABLE);
       port_connections_manager_ensure_connect (
         PORT_CONNECTIONS_MGR,
         &ch->fader->stereo_out->r->id,
-        &ch->stereo_out->r->id,
-        1.f, F_LOCKED, F_ENABLE);
+        &ch->stereo_out->r->id, 1.f, F_LOCKED,
+        F_ENABLE);
     }
   else if (tr->out_signal_type == TYPE_EVENT)
     {
       port_connections_manager_ensure_connect (
         PORT_CONNECTIONS_MGR,
         &ch->prefader->midi_out->id,
-        &ch->fader->midi_in->id,
-        1.f, F_LOCKED, F_ENABLE);
+        &ch->fader->midi_in->id, 1.f, F_LOCKED,
+        F_ENABLE);
       port_connections_manager_ensure_connect (
         PORT_CONNECTIONS_MGR,
-        &ch->fader->midi_out->id,
-        &ch->midi_out->id,
+        &ch->fader->midi_out->id, &ch->midi_out->id,
         1.f, F_LOCKED, F_ENABLE);
     }
 
@@ -1151,8 +1106,7 @@ channel_connect (
 }
 
 Track *
-channel_get_track (
-  Channel * self)
+channel_get_track (Channel * self)
 {
   if (G_LIKELY (self->track))
     return self->track;
@@ -1171,8 +1125,7 @@ channel_get_track (
 }
 
 Track *
-channel_get_output_track (
-  Channel * self)
+channel_get_output_track (Channel * self)
 {
   if (!self->has_output)
     return NULL;
@@ -1183,7 +1136,7 @@ channel_get_output_track (
     track_get_tracklist (track);
   Track * output_track =
     tracklist_find_track_by_name_hash (
-    tracklist, self->output_name_hash);
+      tracklist, self->output_name_hash);
   g_return_val_if_fail (
     output_track && track != output_track, NULL);
 
@@ -1224,8 +1177,7 @@ channel_append_ports (
       _ADD (self->prefader->stereo_out->l);
       _ADD (self->prefader->stereo_out->r);
     }
-  else if (self->track->out_signal_type ==
-             TYPE_EVENT)
+  else if (self->track->out_signal_type == TYPE_EVENT)
     {
       _ADD (self->midi_out);
 
@@ -1256,7 +1208,7 @@ channel_append_ports (
     {
 #define ADD_PLUGIN_PORTS(x) \
   if (x) \
-    plugin_append_ports (x, ports)
+  plugin_append_ports (x, ports)
 
       /* add plugin ports */
       for (int j = 0; j < STRIP_SIZE; j++)
@@ -1291,9 +1243,7 @@ channel_append_ports (
  *   new.
  */
 static void
-init_stereo_out_ports (
-  Channel * self,
-  bool      loading)
+init_stereo_out_ports (Channel * self, bool loading)
 {
   if (loading)
     {
@@ -1304,18 +1254,16 @@ init_stereo_out_ports (
   strcpy (str, "Stereo out");
 
   strcat (str, " L");
-  Port * l =
-    port_new_with_type_and_owner (
-      TYPE_AUDIO, FLOW_OUTPUT, str,
-      PORT_OWNER_TYPE_CHANNEL, self);
+  Port * l = port_new_with_type_and_owner (
+    TYPE_AUDIO, FLOW_OUTPUT, str,
+    PORT_OWNER_TYPE_CHANNEL, self);
   l->id.sym = g_strdup ("stereo_out_l");
 
   str[10] = '\0';
   strcat (str, " R");
-  Port * r =
-    port_new_with_type_and_owner (
-      TYPE_AUDIO, FLOW_OUTPUT, str,
-      PORT_OWNER_TYPE_CHANNEL, self);
+  Port * r = port_new_with_type_and_owner (
+    TYPE_AUDIO, FLOW_OUTPUT, str,
+    PORT_OWNER_TYPE_CHANNEL, self);
   r->id.sym = g_strdup ("stereo_out_r");
 
   self->stereo_out =
@@ -1335,14 +1283,11 @@ init_stereo_out_ports (
  *   new.
  */
 static void
-init_midi_port (
-  Channel * self,
-  int       loading)
+init_midi_port (Channel * self, int loading)
 {
-  Port * port =
-    port_new_with_type_and_owner (
-      TYPE_EVENT, FLOW_OUTPUT, _("MIDI out"),
-      PORT_OWNER_TYPE_CHANNEL, self);
+  Port * port = port_new_with_type_and_owner (
+    TYPE_EVENT, FLOW_OUTPUT, _ ("MIDI out"),
+    PORT_OWNER_TYPE_CHANNEL, self);
   port->id.sym = g_strdup ("midi_out");
   self->midi_out = port;
 }
@@ -1352,14 +1297,12 @@ init_midi_port (
  * given label.
  */
 Channel *
-channel_new (
-  Track *     track)
+channel_new (Track * track)
 {
   Channel * self = object_new (Channel);
 
   track->channel = self;
-  self->schema_version =
-    CHANNEL_SCHEMA_VERSION;
+  self->schema_version = CHANNEL_SCHEMA_VERSION;
   self->magic = CHANNEL_MAGIC;
   self->track_pos = track->pos;
   self->track = track;
@@ -1385,19 +1328,16 @@ channel_new (
     track_get_fader_type (track);
   FaderType prefader_type =
     track_type_get_prefader_type (track->type);
-  self->fader =
-    fader_new (
-      fader_type, false, track, NULL, NULL);
-  self->prefader =
-    fader_new (
-      prefader_type, true, track, NULL, NULL);
+  self->fader = fader_new (
+    fader_type, false, track, NULL, NULL);
+  self->prefader = fader_new (
+    prefader_type, true, track, NULL, NULL);
 
   /* init sends */
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      self->sends[i] =
-        channel_send_new (
-          track_get_name_hash (track), i, track);
+      self->sends[i] = channel_send_new (
+        track_get_name_hash (track), i, track);
       self->sends[i]->track = track;
     }
 
@@ -1412,8 +1352,8 @@ channel_set_phase (void * _channel, float phase)
 
   /* FIXME use an event */
   /*if (channel->widget)*/
-    /*gtk_label_set_text (channel->widget->phase_reading,*/
-                        /*g_strdup_printf ("%.1f", phase));*/
+  /*gtk_label_set_text (channel->widget->phase_reading,*/
+  /*g_strdup_printf ("%.1f", phase));*/
 }
 
 float
@@ -1426,7 +1366,7 @@ channel_get_phase (void * _channel)
 void
 channel_set_balance_control (
   void * _channel,
-  float pan)
+  float  pan)
 {
   Channel * channel = (Channel *) _channel;
   port_set_control_value (
@@ -1434,24 +1374,22 @@ channel_set_balance_control (
 }
 
 float
-channel_get_balance_control (
-  void * _channel)
+channel_get_balance_control (void * _channel)
 {
   Channel * channel = (Channel *) _channel;
-  return
-    port_get_control_value (
-      channel->fader->balance, 0);
+  return port_get_control_value (
+    channel->fader->balance, 0);
 }
 
 static inline void
 channel_disconnect_plugin_from_strip (
   Channel * ch,
-  int pos,
-  Plugin * pl)
+  int       pos,
+  Plugin *  pl)
 {
-  int i;
+  int            i;
   PluginSlotType slot_type = pl->id.slot_type;
-  Plugin ** prev_plugins = NULL;
+  Plugin **      prev_plugins = NULL;
   switch (slot_type)
     {
     case PLUGIN_SLOT_INSERT:
@@ -1489,8 +1427,7 @@ channel_disconnect_plugin_from_strip (
       if (next_plugin)
         break;
     }
-  if (!next_plugin &&
-      slot_type == PLUGIN_SLOT_MIDI_FX)
+  if (!next_plugin && slot_type == PLUGIN_SLOT_MIDI_FX)
     {
       if (ch->instrument)
         next_plugin = ch->instrument;
@@ -1512,8 +1449,7 @@ channel_disconnect_plugin_from_strip (
       if (prev_plugin)
         break;
     }
-  if (!prev_plugin &&
-      slot_type == PLUGIN_SLOT_INSERT)
+  if (!prev_plugin && slot_type == PLUGIN_SLOT_INSERT)
     {
       if (ch->instrument)
         prev_plugin = ch->instrument;
@@ -1547,8 +1483,7 @@ channel_disconnect_plugin_from_strip (
     }
 
   /* unexpose all JACK ports */
-  plugin_expose_ports (
-    pl, F_NOT_EXPOSE, true, true);
+  plugin_expose_ports (pl, F_NOT_EXPOSE, true, true);
 }
 
 /**
@@ -1588,11 +1523,10 @@ channel_remove_plugin (
     default:
       break;
     }
+  g_return_if_fail (IS_PLUGIN_AND_NONNULL (plugin));
   g_return_if_fail (
-    IS_PLUGIN_AND_NONNULL (plugin));
-  g_return_if_fail (
-    plugin->id.track_name_hash ==
-      track_get_name_hash (channel->track));
+    plugin->id.track_name_hash
+    == track_get_name_hash (channel->track));
 
   Track * track = channel_get_track (channel);
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
@@ -1619,8 +1553,9 @@ channel_remove_plugin (
    * entirely */
   if (deleting_plugin)
     {
-      if (channel_is_in_active_project (channel)
-          && plugin_is_selected (plugin))
+      if (
+        channel_is_in_active_project (channel)
+        && plugin_is_selected (plugin))
         {
           mixer_selections_remove_slot (
             MIXER_SELECTIONS, plugin->id.slot,
@@ -1652,22 +1587,22 @@ channel_remove_plugin (
    * disconnect its connections to the prev/
    * next slot or the channel if first/last */
   /*else*/
-    /*{*/
-      /*channel_disconnect_plugin_from_strip (*/
-        /*channel, pos, plugin);*/
-    /*}*/
+  /*{*/
+  /*channel_disconnect_plugin_from_strip (*/
+  /*channel, pos, plugin);*/
+  /*}*/
 
-  if (track_is_in_active_project (track)
-      && !track->disconnecting
-      /* only verify if we are deleting the plugin.
+  if (
+    track_is_in_active_project (track)
+    && !track->disconnecting
+    /* only verify if we are deleting the plugin.
        * if the plugin is moved to another slot
        * this check fails because the port
        * identifiers in the automation tracks are
        * already updated to point to the next
        * slot and the plugin is not found there
        * yet */
-      && deleting_plugin
-      && !moving_plugin)
+    && deleting_plugin && !moving_plugin)
     {
       track_validate (channel->track);
     }
@@ -1701,15 +1636,15 @@ channel_remove_plugin (
  */
 bool
 channel_add_plugin (
-  Channel * self,
+  Channel *      self,
   PluginSlotType slot_type,
-  int       slot,
-  Plugin *  plugin,
-  bool      confirm,
-  bool      moving_plugin,
-  bool      gen_automatables,
-  bool      recalc_graph,
-  bool      pub_events)
+  int            slot,
+  Plugin *       plugin,
+  bool           confirm,
+  bool           moving_plugin,
+  bool           gen_automatables,
+  bool           recalc_graph,
+  bool           pub_events)
 {
   g_return_val_if_fail (
     plugin_identifier_validate_slot_type_slot_combo (
@@ -1749,7 +1684,7 @@ channel_add_plugin (
         "existing plugin exists at %s:%d",
         track->name, slot);
     }
-  /* TODO move confirmation to widget */
+    /* TODO move confirmation to widget */
 #if 0
   /* confirm if another plugin exists */
   if (confirm && existing_pl && ZRYTHM_HAVE_UI)
@@ -1771,9 +1706,8 @@ channel_add_plugin (
   if (existing_pl)
     {
       channel_remove_plugin (
-        self, slot_type, slot,
-        moving_plugin, F_DELETING_PLUGIN,
-        F_NOT_DELETING_CHANNEL,
+        self, slot_type, slot, moving_plugin,
+        F_DELETING_PLUGIN, F_NOT_DELETING_CHANNEL,
         F_NO_RECALC_GRAPH);
     }
 
@@ -1792,8 +1726,7 @@ channel_add_plugin (
     }
   plugin->track = track;
   plugin_set_track_and_slot (
-    plugin,
-    track_get_name_hash (self->track),
+    plugin, track_get_name_hash (self->track),
     slot_type, slot);
   g_return_val_if_fail (plugin->track, false);
 
@@ -1830,15 +1763,16 @@ channel_add_plugin (
 
   Plugin * next_pl = NULL;
   for (int i =
-         (slot_type == PLUGIN_SLOT_INSTRUMENT ?
-            0 : slot + 1); i < STRIP_SIZE; i++)
+         (slot_type == PLUGIN_SLOT_INSTRUMENT
+            ? 0
+            : slot + 1);
+       i < STRIP_SIZE; i++)
     {
       next_pl = next_plugins[i];
       if (next_pl)
         break;
     }
-  if (!next_pl &&
-      slot_type == PLUGIN_SLOT_MIDI_FX)
+  if (!next_pl && slot_type == PLUGIN_SLOT_MIDI_FX)
     {
       if (self->instrument)
         next_pl = self->instrument;
@@ -1863,8 +1797,7 @@ channel_add_plugin (
             break;
         }
     }
-  if (!prev_pl &&
-      slot_type == PLUGIN_SLOT_INSERT)
+  if (!prev_pl && slot_type == PLUGIN_SLOT_INSERT)
     {
       if (self->instrument)
         prev_pl = self->instrument;
@@ -1927,20 +1860,19 @@ channel_update_track_name_hash (
   g_return_if_fail (track);
 
   /* update output */
-  if (track_is_in_active_project (track)
-      && self->has_output)
+  if (
+    track_is_in_active_project (track)
+    && self->has_output)
     {
       Track * out_track =
         channel_get_output_track (self);
       g_return_if_fail (
         IS_TRACK_AND_NONNULL (out_track));
-      int child_idx =
-        group_target_track_find_child (
-          out_track, old_name_hash);
+      int child_idx = group_target_track_find_child (
+        out_track, old_name_hash);
       g_return_if_fail (child_idx >= 0);
 
-      out_track->children[child_idx] =
-        new_name_hash;
+      out_track->children[child_idx] = new_name_hash;
       g_debug (
         "%s: setting output of track '%s' to '%s'",
         __func__, self->track->name,
@@ -1955,8 +1887,7 @@ channel_update_track_name_hash (
 
 #define SET_PLUGIN_NAME_HASH(pl) \
   if (pl) \
-    plugin_set_track_name_hash ( \
-      pl, new_name_hash)
+  plugin_set_track_name_hash (pl, new_name_hash)
 
   for (int i = 0; i < STRIP_SIZE; i++)
     {
@@ -1972,8 +1903,8 @@ channel_update_track_name_hash (
  */
 AutomationTrack *
 channel_get_automation_track (
-  Channel *       channel,
-  PortFlags       port_flags)
+  Channel * channel,
+  PortFlags port_flags)
 {
   Track * track = channel_get_track (channel);
   AutomationTracklist * atl =
@@ -2021,24 +1952,22 @@ channel_clone (
         clone->sends[i], src_send);
     }
 
-#define CLONE_AND_ADD_PL(pl,slot_type,slot) \
+#define CLONE_AND_ADD_PL(pl, slot_type, slot) \
   { \
     GError * err = NULL; \
-    Plugin * clone_pl = \
-      plugin_clone (pl, &err); \
+    Plugin * clone_pl = plugin_clone (pl, &err); \
     if (!clone_pl) \
       { \
         PROPAGATE_PREFIXED_ERROR ( \
           error, err, "%s", \
-          _("Failed to clone plugin")); \
+          _ ("Failed to clone plugin")); \
         object_free_w_func_and_null ( \
           channel_free, clone); \
         return NULL; \
       } \
     channel_add_plugin ( \
-      clone, slot_type, \
-      slot, clone_pl, F_NO_CONFIRM, \
-      F_NOT_MOVING_PLUGIN, \
+      clone, slot_type, slot, clone_pl, \
+      F_NO_CONFIRM, F_NOT_MOVING_PLUGIN, \
       F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH, \
       F_NO_PUBLISH_EVENTS); \
   }
@@ -2057,15 +1986,13 @@ channel_clone (
       if (ch->midi_fx[i])
         {
           CLONE_AND_ADD_PL (
-            ch->midi_fx[i], PLUGIN_SLOT_MIDI_FX,
-            i);
+            ch->midi_fx[i], PLUGIN_SLOT_MIDI_FX, i);
         }
     }
   if (ch->instrument)
     {
       CLONE_AND_ADD_PL (
-        ch->instrument, PLUGIN_SLOT_INSTRUMENT,
-        -1);
+        ch->instrument, PLUGIN_SLOT_INSTRUMENT, -1);
     }
 
 #undef CLONE_AND_ADD_PL
@@ -2144,8 +2071,7 @@ channel_select_all (
  * Sets caches for processing.
  */
 void
-channel_set_caches (
-  Channel * self)
+channel_set_caches (Channel * self)
 {
   Plugin * pls[120];
   int num_pls = channel_get_plugins (self, pls);
@@ -2158,9 +2084,7 @@ channel_set_caches (
 }
 
 int
-channel_get_plugins (
-  Channel * ch,
-  Plugin ** pls)
+channel_get_plugins (Channel * ch, Plugin ** pls)
 {
   int size = 0;
   for (int i = 0; i < STRIP_SIZE; i++)
@@ -2199,57 +2123,49 @@ channel_get_plugins (
  * @param recalc_graph Recalculate mixer graph.
  */
 void
-channel_disconnect (
-  Channel * self,
-  bool      remove_pl)
+channel_disconnect (Channel * self, bool remove_pl)
 {
   if (remove_pl)
     {
       FOREACH_STRIP
-        {
-          if (self->inserts[i])
-            {
-              channel_remove_plugin (
-                self,
-                PLUGIN_SLOT_INSERT,
-                i, F_NOT_MOVING_PLUGIN,
-                remove_pl, false,
-                F_NO_RECALC_GRAPH);
-            }
-          if (self->midi_fx[i])
-            {
-              channel_remove_plugin (
-                self,
-                PLUGIN_SLOT_MIDI_FX,
-                i, F_NOT_MOVING_PLUGIN,
-                remove_pl, false,
-                F_NO_RECALC_GRAPH);
-            }
-        }
+      {
+        if (self->inserts[i])
+          {
+            channel_remove_plugin (
+              self, PLUGIN_SLOT_INSERT, i,
+              F_NOT_MOVING_PLUGIN, remove_pl, false,
+              F_NO_RECALC_GRAPH);
+          }
+        if (self->midi_fx[i])
+          {
+            channel_remove_plugin (
+              self, PLUGIN_SLOT_MIDI_FX, i,
+              F_NOT_MOVING_PLUGIN, remove_pl, false,
+              F_NO_RECALC_GRAPH);
+          }
+      }
       if (self->instrument)
         {
           channel_remove_plugin (
-            self,
-            PLUGIN_SLOT_INSTRUMENT,
-            0, F_NOT_MOVING_PLUGIN,
-            remove_pl, false,
+            self, PLUGIN_SLOT_INSTRUMENT, 0,
+            F_NOT_MOVING_PLUGIN, remove_pl, false,
             F_NO_RECALC_GRAPH);
         }
     }
 
   /* disconnect from output */
-  if (channel_is_in_active_project (self) &&
-      self->has_output)
+  if (
+    channel_is_in_active_project (self)
+    && self->has_output)
     {
       Track * out_track =
         channel_get_output_track (self);
       g_return_if_fail (
         IS_TRACK_AND_NONNULL (out_track));
       group_target_track_remove_child (
-        out_track,
-        track_get_name_hash (self->track),
-        F_DISCONNECT,
-        F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
+        out_track, track_get_name_hash (self->track),
+        F_DISCONNECT, F_NO_RECALC_GRAPH,
+        F_NO_PUBLISH_EVENTS);
     }
 
   /* disconnect fader/prefader */
@@ -2262,11 +2178,11 @@ channel_disconnect (
   for (size_t i = 0; i < ports->len; i++)
     {
       Port * port = g_ptr_array_index (ports, i);
-      if (!IS_PORT (port)
-          ||
-          port_is_in_active_project (port) !=
-            track_is_in_active_project (
-              self->track))
+      if (
+        !IS_PORT (port)
+        || port_is_in_active_project (port)
+             != track_is_in_active_project (
+               self->track))
         {
           g_critical ("invalid port");
           g_ptr_array_unref (ports);

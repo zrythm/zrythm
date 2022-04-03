@@ -46,39 +46,45 @@
 class FixedTempoEstimator : public Vamp::Plugin
 {
 public:
-    FixedTempoEstimator(float inputSampleRate);
-    virtual ~FixedTempoEstimator();
+  FixedTempoEstimator (float inputSampleRate);
+  virtual ~FixedTempoEstimator ();
 
-    bool initialise(size_t channels, size_t stepSize, size_t blockSize);
-    void reset();
+  bool initialise (
+    size_t channels,
+    size_t stepSize,
+    size_t blockSize);
+  void reset ();
 
-    InputDomain getInputDomain() const { return FrequencyDomain; }
+  InputDomain getInputDomain () const
+  {
+    return FrequencyDomain;
+  }
 
-    std::string getIdentifier() const;
-    std::string getName() const;
-    std::string getDescription() const;
-    std::string getMaker() const;
-    int getPluginVersion() const;
-    std::string getCopyright() const;
+  std::string getIdentifier () const;
+  std::string getName () const;
+  std::string getDescription () const;
+  std::string getMaker () const;
+  int         getPluginVersion () const;
+  std::string getCopyright () const;
 
-    size_t getPreferredStepSize() const;
-    size_t getPreferredBlockSize() const;
+  size_t getPreferredStepSize () const;
+  size_t getPreferredBlockSize () const;
 
-    ParameterList getParameterDescriptors() const;
-    float getParameter(std::string id) const;
-    void setParameter(std::string id, float value);
+  ParameterList getParameterDescriptors () const;
+  float         getParameter (std::string id) const;
+  void setParameter (std::string id, float value);
 
-    OutputList getOutputDescriptors() const;
+  OutputList getOutputDescriptors () const;
 
-    FeatureSet process(const float *const *inputBuffers,
-                       Vamp::RealTime timestamp);
+  FeatureSet process (
+    const float * const * inputBuffers,
+    Vamp::RealTime        timestamp);
 
-    FeatureSet getRemainingFeatures();
+  FeatureSet getRemainingFeatures ();
 
 protected:
-    class D;
-    D *m_d;
+  class D;
+  D * m_d;
 };
-
 
 #endif

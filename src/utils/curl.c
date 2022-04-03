@@ -50,7 +50,8 @@ typedef enum
 
 #define Z_UTILS_CURL_ERROR \
   z_utils_curl_error_quark ()
-GQuark z_utils_curl_error_quark (void);
+GQuark
+z_utils_curl_error_quark (void);
 G_DEFINE_QUARK (
   z-utils-curl-error-quark, z_utils_curl_error)
 
@@ -66,9 +67,8 @@ curl_to_string (
 
   GString * page_str = (GString *) data;
 
-  page_str =
-    g_string_append_len (
-      page_str, ptr, (gssize) (size * nmemb));
+  page_str = g_string_append_len (
+    page_str, ptr, (gssize) (size * nmemb));
 
   return size * nmemb;
 }
@@ -101,8 +101,7 @@ z_curl_get_page_contents (
     curl, CURLOPT_WRITEFUNCTION, curl_to_string);
   curl_easy_setopt (
     curl, CURLOPT_WRITEDATA, page_str);
-  curl_easy_setopt (
-    curl, CURLOPT_TIMEOUT, timeout);
+  curl_easy_setopt (curl, CURLOPT_TIMEOUT, timeout);
   curl_easy_setopt (
     curl, CURLOPT_USERAGENT,
     "zrythm-daw/" PACKAGE_VERSION);
@@ -141,8 +140,7 @@ z_curl_get_page_contents (
  * @return Newly allocated string or NULL if fail.
  */
 char *
-z_curl_get_page_contents_default (
-  const char * url)
+z_curl_get_page_contents_default (const char * url)
 {
   int timeout = env_get_int ("Z_CURL_TIMEOUT", 0);
 
@@ -154,28 +152,35 @@ z_curl_get_page_contents_default (
   return z_curl_get_page_contents (url, timeout);
 }
 
-struct WriteThis {
-  const char *readptr;
-  size_t sizeleft;
+struct WriteThis
+{
+  const char * readptr;
+  size_t       sizeleft;
 };
 
-static size_t read_callback(char *dest, size_t size, size_t nmemb, void *userp)
+static size_t
+read_callback (
+  char * dest,
+  size_t size,
+  size_t nmemb,
+  void * userp)
 {
-  struct WriteThis *wt = (struct WriteThis *)userp;
-  size_t buffer_size = size*nmemb;
+  struct WriteThis * wt = (struct WriteThis *) userp;
+  size_t             buffer_size = size * nmemb;
 
-  if(wt->sizeleft) {
-    /* copy as much as possible from the source to the destination */
-    size_t copy_this_much = wt->sizeleft;
-    if(copy_this_much > buffer_size)
-      copy_this_much = buffer_size;
-    memcpy(dest, wt->readptr, copy_this_much);
+  if (wt->sizeleft)
+    {
+      /* copy as much as possible from the source to the destination */
+      size_t copy_this_much = wt->sizeleft;
+      if (copy_this_much > buffer_size)
+        copy_this_much = buffer_size;
+      memcpy (dest, wt->readptr, copy_this_much);
 
-    wt->readptr += copy_this_much;
-    wt->sizeleft -= copy_this_much;
-    g_debug ("copied %zu chars", copy_this_much);
-    return copy_this_much; /* we copied this many bytes */
-  }
+      wt->readptr += copy_this_much;
+      wt->sizeleft -= copy_this_much;
+      g_debug ("copied %zu chars", copy_this_much);
+      return copy_this_much; /* we copied this many bytes */
+    }
 
   return 0; /* no more data left to deliver */
 }
@@ -201,8 +206,9 @@ z_curl_post_json_no_auth (
   ...)
 {
   g_return_val_if_fail (
-    url == NULL || data == NULL
-    || error == NULL || *error == NULL, -1);
+    url == NULL || data == NULL || error == NULL
+      || *error == NULL,
+    -1);
 
   g_message ("sending data...");
 
@@ -226,12 +232,10 @@ z_curl_post_json_no_auth (
 #endif
 
   struct curl_slist * headers = NULL;
-  headers =
-    curl_slist_append (
-      headers, "Accept: application/json");
-  headers =
-    curl_slist_append (
-      headers, "Content-Type: multipart/form-data");
+  headers = curl_slist_append (
+    headers, "Accept: application/json");
+  headers = curl_slist_append (
+    headers, "Content-Type: multipart/form-data");
 #if 0
   headers =
     curl_slist_append (
@@ -258,8 +262,7 @@ z_curl_post_json_no_auth (
     curl, CURLOPT_WRITEFUNCTION, curl_to_string);
   curl_easy_setopt (
     curl, CURLOPT_WRITEDATA, response);
-  curl_easy_setopt (
-    curl, CURLOPT_TIMEOUT, timeout);
+  curl_easy_setopt (curl, CURLOPT_TIMEOUT, timeout);
   curl_easy_setopt (
     curl, CURLOPT_USERAGENT,
     "zrythm-daw/" PACKAGE_VERSION);
@@ -274,8 +277,7 @@ z_curl_post_json_no_auth (
   curl_mimepart * json_part =
     curl_mime_addpart (mime);
   curl_mime_name (json_part, "data");
-  curl_mime_type (
-    json_part, "application/json");
+  curl_mime_type (json_part, "application/json");
   curl_mime_data (
     json_part, data, CURL_ZERO_TERMINATED);
 
@@ -302,8 +304,7 @@ z_curl_post_json_no_auth (
     }
   va_end (args);
 
-  curl_easy_setopt (
-    curl, CURLOPT_MIMEPOST, mime);
+  curl_easy_setopt (curl, CURLOPT_MIMEPOST, mime);
 
   res = curl_easy_perform (curl);
   if (res != CURLE_OK)
@@ -332,8 +333,7 @@ z_curl_post_json_no_auth (
   g_debug (
     "[%ld]: %s", http_code, response_str);
 #endif
-  if (http_code >= 200
-      && http_code < 300)
+  if (http_code >= 200 && http_code < 300)
     {
       g_debug ("success");
     }
@@ -342,8 +342,8 @@ z_curl_post_json_no_auth (
       g_set_error (
         error, Z_UTILS_CURL_ERROR,
         Z_UTILS_CURL_ERROR_NON_2XX_RESPONSE,
-        "POST failed: [%ld] %s",
-        http_code, response_str);
+        "POST failed: [%ld] %s", http_code,
+        response_str);
 
       g_free (response_str);
       curl_easy_cleanup (curl);

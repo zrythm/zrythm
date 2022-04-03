@@ -19,13 +19,13 @@
 
 #include "audio/audio_region.h"
 #include "audio/automation_region.h"
+#include "audio/channel.h"
 #include "audio/chord_region.h"
 #include "audio/chord_track.h"
-#include "audio/channel.h"
 #include "audio/clip.h"
+#include "audio/instrument_track.h"
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
-#include "audio/instrument_track.h"
 #include "audio/pool.h"
 #include "audio/recording_manager.h"
 #include "audio/region.h"
@@ -47,17 +47,16 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/audio.h"
 #include "utils/debug.h"
 #include "utils/flags.h"
-#include "utils/audio.h"
 #include "utils/objects.h"
 #include "utils/yaml.h"
 
 #include <glib/gi18n.h>
 
-#include <sndfile.h>
 #include <samplerate.h>
-
+#include <sndfile.h>
 
 /**
  * Only to be used by implementing structs.
@@ -73,8 +72,7 @@ region_init (
 {
   self->schema_version = REGION_SCHEMA_VERSION;
 
-  ArrangerObject * obj =
-    (ArrangerObject *) self;
+  ArrangerObject * obj = (ArrangerObject *) self;
   obj->type = ARRANGER_OBJECT_TYPE_REGION;
   arranger_object_init (obj);
 
@@ -87,12 +85,10 @@ region_init (
   self->id.link_group = -1;
 
   position_init (&obj->pos);
-  position_set_to_pos (
-    &obj->pos, start_pos);
+  position_set_to_pos (&obj->pos, start_pos);
   obj->pos.frames = start_pos->frames;
   position_init (&obj->end_pos);
-  position_set_to_pos (
-    &obj->end_pos, end_pos);
+  position_set_to_pos (&obj->end_pos, end_pos);
   obj->end_pos.frames = end_pos->frames;
   position_init (&obj->clip_start_pos);
   long length =
@@ -100,15 +96,13 @@ region_init (
   g_warn_if_fail (length > 0);
   position_init (&obj->loop_start_pos);
   position_init (&obj->loop_end_pos);
-  position_from_frames (
-    &obj->loop_end_pos, length);
+  position_from_frames (&obj->loop_end_pos, length);
   obj->loop_end_pos.frames = length;
 
   /* set fade positions to start/end */
   position_init (&obj->fade_in_pos);
   position_init (&obj->fade_out_pos);
-  position_from_frames (
-    &obj->fade_out_pos, length);
+  position_from_frames (&obj->fade_out_pos, length);
 
   self->magic = REGION_MAGIC;
 
@@ -132,13 +126,10 @@ region_gen_name (
   /* Name to try to assign */
   char * orig_name = NULL;
   if (base_name)
-    orig_name =
-      g_strdup (base_name);
+    orig_name = g_strdup (base_name);
   else if (at)
-    orig_name =
-      g_strdup_printf (
-        "%s - %s",
-        track->name, at->port_id.label);
+    orig_name = g_strdup_printf (
+      "%s - %s", track->name, at->port_id.label);
   else
     orig_name = g_strdup (track->name);
 
@@ -182,16 +173,17 @@ region_set_lane (
  */
 void
 region_move_to_track (
-  ZRegion *  region,
-  Track *    track,
-  int        index_in_lane)
+  ZRegion * region,
+  Track *   track,
+  int       index_in_lane)
 {
   g_return_if_fail (IS_REGION (region) && track);
 
-  g_message ("moving region %s to track %s",
-    region->name, track->name);
+  g_message (
+    "moving region %s to track %s", region->name,
+    track->name);
   size_t sz = 2000;
-  char buf[sz];
+  char   buf[sz];
   region_print_to_str (region, buf, sz);
   g_debug ("before: %s", buf);
 
@@ -204,9 +196,8 @@ region_move_to_track (
         link_group, region, false, true);
     }
 
-  Track * region_track =
-    arranger_object_get_track (
-      (ArrangerObject *) region);
+  Track * region_track = arranger_object_get_track (
+    (ArrangerObject *) region);
   g_return_if_fail (region_track);
 
   if (region_track == track)
@@ -216,20 +207,18 @@ region_move_to_track (
   int lane_pos = region->id.lane_pos;
 
   /* create lanes if they don't exist */
-  track_create_missing_lanes (
-    track, lane_pos);
+  track_create_missing_lanes (track, lane_pos);
 
   /* remove the region from its old track */
   track_remove_region (
-    region_track,
-    region, F_NO_PUBLISH_EVENTS, F_NO_FREE);
+    region_track, region, F_NO_PUBLISH_EVENTS,
+    F_NO_FREE);
 
   /* add the region to its new track */
   if (index_in_lane >= 0)
     {
       track_insert_region (
-        track, region, NULL, lane_pos,
-        index_in_lane,
+        track, region, NULL, lane_pos, index_in_lane,
         F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS);
     }
   else
@@ -240,21 +229,19 @@ region_move_to_track (
     }
   g_warn_if_fail (region->id.lane_pos == lane_pos);
   g_warn_if_fail (
-    track->lanes[lane_pos]->num_regions > 0 &&
-    track->lanes[lane_pos]->regions[
-      region->id.idx] == region);
-  region_set_lane (
-    region, track->lanes[lane_pos]);
+    track->lanes[lane_pos]->num_regions > 0
+    && track->lanes[lane_pos]->regions[region->id.idx]
+         == region);
+  region_set_lane (region, track->lanes[lane_pos]);
 
   /* reselect if necessary */
   arranger_object_select (
-    (ArrangerObject *) region, selected,
-    F_APPEND, F_NO_PUBLISH_EVENTS);
+    (ArrangerObject *) region, selected, F_APPEND,
+    F_NO_PUBLISH_EVENTS);
 
   /* remove empty lanes if the region was the
    * last on its track lane */
-  track_remove_empty_last_lanes (
-    region_track);
+  track_remove_empty_last_lanes (region_track);
 
   if (link_group)
     {
@@ -281,15 +268,12 @@ region_move_to_track (
  * @param ratio The ratio to stretch by.
  */
 void
-region_stretch (
-  ZRegion * self,
-  double    ratio)
+region_stretch (ZRegion * self, double ratio)
 {
   g_return_if_fail (IS_REGION (self));
 
   g_debug (
-    "stretching region %p (ratio %f)",
-    self, ratio);
+    "stretching region %p (ratio %f)", self, ratio);
 
   self->stretching = true;
   ArrangerObject * obj = (ArrangerObject *) self;
@@ -299,26 +283,21 @@ region_stretch (
     case REGION_TYPE_MIDI:
       for (int i = 0; i < self->num_midi_notes; i++)
         {
-          MidiNote * mn =
-            self->midi_notes[i];
+          MidiNote *       mn = self->midi_notes[i];
           ArrangerObject * mn_obj =
             (ArrangerObject *) mn;
 
           /* set start pos */
-          double before_ticks = mn_obj->pos.ticks;
-          double new_ticks = before_ticks * ratio;
+          double   before_ticks = mn_obj->pos.ticks;
+          double   new_ticks = before_ticks * ratio;
           Position tmp;
-          position_from_ticks (
-            &tmp, new_ticks);
-          arranger_object_pos_setter (
-            mn_obj, &tmp);
+          position_from_ticks (&tmp, new_ticks);
+          arranger_object_pos_setter (mn_obj, &tmp);
 
           /* set end pos */
-          before_ticks =
-            mn_obj->end_pos.ticks;
+          before_ticks = mn_obj->end_pos.ticks;
           new_ticks = before_ticks * ratio;
-          position_from_ticks (
-            &tmp, new_ticks);
+          position_from_ticks (&tmp, new_ticks);
           arranger_object_end_pos_setter (
             mn_obj, &tmp);
         }
@@ -326,18 +305,16 @@ region_stretch (
     case REGION_TYPE_AUTOMATION:
       for (int i = 0; i < self->num_aps; i++)
         {
-          AutomationPoint * ap =
-            self->aps[i];
-          ArrangerObject * ap_obj =
+          AutomationPoint * ap = self->aps[i];
+          ArrangerObject *  ap_obj =
             (ArrangerObject *) ap;
 
           /* set pos */
-          double before_ticks = ap_obj->pos.ticks;
-          double new_ticks = before_ticks * ratio;
+          double   before_ticks = ap_obj->pos.ticks;
+          double   new_ticks = before_ticks * ratio;
           Position tmp;
           position_from_ticks (&tmp, new_ticks);
-          arranger_object_pos_setter (
-            ap_obj, &tmp);
+          arranger_object_pos_setter (ap_obj, &tmp);
         }
       break;
     case REGION_TYPE_CHORD:
@@ -349,25 +326,22 @@ region_stretch (
             (ArrangerObject *) co;
 
           /* set pos */
-          double before_ticks = co_obj->pos.ticks;
-          double new_ticks = before_ticks * ratio;
+          double   before_ticks = co_obj->pos.ticks;
+          double   new_ticks = before_ticks * ratio;
           Position tmp;
           position_from_ticks (&tmp, new_ticks);
-          arranger_object_pos_setter (
-            co_obj, &tmp);
+          arranger_object_pos_setter (co_obj, &tmp);
         }
       break;
     case REGION_TYPE_AUDIO:
       {
         AudioClip * clip =
           audio_region_get_clip (self);
-        int new_clip_id =
-          audio_pool_duplicate_clip (
-            AUDIO_POOL, clip->pool_id,
-            F_NO_WRITE_FILE);
-        AudioClip * new_clip =
-          audio_pool_get_clip (
-            AUDIO_POOL, new_clip_id);
+        int new_clip_id = audio_pool_duplicate_clip (
+          AUDIO_POOL, clip->pool_id,
+          F_NO_WRITE_FILE);
+        AudioClip * new_clip = audio_pool_get_clip (
+          AUDIO_POOL, new_clip_id);
         audio_region_set_clip_id (
           self, new_clip->pool_id);
         Stretcher * stretcher =
@@ -379,8 +353,7 @@ region_stretch (
             stretcher, new_clip->frames,
             (size_t) new_clip->num_frames,
             &new_clip->frames);
-        z_return_if_fail_cmp (
-          returned_frames, >, 0);
+        z_return_if_fail_cmp (returned_frames, >, 0);
         new_clip->num_frames =
           (unsigned_frame_t) returned_frames;
         audio_clip_write_to_pool (
@@ -430,32 +403,30 @@ region_stretch (
  */
 void
 region_move_to_lane (
-  ZRegion *    region,
+  ZRegion *   region,
   TrackLane * lane,
-  int          index_in_lane)
+  int         index_in_lane)
 {
   g_return_if_fail (IS_REGION (region) && lane);
 
-  Track * region_track =
-    arranger_object_get_track (
-      (ArrangerObject *) region);
+  Track * region_track = arranger_object_get_track (
+    (ArrangerObject *) region);
   g_return_if_fail (region_track);
 
   int selected = region_is_selected (region);
   int is_clip_editor_region =
     region == clip_editor_get_region (CLIP_EDITOR);
 
-  Track * lane_track =
-    track_lane_get_track (lane);
+  Track * lane_track = track_lane_get_track (lane);
   track_remove_region (
-    region_track, region,
-    F_NO_PUBLISH_EVENTS, F_NO_FREE);
+    region_track, region, F_NO_PUBLISH_EVENTS,
+    F_NO_FREE);
   if (index_in_lane >= 0)
     {
       track_insert_region (
         lane_track, region, NULL, lane->pos,
-        index_in_lane,
-        F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS);
+        index_in_lane, F_NO_GEN_NAME,
+        F_NO_PUBLISH_EVENTS);
     }
   else
     {
@@ -473,11 +444,10 @@ region_move_to_lane (
     }
 
   arranger_object_select (
-    (ArrangerObject *) region, selected,
-    F_APPEND, F_NO_PUBLISH_EVENTS);
+    (ArrangerObject *) region, selected, F_APPEND,
+    F_NO_PUBLISH_EVENTS);
   region_set_lane (region, lane);
-  g_warn_if_fail (
-    lane->pos == region->id.lane_pos);
+  g_warn_if_fail (lane->pos == region->id.lane_pos);
 
   track_create_missing_lanes (
     region_track, lane->pos);
@@ -515,8 +485,7 @@ region_set_automation_track (
         F_NO_APPEND, F_NO_PUBLISH_EVENTS);
     }
   self->id.at_idx = at->index;
-  Track * track =
-    automation_track_get_track (at);
+  Track * track = automation_track_get_track (at);
   self->id.track_name_hash =
     track_get_name_hash (track);
 
@@ -526,31 +495,29 @@ region_set_automation_track (
   if (was_selected)
     {
       arranger_object_select (
-        (ArrangerObject *) self, F_SELECT,
-        F_APPEND, F_NO_PUBLISH_EVENTS);
+        (ArrangerObject *) self, F_SELECT, F_APPEND,
+        F_NO_PUBLISH_EVENTS);
     }
 }
 
 void
-region_get_type_as_string (
-  RegionType type,
-  char *     buf)
+region_get_type_as_string (RegionType type, char * buf)
 {
   g_return_if_fail (
     type >= 0 && type <= REGION_TYPE_CHORD);
   switch (type)
     {
     case REGION_TYPE_MIDI:
-      strcpy (buf, _("MIDI"));
+      strcpy (buf, _ ("MIDI"));
       break;
     case REGION_TYPE_AUDIO:
-      strcpy (buf, _("Audio"));
+      strcpy (buf, _ ("Audio"));
       break;
     case REGION_TYPE_AUTOMATION:
-      strcpy (buf, _("Automation"));
+      strcpy (buf, _ ("Automation"));
       break;
     case REGION_TYPE_CHORD:
-      strcpy (buf, _("Chord"));
+      strcpy (buf, _ ("Chord"));
       break;
     }
 }
@@ -559,9 +526,7 @@ region_get_type_as_string (
  * Sanity checking.
  */
 bool
-region_validate (
-  ZRegion * self,
-  bool      is_project)
+region_validate (ZRegion * self, bool is_project)
 {
   g_return_val_if_fail (IS_REGION (self), false);
 
@@ -579,10 +544,10 @@ region_validate (
         }
     }
 
-  ArrangerObject * r_obj =  (ArrangerObject *) self;
+  ArrangerObject * r_obj = (ArrangerObject *) self;
   g_return_val_if_fail (
     position_is_before (
-    &r_obj->loop_start_pos, &r_obj->loop_end_pos),
+      &r_obj->loop_start_pos, &r_obj->loop_end_pos),
     false);
 
   switch (self->id.type)
@@ -604,14 +569,12 @@ region_validate (
 }
 
 TrackLane *
-region_get_lane (
-  const ZRegion * self)
+region_get_lane (const ZRegion * self)
 {
   g_return_val_if_fail (IS_REGION (self), NULL);
 
-  Track * track =
-    arranger_object_get_track (
-      (ArrangerObject *) self);
+  Track * track = arranger_object_get_track (
+    (ArrangerObject *) self);
   g_return_val_if_fail (IS_TRACK (track), NULL);
   if (self->id.lane_pos < track->num_lanes)
     {
@@ -628,17 +591,16 @@ region_get_lane (
  * Returns the region's link group.
  */
 RegionLinkGroup *
-region_get_link_group (
-  ZRegion * self)
+region_get_link_group (ZRegion * self)
 {
   g_return_val_if_fail (
-    self && self->id.link_group >= 0 &&
-    REGION_LINK_GROUP_MANAGER->num_groups >
-      self->id.link_group, NULL);
+    self && self->id.link_group >= 0
+      && REGION_LINK_GROUP_MANAGER->num_groups
+           > self->id.link_group,
+    NULL);
   RegionLinkGroup * group =
     region_link_group_manager_get_group (
-      REGION_LINK_GROUP_MANAGER,
-      self->id.link_group);
+      REGION_LINK_GROUP_MANAGER, self->id.link_group);
   return group;
 }
 
@@ -654,23 +616,22 @@ region_set_link_group (
   int       group_idx,
   bool      update_identifier)
 {
-  ArrangerObject * obj =
-    (ArrangerObject *) region;
+  ArrangerObject * obj = (ArrangerObject *) region;
   if (obj->flags & ARRANGER_OBJECT_FLAG_NON_PROJECT)
     {
       region->id.link_group = group_idx;
       return;
     }
 
-  if (region->id.link_group >= 0 &&
-      region->id.link_group != group_idx)
+  if (
+    region->id.link_group >= 0
+    && region->id.link_group != group_idx)
     {
       RegionLinkGroup * link_group =
         region_get_link_group (region);
       g_return_if_fail (link_group);
       region_link_group_remove_region (
-        link_group,
-        region, true, update_identifier);
+        link_group, region, true, update_identifier);
     }
   if (group_idx >= 0)
     {
@@ -678,8 +639,7 @@ region_set_link_group (
         region_link_group_manager_get_group (
           REGION_LINK_GROUP_MANAGER, group_idx);
       g_return_if_fail (group);
-      region_link_group_add_region (
-        group, region);
+      region_link_group_add_region (group, region);
     }
 
   g_return_if_fail (
@@ -690,18 +650,16 @@ region_set_link_group (
 }
 
 void
-region_create_link_group_if_none (
-  ZRegion * region)
+region_create_link_group_if_none (ZRegion * region)
 {
-  ArrangerObject * obj =
-    (ArrangerObject *) region;
+  ArrangerObject * obj = (ArrangerObject *) region;
   if (obj->flags & ARRANGER_OBJECT_FLAG_NON_PROJECT)
     return;
 
   if (region->id.link_group < 0)
     {
       size_t sz = 2000;
-      char buf[sz];
+      char   buf[sz];
       region_print_to_str (region, buf, sz);
       g_debug (
         "creating link group for region: %s", buf);
@@ -713,14 +671,12 @@ region_create_link_group_if_none (
 
       region_print_to_str (region, buf, sz);
       g_debug (
-        "after link group (%d): %s",
-        new_group, buf);
+        "after link group (%d): %s", new_group, buf);
     }
 }
 
 bool
-region_has_link_group (
-  ZRegion * region)
+region_has_link_group (ZRegion * region)
 {
   g_return_val_if_fail (IS_REGION (region), false);
   return region->id.link_group >= 0;
@@ -730,11 +686,9 @@ region_has_link_group (
  * Removes the link group from the region, if any.
  */
 void
-region_unlink (
-  ZRegion * region)
+region_unlink (ZRegion * region)
 {
-  ArrangerObject * obj =
-    (ArrangerObject *) region;
+  ArrangerObject * obj = (ArrangerObject *) region;
   if (obj->flags & ARRANGER_OBJECT_FLAG_NON_PROJECT)
     {
       region->id.link_group = -1;
@@ -762,18 +716,17 @@ region_unlink (
  * Looks for the ZRegion matching the identifier.
  */
 ZRegion *
-region_find (
-  const RegionIdentifier * const id)
+region_find (const RegionIdentifier * const id)
 {
-  Track * track = NULL;
-  TrackLane * lane = NULL;
+  Track *           track = NULL;
+  TrackLane *       lane = NULL;
   AutomationTrack * at = NULL;
-  if (id->type == REGION_TYPE_MIDI ||
-      id->type == REGION_TYPE_AUDIO)
+  if (
+    id->type == REGION_TYPE_MIDI
+    || id->type == REGION_TYPE_AUDIO)
     {
-      track =
-        tracklist_find_track_by_name_hash (
-          TRACKLIST, id->track_name_hash);
+      track = tracklist_find_track_by_name_hash (
+        TRACKLIST, id->track_name_hash);
       g_return_val_if_fail (track, NULL);
 
       if (id->lane_pos >= track->num_lanes)
@@ -781,9 +734,8 @@ region_find (
           g_critical (
             "%s: given lane pos %d is greater than "
             "track '%s' (%d) number of lanes %d",
-            __func__,
-            id->lane_pos, track->name, track->pos,
-            track->num_lanes);
+            __func__, id->lane_pos, track->name,
+            track->pos, track->num_lanes);
           return NULL;
         }
       lane = track->lanes[id->lane_pos];
@@ -802,9 +754,8 @@ region_find (
     }
   else if (id->type == REGION_TYPE_AUTOMATION)
     {
-      track =
-        tracklist_find_track_by_name_hash (
-          TRACKLIST, id->track_name_hash);
+      track = tracklist_find_track_by_name_hash (
+        TRACKLIST, id->track_name_hash);
       g_return_val_if_fail (track, NULL);
 
       AutomationTracklist * atl =
@@ -819,7 +770,8 @@ region_find (
           automation_tracklist_print_regions (atl);
           g_critical (
             "Automation track for %s has no "
-            "regions", at->port_id.label);
+            "regions",
+            at->port_id.label);
           return NULL;
         }
       ZRegion * region = at->regions[id->idx];
@@ -851,8 +803,7 @@ region_find (
  * to update the region's children.
  */
 void
-region_update_identifier (
-  ZRegion * self)
+region_update_identifier (ZRegion * self)
 {
   g_return_if_fail (IS_REGION (self));
 
@@ -899,11 +850,10 @@ region_update_identifier (
  * group, if any.
  */
 void
-region_update_link_group (
-  ZRegion * self)
+region_update_link_group (ZRegion * self)
 {
-  g_message ("updating link group %d",
-    self->id.link_group);
+  g_message (
+    "updating link group %d", self->id.link_group);
   if (self->id.link_group >= 0)
     {
       RegionLinkGroup * group =
@@ -918,10 +868,10 @@ region_update_link_group (
  * Removes all children objects from the region.
  */
 void
-region_remove_all_children (
-  ZRegion * region)
+region_remove_all_children (ZRegion * region)
 {
-  g_message ("removing all children from %d %s",
+  g_message (
+    "removing all children from %d %s",
     region->id.idx, region->name);
   switch (region->id.type)
     {
@@ -932,22 +882,19 @@ region_remove_all_children (
         for (int i = region->num_midi_notes - 1;
              i >= 0; i--)
           {
-            MidiNote * mn =
-              region->midi_notes[i];
+            MidiNote * mn = region->midi_notes[i];
             midi_region_remove_midi_note (
               region, mn, F_FREE,
               F_NO_PUBLISH_EVENTS);
           }
-        g_warn_if_fail (
-          region->num_midi_notes == 0);
+        g_warn_if_fail (region->num_midi_notes == 0);
       }
       break;
     case REGION_TYPE_AUDIO:
       break;
     case REGION_TYPE_AUTOMATION:
       {
-        for (int i = region->num_aps - 1;
-             i >= 0; i--)
+        for (int i = region->num_aps - 1; i >= 0; i--)
           {
             AutomationPoint * ap = region->aps[i];
             automation_region_remove_ap (
@@ -976,16 +923,14 @@ region_remove_all_children (
  * \ref dest.
  */
 void
-region_copy_children (
-  ZRegion * dest,
-  ZRegion * src)
+region_copy_children (ZRegion * dest, ZRegion * src)
 {
   g_return_if_fail (dest->id.type == src->id.type);
 
   g_message (
     "copying children from %d %s to %d %s",
-    src->id.idx, src->name,
-    dest->id.idx, dest->name);
+    src->id.idx, src->name, dest->id.idx,
+    dest->name);
 
   switch (src->id.type)
     {
@@ -994,18 +939,14 @@ region_copy_children (
         g_warn_if_fail (dest->num_midi_notes == 0);
         g_message (
           "%d midi notes", src->num_midi_notes);
-        for (int i = 0;
-             i < src->num_midi_notes; i++)
+        for (int i = 0; i < src->num_midi_notes; i++)
           {
-            MidiNote * orig_mn =
-              src->midi_notes[i];
+            MidiNote * orig_mn = src->midi_notes[i];
             ArrangerObject * orig_mn_obj =
               (ArrangerObject *) orig_mn;
 
-            MidiNote * mn =
-              (MidiNote *)
-              arranger_object_clone (
-                orig_mn_obj);
+            MidiNote * mn = (MidiNote *)
+              arranger_object_clone (orig_mn_obj);
 
             midi_region_add_midi_note (
               dest, mn, F_NO_PUBLISH_EVENTS);
@@ -1017,18 +958,16 @@ region_copy_children (
     case REGION_TYPE_AUTOMATION:
       {
         /* add automation points */
-        AutomationPoint * src_ap, * dest_ap;
+        AutomationPoint *src_ap, *dest_ap;
         for (int j = 0; j < src->num_aps; j++)
           {
             src_ap = src->aps[j];
             ArrangerObject * src_ap_obj =
               (ArrangerObject *) src_ap;
 
-            dest_ap =
-              automation_point_new_float (
-                src_ap->fvalue,
-                src_ap->normalized_val,
-                &src_ap_obj->pos);
+            dest_ap = automation_point_new_float (
+              src_ap->fvalue, src_ap->normalized_val,
+              &src_ap_obj->pos);
             automation_region_add_ap (
               dest, dest_ap, F_NO_PUBLISH_EVENTS);
           }
@@ -1036,14 +975,13 @@ region_copy_children (
       break;
     case REGION_TYPE_CHORD:
       {
-        ChordObject * src_co, * dest_co;
-        for (int i = 0;
-             i < src->num_chord_objects; i++)
+        ChordObject *src_co, *dest_co;
+        for (int i = 0; i < src->num_chord_objects;
+             i++)
           {
             src_co = src->chord_objects[i];
 
-            dest_co =
-              (ChordObject *)
+            dest_co = (ChordObject *)
               arranger_object_clone (
                 (ArrangerObject *) src_co);
 
@@ -1056,8 +994,7 @@ region_copy_children (
 }
 
 bool
-region_is_looped (
-  const ZRegion * const self)
+region_is_looped (const ZRegion * const self)
 {
   const ArrangerObject * const obj =
     (const ArrangerObject * const) self;
@@ -1086,17 +1023,14 @@ region_is_looped (
  * from a cloned MidiNote (e.g. when doing/undoing).
  */
 MidiNote *
-region_find_midi_note (
-  ZRegion * r,
-  MidiNote * clone)
+region_find_midi_note (ZRegion * r, MidiNote * clone)
 {
   MidiNote * mn;
   for (int i = 0; i < r->num_midi_notes; i++)
     {
       mn = r->midi_notes[i];
 
-      if (midi_note_is_equal (
-            clone, mn))
+      if (midi_note_is_equal (clone, mn))
         return mn;
     }
 
@@ -1110,17 +1044,16 @@ AutomationTrack *
 region_get_automation_track (
   const ZRegion * const region)
 {
-  Track * track =
-    arranger_object_get_track (
-      (const ArrangerObject * const) region);
+  Track * track = arranger_object_get_track (
+    (const ArrangerObject * const) region);
   g_return_val_if_fail (
-    IS_TRACK (track) &&
-    track->automation_tracklist.num_ats >
-     region->id.at_idx, NULL);
+    IS_TRACK (track)
+      && track->automation_tracklist.num_ats
+           > region->id.at_idx,
+    NULL);
 
-  return
-    track->automation_tracklist.ats[
-      region->id.at_idx];
+  return track->automation_tracklist
+    .ats[region->id.at_idx];
 }
 
 void
@@ -1130,9 +1063,8 @@ region_print_to_str (
   const size_t    buf_size)
 {
   char from_pos_str[100], to_pos_str[100],
-       loop_end_pos_str[100];
-  position_to_string (
-    &self->base.pos, from_pos_str);
+    loop_end_pos_str[100];
+  position_to_string (&self->base.pos, from_pos_str);
   position_to_string (
     &self->base.end_pos, to_pos_str);
   position_to_string (
@@ -1145,23 +1077,19 @@ region_print_to_str (
     self->name,
     region_identifier_get_region_type_name (
       self->id.type),
-    self->id.track_name_hash,
-    self->id.lane_pos,
-    self->id.idx, self,
-    from_pos_str, to_pos_str,
-    loop_end_pos_str,
-    self->id.link_group);
+    self->id.track_name_hash, self->id.lane_pos,
+    self->id.idx, self, from_pos_str, to_pos_str,
+    loop_end_pos_str, self->id.link_group);
 }
 
 /**
  * Print region info for debugging.
  */
 void
-region_print (
-  const ZRegion * self)
+region_print (const ZRegion * self)
 {
   size_t sz = 2000;
-  char buf[sz];
+  char   buf[sz];
   region_print_to_str (self, buf, sz);
   g_message ("%s", buf);
 }
@@ -1193,10 +1121,11 @@ region_at_position (
               region = lane->regions[j];
               ArrangerObject * r_obj =
                 (ArrangerObject *) region;
-              if (position_is_after_or_equal (
-                    pos, &r_obj->pos) &&
-                  position_is_before_or_equal (
-                    pos, &r_obj->end_pos))
+              if (
+                position_is_after_or_equal (
+                  pos, &r_obj->pos)
+                && position_is_before_or_equal (
+                  pos, &r_obj->end_pos))
                 {
                   return region;
                 }
@@ -1210,10 +1139,11 @@ region_at_position (
           region = at->regions[i];
           ArrangerObject * r_obj =
             (ArrangerObject *) region;
-          if (position_is_after_or_equal (
-                pos, &r_obj->pos) &&
-              position_is_before_or_equal (
-                pos, &r_obj->end_pos))
+          if (
+            position_is_after_or_equal (
+              pos, &r_obj->pos)
+            && position_is_before_or_equal (
+              pos, &r_obj->end_pos))
             {
               return region;
             }
@@ -1253,30 +1183,23 @@ region_is_hit (
  * given region type.
  */
 ArrangerSelections *
-region_get_arranger_selections (
-  ZRegion * self)
+region_get_arranger_selections (ZRegion * self)
 {
   ArrangerSelections * sel = NULL;
   switch (self->id.type)
     {
     case REGION_TYPE_MIDI:
-      sel =
-        (ArrangerSelections *) MA_SELECTIONS;
+      sel = (ArrangerSelections *) MA_SELECTIONS;
       break;
     case REGION_TYPE_AUTOMATION:
-      sel =
-        (ArrangerSelections *)
+      sel = (ArrangerSelections *)
         AUTOMATION_SELECTIONS;
       break;
     case REGION_TYPE_CHORD:
-      sel =
-        (ArrangerSelections *)
-        CHORD_SELECTIONS;
+      sel = (ArrangerSelections *) CHORD_SELECTIONS;
       break;
     case REGION_TYPE_AUDIO:
-      sel =
-        (ArrangerSelections *)
-        AUDIO_SELECTIONS;
+      sel = (ArrangerSelections *) AUDIO_SELECTIONS;
       break;
     default:
       break;
@@ -1292,8 +1215,7 @@ region_get_arranger_selections (
  * @note Only applicable to audio regions.
  */
 bool
-region_get_musical_mode (
-  ZRegion * self)
+region_get_musical_mode (ZRegion * self)
 {
   /* off for v1 */
   return false;
@@ -1301,9 +1223,8 @@ region_get_musical_mode (
   switch (self->musical_mode)
     {
     case REGION_MUSICAL_MODE_INHERIT:
-      return
-        g_settings_get_boolean (
-          S_UI, "musical-mode");
+      return g_settings_get_boolean (
+        S_UI, "musical-mode");
     case REGION_MUSICAL_MODE_OFF:
       return false;
     case REGION_MUSICAL_MODE_ON:
@@ -1368,15 +1289,12 @@ region_is_hit_by_range (
  * clip start point, loop start point, etc.
  */
 void
-region_copy (
-  ZRegion * src,
-  ZRegion * dest)
+region_copy (ZRegion * src, ZRegion * dest)
 {
   g_free (dest->name);
   dest->name = g_strdup (src->name);
 
-  ArrangerObject * src_obj =
-    (ArrangerObject *) src;
+  ArrangerObject * src_obj = (ArrangerObject *) src;
   ArrangerObject * dest_obj =
     (ArrangerObject *) dest;
 
@@ -1408,8 +1326,7 @@ region_add_arranger_object (
       break;
     case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
       automation_region_add_ap (
-        self, (AutomationPoint *) obj,
-        fire_events);
+        self, (AutomationPoint *) obj, fire_events);
       break;
     default:
       g_return_if_reached ();
@@ -1445,8 +1362,7 @@ region_timeline_frames_to_local (
   if (normalize)
     {
       signed_frame_t diff_frames =
-        timeline_frames -
-        r_obj->pos.frames;
+        timeline_frames - r_obj->pos.frames;
 
       /* special case: timeline frames is exactly
        * at the end of the region */
@@ -1460,8 +1376,7 @@ region_timeline_frames_to_local (
       const signed_frame_t loop_size =
         arranger_object_get_loop_length_in_frames (
           r_obj);
-      z_return_val_if_fail_cmp (
-        loop_size, >, 0, 0);
+      z_return_val_if_fail_cmp (loop_size, >, 0, 0);
 
       diff_frames += clip_start_frames;
 
@@ -1474,9 +1389,7 @@ region_timeline_frames_to_local (
     }
   else
     {
-      return
-        timeline_frames -
-        r_obj->pos.frames;
+      return timeline_frames - r_obj->pos.frames;
     }
 }
 
@@ -1503,8 +1416,7 @@ region_get_frames_till_next_loop_or_end (
   ArrangerObject * r_obj = (ArrangerObject *) self;
 
   signed_frame_t loop_size =
-    arranger_object_get_loop_length_in_frames (
-      r_obj);
+    arranger_object_get_loop_length_in_frames (r_obj);
   z_return_if_fail_cmp (loop_size, >, 0);
 
   signed_frame_t local_frames =
@@ -1512,8 +1424,7 @@ region_get_frames_till_next_loop_or_end (
 
   local_frames += r_obj->clip_start_pos.frames;
 
-  while (local_frames >=
-           r_obj->loop_end_pos.frames)
+  while (local_frames >= r_obj->loop_end_pos.frames)
     {
       local_frames -= loop_size;
     }
@@ -1524,8 +1435,7 @@ region_get_frames_till_next_loop_or_end (
   signed_frame_t frames_till_end =
     r_obj->end_pos.frames - timeline_frames;
 
-  *is_loop =
-    frames_till_next_loop < frames_till_end;
+  *is_loop = frames_till_next_loop < frames_till_end;
   *ret_frames =
     MIN (frames_till_end, frames_till_next_loop);
 }
@@ -1540,13 +1450,11 @@ region_get_frames_till_next_loop_or_end (
 char *
 region_generate_filename (ZRegion * region)
 {
-  Track * track =
-    arranger_object_get_track (
-      (ArrangerObject *) region);
-  return
-    g_strdup_printf (
-      REGION_PRINTF_FILENAME, track->name,
-      region->name);
+  Track * track = arranger_object_get_track (
+    (ArrangerObject *) region);
+  return g_strdup_printf (
+    REGION_PRINTF_FILENAME, track->name,
+    region->name);
 }
 
 /**
@@ -1554,8 +1462,7 @@ region_generate_filename (ZRegion * region)
  * recorded onto.
  */
 bool
-region_is_recording (
-  ZRegion * self)
+region_is_recording (ZRegion * self)
 {
   if (RECORDING_MANAGER->num_active_recordings == 0)
     {
@@ -1563,8 +1470,7 @@ region_is_recording (
     }
 
   for (int i = 0;
-       i < RECORDING_MANAGER->num_recorded_ids;
-       i++)
+       i < RECORDING_MANAGER->num_recorded_ids; i++)
     {
       if (region_identifier_is_equal (
             &self->id,
@@ -1584,8 +1490,7 @@ region_is_recording (
  * resources.
  */
 void
-region_disconnect (
-  ZRegion * self)
+region_disconnect (ZRegion * self)
 {
   ZRegion * clip_editor_region =
     clip_editor_get_region (CLIP_EDITOR);
@@ -1625,7 +1530,7 @@ region_disconnect (
     {
       /*ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);*/
       /*if (ar_prv->start_object ==*/
-            /*(ArrangerObject *) self)*/
-        /*ar_prv->start_object = NULL;*/
+      /*(ArrangerObject *) self)*/
+      /*ar_prv->start_object = NULL;*/
     }
 }

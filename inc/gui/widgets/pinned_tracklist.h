@@ -39,7 +39,8 @@
 G_DECLARE_FINAL_TYPE (
   PinnedTracklistWidget,
   pinned_tracklist_widget,
-  Z, PINNED_TRACKLIST_WIDGET,
+  Z,
+  PINNED_TRACKLIST_WIDGET,
   GtkBox);
 
 /**
@@ -51,7 +52,7 @@ G_DECLARE_FINAL_TYPE (
 #define MW_PINNED_TRACKLIST \
   MW_TIMELINE_PANEL->pinned_tracklist
 
-typedef struct Tracklist Tracklist;
+typedef struct Tracklist    Tracklist;
 typedef struct _TrackWidget TrackWidget;
 
 /**
@@ -64,7 +65,7 @@ typedef struct _TrackWidget TrackWidget;
  */
 typedef struct _PinnedTracklistWidget
 {
-  GtkBox     parent_instance;
+  GtkBox parent_instance;
 
   /** The backend. */
   Tracklist * tracklist;
@@ -76,9 +77,9 @@ typedef struct _PinnedTracklistWidget
  */
 TrackWidget *
 pinned_tracklist_widget_get_hit_track (
-  PinnedTracklistWidget *  self,
-  double            x,
-  double            y);
+  PinnedTracklistWidget * self,
+  double                  x,
+  double                  y);
 
 /**
  * Removes and readds the tracks.

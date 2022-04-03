@@ -93,9 +93,7 @@ stack_peek_last (Stack * s)
 }
 
 void
-stack_push (
-  Stack *    s,
-  void *     element)
+stack_push (Stack * s, void * element)
 {
   if (stack_is_full (s))
     g_warning ("stack is full, cannot push");
@@ -105,10 +103,9 @@ stack_push (
       g_atomic_int_inc (&s->top);
       if (s->max_length == -1)
         {
-          s->elements =
-            g_realloc (
-              s->elements,
-              (size_t) (top + 2) * sizeof (void *));
+          s->elements = g_realloc (
+            s->elements,
+            (size_t) (top + 2) * sizeof (void *));
         }
       s->elements[top + 1] = element;
     }
@@ -147,16 +144,14 @@ stack_pop_last (Stack * s)
 }
 
 void
-stack_free_members (
-  Stack * s)
+stack_free_members (Stack * s)
 {
   if (s->elements)
     free (s->elements);
 }
 
 void
-stack_free (
-  Stack * s)
+stack_free (Stack * s)
 {
   stack_free_members (s);
   free (s);

@@ -43,15 +43,15 @@
 
 typedef struct PeakDsp
 {
-  float   rms;         // max rms value since last read()
-  float   peak;        // max peak value since last read()
-  int     cnt;       // digital peak hold counter
-  int     fpp;       // frames per period
-  float   fall;        // peak fallback
-  bool    flag;        // flag set by read(), resets _rms
+  float rms;  // max rms value since last read()
+  float peak; // max peak value since last read()
+  int   cnt;  // digital peak hold counter
+  int   fpp;  // frames per period
+  float fall; // peak fallback
+  bool  flag; // flag set by read(), resets _rms
 
-  int     hold;        // peak hold timeoute
-  float   fsamp;       // sample-rate
+  int   hold;  // peak hold timeoute
+  float fsamp; // sample-rate
 } PeakDsp;
 
 /**
@@ -60,39 +60,32 @@ typedef struct PeakDsp
  * @param p Frame array.
  * @param n Number of samples.
  */
-HOT
-void
-peak_dsp_process (
-  PeakDsp * self,
-  float *p, int n);
+HOT void
+peak_dsp_process (PeakDsp * self, float * p, int n);
 
 float
-peak_dsp_read_f (
-  PeakDsp * self);
+peak_dsp_read_f (PeakDsp * self);
 
 void
 peak_dsp_read (
   PeakDsp * self,
-  float * rms, float * peak);
+  float *   rms,
+  float *   peak);
 
 void
-peak_dsp_reset (
-  PeakDsp * self);
+peak_dsp_reset (PeakDsp * self);
 
 /**
  * Init with the samplerate.
  */
 void
-peak_dsp_init (
-  PeakDsp * self,
-  float samplerate);
+peak_dsp_init (PeakDsp * self, float samplerate);
 
 MALLOC
 PeakDsp *
 peak_dsp_new (void);
 
 void
-peak_dsp_free (
-  PeakDsp * self);
+peak_dsp_free (PeakDsp * self);
 
 #endif

@@ -29,15 +29,15 @@
 
 #if 0
 
-#ifndef __GUI_WIDGETS_RULER_MARKER_H__
-#define __GUI_WIDGETS_RULER_MARKER_H__
+#  ifndef __GUI_WIDGETS_RULER_MARKER_H__
+#    define __GUI_WIDGETS_RULER_MARKER_H__
 
-#include "utils/ui.h"
+#    include "utils/ui.h"
 
-#include <gtk/gtk.h>
+#    include <gtk/gtk.h>
 
-#define RULER_MARKER_WIDGET_TYPE \
-  (ruler_marker_widget_get_type ())
+#    define RULER_MARKER_WIDGET_TYPE \
+      (ruler_marker_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   RulerMarkerWidget,
   ruler_marker_widget,
@@ -52,15 +52,18 @@ typedef struct _RulerWidget RulerWidget;
  * @{
  */
 
-#define TL_RULER_PLAYHEAD \
-  (ruler_widget_get_private ( \
-    Z_RULER_WIDGET (MW_RULER))->playhead)
-#define EDITOR_RULER_PLAYHEAD \
-  (ruler_widget_get_private ( \
-    Z_RULER_WIDGET (EDITOR_RULER))->playhead)
-#define AUDIO_RULER_PLAYHEAD \
-  (ruler_widget_get_private ( \
-    Z_RULER_WIDGET (AUDIO_RULER))->playhead)
+#    define TL_RULER_PLAYHEAD \
+      (ruler_widget_get_private ( \
+         Z_RULER_WIDGET (MW_RULER)) \
+         ->playhead)
+#    define EDITOR_RULER_PLAYHEAD \
+      (ruler_widget_get_private ( \
+         Z_RULER_WIDGET (EDITOR_RULER)) \
+         ->playhead)
+#    define AUDIO_RULER_PLAYHEAD \
+      (ruler_widget_get_private ( \
+         Z_RULER_WIDGET (AUDIO_RULER)) \
+         ->playhead)
 
 typedef enum RulerMarkerType
 {
@@ -98,5 +101,5 @@ ruler_marker_widget_update_tooltip (
  * @}
  */
 
-#endif
+#  endif
 #endif

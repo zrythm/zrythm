@@ -27,20 +27,19 @@
 G_DECLARE_FINAL_TYPE (
   TopBarWidget,
   top_bar_widget,
-  Z, TOP_BAR_WIDGET,
+  Z,
+  TOP_BAR_WIDGET,
   GtkBox)
 
 #define TOP_BAR MW->top_bar
 
-typedef struct _DigitalMeterWidget
-  DigitalMeterWidget;
+typedef struct _DigitalMeterWidget DigitalMeterWidget;
 typedef struct _TransportControlsWidget
-  TransportControlsWidget;
+                          TransportControlsWidget;
 typedef struct _CpuWidget CpuWidget;
 typedef struct _MidiActivityBarWidget
   MidiActivityBarWidget;
-typedef struct _LiveWaveformWidget
-  LiveWaveformWidget;
+typedef struct _LiveWaveformWidget LiveWaveformWidget;
 
 typedef struct _TopBarWidget
 {

@@ -60,28 +60,24 @@ typedef enum BeatUnit
   BEAT_UNIT_16
 } BeatUnit;
 
-static const cyaml_strval_t
-beat_unit_strings[] =
-{
-  { "2",      BEAT_UNIT_2    },
-  { "4",      BEAT_UNIT_4    },
-  { "8",      BEAT_UNIT_8    },
-  { "16",     BEAT_UNIT_16   },
+static const cyaml_strval_t beat_unit_strings[] = {
+  {"2",   BEAT_UNIT_2 },
+  { "4",  BEAT_UNIT_4 },
+  { "8",  BEAT_UNIT_8 },
+  { "16", BEAT_UNIT_16},
 };
 
 /**
  * Creates the default tempo track.
  */
 Track *
-tempo_track_default (
-  int   track_pos);
+tempo_track_default (int track_pos);
 
 /**
  * Inits the tempo track.
  */
 void
-tempo_track_init (
-  Track * track);
+tempo_track_init (Track * track);
 
 /**
  * Removes all objects from the tempo track.
@@ -89,8 +85,7 @@ tempo_track_init (
  * Mainly used in testing.
  */
 void
-tempo_track_clear (
-  Track * self);
+tempo_track_clear (Track * self);
 
 /**
  * Returns the BPM at the given pos.
@@ -104,12 +99,10 @@ tempo_track_get_bpm_at_pos (
  * Returns the current BPM.
  */
 bpm_t
-tempo_track_get_current_bpm (
-  Track * self);
+tempo_track_get_current_bpm (Track * self);
 
 const char *
-tempo_track_get_current_bpm_as_str (
-  void * self);
+tempo_track_get_current_bpm_as_str (void * self);
 
 /**
  * Sets the BPM.
@@ -145,12 +138,10 @@ tempo_track_set_beat_unit_from_enum (
   BeatUnit ebeat_unit);
 
 BeatUnit
-tempo_track_get_beat_unit_enum (
-  Track * self);
+tempo_track_get_beat_unit_enum (Track * self);
 
 BeatUnit
-tempo_track_beat_unit_to_enum (
-  int beat_unit);
+tempo_track_beat_unit_to_enum (int beat_unit);
 
 void
 tempo_track_set_beat_unit (
@@ -162,16 +153,14 @@ tempo_track_set_beat_unit (
  */
 void
 tempo_track_set_beats_per_bar (
-  Track *     self,
-  int         beats_per_bar);
+  Track * self,
+  int     beats_per_bar);
 
 int
-tempo_track_get_beats_per_bar (
-  Track * self);
+tempo_track_get_beats_per_bar (Track * self);
 
 int
-tempo_track_get_beat_unit (
-  Track * self);
+tempo_track_get_beat_unit (Track * self);
 
 /**
  * @}

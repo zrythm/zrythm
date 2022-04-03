@@ -21,22 +21,21 @@
 
 #ifdef HAVE_RTMIDI
 
-#include "audio/engine.h"
-#include "audio/midi_event.h"
-#include "audio/port.h"
-#include "audio/rtmidi_device.h"
-#include "project.h"
-#include "utils/objects.h"
-#include "utils/string.h"
+#  include "audio/engine.h"
+#  include "audio/midi_event.h"
+#  include "audio/port.h"
+#  include "audio/rtmidi_device.h"
+#  include "project.h"
+#  include "utils/objects.h"
+#  include "utils/string.h"
 
-#include <gtk/gtk.h>
+#  include <gtk/gtk.h>
 
 static enum RtMidiApi
-get_api_from_midi_backend (
-  MidiBackend backend)
+get_api_from_midi_backend (MidiBackend backend)
 {
   enum RtMidiApi apis[20];
-  int num_apis =
+  int            num_apis =
     (int) rtmidi_get_compiled_api (apis, 20);
   if (num_apis < 0)
     {
@@ -47,25 +46,27 @@ get_api_from_midi_backend (
     }
   for (int i = 0; i < num_apis; i++)
     {
-      if (backend == MIDI_BACKEND_ALSA_RTMIDI &&
-            apis[i] == RTMIDI_API_LINUX_ALSA)
+      if (
+        backend == MIDI_BACKEND_ALSA_RTMIDI
+        && apis[i] == RTMIDI_API_LINUX_ALSA)
         {
           return apis[i];
         }
-      if (backend == MIDI_BACKEND_JACK_RTMIDI &&
-            apis[i] == RTMIDI_API_UNIX_JACK)
+      if (
+        backend == MIDI_BACKEND_JACK_RTMIDI
+        && apis[i] == RTMIDI_API_UNIX_JACK)
         {
           return apis[i];
         }
-      if (backend ==
-            MIDI_BACKEND_WINDOWS_MME_RTMIDI &&
-            apis[i] == RTMIDI_API_WINDOWS_MM)
+      if (
+        backend == MIDI_BACKEND_WINDOWS_MME_RTMIDI
+        && apis[i] == RTMIDI_API_WINDOWS_MM)
         {
           return apis[i];
         }
-      if (backend ==
-            MIDI_BACKEND_COREMIDI_RTMIDI &&
-            apis[i] == RTMIDI_API_MACOSX_CORE)
+      if (
+        backend == MIDI_BACKEND_COREMIDI_RTMIDI
+        && apis[i] == RTMIDI_API_MACOSX_CORE)
         {
           return apis[i];
         }
@@ -106,11 +107,12 @@ midi_in_cb (
 
   /* add to ring buffer */
   MidiEventHeader h = {
-    .time = (uint64_t) ts, .size = message_size,
+    .time = (uint64_t) ts,
+    .size = message_size,
   };
   zix_ring_write (
-    self->midi_ring,
-    (uint8_t *) &h, sizeof (MidiEventHeader));
+    self->midi_ring, (uint8_t *) &h,
+    sizeof (MidiEventHeader));
   zix_ring_write (
     self->midi_ring, message, message_size);
 
@@ -171,7 +173,7 @@ rtmidi_device_new (
   RtMidiDevice * self = object_new (RtMidiDevice);
 
   enum RtMidiApi apis[20];
-  int num_apis =
+  int            num_apis =
     (int) rtmidi_get_compiled_api (apis, 20);
   if (num_apis < 0)
     {
@@ -192,15 +194,13 @@ rtmidi_device_new (
       rtmidi_device_first_run = false;
     }
 
-  enum RtMidiApi api =
-    get_api_from_midi_backend (
-      AUDIO_ENGINE->midi_backend);
+  enum RtMidiApi api = get_api_from_midi_backend (
+    AUDIO_ENGINE->midi_backend);
   if (api == RTMIDI_API_RTMIDI_DUMMY)
     {
       g_warning (
         "RtMidi API for %s not enabled",
-        midi_backend_str[
-          AUDIO_ENGINE->midi_backend]);
+        midi_backend_str[AUDIO_ENGINE->midi_backend]);
       object_zero_and_free (self);
       return NULL;
     }
@@ -228,15 +228,14 @@ rtmidi_device_new (
   self->port = port;
   if (is_input)
     {
-      self->in_handle =
-        rtmidi_in_create (
-          api, "Zrythm",
-          AUDIO_ENGINE->midi_buf_size);
+      self->in_handle = rtmidi_in_create (
+        api, "Zrythm", AUDIO_ENGINE->midi_buf_size);
       if (!self->in_handle->ok)
         {
           g_warning (
             "An error occurred creating an RtMidi "
-            "in handle: %s", self->in_handle->msg);
+            "in handle: %s",
+            self->in_handle->msg);
           object_zero_and_free (self);
           return NULL;
         }
@@ -245,9 +244,8 @@ rtmidi_device_new (
     {
       /* TODO */
     }
-  self->midi_ring =
-    zix_ring_new (
-      sizeof (uint8_t) * (size_t) MIDI_BUFFER_SIZE);
+  self->midi_ring = zix_ring_new (
+    sizeof (uint8_t) * (size_t) MIDI_BUFFER_SIZE);
 
   self->events = midi_events_new ();
 
@@ -265,9 +263,7 @@ rtmidi_device_new (
  * @return Non-zero if error.
  */
 int
-rtmidi_device_open (
-  RtMidiDevice * self,
-  int            start)
+rtmidi_device_open (RtMidiDevice * self, int start)
 {
   g_message ("opening rtmidi device");
   char designation[800];
@@ -281,7 +277,8 @@ rtmidi_device_open (
     {
       g_warning (
         "An error occurred opening the RtMidi "
-        "device: %s", self->in_handle->msg);
+        "device: %s",
+        self->in_handle->msg);
       return -1;
     }
 
@@ -324,8 +321,7 @@ rtmidi_device_close (
 }
 
 int
-rtmidi_device_start (
-  RtMidiDevice * self)
+rtmidi_device_start (RtMidiDevice * self)
 {
   g_message ("starting rtmidi device");
   if (self->is_input)
@@ -348,8 +344,7 @@ rtmidi_device_start (
 }
 
 int
-rtmidi_device_stop (
-  RtMidiDevice * self)
+rtmidi_device_stop (RtMidiDevice * self)
 {
   g_message ("stopping rtmidi device");
   if (self->is_input)
@@ -362,8 +357,7 @@ rtmidi_device_stop (
 }
 
 void
-rtmidi_device_free (
-  RtMidiDevice *  self)
+rtmidi_device_free (RtMidiDevice * self)
 {
   if (self->is_input)
     {

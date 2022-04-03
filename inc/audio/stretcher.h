@@ -28,11 +28,11 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include <sys/types.h>
 
 #include "utils/types.h"
 
 #include <rubberband/rubberband-c.h>
+#include <sys/types.h>
 
 /**
  * @addtogroup audio
@@ -58,15 +58,15 @@ typedef enum StretcherBackend
  */
 typedef struct Stretcher
 {
-  StretcherBackend  backend;
+  StretcherBackend backend;
 
   /** For rubberband API. */
-  RubberBandState   rubberband_state;
+  RubberBandState rubberband_state;
 
-  unsigned int      samplerate;
-  unsigned int      channels;
+  unsigned int samplerate;
+  unsigned int channels;
 
-  bool              is_realtime;
+  bool is_realtime;
 
   /**
    * Size of the block to process in each
@@ -74,7 +74,7 @@ typedef struct Stretcher
    *
    * Somewhere around 6k should be fine.
    */
-  unsigned int      block_size;
+  unsigned int block_size;
 } Stretcher;
 
 /**
@@ -92,11 +92,11 @@ typedef struct Stretcher
  */
 Stretcher *
 stretcher_new_rubberband (
-  unsigned int   samplerate,
-  unsigned int   channels,
-  double         time_ratio,
-  double         pitch_ratio,
-  bool           realtime);
+  unsigned int samplerate,
+  unsigned int channels,
+  double       time_ratio,
+  double       pitch_ratio,
+  bool         realtime);
 
 /**
  * Perform stretching.
@@ -124,8 +124,7 @@ stretcher_stretch (
  * Get latency in number of samples.
  */
 unsigned int
-stretcher_get_latency (
-  Stretcher * self);
+stretcher_get_latency (Stretcher * self);
 
 void
 stretcher_set_time_ratio (
@@ -154,8 +153,7 @@ stretcher_stretch_interleaved (
  * Frees the resampler.
  */
 void
-stretcher_free (
-  Stretcher * self);
+stretcher_free (Stretcher * self);
 
 /**
  * @}

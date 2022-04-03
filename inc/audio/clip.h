@@ -48,13 +48,13 @@
  */
 typedef struct AudioClip
 {
-  int              schema_version;
+  int schema_version;
 
   /** Name of the clip. */
-  char *           name;
+  char * name;
 
   /** The audio frames, interleaved. */
-  sample_t *       frames;
+  sample_t * frames;
 
   /** Number of frames per channel. */
   unsigned_frame_t num_frames;
@@ -62,39 +62,39 @@ typedef struct AudioClip
   /**
    * Per-channel frames for convenience.
    */
-  sample_t *       ch_frames[16];
+  sample_t * ch_frames[16];
 
   /** Number of channels. */
-  channels_t       channels;
+  channels_t channels;
 
   /**
    * BPM of the clip, or BPM of the project when
    * the clip was first loaded.
    */
-  bpm_t            bpm;
+  bpm_t bpm;
 
   /**
    * Samplerate of the clip, or samplerate when
    * the clip was imported into the project.
    */
-  int              samplerate;
+  int samplerate;
 
   /**
    * Bit depth of the clip when the clip was
    * imported into the project.
    */
-  BitDepth         bit_depth;
+  BitDepth bit_depth;
 
   /** Whether the clip should use FLAC when being
    * serialized. */
-  bool             use_flac;
+  bool use_flac;
 
   /** ID in the audio pool. */
-  int              pool_id;
+  int pool_id;
 
   /** File hash, used for checking if a clip is
    * already written to the pool. */
-  char *           file_hash;
+  char * file_hash;
 
   /**
    * Frames already written to the file, per channel.
@@ -111,57 +111,47 @@ typedef struct AudioClip
    *
    * @see AudioClip.frames_written.
    */
-  gint64           last_write;
+  gint64 last_write;
 } AudioClip;
 
 static const cyaml_schema_field_t
-audio_clip_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    AudioClip, schema_version),
-  YAML_FIELD_STRING_PTR (
-    AudioClip, name),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    AudioClip, file_hash),
-  YAML_FIELD_FLOAT (
-    AudioClip, bpm),
-  YAML_FIELD_ENUM (
-    AudioClip, bit_depth, bit_depth_strings),
-  YAML_FIELD_INT (
-    AudioClip, use_flac),
-  YAML_FIELD_INT (
-    AudioClip, samplerate),
-  YAML_FIELD_INT (
-    AudioClip, pool_id),
+  audio_clip_fields_schema[] = {
+    YAML_FIELD_INT (AudioClip, schema_version),
+    YAML_FIELD_STRING_PTR (AudioClip, name),
+    YAML_FIELD_STRING_PTR_OPTIONAL (
+      AudioClip,
+      file_hash),
+    YAML_FIELD_FLOAT (AudioClip, bpm),
+    YAML_FIELD_ENUM (
+      AudioClip,
+      bit_depth,
+      bit_depth_strings),
+    YAML_FIELD_INT (AudioClip, use_flac),
+    YAML_FIELD_INT (AudioClip, samplerate),
+    YAML_FIELD_INT (AudioClip, pool_id),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t
-audio_clip_schema = {
+static const cyaml_schema_value_t audio_clip_schema = {
   YAML_VALUE_PTR_NULLABLE (
-    AudioClip, audio_clip_fields_schema),
+    AudioClip,
+    audio_clip_fields_schema),
 };
 
 /**
  * Inits after loading a Project.
  */
-COLD
-NONNULL
-void
-audio_clip_init_loaded (
-  AudioClip * self);
+COLD NONNULL void
+audio_clip_init_loaded (AudioClip * self);
 
 /**
  * Creates an audio clip from a file.
  *
  * The name used is the basename of the file.
  */
-COLD
-NONNULL
-AudioClip *
-audio_clip_new_from_file (
-  const char * full_path);
+COLD NONNULL AudioClip *
+audio_clip_new_from_file (const char * full_path);
 
 /**
  * Creates an audio clip by copying the given float
@@ -224,8 +214,7 @@ audio_clip_update_channel_caches (
  */
 NONNULL
 AudioClip *
-audio_clip_edit_in_ext_program (
-  AudioClip * self);
+audio_clip_edit_in_ext_program (AudioClip * self);
 
 /**
  * Writes the given audio clip data to a file.
@@ -316,16 +305,14 @@ audio_clip_remove_and_free (
 
 NONNULL
 AudioClip *
-audio_clip_clone (
-  AudioClip * src);
+audio_clip_clone (AudioClip * src);
 
 /**
  * Frees the audio clip.
  */
 NONNULL
 void
-audio_clip_free (
-  AudioClip * self);
+audio_clip_free (AudioClip * self);
 
 /**
  * @}

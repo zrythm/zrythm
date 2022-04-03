@@ -44,8 +44,8 @@ on_right_click (
 
   /* see gtklistitemwidget.c in gtk */
   gtk_widget_activate_action (
-    GTK_WIDGET (self), "listitem.select",
-    "(bb)", true, true);
+    GTK_WIDGET (self), "listitem.select", "(bb)",
+    true, true);
 
   gtk_popover_set_pointing_to (
     GTK_POPOVER (self->popover_menu),
@@ -101,43 +101,37 @@ popover_menu_bin_widget_get_child (
 PopoverMenuBinWidget *
 popover_menu_bin_widget_new (void)
 {
-  return
-    g_object_new (
-      POPOVER_MENU_BIN_WIDGET_TYPE, NULL);
+  return g_object_new (
+    POPOVER_MENU_BIN_WIDGET_TYPE, NULL);
 }
 
 static void
-dispose (
-  PopoverMenuBinWidget * self)
+dispose (PopoverMenuBinWidget * self)
 {
   gtk_widget_unparent (
     GTK_WIDGET (self->popover_menu));
   if (self->child)
-    gtk_widget_unparent (
-      GTK_WIDGET (self->child));
+    gtk_widget_unparent (GTK_WIDGET (self->child));
 
   G_OBJECT_CLASS (
-    popover_menu_bin_widget_parent_class)->
-      dispose (G_OBJECT (self));
+    popover_menu_bin_widget_parent_class)
+    ->dispose (G_OBJECT (self));
 }
 
 static void
 popover_menu_bin_widget_class_init (
   PopoverMenuBinWidgetClass * _klass)
 {
-  GObjectClass * oklass =
-    G_OBJECT_CLASS (_klass);
-  oklass->dispose =
-    (GObjectFinalizeFunc) dispose;
+  GObjectClass * oklass = G_OBJECT_CLASS (_klass);
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
 }
 
 static void
 popover_menu_bin_widget_init (
   PopoverMenuBinWidget * self)
 {
-  self->popover_menu =
-    GTK_POPOVER_MENU (
-      gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu = GTK_POPOVER_MENU (
+    gtk_popover_menu_new_from_model (NULL));
   gtk_widget_set_parent (
     GTK_WIDGET (self->popover_menu),
     GTK_WIDGET (self));

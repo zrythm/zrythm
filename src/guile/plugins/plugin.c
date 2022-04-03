@@ -20,49 +20,52 @@
 #include "guile/modules.h"
 
 #ifndef SNARF_MODE
-#include "plugins/plugin.h"
-#include "project.h"
+#  include "plugins/plugin.h"
+#  include "project.h"
 #endif
 
 SCM_DEFINE (
   s_plugin_get_in_port,
-  "plugin-get-in-port", 2, 0, 0,
+  "plugin-get-in-port",
+  2,
+  0,
+  0,
   (SCM plugin, SCM port_idx),
   "Returns the input port of the plugin at the given index.")
 #define FUNC_NAME s_
 {
   Plugin * pl = (Plugin *) scm_to_pointer (plugin);
 
-  return
-    scm_from_pointer (
-      pl->in_ports[scm_to_int (port_idx)], NULL);
+  return scm_from_pointer (
+    pl->in_ports[scm_to_int (port_idx)], NULL);
 }
 #undef FUNC_NAME
 
 SCM_DEFINE (
   s_plugin_get_out_port,
-  "plugin-get-out-port", 2, 0, 0,
+  "plugin-get-out-port",
+  2,
+  0,
+  0,
   (SCM plugin, SCM port_idx),
   "Returns the output port of the plugin at the given index.")
 #define FUNC_NAME s_
 {
   Plugin * pl = (Plugin *) scm_to_pointer (plugin);
 
-  return
-    scm_from_pointer (
-      pl->out_ports[scm_to_int (port_idx)], NULL);
+  return scm_from_pointer (
+    pl->out_ports[scm_to_int (port_idx)], NULL);
 }
 #undef FUNC_NAME
 
-static  void
+static void
 init_module (void * data)
 {
 #ifndef SNARF_MODE
-#include "plugins_plugin.x"
+#  include "plugins_plugin.x"
 #endif
   scm_c_export (
-    "plugin-get-in-port",
-    "plugin-get-out-port",
+    "plugin-get-in-port", "plugin-get-out-port",
     NULL);
 }
 

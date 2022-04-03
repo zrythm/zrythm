@@ -43,9 +43,7 @@
  *   wait.
  */
 int
-system_run_cmd (
-  const char * cmd,
-  long         ms_timer);
+system_run_cmd (const char * cmd, long ms_timer);
 
 /**
  * Runs the command and returns the output, or NULL.

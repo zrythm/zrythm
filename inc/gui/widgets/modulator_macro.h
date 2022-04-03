@@ -31,8 +31,7 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _KnobWithNameWidget
-  KnobWithNameWidget;
+typedef struct _KnobWithNameWidget KnobWithNameWidget;
 typedef struct _PortConnectionsPopoverWidget
   PortConnectionsPopoverWidget;
 
@@ -45,30 +44,33 @@ typedef struct _PortConnectionsPopoverWidget
 #define MODULATOR_MACRO_WIDGET_TYPE \
   (modulator_macro_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  ModulatorMacroWidget, modulator_macro_widget,
-  Z, MODULATOR_MACRO_WIDGET, GtkGrid)
+  ModulatorMacroWidget,
+  modulator_macro_widget,
+  Z,
+  MODULATOR_MACRO_WIDGET,
+  GtkGrid)
 
 /**
  * ModulatorMacro.
  */
 typedef struct _ModulatorMacroWidget
 {
-  GtkGrid              parent_instance;
+  GtkGrid parent_instance;
 
   KnobWithNameWidget * knob_with_name;
 
-  GtkDrawingArea *     inputs;
-  GtkDrawingArea *     output;
+  GtkDrawingArea * inputs;
+  GtkDrawingArea * output;
 
   /** Button to show an unused modulator macro. */
-  GtkButton *          add_input;
+  GtkButton * add_input;
 
-  GtkButton *          outputs;
+  GtkButton * outputs;
 
   /** Index of the modulator macro in the track. */
-  int                  modulator_macro_idx;
+  int modulator_macro_idx;
 
-  PangoLayout *        layout;
+  PangoLayout * layout;
 
   PortConnectionsPopoverWidget * connections_popover;
 } ModulatorMacroWidget;

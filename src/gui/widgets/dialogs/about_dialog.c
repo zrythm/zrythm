@@ -20,74 +20,59 @@
 #include "zrythm-config.h"
 
 /* auto-generated */
-#include "src/translators.h"
-
 #include "gui/widgets/dialogs/about_dialog.h"
 #include "utils/resources.h"
 #include "zrythm.h"
 
 #include <glib/gi18n.h>
 
+#include "src/translators.h"
+
 /**
  * Creates and displays the about dialog.
  */
 GtkAboutDialog *
-about_dialog_widget_new (
-  GtkWindow * parent)
+about_dialog_widget_new (GtkWindow * parent)
 {
-  const char * artists[] =
-    {
-      "Alexandros Theodotou <alex@zrythm.org>",
-      "Daniel Peterson",
-      "Carlos Han (C.K. Design) <https://twitter.com/karl_iaxd>",
-      NULL
-    };
-  const char * authors[] =
-    {
-      "Alexandros Theodotou <alex@zrythm.org>",
-      "Ryan Gonzalez",
-      "Sascha Bast <sash@mischkonsum.org>",
-      "Georg Krause",
-      NULL
-    };
-  const char * documenters[] =
-    {
-      "Alexandros Theodotou <alex@zrythm.org>",
-      NULL
-    };
-  const char * translators =
-    TRANSLATORS_STR;
+  const char * artists[] = {
+    "Alexandros Theodotou <alex@zrythm.org>",
+    "Daniel Peterson",
+    "Carlos Han (C.K. Design) <https://twitter.com/karl_iaxd>",
+    NULL
+  };
+  const char * authors[] = {
+    "Alexandros Theodotou <alex@zrythm.org>",
+    "Ryan Gonzalez",
+    "Sascha Bast <sash@mischkonsum.org>",
+    "Georg Krause", NULL
+  };
+  const char * documenters[] = {
+    "Alexandros Theodotou <alex@zrythm.org>", NULL
+  };
+  const char * translators = TRANSLATORS_STR;
 
-  char * version =
-    zrythm_get_version (true);
+  char * version = zrythm_get_version (true);
 
-  GtkAboutDialog * dialog =
-    g_object_new (
-      GTK_TYPE_ABOUT_DIALOG,
-      "artists", artists,
-      "authors", authors,
-      "copyright",
-      "Copyright © "
-        COPYRIGHT_YEARS " " COPYRIGHT_NAME
-#if !defined(HAVE_CUSTOM_LOGO_AND_SPLASH) || \
-  !defined (HAVE_CUSTOM_NAME)
-      "\nZrythm and the Zrythm logo are trademarks of Alexandros Theodotou"
+  GtkAboutDialog * dialog = g_object_new (
+    GTK_TYPE_ABOUT_DIALOG, "artists", artists,
+    "authors", authors, "copyright",
+    "Copyright © " COPYRIGHT_YEARS " " COPYRIGHT_NAME
+#if !defined(HAVE_CUSTOM_LOGO_AND_SPLASH) \
+  || !defined(HAVE_CUSTOM_NAME)
+    "\nZrythm and the Zrythm logo are trademarks of Alexandros Theodotou"
 #endif
-      ,
-      "documenters", documenters,
-      "logo-icon-name", "zrythm-splash-png",
-      /*"logo", pixbuf,*/
-      "program-name", PROGRAM_NAME,
-      "comments", _("a highly automated and intuitive digital audio workstation"),
-      "license-type", GTK_LICENSE_AGPL_3_0,
-      "translator-credits", translators,
-      "website", "https://www.zrythm.org",
-      "website-label", _("Website"),
-      "version", version,
-      NULL);
+    ,
+    "documenters", documenters, "logo-icon-name",
+    "zrythm-splash-png",
+    /*"logo", pixbuf,*/
+    "program-name", PROGRAM_NAME, "comments",
+    _ ("a highly automated and intuitive digital audio workstation"),
+    "license-type", GTK_LICENSE_AGPL_3_0,
+    "translator-credits", translators, "website",
+    "https://www.zrythm.org", "website-label",
+    _ ("Website"), "version", version, NULL);
   gtk_window_set_transient_for (
-    GTK_WINDOW (dialog),
-    parent);
+    GTK_WINDOW (dialog), parent);
 
   g_free (version);
 

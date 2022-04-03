@@ -35,12 +35,13 @@
 G_DECLARE_FINAL_TYPE (
   InspectorPortWidget,
   inspector_port_widget,
-  Z, INSPECTOR_PORT_WIDGET,
+  Z,
+  INSPECTOR_PORT_WIDGET,
   GtkWidget)
 
 typedef struct _BarSliderWidget BarSliderWidget;
 typedef struct _PortConnectionsPopoverWidget
-  PortConnectionsPopoverWidget;
+                     PortConnectionsPopoverWidget;
 typedef struct Meter Meter;
 
 /**
@@ -54,15 +55,15 @@ typedef struct Meter Meter;
  */
 typedef struct _InspectorPortWidget
 {
-  GtkWidget         parent_instance;
+  GtkWidget parent_instance;
 
-  GtkOverlay *      overlay;
+  GtkOverlay * overlay;
 
   /** The bar slider. */
   BarSliderWidget * bar_slider;
 
   /** Last MIDI event trigger time, for MIDI ports. */
-  gint64            last_midi_trigger_time;
+  gint64 last_midi_trigger_time;
 
   /**
    * Last time the tooltip changed.
@@ -70,24 +71,24 @@ typedef struct _InspectorPortWidget
    * Used to avoid excessive updating of the
    * tooltip text.
    */
-  gint64            last_tooltip_change;
+  gint64 last_tooltip_change;
 
   /** Caches from the port. */
-  float             minf;
-  float             maxf;
-  float             zerof;
+  float minf;
+  float maxf;
+  float zerof;
 
   /** Normalized value at the start of an action. */
-  float             normalized_init_port_val;
+  float normalized_init_port_val;
 
   /** Port name cache. */
-  char              port_str[400];
+  char port_str[400];
 
   /** Port this is for. */
-  Port *            port;
+  Port * port;
 
   /** Meter for this widget. */
-  Meter *           meter;
+  Meter * meter;
 
   /** Jack button to expose port to jack. */
   GtkToggleButton * jack;
@@ -101,11 +102,11 @@ typedef struct _InspectorPortWidget
   /** Multipress guesture for right click. */
   GtkGestureClick * right_click_gesture;
 
-  char                   hex_color[40];
+  char hex_color[40];
 
   /** Cache of port's last drawn number of
    * connetions (srcs or dests). */
-  int               last_num_connections;
+  int last_num_connections;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
@@ -121,8 +122,7 @@ inspector_port_widget_refresh (
  * Creates a new widget.
  */
 InspectorPortWidget *
-inspector_port_widget_new (
-  Port * port);
+inspector_port_widget_new (Port * port);
 
 /**
  * @}

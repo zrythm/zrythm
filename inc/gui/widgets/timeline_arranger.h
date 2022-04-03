@@ -27,22 +27,22 @@
 #define __GUI_WIDGETS_TIMELINE_ARRANGER_H__
 
 #include "audio/position.h"
-#include "gui/backend/tool.h"
 #include "gui/backend/timeline_selections.h"
+#include "gui/backend/tool.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
 
 #include <gtk/gtk.h>
 
 typedef struct _ArrangerWidget ArrangerWidget;
-typedef struct MidiNote MidiNote;
-typedef struct SnapGrid SnapGrid;
+typedef struct MidiNote        MidiNote;
+typedef struct SnapGrid        SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
 typedef struct _AutomationPointWidget
   AutomationPointWidget;
 typedef struct AutomationCurve AutomationCurve;
-typedef struct ChordObject ChordObject;
-typedef struct ScaleObject ScaleObject;
+typedef struct ChordObject     ChordObject;
+typedef struct ScaleObject     ScaleObject;
 
 /**
  * @addtogroup widgets
@@ -65,7 +65,7 @@ timeline_arranger_widget_snap_range_r (
 TrackLane *
 timeline_arranger_widget_get_track_lane_at_y (
   ArrangerWidget * self,
-  double y);
+  double           y);
 
 /**
  * Gets the Track at y.
@@ -73,7 +73,7 @@ timeline_arranger_widget_get_track_lane_at_y (
 Track *
 timeline_arranger_widget_get_track_at_y (
   ArrangerWidget * self,
-  double y);
+  double           y);
 
 /**
  * Returns the hit AutomationTrack at y.
@@ -81,7 +81,7 @@ timeline_arranger_widget_get_track_at_y (
 AutomationTrack *
 timeline_arranger_widget_get_at_at_y (
   ArrangerWidget * self,
-  double                   y);
+  double           y);
 
 /**
  * Determines the selection time (objects/range)
@@ -104,12 +104,12 @@ timeline_arranger_widget_set_select_type (
  */
 void
 timeline_arranger_widget_create_region (
-  ArrangerWidget * self,
-  const RegionType         type,
-  Track *                  track,
-  TrackLane *              lane,
-  AutomationTrack *        at,
-  const Position *         pos);
+  ArrangerWidget *  self,
+  const RegionType  type,
+  Track *           track,
+  TrackLane *       lane,
+  AutomationTrack * at,
+  const Position *  pos);
 
 /**
  * Wrapper for
@@ -122,9 +122,9 @@ timeline_arranger_widget_create_region (
 void
 timeline_arranger_widget_create_chord_or_scale (
   ArrangerWidget * self,
-  Track *                  track,
-  double                   y,
-  const Position *         pos);
+  Track *          track,
+  double           y,
+  const Position * pos);
 
 /**
  * Create a ScaleObject at the given Position in the
@@ -135,8 +135,8 @@ timeline_arranger_widget_create_chord_or_scale (
 void
 timeline_arranger_widget_create_scale (
   ArrangerWidget * self,
-  Track *            track,
-  const Position *         pos);
+  Track *          track,
+  const Position * pos);
 
 /**
  * Create a Marker at the given Position in the
@@ -147,8 +147,8 @@ timeline_arranger_widget_create_scale (
 void
 timeline_arranger_widget_create_marker (
   ArrangerWidget * self,
-  Track *            track,
-  const Position *         pos);
+  Track *          track,
+  const Position * pos);
 
 /**
  * Snaps both the transients (to show in the GUI)
@@ -183,8 +183,8 @@ timeline_arranger_widget_snap_regions_l (
 int
 timeline_arranger_widget_snap_regions_r (
   ArrangerWidget * self,
-  Position *               pos,
-  int                      dry_run);
+  Position *       pos,
+  int              dry_run);
 
 /**
  * Scroll to the given position.
@@ -193,7 +193,7 @@ timeline_arranger_widget_snap_regions_r (
 void
 timeline_arranger_widget_scroll_to (
   ArrangerWidget * self,
-  Position *               pos);
+  Position *       pos);
 
 /**
  * Move the selected Regions to the new Track.

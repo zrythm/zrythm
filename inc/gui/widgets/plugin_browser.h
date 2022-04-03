@@ -34,12 +34,15 @@
 #define PLUGIN_BROWSER_WIDGET_TYPE \
   (plugin_browser_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  PluginBrowserWidget, plugin_browser_widget,
-  Z, PLUGIN_BROWSER_WIDGET, GtkBox)
+  PluginBrowserWidget,
+  plugin_browser_widget,
+  Z,
+  PLUGIN_BROWSER_WIDGET,
+  GtkBox)
 
 typedef struct _ExpanderBoxWidget ExpanderBoxWidget;
-typedef struct PluginCollection PluginCollection;
-typedef struct ItemFactory ItemFactory;
+typedef struct PluginCollection   PluginCollection;
+typedef struct ItemFactory        ItemFactory;
 
 /**
  * @addtogroup widgets
@@ -77,40 +80,40 @@ typedef enum
  */
 typedef struct _PluginBrowserWidget
 {
-  GtkBox               parent_instance;
+  GtkBox parent_instance;
 
-  GtkPaned *           paned;
+  GtkPaned * paned;
 
   /** The stack switcher. */
-  AdwViewSwitcher *    stack_switcher;
-  GtkBox *             stack_switcher_box;
+  AdwViewSwitcher * stack_switcher;
+  GtkBox *          stack_switcher_box;
 
   /** The stack containing collection/category/
    * protocol. */
-  AdwViewStack *       stack;
+  AdwViewStack * stack;
 
   /* The scrolls for each tree view */
-  GtkScrolledWindow *  collection_scroll;
-  GtkScrolledWindow *  author_scroll;
-  GtkScrolledWindow *  category_scroll;
-  GtkScrolledWindow *  protocol_scroll;
-  GtkScrolledWindow *  plugin_scroll;
+  GtkScrolledWindow * collection_scroll;
+  GtkScrolledWindow * author_scroll;
+  GtkScrolledWindow * category_scroll;
+  GtkScrolledWindow * protocol_scroll;
+  GtkScrolledWindow * plugin_scroll;
 
   /* The tree views */
-  GtkTreeView *        collection_tree_view;
-  GtkTreeView *        author_tree_view;
-  GtkTreeView *        category_tree_view;
-  GtkTreeView *        protocol_tree_view;
+  GtkTreeView * collection_tree_view;
+  GtkTreeView * author_tree_view;
+  GtkTreeView * category_tree_view;
+  GtkTreeView * protocol_tree_view;
 
-  GtkSearchEntry *     plugin_search_entry;
-  GtkListView *        plugin_list_view;
+  GtkSearchEntry * plugin_search_entry;
+  GtkListView *    plugin_list_view;
 
   /** Browser bot. */
-  GtkBox *             browser_bot;
+  GtkBox * browser_bot;
 
   /* The toolbar to toggle visibility of
    * modulators/effects/instruments/midi modifiers */
-  GtkBox *             plugin_toolbar;
+  GtkBox * plugin_toolbar;
 
   GtkToggleButton * toggle_instruments;
   GtkToggleButton * toggle_effects;
@@ -119,27 +122,27 @@ typedef struct _PluginBrowserWidget
 
   /** A label to show info about the currently
    * selected Plugin. */
-  GtkLabel *           plugin_info;
+  GtkLabel * plugin_info;
 
   /** Symbol IDs of selected authors. */
-  uint32_t             selected_authors[600];
-  int                  num_selected_authors;
+  uint32_t selected_authors[600];
+  int      num_selected_authors;
 
   /** Selected categories. */
-  ZPluginCategory      selected_categories[600];
-  int                  num_selected_categories;
+  ZPluginCategory selected_categories[600];
+  int             num_selected_categories;
 
   /** Selected protocols. */
-  PluginProtocol       selected_protocols[60];
-  int                  num_selected_protocols;
+  PluginProtocol selected_protocols[60];
+  int            num_selected_protocols;
 
   /** The selected collection. */
-  PluginCollection *   selected_collection;
+  PluginCollection * selected_collection;
 
-  GtkTreeModel *       collection_tree_model;
-  GtkTreeModel *       author_tree_model;
-  GtkTreeModelSort *   protocol_tree_model;
-  GtkTreeModel *       category_tree_model;
+  GtkTreeModel *     collection_tree_model;
+  GtkTreeModel *     author_tree_model;
+  GtkTreeModelSort * protocol_tree_model;
+  GtkTreeModel *     category_tree_model;
 
   /** List view -> selection model -> filter model */
   GtkCustomFilter *    plugin_filter;
@@ -156,8 +159,8 @@ typedef struct _PluginBrowserWidget
    * These are pointers to the actual collections and
    * must not be deleted.
    */
-  PluginCollection **  current_collections;
-  int                  num_current_collections;
+  PluginCollection ** current_collections;
+  int                 num_current_collections;
 
   /**
    * The currently selected plugin descriptors.
@@ -168,8 +171,8 @@ typedef struct _PluginBrowserWidget
    * These are pointers to the actual descriptors and
    * must not be deleted.
    */
-  PluginDescriptor **  current_descriptors;
-  int                  num_current_descriptors;
+  PluginDescriptor ** current_descriptors;
+  int                 num_current_descriptors;
 
   /**
    * A little hack to get the paned position to
@@ -179,15 +182,15 @@ typedef struct _PluginBrowserWidget
    * overwritten by something random within 300 ms
    * of widget creation.
    */
-  int                  start_saving_pos;
-  int                  first_time_position_set;
-  gint64               first_time_position_set_time;
+  int    start_saving_pos;
+  int    first_time_position_set;
+  gint64 first_time_position_set_time;
 
   /** Current search string. */
-  char *               current_search;
+  char * current_search;
 
   /** Symbol map for string interning. */
-  Symap *              symap;
+  Symap * symap;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;

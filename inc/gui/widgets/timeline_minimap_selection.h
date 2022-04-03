@@ -41,14 +41,15 @@
 G_DECLARE_FINAL_TYPE (
   TimelineMinimapSelectionWidget,
   timeline_minimap_selection_widget,
-  Z, TIMELINE_MINIMAP_SELECTION_WIDGET,
+  Z,
+  TIMELINE_MINIMAP_SELECTION_WIDGET,
   GtkWidget)
 
 typedef struct _TimelineMinimapSelectionWidget
 {
-  GtkWidget              parent_instance;
+  GtkWidget parent_instance;
 
-  UiCursorState          cursor;
+  UiCursorState cursor;
 
   /** Pointer back to parent. */
   TimelineMinimapWidget * parent;

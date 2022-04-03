@@ -31,10 +31,10 @@
 #include "actions/chord_action.h"
 #include "actions/midi_mapping_action.h"
 #include "actions/mixer_selections_action.h"
-#include "actions/tracklist_selections.h"
 #include "actions/port_action.h"
 #include "actions/port_connection_action.h"
 #include "actions/range_action.h"
+#include "actions/tracklist_selections.h"
 #include "actions/transport_action.h"
 #include "utils/stack.h"
 #include "utils/yaml.h"
@@ -56,106 +56,113 @@ typedef struct AudioClip AudioClip;
  */
 typedef struct UndoStack
 {
-  int           schema_version;
+  int schema_version;
 
   /** Actual stack used at runtime. */
-  Stack *       stack;
+  Stack * stack;
 
   /* the following are for serialization
    * purposes only */
 
   ArrangerSelectionsAction ** as_actions;
-  size_t        num_as_actions;
-  size_t        as_actions_size;
+  size_t                      num_as_actions;
+  size_t                      as_actions_size;
 
   MixerSelectionsAction ** mixer_selections_actions;
-  size_t        num_mixer_selections_actions;
-  size_t        mixer_selections_actions_size;
+  size_t num_mixer_selections_actions;
+  size_t mixer_selections_actions_size;
 
-  TracklistSelectionsAction ** tracklist_selections_actions;
-  size_t        num_tracklist_selections_actions;
-  size_t        tracklist_selections_actions_size;
+  TracklistSelectionsAction **
+         tracklist_selections_actions;
+  size_t num_tracklist_selections_actions;
+  size_t tracklist_selections_actions_size;
 
   ChannelSendAction ** channel_send_actions;
-  size_t        num_channel_send_actions;
-  size_t        channel_send_actions_size;
+  size_t               num_channel_send_actions;
+  size_t               channel_send_actions_size;
 
   PortConnectionAction ** port_connection_actions;
-  size_t        num_port_connection_actions;
-  size_t        port_connection_actions_size;
+  size_t num_port_connection_actions;
+  size_t port_connection_actions_size;
 
   PortAction ** port_actions;
   size_t        num_port_actions;
   size_t        port_actions_size;
 
   MidiMappingAction ** midi_mapping_actions;
-  size_t        num_midi_mapping_actions;
-  size_t        midi_mapping_actions_size;
+  size_t               num_midi_mapping_actions;
+  size_t               midi_mapping_actions_size;
 
   RangeAction ** range_actions;
-  size_t        num_range_actions;
-  size_t        range_actions_size;
+  size_t         num_range_actions;
+  size_t         range_actions_size;
 
   TransportAction ** transport_actions;
-  size_t        num_transport_actions;
-  size_t        transport_actions_size;
+  size_t             num_transport_actions;
+  size_t             transport_actions_size;
 
   ChordAction ** chord_actions;
-  size_t        num_chord_actions;
-  size_t        chord_actions_size;
+  size_t         num_chord_actions;
+  size_t         chord_actions_size;
 
 } UndoStack;
 
-static const cyaml_schema_field_t
-  undo_stack_fields_schema[] =
-{
+static const cyaml_schema_field_t undo_stack_fields_schema[] = {
   YAML_FIELD_INT (UndoStack, schema_version),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, as_actions,
+    UndoStack,
+    as_actions,
     arranger_selections_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, mixer_selections_actions,
+    UndoStack,
+    mixer_selections_actions,
     mixer_selections_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, tracklist_selections_actions,
+    UndoStack,
+    tracklist_selections_actions,
     tracklist_selections_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, channel_send_actions,
+    UndoStack,
+    channel_send_actions,
     channel_send_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, port_connection_actions,
+    UndoStack,
+    port_connection_actions,
     port_connection_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, port_actions,
+    UndoStack,
+    port_actions,
     port_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, midi_mapping_actions,
+    UndoStack,
+    midi_mapping_actions,
     midi_mapping_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, range_actions,
+    UndoStack,
+    range_actions,
     range_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, transport_actions,
+    UndoStack,
+    transport_actions,
     transport_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, chord_actions,
+    UndoStack,
+    chord_actions,
     chord_action_schema),
   YAML_FIELD_MAPPING_PTR (
-    UndoStack, stack, stack_fields_schema),
+    UndoStack,
+    stack,
+    stack_fields_schema),
 
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-  undo_stack_schema =
-{
-  YAML_VALUE_PTR (
-    UndoStack, undo_stack_fields_schema),
+static const cyaml_schema_value_t undo_stack_schema = {
+  YAML_VALUE_PTR (UndoStack, undo_stack_fields_schema),
 };
 
 void
-undo_stack_init_loaded (
-  UndoStack * self);
+undo_stack_init_loaded (UndoStack * self);
 
 /**
  * Creates a new stack for undoable actions.
@@ -165,8 +172,7 @@ undo_stack_new (void);
 
 NONNULL
 UndoStack *
-undo_stack_clone (
-  const UndoStack * src);
+undo_stack_clone (const UndoStack * src);
 
 /**
  * Gets the list of actions as a string.
@@ -188,8 +194,7 @@ undo_stack_get_total_cached_actions (
 
 /* --- start wrappers --- */
 
-#define undo_stack_size(x) \
-  (stack_size ((x)->stack))
+#define undo_stack_size(x) (stack_size ((x)->stack))
 
 #define undo_stack_is_empty(x) \
   (stack_is_empty ((x)->stack))
@@ -197,8 +202,7 @@ undo_stack_get_total_cached_actions (
 #define undo_stack_is_full(x) \
   (stack_is_full ((x)->stack))
 
-#define undo_stack_peek(x) \
-  (stack_peek ((x)->stack))
+#define undo_stack_peek(x) (stack_peek ((x)->stack))
 
 #define undo_stack_peek_last(x) \
   (stack_peek_last ((x)->stack))
@@ -209,15 +213,13 @@ undo_stack_push (
   UndoableAction * action);
 
 UndoableAction *
-undo_stack_pop (
-  UndoStack * self);
+undo_stack_pop (UndoStack * self);
 
 /**
  * Pops the last element and moves everything back.
  */
 UndoableAction *
-undo_stack_pop_last (
-  UndoStack * self);
+undo_stack_pop_last (UndoStack * self);
 
 /* --- end wrappers --- */
 
@@ -249,13 +251,10 @@ undo_stack_get_plugins (
  * elements.
  */
 void
-undo_stack_clear (
-  UndoStack * self,
-  bool        free);
+undo_stack_clear (UndoStack * self, bool free);
 
 void
-undo_stack_free (
-  UndoStack * self);
+undo_stack_free (UndoStack * self);
 
 /**
  * @}

@@ -26,10 +26,11 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include <glib.h>
+
 #include "tests/helpers/project.h"
 #include "tests/helpers/zrythm.h"
 
-#include <glib.h>
 #include <locale.h>
 
 static void
@@ -38,14 +39,12 @@ perform_create_region_action (void)
   Position p1, p2;
   position_set_to_bar (&p1, 1);
   position_set_to_bar (&p2, 2);
-  int track_pos = TRACKLIST->num_tracks - 1;
-  Track * track = TRACKLIST->tracks[track_pos];
-  ZRegion * r =
-    automation_region_new (
-      &p1, &p2, track_get_name_hash (track), 0, 0);
-  ArrangerObject * r_obj =
-    (ArrangerObject *) r;
-  track =  TRACKLIST->tracks[track_pos];
+  int       track_pos = TRACKLIST->num_tracks - 1;
+  Track *   track = TRACKLIST->tracks[track_pos];
+  ZRegion * r = automation_region_new (
+    &p1, &p2, track_get_name_hash (track), 0, 0);
+  ArrangerObject * r_obj = (ArrangerObject *) r;
+  track = TRACKLIST->tracks[track_pos];
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
   AutomationTrack * at = atl->ats[0];
@@ -64,8 +63,8 @@ test_perform_many_actions (void)
 {
   test_helper_zrythm_init ();
 
-  for (int i = 0;
-       !undo_stack_is_full (UNDO_MANAGER->undo_stack);
+  for (int i = 0; !undo_stack_is_full (
+         UNDO_MANAGER->undo_stack);
        i++)
     {
       if (i % 2 == 0)
@@ -91,12 +90,11 @@ test_perform_many_actions (void)
   perform_create_region_action ();
   perform_create_region_action ();
 
-  for (int i = 0;
-       !undo_stack_is_full (
-         UNDO_MANAGER->redo_stack) ||
-       undo_stack_is_empty (
-         UNDO_MANAGER->redo_stack);
-       i++)
+  for (
+    int i = 0;
+    !undo_stack_is_full (UNDO_MANAGER->redo_stack)
+    || undo_stack_is_empty (UNDO_MANAGER->redo_stack);
+    i++)
     {
       if (undo_stack_is_empty (
             UNDO_MANAGER->redo_stack))
@@ -126,7 +124,7 @@ test_multi_actions (void)
 {
   test_helper_zrythm_init ();
 
-  int max_actions = 3;
+  int       max_actions = 3;
   const int num_tracks_at_start =
     TRACKLIST->num_tracks;
   for (int i = 0; i < max_actions; i++)
@@ -204,7 +202,7 @@ test_fill_stack (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

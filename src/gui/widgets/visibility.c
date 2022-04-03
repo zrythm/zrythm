@@ -20,28 +20,28 @@
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/left_dock_edge.h"
-#include "gui/widgets/visibility.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/track_visibility_tree.h"
 #include "gui/widgets/two_col_expander_box.h"
+#include "gui/widgets/visibility.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
-  VisibilityWidget, visibility_widget,
+  VisibilityWidget,
+  visibility_widget,
   GTK_TYPE_BOX)
 
 /**
  * Refreshes the visibility widget.
  */
 void
-visibility_widget_refresh (
-  VisibilityWidget * self)
+visibility_widget_refresh (VisibilityWidget * self)
 {
   track_visibility_tree_widget_refresh (
     self->track_visibility);

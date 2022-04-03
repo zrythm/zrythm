@@ -35,14 +35,17 @@
 #define TOOLBOX_WIDGET_TYPE \
   (toolbox_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  ToolboxWidget, toolbox_widget,
-  Z, TOOLBOX_WIDGET, GtkBox)
+  ToolboxWidget,
+  toolbox_widget,
+  Z,
+  TOOLBOX_WIDGET,
+  GtkBox)
 
 #define MW_TOOLBOX MW_HOME_TOOLBAR->toolbox
 
 typedef struct _ToolboxWidget
 {
-  GtkBox      parent_instance;
+  GtkBox            parent_instance;
   GtkToggleButton * select_mode;
   GtkToggleButton * edit_mode;
   GtkToggleButton * cut_mode;
@@ -51,12 +54,12 @@ typedef struct _ToolboxWidget
   GtkToggleButton * audition_mode;
   GtkImage *        select_img;
 
-  gulong            select_handler_id;
-  gulong            edit_handler_id;
-  gulong            cut_handler_id;
-  gulong            erase_handler_id;
-  gulong            ramp_handler_id;
-  gulong            audition_handler_id;
+  gulong select_handler_id;
+  gulong edit_handler_id;
+  gulong cut_handler_id;
+  gulong erase_handler_id;
+  gulong ramp_handler_id;
+  gulong audition_handler_id;
 } ToolboxWidget;
 
 /**
@@ -64,8 +67,7 @@ typedef struct _ToolboxWidget
  * the callbacks.
  */
 void
-toolbox_widget_refresh (
-  ToolboxWidget * self);
+toolbox_widget_refresh (ToolboxWidget * self);
 
 /**
  * @}

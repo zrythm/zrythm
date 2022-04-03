@@ -37,7 +37,8 @@
  * @{
  */
 
-#define P_MODULATOR_TRACK (TRACKLIST->modulator_track)
+#define P_MODULATOR_TRACK \
+  (TRACKLIST->modulator_track)
 
 /**
  * Inserts and connects a Modulator to the Track.
@@ -84,15 +85,13 @@ modulator_track_remove_modulator (
  * Creates the default modulator track.
  */
 Track *
-modulator_track_default (
-  int   track_pos);
+modulator_track_default (int track_pos);
 
 /**
  * Inits the modulator track.
  */
 void
-modulator_track_init (
-  Track * track);
+modulator_track_init (Track * track);
 
 /**
  * @}

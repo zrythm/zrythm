@@ -83,14 +83,14 @@ typedef enum ExportMode
   EXPORT_MODE_REGIONS,
 } ExportMode;
 
-static const char * export_mode_str[] =
-{
-  "Full", "Tracks", "Regions",
+static const char * export_mode_str[] = {
+  "Full",
+  "Tracks",
+  "Regions",
 };
 
 static inline const char *
-export_mode_to_str (
-  ExportMode export_mode)
+export_mode_to_str (ExportMode export_mode)
 {
   return export_mode_str[export_mode];
 }
@@ -102,16 +102,14 @@ typedef enum BounceStep
   BOUNCE_STEP_POST_FADER,
 } BounceStep;
 
-static const char * bounce_step_str[] =
-{
-  __("Before inserts"),
-  __("Pre-fader"),
-  __("Post fader"),
+static const char * bounce_step_str[] = {
+  __ ("Before inserts"),
+  __ ("Pre-fader"),
+  __ ("Post fader"),
 };
 
 static inline const char *
-bounce_step_to_str (
-  BounceStep bounce_step)
+bounce_step_to_str (BounceStep bounce_step)
 {
   return bounce_step_str[bounce_step];
 }
@@ -122,26 +120,26 @@ bounce_step_to_str (
  */
 typedef struct ExportSettings
 {
-  ExportFormat      format;
-  char *            artist;
-  char *            title;
-  char *            genre;
+  ExportFormat format;
+  char *       artist;
+  char *       title;
+  char *       genre;
 
   /** Bit depth (16/24/64). */
-  BitDepth          depth;
-  ExportTimeRange   time_range;
+  BitDepth        depth;
+  ExportTimeRange time_range;
 
   /** Export mode. */
-  ExportMode        mode;
+  ExportMode mode;
 
   /**
    * Disable exported track (or mute region) after
    * bounce.
    */
-  bool              disable_after_bounce;
+  bool disable_after_bounce;
 
   /** Bounce with parent tracks (direct outs). */
-  bool              bounce_with_parents;
+  bool bounce_with_parents;
 
   /**
    * Bounce step (pre inserts, pre fader, post
@@ -150,28 +148,28 @@ typedef struct ExportSettings
    * Only valid if ExportSettings.bounce_with_parents
    * is false.
    */
-  BounceStep        bounce_step;
+  BounceStep bounce_step;
 
   /** Positions in case of custom time range. */
-  Position          custom_start;
-  Position          custom_end;
+  Position custom_start;
+  Position custom_end;
 
   /** Export track lanes as separate MIDI tracks. */
-  bool              lanes_as_tracks;
+  bool lanes_as_tracks;
 
   /**
    * Dither or not.
    */
-  bool              dither;
+  bool dither;
 
   /**
    * Absolute path for export file.
    */
-  char *            file_uri;
+  char * file_uri;
 
   /** Number of files being simultaneously exported,
    * for progress calculation. */
-  int               num_files;
+  int num_files;
 
   GenericProgressInfo progress_info;
 } ExportSettings;
@@ -203,16 +201,13 @@ export_settings_set_bounce_defaults (
   const char *     bounce_name);
 
 void
-export_settings_print (
-  const ExportSettings * self);
+export_settings_print (const ExportSettings * self);
 
 void
-export_settings_free_members (
-  ExportSettings * self);
+export_settings_free_members (ExportSettings * self);
 
 void
-export_settings_free (
-  ExportSettings * self);
+export_settings_free (ExportSettings * self);
 
 /**
  * This must be called on the main thread after the
@@ -246,8 +241,7 @@ exporter_return_connections_post_export (
  * See bounce_dialog for an example.
  */
 void *
-exporter_generic_export_thread (
-  void * data);
+exporter_generic_export_thread (void * data);
 
 /**
  * To be called to create and perform an undoable

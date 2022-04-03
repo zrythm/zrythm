@@ -24,13 +24,12 @@
 
 #ifdef HAVE_RTAUDIO
 
-#define RTAUDIO_DEVICE_BUFFER_SIZE 32000
+#  define RTAUDIO_DEVICE_BUFFER_SIZE 32000
 
-#include <stdint.h>
+#  include <stdint.h>
 
-#include "zix/ring.h"
-
-#include <rtaudio_c.h>
+#  include "zix/ring.h"
+#  include <rtaudio_c.h>
 
 typedef struct Port Port;
 
@@ -55,39 +54,39 @@ enum RtAudioDeviceFlow
  */
 typedef struct RtAudioDevice
 {
-  int           is_input;
+  int is_input;
 
   /** Channel index. */
-  unsigned int  channel_idx;
+  unsigned int channel_idx;
 
   /** Index (device index from RtAudio). */
-  unsigned int  id;
+  unsigned int id;
 
-  char *        name;
+  char * name;
 
   /** Whether opened or not. */
-  int           opened;
+  int opened;
 
   /** Whether started (running) or not. */
-  int           started;
+  int started;
 
-  rtaudio_t     handle;
+  rtaudio_t handle;
 
   /** Associated port. */
-  Port *        port;
+  Port * port;
 
   /**
    * Audio data buffer (see
    * port_prepare_rtaudio_data()).
    */
-  float         buf[16000];
+  float buf[16000];
 
   /** Ring buffer for audio data. */
-  ZixRing *     audio_ring;
+  ZixRing * audio_ring;
 
   /** Semaphore for blocking writing events while
    * events are being read. */
-  ZixSem        audio_ring_sem;
+  ZixSem audio_ring_sem;
 
 } RtAudioDevice;
 
@@ -108,9 +107,7 @@ rtaudio_device_new (
  * @return Non-zero if error.
  */
 int
-rtaudio_device_open (
-  RtAudioDevice * self,
-  int             start);
+rtaudio_device_open (RtAudioDevice * self, int start);
 
 /**
  * Close the RtAudioDevice.
@@ -118,21 +115,16 @@ rtaudio_device_open (
  * @param free Also free the memory.
  */
 int
-rtaudio_device_close (
-  RtAudioDevice * self,
-  int            free);
+rtaudio_device_close (RtAudioDevice * self, int free);
 
 int
-rtaudio_device_start (
-  RtAudioDevice * self);
+rtaudio_device_start (RtAudioDevice * self);
 
 int
-rtaudio_device_stop (
-  RtAudioDevice * self);
+rtaudio_device_stop (RtAudioDevice * self);
 
 void
-rtaudio_device_free (
-  RtAudioDevice *  self);
+rtaudio_device_free (RtAudioDevice * self);
 
 /**
  * @}

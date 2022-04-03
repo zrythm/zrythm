@@ -29,13 +29,13 @@
 #include "audio/channel_track.h"
 #include "audio/track.h"
 
-typedef struct Position Position;
-typedef struct _TrackWidget TrackWidget;
-typedef struct Channel Channel;
-typedef struct MidiEvents MidiEvents;
+typedef struct Position        Position;
+typedef struct _TrackWidget    TrackWidget;
+typedef struct Channel         Channel;
+typedef struct MidiEvents      MidiEvents;
 typedef struct AutomationTrack AutomationTrack;
-typedef struct Automatable Automatable;
-typedef struct ZRegion MidiRegion;
+typedef struct Automatable     Automatable;
+typedef struct ZRegion         MidiRegion;
 
 typedef struct Track InstrumentTrack;
 
@@ -55,16 +55,14 @@ void
 instrument_track_setup (Track * self);
 
 Plugin *
-instrument_track_get_instrument (
-  Track * self);
+instrument_track_get_instrument (Track * self);
 
 /**
  * Returns if the first plugin's UI in the
  * instrument track is visible.
  */
 int
-instrument_track_is_plugin_visible (
-  Track * self);
+instrument_track_is_plugin_visible (Track * self);
 
 /**
  * Toggles whether the first plugin's UI in the

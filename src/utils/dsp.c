@@ -28,17 +28,14 @@
 #include <gtk/gtk.h>
 
 #ifdef HAVE_LSP_DSP
-#include <lsp-plug.in/dsp/dsp.h>
+#  include <lsp-plug.in/dsp/dsp.h>
 #endif
 
 /**
  * Fill the buffer with the given value.
  */
 void
-dsp_fill (
-  float * buf,
-  float   val,
-  size_t  size)
+dsp_fill (float * buf, float val, size_t size)
 {
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
@@ -61,9 +58,7 @@ dsp_fill (
  * Gets the minimum of the buffer.
  */
 float
-dsp_min (
-  float * buf,
-  size_t  size)
+dsp_min (float * buf, size_t size)
 {
   float min = 1000.f;
 #ifdef HAVE_LSP_DSP
@@ -92,11 +87,9 @@ dsp_min (
  * Gets the maximum of the buffer.
  */
 float
-dsp_max (
-  float * buf,
-  size_t  size)
+dsp_max (float * buf, size_t size)
 {
-  float max = - 1000.f;
+  float max = -1000.f;
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
@@ -123,10 +116,7 @@ dsp_max (
  * Compute dest[i] = src[i].
  */
 void
-dsp_copy (
-  float *       dest,
-  const float * src,
-  size_t        size)
+dsp_copy (float * dest, const float * src, size_t size)
 {
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
@@ -149,10 +139,7 @@ dsp_copy (
  * Calculate dst[i] = dst[i] + src[i].
  */
 void
-dsp_add2 (
-  float *       dest,
-  const float * src,
-  size_t        size)
+dsp_add2 (float * dest, const float * src, size_t size)
 {
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
@@ -175,10 +162,7 @@ dsp_add2 (
  * Scale: dst[i] = dst[i] * k.
  */
 void
-dsp_mul_k2 (
-  float * dest,
-  float   k,
-  size_t  size)
+dsp_mul_k2 (float * dest, float k, size_t size)
 {
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
@@ -235,9 +219,7 @@ dsp_mix_add2 (
  */
 NONNULL
 void
-dsp_linear_fade_in (
-  float * dest,
-  size_t  size)
+dsp_linear_fade_in (float * dest, size_t size)
 {
   for (size_t i = 0; i < size; i++)
     {
@@ -252,9 +234,7 @@ dsp_linear_fade_in (
  */
 NONNULL
 void
-dsp_linear_fade_out (
-  float * dest,
-  size_t  size)
+dsp_linear_fade_out (float * dest, size_t size)
 {
   for (size_t i = 0; i < size; i++)
     {

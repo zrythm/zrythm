@@ -21,18 +21,18 @@
 
 #include "audio/master_track.h"
 #include "audio/midi_mapping.h"
-#include "helpers/project.h"
-#include "helpers/zrythm.h"
 #include "project.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "zrythm.h"
 
+#include "helpers/project.h"
+#include "helpers/zrythm.h"
+
 static void
 test_midi_mappping (void)
 {
-  MidiMappings * mappings =
-    midi_mappings_new ();
+  MidiMappings * mappings = midi_mappings_new ();
   g_assert_nonnull (mappings);
   free (mappings);
 
@@ -60,12 +60,12 @@ test_midi_mappping (void)
   test_project_save_and_reload ();
 
   g_assert_true (
-    P_MASTER_TRACK->channel->fader->amp ==
-      MIDI_MAPPINGS->mappings[0]->dest);
+    P_MASTER_TRACK->channel->fader->amp
+    == MIDI_MAPPINGS->mappings[0]->dest);
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

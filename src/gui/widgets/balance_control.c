@@ -24,8 +24,8 @@
 #include "actions/undo_manager.h"
 #include "audio/midi_mapping.h"
 #include "gui/widgets/balance_control.h"
-#include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/bot_bar.h"
+#include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "project.h"
@@ -46,7 +46,8 @@ G_DEFINE_TYPE (
   GTK_TYPE_WIDGET)
 
 #define GET_VAL ((*self->getter) (self->object))
-#define SET_VAL(real) ((*self->setter)(self->object, real))
+#define SET_VAL(real) \
+  ((*self->setter) (self->object, real))
 
 #define TEXT_FONT "Sans SemiBold 8"
 #define TEXT_PADDING 3.0
@@ -75,8 +76,7 @@ balance_control_snapshot (
     return;
 
   float pan_val = GET_VAL;
-  float value_px =
-    pan_val * (float) width;
+  float value_px = pan_val * (float) width;
   float half_width = (float) width / 2.f;
 
   /* draw filled bg */
@@ -91,16 +91,16 @@ balance_control_snapshot (
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          value_px, 0,
-          half_width - value_px, height));
+          value_px, 0, half_width - value_px,
+          height));
     }
   else
     {
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          half_width, 0,
-          value_px - half_width, height));
+          half_width, 0, value_px - half_width,
+          height));
     }
 
   /* draw vertical line at current val */
@@ -116,14 +116,12 @@ balance_control_snapshot (
       value_px, 0, line_width, height));
 
   /* draw text */
-  PangoLayout * layout = self->layout;
+  PangoLayout *  layout = self->layout;
   PangoRectangle pangorect;
-  color =
-    Z_GDK_RGBA_INIT (
-      UI_COLORS->bright_text.red,
-      UI_COLORS->bright_text.green,
-      UI_COLORS->bright_text.blue,
-      color.alpha);
+  color = Z_GDK_RGBA_INIT (
+    UI_COLORS->bright_text.red,
+    UI_COLORS->bright_text.green,
+    UI_COLORS->bright_text.blue, color.alpha);
   pango_layout_set_text (layout, "L", -1);
   pango_layout_get_pixel_extents (
     layout, NULL, &pangorect);
@@ -146,8 +144,7 @@ balance_control_snapshot (
   gtk_snapshot_translate (
     snapshot,
     &GRAPHENE_POINT_INIT (
-      (float)
-      (width - (TEXT_PADDING + pangorect.width)),
+      (float) (width - (TEXT_PADDING + pangorect.width)),
       height / 2.f - pangorect.height / 2.f));
   gtk_snapshot_append_layout (
     snapshot, layout, &color);
@@ -160,8 +157,7 @@ balance_control_snapshot (
  * Must be free'd.
  */
 static char *
-get_pan_string (
-  BalanceControlWidget * self)
+get_pan_string (BalanceControlWidget * self)
 {
   /* make it from -0.5 to 0.5 */
   float pan_val = GET_VAL - 0.5f;
@@ -169,11 +165,9 @@ get_pan_string (
   /* get as percentage */
   pan_val = (fabsf (pan_val) / 0.5f) * 100.f;
 
-  return
-    g_strdup_printf (
-      "%s%.0f%%",
-      GET_VAL < 0.5f ? "-" : "",
-      (double) pan_val);
+  return g_strdup_printf (
+    "%s%.0f%%", GET_VAL < 0.5f ? "-" : "",
+    (double) pan_val);
 }
 
 static void
@@ -200,9 +194,9 @@ on_motion_leave (
 
 static void
 on_drag_begin (
-  GtkGestureDrag * gesture,
-  double           start_x,
-  double           start_y,
+  GtkGestureDrag *       gesture,
+  double                 start_x,
+  double                 start_y,
   BalanceControlWidget * self)
 {
   self->balance_at_start = GET_VAL;
@@ -210,26 +204,25 @@ on_drag_begin (
 
 static void
 on_drag_update (
-  GtkGestureDrag * gesture,
-  gdouble         offset_x,
-  gdouble         offset_y,
-  BalanceControlWidget *     self)
+  GtkGestureDrag *       gesture,
+  gdouble                offset_x,
+  gdouble                offset_y,
+  BalanceControlWidget * self)
 {
   double sensitivity = 0.005;
 
   /* lower sensitivity if shift held */
   GdkModifierType mask;
-  z_gtk_widget_get_mask (
-    GTK_WIDGET (self), &mask);
+  z_gtk_widget_get_mask (GTK_WIDGET (self), &mask);
   if (mask & GDK_SHIFT_MASK)
     {
       sensitivity = 0.002;
     }
 
-  offset_y = - offset_y;
+  offset_y = -offset_y;
   int use_y =
-    fabs (offset_y - self->last_y) >
-    fabs (offset_x - self->last_x);
+    fabs (offset_y - self->last_y)
+    > fabs (offset_x - self->last_x);
   double diff =
     sensitivity *
     (use_y ?
@@ -237,8 +230,7 @@ on_drag_update (
        offset_x - self->last_x);
 
   float new_val =
-    CLAMP (
-      GET_VAL + (float) diff, 0.0f, 1.0f);
+    CLAMP (GET_VAL + (float) diff, 0.0f, 1.0f);
 
   SET_VAL (new_val);
   self->last_x = offset_x;
@@ -247,7 +239,7 @@ on_drag_update (
 
   char * str = get_pan_string (self);
   /*gtk_label_set_text (*/
-    /*self->tooltip_label, str);*/
+  /*self->tooltip_label, str);*/
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self), str);
   g_free (str);
@@ -268,23 +260,24 @@ on_drag_end (
   self->dragged = 0;
   /*gtk_widget_hide (GTK_WIDGET (self->tooltip_win));*/
 
-  if (IS_CHANNEL ((Channel *) self->object) &&
-      !math_floats_equal_epsilon (
-        self->balance_at_start, GET_VAL, 0.0001f))
+  if (
+    IS_CHANNEL ((Channel *) self->object)
+    && !math_floats_equal_epsilon (
+      self->balance_at_start, GET_VAL, 0.0001f))
     {
-      Track * track =
-        channel_get_track ((Channel *) self->object);
+      Track * track = channel_get_track (
+        (Channel *) self->object);
       GError * err = NULL;
-      bool ret =
+      bool     ret =
         tracklist_selections_action_perform_edit_single_float (
-          EDIT_TRACK_ACTION_TYPE_PAN,
-          track, self->balance_at_start,
-          GET_VAL, true, &err);
+          EDIT_TRACK_ACTION_TYPE_PAN, track,
+          self->balance_at_start, GET_VAL, true,
+          &err);
       if (!ret)
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Failed to change balance"));
+            _ ("Failed to change balance"));
         }
     }
 }
@@ -297,21 +290,18 @@ show_context_menu (
 {
   g_return_if_fail (self->port);
 
-  GMenu * menu = g_menu_new ();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
   char tmp[600];
   sprintf (
     tmp, "app.reset-stereo-balance::%p", self->port);
   menuitem =
-    z_gtk_create_menu_item (
-      _("Reset"), NULL, tmp);
+    z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
-  sprintf (
-    tmp, "app.bind-midi-cc::%p", self->port);
-  menuitem =
-    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+  sprintf (tmp, "app.bind-midi-cc::%p", self->port);
+  menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
@@ -320,10 +310,10 @@ show_context_menu (
 
 static void
 on_right_click (
-  GtkGestureClick *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
+  GtkGestureClick *      gesture,
+  gint                   n_press,
+  gdouble                x,
+  gdouble                y,
   BalanceControlWidget * self)
 {
   if (n_press == 1)
@@ -363,12 +353,9 @@ balance_control_widget_new (
   Port *             port,
   int                height)
 {
-  BalanceControlWidget * self =
-    g_object_new (
-      BALANCE_CONTROL_WIDGET_TYPE,
-      "visible", 1,
-      "height-request", height,
-      NULL);
+  BalanceControlWidget * self = g_object_new (
+    BALANCE_CONTROL_WIDGET_TYPE, "visible", 1,
+    "height-request", height, NULL);
   self->getter = getter;
   self->setter = setter;
   self->object = object;
@@ -376,8 +363,7 @@ balance_control_widget_new (
 
   /* add right mouse multipress */
   GtkGestureClick * right_mouse_mp =
-    GTK_GESTURE_CLICK (
-      gtk_gesture_click_new ());
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (right_mouse_mp));
@@ -423,45 +409,40 @@ balance_control_finalize (
   BalanceControlWidget * self)
 {
   G_OBJECT_CLASS (
-    balance_control_widget_parent_class)->
-      finalize (G_OBJECT (self));
+    balance_control_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 static void
-dispose (
-  BalanceControlWidget * self)
+dispose (BalanceControlWidget * self)
 {
   gtk_widget_unparent (
     GTK_WIDGET (self->popover_menu));
 
   G_OBJECT_CLASS (
-    balance_control_widget_parent_class)->
-      dispose (G_OBJECT (self));
+    balance_control_widget_parent_class)
+    ->dispose (G_OBJECT (self));
 }
 
 static void
 balance_control_widget_init (
   BalanceControlWidget * self)
 {
-  gtk_widget_set_focusable (
-    GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (GTK_WIDGET (self), true);
 
   gdk_rgba_parse (
     &self->start_color, "rgba(0%,100%,0%,1.0)");
   gdk_rgba_parse (
     &self->end_color, "rgba(0%,50%,50%,1.0)");
 
-  self->popover_menu =
-    GTK_POPOVER_MENU (
-      gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu = GTK_POPOVER_MENU (
+    gtk_popover_menu_new_from_model (NULL));
   gtk_widget_set_parent (
     GTK_WIDGET (self->popover_menu),
     GTK_WIDGET (self));
 
-  gtk_widget_set_margin_start (
-    GTK_WIDGET (self), 2);
-  gtk_widget_set_margin_end (
-    GTK_WIDGET (self), 2);
+  gtk_widget_set_margin_start (GTK_WIDGET (self), 2);
+  gtk_widget_set_margin_end (GTK_WIDGET (self), 2);
 
   /* TODO port to gtk_tooltip_set_custom() */
 #if 0
@@ -482,16 +463,14 @@ balance_control_widget_init (
 #endif
 
   self->drag =
-    GTK_GESTURE_DRAG (
-      gtk_gesture_drag_new ());
+    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (self->drag));
 
   PangoFontDescription * desc;
-  self->layout =
-    gtk_widget_create_pango_layout (
-      GTK_WIDGET (self), NULL);
+  self->layout = gtk_widget_create_pango_layout (
+    GTK_WIDGET (self), NULL);
   desc =
     pango_font_description_from_string (TEXT_FONT);
   pango_layout_set_font_description (
@@ -515,10 +494,8 @@ balance_control_widget_class_init (
   gtk_widget_class_set_layout_manager_type (
     wklass, GTK_TYPE_BIN_LAYOUT);
 
-  GObjectClass * oklass =
-    G_OBJECT_CLASS (klass);
-  oklass->dispose =
-    (GObjectFinalizeFunc) dispose;
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
   oklass->finalize =
     (GObjectFinalizeFunc) balance_control_finalize;
 }

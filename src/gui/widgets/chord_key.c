@@ -20,7 +20,6 @@
 #include "audio/chord_descriptor.h"
 #include "audio/chord_object.h"
 #include "audio/chord_track.h"
-#include "utils/midi.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -37,32 +36,33 @@
 #include "utils/cairo.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/midi.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
-  ChordKeyWidget, chord_key_widget, GTK_TYPE_GRID)
+  ChordKeyWidget,
+  chord_key_widget,
+  GTK_TYPE_GRID)
 
 static ChordDescriptor *
-get_chord_descr (
-  ChordKeyWidget *  self)
+get_chord_descr (ChordKeyWidget * self)
 {
   return CHORD_EDITOR->chords[self->chord_idx];
 }
 
 static void
 on_choose_chord_btn_clicked (
-  GtkButton * btn,
-  ChordKeyWidget *  self)
+  GtkButton *      btn,
+  ChordKeyWidget * self)
 {
   ChordSelectorWindowWidget * chord_selector =
     chord_selector_window_widget_new (
       self->chord_idx);
 
-  gtk_window_present (
-    GTK_WINDOW (chord_selector));
+  gtk_window_present (GTK_WINDOW (chord_selector));
 }
 
 static void
@@ -77,8 +77,9 @@ on_invert_btn_clicked (
 
   if (btn == self->invert_prev_btn)
     {
-      if (chord_descriptor_get_min_inversion (
-            descr) != descr->inversion)
+      if (
+        chord_descriptor_get_min_inversion (descr)
+        != descr->inversion)
         {
           descr_clone->inversion--;
           chord_editor_apply_single_chord (
@@ -88,8 +89,9 @@ on_invert_btn_clicked (
     }
   else if (btn == self->invert_next_btn)
     {
-      if (chord_descriptor_get_max_inversion (
-            descr) != descr->inversion)
+      if (
+        chord_descriptor_get_max_inversion (descr)
+        != descr->inversion)
         {
           descr_clone->inversion++;
           chord_editor_apply_single_chord (
@@ -102,10 +104,9 @@ on_invert_btn_clicked (
 }
 
 void
-chord_key_widget_refresh (
-  ChordKeyWidget * self)
+chord_key_widget_refresh (ChordKeyWidget * self)
 {
-  char str[120];
+  char              str[120];
   ChordDescriptor * descr = get_chord_descr (self);
   chord_descriptor_to_string (descr, str);
   gtk_label_set_text (self->chord_lbl, str);
@@ -118,8 +119,7 @@ chord_key_widget_refresh (
  * MIDI note descriptor.
  */
 ChordKeyWidget *
-chord_key_widget_new (
-  int               idx)
+chord_key_widget_new (int idx)
 {
   ChordKeyWidget * self =
     g_object_new (CHORD_KEY_WIDGET_TYPE, NULL);
@@ -132,8 +132,7 @@ chord_key_widget_new (
   gtk_widget_set_size_request (
     GTK_WIDGET (self->piano), 216, 24);
   gtk_box_append (
-    self->piano_box,
-    GTK_WIDGET (self->piano));
+    self->piano_box, GTK_WIDGET (self->piano));
 
   chord_key_widget_refresh (self);
 
@@ -145,8 +144,7 @@ chord_key_widget_class_init (
   ChordKeyWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "chord-key");
+  gtk_widget_class_set_css_name (klass, "chord-key");
 
   resources_set_class_template (
     klass, "chord_key.ui");
@@ -166,8 +164,7 @@ chord_key_widget_class_init (
 }
 
 static void
-chord_key_widget_init (
-  ChordKeyWidget * self)
+chord_key_widget_init (ChordKeyWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -176,11 +173,11 @@ chord_key_widget_init (
 
   g_signal_connect (
     G_OBJECT (self->choose_chord_btn), "clicked",
-    G_CALLBACK (on_choose_chord_btn_clicked),  self);
+    G_CALLBACK (on_choose_chord_btn_clicked), self);
   g_signal_connect (
     G_OBJECT (self->invert_prev_btn), "clicked",
-    G_CALLBACK (on_invert_btn_clicked),  self);
+    G_CALLBACK (on_invert_btn_clicked), self);
   g_signal_connect (
     G_OBJECT (self->invert_next_btn), "clicked",
-    G_CALLBACK (on_invert_btn_clicked),  self);
+    G_CALLBACK (on_invert_btn_clicked), self);
 }

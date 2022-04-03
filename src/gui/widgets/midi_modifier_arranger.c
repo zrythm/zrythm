@@ -38,8 +38,8 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
-#include "utils/objects.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
 /**
@@ -78,15 +78,15 @@ get_enclosed_velocities (
   Position selection_start_pos, selection_end_pos;
   ui_px_to_pos_editor (
     self->start_x,
-    offset_x >= 0 ?
-      &selection_start_pos :
-      &selection_end_pos,
+    offset_x >= 0
+      ? &selection_start_pos
+      : &selection_end_pos,
     F_PADDING);
   ui_px_to_pos_editor (
     self->start_x + offset_x,
-    offset_x >= 0 ?
-      &selection_end_pos :
-      &selection_start_pos,
+    offset_x >= 0
+      ? &selection_end_pos
+      : &selection_start_pos,
     F_PADDING);
 
   ZRegion * region =
@@ -96,14 +96,12 @@ get_enclosed_velocities (
     NULL);
 
   /* find enclosed velocities */
-  size_t velocities_size = 1;
+  size_t      velocities_size = 1;
   Velocity ** velocities =
-    object_new_n (
-      velocities_size, Velocity *);
+    object_new_n (velocities_size, Velocity *);
   *num_vels = 0;
   midi_region_get_velocities_in_range (
-    region,
-    &selection_start_pos, &selection_end_pos,
+    region, &selection_start_pos, &selection_end_pos,
     &velocities, num_vels, &velocities_size, hit);
 
   return velocities;
@@ -115,14 +113,13 @@ midi_modifier_arranger_widget_select_vels_in_range (
   double           offset_x)
 {
   /* find enclosed velocities */
-  int num_velocities = 0;
-  Velocity ** velocities =
-    get_enclosed_velocities (
-      self, offset_x, &num_velocities, true);
+  int         num_velocities = 0;
+  Velocity ** velocities = get_enclosed_velocities (
+    self, offset_x, &num_velocities, true);
 
   arranger_selections_clear (
-    (ArrangerSelections *) MA_SELECTIONS,
-    F_NO_FREE, F_NO_PUBLISH_EVENTS);
+    (ArrangerSelections *) MA_SELECTIONS, F_NO_FREE,
+    F_NO_PUBLISH_EVENTS);
   for (int i = 0; i < num_velocities; i++)
     {
       Velocity * vel = velocities[i];
@@ -144,31 +141,31 @@ midi_modifier_arranger_widget_select_vels_in_range (
  */
 /*void*/
 /*midi_modifier_arranger_widget_get_hit_velocities (*/
-  /*ArrangerWidget *  self,*/
-  /*double            x,*/
-  /*double            y,*/
-  /*ArrangerObject ** objs,*/
-  /*int *             num_objs)*/
+/*ArrangerWidget *  self,*/
+/*double            x,*/
+/*double            y,*/
+/*ArrangerObject ** objs,*/
+/*int *             num_objs)*/
 /*{*/
-  /*ZRegion * r = clip_editor_get_region (CLIP_EDITOR);*/
-  /*if (!r)*/
-    /*break;*/
+/*ZRegion * r = clip_editor_get_region (CLIP_EDITOR);*/
+/*if (!r)*/
+/*break;*/
 
-  /*for (int i = 0; i < r->num_midi_notes; i++)*/
-    /*{*/
-      /*MidiNote * mn = r->midi_notes[i];*/
-      /*Velocity * vel = mn->vel;*/
-      /*obj = (ArrangerObject *) vel;*/
+/*for (int i = 0; i < r->num_midi_notes; i++)*/
+/*{*/
+/*MidiNote * mn = r->midi_notes[i];*/
+/*Velocity * vel = mn->vel;*/
+/*obj = (ArrangerObject *) vel;*/
 
-      /*if (obj->deleted_temporarily)*/
-        /*continue;*/
+/*if (obj->deleted_temporarily)*/
+/*continue;*/
 
-      /*arranger_object_set_full_rectangle (obj, self);*/
+/*arranger_object_set_full_rectangle (obj, self);*/
 
-      /*add_object_if_overlap (*/
-        /*self, rect, x, y, array,*/
-        /*array_size, obj);*/
-    /*}*/
+/*add_object_if_overlap (*/
+/*self, rect, x, y, array,*/
+/*array_size, obj);*/
+/*}*/
 /*}*/
 
 /**
@@ -182,64 +179,54 @@ midi_modifier_arranger_widget_ramp (
   double           offset_y)
 {
   /* find enclosed velocities */
-  int num_velocities = 0;
-  Velocity ** velocities =
-    get_enclosed_velocities (
-      self, offset_x, &num_velocities, true);
+  int         num_velocities = 0;
+  Velocity ** velocities = get_enclosed_velocities (
+    self, offset_x, &num_velocities, true);
 
   /* ramp */
   Velocity * vel;
-  int px, val;
-  double y1, y2, x1, x2;
-  int height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
+  int        px, val;
+  double     y1, y2, x1, x2;
+  int height = gtk_widget_get_allocated_height (
+    GTK_WIDGET (self));
   Position start_pos;
   for (int i = 0; i < num_velocities; i++)
     {
       vel = velocities[i];
-      MidiNote * mn =
-        velocity_get_midi_note (vel);
+      MidiNote * mn = velocity_get_midi_note (vel);
       midi_note_get_global_start_pos (
         mn, &start_pos);
       px =
-        ui_pos_to_px_editor (
-          &start_pos, F_PADDING);
+        ui_pos_to_px_editor (&start_pos, F_PADDING);
 
       x1 = self->start_x;
       x2 = self->start_x + offset_x;
       y1 = height - self->start_y;
       y2 = height - (self->start_y + offset_y);
       /*g_message ("x1 %f.0 x2 %f.0 y1 %f.0 y2 %f.0",*/
-                 /*x1, x2, y1, y2);*/
+      /*x1, x2, y1, y2);*/
 
       /* y = y1 + ((y2 - y1)/(x2 - x1))*(x - x1)
        * http://stackoverflow.com/questions/2965144/ddg#2965188 */
       /* get val in pixels */
       val =
-        (int)
-        (y1 +
-         ((y2 - y1)/(x2 - x1)) *
-           ((double) px - x1));
+        (int) (y1 + ((y2 - y1) / (x2 - x1)) * ((double) px - x1));
 
       /* normalize and multiply by 127 to get
        * velocity value */
       val =
-        (int)
-        (((double) val / (double) height) * 127.0);
+        (int) (((double) val / (double) height) * 127.0);
       val = CLAMP (val, 1, 127);
       /*g_message ("val %d", val);*/
 
-      velocity_set_val (
-        vel, val);
+      velocity_set_val (vel, val);
     }
   free (velocities);
 
   /* find velocities not hit */
   num_velocities = 0;
-  velocities =
-    get_enclosed_velocities (
-      self, offset_x, &num_velocities, false);
+  velocities = get_enclosed_velocities (
+    self, offset_x, &num_velocities, false);
 
   /* reset their value */
   for (int i = 0; i < num_velocities; i++)
@@ -257,28 +244,21 @@ midi_modifier_arranger_widget_resize_velocities (
   ArrangerWidget * self,
   double           offset_y)
 {
-  int height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
+  int height = gtk_widget_get_allocated_height (
+    GTK_WIDGET (self));
 
   /* adjust for circle radius */
-  double start_y =
-    self->start_y;
-    /*self->start_y - VELOCITY_WIDTH / 2;*/
+  double start_y = self->start_y;
+  /*self->start_y - VELOCITY_WIDTH / 2;*/
   /*offset_y -= VELOCITY_WIDTH / 2;*/
   /*g_message ("start y %f offset y %f res %f height %f", start_y, offset_y, start_y + offset_y,*/
-    /*(double) height);*/
+  /*(double) height);*/
 
-  double start_ratio =
-    CLAMP (
-      1.0 - start_y / (double) height,
-      0.0, 1.0);
-  double ratio =
-    CLAMP (
-      1.0 -
-      (start_y + offset_y) /
-        (double) height,
-      0.0, 1.0);
+  double start_ratio = CLAMP (
+    1.0 - start_y / (double) height, 0.0, 1.0);
+  double ratio = CLAMP (
+    1.0 - (start_y + offset_y) / (double) height,
+    0.0, 1.0);
   g_return_if_fail (start_ratio <= 1.0);
   g_return_if_fail (ratio <= 1.0);
   int start_val = (int) (start_ratio * 127.0);
@@ -287,33 +267,33 @@ midi_modifier_arranger_widget_resize_velocities (
 
   /*Velocity * vel = self->start_velocity;*/
   /*vel =*/
-    /*velocity_get_main_trans_velocity (vel);*/
+  /*velocity_get_main_trans_velocity (vel);*/
   /*velocity_set_val (*/
-    /*vel, CLAMP (ratio * 127, 1, 127));*/
+  /*vel, CLAMP (ratio * 127, 1, 127));*/
   /*int diff = vel->vel - self->start_vel_val;*/
   /*self->vel_diff =*/
   /*if (vel->widget)*/
-    /*velocity_widget_update_tooltip (*/
-      /*vel->widget, 1);*/
+  /*velocity_widget_update_tooltip (*/
+  /*vel->widget, 1);*/
   /*g_message ("diff %d", diff);*/
 
-  for (int i = 0;
-       i < MA_SELECTIONS->num_midi_notes; i++)
+  for (int i = 0; i < MA_SELECTIONS->num_midi_notes;
+       i++)
     {
       Velocity * vel =
         MA_SELECTIONS->midi_notes[i]->vel;
       Velocity * vel_at_start =
-        ((MidiArrangerSelections *)
-        self->sel_at_start)->midi_notes[i]->vel;
+        ((MidiArrangerSelections *) self->sel_at_start)
+          ->midi_notes[i]
+          ->vel;
 
       velocity_set_val (
         vel,
         CLAMP (
-          vel_at_start->vel + self->vel_diff,
-          1, 127));
+          vel_at_start->vel + self->vel_diff, 1,
+          127));
 
-      EVENTS_PUSH (
-        ET_ARRANGER_OBJECT_CHANGED, vel);
+      EVENTS_PUSH (ET_ARRANGER_OBJECT_CHANGED, vel);
 
 #if 0
       ArrangerObject * vel_obj =
@@ -330,8 +310,8 @@ midi_modifier_arranger_widget_resize_velocities (
   if (self->start_object)
     {
       g_return_if_fail (
-        self->start_object->type ==
-          ARRANGER_OBJECT_TYPE_VELOCITY);
+        self->start_object->type
+        == ARRANGER_OBJECT_TYPE_VELOCITY);
       Velocity * vel =
         (Velocity *) self->start_object;
       g_settings_set_int (
@@ -362,16 +342,14 @@ midi_modifier_arranger_set_hit_velocity_vals (
     objs_arr);
   g_message ("%u velocities hit", objs_arr->len);
 
-  int height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
+  int height = gtk_widget_get_allocated_height (
+    GTK_WIDGET (self));
   double ratio = 1.0 - y / (double) height;
   int val = CLAMP ((int) (ratio * 127.0), 1, 127);
 
   for (size_t i = 0; i < objs_arr->len; i++)
     {
-      ArrangerObject * obj =
-        (ArrangerObject *)
+      ArrangerObject * obj = (ArrangerObject *)
         g_ptr_array_index (objs_arr, i);
       Velocity * vel = (Velocity *) obj;
       MidiNote * mn = velocity_get_midi_note (vel);

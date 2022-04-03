@@ -24,15 +24,16 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (InspectorChordWidget,
-               inspector_chord_widget,
-               GTK_TYPE_GRID)
+G_DEFINE_TYPE (
+  InspectorChordWidget,
+  inspector_chord_widget,
+  GTK_TYPE_GRID)
 
 void
 inspector_chord_widget_show_chords (
   InspectorChordWidget * self,
-  ChordObject **               chords,
-  int                     num_chords)
+  ChordObject **         chords,
+  int                    num_chords)
 {
   if (num_chords == 1)
     {
@@ -40,14 +41,12 @@ inspector_chord_widget_show_chords (
     }
   else
     {
-      char * string = g_strdup_printf ("Chords (%d)", num_chords);
+      char * string =
+        g_strdup_printf ("Chords (%d)", num_chords);
       gtk_label_set_text (self->header, string);
       g_free (string);
 
-      for (int i = 0; i < num_chords; i++)
-      {
-
-      }
+      for (int i = 0; i < num_chords; i++) { }
     }
 }
 
@@ -56,33 +55,32 @@ inspector_chord_widget_class_init (
   InspectorChordWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "inspector_chord.ui");
+  resources_set_class_template (
+    klass, "inspector_chord.ui");
 
   /*gtk_widget_class_bind_template_child (*/
-    /*klass,*/
-    /*InspectorChordWidget,*/
-    /*position_box);*/
+  /*klass,*/
+  /*InspectorChordWidget,*/
+  /*position_box);*/
   /*gtk_widget_class_bind_template_child (*/
-    /*klass,*/
-    /*InspectorChordWidget,*/
-    /*length_box);*/
+  /*klass,*/
+  /*InspectorChordWidget,*/
+  /*length_box);*/
   /*gtk_widget_class_bind_template_child (*/
-    /*klass,*/
-    /*InspectorChordWidget,*/
-    /*color);*/
+  /*klass,*/
+  /*InspectorChordWidget,*/
+  /*color);*/
   /*gtk_widget_class_bind_template_child (*/
-    /*klass,*/
-    /*InspectorChordWidget,*/
-    /*mute_toggle);*/
+  /*klass,*/
+  /*InspectorChordWidget,*/
+  /*mute_toggle);*/
   gtk_widget_class_bind_template_child (
-    klass,
-    InspectorChordWidget,
-    header);
+    klass, InspectorChordWidget, header);
 }
 
 static void
-inspector_chord_widget_init (InspectorChordWidget * self)
+inspector_chord_widget_init (
+  InspectorChordWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }

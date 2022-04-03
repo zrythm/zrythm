@@ -39,20 +39,20 @@
 
 #ifdef _WOE32
 
-#include "audio/channel.h"
-#include "audio/engine.h"
-#include "audio/engine_windows_mme.h"
-#include "audio/master_track.h"
-#include "audio/router.h"
-#include "audio/port.h"
-#include "audio/windows_mme_device.h"
-#include "audio/windows_mmcss.h"
-#include "project.h"
-#include "settings/settings.h"
-#include "utils/ui.h"
+#  include "audio/channel.h"
+#  include "audio/engine.h"
+#  include "audio/engine_windows_mme.h"
+#  include "audio/master_track.h"
+#  include "audio/port.h"
+#  include "audio/router.h"
+#  include "audio/windows_mmcss.h"
+#  include "audio/windows_mme_device.h"
+#  include "project.h"
+#  include "settings/settings.h"
+#  include "utils/ui.h"
 
-#include <gtk/gtk.h>
-#include <glib/gi18n.h>
+#  include <glib/gi18n.h>
+#  include <gtk/gtk.h>
 
 /**
  * Returns the number of MIDI devices available.
@@ -60,8 +60,7 @@
  * @param input 1 for input, 0 for output.
  */
 int
-engine_windows_mme_get_num_devices (
-  int input)
+engine_windows_mme_get_num_devices (int input)
 {
   if (input)
     return (int) midiInGetNumDevs ();
@@ -86,17 +85,15 @@ engine_windows_mme_get_error (
 
   MMRESULT result;
   if (input)
-  {
-    result =
-    midiInGetErrorText (
-      error_code, buf, (UINT) buf_size);
-  }
+    {
+      result = midiInGetErrorText (
+        error_code, buf, (UINT) buf_size);
+    }
   else
-  {
-    result =
-    midiOutGetErrorText (
-      error_code, buf, (UINT) buf_size);
-  }
+    {
+      result = midiOutGetErrorText (
+        error_code, buf, (UINT) buf_size);
+    }
   g_return_val_if_fail (
     result == MMSYSERR_NOERROR, -1);
 
@@ -111,13 +108,11 @@ engine_windows_mme_print_error (
   MMRESULT error_code,
   int      input)
 {
-  g_return_if_fail (
-    error_code != MMSYSERR_NOERROR);
+  g_return_if_fail (error_code != MMSYSERR_NOERROR);
 
   char msg[600];
-  int ret =
-    engine_windows_mme_get_error (
-      error_code, input, msg, 600);
+  int  ret = engine_windows_mme_get_error (
+     error_code, input, msg, 600);
   if (!ret)
     {
       g_critical ("Windows MME error: %s", msg);
@@ -143,16 +138,14 @@ engine_windows_mme_activate (
 
   for (int i = 0; i < self->num_mme_in_devs; i++)
     {
-      WindowsMmeDevice * dev =
-        self->mme_in_devs[i];
+      WindowsMmeDevice * dev = self->mme_in_devs[i];
 
       if (activate)
         {
           g_return_val_if_fail (
-            dev->opened == 1 &&
-            dev->started == 0, -1);
-          int ret =
-            windows_mme_device_start (dev);
+            dev->opened == 1 && dev->started == 0,
+            -1);
+          int ret = windows_mme_device_start (dev);
           g_return_val_if_fail (ret == 0, -1);
         }
       else
@@ -162,17 +155,15 @@ engine_windows_mme_activate (
     }
   for (int i = 0; i < self->num_mme_out_devs; i++)
     {
-	    /* skip for now */
-	    break;
-      WindowsMmeDevice * dev =
-        self->mme_out_devs[i];
+      /* skip for now */
+      break;
+      WindowsMmeDevice * dev = self->mme_out_devs[i];
       if (activate)
         {
           g_return_val_if_fail (
-            dev->opened == 1 &&
-            dev->started == 0, -1);
-          int ret =
-            windows_mme_device_start (dev);
+            dev->opened == 1 && dev->started == 0,
+            -1);
+          int ret = windows_mme_device_start (dev);
           g_return_val_if_fail (ret == 0, -1);
         }
       else
@@ -200,8 +191,7 @@ engine_windows_mme_rescan_devices (
 {
   for (int i = 0; i < self->num_mme_in_devs; i++)
     {
-      WindowsMmeDevice * dev =
-        self->mme_in_devs[i];
+      WindowsMmeDevice * dev = self->mme_in_devs[i];
 
       if (dev->started)
         windows_mme_device_stop (dev);
@@ -211,8 +201,7 @@ engine_windows_mme_rescan_devices (
     }
   for (int i = 0; i < self->num_mme_out_devs; i++)
     {
-      WindowsMmeDevice * dev =
-        self->mme_out_devs[i];
+      WindowsMmeDevice * dev = self->mme_out_devs[i];
 
       if (dev->started)
         windows_mme_device_stop (dev);
@@ -223,25 +212,22 @@ engine_windows_mme_rescan_devices (
   self->num_mme_in_devs = 0;
   self->num_mme_out_devs = 0;
 
-  int num_devs =
-    engine_windows_mme_get_num_devices (
-      WINDOWS_MME_DEVICE_FLOW_INPUT);
+  int num_devs = engine_windows_mme_get_num_devices (
+    WINDOWS_MME_DEVICE_FLOW_INPUT);
   for (int i = 0; i < num_devs; i++)
     {
       WindowsMmeDevice * dev =
         windows_mme_device_new (
           WINDOWS_MME_DEVICE_FLOW_INPUT, i);
       g_return_val_if_fail (dev, -1);
-      int ret =
-        windows_mme_device_open (dev, 0);
+      int ret = windows_mme_device_open (dev, 0);
       g_return_val_if_fail (ret == 0, -1);
-      self->mme_in_devs[
-        self->num_mme_in_devs++] = dev;
+      self->mme_in_devs[self->num_mme_in_devs++] =
+        dev;
     }
 
-  num_devs =
-    engine_windows_mme_get_num_devices (
-      WINDOWS_MME_DEVICE_FLOW_OUTPUT);
+  num_devs = engine_windows_mme_get_num_devices (
+    WINDOWS_MME_DEVICE_FLOW_OUTPUT);
 
   for (int i = 0; i < num_devs; i++)
     {
@@ -249,13 +235,12 @@ engine_windows_mme_rescan_devices (
         windows_mme_device_new (
           WINDOWS_MME_DEVICE_FLOW_OUTPUT, i);
       g_return_val_if_fail (dev, -1);
-      g_message ("found midi output device %s",
-          dev->name);
-      int ret =
-        windows_mme_device_open (dev, 0);
+      g_message (
+        "found midi output device %s", dev->name);
+      int ret = windows_mme_device_open (dev, 0);
       g_return_val_if_fail (ret == 0, -1);
-      self->mme_out_devs[
-        self->num_mme_out_devs++] = dev;
+      self->mme_out_devs[self->num_mme_out_devs++] =
+        dev;
     }
 
   if (start)
@@ -270,8 +255,7 @@ engine_windows_mme_rescan_devices (
  * Set up Port Audio.
  */
 int
-engine_windows_mme_setup (
-  AudioEngine * self)
+engine_windows_mme_setup (AudioEngine * self)
 {
   g_message ("Initing MMCSS...");
   windows_mmcss_initialize ();
@@ -282,7 +266,6 @@ engine_windows_mme_setup (
   return 0;
 }
 
-
 /**
  * Tests if PortAudio is working properly.
  *
@@ -292,8 +275,7 @@ engine_windows_mme_setup (
  * to it.
  */
 int
-engine_windows_mme_test (
-  GtkWindow * win)
+engine_windows_mme_test (GtkWindow * win)
 {
   return 0;
 }
@@ -302,8 +284,7 @@ engine_windows_mme_test (
  * Closes Port Audio.
  */
 int
-engine_windows_mme_tear_down (
-  AudioEngine * engine)
+engine_windows_mme_tear_down (AudioEngine * engine)
 {
   return 0;
 }

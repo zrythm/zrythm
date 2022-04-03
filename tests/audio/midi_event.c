@@ -23,9 +23,9 @@
 
 #include "audio/midi_event.h"
 
-#include "tests/helpers/zrythm.h"
-
 #include <glib.h>
+
+#include "tests/helpers/zrythm.h"
 
 static void
 test_add_note_ons (void)
@@ -35,7 +35,7 @@ test_add_note_ons (void)
   midi_time_t _time = 402;
 
   ChordDescriptor * descr = CHORD_EDITOR->chords[0];
-  MidiEvents * events = midi_events_new ();
+  MidiEvents *      events = midi_events_new ();
 
   /* check at least 3 notes are valid */
   midi_events_add_note_ons_from_chord_descr (
@@ -55,7 +55,7 @@ test_add_note_ons (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

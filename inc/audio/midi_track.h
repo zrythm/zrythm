@@ -23,13 +23,13 @@
 #include "audio/channel_track.h"
 #include "audio/track.h"
 
-typedef struct Position Position;
-typedef struct _TrackWidget TrackWidget;
-typedef struct Channel Channel;
-typedef struct MidiEvents MidiEvents;
+typedef struct Position        Position;
+typedef struct _TrackWidget    TrackWidget;
+typedef struct Channel         Channel;
+typedef struct MidiEvents      MidiEvents;
 typedef struct AutomationTrack AutomationTrack;
-typedef struct Automatable Automatable;
-typedef struct ZRegion MidiRegion;
+typedef struct Automatable     Automatable;
+typedef struct ZRegion         MidiRegion;
 
 /**
  * @addtogroup audio
@@ -71,11 +71,11 @@ midi_track_setup (Track * self);
 REALTIME
 void
 midi_track_fill_midi_events (
-  Track *      track,
-  const long   g_start_frames,
+  Track *         track,
+  const long      g_start_frames,
   const nframes_t local_start_frame,
-  nframes_t     nframes,
-  MidiEvents * midi_events);
+  nframes_t       nframes,
+  MidiEvents *    midi_events);
 
 /**
  * Frees the track.

@@ -21,17 +21,17 @@
 #define __UTILS_ARRAYS_H__
 
 #define array_index_of(array, size, element) \
-  _array_index_of ((void **) array, \
-                   size, \
-                   (void *) element)
+  _array_index_of ( \
+    (void **) array, size, (void *) element)
 
 /**
  * Appends element to the end of array array and increases the size.
  */
-#define array_append(array,size,element) \
+#define array_append(array, size, element) \
   (array)[(size)++] = element;
 
-#define array_double_append(arr1,arr2,size,el1,el2) \
+#define array_double_append( \
+  arr1, arr2, size, el1, el2) \
   arr1[size] = el1; \
   arr2[size] = el2; \
   size++;
@@ -40,7 +40,7 @@
  * Inserts element in array at pos and increases the
  * size.
  */
-#define array_insert(array,size,pos,element) \
+#define array_insert(array, size, pos, element) \
   for (int ii = size; ii > pos; ii--) \
     { \
       array[ii] = array[ii - 1]; \
@@ -54,7 +54,7 @@
  * Assumes the arrays are the same size.
  */
 #define array_double_insert( \
-  arr1,arr2,size,pos,el1,el2) \
+  arr1, arr2, size, pos, el1, el2) \
   for (int ii = size; ii > pos; ii--) \
     { \
       arr1[ii] = arr1[ii - 1]; \
@@ -103,23 +103,25 @@ _array_double_size_if_full (
  * @param type The type of elements the array holds.
  */
 #define array_double_size_if_full( \
-  array,count,size,type) \
-  ((size_t) (count) < (size_t) (size) ? ({}) \
-   : _array_double_size_if_full ( \
-       (void **) &array, (size_t) (count), \
-       &size, sizeof (type)))
+  array, count, size, type) \
+  ((size_t) (count) < (size_t) (size) \
+     ? ({}) \
+     : _array_double_size_if_full ( \
+       (void **) &array, (size_t) (count), &size, \
+       sizeof (type)))
 
 /**
  * Deletes element from array and rearranges other
  * elements accordingly.
  */
-#define array_delete(array,size,element) \
+#define array_delete(array, size, element) \
   for (size_t ii = 0; ii < (size_t) size; ii++) \
     { \
       if ((void *) array[ii] == (void *) element) \
         { \
           --size; \
-          for (size_t jj = ii; jj < (size_t) size; jj++) \
+          for (size_t jj = ii; jj < (size_t) size; \
+               jj++) \
             { \
               array[jj] = array[jj + 1]; \
             } \
@@ -132,7 +134,7 @@ _array_double_size_if_full (
  * elements accordingly.
  */
 #define array_delete_confirm( \
-  array,size,element,confirm) \
+  array, size, element, confirm) \
   confirm = false; \
   for (size_t ii = 0; ii < (size_t) size; ii++) \
     { \
@@ -140,7 +142,8 @@ _array_double_size_if_full (
         { \
           confirm = true; \
           --size; \
-          for (size_t jj = ii; jj < (size_t) size; jj++) \
+          for (size_t jj = ii; jj < (size_t) size; \
+               jj++) \
             { \
               array[jj] = array[jj + 1]; \
             } \
@@ -152,7 +155,8 @@ _array_double_size_if_full (
  * Deletes element from array and rearranges other
  * elements accordingly.
  */
-#define array_delete_primitive(array,size,element) \
+#define array_delete_primitive( \
+  array, size, element) \
   for (int ii = 0; ii < size; ii++) \
     { \
       if (array[ii] == element) \
@@ -170,7 +174,8 @@ _array_double_size_if_full (
  * Same as array_delete but sets the deleted element
  * index to pos.
  */
-#define array_delete_return_pos(array,size,element,pos) \
+#define array_delete_return_pos( \
+  array, size, element, pos) \
   for (int ii = 0; ii < size; ii++) \
     { \
       if (array[ii] == element) \
@@ -192,7 +197,7 @@ _array_double_size_if_full (
  * same index in both arrays.
  */
 #define array_double_delete( \
-  array1,array2,size,element1,element2) \
+  array1, array2, size, element1, element2) \
   for (int ii = 0; ii < size; ii++) \
     { \
       if (array1[ii] == element1) \
@@ -207,26 +212,22 @@ _array_double_size_if_full (
         } \
     }
 
-
-#define array_contains_cmp(array,size,element,cmp, \
-  equal_val, pointers) \
+#define array_contains_cmp( \
+  array, size, element, cmp, equal_val, pointers) \
   _array_contains_cmp ( \
-    (void **) array, \
-    size, \
-    (void *) element, \
-    (int (*) (void *, void *)) cmp, \
-    equal_val, pointers)
+    (void **) array, size, (void *) element, \
+    (int (*) (void *, void *)) cmp, equal_val, \
+    pointers)
 
 /**
  * Macro so that no casting to void ** and void * is
  * necessary.
  */
-#define array_contains(array,size,element) \
-  _array_contains ((void **) array, \
-                   size, \
-                   (void *) element)
+#define array_contains(array, size, element) \
+  _array_contains ( \
+    (void **) array, size, (void *) element)
 
-#define array_dynamic_swap(arr1,sz1,arr2,sz2) \
+#define array_dynamic_swap(arr1, sz1, arr2, sz2) \
   _array_dynamic_swap ( \
     (void ***) arr1, (size_t *) sz1, \
     (void ***) arr2, (size_t *) sz2)
@@ -241,16 +242,13 @@ _array_double_size_if_full (
  */
 void
 _array_dynamic_swap (
-  void ***  arr1,
+  void *** arr1,
   size_t * sz1,
-  void ***  arr2,
+  void *** arr2,
   size_t * sz2);
 
 static inline int
-array_contains_int (
-  int * array,
-  int   size,
-  int   element)
+array_contains_int (int * array, int size, int element)
 {
   for (int i = 0; i < size; i++)
     {
@@ -267,8 +265,8 @@ array_contains_int (
  * @param size Size of each element
  *   (@code sizeof (arr[0]) @endcode).
  */
-void array_shuffle (
-  void *array, size_t n, size_t size);
+void
+array_shuffle (void * array, size_t n, size_t size);
 
 /**
  * Returns 1 if element exists in array, 0 if not.
@@ -276,9 +274,7 @@ void array_shuffle (
  * The element exists if the pointers are equal.
  */
 NONNULL
-PURE
-WARN_UNUSED_RESULT
-int
+PURE WARN_UNUSED_RESULT int
 _array_contains (
   void ** array,
   int     size,
@@ -300,9 +296,9 @@ _array_contains_cmp (
   void ** array,
   int     size,
   void *  element,
-  int (*cmp)(void *, void *),
-  int     equal_val,
-  int     pointers);
+  int (*cmp) (void *, void *),
+  int equal_val,
+  int pointers);
 
 /**
  * Returns the index of the element exists in array,
@@ -321,24 +317,18 @@ array_sort_alphabetically (
   int     case_sensitive);
 
 void
-array_sort_float (
-  float * array,
-  int     size);
+array_sort_float (float * array, int size);
 
 void
-array_sort_long (
-  long * array,
-  int    size);
+array_sort_long (long * array, int size);
 
-#define array_get_count(_arr,_sz) \
+#define array_get_count(_arr, _sz) \
   _array_get_count ((void **) _arr, _sz)
 
 /**
  * Gets the count of a NULL-terminated array.
  */
 size_t
-_array_get_count (
-  void ** array,
-  size_t  element_size);
+_array_get_count (void ** array, size_t element_size);
 
 #endif /* __UTILS_ARRAYS_H__ */

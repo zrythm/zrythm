@@ -31,7 +31,6 @@
 #include <stdbool.h>
 
 #include "plugins/plugin_descriptor.h"
-
 #include "utils/yaml.h"
 
 /**
@@ -48,30 +47,30 @@
  */
 typedef struct PluginSetting
 {
-  int                schema_version;
+  int schema_version;
 
   /** The descriptor of the plugin this setting is
    * for. */
   PluginDescriptor * descr;
 
   /** Whether to instantiate this plugin with carla. */
-  bool               open_with_carla;
+  bool open_with_carla;
 
   /** Whether to force a generic UI. */
-  bool               force_generic_ui;
+  bool force_generic_ui;
 
   /** Requested carla bridge mode. */
-  CarlaBridgeMode    bridge_mode;
+  CarlaBridgeMode bridge_mode;
 
   /** Requested UI URI (if LV2 and non-bridged and
    * not forcing a generic UI and have a custom
    * UI */
-  char *             ui_uri;
+  char * ui_uri;
 } PluginSetting;
 
 typedef struct PluginSettings
 {
-  int             schema_version;
+  int schema_version;
 
   /** Settings. */
   PluginSetting * settings[90000];
@@ -79,63 +78,60 @@ typedef struct PluginSettings
 } PluginSettings;
 
 static const cyaml_schema_field_t
-plugin_setting_fields_schema[] =
-{
-  YAML_FIELD_INT (PluginSetting, schema_version),
-  YAML_FIELD_MAPPING_PTR (
-    PluginSetting, descr,
-    plugin_descriptor_fields_schema),
-  YAML_FIELD_INT (PluginSetting, open_with_carla),
-  YAML_FIELD_INT (PluginSetting, force_generic_ui),
-  YAML_FIELD_ENUM (
-    PluginSetting, bridge_mode,
-    carla_bridge_mode_strings),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    PluginSetting, ui_uri),
+  plugin_setting_fields_schema[] = {
+    YAML_FIELD_INT (PluginSetting, schema_version),
+    YAML_FIELD_MAPPING_PTR (
+      PluginSetting,
+      descr,
+      plugin_descriptor_fields_schema),
+    YAML_FIELD_INT (PluginSetting, open_with_carla),
+    YAML_FIELD_INT (PluginSetting, force_generic_ui),
+    YAML_FIELD_ENUM (
+      PluginSetting,
+      bridge_mode,
+      carla_bridge_mode_strings),
+    YAML_FIELD_STRING_PTR_OPTIONAL (
+      PluginSetting,
+      ui_uri),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-plugin_setting_schema =
-{
-  YAML_VALUE_PTR (
-    PluginSetting,
-    plugin_setting_fields_schema),
-};
+  plugin_setting_schema = {
+    YAML_VALUE_PTR (
+      PluginSetting,
+      plugin_setting_fields_schema),
+  };
 
 static const cyaml_schema_field_t
-plugin_settings_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    PluginSettings, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    PluginSettings, settings,
-    plugin_setting_schema),
+  plugin_settings_fields_schema[] = {
+    YAML_FIELD_INT (PluginSettings, schema_version),
+    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+      PluginSettings,
+      settings,
+      plugin_setting_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-plugin_settings_schema =
-{
-  YAML_VALUE_PTR (
-    PluginSettings,
-    plugin_settings_fields_schema),
-};
+  plugin_settings_schema = {
+    YAML_VALUE_PTR (
+      PluginSettings,
+      plugin_settings_fields_schema),
+  };
 
 /**
  * Creates a plugin setting with the recommended
  * settings for the given plugin descriptor based
  * on the current setup.
  */
-PluginSetting *
-NONNULL
+PluginSetting * NONNULL
 plugin_setting_new_default (
   const PluginDescriptor * descr);
 
-PluginSetting *
-NONNULL
+PluginSetting * NONNULL
 plugin_setting_clone (
   const PluginSetting * src,
   bool                  validate);
@@ -151,13 +147,11 @@ plugin_setting_clone (
  */
 NONNULL
 void
-plugin_setting_validate (
-  PluginSetting * self);
+plugin_setting_validate (PluginSetting * self);
 
 NONNULL
 void
-plugin_setting_print (
-  const PluginSetting * self);
+plugin_setting_print (const PluginSetting * self);
 
 /**
  * Creates necessary tracks at the end of the
@@ -165,16 +159,14 @@ plugin_setting_print (
  */
 NONNULL
 void
-plugin_setting_activate (
-  const PluginSetting * self);
+plugin_setting_activate (const PluginSetting * self);
 
 /**
  * Frees the plugin setting.
  */
 NONNULL
 void
-plugin_setting_free (
-  PluginSetting * self);
+plugin_setting_free (PluginSetting * self);
 
 /**
  * Reads the file and fills up the object.
@@ -219,8 +211,7 @@ plugin_settings_set (
 
 NONNULL
 void
-plugin_settings_free (
-  PluginSettings * self);
+plugin_settings_free (PluginSettings * self);
 
 /**
  * @}

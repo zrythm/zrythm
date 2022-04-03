@@ -26,22 +26,23 @@
 
 #define INSPECTOR_AP_WIDGET_TYPE \
   (inspector_ap_widget_get_type ())
-G_DECLARE_FINAL_TYPE (InspectorApWidget,
-                      inspector_ap_widget,
-                      Z,
-                      INSPECTOR_AP_WIDGET,
-                      GtkGrid)
+G_DECLARE_FINAL_TYPE (
+  InspectorApWidget,
+  inspector_ap_widget,
+  Z,
+  INSPECTOR_AP_WIDGET,
+  GtkGrid)
 
 typedef struct AutomationPoint AutomationPoint;
 
 typedef struct _InspectorApWidget
 {
-  GtkGrid             parent_instance;
-  GtkLabel *          header;
-  GtkBox *            position_box;
-  GtkBox *            length_box;
-  GtkColorButton *    color;
-  GtkToggleButton *   mute_toggle;
+  GtkGrid           parent_instance;
+  GtkLabel *        header;
+  GtkBox *          position_box;
+  GtkBox *          length_box;
+  GtkColorButton *  color;
+  GtkToggleButton * mute_toggle;
 } InspectorApWidget;
 
 void

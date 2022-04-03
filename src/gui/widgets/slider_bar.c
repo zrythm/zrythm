@@ -20,16 +20,17 @@
 #include "gui/widgets/slider_bar.h"
 
 G_DEFINE_TYPE (
-  SliderBarWidget, slider_bar_widget,
+  SliderBarWidget,
+  slider_bar_widget,
   GTK_TYPE_DRAWING_AREA)
 
 static void
 slider_bar_draw_cb (
-  GtkDrawingArea* drawing_area,
-  cairo_t* cr,
-  int width,
-  int height,
-  gpointer user_data)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
   SliderBarWidget * self =
     Z_SLIDER_BAR_WIDGET (user_data);
@@ -56,12 +57,12 @@ SliderBarWidget *
 _slider_bar_widget_new (
   float (*get_val) (void *),
   void (*set_val) (void *, float),
-  void * object,
-  float min,
-  float max,
-  int   width,
-  int   height,
-  float zero,
+  void *       object,
+  float        min,
+  float        max,
+  int          width,
+  int          height,
+  float        zero,
   const char * text)
 {
   SliderBarWidget * self =
@@ -85,15 +86,14 @@ _slider_bar_widget_new (
     GTK_WIDGET (self), width, height);
 
   gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self),
-    slider_bar_draw_cb, self, NULL);
+    GTK_DRAWING_AREA (self), slider_bar_draw_cb,
+    self, NULL);
 
   return self;
 }
 
 static void
-slider_bar_widget_init (
-  SliderBarWidget * self)
+slider_bar_widget_init (SliderBarWidget * self)
 {
   self->drag =
     GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
@@ -106,8 +106,7 @@ static void
 slider_bar_widget_class_init (
   SliderBarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "slider-bar");
 }

@@ -34,28 +34,25 @@
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 /**
  * Inits the tempo track.
  */
 void
-tempo_track_init (
-  Track * self)
+tempo_track_init (Track * self)
 {
   self->type = TRACK_TYPE_TEMPO;
   self->main_height = TRACK_DEF_HEIGHT / 2;
 
   gdk_rgba_parse (&self->color, "#2f6c52");
-  self->icon_name =
-    g_strdup ("filename-bpm-amarok");
+  self->icon_name = g_strdup ("filename-bpm-amarok");
 
   /* create bpm port */
-  self->bpm_port =
-    port_new_with_type_and_owner (
-      TYPE_CONTROL, FLOW_INPUT, _("BPM"),
-      PORT_OWNER_TYPE_TRACK, self);
+  self->bpm_port = port_new_with_type_and_owner (
+    TYPE_CONTROL, FLOW_INPUT, _ ("BPM"),
+    PORT_OWNER_TYPE_TRACK, self);
   self->bpm_port->id.sym = g_strdup ("bpm");
   self->bpm_port->minf = 60.f;
   self->bpm_port->maxf = 360.f;
@@ -64,13 +61,12 @@ tempo_track_init (
     self->bpm_port, self->bpm_port->deff, false,
     false);
   self->bpm_port->id.flags |= PORT_FLAG_BPM;
-  self->bpm_port->id.flags |=
-    PORT_FLAG_AUTOMATABLE;
+  self->bpm_port->id.flags |= PORT_FLAG_AUTOMATABLE;
 
   /* create time sig ports */
   self->beats_per_bar_port =
     port_new_with_type_and_owner (
-      TYPE_CONTROL, FLOW_INPUT, _("Beats per bar"),
+      TYPE_CONTROL, FLOW_INPUT, _ ("Beats per bar"),
       PORT_OWNER_TYPE_TRACK, self);
   self->beats_per_bar_port->id.sym =
     g_strdup ("beats_per_bar");
@@ -82,8 +78,7 @@ tempo_track_init (
     TEMPO_TRACK_MIN_BEATS_PER_BAR;
   port_set_control_value (
     self->beats_per_bar_port,
-    TEMPO_TRACK_DEFAULT_BEATS_PER_BAR,
-    false, false);
+    TEMPO_TRACK_DEFAULT_BEATS_PER_BAR, false, false);
   self->beats_per_bar_port->id.flags2 |=
     PORT_FLAG2_BEATS_PER_BAR;
   self->beats_per_bar_port->id.flags |=
@@ -91,10 +86,9 @@ tempo_track_init (
   self->beats_per_bar_port->id.flags |=
     PORT_FLAG_INTEGER;
 
-  self->beat_unit_port =
-    port_new_with_type_and_owner (
-      TYPE_CONTROL, FLOW_INPUT, _("Beat unit"),
-      PORT_OWNER_TYPE_TRACK, self);
+  self->beat_unit_port = port_new_with_type_and_owner (
+    TYPE_CONTROL, FLOW_INPUT, _ ("Beat unit"),
+    PORT_OWNER_TYPE_TRACK, self);
   self->beat_unit_port->id.sym =
     g_strdup ("beat_unit");
   self->beat_unit_port->minf =
@@ -121,13 +115,11 @@ tempo_track_init (
  * Creates the default tempo track.
  */
 Track *
-tempo_track_default (
-  int   track_pos)
+tempo_track_default (int track_pos)
 {
-  Track * self =
-    track_new (
-      TRACK_TYPE_TEMPO, track_pos, _("Tempo"),
-      F_WITHOUT_LANE);
+  Track * self = track_new (
+    TRACK_TYPE_TEMPO, track_pos, _ ("Tempo"),
+    F_WITHOUT_LANE);
 
   return self;
 }
@@ -143,26 +135,22 @@ tempo_track_get_bpm_at_pos (
   AutomationTrack * at =
     automation_track_find_from_port_id (
       &self->bpm_port->id, false);
-  return
-    automation_track_get_val_at_pos (
-      at, pos, false, false);
+  return automation_track_get_val_at_pos (
+    at, pos, false, false);
 }
 
 /**
  * Returns the current BPM.
  */
 bpm_t
-tempo_track_get_current_bpm (
-  Track * self)
+tempo_track_get_current_bpm (Track * self)
 {
-  return
-    port_get_control_value (
-      self->bpm_port, false);
+  return port_get_control_value (
+    self->bpm_port, false);
 }
 
 const char *
-tempo_track_get_current_bpm_as_str (
-  void * self)
+tempo_track_get_current_bpm_as_str (void * self)
 {
   Track * t = (Track *) self;
   g_return_val_if_fail (
@@ -197,12 +185,13 @@ tempo_track_set_bpm (
   bool    temporary,
   bool    fire_events)
 {
-  if (AUDIO_ENGINE->transport_type ==
-        AUDIO_ENGINE_NO_JACK_TRANSPORT)
+  if (
+    AUDIO_ENGINE->transport_type
+    == AUDIO_ENGINE_NO_JACK_TRANSPORT)
     {
       g_debug (
-        "%s: bpm <%f>, temporary <%d>",
-        __func__, (double) bpm, temporary);
+        "%s: bpm <%f>, temporary <%d>", __func__,
+        (double) bpm, temporary);
     }
 
   if (bpm < TEMPO_TRACK_MIN_BPM)
@@ -222,14 +211,12 @@ tempo_track_set_bpm (
   else
     {
       GError * err = NULL;
-      bool ret =
-        transport_action_perform_bpm_change (
-          start_bpm, bpm, false, &err);
+      bool ret = transport_action_perform_bpm_change (
+        start_bpm, bpm, false, &err);
       if (!ret)
         {
           HANDLE_ERROR (
-            err, "%s",
-            _("Failed to change BPM"));
+            err, "%s", _ ("Failed to change BPM"));
         }
     }
 
@@ -290,21 +277,16 @@ tempo_track_set_beat_unit_from_enum (
 {
   g_return_if_fail (
     !engine_get_run (AUDIO_ENGINE)
-    ||
-    (ROUTER
-     &&
-     router_is_processing_kickoff_thread (ROUTER)));
+    || (ROUTER && router_is_processing_kickoff_thread (ROUTER)));
 
   port_set_control_value (
     self->beat_unit_port, ebeat_unit,
     F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
-  EVENTS_PUSH (
-    ET_TIME_SIGNATURE_CHANGED, NULL);
+  EVENTS_PUSH (ET_TIME_SIGNATURE_CHANGED, NULL);
 }
 
 BeatUnit
-tempo_track_beat_unit_to_enum (
-  int beat_unit)
+tempo_track_beat_unit_to_enum (int beat_unit)
 {
   switch (beat_unit)
     {
@@ -315,7 +297,8 @@ tempo_track_beat_unit_to_enum (
     case 8:
       return BEAT_UNIT_8;
     case 16:
-      return BEAT_UNIT_16;;
+      return BEAT_UNIT_16;
+      ;
     default:
       break;
     }
@@ -323,23 +306,18 @@ tempo_track_beat_unit_to_enum (
 }
 
 BeatUnit
-tempo_track_get_beat_unit_enum (
-  Track * self)
+tempo_track_get_beat_unit_enum (Track * self)
 {
-  return
-    tempo_track_beat_unit_to_enum (
-      tempo_track_get_beat_unit (self));
+  return tempo_track_beat_unit_to_enum (
+    tempo_track_get_beat_unit (self));
 }
 
 void
-tempo_track_set_beat_unit (
-  Track * self,
-  int     beat_unit)
+tempo_track_set_beat_unit (Track * self, int beat_unit)
 {
   BeatUnit ebu =
     tempo_track_beat_unit_to_enum (beat_unit);
-  tempo_track_set_beat_unit_from_enum (
-    self, ebu);
+  tempo_track_set_beat_unit_from_enum (self, ebu);
 }
 
 /**
@@ -347,40 +325,31 @@ tempo_track_set_beat_unit (
  */
 void
 tempo_track_set_beats_per_bar (
-  Track *     self,
-  int         beats_per_bar)
+  Track * self,
+  int     beats_per_bar)
 {
   g_return_if_fail (
     !engine_get_run (AUDIO_ENGINE)
-    ||
-    (ROUTER
-     &&
-     router_is_processing_kickoff_thread (ROUTER)));
+    || (ROUTER && router_is_processing_kickoff_thread (ROUTER)));
 
   port_set_control_value (
     self->beats_per_bar_port, beats_per_bar,
     F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
-  EVENTS_PUSH (
-    ET_TIME_SIGNATURE_CHANGED, NULL);
+  EVENTS_PUSH (ET_TIME_SIGNATURE_CHANGED, NULL);
 }
 
 int
-tempo_track_get_beats_per_bar (
-  Track * self)
+tempo_track_get_beats_per_bar (Track * self)
 {
-  return
-    (int)
-    math_round_float_to_signed_32 (
-      self->beats_per_bar_port->control);
+  return (int) math_round_float_to_signed_32 (
+    self->beats_per_bar_port->control);
 }
 
 int
-tempo_track_get_beat_unit (
-  Track * self)
+tempo_track_get_beat_unit (Track * self)
 {
   BeatUnit ebu =
-    (BeatUnit)
-    math_round_float_to_signed_32 (
+    (BeatUnit) math_round_float_to_signed_32 (
       self->beat_unit_port->control);
   return tempo_track_beat_unit_enum_to_int (ebu);
 }
@@ -391,8 +360,7 @@ tempo_track_get_beat_unit (
  * Mainly used in testing.
  */
 void
-tempo_track_clear (
-  Track * self)
+tempo_track_clear (Track * self)
 {
   /* TODO */
   /*g_warn_if_reached ();*/

@@ -29,8 +29,8 @@
 #include "gui/widgets/knob.h"
 #include "gui/widgets/knob_with_name.h"
 #include "gui/widgets/live_waveform.h"
-#include "gui/widgets/modulator_inner.h"
 #include "gui/widgets/modulator.h"
+#include "gui/widgets/modulator_inner.h"
 #include "gui/widgets/port_connections_popover.h"
 #include "project.h"
 #include "utils/arrays.h"
@@ -45,19 +45,18 @@
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
-  ModulatorInnerWidget, modulator_inner_widget,
+  ModulatorInnerWidget,
+  modulator_inner_widget,
   GTK_TYPE_BOX)
 
 static Plugin *
-get_modulator (
-  ModulatorInnerWidget * self)
+get_modulator (ModulatorInnerWidget * self)
 {
   return self->parent->modulator;
 }
 
 static float
-get_snapped_control_value (
-  Port * port)
+get_snapped_control_value (Port * port)
 {
   float val =
     port_get_control_value (port, F_NOT_NORMALIZED);
@@ -67,12 +66,12 @@ get_snapped_control_value (
 
 static void
 on_show_hide_ui_toggled (
-  GtkToggleButton *  btn,
+  GtkToggleButton *      btn,
   ModulatorInnerWidget * self)
 {
   Plugin * modulator = get_modulator (self);
 
-  modulator->visible = ! modulator->visible;
+  modulator->visible = !modulator->visible;
 
   EVENTS_PUSH (
     ET_PLUGIN_VISIBILITY_CHANGED, modulator);
@@ -80,7 +79,7 @@ on_show_hide_ui_toggled (
 
 static void
 on_delete_clicked (
-  GtkButton *        btn,
+  GtkButton *            btn,
   ModulatorInnerWidget * self)
 {
   MixerSelections * sel = mixer_selections_new ();
@@ -90,15 +89,12 @@ on_delete_clicked (
     modulator->id.slot, F_NO_CLONE);
 
   GError * err = NULL;
-  bool ret =
-    mixer_selections_action_perform_delete (
-      sel,
-      PORT_CONNECTIONS_MGR,
-      &err);
+  bool ret = mixer_selections_action_perform_delete (
+    sel, PORT_CONNECTIONS_MGR, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _("Failed to delete plugins"));
+        err, "%s", _ ("Failed to delete plugins"));
     }
 
   mixer_selections_free (sel);
@@ -106,14 +102,13 @@ on_delete_clicked (
 
 static void
 on_automate_clicked (
-  GtkButton *       btn,
+  GtkButton *            btn,
   ModulatorInnerWidget * self)
 {
   int index = -1;
   for (int i = 0; i < 16; i++)
     {
-      if (self->waveform_automate_buttons[i] ==
-            btn)
+      if (self->waveform_automate_buttons[i] == btn)
         {
           index = i;
           break;
@@ -160,28 +155,22 @@ on_knob_right_click (
   if (n_press != 1)
     return;
 
-  GMenu * menu = g_menu_new ();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
   char tmp[600];
-  sprintf (
-    tmp, "app.reset-control::%p", port);
+  sprintf (tmp, "app.reset-control::%p", port);
   menuitem =
-    z_gtk_create_menu_item (
-      _("Reset"), NULL, tmp);
+    z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
-  sprintf (
-    tmp, "app.bind-midi-cc::%p", port);
-  menuitem =
-    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+  sprintf (tmp, "app.bind-midi-cc::%p", port);
+  menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
-  sprintf (
-    tmp, "app.port-view-info::%p", port);
-  menuitem =
-    z_gtk_create_menu_item (
-      _("View info"), NULL, tmp);
+  sprintf (tmp, "app.port-view-info::%p", port);
+  menuitem = z_gtk_create_menu_item (
+    _ ("View info"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
@@ -192,34 +181,30 @@ on_knob_right_click (
  * Creates a new widget.
  */
 ModulatorInnerWidget *
-modulator_inner_widget_new (
-  ModulatorWidget * parent)
+modulator_inner_widget_new (ModulatorWidget * parent)
 {
-  ModulatorInnerWidget * self =
-    g_object_new (MODULATOR_INNER_WIDGET_TYPE, NULL);
+  ModulatorInnerWidget * self = g_object_new (
+    MODULATOR_INNER_WIDGET_TYPE, NULL);
 
   self->parent = parent;
 
   Plugin * modulator = get_modulator (self);
-  for (int i = 0;
-       i < modulator->num_in_ports; i++)
+  for (int i = 0; i < modulator->num_in_ports; i++)
     {
       Port * port = modulator->in_ports[i];
 
-      if (port->id.type != TYPE_CONTROL ||
-          port->id.flow != FLOW_INPUT ||
-          port->id.flags & PORT_FLAG_NOT_ON_GUI)
+      if (
+        port->id.type != TYPE_CONTROL
+        || port->id.flow != FLOW_INPUT
+        || port->id.flags & PORT_FLAG_NOT_ON_GUI)
         continue;
 
-      KnobWidget * knob =
-        knob_widget_new_simple (
-          control_port_get_val,
-          control_port_get_default_val,
-          control_port_set_real_val,
-          port, port->minf, port->maxf,
-          24, port->zerof);
-      knob->snapped_getter =
-        (GenericFloatGetter)
+      KnobWidget * knob = knob_widget_new_simple (
+        control_port_get_val,
+        control_port_get_default_val,
+        control_port_set_real_val, port, port->minf,
+        port->maxf, 24, port->zerof);
+      knob->snapped_getter = (GenericFloatGetter)
         get_snapped_control_value;
       KnobWithNameWidget * knob_with_name =
         knob_with_name_widget_new (
@@ -241,9 +226,8 @@ modulator_inner_widget_new (
         GTK_WIDGET (knob_with_name));
 
       /* add context menu */
-      GtkGestureClick * mp =
-        GTK_GESTURE_CLICK (
-          gtk_gesture_click_new ());
+      GtkGestureClick * mp = GTK_GESTURE_CLICK (
+        gtk_gesture_click_new ());
       gtk_gesture_single_set_button (
         GTK_GESTURE_SINGLE (mp),
         GDK_BUTTON_SECONDARY);
@@ -280,15 +264,13 @@ modulator_inner_widget_new (
         GTK_WIDGET (self->waveform_overlays[index]),
         true);
       gtk_overlay_set_child (
-        GTK_OVERLAY (
-          self->waveform_overlays[index]),
+        GTK_OVERLAY (self->waveform_overlays[index]),
         GTK_WIDGET (self->waveforms[index]));
 
       /* add button for selecting automatable */
       self->waveform_automate_buttons[index] =
-        GTK_BUTTON (
-          gtk_button_new_from_icon_name (
-            "automate"));
+        GTK_BUTTON (gtk_button_new_from_icon_name (
+          "automate"));
       gtk_widget_set_visible (
         GTK_WIDGET (
           self->waveform_automate_buttons[index]),
@@ -309,8 +291,8 @@ modulator_inner_widget_new (
       g_signal_connect (
         G_OBJECT (
           self->waveform_automate_buttons[index]),
-        "clicked",
-        G_CALLBACK (on_automate_clicked), self);
+        "clicked", G_CALLBACK (on_automate_clicked),
+        self);
 
       gtk_box_append (
         GTK_BOX (self->waveforms_box),
@@ -328,8 +310,7 @@ modulator_inner_widget_new (
 }
 
 static void
-finalize (
-  ModulatorInnerWidget * self)
+finalize (ModulatorInnerWidget * self)
 {
   if (self->knobs)
     {
@@ -337,20 +318,19 @@ finalize (
     }
 
   G_OBJECT_CLASS (
-    modulator_inner_widget_parent_class)->
-      finalize (G_OBJECT (self));
+    modulator_inner_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 static void
-dispose (
-  ModulatorInnerWidget * self)
+dispose (ModulatorInnerWidget * self)
 {
   gtk_widget_unparent (
     GTK_WIDGET (self->connections_popover));
 
   G_OBJECT_CLASS (
-    modulator_inner_widget_parent_class)->
-      dispose (G_OBJECT (self));
+    modulator_inner_widget_parent_class)
+    ->dispose (G_OBJECT (self));
 }
 
 static void
@@ -375,8 +355,7 @@ static void
 modulator_inner_widget_class_init (
   ModulatorInnerWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "modulator_inner.ui");
   gtk_widget_class_set_css_name (

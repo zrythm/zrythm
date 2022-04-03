@@ -58,13 +58,11 @@ typedef enum RegionType
   REGION_TYPE_CHORD = 1 << 3,
 } RegionType;
 
-static const cyaml_bitdef_t
-region_type_bitvals[] =
-{
-  { .name = "midi", .offset =  0, .bits =  1 },
-  { .name = "audio", .offset =  1, .bits =  1 },
-  { .name = "automation", .offset = 2, .bits = 1 },
-  { .name = "chord", .offset = 3, .bits = 1 },
+static const cyaml_bitdef_t region_type_bitvals[] = {
+  {.name = "midi",        .offset = 0, .bits = 1},
+  { .name = "audio",      .offset = 1, .bits = 1},
+  { .name = "automation", .offset = 2, .bits = 1},
+  { .name = "chord",      .offset = 3, .bits = 1},
 };
 
 /**
@@ -74,81 +72,74 @@ region_type_bitvals[] =
  */
 typedef struct RegionIdentifier
 {
-  int          schema_version;
+  int schema_version;
 
-  RegionType   type;
+  RegionType type;
 
   /** Link group index, if any, or -1. */
-  int          link_group;
+  int link_group;
 
   unsigned int track_name_hash;
   int          lane_pos;
 
   /** Automation track index in the automation
    * tracklist, if automation region. */
-  int          at_idx;
+  int at_idx;
 
   /** Index inside lane or automation track. */
-  int          idx;
+  int idx;
 } RegionIdentifier;
 
 static const cyaml_schema_field_t
-region_identifier_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    RegionIdentifier, schema_version),
-  YAML_FIELD_BITFIELD (
-    RegionIdentifier, type, region_type_bitvals),
-  YAML_FIELD_INT (
-    RegionIdentifier, link_group),
-  YAML_FIELD_UINT (
-    RegionIdentifier, track_name_hash),
-  YAML_FIELD_INT (
-    RegionIdentifier, lane_pos),
-  YAML_FIELD_INT (
-    RegionIdentifier, at_idx),
-  YAML_FIELD_INT (
-    RegionIdentifier, idx),
+  region_identifier_fields_schema[] = {
+    YAML_FIELD_INT (RegionIdentifier, schema_version),
+    YAML_FIELD_BITFIELD (
+      RegionIdentifier,
+      type,
+      region_type_bitvals),
+    YAML_FIELD_INT (RegionIdentifier, link_group),
+    YAML_FIELD_UINT (RegionIdentifier, track_name_hash),
+    YAML_FIELD_INT (RegionIdentifier, lane_pos),
+    YAML_FIELD_INT (RegionIdentifier, at_idx),
+    YAML_FIELD_INT (RegionIdentifier, idx),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-region_identifier_schema = {
-  YAML_VALUE_PTR (
-    RegionIdentifier,
-    region_identifier_fields_schema),
-};
+  region_identifier_schema = {
+    YAML_VALUE_PTR (
+      RegionIdentifier,
+      region_identifier_fields_schema),
+  };
 
 static const cyaml_schema_value_t
-region_identifier_schema_default = {
-  YAML_VALUE_DEFAULT (
-    RegionIdentifier,
-    region_identifier_fields_schema),
-};
+  region_identifier_schema_default = {
+    YAML_VALUE_DEFAULT (
+      RegionIdentifier,
+      region_identifier_fields_schema),
+  };
 
 void
-region_identifier_init (
-  RegionIdentifier * self);
+region_identifier_init (RegionIdentifier * self);
 
 static inline int
 region_identifier_is_equal (
   const RegionIdentifier * a,
   const RegionIdentifier * b)
 {
-  return
-    a->idx == b->idx &&
-    a->track_name_hash == b->track_name_hash &&
-    a->lane_pos == b->lane_pos &&
-    a->at_idx == b->at_idx &&
-    a->link_group == b->link_group &&
-    a->type == b->type;
+  return a->idx == b->idx
+         && a->track_name_hash == b->track_name_hash
+         && a->lane_pos == b->lane_pos
+         && a->at_idx == b->at_idx
+         && a->link_group == b->link_group
+         && a->type == b->type;
 }
 
 NONNULL
 static inline void
 region_identifier_copy (
-  RegionIdentifier * dest,
+  RegionIdentifier *       dest,
   const RegionIdentifier * src)
 {
   dest->schema_version = src->schema_version;
@@ -161,20 +152,20 @@ region_identifier_copy (
 }
 
 bool
-region_identifier_validate (
-  RegionIdentifier * self);
+region_identifier_validate (RegionIdentifier * self);
 
 static inline const char *
 region_identifier_get_region_type_name (
   RegionType type)
 {
   g_return_val_if_fail (
-    type >= REGION_TYPE_MIDI &&
-      type <= REGION_TYPE_CHORD, NULL);
+    type >= REGION_TYPE_MIDI
+      && type <= REGION_TYPE_CHORD,
+    NULL);
 
-  return
-    region_type_bitvals[
-      utils_get_uint_from_bitfield_val (type)].name;
+  return region_type_bitvals
+    [utils_get_uint_from_bitfield_val (type)]
+      .name;
 }
 
 static inline void
@@ -188,13 +179,11 @@ region_identifier_print (
     region_identifier_get_region_type_name (
       self->type),
     self->track_name_hash, self->lane_pos,
-    self->at_idx,
-    self->idx, self->link_group);
+    self->at_idx, self->idx, self->link_group);
 }
 
 void
-region_identifier_free (
-  RegionIdentifier * self);
+region_identifier_free (RegionIdentifier * self);
 
 /**
  * @}

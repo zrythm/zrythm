@@ -32,7 +32,5 @@ fade_get_y_normalized (
   CurveOptions * opts,
   int            fade_in)
 {
-  return
-    curve_get_normalized_y (
-      x, opts, !fade_in);
+  return curve_get_normalized_y (x, opts, !fade_in);
 }

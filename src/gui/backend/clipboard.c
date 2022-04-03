@@ -52,16 +52,12 @@ clipboard_new_for_arranger_selections (
         CLIPBOARD_TYPE_TIMELINE_SELECTIONS;
       break;
     case ARRANGER_SELECTIONS_TYPE_MIDI:
-      self->ma_sel =
-        (MidiArrangerSelections *) sel;
-      self->type =
-        CLIPBOARD_TYPE_MIDI_SELECTIONS;
+      self->ma_sel = (MidiArrangerSelections *) sel;
+      self->type = CLIPBOARD_TYPE_MIDI_SELECTIONS;
       break;
     case ARRANGER_SELECTIONS_TYPE_CHORD:
-      self->chord_sel =
-        (ChordSelections *) sel;
-      self->type =
-        CLIPBOARD_TYPE_CHORD_SELECTIONS;
+      self->chord_sel = (ChordSelections *) sel;
+      self->type = CLIPBOARD_TYPE_CHORD_SELECTIONS;
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -98,8 +94,7 @@ clipboard_new_for_tracklist_selections (
   if (clone)
     {
       GError * err = NULL;
-      sel =
-        tracklist_selections_clone (sel, &err);
+      sel = tracklist_selections_clone (sel, &err);
       if (!sel)
         {
           clipboard_free (self);
@@ -123,13 +118,13 @@ clipboard_new_for_tracklist_selections (
  * contains arranger selections.
  */
 ArrangerSelections *
-clipboard_get_selections (
-  Clipboard * self)
+clipboard_get_selections (Clipboard * self)
 {
 #define RETURN_IF_EXISTS(selections) \
   if (self->selections) \
     { \
-      return (ArrangerSelections *) self->selections; \
+      return (ArrangerSelections *) \
+        self->selections; \
     }
 
   RETURN_IF_EXISTS (ma_sel);
@@ -146,8 +141,7 @@ clipboard_get_selections (
  * Frees the clipboard and all associated data.
  */
 void
-clipboard_free (
-  Clipboard * self)
+clipboard_free (Clipboard * self)
 {
   switch (self->type)
     {

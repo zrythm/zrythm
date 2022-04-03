@@ -39,15 +39,14 @@
 #include "zrythm-config.h"
 
 #include <stdlib.h>
-#include <ctype.h>
 
 #include "gui/widgets/main_window.h"
 #include "plugins/cached_plugin_descriptors.h"
 #include "plugins/carla/carla_discovery.h"
 #include "plugins/collections.h"
+#include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
-#include "plugins/lv2_plugin.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
@@ -60,16 +59,17 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
+#include <ctype.h>
+#include <lv2/buf-size/buf-size.h>
 #include <lv2/event/event.h>
+#include <lv2/midi/midi.h>
 #include <lv2/options/options.h>
 #include <lv2/parameters/parameters.h>
-#include <lv2/buf-size/buf-size.h>
 #include <lv2/patch/patch.h>
 #include <lv2/port-groups/port-groups.h>
-#include <lv2/midi/midi.h>
 #include <lv2/port-props/port-props.h>
 #include <lv2/presets/presets.h>
 #include <lv2/resize-port/resize-port.h>
@@ -93,8 +93,8 @@ add_category_and_author (
         "name...");
     }
   bool ignore_category = false;
-  for (int i = 0;
-       i < self->num_plugin_categories; i++)
+  for (int i = 0; i < self->num_plugin_categories;
+       i++)
     {
       char * cat = self->plugin_categories[i];
       if (!strcmp (cat, category))
@@ -106,16 +106,16 @@ add_category_and_author (
   if (!ignore_category)
     {
       g_message ("%s: %s", __func__, category);
-      self->plugin_categories[
-        self->num_plugin_categories++] =
-          g_strdup (category);
+      self->plugin_categories
+        [self->num_plugin_categories++] =
+        g_strdup (category);
     }
 
   if (author)
     {
       bool ignore_author = false;
-      for (int i = 0;
-           i < self->num_plugin_authors; i++)
+      for (int i = 0; i < self->num_plugin_authors;
+           i++)
         {
           char * cat = self->plugin_authors[i];
           if (!strcmp (cat, author))
@@ -128,45 +128,45 @@ add_category_and_author (
       if (!ignore_author)
         {
           g_message ("%s: %s", __func__, author);
-          self->plugin_authors[
-            self->num_plugin_authors++] =
-              g_strdup (author);
+          self->plugin_authors
+            [self->num_plugin_authors++] =
+            g_strdup (author);
         }
     }
 }
 
-static int sort_plugin_func (
-  const void *a, const void *b)
+static int
+sort_plugin_func (const void * a, const void * b)
 {
   PluginDescriptor * pa =
     *(PluginDescriptor * const *) a;
   PluginDescriptor * pb =
     *(PluginDescriptor * const *) b;
   g_return_val_if_fail (pa->name && pb->name, -1);
-  int r = strcasecmp(pa->name, pb->name);
+  int r = strcasecmp (pa->name, pb->name);
   if (r)
     return r;
 
   /* if equal ignoring case, use opposite of strcmp()
    * result to get lower before upper */
   /* aka: return strcmp(b, a); */
-  return -strcmp(pa->name, pb->name);
+  return -strcmp (pa->name, pb->name);
 }
 
 /*static void*/
 /*print_plugins ()*/
 /*{*/
-  /*for (int i = 0; i < PLUGIN_MANAGER->num_plugins; i++)*/
-    /*{*/
-      /*PluginDescriptor * descr =*/
-        /*PLUGIN_MANAGER->plugin_descriptors[i];*/
+/*for (int i = 0; i < PLUGIN_MANAGER->num_plugins; i++)*/
+/*{*/
+/*PluginDescriptor * descr =*/
+/*PLUGIN_MANAGER->plugin_descriptors[i];*/
 
-      /*g_message ("[%d] %s (%s - %s)",*/
-                 /*i,*/
-                 /*descr->name,*/
-                 /*descr->uri,*/
-                 /*descr->category_str);*/
-    /*}*/
+/*g_message ("[%d] %s (%s - %s)",*/
+/*i,*/
+/*descr->name,*/
+/*descr->uri,*/
+/*descr->category_str);*/
+/*}*/
 /*}*/
 
 /**
@@ -205,69 +205,59 @@ plugin_manager_get_node (
 }
 
 static void
-create_and_load_lilv_word (
-  PluginManager * self)
+create_and_load_lilv_word (PluginManager * self)
 {
   g_message ("Creating Lilv World...");
   LilvWorld * world = lilv_world_new ();
   self->lilv_world = world;
 
   /* load all installed plugins on system */
-#if !defined (_WOE32) && !defined (__APPLE__)
+#if !defined(_WOE32) && !defined(__APPLE__)
   self->lv2_path = NULL;
   LilvNode * lv2_path = NULL;
-  char * env_lv2_path = getenv ("LV2_PATH");
-  char * builtin_plugins_path =
-    zrythm_get_dir (ZRYTHM_DIR_SYSTEM_LV2_PLUGINS_DIR);
+  char *     env_lv2_path = getenv ("LV2_PATH");
+  char *     builtin_plugins_path = zrythm_get_dir (
+        ZRYTHM_DIR_SYSTEM_LV2_PLUGINS_DIR);
   if (env_lv2_path && (strlen (env_lv2_path) > 0))
     {
-      self->lv2_path =
-        g_strdup_printf (
-          "%s:%s",
-          env_lv2_path, builtin_plugins_path);
+      self->lv2_path = g_strdup_printf (
+        "%s:%s", env_lv2_path, builtin_plugins_path);
     }
   else
     {
-#ifdef FLATPAK_BUILD
-      self->lv2_path =
-        g_strdup_printf (
-          "%s/.lv2:/app/lib/lv2:"
-          "/app/extensions/Plugins/lv2:%s",
-          g_get_home_dir (),
-          builtin_plugins_path);
-#else
+#  ifdef FLATPAK_BUILD
+      self->lv2_path = g_strdup_printf (
+        "%s/.lv2:/app/lib/lv2:"
+        "/app/extensions/Plugins/lv2:%s",
+        g_get_home_dir (), builtin_plugins_path);
+#  else
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
-          self->lv2_path =
-            g_strdup_printf (
-              "%s/.lv2:/usr/local/lib/lv2:"
-              "/usr/lib/lv2:%s",
-              g_get_home_dir (),
-              builtin_plugins_path);
+          self->lv2_path = g_strdup_printf (
+            "%s/.lv2:/usr/local/lib/lv2:"
+            "/usr/lib/lv2:%s",
+            g_get_home_dir (), builtin_plugins_path);
         }
       else
         {
-          self->lv2_path =
-            g_strdup_printf (
-              "%s/.lv2:/usr/local/" LIBDIR_NAME
-              "/lv2:/usr/" LIBDIR_NAME "/lv2:"
-              /* some distros report the wrong
+          self->lv2_path = g_strdup_printf (
+            "%s/.lv2:/usr/local/" LIBDIR_NAME
+            "/lv2:/usr/" LIBDIR_NAME
+            "/lv2:"
+            /* some distros report the wrong
                * LIBDIR_NAME so hardcode these */
-              "/usr/local/lib/lv2:/usr/lib/lv2:%s",
-              g_get_home_dir (),
-              builtin_plugins_path);
+            "/usr/local/lib/lv2:/usr/lib/lv2:%s",
+            g_get_home_dir (), builtin_plugins_path);
         }
-#endif /* flatpak build */
+#  endif /* flatpak build */
     }
 
   g_return_if_fail (self->lv2_path);
 
   /* add zrythm custom path for installer */
   char * before_path = self->lv2_path;
-  self->lv2_path =
-    g_strdup_printf (
-      "%s:" PREFIX "/lib/zrythm/lib/lv2",
-      before_path);
+  self->lv2_path = g_strdup_printf (
+    "%s:" PREFIX "/lib/zrythm/lib/lv2", before_path);
   g_free (before_path);
 
   /* add test plugins if testing */
@@ -278,15 +268,13 @@ create_and_load_lilv_word (
       g_return_if_fail (tests_builddir);
 
       before_path = self->lv2_path;
-      self->lv2_path =
-        g_strdup_printf (
-          "%s:%s/lv2plugins",
-          before_path, tests_builddir);
+      self->lv2_path = g_strdup_printf (
+        "%s:%s/lv2plugins", before_path,
+        tests_builddir);
       g_free (before_path);
     }
 
-  lv2_path =
-    lilv_new_string (world, self->lv2_path);
+  lv2_path = lilv_new_string (world, self->lv2_path);
 
   g_message (
     "%s: LV2 path: %s", __func__, self->lv2_path);
@@ -297,26 +285,24 @@ create_and_load_lilv_word (
     {
       g_message (
         "%s: loading specifications and plugin "
-        "classes...",  __func__);
+        "classes...",
+        __func__);
       lilv_world_load_specifications (world);
       lilv_world_load_plugin_classes (world);
     }
   else
     {
-      g_message (
-        "%s: loading all...", __func__);
+      g_message ("%s: loading all...", __func__);
       lilv_world_load_all (world);
     }
 }
 
 static void
-init_symap (
-  PluginManager * self)
+init_symap (PluginManager * self)
 {
   /* symap URIDs */
-#define SYMAP_MAP(target,uri) \
-  self->urids.target = \
-    symap_map (self->symap, uri);
+#define SYMAP_MAP(target, uri) \
+  self->urids.target = symap_map (self->symap, uri);
 
   SYMAP_MAP (atom_Float, LV2_ATOM__Float);
   SYMAP_MAP (atom_Int, LV2_ATOM__Int);
@@ -335,15 +321,13 @@ init_symap (
     bufsz_nominalBlockLength,
     LV2_BUF_SIZE__nominalBlockLength);
   SYMAP_MAP (
-    bufsz_sequenceSize,
-    LV2_BUF_SIZE__sequenceSize);
-  SYMAP_MAP ( log_Error, LV2_LOG__Error);
+    bufsz_sequenceSize, LV2_BUF_SIZE__sequenceSize);
+  SYMAP_MAP (log_Error, LV2_LOG__Error);
   SYMAP_MAP (log_Trace, LV2_LOG__Trace);
   SYMAP_MAP (log_Warning, LV2_LOG__Warning);
   SYMAP_MAP (midi_MidiEvent, LV2_MIDI__MidiEvent);
   SYMAP_MAP (
-    param_sampleRate,
-    LV2_PARAMETERS__sampleRate);
+    param_sampleRate, LV2_PARAMETERS__sampleRate);
   SYMAP_MAP (patch_Get, LV2_PATCH__Get);
   SYMAP_MAP (patch_Put, LV2_PATCH__Put);
   SYMAP_MAP (patch_Set, LV2_PATCH__Set);
@@ -355,11 +339,9 @@ init_symap (
   SYMAP_MAP (time_barBeat, LV2_TIME__barBeat);
   SYMAP_MAP (time_beatUnit, LV2_TIME__beatUnit);
   SYMAP_MAP (
-    time_beatsPerBar,
-    LV2_TIME__beatsPerBar);
+    time_beatsPerBar, LV2_TIME__beatsPerBar);
   SYMAP_MAP (
-    time_beatsPerMinute,
-    LV2_TIME__beatsPerMinute);
+    time_beatsPerMinute, LV2_TIME__beatsPerMinute);
   SYMAP_MAP (time_frame, LV2_TIME__frame);
   SYMAP_MAP (time_speed, LV2_TIME__speed);
   SYMAP_MAP (ui_updateRate, LV2_UI__updateRate);
@@ -367,21 +349,18 @@ init_symap (
   SYMAP_MAP (ui_scaleFactor, LV2_UI__scaleFactor);
 #endif
 
-  SYMAP_MAP (
-    z_hostInfo_name, Z_LV2_HOST_INFO__name);
+  SYMAP_MAP (z_hostInfo_name, Z_LV2_HOST_INFO__name);
   SYMAP_MAP (
     z_hostInfo_version, Z_LV2_HOST_INFO__version);
 #undef SYMAP_MAP
 }
 
 static void
-load_bundled_lv2_plugins (
-  PluginManager * self)
+load_bundled_lv2_plugins (PluginManager * self)
 {
 #ifndef _WOE32
-  GError * err;
-  const char * path =
-    CONFIGURE_LIBDIR "/zrythm/lv2";
+  GError *     err;
+  const char * path = CONFIGURE_LIBDIR "/zrythm/lv2";
   if (g_file_test (
         path,
         G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
@@ -391,24 +370,20 @@ load_bundled_lv2_plugins (
       if (bundle_lv2_dir)
         {
           const char * dir;
-          char * str;
-          while ((dir = g_dir_read_name (bundle_lv2_dir)))
+          char *       str;
+          while ((
+            dir = g_dir_read_name (bundle_lv2_dir)))
             {
-              str =
-                g_strdup_printf (
-                  "file://%s%s%s%smanifest.ttl",
-                  path,
-                  G_DIR_SEPARATOR_S,
-                  dir,
-                  G_DIR_SEPARATOR_S);
-              LilvNode * uri =
-                lilv_new_uri (
-                  self->lilv_world, str);
+              str = g_strdup_printf (
+                "file://%s%s%s%smanifest.ttl", path,
+                G_DIR_SEPARATOR_S, dir,
+                G_DIR_SEPARATOR_S);
+              LilvNode * uri = lilv_new_uri (
+                self->lilv_world, str);
               lilv_world_load_bundle (
                 self->lilv_world, uri);
               g_message (
-                "Loaded bundled plugin at %s",
-                str);
+                "Loaded bundled plugin at %s", str);
               g_free (str);
               lilv_node_free (uri);
             }
@@ -416,9 +391,9 @@ load_bundled_lv2_plugins (
         }
       else
         {
-          char * msg =
-            g_strdup_printf ("%s%s",
-            _("Error loading LV2 bundle dir: "),
+          char * msg = g_strdup_printf (
+            "%s%s",
+            _ ("Error loading LV2 bundle dir: "),
             err->message);
           if (ZRYTHM_HAVE_UI)
             {
@@ -436,12 +411,10 @@ plugin_manager_new (void)
 {
   PluginManager * self = object_new (PluginManager);
 
-  self->plugin_descriptors =
-    g_ptr_array_new_full (
-      100,
-      (GDestroyNotify) plugin_descriptor_free);
+  self->plugin_descriptors = g_ptr_array_new_full (
+    100, (GDestroyNotify) plugin_descriptor_free);
 
-  self->symap = symap_new();
+  self->symap = symap_new ();
   zix_sem_init (&self->symap_lock, 1);
 
   self->nodes_size = 1;
@@ -465,53 +438,47 @@ plugin_manager_new (void)
 
 #ifdef HAVE_CARLA
 static char **
-get_vst_paths (
-  PluginManager * self)
+get_vst_paths (PluginManager * self)
 {
   g_message ("%s: getting paths...", __func__);
 
-#ifdef _WOE32
-  char ** paths =
-    g_settings_get_strv (
-      S_P_PLUGINS_PATHS,
-      "vst-search-paths-windows");
+#  ifdef _WOE32
+  char ** paths = g_settings_get_strv (
+    S_P_PLUGINS_PATHS, "vst-search-paths-windows");
   g_return_val_if_fail (paths, NULL);
-#elif defined (__APPLE__)
-  char ** paths =
-    g_strsplit (
-      "/Library/Audio/Plug-ins/VST"
-        G_SEARCHPATH_SEPARATOR_S,
-      G_SEARCHPATH_SEPARATOR_S, -1);
-#else
-  char * vst_path =
-    g_strdup (getenv ("VST_PATH"));
+#  elif defined(__APPLE__)
+  char ** paths = g_strsplit (
+    "/Library/Audio/Plug-ins/VST" G_SEARCHPATH_SEPARATOR_S,
+    G_SEARCHPATH_SEPARATOR_S, -1);
+#  else
+  char * vst_path = g_strdup (getenv ("VST_PATH"));
   if (!vst_path || (strlen (vst_path) == 0))
     {
-#ifdef FLATPAK_BUILD
+#    ifdef FLATPAK_BUILD
       vst_path =
         g_strdup ("/app/extensions/Plugins/lxvst");
-#else
+#    else
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
-          vst_path =
-            g_strdup_printf (
-              "%s/.vst:%s/vst:"
-              "/usr/" LIBDIR_NAME "/vst:"
-              "/usr/local/" LIBDIR_NAME "/vst",
-              g_get_home_dir (), g_get_home_dir ());
+          vst_path = g_strdup_printf (
+            "%s/.vst:%s/vst:"
+            "/usr/" LIBDIR_NAME
+            "/vst:"
+            "/usr/local/" LIBDIR_NAME "/vst",
+            g_get_home_dir (), g_get_home_dir ());
         }
       else
         {
-          vst_path =
-            g_strdup_printf (
-              "%s/.vst:%s/vst:"
-              "/usr/lib/vst:"
-              "/usr/" LIBDIR_NAME "/vst:"
-              "/usr/local/lib/vst:"
-              "/usr/local/" LIBDIR_NAME "/vst",
-              g_get_home_dir (), g_get_home_dir ());
+          vst_path = g_strdup_printf (
+            "%s/.vst:%s/vst:"
+            "/usr/lib/vst:"
+            "/usr/" LIBDIR_NAME
+            "/vst:"
+            "/usr/local/lib/vst:"
+            "/usr/local/" LIBDIR_NAME "/vst",
+            g_get_home_dir (), g_get_home_dir ());
         }
-#endif
+#    endif
 
       g_message (
         "Using standard VST paths: %s", vst_path);
@@ -523,10 +490,10 @@ get_vst_paths (
         vst_path);
     }
   g_return_val_if_fail (vst_path, NULL);
-  char ** paths =
-    g_strsplit (vst_path, G_SEARCHPATH_SEPARATOR_S, 0);
+  char ** paths = g_strsplit (
+    vst_path, G_SEARCHPATH_SEPARATOR_S, 0);
   g_free (vst_path);
-#endif // __APPLE__
+#  endif // __APPLE__
 
   g_message ("%s: done", __func__);
 
@@ -534,51 +501,45 @@ get_vst_paths (
 }
 
 static char **
-get_vst3_paths (
-  PluginManager * self)
+get_vst3_paths (PluginManager * self)
 {
-#ifdef _WOE32
-  return
-    g_strsplit (
-      "C:\\Program Files\\Common Files\\VST3"
-      G_SEARCHPATH_SEPARATOR_S
-      "C:\\Program Files (x86)\\Common Files\\VST3",
-      G_SEARCHPATH_SEPARATOR_S, 0);
-#elif defined (__APPLE__)
-  return
-    g_strsplit (
-      "/Library/Audio/Plug-ins/VST3" G_SEARCHPATH_SEPARATOR_S,
-      G_SEARCHPATH_SEPARATOR_S, -1);
-#else
-  char * vst_path =
-    g_strdup (getenv ("VST3_PATH"));
+#  ifdef _WOE32
+  return g_strsplit (
+    "C:\\Program Files\\Common Files\\VST3" G_SEARCHPATH_SEPARATOR_S
+    "C:\\Program Files (x86)\\Common Files\\VST3",
+    G_SEARCHPATH_SEPARATOR_S, 0);
+#  elif defined(__APPLE__)
+  return g_strsplit (
+    "/Library/Audio/Plug-ins/VST3" G_SEARCHPATH_SEPARATOR_S,
+    G_SEARCHPATH_SEPARATOR_S, -1);
+#  else
+  char * vst_path = g_strdup (getenv ("VST3_PATH"));
   if (!vst_path || (strlen (vst_path) == 0))
     {
-#ifdef FLATPAK_BUILD
+#    ifdef FLATPAK_BUILD
       vst_path =
         g_strdup ("/app/extensions/Plugins/vst3");
-#else
+#    else
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
-          vst_path =
-            g_strdup_printf (
-              "%s/.vst3:"
-              "/usr/lib/vst3:"
-              "/usr/local/lib/vst3",
-              g_get_home_dir ());
+          vst_path = g_strdup_printf (
+            "%s/.vst3:"
+            "/usr/lib/vst3:"
+            "/usr/local/lib/vst3",
+            g_get_home_dir ());
         }
       else
         {
-          vst_path =
-            g_strdup_printf (
-              "%s/.vst3:"
-              "/usr/lib/vst3:"
-              "/usr/" LIBDIR_NAME "/vst3:"
-              "/usr/local/lib/vst3:"
-              "/usr/local/" LIBDIR_NAME "/vst3",
-              g_get_home_dir ());
+          vst_path = g_strdup_printf (
+            "%s/.vst3:"
+            "/usr/lib/vst3:"
+            "/usr/" LIBDIR_NAME
+            "/vst3:"
+            "/usr/local/lib/vst3:"
+            "/usr/local/" LIBDIR_NAME "/vst3",
+            g_get_home_dir ());
         }
-#endif
+#    endif
 
       g_message (
         "Using standard VST3 paths: %s", vst_path);
@@ -590,22 +551,21 @@ get_vst3_paths (
         vst_path);
     }
   g_return_val_if_fail (vst_path, NULL);
-  char ** paths =
-    g_strsplit (vst_path, G_SEARCHPATH_SEPARATOR_S, 0);
+  char ** paths = g_strsplit (
+    vst_path, G_SEARCHPATH_SEPARATOR_S, 0);
   g_free (vst_path);
   return paths;
-#endif // __APPLE__
+#  endif // __APPLE__
 }
 
 static int
-get_vst3_count (
-  PluginManager * self)
+get_vst3_count (PluginManager * self)
 {
   char ** paths = get_vst3_paths (self);
   g_return_val_if_fail (paths, 0);
-  int path_idx = 0;
+  int    path_idx = 0;
   char * path;
-  int count = 0;
+  int    count = 0;
   while ((path = paths[path_idx++]) != NULL)
     {
       if (!g_file_test (path, G_FILE_TEST_EXISTS))
@@ -618,9 +578,10 @@ get_vst3_count (
         continue;
 
       char * plugin_path;
-      int plugin_idx = 0;
-      while ((plugin_path = vst_plugins[plugin_idx++]) !=
-               NULL)
+      int    plugin_idx = 0;
+      while (
+        (plugin_path = vst_plugins[plugin_idx++])
+        != NULL)
         {
           count++;
         }
@@ -632,14 +593,13 @@ get_vst3_count (
 }
 
 static int
-get_vst_count (
-  PluginManager * self)
+get_vst_count (PluginManager * self)
 {
   char ** paths = get_vst_paths (self);
   g_return_val_if_fail (paths, 0);
-  int path_idx = 0;
+  int    path_idx = 0;
   char * path;
-  int count = 0;
+  int    count = 0;
   while ((path = paths[path_idx++]) != NULL)
     {
       if (!g_file_test (path, G_FILE_TEST_EXISTS))
@@ -652,9 +612,10 @@ get_vst_count (
         continue;
 
       char * plugin_path;
-      int plugin_idx = 0;
-      while ((plugin_path = vst_plugins[plugin_idx++]) !=
-               NULL)
+      int    plugin_idx = 0;
+      while (
+        (plugin_path = vst_plugins[plugin_idx++])
+        != NULL)
         {
           count++;
         }
@@ -669,24 +630,21 @@ get_vst_count (
  * Gets the SFZ or SF2 paths.
  */
 static char **
-get_sf_paths (
-  PluginManager * self,
-  bool            sf2)
+get_sf_paths (PluginManager * self, bool sf2)
 {
   char ** paths = NULL;
   if (ZRYTHM_TESTING)
     {
-      paths =
-        g_strsplit (G_SEARCHPATH_SEPARATOR_S, G_SEARCHPATH_SEPARATOR_S, -1);
+      paths = g_strsplit (
+        G_SEARCHPATH_SEPARATOR_S,
+        G_SEARCHPATH_SEPARATOR_S, -1);
     }
   else
     {
-      paths =
-        g_settings_get_strv (
-          S_P_PLUGINS_PATHS,
-          sf2 ?
-            "sf2-search-paths" :
-            "sfz-search-paths");
+      paths = g_settings_get_strv (
+        S_P_PLUGINS_PATHS,
+        sf2 ? "sf2-search-paths"
+            : "sfz-search-paths");
       g_return_val_if_fail (paths, NULL);
     }
 
@@ -701,9 +659,9 @@ get_sf_count (
   char ** paths =
     get_sf_paths (self, prot == PROT_SF2);
   g_return_val_if_fail (paths, 0);
-  int path_idx = 0;
+  int    path_idx = 0;
   char * path;
-  int count = 0;
+  int    count = 0;
   while ((path = paths[path_idx++]) != NULL)
     {
       if (!g_file_test (path, G_FILE_TEST_EXISTS))
@@ -718,9 +676,10 @@ get_sf_count (
         continue;
 
       char * plugin_path;
-      int plugin_idx = 0;
-      while ((plugin_path = sf_instruments[plugin_idx++]) !=
-               NULL)
+      int    plugin_idx = 0;
+      while (
+        (plugin_path = sf_instruments[plugin_idx++])
+        != NULL)
         {
           count++;
         }
@@ -732,36 +691,34 @@ get_sf_count (
 }
 
 static char **
-get_dssi_paths (
-  PluginManager * self)
+get_dssi_paths (PluginManager * self)
 {
   g_debug ("%s: getting paths...", __func__);
 
-  char * dssi_path =
-    g_strdup (getenv ("DSSI_PATH"));
+  char * dssi_path = g_strdup (getenv ("DSSI_PATH"));
   if (!dssi_path || (strlen (dssi_path) == 0))
     {
-#ifdef FLATPAK_BUILD
+#  ifdef FLATPAK_BUILD
       dssi_path =
         g_strdup ("/app/extensions/Plugins/dssi");
-#else
+#  else
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
-          dssi_path =
-            g_strdup (
-              "/usr/" LIBDIR_NAME "/dssi:"
-              "/usr/local/" LIBDIR_NAME "/dssi");
+          dssi_path = g_strdup (
+            "/usr/" LIBDIR_NAME
+            "/dssi:"
+            "/usr/local/" LIBDIR_NAME "/dssi");
         }
       else
         {
-          dssi_path =
-            g_strdup (
-              "/usr/lib/dssi:"
-              "/usr/" LIBDIR_NAME "/dssi:"
-              "/usr/local/lib/dssi:"
-              "/usr/local/" LIBDIR_NAME "/dssi");
+          dssi_path = g_strdup (
+            "/usr/lib/dssi:"
+            "/usr/" LIBDIR_NAME
+            "/dssi:"
+            "/usr/local/lib/dssi:"
+            "/usr/local/" LIBDIR_NAME "/dssi");
         }
-#endif /* flatpak build */
+#  endif /* flatpak build */
 
       g_message (
         "Using standard DSSI paths: %s", dssi_path);
@@ -772,8 +729,8 @@ get_dssi_paths (
         "using %s from the environment (DSSI_PATH)",
         dssi_path);
     }
-  char ** paths =
-    g_strsplit (dssi_path, G_SEARCHPATH_SEPARATOR_S, 0);
+  char ** paths = g_strsplit (
+    dssi_path, G_SEARCHPATH_SEPARATOR_S, 0);
   g_free (dssi_path);
 
   g_debug ("%s: done", __func__);
@@ -782,8 +739,7 @@ get_dssi_paths (
 }
 
 static char **
-get_ladspa_paths (
-  PluginManager * self)
+get_ladspa_paths (PluginManager * self)
 {
   g_debug ("%s: getting paths...", __func__);
 
@@ -791,27 +747,27 @@ get_ladspa_paths (
     g_strdup (getenv ("LADSPA_PATH"));
   if (!ladspa_path || (strlen (ladspa_path) == 0))
     {
-#ifdef FLATPAK_BUILD
+#  ifdef FLATPAK_BUILD
       ladspa_path =
         g_strdup ("/app/extensions/Plugins/ladspa");
-#else
+#  else
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
-          ladspa_path =
-            g_strdup (
-              "/usr/" LIBDIR_NAME "/ladspa:"
-              "/usr/local/" LIBDIR_NAME "/ladspa");
+          ladspa_path = g_strdup (
+            "/usr/" LIBDIR_NAME
+            "/ladspa:"
+            "/usr/local/" LIBDIR_NAME "/ladspa");
         }
       else
         {
-          ladspa_path =
-            g_strdup (
-              "/usr/lib/ladspa:"
-              "/usr/" LIBDIR_NAME "/ladspa:"
-              "/usr/local/lib/ladspa:"
-              "/usr/local/" LIBDIR_NAME "/ladspa");
+          ladspa_path = g_strdup (
+            "/usr/lib/ladspa:"
+            "/usr/" LIBDIR_NAME
+            "/ladspa:"
+            "/usr/local/lib/ladspa:"
+            "/usr/local/" LIBDIR_NAME "/ladspa");
         }
-#endif /* flatpak build */
+#  endif /* flatpak build */
 
       g_message (
         "Using standard LADSPA paths: %s",
@@ -823,8 +779,8 @@ get_ladspa_paths (
         "using %s from the environment (LADSPA)",
         ladspa_path);
     }
-  char ** paths =
-    g_strsplit (ladspa_path, G_SEARCHPATH_SEPARATOR_S, 0);
+  char ** paths = g_strsplit (
+    ladspa_path, G_SEARCHPATH_SEPARATOR_S, 0);
   g_free (ladspa_path);
 
   g_debug ("%s: done", __func__);
@@ -861,22 +817,23 @@ plugin_manager_supports_protocol (
     case PROT_SF2:
       {
 #ifdef HAVE_CARLA
-        const char* const * carla_features =
+        const char * const * carla_features =
           carla_get_supported_features ();
         const char * feature;
-        int i = 0;
+        int          i = 0;
         while ((feature = carla_features[i++]))
           {
-#define CHECK_FEATURE(str,format) \
-  if (string_is_equal (feature, str) && \
-        protocol == PROT_##format) \
+#  define CHECK_FEATURE(str, format) \
+    if ( \
+      string_is_equal (feature, str) \
+      && protocol == PROT_##format) \
     return true
 
             CHECK_FEATURE ("sf2", SF2);
             CHECK_FEATURE ("osc", DSSI);
             CHECK_FEATURE ("vst3", VST3);
             CHECK_FEATURE ("au", AU);
-#undef CHECK_FEATURE
+#  undef CHECK_FEATURE
           }
 #endif /* HAVE_CARLA */
         return false;
@@ -908,21 +865,20 @@ scan_carla_descriptors_from_paths (
         protocol_str);
       return;
     }
-  g_message (
-    "Scanning %s plugins...", protocol_str);
+  g_message ("Scanning %s plugins...", protocol_str);
 
   /* get paths and suffix */
-  char ** paths = NULL;
+  char **      paths = NULL;
   const char * suffix = NULL;
   switch (protocol)
     {
     case PROT_VST:
       paths = get_vst_paths (self);
-#ifdef __APPLE__
+#  ifdef __APPLE__
       suffix = ".vst";
-#else
+#  else
       suffix = LIB_SUFFIX;
-#endif
+#  endif
       break;
     case PROT_VST3:
       paths = get_vst3_paths (self);
@@ -949,7 +905,7 @@ scan_carla_descriptors_from_paths (
     }
   g_return_if_fail (paths && suffix);
 
-  int path_idx = 0;
+  int    path_idx = 0;
   char * path;
   while ((path = paths[path_idx++]) != NULL)
     {
@@ -967,9 +923,10 @@ scan_carla_descriptors_from_paths (
         continue;
 
       char * plugin_path;
-      int plugin_idx = 0;
-      while ((plugin_path = plugins[plugin_idx++]) !=
-               NULL)
+      int    plugin_idx = 0;
+      while (
+        (plugin_path = plugins[plugin_idx++])
+        != NULL)
         {
           PluginDescriptor ** descriptors =
             cached_plugin_descriptors_get (
@@ -982,19 +939,17 @@ scan_carla_descriptors_from_paths (
               /* clone and add them to the list
                * of descriptors */
               PluginDescriptor * descriptor = NULL;
-              int i = 0;
+              int                i = 0;
               while ((descriptor = descriptors[i++]))
                 {
                   g_debug (
                     "Found cached %s %s",
-                    protocol_str,
-                    descriptor->name);
+                    protocol_str, descriptor->name);
                   PluginDescriptor * clone =
                     plugin_descriptor_clone (
                       descriptor);
                   g_ptr_array_add (
-                    self->plugin_descriptors,
-                    clone);
+                    self->plugin_descriptors, clone);
                   add_category_and_author (
                     self, clone->category_str,
                     clone->author);
@@ -1005,11 +960,11 @@ scan_carla_descriptors_from_paths (
             {
               g_debug (
                 "No cached descriptors found for "
-                "%s", plugin_path);
-              if (
-                cached_plugin_descriptors_is_blacklisted (
-                  self->cached_plugin_descriptors,
-                  plugin_path))
+                "%s",
+                plugin_path);
+              if (cached_plugin_descriptors_is_blacklisted (
+                    self->cached_plugin_descriptors,
+                    plugin_path))
                 {
                   g_message (
                     "Ignoring blacklisted %s "
@@ -1018,22 +973,27 @@ scan_carla_descriptors_from_paths (
                 }
               else
                 {
-                  if (protocol == PROT_SFZ ||
-                      protocol == PROT_SF2)
+                  if (
+                    protocol == PROT_SFZ
+                    || protocol == PROT_SF2)
                     {
-                      descriptors =
-                        calloc (
-                          2, sizeof (PluginDescriptor *));
+                      descriptors = calloc (
+                        2,
+                        sizeof (PluginDescriptor *));
                       descriptors[0] =
                         plugin_descriptor_new ();
                       PluginDescriptor * descr =
                         descriptors[0];
-                      descr->path = g_strdup (plugin_path);
+                      descr->path =
+                        g_strdup (plugin_path);
                       GFile * file =
-                        g_file_new_for_path (descr->path);
-                      descr->ghash = g_file_hash (file);
+                        g_file_new_for_path (
+                          descr->path);
+                      descr->ghash =
+                        g_file_hash (file);
                       g_object_unref (file);
-                      descr->category = PC_INSTRUMENT;
+                      descr->category =
+                        PC_INSTRUMENT;
                       descr->category_str =
                         plugin_descriptor_category_to_string (
                           descr->category);
@@ -1041,18 +1001,22 @@ scan_carla_descriptors_from_paths (
                         io_path_get_basename_without_ext (
                           plugin_path);
                       char * parent_path =
-                        io_path_get_parent_dir (plugin_path);
+                        io_path_get_parent_dir (
+                          plugin_path);
                       if (!parent_path)
                         {
                           g_warning (
                             "Failed to get parent dir of "
-                            "%s", plugin_path);
-                          plugin_descriptor_free (descr);
+                            "%s",
+                            plugin_path);
+                          plugin_descriptor_free (
+                            descr);
                           descriptors[0] = NULL;
                           continue;
                         }
                       descr->author =
-                        g_path_get_basename (parent_path);
+                        g_path_get_basename (
+                          parent_path);
                       g_free (parent_path);
                       descr->num_audio_outs = 2;
                       descr->num_midi_ins = 1;
@@ -1086,9 +1050,12 @@ scan_carla_descriptors_from_paths (
 
                   if (descriptors)
                     {
-                      PluginDescriptor * descriptor = NULL;
+                      PluginDescriptor * descriptor =
+                        NULL;
                       int i = 0;
-                      while ((descriptor = descriptors[i++]))
+                      while ((
+                        descriptor =
+                          descriptors[i++]))
                         {
                           g_ptr_array_add (
                             self->plugin_descriptors,
@@ -1118,8 +1085,7 @@ scan_carla_descriptors_from_paths (
                     {
                       g_message (
                         "Blacklisting %s %s",
-                        protocol_str,
-                        plugin_path);
+                        protocol_str, plugin_path);
                       cached_plugin_descriptors_blacklist (
                         self->cached_plugin_descriptors,
                         plugin_path, 0);
@@ -1131,15 +1097,15 @@ scan_carla_descriptors_from_paths (
           if (progress)
             {
               *progress =
-                start_progress +
-                ((double) *count / size) *
-                  (max_progress - start_progress);
+                start_progress
+                + ((double) *count / size)
+                    * (max_progress - start_progress);
               char prog_str[800];
               if (descriptors)
                 {
                   sprintf (
                     prog_str,
-                    _("Scanned %s plugin: %s"),
+                    _ ("Scanned %s plugin: %s"),
                     protocol_str,
                     descriptors[0]->name);
 
@@ -1153,17 +1119,15 @@ scan_carla_descriptors_from_paths (
                     /* TRANSLATORS: first argument
                      * is plugin protocol, 2nd
                      * argument is path */
-                    _("Skipped %1$s plugin at "
-                    "%2$s"),
-                    protocol_str,
-                    plugin_path);
+                    _ ("Skipped %1$s plugin at "
+                       "%2$s"),
+                    protocol_str, plugin_path);
                 }
               zrythm_app_set_progress_status (
                 zrythm_app, prog_str, *progress);
             }
         }
-      if (plugin_idx > 0 &&
-          !ZRYTHM_TESTING)
+      if (plugin_idx > 0 && !ZRYTHM_TESTING)
         {
           cached_plugin_descriptors_serialize_to_file (
             self->cached_plugin_descriptors);
@@ -1193,11 +1157,10 @@ plugin_manager_scan_plugins (
 
   g_message ("%s: Scanning...", __func__);
 
-  double start_progress =
-    progress ? *progress : 0;
+  double start_progress = progress ? *progress : 0;
 
   /* load all plugins with lilv */
-  LilvWorld * world = self->lilv_world;
+  LilvWorld *         world = self->lilv_world;
   const LilvPlugins * lilv_plugins =
     lilv_world_get_all_plugins (world);
   self->lilv_plugins = lilv_plugins;
@@ -1224,7 +1187,7 @@ plugin_manager_scan_plugins (
   unsigned int count = 0;
   LILV_FOREACH (plugins, i, lilv_plugins)
     {
-      const LilvPlugin* p =
+      const LilvPlugin * p =
         lilv_plugins_get (lilv_plugins, i);
 
       PluginDescriptor * descriptor =
@@ -1250,12 +1213,10 @@ plugin_manager_scan_plugins (
                 self, found_descr->category_str,
                 found_descr->author);
 
-              plugin_descriptor_free (
-                descriptor);
-              descriptor =
-                g_ptr_array_index (
-                  self->plugin_descriptors,
-                  self->plugin_descriptors->len - 1);
+              plugin_descriptor_free (descriptor);
+              descriptor = g_ptr_array_index (
+                self->plugin_descriptors,
+                self->plugin_descriptors->len - 1);
             }
           else
             {
@@ -1279,26 +1240,26 @@ plugin_manager_scan_plugins (
       if (progress)
         {
           *progress =
-            start_progress +
-            ((double) count / size) *
-              (max_progress - start_progress);
+            start_progress
+            + ((double) count / size)
+                * (max_progress - start_progress);
           char prog_str[800];
           if (descriptor)
             {
               sprintf (
                 prog_str, "%s: %s",
-                _("Scanned LV2 plugin"),
+                _ ("Scanned LV2 plugin"),
                 descriptor->name);
             }
           else
             {
-              const LilvNode*  lv2_uri =
+              const LilvNode * lv2_uri =
                 lilv_plugin_get_uri (p);
               const char * uri_str =
                 lilv_node_as_string (lv2_uri);
               sprintf (
                 prog_str,
-                _("Skipped LV2 plugin at %s"),
+                _ ("Skipped LV2 plugin at %s"),
                 uri_str);
             }
           zrythm_app_set_progress_status (
@@ -1313,7 +1274,7 @@ plugin_manager_scan_plugins (
 
 #ifdef HAVE_CARLA
 
-#if !defined (_WOE32) && !defined (__APPLE__)
+#  if !defined(_WOE32) && !defined(__APPLE__)
   /* scan ladspa */
   scan_carla_descriptors_from_paths (
     self, PROT_LADSPA, &count, size, progress,
@@ -1323,7 +1284,7 @@ plugin_manager_scan_plugins (
   scan_carla_descriptors_from_paths (
     self, PROT_DSSI, &count, size, progress,
     start_progress, max_progress);
-#endif /* not apple/woe32 */
+#  endif /* not apple/woe32 */
 
   /* scan vst */
   scan_carla_descriptors_from_paths (
@@ -1345,14 +1306,13 @@ plugin_manager_scan_plugins (
     self, PROT_SF2, &count, size, progress,
     start_progress, max_progress);
 
-#ifdef __APPLE__
+#  ifdef __APPLE__
   /* scan AU plugins */
   g_message ("Scanning AU plugins...");
   unsigned int au_count =
     carla_get_cached_plugin_count (PLUGIN_AU, NULL);
   char * all_plugins =
-    z_carla_discovery_run (
-      ARCH_64, "au", ":all");
+    z_carla_discovery_run (ARCH_64, "au", ":all");
   g_message ("all plugins %s", all_plugins);
   g_message ("%u plugins found", au_count);
   if (all_plugins)
@@ -1378,22 +1338,22 @@ plugin_manager_scan_plugins (
           if (progress)
             {
               *progress =
-                start_progress +
-                ((double) count / size) *
-                  (max_progress - start_progress);
+                start_progress
+                + ((double) count / size)
+                    * (max_progress - start_progress);
               char prog_str[800];
               if (descriptor)
                 {
                   sprintf (
                     prog_str, "%s: %s",
-                    _("Scanned AU plugin"),
+                    _ ("Scanned AU plugin"),
                     descriptor->name);
                 }
               else
                 {
                   sprintf (
                     prog_str,
-                    _("Skipped AU plugin at %u"),
+                    _ ("Skipped AU plugin at %u"),
                     i);
                 }
               zrythm_app_set_progress_status (
@@ -1405,27 +1365,24 @@ plugin_manager_scan_plugins (
     {
       g_warning ("failed to get AU plugins");
     }
-#endif // __APPLE__
-#endif // HAVE_CARLA
+#  endif // __APPLE__
+#endif   // HAVE_CARLA
 
   /* sort alphabetically */
   g_ptr_array_sort (
-    self->plugin_descriptors,
-    sort_plugin_func);
+    self->plugin_descriptors, sort_plugin_func);
   qsort (
     self->plugin_categories,
     (size_t) self->num_plugin_categories,
-    sizeof (char *),
-    sort_alphabetical_func);
+    sizeof (char *), sort_alphabetical_func);
   qsort (
     self->plugin_authors,
     (size_t) self->num_plugin_authors,
-    sizeof (char *),
-    sort_alphabetical_func);
+    sizeof (char *), sort_alphabetical_func);
 
   g_message (
-    "%s: %d Plugins scanned.",
-    __func__, self->plugin_descriptors->len);
+    "%s: %d Plugins scanned.", __func__,
+    self->plugin_descriptors->len);
 
   /*print_plugins ();*/
 }
@@ -1445,9 +1402,8 @@ plugin_manager_find_plugin_from_uri (
   for (size_t i = 0;
        i < self->plugin_descriptors->len; i++)
     {
-      PluginDescriptor * descr =
-        g_ptr_array_index (
-          self->plugin_descriptors, i);
+      PluginDescriptor * descr = g_ptr_array_index (
+        self->plugin_descriptors, i);
       if (string_is_equal (uri, descr->uri))
         {
           return descr;
@@ -1474,9 +1430,8 @@ plugin_manager_find_from_descriptor (
   for (size_t i = 0;
        i < self->plugin_descriptors->len; i++)
     {
-      PluginDescriptor * descr =
-        g_ptr_array_index (
-          self->plugin_descriptors, i);
+      PluginDescriptor * descr = g_ptr_array_index (
+        self->plugin_descriptors, i);
       if (plugin_descriptor_is_same_plugin (
             src_descr, descr))
         {
@@ -1493,15 +1448,13 @@ plugin_manager_find_from_descriptor (
  * Returns an instrument plugin, if any.
  */
 PluginDescriptor *
-plugin_manager_pick_instrument (
-  PluginManager * self)
+plugin_manager_pick_instrument (PluginManager * self)
 {
   for (size_t i = 0;
        i < self->plugin_descriptors->len; i++)
     {
-      PluginDescriptor * descr =
-        g_ptr_array_index (
-          self->plugin_descriptors, i);
+      PluginDescriptor * descr = g_ptr_array_index (
+        self->plugin_descriptors, i);
       if (plugin_descriptor_is_instrument (descr))
         {
           return descr;
@@ -1511,12 +1464,11 @@ plugin_manager_pick_instrument (
 }
 
 void
-plugin_manager_clear_plugins (
-  PluginManager * self)
+plugin_manager_clear_plugins (PluginManager * self)
 {
   g_ptr_array_remove_range (
-    self->plugin_descriptors,
-    0, self->plugin_descriptors->len);
+    self->plugin_descriptors, 0,
+    self->plugin_descriptors->len);
 
   for (int i = 0; i < self->num_plugin_categories;
        i++)
@@ -1527,8 +1479,7 @@ plugin_manager_clear_plugins (
 }
 
 void
-plugin_manager_free (
-  PluginManager * self)
+plugin_manager_free (PluginManager * self)
 {
   g_debug ("%s: Freeing...", __func__);
 
@@ -1553,8 +1504,7 @@ plugin_manager_free (
     cached_plugin_descriptors_free,
     self->cached_plugin_descriptors);
   object_free_w_func_and_null (
-    plugin_collections_free,
-    self->collections);
+    plugin_collections_free, self->collections);
 
   object_zero_and_free (self);
 

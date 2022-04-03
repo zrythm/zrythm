@@ -35,7 +35,8 @@
 G_DECLARE_FINAL_TYPE (
   BindCcDialogWidget,
   bind_cc_dialog_widget,
-  Z, BIND_CC_DIALOG_WIDGET,
+  Z,
+  BIND_CC_DIALOG_WIDGET,
   GtkDialog)
 
 /**
@@ -49,20 +50,20 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _BindCcDialogWidget
 {
-  GtkDialog            parent_instance;
-  GtkButton *          cancel_btn;
-  GtkButton *          ok_btn;
-  GtkLabel *           lbl;
+  GtkDialog   parent_instance;
+  GtkButton * cancel_btn;
+  GtkButton * ok_btn;
+  GtkLabel *  lbl;
 
   /** A MIDI event for the CC selected, or all 0's if
    * none selected. */
-  midi_byte_t          cc[3];
+  midi_byte_t cc[3];
 
-  Port *               port;
+  Port * port;
 
   /** Whether to perform an undoable action for
    * binding on close. */
-  bool                 perform_action;
+  bool perform_action;
 } BindCcDialogWidget;
 
 /**

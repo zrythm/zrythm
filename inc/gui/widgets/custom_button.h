@@ -67,28 +67,28 @@ typedef struct CustomButtonWidget
   //int          is_toggle;
 
   /** Default color. */
-  GdkRGBA      def_color;
+  GdkRGBA def_color;
 
   /** Hovered color. */
-  GdkRGBA      hovered_color;
+  GdkRGBA hovered_color;
 
   /** Toggled color. */
-  GdkRGBA      toggled_color;
+  GdkRGBA toggled_color;
 
   /** Held color (used after clicking and before
    * releasing). */
-  GdkRGBA      held_color;
+  GdkRGBA held_color;
 
   /** Name of the icon to show. */
-  char         icon_name[120];
+  char icon_name[120];
 
   /** Size in pixels (width and height will be set
    * to this). */
-  int          size;
+  int size;
 
   /** if non-zero, the button has "size" height and
    * this width. */
-  int          width;
+  int width;
 
   /** Whether currently hovered. */
   //int         hovered;
@@ -97,17 +97,17 @@ typedef struct CustomButtonWidget
   //int         pressed;
 
   /** Aspect ratio for the rounded rectangle. */
-  double       aspect;
+  double aspect;
 
   /** Corner curvature radius for the rounded
    * rectangle. */
-  double       corner_radius;
+  double corner_radius;
 
   /** Object to pass to the callback. */
   //void *       obj;
 
   /** The icon surface. */
-  GdkTexture *      icon_texture;
+  GdkTexture * icon_texture;
 
   /** Used to update caches if state changed. */
   CustomButtonWidgetState last_state;
@@ -116,26 +116,26 @@ typedef struct CustomButtonWidget
   CustomButtonWidgetOwner owner_type;
 
   /** Owner. */
-  void *                  owner;
+  void * owner;
 
   /** Used during transitions. */
-  GdkRGBA            last_color;
+  GdkRGBA last_color;
 
   /**
    * Text, if any, to show after the icon.
    *
    * This will be ellipsized.
    */
-  char *             text;
+  char * text;
 
-  int                text_height;
+  int text_height;
 
   /** Cache layout for drawing the text. */
-  PangoLayout *      layout;
+  PangoLayout * layout;
 
   /** X/y relative to parent drawing area. */
-  double             x;
-  double             y;
+  double x;
+  double y;
 
   /**
    * The id of the button returned by a symap of its
@@ -144,10 +144,10 @@ typedef struct CustomButtonWidget
    *
    * TODO
    */
-  unsigned int       button_id;
+  unsigned int button_id;
 
   /** Frames left for a transition in color. */
-  int                transition_frames;
+  int transition_frames;
 
 } CustomButtonWidget;
 
@@ -161,23 +161,23 @@ custom_button_widget_new (
 
 void
 custom_button_widget_draw (
-  CustomButtonWidget * self,
-  GtkSnapshot *        snapshot,
-  double               x,
-  double               y,
-  CustomButtonWidgetState    state);
+  CustomButtonWidget *    self,
+  GtkSnapshot *           snapshot,
+  double                  x,
+  double                  y,
+  CustomButtonWidgetState state);
 
 /**
  * @param width Max width for the button to use.
  */
 void
 custom_button_widget_draw_with_text (
-  CustomButtonWidget * self,
-  GtkSnapshot *        snapshot,
-  double               x,
-  double               y,
-  double               width,
-  CustomButtonWidgetState    state);
+  CustomButtonWidget *    self,
+  GtkSnapshot *           snapshot,
+  double                  x,
+  double                  y,
+  double                  width,
+  CustomButtonWidgetState state);
 
 /**
  * Sets the text and layout to draw the text width.

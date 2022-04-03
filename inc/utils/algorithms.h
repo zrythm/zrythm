@@ -36,7 +36,7 @@ algorithm_sort_int_cmpfunc (
   const void * a,
   const void * b)
 {
-  return ( *(int*)a - *(int*)b );
+  return (*(int *) a - *(int *) b);
 }
 
 /**
@@ -51,10 +51,7 @@ algorithm_sort_int_cmpfunc (
  * @param include_equal Include equal elements (if an
  *   exact match is found, return it).
  */
-HOT
-PURE
-NONNULL
-void *
+HOT PURE NONNULL void *
 algorithms_binary_search_nearby (
   const void *   key,
   const void *   base,

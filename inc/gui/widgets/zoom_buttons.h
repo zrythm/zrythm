@@ -29,19 +29,22 @@
 #define ZOOM_BUTTONS_WIDGET_TYPE \
   (zoom_buttons_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  ZoomButtonsWidget, zoom_buttons_widget,
-  Z, ZOOM_BUTTONS_WIDGET, GtkBox)
+  ZoomButtonsWidget,
+  zoom_buttons_widget,
+  Z,
+  ZOOM_BUTTONS_WIDGET,
+  GtkBox)
 
 /**
  * Zoom buttons for toolbars.
  */
 typedef struct _ZoomButtonsWidget
 {
-  GtkBox         parent_instance;
-  GtkButton *    zoom_in;
-  GtkButton *    zoom_out;
-  GtkButton *    original_size;
-  GtkButton *    best_fit;
+  GtkBox      parent_instance;
+  GtkButton * zoom_in;
+  GtkButton * zoom_out;
+  GtkButton * original_size;
+  GtkButton * best_fit;
 } ZoomButtonsWidget;
 
 void

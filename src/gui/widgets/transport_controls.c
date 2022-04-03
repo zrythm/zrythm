@@ -17,14 +17,14 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "project.h"
-#include "audio/transport.h"
 #include "audio/midi_event.h"
+#include "audio/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/button_with_menu.h"
+#include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/transport_controls.h"
+#include "project.h"
 #include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
@@ -32,8 +32,8 @@
 #include "utils/string.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   TransportControlsWidget,
@@ -59,7 +59,7 @@ play_clicked_cb (
 
 static void
 play_rb_released (
-  GtkGestureClick *    gesture,
+  GtkGestureClick *         gesture,
   int                       n_press,
   double                    x,
   double                    y,
@@ -68,14 +68,13 @@ play_rb_released (
   if (n_press != 1)
     return;
 
-  GMenu * menu = g_menu_new ();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
   char tmp[500];
   sprintf (
     tmp, "app.bind-midi-cc::%p", TRANSPORT->roll);
-  menuitem =
-    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+  menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
@@ -84,7 +83,7 @@ play_rb_released (
 
 static void
 stop_rb_released (
-  GtkGestureClick *    gesture,
+  GtkGestureClick *         gesture,
   int                       n_press,
   double                    x,
   double                    y,
@@ -93,14 +92,13 @@ stop_rb_released (
   if (n_press != 1)
     return;
 
-  GMenu * menu = g_menu_new ();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
   char tmp[500];
   sprintf (
     tmp, "app.bind-midi-cc::%p", TRANSPORT->stop);
-  menuitem =
-    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+  menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
@@ -109,7 +107,7 @@ stop_rb_released (
 
 static void
 backward_rb_released (
-  GtkGestureClick *    gesture,
+  GtkGestureClick *         gesture,
   int                       n_press,
   double                    x,
   double                    y,
@@ -118,15 +116,14 @@ backward_rb_released (
   if (n_press != 1)
     return;
 
-  GMenu * menu = g_menu_new ();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
   char tmp[500];
   sprintf (
     tmp, "app.bind-midi-cc::%p",
     TRANSPORT->backward);
-  menuitem =
-    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+  menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
@@ -135,7 +132,7 @@ backward_rb_released (
 
 static void
 forward_rb_released (
-  GtkGestureClick *    gesture,
+  GtkGestureClick *         gesture,
   int                       n_press,
   double                    x,
   double                    y,
@@ -144,15 +141,13 @@ forward_rb_released (
   if (n_press != 1)
     return;
 
-  GMenu * menu = g_menu_new ();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
   char tmp[500];
   sprintf (
-    tmp, "app.bind-midi-cc::%p",
-    TRANSPORT->forward);
-  menuitem =
-    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+    tmp, "app.bind-midi-cc::%p", TRANSPORT->forward);
+  menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
@@ -161,7 +156,7 @@ forward_rb_released (
 
 static void
 loop_rb_released (
-  GtkGestureClick *    gesture,
+  GtkGestureClick *         gesture,
   int                       n_press,
   double                    x,
   double                    y,
@@ -170,15 +165,14 @@ loop_rb_released (
   if (n_press != 1)
     return;
 
-  GMenu * menu = g_menu_new ();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
   char tmp[500];
   sprintf (
     tmp, "app.bind-midi-cc::%p",
     TRANSPORT->loop_toggle);
-  menuitem =
-    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+  menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
@@ -187,7 +181,7 @@ loop_rb_released (
 
 static void
 rec_rb_released (
-  GtkGestureClick *    gesture,
+  GtkGestureClick *         gesture,
   int                       n_press,
   double                    x,
   double                    y,
@@ -196,15 +190,14 @@ rec_rb_released (
   if (n_press != 1)
     return;
 
-  GMenu * menu = g_menu_new ();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
   char tmp[500];
   sprintf (
     tmp, "app.bind-midi-cc::%p",
     TRANSPORT->rec_toggle);
-  menuitem =
-    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+  menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
@@ -213,8 +206,8 @@ rec_rb_released (
 
 static void
 stop_clicked_cb (
-  GtkButton *button,
-  gpointer       user_data)
+  GtkButton * button,
+  gpointer    user_data)
 {
   /*g_message ("playstate %d", TRANSPORT->play_state);*/
   if (TRANSPORT->play_state == PLAYSTATE_PAUSED)
@@ -231,33 +224,34 @@ stop_clicked_cb (
 static void
 record_toggled_cb (
   GtkToggleButton * tg,
-  gpointer        user_data)
+  gpointer          user_data)
 {
   transport_set_recording (
     TRANSPORT, gtk_toggle_button_get_active (tg),
-    true,
-    F_PUBLISH_EVENTS);
+    true, F_PUBLISH_EVENTS);
 }
 
 static void
-forward_clicked_cb (GtkButton * forward,
-                    gpointer          user_data)
+forward_clicked_cb (
+  GtkButton * forward,
+  gpointer    user_data)
 {
   transport_move_forward (TRANSPORT, true);
 }
 
 static void
-backward_clicked_cb (GtkButton * backward,
-                     gpointer    user_data)
+backward_clicked_cb (
+  GtkButton * backward,
+  gpointer    user_data)
 {
   transport_move_backward (TRANSPORT, true);
 }
 
 static void
 change_state_punch_mode (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   bool value = g_variant_get_boolean (variant);
   transport_set_punch_mode_enabled (
@@ -271,9 +265,9 @@ change_state_punch_mode (
 
 static void
 change_start_on_midi_input (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
 {
   bool value = g_variant_get_boolean (variant);
   transport_set_start_playback_on_midi_input (
@@ -285,13 +279,13 @@ change_start_on_midi_input (
 
 static void
 activate_recording_mode (
-  GSimpleAction *action,
-  GVariant      *_variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      _variant,
+  gpointer        user_data)
 {
   g_return_if_fail (_variant);
 
-  gsize size;
+  gsize        size;
   const char * variant =
     g_variant_get_string (_variant, &size);
   g_simple_action_set_state (action, _variant);
@@ -324,13 +318,13 @@ activate_recording_mode (
 
 static void
 activate_preroll (
-  GSimpleAction *action,
-  GVariant      *_variant,
-  gpointer       user_data)
+  GSimpleAction * action,
+  GVariant *      _variant,
+  gpointer        user_data)
 {
   g_return_if_fail (_variant);
 
-  gsize size;
+  gsize        size;
   const char * variant =
     g_variant_get_string (_variant, &size);
   g_simple_action_set_state (action, _variant);
@@ -369,9 +363,8 @@ transport_controls_widget_refresh (
     self->trans_record_btn,
     self->rec_toggled_handler_id);
   char * loop_action_name =
-    g_strdup (
-      gtk_actionable_get_action_name (
-        GTK_ACTIONABLE (self->loop)));
+    g_strdup (gtk_actionable_get_action_name (
+      GTK_ACTIONABLE (self->loop)));
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->loop), "");
 
@@ -390,8 +383,7 @@ transport_controls_widget_refresh (
 }
 
 static void
-setup_record_btn (
-  TransportControlsWidget * self)
+setup_record_btn (TransportControlsWidget * self)
 {
   /* create main button */
   self->trans_record_btn =
@@ -407,72 +399,78 @@ setup_record_btn (
   GMenu * menu = g_menu_new ();
   GMenu * punch_section = g_menu_new ();
   g_menu_append (
-    punch_section, _("Punch in/out"),
+    punch_section, _ ("Punch in/out"),
     "record-btn.punch-mode");
   g_menu_append (
-    punch_section, _("Start on MIDI input"),
+    punch_section, _ ("Start on MIDI input"),
     "record-btn.start-on-midi-input");
   g_menu_append_section (
-    menu, _("Options"),
+    menu, _ ("Options"),
     G_MENU_MODEL (punch_section));
   g_object_unref (punch_section);
   GMenu * modes_section = g_menu_new ();
   g_menu_append (
-    modes_section, _("Overwrite events"),
+    modes_section, _ ("Overwrite events"),
     "record-btn.recording-mode::overwrite");
   g_menu_append (
-    modes_section, _("Merge events"),
+    modes_section, _ ("Merge events"),
     "record-btn.recording-mode::merge");
   g_menu_append (
-    modes_section, _("Create takes"),
+    modes_section, _ ("Create takes"),
     "record-btn.recording-mode::takes");
   g_menu_append (
-    modes_section, _("Create takes (mute previous)"),
+    modes_section,
+    _ ("Create takes (mute previous)"),
     "record-btn.recording-mode::takes-muted");
   g_menu_append_section (
-    menu, _("Recording mode"),
+    menu, _ ("Recording mode"),
     G_MENU_MODEL (modes_section));
   g_object_unref (modes_section);
   GMenu * preroll_section = g_menu_new ();
   g_menu_append (
-    preroll_section, _(preroll_count_bars_str[0]),
+    preroll_section, _ (preroll_count_bars_str[0]),
     "record-btn.preroll::none");
   g_menu_append (
-    preroll_section, _(preroll_count_bars_str[1]),
+    preroll_section, _ (preroll_count_bars_str[1]),
     "record-btn.preroll::one");
   g_menu_append (
-    preroll_section, _(preroll_count_bars_str[2]),
+    preroll_section, _ (preroll_count_bars_str[2]),
     "record-btn.preroll::two");
   g_menu_append (
-    preroll_section, _(preroll_count_bars_str[3]),
+    preroll_section, _ (preroll_count_bars_str[3]),
     "record-btn.preroll::four");
   g_menu_append_section (
-    menu, _("Preroll"),
+    menu, _ ("Preroll"),
     G_MENU_MODEL (preroll_section));
   g_object_unref (preroll_section);
   GSimpleActionGroup * action_group =
     g_simple_action_group_new ();
   const char * recording_modes[] = {
-    "'overwrite'", "'merge'", "'takes'",
-    "'takes-muted'", };
+    "'overwrite'",
+    "'merge'",
+    "'takes'",
+    "'takes-muted'",
+  };
   const char * preroll_types[] = {
-    "'none'", "'one'", "'two'", "'four'", };
+    "'none'",
+    "'one'",
+    "'two'",
+    "'four'",
+  };
   GActionEntry actions[] = {
-    { "punch-mode", NULL, NULL,
-      (TRANSPORT->punch_mode ? "true" : "false"),
-      change_state_punch_mode },
-    { "start-on-midi-input", NULL, NULL,
-      (TRANSPORT->start_playback_on_midi_input ?
-         "true" : "false"),
-      change_start_on_midi_input },
-    { "recording-mode",
-      activate_recording_mode, "s",
-      recording_modes[TRANSPORT->recording_mode] },
-    { "preroll",
-      activate_preroll, "s",
-      preroll_types[
-        g_settings_get_enum (
-          S_TRANSPORT, "recording-preroll")] },
+    {"punch-mode",           NULL,                    NULL,
+     (TRANSPORT->punch_mode ? "true" : "false"),
+     change_state_punch_mode                     },
+    { "start-on-midi-input", NULL,                    NULL,
+     (TRANSPORT->start_playback_on_midi_input
+         ? "true"
+         : "false"),
+     change_start_on_midi_input                  },
+    { "recording-mode",      activate_recording_mode, "s",
+     recording_modes[TRANSPORT->recording_mode]},
+    { "preroll",      activate_preroll,                     "s",
+     preroll_types[g_settings_get_enum (
+        S_TRANSPORT,      "recording-preroll")]},
   };
   g_action_map_add_action_entries (
     G_ACTION_MAP (action_group), actions,
@@ -485,9 +483,8 @@ setup_record_btn (
   button_with_menu_widget_setup (
     self->trans_record,
     GTK_BUTTON (self->trans_record_btn),
-    G_MENU_MODEL (menu),
-    false, 38, _("Record"),
-    _("Record options"));
+    G_MENU_MODEL (menu), false, 38, _ ("Record"),
+    _ ("Record options"));
 }
 
 static void
@@ -524,12 +521,10 @@ transport_controls_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->popover_menu =
-    GTK_POPOVER_MENU (
-      gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu = GTK_POPOVER_MENU (
+    gtk_popover_menu_new_from_model (NULL));
   gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->popover_menu));
+    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
 
   /* setup record button */
   setup_record_btn (self);
@@ -553,47 +548,41 @@ transport_controls_widget_init (
   g_signal_connect (
     GTK_WIDGET (self->stop), "clicked",
     G_CALLBACK (stop_clicked_cb), NULL);
-  self->rec_toggled_handler_id =
-    g_signal_connect (
-      GTK_WIDGET (self->trans_record_btn), "toggled",
-      G_CALLBACK (record_toggled_cb), NULL);
+  self->rec_toggled_handler_id = g_signal_connect (
+    GTK_WIDGET (self->trans_record_btn), "toggled",
+    G_CALLBACK (record_toggled_cb), NULL);
   g_signal_connect (
-    GTK_WIDGET(self->forward), "clicked",
-    G_CALLBACK(forward_clicked_cb), NULL);
+    GTK_WIDGET (self->forward), "clicked",
+    G_CALLBACK (forward_clicked_cb), NULL);
   g_signal_connect (
-    GTK_WIDGET(self->backward), "clicked",
-    G_CALLBACK(backward_clicked_cb), NULL);
+    GTK_WIDGET (self->backward), "clicked",
+    G_CALLBACK (backward_clicked_cb), NULL);
 
   /* add context menus */
   GtkGesture * mp =
     GTK_GESTURE (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (mp),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
   g_signal_connect (
-    mp, "released",
-    G_CALLBACK (play_rb_released), self);
+    mp, "released", G_CALLBACK (play_rb_released),
+    self);
   gtk_widget_add_controller (
     GTK_WIDGET (self->play),
     GTK_EVENT_CONTROLLER (mp));
 
-  mp =
-    GTK_GESTURE (gtk_gesture_click_new ());
+  mp = GTK_GESTURE (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (mp),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
   g_signal_connect (
-    mp, "released",
-    G_CALLBACK (stop_rb_released), self);
+    mp, "released", G_CALLBACK (stop_rb_released),
+    self);
   gtk_widget_add_controller (
     GTK_WIDGET (self->stop),
     GTK_EVENT_CONTROLLER (mp));
 
-  mp =
-    GTK_GESTURE (gtk_gesture_click_new ());
+  mp = GTK_GESTURE (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (mp),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
   g_signal_connect (
     mp, "released",
     G_CALLBACK (backward_rb_released), self);
@@ -601,11 +590,9 @@ transport_controls_widget_init (
     GTK_WIDGET (self->backward),
     GTK_EVENT_CONTROLLER (mp));
 
-  mp =
-    GTK_GESTURE (gtk_gesture_click_new ());
+  mp = GTK_GESTURE (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (mp),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
   g_signal_connect (
     mp, "released",
     G_CALLBACK (forward_rb_released), self);
@@ -613,26 +600,21 @@ transport_controls_widget_init (
     GTK_WIDGET (self->forward),
     GTK_EVENT_CONTROLLER (mp));
 
-  mp =
-    GTK_GESTURE (gtk_gesture_click_new ());
+  mp = GTK_GESTURE (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (mp),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
   g_signal_connect (
-    mp, "released",
-    G_CALLBACK (loop_rb_released), self);
+    mp, "released", G_CALLBACK (loop_rb_released),
+    self);
   gtk_widget_add_controller (
     GTK_WIDGET (self->loop),
     GTK_EVENT_CONTROLLER (mp));
 
-  mp =
-    GTK_GESTURE (gtk_gesture_click_new ());
+  mp = GTK_GESTURE (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (mp),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
   g_signal_connect (
-    mp, "released",
-    G_CALLBACK (rec_rb_released),
+    mp, "released", G_CALLBACK (rec_rb_released),
     self);
   gtk_widget_add_controller (
     GTK_WIDGET (self->trans_record_btn),

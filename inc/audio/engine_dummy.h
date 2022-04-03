@@ -28,19 +28,16 @@ typedef struct AudioEngine AudioEngine;
  * Sets up a dummy audio engine.
  */
 int
-engine_dummy_setup (
-  AudioEngine * self);
+engine_dummy_setup (AudioEngine * self);
 
 int
-engine_dummy_process (
-  AudioEngine * self);
+engine_dummy_process (AudioEngine * self);
 
 /**
  * Sets up a dummy MIDI engine.
  */
 int
-engine_dummy_midi_setup (
-  AudioEngine * self);
+engine_dummy_midi_setup (AudioEngine * self);
 
 int
 engine_dummy_activate (
@@ -48,7 +45,6 @@ engine_dummy_activate (
   bool          activate);
 
 void
-engine_dummy_tear_down (
-  AudioEngine * self);
+engine_dummy_tear_down (AudioEngine * self);
 
 #endif

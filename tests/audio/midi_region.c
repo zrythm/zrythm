@@ -35,15 +35,14 @@ test_export (void)
 {
   const int max_files = 20;
 
-  char ** midi_files =
-    io_get_files_in_dir_ending_in (
-      MIDILIB_TEST_MIDI_FILES_PATH,
-      F_RECURSIVE, ".MID", false);
+  char ** midi_files = io_get_files_in_dir_ending_in (
+    MIDILIB_TEST_MIDI_FILES_PATH, F_RECURSIVE,
+    ".MID", false);
   g_assert_nonnull (midi_files);
-  char * export_dir =
-    g_dir_make_tmp ("test_midi_export_XXXXXX", NULL);
+  char * export_dir = g_dir_make_tmp (
+    "test_midi_export_XXXXXX", NULL);
   char * midi_file;
-  int iter = 0;
+  int    iter = 0;
   while ((midi_file = midi_files[iter++]))
     {
       g_message ("testing %s", midi_file);
@@ -57,23 +56,19 @@ test_export (void)
         TRACKLIST->num_tracks, 1, NULL);
       supported_file_free (file);
 
-      Track * track =
-        tracklist_get_last_track (
-          TRACKLIST, TRACKLIST_PIN_OPTION_BOTH,
-          true);
+      Track * track = tracklist_get_last_track (
+        TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, true);
 
       g_assert_cmpint (track->num_lanes, >, 0);
       g_assert_cmpint (
         track->lanes[0]->num_regions, >, 0);
-      ZRegion * region =
-        track->lanes[0]->regions[0];
+      ZRegion * region = track->lanes[0]->regions[0];
       g_assert_true (IS_REGION (region));
 
       char * basename =
         g_path_get_basename (midi_file);
-      char * export_filepath =
-        g_build_filename (
-          export_dir, basename, NULL);
+      char * export_filepath = g_build_filename (
+        export_dir, basename, NULL);
 
       /* export the region again */
       midi_region_export_to_midi_file (
@@ -81,11 +76,9 @@ test_export (void)
       midi_region_export_to_midi_file (
         region, export_filepath, 0, true);
 
-      g_assert_true (
-        g_file_test (
-          export_filepath,
-          G_FILE_TEST_EXISTS |
-            G_FILE_TEST_IS_REGULAR));
+      g_assert_true (g_file_test (
+        export_filepath,
+        G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR));
 
       io_remove (export_filepath);
 
@@ -103,7 +96,7 @@ test_export (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

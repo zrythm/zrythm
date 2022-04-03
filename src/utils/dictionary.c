@@ -35,11 +35,11 @@ dictionary_new (void)
 static int
 dictionary_find_index (
   Dictionary * dict,
-  const char *key)
+  const char * key)
 {
   for (int i = 0; i < dict->len; i++)
     {
-      if (!strcmp(dict->entry[i].key, key))
+      if (!strcmp (dict->entry[i].key, key))
         {
           return i;
         }
@@ -53,7 +53,7 @@ dictionary_find (
   const char * key,
   void *       def)
 {
-  int idx = dictionary_find_index(dict, key);
+  int idx = dictionary_find_index (dict, key);
   return idx == -1 ? def : dict->entry[idx].val;
 }
 
@@ -71,10 +71,9 @@ _dictionary_add (
     }
   if (dict->len == (int) dict->size)
     {
-      dict->entry =
-        object_realloc_n (
-          dict->entry, dict->size,
-          dict->size * 2, DictionaryEntry);
+      dict->entry = object_realloc_n (
+        dict->entry, dict->size, dict->size * 2,
+        DictionaryEntry);
       dict->size *= 2;
     }
   dict->entry[dict->len].key = g_strdup (key);
@@ -83,8 +82,7 @@ _dictionary_add (
 }
 
 void
-dictionary_free (
-  Dictionary * dict)
+dictionary_free (Dictionary * dict)
 {
   for (int i = 0; i < dict->len; i++)
     {

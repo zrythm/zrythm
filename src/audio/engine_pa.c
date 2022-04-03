@@ -21,18 +21,17 @@
 
 #ifdef HAVE_PORT_AUDIO
 
-#include "audio/channel.h"
-#include "audio/engine.h"
-#include "audio/engine_pa.h"
-#include "audio/master_track.h"
-#include "audio/router.h"
-#include "audio/port.h"
-#include "project.h"
-#include "utils/ui.h"
+#  include "audio/channel.h"
+#  include "audio/engine.h"
+#  include "audio/engine_pa.h"
+#  include "audio/master_track.h"
+#  include "audio/port.h"
+#  include "audio/router.h"
+#  include "project.h"
+#  include "utils/ui.h"
 
-#include <gtk/gtk.h>
-
-#include <glib/gi18n.h>
+#  include <glib/gi18n.h>
+#  include <gtk/gtk.h>
 
 /**
  * This routine will be called by the PortAudio
@@ -44,15 +43,14 @@
 */
 static int
 pa_stream_cb (
-  const void *                    in,
-  void *                          out,
-  unsigned long                   nframes,
-  const PaStreamCallbackTimeInfo* time_info,
-  PaStreamCallbackFlags           status_flags,
-  AudioEngine *                   self)
+  const void *                     in,
+  void *                           out,
+  unsigned long                    nframes,
+  const PaStreamCallbackTimeInfo * time_info,
+  PaStreamCallbackFlags            status_flags,
+  AudioEngine *                    self)
 {
-  engine_process (
-    self, (nframes_t) nframes);
+  engine_process (self, (nframes_t) nframes);
 
   float * outf = (float *) out;
   for (unsigned int i = 0; i < nframes * 2; i++)
@@ -68,8 +66,8 @@ pa_stream_cb (
 static PaStream *
 open_stream (AudioEngine * self)
 {
-  PaStream *stream;
-  PaError err;
+  PaStream * stream;
+  PaError    err;
 
   int api_count = Pa_GetHostApiCount ();
   for (int i = 0; i < api_count; i++)
@@ -83,8 +81,8 @@ open_stream (AudioEngine * self)
   const PaHostApiInfo * api_info =
     Pa_GetHostApiInfo (api);
   /*int api = 2;*/
-  g_message ("using api %s (%d)",
-    api_info->name, api);
+  g_message (
+    "using api %s (%d)", api_info->name, api);
 
   int device_count = Pa_GetDeviceCount ();
   for (int i = 0; i < device_count; i++)
@@ -99,16 +97,14 @@ open_stream (AudioEngine * self)
     }
 
   PaStreamParameters in_param;
-  in_param.device =
-    api_info->defaultInputDevice;
+  in_param.device = api_info->defaultInputDevice;
   in_param.channelCount = 2;
   in_param.sampleFormat = paFloat32;
   in_param.suggestedLatency = 10.0;
   in_param.hostApiSpecificStreamInfo = NULL;
 
   PaStreamParameters out_param;
-  out_param.device =
-    api_info->defaultOutputDevice;
+  out_param.device = api_info->defaultOutputDevice;
   out_param.channelCount = 2;
   out_param.sampleFormat = paFloat32;
   out_param.suggestedLatency = 10.0;
@@ -120,21 +116,18 @@ open_stream (AudioEngine * self)
     in_param.device, out_param.device);
 
   /* Open an audio I/O stream. */
-  err =
-    Pa_OpenStream (
-      &stream,
-      /* stereo input */
-      &in_param,
-      /* stereo output */
-      &out_param,
-      self->sample_rate,
-      /* block size */
-      paFramesPerBufferUnspecified,
-      0,
-      /* callback function */
-      (PaStreamCallback *) pa_stream_cb,
-      /* user data */
-      self);
+  err = Pa_OpenStream (
+    &stream,
+    /* stereo input */
+    &in_param,
+    /* stereo output */
+    &out_param, self->sample_rate,
+    /* block size */
+    paFramesPerBufferUnspecified, 0,
+    /* callback function */
+    (PaStreamCallback *) pa_stream_cb,
+    /* user data */
+    self);
   if (err != paNoError)
     {
       g_warning (
@@ -150,42 +143,39 @@ open_stream (AudioEngine * self)
  * Set up Port Audio.
  */
 int
-engine_pa_setup (
-  AudioEngine * self)
+engine_pa_setup (AudioEngine * self)
 {
   g_message ("Setting up Port Audio...");
   PaError err = Pa_Initialize ();
   if (err != paNoError)
     {
-      g_warning ("error initializing Port Audio: %s",
-                 Pa_GetErrorText (err));
+      g_warning (
+        "error initializing Port Audio: %s",
+        Pa_GetErrorText (err));
       return -1;
     }
   else
     g_message ("Initialized Port Audio");
 
   /* Set audio engine properties */
-  self->sample_rate   = 44100;
-  self->block_length  = 256;
+  self->sample_rate = 44100;
+  self->block_length = 256;
 
-  g_warn_if_fail (TRANSPORT &&
-                  TRANSPORT->beats_per_bar > 1);
+  g_warn_if_fail (
+    TRANSPORT && TRANSPORT->beats_per_bar > 1);
 
   engine_update_frames_per_tick (
-    self,
-    TRANSPORT->beats_per_bar,
-    TRANSPORT->bpm,
+    self, TRANSPORT->beats_per_bar, TRANSPORT->bpm,
     self->sample_rate, false);
 
   self->pa_out_buf =
-    calloc (self->block_length * 2,
-            sizeof (float));
+    calloc (self->block_length * 2, sizeof (float));
 
   self->pa_stream = open_stream (self);
   g_return_val_if_fail (self->pa_stream, -1);
 
   g_message ("Starting Port Audio stream...");
-  err = Pa_StartStream( self->pa_stream );
+  err = Pa_StartStream (self->pa_stream);
   if (err != paNoError)
     {
       g_warning (
@@ -209,16 +199,13 @@ engine_pa_fill_out_bufs (
   for (unsigned int i = 0; i < nframes; i++)
     {
       self->pa_out_buf[i * 2] =
-        self->
-          monitor_out->l->buf[i];
+        self->monitor_out->l->buf[i];
       /*g_message ("%f",*/
-                 /*engine->pa_out_buf[i]);*/
+      /*engine->pa_out_buf[i]);*/
       self->pa_out_buf[i * 2 + 1] =
-        self->
-          monitor_out->r->buf[i];
+        self->monitor_out->r->buf[i];
     }
 }
-
 
 /**
  * Tests if PortAudio is working properly.
@@ -229,51 +216,40 @@ engine_pa_fill_out_bufs (
  * to it.
  */
 int
-engine_pa_test (
-  GtkWindow * win)
+engine_pa_test (GtkWindow * win)
 {
-  char *msg;
+  char * msg;
 
   PaError err = Pa_Initialize ();
   if (err != paNoError)
     {
-      msg =
-        g_strdup_printf (
-          _("PortAudio Error: %s"),
-          Pa_GetErrorText (err));
-      ui_show_error_message (
-        win, msg);
+      msg = g_strdup_printf (
+        _ ("PortAudio Error: %s"),
+        Pa_GetErrorText (err));
+      ui_show_error_message (win, msg);
       g_free (msg);
       return 1;
     }
 
   PaStream * stream;
-  err =
-    Pa_OpenDefaultStream (
-      &stream,
-      2, 2, paFloat32,
-      48000,
-      512,
-      NULL, NULL);
+  err = Pa_OpenDefaultStream (
+    &stream, 2, 2, paFloat32, 48000, 512, NULL,
+    NULL);
   if (err != paNoError)
     {
-      msg =
-        g_strdup_printf (
-          _("PortAudio Error: %s"),
-          Pa_GetErrorText (err));
-      ui_show_error_message (
-        win, msg);
+      msg = g_strdup_printf (
+        _ ("PortAudio Error: %s"),
+        Pa_GetErrorText (err));
+      ui_show_error_message (win, msg);
       g_free (msg);
       return 1;
     }
   else if ((err = Pa_Terminate ()) != paNoError)
     {
-      msg =
-        g_strdup_printf (
-          _("PortAudio Error: %s"),
-          Pa_GetErrorText (err));
-      ui_show_error_message (
-        win, msg);
+      msg = g_strdup_printf (
+        _ ("PortAudio Error: %s"),
+        Pa_GetErrorText (err));
+      ui_show_error_message (win, msg);
       g_free (msg);
       return 1;
     }
@@ -284,23 +260,25 @@ engine_pa_test (
  * Closes Port Audio.
  */
 void
-engine_pa_tear_down (
-  AudioEngine * engine)
+engine_pa_tear_down (AudioEngine * engine)
 {
-  PaError err = Pa_StopStream( engine->pa_stream );
-  if( err != paNoError )
-    g_warning ("error stopping Port Audio stream: %s",
-               Pa_GetErrorText (err));
+  PaError err = Pa_StopStream (engine->pa_stream);
+  if (err != paNoError)
+    g_warning (
+      "error stopping Port Audio stream: %s",
+      Pa_GetErrorText (err));
 
-  err = Pa_CloseStream( engine->pa_stream );
-  if( err != paNoError )
-    g_warning ("error closing Port Audio stream: %s",
-               Pa_GetErrorText (err));
+  err = Pa_CloseStream (engine->pa_stream);
+  if (err != paNoError)
+    g_warning (
+      "error closing Port Audio stream: %s",
+      Pa_GetErrorText (err));
 
-  err = Pa_Terminate();
-  if( err != paNoError )
-    g_warning ("error terminating Port Audio: %s",
-               Pa_GetErrorText (err));
+  err = Pa_Terminate ();
+  if (err != paNoError)
+    g_warning (
+      "error terminating Port Audio: %s",
+      Pa_GetErrorText (err));
 }
 
 #endif

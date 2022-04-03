@@ -28,11 +28,14 @@
 G_DECLARE_DERIVABLE_TYPE (
   TwoColExpanderBoxWidget,
   two_col_expander_box_widget,
-  Z, TWO_COL_EXPANDER_BOX_WIDGET,
+  Z,
+  TWO_COL_EXPANDER_BOX_WIDGET,
   ExpanderBoxWidget)
 
-#define TWO_COL_EXPANDER_BOX_DEFAULT_HORIZONTAL_SPACING 4
-#define TWO_COL_EXPANDER_BOX_DEFAULT_VERTICAL_SPACING 0
+#define TWO_COL_EXPANDER_BOX_DEFAULT_HORIZONTAL_SPACING \
+  4
+#define TWO_COL_EXPANDER_BOX_DEFAULT_VERTICAL_SPACING \
+  0
 
 /**
  * A two column expander for the simple case that the
@@ -52,26 +55,26 @@ typedef struct
    * ExpanderBoxWidget does that will hold a bunch
    * of pairs (e.g. key-value) stacked vertically.
    */
-  GtkBox *   content;
+  GtkBox * content;
 
   /**
    * The spacing to use in each horizontal box.
    */
-  int        horizontal_spacing;
+  int horizontal_spacing;
 
   /**
    * The spacing to use between stacked boxes.
    */
-  int        vertical_spacing;
+  int vertical_spacing;
 
   /** Max width of content. */
-  int        max_width;
+  int max_width;
 
   /** Max height of content. */
-  int        max_height;
+  int max_height;
 
   /** Show scrollbars when max size is reached. */
-  int        show_scroll;
+  int show_scroll;
 
 } TwoColExpanderBoxWidgetPrivate;
 
@@ -93,7 +96,7 @@ two_col_expander_box_widget_get_private (
 void
 two_col_expander_box_widget_set_horizontal_spacing (
   TwoColExpanderBoxWidget * self,
-  int horizontal_spacing);
+  int                       horizontal_spacing);
 
 /**
  * Sets the max size.
@@ -122,8 +125,8 @@ two_col_expander_box_widget_set_scroll_policy (
 void
 two_col_expander_box_widget_add_pair (
   TwoColExpanderBoxWidget * self,
-  GtkWidget *         widget1,
-  GtkWidget *         widget2);
+  GtkWidget *               widget1,
+  GtkWidget *               widget2);
 
 /**
  * Adds a single widget taking up the full horizontal
@@ -132,7 +135,7 @@ two_col_expander_box_widget_add_pair (
 void
 two_col_expander_box_widget_add_single (
   TwoColExpanderBoxWidget * self,
-  GtkWidget *         widget);
+  GtkWidget *               widget);
 
 /**
  * Removes and destroys the children widgets.

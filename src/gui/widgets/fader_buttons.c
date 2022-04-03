@@ -21,8 +21,8 @@
 #include "gui/widgets/balance_control.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/fader.h"
-#include "gui/widgets/fader_controls_expander.h"
 #include "gui/widgets/fader_buttons.h"
+#include "gui/widgets/fader_controls_expander.h"
 #include "gui/widgets/inspector_track.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
@@ -44,7 +44,7 @@ G_DEFINE_TYPE (
 
 static void
 on_record_toggled (
-  GtkToggleButton * btn,
+  GtkToggleButton *    btn,
   FaderButtonsWidget * self)
 {
   Track * track = self->track;
@@ -57,14 +57,14 @@ on_record_toggled (
             F_PUBLISH_EVENTS);
         }
       track_set_recording (
-        track,
-        gtk_toggle_button_get_active (btn), 1);
+        track, gtk_toggle_button_get_active (btn),
+        1);
     }
 }
 
 static void
 on_solo_toggled (
-  GtkToggleButton * btn,
+  GtkToggleButton *    btn,
   FaderButtonsWidget * self)
 {
   Track * track = self->track;
@@ -80,7 +80,7 @@ on_solo_toggled (
 
 static void
 on_mute_toggled (
-  GtkToggleButton * btn,
+  GtkToggleButton *    btn,
   FaderButtonsWidget * self)
 {
   Track * track = self->track;
@@ -96,7 +96,7 @@ on_mute_toggled (
 
 static void
 on_listen_toggled (
-  GtkToggleButton * btn,
+  GtkToggleButton *    btn,
   FaderButtonsWidget * self)
 {
   Track * track = self->track;
@@ -145,17 +145,13 @@ fader_buttons_widget_block_signal_handlers (
     self->mono_compat,
     self->mono_compat_toggled_handler_id);
   g_signal_handler_block (
-    self->solo,
-    self->solo_toggled_handler_id);
+    self->solo, self->solo_toggled_handler_id);
   g_signal_handler_block (
-    self->mute,
-    self->mute_toggled_handler_id);
+    self->mute, self->mute_toggled_handler_id);
   g_signal_handler_block (
-    self->listen,
-    self->listen_toggled_handler_id);
+    self->listen, self->listen_toggled_handler_id);
   g_signal_handler_block (
-    self->record,
-    self->record_toggled_handler_id);
+    self->record, self->record_toggled_handler_id);
 }
 
 void
@@ -172,17 +168,13 @@ fader_buttons_widget_unblock_signal_handlers (
     self->mono_compat,
     self->mono_compat_toggled_handler_id);
   g_signal_handler_unblock (
-    self->solo,
-    self->solo_toggled_handler_id);
+    self->solo, self->solo_toggled_handler_id);
   g_signal_handler_unblock (
-    self->mute,
-    self->mute_toggled_handler_id);
+    self->mute, self->mute_toggled_handler_id);
   g_signal_handler_unblock (
-    self->listen,
-    self->listen_toggled_handler_id);
+    self->listen, self->listen_toggled_handler_id);
   g_signal_handler_unblock (
-    self->record,
-    self->record_toggled_handler_id);
+    self->record, self->record_toggled_handler_id);
 }
 
 void
@@ -237,11 +229,11 @@ fader_buttons_widget_refresh (
 
 static void
 on_btn_right_click (
-  GtkGestureClick * gesture,
-  gint                   n_press,
-  gdouble                x_dbl,
-  gdouble                y_dbl,
-  FaderButtonsWidget *   self)
+  GtkGestureClick *    gesture,
+  gint                 n_press,
+  gdouble              x_dbl,
+  gdouble              y_dbl,
+  FaderButtonsWidget * self)
 {
   GtkWidget * widget =
     gtk_event_controller_get_widget (
@@ -272,14 +264,12 @@ on_btn_right_click (
       port = self->track->recording;
     }
 
-  GMenu * menu = g_menu_new ();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
   char tmp[600];
-  sprintf (
-    tmp, "app.bind-midi-cc::%p", port);
-  menuitem =
-    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+  sprintf (tmp, "app.bind-midi-cc::%p", port);
+  menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
@@ -287,30 +277,25 @@ on_btn_right_click (
 }
 
 static void
-fader_buttons_finalize (
-  FaderButtonsWidget * self)
+fader_buttons_finalize (FaderButtonsWidget * self)
 {
   g_debug ("finalizing...");
 
-  G_OBJECT_CLASS (
-    fader_buttons_widget_parent_class)->
-      finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (fader_buttons_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 
   g_debug ("done");
 }
 
 static void
-fader_buttons_widget_init (
-  FaderButtonsWidget * self)
+fader_buttons_widget_init (FaderButtonsWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->popover_menu =
-    GTK_POPOVER_MENU (
-      gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu = GTK_POPOVER_MENU (
+    gtk_popover_menu_new_from_model (NULL));
   gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->popover_menu));
+    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
 
   /* add css classes */
   GtkStyleContext * context =
@@ -318,9 +303,8 @@ fader_buttons_widget_init (
       GTK_WIDGET (self->record));
   gtk_style_context_add_class (
     context, "record-button");
-  context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self->solo));
+  context = gtk_widget_get_style_context (
+    GTK_WIDGET (self->solo));
   gtk_style_context_add_class (
     context, "solo-button");
 
@@ -328,39 +312,32 @@ fader_buttons_widget_init (
     g_signal_connect (
       G_OBJECT (self->mono_compat), "toggled",
       G_CALLBACK (on_mono_compat_toggled), self);
-  self->solo_toggled_handler_id =
-    g_signal_connect (
-      G_OBJECT (self->solo), "toggled",
-      G_CALLBACK (on_solo_toggled), self);
-  self->mute_toggled_handler_id =
-    g_signal_connect (
-      G_OBJECT (self->mute), "toggled",
-      G_CALLBACK (on_mute_toggled), self);
-  self->listen_toggled_handler_id =
-    g_signal_connect (
-      G_OBJECT (self->listen), "toggled",
-      G_CALLBACK (on_listen_toggled), self);
-  self->record_toggled_handler_id =
-    g_signal_connect (
-      G_OBJECT (self->record), "toggled",
-      G_CALLBACK (on_record_toggled), self);
+  self->solo_toggled_handler_id = g_signal_connect (
+    G_OBJECT (self->solo), "toggled",
+    G_CALLBACK (on_solo_toggled), self);
+  self->mute_toggled_handler_id = g_signal_connect (
+    G_OBJECT (self->mute), "toggled",
+    G_CALLBACK (on_mute_toggled), self);
+  self->listen_toggled_handler_id = g_signal_connect (
+    G_OBJECT (self->listen), "toggled",
+    G_CALLBACK (on_listen_toggled), self);
+  self->record_toggled_handler_id = g_signal_connect (
+    G_OBJECT (self->record), "toggled",
+    G_CALLBACK (on_record_toggled), self);
 
   /* add right click menus */
   GtkGestureClick * mp;
 
 #define ADD_RIGHT_CLICK_CB(widget) \
   mp = \
-    GTK_GESTURE_CLICK ( \
-      gtk_gesture_click_new ()); \
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ()); \
   gtk_gesture_single_set_button ( \
-    GTK_GESTURE_SINGLE (mp), \
-    GDK_BUTTON_SECONDARY); \
+    GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY); \
   g_signal_connect ( \
     G_OBJECT (mp), "pressed", \
     G_CALLBACK (on_btn_right_click), self); \
   gtk_widget_add_controller ( \
-    GTK_WIDGET (widget), \
-    GTK_EVENT_CONTROLLER (mp))
+    GTK_WIDGET (widget), GTK_EVENT_CONTROLLER (mp))
 
   ADD_RIGHT_CLICK_CB (self->mute);
   ADD_RIGHT_CLICK_CB (self->solo);
@@ -375,8 +352,7 @@ static void
 fader_buttons_widget_class_init (
   FaderButtonsWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "fader_buttons.ui");
 
@@ -393,9 +369,7 @@ fader_buttons_widget_class_init (
 
 #undef BIND_CHILD
 
-  GObjectClass * oklass =
-    G_OBJECT_CLASS (klass);
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize =
-    (GObjectFinalizeFunc)
-    fader_buttons_finalize;
+    (GObjectFinalizeFunc) fader_buttons_finalize;
 }

@@ -36,19 +36,17 @@ typedef enum PortActionType
 } PortActionType;
 
 static const cyaml_strval_t
-port_action_type_strings[] =
-{
-  { "Set control val",
-    PORT_ACTION_SET_CONTROL_VAL },
+  port_action_type_strings[] = {
+    {"Set control val", PORT_ACTION_SET_CONTROL_VAL},
 };
 
 typedef struct PortAction
 {
-  UndoableAction  parent_instance;
+  UndoableAction parent_instance;
 
-  PortActionType  type;
+  PortActionType type;
 
-  PortIdentifier  port_id;
+  PortIdentifier port_id;
 
   /**
    * Real (not normalized) value before/after the
@@ -56,38 +54,36 @@ typedef struct PortAction
    *
    * To be swapped on undo/redo.
    */
-  float           val;
+  float val;
 } PortAction;
 
 static const cyaml_schema_field_t
-  port_action_fields_schema[] =
-{
-  YAML_FIELD_MAPPING_EMBEDDED (
-    PortAction, parent_instance,
-    undoable_action_fields_schema),
-  YAML_FIELD_ENUM (
-    PortAction, type,
-    port_action_type_strings),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    PortAction, port_id,
-    port_identifier_fields_schema),
-  YAML_FIELD_FLOAT (
-    PortAction, val),
+  port_action_fields_schema[] = {
+    YAML_FIELD_MAPPING_EMBEDDED (
+      PortAction,
+      parent_instance,
+      undoable_action_fields_schema),
+    YAML_FIELD_ENUM (
+      PortAction,
+      type,
+      port_action_type_strings),
+    YAML_FIELD_MAPPING_EMBEDDED (
+      PortAction,
+      port_id,
+      port_identifier_fields_schema),
+    YAML_FIELD_FLOAT (PortAction, val),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t
-  port_action_schema =
-{
+static const cyaml_schema_value_t port_action_schema = {
   YAML_VALUE_PTR (
     PortAction,
     port_action_fields_schema),
 };
 
 void
-port_action_init_loaded (
-  PortAction * self);
+port_action_init_loaded (PortAction * self);
 
 /**
  * Create a new action.
@@ -112,8 +108,7 @@ port_action_new_reset_control (
 
 NONNULL
 PortAction *
-port_action_clone (
-  const PortAction * src);
+port_action_clone (const PortAction * src);
 
 bool
 port_action_perform (
@@ -129,22 +124,16 @@ port_action_perform_reset_control (
   GError **        error);
 
 int
-port_action_do (
-  PortAction * self,
-  GError **    error);
+port_action_do (PortAction * self, GError ** error);
 
 int
-port_action_undo (
-  PortAction * self,
-  GError **    error);
+port_action_undo (PortAction * self, GError ** error);
 
 char *
-port_action_stringize (
-  PortAction * self);
+port_action_stringize (PortAction * self);
 
 void
-port_action_free (
-  PortAction * self);
+port_action_free (PortAction * self);
 
 /**
  * @}

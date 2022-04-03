@@ -37,21 +37,20 @@
  * @{
  */
 
-#define recording_event_queue_push_back_event(q,x) \
+#define recording_event_queue_push_back_event(q, x) \
   mpmc_queue_push_back (q, (void *) x)
 
-#define recording_event_queue_dequeue_event(q,x) \
+#define recording_event_queue_dequeue_event(q, x) \
   mpmc_queue_dequeue (q, (void *) x)
 
 /**
  * Push events.
  */
-#define RECORDING_EVENTS_PUSH_AUDIO(et,_arg) \
+#define RECORDING_EVENTS_PUSH_AUDIO(et, _arg) \
   if (RECORDING_MANAGER->event_queue) \
     { \
       RecordingEvent * ev = \
-        (RecordingEvent *) \
-        object_pool_get ( \
+        (RecordingEvent *) object_pool_get ( \
           RECORDING_MANAGER->event_obj_pool); \
       ev->type = et; \
       ev->arg = (void *) _arg; \
@@ -94,17 +93,17 @@ typedef struct RecordingEvent
   RecordingEventType type;
 
   /** The name of the track this event is for. */
-  unsigned int       track_name_hash;
+  unsigned int track_name_hash;
 
   /** ZRegion name, if applicable. */
-  char               region_name[200];
+  char region_name[200];
 
   /** Global start frames of the event. */
-  unsigned_frame_t   g_start_frame;
+  unsigned_frame_t g_start_frame;
 
   /** Offset from \ref RecordingEvent.g_start_frames
    * that this event starts from. */
-  nframes_t          local_offset;
+  nframes_t local_offset;
 
   /**
    * The actual data (if audio).
@@ -112,29 +111,29 @@ typedef struct RecordingEvent
    * This will be \ref RecordingEvent.nframes times
    * the number of channels in the track.
    */
-  float              lbuf[9000];
-  float              rbuf[9000];
+  float lbuf[9000];
+  float rbuf[9000];
 
-  int                has_midi_event;
+  int has_midi_event;
 
   /**
    * MidiEvent, if midi.
    */
-  MidiEvent          midi_event;
+  MidiEvent midi_event;
 
   /** Port if automation. */
-  PortIdentifier     port_id;
+  PortIdentifier port_id;
 
   /** Automation value, if automation. */
   //float             control_val;
 
   /** Number of frames processed in this event. */
-  nframes_t          nframes;
+  nframes_t nframes;
 
   /* debug info */
-  const char *       file;
-  const char *       func;
-  int                lineno;
+  const char * file;
+  const char * func;
+  int          lineno;
 } RecordingEvent;
 
 /**
@@ -145,18 +144,14 @@ typedef struct RecordingEvent
   re->func = __func__; \
   re->lineno = __LINE__
 
-COLD
-MALLOC
-RecordingEvent *
+COLD MALLOC RecordingEvent *
 recording_event_new (void);
 
 void
-recording_event_print (
-  RecordingEvent * self);
+recording_event_print (RecordingEvent * self);
 
 void
-recording_event_free (
-  RecordingEvent * self);
+recording_event_free (RecordingEvent * self);
 
 /**
  * @}

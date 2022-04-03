@@ -24,26 +24,43 @@
 
 G_BEGIN_DECLS
 
-#define GTK_TYPE_FLIPPER         (gtk_flipper_get_type ())
+#define GTK_TYPE_FLIPPER (gtk_flipper_get_type ())
 
-G_DECLARE_FINAL_TYPE (GtkFlipper, gtk_flipper, GTK, FLIPPER, GtkWidget)
+G_DECLARE_FINAL_TYPE (
+  GtkFlipper,
+  gtk_flipper,
+  GTK,
+  FLIPPER,
+  GtkWidget)
 
-GtkWidget *     gtk_flipper_new                                 (GtkWidget              *child);
+GtkWidget *
+gtk_flipper_new (GtkWidget * child);
 
-GtkWidget *     gtk_flipper_get_child                           (GtkFlipper             *self);
-void            gtk_flipper_set_child                           (GtkFlipper             *self,
-                                                                 GtkWidget              *child);
-gboolean        gtk_flipper_get_flip_horizontal                 (GtkFlipper             *self);
-void            gtk_flipper_set_flip_horizontal                 (GtkFlipper             *self,
-                                                                 gboolean                flip_horizontal);
-gboolean        gtk_flipper_get_flip_vertical                   (GtkFlipper             *self);
-void            gtk_flipper_set_flip_vertical                   (GtkFlipper             *self,
-                                                                 gboolean                flip_vertical);
-gboolean        gtk_flipper_get_rotate                          (GtkFlipper             *self);
-void            gtk_flipper_set_rotate                          (GtkFlipper             *self,
-                                                                 gboolean                rotate);
-
+GtkWidget *
+gtk_flipper_get_child (GtkFlipper * self);
+void
+gtk_flipper_set_child (
+  GtkFlipper * self,
+  GtkWidget *  child);
+gboolean
+gtk_flipper_get_flip_horizontal (GtkFlipper * self);
+void
+gtk_flipper_set_flip_horizontal (
+  GtkFlipper * self,
+  gboolean     flip_horizontal);
+gboolean
+gtk_flipper_get_flip_vertical (GtkFlipper * self);
+void
+gtk_flipper_set_flip_vertical (
+  GtkFlipper * self,
+  gboolean     flip_vertical);
+gboolean
+gtk_flipper_get_rotate (GtkFlipper * self);
+void
+gtk_flipper_set_rotate (
+  GtkFlipper * self,
+  gboolean     rotate);
 
 G_END_DECLS
 
-#endif  /* __GTK_FLIPPER_H__ */
+#endif /* __GTK_FLIPPER_H__ */

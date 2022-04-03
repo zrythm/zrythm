@@ -57,10 +57,10 @@ typedef enum FileManagerSpecialLocation
 typedef struct FileBrowserLocation
 {
   /** Human readable label. */
-  char *             label;
+  char * label;
 
   /** Absolute path. */
-  char *             path;
+  char * path;
 
   /** Whether this is a standard (undeletable)
    * location. */
@@ -87,7 +87,7 @@ typedef struct FileManager
    *
    * Array of SupportedFile.
    */
-  GPtrArray *              files;
+  GPtrArray * files;
 
 #if 0
   /**
@@ -102,12 +102,12 @@ typedef struct FileManager
    *
    * Array of FileBrowserLocation.
    */
-  GPtrArray *              locations;
+  GPtrArray * locations;
 
   /**
    * Current selection in the top window.
    */
-  FileBrowserLocation *    selection;
+  FileBrowserLocation * selection;
 
 } FileManager;
 
@@ -130,17 +130,16 @@ file_manager_load_files (FileManager * self);
 NONNULL
 void
 file_manager_set_selection (
-  FileManager *            self,
-  FileBrowserLocation *    sel,
-  bool                     load_files,
-  bool                     save_to_settings);
+  FileManager *         self,
+  FileBrowserLocation * sel,
+  bool                  load_files,
+  bool                  save_to_settings);
 
 /**
  * Frees the file manager.
  */
 void
-file_manager_free (
-  FileManager * self);
+file_manager_free (FileManager * self);
 
 FileBrowserLocation *
 file_browser_location_new (void);

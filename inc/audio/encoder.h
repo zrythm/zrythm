@@ -26,9 +26,10 @@
 #ifndef __AUDIO_ENCODER_H__
 #define __AUDIO_ENCODER_H__
 
+#include "zrythm-config.h"
+
 #include <stdbool.h>
 
-#include "zrythm-config.h"
 #include "utils/types.h"
 
 #include <audec/audec.h>
@@ -39,26 +40,25 @@
  * @{
  */
 
-
 /**
  * Struct for holding info for encoding.
  */
 typedef struct AudioEncoder
 {
   /** Filename, if encoding from file. */
-  char *           file;
+  char * file;
 
   /** Number of channels. */
-  channels_t       channels;
+  channels_t channels;
 
   /** The output frames interleaved. */
-  float *          out_frames;
+  float * out_frames;
 
   /** Output number of frames per channel. */
   unsigned_frame_t num_out_frames;
 
-  AudecInfo        nfo;
-  AudecHandle *    audec_handle;
+  AudecInfo     nfo;
+  AudecHandle * audec_handle;
 } AudioEncoder;
 
 /**
@@ -70,8 +70,7 @@ typedef struct AudioEncoder
  * for decoding it into the project's sample rate.
  */
 AudioEncoder *
-audio_encoder_new_from_file (
-  const char *    filepath);
+audio_encoder_new_from_file (const char * filepath);
 
 /**
  * Decodes the information in the AudioEncoder
@@ -96,8 +95,7 @@ audio_encoder_decode (
  */
 NONNULL
 void
-audio_encoder_free (
-  AudioEncoder * self);
+audio_encoder_free (AudioEncoder * self);
 
 /**
  * @}

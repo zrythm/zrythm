@@ -43,11 +43,12 @@
 #include "zrythm-config.h"
 
 #include <stdint.h>
-#include <string.h>
 
 #include "utils/types.h"
 
 #include <gtk/gtk.h>
+
+#include <string.h>
 
 /**
  * @addtogroup audio
@@ -73,8 +74,7 @@
  */
 CONST
 const char *
-midi_get_controller_name (
-  const midi_byte_t cc);
+midi_get_controller_name (const midi_byte_t cc);
 
 /**
  * Used for MIDI controls whose values are split
@@ -105,33 +105,27 @@ midi_ctrl_change_get_ch_and_description (
  * the status byte.
  */
 int
-midi_get_msg_length (
-  const uint8_t status_byte);
+midi_get_msg_length (const uint8_t status_byte);
 
 /**
  * Returns the frequency in Hz of the given note,
  * using 440Hz base.
  */
 static inline float
-midi_note_number_to_frequency (
-  const uint8_t note)
+midi_note_number_to_frequency (const uint8_t note)
 {
-  return
-    440.f *
-    powf (
-      2.f, ((float) note - 69.f) * (1.f / 12.f));
+  return 440.f
+         * powf (
+           2.f, ((float) note - 69.f) * (1.f / 12.f));
 }
 
 static inline uint8_t
-midi_frequency_to_note_number (
-  const float freq)
+midi_frequency_to_note_number (const float freq)
 {
-  return
-    (uint8_t)
-    round (
-      69.f +
-      (12.f / logf (2.f)) *
-        logf (freq * (1.0f / 440.f)));
+  return (uint8_t) round (
+    69.f
+    + (12.f / logf (2.f))
+        * logf (freq * (1.0f / 440.f)));
 }
 
 /**
@@ -141,8 +135,7 @@ midi_frequency_to_note_number (
  * TODO maybe move to chord/scale.
  */
 static inline uint8_t
-midi_get_chromatic_scale_index (
-  const uint8_t note)
+midi_get_chromatic_scale_index (const uint8_t note)
 {
   return note % 12;
 }
@@ -153,8 +146,7 @@ midi_get_chromatic_scale_index (
  * TODO maybe move to chord/scale.
  */
 static inline uint8_t
-midi_get_octave_number (
-  const uint8_t note)
+midi_get_octave_number (const uint8_t note)
 {
   const uint8_t octave_for_middle_c = 3;
   return note / 12 + (octave_for_middle_c - 5);
@@ -173,15 +165,13 @@ midi_is_short_message_type (
 }
 
 static inline midi_byte_t
-midi_get_note_number (
-  const midi_byte_t short_msg[3])
+midi_get_note_number (const midi_byte_t short_msg[3])
 {
   return short_msg[1];
 }
 
 static inline midi_byte_t
-midi_get_velocity (
-  const midi_byte_t short_msg[3])
+midi_get_velocity (const midi_byte_t short_msg[3])
 {
   return short_msg[2];
 }
@@ -192,8 +182,7 @@ midi_get_velocity (
  */
 CONST
 const char *
-midi_get_note_name (
-  const midi_byte_t note);
+midi_get_note_name (const midi_byte_t note);
 
 void
 midi_get_note_name_with_octave (
@@ -201,36 +190,27 @@ midi_get_note_name_with_octave (
   char *            buf);
 
 static inline bool
-midi_is_note_on (
-  const midi_byte_t short_msg[3])
+midi_is_note_on (const midi_byte_t short_msg[3])
 {
-  return
-    midi_is_short_message_type (
-      short_msg, MIDI_CH1_NOTE_ON)
-    &&
-    midi_get_velocity (short_msg) != 0;
+  return midi_is_short_message_type (
+           short_msg, MIDI_CH1_NOTE_ON)
+         && midi_get_velocity (short_msg) != 0;
 }
 
 static inline bool
-midi_is_note_off (
-  const midi_byte_t short_msg[3])
+midi_is_note_off (const midi_byte_t short_msg[3])
 {
-  return
-    midi_is_short_message_type (
-      short_msg, MIDI_CH1_NOTE_OFF)
-    ||
-    (midi_is_short_message_type (
-       short_msg, MIDI_CH1_NOTE_ON)
-     && midi_get_velocity (short_msg) == 0);
+  return midi_is_short_message_type (
+           short_msg, MIDI_CH1_NOTE_OFF)
+         || (midi_is_short_message_type (short_msg, MIDI_CH1_NOTE_ON) && midi_get_velocity (short_msg) == 0);
 }
 
 static inline bool
 midi_is_program_change (
   const midi_byte_t short_msg[3])
 {
-  return
-    midi_is_short_message_type (
-      short_msg, MIDI_CH1_PROG_CHANGE);
+  return midi_is_short_message_type (
+    short_msg, MIDI_CH1_PROG_CHANGE);
 }
 
 static inline midi_byte_t
@@ -241,39 +221,32 @@ midi_get_program_change_number (
 }
 
 static inline bool
-midi_is_pitch_wheel (
-  const midi_byte_t short_msg[3])
+midi_is_pitch_wheel (const midi_byte_t short_msg[3])
 {
-  return
-    midi_is_short_message_type (
-      short_msg, MIDI_CH1_PITCH_WHEEL_RANGE);
+  return midi_is_short_message_type (
+    short_msg, MIDI_CH1_PITCH_WHEEL_RANGE);
 }
 
 static inline bool
-midi_is_aftertouch (
-  const midi_byte_t short_msg[3])
+midi_is_aftertouch (const midi_byte_t short_msg[3])
 {
-  return
-    midi_is_short_message_type (
-      short_msg, MIDI_CH1_POLY_AFTERTOUCH);
+  return midi_is_short_message_type (
+    short_msg, MIDI_CH1_POLY_AFTERTOUCH);
 }
 
 static inline bool
 midi_is_channel_pressure (
   const midi_byte_t short_msg[3])
 {
-  return
-    midi_is_short_message_type (
-      short_msg, MIDI_CH1_CHAN_AFTERTOUCH);
+  return midi_is_short_message_type (
+    short_msg, MIDI_CH1_CHAN_AFTERTOUCH);
 }
 
 static inline bool
-midi_is_controller (
-  const midi_byte_t short_msg[3])
+midi_is_controller (const midi_byte_t short_msg[3])
 {
-  return
-    midi_is_short_message_type (
-      short_msg, MIDI_CH1_CTRL_CHANGE);
+  return midi_is_short_message_type (
+    short_msg, MIDI_CH1_CTRL_CHANGE);
 }
 
 /**
@@ -287,8 +260,7 @@ static inline uint32_t
 midi_get_14_bit_value (
   const midi_byte_t short_msg[3])
 {
-  return
-    short_msg[1] | ((uint32_t) short_msg[2] << 7);
+  return short_msg[1] | ((uint32_t) short_msg[2] << 7);
 }
 
 static inline midi_byte_t
@@ -344,18 +316,18 @@ static inline bool
 midi_is_all_notes_off (
   const midi_byte_t short_msg[3])
 {
-  return
-    midi_is_controller (short_msg)
-    && midi_get_controller_number (short_msg) == 123;
+  return midi_is_controller (short_msg)
+         && midi_get_controller_number (short_msg)
+              == 123;
 }
 
 static inline bool
 midi_is_all_sound_off (
   const midi_byte_t short_msg[3])
 {
-  return
-    midi_is_controller (short_msg)
-    && midi_get_controller_number (short_msg) == 120;
+  return midi_is_controller (short_msg)
+         && midi_get_controller_number (short_msg)
+              == 120;
 }
 
 static inline bool
@@ -366,36 +338,31 @@ midi_is_quarter_frame (
 }
 
 static inline bool
-midi_is_clock (
-  const midi_byte_t short_msg[3])
+midi_is_clock (const midi_byte_t short_msg[3])
 {
   return short_msg[0] == 0xf8;
 }
 
 static inline bool
-midi_is_start (
-  const midi_byte_t short_msg[3])
+midi_is_start (const midi_byte_t short_msg[3])
 {
   return short_msg[0] == 0xfa;
 }
 
 static inline bool
-midi_is_continue (
-  const midi_byte_t short_msg[3])
+midi_is_continue (const midi_byte_t short_msg[3])
 {
   return short_msg[0] == 0xfb;
 }
 
 static inline bool
-midi_is_stop (
-  const midi_byte_t short_msg[3])
+midi_is_stop (const midi_byte_t short_msg[3])
 {
   return short_msg[0] == 0xfc;
 }
 
 static inline bool
-midi_is_active_sense (
-  const midi_byte_t short_msg[3])
+midi_is_active_sense (const midi_byte_t short_msg[3])
 {
   return short_msg[0] == 0xfe;
 }
@@ -441,9 +408,8 @@ midi_is_short_msg (
   if (msg_sz > 3)
     return false;
 
-  return
-    msg[0] != MIDI_SYSTEM_MESSAGE
-    && msg[0] != MIDI_META_EVENT;
+  return msg[0] != MIDI_SYSTEM_MESSAGE
+         && msg[0] != MIDI_META_EVENT;
 }
 
 static inline bool
@@ -451,9 +417,7 @@ midi_is_sysex (
   const midi_byte_t * msg,
   const size_t        msg_sz)
 {
-  return
-    msg_sz > 1
-    && msg[0] == MIDI_SYSTEM_MESSAGE;
+  return msg_sz > 1 && msg[0] == MIDI_SYSTEM_MESSAGE;
 }
 
 static inline bool
@@ -461,9 +425,7 @@ midi_is_meta_event (
   const midi_byte_t * msg,
   const size_t        msg_sz)
 {
-  return
-    msg_sz > 2
-    && msg[0] == MIDI_META_EVENT;
+  return msg_sz > 2 && msg[0] == MIDI_META_EVENT;
 }
 
 static inline bool
@@ -479,10 +441,8 @@ midi_is_meta_event_of_type (
   const size_t        msg_sz,
   const midi_byte_t   type)
 {
-  return
-    msg_sz > 2
-    && msg[1] == type
-    && msg[0] == MIDI_META_EVENT;
+  return msg_sz > 2 && msg[1] == type
+         && msg[0] == MIDI_META_EVENT;
 }
 
 static inline midi_byte_t

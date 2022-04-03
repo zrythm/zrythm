@@ -41,10 +41,11 @@
 #ifndef __PLUGINS_LV2_GTK_H__
 #define __PLUGINS_LV2_GTK_H__
 
-typedef struct Lv2Plugin Lv2Plugin;
+typedef struct Lv2Plugin  Lv2Plugin;
 typedef struct Lv2Control Lv2Control;
 typedef struct PluginGtkPresetMenu
-  PluginGtkPresetMenu;
+                    PluginGtkPresetMenu;
+typedef struct Port Port;
 
 #include <stdint.h>
 
@@ -63,12 +64,12 @@ typedef struct PluginGtkPresetMenu
  * plugin.
  */
 void
-lv2_gtk_ui_port_event(
-  Lv2Plugin*  plugin,
-  uint32_t    port_index,
-  uint32_t    buffer_size,
-  uint32_t    protocol,
-  const void* buffer);
+lv2_gtk_ui_port_event (
+  Lv2Plugin *  plugin,
+  uint32_t     port_index,
+  uint32_t     buffer_size,
+  uint32_t     protocol,
+  const void * buffer);
 
 /**
  * Called by generic UI callbacks when e.g. a slider
@@ -87,8 +88,7 @@ lv2_gtk_set_float_control (
  * Use plugin_gtk_*() for generic UIs.
  */
 int
-lv2_gtk_open_ui (
-  Lv2Plugin* plugin);
+lv2_gtk_open_ui (Lv2Plugin * plugin);
 
 #if 0
 PluginGtkPresetMenu*
@@ -115,19 +115,20 @@ lv2_gtk_add_preset_to_menu (
  */
 void
 lv2_gtk_on_save_preset_activate (
-  GtkWidget*   widget,
+  GtkWidget *  widget,
   Lv2Plugin *  plugin,
   const char * path,
   const char * uri,
   bool         add_prefix);
 
-GtkWidget*
+GtkWidget *
 lv2_gtk_build_control_widget (
-  Lv2Plugin* plugin, GtkWindow* window);
+  Lv2Plugin * plugin,
+  GtkWindow * window);
 
 void
 lv2_gtk_on_delete_preset_activate (
-  GtkWidget* widget,
+  GtkWidget * widget,
   Lv2Plugin * plugin);
 
 /**

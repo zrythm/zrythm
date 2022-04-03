@@ -83,9 +83,9 @@ test_find_and_queue_metronome (void)
       &play_pos, 226.99682539682544302);
     position_update_frames_from_ticks (&play_pos);
     transport_set_playhead_pos (
-    TRANSPORT, &play_pos);
+      TRANSPORT, &play_pos);
     metronome_queue_events (
-    AUDIO_ENGINE, 0, AUDIO_ENGINE->block_length);
+      AUDIO_ENGINE, 0, AUDIO_ENGINE->block_length);
 
     /* assert no sound is played for 5.1.1.0 */
     g_assert_cmpint (
@@ -95,13 +95,11 @@ test_find_and_queue_metronome (void)
      * metronome was added */
     transport_add_to_playhead (
       TRANSPORT, AUDIO_ENGINE->block_length);
-    metronome_queue_events (
-      AUDIO_ENGINE, 0, 1);
+    metronome_queue_events (AUDIO_ENGINE, 0, 1);
 
     /* assert metronome is queued for 1.1.1.0 */
     g_assert_cmpint (
       SAMPLE_PROCESSOR->num_current_samples, ==, 1);
-
   }
 
   {
@@ -115,13 +113,11 @@ test_find_and_queue_metronome (void)
       {
         g_message ("%u", i);
         SAMPLE_PROCESSOR->num_current_samples = 0;
-        metronome_queue_events (
-          AUDIO_ENGINE, 0, 1);
+        metronome_queue_events (AUDIO_ENGINE, 0, 1);
         g_assert_cmpint (
           SAMPLE_PROCESSOR->num_current_samples, ==,
           i == 4);
-        transport_add_to_playhead (
-          TRANSPORT, 1);
+        transport_add_to_playhead (TRANSPORT, 1);
       }
 
     position_set_to_bar (&play_pos, 16);
@@ -132,13 +128,11 @@ test_find_and_queue_metronome (void)
       {
         g_message ("%u", i);
         SAMPLE_PROCESSOR->num_current_samples = 0;
-        metronome_queue_events (
-          AUDIO_ENGINE, 0, 2);
+        metronome_queue_events (AUDIO_ENGINE, 0, 2);
         g_assert_cmpint (
           SAMPLE_PROCESSOR->num_current_samples, ==,
           (i >= 3 && i <= 4));
-        transport_add_to_playhead (
-          TRANSPORT, 1);
+        transport_add_to_playhead (TRANSPORT, 1);
       }
   }
 
@@ -152,9 +146,9 @@ test_find_and_queue_metronome (void)
       position_set_to_bar (&play_pos, 16);
       position_add_frames (
         &play_pos,
-        - (long) AUDIO_ENGINE->block_length);
+        -(long) AUDIO_ENGINE->block_length);
       if (i == 1)
-        position_add_ticks (&play_pos, - 0.01);
+        position_add_ticks (&play_pos, -0.01);
       transport_set_playhead_pos (
         TRANSPORT, &play_pos);
       position_set_to_bar (
@@ -166,7 +160,8 @@ test_find_and_queue_metronome (void)
       metronome_queue_events (
         AUDIO_ENGINE, 0, AUDIO_ENGINE->block_length);
       g_assert_cmpint (
-        SAMPLE_PROCESSOR->num_current_samples, ==, 0);
+        SAMPLE_PROCESSOR->num_current_samples, ==,
+        0);
 
       /* add remaining frames and assert playback
        * at the first sample */
@@ -176,7 +171,8 @@ test_find_and_queue_metronome (void)
       metronome_queue_events (
         AUDIO_ENGINE, 0, AUDIO_ENGINE->block_length);
       g_assert_cmpint (
-        SAMPLE_PROCESSOR->num_current_samples, ==, 1);
+        SAMPLE_PROCESSOR->num_current_samples, ==,
+        1);
       SamplePlayback * sp =
         &SAMPLE_PROCESSOR->current_samples[0];
       g_assert_cmpuint (sp->start_offset, ==, 0);
@@ -186,7 +182,7 @@ test_find_and_queue_metronome (void)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

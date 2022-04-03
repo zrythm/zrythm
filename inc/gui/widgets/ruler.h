@@ -42,11 +42,12 @@
  */
 #define RW_PX_TO_HIDE_BEATS 40.0
 
-#define RULER_WIDGET_TYPE \
-  (ruler_widget_get_type ())
+#define RULER_WIDGET_TYPE (ruler_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  RulerWidget, ruler_widget,
-  Z, RULER_WIDGET,
+  RulerWidget,
+  ruler_widget,
+  Z,
+  RULER_WIDGET,
   GtkWidget)
 
 /**
@@ -113,63 +114,63 @@ typedef enum RulerWidgetRangeType
 
 typedef struct _RulerWidget
 {
-  GtkWidget       parent_instance;
+  GtkWidget parent_instance;
 
-  RulerWidgetType   type;
+  RulerWidgetType type;
 
-  double            px_per_beat;
-  double            px_per_bar;
-  double            px_per_sixteenth;
-  double            px_per_tick;
-  double            px_per_min;
-  double            px_per_10sec;
-  double            px_per_sec;
-  double            px_per_100ms;
-  double            total_px;
+  double px_per_beat;
+  double px_per_bar;
+  double px_per_sixteenth;
+  double px_per_tick;
+  double px_per_min;
+  double px_per_10sec;
+  double px_per_sec;
+  double px_per_100ms;
+  double total_px;
 
   /**
    * Dragging playhead or creating range, etc.
    */
-  UiOverlayAction   action;
+  UiOverlayAction action;
 
   /** For dragging. */
-  double            start_x;
-  double            start_y;
-  double            last_offset_x;
+  double start_x;
+  double start_y;
+  double last_offset_x;
 
   GtkGestureDrag *  drag;
   GtkGestureClick * click;
 
   /** Target acting upon. */
-  RWTarget          target;
+  RWTarget target;
 
   /**
    * If shift was held down during the press.
    */
-  int               shift_held;
+  int shift_held;
 
   /** Px the playhead was last drawn at, so we can
    * redraw this and the new px only when the
    * playhead changes position. */
-  int               last_playhead_px;
+  int last_playhead_px;
 
   /** Set to 1 to redraw. */
-  int               redraw;
+  int redraw;
 
   /** Whether range1 was before range2 at drag
    * start. */
-  int               range1_first;
+  int range1_first;
 
   /** Set to 1 between drag begin and drag end. */
-  int               dragging;
+  int dragging;
 
   /**
    * Set on drag begin.
    *
    * Useful for moving range.
    */
-  Position          range1_start_pos;
-  Position          range2_start_pos;
+  Position range1_start_pos;
+  Position range2_start_pos;
 
   /**
    * Last position the playhead was set to.
@@ -177,24 +178,24 @@ typedef struct _RulerWidget
    * This is used for setting the cue point on
    * drag end.
    */
-  Position          last_set_pos;
+  Position last_set_pos;
 
   /** Position at start of drag. */
-  Position          drag_start_pos;
+  Position drag_start_pos;
 
-  cairo_t *         cached_cr;
+  cairo_t * cached_cr;
 
   cairo_surface_t * cached_surface;
 
   /** Rectangle in the last call. */
-  graphene_rect_t   last_rect;
+  graphene_rect_t last_rect;
 
   /* layout for drawing text */
-  PangoLayout *     layout_normal;
-  PangoLayout *     layout_small;
+  PangoLayout * layout_normal;
+  PangoLayout * layout_small;
 
   /** Popover to be reused for context menus. */
-  GtkPopoverMenu *  popover_menu;
+  GtkPopoverMenu * popover_menu;
 } RulerWidget;
 
 /**
@@ -213,8 +214,7 @@ ruler_widget_set_zoom_level (
  * lines.
  */
 int
-ruler_widget_get_beat_interval (
-  RulerWidget * self);
+ruler_widget_get_beat_interval (RulerWidget * self);
 
 /**
  * Returns the sixteenth interval for drawing
@@ -228,15 +228,13 @@ ruler_widget_get_sixteenth_interval (
  * Returns the 10 sec interval.
  */
 int
-ruler_widget_get_10sec_interval (
-  RulerWidget * self);
+ruler_widget_get_10sec_interval (RulerWidget * self);
 
 /**
  * Returns the sec interval.
  */
 int
-ruler_widget_get_sec_interval (
-  RulerWidget * self);
+ruler_widget_get_sec_interval (RulerWidget * self);
 
 bool
 ruler_widget_is_range_hit (
@@ -250,16 +248,13 @@ ruler_widget_is_range_hit (
  * RulerWidget from the backend.
  */
 double
-ruler_widget_get_zoom_level (
-  RulerWidget * self);
+ruler_widget_get_zoom_level (RulerWidget * self);
 
 GtkScrolledWindow *
-ruler_widget_get_parent_scroll (
-  RulerWidget * self);
+ruler_widget_get_parent_scroll (RulerWidget * self);
 
 void
-ruler_widget_refresh (
-  RulerWidget * self);
+ruler_widget_refresh (RulerWidget * self);
 
 /**
  * @}

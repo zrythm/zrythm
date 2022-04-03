@@ -40,43 +40,43 @@ inspector_midi_widget_show_midi (
     }
   else
     {
-      char * string = g_strdup_printf ("Midis (%d)", num_midis);
+      char * string =
+        g_strdup_printf ("Midis (%d)", num_midis);
       gtk_label_set_text (self->header, string);
       g_free (string);
 
-      for (int i = 0; i < num_midis; i++)
-      {
-
-      }
+      for (int i = 0; i < num_midis; i++) { }
     }
 }
 
-
 static void
-inspector_midi_widget_class_init (InspectorMidiWidgetClass * klass)
+inspector_midi_widget_class_init (
+  InspectorMidiWidgetClass * klass)
 {
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/org/zrythm/ui/inspector_midi.ui");
+  gtk_widget_class_set_template_from_resource (
+    GTK_WIDGET_CLASS (klass),
+    "/org/zrythm/ui/inspector_midi.ui");
 
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorMidiWidget,
-                                        position_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorMidiWidget,
-                                        length_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorMidiWidget,
-                                        color);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorMidiWidget,
-                                        mute_toggle);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorMidiWidget,
-                                        header);
+  gtk_widget_class_bind_template_child (
+    GTK_WIDGET_CLASS (klass), InspectorMidiWidget,
+    position_box);
+  gtk_widget_class_bind_template_child (
+    GTK_WIDGET_CLASS (klass), InspectorMidiWidget,
+    length_box);
+  gtk_widget_class_bind_template_child (
+    GTK_WIDGET_CLASS (klass), InspectorMidiWidget,
+    color);
+  gtk_widget_class_bind_template_child (
+    GTK_WIDGET_CLASS (klass), InspectorMidiWidget,
+    mute_toggle);
+  gtk_widget_class_bind_template_child (
+    GTK_WIDGET_CLASS (klass), InspectorMidiWidget,
+    header);
 }
 
 static void
-inspector_midi_widget_init (InspectorMidiWidget * self)
+inspector_midi_widget_init (
+  InspectorMidiWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }

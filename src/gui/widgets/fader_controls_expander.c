@@ -25,8 +25,8 @@
 #include "project.h"
 #include "utils/gtk.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 #define FADER_CONTROLS_EXPANDER_WIDGET_TYPE \
   (fader_controls_expander_widget_get_type ())
@@ -50,12 +50,11 @@ fader_controls_expander_widget_refresh (
 void
 fader_controls_expander_widget_setup (
   FaderControlsExpanderWidget * self,
-  Track *                     track)
+  Track *                       track)
 {
   /* set name and icon */
   expander_box_widget_set_label (
-    Z_EXPANDER_BOX_WIDGET (self),
-    _("Fader"));
+    Z_EXPANDER_BOX_WIDGET (self), _ ("Fader"));
 
   self->track = track;
 
@@ -85,8 +84,7 @@ static void
 fader_controls_expander_widget_init (
   FaderControlsExpanderWidget * self)
 {
-  self->grid =
-    fader_controls_grid_widget_new ();
+  self->grid = fader_controls_grid_widget_new ();
   gtk_widget_set_visible (
     GTK_WIDGET (self->grid), 1);
 
@@ -99,8 +97,7 @@ fader_controls_expander_widget_init (
 
   /* add css classes */
   GtkStyleContext * context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self));
+    gtk_widget_get_style_context (GTK_WIDGET (self));
   gtk_style_context_add_class (
     context, "fader-controls-expander");
 }

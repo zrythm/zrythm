@@ -50,20 +50,18 @@
 
 #include <gtk/gtk.h>
 
-typedef struct GraphNode GraphNode;
-typedef struct Graph Graph;
-typedef struct PassthroughProcessor
-  PassthroughProcessor;
-typedef struct Port Port;
-typedef struct Fader Fader;
-typedef struct Track Track;
-typedef struct SampleProcessor SampleProcessor;
-typedef struct Plugin Plugin;
-typedef struct HardwareProcessor HardwareProcessor;
-typedef struct ModulatorMacroProcessor
-  ModulatorMacroProcessor;
-typedef struct EngineProcessTimeInfo
-  EngineProcessTimeInfo;
+TYPEDEF_STRUCT (GraphNode);
+TYPEDEF_STRUCT (Graph);
+TYPEDEF_STRUCT (PassthroughProcessor);
+TYPEDEF_STRUCT (Port);
+TYPEDEF_STRUCT (Fader);
+TYPEDEF_STRUCT (Track);
+TYPEDEF_STRUCT (SampleProcessor);
+TYPEDEF_STRUCT (Plugin);
+TYPEDEF_STRUCT (HardwareProcessor);
+TYPEDEF_STRUCT (ModulatorMacroProcessor);
+TYPEDEF_STRUCT (EngineProcessTimeInfo);
+TYPEDEF_STRUCT (ChannelSend);
 
 /**
  * @addtogroup audio
@@ -115,41 +113,41 @@ typedef enum GraphNodeType
  */
 typedef struct GraphNode
 {
-  int           id;
+  int id;
   /** Ref back to the graph so we don't have to
    * pass it around. */
-  Graph *      graph;
+  Graph * graph;
 
   /** outgoing edges
    * downstream nodes to activate when this node
    * has completed processed
    */
-  GraphNode **  childnodes;
-  int           n_childnodes;
+  GraphNode ** childnodes;
+  int          n_childnodes;
 
   /** Incoming node count. */
   volatile gint refcount;
 
   /** Initial incoming node count. */
-  gint          init_refcount;
+  gint init_refcount;
 
   /** Used when creating the graph so we can
    * traverse it backwards to set the latencies. */
-  GraphNode **  parentnodes;
+  GraphNode ** parentnodes;
 
   /** Port, if not a plugin or fader. */
-  Port *        port;
+  Port * port;
 
   /** Plugin, if plugin. */
-  Plugin *      pl;
+  Plugin * pl;
 
   /** Fader, if fader. */
-  Fader *       fader;
+  Fader * fader;
 
-  Track *       track;
+  Track * track;
 
   /** Pre-Fader, if prefader node. */
-  Fader *       prefader;
+  Fader * prefader;
 
   /** Sample processor, if sample processor. */
   SampleProcessor * sample_processor;
@@ -162,15 +160,15 @@ typedef struct GraphNode
   ChannelSend * send;
 
   /** For debugging. */
-  bool          terminal;
-  bool          initial;
+  bool terminal;
+  bool initial;
 
   /** The playback latency of the node, in
    * samples. */
-  nframes_t     playback_latency;
+  nframes_t playback_latency;
 
   /** The route's playback latency so far. */
-  nframes_t     route_playback_latency;
+  nframes_t route_playback_latency;
 
   GraphNodeType type;
 } GraphNode;
@@ -181,12 +179,10 @@ typedef struct GraphNode
  * Must be free'd.
  */
 char *
-graph_node_get_name (
-  GraphNode * node);
+graph_node_get_name (GraphNode * node);
 
 void *
-graph_node_get_pointer (
-  GraphNode * self);
+graph_node_get_pointer (GraphNode * self);
 
 void
 graph_node_print_to_str (
@@ -195,14 +191,12 @@ graph_node_print_to_str (
   size_t      buf_sz);
 
 void
-graph_node_print (
-  GraphNode * node);
+graph_node_print (GraphNode * node);
 
 /**
  * Processes the GraphNode.
  */
-HOT
-void
+HOT void
 graph_node_process (
   GraphNode *           node,
   EngineProcessTimeInfo time_nfo);
@@ -236,35 +230,30 @@ graph_node_set_route_playback_latency (
  * Called by an upstream node when it has completed
  * processing.
  */
-HOT
-void
-graph_node_trigger (
-  GraphNode * self);
+HOT void
+graph_node_trigger (GraphNode * self);
 
 //void
 //graph_node_add_feeds (
-  //GraphNode * self,
-  //GraphNode * dest);
+//GraphNode * self,
+//GraphNode * dest);
 
 //void
 //graph_node_add_depends (
-  //GraphNode * self,
-  //GraphNode * src);
+//GraphNode * self,
+//GraphNode * src);
 
 void
-graph_node_connect (
-  GraphNode * from,
-  GraphNode * to);
+graph_node_connect (GraphNode * from, GraphNode * to);
 
 GraphNode *
 graph_node_new (
-  Graph * graph,
+  Graph *       graph,
   GraphNodeType type,
-  void *   data);
+  void *        data);
 
 void
-graph_node_free (
-  GraphNode * node);
+graph_node_free (GraphNode * node);
 
 /**
  * @}

@@ -24,12 +24,12 @@
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include <glib/gi18n.h>
-
 G_DEFINE_TYPE (
-  SnapGridWidget, snap_grid_widget,
+  SnapGridWidget,
+  snap_grid_widget,
   GTK_TYPE_BOX)
 
 #if 0
@@ -45,23 +45,21 @@ static void
 set_label (SnapGridWidget * self)
 {
   SnapGrid * sg = self->snap_grid;
-  char * snap_str = snap_grid_stringize (sg);
+  char *     snap_str = snap_grid_stringize (sg);
 
   char new_str[600];
   if (sg->length_type == NOTE_LENGTH_LINK)
     {
       sprintf (new_str, "%s - 🔗", snap_str);
     }
-  else if (sg->length_type ==
-             NOTE_LENGTH_LAST_OBJECT)
+  else if (sg->length_type == NOTE_LENGTH_LAST_OBJECT)
     {
       sprintf (
-        new_str, _("%s - Last object"), snap_str);
+        new_str, _ ("%s - Last object"), snap_str);
     }
   else
     {
-      char * default_str =
-        snap_grid_stringize (sg);
+      char * default_str = snap_grid_stringize (sg);
       sprintf (
         new_str, "%s - %s", snap_str, default_str);
       g_free (default_str);
@@ -72,8 +70,7 @@ set_label (SnapGridWidget * self)
 }
 
 void
-snap_grid_widget_refresh (
-  SnapGridWidget * self)
+snap_grid_widget_refresh (SnapGridWidget * self)
 {
   set_label (self);
 }
@@ -105,22 +102,16 @@ snap_grid_widget_init (SnapGridWidget * self)
   self->menu_btn =
     GTK_MENU_BUTTON (gtk_menu_button_new ());
   gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->menu_btn));
+    GTK_BOX (self), GTK_WIDGET (self->menu_btn));
 
-  self->box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
-  self->img =
-    GTK_IMAGE (
-      gtk_image_new_from_icon_name ("snap-to-grid"));
-  self->label =
-    GTK_LABEL (gtk_label_new (""));
+  self->box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  self->img = GTK_IMAGE (
+    gtk_image_new_from_icon_name ("snap-to-grid"));
+  self->label = GTK_LABEL (gtk_label_new (""));
   gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self->box),
-    _("Snap/Grid options"));
-  gtk_box_append (
-    self->box, GTK_WIDGET (self->img));
+    GTK_WIDGET (self->box), _ ("Snap/Grid options"));
+  gtk_box_append (self->box, GTK_WIDGET (self->img));
   gtk_box_append (
     self->box, GTK_WIDGET (self->label));
   gtk_menu_button_set_child (

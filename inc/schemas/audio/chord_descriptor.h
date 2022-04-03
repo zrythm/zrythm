@@ -47,20 +47,19 @@ typedef enum MusicalNote_v1
   NOTE_B_v1,
 } MusicalNote_v1;
 
-static const cyaml_strval_t
-musical_note_strings_v1[] = {
-  { "C",          NOTE_C_v1    },
-  { "C#",         NOTE_CS_v1   },
-  { "D",          NOTE_D_v1   },
-  { "D#",         NOTE_DS_v1   },
-  { "E",          NOTE_E_v1   },
-  { "F",          NOTE_F_v1   },
-  { "F#",         NOTE_FS_v1   },
-  { "G",          NOTE_G_v1   },
-  { "G#",         NOTE_GS_v1   },
-  { "A",          NOTE_A_v1   },
-  { "A#",         NOTE_AS_v1   },
-  { "B",          NOTE_B_v1   },
+static const cyaml_strval_t musical_note_strings_v1[] = {
+  {"C",   NOTE_C_v1 },
+  { "C#", NOTE_CS_v1},
+  { "D",  NOTE_D_v1 },
+  { "D#", NOTE_DS_v1},
+  { "E",  NOTE_E_v1 },
+  { "F",  NOTE_F_v1 },
+  { "F#", NOTE_FS_v1},
+  { "G",  NOTE_G_v1 },
+  { "G#", NOTE_GS_v1},
+  { "A",  NOTE_A_v1 },
+  { "A#", NOTE_AS_v1},
+  { "B",  NOTE_B_v1 },
 };
 
 typedef enum ChordType_v1
@@ -94,42 +93,44 @@ typedef struct ChordDescriptor_v1
   int            schema_version;
   bool           has_bass;
   bool           is_custom;
-  MusicalNote_v1    root_note;
-  MusicalNote_v1    bass_note;
-  ChordType_v1      type;
-  ChordAccent_v1    accent;
+  MusicalNote_v1 root_note;
+  MusicalNote_v1 bass_note;
+  ChordType_v1   type;
+  ChordAccent_v1 accent;
   bool           notes[CHORD_DESCRIPTOR_MAX_NOTES];
-  int                   inversion;
+  int            inversion;
 } ChordDescriptor_v1;
 
 static const cyaml_schema_field_t
-  chord_descriptor_fields_schema_v1[] =
-{
-  YAML_FIELD_INT (
-    ChordDescriptor_v1, schema_version),
-  YAML_FIELD_INT (
-    ChordDescriptor_v1, has_bass),
-  YAML_FIELD_ENUM (
-    ChordDescriptor, root_note,
-    musical_note_strings_v1),
-  YAML_FIELD_ENUM (
-    ChordDescriptor_v1, bass_note,
-    musical_note_strings_v1),
-  CYAML_FIELD_SEQUENCE_FIXED (
-    "notes", CYAML_FLAG_OPTIONAL,
-    ChordDescriptor_v1, notes, &int_schema, 36),
-  YAML_FIELD_INT (
-    ChordDescriptor_v1, inversion),
+  chord_descriptor_fields_schema_v1[] = {
+    YAML_FIELD_INT (ChordDescriptor_v1, schema_version),
+    YAML_FIELD_INT (ChordDescriptor_v1, has_bass),
+    YAML_FIELD_ENUM (
+      ChordDescriptor,
+      root_note,
+      musical_note_strings_v1),
+    YAML_FIELD_ENUM (
+      ChordDescriptor_v1,
+      bass_note,
+      musical_note_strings_v1),
+    CYAML_FIELD_SEQUENCE_FIXED (
+      "notes",
+      CYAML_FLAG_OPTIONAL,
+      ChordDescriptor_v1,
+      notes,
+      &int_schema,
+      36),
+    YAML_FIELD_INT (ChordDescriptor_v1, inversion),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-chord_descriptor_schema_v1 = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    ChordDescriptor_v1,
-    chord_descriptor_fields_schema_v1),
-};
+  chord_descriptor_schema_v1 = {
+    CYAML_VALUE_MAPPING (
+      CYAML_FLAG_POINTER,
+      ChordDescriptor_v1,
+      chord_descriptor_fields_schema_v1),
+  };
 
 #endif

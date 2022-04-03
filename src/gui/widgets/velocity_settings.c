@@ -27,7 +27,8 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  VelocitySettingsWidget, velocity_settings_widget,
+  VelocitySettingsWidget,
+  velocity_settings_widget,
   GTK_TYPE_WIDGET)
 
 static gboolean
@@ -39,8 +40,7 @@ get_mapping (
   const char * str =
     g_variant_get_string (variant, NULL);
 
-  guint val =
-    velocity_setting_str_to_enum (str);
+  guint val = velocity_setting_str_to_enum (str);
   g_value_set_uint (value, val);
 
   return true;
@@ -61,23 +61,21 @@ set_mapping (
 }
 
 static void
-on_dispose (
-  GObject * object)
+on_dispose (GObject * object)
 {
   z_gtk_widget_remove_all_children (
     GTK_WIDGET (object));
 
   G_OBJECT_CLASS (
-    velocity_settings_widget_parent_class)->
-      dispose (object);
+    velocity_settings_widget_parent_class)
+    ->dispose (object);
 }
 
 static void
 velocity_settings_widget_class_init (
   VelocitySettingsWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "velocity-settings");
 
@@ -89,23 +87,22 @@ static void
 velocity_settings_widget_init (
   VelocitySettingsWidget * self)
 {
-  GtkBoxLayout * box_layout =
-    GTK_BOX_LAYOUT (
-      gtk_box_layout_new (GTK_ORIENTATION_HORIZONTAL));
+  GtkBoxLayout * box_layout = GTK_BOX_LAYOUT (
+    gtk_box_layout_new (GTK_ORIENTATION_HORIZONTAL));
   gtk_box_layout_set_spacing (box_layout, 1);
   gtk_widget_set_layout_manager (
     GTK_WIDGET (self),
     GTK_LAYOUT_MANAGER (box_layout));
 
   GtkWidget * lbl =
-    gtk_label_new (_("Default Velocity"));
+    gtk_label_new (_ ("Default Velocity"));
   gtk_widget_set_parent (lbl, GTK_WIDGET (self));
 
   const char * list[] = {
-    _("Last Note"), "40", "90", "120", NULL };
-  self->default_velocity_dropdown =
-    GTK_DROP_DOWN (
-      gtk_drop_down_new_from_strings (list));
+    _ ("Last Note"), "40", "90", "120", NULL
+  };
+  self->default_velocity_dropdown = GTK_DROP_DOWN (
+    gtk_drop_down_new_from_strings (list));
   gtk_widget_set_parent (
     GTK_WIDGET (self->default_velocity_dropdown),
     GTK_WIDGET (self));
@@ -122,6 +119,6 @@ velocity_settings_widget_init (
     G_OBJECT (self->default_velocity_dropdown),
     "selected", G_SETTINGS_BIND_DEFAULT,
     (GSettingsBindGetMapping) get_mapping,
-    (GSettingsBindSetMapping) set_mapping,
-    self, NULL);
+    (GSettingsBindSetMapping) set_mapping, self,
+    NULL);
 }

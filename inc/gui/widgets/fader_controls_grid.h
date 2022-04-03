@@ -33,16 +33,16 @@
 G_DECLARE_FINAL_TYPE (
   FaderControlsGridWidget,
   fader_controls_grid_widget,
-  Z, FADER_CONTROLS_GRID_WIDGET,
+  Z,
+  FADER_CONTROLS_GRID_WIDGET,
   GtkGrid)
 
-typedef struct Track Track;
+typedef struct Track        Track;
 typedef struct _FaderWidget FaderWidget;
 typedef struct _MeterWidget MeterWidget;
 typedef struct _BalanceControlWidget
   BalanceControlWidget;
-typedef struct _FaderButtonsWidget
-  FaderButtonsWidget;
+typedef struct _FaderButtonsWidget FaderButtonsWidget;
 
 /**
  * @addtogroup widgets
@@ -52,28 +52,28 @@ typedef struct _FaderButtonsWidget
 
 typedef struct _FaderControlsGridWidget
 {
-  GtkGrid        parent_instance;
+  GtkGrid parent_instance;
 
-  GtkBox *       meters_box;
-  MeterWidget *  meter_l;
-  MeterWidget *  meter_r;
-  GtkBox *       balance_box;
+  GtkBox *               meters_box;
+  MeterWidget *          meter_l;
+  MeterWidget *          meter_r;
+  GtkBox *               balance_box;
   BalanceControlWidget * balance_control;
-  FaderWidget *  fader;
+  FaderWidget *          fader;
 
-  Track *        track;
+  Track * track;
 
   FaderButtonsWidget * fader_buttons;
 
-  GtkLabel *     meter_readings;
+  GtkLabel * meter_readings;
 
-  double         meter_reading_val;
+  double meter_reading_val;
 
   /** Last MIDI event trigger time, for MIDI
    * output. */
-  gint64         last_midi_trigger_time;
+  gint64 last_midi_trigger_time;
 
-  guint          tick_cb;
+  guint tick_cb;
 
 } FaderControlsGridWidget;
 

@@ -40,8 +40,7 @@
 
 #define SNAP_GRID_TIMELINE \
   (PROJECT->snap_grid_timeline)
-#define SNAP_GRID_EDITOR \
-  (PROJECT->snap_grid_editor)
+#define SNAP_GRID_EDITOR (PROJECT->snap_grid_editor)
 
 #define SNAP_GRID_IS_EDITOR(sg) \
   (SNAP_GRID_EDITOR == sg)
@@ -97,8 +96,8 @@ typedef enum SnapGridType
 
 typedef struct SnapGrid
 {
-  int              schema_version;
-  SnapGridType     type;
+  int          schema_version;
+  SnapGridType type;
 
   /**
    * If this is on, the snap note length will be
@@ -107,16 +106,16 @@ typedef struct SnapGrid
    *
    * The snap note type still applies.
    */
-  bool             snap_adaptive;
+  bool snap_adaptive;
 
   /** Snap note length. */
-  NoteLength       snap_note_length;
+  NoteLength snap_note_length;
 
   /** Snap note type. */
-  NoteType         snap_note_type;
+  NoteType snap_note_type;
 
   /** Whether to snap to the grid. */
-  bool             snap_to_grid;
+  bool snap_to_grid;
 
   /**
    * Whether to keep the offset when moving items.
@@ -124,15 +123,15 @@ typedef struct SnapGrid
    * This requires @ref SnapGrid.snap_to_grid to be
    * enabled.
    */
-  bool             snap_to_grid_keep_offset;
+  bool snap_to_grid_keep_offset;
 
   /** Whether to snap to events. */
-  bool             snap_to_events;
+  bool snap_to_events;
 
   /** Default note length. */
-  NoteLength       default_note_length;
+  NoteLength default_note_length;
   /** Default note type. */
-  NoteType         default_note_type;
+  NoteType default_note_type;
 
   /**
    * If this is on, the default note length will be
@@ -143,99 +142,96 @@ typedef struct SnapGrid
    *
    * TODO this will be done after v1.
    */
-  bool             default_adaptive;
+  bool default_adaptive;
 
   /**
    * See NoteLengthType.
    */
-  NoteLengthType   length_type;
+  NoteLengthType length_type;
 } SnapGrid;
 
-static const cyaml_strval_t
-snap_grid_type_strings[] =
-{
-  { "timeline",     SNAP_GRID_TYPE_TIMELINE    },
-  { "editor",       SNAP_GRID_TYPE_EDITOR   },
+static const cyaml_strval_t snap_grid_type_strings[] = {
+  {"timeline", SNAP_GRID_TYPE_TIMELINE},
+  { "editor",  SNAP_GRID_TYPE_EDITOR  },
+};
+
+static const cyaml_strval_t note_length_strings[] = {
+  {"bar",    NOTE_LENGTH_BAR  },
+  { "beat",  NOTE_LENGTH_BEAT },
+  { "2/1",   NOTE_LENGTH_2_1  },
+  { "1/1",   NOTE_LENGTH_1_1  },
+  { "1/2",   NOTE_LENGTH_1_2  },
+  { "1/4",   NOTE_LENGTH_1_4  },
+  { "1/8",   NOTE_LENGTH_1_8  },
+  { "1/16",  NOTE_LENGTH_1_16 },
+  { "1/32",  NOTE_LENGTH_1_32 },
+  { "1/64",  NOTE_LENGTH_1_64 },
+  { "1/128", NOTE_LENGTH_1_128},
+};
+
+static const cyaml_strval_t note_type_strings[] = {
+  {"normal",   NOTE_TYPE_NORMAL },
+  { "dotted",  NOTE_TYPE_DOTTED },
+  { "triplet", NOTE_TYPE_TRIPLET},
 };
 
 static const cyaml_strval_t
-note_length_strings[] =
-{
-  { "bar",          NOTE_LENGTH_BAR    },
-  { "beat",         NOTE_LENGTH_BEAT    },
-  { "2/1",          NOTE_LENGTH_2_1    },
-  { "1/1",          NOTE_LENGTH_1_1   },
-  { "1/2",          NOTE_LENGTH_1_2   },
-  { "1/4",          NOTE_LENGTH_1_4   },
-  { "1/8",          NOTE_LENGTH_1_8   },
-  { "1/16",         NOTE_LENGTH_1_16   },
-  { "1/32",         NOTE_LENGTH_1_32   },
-  { "1/64",         NOTE_LENGTH_1_64   },
-  { "1/128",        NOTE_LENGTH_1_128   },
-};
-
-static const cyaml_strval_t
-note_type_strings[] =
-{
-  { "normal",       NOTE_TYPE_NORMAL    },
-  { "dotted",       NOTE_TYPE_DOTTED   },
-  { "triplet",      NOTE_TYPE_TRIPLET   },
-};
-
-static const cyaml_strval_t
-note_length_type_strings[] =
-{
-  { "custom",       NOTE_LENGTH_CUSTOM    },
-  { "link",         NOTE_LENGTH_LINK   },
-  { "last object",  NOTE_LENGTH_LAST_OBJECT   },
+  note_length_type_strings[] = {
+    {"custom",       NOTE_LENGTH_CUSTOM     },
+    { "link",        NOTE_LENGTH_LINK       },
+    { "last object", NOTE_LENGTH_LAST_OBJECT},
 };
 
 /**
  * These are not meant to be serialized, they are
  * only used for convenience.
  */
-static const cyaml_strval_t
-note_type_short_strings[] =
-{
-  { "",       NOTE_TYPE_NORMAL    },
-  { ".",       NOTE_TYPE_DOTTED   },
-  { "t",      NOTE_TYPE_TRIPLET   },
+static const cyaml_strval_t note_type_short_strings[] = {
+  {"",   NOTE_TYPE_NORMAL },
+  { ".", NOTE_TYPE_DOTTED },
+  { "t", NOTE_TYPE_TRIPLET},
 };
 
-static const cyaml_schema_field_t
-  snap_grid_fields_schema[] =
-{
+static const cyaml_schema_field_t snap_grid_fields_schema[] = {
   YAML_FIELD_INT (SnapGrid, schema_version),
   YAML_FIELD_ENUM (
-    SnapGrid, type, snap_grid_type_strings),
+    SnapGrid,
+    type,
+    snap_grid_type_strings),
   YAML_FIELD_ENUM (
-    SnapGrid, snap_note_length, note_length_strings),
-  YAML_FIELD_ENUM (
-    SnapGrid, snap_note_type, note_type_strings),
-  YAML_FIELD_INT (
-    SnapGrid, snap_adaptive),
-  YAML_FIELD_ENUM (
-    SnapGrid, default_note_length,
+    SnapGrid,
+    snap_note_length,
     note_length_strings),
   YAML_FIELD_ENUM (
-    SnapGrid, default_note_type, note_type_strings),
+    SnapGrid,
+    snap_note_type,
+    note_type_strings),
+  YAML_FIELD_INT (SnapGrid, snap_adaptive),
+  YAML_FIELD_ENUM (
+    SnapGrid,
+    default_note_length,
+    note_length_strings),
+  YAML_FIELD_ENUM (
+    SnapGrid,
+    default_note_type,
+    note_type_strings),
   YAML_FIELD_INT (SnapGrid, default_adaptive),
   YAML_FIELD_ENUM (
-    SnapGrid, length_type,
+    SnapGrid,
+    length_type,
     note_length_type_strings),
   YAML_FIELD_INT (SnapGrid, snap_to_grid),
-  YAML_FIELD_INT (
-    SnapGrid, snap_to_grid_keep_offset),
+  YAML_FIELD_INT (SnapGrid, snap_to_grid_keep_offset),
   YAML_FIELD_INT (SnapGrid, snap_to_events),
 
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-snap_grid_schema = {
+static const cyaml_schema_value_t snap_grid_schema = {
   CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-    SnapGrid, snap_grid_fields_schema),
+    SnapGrid,
+    snap_grid_fields_schema),
 };
 
 void
@@ -255,20 +251,17 @@ snap_grid_get_ticks_from_length_and_type (
  */
 NONNULL
 int
-snap_grid_get_snap_ticks (
-  const SnapGrid * self);
+snap_grid_get_snap_ticks (const SnapGrid * self);
 
 NONNULL
 double
-snap_grid_get_snap_frames (
-  const SnapGrid * self);
+snap_grid_get_snap_frames (const SnapGrid * self);
 
 /**
  * Gets a the default length in ticks.
  */
 int
-snap_grid_get_default_ticks (
-  SnapGrid * self);
+snap_grid_get_default_ticks (SnapGrid * self);
 
 /**
  * Returns the grid intensity as a human-readable
@@ -288,8 +281,7 @@ snap_grid_stringize_length_and_type (
  * Must be free'd.
  */
 char *
-snap_grid_stringize (
-  SnapGrid * self);
+snap_grid_stringize (SnapGrid * self);
 
 /**
  * Returns the next or previous SnapGrid point.
@@ -312,15 +304,13 @@ snap_grid_get_nearby_snap_point (
   const bool             return_prev);
 
 SnapGrid *
-snap_grid_clone (
-  SnapGrid * src);
+snap_grid_clone (SnapGrid * src);
 
 SnapGrid *
 snap_grid_new (void);
 
 void
-snap_grid_free (
-  SnapGrid * self);
+snap_grid_free (SnapGrid * self);
 
 /**
  * @}

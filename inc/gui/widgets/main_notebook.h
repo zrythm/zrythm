@@ -33,14 +33,16 @@
 #define MAIN_NOTEBOOK_WIDGET_TYPE \
   (main_notebook_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  MainNotebookWidget, main_notebook_widget,
-  Z, MAIN_NOTEBOOK_WIDGET, GtkBox)
+  MainNotebookWidget,
+  main_notebook_widget,
+  Z,
+  MAIN_NOTEBOOK_WIDGET,
+  GtkBox)
 
 typedef struct _TimelinePanelWidget
   TimelinePanelWidget;
-typedef struct _EventViewerWidget
-  EventViewerWidget;
-typedef struct _CcBindingsWidget CcBindingsWidget;
+typedef struct _EventViewerWidget EventViewerWidget;
+typedef struct _CcBindingsWidget  CcBindingsWidget;
 typedef struct _PortConnectionsWidget
   PortConnectionsWidget;
 
@@ -55,24 +57,23 @@ typedef struct _PortConnectionsWidget
 
 typedef struct _MainNotebookWidget
 {
-  GtkBox              parent_instance;
+  GtkBox parent_instance;
 
   FoldableNotebookWidget * foldable_notebook;
 
   /** Event viewr + timeline panel. */
-  GtkPaned *
-    timeline_plus_event_viewer_paned;
+  GtkPaned * timeline_plus_event_viewer_paned;
   TimelinePanelWidget * timeline_panel;
   EventViewerWidget *   event_viewer;
   GtkStack *            end_stack;
 
-  GtkBox *              cc_bindings_box;
-  CcBindingsWidget *    cc_bindings;
+  GtkBox *           cc_bindings_box;
+  CcBindingsWidget * cc_bindings;
 
-  GtkBox *              port_connections_box;
+  GtkBox *                port_connections_box;
   PortConnectionsWidget * port_connections;
 
-  GtkBox *              scenes_box;
+  GtkBox * scenes_box;
 } MainNotebookWidget;
 
 void

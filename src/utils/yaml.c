@@ -17,25 +17,23 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <string.h>
-
 #include "utils/objects.h"
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
 
+#include <string.h>
+
 cyaml_log_t _cyaml_log_level = CYAML_LOG_WARNING;
 
 void
-yaml_set_log_level (
-  cyaml_log_t level)
+yaml_set_log_level (cyaml_log_t level)
 {
   _cyaml_log_level = level;
 }
 
 void
-yaml_get_cyaml_config (
-  cyaml_config_t * config)
+yaml_get_cyaml_config (cyaml_config_t * config)
 {
   /** log level: DEBUG, WARNING, INFO... */
   config->log_level = _cyaml_log_level;
@@ -50,7 +48,8 @@ yaml_get_cyaml_config (
 /**
  * Custom logging function for libcyaml.
  */
-void yaml_cyaml_log_func (
+void
+yaml_cyaml_log_func (
   cyaml_log_t  lvl,
   void *       ctxt,
   const char * fmt,
@@ -86,20 +85,17 @@ yaml_serialize (
   void *                       data,
   const cyaml_schema_value_t * schema)
 {
-  cyaml_err_t err;
+  cyaml_err_t    err;
   cyaml_config_t cyaml_config;
   yaml_get_cyaml_config (&cyaml_config);
   char * output;
   size_t output_len;
-  err =
-    cyaml_save_data (
-      &output, &output_len,
-      &cyaml_config, schema, data, 0);
+  err = cyaml_save_data (
+    &output, &output_len, &cyaml_config, schema,
+    data, 0);
   if (err != CYAML_OK)
     {
-      g_warning (
-        "error %s",
-        cyaml_strerror (err));
+      g_warning ("error %s", cyaml_strerror (err));
       return NULL;
     }
   char * new_str =
@@ -117,14 +113,13 @@ yaml_deserialize (
   const char *                 yaml,
   const cyaml_schema_value_t * schema)
 {
-  void * obj;
+  void *         obj;
   cyaml_config_t cyaml_config;
   yaml_get_cyaml_config (&cyaml_config);
-  cyaml_err_t err =
-    cyaml_load_data (
-      (const unsigned char *) yaml, strlen (yaml),
-      &cyaml_config, schema, (cyaml_data_t **) &obj,
-      NULL);
+  cyaml_err_t err = cyaml_load_data (
+    (const unsigned char *) yaml, strlen (yaml),
+    &cyaml_config, schema, (cyaml_data_t **) &obj,
+    NULL);
   if (err != CYAML_OK)
     {
       g_warning (

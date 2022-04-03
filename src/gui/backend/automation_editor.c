@@ -24,8 +24,7 @@
 #include "utils/objects.h"
 
 void
-automation_editor_init (
-  AutomationEditor * self)
+automation_editor_init (AutomationEditor * self)
 {
   self->schema_version =
     AUTOMATION_EDITOR_SCHEMA_VERSION;
@@ -34,8 +33,7 @@ automation_editor_init (
 }
 
 AutomationEditor *
-automation_editor_clone (
-  AutomationEditor * src)
+automation_editor_clone (AutomationEditor * src)
 {
   AutomationEditor * self =
     object_new (AutomationEditor);
@@ -59,8 +57,7 @@ automation_editor_new (void)
 }
 
 void
-automation_editor_free (
-  AutomationEditor * self)
+automation_editor_free (AutomationEditor * self)
 {
   object_zero_and_free (self);
 }

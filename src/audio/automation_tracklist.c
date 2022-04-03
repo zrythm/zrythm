@@ -45,7 +45,7 @@ automation_tracklist_init_loaded (
 {
   self->track = track;
   self->ats_size = (size_t) self->num_ats;
-  int j;
+  int               j;
   AutomationTrack * at;
   for (j = 0; j < self->num_ats; j++)
     {
@@ -79,8 +79,7 @@ automation_tracklist_add_at (
   array_double_size_if_full (
     self->ats, self->num_ats, self->ats_size,
     AutomationTrack *);
-  array_append (
-    self->ats, self->num_ats, at);
+  array_append (self->ats, self->num_ats, at);
 
   at->index = self->num_ats - 1;
   at->port_id.track_name_hash =
@@ -113,16 +112,13 @@ automation_tracklist_get_plugin_at (
       AutomationTrack * at = self->ats[i];
       g_return_val_if_fail (at, NULL);
 
-      if (at->port_id.owner_type ==
-            PORT_OWNER_TYPE_PLUGIN
-          && plugin_slot ==
-            at->port_id.plugin_id.slot
-          && slot_type ==
-            at->port_id.plugin_id.slot_type
-          && port_index ==
-            at->port_id.port_index
-          && string_is_equal (
-            symbol, at->port_id.sym))
+      if (
+        at->port_id.owner_type
+          == PORT_OWNER_TYPE_PLUGIN
+        && plugin_slot == at->port_id.plugin_id.slot
+        && slot_type == at->port_id.plugin_id.slot_type
+        && port_index == at->port_id.port_index
+        && string_is_equal (symbol, at->port_id.sym))
         {
           return at;
         }
@@ -147,7 +143,7 @@ automation_tracklist_init (
 
   /*self->ats_size = 1;*/
   /*self->ats =*/
-    /*object_new_n (self->ats_size, AutomationTrack *);*/
+  /*object_new_n (self->ats_size, AutomationTrack *);*/
 }
 
 /**
@@ -188,8 +184,8 @@ automation_tracklist_set_at_index (
     index < self->num_ats && self->ats[index]);
 
   /*g_message ("setting %s (%d) to %d",*/
-    /*at->automatable->label, at->index,*/
-    /*index);*/
+  /*at->automatable->label, at->index,*/
+  /*index);*/
 
   if (at->index == index)
     return;
@@ -202,8 +198,9 @@ automation_tracklist_set_at_index (
       RegionIdentifier * clip_editor_region_id =
         &clip_editor_region->id;
 
-      if (clip_editor_region_id->track_name_hash ==
-            at->port_id.track_name_hash)
+      if (
+        clip_editor_region_id->track_name_hash
+        == at->port_id.track_name_hash)
         {
           clip_editor_region_idx =
             clip_editor_region_id->at_idx;
@@ -218,8 +215,7 @@ automation_tracklist_set_at_index (
       bool increase = at->index > index;
       if (increase)
         {
-          for (int i = at->index - 1;
-               i >= index; i--)
+          for (int i = at->index - 1; i >= index; i--)
             {
               int prev_idx = i;
               int new_idx = i + 1;
@@ -244,14 +240,12 @@ automation_tracklist_set_at_index (
            * affected */
           if (clip_editor_region_idx == prev_idx)
             {
-              CLIP_EDITOR->region_id.at_idx =
-                index;
+              CLIP_EDITOR->region_id.at_idx = index;
             }
         }
       else
         {
-          for (int i = at->index + 1;
-               i <= index; i++)
+          for (int i = at->index + 1; i <= index; i++)
             {
               int prev_idx = i;
               int new_idx = i - 1;
@@ -276,14 +270,13 @@ automation_tracklist_set_at_index (
            * affected */
           if (clip_editor_region_idx == prev_idx)
             {
-              CLIP_EDITOR->region_id.at_idx =
-                index;
+              CLIP_EDITOR->region_id.at_idx = index;
             }
         }
     }
   else
     {
-      int prev_index = at->index;
+      int               prev_index = at->index;
       AutomationTrack * new_at = self->ats[index];
       self->ats[index] = at;
       automation_track_set_index (at, index);
@@ -303,8 +296,9 @@ automation_tracklist_set_at_index (
           CLIP_EDITOR->region_id.at_idx = index;
         }
 
-      g_debug ("new pos %s (%d)",
-        new_at->port_id.label, new_at->index);
+      g_debug (
+        "new pos %s (%d)", new_at->port_id.label,
+        new_at->index);
     }
 }
 
@@ -325,10 +319,10 @@ automation_tracklist_update_track_name_hash (
   for (int i = 0; i < self->num_ats; i++)
     {
       AutomationTrack * at = self->ats[i];
-      at->port_id.track_name_hash =
-        track_name_hash;
-      if (at->port_id.owner_type ==
-            PORT_OWNER_TYPE_PLUGIN)
+      at->port_id.track_name_hash = track_name_hash;
+      if (
+        at->port_id.owner_type
+        == PORT_OWNER_TYPE_PLUGIN)
         {
           at->port_id.plugin_id.track_name_hash =
             track_name_hash;
@@ -382,9 +376,8 @@ automation_tracklist_clone (
 {
   dest->ats_size = (size_t) src->num_ats;
   dest->num_ats = src->num_ats;
-  dest->ats =
-    object_new_n (
-      dest->ats_size, AutomationTrack *);
+  dest->ats = object_new_n (
+    dest->ats_size, AutomationTrack *);
 
   for (int i = 0; i < src->num_ats; i++)
     {
@@ -429,8 +422,7 @@ automation_tracklist_get_visible_tracks (
 {
   *num_visible = 0;
   AutomationTrack * at;
-  for (int i = 0;
-       i < self->num_ats; i++)
+  for (int i = 0; i < self->num_ats; i++)
     {
       at = self->ats[i];
       if (at->created && at->visible)
@@ -438,8 +430,7 @@ automation_tracklist_get_visible_tracks (
           if (visible_tracks)
             {
               array_append (
-                visible_tracks, *num_visible,
-                at);
+                visible_tracks, *num_visible, at);
             }
           else
             {
@@ -489,7 +480,7 @@ automation_tracklist_get_first_invisible_at (
   /* prioritize automation tracks with existing
    * lanes */
   AutomationTrack * at;
-  int i;
+  int               i;
   for (i = 0; i < self->num_ats; i++)
     {
       at = self->ats[i];
@@ -603,11 +594,10 @@ void
 automation_tracklist_print_ats (
   AutomationTracklist * self)
 {
-  GString * g_str =  g_string_new (NULL);
+  GString * g_str = g_string_new (NULL);
 
   g_string_append_printf (
-    g_str,
-    "Automation tracklist (track '%s')\n",
+    g_str, "Automation tracklist (track '%s')\n",
     self->track->name);
 
   for (int i = 0; i < self->num_ats; i++)
@@ -615,8 +605,8 @@ automation_tracklist_print_ats (
       AutomationTrack * at = self->ats[i];
 
       g_string_append_printf (
-        g_str, "[%d] '%s' (sym '%s')\n",
-        i, at->port_id.label, at->port_id.sym);
+        g_str, "[%d] '%s' (sym '%s')\n", i,
+        at->port_id.label, at->port_id.sym);
     }
   g_string_erase (
     g_str, (gssize) (g_str->len - 1), -1);
@@ -634,8 +624,8 @@ automation_tracklist_get_num_visible (
   AutomationTracklist * self)
 {
   AutomationTrack * at;
-  int i;
-  int count = 0;
+  int               i;
+  int               count = 0;
   for (i = 0; i < self->num_ats; i++)
     {
       at = self->ats[i];
@@ -659,8 +649,9 @@ automation_tracklist_validate (
   AutomationTracklist * self)
 {
   g_return_val_if_fail (
-    self->schema_version ==
-      AUTOMATION_TRACKLIST_SCHEMA_VERSION, false);
+    self->schema_version
+      == AUTOMATION_TRACKLIST_SCHEMA_VERSION,
+    false);
   g_return_val_if_fail (
     IS_TRACK_AND_NONNULL (self->track), false);
 
@@ -670,9 +661,9 @@ automation_tracklist_validate (
     {
       AutomationTrack * at = self->ats[i];
       g_return_val_if_fail (
-        at->port_id.track_name_hash ==
-          track_name_hash
-        && at->index == i, false);
+        at->port_id.track_name_hash == track_name_hash
+          && at->index == i,
+        false);
       automation_track_validate (at);
     }
 
@@ -707,11 +698,9 @@ automation_tracklist_set_caches (
   if (track_is_auditioner (track))
     return;
 
-  self->ats_in_record_mode =
-    g_realloc_n (
-      self->ats_in_record_mode,
-      (size_t) self->num_ats,
-      sizeof (AutomationTrack *));
+  self->ats_in_record_mode = g_realloc_n (
+    self->ats_in_record_mode, (size_t) self->num_ats,
+    sizeof (AutomationTrack *));
   self->num_ats_in_record_mode = 0;
 
   for (int i = 0; i < self->num_ats; i++)
@@ -719,8 +708,7 @@ automation_tracklist_set_caches (
       AutomationTrack * at = self->ats[i];
       automation_track_set_caches (at);
 
-      if (at->automation_mode ==
-            AUTOMATION_MODE_RECORD)
+      if (at->automation_mode == AUTOMATION_MODE_RECORD)
         {
           array_append (
             self->ats_in_record_mode,
@@ -750,9 +738,8 @@ automation_tracklist_print_regions (
         continue;
 
       g_string_append_printf (
-        str,
-        "\n  [%d] port '%s': %d regions",
-        i, at->port_id.label, at->num_regions);
+        str, "\n  [%d] port '%s': %d regions", i,
+        at->port_id.label, at->num_regions);
     }
   char * tmp = g_string_free (str, false);
   g_message ("%s", tmp);

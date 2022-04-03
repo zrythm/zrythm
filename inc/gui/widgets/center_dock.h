@@ -31,16 +31,17 @@
 #define CENTER_DOCK_WIDGET_TYPE \
   (center_dock_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  CenterDockWidget, center_dock_widget,
-  Z, CENTER_DOCK_WIDGET, GtkWidget)
+  CenterDockWidget,
+  center_dock_widget,
+  Z,
+  CENTER_DOCK_WIDGET,
+  GtkWidget)
 
-typedef struct _LeftDockEdgeWidget
-  LeftDockEdgeWidget;
+typedef struct _LeftDockEdgeWidget LeftDockEdgeWidget;
 typedef struct _RightDockEdgeWidget
   RightDockEdgeWidget;
 typedef struct _BotDockEdgeWidget BotDockEdgeWidget;
-typedef struct _MainNotebookWidget
-  MainNotebookWidget;
+typedef struct _MainNotebookWidget MainNotebookWidget;
 
 /**
  * @addtogroup widgets
@@ -55,12 +56,12 @@ typedef struct _MainNotebookWidget
  */
 typedef struct _CenterDockWidget
 {
-  GtkWidget             parent_instance;
+  GtkWidget parent_instance;
 
-  MainNotebookWidget *  main_notebook;
+  MainNotebookWidget * main_notebook;
 
-  GtkPaned *            left_rest_paned;
-  GtkPaned *            center_right_paned;
+  GtkPaned * left_rest_paned;
+  GtkPaned * center_right_paned;
 
   LeftDockEdgeWidget *  left_dock_edge;
   RightDockEdgeWidget * right_dock_edge;
@@ -68,12 +69,11 @@ typedef struct _CenterDockWidget
   GtkPaned *            center_paned;
 
   /** Hack to remember paned position. */
-  bool                  first_draw;
+  bool first_draw;
 } CenterDockWidget;
 
 void
-center_dock_widget_setup (
-  CenterDockWidget * self);
+center_dock_widget_setup (CenterDockWidget * self);
 
 /**
  * Prepare for finalization.

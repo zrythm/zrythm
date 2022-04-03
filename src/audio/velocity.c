@@ -33,15 +33,12 @@
  * Creates a new Velocity with the given value.
  */
 Velocity *
-velocity_new (
-  MidiNote *    midi_note,
-  const uint8_t vel)
+velocity_new (MidiNote * midi_note, const uint8_t vel)
 {
   Velocity * self = object_new (Velocity);
 
   self->schema_version = VELOCITY_SCHEMA_VERSION;
-  ArrangerObject * obj =
-    (ArrangerObject *) self;
+  ArrangerObject * obj = (ArrangerObject *) self;
   obj->type = ARRANGER_OBJECT_TYPE_VELOCITY;
 
   self->vel = vel;
@@ -67,20 +64,17 @@ velocity_set_midi_note (
  * Returns 1 if the Velocity's match, 0 if not.
  */
 int
-velocity_is_equal (
-  Velocity * src,
-  Velocity * dest)
+velocity_is_equal (Velocity * src, Velocity * dest)
 {
   ArrangerObject * src_mn_obj =
     (ArrangerObject *) src->midi_note;
   ArrangerObject * dest_mn_obj =
     (ArrangerObject *) dest->midi_note;
-  return
-    src->vel == dest->vel &&
-    src->midi_note->pos == dest->midi_note->pos &&
-    region_identifier_is_equal (
-      &src_mn_obj->region_id,
-      &dest_mn_obj->region_id);
+  return src->vel == dest->vel
+         && src->midi_note->pos == dest->midi_note->pos
+         && region_identifier_is_equal (
+           &src_mn_obj->region_id,
+           &dest_mn_obj->region_id);
 }
 
 /**
@@ -90,14 +84,11 @@ velocity_is_equal (
  * and will be clamped.
  */
 void
-velocity_set_val (
-  Velocity *    self,
-  const int     val)
+velocity_set_val (Velocity * self, const int val)
 {
   g_return_if_fail (IS_ARRANGER_OBJECT (self));
 
-  self->vel =
-    (uint8_t) CLAMP (val, 0, 127);
+  self->vel = (uint8_t) CLAMP (val, 0, 127);
 
   /* re-set the midi note value to set a note off
    * event */
@@ -111,21 +102,17 @@ velocity_set_val (
  * values (delta).
  */
 void
-velocity_shift (
-  Velocity * self,
-  const int  delta)
+velocity_shift (Velocity * self, const int delta)
 {
   self->vel =
-    (midi_byte_t)
-    ((int) self->vel + delta);
+    (midi_byte_t) ((int) self->vel + delta);
 }
 
 /**
  * Returns the owner MidiNote.
  */
 MidiNote *
-velocity_get_midi_note (
-  const Velocity * const self)
+velocity_get_midi_note (const Velocity * const self)
 {
   g_return_val_if_fail (
     IS_MIDI_NOTE (self->midi_note), NULL);
@@ -142,8 +129,7 @@ velocity_get_midi_note (
 }
 
 const char *
-velocity_setting_enum_to_str (
-  guint index)
+velocity_setting_enum_to_str (guint index)
 {
   switch (index)
     {
@@ -163,8 +149,7 @@ velocity_setting_enum_to_str (
 }
 
 guint
-velocity_setting_str_to_enum (
-  const char * str)
+velocity_setting_str_to_enum (const char * str)
 {
   guint val;
   if (string_is_equal (str, "40"))

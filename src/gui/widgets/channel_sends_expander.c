@@ -28,8 +28,8 @@
 #include "utils/gtk.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 #define CHANNEL_SENDS_EXPANDER_WIDGET_TYPE \
   (channel_sends_expander_widget_get_type ())
@@ -79,8 +79,7 @@ channel_sends_expander_widget_setup (
 {
   /* set name and icon */
   expander_box_widget_set_label (
-    Z_EXPANDER_BOX_WIDGET (self),
-    _("Sends"));
+    Z_EXPANDER_BOX_WIDGET (self), _ ("Sends"));
 
   if (track)
     {
@@ -101,22 +100,18 @@ channel_sends_expander_widget_setup (
         }
     }
 
-  if (track != self->track ||
-      position != self->position)
+  if (track != self->track || position != self->position)
     {
       /* remove children */
       z_gtk_widget_destroy_all_children (
         GTK_WIDGET (self->box));
 
-      Channel * ch =
-        track_get_channel (track);
+      Channel * ch = track_get_channel (track);
       g_return_if_fail (ch);
       for (int i = 0; i < STRIP_SIZE; i++)
         {
-          GtkBox * strip_box =
-            GTK_BOX (
-              gtk_box_new (
-                GTK_ORIENTATION_HORIZONTAL, 0));
+          GtkBox * strip_box = GTK_BOX (gtk_box_new (
+            GTK_ORIENTATION_HORIZONTAL, 0));
           gtk_widget_set_name (
             GTK_WIDGET (strip_box),
             "channel-sends-expander-strip-box");
@@ -164,9 +159,8 @@ static void
 channel_sends_expander_widget_init (
   ChannelSendsExpanderWidget * self)
 {
-  self->scroll =
-    GTK_SCROLLED_WINDOW (
-      gtk_scrolled_window_new ());
+  self->scroll = GTK_SCROLLED_WINDOW (
+    gtk_scrolled_window_new ());
   gtk_widget_set_name (
     GTK_WIDGET (self->scroll),
     "channel-sends-expander-scroll");
@@ -174,8 +168,7 @@ channel_sends_expander_widget_init (
     GTK_WIDGET (self->scroll), true);
 
   self->viewport =
-    GTK_VIEWPORT (
-      gtk_viewport_new (NULL, NULL));
+    GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
   gtk_viewport_set_scroll_to_focus (
     self->viewport, false);
   gtk_widget_set_name (
@@ -185,9 +178,8 @@ channel_sends_expander_widget_init (
     GTK_SCROLLED_WINDOW (self->scroll),
     GTK_WIDGET (self->viewport));
 
-  self->box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  self->box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_widget_set_name (
     GTK_WIDGET (self->box),
     "channel-sends-expander-box");

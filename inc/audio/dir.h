@@ -26,4 +26,3 @@
  * Contains various arranger, editor, etc., structs
  * such as ZRegion and MidiNote.
  */
-

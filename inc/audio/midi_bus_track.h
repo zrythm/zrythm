@@ -23,11 +23,11 @@
 #include "audio/channel_track.h"
 #include "audio/track.h"
 
-typedef struct Position Position;
-typedef struct _TrackWidget TrackWidget;
-typedef struct Channel Channel;
+typedef struct Position        Position;
+typedef struct _TrackWidget    TrackWidget;
+typedef struct Channel         Channel;
 typedef struct AutomationTrack AutomationTrack;
-typedef struct Automatable Automatable;
+typedef struct Automatable     Automatable;
 
 typedef struct Track MidiBusTrack;
 

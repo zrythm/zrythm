@@ -27,8 +27,8 @@
 #include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
-#include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/editor_ruler.h"
+#include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
@@ -39,12 +39,12 @@
 #include "zrythm_app.h"
 
 G_DEFINE_TYPE (
-  ClipEditorWidget, clip_editor_widget,
+  ClipEditorWidget,
+  clip_editor_widget,
   GTK_TYPE_BOX)
 
 void
-clip_editor_widget_setup (
-  ClipEditorWidget * self)
+clip_editor_widget_setup (ClipEditorWidget * self)
 {
   clip_editor_inner_widget_setup (
     self->clip_editor_inner);
@@ -60,8 +60,7 @@ clip_editor_widget_setup (
  * widths.
  */
 static int
-refresh_editor_ruler_and_arranger (
-  void * user_data)
+refresh_editor_ruler_and_arranger (void * user_data)
 {
   if (!ui_is_widget_revealed (EDITOR_RULER))
     {
@@ -85,8 +84,7 @@ void
 clip_editor_widget_on_region_changed (
   ClipEditorWidget * self)
 {
-  ZRegion * r =
-    clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
 
   if (r)
     {
@@ -98,8 +96,7 @@ clip_editor_widget_on_region_changed (
         MW_CLIP_EDITOR_INNER);
 
       g_idle_add (
-        refresh_editor_ruler_and_arranger,
-        NULL);
+        refresh_editor_ruler_and_arranger, NULL);
 
       /* update the toolbar */
       editor_toolbar_widget_refresh (
@@ -117,8 +114,7 @@ ClipEditorWidget *
 clip_editor_widget_new (void)
 {
   ClipEditorWidget * self =
-    g_object_new (
-      CLIP_EDITOR_WIDGET_TYPE, NULL);
+    g_object_new (CLIP_EDITOR_WIDGET_TYPE, NULL);
 
   return self;
 }

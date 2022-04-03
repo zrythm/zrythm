@@ -18,14 +18,13 @@
  */
 
 #include <stdlib.h>
-#include <string.h>
 
 #include "utils/objects.h"
 
+#include <string.h>
+
 void
-_object_zero_and_free (
-  void ** ptr,
-  size_t  sz)
+_object_zero_and_free (void ** ptr, size_t sz)
 {
   if (!*ptr)
     return;

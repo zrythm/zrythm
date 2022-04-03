@@ -31,37 +31,39 @@ typedef struct _PluginStripExpanderWidget
 #define CHANNEL_WIDGET_TYPE \
   (channel_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  ChannelWidget, channel_widget,
-  Z, CHANNEL_WIDGET,
+  ChannelWidget,
+  channel_widget,
+  Z,
+  CHANNEL_WIDGET,
   GtkBox)
 
-typedef struct _ColorAreaWidget ColorAreaWidget;
-typedef struct _KnobWidget KnobWidget;
-typedef struct _FaderWidget FaderWidget;
-typedef struct Channel Channel;
+typedef struct _ColorAreaWidget   ColorAreaWidget;
+typedef struct _KnobWidget        KnobWidget;
+typedef struct _FaderWidget       FaderWidget;
+typedef struct Channel            Channel;
 typedef struct _ChannelSlotWidget ChannelSlotWidget;
 typedef struct _RouteTargetSelectorWidget
   RouteTargetSelectorWidget;
-typedef struct _BalanceControlWidget BalanceControlWidget;
+typedef struct _BalanceControlWidget
+  BalanceControlWidget;
 typedef struct _EditableLabelWidget
   EditableLabelWidget;
-typedef struct _FaderButtonsWidget
-  FaderButtonsWidget;
+typedef struct _FaderButtonsWidget FaderButtonsWidget;
 typedef struct _ChannelSendsExpanderWidget
   ChannelSendsExpanderWidget;
 
 typedef struct _ChannelWidget
 {
-  GtkBox         parent_instance;
-  GtkGrid *          grid;
+  GtkBox                      parent_instance;
+  GtkGrid *                   grid;
   RouteTargetSelectorWidget * output;
-  ColorAreaWidget *   color;
-  GtkBox *       icon_and_name_event_box;
+  ColorAreaWidget *           color;
+  GtkBox *              icon_and_name_event_box;
   EditableLabelWidget * name;
-  GtkBox *            phase_controls;
-  GtkButton *         phase_invert;
-  GtkLabel *          phase_reading;
-  KnobWidget *        phase_knob;
+  GtkBox *              phase_controls;
+  GtkButton *           phase_invert;
+  GtkLabel *            phase_reading;
+  KnobWidget *          phase_knob;
 
   /** Instrument slot. */
   GtkBox *            instrument_box;
@@ -69,7 +71,7 @@ typedef struct _ChannelWidget
 
   /* ----- mid box ------ */
 
-  GtkBox *            mid_box;
+  GtkBox *                    mid_box;
   PluginStripExpanderWidget * inserts;
   PluginStripExpanderWidget * midi_fx;
 
@@ -78,49 +80,49 @@ typedef struct _ChannelWidget
 
   /* -------- end mid box --------- */
 
-  FaderButtonsWidget *  fader_buttons;
+  FaderButtonsWidget * fader_buttons;
 
   /** Meter area including reading. */
-  GtkBox *            meter_area;
-  GtkBox *            balance_control_box;
+  GtkBox *               meter_area;
+  GtkBox *               balance_control_box;
   BalanceControlWidget * balance_control;
-  FaderWidget *       fader;
-  MeterWidget *       meter_l;
-  MeterWidget *       meter_r;
-  GtkLabel *          meter_reading;
-  GtkImage *          icon;
+  FaderWidget *          fader;
+  MeterWidget *          meter_l;
+  MeterWidget *          meter_r;
+  GtkLabel *             meter_reading;
+  GtkImage *             icon;
 
   /** Cache. */
-  double              meter_reading_val;
+  double meter_reading_val;
 
   /** Used for highlighting. */
-  GtkBox *            highlight_left_box;
-  GtkBox *            highlight_right_box;
+  GtkBox * highlight_left_box;
+  GtkBox * highlight_right_box;
 
   /** Box for auxiliary buttons near the top of the
    * widget. */
-  GtkBox *            aux_buttons_box;
+  GtkBox * aux_buttons_box;
 
   /** Mono compatibility button. */
-  GtkToggleButton *   mono_compat_btn;
+  GtkToggleButton * mono_compat_btn;
 
   /** Number of clicks, used when selecting/moving/
    * dragging channels. */
-  int                 n_press;
+  int n_press;
 
   /** Control held down on drag begin. */
-  int                 ctrl_held_at_start;
+  int ctrl_held_at_start;
 
   /** If drag update was called at least once. */
-  int                 dragged;
+  int dragged;
 
   /** The track selection processing was done in
    * the dnd callbacks, so no need to do it in
    * drag_end. */
-  int                 selected_in_dnd;
+  int selected_in_dnd;
 
   /** Pointer to owner Channel. */
-  Channel             * channel;
+  Channel * channel;
 
   /**
    * Last time a plugin was pressed.
@@ -128,11 +130,11 @@ typedef struct _ChannelWidget
    * This is to detect when a channel was selected
    * without clicking a plugin.
    */
-  gint64              last_plugin_press;
+  gint64 last_plugin_press;
 
   /** Last MIDI event trigger time, for MIDI
    * output. */
-  gint64              last_midi_trigger_time;
+  gint64 last_midi_trigger_time;
 
   /** Whole channel press. */
   GtkGestureClick * mp;
@@ -140,9 +142,9 @@ typedef struct _ChannelWidget
   GtkGestureClick * right_mouse_mp;
 
   /** Drag on the icon and name event box. */
-  GtkGestureDrag       * drag;
+  GtkGestureDrag * drag;
 
-  bool                   setup;
+  bool setup;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
@@ -156,20 +158,17 @@ channel_widget_update_midi_fx_and_inserts (
   ChannelWidget * self);
 
 void
-channel_widget_redraw_fader (
-  ChannelWidget * self);
+channel_widget_redraw_fader (ChannelWidget * self);
 
 /**
  * Creates a channel widget using the given channel
  * data.
  */
 ChannelWidget *
-channel_widget_new (
-  Channel * channel);
+channel_widget_new (Channel * channel);
 
 void
-channel_widget_tear_down (
-  ChannelWidget * self);
+channel_widget_tear_down (ChannelWidget * self);
 
 /**
  * Updates the meter reading
@@ -187,8 +186,7 @@ channel_widget_update_meter_reading (
  * fix if it causes lags.
  */
 void
-channel_widget_refresh (
-  ChannelWidget * self);
+channel_widget_refresh (ChannelWidget * self);
 
 void
 channel_widget_refresh_buttons (
@@ -198,7 +196,6 @@ channel_widget_refresh_buttons (
  * Displays the widget.
  */
 void
-channel_widget_show (
-  ChannelWidget * self);
+channel_widget_show (ChannelWidget * self);
 
 #endif

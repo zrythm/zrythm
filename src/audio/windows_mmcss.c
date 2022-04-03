@@ -39,27 +39,37 @@
 
 #ifdef _WOE32
 
-#include "audio/windows_mmcss.h"
+#  include "audio/windows_mmcss.h"
 
-#include <gtk/gtk.h>
+#  include <gtk/gtk.h>
 
-typedef HANDLE (WINAPI* AvSetMmThreadCharacteristicsA_t)(LPCSTR TaskName, LPDWORD TaskIndex);
+typedef HANDLE (
+  WINAPI * AvSetMmThreadCharacteristicsA_t) (
+  LPCSTR  TaskName,
+  LPDWORD TaskIndex);
 
-typedef BOOL (WINAPI* AvRevertMmThreadCharacteristics_t)(HANDLE AvrtHandle);
+typedef BOOL (
+  WINAPI * AvRevertMmThreadCharacteristics_t) (
+  HANDLE AvrtHandle);
 
-typedef BOOL (WINAPI* AvSetMmThreadPriority_t)(
-    HANDLE AvrtHandle, AVRT_PRIORITY Priority);
+typedef BOOL (WINAPI * AvSetMmThreadPriority_t) (
+  HANDLE        AvrtHandle,
+  AVRT_PRIORITY Priority);
 
 static HMODULE avrt_dll = NULL;
 
-static AvSetMmThreadCharacteristicsA_t AvSetMmThreadCharacteristicsA = NULL;
-static AvRevertMmThreadCharacteristics_t AvRevertMmThreadCharacteristics = NULL;
-static AvSetMmThreadPriority_t AvSetMmThreadPriority = NULL;
+static AvSetMmThreadCharacteristicsA_t
+  AvSetMmThreadCharacteristicsA = NULL;
+static AvRevertMmThreadCharacteristics_t
+  AvRevertMmThreadCharacteristics = NULL;
+static AvSetMmThreadPriority_t
+  AvSetMmThreadPriority = NULL;
 
 int
 windows_mmcss_initialize ()
 {
-  if (avrt_dll != NULL) return 0;
+  if (avrt_dll != NULL)
+    return 0;
 
   avrt_dll = LoadLibraryA ("avrt.dll");
 
@@ -71,8 +81,7 @@ windows_mmcss_initialize ()
   int unload_dll = 0;
 
   AvSetMmThreadCharacteristicsA =
-    (AvSetMmThreadCharacteristicsA_t)
-    GetProcAddress (
+    (AvSetMmThreadCharacteristicsA_t) GetProcAddress (
       avrt_dll, "AvSetMmThreadCharacteristicsA");
 
   if (AvSetMmThreadCharacteristicsA == NULL)
@@ -84,8 +93,7 @@ windows_mmcss_initialize ()
     }
 
   AvRevertMmThreadCharacteristics =
-    (AvRevertMmThreadCharacteristics_t)
-    GetProcAddress (
+    (AvRevertMmThreadCharacteristics_t) GetProcAddress (
       avrt_dll, "AvRevertMmThreadCharacteristics");
 
   if (AvRevertMmThreadCharacteristics == NULL)
@@ -97,8 +105,7 @@ windows_mmcss_initialize ()
     }
 
   AvSetMmThreadPriority =
-    (AvSetMmThreadPriority_t)
-    GetProcAddress (
+    (AvSetMmThreadPriority_t) GetProcAddress (
       avrt_dll, "AvSetMmThreadPriority");
 
   if (AvSetMmThreadPriority == NULL)
@@ -143,16 +150,15 @@ windows_mmcss_deinitialize (void)
 int
 windows_mmcss_set_thread_characteristics (
   const char * task_name,
-  HANDLE * task_handle)
+  HANDLE *     task_handle)
 {
   if (AvSetMmThreadCharacteristicsA == NULL)
     return -1;
 
   DWORD task_index_dummy = 0;
 
-  *task_handle =
-    AvSetMmThreadCharacteristicsA (
-      task_name, &task_index_dummy);
+  *task_handle = AvSetMmThreadCharacteristicsA (
+    task_name, &task_index_dummy);
 
   if (*task_handle == 0)
 
@@ -160,7 +166,7 @@ windows_mmcss_set_thread_characteristics (
       g_critical (
         "Failed to set Thread Characteristics to %s",
         task_name);
-      DWORD error = GetLastError();
+      DWORD error = GetLastError ();
 
       switch (error)
         {
@@ -196,8 +202,7 @@ windows_mmcss_revert_thread_characteristics (
   if (AvRevertMmThreadCharacteristics == NULL)
     return -1;
 
-  if (AvRevertMmThreadCharacteristics (
-        task_handle) ==  0)
+  if (AvRevertMmThreadCharacteristics (task_handle) == 0)
     {
       g_critical (
         "MMCSS: Failed to set revert thread "
@@ -205,7 +210,8 @@ windows_mmcss_revert_thread_characteristics (
       return -1;
     }
 
-  g_message ("MMCSS: Reverted thread characteristics");
+  g_message (
+    "MMCSS: Reverted thread characteristics");
 
   return 0;
 }
@@ -218,8 +224,7 @@ windows_mmcss_set_thread_priority (
   if (AvSetMmThreadPriority == NULL)
     return -1;
 
-  if (AvSetMmThreadPriority (
-        task_handle, priority) == 0)
+  if (AvSetMmThreadPriority (task_handle, priority) == 0)
     {
       g_critical (
         "Failed to set thread priority %i",

@@ -20,9 +20,10 @@
 #include "gui/widgets/selection_info.h"
 #include "utils/gtk.h"
 
-G_DEFINE_TYPE_WITH_PRIVATE (SelectionInfoWidget,
-                            selection_info_widget,
-                            GTK_TYPE_GRID)
+G_DEFINE_TYPE_WITH_PRIVATE (
+  SelectionInfoWidget,
+  selection_info_widget,
+  GTK_TYPE_GRID)
 
 SelectionInfoWidgetPrivate *
 selection_info_widget_get_private (
@@ -59,30 +60,24 @@ selection_info_widget_add_info (
   /* add separator if not 0 */
   if (l > 0)
     {
-      GtkWidget * separator =
-        gtk_separator_new (GTK_ORIENTATION_VERTICAL);
+      GtkWidget * separator = gtk_separator_new (
+        GTK_ORIENTATION_VERTICAL);
       gtk_widget_set_visible (separator, 1);
       gtk_grid_attach (
-        GTK_GRID (self),
-        separator,
-        l - 1, 0, 1, 2);
+        GTK_GRID (self), separator, l - 1, 0, 1, 2);
     }
 
   if (label)
     {
-    gtk_grid_attach (
-      GTK_GRID (self),
-      label,
-      l, 0, 1, 1);
+      gtk_grid_attach (
+        GTK_GRID (self), label, l, 0, 1, 1);
     }
   gtk_grid_attach (
-    GTK_GRID (self),
-    widget,
-    l, 1, 1, 1);
+    GTK_GRID (self), widget, l, 1, 1, 1);
   gtk_widget_set_vexpand (widget, 1);
   /*g_object_set (*/
-    /*G_OBJECT (widget),*/
-    /*"height-request", 32);*/
+  /*G_OBJECT (widget),*/
+  /*"height-request", 32);*/
 
   sel_inf_prv->num_items++;
 }
@@ -112,6 +107,5 @@ selection_info_widget_init (
   SelectionInfoWidget * self)
 {
   gtk_widget_set_visible (GTK_WIDGET (self), 1);
-  gtk_grid_set_column_spacing (
-    GTK_GRID (self), 4);
+  gtk_grid_set_column_spacing (GTK_GRID (self), 4);
 }

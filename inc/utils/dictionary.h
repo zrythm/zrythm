@@ -41,14 +41,14 @@
 
 typedef struct DictionaryEntry
 {
-  char *       key;
-  void *       val;
+  char * key;
+  void * val;
 } DictionaryEntry;
 
 typedef struct Dictionary
 {
   /** Number of valid elements in the array. */
-  int               len;
+  int len;
   /** Size of the array. */
   size_t            size;
   DictionaryEntry * entry;
@@ -57,7 +57,7 @@ typedef struct Dictionary
 Dictionary *
 dictionary_new (void);
 
-#define dictionary_find_simple(dict,key,type) \
+#define dictionary_find_simple(dict, key, type) \
   ((type *) dictionary_find (dict, key, NULL))
 
 void *
@@ -66,9 +66,8 @@ dictionary_find (
   const char * key,
   void *       def);
 
-#define dictionary_add(dict,key,val) \
-  _dictionary_add ( \
-    dict, key, (void *) val)
+#define dictionary_add(dict, key, val) \
+  _dictionary_add (dict, key, (void *) val)
 
 void
 _dictionary_add (
@@ -77,8 +76,7 @@ _dictionary_add (
   void *       value);
 
 void
-dictionary_free (
-  Dictionary * self);
+dictionary_free (Dictionary * self);
 
 /**
  * @}

@@ -28,9 +28,9 @@
 
 #ifdef _WOE32
 
-#ifdef __cplusplus
+#  ifdef __cplusplus
 extern "C" {
-#endif
+#  endif
 
 /**
  * Return the CPU usage as a percentage/
@@ -41,9 +41,9 @@ extern "C" {
 int
 cpu_windows_get_usage (int pid);
 
-#ifdef __cplusplus
+#  ifdef __cplusplus
 }
-#endif
+#  endif
 
 #endif // _WOE32
 

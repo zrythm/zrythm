@@ -49,14 +49,14 @@
  * Inits the ClipEditor after a Project is loaded.
  */
 void
-clip_editor_init_loaded (
-  ClipEditor * self)
+clip_editor_init_loaded (ClipEditor * self)
 {
   g_message ("Initializing clip editor backend...");
 
   piano_roll_init_loaded (self->piano_roll);
 
-  g_message ("Done initializing clip editor backend");
+  g_message (
+    "Done initializing clip editor backend");
 }
 
 /**
@@ -97,9 +97,8 @@ clip_editor_set_region (
       self->has_region = 1;
       region_identifier_copy (
         &self->region_id, &region->id);
-      self->track =
-        arranger_object_get_track (
-          (ArrangerObject *) region);
+      self->track = arranger_object_get_track (
+        (ArrangerObject *) region);
     }
   else
     {
@@ -116,8 +115,9 @@ clip_editor_set_region (
         "clip editor region successfully changed");
     }
 
-  if (fire_events && ZRYTHM_HAVE_UI &&
-      MAIN_WINDOW && MW_CLIP_EDITOR)
+  if (
+    fire_events && ZRYTHM_HAVE_UI && MAIN_WINDOW
+    && MW_CLIP_EDITOR)
     {
       EVENTS_PUSH (
         ET_CLIP_EDITOR_REGION_CHANGED, NULL);
@@ -125,8 +125,7 @@ clip_editor_set_region (
 }
 
 ZRegion *
-clip_editor_get_region (
-  ClipEditor * self)
+clip_editor_get_region (ClipEditor * self)
 {
   if (router_is_processing_thread (ROUTER))
     {
@@ -141,8 +140,7 @@ clip_editor_get_region (
 }
 
 Track *
-clip_editor_get_track (
-  ClipEditor * self)
+clip_editor_get_track (ClipEditor * self)
 {
   if (router_is_processing_thread (ROUTER))
     {
@@ -155,9 +153,8 @@ clip_editor_get_track (
   ZRegion * region = clip_editor_get_region (self);
   g_return_val_if_fail (region, NULL);
 
-  Track * track =
-    arranger_object_get_track (
-      (ArrangerObject *) region);
+  Track * track = arranger_object_get_track (
+    (ArrangerObject *) region);
   g_return_val_if_fail (track, NULL);
 
   return track;
@@ -200,8 +197,7 @@ clip_editor_get_arranger_selections (
 }
 
 ClipEditor *
-clip_editor_clone (
-  const ClipEditor * src)
+clip_editor_clone (const ClipEditor * src)
 {
   ClipEditor * self = object_new (ClipEditor);
 
@@ -211,13 +207,11 @@ clip_editor_clone (
   self->piano_roll =
     piano_roll_clone (src->piano_roll);
   self->automation_editor =
-    automation_editor_clone (
-      src->automation_editor);
+    automation_editor_clone (src->automation_editor);
   self->chord_editor =
     chord_editor_clone (src->chord_editor);
   self->audio_clip_editor =
-    audio_clip_editor_clone (
-      src->audio_clip_editor);
+    audio_clip_editor_clone (src->audio_clip_editor);
 
   return self;
 }
@@ -226,8 +220,7 @@ clip_editor_clone (
  * To be called when recalculating the graph.
  */
 void
-clip_editor_set_caches (
-  ClipEditor * self)
+clip_editor_set_caches (ClipEditor * self)
 {
   if (self->has_region)
     {
@@ -253,8 +246,7 @@ clip_editor_new (void)
   self->piano_roll = piano_roll_new ();
   self->audio_clip_editor = audio_clip_editor_new ();
   self->chord_editor = chord_editor_new ();
-  self->automation_editor =
-    automation_editor_new ();
+  self->automation_editor = automation_editor_new ();
 
   return self;
 }
@@ -263,11 +255,9 @@ clip_editor_new (void)
  * Inits the clip editor.
  */
 void
-clip_editor_init (
-  ClipEditor * self)
+clip_editor_init (ClipEditor * self)
 {
-  self->schema_version =
-    CLIP_EDITOR_SCHEMA_VERSION;
+  self->schema_version = CLIP_EDITOR_SCHEMA_VERSION;
 
   piano_roll_init (self->piano_roll);
   audio_clip_editor_init (self->audio_clip_editor);
@@ -276,8 +266,7 @@ clip_editor_init (
 }
 
 void
-clip_editor_free (
-  ClipEditor * self)
+clip_editor_free (ClipEditor * self)
 {
   object_free_w_func_and_null (
     piano_roll_free, self->piano_roll);

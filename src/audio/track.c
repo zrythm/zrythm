@@ -21,12 +21,12 @@
 
 #include "actions/tracklist_selections.h"
 #include "actions/undo_manager.h"
+#include "audio/audio_bus_track.h"
 #include "audio/audio_group_track.h"
 #include "audio/audio_region.h"
 #include "audio/audio_track.h"
 #include "audio/automation_point.h"
 #include "audio/automation_track.h"
-#include "audio/audio_bus_track.h"
 #include "audio/channel.h"
 #include "audio/chord_track.h"
 #include "audio/control_port.h"
@@ -41,7 +41,6 @@
 #include "audio/midi_group_track.h"
 #include "audio/midi_track.h"
 #include "audio/modulator_track.h"
-#include "audio/instrument_track.h"
 #include "audio/router.h"
 #include "audio/stretcher.h"
 #include "audio/tempo_track.h"
@@ -49,15 +48,13 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/channel.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/channel.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/track.h"
-#include "midilib/src/midifile.h"
-#include "midilib/src/midiinfo.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/debug.h"
@@ -72,6 +69,9 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "midilib/src/midifile.h"
+#include "midilib/src/midiinfo.h"
 
 void
 track_init_loaded (
@@ -138,8 +138,7 @@ track_init_loaded (
   if (self->channel)
     {
       self->channel->track = self;
-      channel_init_loaded (
-        self->channel, self);
+      channel_init_loaded (self->channel, self);
     }
 
   /* set track to automation tracklist */
@@ -147,20 +146,17 @@ track_init_loaded (
     track_get_automation_tracklist (self);
   if (atl)
     {
-      automation_tracklist_init_loaded (
-        atl, self);
+      automation_tracklist_init_loaded (atl, self);
     }
 
   if (self->type == TRACK_TYPE_AUDIO)
     {
-      self->rt_stretcher =
-        stretcher_new_rubberband (
-          AUDIO_ENGINE->sample_rate, 2, 1.0,
-          1.0, true);
+      self->rt_stretcher = stretcher_new_rubberband (
+        AUDIO_ENGINE->sample_rate, 2, 1.0, 1.0,
+        true);
     }
 
-  for (int i = 0; i < self->num_modulator_macros;
-       i++)
+  for (int i = 0; i < self->num_modulator_macros; i++)
     {
       ModulatorMacroProcessor * mmp =
         self->modulator_macros[i];
@@ -184,8 +180,7 @@ track_init_loaded (
             port->id.track_name_hash == name_hash);
 
           /* set automation tracks on ports */
-          if (port->id.flags &
-                PORT_FLAG_AUTOMATABLE)
+          if (port->id.flags & PORT_FLAG_AUTOMATABLE)
             {
               AutomationTrack * at =
                 automation_track_find_from_port (
@@ -204,15 +199,13 @@ track_init_loaded (
  */
 NONNULL
 static void
-track_add_lane (
-  Track * self,
-  int     fire_events)
+track_add_lane (Track * self, int fire_events)
 {
   g_return_if_fail (IS_TRACK (self));
 
   array_double_size_if_full (
-    self->lanes, self->num_lanes,
-    self->lanes_size, TrackLane *);
+    self->lanes, self->num_lanes, self->lanes_size,
+    TrackLane *);
   TrackLane * lane =
     track_lane_new (self, self->num_lanes);
   g_return_if_fail (lane);
@@ -235,9 +228,7 @@ track_add_lane (
  *   be cloned so this should be 0.
  */
 void
-track_init (
-  Track *   self,
-  const int add_lane)
+track_init (Track * self, const int add_lane)
 {
   self->schema_version = TRACK_SCHEMA_VERSION;
   self->visible = true;
@@ -280,94 +271,68 @@ track_new (
   switch (type)
     {
     case TRACK_TYPE_INSTRUMENT:
-      self->in_signal_type =
-        TYPE_EVENT;
-      self->out_signal_type =
-        TYPE_AUDIO;
+      self->in_signal_type = TYPE_EVENT;
+      self->out_signal_type = TYPE_AUDIO;
       instrument_track_init (self);
       break;
     case TRACK_TYPE_AUDIO:
-      self->in_signal_type =
-        TYPE_AUDIO;
-      self->out_signal_type =
-        TYPE_AUDIO;
+      self->in_signal_type = TYPE_AUDIO;
+      self->out_signal_type = TYPE_AUDIO;
       audio_track_init (self);
       break;
     case TRACK_TYPE_MASTER:
-      self->in_signal_type =
-        TYPE_AUDIO;
-      self->out_signal_type =
-        TYPE_AUDIO;
+      self->in_signal_type = TYPE_AUDIO;
+      self->out_signal_type = TYPE_AUDIO;
       master_track_init (self);
       break;
     case TRACK_TYPE_AUDIO_BUS:
-      self->in_signal_type =
-        TYPE_AUDIO;
-      self->out_signal_type =
-        TYPE_AUDIO;
+      self->in_signal_type = TYPE_AUDIO;
+      self->out_signal_type = TYPE_AUDIO;
       audio_bus_track_init (self);
       break;
     case TRACK_TYPE_MIDI_BUS:
-      self->in_signal_type =
-        TYPE_EVENT;
-      self->out_signal_type =
-        TYPE_EVENT;
+      self->in_signal_type = TYPE_EVENT;
+      self->out_signal_type = TYPE_EVENT;
       midi_bus_track_init (self);
       break;
     case TRACK_TYPE_AUDIO_GROUP:
-      self->in_signal_type =
-        TYPE_AUDIO;
-      self->out_signal_type =
-        TYPE_AUDIO;
+      self->in_signal_type = TYPE_AUDIO;
+      self->out_signal_type = TYPE_AUDIO;
       audio_group_track_init (self);
       break;
     case TRACK_TYPE_MIDI_GROUP:
-      self->in_signal_type =
-        TYPE_EVENT;
-      self->out_signal_type =
-        TYPE_EVENT;
+      self->in_signal_type = TYPE_EVENT;
+      self->out_signal_type = TYPE_EVENT;
       midi_group_track_init (self);
       break;
     case TRACK_TYPE_MIDI:
-      self->in_signal_type =
-        TYPE_EVENT;
-      self->out_signal_type =
-        TYPE_EVENT;
+      self->in_signal_type = TYPE_EVENT;
+      self->out_signal_type = TYPE_EVENT;
       midi_track_init (self);
       break;
     case TRACK_TYPE_CHORD:
-      self->in_signal_type =
-        TYPE_EVENT;
-      self->out_signal_type =
-        TYPE_EVENT;
+      self->in_signal_type = TYPE_EVENT;
+      self->out_signal_type = TYPE_EVENT;
       chord_track_init (self);
       break;
     case TRACK_TYPE_MARKER:
-      self->in_signal_type =
-        TYPE_UNKNOWN;
-      self->out_signal_type =
-        TYPE_UNKNOWN;
+      self->in_signal_type = TYPE_UNKNOWN;
+      self->out_signal_type = TYPE_UNKNOWN;
       marker_track_init (self);
       break;
     case TRACK_TYPE_TEMPO:
-      self->in_signal_type =
-        TYPE_UNKNOWN;
-      self->out_signal_type =
-        TYPE_UNKNOWN;
+      self->in_signal_type = TYPE_UNKNOWN;
+      self->out_signal_type = TYPE_UNKNOWN;
       tempo_track_init (self);
       break;
     case TRACK_TYPE_MODULATOR:
-      self->in_signal_type =
-        TYPE_UNKNOWN;
-      self->out_signal_type =
-        TYPE_UNKNOWN;
+      self->in_signal_type = TYPE_UNKNOWN;
+      self->out_signal_type = TYPE_UNKNOWN;
       modulator_track_init (self);
       break;
     case TRACK_TYPE_FOLDER:
-      self->in_signal_type =
-        TYPE_UNKNOWN;
-      self->out_signal_type =
-        TYPE_UNKNOWN;
+      self->in_signal_type = TYPE_UNKNOWN;
+      self->out_signal_type = TYPE_UNKNOWN;
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -385,11 +350,9 @@ track_new (
 
   if (track_type_can_record (type))
     {
-      self->recording =
-        port_new_with_type_and_owner (
-          TYPE_CONTROL, FLOW_INPUT,
-          _("Track record"),
-          PORT_OWNER_TYPE_TRACK, self);
+      self->recording = port_new_with_type_and_owner (
+        TYPE_CONTROL, FLOW_INPUT, _ ("Track record"),
+        PORT_OWNER_TYPE_TRACK, self);
       self->recording->id.sym =
         g_strdup ("track_record");
       control_port_set_toggled (
@@ -397,8 +360,7 @@ track_new (
         F_NO_PUBLISH_EVENTS);
       self->recording->id.flags2 |=
         PORT_FLAG2_TRACK_RECORDING;
-      self->recording->id.flags |=
-        PORT_FLAG_TOGGLE;
+      self->recording->id.flags |= PORT_FLAG_TOGGLE;
     }
 
   self->processor = track_processor_new (self);
@@ -421,8 +383,7 @@ track_new (
  * Track that has a Channel.
  */
 bool
-track_type_has_channel (
-  TrackType type)
+track_type_has_channel (TrackType type)
 {
   switch (type)
     {
@@ -443,15 +404,13 @@ track_type_has_channel (
  * by the user.
  */
 bool
-track_type_is_deletable (
-  TrackType type)
+track_type_is_deletable (TrackType type)
 {
-  return
-    type != TRACK_TYPE_MASTER &&
-    type != TRACK_TYPE_TEMPO &&
-    type != TRACK_TYPE_CHORD &&
-    type != TRACK_TYPE_MODULATOR &&
-    type != TRACK_TYPE_MARKER;
+  return type != TRACK_TYPE_MASTER
+         && type != TRACK_TYPE_TEMPO
+         && type != TRACK_TYPE_CHORD
+         && type != TRACK_TYPE_MODULATOR
+         && type != TRACK_TYPE_MARKER;
 }
 
 /**
@@ -460,33 +419,27 @@ track_type_is_deletable (
  * @param error To be filled if an error occurred.
  */
 Track *
-track_clone (
-  Track *   track,
-  GError ** error)
+track_clone (Track * track, GError ** error)
 {
   g_return_val_if_fail (!error || !*error, NULL);
 
   /* set the track on the given track's channel
    * if not set */
-  if (!track_is_in_active_project (track)
-      && track->channel
-      && !track->channel->track)
+  if (
+    !track_is_in_active_project (track)
+    && track->channel && !track->channel->track)
     track->channel->track = track;
 
-  Track * new_track =
-    track_new (
-      track->type, track->pos, track->name,
-      F_WITHOUT_LANE);
+  Track * new_track = track_new (
+    track->type, track->pos, track->name,
+    F_WITHOUT_LANE);
   g_return_val_if_fail (
     IS_TRACK_AND_NONNULL (new_track), NULL);
 
-  new_track->icon_name =
-    g_strdup (track->icon_name);
-  new_track->comment =
-    g_strdup (track->comment);
+  new_track->icon_name = g_strdup (track->icon_name);
+  new_track->comment = g_strdup (track->comment);
 
-#define COPY_MEMBER(a) \
-  new_track->a = track->a
+#define COPY_MEMBER(a) new_track->a = track->a
 
   COPY_MEMBER (type);
   COPY_MEMBER (automation_visible);
@@ -514,8 +467,7 @@ track_clone (
 
   if (track->type == TRACK_TYPE_MODULATOR)
     {
-      for (int i = 0; i < track->num_modulators;
-           i++)
+      for (int i = 0; i < track->num_modulators; i++)
         {
           GError * err = NULL;
           Plugin * pl = track->modulators[i];
@@ -525,8 +477,8 @@ track_clone (
             {
               PROPAGATE_PREFIXED_ERROR (
                 error, err, "%s",
-                _("Failed to clone modulator "
-                "plugin"));
+                _ ("Failed to clone modulator "
+                   "plugin"));
               object_free_w_func_and_null (
                 track_free, new_track);
               return NULL;
@@ -549,14 +501,13 @@ track_clone (
       /* set the given channel's track if not
        * set */
       GError * err = NULL;
-      new_track->channel =
-        channel_clone (
-          track->channel, new_track, &err);
+      new_track->channel = channel_clone (
+        track->channel, new_track, &err);
       if (new_track->channel == NULL)
         {
           PROPAGATE_PREFIXED_ERROR (
             error, err, "%s",
-            _("Failed to clone channel"));
+            _ ("Failed to clone channel"));
           object_free_w_func_and_null (
             track_free, new_track);
           return NULL;
@@ -567,67 +518,54 @@ track_clone (
   /* --- copy objects --- */
 
   new_track->num_lanes = track->num_lanes;
-  new_track->lanes =
-    g_realloc (
-      new_track->lanes,
-      sizeof (TrackLane *) *
-        (size_t) track->num_lanes);
+  new_track->lanes = g_realloc (
+    new_track->lanes,
+    sizeof (TrackLane *) * (size_t) track->num_lanes);
   for (int j = 0; j < track->num_lanes; j++)
     {
-       TrackLane * lane = track->lanes[j];
-       TrackLane * new_lane =
-         track_lane_clone (lane, new_track);
-       new_track->lanes[j] = new_lane;
+      TrackLane * lane = track->lanes[j];
+      TrackLane * new_lane =
+        track_lane_clone (lane, new_track);
+      new_track->lanes[j] = new_lane;
     }
 
   new_track->num_scales = track->num_scales;
-  new_track->scales =
-    g_realloc (
-      new_track->scales,
-      sizeof (ScaleObject *) *
-        (size_t) track->num_scales);
+  new_track->scales = g_realloc (
+    new_track->scales,
+    sizeof (ScaleObject *)
+      * (size_t) track->num_scales);
   for (int j = 0; j < track->num_scales; j++)
     {
-       ScaleObject * s = track->scales[j];
-       new_track->scales[j] =
-         (ScaleObject *)
-         arranger_object_clone (
-           (ArrangerObject *) s);
+      ScaleObject * s = track->scales[j];
+      new_track->scales[j] = (ScaleObject *)
+        arranger_object_clone ((ArrangerObject *) s);
     }
 
   new_track->num_markers = track->num_markers;
-  new_track->markers =
-    g_realloc (
-      new_track->markers,
-      sizeof (Marker *) *
-        (size_t) track->num_markers);
+  new_track->markers = g_realloc (
+    new_track->markers,
+    sizeof (Marker *) * (size_t) track->num_markers);
   for (int j = 0; j < track->num_markers; j++)
     {
-       Marker * m = track->markers[j];
-       new_track->markers[j] =
-         (Marker *)
-         arranger_object_clone (
-           (ArrangerObject *) m);
+      Marker * m = track->markers[j];
+      new_track->markers[j] = (Marker *)
+        arranger_object_clone ((ArrangerObject *) m);
     }
 
   new_track->num_chord_regions =
     track->num_chord_regions;
-  new_track->chord_regions =
-    g_realloc (
-      new_track->chord_regions,
-      sizeof (ZRegion *) *
-        (size_t) track->num_chord_regions);
+  new_track->chord_regions = g_realloc (
+    new_track->chord_regions,
+    sizeof (ZRegion *)
+      * (size_t) track->num_chord_regions);
   for (int j = 0; j < track->num_chord_regions; j++)
     {
-       ZRegion * r = track->chord_regions[j];
-       new_track->chord_regions[j] =
-         (ZRegion *)
-         arranger_object_clone (
-           (ArrangerObject *) r);
+      ZRegion * r = track->chord_regions[j];
+      new_track->chord_regions[j] = (ZRegion *)
+        arranger_object_clone ((ArrangerObject *) r);
     }
 
-  new_track->automation_tracklist.track =
-    new_track;
+  new_track->automation_tracklist.track = new_track;
   automation_tracklist_clone (
     &track->automation_tracklist,
     &new_track->automation_tracklist);
@@ -639,9 +577,8 @@ track_clone (
       for (int i = 0; i < track->num_children; i++)
         {
           group_target_track_add_child (
-            new_track, track->children[i],
-            false, F_NO_RECALC_GRAPH,
-            F_NO_PUBLISH_EVENTS);
+            new_track, track->children[i], false,
+            F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
         }
     }
 
@@ -654,7 +591,7 @@ track_clone (
 
 #define COPY_PORT_VALUES(x) \
   if (track->x) \
-    port_copy_values (new_track->x, track->x)
+  port_copy_values (new_track->x, track->x)
 
   /* copy own values */
   COPY_PORT_VALUES (recording);
@@ -666,8 +603,9 @@ track_clone (
 
   /* check that source track is not affected
    * during unit tests */
-  if (ZRYTHM_TESTING &&
-      track_is_in_active_project (track))
+  if (
+    ZRYTHM_TESTING
+    && track_is_in_active_project (track))
     {
       track_validate (track);
     }
@@ -679,8 +617,7 @@ track_clone (
  * Sets magic on objects recursively.
  */
 void
-track_set_magic (
-  Track * self)
+track_set_magic (Track * self)
 {
   self->magic = TRACK_MAGIC;
 
@@ -694,8 +631,7 @@ track_set_magic (
 }
 
 Tracklist *
-track_get_tracklist (
-  Track * self)
+track_get_tracklist (Track * self)
 {
   if (track_is_auditioner (self))
     {
@@ -728,8 +664,7 @@ track_select (
       if (exclusive)
         {
           tracklist_selections_select_single (
-            TRACKLIST_SELECTIONS, self,
-            fire_events);
+            TRACKLIST_SELECTIONS, self, fire_events);
         }
       else
         {
@@ -753,15 +688,12 @@ track_select (
  * Returns if the track is soloed.
  */
 bool
-track_get_soloed (
-  Track * self)
+track_get_soloed (Track * self)
 {
   if (G_UNLIKELY (self->type == TRACK_TYPE_FOLDER))
     {
-      return
-        foldable_track_is_status (
-          self,
-          FOLDABLE_TRACK_MIXER_STATUS_SOLOED);
+      return foldable_track_is_status (
+        self, FOLDABLE_TRACK_MIXER_STATUS_SOLOED);
     }
 
   g_return_val_if_fail (self->channel, false);
@@ -774,35 +706,30 @@ track_get_soloed (
  * out, etc.) is soloed.
  */
 bool
-track_get_implied_soloed (
-  Track * self)
+track_get_implied_soloed (Track * self)
 {
   if (self->type == TRACK_TYPE_FOLDER)
     {
-      return
-        foldable_track_is_status (
-          self,
-          FOLDABLE_TRACK_MIXER_STATUS_IMPLIED_SOLOED);
+      return foldable_track_is_status (
+        self,
+        FOLDABLE_TRACK_MIXER_STATUS_IMPLIED_SOLOED);
     }
 
   g_return_val_if_fail (self->channel, false);
-  return
-    fader_get_implied_soloed (self->channel->fader);
+  return fader_get_implied_soloed (
+    self->channel->fader);
 }
 
 /**
  * Returns if the track is muted.
  */
 bool
-track_get_muted (
-  Track * self)
+track_get_muted (Track * self)
 {
   if (self->type == TRACK_TYPE_FOLDER)
     {
-      return
-        foldable_track_is_status (
-          self,
-          FOLDABLE_TRACK_MIXER_STATUS_MUTED);
+      return foldable_track_is_status (
+        self, FOLDABLE_TRACK_MIXER_STATUS_MUTED);
     }
 
   g_return_val_if_fail (self->channel, false);
@@ -813,15 +740,12 @@ track_get_muted (
  * Returns if the track is listened.
  */
 bool
-track_get_listened (
-  Track * self)
+track_get_listened (Track * self)
 {
   if (self->type == TRACK_TYPE_FOLDER)
     {
-      return
-        foldable_track_is_status (
-          self,
-          FOLDABLE_TRACK_MIXER_STATUS_LISTENED);
+      return foldable_track_is_status (
+        self, FOLDABLE_TRACK_MIXER_STATUS_LISTENED);
     }
 
   g_return_val_if_fail (self->channel, false);
@@ -832,18 +756,16 @@ track_get_listened (
  * Returns whether monitor audio is on.
  */
 bool
-track_get_monitor_audio (
-  Track * self)
+track_get_monitor_audio (Track * self)
 {
   g_return_val_if_fail (
-    IS_TRACK (self) && self->processor &&
-    IS_PORT_AND_NONNULL (
-      self->processor->monitor_audio),
+    IS_TRACK (self) && self->processor
+      && IS_PORT_AND_NONNULL (
+        self->processor->monitor_audio),
     false);
 
-  return
-    control_port_is_toggled (
-      self->processor->monitor_audio);
+  return control_port_is_toggled (
+    self->processor->monitor_audio);
 }
 
 /**
@@ -857,8 +779,8 @@ track_set_monitor_audio (
   bool    fire_events)
 {
   g_return_if_fail (
-    IS_TRACK (self) && self->processor &&
-    IS_PORT_AND_NONNULL (
+    IS_TRACK (self) && self->processor
+    && IS_PORT_AND_NONNULL (
       self->processor->monitor_audio));
 
   if (auto_select)
@@ -868,8 +790,8 @@ track_set_monitor_audio (
     }
 
   control_port_set_toggled (
-    self->processor->monitor_audio,
-    monitor, fire_events);
+    self->processor->monitor_audio, monitor,
+    fire_events);
 }
 
 TrackType
@@ -878,25 +800,22 @@ track_get_type_from_plugin_descriptor (
 {
   if (plugin_descriptor_is_instrument (descr))
     return TRACK_TYPE_INSTRUMENT;
-  else if (plugin_descriptor_is_midi_modifier (
-             descr))
+  else if (plugin_descriptor_is_midi_modifier (descr))
     return TRACK_TYPE_MIDI;
   else
     return TRACK_TYPE_AUDIO_BUS;
 }
 
 bool
-track_get_recording (
-  const Track * const track)
+track_get_recording (const Track * const track)
 {
   g_return_val_if_fail (
-    IS_TRACK (track) &&
-      track_type_can_record (track->type) &&
-      IS_PORT_AND_NONNULL (track->recording),
+    IS_TRACK (track)
+      && track_type_can_record (track->type)
+      && IS_PORT_AND_NONNULL (track->recording),
     false);
 
-  return
-    control_port_is_toggled (track->recording);
+  return control_port_is_toggled (track->recording);
 }
 
 /**
@@ -905,9 +824,9 @@ track_get_recording (
  */
 void
 track_set_recording (
-  Track *   track,
-  bool      recording,
-  bool      fire_events)
+  Track * track,
+  bool    recording,
+  bool    fire_events)
 {
   g_return_if_fail (IS_TRACK (track));
 
@@ -915,8 +834,7 @@ track_set_recording (
     "%s: setting recording %d (fire events: %d)",
     track->name, recording, fire_events);
 
-  Channel * channel =
-    track_get_channel (track);
+  Channel * channel = track_get_channel (track);
 
   if (!channel)
     {
@@ -944,8 +862,7 @@ track_set_recording (
 
   if (fire_events)
     {
-      EVENTS_PUSH (
-        ET_TRACK_STATE_CHANGED, track);
+      EVENTS_PUSH (ET_TRACK_STATE_CHANGED, track);
     }
 }
 
@@ -962,8 +879,7 @@ track_set_muted (
   bool    fire_events)
 {
   g_message (
-    "Setting track %s muted (%d)",
-    self->name, mute);
+    "Setting track %s muted (%d)", self->name, mute);
 
   if (auto_select)
     {
@@ -976,18 +892,17 @@ track_set_muted (
       /* this is only supported if the fader track
        * is the only track selected */
       g_return_if_fail (
-        TRACKLIST_SELECTIONS->num_tracks == 1 &&
-        TRACKLIST_SELECTIONS->tracks[0] == self);
+        TRACKLIST_SELECTIONS->num_tracks == 1
+        && TRACKLIST_SELECTIONS->tracks[0] == self);
 
       GError * err = NULL;
-      bool ret =
+      bool     ret =
         tracklist_selections_action_perform_edit_mute (
           TRACKLIST_SELECTIONS, mute, &err);
       if (!ret)
         {
           HANDLE_ERROR (
-            err, "%s",
-            _("Cannot set track muted"));
+            err, "%s", _ ("Cannot set track muted"));
           return;
         }
     }
@@ -1014,8 +929,8 @@ track_set_folded (
     track_type_is_foldable (self->type));
 
   g_message (
-    "Setting track %s folded (%d)",
-    self->name, folded);
+    "Setting track %s folded (%d)", self->name,
+    folded);
   if (auto_select)
     {
       track_select (
@@ -1025,18 +940,18 @@ track_set_folded (
   if (trigger_undo)
     {
       g_return_if_fail (
-        TRACKLIST_SELECTIONS->num_tracks == 1 &&
-        TRACKLIST_SELECTIONS->tracks[0] == self);
+        TRACKLIST_SELECTIONS->num_tracks == 1
+        && TRACKLIST_SELECTIONS->tracks[0] == self);
 
       GError * err = NULL;
-      bool ret =
+      bool     ret =
         tracklist_selections_action_perform_edit_fold (
           TRACKLIST_SELECTIONS, folded, &err);
       if (!ret)
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Cannot set track folded"));
+            _ ("Cannot set track folded"));
           return;
         }
     }
@@ -1055,8 +970,7 @@ track_set_folded (
  * Returns whether the track has any soloed lanes.
  */
 bool
-track_has_soloed_lanes (
-  const Track * const self)
+track_has_soloed_lanes (const Track * const self)
 {
   for (int i = 0; i < self->num_lanes; i++)
     {
@@ -1075,8 +989,7 @@ track_has_soloed_lanes (
  * @param name Name to search for.
  */
 Track *
-track_get_from_name (
-  const char * name)
+track_get_from_name (const char * name)
 {
   g_return_val_if_fail (name, NULL);
 
@@ -1093,8 +1006,7 @@ track_get_from_name (
 }
 
 Track *
-track_find_by_name (
-  const char * name)
+track_find_by_name (const char * name)
 {
   Track * track;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -1124,8 +1036,9 @@ track_get_velocities_in_range (
   size_t *         velocities_size,
   int              inside)
 {
-  if (track->type != TRACK_TYPE_MIDI &&
-      track->type != TRACK_TYPE_INSTRUMENT)
+  if (
+    track->type != TRACK_TYPE_MIDI
+    && track->type != TRACK_TYPE_INSTRUMENT)
     return;
 
   for (int i = 0; i < track->num_lanes; i++)
@@ -1136,8 +1049,7 @@ track_get_velocities_in_range (
           ZRegion * r = lane->regions[j];
           midi_region_get_velocities_in_range (
             r, start_pos, end_pos, velocities,
-            num_velocities, velocities_size,
-            inside);
+            num_velocities, velocities_size, inside);
         }
     }
 }
@@ -1149,19 +1061,17 @@ track_get_velocities_in_range (
  * @return True if pass.
  */
 bool
-track_validate (
-  Track * self)
+track_validate (Track * self)
 {
   g_return_val_if_fail (self, false);
 
-  g_debug (
-    "validating track '%s'...", self->name);
+  g_debug ("validating track '%s'...", self->name);
 
   if (self->channel)
     g_return_val_if_fail (
-      self->channel->sends[0]->track_name_hash ==
-      self->channel->sends[0]->amount->
-        id.track_name_hash,
+      self->channel->sends[0]->track_name_hash
+        == self->channel->sends[0]
+             ->amount->id.track_name_hash,
       false);
 
   if (ZRYTHM_TESTING)
@@ -1180,8 +1090,9 @@ track_validate (
           g_return_val_if_fail (
             port->id.track_name_hash == name_hash,
             false);
-          if (port->id.owner_type ==
-                PORT_OWNER_TYPE_PLUGIN)
+          if (
+            port->id.owner_type
+            == PORT_OWNER_TYPE_PLUGIN)
             {
               PluginIdentifier * pid =
                 &port->id.plugin_id;
@@ -1197,9 +1108,11 @@ track_validate (
                 false);
               g_return_val_if_fail (
                 plugin_identifier_is_equal (
-                  &pl->id, pid), false);
-              if (pid->slot_type ==
-                    PLUGIN_SLOT_INSTRUMENT)
+                  &pl->id, pid),
+                false);
+              if (
+                pid->slot_type
+                == PLUGIN_SLOT_INSTRUMENT)
                 {
                   g_return_val_if_fail (
                     pl == self->channel->instrument,
@@ -1209,8 +1122,7 @@ track_validate (
 
           /* check that the automation track is
            * there */
-          if (atl &&
-              port->id.flags & PORT_FLAG_AUTOMATABLE)
+          if (atl && port->id.flags & PORT_FLAG_AUTOMATABLE)
             {
               /*g_message ("checking %s", port->id.label);*/
               AutomationTrack * at =
@@ -1229,7 +1141,8 @@ track_validate (
                 }
               g_return_val_if_fail (
                 automation_track_find_from_port (
-                  port, self, false), false);
+                  port, self, false),
+                false);
               g_return_val_if_fail (
                 port->at == at, false);
 
@@ -1244,7 +1157,7 @@ track_validate (
   if (self->channel)
     {
       Channel * ch = self->channel;
-      Track * out_track =
+      Track *   out_track =
         channel_get_output_track (ch);
       g_return_val_if_fail (
         out_track != self, false);
@@ -1256,9 +1169,8 @@ track_validate (
 
       /* verify plugins */
       Plugin * plugins[60];
-      int num_plugins =
-        channel_get_plugins (
-          self->channel, plugins);
+      int      num_plugins = channel_get_plugins (
+             self->channel, plugins);
       for (int i = 0; i < num_plugins; i++)
         {
           Plugin * pl = plugins[i];
@@ -1280,8 +1192,7 @@ track_validate (
   if (atl)
     {
       g_return_val_if_fail (
-        automation_tracklist_validate (atl),
-        false);
+        automation_tracklist_validate (atl), false);
     }
 
   /* verify regions */
@@ -1305,8 +1216,7 @@ track_validate (
         r, track_is_in_active_project (self));
     }
 
-  g_debug (
-    "done validating track '%s'", self->name);
+  g_debug ("done validating track '%s'", self->name);
 
   return true;
 }
@@ -1327,8 +1237,7 @@ track_add_folder_parents (
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * cur_track = TRACKLIST->tracks[i];
-      if (!track_type_is_foldable (
-             cur_track->type))
+      if (!track_type_is_foldable (cur_track->type))
         continue;
 
       /* last position covered by the foldable
@@ -1336,8 +1245,9 @@ track_add_folder_parents (
       int last_covered_pos =
         cur_track->pos + (cur_track->size - 1);
 
-      if (cur_track->pos < self->pos &&
-          self->pos <= last_covered_pos)
+      if (
+        cur_track->pos < self->pos
+        && self->pos <= last_covered_pos)
         {
           g_ptr_array_insert (
             parents, prepend ? 0 : -1, cur_track);
@@ -1349,12 +1259,10 @@ track_add_folder_parents (
  * Returns the closest foldable parent or NULL.
  */
 Track *
-track_get_direct_folder_parent (
-  Track * track)
+track_get_direct_folder_parent (Track * track)
 {
   GPtrArray * parents = g_ptr_array_new ();
-  track_add_folder_parents (
-    track, parents, true);
+  track_add_folder_parents (track, parents, true);
   Track * parent = NULL;
   if (parents->len > 0)
     {
@@ -1371,12 +1279,10 @@ track_get_direct_folder_parent (
  * Used when deleting tracks.
  */
 void
-track_remove_from_folder_parents (
-  Track * self)
+track_remove_from_folder_parents (Track * self)
 {
   GPtrArray * parents = g_ptr_array_new ();
-  track_add_folder_parents (
-    self, parents, false);
+  track_add_folder_parents (self, parents, false);
   for (size_t j = 0; j < parents->len; j++)
     {
       Track * parent =
@@ -1398,19 +1304,15 @@ track_type_can_host_region_type (
   switch (rt)
     {
     case REGION_TYPE_MIDI:
-      return
-        tt == TRACK_TYPE_MIDI ||
-        tt == TRACK_TYPE_INSTRUMENT;
+      return tt == TRACK_TYPE_MIDI
+             || tt == TRACK_TYPE_INSTRUMENT;
     case REGION_TYPE_AUDIO:
-      return
-        tt == TRACK_TYPE_AUDIO;
+      return tt == TRACK_TYPE_AUDIO;
     case REGION_TYPE_AUTOMATION:
-      return
-        tt != TRACK_TYPE_CHORD &&
-        tt != TRACK_TYPE_MARKER;
+      return tt != TRACK_TYPE_CHORD
+             && tt != TRACK_TYPE_MARKER;
     case REGION_TYPE_CHORD:
-      return
-        tt == TRACK_TYPE_CHORD;
+      return tt == TRACK_TYPE_CHORD;
     }
   g_return_val_if_reached (-1);
 }
@@ -1423,15 +1325,13 @@ track_type_can_host_region_type (
  */
 NONNULL
 bool
-track_get_should_be_visible (
-  Track * self)
+track_get_should_be_visible (Track * self)
 {
   if (!self->visible)
     return false;
 
   GPtrArray * parents = g_ptr_array_new ();
-  track_add_folder_parents (
-    self, parents, false);
+  track_add_folder_parents (self, parents, false);
   for (size_t i = 0; i < parents->len; i++)
     {
       Track * parent =
@@ -1450,8 +1350,7 @@ track_get_should_be_visible (
  * of all visible lanes).
  */
 double
-track_get_full_visible_height (
-  Track * const self)
+track_get_full_visible_height (Track * const self)
 {
   double height = self->main_height;
 
@@ -1489,8 +1388,7 @@ track_multiply_heights (
   bool    visible_only,
   bool    check_only)
 {
-  if (self->main_height * multiplier <
-        TRACK_MIN_HEIGHT)
+  if (self->main_height * multiplier < TRACK_MIN_HEIGHT)
     return false;
 
   if (!check_only)
@@ -1504,8 +1402,9 @@ track_multiply_heights (
         {
           TrackLane * lane = self->lanes[i];
 
-          if (lane->height * multiplier <
-                TRACK_MIN_HEIGHT)
+          if (
+            lane->height * multiplier
+            < TRACK_MIN_HEIGHT)
             {
               return false;
             }
@@ -1529,8 +1428,9 @@ track_multiply_heights (
               if (visible_only && !at->visible)
                 continue;
 
-              if (at->height * multiplier <
-                    TRACK_MIN_HEIGHT)
+              if (
+                at->height * multiplier
+                < TRACK_MIN_HEIGHT)
                 {
                   return false;
                 }
@@ -1584,18 +1484,18 @@ track_set_soloed (
       /* this is only supported if the fader track
        * is the only track selected */
       g_return_if_fail (
-        TRACKLIST_SELECTIONS->num_tracks == 1 &&
-        TRACKLIST_SELECTIONS->tracks[0] == self);
+        TRACKLIST_SELECTIONS->num_tracks == 1
+        && TRACKLIST_SELECTIONS->tracks[0] == self);
 
       GError * err = NULL;
-      bool ret =
+      bool     ret =
         tracklist_selections_action_perform_edit_solo (
           TRACKLIST_SELECTIONS, solo, &err);
       if (!ret)
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Cannot set track soloed"));
+            _ ("Cannot set track soloed"));
           return;
         }
     }
@@ -1636,18 +1536,18 @@ track_set_listened (
       /* this is only supported if the fader track
        * is the only track selected */
       g_return_if_fail (
-        TRACKLIST_SELECTIONS->num_tracks == 1 &&
-        TRACKLIST_SELECTIONS->tracks[0] == self);
+        TRACKLIST_SELECTIONS->num_tracks == 1
+        && TRACKLIST_SELECTIONS->tracks[0] == self);
 
       GError * err = NULL;
-      bool ret =
+      bool     ret =
         tracklist_selections_action_perform_edit_listen (
           TRACKLIST_SELECTIONS, listen, &err);
       if (!ret)
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Cannot set track listened"));
+            _ ("Cannot set track listened"));
           return;
         }
     }
@@ -1679,13 +1579,12 @@ track_write_to_midi_file (
     track_type_has_piano_roll (self->type));
 
   bool own_events = false;
-  int midi_track_pos = self->pos;
+  int  midi_track_pos = self->pos;
   if (!lanes_as_tracks && use_track_pos)
     {
       g_return_if_fail (!events);
       midiTrackAddText (
-        mf, self->pos, textTrackName,
-        self->name);
+        mf, self->pos, textTrackName, self->name);
       events = midi_events_new ();
       own_events = true;
     }
@@ -1751,17 +1650,17 @@ track_contains_uninstantiated_plugin (
  * FIXME cache.
  */
 ZRegion *
-track_get_last_region (
-  Track * track)
+track_get_last_region (Track * track)
 {
-  int i, j;
-  ZRegion * last_region = NULL, * r;
+  int              i, j;
+  ZRegion *        last_region = NULL, *r;
   ArrangerObject * r_obj;
-  Position tmp;
+  Position         tmp;
   position_init (&tmp);
 
-  if (track->type == TRACK_TYPE_AUDIO ||
-      track->type == TRACK_TYPE_INSTRUMENT)
+  if (
+    track->type == TRACK_TYPE_AUDIO
+    || track->type == TRACK_TYPE_INSTRUMENT)
     {
       TrackLane * lane;
       for (i = 0; i < track->num_lanes; i++)
@@ -1795,8 +1694,7 @@ track_get_last_region (
       if (!r)
         continue;
 
-      if (position_is_after (
-            &r_obj->end_pos, &tmp))
+      if (position_is_after (&r_obj->end_pos, &tmp))
         {
           last_region = r;
           position_set_to_pos (
@@ -1814,8 +1712,7 @@ track_get_last_region (
  * created.
  */
 void
-track_generate_automation_tracks (
-  Track * track)
+track_generate_automation_tracks (Track * track)
 {
   g_message (
     "generating automation tracks for '%s'",
@@ -1832,20 +1729,17 @@ track_generate_automation_tracks (
       /* -- fader -- */
 
       /* volume */
-      at =
-        automation_track_new (ch->fader->amp);
+      at = automation_track_new (ch->fader->amp);
       automation_tracklist_add_at (atl, at);
       at->created = 1;
       at->visible = 1;
 
       /* balance */
-      at =
-        automation_track_new (ch->fader->balance);
+      at = automation_track_new (ch->fader->balance);
       automation_tracklist_add_at (atl, at);
 
       /* mute */
-      at =
-        automation_track_new (ch->fader->mute);
+      at = automation_track_new (ch->fader->mute);
       automation_tracklist_add_at (atl, at);
 
       /* --- end fader --- */
@@ -1853,9 +1747,8 @@ track_generate_automation_tracks (
       /* sends */
       for (int i = 0; i < STRIP_SIZE; i++)
         {
-          at =
-            automation_track_new (
-              ch->sends[i]->amount);
+          at = automation_track_new (
+            ch->sends[i]->amount);
           automation_tracklist_add_at (atl, at);
         }
     }
@@ -1869,14 +1762,13 @@ track_generate_automation_tracks (
           for (int j = 0; j < 128; j++)
             {
               cc =
-                track->processor->midi_cc[
-                  i * 128 + j];
+                track->processor
+                  ->midi_cc[i * 128 + j];
               at = automation_track_new (cc);
               automation_tracklist_add_at (atl, at);
             }
 
-          cc =
-            track->processor->pitch_bend[i];
+          cc = track->processor->pitch_bend[i];
           at = automation_track_new (cc);
           automation_tracklist_add_at (atl, at);
 
@@ -1885,8 +1777,7 @@ track_generate_automation_tracks (
           at = automation_track_new (cc);
           automation_tracklist_add_at (atl, at);
 
-          cc =
-            track->processor->channel_pressure[i];
+          cc = track->processor->channel_pressure[i];
           at = automation_track_new (cc);
           automation_tracklist_add_at (atl, at);
         }
@@ -1895,28 +1786,25 @@ track_generate_automation_tracks (
   switch (track->type)
     {
     case TRACK_TYPE_TEMPO:
-    /* create special BPM and time sig automation
+      /* create special BPM and time sig automation
      * tracks for tempo track */
       at = automation_track_new (track->bpm_port);
       at->created = true;
       at->visible = true;
       automation_tracklist_add_at (atl, at);
-      at =
-        automation_track_new (
-          track->beats_per_bar_port);
+      at = automation_track_new (
+        track->beats_per_bar_port);
       automation_tracklist_add_at (atl, at);
-      at =
-        automation_track_new (
-          track->beat_unit_port);
+      at = automation_track_new (
+        track->beat_unit_port);
       automation_tracklist_add_at (atl, at);
       break;
     case TRACK_TYPE_MODULATOR:
       for (int i = 0;
            i < track->num_modulator_macros; i++)
         {
-          at =
-            automation_track_new (
-              track->modulator_macros[i]->macro);
+          at = automation_track_new (
+            track->modulator_macros[i]->macro);
           if (i == 0)
             {
               at->created = true;
@@ -1926,9 +1814,8 @@ track_generate_automation_tracks (
         }
       break;
     case TRACK_TYPE_AUDIO:
-      at =
-        automation_track_new (
-          track->processor->output_gain);
+      at = automation_track_new (
+        track->processor->output_gain);
       break;
     default:
       break;
@@ -1943,18 +1830,18 @@ track_generate_automation_tracks (
 void
 track_setup (Track * track)
 {
-#define SETUP_TRACK(uc,sc) \
+#define SETUP_TRACK(uc, sc) \
   case TRACK_TYPE_##uc: \
     sc##_track_setup (track); \
     break;
 
   switch (track->type)
     {
-    SETUP_TRACK (INSTRUMENT, instrument);
-    SETUP_TRACK (MASTER, master);
-    SETUP_TRACK (AUDIO, audio);
-    SETUP_TRACK (AUDIO_BUS, audio_bus);
-    SETUP_TRACK (AUDIO_GROUP, audio_group);
+      SETUP_TRACK (INSTRUMENT, instrument);
+      SETUP_TRACK (MASTER, master);
+      SETUP_TRACK (AUDIO, audio);
+      SETUP_TRACK (AUDIO_BUS, audio_bus);
+      SETUP_TRACK (AUDIO_GROUP, audio_group);
     case TRACK_TYPE_CHORD:
     /* TODO */
     default:
@@ -1980,12 +1867,12 @@ track_setup (Track * track)
  */
 void
 track_add_region (
-  Track * track,
-  ZRegion * region,
+  Track *           track,
+  ZRegion *         region,
   AutomationTrack * at,
-  int      lane_pos,
-  int      gen_name,
-  int      fire_events)
+  int               lane_pos,
+  int               gen_name,
+  int               fire_events)
 {
   track_insert_region (
     track, region, at, lane_pos, -1, gen_name,
@@ -2025,11 +1912,9 @@ track_insert_region (
       track = automation_track_get_track (at);
     }
   g_return_if_fail (IS_TRACK (track));
-  g_return_if_fail (
-    region_validate (region, false));
-  g_return_if_fail (
-    track_type_can_have_region_type (
-      track->type, region->id.type));
+  g_return_if_fail (region_validate (region, false));
+  g_return_if_fail (track_type_can_have_region_type (
+    track->type, region->id.type));
 
   if (gen_name)
     {
@@ -2098,8 +1983,7 @@ track_insert_region (
       if (idx == -1)
         {
           chord_track_insert_chord_region (
-            track, region,
-            track->num_chord_regions);
+            track, region, track->num_chord_regions);
         }
       else
         {
@@ -2109,8 +1993,9 @@ track_insert_region (
     }
 
   /* write clip if audio region */
-  if (region->id.type == REGION_TYPE_AUDIO &&
-      !track_is_auditioner (track))
+  if (
+    region->id.type == REGION_TYPE_AUDIO
+    && !track_is_auditioner (track))
     {
       AudioClip * clip =
         audio_region_get_clip (region);
@@ -2128,8 +2013,7 @@ track_insert_region (
 
       if (add_lane)
         {
-          EVENTS_PUSH (
-            ET_TRACK_LANE_ADDED, NULL);
+          EVENTS_PUSH (ET_TRACK_LANE_ADDED, NULL);
         }
     }
 }
@@ -2153,12 +2037,12 @@ track_create_missing_lanes (
  * (except the last one).
  */
 void
-track_remove_empty_last_lanes (
-  Track * track)
+track_remove_empty_last_lanes (Track * track)
 {
   g_return_if_fail (track);
-  g_message ("removing empty last lanes from %s",
-             track->name);
+  g_message (
+    "removing empty last lanes from %s",
+    track->name);
   int removed = 0;
   for (int i = track->num_lanes - 1; i >= 1; i--)
     {
@@ -2169,8 +2053,9 @@ track_remove_empty_last_lanes (
       if (lane->num_regions > 0)
         break;
 
-      if (lane->num_regions == 0 &&
-          prev_lane->num_regions == 0)
+      if (
+        lane->num_regions == 0
+        && prev_lane->num_regions == 0)
         {
           g_message ("removing lane %d", i);
           track->num_lanes--;
@@ -2193,8 +2078,7 @@ track_remove_empty_last_lanes (
  * Used when changing track positions.
  */
 void
-track_update_children (
-  Track * self)
+track_update_children (Track * self)
 {
   unsigned int name_hash =
     track_get_name_hash (self);
@@ -2204,9 +2088,9 @@ track_update_children (
         tracklist_find_track_by_name_hash (
           TRACKLIST, self->children[i]);
       g_warn_if_fail (
-        IS_TRACK (child) &&
-        child->out_signal_type ==
-          self->in_signal_type);
+        IS_TRACK (child)
+        && child->out_signal_type
+             == self->in_signal_type);
       child->channel->output_name_hash = name_hash;
       g_debug (
         "%s: setting output of track %s [%d] to "
@@ -2228,13 +2112,11 @@ track_update_children (
  * played normally again.
  */
 void
-track_freeze (
-  Track * self,
-  bool    freeze)
+track_freeze (Track * self, bool freeze)
 {
   g_message (
-    "%sfreezing %s...",
-    freeze ? "" : "un", self->name);
+    "%sfreezing %s...", freeze ? "" : "un",
+    self->name);
 
   if (freeze)
     {
@@ -2248,12 +2130,10 @@ track_freeze (
         self->name);
 
       /* start exporting in a new thread */
-      GThread * thread =
-        g_thread_new (
-          "bounce_thread",
-          (GThreadFunc)
-            exporter_generic_export_thread,
-          &settings);
+      GThread * thread = g_thread_new (
+        "bounce_thread",
+        (GThreadFunc) exporter_generic_export_thread,
+        &settings);
 
       /* create a progress dialog and block */
       ExportProgressDialogWidget * progress_dialog =
@@ -2270,8 +2150,9 @@ track_freeze (
       /* assert exporting is finished */
       g_return_if_fail (!AUDIO_ENGINE->exporting);
 
-      if (!settings.progress_info.has_error &&
-          !settings.progress_info.cancelled)
+      if (
+        !settings.progress_info.has_error
+        && !settings.progress_info.cancelled)
         {
           /* move the temporary file to the pool */
           AudioClip * clip =
@@ -2296,7 +2177,7 @@ track_freeze (
     {
       /* FIXME */
       /*audio_pool_remove_clip (*/
-        /*AUDIO_POOL, self->pool_id, true);*/
+      /*AUDIO_POOL, self->pool_id, true);*/
     }
 
   self->frozen = freeze;
@@ -2331,29 +2212,26 @@ track_insert_plugin (
   if (slot_type == PLUGIN_SLOT_MODULATOR)
     {
       modulator_track_insert_modulator (
-        self, slot, pl, replacing_plugin,
-        confirm, gen_automatables,
-        recalc_graph, fire_events);
+        self, slot, pl, replacing_plugin, confirm,
+        gen_automatables, recalc_graph, fire_events);
     }
   else
     {
       channel_add_plugin (
-        self->channel, slot_type, slot, pl,
-        confirm, moving_plugin, gen_automatables,
+        self->channel, slot_type, slot, pl, confirm,
+        moving_plugin, gen_automatables,
         recalc_graph, fire_events);
     }
 
-  if (!pl->instantiated &&
-      !pl->instantiation_failed)
+  if (!pl->instantiated && !pl->instantiation_failed)
     {
       GError * err = NULL;
-      int ret =
-        plugin_instantiate (pl, NULL, &err);
+      int ret = plugin_instantiate (pl, NULL, &err);
       if (ret != 0)
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Failed to instantiate plugin"));
+            _ ("Failed to instantiate plugin"));
         }
     }
 }
@@ -2408,20 +2286,21 @@ track_disconnect (
   bool    remove_pl,
   bool    recalc_graph)
 {
-  g_message ("disconnecting track '%s' (%d)...",
-    self->name, self->pos);
+  g_message (
+    "disconnecting track '%s' (%d)...", self->name,
+    self->pos);
 
   self->disconnecting = true;
 
   /* if this is a group track and has children,
    * remove them */
-  if (track_is_in_active_project (self)
-      && !track_is_auditioner (self)
-      && TRACK_CAN_BE_GROUP_TARGET (self))
+  if (
+    track_is_in_active_project (self)
+    && !track_is_auditioner (self)
+    && TRACK_CAN_BE_GROUP_TARGET (self))
     {
       group_target_track_remove_all_children (
-        self, F_DISCONNECT,
-        F_NO_RECALC_GRAPH,
+        self, F_DISCONNECT, F_NO_RECALC_GRAPH,
         F_NO_PUBLISH_EVENTS);
     }
 
@@ -2432,9 +2311,10 @@ track_disconnect (
   for (size_t i = 0; i < ports->len; i++)
     {
       Port * port = g_ptr_array_index (ports, i);
-      if (!IS_PORT (port) ||
-          port_is_in_active_project (port) !=
-            track_is_in_active_project (self))
+      if (
+        !IS_PORT (port)
+        || port_is_in_active_project (port)
+             != track_is_in_active_project (self))
         {
           g_critical ("invalid port");
           object_free_w_func_and_null (
@@ -2448,8 +2328,9 @@ track_disconnect (
   object_free_w_func_and_null (
     g_ptr_array_unref, ports);
 
-  if (track_is_in_active_project (self)
-      && !track_is_auditioner (self))
+  if (
+    track_is_in_active_project (self)
+    && !track_is_auditioner (self))
     {
       /* disconnect from folders */
       track_remove_from_folder_parents (self);
@@ -2462,8 +2343,7 @@ track_disconnect (
 
   if (track_type_has_channel (self->type))
     {
-      channel_disconnect (
-        self->channel, remove_pl);
+      channel_disconnect (self->channel, remove_pl);
     }
 
   self->disconnecting = false;
@@ -2532,8 +2412,7 @@ track_set_automation_visible (
  * Unselects all arranger objects in the track.
  */
 void
-track_unselect_all (
-  Track * self)
+track_unselect_all (Track * self)
 {
   if (track_is_auditioner (self))
     return;
@@ -2558,8 +2437,7 @@ track_unselect_all (
  * Removes all arranger objects recursively.
  */
 void
-track_clear (
-  Track * self)
+track_clear (Track * self)
 {
   g_return_if_fail (IS_TRACK (self));
 
@@ -2595,15 +2473,13 @@ track_remove_region (
     IS_TRACK (self) && IS_REGION (region));
 
   g_message (
-    "removing region from track '%s':",
-    self->name);
+    "removing region from track '%s':", self->name);
   if (!track_is_auditioner (self))
     region_print (region);
 
   /* check if region type matches track type */
-  g_return_if_fail (
-    track_type_can_have_region_type (
-      self->type, region->id.type));
+  g_return_if_fail (track_type_can_have_region_type (
+    self->type, region->id.type));
 
   if (!track_is_auditioner (self))
     region_disconnect (region);
@@ -2622,8 +2498,7 @@ track_remove_region (
     {
       chord_track_remove_region (self, region);
     }
-  else if (region->id.type ==
-             REGION_TYPE_AUTOMATION)
+  else if (region->id.type == REGION_TYPE_AUTOMATION)
     {
       AutomationTracklist * atl =
         &self->automation_tracklist;
@@ -2638,8 +2513,9 @@ track_remove_region (
         }
     }
 
-  if (ZRYTHM_HAVE_UI && MAIN_WINDOW &&
-      !track_is_auditioner (self))
+  if (
+    ZRYTHM_HAVE_UI && MAIN_WINDOW
+    && !track_is_auditioner (self))
     {
       ArrangerObject * obj =
         (ArrangerObject *) region;
@@ -2675,8 +2551,7 @@ track_remove_region (
  * or NULL if it doesn't (like chord tracks).
  */
 AutomationTracklist *
-track_get_automation_tracklist (
-  Track * const track)
+track_get_automation_tracklist (Track * const track)
 {
   g_return_val_if_fail (IS_TRACK (track), NULL);
 
@@ -2720,12 +2595,13 @@ track_get_region_at_pos (
 {
   int i, j;
 
-  if (track->type == TRACK_TYPE_INSTRUMENT ||
-      track->type == TRACK_TYPE_AUDIO ||
-      track->type == TRACK_TYPE_MIDI)
+  if (
+    track->type == TRACK_TYPE_INSTRUMENT
+    || track->type == TRACK_TYPE_AUDIO
+    || track->type == TRACK_TYPE_MIDI)
     {
-      TrackLane * lane;
-      ZRegion * r;
+      TrackLane *      lane;
+      ZRegion *        r;
       ArrangerObject * r_obj;
       for (i = 0; i < track->num_lanes; i++)
         {
@@ -2735,11 +2611,11 @@ track_get_region_at_pos (
             {
               r = lane->regions[j];
               r_obj = (ArrangerObject *) r;
-              if (pos->frames >=
-                    r_obj->pos.frames &&
-                  pos->frames <
-                    r_obj->end_pos.frames +
-                      (include_region_end ? 1 : 0))
+              if (
+                pos->frames >= r_obj->pos.frames
+                && pos->frames
+                     < r_obj->end_pos.frames
+                         + (include_region_end ? 1 : 0))
                 {
                   return r;
                 }
@@ -2748,17 +2624,18 @@ track_get_region_at_pos (
     }
   else if (track->type == TRACK_TYPE_CHORD)
     {
-      ZRegion * r;
+      ZRegion *        r;
       ArrangerObject * r_obj;
       for (j = 0; j < track->num_chord_regions; j++)
         {
           r = track->chord_regions[j];
           r_obj = (ArrangerObject *) r;
-          if (position_is_after_or_equal (
-                pos, &r_obj->pos) &&
-              pos->frames <
-                r_obj->end_pos.frames +
-                  (include_region_end ? 1 : 0))
+          if (
+            position_is_after_or_equal (
+              pos, &r_obj->pos)
+            && pos->frames
+                 < r_obj->end_pos.frames
+                     + (include_region_end ? 1 : 0))
             {
               return r;
             }
@@ -2769,10 +2646,9 @@ track_get_region_at_pos (
 }
 
 const char *
-track_stringize_type (
-  TrackType type)
+track_stringize_type (TrackType type)
 {
-  return _(track_type_strings[type].str);
+  return _ (track_type_strings[type].str);
 }
 
 /**
@@ -2782,9 +2658,7 @@ track_stringize_type (
  *   false to get pre fader.
  */
 Fader *
-track_get_fader (
-  Track * self,
-  bool    post_fader)
+track_get_fader (Track * self, bool post_fader)
 {
   Channel * ch = track_get_channel (self);
   if (ch)
@@ -2807,8 +2681,7 @@ track_get_fader (
  * Track.
  */
 FaderType
-track_get_fader_type (
-  const Track * track)
+track_get_fader_type (const Track * track)
 {
   switch (track->type)
     {
@@ -2835,8 +2708,7 @@ track_get_fader_type (
  * corresponding to the given Track.
  */
 FaderType
-track_type_get_prefader_type (
-  TrackType type)
+track_type_get_prefader_type (TrackType type)
 {
   switch (type)
     {
@@ -2876,29 +2748,25 @@ track_update_positions (
   for (i = 0; i < self->num_lanes; i++)
     {
       track_lane_update_positions (
-        self->lanes[i], from_ticks,
-        bpm_change);
+        self->lanes[i], from_ticks, bpm_change);
     }
   for (i = 0; i < self->num_chord_regions; i++)
     {
       arranger_object_update_positions (
-        (ArrangerObject *)
-        self->chord_regions[i], from_ticks,
-        bpm_change);
+        (ArrangerObject *) self->chord_regions[i],
+        from_ticks, bpm_change);
     }
   for (i = 0; i < self->num_scales; i++)
     {
       arranger_object_update_positions (
-        (ArrangerObject *)
-        self->scales[i], from_ticks,
-        bpm_change);
+        (ArrangerObject *) self->scales[i],
+        from_ticks, bpm_change);
     }
   for (i = 0; i < self->num_markers; i++)
     {
       arranger_object_update_positions (
-        (ArrangerObject *)
-        self->markers[i], from_ticks,
-        bpm_change);
+        (ArrangerObject *) self->markers[i],
+        from_ticks, bpm_change);
     }
 
   automation_tracklist_update_positions (
@@ -2925,8 +2793,9 @@ track_fill_events (
   MidiEvents *                        midi_events,
   StereoPorts *                       stereo_ports)
 {
-  if (!track_is_auditioner (self)
-      && !TRANSPORT_IS_ROLLING)
+  if (
+    !track_is_auditioner (self)
+    && !TRANSPORT_IS_ROLLING)
     return;
 
   const unsigned_frame_t g_end_frames =
@@ -2949,8 +2818,7 @@ track_fill_events (
 
   /* go through each lane */
   const int num_loops =
-    (tt == TRACK_TYPE_CHORD ?
-     1 : self->num_lanes);
+    (tt == TRACK_TYPE_CHORD ? 1 : self->num_lanes);
   for (int j = 0; j < num_loops; j++)
     {
       TrackLane * lane = NULL;
@@ -2962,70 +2830,65 @@ track_fill_events (
 
       /* go through each region */
       const int num_regions =
-        (tt == TRACK_TYPE_CHORD ?
-         self->num_chord_regions :
-         lane->num_regions);
+        (tt == TRACK_TYPE_CHORD
+           ? self->num_chord_regions
+           : lane->num_regions);
       for (int i = 0; i < num_regions; i++)
         {
           ZRegion * r =
-            tt == TRACK_TYPE_CHORD ?
-            self->chord_regions[i] :
-            lane->regions[i];
+            tt == TRACK_TYPE_CHORD
+              ? self->chord_regions[i]
+              : lane->regions[i];
           ArrangerObject * r_obj =
             (ArrangerObject *) r;
           g_return_if_fail (IS_REGION (r));
 
           /* skip region if muted */
-          if (arranger_object_get_muted (
-                r_obj, true))
+          if (arranger_object_get_muted (r_obj, true))
             {
               continue;
             }
 
           /* skip if in bounce mode and the
            * region should not be bounced */
-          if (AUDIO_ENGINE->bounce_mode !=
-                BOUNCE_OFF &&
-              (!r->bounce || !self->bounce))
+          if (
+            AUDIO_ENGINE->bounce_mode != BOUNCE_OFF
+            && (!r->bounce || !self->bounce))
             {
               continue;
             }
 
           /* skip if region is not hit
            * (inclusive of its last point) */
-          if (!region_is_hit_by_range (
-                 r,
-                 (signed_frame_t)
-                 time_nfo->g_start_frame,
-                 (signed_frame_t)
-                 (midi_events ?
-                    g_end_frames :
-                    (g_end_frames - 1)),
-                 F_INCLUSIVE))
+          if (
+            !region_is_hit_by_range (
+              r,
+              (signed_frame_t) time_nfo->g_start_frame,
+              (signed_frame_t) (midi_events ? g_end_frames : (g_end_frames - 1)),
+              F_INCLUSIVE))
             {
               continue;
             }
 
-          signed_frame_t num_frames_to_process =
-            MIN (
-              r_obj->end_pos.frames -
-              (signed_frame_t)
-                time_nfo->g_start_frame,
-              (signed_frame_t)
-              time_nfo->nframes);
+          signed_frame_t num_frames_to_process = MIN (
+            r_obj->end_pos.frames
+              - (signed_frame_t)
+                  time_nfo->g_start_frame,
+            (signed_frame_t) time_nfo->nframes);
           nframes_t frames_processed = 0;
 
           while (num_frames_to_process > 0)
             {
               unsigned_frame_t cur_g_start_frame =
-                time_nfo->g_start_frame +
-                  frames_processed;
+                time_nfo->g_start_frame
+                + frames_processed;
               nframes_t cur_local_start_frame =
-                time_nfo->local_offset +
-                  frames_processed;
+                time_nfo->local_offset
+                + frames_processed;
 
               bool is_end_loop;
-              signed_frame_t cur_num_frames_till_next_r_loop_or_end;
+              signed_frame_t
+                cur_num_frames_till_next_r_loop_or_end;
               region_get_frames_till_next_loop_or_end (
                 r,
                 (signed_frame_t) cur_g_start_frame,
@@ -3045,22 +2908,20 @@ track_fill_events (
 
               /* whether we need a note off */
               bool need_note_off =
-                (cur_num_frames_till_next_r_loop_or_end <
-                   num_frames_to_process) ||
-                (cur_num_frames_till_next_r_loop_or_end ==
-                   num_frames_to_process &&
-                 !is_end_loop) ||
+                (cur_num_frames_till_next_r_loop_or_end
+                 < num_frames_to_process)
+                || (cur_num_frames_till_next_r_loop_or_end == num_frames_to_process && !is_end_loop)
+                ||
                 /* region end */
-                ((signed_frame_t)
-                 time_nfo->g_start_frame +
-                   num_frames_to_process ==
-                     r_obj->end_pos.frames) ||
+                ((signed_frame_t) time_nfo->g_start_frame
+                   + num_frames_to_process
+                 == r_obj->end_pos.frames)
+                ||
                 /* transport end */
-                (TRANSPORT_IS_LOOPING &&
-                 (signed_frame_t)
-                 time_nfo->g_start_frame +
-                   num_frames_to_process ==
-                     TRANSPORT->loop_end_pos.frames);
+                (TRANSPORT_IS_LOOPING
+                 && (signed_frame_t) time_nfo->g_start_frame
+                        + num_frames_to_process
+                      == TRANSPORT->loop_end_pos.frames);
 
               /* number of frames to process this
                * time */
@@ -3071,10 +2932,10 @@ track_fill_events (
 
               const EngineProcessTimeInfo nfo = {
                 .g_start_frame = cur_g_start_frame,
-                .local_offset =
-                  cur_local_start_frame,
+                .local_offset = cur_local_start_frame,
                 .nframes =
-                  cur_num_frames_till_next_r_loop_or_end };
+                  cur_num_frames_till_next_r_loop_or_end
+              };
 
               if (midi_events)
                 {
@@ -3088,7 +2949,8 @@ track_fill_events (
                     r, &nfo, stereo_ports);
                 }
 
-              frames_processed += cur_num_frames_till_next_r_loop_or_end;
+              frames_processed +=
+                cur_num_frames_till_next_r_loop_or_end;
               num_frames_to_process -=
                 cur_num_frames_till_next_r_loop_or_end;
             } /* end while frames left */
@@ -3142,14 +3004,13 @@ track_set_name_with_action_full (
   g_return_val_if_fail (IS_TRACK (track), false);
 
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     tracklist_selections_action_perform_edit_rename (
       track, PORT_CONNECTIONS_MGR, name, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s",
-        _("Failed to rename track"));
+        err, "%s", _ ("Failed to rename track"));
       return false;
     }
   return true;
@@ -3164,8 +3025,7 @@ track_set_name_with_action (
   Track *      track,
   const char * name)
 {
-  track_set_name_with_action_full (
-    track, name);
+  track_set_name_with_action_full (track, name);
 }
 
 static void
@@ -3177,8 +3037,7 @@ add_region_if_in_range (
   int *      count,
   ZRegion *  region)
 {
-  ArrangerObject * r_obj =
-    (ArrangerObject *) region;
+  ArrangerObject * r_obj = (ArrangerObject *) region;
 
   if (!p1 && !p2)
     {
@@ -3187,20 +3046,17 @@ add_region_if_in_range (
     }
 
   /* start inside */
-  if ((position_is_before_or_equal (
-         p1, &r_obj->pos) &&
-       position_is_after (
-         p2, &r_obj->pos)) ||
-      /* end inside */
-      (position_is_before_or_equal (
-         p1, &r_obj->end_pos) &&
-       position_is_after (
-         p2, &r_obj->end_pos)) ||
-      /* start before and end after */
-      (position_is_before_or_equal (
-         &r_obj->pos, p1) &&
-       position_is_after (
-         &r_obj->end_pos, p2)))
+  if (
+    (position_is_before_or_equal (p1, &r_obj->pos)
+     && position_is_after (p2, &r_obj->pos))
+    ||
+    /* end inside */
+    (position_is_before_or_equal (p1, &r_obj->end_pos)
+     && position_is_after (p2, &r_obj->end_pos))
+    ||
+    /* start before and end after */
+    (position_is_before_or_equal (&r_obj->pos, p1)
+     && position_is_after (&r_obj->end_pos, p2)))
     {
       regions[(*count)++] = region;
     }
@@ -3222,21 +3078,20 @@ track_get_regions_in_range (
 {
   int count = 0;
 
-  if (track->type == TRACK_TYPE_INSTRUMENT ||
-      track->type == TRACK_TYPE_AUDIO ||
-      track->type == TRACK_TYPE_MIDI)
+  if (
+    track->type == TRACK_TYPE_INSTRUMENT
+    || track->type == TRACK_TYPE_AUDIO
+    || track->type == TRACK_TYPE_MIDI)
     {
       for (int i = 0; i < track->num_lanes; i++)
         {
           TrackLane * lane = track->lanes[i];
 
-          for (int j = 0; j < lane->num_regions;
-               j++)
+          for (int j = 0; j < lane->num_regions; j++)
             {
               ZRegion * r = lane->regions[j];
               add_region_if_in_range (
-                track, p1, p2, regions, &count,
-                r);
+                track, p1, p2, regions, &count, r);
             }
         }
     }
@@ -3285,10 +3140,10 @@ track_get_unique_name (
   char name[strlen (_name) + 40];
   strcpy (name, _name);
   while (!tracklist_track_name_is_unique (
-            TRACKLIST, name, track_to_skip))
+    TRACKLIST, name, track_to_skip))
     {
       char name_without_num[strlen (name) + 1];
-      int ending_num =
+      int  ending_num =
         string_get_int_after_last_space (
           name, name_without_num);
       if (ending_num == -1)
@@ -3300,8 +3155,8 @@ track_get_unique_name (
         {
           /* add 1 to the number at the end */
           sprintf (
-            name, "%s %d",
-            name_without_num, ending_num + 1);
+            name, "%s %d", name_without_num,
+            ending_num + 1);
         }
     }
 
@@ -3336,8 +3191,7 @@ track_set_name (
     }
   self->name = new_name;
 
-  unsigned int new_hash =
-    track_get_name_hash (self);
+  unsigned int new_hash = track_get_name_hash (self);
 
   if (old_hash != 0)
     {
@@ -3355,7 +3209,8 @@ track_set_name (
             self->markers[i], new_hash);
         }
 
-      for (int i = 0; i < self->num_chord_regions; i++)
+      for (int i = 0; i < self->num_chord_regions;
+           i++)
         {
           ZRegion * r = self->chord_regions[i];
           r->id.track_name_hash = new_hash;
@@ -3379,8 +3234,7 @@ track_set_name (
           port_update_track_name_hash (
             port, self, new_hash);
 
-          if (port_is_exposed_to_backend (
-                port))
+          if (port_is_exposed_to_backend (port))
             {
               port_rename_backend (port);
             }
@@ -3395,18 +3249,20 @@ track_set_name (
       track_update_children (self);
 
       /* update mixer selections */
-      if (MIXER_SELECTIONS->has_any &&
-          MIXER_SELECTIONS->track_name_hash ==
-            old_hash)
+      if (
+        MIXER_SELECTIONS->has_any
+        && MIXER_SELECTIONS->track_name_hash
+             == old_hash)
         {
           MIXER_SELECTIONS->track_name_hash =
             new_hash;
         }
 
       /* change the clip editor region */
-      if (CLIP_EDITOR->has_region &&
-          CLIP_EDITOR->region_id.track_name_hash ==
-            old_hash)
+      if (
+        CLIP_EDITOR->has_region
+        && CLIP_EDITOR->region_id.track_name_hash
+             == old_hash)
         {
           g_message (
             "updating clip editor region track to "
@@ -3419,8 +3275,7 @@ track_set_name (
 
   if (pub_events)
     {
-      EVENTS_PUSH (
-        ET_TRACK_NAME_CHANGED, self);
+      EVENTS_PUSH (ET_TRACK_NAME_CHANGED, self);
     }
 }
 
@@ -3452,8 +3307,7 @@ track_get_plugins (
 
   if (self->type == TRACK_TYPE_MODULATOR)
     {
-      for (int i = 0; i < self->num_modulators;
-           i++)
+      for (int i = 0; i < self->num_modulators; i++)
         {
           Plugin * pl = self->modulators[i];
           if (pl)
@@ -3483,17 +3337,16 @@ track_activate_all_plugins (
       Plugin * pl =
         (Plugin *) g_ptr_array_index (pls, i);
 
-      if (!pl->instantiated &&
-          !pl->instantiation_failed)
+      if (!pl->instantiated && !pl->instantiation_failed)
         {
           GError * err = NULL;
-          int ret =
+          int      ret =
             plugin_instantiate (pl, NULL, &err);
           if (ret != 0)
             {
               HANDLE_ERROR (
                 err, "%s",
-                _("Failed to instantiate plugin"));
+                _ ("Failed to instantiate plugin"));
             }
         }
 
@@ -3513,8 +3366,8 @@ track_activate_all_plugins (
  */
 void
 track_comment_setter (
-  void *        track,
-  const char *  comment)
+  void *       track,
+  const char * comment)
 {
   Track * self = (Track *) track;
   g_return_if_fail (IS_TRACK (self));
@@ -3527,9 +3380,9 @@ track_comment_setter (
  */
 void
 track_set_comment (
-  Track *       self,
-  const char *  comment,
-  bool          undoable)
+  Track *      self,
+  const char * comment,
+  bool         undoable)
 {
   if (undoable)
     {
@@ -3538,14 +3391,14 @@ track_set_comment (
         F_NO_PUBLISH_EVENTS);
 
       GError * err = NULL;
-      bool ret =
+      bool     ret =
         tracklist_selections_action_perform_edit_comment (
           TRACKLIST_SELECTIONS, comment, &err);
       if (!ret)
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Cannot set track comment"));
+            _ ("Cannot set track comment"));
           return;
         }
     }
@@ -3560,8 +3413,7 @@ track_set_comment (
  * Comment getter.
  */
 const char *
-track_get_comment (
-  void *  track)
+track_get_comment (void * track)
 {
   Track * self = (Track *) track;
   g_return_val_if_fail (IS_TRACK (self), NULL);
@@ -3586,14 +3438,14 @@ track_set_color (
         F_NO_PUBLISH_EVENTS);
 
       GError * err = NULL;
-      bool ret =
+      bool     ret =
         tracklist_selections_action_perform_edit_color (
           TRACKLIST_SELECTIONS, color, &err);
       if (!ret)
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Cannot set track comment"));
+            _ ("Cannot set track comment"));
           return;
         }
     }
@@ -3603,8 +3455,7 @@ track_set_color (
 
       if (fire_events)
         {
-          EVENTS_PUSH (
-            ET_TRACK_COLOR_CHANGED, self);
+          EVENTS_PUSH (ET_TRACK_COLOR_CHANGED, self);
         }
     }
 }
@@ -3626,14 +3477,13 @@ track_set_icon (
         F_NO_PUBLISH_EVENTS);
 
       GError * err = NULL;
-      bool ret =
+      bool     ret =
         tracklist_selections_action_perform_edit_icon (
           TRACKLIST_SELECTIONS, icon_name, &err);
       if (!ret)
         {
           HANDLE_ERROR (
-            err, "%s",
-            _("Cannot set track icon"));
+            err, "%s", _ ("Cannot set track icon"));
           return;
         }
     }
@@ -3649,8 +3499,7 @@ track_set_icon (
 }
 
 TrackType
-track_type_get_from_string (
-  const char * str)
+track_type_get_from_string (const char * str)
 {
   for (int i = 0; i <= TRACK_TYPE_MIDI_GROUP; i++)
     {
@@ -3671,9 +3520,9 @@ track_type_get_from_string (
  */
 Plugin *
 track_get_plugin_at_slot (
-  Track *           self,
-  PluginSlotType    slot_type,
-  int               slot)
+  Track *        self,
+  PluginSlotType slot_type,
+  int            slot)
 {
   switch (slot_type)
     {
@@ -3684,8 +3533,7 @@ track_get_plugin_at_slot (
     case PLUGIN_SLOT_INSERT:
       return self->channel->inserts[slot];
     case PLUGIN_SLOT_MODULATOR:
-      if (self->modulators &&
-          slot < self->num_modulators)
+      if (self->modulators && slot < self->num_modulators)
         {
           return self->modulators[slot];
         }
@@ -3736,13 +3584,12 @@ track_mark_for_bounce (
         {
           TrackLane * lane = self->lanes[j];
 
-          for (int k = 0; k < lane->num_regions;
-               k++)
+          for (int k = 0; k < lane->num_regions; k++)
             {
               ZRegion * r = lane->regions[k];
-              if (r->id.type != REGION_TYPE_MIDI
-                  &&
-                  r->id.type != REGION_TYPE_AUDIO)
+              if (
+                r->id.type != REGION_TYPE_MIDI
+                && r->id.type != REGION_TYPE_AUDIO)
                 continue;
 
               r->bounce = bounce;
@@ -3827,8 +3674,7 @@ track_append_ports (
     }
   else if (self->type == TRACK_TYPE_MODULATOR)
     {
-      for (int j = 0;
-           j < self->num_modulators; j++)
+      for (int j = 0; j < self->num_modulators; j++)
         {
           Plugin * pl = self->modulators[j];
 
@@ -3847,8 +3693,7 @@ track_append_ports (
 }
 
 bool
-track_is_enabled (
-  Track * self)
+track_is_enabled (Track * self)
 {
   return self->enabled;
 }
@@ -3864,8 +3709,8 @@ track_set_enabled (
   self->enabled = enabled;
 
   g_message (
-    "Setting track %s enabled (%d)",
-    self->name, enabled);
+    "Setting track %s enabled (%d)", self->name,
+    enabled);
   if (auto_select)
     {
       track_select (
@@ -3875,14 +3720,14 @@ track_set_enabled (
   if (trigger_undo)
     {
       GError * err = NULL;
-      bool ret =
+      bool     ret =
         tracklist_selections_action_perform_edit_enable (
           TRACKLIST_SELECTIONS, enabled, &err);
       if (!ret)
         {
           HANDLE_ERROR (
             err, "%s",
-            _("Cannot set track enabled"));
+            _ ("Cannot set track enabled"));
           return;
         }
     }
@@ -3892,8 +3737,7 @@ track_set_enabled (
 
       if (fire_events)
         {
-          EVENTS_PUSH (
-            ET_TRACK_STATE_CHANGED, self);
+          EVENTS_PUSH (ET_TRACK_STATE_CHANGED, self);
         }
     }
 }
@@ -3907,9 +3751,8 @@ get_end_pos_from_objs (
   for (int i = 0; i < num_objs; i++)
     {
       ArrangerObject * obj = objs[i];
-      Position end_pos;
-      if (arranger_object_type_has_length (
-            obj->type))
+      Position         end_pos;
+      if (arranger_object_type_has_length (obj->type))
         {
           arranger_object_get_end_pos (
             obj, &end_pos);
@@ -3926,9 +3769,7 @@ get_end_pos_from_objs (
 }
 
 void
-track_get_total_bars (
-  Track * self,
-  int *   total_bars)
+track_get_total_bars (Track * self, int * total_bars)
 {
   Position pos;
   position_from_bars (&pos, *total_bars);
@@ -3943,8 +3784,7 @@ track_get_total_bars (
 
   get_end_pos_from_objs (
     (ArrangerObject **) self->chord_regions,
-    self->num_chord_regions,
-    &pos);
+    self->num_chord_regions, &pos);
   get_end_pos_from_objs (
     (ArrangerObject **) self->scales,
     self->num_scales, &pos);
@@ -3971,15 +3811,15 @@ track_create_with_action (
   GError **             error)
 {
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     tracklist_selections_action_perform_create (
-      type, pl_setting, file_descr,
-      index, pos, num_tracks, -1, &err);
+      type, pl_setting, file_descr, index, pos,
+      num_tracks, -1, &err);
   if (!ret)
     {
       PROPAGATE_PREFIXED_ERROR (
         error, err, "%s",
-        _("Failed to create track"));
+        _ ("Failed to create track"));
       return NULL;
     }
 
@@ -3995,8 +3835,7 @@ track_create_with_action (
 }
 
 unsigned int
-track_get_name_hash (
-  Track * self)
+track_get_name_hash (Track * self)
 {
   return g_str_hash (self->name);
 }
@@ -4018,12 +3857,11 @@ remove_ats_from_automation_tracklist (
   for (int i = 0; i < atl->num_ats; i++)
     {
       AutomationTrack * at = atl->ats[i];
-      if (at->port_id.flags &
-            PORT_FLAG_CHANNEL_FADER ||
-          at->port_id.flags &
-            PORT_FLAG_FADER_MUTE ||
-          at->port_id.flags &
-            PORT_FLAG_STEREO_BALANCE)
+      if (
+        at->port_id.flags & PORT_FLAG_CHANNEL_FADER
+        || at->port_id.flags & PORT_FLAG_FADER_MUTE
+        || at->port_id.flags
+             & PORT_FLAG_STEREO_BALANCE)
         {
           automation_tracklist_remove_at (
             atl, at, F_NO_FREE, fire_events);
@@ -4032,8 +3870,7 @@ remove_ats_from_automation_tracklist (
 }
 
 void
-track_set_caches (
-  Track * self)
+track_set_caches (Track * self)
 {
   AutomationTracklist * atl =
     track_get_automation_tracklist (self);
@@ -4056,8 +3893,9 @@ track_set_caches (
 void
 track_free (Track * self)
 {
-  g_debug ("freeing track '%s' (pos %d)...",
-    self->name, self->pos);
+  g_debug (
+    "freeing track '%s' (pos %d)...", self->name,
+    self->pos);
 
   if (Z_IS_TRACK_WIDGET (self->widget))
     {
@@ -4122,8 +3960,7 @@ track_free (Track * self)
   g_free_and_null (self->comment);
   g_free_and_null (self->icon_name);
 
-  for (int i = 0; i < self->num_modulator_macros;
-       i++)
+  for (int i = 0; i < self->num_modulator_macros; i++)
     {
       modulator_macro_processor_free (
         self->modulator_macros[i]);

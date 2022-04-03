@@ -39,7 +39,10 @@
 #define CHORD_PAD_WIDGET_TYPE \
   (chord_pad_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  ChordPadWidget, chord_pad_widget, Z, CHORD_PAD_WIDGET,
+  ChordPadWidget,
+  chord_pad_widget,
+  Z,
+  CHORD_PAD_WIDGET,
   GtkWidget)
 
 /**
@@ -47,29 +50,29 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _ChordPadWidget
 {
-  GtkWidget     parent_instance;
+  GtkWidget parent_instance;
 
   /** Main child. */
-  GtkOverlay *  overlay;
+  GtkOverlay * overlay;
 
   /** Button. */
-  GtkButton *   btn;
+  GtkButton * btn;
 
   GtkGestureDrag * btn_drag;
 
-  double        drag_start_x;
-  double        drag_start_y;
+  double drag_start_x;
+  double drag_start_y;
 
   /** Whether the drag has started. */
-  bool          drag_started;
+  bool drag_started;
 
-  GtkBox *      btn_box;
-  GtkButton *   edit_chord_btn;
-  GtkButton *   invert_prev_btn;
-  GtkButton *   invert_next_btn;
+  GtkBox *    btn_box;
+  GtkButton * edit_chord_btn;
+  GtkButton * invert_prev_btn;
+  GtkButton * invert_next_btn;
 
   /** Index of the chord in the chord track. */
-  int           chord_idx;
+  int chord_idx;
 } ChordPadWidget;
 
 /**

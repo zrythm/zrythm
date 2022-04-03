@@ -35,10 +35,12 @@
 G_DECLARE_FINAL_TYPE (
   AddTracksToGroupDialogWidget,
   add_tracks_to_group_dialog_widget,
-  Z, ADD_TRACKS_TO_GROUP_DIALOG_WIDGET,
+  Z,
+  ADD_TRACKS_TO_GROUP_DIALOG_WIDGET,
   GtkDialog)
 
-typedef struct TracklistSelections TracklistSelections;
+typedef struct TracklistSelections
+  TracklistSelections;
 
 /**
  * @addtogroup widgets
@@ -51,7 +53,7 @@ typedef struct TracklistSelections TracklistSelections;
  */
 typedef struct _AddTracksToGroupDialogWidget
 {
-  GtkDialog            parent_instance;
+  GtkDialog parent_instance;
 } AddTracksToGroupDialogWidget;
 
 /**

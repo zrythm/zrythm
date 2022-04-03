@@ -33,10 +33,11 @@
 G_DECLARE_FINAL_TYPE (
   ChannelSendSelectorWidget,
   channel_send_selector_widget,
-  Z, CHANNEL_SEND_SELECTOR_WIDGET,
+  Z,
+  CHANNEL_SEND_SELECTOR_WIDGET,
   GtkPopover)
 
-typedef struct ChannelSend ChannelSend;
+typedef struct ChannelSend        ChannelSend;
 typedef struct _ChannelSendWidget ChannelSendWidget;
 
 /**
@@ -47,21 +48,21 @@ typedef struct _ChannelSendWidget ChannelSendWidget;
 
 typedef struct _ChannelSendSelectorWidget
 {
-  GtkPopover          parent_instance;
+  GtkPopover parent_instance;
 
   /** Owner. */
   ChannelSendWidget * send_widget;
 
   /** Main vbox. */
-  GtkBox *            vbox;
+  GtkBox * vbox;
 
   /** Button group below the list box. */
-  GtkBox *      btn_box;
+  GtkBox * btn_box;
 
-  GtkTreeModel *      model;
-  GtkTreeView *       treeview;
+  GtkTreeModel * model;
+  GtkTreeView *  treeview;
 
-  GtkButton *         ok_btn;
+  GtkButton * ok_btn;
 
 } ChannelSendSelectorWidget;
 

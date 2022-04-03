@@ -34,11 +34,11 @@
 #include "gui/backend/arranger_object.h"
 
 typedef struct _MidiNoteWidget MidiNoteWidget;
-typedef struct Channel Channel;
-typedef struct Track Track;
-typedef struct MidiEvents MidiEvents;
-typedef struct Position Position;
-typedef struct Velocity Velocity;
+typedef struct Channel         Channel;
+typedef struct Track           Track;
+typedef struct MidiEvents      MidiEvents;
+typedef struct Position        Position;
+typedef struct Velocity        Velocity;
 
 /**
  * @addtogroup audio
@@ -50,12 +50,11 @@ typedef struct Velocity Velocity;
 
 #define MIDI_NOTE_MAGIC 3588791
 #define IS_MIDI_NOTE(tr) \
-  ((MidiNote *) tr && \
-   ((MidiNote *) tr)->magic == MIDI_NOTE_MAGIC)
+  ((MidiNote *) tr \
+   && ((MidiNote *) tr)->magic == MIDI_NOTE_MAGIC)
 
 #define midi_note_is_selected(r) \
-  arranger_object_is_selected ( \
-    (ArrangerObject *) r)
+  arranger_object_is_selected ((ArrangerObject *) r)
 
 /**
  * A MIDI note inside a ZRegion shown in the
@@ -64,62 +63,63 @@ typedef struct Velocity Velocity;
 typedef struct MidiNote
 {
   /** Base struct. */
-  ArrangerObject  base;
+  ArrangerObject base;
 
-  int             schema_version;
+  int schema_version;
 
   /** Velocity. */
-  Velocity *      vel;
+  Velocity * vel;
 
   /** The note/pitch, (0-127). */
-  uint8_t         val;
+  uint8_t val;
 
   /** Cached note, for live operations. */
-  uint8_t         cache_val;
+  uint8_t cache_val;
 
   /** Muted or not */
-  int             muted;
+  int muted;
 
   /** Whether or not this note is currently
    * listened to */
-  int             currently_listened;
+  int currently_listened;
 
   /** The note/pitch that is currently playing,
    * if \ref MidiNote.currently_listened is true. */
-  uint8_t         last_listened_val;
+  uint8_t last_listened_val;
 
   /** Index in the parent region. */
-  int             pos;
+  int pos;
 
-  int             magic;
+  int magic;
 
   /** Cache layout for drawing the name. */
-  PangoLayout *   layout;
+  PangoLayout * layout;
 } MidiNote;
 
 static const cyaml_schema_field_t
-midi_note_fields_schema[] =
-{
-  YAML_FIELD_MAPPING_EMBEDDED (
-    MidiNote, base,
-    arranger_object_fields_schema),
-  YAML_FIELD_INT (MidiNote, schema_version),
-  YAML_FIELD_MAPPING_PTR (
-    MidiNote, vel, velocity_fields_schema),
-  YAML_FIELD_UINT (MidiNote, val),
-  YAML_FIELD_INT (MidiNote, muted),
-  YAML_FIELD_INT (MidiNote, pos),
-  CYAML_FIELD_END
-};
+  midi_note_fields_schema[] = {
+    YAML_FIELD_MAPPING_EMBEDDED (
+      MidiNote,
+      base,
+      arranger_object_fields_schema),
+    YAML_FIELD_INT (MidiNote, schema_version),
+    YAML_FIELD_MAPPING_PTR (
+      MidiNote,
+      vel,
+      velocity_fields_schema),
+    YAML_FIELD_UINT (MidiNote, val),
+    YAML_FIELD_INT (MidiNote, muted),
+    YAML_FIELD_INT (MidiNote, pos),
+    CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t
-  midi_note_schema =
-{
+static const cyaml_schema_value_t midi_note_schema = {
   /* allow nullable for mn_r1 in
    * ArrangerSelectionsAction */
   CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER_NULL_STR,
-    MidiNote, midi_note_fields_schema),
+    MidiNote,
+    midi_note_fields_schema),
 };
 
 /**
@@ -139,10 +139,10 @@ midi_note_get_global_start_pos (
 MidiNote *
 midi_note_new (
   RegionIdentifier * region_id,
-  Position *   start_pos,
-  Position *   end_pos,
-  uint8_t      val,
-  uint8_t      vel);
+  Position *         start_pos,
+  Position *         end_pos,
+  uint8_t            val,
+  uint8_t            vel);
 
 /**
  * Sets the region the MidiNote belongs to.
@@ -150,7 +150,7 @@ midi_note_new (
 void
 midi_note_set_region_and_index (
   MidiNote * self,
-  ZRegion *   region,
+  ZRegion *  region,
   int        idx);
 
 void
@@ -162,11 +162,8 @@ midi_note_set_cache_val (
  * Returns 1 if the MidiNotes match, 0 if not.
  */
 NONNULL
-PURE
-int
-midi_note_is_equal (
-  MidiNote * src,
-  MidiNote * dest);
+PURE int
+midi_note_is_equal (MidiNote * src, MidiNote * dest);
 
 /**
  * Gets the MIDI note's value as a string (eg
@@ -185,8 +182,7 @@ midi_note_get_val_as_string (
  * For debugging.
  */
 void
-midi_note_print (
-  MidiNote * mn);
+midi_note_print (MidiNote * mn);
 
 /**
  * Listen to the given MidiNote.
@@ -195,9 +191,7 @@ midi_note_print (
  *   off if 0.
  */
 void
-midi_note_listen (
-  MidiNote * mn,
-  bool       listen);
+midi_note_listen (MidiNote * mn, bool listen);
 
 /**
  * Shifts MidiNote's position and/or value.
@@ -243,8 +237,7 @@ midi_note_set_val (
   const uint8_t val);
 
 ZRegion *
-midi_note_get_region (
-  MidiNote * self);
+midi_note_get_region (MidiNote * self);
 
 /**
  * @}

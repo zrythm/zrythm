@@ -34,13 +34,14 @@
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
-  SplashWindowWidget, splash_window_widget,
+  SplashWindowWidget,
+  splash_window_widget,
   GTK_TYPE_WINDOW)
 
 static gboolean
 splash_tick_cb (
-  GtkWidget *widget,
-  GdkFrameClock *frame_clock,
+  GtkWidget *          widget,
+  GdkFrameClock *      frame_clock,
   SplashWindowWidget * self)
 {
   zix_sem_wait (&zrythm_app->progress_status_lock);
@@ -67,8 +68,7 @@ splash_window_widget_close (
 }
 
 static void
-finalize (
-  SplashWindowWidget * self)
+finalize (SplashWindowWidget * self)
 {
   g_debug ("finalizing splash screen");
 
@@ -78,32 +78,26 @@ finalize (
       zrythm_app->init_thread = NULL;
     }
 
-  G_OBJECT_CLASS (
-    splash_window_widget_parent_class)->
-      finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (splash_window_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 SplashWindowWidget *
-splash_window_widget_new (
-  ZrythmApp * app)
+splash_window_widget_new (ZrythmApp * app)
 {
-  SplashWindowWidget * self =
-    g_object_new (
-      SPLASH_WINDOW_WIDGET_TYPE,
-      "application", G_APPLICATION (app),
-      "title", PROGRAM_NAME,
-      NULL);
+  SplashWindowWidget * self = g_object_new (
+    SPLASH_WINDOW_WIDGET_TYPE, "application",
+    G_APPLICATION (app), "title", PROGRAM_NAME,
+    NULL);
   g_return_val_if_fail (
     Z_IS_SPLASH_WINDOW_WIDGET (self), NULL);
 
   gtk_progress_bar_set_fraction (
     self->progress_bar, 0.0);
 
-  self->tick_cb_id =
-    gtk_widget_add_tick_callback (
-      (GtkWidget *) self,
-      (GtkTickCallback) splash_tick_cb,
-      self, NULL);
+  self->tick_cb_id = gtk_widget_add_tick_callback (
+    (GtkWidget *) self,
+    (GtkTickCallback) splash_tick_cb, self, NULL);
 
   return self;
 }
@@ -113,8 +107,7 @@ splash_window_widget_class_init (
   SplashWindowWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "splash.ui");
+  resources_set_class_template (klass, "splash.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
@@ -127,10 +120,8 @@ splash_window_widget_class_init (
 
 #undef BIND_CHILD
 
-  GObjectClass * oklass =
-    G_OBJECT_CLASS (klass);
-  oklass->finalize =
-    (GObjectFinalizeFunc) finalize;
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->finalize = (GObjectFinalizeFunc) finalize;
 }
 
 static void
@@ -140,11 +131,9 @@ splash_window_widget_init (SplashWindowWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  GtkStyleContext *context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self));
-  gtk_style_context_add_class (
-    context, "splash");
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (GTK_WIDGET (self));
+  gtk_style_context_add_class (context, "splash");
 
   GdkTexture * texture =
     z_gdk_texture_new_from_icon_name (
@@ -153,7 +142,7 @@ splash_window_widget_init (SplashWindowWidget * self)
     self->img, texture);
 
   char * ver = zrythm_get_version (true);
-  char ver_str[800];
+  char   ver_str[800];
   sprintf (ver_str, "<small>%s</small>", ver);
   g_free (ver);
   gtk_label_set_markup (

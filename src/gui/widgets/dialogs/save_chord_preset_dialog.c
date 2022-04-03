@@ -30,8 +30,8 @@
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   SaveChordPresetDialogWidget,
@@ -58,8 +58,8 @@ on_response (
             self->pack_dropdown));
       g_return_if_fail (wrapped_pack);
       g_return_if_fail (
-        wrapped_pack->type ==
-          WRAPPED_OBJECT_TYPE_CHORD_PSET_PACK);
+        wrapped_pack->type
+        == WRAPPED_OBJECT_TYPE_CHORD_PSET_PACK);
       ChordPresetPack * pack =
         (ChordPresetPack *) wrapped_pack->obj;
 
@@ -67,7 +67,7 @@ on_response (
         {
           ui_show_error_message (
             dialog, false,
-            _("Please enter a valid name."));
+            _ ("Please enter a valid name."));
           return;
         }
       else if (chord_preset_pack_contains_name (
@@ -75,8 +75,9 @@ on_response (
         {
           ui_show_message_printf (
             dialog, GTK_MESSAGE_ERROR, false,
-            _("Name '%s' is taken. Please enter "
-            "a different name"), entered_name);
+            _ ("Name '%s' is taken. Please enter "
+               "a different name"),
+            entered_name);
           return;
         }
       else
@@ -109,9 +110,8 @@ on_response (
 static GtkDropDown *
 generate_packs_dropdown (void)
 {
-  GListStore * store =
-    g_list_store_new (
-      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+  GListStore * store = g_list_store_new (
+    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
   int num_packs =
     chord_preset_pack_manager_get_num_packs (
@@ -126,22 +126,18 @@ generate_packs_dropdown (void)
 
       WrappedObjectWithChangeSignal * wrapped_pack =
         wrapped_object_with_change_signal_new (
-          pack,
-          WRAPPED_OBJECT_TYPE_CHORD_PSET_PACK);
+          pack, WRAPPED_OBJECT_TYPE_CHORD_PSET_PACK);
 
       g_list_store_append (store, wrapped_pack);
     }
 
-  GtkExpression * expr =
-    gtk_cclosure_expression_new (
-      G_TYPE_STRING, NULL, 0, NULL,
-      G_CALLBACK (
-        wrapped_object_with_change_signal_get_display_name),
-      NULL, NULL);
-  GtkDropDown * dropdown =
-    GTK_DROP_DOWN (
-      gtk_drop_down_new (
-        G_LIST_MODEL (store), expr));
+  GtkExpression * expr = gtk_cclosure_expression_new (
+    G_TYPE_STRING, NULL, 0, NULL,
+    G_CALLBACK (
+      wrapped_object_with_change_signal_get_display_name),
+    NULL, NULL);
+  GtkDropDown * dropdown = GTK_DROP_DOWN (
+    gtk_drop_down_new (G_LIST_MODEL (store), expr));
 
   return dropdown;
 }
@@ -153,13 +149,10 @@ SaveChordPresetDialogWidget *
 save_chord_preset_dialog_widget_new (
   GtkWindow * parent_window)
 {
-  SaveChordPresetDialogWidget * self =
-    g_object_new (
-      SAVE_CHORD_PRESET_DIALOG_WIDGET_TYPE,
-      "title", _("Save Chord Preset"),
-      "modal", true,
-      "transient-for", parent_window,
-      NULL);
+  SaveChordPresetDialogWidget * self = g_object_new (
+    SAVE_CHORD_PRESET_DIALOG_WIDGET_TYPE, "title",
+    _ ("Save Chord Preset"), "modal", true,
+    "transient-for", parent_window, NULL);
 
   return self;
 }
@@ -175,22 +168,20 @@ save_chord_preset_dialog_widget_init (
   SaveChordPresetDialogWidget * self)
 {
   gtk_dialog_add_button (
-    GTK_DIALOG (self), _("_Save"),
+    GTK_DIALOG (self), _ ("_Save"),
     GTK_RESPONSE_ACCEPT);
   gtk_dialog_add_button (
-    GTK_DIALOG (self), _("_Cancel"),
+    GTK_DIALOG (self), _ ("_Cancel"),
     GTK_RESPONSE_REJECT);
 
-  GtkBox * content_area =
-    GTK_BOX (
-      gtk_dialog_get_content_area (
-        GTK_DIALOG (self)));
+  GtkBox * content_area = GTK_BOX (
+    gtk_dialog_get_content_area (GTK_DIALOG (self)));
 
-  GtkGrid * grid = GTK_GRID (gtk_grid_new ());
+  GtkGrid *  grid = GTK_GRID (gtk_grid_new ());
   GtkLabel * pack_lbl =
-    GTK_LABEL (gtk_label_new (_("Pack")));
+    GTK_LABEL (gtk_label_new (_ ("Pack")));
   GtkLabel * preset_name_lbl =
-    GTK_LABEL (gtk_label_new (_("Preset Name")));
+    GTK_LABEL (gtk_label_new (_ ("Preset Name")));
   GtkDropDown * pack_dropdown =
     generate_packs_dropdown ();
   self->pack_dropdown = pack_dropdown;
@@ -204,7 +195,8 @@ save_chord_preset_dialog_widget_init (
   gtk_grid_attach (
     grid, GTK_WIDGET (preset_name_lbl), 0, 1, 1, 1);
   gtk_grid_attach (
-    grid, GTK_WIDGET (preset_name_entry), 1, 1, 1, 1);
+    grid, GTK_WIDGET (preset_name_entry), 1, 1, 1,
+    1);
   gtk_grid_set_row_spacing (grid, 2);
   gtk_grid_set_column_spacing (grid, 2);
   z_gtk_widget_set_margin (GTK_WIDGET (grid), 4);

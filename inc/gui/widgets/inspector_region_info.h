@@ -33,13 +33,13 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _ExpanderBoxWidget
 {
-  GtkBox         parent_instance;
+  GtkBox parent_instance;
 
-  GtkButton *    button;
-  GtkLabel *     btn_label;
-  GtkImage *     btn_img;
-  GtkRevealer *  revealer;
-  GtkBox *       content;
+  GtkButton *   button;
+  GtkLabel *    btn_label;
+  GtkImage *    btn_img;
+  GtkRevealer * revealer;
+  GtkBox *      content;
 } ExpanderBoxWidget;
 
 /**
@@ -59,4 +59,3 @@ expander_box_widget_set_icon_name (
   const char *        icon_name);
 
 #endif
-

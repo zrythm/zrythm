@@ -35,6 +35,13 @@
  * @{
  */
 
+#define TYPEDEF_STRUCT(s) typedef struct s s;
+
+#define TYPEDEF_STRUCT_UNDERSCORED(s) \
+  typedef struct _##s s;
+
+#define TYPEDEF_ENUM(s) typedef enum s s;
+
 /** MIDI byte. */
 typedef uint8_t midi_byte_t;
 
@@ -73,15 +80,13 @@ typedef signed_frame_t signed_sec_t;
 /**
  * Getter prototype for float values.
  */
-typedef float (*GenericFloatGetter) (
-  void * object);
+typedef float (*GenericFloatGetter) (void * object);
 
 /**
  * Setter prototype for float values.
  */
-typedef void (*GenericFloatSetter) (
-  void * object,
-  float  val);
+typedef void (
+  *GenericFloatSetter) (void * object, float val);
 
 /**
  * Getter prototype for strings.
@@ -107,15 +112,13 @@ typedef void (*GenericStringSetter) (
 /**
  * Generic callback.
  */
-typedef void (*GenericCallback) (
-  void *       object);
+typedef void (*GenericCallback) (void * object);
 
 /**
  * Generic comparator.
  */
-typedef int (*GenericCmpFunc) (
-  const void * a,
-  const void * b);
+typedef int (
+  *GenericCmpFunc) (const void * a, const void * b);
 
 /**
  * Predicate function prototype.
@@ -133,27 +136,27 @@ typedef bool (*GenericPredicateFunc) (
 typedef struct GenericProgressInfo
 {
   /** Progress done (0.0 to 1.0). */
-  double            progress;
+  double progress;
 
   /** Action cancelled. */
-  bool              cancelled;
+  bool cancelled;
 
   /** Error occurred. */
-  bool              has_error;
+  bool has_error;
 
   /** String to show in the label during the
    * action. */
-  char              label_str[1800];
+  char label_str[1800];
 
   /** String to show in the label when the action
    * is complete (progress == 1.0). */
-  char              label_done_str[1800];
+  char label_done_str[1800];
 
   /**
    * String to show in a popup when
    * GenericProgressInfo.has_error is true.
    */
-  char              error_str[1800];
+  char error_str[1800];
 } GenericProgressInfo;
 
 typedef enum AudioValueFormat
@@ -185,12 +188,12 @@ typedef struct EngineProcessTimeInfo
   /** Offset in the current processing cycle,
    * between 0 and the number of frames in
    * AudioEngine.block_length. */
-  nframes_t        local_offset;
+  nframes_t local_offset;
 
   /**
    * Number of frames to process in this call.
    */
-  nframes_t        nframes;
+  nframes_t nframes;
 } EngineProcessTimeInfo;
 
 /**

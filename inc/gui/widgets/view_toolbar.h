@@ -29,17 +29,20 @@
 #define VIEW_TOOLBAR_WIDGET_TYPE \
   (view_toolbar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  ViewToolbarWidget, view_toolbar_widget,
-  Z, VIEW_TOOLBAR_WIDGET, GtkBox)
+  ViewToolbarWidget,
+  view_toolbar_widget,
+  Z,
+  VIEW_TOOLBAR_WIDGET,
+  GtkBox)
 
 #define MW_VIEW_TOOLBAR \
   MW_HEADER_NOTEBOOK->view_toolbar
 
 typedef struct _ViewToolbarWidget
 {
-  GtkBox         parent_instance;
+  GtkBox      parent_instance;
   GtkButton * status_bar;
-  GtkButton *    fullscreen;
+  GtkButton * fullscreen;
   GtkButton * left_panel;
   GtkButton * bot_panel;
   GtkButton * top_panel;

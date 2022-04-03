@@ -21,52 +21,49 @@
 
 #ifdef HAVE_SDL
 
-#include "audio/channel.h"
-#include "audio/engine.h"
-#include "audio/engine_sdl.h"
-#include "audio/master_track.h"
-#include "audio/port.h"
-#include "audio/router.h"
-#include "audio/tempo_track.h"
-#include "project.h"
-#include "settings/settings.h"
-#include "utils/ui.h"
-#include "zrythm_app.h"
+#  include "audio/channel.h"
+#  include "audio/engine.h"
+#  include "audio/engine_sdl.h"
+#  include "audio/master_track.h"
+#  include "audio/port.h"
+#  include "audio/router.h"
+#  include "audio/tempo_track.h"
+#  include "project.h"
+#  include "settings/settings.h"
+#  include "utils/ui.h"
+#  include "zrythm_app.h"
 
-#include <gtk/gtk.h>
-#include <glib/gi18n.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_audio.h>
+#  include <glib/gi18n.h>
+#  include <gtk/gtk.h>
+
+#  include <SDL2/SDL.h>
+#  include <SDL2/SDL_audio.h>
 
 static void
-sdl_callback (
-  void *  user_data,
-  Uint8 * buf,
-  int     len)
+sdl_callback (void * user_data, Uint8 * buf, int len)
 {
   AudioEngine * self = (AudioEngine *) user_data;
   if (!self->run)
     return;
 
-  nframes_t num_frames =
-    AUDIO_ENGINE->block_length;
+  nframes_t num_frames = AUDIO_ENGINE->block_length;
   /*g_message (*/
-    /*"processing for num frames %u (len %d)",*/
-    /*num_frames, len);*/
+  /*"processing for num frames %u (len %d)",*/
+  /*num_frames, len);*/
   engine_process (self, num_frames);
 
   memset (buf, 0, (size_t) len);
   float * float_buf = (float *) buf;
   for (nframes_t i = 0; i < num_frames; i++)
     {
-#ifdef TRIAL_VER
+#  ifdef TRIAL_VER
       if (self->limit_reached)
         {
           float_buf[i * 2] = 0;
           float_buf[i * 2 + 1] = 0;
           continue;
         }
-#endif
+#  endif
       float_buf[i * 2] =
         self->monitor_out->l->buf[i];
       float_buf[i * 2 + 1] =
@@ -87,13 +84,11 @@ engine_sdl_get_device_names (
   char **       names,
   int *         num_names)
 {
-  *num_names =
-    SDL_GetNumAudioDevices (input);
+  *num_names = SDL_GetNumAudioDevices (input);
   for (int i = 0; i < *num_names; i++)
     {
-      names[i] =
-        g_strdup (
-          SDL_GetAudioDeviceName (i, input));
+      names[i] = g_strdup (
+        SDL_GetAudioDeviceName (i, input));
       g_message (
         "Output audio device %d: %s", i, names[i]);
     }
@@ -103,13 +98,13 @@ engine_sdl_get_device_names (
  * Set up Port Audio.
  */
 int
-engine_sdl_setup (
-  AudioEngine * self)
+engine_sdl_setup (AudioEngine * self)
 {
   g_message ("Setting up SDL...");
 
-  if (SDL_Init (
-        SDL_INIT_AUDIO | SDL_INIT_NOPARACHUTE) < 0)
+  if (
+    SDL_Init (SDL_INIT_AUDIO | SDL_INIT_NOPARACHUTE)
+    < 0)
     {
       g_critical (
         "Failed to initialize SDL: %s",
@@ -119,18 +114,14 @@ engine_sdl_setup (
 
   SDL_AudioSpec req_specs;
   memset (&req_specs, 0, sizeof (req_specs));
-  req_specs.freq =
-    engine_samplerate_enum_to_int (
-      (AudioEngineSamplerate)
-      g_settings_get_enum (
-        S_P_GENERAL_ENGINE, "sample-rate"));
+  req_specs.freq = engine_samplerate_enum_to_int (
+    (AudioEngineSamplerate) g_settings_get_enum (
+      S_P_GENERAL_ENGINE, "sample-rate"));
   req_specs.format = AUDIO_F32SYS;
   req_specs.channels = 2;
-  req_specs.samples =
-    engine_buffer_size_enum_to_int (
-      (AudioEngineBufferSize)
-      g_settings_get_enum (
-        S_P_GENERAL_ENGINE, "buffer-size"));
+  req_specs.samples = engine_buffer_size_enum_to_int (
+    (AudioEngineBufferSize) g_settings_get_enum (
+      S_P_GENERAL_ENGINE, "buffer-size"));
   req_specs.callback =
     (SDL_AudioCallback) sdl_callback;
   req_specs.userdata = self;
@@ -139,13 +130,12 @@ engine_sdl_setup (
   for (int i = 0; i < num_out_devices; i++)
     {
       g_message (
-        "Output audio device %d: %s",
-        i, SDL_GetAudioDeviceName (i, 0));
+        "Output audio device %d: %s", i,
+        SDL_GetAudioDeviceName (i, 0));
     }
 
-  char * out_device =
-    g_settings_get_string (
-      S_P_GENERAL_ENGINE, "sdl-audio-device-name");
+  char * out_device = g_settings_get_string (
+    S_P_GENERAL_ENGINE, "sdl-audio-device-name");
   if (!out_device || strlen (out_device) < 1)
     {
       out_device = NULL;
@@ -156,10 +146,9 @@ engine_sdl_setup (
     out_device, req_specs.freq, req_specs.samples);
 
   SDL_AudioSpec actual_specs;
-  self->dev =
-    SDL_OpenAudioDevice (
-      out_device, 0, &req_specs, &actual_specs,
-      SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
+  self->dev = SDL_OpenAudioDevice (
+    out_device, 0, &req_specs, &actual_specs,
+    SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
   if (self->dev == 0)
     {
       g_critical (
@@ -178,7 +167,8 @@ engine_sdl_setup (
 
   g_message (
     "Setting sample rate to %u and buffer size to "
-    "%d", self->sample_rate, self->block_length);
+    "%d",
+    self->sample_rate, self->block_length);
 
   int beats_per_bar =
     tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
@@ -190,9 +180,7 @@ engine_sdl_setup (
 }
 
 void
-engine_sdl_activate (
-  AudioEngine * self,
-  bool          activate)
+engine_sdl_activate (AudioEngine * self, bool activate)
 {
   if (activate)
     {
@@ -204,24 +192,23 @@ engine_sdl_activate (
     }
 
   /* start playing */
-  SDL_PauseAudioDevice (
-    self->dev, !activate);
+  SDL_PauseAudioDevice (self->dev, !activate);
 
   switch (SDL_GetAudioDeviceStatus (self->dev))
     {
-      case SDL_AUDIO_STOPPED:
-        g_message ("SDL audio stopped");
-        break;
-      case SDL_AUDIO_PLAYING:
-        g_message ("SDL audio playing");
-        break;
-      case SDL_AUDIO_PAUSED:
-        g_message("SDL audio paused");
-        break;
-      default:
-        g_critical (
-          "[SDL] Unknown audio device status");
-        break;
+    case SDL_AUDIO_STOPPED:
+      g_message ("SDL audio stopped");
+      break;
+    case SDL_AUDIO_PLAYING:
+      g_message ("SDL audio playing");
+      break;
+    case SDL_AUDIO_PAUSED:
+      g_message ("SDL audio paused");
+      break;
+    default:
+      g_critical (
+        "[SDL] Unknown audio device status");
+      break;
     }
 
   g_message ("%s: done", __func__);
@@ -236,8 +223,7 @@ engine_sdl_activate (
  * to it.
  */
 int
-engine_sdl_test (
-  GtkWindow * win)
+engine_sdl_test (GtkWindow * win)
 {
   return 0;
 }
@@ -246,8 +232,7 @@ engine_sdl_test (
  * Closes Port Audio.
  */
 void
-engine_sdl_tear_down (
-  AudioEngine * self)
+engine_sdl_tear_down (AudioEngine * self)
 {
   SDL_CloseAudioDevice (self->dev);
   SDL_Quit ();

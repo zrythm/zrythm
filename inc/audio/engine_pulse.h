@@ -21,13 +21,14 @@
 
 #ifdef HAVE_PULSEAUDIO
 
-#ifndef __AUDIO_ENGINE_PULSE_H__
-#define __AUDIO_ENGINE_PULSE_H__
+#  ifndef __AUDIO_ENGINE_PULSE_H__
+#    define __AUDIO_ENGINE_PULSE_H__
 
-#include "utils/types.h"
+#    include "utils/types.h"
 
-#include <gtk/gtk.h>
-#include <pulse/pulseaudio.h>
+#    include <gtk/gtk.h>
+
+#    include <pulse/pulseaudio.h>
 
 typedef struct AudioEngine AudioEngine;
 
@@ -41,8 +42,7 @@ typedef struct AudioEngine AudioEngine;
  * Set up PulseAudio.
  */
 int
-engine_pulse_setup (
-  AudioEngine * self);
+engine_pulse_setup (AudioEngine * self);
 
 void
 engine_pulse_activate (
@@ -58,8 +58,7 @@ engine_pulse_activate (
  * to it.
  */
 int
-engine_pulse_test (
-  GtkWindow * win);
+engine_pulse_test (GtkWindow * win);
 
 /**
  * Closes PulseAudio.
@@ -71,5 +70,5 @@ engine_pulse_tear_down (AudioEngine * engine);
  * @}
  */
 
-#endif
+#  endif
 #endif // HAVE_PULSEAUDIO

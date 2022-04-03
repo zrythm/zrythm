@@ -18,8 +18,8 @@
  */
 
 #include "audio/engine.h"
-#include "audio/meter.h"
 #include "audio/kmeter_dsp.h"
+#include "audio/meter.h"
 #include "audio/midi_event.h"
 #include "audio/peak_dsp.h"
 #include "audio/port.h"
@@ -51,45 +51,44 @@ meter_get_value (
   /* get amplitude */
   float amp = -1.f;
   float max_amp = -1.f;
-  if (port->id.type == TYPE_AUDIO ||
-      port->id.type == TYPE_CV)
+  if (
+    port->id.type == TYPE_AUDIO
+    || port->id.type == TYPE_CV)
     {
       g_return_if_fail (port->audio_ring);
-      int num_cycles = 4;
+      int    num_cycles = 4;
       size_t read_space_avail =
         zix_ring_read_space (port->audio_ring);
       size_t size =
-        sizeof (float) *
-        (size_t) AUDIO_ENGINE->block_length;
+        sizeof (float)
+        * (size_t) AUDIO_ENGINE->block_length;
       size_t blocks_to_read =
-        size == 0 ?
-          0 : read_space_avail / size;
+        size == 0 ? 0 : read_space_avail / size;
       /* if no blocks available, skip */
       if (blocks_to_read == 0)
         {
-          * val = 1e-20f;
-          * max = 1e-20f;
+          *val = 1e-20f;
+          *max = 1e-20f;
           return;
         }
 
-      float buf[read_space_avail];
-      size_t blocks_read =
-        zix_ring_peek (
-          port->audio_ring, &buf[0],
-          read_space_avail);
+      float  buf[read_space_avail];
+      size_t blocks_read = zix_ring_peek (
+        port->audio_ring, &buf[0], read_space_avail);
       blocks_read /= size;
-      num_cycles = MIN (num_cycles, (int) blocks_read);
+      num_cycles =
+        MIN (num_cycles, (int) blocks_read);
       size_t start_index =
-        (blocks_read - (size_t) num_cycles) *
-          AUDIO_ENGINE->block_length;
+        (blocks_read - (size_t) num_cycles)
+        * AUDIO_ENGINE->block_length;
       g_return_if_fail (IS_PORT_AND_NONNULL (port));
       if (blocks_read == 0)
         {
           g_message (
             "%s: blocks read for port %s is 0",
             __func__, port->id.label);
-          * val = 1e-20f;
-          * max = 1e-20f;
+          *val = 1e-20f;
+          *max = 1e-20f;
           return;
         }
 
@@ -98,33 +97,28 @@ meter_get_value (
         case METER_ALGORITHM_RMS:
           /* not used */
           g_warn_if_reached ();
-          amp =
-            math_calculate_rms_amp (
-              &buf[start_index],
-              (size_t) num_cycles *
-                AUDIO_ENGINE->block_length);
+          amp = math_calculate_rms_amp (
+            &buf[start_index],
+            (size_t) num_cycles
+              * AUDIO_ENGINE->block_length);
           break;
         case METER_ALGORITHM_TRUE_PEAK:
           true_peak_dsp_process (
-            self->true_peak_processor,
-            &port->buf[0],
+            self->true_peak_processor, &port->buf[0],
             (int) AUDIO_ENGINE->block_length);
-          amp =
-            true_peak_dsp_read_f (
-              self->true_peak_processor);
+          amp = true_peak_dsp_read_f (
+            self->true_peak_processor);
           break;
         case METER_ALGORITHM_K:
           kmeter_dsp_process (
-            self->kmeter_processor,
-            &port->buf[0],
+            self->kmeter_processor, &port->buf[0],
             (int) AUDIO_ENGINE->block_length);
           kmeter_dsp_read (
             self->kmeter_processor, &amp, &max_amp);
           break;
         case METER_ALGORITHM_DIGITAL_PEAK:
           peak_dsp_process (
-            self->peak_processor,
-            &port->buf[0],
+            self->peak_processor, &port->buf[0],
             (int) AUDIO_ENGINE->block_length);
           peak_dsp_read (
             self->peak_processor, &amp, &max_amp);
@@ -142,10 +136,12 @@ meter_get_value (
           while (
             zix_ring_peek (
               port->midi_ring, &event,
-              sizeof (MidiEvent)) > 0)
+              sizeof (MidiEvent))
+            > 0)
             {
-              if (event.systime >
-                    self->last_midi_trigger_time)
+              if (
+                event.systime
+                > self->last_midi_trigger_time)
                 {
                   on = true;
                   self->last_midi_trigger_time =
@@ -157,15 +153,15 @@ meter_get_value (
       else
         {
           on =
-            port->last_midi_event_time >
-            self->last_midi_trigger_time;
-            /*g_atomic_int_compare_and_exchange (*/
-              /*&port->has_midi_events, 1, 0);*/
+            port->last_midi_event_time
+            > self->last_midi_trigger_time;
+          /*g_atomic_int_compare_and_exchange (*/
+          /*&port->has_midi_events, 1, 0);*/
           if (on)
             {
               self->last_midi_trigger_time =
                 port->last_midi_event_time;
-                /*g_get_monotonic_time ();*/
+              /*g_get_monotonic_time ();*/
             }
         }
 
@@ -179,16 +175,16 @@ meter_get_value (
     {
       /* calculate new value after falloff */
       float falloff =
-        ((float)
-         (now - self->last_draw_time) / 1000000.f) *
-          /* rgareus says 13.3 is the standard */
-          13.3f;
+        ((float) (now - self->last_draw_time)
+         / 1000000.f)
+        *
+        /* rgareus says 13.3 is the standard */
+        13.3f;
 
       /* use prev val plus falloff if higher than
        * current val */
-      float prev_val_after_falloff =
-        math_dbfs_to_amp (
-          math_amp_to_dbfs (self->last_amp) - falloff);
+      float prev_val_after_falloff = math_dbfs_to_amp (
+        math_amp_to_dbfs (self->last_amp) - falloff);
       if (prev_val_after_falloff > amp)
         {
           amp = prev_val_after_falloff;
@@ -223,21 +219,22 @@ meter_get_value (
 }
 
 Meter *
-meter_new_for_port (
-  Port * port)
+meter_new_for_port (Port * port)
 {
   Meter * self = object_new (Meter);
 
   self->port = port;
 
   /* master */
-  if (port->id.type == TYPE_AUDIO ||
-      port->id.type == TYPE_CV)
+  if (
+    port->id.type == TYPE_AUDIO
+    || port->id.type == TYPE_CV)
     {
       bool is_master_fader = false;
       if (port->id.owner_type == PORT_OWNER_TYPE_TRACK)
         {
-          Track * track = port_get_track (port, true);
+          Track * track =
+            port_get_track (port, true);
           if (track->type == TRACK_TYPE_MASTER)
             {
               is_master_fader = true;
@@ -270,10 +267,9 @@ meter_new_for_port (
 }
 
 void
-meter_free (
-  Meter * self)
+meter_free (Meter * self)
 {
-#define FREE_DSP(x,name) \
+#define FREE_DSP(x, name) \
   if (self->x) \
     { \
       name##_free (self->x); \

@@ -41,11 +41,11 @@ typedef struct Lv2Plugin Lv2Plugin;
  * @{
  */
 
-typedef int (*PresetSink)
-  (Lv2Plugin*           plugin,
-  const LilvNode* node,
-  const LilvNode* title,
-  void*           data);
+typedef int (*PresetSink) (
+  Lv2Plugin *      plugin,
+  const LilvNode * node,
+  const LilvNode * title,
+  void *           data);
 
 /* handled by lilv */
 #if 0
@@ -90,8 +90,8 @@ lv2_state_make_path_save (
 NONNULL
 void
 lv2_state_apply_state (
-  Lv2Plugin* plugin,
-  LilvState* state);
+  Lv2Plugin * plugin,
+  LilvState * state);
 
 /**
  * Saves the plugin state to the filesystem and
@@ -101,8 +101,8 @@ WARN_UNUSED_RESULT
 NONNULL
 LilvState *
 lv2_state_save_to_file (
-  Lv2Plugin *  pl,
-  bool         is_backup);
+  Lv2Plugin * pl,
+  bool        is_backup);
 
 /**
  * Saves the plugin state into a new LilvState that
@@ -112,8 +112,7 @@ lv2_state_save_to_file (
  * Must be free'd with lilv_state_free().
  */
 LilvState *
-lv2_state_save_to_memory (
-  Lv2Plugin* plugin);
+lv2_state_save_to_memory (Lv2Plugin * plugin);
 
 /**
  * Saves the plugin state to a string after writing
@@ -121,8 +120,8 @@ lv2_state_save_to_memory (
  */
 LilvState *
 lv2_state_save_to_string (
-  Lv2Plugin *  pl,
-  bool         is_backup);
+  Lv2Plugin * pl,
+  bool        is_backup);
 
 /**
  * LV2 State makePath feature for temporary files.
@@ -133,7 +132,7 @@ lv2_state_save_to_string (
 char *
 lv2_state_make_path_temp (
   LV2_State_Make_Path_Handle handle,
-  const char*                path);
+  const char *               path);
 
 /**
  * Saves the preset.
@@ -163,18 +162,16 @@ lv2_state_apply_preset (
  * Deletes the current preset.
  */
 int
-lv2_state_delete_current_preset (
-  Lv2Plugin* plugin);
+lv2_state_delete_current_preset (Lv2Plugin * plugin);
 
 int
 lv2_state_load_presets (
-  Lv2Plugin* plugin,
-  PresetSink sink,
-  void* data);
+  Lv2Plugin * plugin,
+  PresetSink  sink,
+  void *      data);
 
 int
-lv2_state_unload_presets (
-  Lv2Plugin* plugin);
+lv2_state_unload_presets (Lv2Plugin * plugin);
 
 /**
  * @}

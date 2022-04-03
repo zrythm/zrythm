@@ -29,7 +29,8 @@
 #include "utils/resources.h"
 
 G_DEFINE_TYPE (
-  SnapBoxWidget, snap_box_widget,
+  SnapBoxWidget,
+  snap_box_widget,
   GTK_TYPE_BOX)
 
 /**
@@ -37,8 +38,7 @@ G_DEFINE_TYPE (
  * deactivating the callbacks.
  */
 void
-snap_box_widget_refresh (
-  SnapBoxWidget * self)
+snap_box_widget_refresh (SnapBoxWidget * self)
 {
   gtk_widget_set_sensitive (
     GTK_WIDGET (self->snap_to_grid_keep_offset),
@@ -49,7 +49,8 @@ snap_box_widget_refresh (
     self->snap_grid->snap_grid->snap_to_grid);
   gtk_toggle_button_set_active (
     self->snap_to_grid_keep_offset,
-    self->snap_grid->snap_grid->snap_to_grid_keep_offset);
+    self->snap_grid->snap_grid
+      ->snap_to_grid_keep_offset);
   gtk_toggle_button_set_active (
     self->snap_to_events,
     self->snap_grid->snap_grid->snap_to_events);
@@ -60,13 +61,13 @@ snap_box_widget_setup (
   SnapBoxWidget * self,
   SnapGrid *      sg)
 {
-  snap_grid_widget_setup (
-    self->snap_grid, sg);
+  snap_grid_widget_setup (self->snap_grid, sg);
 
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->snap_to_grid), NULL);
   gtk_actionable_set_action_name (
-    GTK_ACTIONABLE (self->snap_to_grid_keep_offset), NULL);
+    GTK_ACTIONABLE (self->snap_to_grid_keep_offset),
+    NULL);
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->snap_to_events), NULL);
 
@@ -97,26 +98,28 @@ snap_box_widget_setup (
   if (sg == SNAP_GRID_TIMELINE)
     {
       gtk_actionable_set_action_target (
-        GTK_ACTIONABLE (self->snap_to_grid),
+        GTK_ACTIONABLE (self->snap_to_grid), "s",
+        "timeline");
+      gtk_actionable_set_action_target (
+        GTK_ACTIONABLE (
+          self->snap_to_grid_keep_offset),
         "s", "timeline");
       gtk_actionable_set_action_target (
-        GTK_ACTIONABLE (self->snap_to_grid_keep_offset),
-        "s", "timeline");
-      gtk_actionable_set_action_target (
-        GTK_ACTIONABLE (self->snap_to_events),
-        "s", "timeline");
+        GTK_ACTIONABLE (self->snap_to_events), "s",
+        "timeline");
     }
   else if (sg == SNAP_GRID_EDITOR)
     {
       gtk_actionable_set_action_target (
-        GTK_ACTIONABLE (self->snap_to_grid),
+        GTK_ACTIONABLE (self->snap_to_grid), "s",
+        "editor");
+      gtk_actionable_set_action_target (
+        GTK_ACTIONABLE (
+          self->snap_to_grid_keep_offset),
         "s", "editor");
       gtk_actionable_set_action_target (
-        GTK_ACTIONABLE (self->snap_to_grid_keep_offset),
-        "s", "editor");
-      gtk_actionable_set_action_target (
-        GTK_ACTIONABLE (self->snap_to_events),
-        "s", "editor");
+        GTK_ACTIONABLE (self->snap_to_events), "s",
+        "editor");
     }
 
   snap_box_widget_refresh (self);
@@ -126,12 +129,10 @@ static void
 snap_box_widget_class_init (
   SnapBoxWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "snap_box.ui");
-  gtk_widget_class_set_css_name (
-    klass, "snap-box");
+  gtk_widget_class_set_css_name (klass, "snap-box");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

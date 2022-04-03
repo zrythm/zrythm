@@ -32,7 +32,8 @@
 #include <gtk/gtk.h>
 
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored \
+  "-Wdeprecated-declarations"
 #include <gtksourceview/gtksource.h>
 #pragma GCC diagnostic pop
 
@@ -41,7 +42,8 @@
 G_DECLARE_FINAL_TYPE (
   TextExpanderWidget,
   text_expander_widget,
-  Z, TEXT_EXPANDER_WIDGET,
+  Z,
+  TEXT_EXPANDER_WIDGET,
   ExpanderBoxWidget);
 
 /**
@@ -65,25 +67,25 @@ typedef struct _TextExpanderWidget
   GenericStringSetter setter;
 
   /** Object to call get/set on. */
-  void *              obj;
+  void * obj;
 
   /** Scrolled window for the editor inside. */
   GtkScrolledWindow * scroll;
   GtkViewport *       viewport;
 
   /** Editor. */
-  GtkSourceView *     editor;
+  GtkSourceView * editor;
 
   /** Editor buffer. */
-  GtkSourceBuffer *   buffer;
+  GtkSourceBuffer * buffer;
 
-  GtkLabel *          label;
+  GtkLabel * label;
 
-  GtkMenuButton *     edit_btn;
+  GtkMenuButton * edit_btn;
 
-  GtkPopover *        popover;
+  GtkPopover * popover;
 
-  bool                has_focus;
+  bool has_focus;
 } TextExpanderWidget;
 
 /**

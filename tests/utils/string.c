@@ -39,20 +39,16 @@ test_get_int_after_last_space (void)
   };
 
   int ret =
-    string_get_int_after_last_space (
-      strs[0], NULL);
+    string_get_int_after_last_space (strs[0], NULL);
   g_assert_cmpint (ret, ==, 1);
   ret =
-    string_get_int_after_last_space (
-      strs[1], NULL);
+    string_get_int_after_last_space (strs[1], NULL);
   g_assert_cmpint (ret, ==, 22);
   ret =
-    string_get_int_after_last_space (
-      strs[2], NULL);
+    string_get_int_after_last_space (strs[2], NULL);
   g_assert_cmpint (ret, ==, -1);
   ret =
-    string_get_int_after_last_space (
-      strs[4], NULL);
+    string_get_int_after_last_space (strs[4], NULL);
   g_assert_cmpint (ret, ==, 56);
 }
 
@@ -82,18 +78,12 @@ test_contains_substr (void)
 static void
 test_is_equal (void)
 {
-  g_assert_true (
-    string_is_equal ("", ""));
-  g_assert_true (
-    string_is_equal (NULL, NULL));
-  g_assert_true (
-    string_is_equal ("abc", "abc"));
-  g_assert_false (
-    string_is_equal ("abc", "aabc"));
-  g_assert_false (
-    string_is_equal ("", "aabc"));
-  g_assert_false (
-    string_is_equal (NULL, ""));
+  g_assert_true (string_is_equal ("", ""));
+  g_assert_true (string_is_equal (NULL, NULL));
+  g_assert_true (string_is_equal ("abc", "abc"));
+  g_assert_false (string_is_equal ("abc", "aabc"));
+  g_assert_false (string_is_equal ("", "aabc"));
+  g_assert_false (string_is_equal (NULL, ""));
 
 #if 0
   /* pwgen -c -n -s 48 50 */
@@ -198,24 +188,18 @@ test_copy_w_realloc (void)
 {
   char * str = g_strdup ("aa");
   string_copy_w_realloc (&str, "");
-  g_assert_true (
-    string_is_equal (str, ""));
+  g_assert_true (string_is_equal (str, ""));
   string_copy_w_realloc (&str, "aa");
-  g_assert_true (
-    string_is_equal (str, "aa"));
+  g_assert_true (string_is_equal (str, "aa"));
   string_copy_w_realloc (&str, "あああ");
-  g_assert_true (
-    string_is_equal (str, "あああ"));
+  g_assert_true (string_is_equal (str, "あああ"));
   string_copy_w_realloc (&str, "あああ");
-  g_assert_true (
-    string_is_equal (str, "あああ"));
+  g_assert_true (string_is_equal (str, "あああ"));
   string_copy_w_realloc (&str, "aa");
-  g_assert_true (
-    string_is_equal (str, "aa"));
+  g_assert_true (string_is_equal (str, "aa"));
   string_copy_w_realloc (&str, "");
   g_assert_nonnull (str);
-  g_assert_true (
-    string_is_equal (str, ""));
+  g_assert_true (string_is_equal (str, ""));
 
   string_copy_w_realloc (&str, NULL);
   g_assert_null (str);
@@ -223,21 +207,15 @@ test_copy_w_realloc (void)
   g_assert_null (str);
   string_copy_w_realloc (&str, "");
   g_assert_nonnull (str);
-  g_assert_true (
-    string_is_equal (str, ""));
+  g_assert_true (string_is_equal (str, ""));
   string_copy_w_realloc (&str, "aaa");
-  g_assert_true (
-    string_is_equal (str, "aaa"));
+  g_assert_true (string_is_equal (str, "aaa"));
   string_copy_w_realloc (&str, "aaa");
-  g_assert_true (
-    string_is_equal (str, "aaa"));
+  g_assert_true (string_is_equal (str, "aaa"));
   string_copy_w_realloc (&str, "aa");
-  g_assert_true (
-    string_is_equal (str, "aa"));
+  g_assert_true (string_is_equal (str, "aa"));
 
-  string_copy_w_realloc (
-    &str,
-    "[Zrythm] Enabled");
+  string_copy_w_realloc (&str, "[Zrythm] Enabled");
   g_assert_true (
     string_is_equal (str, "[Zrythm] Enabled"));
 }
@@ -245,38 +223,36 @@ test_copy_w_realloc (void)
 static void
 test_replace_regex (void)
 {
-  const char * replace_str, * regex;
-  char * src_str;
+  const char *replace_str, *regex;
+  char *      src_str;
 
   replace_str = "---$1---";
   regex = "(abc)+\\1";
   src_str = g_strdup ("abcabc");
   string_replace_regex (
     &src_str, regex, replace_str);
-  g_assert_cmpstr (
-    src_str, ==, "---abc---");
+  g_assert_cmpstr (src_str, ==, "---abc---");
 
   replace_str = "$1";
   regex = "(\\?\\?\\?\n)+\\1";
-  src_str =
-    g_strdup ("???\n???\n???\n???\n??? abc");
+  src_str = g_strdup ("???\n???\n???\n???\n??? abc");
   string_replace_regex (
     &src_str, regex, replace_str);
-  g_assert_cmpstr (
-    src_str, ==, "???\n??? abc");
+  g_assert_cmpstr (src_str, ==, "???\n??? abc");
 
   replace_str = "??? ...\n";
   regex = "(\\?\\?\\?\n)+\\1";
-  src_str =
-    g_strdup ("???\n???\n???\n???\n??? abc\n???\n???\n??? test");
+  src_str = g_strdup (
+    "???\n???\n???\n???\n??? abc\n???\n???\n??? test");
   string_replace_regex (
     &src_str, regex, replace_str);
   g_assert_cmpstr (
-    src_str, ==, "??? ...\n??? abc\n??? ...\n??? test");
+    src_str, ==,
+    "??? ...\n??? abc\n??? ...\n??? test");
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 

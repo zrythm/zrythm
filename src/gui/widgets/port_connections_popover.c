@@ -21,8 +21,8 @@
 #include "audio/channel_track.h"
 #include "audio/port_connections_manager.h"
 #include "gui/widgets/dialogs/port_selector_dialog.h"
-#include "gui/widgets/port_connection_row.h"
 #include "gui/widgets/inspector_port.h"
+#include "gui/widgets/port_connection_row.h"
 #include "gui/widgets/port_connections_popover.h"
 #include "plugins/plugin.h"
 #include "project.h"
@@ -30,8 +30,8 @@
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   PortConnectionsPopoverWidget,
@@ -77,11 +77,11 @@ port_connections_popover_widget_refresh (
       if (GTK_IS_LABEL (self->title))
         {
           gtk_label_set_text (
-            self->title, _("INPUTS"));
+            self->title, _ ("INPUTS"));
         }
 
       GPtrArray * srcs = g_ptr_array_new ();
-      int num_srcs =
+      int         num_srcs =
         port_connections_manager_get_sources_or_dests (
           PORT_CONNECTIONS_MGR, srcs,
           &self->port->id, true);
@@ -101,17 +101,16 @@ port_connections_popover_widget_refresh (
         }
       g_ptr_array_unref (srcs);
     }
-  else if (self->port->id.flow ==
-             FLOW_OUTPUT)
+  else if (self->port->id.flow == FLOW_OUTPUT)
     {
       if (GTK_IS_LABEL (self->title))
         {
           gtk_label_set_text (
-            self->title, _("OUTPUTS"));
+            self->title, _ ("OUTPUTS"));
         }
 
       GPtrArray * dests = g_ptr_array_new ();
-      int num_dests =
+      int         num_dests =
         port_connections_manager_get_sources_or_dests (
           PORT_CONNECTIONS_MGR, dests,
           &self->port->id, false);
@@ -143,23 +142,20 @@ PortConnectionsPopoverWidget *
 port_connections_popover_widget_new (
   GtkWidget * owner)
 {
-  g_return_val_if_fail (
-    GTK_IS_WIDGET (owner), NULL);
+  g_return_val_if_fail (GTK_IS_WIDGET (owner), NULL);
 
-  PortConnectionsPopoverWidget * self =
-    g_object_new (
-      PORT_CONNECTIONS_POPOVER_WIDGET_TYPE, NULL);
+  PortConnectionsPopoverWidget * self = g_object_new (
+    PORT_CONNECTIONS_POPOVER_WIDGET_TYPE, NULL);
 
   return self;
 }
 
 static void
-finalize (
-  PortConnectionsPopoverWidget * self)
+finalize (PortConnectionsPopoverWidget * self)
 {
   G_OBJECT_CLASS (
-    port_connections_popover_widget_parent_class)->
-      finalize (G_OBJECT (self));
+    port_connections_popover_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 static void
@@ -167,8 +163,7 @@ port_connections_popover_widget_class_init (
   PortConnectionsPopoverWidgetClass * _klass)
 {
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
-  oklass->finalize =
-    (GObjectFinalizeFunc) finalize;
+  oklass->finalize = (GObjectFinalizeFunc) finalize;
 }
 
 static void
@@ -176,24 +171,19 @@ port_connections_popover_widget_init (
   PortConnectionsPopoverWidget * self)
 {
   /* create all */
-  self->main_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 2));
-  self->title =
-    GTK_LABEL (gtk_label_new (""));
-  self->ports_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 1));
+  self->main_box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_VERTICAL, 2));
+  self->title = GTK_LABEL (gtk_label_new (""));
+  self->ports_box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_VERTICAL, 1));
 
-  self->add =
-    GTK_BUTTON (gtk_button_new ());
+  self->add = GTK_BUTTON (gtk_button_new ());
   GtkWidget * btn_box =
     gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   GtkWidget * img =
     gtk_image_new_from_icon_name ("add");
   gtk_box_append (GTK_BOX (btn_box), img);
-  GtkWidget * lbl =
-    gtk_label_new (_("Add"));
+  GtkWidget * lbl = gtk_label_new (_ ("Add"));
   gtk_box_append (GTK_BOX (btn_box), lbl);
   gtk_button_set_child (
     GTK_BUTTON (self->add), btn_box);
@@ -207,8 +197,7 @@ port_connections_popover_widget_init (
   /* add to each other */
   gtk_box_append (
     self->main_box, GTK_WIDGET (self->title));
-  gtk_box_append (
-    self->main_box, separator);
+  gtk_box_append (self->main_box, separator);
   gtk_box_append (
     self->main_box, GTK_WIDGET (self->ports_box));
   gtk_box_append (
@@ -216,6 +205,5 @@ port_connections_popover_widget_init (
 
   /* add to popover */
   gtk_popover_set_child (
-    GTK_POPOVER (self),
-    GTK_WIDGET (self->main_box));
+    GTK_POPOVER (self), GTK_WIDGET (self->main_box));
 }

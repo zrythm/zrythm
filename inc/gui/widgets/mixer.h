@@ -31,9 +31,9 @@
 #include <gtk/gtk.h>
 
 typedef struct _DragDestBoxWidget DragDestBoxWidget;
-typedef struct Channel Channel;
+typedef struct Channel            Channel;
 typedef struct _ChannelSlotWidget ChannelSlotWidget;
-typedef struct Track Track;
+typedef struct Track              Track;
 
 /**
  * @addtogroup widgets
@@ -41,17 +41,19 @@ typedef struct Track Track;
  * @{
  */
 
-#define MIXER_WIDGET_TYPE \
-  (mixer_widget_get_type ())
+#define MIXER_WIDGET_TYPE (mixer_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  MixerWidget, mixer_widget,
-  Z, MIXER_WIDGET, GtkBox)
+  MixerWidget,
+  mixer_widget,
+  Z,
+  MIXER_WIDGET,
+  GtkBox)
 
 #define MW_MIXER MW_BOT_DOCK_EDGE->mixer
 
 typedef struct _MixerWidget
 {
-  GtkBox              parent_instance;
+  GtkBox parent_instance;
 
   /** Drag n drop dest box. */
   DragDestBoxWidget * ddbox;
@@ -59,7 +61,7 @@ typedef struct _MixerWidget
   /**
    * Box containing all channels except master.
    */
-  GtkBox *            channels_box;
+  GtkBox * channels_box;
 
   /**
    * The track where dnd originated from.
@@ -67,10 +69,10 @@ typedef struct _MixerWidget
    * Used to decide if left/right highlight means
    * the track should be dropped before or after.
    */
-  Track *             start_drag_track;
+  Track * start_drag_track;
 
-  GtkButton *         channels_add;
-  GtkBox *            master_box;
+  GtkButton * channels_add;
+  GtkBox *    master_box;
 
   /**
    * Selected slot to paste selections (when
@@ -78,7 +80,7 @@ typedef struct _MixerWidget
    */
   ChannelSlotWidget * paste_slot;
 
-  bool                setup;
+  bool setup;
 } MixerWidget;
 
 /**

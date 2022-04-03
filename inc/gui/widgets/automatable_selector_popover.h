@@ -22,7 +22,6 @@
 
 /* FIXME should be merged with port selector popover */
 
-
 #include <gtk/gtk.h>
 
 #define AUTOMATABLE_SELECTOR_POPOVER_WIDGET_TYPE \
@@ -30,7 +29,8 @@
 G_DECLARE_FINAL_TYPE (
   AutomatableSelectorPopoverWidget,
   automatable_selector_popover_widget,
-  Z, AUTOMATABLE_SELECTOR_POPOVER_WIDGET,
+  Z,
+  AUTOMATABLE_SELECTOR_POPOVER_WIDGET,
   GtkPopover)
 
 typedef struct _AutomatableSelectorButtonWidget
@@ -95,23 +95,23 @@ typedef enum AutomatableSelectorType
  */
 typedef struct _AutomatableSelectorPopoverWidget
 {
-  GtkPopover              parent_instance;
+  GtkPopover parent_instance;
 
   /** The owner button. */
-  AutomationTrack *       owner;
+  AutomationTrack * owner;
 
-  GtkBox *                type_treeview_box;
-  GtkTreeView *           type_treeview;
-  GtkTreeModel *          type_model;
-  GtkBox *                port_treeview_box;
-  GtkTreeView *           port_treeview;
-  GtkTreeModel *          port_model;
+  GtkBox *       type_treeview_box;
+  GtkTreeView *  type_treeview;
+  GtkTreeModel * type_model;
+  GtkBox *       port_treeview_box;
+  GtkTreeView *  port_treeview;
+  GtkTreeModel * port_model;
 
-  GtkLabel *              info;
+  GtkLabel * info;
 
   /** Flag to set to ignore the selection change
    * callbacks when setting a selection manually */
-  int                     selecting_manually;
+  int selecting_manually;
 
   AutomatableSelectorType selected_type;
   int                     selected_slot;
@@ -123,7 +123,7 @@ typedef struct _AutomatableSelectorPopoverWidget
    * create/show the one corresponding to this
    * Automatable.
    */
-  Port *       selected_port;
+  Port * selected_port;
 } AutomatableSelectorPopoverWidget;
 
 /**

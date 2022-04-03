@@ -35,30 +35,26 @@ StrvBuilder *
 strv_builder_new (void);
 
 void
-strv_builder_unref (
-  StrvBuilder *builder);
+strv_builder_unref (StrvBuilder * builder);
 
 StrvBuilder *
-strv_builder_ref (
-  StrvBuilder *builder);
+strv_builder_ref (StrvBuilder * builder);
 
 void
 strv_builder_add (
-  StrvBuilder *builder,
-  const char *value);
+  StrvBuilder * builder,
+  const char *  value);
 
 void
 strv_builder_addv (
-  StrvBuilder *builder,
-  const char **value);
+  StrvBuilder * builder,
+  const char ** value);
 
 void
-strv_builder_add_many (
-  StrvBuilder *builder,
-  ...) G_GNUC_NULL_TERMINATED;
+strv_builder_add_many (StrvBuilder * builder, ...)
+  G_GNUC_NULL_TERMINATED;
 
 char **
-strv_builder_end (
-  StrvBuilder *builder);
+strv_builder_end (StrvBuilder * builder);
 
 #endif /* __Z_STRVBUILDER_H__ */

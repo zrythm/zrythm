@@ -20,8 +20,8 @@
 #include <stdlib.h>
 
 #include "audio/channel.h"
-#include "gui/backend/audio_clip_editor.h"
 #include "audio/track.h"
+#include "gui/backend/audio_clip_editor.h"
 #include "project.h"
 #include "utils/objects.h"
 
@@ -35,8 +35,7 @@ audio_clip_editor_init (AudioClipEditor * self)
 }
 
 AudioClipEditor *
-audio_clip_editor_clone (
-  AudioClipEditor * src)
+audio_clip_editor_clone (AudioClipEditor * src)
 {
   AudioClipEditor * self =
     object_new (AudioClipEditor);
@@ -60,8 +59,7 @@ audio_clip_editor_new (void)
 }
 
 void
-audio_clip_editor_free (
-  AudioClipEditor * self)
+audio_clip_editor_free (AudioClipEditor * self)
 {
   object_zero_and_free (self);
 }

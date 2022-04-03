@@ -30,9 +30,8 @@
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
-
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   InspectorPluginWidget,
@@ -97,29 +96,21 @@ inspector_plugin_widget_show (
     }
 
   ports_expander_widget_setup_plugin (
-    self->ctrl_ins, FLOW_INPUT,
-    TYPE_CONTROL, pl);
+    self->ctrl_ins, FLOW_INPUT, TYPE_CONTROL, pl);
   ports_expander_widget_setup_plugin (
-    self->ctrl_outs, FLOW_OUTPUT,
-    TYPE_CONTROL, pl);
+    self->ctrl_outs, FLOW_OUTPUT, TYPE_CONTROL, pl);
   ports_expander_widget_setup_plugin (
-    self->midi_ins, FLOW_INPUT,
-    TYPE_EVENT, pl);
+    self->midi_ins, FLOW_INPUT, TYPE_EVENT, pl);
   ports_expander_widget_setup_plugin (
-    self->midi_outs, FLOW_OUTPUT,
-    TYPE_EVENT, pl);
+    self->midi_outs, FLOW_OUTPUT, TYPE_EVENT, pl);
   ports_expander_widget_setup_plugin (
-    self->audio_ins, FLOW_INPUT,
-    TYPE_AUDIO, pl);
+    self->audio_ins, FLOW_INPUT, TYPE_AUDIO, pl);
   ports_expander_widget_setup_plugin (
-    self->audio_outs, FLOW_OUTPUT,
-    TYPE_AUDIO, pl);
+    self->audio_outs, FLOW_OUTPUT, TYPE_AUDIO, pl);
   ports_expander_widget_setup_plugin (
-    self->cv_ins, FLOW_INPUT,
-    TYPE_CV, pl);
+    self->cv_ins, FLOW_INPUT, TYPE_CV, pl);
   ports_expander_widget_setup_plugin (
-    self->cv_outs, FLOW_OUTPUT,
-    TYPE_CV, pl);
+    self->cv_outs, FLOW_OUTPUT, TYPE_CV, pl);
 
   plugin_properties_expander_widget_refresh (
     self->properties, pl);
@@ -128,9 +119,8 @@ inspector_plugin_widget_show (
 InspectorPluginWidget *
 inspector_plugin_widget_new (void)
 {
-  InspectorPluginWidget * self =
-    g_object_new (
-      INSPECTOR_PLUGIN_WIDGET_TYPE, NULL);
+  InspectorPluginWidget * self = g_object_new (
+    INSPECTOR_PLUGIN_WIDGET_TYPE, NULL);
 
   plugin_properties_expander_widget_setup (
     self->properties, NULL);
@@ -142,16 +132,14 @@ static void
 inspector_plugin_widget_class_init (
   InspectorPluginWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "inspector_plugin.ui");
 
 #define BIND_CHILD(child) \
   gtk_widget_class_bind_template_child ( \
     GTK_WIDGET_CLASS (klass), \
-    InspectorPluginWidget, \
-    child);
+    InspectorPluginWidget, child);
 
   BIND_CHILD (color);
   BIND_CHILD (properties);

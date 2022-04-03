@@ -46,32 +46,31 @@
 
 #include "zrythm-config.h"
 
-#include <pthread.h>
-
 #include "audio/engine.h"
 #include "utils/types.h"
 
-#include "zix/ring.h"
-#include "zix/sem.h"
-
 #include <gtk/gtk.h>
 
+#include "zix/ring.h"
+#include "zix/sem.h"
+#include <pthread.h>
+
 typedef struct GraphNode GraphNode;
-typedef struct Graph Graph;
+typedef struct Graph     Graph;
 typedef struct PassthroughProcessor
-  PassthroughProcessor;
+                         PassthroughProcessor;
 typedef struct MPMCQueue MPMCQueue;
-typedef struct Port Port;
-typedef struct Fader Fader;
-typedef struct Track Track;
-typedef struct Plugin Plugin;
-typedef struct Position Position;
+typedef struct Port      Port;
+typedef struct Fader     Fader;
+typedef struct Track     Track;
+typedef struct Plugin    Plugin;
+typedef struct Position  Position;
 typedef struct ControlPortChange ControlPortChange;
 typedef struct EngineProcessTimeInfo
   EngineProcessTimeInfo;
 
 #ifdef HAVE_JACK
-#include "weak_libjack.h"
+#  include "weak_libjack.h"
 #endif
 
 /**
@@ -84,30 +83,30 @@ typedef struct EngineProcessTimeInfo
 
 typedef struct Router
 {
-  Graph *               graph;
+  Graph * graph;
 
   /** Time info for this processing cycle. */
   EngineProcessTimeInfo time_nfo;
 
   /** Stored for the currently processing cycle */
-  nframes_t             max_route_playback_latency;
+  nframes_t max_route_playback_latency;
 
   /** Current global latency offset (max latency
    * of all routes - remaining latency from
    * engine). */
-  nframes_t             global_offset;
+  nframes_t global_offset;
 
   /** Used when recalculating the graph. */
-  ZixSem                graph_access;
+  ZixSem graph_access;
 
-  bool                  callback_in_progress;
+  bool callback_in_progress;
 
   /** Thread that calls kicks off the cycle. */
-  GThread *             process_kickoff_thread;
+  GThread * process_kickoff_thread;
 
   /** Message queue for control port changes, used
    * for BPM/time signature changes. */
-  ZixRing *             ctrl_port_change_queue;
+  ZixRing * ctrl_port_change_queue;
 
 } Router;
 
@@ -120,9 +119,7 @@ router_new (void);
  * @param soft If true, only readjusts latencies.
  */
 void
-router_recalc_graph (
-  Router * self,
-  bool     soft);
+router_recalc_graph (Router * self, bool soft);
 
 /**
  * Starts a new cycle.
@@ -145,12 +142,9 @@ router_get_max_route_playback_latency (
  * processing thread.
  */
 WARN_UNUSED_RESULT
-HOT
-NONNULL
-ACCESS_READ_ONLY (1)
-bool
-router_is_processing_thread (
-  const Router * const router);
+HOT NONNULL
+  ACCESS_READ_ONLY (1) bool router_is_processing_thread (
+    const Router * const router);
 
 /**
  * Returns whether this is the thread that kicks
@@ -158,12 +152,9 @@ router_is_processing_thread (
  * router_start_cycle()).
  */
 WARN_UNUSED_RESULT
-HOT
-NONNULL
-ACCESS_READ_ONLY (1)
-bool
-router_is_processing_kickoff_thread (
-  const Router * const self);
+HOT NONNULL
+  ACCESS_READ_ONLY (1) bool router_is_processing_kickoff_thread (
+    const Router * const self);
 
 /**
  * Queues a control port change to be applied
@@ -179,8 +170,7 @@ router_queue_control_port_change (
   const ControlPortChange * change);
 
 void
-router_free (
-  Router * self);
+router_free (Router * self);
 
 /**
  * @}

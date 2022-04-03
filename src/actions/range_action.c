@@ -32,8 +32,7 @@
 #include <glib/gi18n.h>
 
 void
-range_action_init_loaded (
-  RangeAction * self)
+range_action_init_loaded (RangeAction * self)
 {
   if (self->sel_before)
     {
@@ -65,13 +64,14 @@ range_action_new (
   Position *      end_pos,
   GError **       error)
 {
-  RangeAction * self = object_new (RangeAction);
+  RangeAction *    self = object_new (RangeAction);
   UndoableAction * ua = (UndoableAction *) self;
   undoable_action_init (ua, UA_RANGE);
 
   g_return_val_if_fail (
-    position_validate (start_pos) &&
-    position_validate (end_pos), NULL);
+    position_validate (start_pos)
+      && position_validate (end_pos),
+    NULL);
 
   self->type = type;
   position_set_to_pos (&self->start_pos, start_pos);
@@ -85,8 +85,7 @@ range_action_new (
     timeline_selections_new_for_range (
       start_pos, &inf, F_CLONE);
   self->sel_after =
-    (TimelineSelections *)
-    arranger_selections_new (
+    (TimelineSelections *) arranger_selections_new (
       ARRANGER_SELECTIONS_TYPE_TIMELINE);
 
   self->transport = transport_clone (TRANSPORT);
@@ -95,8 +94,7 @@ range_action_new (
 }
 
 RangeAction *
-range_action_clone (
-  const RangeAction * src)
+range_action_clone (const RangeAction * src)
 {
   RangeAction * self = object_new (RangeAction);
   self->parent_instance = src->parent_instance;
@@ -104,17 +102,14 @@ range_action_clone (
   self->start_pos = src->start_pos;
   self->end_pos = src->end_pos;
   self->type = src->type;
-  self->sel_before =
-    (TimelineSelections *)
+  self->sel_before = (TimelineSelections *)
     arranger_selections_clone (
       (ArrangerSelections *) src->sel_before);
-  self->sel_after =
-    (TimelineSelections *)
+  self->sel_after = (TimelineSelections *)
     arranger_selections_clone (
       (ArrangerSelections *) src->sel_after);
   self->first_run = src->first_run;
-  self->transport =
-    transport_clone (src->transport);
+  self->transport = transport_clone (src->transport);
 
   return self;
 }
@@ -127,39 +122,36 @@ range_action_perform (
   GError **       error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    range_action_new,
-    error, type, start_pos, end_pos, error);
+    range_action_new, error, type, start_pos,
+    end_pos, error);
 }
 
-#define _MOVE_TRANSPORT_MARKER(x,_ticks,_do) \
-  if (self->type == RANGE_ACTION_REMOVE && \
-      position_is_after_or_equal ( \
-        &TRANSPORT->x, \
-        &self->start_pos) && \
-      position_is_before_or_equal ( \
-        &TRANSPORT->x, \
-        &self->end_pos)) \
+#define _MOVE_TRANSPORT_MARKER(x, _ticks, _do) \
+  if ( \
+    self->type == RANGE_ACTION_REMOVE \
+    && position_is_after_or_equal ( \
+      &TRANSPORT->x, &self->start_pos) \
+    && position_is_before_or_equal ( \
+      &TRANSPORT->x, &self->end_pos)) \
     { \
       /* move position to range start or back to
        * original pos */ \
       position_set_to_pos ( \
         &TRANSPORT->x, \
-        _do ? \
-          &self->start_pos : &self->transport->x); \
+        _do ? &self->start_pos \
+            : &self->transport->x); \
     } \
   else if (position_is_after_or_equal ( \
-             &TRANSPORT->x, \
-             &self->start_pos)) \
+             &TRANSPORT->x, &self->start_pos)) \
     { \
-      position_add_ticks ( \
-        &TRANSPORT->x, _ticks); \
+      position_add_ticks (&TRANSPORT->x, _ticks); \
     }
 
-#define MOVE_TRANSPORT_MARKER(x,_do) \
+#define MOVE_TRANSPORT_MARKER(x, _do) \
   _MOVE_TRANSPORT_MARKER (x, range_size_ticks, _do)
 
-#define UNMOVE_TRANSPORT_MARKER(x,_do) \
-  _MOVE_TRANSPORT_MARKER (x, - range_size_ticks, _do)
+#define UNMOVE_TRANSPORT_MARKER(x, _do) \
+  _MOVE_TRANSPORT_MARKER (x, -range_size_ticks, _do)
 
 #define MOVE_TRANSPORT_MARKERS(_do) \
   MOVE_TRANSPORT_MARKER (playhead_pos, _do); \
@@ -187,17 +179,14 @@ add_to_sel_after (
     "adding to sel after (num prj objs %d)",
     *num_prj_objs);
   arranger_object_print (prj_obj);
-  after_objs_for_prj[(*num_prj_objs)++] =
-    after_obj;
+  after_objs_for_prj[(*num_prj_objs)++] = after_obj;
   arranger_selections_add_object (
-    (ArrangerSelections *)
-    self->sel_after, after_obj);
+    (ArrangerSelections *) self->sel_after,
+    after_obj);
 }
 
 int
-range_action_do (
-  RangeAction * self,
-  GError **     error)
+range_action_do (RangeAction * self, GError ** error)
 {
   /* sort the selections in ascending order */
   arranger_selections_sort_by_indices (
@@ -205,31 +194,28 @@ range_action_do (
   arranger_selections_sort_by_indices (
     (ArrangerSelections *) self->sel_after, false);
 
-  GPtrArray * before_objs_arr =
-    g_ptr_array_new ();
+  GPtrArray * before_objs_arr = g_ptr_array_new ();
   arranger_selections_get_all_objects (
     (ArrangerSelections *) self->sel_before,
     before_objs_arr);
-  GPtrArray * after_objs_arr =
-    g_ptr_array_new ();
+  GPtrArray * after_objs_arr = g_ptr_array_new ();
   arranger_selections_get_all_objects (
     (ArrangerSelections *) self->sel_after,
     after_objs_arr);
   double range_size_ticks =
-    position_to_ticks (&self->end_pos) -
-    position_to_ticks (&self->start_pos);
+    position_to_ticks (&self->end_pos)
+    - position_to_ticks (&self->start_pos);
 
   /* temporary place to store project objects, so
    * we can get their final identifiers at the end */
-  ArrangerObject * prj_objs[
-    before_objs_arr->len * 2];
-  int num_prj_objs = 0;
+  ArrangerObject * prj_objs[before_objs_arr->len * 2];
+  int              num_prj_objs = 0;
 
   /* after objects corresponding to the above */
-  ArrangerObject * after_objs_for_prj[
-    before_objs_arr->len * 2];
+  ArrangerObject *
+    after_objs_for_prj[before_objs_arr->len * 2];
 
-#define ADD_AFTER(_prj_obj,_after_obj) \
+#define ADD_AFTER(_prj_obj, _after_obj) \
   add_to_sel_after ( \
     self, prj_objs, after_objs_for_prj, \
     &num_prj_objs, _prj_obj, _after_obj)
@@ -243,12 +229,12 @@ range_action_do (
                i >= 0; i--)
             {
               ArrangerObject * obj =
-                (ArrangerObject *)
-                g_ptr_array_index (
+                (ArrangerObject *) g_ptr_array_index (
                   before_objs_arr, i);
               g_message (
                 "looping backwards. "
-                "current object %d:", i);
+                "current object %d:",
+                i);
               arranger_object_print (obj);
 
               obj->flags |=
@@ -261,17 +247,17 @@ range_action_do (
               /* object starts before the range and
                * ends after the range start -
                * split at range start */
-              if (arranger_object_is_hit (
-                    prj_obj, &self->start_pos,
-                    NULL) &&
-                  position_is_before (
-                    &prj_obj->pos, &self->start_pos))
+              if (
+                arranger_object_is_hit (
+                  prj_obj, &self->start_pos, NULL)
+                && position_is_before (
+                  &prj_obj->pos, &self->start_pos))
                 {
                   /* split at range start */
-                  ArrangerObject * part1, * part2;
+                  ArrangerObject *part1, *part2;
                   arranger_object_split (
-                    obj, &self->start_pos,
-                    false, &part1, &part2, false);
+                    obj, &self->start_pos, false,
+                    &part1, &part2, false);
 
                   /* move part2 by the range
                    * amount */
@@ -285,14 +271,12 @@ range_action_do (
                   /* create clones and add to
                    * project */
                   ArrangerObject * prj_part1 =
-                    arranger_object_clone (
-                      part1);
+                    arranger_object_clone (part1);
                   arranger_object_add_to_project (
                     prj_part1, F_NO_PUBLISH_EVENTS);
 
                   ArrangerObject * prj_part2 =
-                    arranger_object_clone (
-                      part2);
+                    arranger_object_clone (part2);
                   arranger_object_add_to_project (
                     prj_part2, F_NO_PUBLISH_EVENTS);
 
@@ -314,8 +298,7 @@ range_action_do (
 
                   /* clone and add to sel_after */
                   ArrangerObject * obj_clone =
-                    arranger_object_clone (
-                      prj_obj);
+                    arranger_object_clone (prj_obj);
 
                   g_message ("moved to object:");
                   arranger_object_print (prj_obj);
@@ -333,8 +316,7 @@ range_action_do (
                i >= 0; i--)
             {
               ArrangerObject * obj =
-                (ArrangerObject *)
-                g_ptr_array_index (
+                (ArrangerObject *) g_ptr_array_index (
                   before_objs_arr, i);
 
               /* get project object and remove it
@@ -349,13 +331,11 @@ range_action_do (
                i < after_objs_arr->len; i++)
             {
               ArrangerObject * obj =
-                g_ptr_array_index (
-                  after_objs_arr, i);
+                g_ptr_array_index (after_objs_arr, i);
 
               /* clone object and add to project */
               ArrangerObject * prj_obj =
-                arranger_object_clone (
-                  obj);
+                arranger_object_clone (obj);
               arranger_object_insert_to_project (
                 prj_obj);
             }
@@ -371,12 +351,12 @@ range_action_do (
                i >= 0; i--)
             {
               ArrangerObject * obj =
-                (ArrangerObject *)
-                g_ptr_array_index (
+                (ArrangerObject *) g_ptr_array_index (
                   before_objs_arr, i);
               g_message (
                 "looping backwards. "
-                "current object %d:", i);
+                "current object %d:",
+                i);
               arranger_object_print (obj);
 
               obj->flags |=
@@ -392,9 +372,8 @@ range_action_do (
                 {
                   ends_inside_range =
                     position_is_after_or_equal (
-                      &prj_obj->pos,
-                      &self->start_pos) &&
-                    position_is_before (
+                      &prj_obj->pos, &self->start_pos)
+                    && position_is_before (
                       &prj_obj->end_pos,
                       &self->end_pos);
                 }
@@ -402,41 +381,37 @@ range_action_do (
                 {
                   ends_inside_range =
                     position_is_after_or_equal (
-                      &prj_obj->pos,
-                      &self->start_pos) &&
-                    position_is_before (
+                      &prj_obj->pos, &self->start_pos)
+                    && position_is_before (
                       &prj_obj->pos, &self->end_pos);
                 }
 
               /* object starts before the range and
                * ends after the range start -
                * split at range start */
-              if (arranger_object_is_hit (
-                    prj_obj, &self->start_pos,
-                    NULL) &&
-                  position_is_before (
-                    &prj_obj->pos, &self->start_pos))
+              if (
+                arranger_object_is_hit (
+                  prj_obj, &self->start_pos, NULL)
+                && position_is_before (
+                  &prj_obj->pos, &self->start_pos))
                 {
                   /* split at range start */
-                  ArrangerObject * part1, * part2;
+                  ArrangerObject *part1, *part2;
                   arranger_object_split (
-                    obj, &self->start_pos,
-                    false, &part1, &part2, false);
+                    obj, &self->start_pos, false,
+                    &part1, &part2, false);
 
                   /* if part 2 extends beyond the
                    * range end, split it  and
                    * remove the part before range
                    * end */
                   if (arranger_object_is_hit (
-                        part2, &self->end_pos,
-                        NULL))
+                        part2, &self->end_pos, NULL))
                     {
-                      ArrangerObject * part3,
-                                     * part4;
+                      ArrangerObject *part3, *part4;
                       arranger_object_split (
-                        part2, &self->end_pos,
-                        false, &part3, &part4,
-                        false);
+                        part2, &self->end_pos, false,
+                        &part3, &part4, false);
                       arranger_object_free (part2);
                       arranger_object_free (part3);
                       part2 = part4;
@@ -454,7 +429,7 @@ range_action_do (
                   if (part2)
                     {
                       arranger_object_move (
-                        part2, - range_size_ticks);
+                        part2, -range_size_ticks);
                     }
 
                   /* remove previous object */
@@ -464,8 +439,7 @@ range_action_do (
                   /* create clones and add to
                    * project */
                   ArrangerObject * prj_part1 =
-                    arranger_object_clone (
-                      part1);
+                    arranger_object_clone (part1);
                   arranger_object_add_to_project (
                     prj_part1, F_NO_PUBLISH_EVENTS);
                   ADD_AFTER (prj_part1, part1);
@@ -473,8 +447,7 @@ range_action_do (
                   if (part2)
                     {
                       ArrangerObject * prj_part2 =
-                        arranger_object_clone (
-                          part2);
+                        arranger_object_clone (part2);
                       arranger_object_add_to_project (
                         prj_part2,
                         F_NO_PUBLISH_EVENTS);
@@ -499,23 +472,22 @@ range_action_do (
               /* object starts before the range end
                * and ends after the range end -
                * split at range end */
-              else if (arranger_object_is_hit (
-                         prj_obj, &self->end_pos,
-                         NULL) &&
-                       position_is_after (
-                         &prj_obj->end_pos,
-                         &self->end_pos))
+              else if (
+                arranger_object_is_hit (
+                  prj_obj, &self->end_pos, NULL)
+                && position_is_after (
+                  &prj_obj->end_pos, &self->end_pos))
                 {
                   /* split at range end */
-                  ArrangerObject * part1, * part2;
+                  ArrangerObject *part1, *part2;
                   arranger_object_split (
-                    obj, &self->end_pos,
-                    false, &part1, &part2, false);
+                    obj, &self->end_pos, false,
+                    &part1, &part2, false);
 
                   /* move part2 by the range
                    * amount */
                   arranger_object_move (
-                    part2, - range_size_ticks);
+                    part2, -range_size_ticks);
 
                   /* discard part before range end */
                   object_free_w_func_and_null (
@@ -528,8 +500,7 @@ range_action_do (
                   /* create clones and add to
                    * project */
                   ArrangerObject * prj_part2 =
-                    arranger_object_clone (
-                      part2);
+                    arranger_object_clone (part2);
                   arranger_object_add_to_project (
                     prj_part2, F_NO_PUBLISH_EVENTS);
                   ADD_AFTER (prj_part2, part2);
@@ -562,7 +533,7 @@ range_action_do (
               else
                 {
                   arranger_object_move (
-                    prj_obj, - range_size_ticks);
+                    prj_obj, -range_size_ticks);
 
                   /* move objects to bar 1 if
                    * negative pos */
@@ -571,17 +542,15 @@ range_action_do (
                   if (position_is_before (
                         &prj_obj->pos, &init_pos))
                     {
-                      g_debug (
-                        "moving object back");
+                      g_debug ("moving object back");
                       arranger_object_move (
                         prj_obj,
-                        - prj_obj->pos.ticks);
+                        -prj_obj->pos.ticks);
                     }
 
                   /* clone and add to sel_after */
                   ArrangerObject * obj_clone =
-                    arranger_object_clone (
-                      prj_obj);
+                    arranger_object_clone (prj_obj);
                   g_debug ("object moved to:");
                   arranger_object_print (prj_obj);
 
@@ -598,8 +567,7 @@ range_action_do (
                i >= 0; i--)
             {
               ArrangerObject * obj =
-                (ArrangerObject *)
-                g_ptr_array_index (
+                (ArrangerObject *) g_ptr_array_index (
                   before_objs_arr, i);
 
               /* get project object and remove it
@@ -614,8 +582,7 @@ range_action_do (
                i < after_objs_arr->len; i++)
             {
               ArrangerObject * obj =
-                g_ptr_array_index (
-                  after_objs_arr, i);
+                g_ptr_array_index (after_objs_arr, i);
 
               /* clone object and add to project */
               ArrangerObject * prj_obj =
@@ -653,9 +620,7 @@ range_action_do (
 }
 
 int
-range_action_undo (
-  RangeAction * self,
-  GError **     error)
+range_action_undo (RangeAction * self, GError ** error)
 {
   /* sort the selections in ascending order */
   arranger_selections_sort_by_indices (
@@ -663,35 +628,31 @@ range_action_undo (
   arranger_selections_sort_by_indices (
     (ArrangerSelections *) self->sel_after, false);
 
-  GPtrArray * before_objs_arr =
-    g_ptr_array_new ();
+  GPtrArray * before_objs_arr = g_ptr_array_new ();
   arranger_selections_get_all_objects (
     (ArrangerSelections *) self->sel_before,
     before_objs_arr);
-  GPtrArray * after_objs_arr =
-    g_ptr_array_new ();
+  GPtrArray * after_objs_arr = g_ptr_array_new ();
   arranger_selections_get_all_objects (
     (ArrangerSelections *) self->sel_after,
     after_objs_arr);
   double range_size_ticks =
-    position_to_ticks (&self->end_pos) -
-    position_to_ticks (&self->start_pos);
+    position_to_ticks (&self->end_pos)
+    - position_to_ticks (&self->start_pos);
 
   /* remove all matching project objects from
    * sel_after */
   for (int i = (int) after_objs_arr->len - 1;
        i >= 0; i--)
     {
-      ArrangerObject * obj =
-        (ArrangerObject *)
+      ArrangerObject * obj = (ArrangerObject *)
         g_ptr_array_index (after_objs_arr, i);
 
       /* get project object and remove it from
        * the project */
       ArrangerObject * prj_obj =
         arranger_object_find (obj);
-      arranger_object_remove_from_project (
-        prj_obj);
+      arranger_object_remove_from_project (prj_obj);
 
       g_message ("removing");
       arranger_object_print (obj);
@@ -699,8 +660,7 @@ range_action_undo (
   /* add all objects from sel_before */
   for (size_t i = 0; i < before_objs_arr->len; i++)
     {
-      ArrangerObject * obj =
-        (ArrangerObject *)
+      ArrangerObject * obj = (ArrangerObject *)
         g_ptr_array_index (before_objs_arr, i);
 
       /* clone object and add to project */
@@ -738,16 +698,15 @@ range_action_undo (
 }
 
 char *
-range_action_stringize (
-  RangeAction * self)
+range_action_stringize (RangeAction * self)
 {
   switch (self->type)
     {
     case RANGE_ACTION_INSERT_SILENCE:
-      return g_strdup (_("Insert silence"));
+      return g_strdup (_ ("Insert silence"));
       break;
     case RANGE_ACTION_REMOVE:
-      return g_strdup (_("Delete range"));
+      return g_strdup (_ ("Delete range"));
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -756,15 +715,14 @@ range_action_stringize (
 }
 
 void
-range_action_free (
-  RangeAction * self)
+range_action_free (RangeAction * self)
 {
   object_free_w_func_and_null_cast (
     arranger_selections_free_full,
-      ArrangerSelections *, self->sel_before);
+    ArrangerSelections *, self->sel_before);
   object_free_w_func_and_null_cast (
     arranger_selections_free_full,
-      ArrangerSelections *, self->sel_after);
+    ArrangerSelections *, self->sel_after);
 
   object_free_w_func_and_null (
     transport_free, self->transport);

@@ -27,8 +27,8 @@
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_bar.h"
-#include "gui/widgets/center_dock.h"
 #include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
@@ -48,9 +48,7 @@
  * relative coordinates.
  */
 void
-velocity_draw (
-  Velocity *    self,
-  GtkSnapshot * snapshot)
+velocity_draw (Velocity * self, GtkSnapshot * snapshot)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   MidiNote * mn = velocity_get_midi_note (self);
@@ -77,10 +75,9 @@ velocity_draw (
   gtk_snapshot_append_color (
     snapshot, &color,
     &GRAPHENE_RECT_INIT (
-      obj->full_rect.width / 2 -
-        VELOCITY_LINE_WIDTH / 2,
-      circle_radius,
-      VELOCITY_LINE_WIDTH,
+      obj->full_rect.width / 2
+        - VELOCITY_LINE_WIDTH / 2,
+      circle_radius, VELOCITY_LINE_WIDTH,
       obj->full_rect.height));
 
   /*
@@ -93,9 +90,8 @@ velocity_draw (
    */
   gtk_snapshot_save (snapshot);
   gtk_snapshot_translate (
-    snapshot,
-    &GRAPHENE_POINT_INIT (- 0.5f, - 0.5f));
-  float circle_angle = 2.f * (float) M_PI;
+    snapshot, &GRAPHENE_POINT_INIT (-0.5f, -0.5f));
+  float          circle_angle = 2.f * (float) M_PI;
   GskRoundedRect rounded_rect;
   gsk_rounded_rect_init_from_rect (
     &rounded_rect,
@@ -109,11 +105,13 @@ velocity_draw (
     snapshot, &Z_GDK_RGBA_INIT (0.8, 0.8, 0.8, 1),
     &rounded_rect.bounds);
   const float border_width = 2.f;
-  float border_widths[] = {
+  float       border_widths[] = {
     border_width, border_width, border_width,
-    border_width };
+    border_width
+  };
   GdkRGBA border_colors[] = {
-    color, color, color, color };
+    color, color, color, color
+  };
   gtk_snapshot_append_border (
     snapshot, &rounded_rect, border_widths,
     border_colors);
@@ -124,11 +122,10 @@ velocity_draw (
   if (arranger->action != UI_OVERLAY_ACTION_NONE)
     {
       char text[8];
-      sprintf (
-        text, "%d", self->vel);
+      sprintf (text, "%d", self->vel);
       const int padding = 3;
-      int text_start_y = padding;
-      int text_start_x =
+      int       text_start_y = padding;
+      int       text_start_x =
         obj->full_rect.width + padding;
 
       gtk_snapshot_save (snapshot);
@@ -146,7 +143,6 @@ velocity_draw (
 
   gtk_snapshot_restore (snapshot);
 }
-
 
 #if 0
 /**

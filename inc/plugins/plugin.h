@@ -38,13 +38,13 @@
 /* pulled in from X11 */
 #undef Bool
 
-typedef struct Project Project;
-typedef struct Channel Channel;
-typedef struct AutomationTrack AutomationTrack;
-typedef struct _ModulatorWidget ModulatorWidget;
-typedef struct Lv2Plugin Lv2Plugin;
+typedef struct Project           Project;
+typedef struct Channel           Channel;
+typedef struct AutomationTrack   AutomationTrack;
+typedef struct _ModulatorWidget  ModulatorWidget;
+typedef struct Lv2Plugin         Lv2Plugin;
 typedef struct CarlaNativePlugin CarlaNativePlugin;
-typedef struct MixerSelections MixerSelections;
+typedef struct MixerSelections   MixerSelections;
 typedef struct _WrappedObjectWithChangeSignal
   WrappedObjectWithChangeSignal;
 
@@ -89,39 +89,39 @@ typedef struct _WrappedObjectWithChangeSignal
  */
 typedef struct Plugin
 {
-  int               schema_version;
+  int schema_version;
 
-  PluginIdentifier  id;
+  PluginIdentifier id;
 
   /**
    * Pointer back to plugin in its original format.
    */
-  Lv2Plugin *       lv2;
+  Lv2Plugin * lv2;
 
   /** Pointer to Carla native plugin. */
   CarlaNativePlugin * carla;
 
   /** Setting this plugin was instantiated with. */
-  PluginSetting *   setting;
+  PluginSetting * setting;
 
   /** Ports coming in as input. */
-  Port **           in_ports;
-  int               num_in_ports;
-  size_t            in_ports_size;
+  Port ** in_ports;
+  int     num_in_ports;
+  size_t  in_ports_size;
 
   /* caches */
-  GPtrArray *       ctrl_in_ports;
-  GPtrArray *       audio_in_ports;
-  GPtrArray *       cv_in_ports;
-  GPtrArray *       midi_in_ports;
+  GPtrArray * ctrl_in_ports;
+  GPtrArray * audio_in_ports;
+  GPtrArray * cv_in_ports;
+  GPtrArray * midi_in_ports;
 
   /** Cache. */
-  Port *            midi_in_port;
+  Port * midi_in_port;
 
   /** Outgoing ports. */
-  Port **           out_ports;
-  int               num_out_ports;
-  size_t            out_ports_size;
+  Port ** out_ports;
+  int     num_out_ports;
+  size_t  out_ports_size;
 
   /**
    * Ports at their lilv indices.
@@ -129,15 +129,15 @@ typedef struct Plugin
    * These point to ports in \ref Plugin.in_ports and
    * \ref Plugin.out_ports so should not be freed.
    */
-  Port **           lilv_ports;
-  int               num_lilv_ports;
+  Port ** lilv_ports;
+  int     num_lilv_ports;
 
   /**
    * Control for plugin enabled, for convenience.
    *
    * This port is already in \ref Plugin.in_ports.
    */
-  Port *            enabled;
+  Port * enabled;
 
   /**
    * Whether the plugin has a custom "enabled" port
@@ -146,14 +146,14 @@ typedef struct Plugin
    * If true, bypass logic will be delegated to
    * the plugin.
    */
-  Port *            own_enabled_port;
+  Port * own_enabled_port;
 
   /**
    * Control for plugin gain, for convenience.
    *
    * This port is already in \ref Plugin.in_ports.
    */
-  Port *            gain;
+  Port * gain;
 
   /**
    * Instrument left stereo output, for convenience.
@@ -161,34 +161,34 @@ typedef struct Plugin
    * This port is already in \ref Plugin.out_ports
    * if instrument.
    */
-  Port *            l_out;
-  Port *            r_out;
+  Port * l_out;
+  Port * r_out;
 
-  PluginBank **     banks;
-  int               num_banks;
-  size_t            banks_size;
+  PluginBank ** banks;
+  int           num_banks;
+  size_t        banks_size;
 
   PluginPresetIdentifier selected_bank;
   PluginPresetIdentifier selected_preset;
 
   /** Whether plugin UI is opened or not. */
-  bool              visible;
+  bool visible;
 
   /** Latency reported by the Lv2Plugin, if any,
    * in samples. */
-  nframes_t         latency;
+  nframes_t latency;
 
   /** Whether the plugin is currently instantiated
    * or not. */
-  bool              instantiated;
+  bool instantiated;
 
   /** Set to true if instantiation failed and the
    * plugin will be treated as disabled. */
-  bool              instantiation_failed;
+  bool instantiation_failed;
 
   /** Whether the plugin is currently activated
    * or not. */
-  bool              activated;
+  bool activated;
 
   /**
    * Whether the UI has finished instantiating.
@@ -202,15 +202,15 @@ typedef struct Plugin
    * then no UI updates should be sent to the
    * plugin.
    */
-  int               ui_instantiated;
+  int ui_instantiated;
 
   /** Update frequency of the UI, in Hz (times
    * per second). */
-  float             ui_update_hz;
+  float ui_update_hz;
 
   /** Scale factor for drawing UIs in scale of the
    * monitor. */
-  float             ui_scale_factor;
+  float ui_scale_factor;
 
   /**
    * State directory (only basename).
@@ -220,15 +220,15 @@ typedef struct Plugin
    * @note This is only the directory basename and
    *   should go in project/plugins/states.
    */
-  char *            state_dir;
+  char * state_dir;
 
   /** Whether the plugin is currently being
    * deleted. */
-  bool              deleting;
+  bool deleting;
 
   /** Active preset item, if wrapped or generic
    * UI. */
-  GtkWidget *       active_preset_item;
+  GtkWidget * active_preset_item;
 
   /**
    * The Plugin's window.
@@ -240,32 +240,32 @@ typedef struct Plugin
    * have external UIs. In that case, this must be
    * NULL.
    */
-  GtkWindow *       window;
+  GtkWindow * window;
 
   /** Whether show () has been called on the LV2
    * external UI. */
-  bool              external_ui_visible;
+  bool external_ui_visible;
 
   /** The GdkWindow of this widget should be
    * somewhere inside \ref Plugin.window and will
    * be used for wrapping plugin UIs in. */
-  GtkBox *          ev_box;
+  GtkBox * ev_box;
 
   /** Vbox containing the above ev_box for wrapping,
    * or used for packing generic UI controls. */
-  GtkBox *          vbox;
+  GtkBox * vbox;
 
   /** ID of the destroy signal for \ref
    * Plugin.window so that we can
    * deactivate before freeing the plugin. */
-  gulong            destroy_window_id;
+  gulong destroy_window_id;
 
   /** ID of the close-request signal for \ref
    * Plugin.window so that we can
    * deactivate before freeing the plugin. */
-  gulong            close_request_id;
+  gulong close_request_id;
 
-  int               magic;
+  int magic;
 
   /** Modulator widget, if modulator. */
   ModulatorWidget * modulator_widget;
@@ -275,23 +275,23 @@ typedef struct Plugin
    *
    * @seealso update_plugin_ui().
    */
-  guint             update_ui_source_id;
+  guint update_ui_source_id;
 
   /** Temporary variable to check if plugin is
    * currently undergoing deactivation. */
-  bool              deactivating;
+  bool deactivating;
 
   /**
    * Set to true to avoid sending multiple
    * ET_PLUGIN_STATE_CHANGED for the same plugin.
    */
-  int               state_changed_event_sent;
+  int state_changed_event_sent;
 
   /** Whether the plugin is used for functions. */
-  bool              is_function;
+  bool is_function;
 
   /** Pointer to owner track, if any. */
-  Track *           track;
+  Track * track;
 
   /** Pointer to owner selections, if any. */
   MixerSelections * ms;
@@ -300,43 +300,47 @@ typedef struct Plugin
   WrappedObjectWithChangeSignal * gobj;
 } Plugin;
 
-static const cyaml_schema_field_t
-plugin_fields_schema[] =
-{
-  YAML_FIELD_INT (
-    Plugin, schema_version),
+static const cyaml_schema_field_t plugin_fields_schema[] = {
+  YAML_FIELD_INT (Plugin, schema_version),
   YAML_FIELD_MAPPING_EMBEDDED (
-    Plugin, id,
+    Plugin,
+    id,
     plugin_identifier_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Plugin, setting,
+    Plugin,
+    setting,
     plugin_setting_fields_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
-    Plugin, in_ports, port_schema),
+    Plugin,
+    in_ports,
+    port_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
-    Plugin, out_ports, port_schema),
+    Plugin,
+    out_ports,
+    port_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    Plugin, banks, plugin_bank_schema),
+    Plugin,
+    banks,
+    plugin_bank_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
-    Plugin, selected_bank,
+    Plugin,
+    selected_bank,
     plugin_preset_identifier_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
-    Plugin, selected_preset,
+    Plugin,
+    selected_preset,
     plugin_preset_identifier_fields_schema),
-  YAML_FIELD_INT (
-    Plugin, visible),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    Plugin, state_dir),
+  YAML_FIELD_INT (Plugin, visible),
+  YAML_FIELD_STRING_PTR_OPTIONAL (Plugin, state_dir),
 
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-  plugin_schema =
-{
+static const cyaml_schema_value_t plugin_schema = {
   CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER_NULL_STR,
-    Plugin, plugin_fields_schema),
+    Plugin,
+    plugin_fields_schema),
 };
 
 NONNULL_ARGS (1)
@@ -352,7 +356,7 @@ plugin_init_loaded (
 NONNULL
 void
 plugin_add_automation_track (
-  Plugin * self,
+  Plugin *          self,
   AutomationTrack * at);
 
 /**
@@ -360,18 +364,14 @@ plugin_add_automation_track (
  */
 NONNULL
 void
-plugin_add_in_port (
-  Plugin * pl,
-  Port *   port);
+plugin_add_in_port (Plugin * pl, Port * port);
 
 /**
  * Adds an out port to the plugin's list.
  */
 NONNULL
 void
-plugin_add_out_port (
-  Plugin * pl,
-  Port *   port);
+plugin_add_out_port (Plugin * pl, Port * port);
 
 /**
  * Creates/initializes a plugin and its internal
@@ -399,31 +399,28 @@ Plugin *
 plugin_new_dummy (
   ZPluginCategory cat,
   unsigned int    track_name_hash,
-  int            slot);
+  int             slot);
 
 /**
  * Sets the UI refresh rate on the Plugin.
  */
 NONNULL
 void
-plugin_set_ui_refresh_rate (
-  Plugin * self);
+plugin_set_ui_refresh_rate (Plugin * self);
 
 /**
  * Gets the enable/disable port for this plugin.
  */
 NONNULL
 Port *
-plugin_get_enabled_port (
-  Plugin * self);
+plugin_get_enabled_port (Plugin * self);
 
 /**
  * Verifies that the plugin identifiers are valid.
  */
 NONNULL
 bool
-plugin_validate (
-  Plugin * self);
+plugin_validate (Plugin * self);
 
 /**
  * Prints the plugin to the buffer, if any, or to
@@ -461,9 +458,7 @@ plugin_remove_ats_from_automation_tracklist (
  */
 NONNULL_ARGS (1)
 Plugin *
-plugin_clone (
-  Plugin *  src,
-  GError ** error);
+plugin_clone (Plugin * src, GError ** error);
 
 void
 plugin_get_full_port_group_designation (
@@ -497,9 +492,7 @@ plugin_get_port_in_same_group (
  */
 NONNULL
 int
-plugin_activate (
-  Plugin * pl,
-  bool     activate);
+plugin_activate (Plugin * pl, bool activate);
 
 /**
  * Moves the plugin to the given slot in
@@ -591,8 +584,7 @@ plugin_get_port_by_param_uri (
 NONNULL
 MALLOC
 char *
-plugin_get_escaped_name (
-  Plugin * pl);
+plugin_get_escaped_name (Plugin * pl);
 
 /**
  * Copies the state directory from the given source
@@ -609,10 +601,10 @@ plugin_get_escaped_name (
  */
 int
 plugin_copy_state_dir (
-  Plugin *       self,
-  Plugin *       src,
-  bool           is_backup,
-  const char *   abs_state_dir);
+  Plugin *     self,
+  Plugin *     src,
+  bool         is_backup,
+  const char * abs_state_dir);
 
 /**
  * Returns the state dir as an absolute path.
@@ -645,18 +637,15 @@ plugin_get_all (
 
 NONNULL
 Channel *
-plugin_get_channel (
-  Plugin * self);
+plugin_get_channel (Plugin * self);
 
 NONNULL
 Track *
-plugin_get_track (
-  Plugin * self);
+plugin_get_track (Plugin * self);
 
 NONNULL
 Plugin *
-plugin_find (
-  PluginIdentifier * id);
+plugin_find (PluginIdentifier * id);
 
 /**
  * To be called when changes to the plugin
@@ -665,16 +654,14 @@ plugin_find (
  */
 NONNULL
 void
-plugin_update_identifier (
-  Plugin * self);
+plugin_update_identifier (Plugin * self);
 
 /**
  * Updates the plugin's latency.
  */
 NONNULL
 void
-plugin_update_latency (
-  Plugin * pl);
+plugin_update_latency (Plugin * pl);
 
 /**
  * Generates automatables for the plugin.
@@ -695,12 +682,8 @@ plugin_generate_automation_tracks (
 /**
  * Prepare plugin for processing.
  */
-HOT
-NONNULL
-OPTIMIZE_O3
-void
-plugin_prepare_process (
-  Plugin * self);
+HOT NONNULL OPTIMIZE_O3 void
+plugin_prepare_process (Plugin * self);
 
 /**
  * Instantiates the plugin (e.g. when adding to a
@@ -726,8 +709,7 @@ plugin_set_track_name_hash (
  * Process plugin.
  */
 NONNULL
-HOT
-void
+HOT void
 plugin_process (
   Plugin *                            plugin,
   const EngineProcessTimeInfo * const time_nfo);
@@ -735,24 +717,21 @@ plugin_process (
 NONNULL
 MALLOC
 char *
-plugin_generate_window_title (
-  Plugin * plugin);
+plugin_generate_window_title (Plugin * plugin);
 
 /**
  * Process show ui
  */
 NONNULL
 void
-plugin_open_ui (
-  Plugin *plugin);
+plugin_open_ui (Plugin * plugin);
 
 /**
  * Returns if Plugin exists in MixerSelections.
  */
 NONNULL
 bool
-plugin_is_selected (
-  Plugin * pl);
+plugin_is_selected (Plugin * pl);
 
 /**
  * Selects the plugin in the MixerSelections.
@@ -776,9 +755,7 @@ plugin_select (
  */
 NONNULL
 bool
-plugin_is_enabled (
-  Plugin * self,
-  bool     check_track);
+plugin_is_enabled (Plugin * self, bool check_track);
 
 NONNULL
 void
@@ -793,9 +770,7 @@ plugin_set_enabled (
  *
  * This is called when the plugin is bypassed.
  */
-HOT
-NONNULL
-void
+HOT NONNULL void
 plugin_process_passthrough (
   Plugin *                            self,
   const EngineProcessTimeInfo * const time_nfo);
@@ -820,7 +795,7 @@ plugin_get_event_ports (
  */
 NONNULL
 void
-plugin_close_ui (Plugin *plugin);
+plugin_close_ui (Plugin * plugin);
 
 /**
  * (re)Generates automatables for the plugin.
@@ -831,7 +806,7 @@ plugin_update_automatables (Plugin * plugin);
 
 PluginBank *
 plugin_add_bank_if_not_exists (
-  Plugin * self,
+  Plugin *     self,
   const char * uri,
   const char * name);
 
@@ -865,8 +840,7 @@ plugin_set_selected_preset_by_name (
  */
 NONNULL
 void
-plugin_set_caches (
-  Plugin * self);
+plugin_set_caches (Plugin * self);
 
 /**
  * Connect the output Ports of the given source
@@ -937,8 +911,7 @@ plugin_disconnect (Plugin * plugin);
  */
 NONNULL
 void
-plugin_delete_state_files (
-  Plugin * self);
+plugin_delete_state_files (Plugin * self);
 
 /**
  * Cleans up an instantiated but not activated
@@ -946,8 +919,7 @@ plugin_delete_state_files (
  */
 NONNULL
 int
-plugin_cleanup (
-  Plugin * self);
+plugin_cleanup (Plugin * self);
 
 /**
  * Frees given plugin, breaks all its port connections, and frees its ports
@@ -955,7 +927,7 @@ plugin_cleanup (
  */
 NONNULL
 void
-plugin_free (Plugin *plugin);
+plugin_free (Plugin * plugin);
 
 /**
  * @}

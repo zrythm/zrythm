@@ -35,7 +35,8 @@
 G_DECLARE_DERIVABLE_TYPE (
   GenericProgressDialogWidget,
   generic_progress_dialog_widget,
-  Z, GENERIC_PROGRESS_DIALOG_WIDGET,
+  Z,
+  GENERIC_PROGRESS_DIALOG_WIDGET,
   GtkDialog)
 
 typedef struct GenericProgressInfo
@@ -49,12 +50,12 @@ typedef struct GenericProgressInfo
 
 typedef struct GenericProgressDialogButton
 {
-  GtkButton *   btn;
+  GtkButton * btn;
 
   /**
    * Only show the button when the action is finished.
    */
-  bool          only_on_finish;
+  bool only_on_finish;
 } GenericProgressDialogButton;
 
 /**
@@ -62,12 +63,12 @@ typedef struct GenericProgressDialogButton
  */
 typedef struct
 {
-  GtkLabel *           label;
-  GtkProgressBar *     progress_bar;
-  GtkButton *          ok;
-  GtkButton *          cancel;
+  GtkLabel *       label;
+  GtkProgressBar * progress_bar;
+  GtkButton *      ok;
+  GtkButton *      cancel;
 
-  GtkBox *       action_btn_box;
+  GtkBox * action_btn_box;
 
   /**
    * Whether to automatically close the progress
@@ -75,14 +76,14 @@ typedef struct
    *
    * This will hide the OK button.
    */
-  bool                 autoclose;
+  bool autoclose;
 
   /**
    * Whether to allow canceling the action.
    *
    * Will show a Cancel button if true.
    */
-  bool                 cancelable;
+  bool cancelable;
 
   GenericProgressInfo * progress_info;
 
@@ -90,7 +91,7 @@ typedef struct
    * Additional buttons.
    */
   GenericProgressDialogButton extra_buttons[10];
-  size_t               num_extra_buttons;
+  size_t                      num_extra_buttons;
 
 } GenericProgressDialogWidgetPrivate;
 

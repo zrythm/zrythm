@@ -17,8 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <string.h>
-
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/symap.h"
@@ -27,10 +25,10 @@
 #include <gtk/gtk.h>
 
 #include <pcre.h>
+#include <string.h>
 
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
-
 #include <regex.h>
 
 int
@@ -59,16 +57,14 @@ string_is_ascii (const char * string)
  */
 char *
 string_array_contains_substr (
-  char ** str_array,
-  int     num_str,
-  const char *  substr)
+  char **      str_array,
+  int          num_str,
+  const char * substr)
 {
   for (int i = 0; i < num_str; i++)
     {
       if (g_str_match_string (
-        substr,
-        str_array[i],
-        0))
+            substr, str_array[i], 0))
         return str_array[i];
     }
 
@@ -85,15 +81,11 @@ string_is_equal_ignore_case (
   const char * str2)
 {
   char * str1_casefolded =
-    g_utf8_casefold (
-      str1, -1);
+    g_utf8_casefold (str1, -1);
   char * str2_casefolded =
-    g_utf8_casefold (
-      str2, -1);
+    g_utf8_casefold (str2, -1);
   int ret =
-    !g_strcmp0 (
-      str1_casefolded,
-      str2_casefolded);
+    !g_strcmp0 (str1_casefolded, str2_casefolded);
   g_free (str1_casefolded);
   g_free (str2_casefolded);
 
@@ -124,8 +116,8 @@ string_contains_substr_case_insensitive (
   new_substr[strlen (substr)] = '\0';
   string_to_upper (substr, new_substr);
 
-  return
-    string_contains_substr (new_str, new_substr);
+  return string_contains_substr (
+    new_str, new_substr);
 }
 
 /**
@@ -136,12 +128,10 @@ string_contains_substr_case_insensitive (
  * chars as \ref in.
  */
 void
-string_to_upper (
-  const char * in,
-  char *       out)
+string_to_upper (const char * in, char * out)
 {
   const char * src = in;
-  char * dest = out;
+  char *       dest = out;
   while (*src)
     {
       *dest = g_ascii_toupper (*src);
@@ -158,12 +148,10 @@ string_to_upper (
  * chars as \ref in.
  */
 void
-string_to_lower (
-  const char * in,
-  char *       out)
+string_to_lower (const char * in, char * out)
 {
   const char * src = in;
-  char * dest = out;
+  char *       dest = out;
   while (*src)
     {
       *dest = g_ascii_tolower (*src);
@@ -179,31 +167,22 @@ string_to_lower (
  * Example: "MIDI ZRegion #1" -> "MIDI_Region_1".
  */
 char *
-string_convert_to_filename (
-  const char * str)
+string_convert_to_filename (const char * str)
 {
   /* convert illegal characters to '_' */
   char * new_str = g_strdup (str);
   for (int i = 0; i < (int) strlen (str); i++)
     {
-      if (str[i] == '#' ||
-          str[i] == '%' ||
-          str[i] == '&' ||
-          str[i] == '{' ||
-          str[i] == '}' ||
-          str[i] == '\\' ||
-          str[i] == '<' ||
-          str[i] == '>' ||
-          str[i] == '*' ||
-          str[i] == '?' ||
-          str[i] == '/' ||
-          str[i] == ' ' ||
-          str[i] == '$' ||
-          str[i] == '!' ||
-          str[i] == '\'' ||
-          str[i] == '"' ||
-          str[i] == ':' ||
-          str[i] == '@')
+      if (
+        str[i] == '#' || str[i] == '%'
+        || str[i] == '&' || str[i] == '{'
+        || str[i] == '}' || str[i] == '\\'
+        || str[i] == '<' || str[i] == '>'
+        || str[i] == '*' || str[i] == '?'
+        || str[i] == '/' || str[i] == ' '
+        || str[i] == '$' || str[i] == '!'
+        || str[i] == '\'' || str[i] == '"'
+        || str[i] == ':' || str[i] == '@')
         new_str[i] = '_';
     }
   return new_str;
@@ -220,10 +199,8 @@ string_get_substr_before_suffix (
   const char * suffix)
 {
   /* get the part without the suffix */
-  char ** parts =
-    g_strsplit (
-      str, suffix, 0);
-  char * part = g_strdup (parts[0]);
+  char ** parts = g_strsplit (str, suffix, 0);
+  char *  part = g_strdup (parts[0]);
   g_strfreev (parts);
   return part;
 }
@@ -240,9 +217,7 @@ string_remove_until_after_first_match (
 {
   g_return_val_if_fail (str, NULL);
 
-  char ** parts =
-    g_strsplit (
-      str, match, 2);
+  char ** parts = g_strsplit (str, match, 2);
 #if 0
   g_message ("after removing prefix: %s", prefix);
   g_message ("part 0 %s", parts[0]);
@@ -263,13 +238,12 @@ string_replace_regex (
   const char * regex,
   const char * replace_str)
 {
-  pcre2_code *re;
-  PCRE2_SIZE erroffset;
-  int errorcode;
-  re =
-    pcre2_compile (
-      (PCRE2_SPTR) regex, PCRE2_ZERO_TERMINATED, 0,
-      &errorcode, &erroffset, NULL);
+  pcre2_code * re;
+  PCRE2_SIZE   erroffset;
+  int          errorcode;
+  re = pcre2_compile (
+    (PCRE2_SPTR) regex, PCRE2_ZERO_TERMINATED, 0,
+    &errorcode, &erroffset, NULL);
   if (!re)
     {
       PCRE2_UCHAR8 buffer[120];
@@ -277,16 +251,16 @@ string_replace_regex (
         errorcode, buffer, 120);
 
       g_warning (
-        "failed to compile regex %s: %s",
-        regex, buffer);
+        "failed to compile regex %s: %s", regex,
+        buffer);
       return;
     }
 
   static PCRE2_UCHAR8 buf[10000];
-  size_t buf_sz = 10000;
+  size_t              buf_sz = 10000;
   pcre2_substitute (
-    re, (PCRE2_SPTR) *str, PCRE2_ZERO_TERMINATED,
-    0, PCRE2_SUBSTITUTE_GLOBAL, NULL, NULL,
+    re, (PCRE2_SPTR) *str, PCRE2_ZERO_TERMINATED, 0,
+    PCRE2_SUBSTITUTE_GLOBAL, NULL, NULL,
     (PCRE2_SPTR) replace_str, PCRE2_ZERO_TERMINATED,
     buf, &buf_sz);
   pcre2_code_free (re);
@@ -301,10 +275,8 @@ string_replace (
   const char * from,
   const char * to)
 {
-  char ** split =
-    g_strsplit (str, from, -1);
-  char * new_str =
-    g_strjoinv (to, split);
+  char ** split = g_strsplit (str, from, -1);
+  char *  new_str = g_strjoinv (to, split);
   g_strfreev (split);
   return new_str;
 }
@@ -347,25 +319,24 @@ string_get_regex_group (
   const char * regex,
   int          group)
 {
-  int OVECCOUNT = 60;
-  const char *error;
-  int   erroffset;
-  pcre *re;
-  int   rc;
-  int   ovector[OVECCOUNT];
+  int          OVECCOUNT = 60;
+  const char * error;
+  int          erroffset;
+  pcre *       re;
+  int          rc;
+  int          ovector[OVECCOUNT];
 
-  re =
-    pcre_compile (
-      /* pattern */
-      regex,
-      /* options */
-      0,
-      /* error message */
-      &error,
-      /* error offset */
-      &erroffset,
-      /* use default character tables */
-      0);
+  re = pcre_compile (
+    /* pattern */
+    regex,
+    /* options */
+    0,
+    /* error message */
+    &error,
+    /* error offset */
+    &erroffset,
+    /* use default character tables */
+    0);
 
   if (!re)
     {
@@ -375,16 +346,15 @@ string_get_regex_group (
       return NULL;
     }
 
-  rc =
-    pcre_exec (
-      re, /* the compiled pattern */
-      0,  /* no extra data - pattern was not studied */
-      str, /* the string to match */
-      strlen (str), /* the length of the string */
-      0,   /* start at offset 0 in the subject */
-      0,   /* default options */
-      ovector, /* output vector for substring information */
-      OVECCOUNT); /* number of elements in the output vector */
+  rc = pcre_exec (
+    re, /* the compiled pattern */
+    0, /* no extra data - pattern was not studied */
+    str,          /* the string to match */
+    strlen (str), /* the length of the string */
+    0,       /* start at offset 0 in the subject */
+    0,       /* default options */
+    ovector, /* output vector for substring information */
+    OVECCOUNT); /* number of elements in the output vector */
 
   if (rc < 0)
     {
@@ -396,8 +366,8 @@ string_get_regex_group (
 
         default:
           g_message (
-            "Error while matching \"%s\": %d",
-            str, rc);
+            "Error while matching \"%s\": %d", str,
+            rc);
           break;
         }
       free (re);
@@ -414,11 +384,10 @@ string_get_regex_group (
     }
 #endif
 
-  return
-    g_strdup_printf (
-      "%.*s",
-      ovector[2 * group + 1] - ovector[2 * group],
-      str + ovector[2 * group]);
+  return g_strdup_printf (
+    "%.*s",
+    ovector[2 * group + 1] - ovector[2 * group],
+    str + ovector[2 * group]);
 }
 
 /**
@@ -437,28 +406,27 @@ string_get_int_after_last_space (
   const char * str,
   char *       str_without_num)
 {
-  int OVECCOUNT = 60;
-  const char *error;
-  int   erroffset;
-  pcre *re;
-  int   rc;
-  int   i;
-  int   ovector[OVECCOUNT];
+  int          OVECCOUNT = 60;
+  const char * error;
+  int          erroffset;
+  pcre *       re;
+  int          rc;
+  int          i;
+  int          ovector[OVECCOUNT];
 
-  const char *regex = "(.*) ([\\d]+)";
+  const char * regex = "(.*) ([\\d]+)";
 
-  re =
-    pcre_compile (
-      /* pattern */
-      regex,
-      /* options */
-      0,
-      /* error message */
-      &error,
-      /* error offset */
-      &erroffset,
-      /* use default character tables */
-      0);
+  re = pcre_compile (
+    /* pattern */
+    regex,
+    /* options */
+    0,
+    /* error message */
+    &error,
+    /* error offset */
+    &erroffset,
+    /* use default character tables */
+    0);
 
   if (!re)
     {
@@ -468,16 +436,15 @@ string_get_int_after_last_space (
       return -1;
     }
 
-  rc =
-    pcre_exec (
-      re, /* the compiled pattern */
-      0,  /* no extra data - pattern was not studied */
-      str, /* the string to match */
-      strlen(str), /* the length of the string */
-      0,   /* start at offset 0 in the subject */
-      0,   /* default options */
-      ovector, /* output vector for substring information */
-      OVECCOUNT); /* number of elements in the output vector */
+  rc = pcre_exec (
+    re, /* the compiled pattern */
+    0, /* no extra data - pattern was not studied */
+    str,          /* the string to match */
+    strlen (str), /* the length of the string */
+    0,       /* start at offset 0 in the subject */
+    0,       /* default options */
+    ovector, /* output vector for substring information */
+    OVECCOUNT); /* number of elements in the output vector */
 
   if (rc < 0)
     {
@@ -485,8 +452,8 @@ string_get_int_after_last_space (
         {
         case PCRE_ERROR_NOMATCH:
           g_message (
-            "%s: String %s didn't match",
-            __func__, str);
+            "%s: String %s didn't match", __func__,
+            str);
           break;
 
         default:
@@ -549,20 +516,15 @@ string_array_sort_and_remove_duplicates (
  * free'd and the pointer is set to NULL.
  */
 void
-string_copy_w_realloc (
-  char **      dest,
-  const char * src)
+string_copy_w_realloc (char ** dest, const char * src)
 {
   g_return_if_fail (
-    dest &&
-    ((!*dest && !src) || (*dest != src)));
+    dest && ((!*dest && !src) || (*dest != src)));
   if (src)
     {
       size_t strlen_src = strlen (src);
-      *dest =
-        g_realloc (
-          *dest,
-          (strlen_src + 1) * sizeof (char));
+      *dest = g_realloc (
+        *dest, (strlen_src + 1) * sizeof (char));
       strcpy (*dest, src);
     }
   else
@@ -580,19 +542,22 @@ string_copy_w_realloc (
  * characters and replaces the rest with underscore.
  */
 char *
-string_symbolify (
-  const char * in)
+string_symbolify (const char * in)
 {
   const size_t len = strlen (in);
-  char * out =
-    (char*) object_new_n_sizeof (len + 1, 1);
-  for (size_t i = 0; i < len; ++i) {
-    if (g_ascii_isalnum (in[i])) {
-      out[i] = in[i];
-    } else {
-      out[i] = '_';
+  char *       out =
+    (char *) object_new_n_sizeof (len + 1, 1);
+  for (size_t i = 0; i < len; ++i)
+    {
+      if (g_ascii_isalnum (in[i]))
+        {
+          out[i] = in[i];
+        }
+      else
+        {
+          out[i] = '_';
+        }
     }
-  }
   return out;
 }
 
@@ -600,8 +565,7 @@ string_symbolify (
  * Returns whether the string is NULL or empty.
  */
 bool
-string_is_empty (
-  const char * str)
+string_is_empty (const char * str)
 {
   if (!str || strlen (str) == 0)
     return true;

@@ -21,9 +21,9 @@
 #include "audio/channel_send.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
-#include "plugins/plugin_identifier.h"
 #include "gui/widgets/channel_send.h"
 #include "gui/widgets/channel_send_selector.h"
+#include "plugins/plugin_identifier.h"
 #include "project.h"
 #include "utils/error.h"
 #include "utils/objects.h"
@@ -57,16 +57,15 @@ typedef struct ChannelSendTarget
 {
   ChannelSendTargetType type;
 
-  int                   track_pos;
+  int track_pos;
 
-  PluginIdentifier      pl_id;
+  PluginIdentifier pl_id;
 
-  char *                port_group;
+  char * port_group;
 } ChannelSendTarget;
 
 static Track *
-get_track_from_target (
-  ChannelSendTarget * target)
+get_track_from_target (ChannelSendTarget * target)
 {
   if (target->type == TARGET_TYPE_NONE)
     return NULL;
@@ -85,14 +84,11 @@ get_sidechain_from_target (
 
   Plugin * pl = plugin_find (&target->pl_id);
   g_return_val_if_fail (pl, NULL);
-  Port * l =
-    plugin_get_port_in_group (
-      pl, target->port_group, true);
-  Port * r =
-    plugin_get_port_in_group (
-      pl, target->port_group, false);
-  return
-    stereo_ports_new_from_existing (l, r);
+  Port * l = plugin_get_port_in_group (
+    pl, target->port_group, true);
+  Port * r = plugin_get_port_in_group (
+    pl, target->port_group, false);
+  return stereo_ports_new_from_existing (l, r);
 }
 
 #if 0
@@ -111,17 +107,15 @@ on_selection_changed (
   ChannelSendSelectorWidget * self)
 {
   GList * selected_rows =
-    gtk_tree_selection_get_selected_rows (
-      ts, NULL);
+    gtk_tree_selection_get_selected_rows (ts, NULL);
   if (!selected_rows)
     return;
 
   GtkTreePath * tp =
-    (GtkTreePath *)
-      g_list_first (selected_rows)->data;
+    (GtkTreePath *) g_list_first (selected_rows)
+      ->data;
   GtkTreeIter iter;
-  gtk_tree_model_get_iter (
-    self->model, &iter, tp);
+  gtk_tree_model_get_iter (self->model, &iter, tp);
   GValue value = G_VALUE_INIT;
   gtk_tree_model_get_value (
     self->model, &iter, 2, &value);
@@ -131,37 +125,38 @@ on_selection_changed (
   ChannelSend * send = self->send_widget->send;
   bool is_empty = channel_send_is_empty (send);
 
-  Track * src_track =
-    channel_send_get_track (send);
+  Track * src_track = channel_send_get_track (send);
   Track * dest_track = NULL;
-  StereoPorts * dest_sidechain = NULL;
-  PortConnection * conn = NULL;;
+  StereoPorts *    dest_sidechain = NULL;
+  PortConnection * conn = NULL;
+  ;
   switch (target->type)
     {
     case TARGET_TYPE_NONE:
       if (channel_send_is_enabled (send))
         {
           GError * err = NULL;
-          bool ret =
+          bool     ret =
             channel_send_action_perform_disconnect (
               self->send_widget->send, &err);
           if (!ret)
             {
               HANDLE_ERROR (
                 err, "%s",
-                _("Failed to disconnect send"));
+                _ ("Failed to disconnect send"));
             }
         }
       break;
     case TARGET_TYPE_TRACK:
-      dest_track =
-        get_track_from_target (target);
+      dest_track = get_track_from_target (target);
       switch (src_track->out_signal_type)
         {
         case TYPE_EVENT:
-          if (port_connections_manager_get_sources_or_dests (
-                PORT_CONNECTIONS_MGR, NULL,
-                &send->midi_out->id, false) == 1)
+          if (
+            port_connections_manager_get_sources_or_dests (
+              PORT_CONNECTIONS_MGR, NULL,
+              &send->midi_out->id, false)
+            == 1)
             {
               conn =
                 port_connections_manager_get_source_or_dest (
@@ -178,7 +173,7 @@ on_selection_changed (
                    id)))
             {
               GError * err = NULL;
-              bool ret =
+              bool     ret =
                 channel_send_action_perform_connect_midi (
                   send,
                   dest_track->processor->midi_in,
@@ -187,15 +182,16 @@ on_selection_changed (
                 {
                   HANDLE_ERROR (
                     err, "%s",
-                    _("Failed to connect send"));
+                    _ ("Failed to connect send"));
                 }
             }
           break;
         case TYPE_AUDIO:
-          if (port_connections_manager_get_sources_or_dests (
-                PORT_CONNECTIONS_MGR, NULL,
-                &send->stereo_out->l->id,
-                false) == 1)
+          if (
+            port_connections_manager_get_sources_or_dests (
+              PORT_CONNECTIONS_MGR, NULL,
+              &send->stereo_out->l->id, false)
+            == 1)
             {
               conn =
                 port_connections_manager_get_source_or_dest (
@@ -212,7 +208,7 @@ on_selection_changed (
                     l->id)))
             {
               GError * err = NULL;
-              bool ret =
+              bool     ret =
                 channel_send_action_perform_connect_audio (
                   send,
                   dest_track->processor->stereo_in,
@@ -221,7 +217,7 @@ on_selection_changed (
                 {
                   HANDLE_ERROR (
                     err, "%s",
-                    _("Failed to connect send"));
+                    _ ("Failed to connect send"));
                 }
             }
           break;
@@ -233,10 +229,11 @@ on_selection_changed (
       {
         dest_sidechain =
           get_sidechain_from_target (target);
-        if (port_connections_manager_get_sources_or_dests (
-              PORT_CONNECTIONS_MGR, NULL,
-              &send->stereo_out->l->id,
-              false) == 1)
+        if (
+          port_connections_manager_get_sources_or_dests (
+            PORT_CONNECTIONS_MGR, NULL,
+            &send->stereo_out->l->id, false)
+          == 1)
           {
             conn =
               port_connections_manager_get_source_or_dest (
@@ -254,15 +251,14 @@ on_selection_changed (
                 &dest_sidechain->l->id))))
           {
             GError * err = NULL;
-            bool ret =
+            bool     ret =
               channel_send_action_perform_connect_sidechain (
-                send,
-                dest_sidechain, &err);
+                send, dest_sidechain, &err);
             if (!ret)
               {
                 HANDLE_ERROR (
                   err, "%s",
-                  _("Failed to connect send"));
+                  _ ("Failed to connect send"));
               }
           }
         object_zero_and_free (dest_sidechain);
@@ -275,14 +271,11 @@ on_selection_changed (
 }
 
 static void
-setup_treeview (
-  ChannelSendSelectorWidget * self)
+setup_treeview (ChannelSendSelectorWidget * self)
 {
   /* icon, name, pointer to data */
-  GtkListStore * list_store =
-    gtk_list_store_new (
-      3, G_TYPE_STRING, G_TYPE_STRING,
-      G_TYPE_POINTER);
+  GtkListStore * list_store = gtk_list_store_new (
+    3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 
   GtkTreeSelection * sel =
     gtk_tree_view_get_selection (
@@ -294,11 +287,8 @@ setup_treeview (
   GtkTreeIter iter;
   gtk_list_store_append (list_store, &iter);
   gtk_list_store_set (
-    list_store, &iter,
-    0, "edit-none",
-    1, _("None"),
-    2, target,
-    -1);
+    list_store, &iter, 0, "edit-none", 1,
+    _ ("None"), 2, target, -1);
   int select_idx = 0;
   int count = 1;
 
@@ -312,10 +302,11 @@ setup_treeview (
       g_debug ("target %s", target_track->name);
 
       /* skip tracks with non-matching signal types */
-      if (target_track == track ||
-          track->out_signal_type !=
-            target_track->in_signal_type ||
-          !track_type_is_fx (target_track->type))
+      if (
+        target_track == track
+        || track->out_signal_type
+             != target_track->in_signal_type
+        || !track_type_is_fx (target_track->type))
         continue;
       g_message ("adding %s", target_track->name);
 
@@ -327,15 +318,13 @@ setup_treeview (
       /* add it to list */
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
-        list_store, &iter,
-        0, "media-album-track",
-        1, target_track->name,
-        2, target,
-        -1);
+        list_store, &iter, 0, "media-album-track",
+        1, target_track->name, 2, target, -1);
 
-      if (channel_send_is_enabled (send) &&
-          target_track ==
-            channel_send_get_target_track (
+      if (
+        channel_send_is_enabled (send)
+        && target_track
+             == channel_send_get_target_track (
                send, NULL))
         {
           select_idx = count;
@@ -349,9 +338,10 @@ setup_treeview (
     {
       Track * target_track = TRACKLIST->tracks[i];
 
-      if (target_track == track ||
-          !track_type_has_channel (
-            target_track->type))
+      if (
+        target_track == track
+        || !track_type_has_channel (
+          target_track->type))
         {
           continue;
         }
@@ -359,7 +349,7 @@ setup_treeview (
       Channel * ch = target_track->channel;
 
       Plugin * plugins[300];
-      int num_plugins =
+      int      num_plugins =
         channel_get_plugins (ch, plugins);
 
       for (int j = 0; j < num_plugins; j++)
@@ -373,12 +363,14 @@ setup_treeview (
               Port * port = pl->in_ports[k];
               g_debug ("port %s", port->id.label);
 
-              if (!(port->id.flags &
-                     PORT_FLAG_SIDECHAIN) ||
-                  port->id.type != TYPE_AUDIO ||
-                  !port->id.port_group ||
-                  !(port->id.flags &
-                      PORT_FLAG_STEREO_L))
+              if (
+                !(port->id.flags
+                  & PORT_FLAG_SIDECHAIN)
+                || port->id.type != TYPE_AUDIO
+                || !port->id.port_group
+                || !(
+                  port->id.flags
+                  & PORT_FLAG_STEREO_L))
                 {
                   continue;
                 }
@@ -398,11 +390,11 @@ setup_treeview (
                 "other channel %s",
                 other_channel->id.label);
 
-              Port * l = NULL, * r = NULL;
-              if (port->id.flags &
-                    PORT_FLAG_STEREO_L &&
-                  other_channel->id.flags &
-                    PORT_FLAG_STEREO_R)
+              Port *l = NULL, *r = NULL;
+              if (
+                port->id.flags & PORT_FLAG_STEREO_L
+                && other_channel->id.flags
+                     & PORT_FLAG_STEREO_R)
                 {
                   l = port;
                   r = other_channel;
@@ -431,11 +423,9 @@ setup_treeview (
               gtk_list_store_append (
                 list_store, &iter);
               gtk_list_store_set (
-                list_store, &iter,
-                0, "media-album-track",
-                1, designation,
-                2, target,
-                -1);
+                list_store, &iter, 0,
+                "media-album-track", 1, designation,
+                2, target, -1);
 
               if (channel_send_is_target_sidechain (
                     send))
@@ -443,8 +433,7 @@ setup_treeview (
                   StereoPorts * sp =
                     channel_send_get_target_sidechain (
                       send);
-                  if (sp->l == l &&
-                      sp->r == r)
+                  if (sp->l == l && sp->r == r)
                     {
                       select_idx = count;
                     }
@@ -461,15 +450,14 @@ setup_treeview (
 
   GtkTreePath * path =
     gtk_tree_path_new_from_indices (select_idx, -1);
-  gtk_tree_selection_select_path (
-    sel, path);
+  gtk_tree_selection_select_path (sel, path);
   gtk_tree_path_free (path);
 
   g_signal_connect (
-    G_OBJECT (
-      gtk_tree_view_get_selection (
-        GTK_TREE_VIEW (self->treeview))), "changed",
-     G_CALLBACK (on_selection_changed), self);
+    G_OBJECT (gtk_tree_view_get_selection (
+      GTK_TREE_VIEW (self->treeview))),
+    "changed", G_CALLBACK (on_selection_changed),
+    self);
 }
 
 void
@@ -483,10 +471,8 @@ ChannelSendSelectorWidget *
 channel_send_selector_widget_new (
   ChannelSendWidget * send)
 {
-  ChannelSendSelectorWidget * self =
-    g_object_new (
-      CHANNEL_SEND_SELECTOR_WIDGET_TYPE,
-      NULL);
+  ChannelSendSelectorWidget * self = g_object_new (
+    CHANNEL_SEND_SELECTOR_WIDGET_TYPE, NULL);
   self->send_widget = send;
 
   return self;
@@ -503,25 +489,21 @@ channel_send_selector_widget_init (
   ChannelSendSelectorWidget * self)
 {
   /* create box */
-  self->vbox =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  self->vbox = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_popover_set_child (
-    GTK_POPOVER (self),
-    GTK_WIDGET (self->vbox));
+    GTK_POPOVER (self), GTK_WIDGET (self->vbox));
 
   /* add scroll */
-  GtkWidget * scroll =
-    gtk_scrolled_window_new ();
+  GtkWidget * scroll = gtk_scrolled_window_new ();
   gtk_scrolled_window_set_policy (
-    GTK_SCROLLED_WINDOW (scroll),
-    GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+    GTK_SCROLLED_WINDOW (scroll), GTK_POLICY_NEVER,
+    GTK_POLICY_AUTOMATIC);
   gtk_scrolled_window_set_propagate_natural_height (
     GTK_SCROLLED_WINDOW (scroll), true);
   gtk_scrolled_window_set_max_content_height (
     GTK_SCROLLED_WINDOW (scroll), 240);
-  gtk_box_append (
-    GTK_BOX (self->vbox), scroll);
+  gtk_box_append (GTK_BOX (self->vbox), scroll);
 
   /* add treeview */
   self->treeview =
@@ -553,26 +535,20 @@ channel_send_selector_widget_init (
 #endif
 
   /* init tree view */
-  GtkCellRenderer * renderer;
+  GtkCellRenderer *   renderer;
   GtkTreeViewColumn * column;
 
   /* column for icon */
   renderer = gtk_cell_renderer_pixbuf_new ();
-  column =
-    gtk_tree_view_column_new_with_attributes (
-      "icon", renderer,
-      "icon-name", 0,
-      NULL);
+  column = gtk_tree_view_column_new_with_attributes (
+    "icon", renderer, "icon-name", 0, NULL);
   gtk_tree_view_append_column (
     self->treeview, column);
 
   /* column for name */
   renderer = gtk_cell_renderer_text_new ();
-  column =
-    gtk_tree_view_column_new_with_attributes (
-      "name", renderer,
-      "text", 1,
-      NULL);
+  column = gtk_tree_view_column_new_with_attributes (
+    "name", renderer, "text", 1, NULL);
   gtk_tree_view_append_column (
     self->treeview, column);
 

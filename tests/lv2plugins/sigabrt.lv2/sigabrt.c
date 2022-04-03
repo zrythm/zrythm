@@ -17,9 +17,9 @@
 
 /** Include standard C headers */
 #include <math.h>
+#include <signal.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <signal.h>
 
 /**
    LV2 headers are based on the URI of the specification they come from, so a
@@ -37,16 +37,18 @@
    file is a good convention to follow.  If this URI does not match that used
    in the data files, the host will fail to load the plugin.
 */
-#define AMP_URI "https://www.zrythm.org/plugins/sigabrt"
+#define AMP_URI \
+  "https://www.zrythm.org/plugins/sigabrt"
 
 /**
    In code, ports are referred to by index.  An enumeration of port indices
    should be defined for readability.
 */
-typedef enum {
-	AMP_GAIN   = 0,
-	AMP_INPUT  = 1,
-	AMP_OUTPUT = 2
+typedef enum
+{
+  AMP_GAIN = 0,
+  AMP_INPUT = 1,
+  AMP_OUTPUT = 2
 } PortIndex;
 
 /**
@@ -55,11 +57,12 @@ typedef enum {
    every instance method.  In this simple plugin, only port buffers need to be
    stored, since there is no additional instance data.
 */
-typedef struct {
-	// Port buffers
-	const float* gain;
-	const float* input;
-	float*       output;
+typedef struct
+{
+  // Port buffers
+  const float * gain;
+  const float * input;
+  float *       output;
 } Amp;
 
 /**
@@ -73,14 +76,15 @@ typedef struct {
    methods on this instance will be called concurrently with it.
 */
 static LV2_Handle
-instantiate(const LV2_Descriptor*     descriptor,
-            double                    rate,
-            const char*               bundle_path,
-            const LV2_Feature* const* features)
+instantiate (
+  const LV2_Descriptor *      descriptor,
+  double                      rate,
+  const char *                bundle_path,
+  const LV2_Feature * const * features)
 {
-	Amp* amp = (Amp*)calloc(1, sizeof(Amp));
+  Amp * amp = (Amp *) calloc (1, sizeof (Amp));
 
-	return (LV2_Handle)amp;
+  return (LV2_Handle) amp;
 }
 
 /**
@@ -92,23 +96,25 @@ instantiate(const LV2_Descriptor*     descriptor,
    context as run().
 */
 static void
-connect_port(LV2_Handle instance,
-             uint32_t   port,
-             void*      data)
+connect_port (
+  LV2_Handle instance,
+  uint32_t   port,
+  void *     data)
 {
-	Amp* amp = (Amp*)instance;
+  Amp * amp = (Amp *) instance;
 
-	switch ((PortIndex)port) {
-	case AMP_GAIN:
-		amp->gain = (const float*)data;
-		break;
-	case AMP_INPUT:
-		amp->input = (const float*)data;
-		break;
-	case AMP_OUTPUT:
-		amp->output = (float*)data;
-		break;
-	}
+  switch ((PortIndex) port)
+    {
+    case AMP_GAIN:
+      amp->gain = (const float *) data;
+      break;
+    case AMP_INPUT:
+      amp->input = (const float *) data;
+      break;
+    case AMP_OUTPUT:
+      amp->output = (float *) data;
+      break;
+    }
 }
 
 /**
@@ -121,12 +127,13 @@ connect_port(LV2_Handle instance,
    methods on this instance will be called concurrently with it.
 */
 static void
-activate(LV2_Handle instance)
+activate (LV2_Handle instance)
 {
 }
 
 /** Define a macro for converting a gain in dB to a coefficient. */
-#define DB_CO(g) ((g) > -90.0f ? powf(10.0f, (g) * 0.05f) : 0.0f)
+#define DB_CO(g) \
+  ((g) > -90.0f ? powf (10.0f, (g) *0.05f) : 0.0f)
 
 /**
    The `run()` method is the main process function of the plugin.  It processes
@@ -135,19 +142,20 @@ activate(LV2_Handle instance)
    a mutex) or memory allocation are not allowed.
 */
 static void
-run(LV2_Handle instance, uint32_t n_samples)
+run (LV2_Handle instance, uint32_t n_samples)
 {
-	const Amp* amp = (const Amp*)instance;
+  const Amp * amp = (const Amp *) instance;
 
-	const float        gain   = *(amp->gain);
-	const float* const input  = amp->input;
-	float* const       output = amp->output;
+  const float         gain = *(amp->gain);
+  const float * const input = amp->input;
+  float * const       output = amp->output;
 
-	const float coef = DB_CO(gain);
+  const float coef = DB_CO (gain);
 
-	for (uint32_t pos = 0; pos < n_samples; pos++) {
-		output[pos] = input[pos] * coef;
-	}
+  for (uint32_t pos = 0; pos < n_samples; pos++)
+    {
+      output[pos] = input[pos] * coef;
+    }
 
   /* force a crash */
   if (n_samples > 1)
@@ -168,7 +176,7 @@ run(LV2_Handle instance, uint32_t n_samples)
    methods on this instance will be called concurrently with it.
 */
 static void
-deactivate(LV2_Handle instance)
+deactivate (LV2_Handle instance)
 {
 }
 
@@ -179,9 +187,9 @@ deactivate(LV2_Handle instance)
    methods on this instance will be called concurrently with it.
 */
 static void
-cleanup(LV2_Handle instance)
+cleanup (LV2_Handle instance)
 {
-	free(instance);
+  free (instance);
 }
 
 /**
@@ -194,10 +202,10 @@ cleanup(LV2_Handle instance)
    This method is in the ``discovery'' threading class, so no other functions
    or methods in this plugin library will be called concurrently with it.
 */
-static const void*
-extension_data(const char* uri)
+static const void *
+extension_data (const char * uri)
 {
-	return NULL;
+  return NULL;
 }
 
 /**
@@ -206,14 +214,8 @@ extension_data(const char* uri)
    library constructors and destructors to clean up properly.
 */
 static const LV2_Descriptor descriptor = {
-	AMP_URI,
-	instantiate,
-	connect_port,
-	activate,
-	run,
-	deactivate,
-	cleanup,
-	extension_data
+  AMP_URI, instantiate, connect_port, activate,
+  run,     deactivate,  cleanup,      extension_data
 };
 
 /**
@@ -227,11 +229,14 @@ static const LV2_Descriptor descriptor = {
    or methods in this plugin library will be called concurrently with it.
 */
 LV2_SYMBOL_EXPORT
-const LV2_Descriptor*
-lv2_descriptor(uint32_t index)
+const LV2_Descriptor *
+lv2_descriptor (uint32_t index)
 {
-	switch (index) {
-	case 0:  return &descriptor;
-	default: return NULL;
-	}
+  switch (index)
+    {
+    case 0:
+      return &descriptor;
+    default:
+      return NULL;
+    }
 }

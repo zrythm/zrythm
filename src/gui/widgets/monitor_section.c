@@ -31,43 +31,40 @@
 #include "settings/settings.h"
 #include "utils/error.h"
 #include "utils/flags.h"
-#include "utils/math.h"
 #include "utils/gtk.h"
+#include "utils/math.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  MonitorSectionWidget, monitor_section_widget,
+  MonitorSectionWidget,
+  monitor_section_widget,
   GTK_TYPE_BOX)
 
 static const char *
-monitor_out_name_getter (
-  void * obj)
+monitor_out_name_getter (void * obj)
 {
-  return _("Monitor");
+  return _ ("Monitor");
 }
 
 static const char *
-mute_name_getter (
-  void * obj)
+mute_name_getter (void * obj)
 {
-  return _("Mute");
+  return _ ("Mute");
 }
 
 static const char *
-listen_name_getter (
-  void * obj)
+listen_name_getter (void * obj)
 {
-  return _("Listen");
+  return _ ("Listen");
 }
 
 static const char *
-dim_name_getter (
-  void * obj)
+dim_name_getter (void * obj)
 {
-  return _("Dim");
+  return _ ("Dim");
 }
 
 void
@@ -83,31 +80,30 @@ monitor_section_widget_refresh (
 
   char str[200];
   snprintf (
-    str, 200, _("<small>%d muted</small>"),
+    str, 200, _ ("<small>%d muted</small>"),
     num_muted);
-  gtk_label_set_markup (
-    self->muted_tracks_lbl, str);
+  gtk_label_set_markup (self->muted_tracks_lbl, str);
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->muted_tracks_lbl),
-    _("Currently muted tracks"));
+    _ ("Currently muted tracks"));
 
   snprintf (
-    str, 200, _("<small>%d soloed</small>"),
+    str, 200, _ ("<small>%d soloed</small>"),
     num_soloed);
   gtk_label_set_markup (
     self->soloed_tracks_lbl, str);
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->soloed_tracks_lbl),
-    _("Currently soloed tracks"));
+    _ ("Currently soloed tracks"));
 
   snprintf (
-    str, 200, _("<small>%d listened</small>"),
+    str, 200, _ ("<small>%d listened</small>"),
     num_listened);
   gtk_label_set_markup (
     self->listened_tracks_lbl, str);
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->listened_tracks_lbl),
-    _("Currently listened tracks"));
+    _ ("Currently listened tracks"));
 
   gtk_widget_set_sensitive (
     GTK_WIDGET (self->soloing_btn), num_soloed > 0);
@@ -137,14 +133,14 @@ on_unsolo_all_clicked (
   tracklist_select_all (
     TRACKLIST, F_SELECT, F_NO_PUBLISH_EVENTS);
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     tracklist_selections_action_perform_edit_solo (
       TRACKLIST_SELECTIONS, F_NO_SOLO, &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err, "%s",
-        _("Failed to unsolo all tracks"));
+        _ ("Failed to unsolo all tracks"));
     }
 
   /* restore selections */
@@ -175,14 +171,14 @@ on_unmute_all_clicked (
   tracklist_select_all (
     TRACKLIST, F_SELECT, F_NO_PUBLISH_EVENTS);
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     tracklist_selections_action_perform_edit_mute (
       TRACKLIST_SELECTIONS, F_NO_MUTE, &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err, "%s",
-        _("Failed to unmute all tracks"));
+        _ ("Failed to unmute all tracks"));
     }
 
   /* restore selections */
@@ -213,14 +209,14 @@ on_unlisten_all_clicked (
   tracklist_select_all (
     TRACKLIST, F_SELECT, F_NO_PUBLISH_EVENTS);
   GError * err = NULL;
-  bool ret =
+  bool     ret =
     tracklist_selections_action_perform_edit_listen (
       TRACKLIST_SELECTIONS, F_NO_LISTEN, &err);
   if (!ret)
     {
       HANDLE_ERROR (
         err, "%s",
-        _("Failed to unlisten all tracks"));
+        _ ("Failed to unlisten all tracks"));
     }
 
   /* restore selections */
@@ -240,8 +236,7 @@ on_mono_toggled (
   bool active = gtk_toggle_button_get_active (btn);
   fader_set_mono_compat_enabled (
     MONITOR_FADER, active, F_NO_PUBLISH_EVENTS);
-  g_settings_set_boolean (
-    S_MONITOR, "mono", active);
+  g_settings_set_boolean (S_MONITOR, "mono", active);
 }
 
 static void
@@ -262,18 +257,17 @@ on_mute_toggled (
 {
   bool active = gtk_toggle_button_get_active (btn);
   MONITOR_FADER->mute->control = active ? 1.f : 0.f;
-  g_settings_set_boolean (
-    S_MONITOR, "mute", active);
+  g_settings_set_boolean (S_MONITOR, "mute", active);
 }
 
 static void
-on_devices_updated (
-  MonitorSectionWidget * self)
+on_devices_updated (MonitorSectionWidget * self)
 {
 #ifdef HAVE_JACK
   /* reconnect to devices */
   engine_jack_reconnect_monitor (AUDIO_ENGINE, true);
-  engine_jack_reconnect_monitor (AUDIO_ENGINE, false);
+  engine_jack_reconnect_monitor (
+    AUDIO_ENGINE, false);
 #endif
 }
 
@@ -284,99 +278,79 @@ monitor_section_widget_setup (
 {
   self->control_room = control_room;
 
-  KnobWidget * knob =
-    knob_widget_new_simple (
-      fader_get_fader_val,
-      fader_get_default_fader_val,
-      fader_set_fader_val,
-      MONITOR_FADER,
-      0.f, 1.f, 78, 0.f);
+  KnobWidget * knob = knob_widget_new_simple (
+    fader_get_fader_val, fader_get_default_fader_val,
+    fader_set_fader_val, MONITOR_FADER, 0.f, 1.f,
+    78, 0.f);
   knob->hover_str_getter = fader_db_string_getter;
-  self->monitor_level =
-    knob_with_name_widget_new (
-      NULL, monitor_out_name_getter, NULL,
-      knob, GTK_ORIENTATION_VERTICAL, false, 2);
+  self->monitor_level = knob_with_name_widget_new (
+    NULL, monitor_out_name_getter, NULL, knob,
+    GTK_ORIENTATION_VERTICAL, false, 2);
   gtk_box_append (
     GTK_BOX (self->monitor_level_box),
     GTK_WIDGET (self->monitor_level));
 
   /* mute */
-  knob =
-    knob_widget_new_simple (
-      fader_get_fader_val,
-      fader_get_default_fader_val,
-      fader_set_fader_val,
-      CONTROL_ROOM->mute_fader,
-      0.f, 1.f, 52, 0.f);
+  knob = knob_widget_new_simple (
+    fader_get_fader_val, fader_get_default_fader_val,
+    fader_set_fader_val, CONTROL_ROOM->mute_fader,
+    0.f, 1.f, 52, 0.f);
   knob->hover_str_getter = fader_db_string_getter;
-  self->mute_level =
-    knob_with_name_widget_new (
-      NULL, mute_name_getter, NULL,
-      knob, GTK_ORIENTATION_VERTICAL, false, 2);
+  self->mute_level = knob_with_name_widget_new (
+    NULL, mute_name_getter, NULL, knob,
+    GTK_ORIENTATION_VERTICAL, false, 2);
   gtk_box_append (
     GTK_BOX (self->mute_level_box),
     GTK_WIDGET (self->mute_level));
 
   /* listen */
-  knob =
-    knob_widget_new_simple (
-      fader_get_fader_val,
-      fader_get_default_fader_val,
-      fader_set_fader_val,
-      CONTROL_ROOM->listen_fader,
-      0.f, 1.f, 52, 0.f);
+  knob = knob_widget_new_simple (
+    fader_get_fader_val, fader_get_default_fader_val,
+    fader_set_fader_val, CONTROL_ROOM->listen_fader,
+    0.f, 1.f, 52, 0.f);
   knob->hover_str_getter = fader_db_string_getter;
-  self->listen_level =
-    knob_with_name_widget_new (
-      NULL, listen_name_getter, NULL,
-      knob, GTK_ORIENTATION_VERTICAL, false, 2);
+  self->listen_level = knob_with_name_widget_new (
+    NULL, listen_name_getter, NULL, knob,
+    GTK_ORIENTATION_VERTICAL, false, 2);
   gtk_box_append (
     GTK_BOX (self->listen_level_box),
     GTK_WIDGET (self->listen_level));
 
   /* dim */
-  knob =
-    knob_widget_new_simple (
-      fader_get_fader_val,
-      fader_get_default_fader_val,
-      fader_set_fader_val,
-      CONTROL_ROOM->dim_fader,
-      0.f, 1.f, 52, 0.f);
+  knob = knob_widget_new_simple (
+    fader_get_fader_val, fader_get_default_fader_val,
+    fader_set_fader_val, CONTROL_ROOM->dim_fader,
+    0.f, 1.f, 52, 0.f);
   knob->hover_str_getter = fader_db_string_getter;
-  self->dim_level =
-    knob_with_name_widget_new (
-      NULL, dim_name_getter, NULL,
-      knob, GTK_ORIENTATION_VERTICAL, false, 2);
+  self->dim_level = knob_with_name_widget_new (
+    NULL, dim_name_getter, NULL, knob,
+    GTK_ORIENTATION_VERTICAL, false, 2);
   gtk_box_append (
     GTK_BOX (self->dim_level_box),
     GTK_WIDGET (self->dim_level));
 
   z_gtk_button_set_icon_name_and_text (
-    GTK_BUTTON (self->mono_toggle),
-    "mono", _("Mono"), true,
-    GTK_ORIENTATION_HORIZONTAL, 1);
+    GTK_BUTTON (self->mono_toggle), "mono",
+    _ ("Mono"), true, GTK_ORIENTATION_HORIZONTAL, 1);
   gtk_toggle_button_set_active (
     self->mono_toggle,
     fader_get_mono_compat_enabled (MONITOR_FADER));
 
   z_gtk_button_set_icon_name_and_text (
-    GTK_BUTTON (self->dim_toggle),
-    "dim", _("Dim"), true,
-    GTK_ORIENTATION_HORIZONTAL, 1);
+    GTK_BUTTON (self->dim_toggle), "dim", _ ("Dim"),
+    true, GTK_ORIENTATION_HORIZONTAL, 1);
   gtk_toggle_button_set_active (
     self->dim_toggle, CONTROL_ROOM->dim_output);
 
   z_gtk_button_set_icon_name_and_text (
-    GTK_BUTTON (self->mute_toggle),
-    "mute", _("Mute"), true,
-    GTK_ORIENTATION_HORIZONTAL, 1);
+    GTK_BUTTON (self->mute_toggle), "mute",
+    _ ("Mute"), true, GTK_ORIENTATION_HORIZONTAL, 1);
   gtk_toggle_button_set_active (
     self->mute_toggle,
     control_port_is_toggled (MONITOR_FADER->mute));
 
   /* left/right outputs */
-  if (AUDIO_ENGINE->audio_backend ==
-        AUDIO_BACKEND_JACK)
+  if (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK)
     {
       self->left_outputs =
         active_hardware_mb_widget_new ();
@@ -393,8 +367,8 @@ monitor_section_widget_setup (
       self->right_outputs =
         active_hardware_mb_widget_new ();
       active_hardware_mb_widget_setup (
-        self->right_outputs, F_NOT_INPUT, F_NOT_MIDI,
-        S_MONITOR, "r-devices");
+        self->right_outputs, F_NOT_INPUT,
+        F_NOT_MIDI, S_MONITOR, "r-devices");
       self->right_outputs->callback =
         (GenericCallback) on_devices_updated;
       self->right_outputs->object = self;
@@ -413,13 +387,13 @@ monitor_section_widget_setup (
   /* set tooltips */
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->soloing_btn),
-    _("Unsolo all tracks"));
+    _ ("Unsolo all tracks"));
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->muting_btn),
-    _("Unmute all tracks"));
+    _ ("Unmute all tracks"));
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->listening_btn),
-    _("Unlisten all tracks"));
+    _ ("Unlisten all tracks"));
 
   /* set signals */
   g_signal_connect (
@@ -451,8 +425,8 @@ monitor_section_widget_setup (
 MonitorSectionWidget *
 monitor_section_widget_new (void)
 {
-  MonitorSectionWidget * self =
-    g_object_new (MONITOR_SECTION_WIDGET_TYPE, NULL);
+  MonitorSectionWidget * self = g_object_new (
+    MONITOR_SECTION_WIDGET_TYPE, NULL);
 
   return self;
 }

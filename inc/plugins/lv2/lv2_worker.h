@@ -17,39 +17,39 @@
 #ifndef __PLUGINS_LV2_WORKER_H__
 #define __PLUGINS_LV2_WORKER_H__
 
+#include "lv2/worker/worker.h"
 #include "zix/ring.h"
 #include "zix/sem.h"
 #include "zix/thread.h"
-
 #include <lilv/lilv.h>
-
-#include "lv2/worker/worker.h"
 
 typedef struct Lv2Plugin Lv2Plugin;
 
-typedef struct {
-	Lv2Plugin *                 plugin;       ///< Pointer back to the plugin
-	ZixRing*                    requests;   ///< Requests to the worker
-	ZixRing*                    responses;  ///< Responses from the worker
-	void*                       response;   ///< Worker response buffer
-	ZixSem                      sem;        ///< Worker semaphore
-	ZixThread                   thread;     ///< Worker thread
-	const LV2_Worker_Interface* iface;      ///< Plugin worker interface
-	bool                        threaded;   ///< Run work in another thread
+typedef struct
+{
+  Lv2Plugin * plugin; ///< Pointer back to the plugin
+  ZixRing *   requests; ///< Requests to the worker
+  ZixRing * responses; ///< Responses from the worker
+  void *    response;  ///< Worker response buffer
+  ZixSem    sem;       ///< Worker semaphore
+  ZixThread thread;    ///< Worker thread
+  const LV2_Worker_Interface *
+       iface;    ///< Plugin worker interface
+  bool threaded; ///< Run work in another thread
 } Lv2Worker;
 
 void
 lv2_worker_init (
-  Lv2Plugin*                       plugin,
-  Lv2Worker*                 worker,
-  const LV2_Worker_Interface* iface,
-  bool                        threaded);
+  Lv2Plugin *                  plugin,
+  Lv2Worker *                  worker,
+  const LV2_Worker_Interface * iface,
+  bool                         threaded);
 
 /**
  * Stops the worker and frees resources.
  */
 void
-lv2_worker_finish (Lv2Worker* worker);
+lv2_worker_finish (Lv2Worker * worker);
 
 /**
  * Called from plugins during run() to request that
@@ -60,7 +60,7 @@ LV2_Worker_Status
 lv2_worker_schedule (
   LV2_Worker_Schedule_Handle handle,
   uint32_t                   size,
-  const void*                data);
+  const void *               data);
 
 /**
  * Called during run() to process worker replies.
@@ -70,6 +70,7 @@ lv2_worker_schedule (
  */
 void
 lv2_worker_emit_responses (
-  Lv2Worker* worker, LilvInstance* instance);
+  Lv2Worker *    worker,
+  LilvInstance * instance);
 
 #endif

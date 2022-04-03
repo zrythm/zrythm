@@ -27,8 +27,8 @@
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   WrappedObjectWithChangeSignal,
@@ -50,7 +50,8 @@ void
 wrapped_object_with_change_signal_fire (
   WrappedObjectWithChangeSignal * self)
 {
-  g_signal_emit (self, obj_signals[SIGNAL_CHANGED], 0);
+  g_signal_emit (
+    self, obj_signals[SIGNAL_CHANGED], 0);
 }
 
 /**
@@ -118,19 +119,15 @@ wrapped_object_with_change_signal_class_init (
 {
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
 
-  obj_signals[SIGNAL_CHANGED] =
-    g_signal_newv (
-      "changed",
-      G_TYPE_FROM_CLASS (oklass),
-      G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE
-        | G_SIGNAL_NO_HOOKS,
-      NULL /* closure */,
-      NULL /* accumulator */,
-      NULL /* accumulator data */,
-      NULL /* C marshaller */,
-      G_TYPE_NONE /* return_type */,
-      0     /* n_params */,
-      NULL  /* param_types */);
+  obj_signals[SIGNAL_CHANGED] = g_signal_newv (
+    "changed", G_TYPE_FROM_CLASS (oklass),
+    G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE
+      | G_SIGNAL_NO_HOOKS,
+    NULL /* closure */, NULL /* accumulator */,
+    NULL /* accumulator data */,
+    NULL /* C marshaller */,
+    G_TYPE_NONE /* return_type */, 0 /* n_params */,
+    NULL /* param_types */);
 }
 
 static void

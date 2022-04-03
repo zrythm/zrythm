@@ -33,7 +33,6 @@ test_exporter_export_audio (
   ExportTimeRange time_range,
   ExportMode      mode);
 
-
 /**
  * Convenient quick export.
  */
@@ -70,12 +69,10 @@ test_exporter_export_audio (
         TRACKLIST, F_BOUNCE);
       settings.bounce_with_parents = true;
     }
-  char * exports_dir =
-    project_get_path (
-      PROJECT, PROJECT_PATH_EXPORTS, false);
+  char * exports_dir = project_get_path (
+    PROJECT, PROJECT_PATH_EXPORTS, false);
   settings.file_uri =
-    g_build_filename (
-      exports_dir, filename, NULL);
+    g_build_filename (exports_dir, filename, NULL);
   int ret = exporter_export (&settings);
   g_assert_false (AUDIO_ENGINE->exporting);
   g_assert_cmpint (ret, ==, 0);

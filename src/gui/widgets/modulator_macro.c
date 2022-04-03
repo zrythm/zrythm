@@ -37,12 +37,12 @@
 #include "utils/gtk.h"
 #include "utils/string.h"
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include <glib/gi18n.h>
-
 G_DEFINE_TYPE (
-  ModulatorMacroWidget, modulator_macro_widget,
+  ModulatorMacroWidget,
+  modulator_macro_widget,
   GTK_TYPE_GRID)
 
 static void
@@ -57,20 +57,21 @@ on_inputs_draw (
     Z_MODULATOR_MACRO_WIDGET (user_data);
   GtkWidget * widget = GTK_WIDGET (drawing_area);
 
-  GtkStyleContext *context =
+  GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
   Port * port =
-    P_MODULATOR_TRACK->modulator_macros[
-      self->modulator_macro_idx]->cv_in;
+    P_MODULATOR_TRACK
+      ->modulator_macros[self->modulator_macro_idx]
+      ->cv_in;
 
   if (port->num_srcs == 0)
     {
-      const char * str = _("No inputs");
-      int w, h;
+      const char * str = _ ("No inputs");
+      int          w, h;
       z_cairo_get_text_extents_for_widget (
         widget, self->layout, str, &w, &h);
       cairo_set_source_rgba (cr, 1, 1, 1, 1);
@@ -106,8 +107,7 @@ on_inputs_draw (
           cairo_set_source_rgba (cr, 1, 1, 0, 1);
           cairo_rectangle (
             cr, val_w * (double) i,
-            (double) height - val_h,
-            val_w, 1);
+            (double) height - val_h, val_w, 1);
           cairo_fill (cr);
 
           if (i != 0)
@@ -133,15 +133,16 @@ on_output_draw (
     Z_MODULATOR_MACRO_WIDGET (user_data);
   GtkWidget * widget = GTK_WIDGET (drawing_area);
 
-  GtkStyleContext *context =
+  GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
   Port * port =
-    P_MODULATOR_TRACK->modulator_macros[
-      self->modulator_macro_idx]->cv_out;
+    P_MODULATOR_TRACK
+      ->modulator_macros[self->modulator_macro_idx]
+      ->cv_out;
 
   cairo_set_source_rgba (cr, 1, 1, 0, 1);
   double val_h =
@@ -156,37 +157,31 @@ on_output_draw (
 
 static void
 on_knob_right_click (
-  GtkGestureClick *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
-  Port *                port)
+  GtkGestureClick * gesture,
+  gint              n_press,
+  gdouble           x,
+  gdouble           y,
+  Port *            port)
 {
   if (n_press != 1)
     return;
 
-  GMenu * menu = g_menu_new ();
+  GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
   char tmp[600];
-  sprintf (
-    tmp, "app.reset-control::%p", port);
+  sprintf (tmp, "app.reset-control::%p", port);
   menuitem =
-    z_gtk_create_menu_item (
-      _("Reset"), NULL, tmp);
+    z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
-  sprintf (
-    tmp, "app.bind-midi-cc::%p", port);
-  menuitem =
-    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+  sprintf (tmp, "app.bind-midi-cc::%p", port);
+  menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
-  sprintf (
-    tmp, "app.port-view-info::%p", port);
-  menuitem =
-    z_gtk_create_menu_item (
-      _("View info"), NULL, tmp);
+  sprintf (tmp, "app.port-view-info::%p", port);
+  menuitem = z_gtk_create_menu_item (
+    _ ("View info"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
@@ -200,9 +195,7 @@ modulator_macro_widget_refresh (
 }
 
 static void
-on_automate_clicked (
-  GtkButton *            btn,
-  Port *                 port)
+on_automate_clicked (GtkButton * btn, Port * port)
 {
   g_return_if_fail (port);
 
@@ -223,7 +216,7 @@ on_automate_clicked (
 
 static bool
 redraw_cb (
-  GtkWidget *             widget,
+  GtkWidget *            widget,
   GdkFrameClock *        frame_clock,
   ModulatorMacroWidget * self)
 {
@@ -233,51 +226,44 @@ redraw_cb (
 }
 
 ModulatorMacroWidget *
-modulator_macro_widget_new (
-  int modulator_macro_idx)
+modulator_macro_widget_new (int modulator_macro_idx)
 {
-  ModulatorMacroWidget * self =
-    g_object_new (MODULATOR_MACRO_WIDGET_TYPE, NULL);
+  ModulatorMacroWidget * self = g_object_new (
+    MODULATOR_MACRO_WIDGET_TYPE, NULL);
 
   self->modulator_macro_idx = modulator_macro_idx;
 
   ModulatorMacroProcessor * macro =
-    P_MODULATOR_TRACK->modulator_macros[
-      modulator_macro_idx];
+    P_MODULATOR_TRACK
+      ->modulator_macros[modulator_macro_idx];
   Port * port = macro->macro;
 
-  KnobWidget * knob =
-    knob_widget_new_simple (
-      control_port_get_val,
-      control_port_get_default_val,
-      control_port_set_real_val,
-      port, port->minf, port->maxf, 48, port->zerof);
-  self->knob_with_name =
-    knob_with_name_widget_new (
-      macro,
-      (GenericStringGetter)
-        modulator_macro_processor_get_name,
-      (GenericStringSetter)
-        modulator_macro_processor_set_name,
-      knob,
-      GTK_ORIENTATION_VERTICAL, true, 2);
+  KnobWidget * knob = knob_widget_new_simple (
+    control_port_get_val,
+    control_port_get_default_val,
+    control_port_set_real_val, port, port->minf,
+    port->maxf, 48, port->zerof);
+  self->knob_with_name = knob_with_name_widget_new (
+    macro,
+    (GenericStringGetter)
+      modulator_macro_processor_get_name,
+    (GenericStringSetter)
+      modulator_macro_processor_set_name,
+    knob, GTK_ORIENTATION_VERTICAL, true, 2);
   gtk_grid_attach (
     GTK_GRID (self),
     GTK_WIDGET (self->knob_with_name), 1, 0, 1, 2);
 
   /* add context menu */
   GtkGestureClick * mp =
-    GTK_GESTURE_CLICK (
-      gtk_gesture_click_new ());
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (mp),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (mp), "pressed",
     G_CALLBACK (on_knob_right_click), port);
   gtk_widget_add_controller (
-    GTK_WIDGET (knob),
-    GTK_EVENT_CONTROLLER (mp));
+    GTK_WIDGET (knob), GTK_EVENT_CONTROLLER (mp));
 
   g_object_set_data (
     G_OBJECT (self->outputs), "owner", self);
@@ -287,13 +273,15 @@ modulator_macro_widget_new (
   g_signal_connect (
     G_OBJECT (self->outputs), "clicked",
     G_CALLBACK (on_automate_clicked),
-    P_MODULATOR_TRACK->modulator_macros[
-      modulator_macro_idx]->cv_out);
+    P_MODULATOR_TRACK
+      ->modulator_macros[modulator_macro_idx]
+      ->cv_out);
   g_signal_connect (
     G_OBJECT (self->add_input), "clicked",
     G_CALLBACK (on_automate_clicked),
-    P_MODULATOR_TRACK->modulator_macros[
-      modulator_macro_idx]->cv_in);
+    P_MODULATOR_TRACK
+      ->modulator_macros[modulator_macro_idx]
+      ->cv_in);
 
   gtk_drawing_area_set_draw_func (
     GTK_DRAWING_AREA (self->inputs), on_inputs_draw,
@@ -304,43 +292,38 @@ modulator_macro_widget_new (
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self->inputs),
-    (GtkTickCallback) redraw_cb,
-    self, NULL);
+    (GtkTickCallback) redraw_cb, self, NULL);
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self->output),
-    (GtkTickCallback) redraw_cb,
-    self, NULL);
+    (GtkTickCallback) redraw_cb, self, NULL);
 
   return self;
 }
 
 static void
-finalize (
-  ModulatorMacroWidget * self)
+finalize (ModulatorMacroWidget * self)
 {
   G_OBJECT_CLASS (
-    modulator_macro_widget_parent_class)->
-      finalize (G_OBJECT (self));
+    modulator_macro_widget_parent_class)
+    ->finalize (G_OBJECT (self));
 }
 
 static void
-dispose (
-  ModulatorMacroWidget * self)
+dispose (ModulatorMacroWidget * self)
 {
   gtk_widget_unparent (
     GTK_WIDGET (self->connections_popover));
 
   G_OBJECT_CLASS (
-    modulator_macro_widget_parent_class)->
-      dispose (G_OBJECT (self));
+    modulator_macro_widget_parent_class)
+    ->dispose (G_OBJECT (self));
 }
 
 static void
 modulator_macro_widget_class_init (
   ModulatorMacroWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
 
   resources_set_class_template (
     klass, "modulator_macro.ui");
@@ -373,7 +356,7 @@ modulator_macro_widget_init (
   gtk_widget_set_size_request (
     GTK_WIDGET (self->inputs), -1, 12);
   /*gtk_widget_set_size_request (*/
-    /*GTK_WIDGET (self->inputs), 24, -1);*/
+  /*GTK_WIDGET (self->inputs), 24, -1);*/
 
   self->layout =
     z_cairo_create_pango_layout_from_string (

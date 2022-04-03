@@ -31,7 +31,6 @@
 #include <stdbool.h>
 
 #include "settings/chord_preset.h"
-
 #include "utils/yaml.h"
 
 /**
@@ -47,10 +46,10 @@
  */
 typedef struct ChordPresetPack
 {
-  int            schema_version;
+  int schema_version;
 
   /** Pack name. */
-  char *         name;
+  char * name;
 
   /** Presets. */
   ChordPreset ** presets;
@@ -59,26 +58,27 @@ typedef struct ChordPresetPack
 
   /** Whether this is a standard preset pack (not
    * user-defined). */
-  bool           is_standard;
+  bool is_standard;
 } ChordPresetPack;
 
 static const cyaml_schema_field_t
-chord_preset_pack_fields_schema[] = {
-  YAML_FIELD_INT (ChordPresetPack, schema_version),
-  YAML_FIELD_STRING_PTR (ChordPresetPack, name),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    ChordPresetPack, presets, chord_preset_schema),
+  chord_preset_pack_fields_schema[] = {
+    YAML_FIELD_INT (ChordPresetPack, schema_version),
+    YAML_FIELD_STRING_PTR (ChordPresetPack, name),
+    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+      ChordPresetPack,
+      presets,
+      chord_preset_schema),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t
-chord_preset_pack_schema =
-{
-  YAML_VALUE_PTR (
-    ChordPresetPack,
-    chord_preset_pack_fields_schema),
-};
+  chord_preset_pack_schema = {
+    YAML_VALUE_PTR (
+      ChordPresetPack,
+      chord_preset_pack_fields_schema),
+  };
 
 ChordPresetPack *
 chord_preset_pack_new (
@@ -127,8 +127,7 @@ chord_preset_pack_generate_context_menu (
   const ChordPresetPack * self);
 
 void
-chord_preset_pack_free (
-  ChordPresetPack * self);
+chord_preset_pack_free (ChordPresetPack * self);
 
 void
 chord_preset_pack_destroy_cb (void * self);

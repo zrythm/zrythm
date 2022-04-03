@@ -39,8 +39,7 @@
  * Inits after loading a project.
  */
 void
-audio_pool_init_loaded (
-  AudioPool * self)
+audio_pool_init_loaded (AudioPool * self)
 {
   self->clips_size = (size_t) self->num_clips;
 
@@ -70,9 +69,7 @@ audio_pool_new ()
 }
 
 static bool
-name_exists (
-  AudioPool *  self,
-  const char * name)
+name_exists (AudioPool * self, const char * name)
 {
   AudioClip * clip;
   for (int i = 0; i < self->num_clips; i++)
@@ -99,25 +96,22 @@ audio_pool_ensure_unique_clip_name (
   AudioPool * self,
   AudioClip * clip)
 {
-  bool is_backup = false;
+  bool   is_backup = false;
   char * orig_name_without_ext =
     io_file_strip_ext (clip->name);
   char * orig_path_in_pool =
     audio_clip_get_path_in_pool (clip, is_backup);
-  char * new_name =
-    g_strdup (orig_name_without_ext);
+  char * new_name = g_strdup (orig_name_without_ext);
 
   bool changed = false;
   while (name_exists (self, new_name))
     {
-      char * prev_new_name = new_name;
+      char *       prev_new_name = new_name;
       const char * regex = "^.*\\((\\d+)\\)$";
-      char * cur_val_str =
-        string_get_regex_group (
-          new_name, regex, 1);
-      int cur_val =
-        string_get_regex_group_as_int (
-          new_name, regex, 1, 0);
+      char *       cur_val_str =
+        string_get_regex_group (new_name, regex, 1);
+      int cur_val = string_get_regex_group_as_int (
+        new_name, regex, 1, 0);
       if (cur_val == 0)
         {
           new_name =
@@ -131,12 +125,11 @@ audio_pool_ensure_unique_clip_name (
             (strlen (cur_val_str) + 2);
           /* + 1 for the terminating NULL */
           size_t tmp_len = len + 1;
-          char tmp[tmp_len];
+          char   tmp[tmp_len];
           memset (tmp, 0, tmp_len * sizeof (char));
           memcpy (tmp, new_name, len - 1);
-          new_name =
-            g_strdup_printf (
-              "%s (%d)", tmp, cur_val + 1);
+          new_name = g_strdup_printf (
+            "%s (%d)", tmp, cur_val + 1);
         }
       g_free (cur_val_str);
       g_free (prev_new_name);
@@ -148,9 +141,8 @@ audio_pool_ensure_unique_clip_name (
       new_name, clip->use_flac, is_backup);
   if (changed)
     {
-      g_return_if_fail (
-        !string_is_equal (
-          new_path_in_pool, orig_path_in_pool));
+      g_return_if_fail (!string_is_equal (
+        new_path_in_pool, orig_path_in_pool));
     }
 
   g_free (clip->name);
@@ -163,8 +155,7 @@ audio_pool_ensure_unique_clip_name (
  * Returns the next available ID.
  */
 static int
-get_next_id (
-  AudioPool * self)
+get_next_id (AudioPool * self)
 {
   int next_id = -1;
   for (int i = 0; i < self->num_clips; i++)
@@ -172,8 +163,7 @@ get_next_id (
       AudioClip * clip = self->clips[i];
       if (clip)
         {
-          next_id =
-            MAX (clip->pool_id, next_id);
+          next_id = MAX (clip->pool_id, next_id);
         }
       else
         {
@@ -226,13 +216,11 @@ audio_pool_add_clip (
  * Returns the clip for the given ID.
  */
 AudioClip *
-audio_pool_get_clip (
-  AudioPool * self,
-  int         clip_id)
+audio_pool_get_clip (AudioPool * self, int clip_id)
 {
   g_return_val_if_fail (
-    self && clip_id >= 0 &&
-    clip_id < self->num_clips, NULL);
+    self && clip_id >= 0 && clip_id < self->num_clips,
+    NULL);
 
   for (int i = 0; i < self->num_clips; i++)
     {
@@ -266,13 +254,13 @@ audio_pool_duplicate_clip (
 
   AudioClip * new_clip =
     audio_clip_new_from_float_array (
-      clip->frames, clip->num_frames, clip->channels,
-      clip->bit_depth, clip->name);
+      clip->frames, clip->num_frames,
+      clip->channels, clip->bit_depth, clip->name);
   audio_pool_add_clip (self, new_clip);
 
   g_message (
-    "duplicating clip %s to %s...",
-    clip->name, new_clip->name);
+    "duplicating clip %s to %s...", clip->name,
+    new_clip->name);
 
   /* assert clip names are not the same */
   g_return_val_if_fail (
@@ -297,12 +285,10 @@ audio_pool_gen_name_for_recording_clip (
   Track *     track,
   int         lane)
 {
-  return
-    g_strdup_printf (
-      "%s - lane %d - recording",
-      track->name,
-      /* add 1 to get human friendly index */
-      lane + 1);
+  return g_strdup_printf (
+    "%s - lane %d - recording", track->name,
+    /* add 1 to get human friendly index */
+    lane + 1);
 }
 
 /**
@@ -359,8 +345,7 @@ audio_pool_remove_unused (
     {
       AudioClip * clip = self->clips[i];
 
-      if (clip &&
-          !audio_clip_is_in_use (clip, true))
+      if (clip && !audio_clip_is_in_use (clip, true))
         {
           g_message (
             "unused clip [%d]: %s", i, clip->name);
@@ -371,12 +356,10 @@ audio_pool_remove_unused (
     }
 
   /* remove untracked files from pool directory */
-  char * prj_pool_dir =
-    project_get_path (
-      PROJECT, PROJECT_PATH_POOL, backup);
-  char ** files =
-    io_get_files_in_dir_ending_in (
-      prj_pool_dir, 1, NULL, false);
+  char * prj_pool_dir = project_get_path (
+    PROJECT, PROJECT_PATH_POOL, backup);
+  char ** files = io_get_files_in_dir_ending_in (
+    prj_pool_dir, 1, NULL, false);
   if (files)
     {
       for (size_t i = 0; files[i] != NULL; i++)
@@ -428,8 +411,7 @@ audio_pool_remove_unused (
  * change in the project (eg, object added/removed).
  */
 void
-audio_pool_reload_clip_frame_bufs (
-  AudioPool * self)
+audio_pool_reload_clip_frame_bufs (AudioPool * self)
 {
   for (int i = 0; i < self->num_clips; i++)
     {
@@ -468,9 +450,8 @@ audio_pool_write_to_disk (
   bool        is_backup)
 {
   /* ensure pool dir exists */
-  char * prj_pool_dir =
-    project_get_path (
-      PROJECT, PROJECT_PATH_POOL, is_backup);
+  char * prj_pool_dir = project_get_path (
+    PROJECT, PROJECT_PATH_POOL, is_backup);
   if (!file_exists (prj_pool_dir))
     {
       io_mkdir (prj_pool_dir);
@@ -489,8 +470,7 @@ audio_pool_write_to_disk (
 }
 
 void
-audio_pool_print (
-  const AudioPool * const self)
+audio_pool_print (const AudioPool * const self)
 {
   GString * gstr = g_string_new ("[Audio Pool]\n");
   for (int i = 0; i < self->num_clips; i++)
@@ -502,9 +482,8 @@ audio_pool_print (
             audio_clip_get_path_in_pool (
               clip, F_NOT_BACKUP);
           g_string_append_printf (
-            gstr, "[Clip #%d] %s (%s): %s\n",
-            i, clip->name, clip->file_hash,
-            pool_path);
+            gstr, "[Clip #%d] %s (%s): %s\n", i,
+            clip->name, clip->file_hash, pool_path);
           g_free (pool_path);
         }
       else
@@ -522,15 +501,13 @@ audio_pool_print (
  * To be used during serialization.
  */
 AudioPool *
-audio_pool_clone (
-  const AudioPool * src)
+audio_pool_clone (const AudioPool * src)
 {
   AudioPool * self = object_new (AudioPool);
   self->schema_version = AUDIO_POOL_SCHEMA_VERSION;
 
-  self->clips =
-    object_new_n (
-      (size_t) src->num_clips, AudioClip *);
+  self->clips = object_new_n (
+    (size_t) src->num_clips, AudioClip *);
   for (int i = 0; i < src->num_clips; i++)
     {
       if (src->clips[i])
@@ -543,8 +520,7 @@ audio_pool_clone (
 }
 
 void
-audio_pool_free (
-  AudioPool * self)
+audio_pool_free (AudioPool * self)
 {
   for (int i = 0; i < self->num_clips; i++)
     {

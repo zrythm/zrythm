@@ -22,58 +22,60 @@
 
 #include <gtk/gtk.h>
 
-#define AUTOMATION_TRACK_WIDGET_TYPE                  (automation_track_widget_get_type ())
-G_DECLARE_FINAL_TYPE (AutomationTrackWidget,
-                      automation_track_widget,
-                      Z,
-                      AUTOMATION_TRACK_WIDGET,
-                      GtkGrid)
+#define AUTOMATION_TRACK_WIDGET_TYPE \
+  (automation_track_widget_get_type ())
+G_DECLARE_FINAL_TYPE (
+  AutomationTrackWidget,
+  automation_track_widget,
+  Z,
+  AUTOMATION_TRACK_WIDGET,
+  GtkGrid)
 
-typedef struct _TrackWidget TrackWidget;
-typedef struct AutomationTrack AutomationTrack;
+typedef struct _TrackWidget        TrackWidget;
+typedef struct AutomationTrack     AutomationTrack;
 typedef struct _DigitalMeterWidget DigitalMeterWidget;
-typedef struct Track Track;
-typedef struct _AutomationPointWidget AutomationPointWidget;
+typedef struct Track               Track;
+typedef struct _AutomationPointWidget
+  AutomationPointWidget;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct _AutomatableSelectorButtonWidget
   AutomatableSelectorButtonWidget;
 
 typedef struct _AutomationTrackWidget
 {
-  GtkGrid                 parent_instance;
+  GtkGrid                           parent_instance;
   AutomatableSelectorButtonWidget * selector;
-  GtkTreeModel *          selector_model;
-  GtkBox *                value_box;
-  DigitalMeterWidget *    value;
-  GtkToggleButton *       mute_toggle;
+  GtkTreeModel *                    selector_model;
+  GtkBox *                          value_box;
+  DigitalMeterWidget *              value;
+  GtkToggleButton *                 mute_toggle;
 
   /**
    * Associated automation track.
    */
-  AutomationTrack *       at;
+  AutomationTrack * at;
 
   /**
    * Selected automatable path.
    */
-  char *                  path;
+  char * path;
 
   /** Cache for showing the value. */
-  float                   last_val;
+  float last_val;
 
   /**
    * For freezing callbacks.
    */
-  gulong                  selector_changed_cb_id;
+  gulong selector_changed_cb_id;
 
-  GtkLabel *              current_val;
+  GtkLabel * current_val;
 } AutomationTrackWidget;
 
 /**
  * Creates a new automation_track widget from the given automation_track.
  */
 AutomationTrackWidget *
-automation_track_widget_new (
-  AutomationTrack * at);
+automation_track_widget_new (AutomationTrack * at);
 
 /**
  * Updates GUI.
@@ -93,7 +95,7 @@ automation_track_widget_update_current_val (
 int
 automation_track_get_y_px_from_normalized_val (
   AutomationTrackWidget * self,
-  float                  fval);
+  float                   fval);
 
 /**
  * Gets the float value at the given Y coordinate
@@ -102,11 +104,11 @@ automation_track_get_y_px_from_normalized_val (
 float
 automation_track_widget_get_fvalue_at_y (
   AutomationTrackWidget * self,
-  double                 _start_y);
+  double                  _start_y);
 
 double
 automation_track_widget_get_y (
-  AutomationTrackWidget *  self,
+  AutomationTrackWidget * self,
   AutomationPointWidget * ap);
 
 #endif
