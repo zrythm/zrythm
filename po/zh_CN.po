@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-04-01 12:19+0100\n"
+"POT-Creation-Date: 2022-04-03 02:24+0100\n"
 "PO-Revision-Date: 2022-04-02 14:09+0000\n"
 "Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -260,7 +260,7 @@ msgstr "乐器"
 
 #: inc/audio/track.h:195 src/gui/widgets/bot_bar.c:503 src/audio/region.c:547
 #: resources/ui/file_browser_filters.ui:10
-#: build/data/org.zrythm.Zrythm.gschema.xml:1076
+#: build/data/org.zrythm.Zrythm.gschema.xml:1085
 msgid "Audio"
 msgstr "音频"
 
@@ -871,51 +871,51 @@ msgstr "未知操作"
 msgid "libguile is required for this option\n"
 msgstr "该选项需要 libguile\n"
 
-#: src/zrythm_app.c:1840
+#: src/zrythm_app.c:1841
 msgid "Print version information"
 msgstr "打印版本信息"
 
-#: src/zrythm_app.c:1845
+#: src/zrythm_app.c:1846
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "转换 ZPJ-FILE 为 YAML"
 
-#: src/zrythm_app.c:1850
+#: src/zrythm_app.c:1851
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "转换 YAML-PROJECT-FILE 为 .zpj 格式"
 
-#: src/zrythm_app.c:1855
+#: src/zrythm_app.c:1856
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "从脚本文件中生成工程"
 
-#: src/zrythm_app.c:1859
+#: src/zrythm_app.c:1860
 msgid "Print output in user-friendly way"
 msgstr "以用户友好的方式打印输出"
 
-#: src/zrythm_app.c:1863
+#: src/zrythm_app.c:1864
 msgid "Print current settings"
 msgstr "打印当前设定"
 
-#: src/zrythm_app.c:1867
+#: src/zrythm_app.c:1868 src/gui/widgets/preferences.c:804
 msgid "Reset to factory settings"
 msgstr "重置到出厂设置"
 
-#: src/zrythm_app.c:1870
+#: src/zrythm_app.c:1871
 msgid "Override the audio backend to use"
 msgstr "覆盖要使用的音频后端"
 
-#: src/zrythm_app.c:1874
+#: src/zrythm_app.c:1875
 msgid "Override the MIDI backend to use"
 msgstr "覆盖要使用的MIDI后端"
 
-#: src/zrythm_app.c:1878
+#: src/zrythm_app.c:1879
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "为以下简写： --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1910
+#: src/zrythm_app.c:1911
 msgid "[PROJECT-FILE]"
 msgstr "[PROJECT-FILE]"
 
-#: src/zrythm_app.c:1915
+#: src/zrythm_app.c:1916
 #, c-format
 msgid ""
 "Examples:\n"
@@ -933,7 +933,7 @@ msgstr ""
 "\n"
 "请报告问题至 %s\n"
 
-#: src/zrythm_app.c:1927
+#: src/zrythm_app.c:1928
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "运行 %s, 可选地传递一个工程文件。"
@@ -1305,8 +1305,8 @@ msgstr "添加"
 
 #: src/gui/widgets/inspector_port.c:158 src/gui/widgets/modulator_inner.c:171
 #: src/gui/widgets/plugin_browser.c:577 src/gui/widgets/plugin_browser.c:627
-#: src/gui/widgets/balance_control.c:308 src/gui/widgets/modulator_macro.c:176
-#: src/gui/widgets/fader.c:307
+#: src/gui/widgets/preferences.c:350 src/gui/widgets/balance_control.c:308
+#: src/gui/widgets/modulator_macro.c:176 src/gui/widgets/fader.c:307
 msgid "Reset"
 msgstr "重置"
 
@@ -2136,7 +2136,7 @@ msgid "Failed to create selections"
 msgstr "未能创建所选"
 
 #: src/gui/widgets/automation_arranger.c:251
-#: build/data/org.zrythm.Zrythm.gschema.xml:1094
+#: build/data/org.zrythm.Zrythm.gschema.xml:1103
 msgid "Curve algorithm"
 msgstr "Curve 算法"
 
@@ -2204,7 +2204,7 @@ msgid "Redo"
 msgstr "重做"
 
 #: src/gui/widgets/home_toolbar.c:68 src/gui/widgets/home_toolbar.c:209
-#: build/data/org.zrythm.Zrythm.gschema.xml:1104
+#: build/data/org.zrythm.Zrythm.gschema.xml:1113
 msgid "Undo"
 msgstr "撤销"
 
@@ -2241,8 +2241,8 @@ msgid "Redo..."
 msgstr "重做..."
 
 #: src/gui/widgets/right_dock_edge.c:106
-#: build/data/org.zrythm.Zrythm.gschema.xml:1016
-#: build/data/org.zrythm.Zrythm.gschema.xml:1047
+#: build/data/org.zrythm.Zrythm.gschema.xml:1025
+#: build/data/org.zrythm.Zrythm.gschema.xml:1056
 msgid "Plugins"
 msgstr "插件"
 
@@ -2422,7 +2422,7 @@ msgid ""
 "%s"
 msgstr ""
 
-#: src/gui/widgets/main_window.c:885 src/gui/widgets/preferences.c:989
+#: src/gui/widgets/main_window.c:885 src/gui/widgets/preferences.c:1060
 #: resources/gtk/menus.ui:40 resources/gtk/help-overlay.ui:39
 #: resources/ui/file_auditioner_controls.ui:33
 msgid "Preferences"
@@ -2453,15 +2453,29 @@ msgstr ""
 msgid "Snap/Grid options"
 msgstr "Snap/Grid 选项"
 
-#: src/gui/widgets/preferences.c:499
+#: src/gui/widgets/preferences.c:177
+msgid "All preferences have been successfully reset to initial values"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:545
 msgid "Select a folder"
 msgstr "选择文件夹"
 
-#: src/gui/widgets/preferences.c:500
+#: src/gui/widgets/preferences.c:546
 msgid "Select a file"
 msgstr "选择文件"
 
-#: src/gui/widgets/preferences.c:971
+#: src/gui/widgets/preferences.c:784
+#: build/data/org.zrythm.Zrythm.gschema.xml:1017
+#, fuzzy
+msgid "Other"
+msgstr "抖动"
+
+#: src/gui/widgets/preferences.c:806
+msgid "Reset all preferences to initial values"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:1045
 #, c-format
 msgid "Some changes will only take effect after you restart %s"
 msgstr "某些更改只有在您重新启动%s后才会生效"
@@ -2537,16 +2551,16 @@ msgstr ""
 msgid "Scripting Interface"
 msgstr "脚本接口"
 
-#: src/gui/widgets/active_hardware_mb.c:56
-#: src/gui/widgets/active_hardware_mb.c:158
+#: src/gui/widgets/active_hardware_mb.c:55
+#: src/gui/widgets/active_hardware_mb.c:162
 msgid "Select..."
 msgstr "选择..."
 
-#: src/gui/widgets/active_hardware_mb.c:127
+#: src/gui/widgets/active_hardware_mb.c:126
 msgid "Click to enable inputs"
 msgstr "点击以启用输入"
 
-#: src/gui/widgets/active_hardware_mb.c:128
+#: src/gui/widgets/active_hardware_mb.c:127
 msgid "Click to enable outputs"
 msgstr "点击启用输出"
 
@@ -3789,54 +3803,66 @@ msgstr "连接 L 端口失败"
 msgid "Failed to connect R port"
 msgstr "连接 R 端口失败"
 
-#: src/settings/settings.c:163
+#: src/settings/settings.c:164
 #, c-format
 msgid "Schema %s%s%s"
 msgstr "架构%s%s%s"
 
-#: src/settings/settings.c:174
+#: src/settings/settings.c:175
 #, c-format
 msgid "Resetting schema %s...\n"
 msgstr "正在重置架构%s.。。\n"
 
-#: src/settings/settings.c:213
+#: src/settings/settings.c:214
 #, c-format
 msgid "skipping %s"
 msgstr "跳过%s"
 
-#: src/settings/settings.c:224
+#: src/settings/settings.c:225
 #, c-format
 msgid "resetting %s to %s"
 msgstr "正在将%s重置为%s"
 
-#: src/settings/settings.c:269
+#: src/settings/settings.c:270
 #, c-format
 msgid "Failed to find schema %s. %s is likely not installed"
 msgstr "找不到架构%s.可能没有安装%s"
 
-#: src/settings/settings.c:284
+#: src/settings/settings.c:285
 #, c-format
 msgid "Failed to view schema %s"
 msgstr "无法查看架构%s"
 
-#: src/settings/settings.c:291
+#: src/settings/settings.c:292
 #, c-format
 msgid "Failed to reset schema %s"
 msgstr "无法重置架构%s"
 
-#: src/settings/settings.c:324
-#, c-format
+#: src/settings/settings.c:342
+#, fuzzy
 msgid ""
-"This will reset %s to factory settings. You will lose all your preferences. "
-"Type 'y' to continue: "
+"This will reset Zrythm to factory settings. <b>You will lose all your "
+"preferences</b>. Continue?"
 msgstr "这会将 %s 重置为出厂设置。你将丢失所有首选项。输入 'y' 继续： "
 
-#: src/settings/settings.c:331
+#: src/settings/settings.c:348
+#, fuzzy
+msgid "Reset to Factory Settings"
+msgstr "重置到出厂设置"
+
+#: src/settings/settings.c:360
+#, fuzzy
+msgid ""
+"This will reset Zrythm to factory settings. You will lose all your "
+"preferences. Type 'y' to continue:"
+msgstr "这会将 %s 重置为出厂设置。你将丢失所有首选项。输入 'y' 继续： "
+
+#: src/settings/settings.c:367
 #, c-format
 msgid "Aborting...\n"
 msgstr "正在中止...\n"
 
-#: src/settings/settings.c:342
+#: src/settings/settings.c:379
 #, c-format
 msgid "Reset to factory settings successful\n"
 msgstr "重置到出厂设置成功\n"
@@ -4033,7 +4059,7 @@ msgstr ""
 msgid "PortAudio Error: %s"
 msgstr "Portaudio错误:%s"
 
-#: src/audio/region.c:550 build/data/org.zrythm.Zrythm.gschema.xml:1090
+#: src/audio/region.c:550 build/data/org.zrythm.Zrythm.gschema.xml:1099
 msgid "Automation"
 msgstr "自动化"
 
@@ -5244,9 +5270,10 @@ msgstr "全局快捷键"
 #: build/data/org.zrythm.Zrythm.gschema.xml:939
 #: build/data/org.zrythm.Zrythm.gschema.xml:988
 #: build/data/org.zrythm.Zrythm.gschema.xml:1002
-#: build/data/org.zrythm.Zrythm.gschema.xml:1119
-#: build/data/org.zrythm.Zrythm.gschema.xml:1134
-#: build/data/org.zrythm.Zrythm.gschema.xml:1188
+#: build/data/org.zrythm.Zrythm.gschema.xml:1016
+#: build/data/org.zrythm.Zrythm.gschema.xml:1128
+#: build/data/org.zrythm.Zrythm.gschema.xml:1143
+#: build/data/org.zrythm.Zrythm.gschema.xml:1197
 msgid "General"
 msgstr "一般设置"
 
@@ -7125,7 +7152,8 @@ msgid "Audio backend"
 msgstr "音频后端"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:945
-msgid "The audio backend to use."
+#, fuzzy
+msgid "The audio backend to use"
 msgstr "要使用的音频后端。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:949
@@ -7133,7 +7161,8 @@ msgid "RtAudio device"
 msgstr "RtAudio设备"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:950
-msgid "The name of the RtAudio device to use."
+#, fuzzy
+msgid "The name of the RtAudio device to use"
 msgstr "要使用的RtAudio设备的名称。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:954
@@ -7141,7 +7170,8 @@ msgid "SDL device"
 msgstr "SDL设备"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:955
-msgid "The name of the SDL device to use."
+#, fuzzy
+msgid "The name of the SDL device to use"
 msgstr "要使用的SDL设备的名称。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:959
@@ -7149,7 +7179,8 @@ msgid "Samplerate"
 msgstr "采样"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:960
-msgid "Samplerate to pass to the backend."
+#, fuzzy
+msgid "Samplerate to pass to the backend"
 msgstr "要传递到后端的采样率。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:964
@@ -7157,7 +7188,8 @@ msgid "Buffer size"
 msgstr "缓冲区大小"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:965
-msgid "Buffer size to pass to the backend."
+#, fuzzy
+msgid "Buffer size to pass to the backend"
 msgstr "要传递到后端的缓冲区大小。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:969
@@ -7165,7 +7197,8 @@ msgid "MIDI backend"
 msgstr "MIDI 后端"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:970
-msgid "The MIDI backend to use."
+#, fuzzy
+msgid "The MIDI backend to use"
 msgstr "要使用的MIDI后端。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:974
@@ -7173,19 +7206,21 @@ msgid "Audio inputs"
 msgstr "音频输入"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:975
-msgid "A list of audio inputs to enable."
-msgstr ""
+#, fuzzy
+msgid "A list of audio inputs to enable"
+msgstr "要启用的控制器列表。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:979
 msgid "MIDI controllers"
 msgstr "MIDI 控制器"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:980
-msgid "A list of controllers to enable."
+#, fuzzy
+msgid "A list of controllers to enable"
 msgstr "要启用的控制器列表。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:989
-#: build/data/org.zrythm.Zrythm.gschema.xml:1048
+#: build/data/org.zrythm.Zrythm.gschema.xml:1057
 msgid "Paths"
 msgstr "路径"
 
@@ -7194,7 +7229,8 @@ msgid "Zrythm path"
 msgstr "Zrythm 路径"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:994
-msgid "The directory used to save user data in."
+#, fuzzy
+msgid "The directory used to save user data in"
 msgstr "用于保存用户数据的目录。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1003
@@ -7206,201 +7242,218 @@ msgid "Check for updates"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1008
-msgid "Whether to check for updates."
+#, fuzzy
+msgid "Whether to check for updates"
 msgstr "是否检查更新。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1017
+#: build/data/org.zrythm.Zrythm.gschema.xml:1026
 msgid "UIs"
 msgstr "用户界面"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1021
+#: build/data/org.zrythm.Zrythm.gschema.xml:1030
 msgid "Open UI on instantiation"
 msgstr "实例化时打开用户界面"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1022
-msgid "Open plugin UIs when they are instantiated."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1031
+#, fuzzy
+msgid "Open plugin UIs when they are instantiated"
 msgstr "当插件用户界面实例化时打开它们。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1026
+#: build/data/org.zrythm.Zrythm.gschema.xml:1035
 msgid "Keep window on top"
 msgstr "将窗口保持在顶部"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1027
-msgid "Always show plugin UIs on top of the main window."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1036
+#, fuzzy
+msgid "Always show plugin UIs on top of the main window"
 msgstr "总是在主窗口的顶部显示插件用户界面。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1032
+#: build/data/org.zrythm.Zrythm.gschema.xml:1041
 msgid "Refresh rate"
 msgstr "刷新率"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1033
+#: build/data/org.zrythm.Zrythm.gschema.xml:1042
+#, fuzzy
 msgid ""
-"Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
+"Refresh rate in Hz (if set to 0, the screen's refresh rate will be used)"
 msgstr "赫兹为单位的刷新率，如设为 0 将使用屏幕刷新率。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1038
+#: build/data/org.zrythm.Zrythm.gschema.xml:1047
 msgid "Scale factor"
 msgstr "缩放因子"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1039
+#: build/data/org.zrythm.Zrythm.gschema.xml:1048
+#, fuzzy
 msgid ""
-"Scale factor to pass to plugin UIs. If set to 0, the monitor's scale factor "
-"will be used."
+"Scale factor to pass to plugin UIs (if set to 0, the monitor's scale factor "
+"will be used)"
 msgstr "传递到插件用户界面的缩放因子，如设为 0，将使用监视器的缩放因子。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1056
+#: build/data/org.zrythm.Zrythm.gschema.xml:1065
 msgid "VST plugins"
 msgstr "VST 插件"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1057
+#: build/data/org.zrythm.Zrythm.gschema.xml:1066
+#, fuzzy
 msgid ""
-"The search paths to scan for VST plugins in. Duplicate paths will be "
-"deduplicated."
+"The search paths to scan for VST plugins in (duplicate paths will be "
+"deduplicated)"
 msgstr "要在其中扫描VST插件的搜索路径。重复路径将是重复数据删除。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1061
+#: build/data/org.zrythm.Zrythm.gschema.xml:1070
 msgid "SFZ instruments"
 msgstr "SFZ 乐器"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1062
+#: build/data/org.zrythm.Zrythm.gschema.xml:1071
+#, fuzzy
 msgid ""
-"The search paths to scan for SFZ instruments in. Duplicate paths will be "
-"deduplicated."
+"The search paths to scan for SFZ instruments in (duplicate paths will be "
+"deduplicated)"
 msgstr "要在其中扫描SFZ乐器的搜索路径。重复路径将是重复数据删除。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1066
+#: build/data/org.zrythm.Zrythm.gschema.xml:1075
 msgid "SF2 instruments"
 msgstr "SF2 乐器"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1067
+#: build/data/org.zrythm.Zrythm.gschema.xml:1076
+#, fuzzy
 msgid ""
-"The search paths to scan for SF2 instruments in. Duplicate paths will be "
-"deduplicated."
+"The search paths to scan for SF2 instruments in (duplicate paths will be "
+"deduplicated)"
 msgstr "要在其中扫描SF2乐器的搜索路径。重复路径将是重复数据删除。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1075
-#: build/data/org.zrythm.Zrythm.gschema.xml:1089
-#: build/data/org.zrythm.Zrythm.gschema.xml:1103
+#: build/data/org.zrythm.Zrythm.gschema.xml:1084
+#: build/data/org.zrythm.Zrythm.gschema.xml:1098
+#: build/data/org.zrythm.Zrythm.gschema.xml:1112
 msgid "Editing"
 msgstr "编辑中"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1080
+#: build/data/org.zrythm.Zrythm.gschema.xml:1089
 msgid "Fade algorithm"
 msgstr "Fade 算法"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1081
-msgid "Default fade algorithm to use for fade in/outs."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1090
+#, fuzzy
+msgid "Default fade algorithm to use for fade in/outs"
 msgstr "用于淡入/淡出的默认 fade 算法。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1095
-msgid "Default algorithm to use for automation curves."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1104
+#, fuzzy
+msgid "Default algorithm to use for automation curves"
 msgstr "用于自动化曲线的默认算法。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1109
+#: build/data/org.zrythm.Zrythm.gschema.xml:1118
 msgid "Undo stack length"
 msgstr "撤销次数限制"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1110
-msgid "Maximum undo history stack length. Set to -1 for unlimited."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1119
+#, fuzzy
+msgid "Maximum undo history stack length (set to -1 for unlimited)"
 msgstr "最大撤消历史堆栈长度。设置为 -1 表示无限制。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1118
+#: build/data/org.zrythm.Zrythm.gschema.xml:1127
 msgid "Projects"
 msgstr "项目"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1124
+#: build/data/org.zrythm.Zrythm.gschema.xml:1133
 msgid "Autosave interval"
 msgstr "自动保存间隔"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1125
-msgid ""
-"Interval to auto-save projects, in minutes. Auto-saving will be disabled if "
-"this is set to 0."
-msgstr "自动保存项目的间隔，以分钟为单位。若设置为 0 将禁用自动保存。"
+#: build/data/org.zrythm.Zrythm.gschema.xml:1134
+#, fuzzy
+msgid "Interval to auto-save projects, in minutes (set to 0 to disable)"
+msgstr ""
+"将时间间隔设置为自动保存项目备份，以分钟为单位。将其设置为0将禁用自动保存"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1133
+#: build/data/org.zrythm.Zrythm.gschema.xml:1142
 msgid "UI"
 msgstr "用户界面"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1138
+#: build/data/org.zrythm.Zrythm.gschema.xml:1147
 msgid "Draw detail"
 msgstr "绘制详细信息"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1139
-msgid "Level of detail to use when drawing graphics."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1148
+#, fuzzy
+msgid "Level of detail to use when drawing graphics"
 msgstr "绘制图形时使用的详细级别。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1144
+#: build/data/org.zrythm.Zrythm.gschema.xml:1153
 msgid "Font scale"
 msgstr "字体缩放"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1145
-msgid "Font scale."
-msgstr "字体缩放。"
+#: build/data/org.zrythm.Zrythm.gschema.xml:1154
+#, fuzzy
+msgid "Font scaling"
+msgstr "字体缩放"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1149
+#: build/data/org.zrythm.Zrythm.gschema.xml:1158
 msgid "User interface language"
 msgstr "用户界面语言"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1150
-msgid "The language to use for the user interface."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1159
+#, fuzzy
+msgid "The language to use for the user interface"
 msgstr "用于用户界面的语言。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1154
+#: build/data/org.zrythm.Zrythm.gschema.xml:1163
 msgid "CSS theme"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1155
-msgid "The CSS theme to use."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1164
+#, fuzzy
+msgid "The CSS theme to use"
 msgstr "要使用的 CSS 主题。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1159
+#: build/data/org.zrythm.Zrythm.gschema.xml:1168
 msgid "Icon theme"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1160
-msgid "The icon theme to use. This is the directory name."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1169
+msgid "The icon theme to use (directory name)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1168
+#: build/data/org.zrythm.Zrythm.gschema.xml:1177
 msgid "DSP"
 msgstr "DSP"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1169
+#: build/data/org.zrythm.Zrythm.gschema.xml:1178
 msgid "Pan"
 msgstr "Pan"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1173
+#: build/data/org.zrythm.Zrythm.gschema.xml:1182
 msgid "Pan algorithm"
 msgstr "Pan 算法"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1174
+#: build/data/org.zrythm.Zrythm.gschema.xml:1183
+#, fuzzy
 msgid ""
 "The panning algorithm to use when applying pan on mono signals (not used at "
-"the moment)."
+"the moment)"
 msgstr "对单声道信号应用摇摄时使用的摇摄算法（不用于那个时刻）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1178
+#: build/data/org.zrythm.Zrythm.gschema.xml:1187
 msgid "Pan law"
 msgstr "Pan定律"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1179
+#: build/data/org.zrythm.Zrythm.gschema.xml:1188
+#, fuzzy
 msgid ""
-"The pan law to use when applying pan on mono signals (not used at the "
-"moment)."
+"The pan law to use when applying pan on mono signals (not used at the moment)"
 msgstr "对单声道信号应用pan时使用的pan定律（不用于时刻）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1187
+#: build/data/org.zrythm.Zrythm.gschema.xml:1196
 msgid "Scripting"
 msgstr "脚本编写"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1192
+#: build/data/org.zrythm.Zrythm.gschema.xml:1201
 msgid "Default script"
 msgstr "默认脚本"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1193
-msgid "The default script to use in the scripting window."
-msgstr ""
+#: build/data/org.zrythm.Zrythm.gschema.xml:1202
+#, fuzzy
+msgid "The default script to use in the scripting window"
+msgstr "创建新的 MIDI 音符时使用的默认速率。"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:7
 msgid "The Zrythm contributors"
@@ -7622,6 +7675,14 @@ msgstr ""
 msgid "Remove message that says Zrythm is in alpha"
 msgstr ""
 
+#~ msgid ""
+#~ "Interval to auto-save projects, in minutes. Auto-saving will be disabled "
+#~ "if this is set to 0."
+#~ msgstr "自动保存项目的间隔，以分钟为单位。若设置为 0 将禁用自动保存。"
+
+#~ msgid "Font scale."
+#~ msgstr "字体缩放。"
+
 #~ msgid "Backend combination not supported"
 #~ msgstr "不支持后端组合"
 
@@ -7821,12 +7882,6 @@ msgstr ""
 
 #~ msgid "GUI"
 #~ msgstr "GUI"
-
-#~ msgid ""
-#~ "Set the interval to auto-save project backups, in minutes. Setting this "
-#~ "to 0 will disable auto-save"
-#~ msgstr ""
-#~ "将时间间隔设置为自动保存项目备份，以分钟为单位。将其设置为0将禁用自动保存"
 
 #, c-format
 #~ msgid "Failed to instantiate cloned plugin %s"

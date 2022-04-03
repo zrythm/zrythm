@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-04-01 12:19+0100\n"
+"POT-Creation-Date: 2022-04-03 02:24+0100\n"
 "PO-Revision-Date: 2022-03-15 18:54+0000\n"
 "Last-Translator: Anthony V. <batmanplayer123@gmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/"
@@ -257,7 +257,7 @@ msgstr "Όργανο"
 
 #: inc/audio/track.h:195 src/gui/widgets/bot_bar.c:503 src/audio/region.c:547
 #: resources/ui/file_browser_filters.ui:10
-#: build/data/org.zrythm.Zrythm.gschema.xml:1076
+#: build/data/org.zrythm.Zrythm.gschema.xml:1085
 msgid "Audio"
 msgstr "Ήχος"
 
@@ -887,52 +887,52 @@ msgstr "Άγνωστη λειτουργία"
 msgid "libguile is required for this option\n"
 msgstr "Το libguile είναι προαπαιτούμενο για αυτή την επιλογή\n"
 
-#: src/zrythm_app.c:1840
+#: src/zrythm_app.c:1841
 msgid "Print version information"
 msgstr "Προβολή πληροφοριών έκδοσης"
 
-#: src/zrythm_app.c:1845
+#: src/zrythm_app.c:1846
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "Μετατροπή ZPJ-FILE σε YAML"
 
-#: src/zrythm_app.c:1850
+#: src/zrythm_app.c:1851
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "Μετατροπή YAML-PROJECT-FILE σε μορφή .zpj"
 
-#: src/zrythm_app.c:1855
+#: src/zrythm_app.c:1856
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "Δημιουργία ενός έργου από το SCRIPT-FILE"
 
-#: src/zrythm_app.c:1859
+#: src/zrythm_app.c:1860
 #, fuzzy
 msgid "Print output in user-friendly way"
 msgstr "Προβολή προϊόντος με φιλικό προς τον χρήστη τρόπο"
 
-#: src/zrythm_app.c:1863
+#: src/zrythm_app.c:1864
 msgid "Print current settings"
 msgstr "Προβολή τρεχουσών ρυθμίσεων"
 
-#: src/zrythm_app.c:1867
+#: src/zrythm_app.c:1868 src/gui/widgets/preferences.c:804
 msgid "Reset to factory settings"
 msgstr "Επαναφορά στις εργαστηριακές ρυθμίσεις"
 
-#: src/zrythm_app.c:1870
+#: src/zrythm_app.c:1871
 msgid "Override the audio backend to use"
 msgstr "Παράκαμψη παρασκηνίου ήχου προς χρήση"
 
-#: src/zrythm_app.c:1874
+#: src/zrythm_app.c:1875
 msgid "Override the MIDI backend to use"
 msgstr "Παράκαμψη παρασκηνίου MIDI προς χρήση"
 
-#: src/zrythm_app.c:1878
+#: src/zrythm_app.c:1879
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "Συντομογραφία για --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1910
+#: src/zrythm_app.c:1911
 msgid "[PROJECT-FILE]"
 msgstr "[ΑΡΧΕΙΟ-ΕΡΓΟΥ]"
 
-#: src/zrythm_app.c:1915
+#: src/zrythm_app.c:1916
 #, c-format
 msgid ""
 "Examples:\n"
@@ -951,7 +951,7 @@ msgstr ""
 "\n"
 "Παρακαλούμε αναφέρετε σφάλματα στο %s\n"
 
-#: src/zrythm_app.c:1927
+#: src/zrythm_app.c:1928
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "Εκτέλεση %s, προαιρετικά περνώντας ένα αρχείο έργου."
@@ -1357,8 +1357,8 @@ msgstr "Προσθήκη"
 
 #: src/gui/widgets/inspector_port.c:158 src/gui/widgets/modulator_inner.c:171
 #: src/gui/widgets/plugin_browser.c:577 src/gui/widgets/plugin_browser.c:627
-#: src/gui/widgets/balance_control.c:308 src/gui/widgets/modulator_macro.c:176
-#: src/gui/widgets/fader.c:307
+#: src/gui/widgets/preferences.c:350 src/gui/widgets/balance_control.c:308
+#: src/gui/widgets/modulator_macro.c:176 src/gui/widgets/fader.c:307
 msgid "Reset"
 msgstr "Επαναφορά"
 
@@ -2248,7 +2248,7 @@ msgid "Failed to create selections"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
 #: src/gui/widgets/automation_arranger.c:251
-#: build/data/org.zrythm.Zrythm.gschema.xml:1094
+#: build/data/org.zrythm.Zrythm.gschema.xml:1103
 msgid "Curve algorithm"
 msgstr "Αλγόριθμος καμπύλης"
 
@@ -2318,7 +2318,7 @@ msgid "Redo"
 msgstr "Επαναφορά"
 
 #: src/gui/widgets/home_toolbar.c:68 src/gui/widgets/home_toolbar.c:209
-#: build/data/org.zrythm.Zrythm.gschema.xml:1104
+#: build/data/org.zrythm.Zrythm.gschema.xml:1113
 msgid "Undo"
 msgstr "Αναίρεση"
 
@@ -2358,8 +2358,8 @@ msgid "Redo..."
 msgstr "Επαναφορά"
 
 #: src/gui/widgets/right_dock_edge.c:106
-#: build/data/org.zrythm.Zrythm.gschema.xml:1016
-#: build/data/org.zrythm.Zrythm.gschema.xml:1047
+#: build/data/org.zrythm.Zrythm.gschema.xml:1025
+#: build/data/org.zrythm.Zrythm.gschema.xml:1056
 msgid "Plugins"
 msgstr "Πρόσθετα"
 
@@ -2550,7 +2550,7 @@ msgid ""
 "%s"
 msgstr ""
 
-#: src/gui/widgets/main_window.c:885 src/gui/widgets/preferences.c:989
+#: src/gui/widgets/main_window.c:885 src/gui/widgets/preferences.c:1060
 #: resources/gtk/menus.ui:40 resources/gtk/help-overlay.ui:39
 #: resources/ui/file_auditioner_controls.ui:33
 msgid "Preferences"
@@ -2583,15 +2583,29 @@ msgstr ""
 msgid "Snap/Grid options"
 msgstr "Ρυθμίσεις σναπαρίσματος/πλέγματος"
 
-#: src/gui/widgets/preferences.c:499
+#: src/gui/widgets/preferences.c:177
+msgid "All preferences have been successfully reset to initial values"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:545
 msgid "Select a folder"
 msgstr "Επιλογή φακέλου"
 
-#: src/gui/widgets/preferences.c:500
+#: src/gui/widgets/preferences.c:546
 msgid "Select a file"
 msgstr "Επιλογή αρχείου"
 
-#: src/gui/widgets/preferences.c:971
+#: src/gui/widgets/preferences.c:784
+#: build/data/org.zrythm.Zrythm.gschema.xml:1017
+#, fuzzy
+msgid "Other"
+msgstr "Θόρυβος διασποράς"
+
+#: src/gui/widgets/preferences.c:806
+msgid "Reset all preferences to initial values"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:1045
 #, c-format
 msgid "Some changes will only take effect after you restart %s"
 msgstr "Κάποιες αλλαγές θα λειτουργήσουν μόνο αν επανεκκινήσετε %s"
@@ -2679,16 +2693,16 @@ msgstr "Ακρόαση"
 msgid "Scripting Interface"
 msgstr "Διεπαφή δέσμης ενεργειών (scripting)"
 
-#: src/gui/widgets/active_hardware_mb.c:56
-#: src/gui/widgets/active_hardware_mb.c:158
+#: src/gui/widgets/active_hardware_mb.c:55
+#: src/gui/widgets/active_hardware_mb.c:162
 msgid "Select..."
 msgstr "Επιλογή..."
 
-#: src/gui/widgets/active_hardware_mb.c:127
+#: src/gui/widgets/active_hardware_mb.c:126
 msgid "Click to enable inputs"
 msgstr "Κλικ για ενεργοποίηση εισαγωγών"
 
-#: src/gui/widgets/active_hardware_mb.c:128
+#: src/gui/widgets/active_hardware_mb.c:127
 #, fuzzy
 msgid "Click to enable outputs"
 msgstr "Κλικ για ενεργοποίηση εισαγωγών"
@@ -4038,56 +4052,70 @@ msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 msgid "Failed to connect R port"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/settings/settings.c:163
+#: src/settings/settings.c:164
 #, c-format
 msgid "Schema %s%s%s"
 msgstr "Διάγραμμα %s%s%s"
 
-#: src/settings/settings.c:174
+#: src/settings/settings.c:175
 #, c-format
 msgid "Resetting schema %s...\n"
 msgstr "Επαναφορά διαγράμματος %s...\n"
 
-#: src/settings/settings.c:213
+#: src/settings/settings.c:214
 #, c-format
 msgid "skipping %s"
 msgstr "παράλειψη %s"
 
-#: src/settings/settings.c:224
+#: src/settings/settings.c:225
 #, c-format
 msgid "resetting %s to %s"
 msgstr "επαναφορά %s σε %s"
 
-#: src/settings/settings.c:269
+#: src/settings/settings.c:270
 #, c-format
 msgid "Failed to find schema %s. %s is likely not installed"
 msgstr "Αποτυχία εύρεσης διαγράμματος %s. Το %s μάλλον δεν είναι εγκατεστημένο"
 
-#: src/settings/settings.c:284
+#: src/settings/settings.c:285
 #, c-format
 msgid "Failed to view schema %s"
 msgstr "Αποτυχία προβολής διαγράμματος %s"
 
-#: src/settings/settings.c:291
+#: src/settings/settings.c:292
 #, c-format
 msgid "Failed to reset schema %s"
 msgstr "Αποτυχία επαναφοράς σχήματος %s"
 
-#: src/settings/settings.c:324
-#, c-format
+#: src/settings/settings.c:342
+#, fuzzy
 msgid ""
-"This will reset %s to factory settings. You will lose all your preferences. "
-"Type 'y' to continue: "
+"This will reset Zrythm to factory settings. <b>You will lose all your "
+"preferences</b>. Continue?"
 msgstr ""
 "Αυτό θα επαναφέρει το %s στις εργαστηριακές ρυθμίσεις. Θα χάσετε όλες τις "
 "ρυθμίσεις σας. Πληκτρολογήστε «y» για να συνεχίσετε: "
 
-#: src/settings/settings.c:331
+#: src/settings/settings.c:348
+#, fuzzy
+msgid "Reset to Factory Settings"
+msgstr "Επαναφορά στις εργαστηριακές ρυθμίσεις"
+
+#: src/settings/settings.c:360
+#, fuzzy
+msgid ""
+"This will reset Zrythm to factory settings. You will lose all your "
+"preferences. Type 'y' to continue:"
+msgstr ""
+"Αυτό θα επαναφέρει το %s στις εργαστηριακές ρυθμίσεις. Θα χάσετε όλες τις "
+"ρυθμίσεις σας. Πληκτρολογήστε «y» για να συνεχίσετε: "
+
+#: src/settings/settings.c:367
 #, c-format
 msgid "Aborting...\n"
 msgstr "Ματαίωση...\n"
 
-#: src/settings/settings.c:342
+#: src/settings/settings.c:379
 #, c-format
 msgid "Reset to factory settings successful\n"
 msgstr "Επιτυχής επαναφορά στις εργαστηριακές ρυθμίσεις\n"
@@ -4298,7 +4326,7 @@ msgstr ""
 msgid "PortAudio Error: %s"
 msgstr "Σφάλμα PortAudio: %s"
 
-#: src/audio/region.c:550 build/data/org.zrythm.Zrythm.gschema.xml:1090
+#: src/audio/region.c:550 build/data/org.zrythm.Zrythm.gschema.xml:1099
 msgid "Automation"
 msgstr "Αυτοματισμός"
 
@@ -5634,9 +5662,10 @@ msgstr "Γενικές συντομεύσεις"
 #: build/data/org.zrythm.Zrythm.gschema.xml:939
 #: build/data/org.zrythm.Zrythm.gschema.xml:988
 #: build/data/org.zrythm.Zrythm.gschema.xml:1002
-#: build/data/org.zrythm.Zrythm.gschema.xml:1119
-#: build/data/org.zrythm.Zrythm.gschema.xml:1134
-#: build/data/org.zrythm.Zrythm.gschema.xml:1188
+#: build/data/org.zrythm.Zrythm.gschema.xml:1016
+#: build/data/org.zrythm.Zrythm.gschema.xml:1128
+#: build/data/org.zrythm.Zrythm.gschema.xml:1143
+#: build/data/org.zrythm.Zrythm.gschema.xml:1197
 msgid "General"
 msgstr "Γενικά"
 
@@ -7660,7 +7689,8 @@ msgid "Audio backend"
 msgstr "Παρασκήνιο ήχου"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:945
-msgid "The audio backend to use."
+#, fuzzy
+msgid "The audio backend to use"
 msgstr "Το παρασκήνιο ήχου προς χρήση."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:949
@@ -7668,7 +7698,8 @@ msgid "RtAudio device"
 msgstr "Συσκευή RtAudio"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:950
-msgid "The name of the RtAudio device to use."
+#, fuzzy
+msgid "The name of the RtAudio device to use"
 msgstr "Το όνομα της συσκευής RtAudio προς χρήση."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:954
@@ -7676,7 +7707,8 @@ msgid "SDL device"
 msgstr "Συσκευή SDL"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:955
-msgid "The name of the SDL device to use."
+#, fuzzy
+msgid "The name of the SDL device to use"
 msgstr "Το όνομα της συσκευής SDL προς χρήση."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:959
@@ -7684,7 +7716,8 @@ msgid "Samplerate"
 msgstr "Ρυθμός δείγματος"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:960
-msgid "Samplerate to pass to the backend."
+#, fuzzy
+msgid "Samplerate to pass to the backend"
 msgstr "Ρυθμός δείγματος που θα περαστεί στο παρασκήνιο."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:964
@@ -7692,7 +7725,8 @@ msgid "Buffer size"
 msgstr "Μέγεθος ενδιάμεσης μνήμης"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:965
-msgid "Buffer size to pass to the backend."
+#, fuzzy
+msgid "Buffer size to pass to the backend"
 msgstr "Μέγεθος μνήμης που θα περαστεί στο παρασκήνιο."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:969
@@ -7700,7 +7734,8 @@ msgid "MIDI backend"
 msgstr "Παρασκήνιο MIDI"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:970
-msgid "The MIDI backend to use."
+#, fuzzy
+msgid "The MIDI backend to use"
 msgstr "Το παρασκήνιο MIDI προς χρήση."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:974
@@ -7708,7 +7743,8 @@ msgid "Audio inputs"
 msgstr "Εισαγόμενοι ήχοι"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:975
-msgid "A list of audio inputs to enable."
+#, fuzzy
+msgid "A list of audio inputs to enable"
 msgstr "Μια λίστα των εισαγόμενων ήχων προς ενεργοποίηση."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:979
@@ -7716,11 +7752,12 @@ msgid "MIDI controllers"
 msgstr "Χειριστές MIDI"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:980
-msgid "A list of controllers to enable."
+#, fuzzy
+msgid "A list of controllers to enable"
 msgstr "Μια λίστα χειριστών προς ενεργοποίηση."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:989
-#: build/data/org.zrythm.Zrythm.gschema.xml:1048
+#: build/data/org.zrythm.Zrythm.gschema.xml:1057
 msgid "Paths"
 msgstr "Μονοπάτια"
 
@@ -7729,7 +7766,8 @@ msgid "Zrythm path"
 msgstr "Μονοπάτι Zrythm"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:994
-msgid "The directory used to save user data in."
+#, fuzzy
+msgid "The directory used to save user data in"
 msgstr "Ο κατάλογος προς χρήση για αποθήκευση δεδομένων του χρήστη."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1003
@@ -7742,228 +7780,242 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1008
 #, fuzzy
-msgid "Whether to check for updates."
+msgid "Whether to check for updates"
 msgstr "Αν το fader κομματιού είναι επεκταμένο."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1017
+#: build/data/org.zrythm.Zrythm.gschema.xml:1026
 msgid "UIs"
 msgstr "Διεπαφές χρήστη"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1021
+#: build/data/org.zrythm.Zrythm.gschema.xml:1030
 msgid "Open UI on instantiation"
 msgstr "Άνοιγμα διεπαφής χρήστη κατά την ενσάρκωση"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1022
-msgid "Open plugin UIs when they are instantiated."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1031
+#, fuzzy
+msgid "Open plugin UIs when they are instantiated"
 msgstr "Άνοιγμα διεπαφών χρήστη προσθέτων κατά την ενσάρκωσή τους."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1026
+#: build/data/org.zrythm.Zrythm.gschema.xml:1035
 msgid "Keep window on top"
 msgstr "Διατήρηση παραθύρου στην κορυφή"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1027
-msgid "Always show plugin UIs on top of the main window."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1036
+#, fuzzy
+msgid "Always show plugin UIs on top of the main window"
 msgstr ""
 "Να προβάλλονται πάντα οι διεπαφές χρήστη προσθέτων στην κορυφή του κεντρικού "
 "παραθύρου."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1032
+#: build/data/org.zrythm.Zrythm.gschema.xml:1041
 msgid "Refresh rate"
 msgstr "Ανανέωση ρυθμού"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1033
+#: build/data/org.zrythm.Zrythm.gschema.xml:1042
+#, fuzzy
 msgid ""
-"Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
+"Refresh rate in Hz (if set to 0, the screen's refresh rate will be used)"
 msgstr ""
 "Ανανέωση ρυθμού σε Hz. Αν οριστεί σε 0, θα χρησιμοποιηθεί η ανανέωση ρυθμού "
 "της οθόνης."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1038
+#: build/data/org.zrythm.Zrythm.gschema.xml:1047
 #, fuzzy
 msgid "Scale factor"
 msgstr "Αντικείμενο κλίμακας"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1039
+#: build/data/org.zrythm.Zrythm.gschema.xml:1048
 #, fuzzy
 msgid ""
-"Scale factor to pass to plugin UIs. If set to 0, the monitor's scale factor "
-"will be used."
+"Scale factor to pass to plugin UIs (if set to 0, the monitor's scale factor "
+"will be used)"
 msgstr ""
 "Ανανέωση ρυθμού σε Hz. Αν οριστεί σε 0, θα χρησιμοποιηθεί η ανανέωση ρυθμού "
 "της οθόνης."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1056
+#: build/data/org.zrythm.Zrythm.gschema.xml:1065
 msgid "VST plugins"
 msgstr "Πρόσθετα VST"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1057
+#: build/data/org.zrythm.Zrythm.gschema.xml:1066
+#, fuzzy
 msgid ""
-"The search paths to scan for VST plugins in. Duplicate paths will be "
-"deduplicated."
+"The search paths to scan for VST plugins in (duplicate paths will be "
+"deduplicated)"
 msgstr ""
 "Τα μονοπάτια αναζήτησης προς σκανάρισμα για πρόσθετα VST. Όμοια μονοπάτια θα "
 "αφαιρεθούν."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1061
+#: build/data/org.zrythm.Zrythm.gschema.xml:1070
 msgid "SFZ instruments"
 msgstr "Όργανα SFZ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1062
+#: build/data/org.zrythm.Zrythm.gschema.xml:1071
+#, fuzzy
 msgid ""
-"The search paths to scan for SFZ instruments in. Duplicate paths will be "
-"deduplicated."
+"The search paths to scan for SFZ instruments in (duplicate paths will be "
+"deduplicated)"
 msgstr ""
 "Τα μονοπάτια αναζήτησης προς σκανάρισμα για όργανα SFZ. Όμοια μονοπάτια θα "
 "αφαιρεθούν."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1066
+#: build/data/org.zrythm.Zrythm.gschema.xml:1075
 msgid "SF2 instruments"
 msgstr "Όργανα SF2"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1067
+#: build/data/org.zrythm.Zrythm.gschema.xml:1076
+#, fuzzy
 msgid ""
-"The search paths to scan for SF2 instruments in. Duplicate paths will be "
-"deduplicated."
+"The search paths to scan for SF2 instruments in (duplicate paths will be "
+"deduplicated)"
 msgstr ""
 "Τα μονοπάτια αναζήτησης προς σκανάρισμα για όργανα SF2. Όμοια μονοπάτια θα "
 "αφαιρεθούν."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1075
-#: build/data/org.zrythm.Zrythm.gschema.xml:1089
-#: build/data/org.zrythm.Zrythm.gschema.xml:1103
+#: build/data/org.zrythm.Zrythm.gschema.xml:1084
+#: build/data/org.zrythm.Zrythm.gschema.xml:1098
+#: build/data/org.zrythm.Zrythm.gschema.xml:1112
 msgid "Editing"
 msgstr "Επεξεργασία"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1080
+#: build/data/org.zrythm.Zrythm.gschema.xml:1089
 msgid "Fade algorithm"
 msgstr "Αλγόριθμος fade"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1081
-msgid "Default fade algorithm to use for fade in/outs."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1090
+#, fuzzy
+msgid "Default fade algorithm to use for fade in/outs"
 msgstr "Προεπιλεγμένος αλγόριθμος fade προς χρήση για fade in/outs."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1095
-msgid "Default algorithm to use for automation curves."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1104
+#, fuzzy
+msgid "Default algorithm to use for automation curves"
 msgstr "Προεπιλεγμένος αλγόριθμος προς χρήση για καμπύλες αυτοματισμού."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1109
+#: build/data/org.zrythm.Zrythm.gschema.xml:1118
 msgid "Undo stack length"
 msgstr "Αριθμός δυνατών αναιρέσεων ενεργειών"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1110
-msgid "Maximum undo history stack length. Set to -1 for unlimited."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1119
+#, fuzzy
+msgid "Maximum undo history stack length (set to -1 for unlimited)"
 msgstr ""
 "Μέγιστος αριθμός ενεργειών που μπορούν να αναιρεθούν. Ορίστε σε -1 για "
 "απεριόριστο."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1118
+#: build/data/org.zrythm.Zrythm.gschema.xml:1127
 msgid "Projects"
 msgstr "Έργα"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1124
+#: build/data/org.zrythm.Zrythm.gschema.xml:1133
 msgid "Autosave interval"
 msgstr "Μεσοδιάστημα αυτόματης αποθήκευσης"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1125
-msgid ""
-"Interval to auto-save projects, in minutes. Auto-saving will be disabled if "
-"this is set to 0."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1134
+#, fuzzy
+msgid "Interval to auto-save projects, in minutes (set to 0 to disable)"
 msgstr ""
-"Μεσοδιάστημα για αυτόματη αποθήκευση έργων, σε λεπτά. Η αυτόματη αποθήκευση "
-"θα απενεργοποιηθεί αν οριστεί σε 0."
+"Ορισμός του μεσοδιαστήματος για αυτόματη αποθήκευση αντιγράφων ασφαλείας "
+"έργου, σε λεπτά. Ορίζοντάς το σε 0 θα απενεργοποιήσει την αυτόματη αποθήκευση"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1133
+#: build/data/org.zrythm.Zrythm.gschema.xml:1142
 msgid "UI"
 msgstr "Διεπαφή χρήστη"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1138
+#: build/data/org.zrythm.Zrythm.gschema.xml:1147
 msgid "Draw detail"
 msgstr "Λεπτομέρεια γραφικών"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1139
-msgid "Level of detail to use when drawing graphics."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1148
+#, fuzzy
+msgid "Level of detail to use when drawing graphics"
 msgstr "Επίπεδο λεπτομέρειας προς χρήση κατά την παράσταση γραφικών."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1144
+#: build/data/org.zrythm.Zrythm.gschema.xml:1153
 #, fuzzy
 msgid "Font scale"
 msgstr "Σε κλίμακα"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1145
+#: build/data/org.zrythm.Zrythm.gschema.xml:1154
 #, fuzzy
-msgid "Font scale."
+msgid "Font scaling"
 msgstr "Σε κλίμακα"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1149
+#: build/data/org.zrythm.Zrythm.gschema.xml:1158
 msgid "User interface language"
 msgstr "Γλώσσα διεπαφής χρήστη"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1150
-msgid "The language to use for the user interface."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1159
+#, fuzzy
+msgid "The language to use for the user interface"
 msgstr "Η γλώσσα προς χρήση για τη διεπαφή χρήστη."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1154
+#: build/data/org.zrythm.Zrythm.gschema.xml:1163
 msgid "CSS theme"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1155
+#: build/data/org.zrythm.Zrythm.gschema.xml:1164
 #, fuzzy
-msgid "The CSS theme to use."
+msgid "The CSS theme to use"
 msgstr "Ο αλγόριθμος παναρίσματος προς χρήση"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1159
+#: build/data/org.zrythm.Zrythm.gschema.xml:1168
 msgid "Icon theme"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1160
-msgid "The icon theme to use. This is the directory name."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1169
+msgid "The icon theme to use (directory name)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1168
+#: build/data/org.zrythm.Zrythm.gschema.xml:1177
 msgid "DSP"
 msgstr "DSP"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1169
+#: build/data/org.zrythm.Zrythm.gschema.xml:1178
 msgid "Pan"
 msgstr "Πανάρισμα"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1173
+#: build/data/org.zrythm.Zrythm.gschema.xml:1182
 msgid "Pan algorithm"
 msgstr "Αλγόριθμος παναρίσματος"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1174
+#: build/data/org.zrythm.Zrythm.gschema.xml:1183
+#, fuzzy
 msgid ""
 "The panning algorithm to use when applying pan on mono signals (not used at "
-"the moment)."
+"the moment)"
 msgstr ""
 "Ο αλγόριθμος παναρίσματος προς χρήση κατά την εφαρμογή παναρίσματος σε "
 "σήματα μόνο (δεν χρησιμοποιείται προς το παρόν)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1178
+#: build/data/org.zrythm.Zrythm.gschema.xml:1187
 msgid "Pan law"
 msgstr "Νόμος παναρίσματος"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1179
+#: build/data/org.zrythm.Zrythm.gschema.xml:1188
+#, fuzzy
 msgid ""
-"The pan law to use when applying pan on mono signals (not used at the "
-"moment)."
+"The pan law to use when applying pan on mono signals (not used at the moment)"
 msgstr ""
 "Ο νόμος παναρίσματος προς χρήση κατά την εφαρμογή παναρίσματος σε σήματα "
 "μόνο (δεν χρησιμοποιείται προς το παρόν)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1187
+#: build/data/org.zrythm.Zrythm.gschema.xml:1196
 #, fuzzy
 msgid "Scripting"
 msgstr "Διεπαφή δέσμης ενεργειών (scripting)"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1192
+#: build/data/org.zrythm.Zrythm.gschema.xml:1201
 #, fuzzy
 msgid "Default script"
 msgstr "Προεπιλεγμένη τράπεζα"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1193
-msgid "The default script to use in the scripting window."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1202
+#, fuzzy
+msgid "The default script to use in the scripting window"
 msgstr ""
+"Προεπιλεγμένο μήκος προς χρήση κατά τη δημιουργία αντικειμένων χρονολογίου, "
+"π.χ. σε λειτουργία επεξεργασίας."
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:7
 msgid "The Zrythm contributors"
@@ -8194,6 +8246,17 @@ msgstr ""
 msgid "Remove message that says Zrythm is in alpha"
 msgstr ""
 
+#~ msgid ""
+#~ "Interval to auto-save projects, in minutes. Auto-saving will be disabled "
+#~ "if this is set to 0."
+#~ msgstr ""
+#~ "Μεσοδιάστημα για αυτόματη αποθήκευση έργων, σε λεπτά. Η αυτόματη "
+#~ "αποθήκευση θα απενεργοποιηθεί αν οριστεί σε 0."
+
+#, fuzzy
+#~ msgid "Font scale."
+#~ msgstr "Σε κλίμακα"
+
 #~ msgid "Backend combination not supported"
 #~ msgstr "Ο συνδυασμός παρασκηνίου δεν υποστηρίζεται"
 
@@ -8419,14 +8482,6 @@ msgstr ""
 
 #~ msgid "GUI"
 #~ msgstr "GUI"
-
-#~ msgid ""
-#~ "Set the interval to auto-save project backups, in minutes. Setting this "
-#~ "to 0 will disable auto-save"
-#~ msgstr ""
-#~ "Ορισμός του μεσοδιαστήματος για αυτόματη αποθήκευση αντιγράφων ασφαλείας "
-#~ "έργου, σε λεπτά. Ορίζοντάς το σε 0 θα απενεργοποιήσει την αυτόματη "
-#~ "αποθήκευση"
 
 #, fuzzy, c-format
 #~ msgid "Failed to instantiate cloned plugin %s"

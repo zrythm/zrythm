@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-04-01 12:19+0100\n"
+"POT-Creation-Date: 2022-04-03 02:24+0100\n"
 "PO-Revision-Date: 2022-01-17 09:53+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
@@ -271,7 +271,7 @@ msgstr "Instrument"
 
 #: inc/audio/track.h:195 src/gui/widgets/bot_bar.c:503 src/audio/region.c:547
 #: resources/ui/file_browser_filters.ui:10
-#: build/data/org.zrythm.Zrythm.gschema.xml:1076
+#: build/data/org.zrythm.Zrythm.gschema.xml:1085
 msgid "Audio"
 msgstr "Lyd"
 
@@ -889,53 +889,53 @@ msgstr "Bakende-feil"
 msgid "libguile is required for this option\n"
 msgstr ""
 
-#: src/zrythm_app.c:1840
+#: src/zrythm_app.c:1841
 msgid "Print version information"
 msgstr ""
 
-#: src/zrythm_app.c:1845
+#: src/zrythm_app.c:1846
 msgid "Convert ZPJ-FILE to YAML"
 msgstr ""
 
-#: src/zrythm_app.c:1850
+#: src/zrythm_app.c:1851
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr ""
 
-#: src/zrythm_app.c:1855
+#: src/zrythm_app.c:1856
 msgid "Generate a project from SCRIPT-FILE"
 msgstr ""
 
-#: src/zrythm_app.c:1859
+#: src/zrythm_app.c:1860
 msgid "Print output in user-friendly way"
 msgstr ""
 
-#: src/zrythm_app.c:1863
+#: src/zrythm_app.c:1864
 msgid "Print current settings"
 msgstr ""
 
-#: src/zrythm_app.c:1867
+#: src/zrythm_app.c:1868 src/gui/widgets/preferences.c:804
 msgid "Reset to factory settings"
 msgstr ""
 
-#: src/zrythm_app.c:1870
+#: src/zrythm_app.c:1871
 #, fuzzy
 msgid "Override the audio backend to use"
 msgstr "MIDI-bakende"
 
-#: src/zrythm_app.c:1874
+#: src/zrythm_app.c:1875
 #, fuzzy
 msgid "Override the MIDI backend to use"
 msgstr "MIDI-bakende"
 
-#: src/zrythm_app.c:1878
+#: src/zrythm_app.c:1879
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr ""
 
-#: src/zrythm_app.c:1910
+#: src/zrythm_app.c:1911
 msgid "[PROJECT-FILE]"
 msgstr ""
 
-#: src/zrythm_app.c:1915
+#: src/zrythm_app.c:1916
 #, c-format
 msgid ""
 "Examples:\n"
@@ -947,7 +947,7 @@ msgid ""
 "Please report issues to %s\n"
 msgstr ""
 
-#: src/zrythm_app.c:1927
+#: src/zrythm_app.c:1928
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr ""
@@ -1341,8 +1341,8 @@ msgstr "Legg til"
 
 #: src/gui/widgets/inspector_port.c:158 src/gui/widgets/modulator_inner.c:171
 #: src/gui/widgets/plugin_browser.c:577 src/gui/widgets/plugin_browser.c:627
-#: src/gui/widgets/balance_control.c:308 src/gui/widgets/modulator_macro.c:176
-#: src/gui/widgets/fader.c:307
+#: src/gui/widgets/preferences.c:350 src/gui/widgets/balance_control.c:308
+#: src/gui/widgets/modulator_macro.c:176 src/gui/widgets/fader.c:307
 msgid "Reset"
 msgstr "Tilbakestill"
 
@@ -2266,7 +2266,7 @@ msgid "Failed to create selections"
 msgstr "Klarte ikke å vise planen %s"
 
 #: src/gui/widgets/automation_arranger.c:251
-#: build/data/org.zrythm.Zrythm.gschema.xml:1094
+#: build/data/org.zrythm.Zrythm.gschema.xml:1103
 msgid "Curve algorithm"
 msgstr ""
 
@@ -2339,7 +2339,7 @@ msgid "Redo"
 msgstr "Gjenta"
 
 #: src/gui/widgets/home_toolbar.c:68 src/gui/widgets/home_toolbar.c:209
-#: build/data/org.zrythm.Zrythm.gschema.xml:1104
+#: build/data/org.zrythm.Zrythm.gschema.xml:1113
 msgid "Undo"
 msgstr "Angre"
 
@@ -2380,8 +2380,8 @@ msgid "Redo..."
 msgstr "Gjenta"
 
 #: src/gui/widgets/right_dock_edge.c:106
-#: build/data/org.zrythm.Zrythm.gschema.xml:1016
-#: build/data/org.zrythm.Zrythm.gschema.xml:1047
+#: build/data/org.zrythm.Zrythm.gschema.xml:1025
+#: build/data/org.zrythm.Zrythm.gschema.xml:1056
 msgid "Plugins"
 msgstr "Programtillegg"
 
@@ -2581,7 +2581,7 @@ msgid ""
 "%s"
 msgstr ""
 
-#: src/gui/widgets/main_window.c:885 src/gui/widgets/preferences.c:989
+#: src/gui/widgets/main_window.c:885 src/gui/widgets/preferences.c:1060
 #: resources/gtk/menus.ui:40 resources/gtk/help-overlay.ui:39
 #: resources/ui/file_auditioner_controls.ui:33
 msgid "Preferences"
@@ -2614,16 +2614,29 @@ msgstr ""
 msgid "Snap/Grid options"
 msgstr ""
 
-#: src/gui/widgets/preferences.c:499
+#: src/gui/widgets/preferences.c:177
+msgid "All preferences have been successfully reset to initial values"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:545
 msgid "Select a folder"
 msgstr "Velg en mappe"
 
-#: src/gui/widgets/preferences.c:500
+#: src/gui/widgets/preferences.c:546
 #, fuzzy
 msgid "Select a file"
 msgstr "Velg en mappe"
 
-#: src/gui/widgets/preferences.c:971
+#: src/gui/widgets/preferences.c:784
+#: build/data/org.zrythm.Zrythm.gschema.xml:1017
+msgid "Other"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:806
+msgid "Reset all preferences to initial values"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:1045
 #, c-format
 msgid "Some changes will only take effect after you restart %s"
 msgstr ""
@@ -2708,17 +2721,17 @@ msgstr ""
 msgid "Scripting Interface"
 msgstr "Grensesnitt"
 
-#: src/gui/widgets/active_hardware_mb.c:56
-#: src/gui/widgets/active_hardware_mb.c:158
+#: src/gui/widgets/active_hardware_mb.c:55
+#: src/gui/widgets/active_hardware_mb.c:162
 #, fuzzy
 msgid "Select..."
 msgstr "Velg…"
 
-#: src/gui/widgets/active_hardware_mb.c:127
+#: src/gui/widgets/active_hardware_mb.c:126
 msgid "Click to enable inputs"
 msgstr ""
 
-#: src/gui/widgets/active_hardware_mb.c:128
+#: src/gui/widgets/active_hardware_mb.c:127
 msgid "Click to enable outputs"
 msgstr ""
 
@@ -4105,54 +4118,63 @@ msgstr "Klarte ikke å vise planen %s"
 msgid "Failed to connect R port"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/settings/settings.c:163
+#: src/settings/settings.c:164
 #, c-format
 msgid "Schema %s%s%s"
 msgstr "Plan %s%s%s"
 
-#: src/settings/settings.c:174
+#: src/settings/settings.c:175
 #, c-format
 msgid "Resetting schema %s...\n"
 msgstr "Tilbakestiller planen %s…\n"
 
-#: src/settings/settings.c:213
+#: src/settings/settings.c:214
 #, c-format
 msgid "skipping %s"
 msgstr ""
 
-#: src/settings/settings.c:224
+#: src/settings/settings.c:225
 #, c-format
 msgid "resetting %s to %s"
 msgstr "tilbakestiller %s til %s"
 
-#: src/settings/settings.c:269
+#: src/settings/settings.c:270
 #, c-format
 msgid "Failed to find schema %s. %s is likely not installed"
 msgstr "Klarte ikke å finne planen %s. %s er antagelig ikke installert"
 
-#: src/settings/settings.c:284
+#: src/settings/settings.c:285
 #, c-format
 msgid "Failed to view schema %s"
 msgstr "Klarte ikke å vise planen %s"
 
-#: src/settings/settings.c:291
+#: src/settings/settings.c:292
 #, c-format
 msgid "Failed to reset schema %s"
 msgstr "Klarte ikke å tilbakestille plan %s"
 
-#: src/settings/settings.c:324
-#, c-format
+#: src/settings/settings.c:342
 msgid ""
-"This will reset %s to factory settings. You will lose all your preferences. "
-"Type 'y' to continue: "
+"This will reset Zrythm to factory settings. <b>You will lose all your "
+"preferences</b>. Continue?"
 msgstr ""
 
-#: src/settings/settings.c:331
+#: src/settings/settings.c:348
+msgid "Reset to Factory Settings"
+msgstr ""
+
+#: src/settings/settings.c:360
+msgid ""
+"This will reset Zrythm to factory settings. You will lose all your "
+"preferences. Type 'y' to continue:"
+msgstr ""
+
+#: src/settings/settings.c:367
 #, c-format
 msgid "Aborting...\n"
 msgstr "Avbryter…\n"
 
-#: src/settings/settings.c:342
+#: src/settings/settings.c:379
 #, c-format
 msgid "Reset to factory settings successful\n"
 msgstr ""
@@ -4364,7 +4386,7 @@ msgstr ""
 msgid "PortAudio Error: %s"
 msgstr "PortAudio-feil: %s"
 
-#: src/audio/region.c:550 build/data/org.zrythm.Zrythm.gschema.xml:1090
+#: src/audio/region.c:550 build/data/org.zrythm.Zrythm.gschema.xml:1099
 #, fuzzy
 msgid "Automation"
 msgstr "Flytt automasjon"
@@ -5711,9 +5733,10 @@ msgstr "Programvide snarveier"
 #: build/data/org.zrythm.Zrythm.gschema.xml:939
 #: build/data/org.zrythm.Zrythm.gschema.xml:988
 #: build/data/org.zrythm.Zrythm.gschema.xml:1002
-#: build/data/org.zrythm.Zrythm.gschema.xml:1119
-#: build/data/org.zrythm.Zrythm.gschema.xml:1134
-#: build/data/org.zrythm.Zrythm.gschema.xml:1188
+#: build/data/org.zrythm.Zrythm.gschema.xml:1016
+#: build/data/org.zrythm.Zrythm.gschema.xml:1128
+#: build/data/org.zrythm.Zrythm.gschema.xml:1143
+#: build/data/org.zrythm.Zrythm.gschema.xml:1197
 msgid "General"
 msgstr "Generelt"
 
@@ -7704,7 +7727,7 @@ msgstr "Lyd-bakende"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:945
 #, fuzzy
-msgid "The audio backend to use."
+msgid "The audio backend to use"
 msgstr "MIDI-bakende"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:949
@@ -7713,8 +7736,9 @@ msgid "RtAudio device"
 msgstr "Lydinnganger"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:950
-msgid "The name of the RtAudio device to use."
-msgstr ""
+#, fuzzy
+msgid "The name of the RtAudio device to use"
+msgstr "MIDI-bakende"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:954
 #, fuzzy
@@ -7722,7 +7746,7 @@ msgid "SDL device"
 msgstr "MIDI-enheter"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:955
-msgid "The name of the SDL device to use."
+msgid "The name of the SDL device to use"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:959
@@ -7730,8 +7754,9 @@ msgid "Samplerate"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:960
-msgid "Samplerate to pass to the backend."
-msgstr ""
+#, fuzzy
+msgid "Samplerate to pass to the backend"
+msgstr "Tester bakendene"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:964
 msgid "Buffer size"
@@ -7739,7 +7764,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:965
 #, fuzzy
-msgid "Buffer size to pass to the backend."
+msgid "Buffer size to pass to the backend"
 msgstr "Tester bakendene"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:969
@@ -7749,7 +7774,7 @@ msgstr "MIDI-bakende"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:970
 #, fuzzy
-msgid "The MIDI backend to use."
+msgid "The MIDI backend to use"
 msgstr "MIDI-bakende"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:974
@@ -7758,7 +7783,7 @@ msgid "Audio inputs"
 msgstr "Lydutganger"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:975
-msgid "A list of audio inputs to enable."
+msgid "A list of audio inputs to enable"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:979
@@ -7767,11 +7792,11 @@ msgid "MIDI controllers"
 msgstr "MIDI-kontrollere"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:980
-msgid "A list of controllers to enable."
+msgid "A list of controllers to enable"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:989
-#: build/data/org.zrythm.Zrythm.gschema.xml:1048
+#: build/data/org.zrythm.Zrythm.gschema.xml:1057
 #, fuzzy
 msgid "Paths"
 msgstr "Sti"
@@ -7782,7 +7807,7 @@ msgid "Zrythm path"
 msgstr "Zrythm"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:994
-msgid "The directory used to save user data in."
+msgid "The directory used to save user data in"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1003
@@ -7794,217 +7819,214 @@ msgid "Check for updates"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1008
-msgid "Whether to check for updates."
+msgid "Whether to check for updates"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1017
+#: build/data/org.zrythm.Zrythm.gschema.xml:1026
 #, fuzzy
 msgid "UIs"
 msgstr "Grafisk grensesnitt"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1021
+#: build/data/org.zrythm.Zrythm.gschema.xml:1030
 msgid "Open UI on instantiation"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1022
-msgid "Open plugin UIs when they are instantiated."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1031
+msgid "Open plugin UIs when they are instantiated"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1026
+#: build/data/org.zrythm.Zrythm.gschema.xml:1035
 msgid "Keep window on top"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1027
-msgid "Always show plugin UIs on top of the main window."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1036
+msgid "Always show plugin UIs on top of the main window"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1032
+#: build/data/org.zrythm.Zrythm.gschema.xml:1041
 #, fuzzy
 msgid "Refresh rate"
 msgstr "Programtilleggsutforsker"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1033
+#: build/data/org.zrythm.Zrythm.gschema.xml:1042
 msgid ""
-"Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
+"Refresh rate in Hz (if set to 0, the screen's refresh rate will be used)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1038
+#: build/data/org.zrythm.Zrythm.gschema.xml:1047
 #, fuzzy
 msgid "Scale factor"
 msgstr "Lagre prosjekt"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1039
+#: build/data/org.zrythm.Zrythm.gschema.xml:1048
 msgid ""
-"Scale factor to pass to plugin UIs. If set to 0, the monitor's scale factor "
-"will be used."
+"Scale factor to pass to plugin UIs (if set to 0, the monitor's scale factor "
+"will be used)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1056
+#: build/data/org.zrythm.Zrythm.gschema.xml:1065
 #, fuzzy
 msgid "VST plugins"
 msgstr "Programtillegg"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1057
+#: build/data/org.zrythm.Zrythm.gschema.xml:1066
 msgid ""
-"The search paths to scan for VST plugins in. Duplicate paths will be "
-"deduplicated."
+"The search paths to scan for VST plugins in (duplicate paths will be "
+"deduplicated)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1061
+#: build/data/org.zrythm.Zrythm.gschema.xml:1070
 #, fuzzy
 msgid "SFZ instruments"
 msgstr "Instrument"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1062
+#: build/data/org.zrythm.Zrythm.gschema.xml:1071
 msgid ""
-"The search paths to scan for SFZ instruments in. Duplicate paths will be "
-"deduplicated."
+"The search paths to scan for SFZ instruments in (duplicate paths will be "
+"deduplicated)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1066
+#: build/data/org.zrythm.Zrythm.gschema.xml:1075
 #, fuzzy
 msgid "SF2 instruments"
 msgstr "Instrument"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1067
+#: build/data/org.zrythm.Zrythm.gschema.xml:1076
 msgid ""
-"The search paths to scan for SF2 instruments in. Duplicate paths will be "
-"deduplicated."
+"The search paths to scan for SF2 instruments in (duplicate paths will be "
+"deduplicated)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1075
-#: build/data/org.zrythm.Zrythm.gschema.xml:1089
-#: build/data/org.zrythm.Zrythm.gschema.xml:1103
+#: build/data/org.zrythm.Zrythm.gschema.xml:1084
+#: build/data/org.zrythm.Zrythm.gschema.xml:1098
+#: build/data/org.zrythm.Zrythm.gschema.xml:1112
 msgid "Editing"
 msgstr "Redigering"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1080
+#: build/data/org.zrythm.Zrythm.gschema.xml:1089
 msgid "Fade algorithm"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1081
-msgid "Default fade algorithm to use for fade in/outs."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1090
+msgid "Default fade algorithm to use for fade in/outs"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1095
-msgid "Default algorithm to use for automation curves."
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:1109
-#, fuzzy
-msgid "Undo stack length"
-msgstr "notelengde"
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:1110
-msgid "Maximum undo history stack length. Set to -1 for unlimited."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1104
+msgid "Default algorithm to use for automation curves"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1118
 #, fuzzy
+msgid "Undo stack length"
+msgstr "notelengde"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:1119
+msgid "Maximum undo history stack length (set to -1 for unlimited)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:1127
+#, fuzzy
 msgid "Projects"
 msgstr "Prosjekt"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1124
+#: build/data/org.zrythm.Zrythm.gschema.xml:1133
 msgid "Autosave interval"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1125
-msgid ""
-"Interval to auto-save projects, in minutes. Auto-saving will be disabled if "
-"this is set to 0."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1134
+msgid "Interval to auto-save projects, in minutes (set to 0 to disable)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1133
+#: build/data/org.zrythm.Zrythm.gschema.xml:1142
 #, fuzzy
 msgid "UI"
 msgstr "Grafisk grensesnitt"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1138
+#: build/data/org.zrythm.Zrythm.gschema.xml:1147
 msgid "Draw detail"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1139
-msgid "Level of detail to use when drawing graphics."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1148
+msgid "Level of detail to use when drawing graphics"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1144
+#: build/data/org.zrythm.Zrythm.gschema.xml:1153
 #, fuzzy
 msgid "Font scale"
 msgstr "I skala"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1145
+#: build/data/org.zrythm.Zrythm.gschema.xml:1154
 #, fuzzy
-msgid "Font scale."
+msgid "Font scaling"
 msgstr "I skala"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1149
+#: build/data/org.zrythm.Zrythm.gschema.xml:1158
 #, fuzzy
 msgid "User interface language"
 msgstr "Grensesnitt"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1150
+#: build/data/org.zrythm.Zrythm.gschema.xml:1159
 #, fuzzy
-msgid "The language to use for the user interface."
+msgid "The language to use for the user interface"
 msgstr "Språk for Zrythm-grensesnittet"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1154
+#: build/data/org.zrythm.Zrythm.gschema.xml:1163
 msgid "CSS theme"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1155
+#: build/data/org.zrythm.Zrythm.gschema.xml:1164
 #, fuzzy
-msgid "The CSS theme to use."
+msgid "The CSS theme to use"
 msgstr "MIDI-bakende"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1159
+#: build/data/org.zrythm.Zrythm.gschema.xml:1168
 msgid "Icon theme"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1160
-msgid "The icon theme to use. This is the directory name."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1169
+msgid "The icon theme to use (directory name)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1168
+#: build/data/org.zrythm.Zrythm.gschema.xml:1177
 msgid "DSP"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1169
+#: build/data/org.zrythm.Zrythm.gschema.xml:1178
 #, fuzzy
 msgid "Pan"
 msgstr "Paneler"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1173
+#: build/data/org.zrythm.Zrythm.gschema.xml:1182
 #, fuzzy
 msgid "Pan algorithm"
 msgstr "Flytt automasjon"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1174
+#: build/data/org.zrythm.Zrythm.gschema.xml:1183
 msgid ""
 "The panning algorithm to use when applying pan on mono signals (not used at "
-"the moment)."
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:1178
-msgid "Pan law"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:1179
-msgid ""
-"The pan law to use when applying pan on mono signals (not used at the "
-"moment)."
+"the moment)"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1187
+msgid "Pan law"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:1188
+msgid ""
+"The pan law to use when applying pan on mono signals (not used at the moment)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:1196
 #, fuzzy
 msgid "Scripting"
 msgstr "Grensesnitt"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1192
+#: build/data/org.zrythm.Zrythm.gschema.xml:1201
 msgid "Default script"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1193
-msgid "The default script to use in the scripting window."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1202
+msgid "The default script to use in the scripting window"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:7
@@ -8229,6 +8251,10 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:143
 msgid "Remove message that says Zrythm is in alpha"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Font scale."
+#~ msgstr "I skala"
 
 #~ msgid "Backend combination not supported"
 #~ msgstr "Bakende-kombinasjon støttes ikke"

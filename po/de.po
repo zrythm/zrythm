@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-04-01 12:19+0100\n"
+"POT-Creation-Date: 2022-04-03 02:24+0100\n"
 "PO-Revision-Date: 2022-03-31 17:07+0000\n"
 "Last-Translator: Cgrieger <translate@cgrieger.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
@@ -257,7 +257,7 @@ msgstr "Instrument"
 
 #: inc/audio/track.h:195 src/gui/widgets/bot_bar.c:503 src/audio/region.c:547
 #: resources/ui/file_browser_filters.ui:10
-#: build/data/org.zrythm.Zrythm.gschema.xml:1076
+#: build/data/org.zrythm.Zrythm.gschema.xml:1085
 msgid "Audio"
 msgstr "Audio"
 
@@ -882,51 +882,51 @@ msgstr "Unbekannter Vorgang"
 msgid "libguile is required for this option\n"
 msgstr "Diese Option setzt libguile voraus\n"
 
-#: src/zrythm_app.c:1840
+#: src/zrythm_app.c:1841
 msgid "Print version information"
 msgstr "Versionsinformationen drucken"
 
-#: src/zrythm_app.c:1845
+#: src/zrythm_app.c:1846
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "ZPJ-Datein zu YAML konvertieren"
 
-#: src/zrythm_app.c:1850
+#: src/zrythm_app.c:1851
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "YAML-PROJEKT-DATEI in das .zpj-Format konvertieren"
 
-#: src/zrythm_app.c:1855
+#: src/zrythm_app.c:1856
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "Erzeugen eines Projekts aus SCRIPT-DATEI"
 
-#: src/zrythm_app.c:1859
+#: src/zrythm_app.c:1860
 msgid "Print output in user-friendly way"
 msgstr "Druckausgabe auf benutzerfreundliche Weise"
 
-#: src/zrythm_app.c:1863
+#: src/zrythm_app.c:1864
 msgid "Print current settings"
 msgstr "Aktuelle Einstellungen drucken"
 
-#: src/zrythm_app.c:1867
+#: src/zrythm_app.c:1868 src/gui/widgets/preferences.c:804
 msgid "Reset to factory settings"
 msgstr "Auf Werkseinstellungen zurücksetzen"
 
-#: src/zrythm_app.c:1870
+#: src/zrythm_app.c:1871
 msgid "Override the audio backend to use"
 msgstr "Das zu nutzende Audio-Backend überschreiben"
 
-#: src/zrythm_app.c:1874
+#: src/zrythm_app.c:1875
 msgid "Override the MIDI backend to use"
 msgstr "Das zu nutzende MIDI-Backend überschreiben"
 
-#: src/zrythm_app.c:1878
+#: src/zrythm_app.c:1879
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "Abkürzung für --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1910
+#: src/zrythm_app.c:1911
 msgid "[PROJECT-FILE]"
 msgstr "[PROJEKT-DATEI]"
 
-#: src/zrythm_app.c:1915
+#: src/zrythm_app.c:1916
 #, c-format
 msgid ""
 "Examples:\n"
@@ -946,7 +946,7 @@ msgstr ""
 "\n"
 "Bitte melden Sie Probleme an %s\n"
 
-#: src/zrythm_app.c:1927
+#: src/zrythm_app.c:1928
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "Führen Sie %s aus, optional mit Angabe einer Projektdatei."
@@ -1332,8 +1332,8 @@ msgstr "Hinzufügen"
 
 #: src/gui/widgets/inspector_port.c:158 src/gui/widgets/modulator_inner.c:171
 #: src/gui/widgets/plugin_browser.c:577 src/gui/widgets/plugin_browser.c:627
-#: src/gui/widgets/balance_control.c:308 src/gui/widgets/modulator_macro.c:176
-#: src/gui/widgets/fader.c:307
+#: src/gui/widgets/preferences.c:350 src/gui/widgets/balance_control.c:308
+#: src/gui/widgets/modulator_macro.c:176 src/gui/widgets/fader.c:307
 msgid "Reset"
 msgstr "Zurücksetzen"
 
@@ -2174,7 +2174,7 @@ msgid "Failed to create selections"
 msgstr "Auswahl konnten nicht erstellt werden"
 
 #: src/gui/widgets/automation_arranger.c:251
-#: build/data/org.zrythm.Zrythm.gschema.xml:1094
+#: build/data/org.zrythm.Zrythm.gschema.xml:1103
 msgid "Curve algorithm"
 msgstr "Kurvenalgorithmus"
 
@@ -2242,7 +2242,7 @@ msgid "Redo"
 msgstr "Wiederherstellen"
 
 #: src/gui/widgets/home_toolbar.c:68 src/gui/widgets/home_toolbar.c:209
-#: build/data/org.zrythm.Zrythm.gschema.xml:1104
+#: build/data/org.zrythm.Zrythm.gschema.xml:1113
 msgid "Undo"
 msgstr "Rückgängig machen"
 
@@ -2279,8 +2279,8 @@ msgid "Redo..."
 msgstr "Wiederherstellen…"
 
 #: src/gui/widgets/right_dock_edge.c:106
-#: build/data/org.zrythm.Zrythm.gschema.xml:1016
-#: build/data/org.zrythm.Zrythm.gschema.xml:1047
+#: build/data/org.zrythm.Zrythm.gschema.xml:1025
+#: build/data/org.zrythm.Zrythm.gschema.xml:1056
 msgid "Plugins"
 msgstr "Plugins"
 
@@ -2471,7 +2471,7 @@ msgstr ""
 "Änderungen:\n"
 "%s"
 
-#: src/gui/widgets/main_window.c:885 src/gui/widgets/preferences.c:989
+#: src/gui/widgets/main_window.c:885 src/gui/widgets/preferences.c:1060
 #: resources/gtk/menus.ui:40 resources/gtk/help-overlay.ui:39
 #: resources/ui/file_auditioner_controls.ui:33
 msgid "Preferences"
@@ -2504,15 +2504,29 @@ msgstr "%s - Letztes Objekt"
 msgid "Snap/Grid options"
 msgstr "Fang-/Rasteroptionen"
 
-#: src/gui/widgets/preferences.c:499
+#: src/gui/widgets/preferences.c:177
+msgid "All preferences have been successfully reset to initial values"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:545
 msgid "Select a folder"
 msgstr "Wähle einen Ordner"
 
-#: src/gui/widgets/preferences.c:500
+#: src/gui/widgets/preferences.c:546
 msgid "Select a file"
 msgstr "Eine Datei auswählen"
 
-#: src/gui/widgets/preferences.c:971
+#: src/gui/widgets/preferences.c:784
+#: build/data/org.zrythm.Zrythm.gschema.xml:1017
+#, fuzzy
+msgid "Other"
+msgstr "Dithern"
+
+#: src/gui/widgets/preferences.c:806
+msgid "Reset all preferences to initial values"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:1045
 #, c-format
 msgid "Some changes will only take effect after you restart %s"
 msgstr "Einige Änderungen werden erst nach einem Neustart wirksam %s"
@@ -2588,16 +2602,16 @@ msgstr "Abhören"
 msgid "Scripting Interface"
 msgstr "Skripting-Schnittstelle"
 
-#: src/gui/widgets/active_hardware_mb.c:56
-#: src/gui/widgets/active_hardware_mb.c:158
+#: src/gui/widgets/active_hardware_mb.c:55
+#: src/gui/widgets/active_hardware_mb.c:162
 msgid "Select..."
 msgstr "Wähle…"
 
-#: src/gui/widgets/active_hardware_mb.c:127
+#: src/gui/widgets/active_hardware_mb.c:126
 msgid "Click to enable inputs"
 msgstr "Klicken um Eingänge zu aktivieren"
 
-#: src/gui/widgets/active_hardware_mb.c:128
+#: src/gui/widgets/active_hardware_mb.c:127
 msgid "Click to enable outputs"
 msgstr "Klicken um Ausgänge zu aktivieren"
 
@@ -3902,56 +3916,70 @@ msgstr "%s konnte nicht mit %s verbunden werden"
 msgid "Failed to connect R port"
 msgstr "%s konnte nicht mit %s verbunden werden"
 
-#: src/settings/settings.c:163
+#: src/settings/settings.c:164
 #, c-format
 msgid "Schema %s%s%s"
 msgstr "Schema %s%s%s"
 
-#: src/settings/settings.c:174
+#: src/settings/settings.c:175
 #, c-format
 msgid "Resetting schema %s...\n"
 msgstr "Schema %s zurücksetzen...\n"
 
-#: src/settings/settings.c:213
+#: src/settings/settings.c:214
 #, c-format
 msgid "skipping %s"
 msgstr "Überspringe %s"
 
-#: src/settings/settings.c:224
+#: src/settings/settings.c:225
 #, c-format
 msgid "resetting %s to %s"
 msgstr "%s auf %s zurücksetzen"
 
-#: src/settings/settings.c:269
+#: src/settings/settings.c:270
 #, c-format
 msgid "Failed to find schema %s. %s is likely not installed"
 msgstr "Konnte Schema %s nicht finden. %s ist wahrscheinlich nicht installiert"
 
-#: src/settings/settings.c:284
+#: src/settings/settings.c:285
 #, c-format
 msgid "Failed to view schema %s"
 msgstr "Schema %s konnte nicht angezeigt werden"
 
-#: src/settings/settings.c:291
+#: src/settings/settings.c:292
 #, c-format
 msgid "Failed to reset schema %s"
 msgstr "Schema %s konnte nicht zurückgesetzt werden"
 
-#: src/settings/settings.c:324
-#, c-format
+#: src/settings/settings.c:342
+#, fuzzy
 msgid ""
-"This will reset %s to factory settings. You will lose all your preferences. "
-"Type 'y' to continue: "
+"This will reset Zrythm to factory settings. <b>You will lose all your "
+"preferences</b>. Continue?"
 msgstr ""
 "Das wird %s auf die Fabrikeinstellung zurücksetzen. Du wirst alle deine "
 "persönlichen Einstellungen verlieren. Tippe ‚y‘, um fortzufahren. "
 
-#: src/settings/settings.c:331
+#: src/settings/settings.c:348
+#, fuzzy
+msgid "Reset to Factory Settings"
+msgstr "Auf Werkseinstellungen zurücksetzen"
+
+#: src/settings/settings.c:360
+#, fuzzy
+msgid ""
+"This will reset Zrythm to factory settings. You will lose all your "
+"preferences. Type 'y' to continue:"
+msgstr ""
+"Das wird %s auf die Fabrikeinstellung zurücksetzen. Du wirst alle deine "
+"persönlichen Einstellungen verlieren. Tippe ‚y‘, um fortzufahren. "
+
+#: src/settings/settings.c:367
 #, c-format
 msgid "Aborting...\n"
 msgstr "Breche ab…\n"
 
-#: src/settings/settings.c:342
+#: src/settings/settings.c:379
 #, c-format
 msgid "Reset to factory settings successful\n"
 msgstr "Erfolgreich auf die Fabrikeinstellungen zurückgesetzt\n"
@@ -4161,7 +4189,7 @@ msgstr ""
 msgid "PortAudio Error: %s"
 msgstr "PortAudio-Fehler: %s"
 
-#: src/audio/region.c:550 build/data/org.zrythm.Zrythm.gschema.xml:1090
+#: src/audio/region.c:550 build/data/org.zrythm.Zrythm.gschema.xml:1099
 msgid "Automation"
 msgstr "Automatisierung"
 
@@ -5411,9 +5439,10 @@ msgstr "Globale Tastenkürzel"
 #: build/data/org.zrythm.Zrythm.gschema.xml:939
 #: build/data/org.zrythm.Zrythm.gschema.xml:988
 #: build/data/org.zrythm.Zrythm.gschema.xml:1002
-#: build/data/org.zrythm.Zrythm.gschema.xml:1119
-#: build/data/org.zrythm.Zrythm.gschema.xml:1134
-#: build/data/org.zrythm.Zrythm.gschema.xml:1188
+#: build/data/org.zrythm.Zrythm.gschema.xml:1016
+#: build/data/org.zrythm.Zrythm.gschema.xml:1128
+#: build/data/org.zrythm.Zrythm.gschema.xml:1143
+#: build/data/org.zrythm.Zrythm.gschema.xml:1197
 msgid "General"
 msgstr "Allgemein"
 
@@ -7394,7 +7423,8 @@ msgid "Audio backend"
 msgstr "Audio-Backend"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:945
-msgid "The audio backend to use."
+#, fuzzy
+msgid "The audio backend to use"
 msgstr "Das zu benutzende Audio-Backend."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:949
@@ -7402,7 +7432,8 @@ msgid "RtAudio device"
 msgstr "RtAudio-Gerät"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:950
-msgid "The name of the RtAudio device to use."
+#, fuzzy
+msgid "The name of the RtAudio device to use"
 msgstr "Der Name des zu benutzenden RtAudio-Gerätes."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:954
@@ -7410,7 +7441,8 @@ msgid "SDL device"
 msgstr "SDL-Gerät"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:955
-msgid "The name of the SDL device to use."
+#, fuzzy
+msgid "The name of the SDL device to use"
 msgstr "Der Name des zu benutzenden SDL-Gerätes."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:959
@@ -7418,7 +7450,8 @@ msgid "Samplerate"
 msgstr "Samplerate"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:960
-msgid "Samplerate to pass to the backend."
+#, fuzzy
+msgid "Samplerate to pass to the backend"
 msgstr "Dem Backend anzugebende Samplerate."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:964
@@ -7426,7 +7459,8 @@ msgid "Buffer size"
 msgstr "Puffergröße"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:965
-msgid "Buffer size to pass to the backend."
+#, fuzzy
+msgid "Buffer size to pass to the backend"
 msgstr "Dem Backend anzugebende Puffergröße."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:969
@@ -7434,7 +7468,8 @@ msgid "MIDI backend"
 msgstr "MIDI-Backend"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:970
-msgid "The MIDI backend to use."
+#, fuzzy
+msgid "The MIDI backend to use"
 msgstr "Das zu benutzende MIDI-Backend."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:974
@@ -7442,7 +7477,8 @@ msgid "Audio inputs"
 msgstr "Audioeingänge"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:975
-msgid "A list of audio inputs to enable."
+#, fuzzy
+msgid "A list of audio inputs to enable"
 msgstr "Liste der zu aktivierenden Audioeingänge."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:979
@@ -7450,11 +7486,12 @@ msgid "MIDI controllers"
 msgstr "MIDI-Controller"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:980
-msgid "A list of controllers to enable."
+#, fuzzy
+msgid "A list of controllers to enable"
 msgstr "Liste der zu aktivierenden Controller."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:989
-#: build/data/org.zrythm.Zrythm.gschema.xml:1048
+#: build/data/org.zrythm.Zrythm.gschema.xml:1057
 msgid "Paths"
 msgstr "Pfade"
 
@@ -7463,7 +7500,8 @@ msgid "Zrythm path"
 msgstr "Zrythm-Pfad"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:994
-msgid "The directory used to save user data in."
+#, fuzzy
+msgid "The directory used to save user data in"
 msgstr "Das Verzeichnis, in dem Benutzerdaten gespeichert werden."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1003
@@ -7475,216 +7513,234 @@ msgid "Check for updates"
 msgstr "Nach Aktualisierungen suchen"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1008
-msgid "Whether to check for updates."
+#, fuzzy
+msgid "Whether to check for updates"
 msgstr "Ob nach Aktualisierungen gesucht werden soll."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1017
+#: build/data/org.zrythm.Zrythm.gschema.xml:1026
 msgid "UIs"
 msgstr "Benutzeroberflächen"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1021
+#: build/data/org.zrythm.Zrythm.gschema.xml:1030
 msgid "Open UI on instantiation"
 msgstr "Beim Einrichten die Benutzeroberfläche öffnen"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1022
-msgid "Open plugin UIs when they are instantiated."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1031
+#, fuzzy
+msgid "Open plugin UIs when they are instantiated"
 msgstr "Öffne Plugin-Benutzeroberflächen bei deren Einrichtung."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1026
+#: build/data/org.zrythm.Zrythm.gschema.xml:1035
 msgid "Keep window on top"
 msgstr "Fenster im Vordergrund halten"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1027
-msgid "Always show plugin UIs on top of the main window."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1036
+#, fuzzy
+msgid "Always show plugin UIs on top of the main window"
 msgstr "Plugin-Benutzeroberflächen immer im Vordergrund halten."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1032
+#: build/data/org.zrythm.Zrythm.gschema.xml:1041
 msgid "Refresh rate"
 msgstr "Aktualisierungsintervall"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1033
+#: build/data/org.zrythm.Zrythm.gschema.xml:1042
+#, fuzzy
 msgid ""
-"Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
+"Refresh rate in Hz (if set to 0, the screen's refresh rate will be used)"
 msgstr ""
 "Aktualisierungsintervall in Hz. Bei Einstellung auf 0 wird die "
 "Bildwiederholfrequenz des Bildschirms verwendet."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1038
+#: build/data/org.zrythm.Zrythm.gschema.xml:1047
 msgid "Scale factor"
 msgstr "Skalierungsfaktor"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1039
+#: build/data/org.zrythm.Zrythm.gschema.xml:1048
+#, fuzzy
 msgid ""
-"Scale factor to pass to plugin UIs. If set to 0, the monitor's scale factor "
-"will be used."
+"Scale factor to pass to plugin UIs (if set to 0, the monitor's scale factor "
+"will be used)"
 msgstr ""
 "Skalierungsfaktor, der den Plugin-Benutzeroberflächen angegeben wird. Bei "
 "Wert 0 wird der Skalierungsfaktor des Monitors verwendet."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1056
+#: build/data/org.zrythm.Zrythm.gschema.xml:1065
 msgid "VST plugins"
 msgstr "VST-Erweiterungen"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1057
+#: build/data/org.zrythm.Zrythm.gschema.xml:1066
+#, fuzzy
 msgid ""
-"The search paths to scan for VST plugins in. Duplicate paths will be "
-"deduplicated."
+"The search paths to scan for VST plugins in (duplicate paths will be "
+"deduplicated)"
 msgstr ""
 "Die Suchpfade, in denen nach VST-Erweiterungen gescannt wird. Doppelte Pfade "
 "werden entdoppelt."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1061
+#: build/data/org.zrythm.Zrythm.gschema.xml:1070
 msgid "SFZ instruments"
 msgstr "SFZ-Instrumente"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1062
+#: build/data/org.zrythm.Zrythm.gschema.xml:1071
+#, fuzzy
 msgid ""
-"The search paths to scan for SFZ instruments in. Duplicate paths will be "
-"deduplicated."
+"The search paths to scan for SFZ instruments in (duplicate paths will be "
+"deduplicated)"
 msgstr ""
 "Die Suchpfade, in denen nach SZF-Instrumenten gescannt wird. Doppelte Pfade "
 "werden entdoppelt."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1066
+#: build/data/org.zrythm.Zrythm.gschema.xml:1075
 msgid "SF2 instruments"
 msgstr "SF2-Instrumente"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1067
+#: build/data/org.zrythm.Zrythm.gschema.xml:1076
+#, fuzzy
 msgid ""
-"The search paths to scan for SF2 instruments in. Duplicate paths will be "
-"deduplicated."
+"The search paths to scan for SF2 instruments in (duplicate paths will be "
+"deduplicated)"
 msgstr ""
 "Die Suchpfade, in denen nach SF2-Instrumenten gescannt wird. Doppelte Pfade "
 "werden entdoppelt."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1075
-#: build/data/org.zrythm.Zrythm.gschema.xml:1089
-#: build/data/org.zrythm.Zrythm.gschema.xml:1103
+#: build/data/org.zrythm.Zrythm.gschema.xml:1084
+#: build/data/org.zrythm.Zrythm.gschema.xml:1098
+#: build/data/org.zrythm.Zrythm.gschema.xml:1112
 msgid "Editing"
 msgstr "Bearbeitung"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1080
+#: build/data/org.zrythm.Zrythm.gschema.xml:1089
 msgid "Fade algorithm"
 msgstr "Fade-Algorithmus"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1081
-msgid "Default fade algorithm to use for fade in/outs."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1090
+#, fuzzy
+msgid "Default fade algorithm to use for fade in/outs"
 msgstr "Standard-Algorithmus für Fade-In/Out."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1095
-msgid "Default algorithm to use for automation curves."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1104
+#, fuzzy
+msgid "Default algorithm to use for automation curves"
 msgstr "Standardalgorithmus für Automatisierungskurven."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1109
+#: build/data/org.zrythm.Zrythm.gschema.xml:1118
 msgid "Undo stack length"
 msgstr "Stapellänge rückgängig machen"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1110
-msgid "Maximum undo history stack length. Set to -1 for unlimited."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1119
+#, fuzzy
+msgid "Maximum undo history stack length (set to -1 for unlimited)"
 msgstr "Maximale Länge des Rückgängig-Verlaufs. Für unbegrenzt auf -1 setzen."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1118
+#: build/data/org.zrythm.Zrythm.gschema.xml:1127
 msgid "Projects"
 msgstr "Projekte"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1124
+#: build/data/org.zrythm.Zrythm.gschema.xml:1133
 msgid "Autosave interval"
 msgstr "Intervall für automatisches Speichern"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1125
-msgid ""
-"Interval to auto-save projects, in minutes. Auto-saving will be disabled if "
-"this is set to 0."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1134
+#, fuzzy
+msgid "Interval to auto-save projects, in minutes (set to 0 to disable)"
 msgstr ""
-"Zeitintervall zum automatischen Speichern von Projekten, in Minuten. Bei "
-"einem Wert von 0 wird das automatische Speichern deaktiviert."
+"Legen Sie das Intervall für die automatische Speicherung von Projekt-"
+"Sicherungen in Minuten fest. Wenn Sie diesen Wert auf 0 setzen, wird die "
+"automatische Speicherung deaktiviert"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1133
+#: build/data/org.zrythm.Zrythm.gschema.xml:1142
 msgid "UI"
 msgstr "Benutzeroberfläche"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1138
+#: build/data/org.zrythm.Zrythm.gschema.xml:1147
 msgid "Draw detail"
 msgstr "Zeichnungsdetail"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1139
-msgid "Level of detail to use when drawing graphics."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1148
+#, fuzzy
+msgid "Level of detail to use when drawing graphics"
 msgstr "Detailgrad für Grafiken."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1144
+#: build/data/org.zrythm.Zrythm.gschema.xml:1153
 msgid "Font scale"
 msgstr "Schriftgröße"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1145
-msgid "Font scale."
-msgstr "Schriftgröße."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1154
+#, fuzzy
+msgid "Font scaling"
+msgstr "Schriftgröße"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1149
+#: build/data/org.zrythm.Zrythm.gschema.xml:1158
 msgid "User interface language"
 msgstr "Sprache der Benutzeroberfläche"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1150
-msgid "The language to use for the user interface."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1159
+#, fuzzy
+msgid "The language to use for the user interface"
 msgstr "Die für die Benutzeroberfläche zu benutzende Sprache."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1154
+#: build/data/org.zrythm.Zrythm.gschema.xml:1163
 msgid "CSS theme"
 msgstr "CSS-Design"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1155
-msgid "The CSS theme to use."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1164
+#, fuzzy
+msgid "The CSS theme to use"
 msgstr "Das zu verwendende CSS-Design."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1159
+#: build/data/org.zrythm.Zrythm.gschema.xml:1168
 msgid "Icon theme"
 msgstr "Icon-Design"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1160
-msgid "The icon theme to use. This is the directory name."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1169
+#, fuzzy
+msgid "The icon theme to use (directory name)"
 msgstr "Das zu verwendende Symboldesign. Dies ist der Verzeichnisname."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1168
+#: build/data/org.zrythm.Zrythm.gschema.xml:1177
 msgid "DSP"
 msgstr "DSP"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1169
+#: build/data/org.zrythm.Zrythm.gschema.xml:1178
 msgid "Pan"
 msgstr "Panorama"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1173
+#: build/data/org.zrythm.Zrythm.gschema.xml:1182
 msgid "Pan algorithm"
 msgstr "Panorama-Algorithmus"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1174
+#: build/data/org.zrythm.Zrythm.gschema.xml:1183
+#, fuzzy
 msgid ""
 "The panning algorithm to use when applying pan on mono signals (not used at "
-"the moment)."
+"the moment)"
 msgstr ""
 "Der Panorama-Algorithmus, der verwendet werden soll, wenn Pan auf "
 "Monosignale angewendet wird (derzeit nicht verwendet)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1178
+#: build/data/org.zrythm.Zrythm.gschema.xml:1187
 msgid "Pan law"
 msgstr "Panorama-Regel"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1179
+#: build/data/org.zrythm.Zrythm.gschema.xml:1188
+#, fuzzy
 msgid ""
-"The pan law to use when applying pan on mono signals (not used at the "
-"moment)."
+"The pan law to use when applying pan on mono signals (not used at the moment)"
 msgstr ""
 "Die zu nutzende Panorama-Regel, wenn Panorama auf Monosignale angewendet "
 "wird (derzeit nicht verwendet)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1187
+#: build/data/org.zrythm.Zrythm.gschema.xml:1196
 msgid "Scripting"
 msgstr "Skripting"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1192
+#: build/data/org.zrythm.Zrythm.gschema.xml:1201
 msgid "Default script"
 msgstr "Standard-Skript"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1193
-msgid "The default script to use in the scripting window."
+#: build/data/org.zrythm.Zrythm.gschema.xml:1202
+#, fuzzy
+msgid "The default script to use in the scripting window"
 msgstr "Das Standardskript, das im Skriptfenster verwendet werden soll."
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:7
@@ -7916,6 +7972,16 @@ msgstr ""
 msgid "Remove message that says Zrythm is in alpha"
 msgstr ""
 
+#~ msgid ""
+#~ "Interval to auto-save projects, in minutes. Auto-saving will be disabled "
+#~ "if this is set to 0."
+#~ msgstr ""
+#~ "Zeitintervall zum automatischen Speichern von Projekten, in Minuten. Bei "
+#~ "einem Wert von 0 wird das automatische Speichern deaktiviert."
+
+#~ msgid "Font scale."
+#~ msgstr "Schriftgröße."
+
 #~ msgid "Backend combination not supported"
 #~ msgstr "Backendkombination wird nicht unterstützt"
 
@@ -8142,14 +8208,6 @@ msgstr ""
 
 #~ msgid "GUI"
 #~ msgstr "Oberfläche"
-
-#~ msgid ""
-#~ "Set the interval to auto-save project backups, in minutes. Setting this "
-#~ "to 0 will disable auto-save"
-#~ msgstr ""
-#~ "Legen Sie das Intervall für die automatische Speicherung von Projekt-"
-#~ "Sicherungen in Minuten fest. Wenn Sie diesen Wert auf 0 setzen, wird die "
-#~ "automatische Speicherung deaktiviert"
 
 #, fuzzy, c-format
 #~ msgid "Failed to instantiate cloned plugin %s"
