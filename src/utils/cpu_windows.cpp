@@ -25,9 +25,10 @@
 
 #ifdef _WOE32
 
+#  include <Windows.h>
+
 #  include <stdio.h>
 
-#  include <Windows.h>
 #  include <iostream>
 
 using namespace std;

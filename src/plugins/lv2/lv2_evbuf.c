@@ -14,8 +14,10 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "plugins/lv2/lv2_evbuf.h"
 #include "utils/objects.h"
@@ -24,8 +26,6 @@
 
 #include "lv2/atom/atom.h"
 #include "lv2/event/event.h"
-#include <inttypes.h>
-#include <string.h>
 
 struct LV2_Evbuf_Impl
 {

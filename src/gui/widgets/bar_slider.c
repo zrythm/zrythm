@@ -20,6 +20,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "audio/port.h"
 #include "audio/port_connection.h"
@@ -29,8 +30,6 @@
 #include "utils/objects.h"
 
 #include <gtk/gtk.h>
-
-#include <string.h>
 
 G_DEFINE_TYPE (
   BarSliderWidget,

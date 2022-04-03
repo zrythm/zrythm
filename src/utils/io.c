@@ -48,6 +48,8 @@
 #endif
 
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "utils/datetime.h"
 #include "utils/file.h"
@@ -61,8 +63,6 @@
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
 
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
 

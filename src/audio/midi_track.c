@@ -19,6 +19,7 @@
 
 #include "zrythm-config.h"
 
+#include <inttypes.h>
 #include <stdlib.h>
 
 #include "audio/automation_track.h"
@@ -38,8 +39,6 @@
 #include "utils/stoat.h"
 
 #include <gtk/gtk.h>
-
-#include <inttypes.h>
 
 /**
  * Initializes an midi track.

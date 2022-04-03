@@ -67,11 +67,16 @@
 #  include <link.h>
 #endif
 
+#include <assert.h>
+#include <inttypes.h>
 #include <math.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "audio/engine.h"
 #include "audio/midi_event.h"
@@ -104,8 +109,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include <assert.h>
-#include <inttypes.h>
 #include <lilv/lilv.h>
 #include <lv2/buf-size/buf-size.h>
 #include <lv2/event/event.h>
@@ -119,10 +122,7 @@
 #include <lv2/time/time.h>
 #include <lv2/units/units.h>
 #include <sratom/sratom.h>
-#include <string.h>
 #include <suil/suil.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <unistd.h>
 
 typedef enum

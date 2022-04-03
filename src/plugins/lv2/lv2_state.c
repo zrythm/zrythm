@@ -34,8 +34,13 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#include <assert.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "audio/transport.h"
 #include "plugins/lv2/lv2_state.h"
@@ -53,12 +58,7 @@
 #include <gtk/gtk.h>
 
 #include "lilv/lilv.h"
-#include <assert.h>
-#include <errno.h>
 #include <lv2/presets/presets.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #define NS_XSD "http://www.w3.org/2001/XMLSchema#"
 
 #define STATE_FILENAME "state.ttl"

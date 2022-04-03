@@ -42,10 +42,11 @@
 #  ifndef __AUDIO_WINDOWS_MME_DEVICE_H__
 #    define __AUDIO_WINDOWS_MME_DEVICE_H__
 
+#    include <windows.h>
+
 #    include <stdint.h>
 
 #    include "zix/ring.h"
-#    include <windows.h>
 
 typedef struct AudioEngine AudioEngine;
 typedef struct MidiEvent   MidiEvent;

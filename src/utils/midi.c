@@ -31,6 +31,7 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <inttypes.h>
 #include <math.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -43,8 +44,6 @@
 #include "project.h"
 #include "utils/midi.h"
 #include "utils/objects.h"
-
-#include <inttypes.h>
 
 /* https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2 */
 static const char * midi_cc_names[128] = {

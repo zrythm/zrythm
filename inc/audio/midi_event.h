@@ -29,11 +29,11 @@
 #include "zrythm-config.h"
 
 #include <stdint.h>
+#include <string.h>
 
 #include "utils/types.h"
 
 #include "zix/sem.h"
-#include <string.h>
 
 #ifdef HAVE_JACK
 #  include "weak_libjack.h"

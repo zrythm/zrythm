@@ -52,9 +52,12 @@ ForEachMacros: ['LILV_FOREACH']
 IncludeBlocks: Regroup
 IncludeCategories:
   - Regex:           '^"(zrythm-|zrythm-test-)config\.h"$'
-    Priority:        -5
+    Priority:        -10
     CaseSensitive:   true
-  - Regex:           '^<(signal|std.+|math)\.h>$'
+  - Regex:           '^<windows.h>$'
+    Priority:        -6
+    CaseSensitive:   false
+  - Regex:           '^<(assert|errno|inttypes|signal|string|std.+|sys/.+|math)\.h>$'
     Priority:        -2
     CaseSensitive:   true
   - Regex:           '^"((audio|actions|plugins|settings|utils|gui)/.*|zrythm\.h|zrythm_app\.h|project\.h)'

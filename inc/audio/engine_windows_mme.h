@@ -17,16 +17,16 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef __AUDIO_ENGINE_WINDOWS_MME_H__
+#define __AUDIO_ENGINE_WINDOWS_MME_H__
+
 #include "zrythm-config.h"
 
 #ifdef _WOE32
 
-#  ifndef __AUDIO_ENGINE_WINDOWS_MME_H__
-#    define __AUDIO_ENGINE_WINDOWS_MME_H__
+#  include <windows.h>
 
-#    include <gtk/gtk.h>
-
-#    include <windows.h>
+#  include <gtk/gtk.h>
 
 typedef struct AudioEngine      AudioEngine;
 typedef struct WindowsMmeDevice WindowsMmeDevice;
@@ -107,5 +107,5 @@ engine_windows_mme_test (GtkWindow * win);
  * @}
  */
 
-#  endif
 #endif // _WOE32
+#endif

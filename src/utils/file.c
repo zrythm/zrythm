@@ -36,17 +36,17 @@
 
 #include "zrythm-config.h"
 
+#include <errno.h>
 #include <stdbool.h>
 #include <stdlib.h>
-
-#include <errno.h>
 #include <string.h>
 #ifdef __linux__
-#  include <fcntl.h>
-#  include <linux/fs.h>
 #  include <sys/ioctl.h>
 #  include <sys/stat.h>
 #  include <sys/types.h>
+
+#  include <fcntl.h>
+#  include <linux/fs.h>
 #endif
 
 #ifdef _WOE32

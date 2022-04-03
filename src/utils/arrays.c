@@ -24,6 +24,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "utils/arrays.h"
 #include "utils/mem.h"
@@ -32,8 +33,6 @@
 #include "zrythm.h"
 
 #include <glib.h>
-
-#include <string.h>
 
 /**
  * Returns 1 if element exists in array, 0 if not.

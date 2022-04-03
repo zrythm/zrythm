@@ -39,11 +39,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <string.h>
 #ifdef _WOE32
-#  include <dbghelp.h>
 #  include <windows.h>
+
+#  include <dbghelp.h>
 #else
 #  include <execinfo.h>
 #endif

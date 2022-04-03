@@ -29,6 +29,7 @@
 
 #include <signal.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "actions/undo_manager.h"
 #include "audio/automation_tracklist.h"
@@ -68,8 +69,6 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-
-#include <string.h>
 
 typedef enum
 {

@@ -19,6 +19,8 @@
 
 #include "zrythm-config.h"
 
+#include <sys/stat.h>
+
 #include "audio/automation_point.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
@@ -81,7 +83,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include <sys/stat.h>
 #include <time.h>
 #include <zstd.h>
 

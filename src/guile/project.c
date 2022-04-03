@@ -17,8 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "guile/modules.h"
 #include <string.h>
+
+#include "guile/modules.h"
 
 #ifndef SNARF_MODE
 #  include "zrythm-config.h"

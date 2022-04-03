@@ -16,12 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
-#include <assert.h>
-#include <string.h>
 
 #define PLB_URI \
   "http://gareus.org/oss/lv2/plumbing#"

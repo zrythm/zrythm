@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <string.h>
+
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/symap.h"
@@ -25,7 +27,6 @@
 #include <gtk/gtk.h>
 
 #include <pcre.h>
-#include <string.h>
 
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>

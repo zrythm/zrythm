@@ -37,6 +37,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "audio/stretcher.h"
 #include "utils/math.h"
@@ -44,8 +45,6 @@
 #include "utils/objects.h"
 
 #include <gtk/gtk.h>
-
-#include <string.h>
 
 /**
  * Create a new Stretcher using the rubberband

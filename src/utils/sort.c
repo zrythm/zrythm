@@ -17,9 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <string.h>
+
 #include "utils/sort.h"
 
-#include <string.h>
 #include <strings.h>
 
 /**

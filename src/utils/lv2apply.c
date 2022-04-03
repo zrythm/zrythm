@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "utils/symap.h"
 
@@ -32,7 +33,6 @@
 #include "lv2/urid/urid.h"
 #include <lilv/lilv.h>
 #include <sndfile.h>
-#include <string.h>
 
 #if defined(__GNUC__)
 #  define LILV_LOG_FUNC(fmt, arg1) \

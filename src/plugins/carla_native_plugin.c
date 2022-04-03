@@ -21,6 +21,7 @@
 
 #ifdef HAVE_CARLA
 
+#  include <inttypes.h>
 #  include <math.h>
 #  include <stdlib.h>
 
@@ -56,7 +57,6 @@
 
 #  include <CarlaHost.h>
 #  include <CarlaNative.h>
-#  include <inttypes.h>
 
 typedef enum
 {

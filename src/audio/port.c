@@ -19,8 +19,10 @@
 
 #include "zrythm-config.h"
 
+#include <inttypes.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "audio/channel.h"
 #include "audio/clip.h"
@@ -59,8 +61,6 @@
 #include <gtk/gtk.h>
 
 #include "zix/ring.h"
-#include <inttypes.h>
-#include <string.h>
 
 #define SLEEPTIME_USEC 60
 

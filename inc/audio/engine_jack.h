@@ -3,16 +3,16 @@
  * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  */
 
+#ifndef __AUDIO_ENGINE_JACK_H__
+#define __AUDIO_ENGINE_JACK_H__
+
 #include "zrythm-config.h"
 
 #ifdef HAVE_JACK
 
-#  ifndef __AUDIO_ENGINE_JACK_H__
-#    define __AUDIO_ENGINE_JACK_H__
+#  include <stdlib.h>
 
-#    include <stdlib.h>
-
-#    define JACK_PORT_T(exp) ((jack_port_t *) exp)
+#  define JACK_PORT_T(exp) ((jack_port_t *) exp)
 
 TYPEDEF_STRUCT (AudioEngine);
 TYPEDEF_ENUM (AudioEngineJackTransportType);
@@ -132,5 +132,5 @@ engine_jack_get_jack_type (PortType type);
 bool
 engine_jack_is_pipewire (AudioEngine * self);
 
-#  endif /* header guard */
-#endif   /* HAVE_JACK */
+#endif /* HAVE_JACK */
+#endif /* header guard */

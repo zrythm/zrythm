@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <sys/time.h>
+
 #include "actions/tracklist_selections.h"
 #include "actions/undo_manager.h"
 #include "actions/undoable_action.h"
@@ -56,7 +58,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include <sys/time.h>
 #include <time.h>
 
 G_DEFINE_TYPE (

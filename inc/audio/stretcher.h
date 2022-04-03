@@ -28,11 +28,11 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <sys/types.h>
 
 #include "utils/types.h"
 
 #include <rubberband/rubberband-c.h>
-#include <sys/types.h>
 
 /**
  * @addtogroup audio

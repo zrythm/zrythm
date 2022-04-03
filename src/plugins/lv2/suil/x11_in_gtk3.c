@@ -23,6 +23,7 @@
 #    include <stdbool.h>
 #    include <stdio.h>
 #    include <stdlib.h>
+#    include <string.h>
 
 #    include <gtk/gtk.h>
 #    include <gtk/gtkx.h>
@@ -32,7 +33,6 @@
 #    include "suil/suil.h"
 #    include <X11/Xatom.h>
 #    include <gdk/gdkx.h>
-#    include <string.h>
 
 #    define SUIL_X11_WRAPPER_TYPE \
       (suil_x11_wrapper_get_type ())

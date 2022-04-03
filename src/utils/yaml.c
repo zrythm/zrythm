@@ -17,12 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <string.h>
+
 #include "utils/objects.h"
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
-
-#include <string.h>
 
 cyaml_log_t _cyaml_log_level = CYAML_LOG_WARNING;
 

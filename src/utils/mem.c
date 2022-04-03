@@ -18,12 +18,11 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "utils/mem.h"
 
 #include <gtk/gtk.h>
-
-#include <string.h>
 
 /**
  * Reallocate and zero out newly added memory.

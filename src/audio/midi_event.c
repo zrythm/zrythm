@@ -35,6 +35,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <inttypes.h>
 #include <math.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -47,8 +48,6 @@
 #include "audio/transport.h"
 #include "project.h"
 #include "utils/objects.h"
-
-#include <inttypes.h>
 
 /**
  * Type of MIDI event.

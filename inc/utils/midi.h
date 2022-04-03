@@ -43,12 +43,11 @@
 #include "zrythm-config.h"
 
 #include <stdint.h>
+#include <string.h>
 
 #include "utils/types.h"
 
 #include <gtk/gtk.h>
-
-#include <string.h>
 
 /**
  * @addtogroup audio

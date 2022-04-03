@@ -35,6 +35,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <inttypes.h>
 #include <stdlib.h>
 
 #include "audio/engine.h"
@@ -58,8 +59,6 @@
 #include "utils/objects.h"
 
 #include <gtk/gtk.h>
-
-#include <inttypes.h>
 
 /**
  * Returns a human friendly name of the node.

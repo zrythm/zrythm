@@ -18,12 +18,11 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "audio/chord_descriptor.h"
 #include "utils/midi.h"
 #include "utils/objects.h"
-
-#include <string.h>
 
 /**
  * @param notes 36 notes.
