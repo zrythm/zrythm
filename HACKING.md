@@ -343,6 +343,15 @@ often
 * only use `CONST`/`PURE` on functions that do not log (or use `g_warn_*()`/`g_return_*()`)
 
 ## Licensing
+For license headers, we use SPDX license
+identifiers. The comment style depends on the file
+type:
+
+    C source: // SPDX-License-Identifier: <SPDX License Expression>
+    C header: /* SPDX-License-Identifier: <SPDX License Expression> */
+    scripts:  # SPDX-License-Identifier: <SPDX License Expression>
+    .rst:     .. SPDX-License-Identifier: <SPDX License Expression>
+
 If you contributed significant (for copyright
 purposes) amounts of code in a file, you should
 append your copyright notice (name, year and

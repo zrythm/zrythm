@@ -19,6 +19,10 @@ or in README files (for graphics and other non-code
 files). Legal texts for each license used are
 provided as additional COPYING.* files.
 
+Where possible, we use SPDX short-form identifiers
+(https://spdx.dev/ids/), version 2.2.1 or later, to
+communicate which license(s) apply to each file.
+
 ---
 
 Additional terms under Section 7 of the GNU AGPL:
