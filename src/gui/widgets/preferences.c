@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -35,6 +35,7 @@
 #include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
+#include "utils/strv_builder.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -47,6 +48,9 @@ G_DEFINE_TYPE (
   PreferencesWidget,
   preferences_widget,
   ADW_TYPE_PREFERENCES_WINDOW)
+
+static const char * reset_to_factory_key =
+  "reset-to-factory";
 
 typedef struct CallbackData
 {
@@ -151,6 +155,28 @@ font_scale_adjustment_changed (
   double factor =
     gtk_adjustment_get_value (adjustment);
   zrythm_app_set_font_scale (zrythm_app, factor);
+}
+
+static void
+on_reset_to_factory_clicked (
+  GtkButton * btn,
+  gpointer    user_data)
+{
+  CallbackData * data = (CallbackData *) user_data;
+  bool successful_reset =
+    settings_reset_to_factory (
+      true, GTK_WINDOW (data->preferences_widget),
+      false);
+
+  if (successful_reset)
+    {
+      gtk_window_destroy (
+        GTK_WINDOW (data->preferences_widget));
+
+      ui_show_notification_idle (
+        _("All preferences have been successfully "
+        "reset to initial values"));
+    }
 }
 
 static void
@@ -317,6 +343,26 @@ make_control (
     &self->subgroup_infos[group_idx][subgroup_idx];
   const char * group = info->group_name;
   const char * subgroup = info->name;
+
+  if (string_is_equal (key, reset_to_factory_key))
+    {
+      GtkWidget * widget =
+        gtk_button_new_with_label (_("Reset"));
+      CallbackData * data =
+        object_new (CallbackData);
+      data->info = info;
+      data->preferences_widget = self;
+      data->key = g_strdup (key);
+      g_signal_connect_data (
+        G_OBJECT (widget), "clicked",
+        G_CALLBACK (on_reset_to_factory_clicked),
+        data,
+        (GClosureNotify)
+          on_closure_notify_delete_data,
+        G_CONNECT_AFTER);
+      return widget;
+    }
+
   GSettingsSchemaKey * schema_key =
     g_settings_schema_get_key (
       info->schema, key);
@@ -724,24 +770,56 @@ add_subgroup (
     subgroup, localized_subgroup_name);
   adw_preferences_page_add (page, subgroup);
 
+  StrvBuilder * builder =
+    strv_builder_new ();
   char ** keys =
     g_settings_schema_list_keys (info->schema);
+  strv_builder_addv (builder, (const char **) keys);
+  g_strfreev (keys);
+
+  /* add option to reset to factory */
+  if (group_idx == 0
+      &&
+      string_is_equal (
+        localized_subgroup_name, _("Other")))
+    {
+      strv_builder_add (
+        builder, reset_to_factory_key);
+    }
+
+  keys = strv_builder_end (builder);
+
   int i = 0;
   int num_controls = 0;
   char * key;
   while ((key = keys[i++]))
     {
-      GSettingsSchemaKey * schema_key =
-        g_settings_schema_get_key (
-          info->schema, key);
-      /* note: this is already translated */
-      const char * summary =
-        g_settings_schema_key_get_summary (
-          schema_key);
-      /* note: this is already translated */
-      const char * description =
-        g_settings_schema_key_get_description (
-          schema_key);
+      const char * summary;
+      const char * description;
+
+      if (string_is_equal (
+            reset_to_factory_key, key))
+        {
+          summary =
+            _("Reset to factory settings");
+          description =
+            _("Reset all preferences to initial "
+              "values");
+        }
+      else
+        {
+          GSettingsSchemaKey * schema_key =
+            g_settings_schema_get_key (
+              info->schema, key);
+          /* note: this is already translated */
+          summary =
+            g_settings_schema_key_get_summary (
+              schema_key);
+          /* note: this is already translated */
+          description =
+            g_settings_schema_key_get_description (
+              schema_key);
+        }
 
       if (string_is_equal (key, "info") ||
           should_be_hidden (
@@ -788,6 +866,8 @@ add_subgroup (
           g_warning ("no widget for %s", key);
         }
     }
+
+  g_strfreev (keys);
 
   /* Remove label if no controls added */
   if (num_controls == 0)
@@ -961,18 +1041,9 @@ on_window_closed (
   GtkWidget *object,
   PreferencesWidget * self)
 {
-  GtkWidget * dialog =
-    gtk_message_dialog_new_with_markup (
-      GTK_WINDOW (MAIN_WINDOW),
-      GTK_DIALOG_MODAL |
-        GTK_DIALOG_DESTROY_WITH_PARENT,
-      GTK_MESSAGE_INFO,
-      GTK_BUTTONS_OK,
-      _("Some changes will only take "
-      "effect after you restart %s"),
-      PROGRAM_NAME);
-  gtk_window_set_modal (GTK_WINDOW (dialog), true);
-  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+  ui_show_notification_idle_printf (
+    _("Some changes will only take "
+    "effect after you restart %s"), PROGRAM_NAME);
 
   MAIN_WINDOW->preferences_opened = false;
 }

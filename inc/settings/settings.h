@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -163,13 +163,19 @@ settings_new (void);
 /**
  * Resets settings to defaults.
  *
+ * @param window Window to set transient to if
+ *   confirming, otherwise console confirmation will
+ *   be used.
  * @param exit_on_finish Exit with a code on
  *   finish.
+ *
+ * @return Whether successfully reset.
  */
-void
+bool
 settings_reset_to_factory (
-  int confirm,
-  int exit_on_finish);
+  bool        confirm,
+  GtkWindow * window,
+  bool        exit_on_finish);
 
 /**
  * Prints the current settings.

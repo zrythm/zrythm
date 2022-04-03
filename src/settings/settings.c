@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,6 +31,7 @@
 #include "settings/plugin_settings.h"
 #include "settings/settings.h"
 #include "settings/user_shortcuts.h"
+#include "utils/gtk.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/string.h"
@@ -310,29 +311,65 @@ print_or_reset (
 /**
  * Resets settings to defaults.
  *
+ * @param window Window to set transient to if
+ *   confirming, otherwise console confirmation will
+ *   be used.
  * @param exit_on_finish Exit with a code on
  *   finish.
+ *
+ * @return Whether successfully reset.
  */
-void
+bool
 settings_reset_to_factory (
-  int confirm,
-  int exit_on_finish)
+  bool        confirm,
+  GtkWindow * window,
+  bool        exit_on_finish)
 {
   if (confirm)
     {
-      printf (
-        _("This will reset %s to factory settings. "
-        "You will lose all your preferences. Type 'y' "
-        "to continue: "),
-        PROGRAM_NAME);
-      char c = getchar ();
-      if (c != 'y')
+      if (window)
         {
-          printf (_("Aborting...\n"));
-          if (exit_on_finish)
-            exit (0);
+          GtkDialog * dialog =
+            GTK_DIALOG (
+              gtk_message_dialog_new_with_markup (
+                window,
+                GTK_DIALOG_DESTROY_WITH_PARENT
+                  | GTK_DIALOG_MODAL,
+                GTK_MESSAGE_WARNING,
+                GTK_BUTTONS_OK_CANCEL, NULL));
+          gtk_message_dialog_set_markup (
+            GTK_MESSAGE_DIALOG (dialog),
+            _("This will reset Zrythm to "
+            "factory settings. <b>You will lose "
+            "all your preferences</b>. "
+            "Continue?"));
+          gtk_window_set_title (
+            GTK_WINDOW (dialog),
+            _("Reset to Factory Settings"));
 
-          return;
+          int response =
+            z_gtk_dialog_run (dialog, true);
+
+          if (response != GTK_RESPONSE_OK)
+            return false;
+        }
+      else
+        {
+          printf (
+            "%s ",
+            _("This will reset Zrythm to factory "
+            "settings. You will lose all your "
+            "preferences. "
+            "Type 'y' to continue:"));
+          char c = getchar ();
+          if (c != 'y')
+            {
+              printf (_("Aborting...\n"));
+              if (exit_on_finish)
+                exit (0);
+
+              return false;
+            }
         }
     }
 
@@ -340,6 +377,8 @@ settings_reset_to_factory (
 
   printf (
     _("Reset to factory settings successful\n"));
+
+  return true;
 }
 
 /**

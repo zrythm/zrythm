@@ -38,7 +38,7 @@ G_DECLARE_FINAL_TYPE (
   ActiveHardwareMbWidget,
   active_hardware_mb_widget,
   Z, ACTIVE_HARDWARE_MB_WIDGET,
-  GtkBox)
+  GtkWidget)
 
 /**
  * @addtogroup widgets
@@ -55,7 +55,7 @@ typedef struct _ActiveHardwarePopoverWidget
  */
 typedef struct _ActiveHardwareMbWidget
 {
-  GtkBox            parent_instance;
+  GtkWidget         parent_instance;
 
   /** The actual menu button. */
   GtkMenuButton *   mbutton;

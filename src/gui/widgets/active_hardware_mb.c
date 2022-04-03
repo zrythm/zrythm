@@ -31,9 +31,8 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  ActiveHardwareMbWidget,
-  active_hardware_mb_widget,
-  GTK_TYPE_BOX)
+  ActiveHardwareMbWidget, active_hardware_mb_widget,
+  GTK_TYPE_WIDGET)
 
 static void
 on_create_popover (
@@ -142,6 +141,10 @@ static void
 active_hardware_mb_widget_class_init (
   ActiveHardwareMbWidgetClass * klass)
 {
+  gtk_widget_class_set_css_name (
+    GTK_WIDGET_CLASS (klass), "active-hw-mb");
+  gtk_widget_class_set_layout_manager_type (
+    GTK_WIDGET_CLASS (klass), GTK_TYPE_BIN_LAYOUT);
 }
 
 static void
@@ -150,9 +153,10 @@ active_hardware_mb_widget_init (
 {
   self->mbutton =
     GTK_MENU_BUTTON (gtk_menu_button_new ());
-  gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->mbutton));
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self->mbutton), true);
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->mbutton), GTK_WIDGET (self));
 
   gtk_menu_button_set_label (
     self->mbutton, _("Select..."));

@@ -1680,7 +1680,8 @@ gen_project (
 static bool
 reset_to_factory (void)
 {
-  settings_reset_to_factory (1, 1);
+  ZRYTHM->have_ui = false;
+  settings_reset_to_factory (true, NULL, true);
 
   exit (EXIT_SUCCESS);
 }

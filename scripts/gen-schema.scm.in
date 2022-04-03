@@ -1038,35 +1038,35 @@ Args:
                    (make-schema-key-with-enum
                      "audio-backend" "audio-backend"
                      "none" "Audio backend"
-                     "The audio backend to use.")
+                     "The audio backend to use")
                    (make-schema-key
                      "rtaudio-audio-device-name" "s"
                      "" "RtAudio device"
-                     "The name of the RtAudio device to use.")
+                     "The name of the RtAudio device to use")
                    (make-schema-key
                      "sdl-audio-device-name" "s"
                      "" "SDL device"
-                     "The name of the SDL device to use.")
+                     "The name of the SDL device to use")
                    (make-schema-key-with-enum
                      "sample-rate" "sample-rate"
                      "48000" "Samplerate"
-                     "Samplerate to pass to the backend.")
+                     "Samplerate to pass to the backend")
                    (make-schema-key-with-enum
                      "buffer-size" "buffer-size"
                      "512" "Buffer size"
-                     "Buffer size to pass to the backend.")
+                     "Buffer size to pass to the backend")
                    (make-schema-key-with-enum
                      "midi-backend" "midi-backend"
                      "none" "MIDI backend"
-                     "The MIDI backend to use.")
+                     "The MIDI backend to use")
                    (make-schema-key
                      "audio-inputs" "as"
                      "[]" "Audio inputs"
-                     "A list of audio inputs to enable.")
+                     "A list of audio inputs to enable")
                    (make-schema-key
                      "midi-controllers" "as"
                      "[]" "MIDI controllers"
-                     "A list of controllers to enable.")
+                     "A list of controllers to enable")
                  )) ;; general/engine
                (make-schema
                  "paths"
@@ -1077,8 +1077,8 @@ Args:
                    (make-schema-key
                      "zrythm-dir" "s"
                      "" "Zrythm path"
-                     "The directory used to save user data in.")
-                 )) ;; general/updates
+                     "The directory used to save user data in")
+                 )) ;; general/paths
                (make-schema
                  "updates"
                  (list
@@ -1088,8 +1088,15 @@ Args:
                    (make-schema-key
                      "check-for-updates" "b" "false"
                      "Check for updates"
-                     "Whether to check for updates.")
+                     "Whether to check for updates")
                  )) ;; general/updates
+               (make-schema
+                 "other"
+                 (list
+                   (make-schema-key
+                     "info" "ai" "[0,3]"
+                     "General" "Other")
+                 )) ;; general/other
              ))) ;; general
 
          (preferences-category-print
@@ -1105,19 +1112,19 @@ Args:
                    (make-schema-key
                      "open-on-instantiate" "b"
                      "true" "Open UI on instantiation"
-                     "Open plugin UIs when they are instantiated.")
+                     "Open plugin UIs when they are instantiated")
                    (make-schema-key
                      "stay-on-top" "b"
                      "true" "Keep window on top"
-                     "Always show plugin UIs on top of the main window.")
+                     "Always show plugin UIs on top of the main window")
                    (make-schema-key-with-range
                      "refresh-rate" "i" "0" "180"
                      "0" "Refresh rate"
-                     "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used.")
+                     "Refresh rate in Hz (if set to 0, the screen's refresh rate will be used)")
                    (make-schema-key-with-range
                      "scale-factor" "d" "0.0" "4.0"
                      "0.0" "Scale factor"
-                     "Scale factor to pass to plugin UIs. If set to 0, the monitor's scale factor will be used.")
+                     "Scale factor to pass to plugin UIs (if set to 0, the monitor's scale factor will be used)")
                  )) ;; plugins/uis
                (make-schema
                  "paths"
@@ -1133,15 +1140,15 @@ Args:
         \"C:\\\\Program Files\\\\Common Files\\\\VST2\",
         \"C:\\\\Program Files\\\\Common Files\\\\Steinberg\\\\VST2\" ]"
                      "VST plugins"
-                     "The search paths to scan for VST plugins in. Duplicate paths will be deduplicated.")
+                     "The search paths to scan for VST plugins in (duplicate paths will be deduplicated)")
                    (make-schema-key
                      "sfz-search-paths" "as" "[]"
                      "SFZ instruments"
-                     "The search paths to scan for SFZ instruments in. Duplicate paths will be deduplicated.")
+                     "The search paths to scan for SFZ instruments in (duplicate paths will be deduplicated)")
                    (make-schema-key
                      "sf2-search-paths" "as" "[]"
                      "SF2 instruments"
-                     "The search paths to scan for SF2 instruments in. Duplicate paths will be deduplicated.")
+                     "The search paths to scan for SF2 instruments in (duplicate paths will be deduplicated)")
                  )) ;; plugins/paths
              ))) ;; plugins
 
@@ -1158,7 +1165,7 @@ Args:
                    (make-schema-key-with-enum
                      "fade-algorithm" "curve-algorithm"
                      "superellipse" "Fade algorithm"
-                     "Default fade algorithm to use for fade in/outs.")
+                     "Default fade algorithm to use for fade in/outs")
                  )) ;; editing/audio
                (make-schema
                  "automation"
@@ -1171,7 +1178,7 @@ Args:
                      "curve-algorithm"
                      "superellipse"
                      "Curve algorithm"
-                     "Default algorithm to use for automation curves.")
+                     "Default algorithm to use for automation curves")
                  )) ;; editing/automation
                (make-schema
                  "undo"
@@ -1183,7 +1190,7 @@ Args:
                      "undo-stack-length" "i" "-1"
                      "380000" "128"
                      "Undo stack length"
-                     "Maximum undo history stack length. Set to -1 for unlimited.")
+                     "Maximum undo history stack length (set to -1 for unlimited)")
                  )) ;; editing/undo
              ))) ;; editing
 
@@ -1201,7 +1208,7 @@ Args:
                      "autosave-interval" "u"
                      "0" "120" "1"
                      "Autosave interval"
-                     "Interval to auto-save projects, in minutes. Auto-saving will be disabled if this is set to 0.")
+                     "Interval to auto-save projects, in minutes (set to 0 to disable)")
                  )) ;; projects/general
              ))) ;; projects
 
@@ -1219,27 +1226,27 @@ Args:
                      "graphic-detail"
                      "graphic-detail" "high"
                      "Draw detail"
-                     "Level of detail to use when drawing graphics.")
+                     "Level of detail to use when drawing graphics")
                    (make-schema-key-with-range
                      "font-scale" "d"
                      "0.2" "2.0" "1.0"
                      "Font scale"
-                     "Font scale.")
+                     "Font scaling")
                    (make-schema-key-with-enum
                      "language" "language"
                      "en"
                      "User interface language"
-                     "The language to use for the user interface.")
+                     "The language to use for the user interface")
                    (make-schema-key
                      "css-theme" "s"
                      "zrythm-theme.css"
                      "CSS theme"
-                     "The CSS theme to use.")
+                     "The CSS theme to use")
                    (make-schema-key
                      "icon-theme" "s"
                      "zrythm-dark"
                      "Icon theme"
-                     "The icon theme to use. This is the directory name.")
+                     "The icon theme to use (directory name)")
                  )) ;; ui/general
              ))) ;; ui
 
@@ -1257,12 +1264,12 @@ Args:
                      "pan-algorithm" "pan-algorithm"
                      "sine"
                      "Pan algorithm"
-                     "The panning algorithm to use when applying pan on mono signals (not used at the moment).")
+                     "The panning algorithm to use when applying pan on mono signals (not used at the moment)")
                    (make-schema-key-with-enum
                      "pan-law" "pan-law"
                      "minus-three-db"
                      "Pan law"
-                     "The pan law to use when applying pan on mono signals (not used at the moment).")
+                     "The pan law to use when applying pan on mono signals (not used at the moment)")
                  )) ;; dsp/pan
              ))) ;; dsp
 
@@ -1279,7 +1286,7 @@ Args:
                    (make-schema-key
                      "default-script" "s" "print-all-tracks.scm"
                      "Default script"
-                     "The default script to use in the scripting window.")
+                     "The default script to use in the scripting window")
                  )) ;; scripting/general
              ))) ;; scripting
 
