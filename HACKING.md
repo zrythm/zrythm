@@ -309,25 +309,15 @@ way that one can understand what is happening in
 each step by only reading the comments.
 
 ## Coding Style
-Generally, try to follow the
+We use a custom coding style based on the
 [GNU coding standards](https://www.gnu.org/prep/standards/html_node/Writing-C.html).
 
-TODO: prepare a clang-format config or similar.
-
-## Include Order
-In alphabetic order:
-1. Config headers
-2. Standard C library headers
-3. Local headers
-4. GTK and GLib headers
-5. Any other headers
-
-## Line Length
-We keep lines within 60 characters. This works
-nicely with 4 columns of files open simultaneously
-in a tiled editor, but if you find this
-difficult to work with < 80 characters is acceptable
-too.
+There is a
+[clang-format target](https://mesonbuild.com/Code-formatting.html#clangformat)
+provided. Please run `ninja -C build clang-format`
+before submitting patches and it will auto-format
+the code. `ninja -C build clang-format-check`
+should pass for a patch to be accepted.
 
 ## Error Handling
 To report invalid program states (such as programming
@@ -340,6 +330,11 @@ to open a file, use the
 [GError](https://www.freedesktop.org/software/gstreamer-sdk/data/docs/latest/glib/glib-Error-Reporting.html) mechanism.
 
 ## Function attributes
+There are macros available for function
+attributes that help the compiler optimize better
+or provide better feedback. See the headers for
+examples.
+
 Tips
 * `inline` small functions that are called very
 often
