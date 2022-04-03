@@ -1,3 +1,8 @@
+<!---
+SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou
+SPDX-License-Identifier: FSFAP
+-->
+
 Zrythm
 ======
 
@@ -123,12 +128,3 @@ us to spend more time working on the project.
 - Bitcoin (BTC): `bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j`
 - Litecoin (LTC): `ltc1qpva5up8vu8k03r8vncrfhu5apkd7p4cgy4355a`
 - Monero (XMR): `87YVi6nqwDhAQwfAuB8a7UeD6wrr81PJG4yBxkkGT3Ri5ng9D1E91hdbCCQsi3ZzRuXiX3aRWesS95S8ij49YMBKG3oEfnr`
-
-----
-
-Copyright (C) 2018-2022 Alexandros Theodotou
-
-Copying and distribution of this file, with or without modification,
-are permitted in any medium without royalty provided the copyright
-notice and this notice are preserved.  This file is offered as-is,
-without any warranty.
