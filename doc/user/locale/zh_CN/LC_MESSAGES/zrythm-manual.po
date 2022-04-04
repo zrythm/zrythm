@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-04-01 12:08+0100\n"
-"PO-Revision-Date: 2022-04-02 14:09+0000\n"
+"PO-Revision-Date: 2022-04-04 03:09+0000\n"
 "Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
@@ -546,7 +546,7 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:30
 msgid "Reset to Factory Settings"
-msgstr ""
+msgstr "重置到出厂设置"
 
 #: ../../configuration/additional-settings.rst:32
 msgid "See :option:`zrythm --reset-to-factory`."
