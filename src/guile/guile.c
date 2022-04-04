@@ -101,6 +101,31 @@ call_proc (void * data)
     scm_c_lookup ("zrythm-script"));
   scm_call_0 (func);
 
+#if 0
+  /* alternative way to do it that can support
+   * other languages in the future too */
+  /* note: currently fails when calling
+   * compile_proc */
+  char * code_str = (char *) data;
+  SCM compile_mod =
+    scm_c_resolve_module ("system base compile");
+  SCM compile_proc =
+    scm_c_module_lookup (compile_mod, "compile");
+  SCM code =
+    scm_from_utf8_string (code_str);
+  SCM s_from_lang =
+    scm_from_utf8_symbol ("scheme");
+  SCM s_to_lang =
+    scm_from_utf8_symbol ("bytecode");
+  SCM kwd_from = scm_from_utf8_keyword ("from");
+  SCM kwd_to = scm_from_utf8_keyword ("to");
+  SCM bc =
+    scm_call_5 (
+      compile_proc, code, kwd_from, s_from_lang,
+      kwd_to, s_to_lang);
+  scm_call_0 (bc);
+#endif
+
   return SCM_BOOL_T;
 }
 
