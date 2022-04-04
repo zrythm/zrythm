@@ -38,6 +38,7 @@ packages:
   - python
   - python-sphinx
   - python-pip
+  - reuse
   - rubberband
   - rtaudio
   - ruby-sass
@@ -69,10 +70,15 @@ tasks:
   - build: |
       cd zrythm
       ninja -C build
+  - check-licenses: |
+      cd zrythm
+      reuse lint || true # pass for now
+  - check-format: |
+      cd zrythm
+      ninja -C build clang-format-check
   - test: |
       cd zrythm
       meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5
-      ninja -C build clang-format-check
   - gen-coverage-report: |
       cd zrythm
       ninja -C build coverage-text

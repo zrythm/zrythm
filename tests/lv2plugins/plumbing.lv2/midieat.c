@@ -1,6 +1,9 @@
-/* LV2 plumbing plugs
+// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+/*
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
  *
- * Copyright (C) 2022 Alexandros Theodotou <alex at zrythm dot org>
  * Copyright (C) 2015 Robin Gareus <robin@gareus.org>
  *
  * This program is free software; you can redistribute it and/or modify

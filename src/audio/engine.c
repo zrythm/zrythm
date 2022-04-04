@@ -1,8 +1,7 @@
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020 Ryan Gonzalez <rymg19 at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- * Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
  *

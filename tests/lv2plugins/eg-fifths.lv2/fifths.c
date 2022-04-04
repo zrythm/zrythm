@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2014-2016 David Robillard <d@drobilla.net>
+// SPDX-License-Identifier: ISC
 /*
   LV2 Fifths Example Plugin
   Copyright 2014-2016 David Robillard <d@drobilla.net>

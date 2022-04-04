@@ -1,0 +1,2 @@
+Files marked under this license make use of the Zrythm logo, which is a trademark of Alexandros Theodotou.
+You may only use the Zrythm logo in accordance with the Zrythm Trademark Policy, found in the TRADEMARKS.md file at the root of this distribution, otherwise please replace these files.

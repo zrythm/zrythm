@@ -56,13 +56,7 @@ Files:
   */zrythm-dark/*/zrythm.svg
   */zrythm-dark/*/zrythm-splash*
 Copyright: 2020 Alexandros Theodotou <alex@zrythm.org>
-License:
-  These files make use of the Zrythm logo,
-  which is a trademark of Alexandros Theodotou.
-  You may only use the Zrythm logo in
-  accordance with the Zrythm Trademark Policy, found in
-  the TRADEMARKS.md file at the root of this
-  distribution, otherwise please replace these files.
+License: LicenseRef-ZrythmLogoLicense
 
 Files:
   */zrythm-dark/*/audio-insert.svg
@@ -273,7 +267,7 @@ License: LicenseRef-ZrythmLicense
 
 Files: data/samples/klick/*.wav
 Copyright: 2007-2013  Dominic Sacré  <dominic.sacre@gmx.de>
-License:
+License: GPL-3.0-only
   These files were taken from the klick project
   (http://das.nasophon.de/klick/) under the GPL3. Its
   README says the following.
@@ -523,7 +517,10 @@ License: CC0-1.0
 Comment:
   Screenshots and other images used in the user manual
 
-Files: resources/ui/*.ui
+Files: 
+  resources/ui/*.ui
+  resources/gtk/help-overlay.ui
+  resources/gtk/menus.ui
 Copyright: 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 License: LicenseRef-ZrythmLicense
 Comment: UI XML files
@@ -710,36 +707,9 @@ Copyright: 2017 bill-auger <https://github.com/bill-auger/git-packaging-hooks/is
 License: GPL-3.0-or-later
 
 Files:
-  CONTRIBUTOR_CERTIFICATE_OF_ORIGIN
-  data/samples/klick/README
-  doc/user/scripting/api/*.rst
-  ext/README
-  git-packaging-hooks/README
-  po/POTFILES
-  resources/icons/ext/README
-  resources/icons/fatcow/README
-  resources/icons/font-awesome/README
-  resources/icons/fork-awesome/README
-  resources/icons/gnome-builder/README
-  resources/icons/jam-icons/README
-  resources/theme/Matcha-dark-sea/README
-  subprojects/*.wrap
-  tests/lv2plugins/eg-amp.lv2/README.txt
-  tests/lv2plugins/eg-fifths.lv2/README.txt
-  tests/lv2plugins/test-instrument.lv2/README.txt
-  tests/presets/LSP_Multi_Sampler_x24_DirectOut_test.preset.lv2/*.ttl
-  tools/stoat_*.txt
-  tools/vg.sup
-  VERSION
-Copyright: Alexandros Theodotou <alex@zrythm.org>
-License: LicenseRef-ZrythmLicense
-Comment:
-  Generated files, short files, etc. Catch all under
-  the main project license.
-
-Files:
   tests/lv2plugins/eg-amp.lv2/*.ttl*
   tests/lv2plugins/sigabrt.lv2/*.ttl*
+  tests/lv2plugins/sigabrt.lv2/sigabrt.c
 Copyright:
   2006-2016 David Robillard <d@drobilla.net>
   2006 Steve Harris <steve@plugin.org.uk>
@@ -757,6 +727,36 @@ Files:
   tests/lv2plugins/plumbing.lv2/plumbing.c
 Copyright: 2015 Robin Gareus <robin@gareus.org>
 License: GPL-2.0-or-later
+
+Files:
+  CONTRIBUTOR_CERTIFICATE_OF_ORIGIN
+  data/samples/klick/README
+  doc/user/scripting/api/*.rst
+  ext/README
+  git-packaging-hooks/README
+  po/POTFILES
+  resources/icons/ext/README
+  resources/icons/fatcow/README
+  resources/icons/font-awesome/README
+  resources/icons/fork-awesome/README
+  resources/icons/gnome-builder/README
+  resources/icons/jam-icons/README
+  resources/theme/Matcha-dark-sea/README
+  subprojects/*.wrap
+  tests/lv2plugins/eg-amp.lv2/README.txt
+  tests/lv2plugins/eg-fifths.lv2/README.txt
+  tests/lv2plugins/plumbing.lv2/README
+  tests/lv2plugins/test-instrument.lv2/README.txt
+  tests/presets/LSP_Multi_Sampler_x24_DirectOut_test.preset.lv2/*.ttl
+  po/zrythm.pot
+  tools/stoat_*.txt
+  tools/vg.sup
+  VERSION
+Copyright: Alexandros Theodotou <alex@zrythm.org>
+License: LicenseRef-ZrythmLicense
+Comment:
+  Generated files, short files, etc. Catch all under
+  the main project license.
 
 Files:
   tests/1_empty_track_1_track_with_data.mid
