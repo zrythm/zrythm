@@ -1521,7 +1521,7 @@ add_internal_plugin_from_descr (
               ? BINARY_NATIVE
               : BINARY_WIN32,
             type, NULL, descr->name, descr->uri, 0,
-            NULL, 0);
+            NULL, PLUGIN_OPTIONS_NULL);
           break;
         case PROT_VST:
         case PROT_VST3:
@@ -1531,21 +1531,21 @@ add_internal_plugin_from_descr (
               ? BINARY_NATIVE
               : BINARY_WIN32,
             type, descr->path, descr->name,
-            descr->name, descr->unique_id, NULL, 0);
+            descr->name, descr->unique_id, NULL, PLUGIN_OPTIONS_NULL);
           break;
         case PROT_DSSI:
         case PROT_LADSPA:
           ret = carla_add_plugin (
             self->host_handle, BINARY_NATIVE, type,
             descr->path, descr->name, descr->uri, 0,
-            NULL, 0);
+            NULL, PLUGIN_OPTIONS_NULL);
           break;
         case PROT_SFZ:
         case PROT_SF2:
           ret = carla_add_plugin (
             self->host_handle, BINARY_NATIVE, type,
             descr->path, descr->name, descr->name,
-            0, NULL, 0);
+            0, NULL, PLUGIN_OPTIONS_NULL);
           break;
         default:
           g_return_val_if_reached (-1);
