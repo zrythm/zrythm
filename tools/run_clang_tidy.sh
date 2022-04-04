@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
+# SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 clang_tidy_bin="$1"
 meson_build_root="$2"

@@ -1,7 +1,0 @@
-Icon by http://www.picol.org/ found on https://www.iconfinder.com/icons/103432/category_icon on 23 June 2019,
-licensed under the Creative Commons (Attribution-Share Alike 3.0 Unported).
-
-It has been modified (color change) and is released under the same license below.
-
-You should have received a copy of the license along
-with Zrythm. If not, see <https://creativecommons.org/licenses/by-sa/3.0/>.

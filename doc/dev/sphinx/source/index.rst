@@ -1,3 +1,6 @@
+..  SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+..  SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 .. Zrythm documentation master file, created by
    sphinx-quickstart on Tue Sep 29 00:15:57 2020.
    You can adapt this file completely to your liking, but it should at least

@@ -1,3 +1,11 @@
+<!---
+SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+SPDX-License-Identifier: FSFAP
+
+Initially written for the GNU Guix project by
+sirgazil who waives all copyright interest.
+-->
+
 Contributing to Zrythm
 ======================
 
@@ -106,15 +114,3 @@ and submit a patch.
 Documents, supporting material and auxiliary
 information useful to hackers and maintainers is
 available at <https://docs.zrythm.org>.
-
-----
-
-Copyright (C) 2020-2021 Alexandros Theodotou
-
-Copying and distribution of this file, with or without modification,
-are permitted in any medium without royalty provided the copyright
-notice and this notice are preserved.  This file is offered as-is,
-without any warranty.
-
-Initially written for the GNU Guix project by
-sirgazil who waives all copyright interest.

@@ -1,4 +1,5 @@
-;;; This file is in the public domain (CC0).
+;;; SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+;;; SPDX-License-Identifier: CC0-1.0
 ;;;
 ;;; An example script for generating projects or
 ;;; project templates.

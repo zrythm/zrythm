@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 custom_css_target = custom_target (
   'custom-css',
   input: 'custom_css.scss',

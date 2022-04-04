@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou
+# SPDX-License-Identifier: FSFAP
 image: freebsd/latest
 packages:
   - amsynth

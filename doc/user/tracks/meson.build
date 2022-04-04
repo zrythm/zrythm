@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 copy_files = [
   'automation.rst',
   'inspector-page.rst',

@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: © 2021 Alexandros Theodotou
+# SPDX-License-Identifier: FSFAP
 ---
 # use '-' to disable checks
 Checks:          '-llvm-include-order,-clang-diagnostic-unused-parameter'

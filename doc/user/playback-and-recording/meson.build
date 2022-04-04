@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 copy_files = [
   'bpm-and-time-signatures.rst',
   'intro.rst',

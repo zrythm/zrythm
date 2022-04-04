@@ -1,21 +1,9 @@
 #!/bin/sh
-
+# SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: 2017 bill-auger <https://github.com/bill-auger/git-packaging-hooks/issues>
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
 #  git-packaging-hooks - git hooks to semi-automate releases and distro packaging
-#
-#  Copyright 2017 bill-auger <https://github.com/bill-auger/git-packaging-hooks/issues>
-#
-#  git-packaging-hooks is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License version 3 as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  git-packaging-hooks is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License version 3
-#  along with git-packaging-hooks.  If not, see <http://www.gnu.org/licenses/>.
 
 
 readonly HOOKS_PATH=$(git config --local core.hooksPath)
@@ -43,7 +31,7 @@ then (($IS_EMPTY_COMMIT_MSG)) && TraceError "empty commit message - aborting com
      #sed --in-place "s/^AC_INIT(.*$/AC_INIT($ac_init_params)/" $VERSION_FILE
      #sed --in-place "20s/  version: '.*$/  version: '$VERSION',/" $VERSION_FILE
      echo "$VERSION" > $VERSION_FILE
-     sed --in-place "4s/\[\([^]]*\)\]/\[$VERSION\]/" CHANGELOG.md
+     sed --in-place "9s/\[\([^]]*\)\]/\[$VERSION\]/" CHANGELOG.md
 
      TraceStage "completed staging-specific pre-commit hooks"
 elif (($IS_PACKAGING_BRANCH))

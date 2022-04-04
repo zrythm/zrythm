@@ -1,3 +1,8 @@
+<!---
+SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+SPDX-License-Identifier: FSFAP
+-->
+
 Information for Packagers
 =========================
 
@@ -98,12 +103,3 @@ options, after replacing all files inside
 `data/icon-themes/zrythm-dark/scalable/apps`. There
 may be more things that need to be changed that
 we missed. If you find any, please let us know.
-
-----
-
-Copyright (C) 2019-2022 Alexandros Theodotou
-
-Copying and distribution of this file, with or without modification,
-are permitted in any medium without royalty provided the copyright
-notice and this notice are preserved.  This file is offered as-is,
-without any warranty.

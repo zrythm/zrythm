@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
+# SPDX-License-Identifier: FSFAP
 image: archlinux
 packages:
   - alsa-lib

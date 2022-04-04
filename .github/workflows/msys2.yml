@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex at zrythm dot org>
+# SPDX-License-Identifier: FSFAP
 name: MSYS2 UCRT64
 on: [ push, pull_request, workflow_dispatch ]
 

@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
+# SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 # remove CI scripts
 rm -rf "${MESON_DIST_ROOT}"/.builds

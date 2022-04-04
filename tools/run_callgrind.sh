@@ -1,5 +1,7 @@
 #!/bin/bash
-
+# SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+#
 # Use CALLGRIND_START_INSTRUMENTATION /
 # CALLGRIND_STOP_INSTRUMENTATION to specify where
 # to start instrumenting

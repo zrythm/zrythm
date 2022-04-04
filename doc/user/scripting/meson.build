@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 script_contents = ''
 foreach script : data_script_filenames
   path = meson_src_root / 'data/scripts' / script

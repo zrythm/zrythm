@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
-/*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
- */
+// SPDX-FileCopyrightText: © 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file

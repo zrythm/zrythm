@@ -1,3 +1,8 @@
+<!---
+SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+SPDX-License-Identifier: FSFAP
+-->
+
 Hacking Zrythm
 ==============
 
@@ -357,7 +362,14 @@ purposes) amounts of code in a file, you should
 append your copyright notice (name, year and
 optionally email/website) at the top.
 
-See also [CONTRIBUTING.md](CONTRIBUTING.md).
+For the copyright years, Zrythm uses a range
+(“2008-2010”) instead of listing individual years
+(“2008, 2009, 2010”) if and only if every year
+in the range, inclusive, is a “copyrightable” year
+that would be listed individually.
+
+See also [CONTRIBUTING.md](CONTRIBUTING.md) and
+[REUSE FAQ](https://reuse.software/faq/).
 
 ## Commit Messages
 Please follow the 50/72 rule:
@@ -393,12 +405,3 @@ can-focus=true (default).
 ## Error building template class 'TimelineToolbarWidget'...:0:0 `<property>` is not a valid tag here
 The error is correct but line numbers are not
 available because the resource files are compressed.
-
-----
-
-Copyright (C) 2018-2022 Alexandros Theodotou
-
-Copying and distribution of this file, with or without modification,
-are permitted in any medium without royalty provided the copyright
-notice and this notice are preserved.  This file is offered as-is,
-without any warranty.

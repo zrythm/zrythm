@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 # used to only create guile docs when possible,
 # otherwise reuse what is already there
 can_make_guile_docs = guile_dep.found () and get_option ('guile_snarf_docs_path') != '' and texi2html.found () and pandoc.found ()

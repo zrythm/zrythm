@@ -1,6 +1,8 @@
 #!/bin/bash
-
-# This should be call from the zrythm root dir
+# SPDX-FileCopyrightText: © 2019, 2021 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+#
+# This should be called from the zrythm root dir
 
 # add --undef-value-errors=no to stop condotion depends on
 # undefined value

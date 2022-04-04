@@ -1,3 +1,6 @@
+.. SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
+.. SPDX-License-Identifier: FSFAP
+
 Installation Instructions
 =========================
 
@@ -199,10 +202,3 @@ other resources in the installed prefix.
 
 For debugging and other developer tools, see
 `HACKING.md <HACKING.md>`_.
-
-.. Copyright (C) 2019-2022 Alexandros Theodotou
-
-   Copying and distribution of this file, with or without modification,
-   are permitted in any medium without royalty provided the copyright
-   notice and this notice are preserved.  This file is offered as-is,
-   without any warranty.

@@ -1,3 +1,8 @@
+<!---
+SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou
+SPDX-License-Identifier: FSFAP
+-->
+
 # Changelog
 All notable changes to this project will be documented in this file.
 
@@ -2693,12 +2698,3 @@ All notable changes to this project will be documented in this file.
 
 ## [0.1.009] - 2019-03-05
 - First release
-
-----
-
-Copyright (C) 2019-2020 Alexandros Theodotou
-
-Copying and distribution of this file, with or without modification,
-are permitted in any medium without royalty provided the copyright
-notice and this notice are preserved.  This file is offered as-is,
-without any warranty.

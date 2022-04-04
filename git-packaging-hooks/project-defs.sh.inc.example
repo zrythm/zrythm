@@ -1,27 +1,12 @@
-# project-specific constants
+# SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
 #
-# NOTE: packaging is strongly coupled to the upstream tarball URL and naming schemes - e.g.
-#         TARBALL_FILE:      ${VERSION_STRING}.tar.gz
-#         TARBALL_INNER_DIR: ${UPSTREAM_NAME}-${VERSION}/
-#         DEB_TARBALL_FILE:  ${DEBIAN_NAME}_${VERSION}.orig.tar.gz
-#         DEB_DIFFBALL_FILE: ${DEBIAN_NAME}_${VERSION}-1.diff.gz
+# project-specific constants
 
 readonly UPSTREAM_NAME='zrythm'
-readonly GITLAB_LOGIN='gitlab-username'
-readonly GITLAB_AUTH_TOKEN='gitlab-auth-token'
-readonly GITLAB_INSTANCE_URL='https://git.mydomain.org'
-readonly GITLAB_REPO='${GITLAB_INSTANCE_URL}/${GITLAB_LOGIN}/${UPSTREAM_NAME}'
-readonly GITLAB_PROJECT_ID='1'
-readonly OBS_LOGIN='obs-username'
-readonly OBS_NAME=$UPSTREAM_NAME
-readonly DEBIAN_NAME=$UPSTREAM_NAME
 readonly REMOTE_NAME='origin'
 readonly STAGING_BRANCH='staging'
 readonly PACKAGING_BRANCH='packaging'
-readonly OBS_DIRNAME='obs'
-readonly OSC_DIR=/opt/oscbuild/user/home:${OBS_LOGIN}/${OBS_NAME}
-readonly BUG_URL=${GITLAB_REPO}/issues
-readonly CHANGELOG_MESSAGE='updated to new upstream version'
 readonly GIT_CLEAN_OPTIONS='-dx --force -e git-packaging-hooks'
 readonly N_MAKE_JOBS=42
 readonly LOG_FILE=../gbp-buildlog

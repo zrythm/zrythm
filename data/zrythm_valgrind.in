@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
+# SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 set -xe
 
