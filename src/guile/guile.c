@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <stdio.h>
 
@@ -87,44 +71,23 @@ static SCM error_out_port;
 static SCM
 call_proc (void * data)
 {
-  char * full_path = (char *) data;
-
-  /* load a file called script.scm with the following
-   * content:
-   *
-   * (define zrythm-script
-   *   (lambda ()
-   *     (display "script called") (newline)))
-   */
-  scm_c_primitive_load (full_path);
-  SCM func = scm_variable_ref (
-    scm_c_lookup ("zrythm-script"));
-  scm_call_0 (func);
-
-#if 0
-  /* alternative way to do it that can support
-   * other languages in the future too */
-  /* note: currently fails when calling
-   * compile_proc */
   char * code_str = (char *) data;
-  SCM compile_mod =
-    scm_c_resolve_module ("system base compile");
-  SCM compile_proc =
-    scm_c_module_lookup (compile_mod, "compile");
+
+  SCM eval_string_proc =
+    scm_variable_ref (
+      scm_c_public_lookup (
+        "ice-9 eval-string", "eval-string"));
   SCM code =
     scm_from_utf8_string (code_str);
   SCM s_from_lang =
+    /* can switch this to any language supported
+     * by the guile compiler, for example
+     * "ecmascript" */
+    /* TODO add a dropdown in the UI */
     scm_from_utf8_symbol ("scheme");
-  SCM s_to_lang =
-    scm_from_utf8_symbol ("bytecode");
-  SCM kwd_from = scm_from_utf8_keyword ("from");
-  SCM kwd_to = scm_from_utf8_keyword ("to");
-  SCM bc =
-    scm_call_5 (
-      compile_proc, code, kwd_from, s_from_lang,
-      kwd_to, s_to_lang);
-  scm_call_0 (bc);
-#endif
+  SCM kwd_lang = scm_from_utf8_keyword ("lang");
+  scm_call_3 (
+    eval_string_proc, code, kwd_lang, s_from_lang);
 
   return SCM_BOOL_T;
 }
@@ -166,21 +129,6 @@ guile_mode_func (void * data)
 {
   char * script_content = (char *) data;
 
-  char * tmp_dir =
-    g_dir_make_tmp ("zrythm_script_XXXXXX", NULL);
-  char * full_path =
-    g_build_filename (tmp_dir, "script.scm", NULL);
-  GError * err = NULL;
-  g_file_set_contents (
-    full_path, script_content, -1, &err);
-  if (err != NULL)
-    {
-      g_warning (
-        "Unable to write file: %s", err->message);
-      g_error_free (err);
-      return NULL;
-    }
-
   guile_define_modules ();
 
   /* receive output */
@@ -192,7 +140,8 @@ guile_mode_func (void * data)
   SCM captured_stack = SCM_BOOL_F;
 
   SCM ret = scm_c_catch (
-    SCM_BOOL_T, call_proc, full_path, eval_handler,
+    SCM_BOOL_T, call_proc, script_content,
+    eval_handler,
     &captured_stack, preunwind_proc,
     &captured_stack);
 
@@ -215,8 +164,6 @@ guile_mode_func (void * data)
         "<b>%s</b></span>\n%s",
         FAILURE_TEXT_TRANSLATED, err_str);
     }
-
-  io_rmdir (tmp_dir, true);
 
   return markup;
 }
