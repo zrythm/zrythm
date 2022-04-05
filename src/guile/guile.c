@@ -74,11 +74,9 @@ call_proc (void * data)
   char * code_str = (char *) data;
 
   SCM eval_string_proc =
-    scm_variable_ref (
-      scm_c_public_lookup (
-        "ice-9 eval-string", "eval-string"));
-  SCM code =
-    scm_from_utf8_string (code_str);
+    scm_variable_ref (scm_c_public_lookup (
+      "ice-9 eval-string", "eval-string"));
+  SCM code = scm_from_utf8_string (code_str);
   SCM s_from_lang =
     /* can switch this to any language supported
      * by the guile compiler, for example
@@ -141,8 +139,7 @@ guile_mode_func (void * data)
 
   SCM ret = scm_c_catch (
     SCM_BOOL_T, call_proc, script_content,
-    eval_handler,
-    &captured_stack, preunwind_proc,
+    eval_handler, &captured_stack, preunwind_proc,
     &captured_stack);
 
   SCM    str_scm = scm_get_output_string (out_port);

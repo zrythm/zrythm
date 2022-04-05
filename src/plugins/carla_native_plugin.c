@@ -1531,7 +1531,8 @@ add_internal_plugin_from_descr (
               ? BINARY_NATIVE
               : BINARY_WIN32,
             type, descr->path, descr->name,
-            descr->name, descr->unique_id, NULL, PLUGIN_OPTIONS_NULL);
+            descr->name, descr->unique_id, NULL,
+            PLUGIN_OPTIONS_NULL);
           break;
         case PROT_DSSI:
         case PROT_LADSPA:
