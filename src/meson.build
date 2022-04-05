@@ -53,10 +53,10 @@ if os_windows
   zrythm_lib_srcs += win_res
 endif
 
-# install shared library separately so the binary
-# remains small
-zrythm_lib = shared_library (
-  'zrythm',
+# static is used in the executable and shared is
+# used in tests
+zrythm_lib = both_libraries (
+  'zrythm-lib',
   sources: [
     zrythm_lib_srcs,
     ext_srcs,
@@ -64,9 +64,8 @@ zrythm_lib = shared_library (
   dependencies: zrythm_deps,
   include_directories: all_inc,
   c_args: [ common_cflags, strict_cflags ],
-  #pic: true,
+  pic: true,
   link_with: zrythm_link_libs,
-  install: true,
   )
 
 objects = []
@@ -81,7 +80,7 @@ zrythm_exe = executable (
     zrythm_deps,
     ],
   link_with: [
-    zrythm_lib,
+    zrythm_lib.get_static_lib (),
     ],
   export_dynamic: true,
   win_subsystem: 'windows',

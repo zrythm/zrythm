@@ -317,7 +317,7 @@ if get_option ('tests')
     endif
   endif
 
-  test_link_libs = [ zrythm_lib ]
+  test_link_libs = [ zrythm_lib.get_shared_lib () ]
   if have_guile
     test_link_libs += guilelib
   endif
