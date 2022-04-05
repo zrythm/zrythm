@@ -105,12 +105,12 @@ private:
   Vamp::RealTime m_lasttime;
 };
 
-FixedTempoEstimator::D::D (float inputSampleRate) :
-    m_inputSampleRate (inputSampleRate),
-    m_stepSize (0), m_blockSize (0), m_minbpm (50),
-    m_maxbpm (190), m_maxdflen (10),
-    m_priorMagnitudes (0), m_df (0), m_r (0),
-    m_fr (0), m_t (0), m_n (0)
+FixedTempoEstimator::D::D (float inputSampleRate)
+    : m_inputSampleRate (inputSampleRate),
+      m_stepSize (0), m_blockSize (0),
+      m_minbpm (50), m_maxbpm (190),
+      m_maxdflen (10), m_priorMagnitudes (0),
+      m_df (0), m_r (0), m_fr (0), m_t (0), m_n (0)
 {
 }
 
@@ -725,9 +725,9 @@ FixedTempoEstimator::D::assembleFeatures ()
 }
 
 FixedTempoEstimator::FixedTempoEstimator (
-  float inputSampleRate) :
-    Plugin (inputSampleRate),
-    m_d (new D (inputSampleRate))
+  float inputSampleRate)
+    : Plugin (inputSampleRate),
+      m_d (new D (inputSampleRate))
 {
 }
 

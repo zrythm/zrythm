@@ -466,7 +466,8 @@ export_audio (ExportSettings * info)
         (TRANSPORT->playhead_pos.ticks
          - start_pos.ticks)
         / total_ticks;
-  } while (
+    }
+  while (
     TRANSPORT->playhead_pos.ticks < stop_pos.ticks
     && !info->progress_info.cancelled);
 

@@ -8,19 +8,27 @@ AccessModifierOffset: -2
 # FIXME set to BlockIndent on clang-format 14
 AlignAfterOpenBracket: AlwaysBreak
 AlignArrayOfStructures: Left
+AlignConsecutiveMacros: None
 AlignConsecutiveAssignments: false
+AlignConsecutiveBitFields: None
 AlignConsecutiveDeclarations: true
 AlignEscapedNewlines: DontAlign
 AlignOperands: Align
+AlignTrailingComments: true
 AllowAllArgumentsOnNextLine: true
+AllowAllConstructorInitializersOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: false
 AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Inline
+AllowShortLambdasOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterDefinitionReturnType: All
 AlwaysBreakAfterReturnType: TopLevel
 AlwaysBreakBeforeMultilineStrings: true
+AlwaysBreakTemplateDeclarations: MultiLine
 AttributeMacros: ['COLD', 'NONNULL_ARGS', 'NONNULL', 'HOT', 'WARN_UNUSED_RESULT', 'PURE']
 BinPackArguments: true
 BinPackParameters: false
@@ -28,29 +36,46 @@ BreakBeforeBraces: Custom
 BraceWrapping:
   AfterCaseLabel: true
   AfterClass: true
-  AfterControlStatement: true
+  AfterControlStatement: Always
   AfterEnum: true
   AfterFunction: true
   AfterNamespace: true
+  AfterObjCDeclaration: true
   AfterStruct: true
   AfterUnion: true
   # This is often beneficial to be on a single line
   AfterExternBlock: false
   BeforeCatch: true
   BeforeElse: true
-  BeforeWhile: false
+  BeforeLambdaBody: false
+  BeforeWhile: true
   IndentBraces: true
   SplitEmptyFunction: true
   SplitEmptyRecord: true
   SplitEmptyNamespace: true
 BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeConceptDeclarations: true
+BreakBeforeInheritanceComma: false
+BreakInheritanceList: BeforeColon
 BreakBeforeTernaryOperators: true
-BreakConstructorInitializers: AfterColon
+BreakConstructorInitializersBeforeComma: false
+BreakConstructorInitializers: BeforeColon
 BreakStringLiterals: false
 ContinuationIndentWidth: 2
 ColumnLimit: 52
+CommentPragmas: '^ IWYU pragma:'
+CompactNamespaces: false
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+ConstructorInitializerIndentWidth: 4
 Cpp11BracedListStyle: false
-ForEachMacros: ['LILV_FOREACH']
+DeriveLineEnding: true
+DerivePointerAlignment: false
+DisableFormat: false
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: LogicalBlock
+FixNamespaceComments: false
+ForEachMacros:
+  - LILV_FOREACH
 IncludeBlocks: Regroup
 IncludeCategories:
   - Regex:           '^"(zrythm-|zrythm-test-)config\.h"$'
@@ -73,9 +98,10 @@ IncludeCategories:
     Priority:        6
 # don't use main includes
 IncludeIsMainRegex: '^$'
+IndentAccessModifiers: false
 IndentCaseBlocks: false
 IndentCaseLabels: false
-IndentExternBlock: NoIndent
+IndentExternBlock: AfterExternBlock
 IndentGotoLabels: false
 IndentPPDirectives: AfterHash
 IndentWidth: 2
@@ -115,5 +141,6 @@ StatementMacros: []
 TabWidth: 2
 TypenameMacros: []
 UseTab: Never
-WhitespaceSensitiveMacros: ['G_DEFINE_QUARK']
+WhitespaceSensitiveMacros:
+  - G_DEFINE_QUARK
 ...

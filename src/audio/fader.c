@@ -488,7 +488,8 @@ fader_get_implied_soloed (Fader * self)
         {
           out_track = NULL;
         }
-  } while (out_track);
+    }
+  while (out_track);
 
   /* check children */
   if (TRACK_CAN_BE_GROUP_TARGET (track))

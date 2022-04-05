@@ -1956,8 +1956,8 @@ port_prepare_rtmidi_events (Port * self)
           midi_events_add_event_from_buf (
             dev->events, ev_time, raw, (int) h.size,
             F_NOT_QUEUED);
-      } while (
-        read_space > sizeof (MidiEventHeader));
+        }
+      while (read_space > sizeof (MidiEventHeader));
       zix_sem_post (&dev->midi_ring_sem);
     }
   self->last_midi_dequeue = cur_time;

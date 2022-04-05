@@ -32,8 +32,8 @@ float BeatTracker::m_stepSecs =
 class BeatTrackerData
 {
 public:
-  BeatTrackerData (const DFConfig &config) :
-      dfConfig (config)
+  BeatTrackerData (const DFConfig &config)
+      : dfConfig (config)
   {
     df = new DetectionFunction (config);
   }
@@ -52,18 +52,17 @@ public:
   Vamp::RealTime      origin;
 };
 
-BeatTracker::BeatTracker (float inputSampleRate) :
-    Vamp::Plugin (inputSampleRate), m_d (0),
-    m_method (METHOD_NEW), m_dfType (DF_COMPLEXSD),
-    m_alpha (
-      0.9), // MEPD new exposed parameter for beat tracker, default value = 0.9 (as old version)
-    m_tightness (4.),
-    m_inputtempo (
-      120.), // MEPD new exposed parameter for beat tracker, default value = 120. (as old version)
-    m_constraintempo (
-      false), // MEPD new exposed parameter for beat tracker, default value = false (as old version)
-    // calling the beat tracker with these default parameters will give the same output as the previous existing version
-    m_whiten (false)
+BeatTracker::BeatTracker (float inputSampleRate)
+    : Vamp::Plugin (inputSampleRate), m_d (0),
+      m_method (METHOD_NEW), m_dfType (DF_COMPLEXSD),
+      m_alpha (0.9), // MEPD new exposed parameter for beat tracker, default value = 0.9 (as old version)
+      m_tightness (4.),
+      m_inputtempo (
+        120.), // MEPD new exposed parameter for beat tracker, default value = 120. (as old version)
+      m_constraintempo (
+        false), // MEPD new exposed parameter for beat tracker, default value = false (as old version)
+      // calling the beat tracker with these default parameters will give the same output as the previous existing version
+      m_whiten (false)
 
 {
 }

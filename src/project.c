@@ -391,7 +391,8 @@ set_and_create_next_available_backup_dir (
           g_free (bak_title);
         }
       i++;
-  } while (file_exists (self->backup_dir));
+    }
+  while (file_exists (self->backup_dir));
   g_free (backups_dir);
 
   io_mkdir (self->backup_dir);

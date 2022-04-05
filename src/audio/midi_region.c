@@ -1118,7 +1118,8 @@ midi_region_add_events (
             events, 1, mn->val,
             (midi_time_t) (position_to_ticks (&mn_end_pos) + region_start),
             F_NOT_QUEUED);
-      } while (
+        }
+      while (
         ++repeat_counter < number_of_loop_repeats
         && !write_only_once);
     }
