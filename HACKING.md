@@ -80,6 +80,11 @@ Hacking Zrythm
     └── tools                             # Various tools
 
 # Debugging
+For debugging or development, we recommend building
+with the following options:
+
+    -Db_lto=false -Dstrict_flags=true -Ddebug=true -Doptimization=0 -Dtests=true -Db_sanitize=address
+
 After installing Zrythm once, for example in
 `~/.local`, use
 

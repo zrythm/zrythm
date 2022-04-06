@@ -1,7 +1,5 @@
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- */
 
 #include <math.h>
 
@@ -995,6 +993,8 @@ automation_track_free (AutomationTrack * self)
         self->regions[i]);
     }
   object_zero_and_free (self->regions);
+
+  port_identifier_free_members (&self->port_id);
 
   object_zero_and_free (self);
 }
