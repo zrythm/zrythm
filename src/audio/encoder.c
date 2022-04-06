@@ -5,6 +5,7 @@
 
 #include "zrythm-config.h"
 
+#include <inttypes.h>
 #include <math.h>
 #include <stdlib.h>
 
@@ -87,7 +88,7 @@ audio_encoder_decode (
   self->num_out_frames =
     (unsigned_frame_t) num_out_frames;
   g_message (
-    "num out frames %lu", self->num_out_frames);
+    "num out frames %" PRIu64, self->num_out_frames);
   self->channels = self->nfo.channels;
   audec_close (self->audec_handle);
   g_message ("--audio decoding end--");

@@ -152,7 +152,7 @@ struct ZixSemImpl {
 static inline ZixStatus
 zix_sem_init(ZixSem* sem, unsigned initial)
 {
-  sem->sem = CreateSemaphore(NULL, initial, LONG_MAX, NULL);
+  sem->sem = CreateSemaphore(NULL, (LONG) initial, LONG_MAX, NULL);
   return (sem->sem) ? ZIX_STATUS_SUCCESS : ZIX_STATUS_ERROR;
 }
 

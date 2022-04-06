@@ -1,7 +1,5 @@
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
- */
 
 #include "audio/channel_send.h"
 #include "audio/control_port.h"
@@ -195,13 +193,14 @@ channel_send_prepare_process (ChannelSend * self)
 void
 channel_send_process (
   ChannelSend *   self,
-  const long      local_offset,
+  const nframes_t local_offset,
   const nframes_t nframes)
 {
   if (channel_send_is_empty (self))
     return;
 
   Track * track = channel_send_get_track (self);
+  g_return_if_fail (track);
   if (track->out_signal_type == TYPE_AUDIO)
     {
       if (math_floats_equal_epsilon (

@@ -1,7 +1,7 @@
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- */
+
+#include <inttypes.h>
 
 #include "audio/audio_region.h"
 #include "audio/channel.h"
@@ -256,9 +256,13 @@ timestretch_buf (
   unsigned_frame_t in_frames_to_process =
     (unsigned_frame_t) (frames_to_process * timestretch_ratio);
   g_message (
-    "%s: in frame offset %ld, out frame offset %lu, "
-    "in frames to process %lu, "
-    "out frames to process %ld",
+    "%s: in frame offset %" PRIu64
+    ", "
+    "out frame offset %" PRIu64
+    ", "
+    "in frames to process %" PRIu64
+    ", "
+    "out frames to process %" PRIu64,
     __func__, in_frame_offset, out_frame_offset,
     in_frames_to_process, frames_to_process);
   g_return_if_fail (
@@ -401,8 +405,10 @@ audio_region_fill_stereo_ports (
         || j > AUDIO_ENGINE->block_length)
         {
           g_critical (
-            "invalid r_local_pos %ld, j %lu, "
-            "g_start_frames %lu, nframes %u",
+            "invalid r_local_pos %" PRId64
+            ", j %" PRIu64
+            ", "
+            "g_start_frames %" PRIu64 ", nframes %u",
             r_local_pos, j, time_nfo->g_start_frame,
             time_nfo->nframes);
           return;

@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <inttypes.h>
+
 #include "audio/audio_function.h"
 #include "audio/audio_region.h"
 #include "audio/engine.h"
@@ -252,8 +254,9 @@ apply_plugin (
       lilv_instance_run (pl->lv2->instance, step);
       for (size_t j = 0; j < step; j++)
         {
-          long actual_j =
-            (long) (i + j) - (long) latency;
+          signed_frame_t actual_j =
+            (signed_frame_t) (i + j)
+            - (signed_frame_t) latency;
           if (actual_j < 0)
             continue;
 #if 0
@@ -264,10 +267,11 @@ apply_plugin (
 #endif
           g_return_val_if_fail (l_out, -1);
           g_return_val_if_fail (r_out, -1);
-          frames[actual_j * channels] =
+          frames[actual_j * (signed_frame_t) channels] =
             l_out->buf[j];
-          frames[actual_j * channels + 1] =
-            r_out->buf[j];
+          frames
+            [actual_j * (signed_frame_t) channels
+             + 1] = r_out->buf[j];
         }
       if (i > latency)
         {
@@ -294,9 +298,9 @@ apply_plugin (
       lilv_instance_run (pl->lv2->instance, step);
       for (size_t j = 0; j < step; j++)
         {
-          long actual_j =
-            (long) (i + j + num_frames)
-            - (long) latency;
+          signed_frame_t actual_j =
+            (signed_frame_t) (i + j + num_frames)
+            - (signed_frame_t) latency;
           g_return_val_if_fail (actual_j >= 0, -1);
 #if 0
           g_message (
@@ -306,10 +310,11 @@ apply_plugin (
 #endif
           g_return_val_if_fail (l_out, -1);
           g_return_val_if_fail (r_out, -1);
-          frames[actual_j * channels] =
+          frames[actual_j * (signed_frame_t) channels] =
             l_out->buf[j];
-          frames[actual_j * channels + 1] =
-            r_out->buf[j];
+          frames
+            [actual_j * (signed_frame_t) channels
+             + 1] = r_out->buf[j];
         }
       i += step;
       step = MIN (step, latency - i);
@@ -410,8 +415,10 @@ audio_function_apply (
   unsigned_frame_t num_frames_excl_nudge;
 
   g_debug (
-    "num frames %lu, nudge_frames %lu", num_frames,
-    nudge_frames);
+    "num frames %" PRIu64
+    ", "
+    "nudge_frames %" PRIu64,
+    num_frames, nudge_frames);
   z_return_val_if_fail_cmp (nudge_frames, >, 0, -1);
 
   switch (type)

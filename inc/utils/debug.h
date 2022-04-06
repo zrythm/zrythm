@@ -31,8 +31,11 @@
   if (!(G_LIKELY (a comparator b))) \
     { \
       g_critical ( \
-        "Assertion failed: %s (%ld) %s %s (%ld)", \
-        #a, (long) a, #comparator, #b, (long) b); \
+        "Assertion failed: %s (%" G_GINT64_FORMAT \
+        ") " \
+        "%s %s (%" G_GINT64_FORMAT ")", \
+        #a, (gint64) a, #comparator, #b, \
+        (gint64) b); \
       return val; \
     }
 
@@ -43,8 +46,11 @@
   if (!(G_LIKELY (a comparator b))) \
     { \
       g_warning ( \
-        "Assertion failed: %s (%ld) %s %s (%ld)", \
-        #a, (long) a, #comparator, #b, (long) b); \
+        "Assertion failed: %s (%" G_GINT64_FORMAT \
+        ") " \
+        "%s %s (%" G_GINT64_FORMAT ")", \
+        #a, (gint64) a, #comparator, #b, \
+        (gint64) b); \
     }
 
 /**

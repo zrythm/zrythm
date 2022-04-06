@@ -5,6 +5,7 @@
 
 #include "zrythm-config.h"
 
+#include <inttypes.h>
 #include <stdlib.h>
 
 #include "audio/encoder.h"
@@ -177,7 +178,7 @@ find_and_queue_metronome (
         &bar_pos, num_bars_before + i + 1);
 
       /* offset of bar pos from start pos */
-      long bar_offset_long =
+      signed_frame_t bar_offset_long =
         bar_pos.frames - start_pos->frames;
       if (bar_offset_long < 0)
         {
@@ -186,14 +187,14 @@ find_and_queue_metronome (
           g_message ("start pos:");
           position_print (start_pos);
           g_critical (
-            "bar offset long (%ld) is < 0",
+            "bar offset long (%" PRId64 ") is < 0",
             bar_offset_long);
           return;
         }
 
       /* add local offset */
-      long metronome_offset_long =
-        bar_offset_long + loffset;
+      signed_frame_t metronome_offset_long =
+        bar_offset_long + (signed_frame_t) loffset;
       z_return_if_fail_cmp (
         metronome_offset_long, >=, 0);
       nframes_t metronome_offset =
@@ -235,13 +236,14 @@ find_and_queue_metronome (
             }
 
           /* offset of beat pos from start pos */
-          long beat_offset_long =
+          signed_frame_t beat_offset_long =
             beat_pos.frames - start_pos->frames;
           g_return_if_fail (beat_offset_long >= 0);
 
           /* add local offset */
-          long metronome_offset_long =
-            beat_offset_long + loffset;
+          signed_frame_t metronome_offset_long =
+            beat_offset_long
+            + (signed_frame_t) loffset;
           g_return_if_fail (
             metronome_offset_long >= 0);
 
