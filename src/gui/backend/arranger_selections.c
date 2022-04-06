@@ -795,16 +795,28 @@ arranger_selections_has_any (
 /**
  * Add owner region's ticks to the given position.
  */
+NONNULL
 static void
 add_region_ticks (
   const ArrangerSelections * self,
   Position *                 pos)
 {
-  ArrangerObject * obj =
-    arranger_selections_get_first_object (self);
-  g_return_if_fail (obj);
-  ArrangerObject * region = (ArrangerObject *)
-    arranger_object_get_region (obj);
+  ArrangerObject * region;
+  if (self->type == ARRANGER_SELECTIONS_TYPE_AUDIO)
+    {
+      const AudioSelections * as =
+        (const AudioSelections *) self;
+      region = (ArrangerObject *) region_find (
+        &as->region_id);
+    }
+  else
+    {
+      ArrangerObject * obj =
+        arranger_selections_get_first_object (self);
+      g_return_if_fail (obj);
+      region = (ArrangerObject *)
+        arranger_object_get_region (obj);
+    }
   g_return_if_fail (region);
   position_add_ticks (pos, region->pos.ticks);
 }
@@ -823,14 +835,12 @@ arranger_selections_get_start_pos (
   Position *                 pos,
   const bool                 global)
 {
-  int i;
-
   position_set_to_bar (pos, 80000);
   g_return_if_fail (pos->ticks > 0);
   /*&pos, TRANSPORT->total_bars);*/
 
 #define GET_START_POS(sel, cc, sc) \
-  for (i = 0; i < (sel)->num_##sc##s; i++) \
+  for (int i = 0; i < (sel)->num_##sc##s; i++) \
     { \
       cc *             sc = (sel)->sc##s[i]; \
       ArrangerObject * obj = (ArrangerObject *) sc; \
@@ -888,6 +898,17 @@ arranger_selections_get_start_pos (
           }
       }
       break;
+    case TYPE (AUDIO):
+      {
+        const AudioSelections * as =
+          (AudioSelections *) self;
+        position_set_to_pos (pos, &as->sel_start);
+        if (global)
+          {
+            add_region_ticks (self, pos);
+          }
+      }
+      break;
     default:
       g_return_if_reached ();
     }
@@ -909,16 +930,10 @@ arranger_selections_get_end_pos (
   Position *           pos,
   int                  global)
 {
-  int                      i;
-  TimelineSelections *     ts;
-  ChordSelections *        cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections *   as;
-
   position_init (pos);
 
 #define GET_END_POS(sel, cc, sc) \
-  for (i = 0; i < (sel)->num_##sc##s; i++) \
+  for (int i = 0; i < (sel)->num_##sc##s; i++) \
     { \
       cc *             sc = (sel)->sc##s[i]; \
       ArrangerObject * obj = (ArrangerObject *) sc; \
@@ -945,35 +960,58 @@ arranger_selections_get_end_pos (
   switch (self->type)
     {
     case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      GET_END_POS (ts, ZRegion, region);
-      GET_END_POS (ts, ScaleObject, scale_object);
-      GET_END_POS (ts, Marker, marker);
+      {
+        const TimelineSelections * ts =
+          (TimelineSelections *) self;
+        GET_END_POS (ts, ZRegion, region);
+        GET_END_POS (ts, ScaleObject, scale_object);
+        GET_END_POS (ts, Marker, marker);
+      }
       break;
     case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      GET_END_POS (mas, MidiNote, midi_note);
-      if (global)
-        {
-          add_region_ticks (self, pos);
-        }
+      {
+        const MidiArrangerSelections * mas =
+          (const MidiArrangerSelections *) self;
+        GET_END_POS (mas, MidiNote, midi_note);
+        if (global)
+          {
+            add_region_ticks (self, pos);
+          }
+      }
       break;
     case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      GET_END_POS (
-        as, AutomationPoint, automation_point);
-      if (global)
-        {
-          add_region_ticks (self, pos);
-        }
+      {
+        const AutomationSelections * as =
+          (const AutomationSelections *) self;
+        GET_END_POS (
+          as, AutomationPoint, automation_point);
+        if (global)
+          {
+            add_region_ticks (self, pos);
+          }
+      }
       break;
     case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      GET_END_POS (cs, ChordObject, chord_object);
-      if (global)
-        {
-          add_region_ticks (self, pos);
-        }
+      {
+        const ChordSelections * cs =
+          (const ChordSelections *) self;
+        GET_END_POS (cs, ChordObject, chord_object);
+        if (global)
+          {
+            add_region_ticks (self, pos);
+          }
+      }
+      break;
+    case TYPE (AUDIO):
+      {
+        const AudioSelections * as =
+          (const AudioSelections *) self;
+        position_set_to_pos (pos, &as->sel_end);
+        if (global)
+          {
+            add_region_ticks (self, pos);
+          }
+      }
       break;
     default:
       g_return_if_reached ();
