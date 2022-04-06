@@ -1,9 +1,11 @@
-// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+ * SPDX-License-Identifier: LicenseRef-ZrythmLicense
  *
  * This file incorporates work covered by the following copyright and
  * permission notice:
+ *
+ * ---
  *
  * Copyright (C) 2008-2011 Fons Adriaensen <fons@linuxaudio.org>
  * Copyright (C) 2013 Robin Gareus <robin@gareus.org>
@@ -19,8 +21,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ * ---
  */
 
 #include <math.h>

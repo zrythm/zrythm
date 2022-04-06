@@ -362,6 +362,13 @@ purposes) amounts of code in a file, you should
 append your copyright notice (name, year and
 optionally email/website) at the top.
 
+If a file incorporates work under a different
+license, it should be explicitly mentioned below
+the main SPDX tags and each copyright and permission
+notice must be separated by `---`. See
+[src/audio/graph_thread.c](src/audio/graph_thread.c)
+for an example.
+
 For the copyright years, Zrythm uses a range
 (“2008-2010”) instead of listing individual years
 (“2008, 2009, 2010”) if and only if every year

@@ -1,3 +1,9 @@
+<!---
+SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+SPDX-FileCopyrightText: © 2020 Sidar Talei, Matthieu Talbot
+SPDX-License-Identifier: FSFAP
+-->
+
 # Building on Windows
 
 Install MSYS2 : https://www.msys2.org
@@ -111,13 +117,3 @@ illegal. For more information on why this is not
 allowed by the GPL, consider:
 
 <https://gitlab.com/gnu-clisp/clisp/blob/dd313099db351c90431c1c90332192edce2bb5c9/doc/Why-CLISP-is-under-GPL>
-
-----
-
-Copyright (C) 2022 Alexandros Theodotou
-Copyright (C) 2020 Sidar Talei, Matthieu Talbot
-
-Copying and distribution of this file, with or without modification,
-are permitted in any medium without royalty provided the copyright
-notice and this notice are preserved.  This file is offered as-is,
-without any warranty.

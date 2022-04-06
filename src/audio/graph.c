@@ -1,9 +1,11 @@
-// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
+ * SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+ * SPDX-License-Identifier: LicenseRef-ZrythmLicense
  *
  * This file incorporates work covered by the following copyright and
  * permission notice:
+ *
+ * ---
  *
  * Copyright (C) 2017, 2019 Robin Gareus <robin@gareus.org>
  *
@@ -17,8 +19,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ * ---
  */
 
 #include "audio/control_room.h"

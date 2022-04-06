@@ -1,7 +1,5 @@
+# SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
-#
-# Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
-# Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
 
 audio_srcs = files([
   'audio_function.c',

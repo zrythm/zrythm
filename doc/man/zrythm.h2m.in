@@ -1,3 +1,6 @@
+SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 [description]
 Zrythm is a digital audio workstation designed to be
 featureful and easy to use.  It offers unlimited automation options, LV2

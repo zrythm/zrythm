@@ -1,7 +1,5 @@
+// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
- */
 
 #include "audio/fader.h"
 #include "audio/graph.h"
