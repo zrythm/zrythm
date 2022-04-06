@@ -1,3 +1,8 @@
+<!---
+SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+SPDX-License-Identifier: FSFAP
+-->
+
 Zrythm User Manual
 ==================
 
@@ -48,12 +53,3 @@ This manual is licensed under the GNU Free Documentation License, version 1.3 or
 
 The full text of the license can be found in the
 root of this distribution.
-
-----
-
-Copyright (C) 2019-2021 Alexandros Theodotou
-
-Copying and distribution of this file, with or without modification,
-are permitted in any medium without royalty provided the copyright
-notice and this notice are preserved.  This file is offered as-is,
-without any warranty.
