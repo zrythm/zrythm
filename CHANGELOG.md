@@ -6,6 +6,37 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.1.3.1] - 2022-04-07
+### Added
+- Include system info in automatic bug reports
+- Add clang-format target
+- Implement base/full MIDI export
+- Preferences: add option to reset to factory settings
+- Add ECMAScript support for scripting
+- Add language selection in scripting dialog
+
+### Changed
+- Switch to REUSE v3.0 and SPDX license identifiers
+- Reformat whole source code using clang-format
+- User manual: update initial configuration, scripting sections
+- Simplify initial configuration: only select language and path
+- Update German, French, Japanese, Chinese (Simplified), Turkish translations
+- Update README, INSTALL, HACKING content
+- Redesign bug report dialog
+- Preferences: use subtitles instead of tooltips
+- Welcome dialog: point to trademark policy
+- Welcome dialog: mention that only flatpak-packaged plugins are supported in flatpak builds
+
+### Fixed
+- Fix formatting in appdata XML
+- User manual: fix broken references
+- Fix MIDI region content selection in MIDI export dialog
+- Fix some memory leaks reported by gcc sanitizer
+- Fix error when right-clicking inside audio editor
+
+### Removed
+- Remove unused bootstrap js files
+
 ## [1.0.0-beta.1.2.3] - 2022-03-29
 ### Fixed
 - Fix PDF manual build
