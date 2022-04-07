@@ -68,13 +68,19 @@ welcome_message_dialog_new (GtkWindow * parent)
       "We recommend setting a fixed buffer size "
       "for Zrythm in your PipeWire config to avoid "
       "this."));
+
+  g_string_append_printf (
+    gstr, "<b>%s</b>: %s\n\n", _ ("Flatpak limitation"),
+    _ (
+      "Only Flatpak-installed plugins are "
+      "supported."));
 #endif
 
   /* copyright line */
   g_string_append_printf (
     gstr, "%s",
-    "Copyright © " COPYRIGHT_YEARS
-    " " COPYRIGHT_NAME);
+    "© " COPYRIGHT_YEARS
+    ", " COPYRIGHT_NAME ".");
 
   /* trademark info */
 #if !defined(HAVE_CUSTOM_NAME) \
