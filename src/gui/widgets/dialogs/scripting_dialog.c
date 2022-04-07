@@ -1,27 +1,11 @@
-/*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
 
 #ifdef HAVE_GUILE
 
-#  include "gui/widgets/scripting_window.h"
+#  include "gui/widgets/dialogs/scripting_dialog.h"
 #  include "project.h"
 #  include "settings/settings.h"
 #  include "utils/gtk.h"
@@ -35,14 +19,14 @@
 #  include "guile/guile.h"
 
 G_DEFINE_TYPE (
-  ScriptingWindowWidget,
-  scripting_window_widget,
-  GTK_TYPE_WINDOW)
+  ScriptingDialogWidget,
+  scripting_dialog_widget,
+  GTK_TYPE_DIALOG)
 
 static void
 on_execute_clicked (
   GtkButton *             spin,
-  ScriptingWindowWidget * self)
+  ScriptingDialogWidget * self)
 {
   GtkTextIter start_iter, end_iter;
   gtk_text_buffer_get_start_iter (
@@ -64,11 +48,11 @@ on_execute_clicked (
 /**
  * Creates a bounce dialog.
  */
-ScriptingWindowWidget *
-scripting_window_widget_new ()
+ScriptingDialogWidget *
+scripting_dialog_widget_new ()
 {
-  ScriptingWindowWidget * self = g_object_new (
-    SCRIPTING_WINDOW_WIDGET_TYPE, "title",
+  ScriptingDialogWidget * self = g_object_new (
+    SCRIPTING_DIALOG_WIDGET_TYPE, "title",
     _ ("Scripting Interface"), "icon-name",
     "zrythm", NULL);
 
@@ -80,25 +64,27 @@ scripting_window_widget_new ()
 }
 
 static void
-scripting_window_widget_class_init (
-  ScriptingWindowWidgetClass * _klass)
+scripting_dialog_widget_class_init (
+  ScriptingDialogWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
-    klass, "scripting_window.ui");
+    klass, "scripting_dialog.ui");
 
 #  define BIND_CHILD(x) \
     gtk_widget_class_bind_template_child ( \
-      klass, ScriptingWindowWidget, x)
+      klass, ScriptingDialogWidget, x)
 
   BIND_CHILD (execute_btn);
   BIND_CHILD (output);
   BIND_CHILD (source_viewport);
+
+#undef BIND_CHILD
 }
 
 static void
-scripting_window_widget_init (
-  ScriptingWindowWidget * self)
+scripting_dialog_widget_init (
+  ScriptingDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 

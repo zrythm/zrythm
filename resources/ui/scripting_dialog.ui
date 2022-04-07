@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="ScriptingWindowWidget" parent="GtkWindow">
+  <template class="ScriptingDialogWidget" parent="GtkDialog">
     <property name="default-height">578</property>
     <property name="default-width">784</property>
-    <child>
-      <placeholder/>
-    </child>
-    <property name="child">
+    <child internal-child="content_area">
       <object class="GtkGrid">
         <child>
           <object class="GtkPaned">
@@ -38,9 +35,6 @@
                     <property name="focusable">1</property>
                     <property name="receives_default">1</property>
                   </object>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
             </child>
@@ -75,10 +69,7 @@
             </layout>
           </object>
         </child>
-        <child>
-          <placeholder/>
-        </child>
       </object>
-    </property>
+    </child>
   </template>
 </interface>

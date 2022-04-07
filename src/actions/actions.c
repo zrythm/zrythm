@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -99,7 +83,7 @@
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
 #ifdef HAVE_GUILE
-#  include "gui/widgets/scripting_window.h"
+#  include "gui/widgets/dialogs/scripting_dialog.h"
 #endif
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
@@ -319,11 +303,11 @@ activate_scripting_interface (
   gpointer        user_data)
 {
 #ifdef HAVE_GUILE
-  ScriptingWindowWidget * widget =
-    scripting_window_widget_new ();
+  ScriptingDialogWidget * widget =
+    scripting_dialog_widget_new ();
   gtk_window_set_transient_for (
     GTK_WINDOW (widget), GTK_WINDOW (MAIN_WINDOW));
-  gtk_widget_set_visible (GTK_WIDGET (widget), 1);
+  gtk_window_present (GTK_WINDOW (widget));
 #else
   GtkWidget * dialog = gtk_message_dialog_new_with_markup (
     GTK_WINDOW (MAIN_WINDOW),

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+// SPDX-FileCopyrightText: © 2018-2019 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**

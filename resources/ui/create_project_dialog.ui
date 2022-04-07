@@ -5,9 +5,6 @@
     <property name="modal">1</property>
     <property name="default_width">280</property>
     <property name="icon_name">zrythm</property>
-    <child>
-      <placeholder/>
-    </child>
     <child internal-child="content_area">
       <object class="GtkBox">
         <property name="orientation">vertical</property>
