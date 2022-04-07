@@ -682,12 +682,9 @@ bug_report_dialog_widget_init (
     self->user_input_text_view, false);
   gtk_text_view_set_wrap_mode (
     self->user_input_text_view, GTK_WRAP_WORD_CHAR);
-  GtkListBoxRow * row =
-    GTK_LIST_BOX_ROW (gtk_list_box_row_new ());
-  gtk_list_box_row_set_child (
-    row, GTK_WIDGET (self->user_input_text_view));
   adw_preferences_group_add (
-    pref_group, GTK_WIDGET (row));
+    pref_group,
+    GTK_WIDGET (self->user_input_text_view));
 
   pref_group = ADW_PREFERENCES_GROUP (
     adw_preferences_group_new ());
@@ -705,8 +702,12 @@ bug_report_dialog_widget_init (
       GTK_LABEL (gtk_label_new (""));
     gtk_label_set_selectable (
       self->backtrace_lbl, true);
+    GtkListBoxRow * row =
+      GTK_LIST_BOX_ROW (gtk_list_box_row_new ());
+    gtk_list_box_row_set_child (
+      row, GTK_WIDGET (self->backtrace_lbl));
     adw_expander_row_add_row (
-      exp_row, GTK_WIDGET (self->backtrace_lbl));
+      exp_row, GTK_WIDGET (row));
     adw_preferences_group_add (
       pref_group, GTK_WIDGET (exp_row));
   }
@@ -718,8 +719,12 @@ bug_report_dialog_widget_init (
       ADW_PREFERENCES_ROW (exp_row), _ ("Log"));
     self->log_lbl = GTK_LABEL (gtk_label_new (""));
     gtk_label_set_selectable (self->log_lbl, true);
+    GtkListBoxRow * row =
+      GTK_LIST_BOX_ROW (gtk_list_box_row_new ());
+    gtk_list_box_row_set_child (
+      row, GTK_WIDGET (self->log_lbl));
     adw_expander_row_add_row (
-      exp_row, GTK_WIDGET (self->log_lbl));
+      exp_row, GTK_WIDGET (row));
     adw_preferences_group_add (
       pref_group, GTK_WIDGET (exp_row));
   }
@@ -734,8 +739,12 @@ bug_report_dialog_widget_init (
       GTK_LABEL (gtk_label_new (""));
     gtk_label_set_selectable (
       self->system_info_lbl, true);
+    GtkListBoxRow * row =
+      GTK_LIST_BOX_ROW (gtk_list_box_row_new ());
+    gtk_list_box_row_set_child (
+      row, GTK_WIDGET (self->system_info_lbl));
     adw_expander_row_add_row (
-      exp_row, GTK_WIDGET (self->system_info_lbl));
+      exp_row, GTK_WIDGET (row));
     adw_preferences_group_add (
       pref_group, GTK_WIDGET (exp_row));
   }
