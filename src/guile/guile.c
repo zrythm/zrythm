@@ -12,8 +12,8 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include "guile/modules.h"
 #include "guile/guile.h"
+#include "guile/modules.h"
 #include <libguile.h>
 #include <pthread.h>
 
@@ -34,11 +34,13 @@ typedef struct ExecutionInfo
 } ExecutionInfo;
 
 static const char * guile_lang_strings[] = {
-  "Scheme", "ECMAScript",
+  "Scheme",
+  "ECMAScript",
 };
 
 static const char * guile_lang_canonical_strings[] = {
-  "scheme", "ecmascript",
+  "scheme",
+  "ecmascript",
 };
 
 const char *
@@ -60,11 +62,9 @@ guile_get_script_language_canonical_str (
 }
 
 GuileScriptLanguage
-guile_get_script_language_from_str (
-  const char * str)
+guile_get_script_language_from_str (const char * str)
 {
-  for (int i = 0; i < NUM_GUILE_SCRIPT_LANGUAGES;
-       i++)
+  for (int i = 0; i < NUM_GUILE_SCRIPT_LANGUAGES; i++)
     {
       if (string_is_equal (
             guile_lang_strings[i], str))
@@ -129,8 +129,7 @@ call_proc (void * data)
   const char * lang_str =
     guile_get_script_language_canonical_str (
       nfo->lang);
-  SCM s_from_lang =
-    scm_from_utf8_symbol (lang_str);
+  SCM s_from_lang = scm_from_utf8_symbol (lang_str);
   SCM kwd_lang = scm_from_utf8_keyword ("lang");
   scm_call_3 (
     eval_string_proc, code, kwd_lang, s_from_lang);
@@ -184,8 +183,8 @@ guile_mode_func (void * data)
   SCM captured_stack = SCM_BOOL_F;
 
   SCM ret = scm_c_catch (
-    SCM_BOOL_T, call_proc, data,
-    eval_handler, &captured_stack, preunwind_proc,
+    SCM_BOOL_T, call_proc, data, eval_handler,
+    &captured_stack, preunwind_proc,
     &captured_stack);
 
   SCM    str_scm = scm_get_output_string (out_port);
@@ -229,7 +228,8 @@ guile_run_script (
     AUDIO_ENGINE, &state, Z_F_NO_FORCE);
 
   ExecutionInfo nfo = {
-    .script = script, .lang = lang };
+    .script = script, .lang = lang
+  };
 
   char * ret = scm_with_guile (
     &guile_mode_func, (void *) &nfo);

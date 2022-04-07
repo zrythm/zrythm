@@ -37,8 +37,7 @@ on_execute_clicked (
     GTK_TEXT_BUFFER (self->buffer), &start_iter,
     &end_iter, false);
 
-  GuileScriptLanguage lang =
-    (GuileScriptLanguage)
+  GuileScriptLanguage lang = (GuileScriptLanguage)
     adw_combo_row_get_selected (
       self->lang_select_combo_row);
 
@@ -60,10 +59,10 @@ on_lang_selection_changed (
     Z_SCRIPTING_DIALOG_WIDGET (data);
   AdwComboRow * combo_row = ADW_COMBO_ROW (gobject);
 
-  const char * source_lang_str = NULL;
+  const char *        source_lang_str = NULL;
   GuileScriptLanguage script_lang =
     (GuileScriptLanguage)
-    adw_combo_row_get_selected (combo_row);
+      adw_combo_row_get_selected (combo_row);
   switch (script_lang)
     {
     case GUILE_SCRIPT_LANGUAGE_SCHEME:
@@ -101,22 +100,18 @@ scripting_dialog_widget_new ()
 }
 
 static void
-setup_lang_selection (
-  ScriptingDialogWidget * self)
+setup_lang_selection (ScriptingDialogWidget * self)
 {
   adw_preferences_row_set_title (
-    ADW_PREFERENCES_ROW (
-      self->lang_select_combo_row),
-    _("Language"));
+    ADW_PREFERENCES_ROW (self->lang_select_combo_row),
+    _ ("Language"));
   adw_action_row_set_subtitle (
-    ADW_ACTION_ROW (
-      self->lang_select_combo_row),
-    _("Select the language of the script"));
+    ADW_ACTION_ROW (self->lang_select_combo_row),
+    _ ("Select the language of the script"));
 
   GtkStringList * string_list =
     gtk_string_list_new (NULL);
-  for (int i = 0; i < NUM_GUILE_SCRIPT_LANGUAGES;
-       i++)
+  for (int i = 0; i < NUM_GUILE_SCRIPT_LANGUAGES; i++)
     {
       gtk_string_list_append (
         string_list,
@@ -148,9 +143,8 @@ scripting_dialog_widget_init (
   GtkWidget * content_area =
     gtk_dialog_get_content_area (GTK_DIALOG (self));
 
-  GtkPaned * paned =
-    GTK_PANED (
-      gtk_paned_new (GTK_ORIENTATION_VERTICAL));
+  GtkPaned * paned = GTK_PANED (
+    gtk_paned_new (GTK_ORIENTATION_VERTICAL));
   gtk_paned_set_shrink_start_child (paned, false);
   gtk_paned_set_shrink_end_child (paned, false);
   gtk_widget_set_hexpand (GTK_WIDGET (paned), true);
@@ -158,14 +152,12 @@ scripting_dialog_widget_init (
   gtk_box_append (
     GTK_BOX (content_area), GTK_WIDGET (paned));
 
-  GtkBox * top_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  GtkBox * top_box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_paned_set_start_child (
     paned, GTK_WIDGET (top_box));
-  GtkScrolledWindow * scroll =
-    GTK_SCROLLED_WINDOW (
-      gtk_scrolled_window_new ());
+  GtkScrolledWindow * scroll = GTK_SCROLLED_WINDOW (
+    gtk_scrolled_window_new ());
   gtk_box_append (top_box, GTK_WIDGET (scroll));
   gtk_widget_set_size_request (
     GTK_WIDGET (scroll), 596, 320);
@@ -271,19 +263,18 @@ scripting_dialog_widget_init (
   /* setup language selection */
   GtkListBox * list_box =
     GTK_LIST_BOX (gtk_list_box_new ());
-  gtk_box_append (
-    top_box, GTK_WIDGET (list_box));
+  gtk_box_append (top_box, GTK_WIDGET (list_box));
   gtk_list_box_set_selection_mode (
     list_box, GTK_SELECTION_NONE);
   self->lang_select_combo_row =
     ADW_COMBO_ROW (adw_combo_row_new ());
   gtk_list_box_append (
-    list_box, GTK_WIDGET (self->lang_select_combo_row));
+    list_box,
+    GTK_WIDGET (self->lang_select_combo_row));
   setup_lang_selection (self);
 
-  self->execute_btn =
-    GTK_BUTTON (
-      gtk_button_new_with_label (_("Execute")));
+  self->execute_btn = GTK_BUTTON (
+    gtk_button_new_with_label (_ ("Execute")));
   gtk_widget_set_receives_default (
     GTK_WIDGET (self->execute_btn), true);
   gtk_widget_set_focusable (
@@ -294,24 +285,19 @@ scripting_dialog_widget_init (
     G_OBJECT (self->execute_btn), "clicked",
     G_CALLBACK (on_execute_clicked), self);
 
-  GtkBox * bot_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  GtkBox * bot_box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_paned_set_end_child (
     paned, GTK_WIDGET (bot_box));
-  scroll =
-    GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
+  scroll = GTK_SCROLLED_WINDOW (
+    gtk_scrolled_window_new ());
   gtk_box_append (bot_box, GTK_WIDGET (scroll));
   gtk_widget_set_size_request (
     GTK_WIDGET (scroll), -1, 105);
-  gtk_widget_set_hexpand (
-    GTK_WIDGET (scroll), true);
-  gtk_widget_set_vexpand (
-    GTK_WIDGET (scroll), true);
-  self->output =
-    GTK_LABEL (
-      gtk_label_new (
-        _("The result will be printed here")));
+  gtk_widget_set_hexpand (GTK_WIDGET (scroll), true);
+  gtk_widget_set_vexpand (GTK_WIDGET (scroll), true);
+  self->output = GTK_LABEL (gtk_label_new (
+    _ ("The result will be printed here")));
   gtk_label_set_selectable (self->output, true);
   gtk_scrolled_window_set_child (
     scroll, GTK_WIDGET (self->output));

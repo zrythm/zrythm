@@ -70,8 +70,8 @@ guile_project_generator_generate_project_from_string (
   PROJECT = prj;
 
   /* run the script to fill in the project */
-  char * markup =
-    (char *) guile_run_script (script, GUILE_SCRIPT_LANGUAGE_SCHEME);
+  char * markup = (char *) guile_run_script (
+    script, GUILE_SCRIPT_LANGUAGE_SCHEME);
   g_message ("\nResult:\n%s", markup);
 
   if (!guile_script_succeeded (markup))
