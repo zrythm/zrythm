@@ -71,9 +71,11 @@ on_lang_selection_changed (
     case GUILE_SCRIPT_LANGUAGE_ECMASCRIPT:
       source_lang_str = "js";
       break;
+#  if 0
     case GUILE_SCRIPT_LANGUAGE_ELISP:
       source_lang_str = "commonlisp";
       break;
+#  endif
     default:
       g_return_if_reached ();
     }
