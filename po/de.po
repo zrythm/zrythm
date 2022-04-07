@@ -15,10 +15,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-03 02:24+0100\n"
-"PO-Revision-Date: 2022-03-31 17:07+0000\n"
-"Last-Translator: Cgrieger <translate@cgrieger.org>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"PO-Revision-Date: 2022-04-04 03:09+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -3216,7 +3216,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:111
 msgid "Welcome"
-msgstr ""
+msgstr "Willkommen"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:103
 #, fuzzy
