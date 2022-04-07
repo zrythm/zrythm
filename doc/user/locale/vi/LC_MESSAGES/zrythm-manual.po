@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.20\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-01 12:08+0100\n"
+"POT-Creation-Date: 2022-04-07 18:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: ../../appendix/environment.rst:10
+#: ../../appendix/environment.rst:11
 msgid "Environment Variables"
 msgstr ""
 
-#: ../../appendix/environment.rst:12
+#: ../../appendix/environment.rst:13
 msgid ""
 "Zrythm understands the following environment variables. They can be "
 "configured in :file:`.bashrc` or a similar shell configuration file, the "
@@ -30,66 +30,66 @@ msgid ""
 "path zrythm_launch``"
 msgstr ""
 
-#: ../../appendix/environment.rst:22
+#: ../../appendix/environment.rst:23
 msgid "Set this to the locations to scan for :term:`LV2` plugins."
 msgstr ""
 
-#: ../../appendix/environment.rst:25
+#: ../../appendix/environment.rst:26
 msgid "Example: ``LV2_PATH=$HOME/custom-lv2-dir``"
 msgstr ""
 
-#: ../../appendix/environment.rst:30
+#: ../../appendix/environment.rst:31
 msgid "Set to 1 to disable plugin scanning."
 msgstr ""
 
-#: ../../appendix/environment.rst:32
+#: ../../appendix/environment.rst:33
 msgid "Example: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
 msgstr ""
 
-#: ../../appendix/environment.rst:37
+#: ../../appendix/environment.rst:38
 msgid "Set this to the locations to scan for :term:`VST2` plugins."
 msgstr ""
 
-#: ../../appendix/environment.rst:42
+#: ../../appendix/environment.rst:43
 msgid "Set this to the locations to scan for :term:`VST3` plugins."
 msgstr ""
 
-#: ../../appendix/environment.rst:47
+#: ../../appendix/environment.rst:48
 msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."
 msgstr ""
 
-#: ../../appendix/environment.rst:52
+#: ../../appendix/environment.rst:53
 msgid "Set to 1 to show extra information useful for developers."
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:6
+#: ../../appendix/files-and-directories.rst:7
 msgid "Files and Directories"
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:9
+#: ../../appendix/files-and-directories.rst:10
 msgid "User path"
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:10
+#: ../../appendix/files-and-directories.rst:11
 msgid ""
 "When Zrythm is launched for the first time, it will also ask you to select a "
 "directory for saving your user data. See :term:`Zrythm user path` for "
 "details."
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:15
+#: ../../appendix/files-and-directories.rst:16
 msgid "Installed Files"
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:16
+#: ../../appendix/files-and-directories.rst:17
 msgid "When Zrythm is installed, it installs the following files by default."
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:20
+#: ../../appendix/files-and-directories.rst:21
 msgid "Desktop Entry"
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:21
+#: ../../appendix/files-and-directories.rst:22
 msgid ""
 "A `freedesktop-compliant configuration file <https://specifications."
 "freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html>`_ that "
@@ -98,144 +98,144 @@ msgid ""
 "zrythm.desktop`."
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:28
+#: ../../appendix/files-and-directories.rst:29
 msgid "GLib Schema"
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:29
+#: ../../appendix/files-and-directories.rst:30
 msgid ""
 "This file contains the schema for user configurations. It is normally "
 "installed at :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema."
 "xml`."
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:34
+#: ../../appendix/files-and-directories.rst:35
 msgid "Desktop Icon"
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:35
+#: ../../appendix/files-and-directories.rst:36
 msgid ""
 "This is used by the desktop environment. Normally installed at :file:`/usr/"
 "share/icons/hicolor/scalable/apps/zrythm.svg`."
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:40
+#: ../../appendix/files-and-directories.rst:41
 msgid "Localization Files"
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:41
+#: ../../appendix/files-and-directories.rst:42
 msgid ""
 "Localization files are installed under :file:`/usr/share/locale`. For "
 "example, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` for Korean."
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:47
-#: ../../getting-started/getting-plugins.rst:100
+#: ../../appendix/files-and-directories.rst:48
+#: ../../getting-started/getting-plugins.rst:101
 msgid "Samples"
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:48
+#: ../../appendix/files-and-directories.rst:49
 msgid ""
 "Default audio samples used by Zrythm (such as the metronome). Normally "
 "installed under :file:`/usr/share/zrythm/samples`."
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:53
+#: ../../appendix/files-and-directories.rst:54
 msgid "Fonts"
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:54
+#: ../../appendix/files-and-directories.rst:55
 msgid ""
 "Unless your distribution provides packages for the required fonts, fonts "
 "required by Zrythm will normally be installed under :file:`/usr/share/fonts/"
 "zrythm`."
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:60
+#: ../../appendix/files-and-directories.rst:61
 msgid "GtkSourceView Stylesheets"
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:61
+#: ../../appendix/files-and-directories.rst:62
 msgid ""
 "Zrythm will install CSS stylesheets to be used by some text input widgets "
 "under :file:`/usr/share/zrythm/sourceview-styles`."
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:66
+#: ../../appendix/files-and-directories.rst:67
 msgid "Themes"
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:67
+#: ../../appendix/files-and-directories.rst:68
 msgid ""
 "Default themes (including icon themes) will normally be installed under :"
 "file:`/usr/share/zrythm/themes`."
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:71
+#: ../../appendix/files-and-directories.rst:72
 msgid ""
 "Zrythm provides ways to override some of these files with user-specified "
 "files in the :term:`Zrythm user path`. See :doc:`../theming/intro` for "
 "details."
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:77
+#: ../../appendix/files-and-directories.rst:78
 msgid "User Files"
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:79
+#: ../../appendix/files-and-directories.rst:80
 msgid "Cached Plugin Descriptors"
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:80
+#: ../../appendix/files-and-directories.rst:81
 msgid ""
 "Plugin descriptor cache for faster scanning. This is found at :file:"
 "`cached_plugin_descriptors.yaml` under the :term:`Zrythm user path`."
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:86
+#: ../../appendix/files-and-directories.rst:87
 msgid "Plugin Collections"
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:87
+#: ../../appendix/files-and-directories.rst:88
 msgid ""
 "This file contains your plugin collections. It is found at :file:"
 "`plugin_collections.yaml` under the :term:`Zrythm user path`."
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:93
+#: ../../appendix/files-and-directories.rst:94
 msgid "Log File"
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:94
+#: ../../appendix/files-and-directories.rst:95
 msgid ""
 "Zrythm will write to a log file on each run inside the :file:`log` "
 "subdirectory under the :term:`Zrythm user path`. The filename will contain "
 "the current date and time, for example :file:`log_2020-06-26_15-34-19.log`."
 msgstr ""
 
-#: ../../appendix/files-and-directories.rst:100
+#: ../../appendix/files-and-directories.rst:101
 msgid "This log file is useful for debugging crashes and other problems."
 msgstr ""
 
-#: ../../appendix/gnu-free-documentation-license.rst:6
+#: ../../appendix/gnu-free-documentation-license.rst:7
 msgid "GNU Free Documentation License"
 msgstr ""
 
-#: ../../appendix/intro.rst:6
+#: ../../appendix/intro.rst:7
 msgid "Appendix"
 msgstr ""
 
-#: ../../appendix/menu-actions.rst:6
+#: ../../appendix/menu-actions.rst:7
 msgid "Menu Actions"
 msgstr ""
 
-#: ../../appendix/troubleshooting.rst:8
+#: ../../appendix/troubleshooting.rst:9
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../appendix/troubleshooting.rst:10
-#: ../../configuration/additional-settings.rst:34
-#: ../../configuration/shortcuts.rst:46
+#: ../../appendix/troubleshooting.rst:11
+#: ../../configuration/additional-settings.rst:35
+#: ../../configuration/shortcuts.rst:47
 #: ../../editing/clip-editors/automation-editor.rst:55
 #: ../../editing/clip-editors/piano-roll.rst:148
 #: ../../exporting/audio-and-midi.rst:38
@@ -245,79 +245,79 @@ msgstr ""
 msgid "Todo"
 msgstr ""
 
-#: ../../appendix/troubleshooting.rst:10
+#: ../../appendix/troubleshooting.rst:11
 msgid "Write this page."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:6
+#: ../../chords-and-scales/chord-pad.rst:7
 msgid "Chord Pad"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:9
+#: ../../chords-and-scales/chord-pad.rst:10
 #: ../../editing/clip-editors/overview.rst:6 ../../editing/overview.rst:6
 #: ../../editing/timeline/overview.rst:6
 #: ../../playback-and-recording/overview.rst:6
 #: ../../plugins-files/audio-midi-files/overview.rst:6
-#: ../../scripting/overview.rst:6 ../../tracks/overview.rst:6
+#: ../../scripting/overview.rst:7 ../../tracks/overview.rst:6
 #: ../../zrythm-interface/overview.rst:6
 msgid "Overview"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:11
+#: ../../chords-and-scales/chord-pad.rst:12
 msgid ""
 "The chord pad contains 12 pads (1 for each key on a piano keyboard) that can "
 "be used to trigger chords. The chord pad can be found in the bottom panel."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:18
+#: ../../chords-and-scales/chord-pad.rst:19
 msgid ""
 "These 12 chords are linked to the chords in the :ref:`Chord Editor <editing/"
 "clip-editors/chord-editor:Chord Editor>`."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:22
-#: ../../getting-started/getting-plugins.rst:85
+#: ../../chords-and-scales/chord-pad.rst:23
+#: ../../getting-started/getting-plugins.rst:86
 #: ../../plugins-files/audio-midi-files/file-browser.rst:67
 msgid "Presets"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:24
+#: ../../chords-and-scales/chord-pad.rst:25
 msgid ""
 "Zrythm comes with pre-installed chord presets, and it also allows you to "
 "generate chord presets from scales, or even save your own."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:29
+#: ../../chords-and-scales/chord-pad.rst:30
 msgid "Preset Packs"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:31
+#: ../../chords-and-scales/chord-pad.rst:32
 msgid ""
 "A list of preset packs and presets is found in the :ref:`Right Panel <zrythm-"
 "interface/right-panel:Right Panel>` under :guilabel:`Chord Preset Browser`."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:38
+#: ../../chords-and-scales/chord-pad.rst:39
 msgid "Chord preset browser"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:41
+#: ../../chords-and-scales/chord-pad.rst:42
 #: ../../plugins-files/audio-midi-files/file-browser.rst:47
 msgid "Filtering"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:43
+#: ../../chords-and-scales/chord-pad.rst:44
 msgid ""
 "Clicking a preset pack in the top will filter the list of presets to presets "
 "in the selected pack."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:47
+#: ../../chords-and-scales/chord-pad.rst:48
 #: ../../plugins-files/audio-midi-files/file-browser.rst:86
 msgid "Auditioning"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:49
+#: ../../chords-and-scales/chord-pad.rst:50
 msgid ""
 "You can audition chord presets by selecting an instrument plugin from the "
 "list and using the available playback controls. This works similarly to :ref:"
@@ -325,143 +325,143 @@ msgid ""
 "browser:Auditioning>`."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:55
+#: ../../chords-and-scales/chord-pad.rst:56
 msgid "Standard Packs"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:57
+#: ../../chords-and-scales/chord-pad.rst:58
 msgid ""
 "Zrythm comes with some standard packs that cannot be renamed or deleted."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:61
+#: ../../chords-and-scales/chord-pad.rst:62
 msgid "Custom Packs"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:64
+#: ../../chords-and-scales/chord-pad.rst:65
 msgid "Creating Custom Packs"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:66
+#: ../../chords-and-scales/chord-pad.rst:67
 msgid ""
 "You can create your own pack by clicking the :guilabel:`Add` button below "
 "the list of chord preset packs."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:73
+#: ../../chords-and-scales/chord-pad.rst:74
 msgid "Creating a chord preset pack"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:76
+#: ../../chords-and-scales/chord-pad.rst:77
 msgid "Editing Custom Packs"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:78
+#: ../../chords-and-scales/chord-pad.rst:79
 msgid "Custom packs can be renamed or deleted by right-clicking."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:84
+#: ../../chords-and-scales/chord-pad.rst:85
 msgid "Renaming or deleting a custom chord preset pack"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:86
+#: ../../chords-and-scales/chord-pad.rst:87
 msgid "Chord presets under the selected pack can also be renamed and deleted."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:90
+#: ../../chords-and-scales/chord-pad.rst:91
 msgid "Saving Presets"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:92
+#: ../../chords-and-scales/chord-pad.rst:93
 msgid ""
 "Clicking on the :guilabel:`Save Preset` button in the top part of the chord "
 "pad will allow you to save the current chord configuration in a preset."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:99
+#: ../../chords-and-scales/chord-pad.rst:100
 msgid "Saving a chord preset"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:102
+#: ../../chords-and-scales/chord-pad.rst:103
 msgid "Loading Presets"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:104
+#: ../../chords-and-scales/chord-pad.rst:105
 msgid ""
 "To load a preset, click the :guilabel:`Load Preset` button in the top part "
 "of the chord pad, then select the preset you want to use."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:111
+#: ../../chords-and-scales/chord-pad.rst:112
 msgid "Selecting a chord preset"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:113
+#: ../../chords-and-scales/chord-pad.rst:114
 msgid ""
 "You can also load a preset by double clicking on it in the preset browser."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:117
+#: ../../chords-and-scales/chord-pad.rst:118
 msgid "Generating Chords from Scale"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:119
+#: ../../chords-and-scales/chord-pad.rst:120
 msgid ""
 "Chords can be generated from a scale and a root note by clicking on the :"
 "guilabel:`Load Preset` button, then selecting a scale and a root note."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:126
+#: ../../chords-and-scales/chord-pad.rst:127
 msgid "Generating chords from a scale"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:129
+#: ../../chords-and-scales/chord-pad.rst:130
 msgid "Transpose"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:131
+#: ../../chords-and-scales/chord-pad.rst:132
 msgid ""
 "Clicking on the up/down transpose buttons will transpose all chords by 1 "
 "semitone up or down."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:135
+#: ../../chords-and-scales/chord-pad.rst:136
 msgid "Editing Chords"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:138
+#: ../../chords-and-scales/chord-pad.rst:139
 msgid "Chord Selection"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:140
+#: ../../chords-and-scales/chord-pad.rst:141
 msgid ""
 "Clicking on the chord button will bring up the chord selector window that "
 "allows you to change the current chord."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:147
+#: ../../chords-and-scales/chord-pad.rst:148
 msgid "Chord selector"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:149
+#: ../../chords-and-scales/chord-pad.rst:150
 msgid ""
 "At the moment, only the :guilabel:`Chord Creator` tab is functional. A chord "
 "can be created by selecting its root note, its type, its accent and its bass "
 "note."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:153
+#: ../../chords-and-scales/chord-pad.rst:154
 msgid ""
 "Selecting :guilabel:`In scale` under :guilabel:`Visibility` will only show "
 "options that correspond to chords inside the currently active scale. This "
 "makes it easy to create chords that stay in the current scale."
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:161
+#: ../../chords-and-scales/chord-pad.rst:162
 msgid "Inversions"
 msgstr ""
 
-#: ../../chords-and-scales/chord-pad.rst:163
+#: ../../chords-and-scales/chord-pad.rst:164
 msgid ""
 "Clicking on the left or right arrows will allow you to invert the chord. "
 "Each inversion towards the right moves the lowest note in the chord one "
@@ -469,49 +469,49 @@ msgid ""
 "the chord one octave below."
 msgstr ""
 
-#: ../../chords-and-scales/intro.rst:8
+#: ../../chords-and-scales/intro.rst:9
 msgid "Chords and Scales"
 msgstr ""
 
-#: ../../chords-and-scales/piano-roll-integration.rst:6
+#: ../../chords-and-scales/piano-roll-integration.rst:7
 msgid "Piano Roll Integration"
 msgstr ""
 
-#: ../../chords-and-scales/piano-roll-integration.rst:11
+#: ../../chords-and-scales/piano-roll-integration.rst:12
 msgid "Highlighting"
 msgstr ""
 
-#: ../../chords-and-scales/piano-roll-integration.rst:13
+#: ../../chords-and-scales/piano-roll-integration.rst:14
 msgid ""
 "You can use highlighting inside the piano roll to highlight the notes "
 "corresponding to the scale, chord, or both at the position of the playhead."
 msgstr ""
 
-#: ../../chords-and-scales/piano-roll-integration.rst:21
+#: ../../chords-and-scales/piano-roll-integration.rst:22
 msgid "No highlighting"
 msgstr ""
 
-#: ../../chords-and-scales/piano-roll-integration.rst:27
+#: ../../chords-and-scales/piano-roll-integration.rst:28
 msgid "Chord highlighting"
 msgstr ""
 
-#: ../../chords-and-scales/piano-roll-integration.rst:33
+#: ../../chords-and-scales/piano-roll-integration.rst:34
 msgid "Scale highlighting"
 msgstr ""
 
-#: ../../chords-and-scales/piano-roll-integration.rst:39
+#: ../../chords-and-scales/piano-roll-integration.rst:40
 msgid "Scale and chord highlighting"
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:6
+#: ../../configuration/additional-settings.rst:7
 msgid "Additional Settings"
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:9
+#: ../../configuration/additional-settings.rst:10
 msgid "GSettings"
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:10
+#: ../../configuration/additional-settings.rst:11
 msgid ""
 "Zrythm stores most of its configuration using the GSettings mechanism, which "
 "comes with the ``gsettings`` command for changing settings from the command "
@@ -519,7 +519,7 @@ msgid ""
 "DconfEditor>`_."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:17
+#: ../../configuration/additional-settings.rst:18
 msgid ""
 "Normally, you shouldn't need to access any of these settings as most of them "
 "are found inside Zrythm's UI, and it is not recommended to edit them as "
@@ -527,31 +527,31 @@ msgid ""
 "internally."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:25
+#: ../../configuration/additional-settings.rst:26
 msgid "Viewing the Current Settings"
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:27
+#: ../../configuration/additional-settings.rst:28
 msgid "See :option:`zrythm --print-settings`."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:30
+#: ../../configuration/additional-settings.rst:31
 msgid "Reset to Factory Settings"
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:32
+#: ../../configuration/additional-settings.rst:33
 msgid "See :option:`zrythm --reset-to-factory`."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:34
+#: ../../configuration/additional-settings.rst:35
 msgid "Add this to the UI."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:37
+#: ../../configuration/additional-settings.rst:38
 msgid "Plugin Settings"
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:38
+#: ../../configuration/additional-settings.rst:39
 msgid ""
 "Located at :file:`plugin-settings.yaml` under the :term:`Zrythm user path`, "
 "this is a collection of per-plugin settings, such as whether to open the "
@@ -560,54 +560,54 @@ msgid ""
 "ref:`generic UI <plugins-files/plugins/plugin-window:Generic UIs>`."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:46
+#: ../../configuration/additional-settings.rst:47
 msgid ""
 "Zrythm will remember the last setting used for each plugin and automatically "
 "apply it when you choose to instantiate that plugin from the :doc:`plugin "
 "browser <../plugins-files/plugins/plugin-browser>`."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:51
+#: ../../configuration/additional-settings.rst:52
 msgid ""
 "This file is generated and maintained automatically by Zrythm and users are "
 "not expected to edit it."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:6
+#: ../../configuration/device-setup.rst:7
 msgid "Devices"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:9
+#: ../../configuration/device-setup.rst:10
 msgid "Device Setup"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:12
+#: ../../configuration/device-setup.rst:13
 msgid "Connecting MIDI and Audio Devices"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:14
+#: ../../configuration/device-setup.rst:15
 msgid ""
 "Zrythm will auto-connect to the devices specified in the :ref:`Preferences "
 "<configuration/preferences:Preferences>` and make these devices available "
 "in :ref:`track inputs <tracks/inspector-page:Inputs>` and other places."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:22
+#: ../../configuration/device-setup.rst:23
 msgid "JACK/PipeWire"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:24
+#: ../../configuration/device-setup.rst:25
 msgid ""
 "Zrythm exposes ports to JACK (or PipeWire) when using the JACK audio and "
 "MIDI backend. These ports can be viewed using a tool like `Qjackctl <https://"
 "qjackctl.sourceforge.io/>`_."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:32
+#: ../../configuration/device-setup.rst:33
 msgid "Device connections in Qjackctl"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:34
+#: ../../configuration/device-setup.rst:35
 msgid ""
 "Zrythm will manage hardware connections on its own, so users are not "
 "expected to have to use such a patchbay to route MIDI/audio devices, however "
@@ -615,19 +615,19 @@ msgid ""
 "record their output, or to route the output of Zrythm into other JACK apps."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:41
+#: ../../configuration/device-setup.rst:42
 msgid "Any connections made externally will not be remembered by Zrythm."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:45
+#: ../../configuration/device-setup.rst:46
 msgid "MIDI Bindings"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:48
+#: ../../configuration/device-setup.rst:49
 msgid "Creating Bindings"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:50
+#: ../../configuration/device-setup.rst:51
 msgid ""
 "MIDI device controls can be mapped to controls inside Zrythm (on controls "
 "that support it). After enabling a device in the :ref:`Preferences "
@@ -635,110 +635,110 @@ msgid ""
 "clicking on eligible controls and selecting :guilabel:`MIDI learn`."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:61
+#: ../../configuration/device-setup.rst:62
 msgid "MIDI learn on channel sends"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:63
+#: ../../configuration/device-setup.rst:64
 msgid ""
 "A window will show up asking you to press a key or move a knob on your MIDI "
 "device."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:69
+#: ../../configuration/device-setup.rst:70
 msgid "MIDI learn window"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:71
+#: ../../configuration/device-setup.rst:72
 msgid ""
 "When the mapping is confirmed, the selected control can be controlled using "
 "the MIDI device."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:75
+#: ../../configuration/device-setup.rst:76
 msgid "Managing Bindings"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:77
+#: ../../configuration/device-setup.rst:78
 msgid ""
 "Device mappings (bindings) can be found under the :guilabel:`Bindings` tab "
 "in the :ref:`main panel <zrythm-interface/main-panel:Main Panel>`."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:85
+#: ../../configuration/device-setup.rst:86
 msgid "MIDI CC bindings"
 msgstr ""
 
-#: ../../configuration/device-setup.rst:87
+#: ../../configuration/device-setup.rst:88
 msgid ""
 "Bindings can be deleted by right-clicking on a row and selecting :guilabel:"
 "`Delete`."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:93
+#: ../../configuration/device-setup.rst:94
 msgid "Deleting a binding"
 msgstr ""
 
-#: ../../configuration/intro.rst:8
+#: ../../configuration/intro.rst:9
 msgid "Configuration"
 msgstr ""
 
-#: ../../configuration/preferences.rst:10
+#: ../../configuration/preferences.rst:11
 #: ../../plugins-files/audio-midi-files/file-browser.rst:116
 #: ../../zrythm-interface/main-toolbar.rst:110
 msgid "Preferences"
 msgstr ""
 
-#: ../../configuration/preferences.rst:12
+#: ../../configuration/preferences.rst:13
 msgid ""
 "Zrythm has a Preferences dialog containing all of the global settings that "
 "can be accessed by clicking the gear icon or with :kbd:`Control-Shift-p`"
 msgstr ""
 
-#: ../../configuration/preferences.rst:19
+#: ../../configuration/preferences.rst:20
 msgid "Preferences dialog"
 msgstr ""
 
-#: ../../configuration/preferences.rst:21
+#: ../../configuration/preferences.rst:22
 msgid ""
 "Preferences are grouped by sections, such as :guilabel:`General` and :"
 "guilabel:`Plugins`, and each item in the preferences contains a tooltip that "
 "explains what it does."
 msgstr ""
 
-#: ../../configuration/preferences.rst:26
+#: ../../configuration/preferences.rst:27
 msgid "Zrythm must be restarted for changes to take effect."
 msgstr ""
 
-#: ../../configuration/preferences.rst:30
+#: ../../configuration/preferences.rst:31
 msgid "Searching"
 msgstr ""
 
-#: ../../configuration/preferences.rst:32
+#: ../../configuration/preferences.rst:33
 msgid ""
 "The preferences are searchable. You can simply start typing a keyword and "
 "results will appear automatically. Clicking on one of the results will "
 "navigate to the corresponding item in the preferences."
 msgstr ""
 
-#: ../../configuration/preferences.rst:41
+#: ../../configuration/preferences.rst:42
 msgid "Searching the user preferences"
 msgstr ""
 
-#: ../../configuration/preferences.rst:44
+#: ../../configuration/preferences.rst:45
 msgid "Notable Preferences"
 msgstr ""
 
-#: ../../configuration/preferences.rst:46
+#: ../../configuration/preferences.rst:47
 msgid ""
 "Below is a list of notable preference items with some comments about them."
 msgstr ""
 
-#: ../../configuration/preferences.rst:50
+#: ../../configuration/preferences.rst:51
 msgid "Backend Selection"
 msgstr ""
 
-#: ../../configuration/preferences.rst:52
+#: ../../configuration/preferences.rst:53
 msgid ""
 "The audio/MIDI backend in under :menuselection:`General --> Engine` controls "
 "which audio engine implementation Zrythm will use to receive input from and "
@@ -746,137 +746,137 @@ msgid ""
 "combination on all systems."
 msgstr ""
 
-#: ../../configuration/preferences.rst:60
+#: ../../configuration/preferences.rst:61
 msgid "Input Devices/Controllers"
 msgstr ""
 
-#: ../../configuration/preferences.rst:62
+#: ../../configuration/preferences.rst:63
 msgid ""
 "In order to be able to record input from MIDI/audio devices, the devices "
 "must be explicitly enabled using the :guilabel:`MIDI controllers` and :"
 "guilabel:`Audio inputs` settings under :menuselection:`General --> Engine`."
 msgstr ""
 
-#: ../../configuration/preferences.rst:68
+#: ../../configuration/preferences.rst:69
 msgid "Zrythm will ignore input from any devices not explicitly enabled."
 msgstr ""
 
-#: ../../configuration/preferences.rst:72
+#: ../../configuration/preferences.rst:73
 msgid "Undo Stack Length"
 msgstr ""
 
-#: ../../configuration/preferences.rst:74
+#: ../../configuration/preferences.rst:75
 msgid ""
 "The size of the undo stack, found under :menuselection:`Editing --> Undo` "
 "controls how far back you can undo user actions in a given project. For "
 "example, if set to 128, you can go back 128 (undoable) user actions."
 msgstr ""
 
-#: ../../configuration/preferences.rst:80
+#: ../../configuration/preferences.rst:81
 msgid ""
 "The undo history is saved inside Zrythm projects, so you can still undo even "
 "after you load the project in a new instance of Zrythm."
 msgstr ""
 
-#: ../../configuration/preferences.rst:84
+#: ../../configuration/preferences.rst:85
 msgid ""
 "Setting this to a very large number will increase the size of project files "
 "and it may take longer to save/load projects. We recommend leaving it to the "
 "default value."
 msgstr ""
 
-#: ../../configuration/preferences.rst:90
+#: ../../configuration/preferences.rst:91
 msgid "Backup Saving"
 msgstr ""
 
-#: ../../configuration/preferences.rst:92
+#: ../../configuration/preferences.rst:93
 msgid ""
 "Zrythm can save backups automatically while working on a project. You can "
 "specify the interval to do this, in minutes, under :menuselection:`Projects "
 "--> General`. To disable auto-save, set the interval to 0."
 msgstr ""
 
-#: ../../configuration/preferences.rst:99
+#: ../../configuration/preferences.rst:100
 msgid "User Interface Language"
 msgstr ""
 
-#: ../../configuration/preferences.rst:101
+#: ../../configuration/preferences.rst:102
 msgid ""
 "The language of the user interface can be changed under :menuselection:`UI --"
 "> General`."
 msgstr ""
 
-#: ../../configuration/shortcuts.rst:6
+#: ../../configuration/shortcuts.rst:7
 msgid "Shortcuts"
 msgstr ""
 
-#: ../../configuration/shortcuts.rst:8
+#: ../../configuration/shortcuts.rst:9
 msgid ""
 "Shortcuts (key bindings) can be previewed by pressing :kbd:`Control-?` or :"
 "kbd:`Control-F1`."
 msgstr ""
 
-#: ../../configuration/shortcuts.rst:12
+#: ../../configuration/shortcuts.rst:13
 msgid "Global Shortcuts"
 msgstr ""
 
-#: ../../configuration/shortcuts.rst:18
+#: ../../configuration/shortcuts.rst:19
 msgid "Editor Shortcuts"
 msgstr ""
 
-#: ../../configuration/shortcuts.rst:24
+#: ../../configuration/shortcuts.rst:25
 msgid "Custom Shortcuts"
 msgstr ""
 
-#: ../../configuration/shortcuts.rst:26
+#: ../../configuration/shortcuts.rst:27
 msgid ""
 "Shortcuts can be overridden by placing a file named :file:`shortcuts.yaml` "
 "under the :term:`Zrythm user path`."
 msgstr ""
 
-#: ../../configuration/shortcuts.rst:30
+#: ../../configuration/shortcuts.rst:31
 msgid "An example is given below."
 msgstr ""
 
-#: ../../configuration/shortcuts.rst:46
+#: ../../configuration/shortcuts.rst:47
 msgid "Make this more user friendly & document all actions."
 msgstr ""
 
-#: ../../contributing/intro.rst:6
+#: ../../contributing/intro.rst:7
 msgid "Contributing"
 msgstr ""
 
-#: ../../contributing/intro.rst:7
+#: ../../contributing/intro.rst:8
 msgid ""
 "We appreciate contributions of any type and size. Tell us how you would like "
 "to help, and we will do our best to guide you."
 msgstr ""
 
-#: ../../contributing/intro.rst:12
+#: ../../contributing/intro.rst:13
 msgid "Coding"
 msgstr ""
 
-#: ../../contributing/intro.rst:13
+#: ../../contributing/intro.rst:14
 msgid ""
 "Please see the :download:`HACKING <../../../HACKING.md>` file in the source "
 "distribution."
 msgstr ""
 
-#: ../../contributing/intro.rst:18
+#: ../../contributing/intro.rst:19
 msgid "Web Design"
 msgstr ""
 
-#: ../../contributing/intro.rst:19
+#: ../../contributing/intro.rst:20
 msgid ""
 "You are welcome to help us improve the looks and usability of the Zrythm "
 "website. Please get in touch with us to discuss."
 msgstr ""
 
-#: ../../contributing/intro.rst:24
+#: ../../contributing/intro.rst:25
 msgid "Artwork and Themes"
 msgstr ""
 
-#: ../../contributing/intro.rst:25
+#: ../../contributing/intro.rst:26
 msgid ""
 "Zrythm is CSS themable and also makes use of many icons, some customized and "
 "some borrowed from other themes. If you would like to contribute artwork "
@@ -884,54 +884,54 @@ msgid ""
 "discussed in :ref:`icon-themes` and :ref:`css`."
 msgstr ""
 
-#: ../../contributing/intro.rst:33
+#: ../../contributing/intro.rst:34
 msgid "Testing"
 msgstr ""
 
-#: ../../contributing/intro.rst:34
+#: ../../contributing/intro.rst:35
 msgid ""
 "You are welcome to join us in testing the latest features in Zrythm and "
 "reporting bugs and feedback on `Sourcehut <https://todo.sr.ht/~alextee>`_."
 msgstr ""
 
-#: ../../contributing/intro.rst:39
+#: ../../contributing/intro.rst:40
 msgid ""
 "The latest development branch for new features is ``development`` in our "
 "`git repository <https://git.zrythm.org/zrythm/zrythm>`_."
 msgstr ""
 
-#: ../../contributing/intro.rst:44
+#: ../../contributing/intro.rst:45
 msgid "Editing this Manual"
 msgstr ""
 
-#: ../../contributing/intro.rst:45
+#: ../../contributing/intro.rst:46
 msgid ""
 "Edit the RST files under :file:`doc/user` and submit a patch when finished."
 msgstr ""
 
-#: ../../contributing/intro.rst:48
+#: ../../contributing/intro.rst:49
 msgid ""
 "You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "installed to compile this manual."
 msgstr ""
 
-#: ../../contributing/intro.rst:53
+#: ../../contributing/intro.rst:54
 msgid "Translation"
 msgstr ""
 
-#: ../../contributing/intro.rst:54
+#: ../../contributing/intro.rst:55
 msgid ""
 "Zrythm is available for translation at `Weblate <https://hosted.weblate.org/"
 "engage/zrythm/?utm_source=widget>`_."
 msgstr ""
 
-#: ../../contributing/intro.rst:57
+#: ../../contributing/intro.rst:58
 msgid ""
 "The Zrythm translation project contains the translations for the Zrythm "
 "program, the website, the accounts site, and sections of this manual."
 msgstr ""
 
-#: ../../contributing/intro.rst:61
+#: ../../contributing/intro.rst:62
 msgid ""
 "Click on the project you wish to work on, and then select a language in the "
 "screen that follows. For more information on using Weblate, please see the "
@@ -939,7 +939,7 @@ msgid ""
 "html>`_."
 msgstr ""
 
-#: ../../contributing/intro.rst:68
+#: ../../contributing/intro.rst:69
 msgid ""
 "Zrythm contains terminology similar to existing audio software. You may find "
 "it useful to borrow terms from them. See the `Cubase Pro Artist manual "
@@ -947,327 +947,327 @@ msgid ""
 "`fr` in the URL with your language code)."
 msgstr ""
 
-#: ../../contributing/intro.rst:75
+#: ../../contributing/intro.rst:76
 msgid "User Manual"
 msgstr ""
 
-#: ../../contributing/intro.rst:76
+#: ../../contributing/intro.rst:77
 msgid ""
 "When translating the user manual, please make sure you follow the following "
 "Sphinx/RST syntax, to avoid errors when applying your translations."
 msgstr ""
 
-#: ../../contributing/intro.rst:81
+#: ../../contributing/intro.rst:82
 msgid "General Syntax"
 msgstr ""
 
-#: ../../contributing/intro.rst:82
+#: ../../contributing/intro.rst:83
 msgid ""
 "When you see something inside ``:``, such as ``:term:``, it should be left "
 "untranslated. The part following should be left untranslated as well. For "
 "example:"
 msgstr ""
 
-#: ../../contributing/intro.rst:91 ../../contributing/intro.rst:106
+#: ../../contributing/intro.rst:92 ../../contributing/intro.rst:107
 msgid "should be translated in French as"
 msgstr ""
 
-#: ../../contributing/intro.rst:97
+#: ../../contributing/intro.rst:98
 msgid ""
 "This is because this value will replaced automatically by Sphinx with the "
 "translation for ``Parameter``. The only exception to this rule is when you "
 "see the ``<>`` characters. For example:"
 msgstr ""
 
-#: ../../contributing/intro.rst:113
+#: ../../contributing/intro.rst:114
 msgid ""
 "Please make sure you do not insert or remove spaces. The following examples "
 "will cause errors."
 msgstr ""
 
-#: ../../contributing/intro.rst:125
+#: ../../contributing/intro.rst:126
 msgid ""
 "Also, there should be space, comma or period after such syntax, like below."
 msgstr ""
 
-#: ../../contributing/intro.rst:134
+#: ../../contributing/intro.rst:135
 msgid "The following examples will cause errors."
 msgstr ""
 
-#: ../../contributing/intro.rst:141
+#: ../../contributing/intro.rst:142
 msgid ""
 "The following syntax usually refers to a path, so please keep it unchanged, "
 "otherwise the file it refers to will not be found."
 msgstr ""
 
-#: ../../contributing/intro.rst:150
+#: ../../contributing/intro.rst:151
 msgid "Donations"
 msgstr ""
 
-#: ../../contributing/intro.rst:151
+#: ../../contributing/intro.rst:152
 msgid ""
 "We use the following services for receiving donations. Any amount, small or "
 "large is appreciated and helps sustain continuous development:"
 msgstr ""
 
-#: ../../contributing/intro.rst:155
+#: ../../contributing/intro.rst:156
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr ""
 
-#: ../../contributing/intro.rst:156
+#: ../../contributing/intro.rst:157
 msgid "`PayPal <https://paypal.me/zrythm>`_"
 msgstr ""
 
-#: ../../contributing/intro.rst:157
+#: ../../contributing/intro.rst:158
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
 msgstr ""
 
-#: ../../contributing/intro.rst:159
+#: ../../contributing/intro.rst:160
 msgid "We also accept cryptocurrency donations at the following addresses:"
 msgstr ""
 
-#: ../../contributing/intro.rst:168
+#: ../../contributing/intro.rst:169
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer <https://www.zrythm.org/"
 "en/download.html>`_."
 msgstr ""
 
-#: ../../credits/intro.rst:6
+#: ../../credits/intro.rst:5
 msgid "Credits"
 msgstr ""
 
-#: ../../credits/intro.rst:8
+#: ../../credits/intro.rst:7
 msgid "This section lists the original contributors to Zrythm project."
 msgstr ""
 
-#: ../../credits/intro.rst:12
+#: ../../credits/intro.rst:11
 msgid "Authors"
 msgstr ""
 
-#: ../../credits/intro.rst:13
+#: ../../credits/intro.rst:12
 msgid ""
 "These include developers, graphic artists and other authors of copyrightable "
 "work."
 msgstr ""
 
-#: ../../credits/intro.rst:21
+#: ../../credits/intro.rst:20
 msgid "Translators"
 msgstr ""
 
-#: ../../credits/intro.rst:22
+#: ../../credits/intro.rst:21
 msgid ""
 "These include translators of the software, the user manual and the website."
 msgstr ""
 
-#: ../../credits/intro.rst:33
+#: ../../credits/intro.rst:32
 msgid ""
 "See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source "
 "distribution."
 msgstr ""
 
-#: ../../credits/intro.rst:38
+#: ../../credits/intro.rst:37
 msgid "Other Contributors"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:8
+#: ../../editing/clip-editors/audio-editor.rst:9
 #: ../../editing/clip-editors/toolbar.rst:53
 msgid "Audio Editor"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:9
+#: ../../editing/clip-editors/audio-editor.rst:10
 msgid "The audio editor is displayed when an audio region is selected."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:15
+#: ../../editing/clip-editors/audio-editor.rst:16
 msgid "Audio editor"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:18
+#: ../../editing/clip-editors/audio-editor.rst:19
 msgid "Audio Arranger"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:19
+#: ../../editing/clip-editors/audio-editor.rst:20
 msgid "The audio arranger refers to the arranger section of the audio editor."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:25
+#: ../../editing/clip-editors/audio-editor.rst:26
 msgid "Audio arranger"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:27
+#: ../../editing/clip-editors/audio-editor.rst:28
 msgid "The arranger shows the following indicators and controls."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:30
+#: ../../editing/clip-editors/audio-editor.rst:31
 msgid "Waveform"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:31
+#: ../../editing/clip-editors/audio-editor.rst:32
 msgid "Fades"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:32
+#: ../../editing/clip-editors/audio-editor.rst:33
 msgid "Amplitude line"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:33
+#: ../../editing/clip-editors/audio-editor.rst:34
 msgid "Part selection"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:36
+#: ../../editing/clip-editors/audio-editor.rst:37
 msgid "Changing the Amplitude"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:38
+#: ../../editing/clip-editors/audio-editor.rst:39
 msgid ""
 "The amplitude of the clip can be changed by clicking and dragging the orange "
 "horizontal line up or down."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:42
+#: ../../editing/clip-editors/audio-editor.rst:43
 msgid "Changing Fades"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:44
+#: ../../editing/clip-editors/audio-editor.rst:45
 msgid ""
 "Fade in/out positions can be changed by clicking and dragging near the top "
 "where the fade in ends or where the fade out starts."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:48
+#: ../../editing/clip-editors/audio-editor.rst:49
 msgid "The cursor will change to a resize left/right cursor."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:51
+#: ../../editing/clip-editors/audio-editor.rst:52
 msgid ""
 "Fade curviness can be changed by clicking and dragging the body of fades "
 "upwards or downwards."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:54
+#: ../../editing/clip-editors/audio-editor.rst:55
 msgid "The cursor will change to a resize up cursor."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:58
+#: ../../editing/clip-editors/audio-editor.rst:59
 msgid "Selecting Parts"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:60
+#: ../../editing/clip-editors/audio-editor.rst:61
 msgid ""
 "Audio parts can be selected by clicking and dragging in the bottom half of "
 "the arranger."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:63
+#: ../../editing/clip-editors/audio-editor.rst:64
 msgid "The cursor will change to a range selection cursor."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:67
+#: ../../editing/clip-editors/audio-editor.rst:68
 msgid "Audio Functions"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:69
+#: ../../editing/clip-editors/audio-editor.rst:70
 msgid ""
 "Audio functions are logic that can be applied to transform the selected "
 "audio part."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:72
+#: ../../editing/clip-editors/audio-editor.rst:73
 #: ../../editing/clip-editors/automation-editor.rst:63
 #: ../../editing/clip-editors/piano-roll.rst:123
 msgid "The following functions are available."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:74
+#: ../../editing/clip-editors/audio-editor.rst:75
 msgid "Invert"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:75
+#: ../../editing/clip-editors/audio-editor.rst:76
 msgid "Invert the polarity of the audio."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:76
+#: ../../editing/clip-editors/audio-editor.rst:77
 msgid "Normalize Peak"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:77
+#: ../../editing/clip-editors/audio-editor.rst:78
 msgid "Normalize the audio so that its peak is 0dB."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:78
+#: ../../editing/clip-editors/audio-editor.rst:79
 msgid "Linear Fade In"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:79
+#: ../../editing/clip-editors/audio-editor.rst:80
 msgid "Fade the audio from silence to full amplitude."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:80
+#: ../../editing/clip-editors/audio-editor.rst:81
 msgid "Linear Fade Out"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:81
+#: ../../editing/clip-editors/audio-editor.rst:82
 msgid "Fade the audio from full amplitude to silence."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:82
+#: ../../editing/clip-editors/audio-editor.rst:83
 msgid "Nudge"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:83
+#: ../../editing/clip-editors/audio-editor.rst:84
 msgid "Shift the audio by 1 sample backward or forward."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:84
+#: ../../editing/clip-editors/audio-editor.rst:85
 msgid "Reverse"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:85
+#: ../../editing/clip-editors/audio-editor.rst:86
 msgid "Reverse the audio (play back backwards)."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:110
+#: ../../editing/clip-editors/audio-editor.rst:111
 msgid "External Program"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:87
+#: ../../editing/clip-editors/audio-editor.rst:88
 msgid ""
 "Run an external program (such as `Audacity <https://www.audacityteam.org/"
 ">`_) to edit the audio."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:94
+#: ../../editing/clip-editors/audio-editor.rst:95
 msgid "Edit the selected audio in an external app"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:96
+#: ../../editing/clip-editors/audio-editor.rst:97
 msgid ""
 "The selected program will be run with the path to a temporary file as an "
 "argument. Normally, the application will open that file, otherwise you will "
 "have to open it manually."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:101
+#: ../../editing/clip-editors/audio-editor.rst:102
 msgid "You can select and copy the path in the dialog."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:104
+#: ../../editing/clip-editors/audio-editor.rst:105
 msgid ""
 "Once you've made your changes to the file, close the external app and press "
 "OK. Zrythm will then apply your changes to the selected audio part."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:108
+#: ../../editing/clip-editors/audio-editor.rst:109
 msgid ""
 "The length of the audio must stay exactly the same, otherwise this operation "
 "will fail."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:112
+#: ../../editing/clip-editors/audio-editor.rst:113
 msgid "Guile Script"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:113
+#: ../../editing/clip-editors/audio-editor.rst:114
 msgid "Not available yet."
 msgstr ""
 
@@ -3253,145 +3253,145 @@ msgid ""
 "resulting image will be extremely large."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:8
+#: ../../getting-started/getting-plugins.rst:9
 msgid "Getting Plugins, Instruments and Samples"
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:11
+#: ../../getting-started/getting-plugins.rst:12
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:13
+#: ../../getting-started/getting-plugins.rst:14
 msgid ""
 "Zrythm ships with a few bundled plugins to help users get started, but users "
 "are expected to download and install their own plugins that suit their "
 "preferences."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:18
+#: ../../getting-started/getting-plugins.rst:19
 msgid ""
 "There are many plugins to choose from. This guide will show you a few ways "
 "you can install plugins on GNU/Linux systems."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:22
+#: ../../getting-started/getting-plugins.rst:23
 msgid ""
 "For other systems, you can find a `list of free software plugins here "
 "<https://github.com/webprofusion/OpenAudio>`_."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:26
+#: ../../getting-started/getting-plugins.rst:27
 msgid ""
 "For users of Debian-based distributions such as Ubuntu and Linux Mint we "
 "recommend using the `KXstudio repositories <https://kx.studio/>`_, as there "
 "are many plugins that can easily be installed via apt."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:31
+#: ../../getting-started/getting-plugins.rst:32
 msgid ""
 "For users of Arch Linux-based distributions such as Manjaro we recommend "
 "installing the `lv2-plugins <https://archlinux.org/groups/x86_64/lv2-plugins/"
 ">`_ group."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:37
+#: ../../getting-started/getting-plugins.rst:38
 msgid "Recommended Plugin Bundles"
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:39
+#: ../../getting-started/getting-plugins.rst:40
 msgid "`DISTRHO Ports`_ provides a good variety of synths and effects."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:42
+#: ../../getting-started/getting-plugins.rst:43
 msgid ""
 "`ZAM Plugins <https://www.zamaudio.com/?p=976>`_ is an effects pack that "
 "contains high quality plugins for all the basic effects such as Delay, "
 "Reverb, Compression, EQ and Saturation."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:47
+#: ../../getting-started/getting-plugins.rst:48
 msgid ""
 "The `LSP Project <https://lsp-plug.in/>`_ has a wide variety of effect "
 "plugins."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:50
+#: ../../getting-started/getting-plugins.rst:51
 msgid ""
 "`X42 Plugins <http://x42-plugins.com/x42/>`_ is a collection of various MIDI "
 "effect and meter plugins."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:54
+#: ../../getting-started/getting-plugins.rst:55
 msgid "Synths"
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:56
+#: ../../getting-started/getting-plugins.rst:57
 msgid ""
 "`Helm <https://tytel.org/helm/>`_ is an easy to use subtractive synthesizer."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:59
+#: ../../getting-started/getting-plugins.rst:60
 msgid ""
 "Vitalium from `DISTRHO Ports`_ is a very powerful wavetable synthesizer."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:62
+#: ../../getting-started/getting-plugins.rst:63
 msgid ""
 "`Surge <https://surge-synthesizer.github.io/>`_ is a subtractive hybrid "
 "synthesizer with a unique interface."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:66
+#: ../../getting-started/getting-plugins.rst:67
 msgid ""
 "`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synthesizer that "
 "is closely modeled on the Yamaha DX7."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:70
+#: ../../getting-started/getting-plugins.rst:71
 msgid ""
 "`ZynFusion <https://zynaddsubfx.sourceforge.io/zyn-fusion.html>`_ is a "
 "powerful additive/subtractive synth that can synthesize a wide variety of "
 "sounds."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:75
+#: ../../getting-started/getting-plugins.rst:76
 msgid "Percussion Generators"
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:77
+#: ../../getting-started/getting-plugins.rst:78
 msgid ""
 "`GeonKick <https://gitlab.com/iurie-sw/geonkick>`_ is a kick drum "
 "synthesizer that can also synthesize other types of percussion."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:81
+#: ../../getting-started/getting-plugins.rst:82
 msgid "See :ref:`scanning-plugins` for paths where plugins will be scanned in."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:86
+#: ../../getting-started/getting-plugins.rst:87
 msgid "`Freesound`_ has presets available to download for specific plugins."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:89
+#: ../../getting-started/getting-plugins.rst:90
 msgid "In the future, we will be offering preset packs for download."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:93
+#: ../../getting-started/getting-plugins.rst:94
 msgid "SFZ/SF2 Instruments"
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:95
+#: ../../getting-started/getting-plugins.rst:96
 msgid ""
 "You can find a list of SFZ instruments under free licenses at `sfz "
 "instruments <https://sfzinstruments.github.io/>`_."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:102
+#: ../../getting-started/getting-plugins.rst:103
 msgid "We recommend using `Freesound`_ for collecting CC-licensed samples."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:105
+#: ../../getting-started/getting-plugins.rst:106
 msgid "We will also be offering sample packs for download in the future."
 msgstr ""
 
@@ -3994,15 +3994,15 @@ msgstr ""
 msgid "the directory for local application data on Windows"
 msgstr ""
 
-#: ../../index.rst:8
+#: ../../index.rst:9
 msgid "Zrythm"
 msgstr ""
 
-#: ../../index.rst:10
+#: ../../index.rst:11
 msgid "Welcome to the Zrythm manual."
 msgstr ""
 
-#: ../../index.rst:27 ../../index.rst:71
+#: ../../index.rst:28 ../../index.rst:72
 msgid ""
 "*Zrythm and the Zrythm logo are registered trademarks of Alexandros "
 "Theodotou in the United Kingdom.*"
@@ -6370,26 +6370,26 @@ msgstr ""
 msgid "Writes the message to the log."
 msgstr ""
 
-#: ../../scripting/examples.rst:6
+#: ../../scripting/examples.rst:7
 msgid "Examples"
 msgstr ""
 
-#: ../../scripting/examples.rst:8
+#: ../../scripting/examples.rst:9
 msgid ""
 "The following examples are in the public domain (`CC 0 <https://"
 "creativecommons.org/publicdomain/zero/1.0/>`_). Feel free to copy and modify "
 "them."
 msgstr ""
 
-#: ../../scripting/examples.rst:13
+#: ../../scripting/examples.rst:14
 msgid "Create MIDI track with notes"
 msgstr ""
 
-#: ../../scripting/examples.rst:48
+#: ../../scripting/examples.rst:47
 msgid "Hello world"
 msgstr ""
 
-#: ../../scripting/examples.rst:59
+#: ../../scripting/examples.rst:56
 msgid "Print all tracks"
 msgstr ""
 
@@ -6397,53 +6397,93 @@ msgstr ""
 msgid "Scripting"
 msgstr ""
 
-#: ../../scripting/overview.rst:8
+#: ../../scripting/overview.rst:9
 msgid ""
-"Zrythm offers a scripting interface using the `GNU Guile language <https://"
-"www.gnu.org/software/guile/>`_, an implementation of `Scheme <https://en."
-"wikipedia.org/wiki/Scheme_%28programming_language%29>`_, which is a dialect "
-"of `LISP <https://en.wikipedia.org/wiki/Lisp_(programming_language)>`_."
+"Zrythm offers a scripting interface implemented using `GNU Guile <https://"
+"www.gnu.org/software/guile/>`_ that supports multiple scripting languages. "
+"Zrythm currently supports the following scripting languages:"
 msgstr ""
 
-#: ../../scripting/overview.rst:15
-msgid ""
-"The next section is a comprehensive list of all available procedures in the "
-"API. Each section in the API corresponds to a specific Guile module, so for "
-"example, to use the procedures in the :scheme:`audio position` section, one "
-"would do :scheme:`(use-modules (audio position))` at the top of the script."
+#: ../../scripting/overview.rst:16
+msgid "`ECMAScript <https://en.wikipedia.org/wiki/ECMAScript>`_"
 msgstr ""
 
-#: ../../scripting/overview.rst:23
+#: ../../scripting/overview.rst:17
+msgid ""
+"`Scheme <https://en.wikipedia.org/wiki/Scheme_%28programming_language%29>`_"
+msgstr ""
+
+#: ../../scripting/overview.rst:21
 msgid "The Guile API is experimental."
 msgstr ""
 
-#: ../../scripting/overview.rst:25
+#: ../../scripting/overview.rst:23
 msgid ""
 "The Guile API is not available on Windows. See `this ticket <https://github."
 "com/msys2/MINGW-packages/issues/3298>`_ for details."
 msgstr ""
 
-#: ../../scripting/scripting-interface.rst:6
+#: ../../scripting/overview.rst:27
+msgid ""
+"The :ref:`API section <scripting/api/intro:API>` is a comprehensive list of "
+"all available procedures in the API. Each section in the API corresponds to "
+"a specific Guile module."
+msgstr ""
+
+#: ../../scripting/overview.rst:33
+msgid "Using Modules"
+msgstr ""
+
+#: ../../scripting/overview.rst:35
+msgid ""
+"To use the :scheme:`audio position` module from Scheme, use the following "
+"code:"
+msgstr ""
+
+#: ../../scripting/overview.rst:44
+msgid "To use it from ECMAScript, use:"
+msgstr ""
+
+#: ../../scripting/scripting-interface.rst:7
 #: ../../zrythm-interface/main-toolbar.rst:105
 msgid "Scripting Interface"
 msgstr ""
 
-#: ../../scripting/scripting-interface.rst:8
+#: ../../scripting/scripting-interface.rst:9
 msgid ""
 "Clicking the :guilabel:`Scripting Interface` button in the :ref:`Main "
 "Toolbar <zrythm-interface/main-toolbar:Main Toolbar>` will bring up the "
 "scripting interface dialog."
 msgstr ""
 
-#: ../../scripting/scripting-interface.rst:16
+#: ../../scripting/scripting-interface.rst:17
 msgid "Scripting interface"
 msgstr ""
 
-#: ../../scripting/scripting-interface.rst:18
+#: ../../scripting/scripting-interface.rst:19
 msgid ""
 "Scripts can be edited in the editor found in the top part of the scrpiting "
-"interface. Pressing :guilabel:`Execute` will execute the script and print "
-"any output in the label at the bottom."
+"interface."
+msgstr ""
+
+#: ../../scripting/scripting-interface.rst:23
+msgid "Execution"
+msgstr ""
+
+#: ../../scripting/scripting-interface.rst:25
+msgid ""
+"Pressing :guilabel:`Execute` will execute the script and print any output in "
+"the label at the bottom."
+msgstr ""
+
+#: ../../scripting/scripting-interface.rst:30
+msgid "Changing Language"
+msgstr ""
+
+#: ../../scripting/scripting-interface.rst:32
+msgid ""
+"The language of the script can be selected using the provided dropdown. "
+"Changing the language will also affect code highlighting."
 msgstr ""
 
 #: ../../theming/css.rst:8

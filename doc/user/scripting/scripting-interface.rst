@@ -1,5 +1,6 @@
+.. SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+.. SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 Scripting Interface
@@ -16,6 +17,18 @@ will bring up the scripting interface dialog.
    Scripting interface
 
 Scripts can be edited in the editor found in the
-top part of the scrpiting interface. Pressing
-:guilabel:`Execute` will execute the script and
-print any output in the label at the bottom.
+top part of the scrpiting interface.
+
+Execution
+~~~~~~~~~
+
+Pressing :guilabel:`Execute` will execute the
+script and print any output in the label at the
+bottom.
+
+Changing Language
+~~~~~~~~~~~~~~~~~
+
+The language of the script can be selected using
+the provided dropdown. Changing the language will
+also affect code highlighting.

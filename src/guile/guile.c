@@ -36,11 +36,13 @@ typedef struct ExecutionInfo
 static const char * guile_lang_strings[] = {
   "Scheme",
   "ECMAScript",
+  "Emacs Lisp",
 };
 
 static const char * guile_lang_canonical_strings[] = {
   "scheme",
   "ecmascript",
+  "elisp",
 };
 
 const char *
