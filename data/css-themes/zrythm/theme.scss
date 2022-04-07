@@ -614,8 +614,8 @@ headerbar {
 }
 
 /* this is used in adwaita preferences window */
-preferencesgroup .header .title,
-preferencesgroup .header > box,
+.header .title,
+.header > box,
 .boxed-list box {
   background-color: transparent;
   border-color: transparent;

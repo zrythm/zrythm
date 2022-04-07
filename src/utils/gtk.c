@@ -1092,6 +1092,19 @@ z_gtk_source_language_manager_get (void)
 
   already_set = true;
 
+#if 0
+  /* print found language specs */
+  const char * const * lang_ids =
+    gtk_source_language_manager_get_language_ids (
+      manager);
+  const char * lang_id = NULL;
+  i = 0;
+  while ((lang_id = lang_ids[i++]) != NULL)
+    {
+      g_debug ("[%d] %s", i, lang_id);
+    }
+#endif
+
   return manager;
 }
 

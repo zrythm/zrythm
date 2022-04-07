@@ -13,6 +13,7 @@
 #include <gtk/gtk.h>
 
 #include "guile/modules.h"
+#include "guile/guile.h"
 #include <libguile.h>
 #include <pthread.h>
 
@@ -25,6 +26,54 @@ SCM tracklist_type;
 
 #define FAILURE_TEXT_TRANSLATED \
   _ ("Script execution failed")
+
+typedef struct ExecutionInfo
+{
+  const char *        script;
+  GuileScriptLanguage lang;
+} ExecutionInfo;
+
+static const char * guile_lang_strings[] = {
+  "Scheme", "ECMAScript",
+};
+
+static const char * guile_lang_canonical_strings[] = {
+  "scheme", "ecmascript",
+};
+
+const char *
+guile_get_script_language_str (
+  GuileScriptLanguage lang)
+{
+  g_return_val_if_fail (
+    lang < NUM_GUILE_SCRIPT_LANGUAGES, NULL);
+  return guile_lang_strings[lang];
+}
+
+const char *
+guile_get_script_language_canonical_str (
+  GuileScriptLanguage lang)
+{
+  g_return_val_if_fail (
+    lang < NUM_GUILE_SCRIPT_LANGUAGES, NULL);
+  return guile_lang_canonical_strings[lang];
+}
+
+GuileScriptLanguage
+guile_get_script_language_from_str (
+  const char * str)
+{
+  for (int i = 0; i < NUM_GUILE_SCRIPT_LANGUAGES;
+       i++)
+    {
+      if (string_is_equal (
+            guile_lang_strings[i], str))
+        return (GuileScriptLanguage) i;
+    }
+
+  g_return_val_if_reached (
+    GUILE_SCRIPT_LANGUAGE_SCHEME);
+}
 
 /**
  * Inits the guile subsystem.
@@ -71,18 +120,17 @@ static SCM error_out_port;
 static SCM
 call_proc (void * data)
 {
-  char * code_str = (char *) data;
+  ExecutionInfo * nfo = (ExecutionInfo *) data;
 
   SCM eval_string_proc =
     scm_variable_ref (scm_c_public_lookup (
       "ice-9 eval-string", "eval-string"));
-  SCM code = scm_from_utf8_string (code_str);
+  SCM code = scm_from_utf8_string (nfo->script);
+  const char * lang_str =
+    guile_get_script_language_canonical_str (
+      nfo->lang);
   SCM s_from_lang =
-    /* can switch this to any language supported
-     * by the guile compiler, for example
-     * "ecmascript" */
-    /* TODO add a dropdown in the UI */
-    scm_from_utf8_symbol ("scheme");
+    scm_from_utf8_symbol (lang_str);
   SCM kwd_lang = scm_from_utf8_keyword ("lang");
   scm_call_3 (
     eval_string_proc, code, kwd_lang, s_from_lang);
@@ -125,8 +173,6 @@ preunwind_proc (
 static void *
 guile_mode_func (void * data)
 {
-  char * script_content = (char *) data;
-
   guile_define_modules ();
 
   /* receive output */
@@ -138,7 +184,7 @@ guile_mode_func (void * data)
   SCM captured_stack = SCM_BOOL_F;
 
   SCM ret = scm_c_catch (
-    SCM_BOOL_T, call_proc, script_content,
+    SCM_BOOL_T, call_proc, data,
     eval_handler, &captured_stack, preunwind_proc,
     &captured_stack);
 
@@ -168,17 +214,25 @@ guile_mode_func (void * data)
 /**
  * Runs the script and returns the output message
  * in Pango markup.
+ *
+ * @param script The script to run as text.
+ * @param lang The language of the script.
  */
 char *
-guile_run_script (const char * script)
+guile_run_script (
+  const char *        script,
+  GuileScriptLanguage lang)
 {
   /* pause engine */
   EngineState state;
   engine_wait_for_pause (
     AUDIO_ENGINE, &state, Z_F_NO_FORCE);
 
+  ExecutionInfo nfo = {
+    .script = script, .lang = lang };
+
   char * ret = scm_with_guile (
-    &guile_mode_func, (void *) script);
+    &guile_mode_func, (void *) &nfo);
 
   /* restart engine */
   engine_resume (AUDIO_ENGINE, &state);

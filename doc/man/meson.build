@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-if (not help2man.found ()) or os_windows
+if (not help2man.found ()) or os_windows or not get_option ('manpage')
   subdir_done ()
 endif
 

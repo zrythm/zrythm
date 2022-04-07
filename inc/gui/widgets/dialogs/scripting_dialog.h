@@ -10,6 +10,7 @@
 #ifndef __GUI_WIDGETS_SCRIPTING_DIALOG_H__
 #define __GUI_WIDGETS_SCRIPTING_DIALOG_H__
 
+#include <adwaita.h>
 #include <gtk/gtk.h>
 
 #pragma GCC diagnostic push
@@ -38,7 +39,10 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _ScriptingDialogWidget
 {
-  GtkDialog         parent_instance;
+  GtkDialog parent_instance;
+
+  AdwComboRow * lang_select_combo_row;
+
   GtkButton *       execute_btn;
   GtkLabel *        output;
   GtkViewport *     source_viewport;

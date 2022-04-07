@@ -721,12 +721,6 @@ need_backtrace (const LogEvent * const ev)
            "gtk_box_append: assertion "
            "'gtk_widget_get_parent (child) == NULL' "
            "failed")
-         /* happens when opening the scripting
-          * dialog TODO report to GTK */
-         && !string_contains_substr (
-           ev->message,
-           "does not create GtkLayoutChild "
-           "instances")
          && !string_contains_substr (
            ev->message,
            "assertion 'self->drop == "

@@ -34,6 +34,25 @@
  * @{
  */
 
+typedef enum GuileScriptLanguage
+{
+  GUILE_SCRIPT_LANGUAGE_SCHEME,
+  GUILE_SCRIPT_LANGUAGE_ECMASCRIPT,
+  NUM_GUILE_SCRIPT_LANGUAGES,
+} GuileScriptLanguage;
+
+const char *
+guile_get_script_language_str (
+  GuileScriptLanguage lang);
+
+const char *
+guile_get_script_language_canonical_str (
+  GuileScriptLanguage lang);
+
+GuileScriptLanguage
+guile_get_script_language_from_str (
+  const char * str);
+
 /**
  * Inits the guile subsystem.
  */
@@ -52,9 +71,14 @@ guile_define_modules (void);
 /**
  * Runs the script and returns the output message
  * in Pango markup.
+ *
+ * @param script The script to run as text.
+ * @param lang The language of the script.
  */
 char *
-guile_run_script (const char * script);
+guile_run_script (
+  const char *        script,
+  GuileScriptLanguage lang);
 
 /**
  * Returns whether the script succeeded based on

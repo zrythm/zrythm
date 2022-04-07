@@ -311,6 +311,23 @@ statuspage {
   }
 }
 
+/*******************************************************
+ * Rich Lists                                          *
+ * Large list usually containing lots of widgets       *
+ * https://gitlab.gnome.org/GNOME/gtk/-/issues/3073    *
+ *******************************************************/
+
+.rich-list { /* rich lists usually containing other widgets than just labels/text */
+  > row {
+    padding: 8px 12px;
+    min-height: 32px; /* should be tall even when only containing a label */
+
+    > box {
+      border-spacing: 12px;
+    }
+  }
+}
+
 /****************
  * AdwActionRow *
  ****************/
@@ -334,6 +351,32 @@ row {
       margin-top: 8px;
       margin-bottom: 8px;
     }
+  }
+}
+
+/***************
+ * AdwComboRow *
+ ***************/
+
+row.combo {
+  image.dropdown-arrow:disabled {
+    filter: opacity($disabled_opacity);
+  }
+
+  listview.inline {
+    background: none;
+    border: none;
+    box-shadow: none;
+    color: inherit;
+
+    &, &:disabled {
+      background: none;
+      color: inherit;
+    }
+  }
+
+  popover > contents {
+    min-width: 120px;
   }
 }
 

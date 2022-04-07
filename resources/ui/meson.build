@@ -59,7 +59,6 @@ resource_files += files ([
   'right_dock_edge.ui',
   'route_target_selector.ui',
   'scale_selector_window.ui',
-  'scripting_dialog.ui',
   'snap_box.ui',
   'snap_grid_popover.ui',
   'splash.ui',
