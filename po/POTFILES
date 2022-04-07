@@ -234,7 +234,6 @@ inc/gui/widgets/arranger.h
 inc/gui/widgets/channel.h
 inc/gui/widgets/home_toolbar.h
 inc/gui/widgets/inspector_port.h
-inc/gui/widgets/scripting_window.h
 inc/gui/widgets/center_dock.h
 inc/gui/widgets/drag_dest_box.h
 inc/gui/widgets/inspector_ap.h
@@ -273,6 +272,7 @@ inc/gui/widgets/dialogs/create_project_dialog.h
 inc/gui/widgets/dialogs/arranger_object_info.h
 inc/gui/widgets/dialogs/export_dialog.h
 inc/gui/widgets/dialogs/track_icon_chooser_dialog.h
+inc/gui/widgets/dialogs/scripting_dialog.h
 inc/gui/widgets/dialogs/bounce_dialog.h
 inc/gui/widgets/dialogs/quantize_dialog.h
 inc/gui/backend/audio_clip_editor.h
@@ -597,7 +597,6 @@ src/gui/widgets/snap_grid.c
 src/gui/widgets/automation_point.c
 src/gui/widgets/preferences.c
 src/gui/widgets/monitor_section.c
-src/gui/widgets/scripting_window.c
 src/gui/widgets/active_hardware_mb.c
 src/gui/widgets/folder_channel.c
 src/gui/widgets/file_auditioner_controls.c
@@ -678,6 +677,7 @@ src/gui/widgets/dialogs/port_selector_dialog.c
 src/gui/widgets/dialogs/first_run_dialog.c
 src/gui/widgets/dialogs/export_dialog.c
 src/gui/widgets/dialogs/project_progress_dialog.c
+src/gui/widgets/dialogs/scripting_dialog.c
 src/gui/widgets/dialogs/track_icon_chooser_dialog.c
 src/gui/widgets/dialogs/changelog_dialog.c
 src/gui/backend/file_manager.c
@@ -918,7 +918,6 @@ resources/ui/arranger_object_info_dialog.ui
 resources/ui/timeline_panel.ui
 resources/ui/mixer.ui
 resources/ui/chord_editor_space.ui
-resources/ui/scripting_window.ui
 resources/ui/chord_pack_browser.ui
 resources/ui/port_selector_dialog.ui
 resources/ui/chord_key.ui
