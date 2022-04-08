@@ -1,5 +1,6 @@
-.. This is part of the Zrythm Manual.
-   Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
+.. SPDX-FileCopyrightText: © 2020, 2022 Alexandros Theodotou <alex@zrythm.org>
+   SPDX-License-Identifier: GFDL-1.3-invariants-or-later
+   This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
 
 Toolbar
