@@ -6,6 +6,8 @@ Authors:
    * Main author of developer docs
  Ryan Gonzalez
    * PulseAudio backend
+ Robert Panovics
+   * Looped MIDI file export
  Sascha Bast
    * Piano roll auto-scroll
  Georg Krause
