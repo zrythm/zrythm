@@ -84,7 +84,8 @@ jobs:
       - name: Build and test
         run: |
           cd /c/src/zrythm
-          meson build -Dtests=true -Dcarla_binaries_dir_32bit=D:/a/_temp/msys64/mingw32/lib/carla -Db_lto=false -Dmanpage=false -Dvamp_static=true
+          sed -i -e 's|-lssp|-Wl,-allow-multiple-definition|g' meson.build
+          meson build -Dtests=true -Dcarla_binaries_dir_32bit=D:/a/_temp/msys64/mingw32/lib/carla -Db_lto=false -Dmanpage=false
           ninja -C build
           meson test -C build
           meson install -C build
