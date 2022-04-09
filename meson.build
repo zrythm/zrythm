@@ -187,6 +187,9 @@ endif
 
 # add global arguments
 if os_windows
+  # if not building an msys2 package, this might
+  # also need -Wl,-allow-multiple-definition
+  # see https://stackoverflow.com/questions/11267877/mingw-multiple-definition-of-unwind-resume
   add_global_link_arguments (
     '-lssp',
     language: [ 'c', 'cpp' ])
