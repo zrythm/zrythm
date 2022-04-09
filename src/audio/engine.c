@@ -2081,7 +2081,8 @@ engine_set_default_backends (bool reset_to_dummy)
         MIDI_BACKEND_DUMMY);
     }
 
-#ifdef HAVE_JACK
+#if defined(HAVE_JACK) && !defined(_WOE32) \
+  && !defined(__APPLE__)
   if (engine_jack_test (NULL))
     {
       g_settings_set_enum (

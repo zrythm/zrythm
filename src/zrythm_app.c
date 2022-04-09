@@ -1320,7 +1320,7 @@ zrythm_app_startup (GApplication * app)
     css_theme_path);
 
   /* init libadwaita */
-  adw_init( );
+  adw_init ();
   AdwStyleManager * style_mgr =
     adw_style_manager_get_default ();
   adw_style_manager_set_color_scheme (
