@@ -1581,7 +1581,6 @@ gen_project (ZrythmApp * self, const char * filepath)
 static bool
 reset_to_factory (void)
 {
-  ZRYTHM->have_ui = false;
   settings_reset_to_factory (true, NULL, true);
 
   exit (EXIT_SUCCESS);
