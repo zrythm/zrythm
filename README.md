@@ -25,9 +25,8 @@ Zrythm is
 [free software](https://www.gnu.org/philosophy/free-sw.html)
 written in C using the
 [GTK4](https://docs.gtk.org/gtk4/overview.html)
-toolkit and can be
-extended using
-[GNU Guile](https://www.gnu.org/software/guile/).
+toolkit and can be extended with user scripts
+written in Scheme or ECMAScript.
 
 ## Features
 

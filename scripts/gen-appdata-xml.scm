@@ -149,7 +149,7 @@ It offers streamlined editing workflows with flexible
 tools, limitless automation capabilities, powerful
 mixing features, chord assistance and support for
 various plugin and file formats.")
-                   (p "Zrythm can be extended with user scripts written in GNU Guile."))
+                   (p "Zrythm can be extended with user scripts written in Scheme or ECMAScript."))
                  (categories
                    (category "AudioVideo")
                    (category "Audio"))
