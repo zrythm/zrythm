@@ -804,6 +804,8 @@ add_subgroup (
           gtk_widget_set_tooltip_text (
             widget, description);
 #endif
+          gtk_widget_set_valign (
+            widget, GTK_ALIGN_CENTER);
           adw_action_row_add_suffix (
             ADW_ACTION_ROW (row), widget);
           num_controls++;

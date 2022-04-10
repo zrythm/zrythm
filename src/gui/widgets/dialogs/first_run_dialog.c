@@ -252,6 +252,9 @@ first_run_dialog_widget_init (
     "notify::selected",
     G_CALLBACK (on_language_changed), self);
   on_language_changed (NULL, NULL, self);
+  gtk_widget_set_valign (
+    GTK_WIDGET (self->language_dropdown),
+    GTK_ALIGN_CENTER);
   adw_action_row_add_suffix (
     row, GTK_WIDGET (self->language_dropdown));
   adw_preferences_group_add (
@@ -274,6 +277,8 @@ first_run_dialog_widget_init (
     NULL);
   g_settings_set_string (
     S_P_GENERAL_PATHS, "zrythm-dir", dir);
+  gtk_widget_set_valign (
+    GTK_WIDGET (self->fc_btn), GTK_ALIGN_CENTER);
   adw_action_row_add_suffix (
     row, GTK_WIDGET (self->fc_btn));
   adw_preferences_group_add (
