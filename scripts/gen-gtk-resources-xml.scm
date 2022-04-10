@@ -1,4 +1,4 @@
-;;; SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+;;; SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 ;;; SPDX-License-Identifier: LicenseRef-ZrythmLicense
 ;;;
 ;;; Generate gtk.gresources.xml
@@ -41,7 +41,7 @@ Args:
 
          (display
 "<!--
-  Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+  Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
 
   This file is part of Zrythm
 
@@ -61,30 +61,7 @@ Args:
 <?xml version='1.0' encoding='UTF-8'?>
 <gresources>
   <gresource prefix='/org/gtk/libgtk'>
-    <file>theme/Matcha-dark-sea/gtk.css</file>
-    <file>theme/Matcha-dark-sea/gtk-dark.css</file>
 ")
-
-         ;; print matcha image assets
-         (let ((dark-sea-assets-dir
-                 "theme/Matcha-dark-sea/assets"))
-           (for-each
-             (lambda (x)
-               (display
-                 (string-append
-                   "    <file>"
-                   dark-sea-assets-dir "/" x
-                   "</file>"))
-               (newline))
-             (scandir
-               (join-path
-                 (list resources-dir
-                       dark-sea-assets-dir))
-               (lambda (f)
-                 (or
-                   (string-suffix? ".png" f)
-                   (string-suffix? ".svg" f))))))
-
          (display
 "  </gresource>
   <gresource prefix='/org/zrythm/Zrythm/app'>

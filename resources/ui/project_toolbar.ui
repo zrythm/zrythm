@@ -38,6 +38,9 @@
     </child>
     <child>
       <object class="GtkSeparator">
+        <style>
+          <class name="spacer"/>
+        </style>
         <property name="orientation">vertical</property>
       </object>
     </child>

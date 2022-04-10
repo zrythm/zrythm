@@ -30,14 +30,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-@import '_adwaita';
-@import '_functions';
+@import '_palette';
 
-/* does not work in gtk4 */
-/*window*/
-/*{*/
-  /*-GtkWidget-window-dragging: true;*/
-/*}*/
+/* override adwaita colors */
+$accent_color: $dark_orange;
+$accent_bg_color: $bright_orange;
+@define-color accent_color #{$accent_color};
+@define-color accent_bg_color #{$accent_bg_color};
 
 paned {
   > separator {
@@ -57,19 +56,10 @@ paned {
   min-height: 6px;
 }
 
-entry:focus
-{
-  border-color: $bright_orange;
-}
-
-spinbutton button:focus
-{
-  border-left-color: $bright_orange;
-}
-
 entry selection,
-text selection
+:not(.sourceview) > text selection
 {
+  color: $bg_lighter_variant1;
   background-color: $z_yellow;
 }
 
@@ -81,37 +71,11 @@ scrollbar,
 box.sidebar,
 filechooser list
 {
-  background-color: $bg_light_variant1;
+  background-color: $hover_color;
 }
 
-/* for editing notebook tab line */
-/*notebook > header.top > tabs > tab:hover {*/
-  /*box-shadow: inset 0 -2px gtkalpha(#2eb398,0.6), 0 1px gtkalpha(#2eb398,0.6);*/
-/*}*/
-
-/*notebook > header.top > tabs > tab:checked {*/
-  /*box-shadow: inset 0 -2px #2eb398, 0 1px #2eb398;*/
-/*}*/
-
-/*notebook > header.right > tabs > tab:hover {*/
-  /*box-shadow: inset 2px 0 gtkalpha(#2eb398,0.6), -1px 0 gtkalpha(#2eb398,0.6);*/
-/*}*/
-
-/*notebook > header.right > tabs > tab:checked {*/
-  /*box-shadow: inset 2px 0 #2eb398, -1px 0 #2eb398;*/
-/*}*/
-
-/*notebook > header.left > tabs > tab:hover {*/
-  /*box-shadow: inset -2px 0 gtkalpha(#2eb398,0.6), 1px 0 gtkalpha(#2eb398,0.6);*/
-/*}*/
-
-/*notebook > header.left > tabs > tab:checked {*/
-  /*box-shadow: inset -2px 0 #2eb398, 1px 0 #2eb398;*/
-/*}*/
-
-.header button.toggle:not(:checked)
-{
-  background-color: $bg_darker_variant1;
+progressbar > trough > progress {
+  background-color: $z_purple;
 }
 
 treeview.view:selected,
@@ -161,13 +125,7 @@ piano-roll-toolbar,
 .file-browser .toolbar,
 dialog
 {
-background-color: $bg_dark_variant2;
-}
-
-.plugin-browser .toolbar,
-.file-browser .toolbar
-{
-  padding: 0px;
+  background-color: $bg_dark_variant2;
 }
 
 .header tabs,
@@ -183,132 +141,55 @@ menubar
   background-color: $bg_darker_variant2;
 }
 
-.header-toolbar-corner
-{
-  /*border-bottom: 0px;*/
-}
-
-home-toolbar separator,
-project-toolbar separator,
-view-toolbar separator,
-help-toolbar separator
-{
-  background-color: grey;
-  margin: 4px;
-}
-
-.arranger-toolbar separator,
-chord-pad .toolbar separator
-{
-  background-color: gtkalpha(grey, 0.6);
-  margin: 4px;
-}
-
-/*piano-roll-label.highlight_scale*/
-/*{*/
-  /*background-color: alpha (#662266, 0.2);*/
-/*}*/
-
-/*piano-roll-label.highlight_chord*/
-/*{*/
-  /*background-color: alpha (#BB22BB, 0.2);*/
-/*}*/
-
-/*piano-roll-label.highlight_both*/
-/*{*/
-  /*background-color: alpha (#FF22FF, 0.2);*/
-/*}*/
-
-/* override button size from theme */
-button
-{
+button {
+  /* override button size from theme */
   min-width: 4px;
   min-height: 4px;
-}
 
-button.toggle,
-button.popup,
-button:not(.flat),
-entry
-{
-  background-color: $bg_light_variant2;
-}
+  &.toggle,
+  &.popup,
+  &:not(.flat) {
+    background-color: $bg_light_variant2;
+  }
 
-button.toggle:hover,
-button.popup:hover,
-button:hover,
-button.flat:hover,
-button.text-button:hover,
-tooltip.background
-{
-  background-color: $bg_lighter_variant1;
-}
+  &.toggle:hover,
+  &.popup:hover,
+  &:hover,
+  &.flat:hover,
+  &.text-button:hover
+  {
+    background-color: $bg_lighter_variant1;
+  }
 
-entry selection
-{
-  color: $bg_lighter_variant1;
-}
+  &:not(.toggle):active,
+  &.flat:not(.toggle):active,
+  &:not(.record-button):not(.solo-button).toggle:active,
+  &.text-button:active {
+    background-color: $accent_bg_color;
+  }
 
-menu,
-popover
-{
-  /*background-color: $bg_lighter_variant2;*/
-  background-color: transparent;
-}
+  &:not(.record-button):not(.solo-button):checked {
+    background-color: $accent_color;
+  }
 
-popover.background > contents,
-popover.background > arrow
-{
-  padding: 3px;
-  background-color: $bg_lighter_variant1;
-  background-clip: unset;
-  border: unset;
-  box-shadow: unset;
-}
-
-button:not(.record-button):not(.solo-button).toggle:checked,
-stackswitcher button:checked,
-menuitem:hover
-{
-  background-color: $dark_orange;
-}
-
-button:not(.record-button).toggle:active,
-.header button.toggle:active
-{
-  background-color: $bright_orange;
-}
-
-button.toggle.record-button:checked
-{
-  background-color: #ED2939;
-}
-
-button.toggle.solo-button:checked
-{
-  background-color: $darkish_green;
-}
-
-button.toggle.record-button:active
-{
-  background-color: #FF2400;
-}
-
-button.donate-button
-{
-  border-radius: 8px;
-}
-
-button.toggle.solo-button:active
-{
-  background-color: $matcha;
-}
-
-button:not(.toggle):active,
-button.flat:not(.toggle):active,
-button.text-button:active
-{
-  background-color: $bright_orange;
+  &.toggle {
+    &.record-button {
+      &:checked {
+        background-color: #ED2939;
+      }
+      &:active {
+        background-color: #FF2400;
+      }
+    }
+    &.solo-button {
+      &:checked {
+        background-color: $darkish_green;
+      }
+      &:active {
+        background-color: $matcha;
+      }
+    }
+  }
 }
 
 bot-dock-edge .toolbar
@@ -444,11 +325,12 @@ channel button.flat
   border-style: solid;
   /* from matcha theme */
   border-color: rgba(0, 0, 0, 0.2);
-}
-.header > box > box {
-  border-top: 1px;
-  border-style: solid;
-  border-color: #1b1b1b;
+
+  > box {
+    border-top: 1px;
+    border-style: solid;
+    border-color: #1b1b1b;
+  }
 }
 
 .header label,
@@ -584,30 +466,11 @@ label.small-vertical-lbl {
   font-size: 6pt;
 }
 
-.rotated-label-parent {
-  /*background-color: yellow;*/
-}
-
-/* Shadow for low res icons <= 32px */
-.lowres-icon-shadow {
-  -gtk-icon-shadow: 0 -1px rgba(0,0,0,0.05),
-    1px 0 rgba(0,0,0,0.1),
-    0 1px rgba(0,0,0,0.3),
-    -1px 0 rgba(0,0,0,0.1);
-}
-
-/* Shadow for large icons > 32px */
-.icon-shadow {
-  -gtk-icon-shadow: 0 1px 12px rgba(0,0,0,0.05),
-      0 -1px rgba(0,0,0,0.05),
-      1px 0 rgba(0,0,0,0.1),
-      0 1px rgba(0,0,0,0.3),
-      -1px 0 rgba(0,0,0,0.1);
-}
-
+/*
 spinbutton text {
   background-color: $bg_light_variant2;
 }
+*/
 
 headerbar {
   background-color: $bg_darker_variant2;
@@ -638,7 +501,12 @@ folder-channel button.toggle:hover {
 
 viewswitcher stack,
 event-viewer stack,
-dropdown stack {
+dropdown stack,
+dropdown stack:hover,
+dropdown stack row,
+dropdown stack row:hover,
+row.combo > box.header > box > listview,
+row.combo > box.header > box > listview > row {
   background-color: transparent;
 }
 
@@ -646,29 +514,10 @@ dropdown stack {
   background-color: transparent;
 }
 
-.main-toolbar-view-switcher button:checked {
-  background-color: $bright_orange;
-}
-
-.main-toolbar-view-switcher button:hover {
-  background-color: $hover_color;
-}
-
 /* context menus */
 popover {
   accelerator {
     font-size: small;
     color: $bright_orange;
-  }
-
-  modelbutton {
-    &:hover,
-    &:selected {
-      background-color: $hover_color;
-    }
-  }
-
-  .title {
-    color: white;
   }
 }

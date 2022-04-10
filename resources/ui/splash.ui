@@ -37,6 +37,9 @@
         </child>
         <child>
           <object class="GtkProgressBar" id="progress_bar">
+            <style>
+              <class name="osd"/>
+            </style>
             <property name="fraction">0.02</property>
           </object>
         </child>

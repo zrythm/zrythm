@@ -28,6 +28,9 @@
             </property>
             <child type="end">
               <object class="GtkBox" id="header_end_box">
+                <style>
+                  <class name="linked"/>
+                </style>
                 <child>
                   <object class="GtkButton" id="scripting_interface">
                     <property name="action_name">app.scripting-interface</property>

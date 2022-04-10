@@ -1103,6 +1103,13 @@ zrythm_app_startup (GApplication * app)
   /* init curl */
   curl_global_init (CURL_GLOBAL_ALL);
 
+  /* init libadwaita */
+  adw_init ();
+  AdwStyleManager * style_mgr =
+    adw_style_manager_get_default ();
+  adw_style_manager_set_color_scheme (
+    style_mgr, ADW_COLOR_SCHEME_FORCE_DARK);
+
   /* init gtksourceview */
   gtk_source_init ();
   z_gtk_source_language_manager_get ();
@@ -1130,12 +1137,14 @@ zrythm_app_startup (GApplication * app)
     gtk_settings_get_default ();
 
   /* set theme */
+#if 0
   g_object_set (
     self->default_settings, "gtk-theme-name",
     "Matcha-dark-sea", NULL);
   g_object_set (
     self->default_settings,
     "gtk-application-prefer-dark-theme", 1, NULL);
+#endif
   int scale_factor =
     z_gtk_get_primary_monitor_scale_factor ();
   g_message (
@@ -1318,13 +1327,6 @@ zrythm_app_startup (GApplication * app)
   g_message (
     "set default css provider from path: %s",
     css_theme_path);
-
-  /* init libadwaita */
-  adw_init ();
-  AdwStyleManager * style_mgr =
-    adw_style_manager_get_default ();
-  adw_style_manager_set_color_scheme (
-    style_mgr, ADW_COLOR_SCHEME_FORCE_DARK);
 
   /* set default window icon */
   gtk_window_set_default_icon_name ("zrythm");
