@@ -1,7 +1,6 @@
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
  *
