@@ -6,6 +6,20 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.1.4.1] - 2022-04-10
+### Changed
+- Become a full libadwaita app
+- Simplify theme CSS
+
+### Fixed
+- Fix defaulting to JACK on Windows/Mac
+- Fix compilation failure on some distros
+- Fix crash when passing --reset-to-factory
+- Fix fonts disappearing on Windows after opening preferences
+
+### Removed
+- Remove matcha theme
+
 ## [1.0.0-beta.1.3.1] - 2022-04-07
 ### Added
 - Include system info in automatic bug reports
