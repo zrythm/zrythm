@@ -128,44 +128,46 @@ typedef struct ChannelSend
 
 } ChannelSend;
 
-static const cyaml_schema_field_t channel_send_fields_schema[] = {
-  YAML_FIELD_INT (ChannelSend, schema_version),
-  YAML_FIELD_INT (ChannelSend, slot),
-  YAML_FIELD_MAPPING_PTR (
-    ChannelSend,
-    amount,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    ChannelSend,
-    enabled,
-    port_fields_schema),
-  YAML_FIELD_INT (ChannelSend, is_sidechain),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    ChannelSend,
-    midi_in,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    ChannelSend,
-    stereo_in,
-    stereo_ports_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    ChannelSend,
-    midi_out,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    ChannelSend,
-    stereo_out,
-    stereo_ports_fields_schema),
-  YAML_FIELD_UINT (ChannelSend, track_name_hash),
+static const cyaml_schema_field_t
+  channel_send_fields_schema[] = {
+    YAML_FIELD_INT (ChannelSend, schema_version),
+    YAML_FIELD_INT (ChannelSend, slot),
+    YAML_FIELD_MAPPING_PTR (
+      ChannelSend,
+      amount,
+      port_fields_schema),
+    YAML_FIELD_MAPPING_PTR (
+      ChannelSend,
+      enabled,
+      port_fields_schema),
+    YAML_FIELD_INT (ChannelSend, is_sidechain),
+    YAML_FIELD_MAPPING_PTR_OPTIONAL (
+      ChannelSend,
+      midi_in,
+      port_fields_schema),
+    YAML_FIELD_MAPPING_PTR_OPTIONAL (
+      ChannelSend,
+      stereo_in,
+      stereo_ports_fields_schema),
+    YAML_FIELD_MAPPING_PTR_OPTIONAL (
+      ChannelSend,
+      midi_out,
+      port_fields_schema),
+    YAML_FIELD_MAPPING_PTR_OPTIONAL (
+      ChannelSend,
+      stereo_out,
+      stereo_ports_fields_schema),
+    YAML_FIELD_UINT (ChannelSend, track_name_hash),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
-static const cyaml_schema_value_t channel_send_schema = {
-  YAML_VALUE_PTR (
-    ChannelSend,
-    channel_send_fields_schema),
-};
+static const cyaml_schema_value_t
+  channel_send_schema = {
+    YAML_VALUE_PTR (
+      ChannelSend,
+      channel_send_fields_schema),
+  };
 
 NONNULL_ARGS (1)
 void

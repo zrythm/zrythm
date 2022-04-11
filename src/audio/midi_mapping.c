@@ -20,9 +20,11 @@ create_midi_mapping (void)
 {
   MidiMapping * self = object_new (MidiMapping);
 
-  self->schema_version = MIDI_MAPPING_SCHEMA_VERSION;
-  self->gobj = wrapped_object_with_change_signal_new (
-    self, WRAPPED_OBJECT_TYPE_MIDI_MAPPING);
+  self->schema_version =
+    MIDI_MAPPING_SCHEMA_VERSION;
+  self->gobj =
+    wrapped_object_with_change_signal_new (
+      self, WRAPPED_OBJECT_TYPE_MIDI_MAPPING);
 
   return self;
 }
@@ -90,10 +92,12 @@ midi_mappings_bind_at (
     }
   mapping->dest_id = dest_port->id;
   mapping->dest = dest_port;
-  g_atomic_int_set (&mapping->enabled, (guint) true);
+  g_atomic_int_set (
+    &mapping->enabled, (guint) true);
 
   char str[100];
-  midi_ctrl_change_get_ch_and_description (buf, str);
+  midi_ctrl_change_get_ch_and_description (
+    buf, str);
 
   if (!(dest_port->id.flags
         & PORT_FLAG_MIDI_AUTOMATABLE))
@@ -123,7 +127,8 @@ midi_mappings_unbind (
 {
   g_return_if_fail (self && idx >= 0);
 
-  MidiMapping * mapping_before = self->mappings[idx];
+  MidiMapping * mapping_before =
+    self->mappings[idx];
 
   for (int i = self->num_mappings - 2; i >= idx; i--)
     {
@@ -145,7 +150,8 @@ midi_mapping_set_enabled (
   MidiMapping * self,
   bool          enabled)
 {
-  g_atomic_int_set (&self->enabled, (guint) enabled);
+  g_atomic_int_set (
+    &self->enabled, (guint) enabled);
 }
 
 int
@@ -265,7 +271,8 @@ apply_mapping (
         & PORT_FLAG2_TRANSPORT_LOOP_TOGGLE)
         {
           EVENTS_PUSH (
-            ET_TRANSPORT_TOGGLE_LOOP_REQUIRED, NULL);
+            ET_TRANSPORT_TOGGLE_LOOP_REQUIRED,
+            NULL);
         }
       else if (
         dest->id.flags2
@@ -306,7 +313,8 @@ midi_mappings_apply_from_cc_events (
         {
           midi_byte_t channel =
             (midi_byte_t) ((ev->raw_buffer[0] & 0xf) + 1);
-          midi_byte_t controller = ev->raw_buffer[1];
+          midi_byte_t controller =
+            ev->raw_buffer[1];
           MidiMapping * mapping =
             self->mappings
               [(channel - 1) * 128 + controller];
@@ -348,8 +356,8 @@ midi_mappings_new ()
     MIDI_MAPPINGS_SCHEMA_VERSION;
 
   self->mappings_size = 4;
-  self->mappings =
-    object_new_n (self->mappings_size, MidiMapping);
+  self->mappings = object_new_n (
+    self->mappings_size, MidiMapping);
 
   return self;
 }

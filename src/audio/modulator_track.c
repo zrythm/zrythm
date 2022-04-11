@@ -126,8 +126,8 @@ modulator_track_insert_modulator (
 
       g_message (
         "Inserting modulator %s at %s:%d",
-        modulator->setting->descr->name, self->name,
-        slot);
+        modulator->setting->descr->name,
+        self->name, slot);
       if (slot == self->num_modulators)
         {
           array_double_size_if_full (
@@ -236,7 +236,8 @@ modulator_track_remove_modulator (
         {
           mixer_selections_remove_slot (
             MIXER_SELECTIONS, plugin->id.slot,
-            PLUGIN_SLOT_MODULATOR, F_PUBLISH_EVENTS);
+            PLUGIN_SLOT_MODULATOR,
+            F_PUBLISH_EVENTS);
         }
 
       plugin_disconnect (plugin);

@@ -78,7 +78,8 @@ audio_region_new (
     {
       if (filename)
         {
-          clip = audio_clip_new_from_file (filename);
+          clip =
+            audio_clip_new_from_file (filename);
         }
       else if (frames)
         {
@@ -313,10 +314,12 @@ audio_region_fill_stereo_ports (
              == UI_OVERLAY_ACTION_STRETCHING_R))
     {
       dsp_fill (
-        &stereo_ports->l->buf[time_nfo->local_offset],
+        &stereo_ports->l
+           ->buf[time_nfo->local_offset],
         DENORMAL_PREVENTION_VAL, time_nfo->nframes);
       dsp_fill (
-        &stereo_ports->r->buf[time_nfo->local_offset],
+        &stereo_ports->r
+           ->buf[time_nfo->local_offset],
         DENORMAL_PREVENTION_VAL, time_nfo->nframes);
       return;
     }
@@ -408,7 +411,8 @@ audio_region_fill_stereo_ports (
             "invalid r_local_pos %" PRId64
             ", j %" PRIu64
             ", "
-            "g_start_frames %" PRIu64 ", nframes %u",
+            "g_start_frames %" PRIu64
+            ", nframes %u",
             r_local_pos, j, time_nfo->g_start_frame,
             time_nfo->nframes);
           return;
@@ -438,7 +442,8 @@ audio_region_fill_stereo_ports (
               /* set the start point (
                * used when
                * timestretching) */
-              buff_index_start = (size_t) buff_index;
+              buff_index_start =
+                (size_t) buff_index;
 
               /* timestretch the material
                * up to this point */

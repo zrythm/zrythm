@@ -115,7 +115,8 @@ midi_note_draw (
     {
       diamond_cr = gtk_snapshot_append_cairo (
         snapshot, &graphene_rect);
-      gdk_cairo_set_source_rgba (diamond_cr, &color);
+      gdk_cairo_set_source_rgba (
+        diamond_cr, &color);
       /* translate to the full rect */
       cairo_translate (
         diamond_cr, (int) (full_rect.x),

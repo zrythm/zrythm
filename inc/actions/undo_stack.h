@@ -158,7 +158,9 @@ static const cyaml_schema_field_t undo_stack_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t undo_stack_schema = {
-  YAML_VALUE_PTR (UndoStack, undo_stack_fields_schema),
+  YAML_VALUE_PTR (
+    UndoStack,
+    undo_stack_fields_schema),
 };
 
 void
@@ -194,7 +196,8 @@ undo_stack_get_total_cached_actions (
 
 /* --- start wrappers --- */
 
-#define undo_stack_size(x) (stack_size ((x)->stack))
+#define undo_stack_size(x) \
+  (stack_size ((x)->stack))
 
 #define undo_stack_is_empty(x) \
   (stack_is_empty ((x)->stack))
@@ -202,7 +205,8 @@ undo_stack_get_total_cached_actions (
 #define undo_stack_is_full(x) \
   (stack_is_full ((x)->stack))
 
-#define undo_stack_peek(x) (stack_peek ((x)->stack))
+#define undo_stack_peek(x) \
+  (stack_peek ((x)->stack))
 
 #define undo_stack_peek_last(x) \
   (stack_peek_last ((x)->stack))

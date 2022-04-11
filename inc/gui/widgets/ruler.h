@@ -42,7 +42,8 @@
  */
 #define RW_PX_TO_HIDE_BEATS 40.0
 
-#define RULER_WIDGET_TYPE (ruler_widget_get_type ())
+#define RULER_WIDGET_TYPE \
+  (ruler_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   RulerWidget,
   ruler_widget,
@@ -228,7 +229,8 @@ ruler_widget_get_sixteenth_interval (
  * Returns the 10 sec interval.
  */
 int
-ruler_widget_get_10sec_interval (RulerWidget * self);
+ruler_widget_get_10sec_interval (
+  RulerWidget * self);
 
 /**
  * Returns the sec interval.

@@ -151,7 +151,8 @@ preroll_count_selector_widget_new (
   gtk_widget_set_visible ( \
     GTK_WIDGET (self->x##_toggle), true); \
   gtk_box_append ( \
-    GTK_BOX (self), GTK_WIDGET (self->x##_toggle)); \
+    GTK_BOX (self), \
+    GTK_WIDGET (self->x##_toggle)); \
   self->x##_toggle_id = g_signal_connect ( \
     G_OBJECT (self->x##_toggle), "toggled", \
     G_CALLBACK (on_btn_toggled), self)

@@ -193,8 +193,9 @@ extension_data (const char * uri)
    library constructors and destructors to clean up properly.
 */
 static const LV2_Descriptor descriptor = {
-  AMP_URI, instantiate, connect_port, activate,
-  run,     deactivate,  cleanup,      extension_data
+  AMP_URI,  instantiate,   connect_port,
+  activate, run,           deactivate,
+  cleanup,  extension_data
 };
 
 /**

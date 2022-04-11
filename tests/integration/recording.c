@@ -164,10 +164,12 @@ do_takes_no_loop_no_punch (
   position_add_frames (&pos, -CYCLE_SIZE);
   g_assert_cmppos (&pos, &audio_r_obj->pos);
   position_from_frames (&pos, CYCLE_SIZE);
-  g_assert_cmppos (&pos, &audio_r_obj->loop_end_pos);
+  g_assert_cmppos (
+    &pos, &audio_r_obj->loop_end_pos);
 
   /* assert that audio is silent */
-  AudioClip * clip = audio_region_get_clip (audio_r);
+  AudioClip * clip =
+    audio_region_get_clip (audio_r);
   g_assert_cmpuint (
     clip->num_frames, ==, CYCLE_SIZE);
   for (nframes_t i = 0; i < CYCLE_SIZE; i++)
@@ -188,7 +190,8 @@ do_takes_no_loop_no_punch (
   position_add_frames (&pos, -CYCLE_SIZE);
   g_assert_cmppos (&pos, &latch_r_obj->pos);
   position_from_frames (&pos, CYCLE_SIZE);
-  g_assert_cmppos (&pos, &latch_r_obj->loop_end_pos);
+  g_assert_cmppos (
+    &pos, &latch_r_obj->loop_end_pos);
   g_assert_cmpint (touch_at->num_regions, ==, 0);
   g_assert_cmpint (on_at->num_regions, ==, 0);
   g_assert_cmpfloat_with_epsilon (
@@ -257,7 +260,8 @@ do_takes_no_loop_no_punch (
   g_assert_cmpint (mn->val, ==, NOTE_PITCH);
   long mn_length_frames =
     arranger_object_get_length_in_frames (mn_obj);
-  g_assert_cmpint (mn_length_frames, ==, CYCLE_SIZE);
+  g_assert_cmpint (
+    mn_length_frames, ==, CYCLE_SIZE);
   position_from_frames (&pos, CYCLE_SIZE);
   g_assert_cmppos (&mn_obj->pos, &pos);
 
@@ -269,7 +273,8 @@ do_takes_no_loop_no_punch (
   g_assert_cmppos (&pos, &audio_r_obj->pos);
   position_init (&pos);
   position_add_frames (&pos, r_length_frames);
-  g_assert_cmppos (&pos, &audio_r_obj->loop_end_pos);
+  g_assert_cmppos (
+    &pos, &audio_r_obj->loop_end_pos);
   position_set_to_pos (
     &pos, &TRANSPORT->playhead_pos);
   g_assert_cmppos (&pos, &audio_r_obj->end_pos);
@@ -279,11 +284,12 @@ do_takes_no_loop_no_punch (
   clip = audio_region_get_clip (audio_r);
   g_assert_cmpuint (
     clip->num_frames, ==, CYCLE_SIZE * 2);
-  for (nframes_t i = CYCLE_SIZE; i < 2 * CYCLE_SIZE;
-       i++)
+  for (nframes_t i = CYCLE_SIZE;
+       i < 2 * CYCLE_SIZE; i++)
     {
       g_assert_cmpfloat_with_epsilon (
-        clip->ch_frames[0][i], AUDIO_VAL, 0.000001f);
+        clip->ch_frames[0][i], AUDIO_VAL,
+        0.000001f);
       g_assert_cmpfloat_with_epsilon (
         clip->ch_frames[1][i], -AUDIO_VAL,
         0.000001f);
@@ -297,7 +303,8 @@ do_takes_no_loop_no_punch (
   g_assert_cmppos (&pos, &latch_r_obj->pos);
   position_init (&pos);
   position_add_frames (&pos, r_length_frames);
-  g_assert_cmppos (&pos, &latch_r_obj->loop_end_pos);
+  g_assert_cmppos (
+    &pos, &latch_r_obj->loop_end_pos);
   position_set_to_pos (
     &pos, &TRANSPORT->playhead_pos);
   g_assert_cmppos (&pos, &latch_r_obj->end_pos);
@@ -461,9 +468,11 @@ do_takes_loop_no_punch (
   position_add_frames (&pos, -FRAMES_BEFORE_LOOP);
   g_assert_cmppos (&pos, &audio_r_obj->pos);
   position_from_frames (&pos, FRAMES_BEFORE_LOOP);
-  g_assert_cmppos (&pos, &audio_r_obj->loop_end_pos);
+  g_assert_cmppos (
+    &pos, &audio_r_obj->loop_end_pos);
   /* assert that audio is silent */
-  AudioClip * clip = audio_region_get_clip (audio_r);
+  AudioClip * clip =
+    audio_region_get_clip (audio_r);
   g_assert_cmpuint (
     clip->num_frames, ==, FRAMES_BEFORE_LOOP);
   for (nframes_t i = 0;
@@ -484,15 +493,17 @@ do_takes_loop_no_punch (
   g_assert_cmppos (&pos, &audio_r_obj->end_pos);
   position_from_frames (
     &pos, CYCLE_SIZE - FRAMES_BEFORE_LOOP);
-  g_assert_cmppos (&pos, &audio_r_obj->loop_end_pos);
+  g_assert_cmppos (
+    &pos, &audio_r_obj->loop_end_pos);
   /* assert that audio is silent */
   clip = audio_region_get_clip (audio_r);
   g_assert_cmpuint (
     clip->num_frames, ==,
     CYCLE_SIZE - FRAMES_BEFORE_LOOP);
-  for (nframes_t i = 0;
-       i < CYCLE_SIZE - (nframes_t) FRAMES_BEFORE_LOOP;
-       i++)
+  for (
+    nframes_t i = 0;
+    i < CYCLE_SIZE - (nframes_t) FRAMES_BEFORE_LOOP;
+    i++)
     {
       g_assert_cmpfloat_with_epsilon (
         clip->ch_frames[0][i], 0.f, 0.000001f);
@@ -510,7 +521,8 @@ do_takes_loop_no_punch (
   position_add_frames (&pos, -FRAMES_BEFORE_LOOP);
   g_assert_cmppos (&pos, &latch_r_obj->pos);
   position_from_frames (&pos, FRAMES_BEFORE_LOOP);
-  g_assert_cmppos (&pos, &latch_r_obj->loop_end_pos);
+  g_assert_cmppos (
+    &pos, &latch_r_obj->loop_end_pos);
   latch_r = latch_at->regions[1];
   latch_r_obj = (ArrangerObject *) latch_r;
   position_set_to_pos (
@@ -521,7 +533,8 @@ do_takes_loop_no_punch (
   g_assert_cmppos (&pos, &latch_r_obj->end_pos);
   position_from_frames (
     &pos, CYCLE_SIZE - FRAMES_BEFORE_LOOP);
-  g_assert_cmppos (&pos, &latch_r_obj->loop_end_pos);
+  g_assert_cmppos (
+    &pos, &latch_r_obj->loop_end_pos);
 
   g_assert_cmpint (touch_at->num_regions, ==, 0);
   g_assert_cmpint (on_at->num_regions, ==, 0);
@@ -703,7 +716,8 @@ test_recording_takes (
 
   ins_track = TRACKLIST->tracks[ins_track_pos];
   audio_track = TRACKLIST->tracks[audio_track_pos];
-  master_track = TRACKLIST->tracks[master_track_pos];
+  master_track =
+    TRACKLIST->tracks[master_track_pos];
 
   prepare ();
   do_takes_loop_no_punch (
@@ -753,7 +767,7 @@ test_automation_touch_recording (void)
   test_plugin_manager_create_tracks_from_plugin (
     HELM_BUNDLE, HELM_URI, true, false, 1);
 
-  int     ins_track_pos = TRACKLIST->num_tracks - 1;
+  int ins_track_pos = TRACKLIST->num_tracks - 1;
   Track * ins_track =
     TRACKLIST->tracks[ins_track_pos];
 
@@ -838,7 +852,8 @@ test_automation_touch_recording (void)
   g_assert_cmppos (&pos, &touch_r_obj->pos);
   position_from_frames (
     &pos, (CYCLE_SIZE + FRAMES_BEFORE_LOOP));
-  g_assert_cmppos (&pos, &touch_r_obj->loop_end_pos);
+  g_assert_cmppos (
+    &pos, &touch_r_obj->loop_end_pos);
   touch_r = touch_at->regions[1];
   touch_r_obj = (ArrangerObject *) touch_r;
   position_set_to_pos (
@@ -849,7 +864,8 @@ test_automation_touch_recording (void)
   g_assert_cmppos (&pos, &touch_r_obj->end_pos);
   position_from_frames (
     &pos, CYCLE_SIZE - FRAMES_BEFORE_LOOP);
-  g_assert_cmppos (&pos, &touch_r_obj->loop_end_pos);
+  g_assert_cmppos (
+    &pos, &touch_r_obj->loop_end_pos);
 
 #  undef FRAMES_BEFORE_LOOP
 
@@ -939,18 +955,22 @@ test_mono_recording (void)
   position_add_frames (&pos, -CYCLE_SIZE);
   g_assert_cmppos (&pos, &audio_r_obj->pos);
   position_from_frames (&pos, CYCLE_SIZE);
-  g_assert_cmppos (&pos, &audio_r_obj->loop_end_pos);
+  g_assert_cmppos (
+    &pos, &audio_r_obj->loop_end_pos);
 
   /* assert that audio is correct */
-  AudioClip * clip = audio_region_get_clip (audio_r);
+  AudioClip * clip =
+    audio_region_get_clip (audio_r);
   g_assert_cmpuint (
     clip->num_frames, ==, CYCLE_SIZE);
   for (nframes_t i = 0; i < CYCLE_SIZE; i++)
     {
       g_assert_cmpfloat_with_epsilon (
-        clip->ch_frames[0][i], AUDIO_VAL, 0.000001f);
+        clip->ch_frames[0][i], AUDIO_VAL,
+        0.000001f);
       g_assert_cmpfloat_with_epsilon (
-        clip->ch_frames[1][i], AUDIO_VAL, 0.000001f);
+        clip->ch_frames[1][i], AUDIO_VAL,
+        0.000001f);
     }
 
   /* stop recording */
@@ -1048,15 +1068,17 @@ test_long_audio_recording (void)
         &pos, &TRANSPORT->playhead_pos);
       g_assert_cmppos (&pos, &audio_r_obj->end_pos);
       position_add_frames (&pos, -CYCLE_SIZE);
-      g_assert_cmppos (&init_pos, &audio_r_obj->pos);
+      g_assert_cmppos (
+        &init_pos, &audio_r_obj->pos);
 
       /* assert that audio is correct */
       AudioClip * r_clip =
         audio_region_get_clip (audio_r);
       g_assert_cmpuint (
-        r_clip->num_frames, ==, processed_ch_frames);
-      for (nframes_t i = 0; i < processed_ch_frames;
-           i++)
+        r_clip->num_frames, ==,
+        processed_ch_frames);
+      for (nframes_t i = 0;
+           i < processed_ch_frames; i++)
         {
           g_assert_cmpfloat_with_epsilon (
             r_clip->ch_frames[0][i],
@@ -1068,9 +1090,10 @@ test_long_audio_recording (void)
 
       /* load the region file and check that
        * frames are correct */
-      AudioClip * new_clip = audio_clip_new_from_file (
-        audio_clip_get_path_in_pool (
-          r_clip, F_NOT_BACKUP));
+      AudioClip * new_clip =
+        audio_clip_new_from_file (
+          audio_clip_get_path_in_pool (
+            r_clip, F_NOT_BACKUP));
       if (r_clip->num_frames < new_clip->num_frames)
         {
           g_warning (
@@ -1078,7 +1101,8 @@ test_long_audio_recording (void)
             new_clip->num_frames);
         }
       g_warn_if_fail (audio_frames_equal (
-        r_clip->ch_frames[0], new_clip->ch_frames[0],
+        r_clip->ch_frames[0],
+        new_clip->ch_frames[0],
         (size_t) MIN (
           new_clip->num_frames, r_clip->num_frames),
         0.0001f));
@@ -1196,8 +1220,10 @@ test_2nd_audio_recording (void)
       /* clear audio input */
       for (nframes_t i = 0; i < CYCLE_SIZE; i++)
         {
-          AUDIO_ENGINE->dummy_input->l->buf[i] = 0.f;
-          AUDIO_ENGINE->dummy_input->r->buf[i] = 0.f;
+          AUDIO_ENGINE->dummy_input->l->buf[i] =
+            0.f;
+          AUDIO_ENGINE->dummy_input->r->buf[i] =
+            0.f;
           processed_ch_frames++;
         }
 
@@ -1214,20 +1240,24 @@ test_2nd_audio_recording (void)
         &pos, &TRANSPORT->playhead_pos);
       g_assert_cmppos (&pos, &audio_r_obj->end_pos);
       position_add_frames (&pos, -CYCLE_SIZE);
-      g_assert_cmppos (&init_pos, &audio_r_obj->pos);
+      g_assert_cmppos (
+        &init_pos, &audio_r_obj->pos);
 
       /* assert that audio is silent */
       AudioClip * r_clip =
         audio_region_get_clip (audio_r);
       g_assert_cmpuint (
-        r_clip->num_frames, ==, processed_ch_frames);
-      for (nframes_t i = 0; i < processed_ch_frames;
-           i++)
+        r_clip->num_frames, ==,
+        processed_ch_frames);
+      for (nframes_t i = 0;
+           i < processed_ch_frames; i++)
         {
           g_assert_cmpfloat_with_epsilon (
-            r_clip->ch_frames[0][i], 0.f, 0.000001f);
+            r_clip->ch_frames[0][i], 0.f,
+            0.000001f);
           g_assert_cmpfloat_with_epsilon (
-            r_clip->ch_frames[1][i], 0.f, 0.000001f);
+            r_clip->ch_frames[1][i], 0.f,
+            0.000001f);
         }
     }
 

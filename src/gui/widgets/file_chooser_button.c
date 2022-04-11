@@ -109,7 +109,8 @@ on_btn_clicked (
   GtkFileChooserNative * fc_native =
     GTK_FILE_CHOOSER_NATIVE (
       gtk_file_chooser_native_new (
-        self->title, NULL, self->action, NULL, NULL));
+        self->title, NULL, self->action, NULL,
+        NULL));
 
   if (self->path)
     {

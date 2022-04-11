@@ -180,7 +180,8 @@ host_get_sample_rate (NativeHostHandle handle)
   if (
     PROJECT && AUDIO_ENGINE
     && AUDIO_ENGINE->sample_rate > 0)
-    sample_rate = (double) AUDIO_ENGINE->sample_rate;
+    sample_rate =
+      (double) AUDIO_ENGINE->sample_rate;
 
   return sample_rate;
 }
@@ -252,14 +253,16 @@ host_ui_parameter_changed (
     }
 
   if (
-    carla_get_current_plugin_count (self->host_handle)
+    carla_get_current_plugin_count (
+      self->host_handle)
     == 2)
     {
       carla_set_parameter_value (
         self->host_handle, 1, index, value);
     }
 
-  port_set_control_value (port, value, false, false);
+  port_set_control_value (
+    port, value, false, false);
 }
 
 static void
@@ -368,7 +371,8 @@ carla_engine_callback (
     {
     case ENGINE_CALLBACK_PLUGIN_ADDED:
       g_message (
-        "Plugin added: %u - %s", plugin_id, val_str);
+        "Plugin added: %u - %s", plugin_id,
+        val_str);
       break;
     case ENGINE_CALLBACK_PLUGIN_REMOVED:
       g_message ("Plugin removed: %u", plugin_id);
@@ -556,13 +560,13 @@ carla_engine_callback (
       break;
     case ENGINE_CALLBACK_PATCHBAY_PORT_REMOVED:
       g_debug (
-        "Patchbay port removed: %u - %d", plugin_id,
-        val1);
+        "Patchbay port removed: %u - %d",
+        plugin_id, val1);
       break;
     case ENGINE_CALLBACK_PATCHBAY_PORT_CHANGED:
       g_debug (
-        "Patchbay port changed: %u - %d", plugin_id,
-        val1);
+        "Patchbay port changed: %u - %d",
+        plugin_id, val1);
       break;
     case ENGINE_CALLBACK_PATCHBAY_CONNECTION_ADDED:
       g_debug ("Connection added %s", val_str);
@@ -835,8 +839,8 @@ carla_native_plugin_process (
    * to these) */
   {
     size_t audio_ports = 0;
-    for (int i = 0; i < self->plugin->num_out_ports;
-         i++)
+    for (int i = 0;
+         i < self->plugin->num_out_ports; i++)
       {
         Port * port = self->plugin->out_ports[i];
         if (port->id.type == TYPE_AUDIO)
@@ -853,8 +857,8 @@ carla_native_plugin_process (
    * to these) */
   {
     size_t cv_ports = 0;
-    for (int i = 0; i < self->plugin->num_out_ports;
-         i++)
+    for (int i = 0;
+         i < self->plugin->num_out_ports; i++)
       {
         Port * port = self->plugin->out_ports[i];
         if (port->id.type == TYPE_CV)
@@ -879,7 +883,8 @@ carla_native_plugin_process (
   int             num_events_written = 0;
   for (int i = 0; i < num_events; i++)
     {
-      MidiEvent * ev = &port->midi_events->events[i];
+      MidiEvent * ev =
+        &port->midi_events->events[i];
       if (
         ev->time < time_nfo->local_offset
         || ev->time >= time_nfo->local_offset
@@ -1076,9 +1081,9 @@ carla_native_plugin_get_descriptor_from_cached (
   descr->num_ctrl_ins = (int) info->parameterIns;
   descr->num_ctrl_outs = (int) info->parameterOuts;
 
-  descr
-    ->category = carla_category_to_zrythm_category (
-    info->category);
+  descr->category =
+    carla_category_to_zrythm_category (
+      info->category);
   descr->category_str =
     carla_category_to_zrythm_category_str (
       info->category);
@@ -1176,7 +1181,8 @@ create_ports (CarlaNativePlugin * self, bool loading)
             && port->id.flags & PORT_FLAG_SIDECHAIN
             && port->id.port_group == NULL
             && !(port->id.flags & PORT_FLAG_STEREO_L)
-            && !(port->id.flags & PORT_FLAG_STEREO_R))
+            && !(
+              port->id.flags & PORT_FLAG_STEREO_R))
             {
               port->id.port_group = g_strdup (
                 "[Zrythm] Sidechain Group");
@@ -1303,7 +1309,8 @@ create_ports (CarlaNativePlugin * self, bool loading)
               port->id.sym =
                 g_strdup_printf ("param_%u", i);
             }
-          port->id.flags |= PORT_FLAG_PLUGIN_CONTROL;
+          port->id.flags |=
+            PORT_FLAG_PLUGIN_CONTROL;
           if (
             param_info->comment
             && strlen (param_info->comment) > 0)
@@ -1318,7 +1325,8 @@ create_ports (CarlaNativePlugin * self, bool loading)
               port->id.port_group =
                 string_get_substr_before_suffix (
                   param_info->groupName, ":");
-              g_return_if_fail (port->id.port_group);
+              g_return_if_fail (
+                port->id.port_group);
             }
           port->carla_param_id = (int) i;
 
@@ -1409,7 +1417,8 @@ create_ports (CarlaNativePlugin * self, bool loading)
 #  endif
         }
       float cur_val =
-        carla_native_plugin_get_param_value (self, i);
+        carla_native_plugin_get_param_value (
+          self, i);
       g_debug (
         "%d: %s=%f%s", i, port->id.label,
         (double) cur_val,
@@ -1538,8 +1547,8 @@ add_internal_plugin_from_descr (
         case PROT_LADSPA:
           ret = carla_add_plugin (
             self->host_handle, BINARY_NATIVE, type,
-            descr->path, descr->name, descr->uri, 0,
-            NULL, PLUGIN_OPTIONS_NULL);
+            descr->path, descr->name, descr->uri,
+            0, NULL, PLUGIN_OPTIONS_NULL);
           break;
         case PROT_SFZ:
         case PROT_SF2:
@@ -1778,8 +1787,8 @@ carla_native_plugin_instantiate (
   /* set binary paths */
   char * zrythm_libdir = zrythm_get_dir (
     ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
-  char * carla_binaries_dir =
-    g_build_filename (zrythm_libdir, "carla", NULL);
+  char * carla_binaries_dir = g_build_filename (
+    zrythm_libdir, "carla", NULL);
   g_message (
     "setting carla engine option "
     "[ENGINE_OPTION_PATH_BINARIES] to '%s'",
@@ -1850,7 +1859,8 @@ carla_native_plugin_instantiate (
       g_message ("using UI bridge only");
       carla_set_engine_option (
         self->host_handle,
-        ENGINE_OPTION_PREFER_UI_BRIDGES, true, NULL);
+        ENGINE_OPTION_PREFER_UI_BRIDGES, true,
+        NULL);
       break;
     default:
       break;
@@ -2036,8 +2046,8 @@ carla_native_plugin_instantiate (
                 self->audio_output_port_id
                   + num_audio_outs_connected);
               ret = carla_patchbay_connect (
-                self->host_handle, false, plugin_id,
-                port_id, 2,
+                self->host_handle, false,
+                plugin_id, port_id, 2,
                 self->audio_output_port_id
                   + num_audio_outs_connected++);
               if (!ret)
@@ -2059,8 +2069,8 @@ carla_native_plugin_instantiate (
                 self->cv_output_port_id
                   + num_cv_outs_connected);
               ret = carla_patchbay_connect (
-                self->host_handle, false, plugin_id,
-                port_id, 4,
+                self->host_handle, false,
+                plugin_id, port_id, 4,
                 self->cv_output_port_id
                   + num_cv_outs_connected++);
               if (!ret)
@@ -2132,7 +2142,9 @@ carla_native_plugin_instantiate (
     }
 
   /* create ports */
-  if (!loading && !use_state_file && !self->ports_created)
+  if (
+    !loading && !use_state_file
+    && !self->ports_created)
     {
       create_ports (self, false);
     }
@@ -2257,12 +2269,14 @@ carla_native_plugin_open_ui (
           "Attempting to %s UI for %s",
           show ? "show" : "hide",
           pl->setting->descr->name);
-        GdkGLContext * context = clear_gl_context ();
+        GdkGLContext * context =
+          clear_gl_context ();
         carla_show_custom_ui (
           self->host_handle, 0, show);
         return_gl_context (context);
         g_message (
-          "Completed %s UI", show ? "show" : "hide");
+          "Completed %s UI",
+          show ? "show" : "hide");
         pl->visible = show;
       }
 
@@ -2304,7 +2318,8 @@ carla_native_plugin_open_ui (
       if (!ZRYTHM_TESTING)
         {
           EVENTS_PUSH (
-            ET_PLUGIN_WINDOW_VISIBILITY_CHANGED, pl);
+            ET_PLUGIN_WINDOW_VISIBILITY_CHANGED,
+            pl);
         }
       break;
     default:
@@ -2362,7 +2377,8 @@ carla_native_plugin_set_param_value (
   carla_set_parameter_value (
     self->host_handle, 0, id, val);
   if (
-    carla_get_current_plugin_count (self->host_handle)
+    carla_get_current_plugin_count (
+      self->host_handle)
     == 2)
     {
       carla_set_parameter_value (
@@ -2569,7 +2585,8 @@ carla_native_plugin_load_state (
   self->loading_state = false;
   if (pl->visible && plugin_is_in_active_project (pl))
     {
-      EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED, pl);
+      EVENTS_PUSH (
+        ET_PLUGIN_VISIBILITY_CHANGED, pl);
     }
   g_message (
     "%s: successfully loaded carla plugin state "

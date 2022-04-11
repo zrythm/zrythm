@@ -623,8 +623,8 @@ setup_dnd (FolderChannelWidget * self)
 FolderChannelWidget *
 folder_channel_widget_new (Track * track)
 {
-  FolderChannelWidget * self =
-    g_object_new (FOLDER_CHANNEL_WIDGET_TYPE, NULL);
+  FolderChannelWidget * self = g_object_new (
+    FOLDER_CHANNEL_WIDGET_TYPE, NULL);
   self->track = track;
 
   setup_folder_channel_icon (self);
@@ -665,7 +665,8 @@ static void
 folder_channel_widget_class_init (
   FolderChannelWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "folder_channel.ui");
   gtk_widget_class_set_css_name (
@@ -703,7 +704,8 @@ folder_channel_widget_init (
   self->popover_menu = GTK_POPOVER_MENU (
     gtk_popover_menu_new_from_model (NULL));
   gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
 
   gtk_widget_set_hexpand (GTK_WIDGET (self), 0);
 
@@ -711,7 +713,8 @@ folder_channel_widget_init (
   rotated_label_widget_setup (self->name, -90);
   GtkLabel * lbl =
     rotated_label_widget_get_label (self->name);
-  gtk_label_set_ellipsize (lbl, PANGO_ELLIPSIZE_END);
+  gtk_label_set_ellipsize (
+    lbl, PANGO_ELLIPSIZE_END);
   GtkStyleContext * context =
     gtk_widget_get_style_context (GTK_WIDGET (lbl));
   gtk_style_context_add_class (

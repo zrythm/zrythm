@@ -109,8 +109,8 @@ port_connection_action_new (
 #define port_connection_action_new_connect( \
   src_id, dest_id, error) \
   port_connection_action_new ( \
-    PORT_CONNECTION_CONNECT, src_id, dest_id, 0.f, \
-    error)
+    PORT_CONNECTION_CONNECT, src_id, dest_id, \
+    0.f, error)
 
 #define port_connection_action_new_disconnect( \
   src_id, dest_id, error) \
@@ -148,8 +148,8 @@ port_connection_action_perform (
 #define port_connection_action_perform_connect( \
   src_id, dest_id, error) \
   port_connection_action_perform ( \
-    PORT_CONNECTION_CONNECT, src_id, dest_id, 0.f, \
-    error)
+    PORT_CONNECTION_CONNECT, src_id, dest_id, \
+    0.f, error)
 
 #define port_connection_action_perform_disconnect( \
   src_id, dest_id, error) \

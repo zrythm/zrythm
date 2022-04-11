@@ -154,8 +154,8 @@ engine_pa_setup (AudioEngine * self)
     self, TRANSPORT->beats_per_bar, TRANSPORT->bpm,
     self->sample_rate, false);
 
-  self->pa_out_buf =
-    calloc (self->block_length * 2, sizeof (float));
+  self->pa_out_buf = calloc (
+    self->block_length * 2, sizeof (float));
 
   self->pa_stream = open_stream (self);
   g_return_val_if_fail (self->pa_stream, -1);

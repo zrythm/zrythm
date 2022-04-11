@@ -72,7 +72,8 @@ automation_mode_widget_init (
   pango_layout_set_text (layout, txt, -1); \
   pango_layout_get_pixel_size ( \
     layout, &x_px, &y_px); \
-  self->text_widths[AUTOMATION_MODE_##caps] = x_px; \
+  self->text_widths[AUTOMATION_MODE_##caps] = \
+    x_px; \
   self->text_heights[AUTOMATION_MODE_##caps] = \
     y_px; \
   if (y_px > self->max_text_height) \
@@ -215,7 +216,8 @@ draw_bg (
     AUTOMATION_MODE_READ, AUTOMATION_MODE_OFF,
     AUTOMATION_MODE_RECORD
   };
-  for (int idx = 0; idx < NUM_AUTOMATION_MODES; idx++)
+  for (int idx = 0; idx < NUM_AUTOMATION_MODES;
+       idx++)
     {
       int i = draw_order[idx];
 
@@ -269,7 +271,8 @@ draw_bg (
             x
             + self->text_widths[AUTOMATION_MODE_READ]
             + 4 * AUTOMATION_MODE_HPADDING
-            + self->text_widths[AUTOMATION_MODE_RECORD];
+            + self->text_widths
+                [AUTOMATION_MODE_RECORD];
           new_width =
             ((int) x + self->width) - (int) new_x;
           break;
@@ -302,13 +305,14 @@ automation_mode_widget_draw (
     || state == CUSTOM_BUTTON_WIDGET_STATE_ACTIVE)
     {
       self->has_hit_mode = 1;
-      self->hit_mode = get_hit_mode (self, x_cursor);
+      self->hit_mode =
+        get_hit_mode (self, x_cursor);
       /*g_message ("hit mode %d", self->hit_mode);*/
     }
 
   /* get current states */
-  for (unsigned int i = 0; i < NUM_AUTOMATION_MODES;
-       i++)
+  for (unsigned int i = 0;
+       i < NUM_AUTOMATION_MODES; i++)
     {
       AutomationMode prev_am =
         self->owner->automation_mode;
@@ -370,7 +374,8 @@ automation_mode_widget_draw (
 
       total_text_widths += self->text_widths[i];
 
-      self->last_states[i] = self->current_states[i];
+      self->last_states[i] =
+        self->current_states[i];
     }
 
   /* pop clip from draw_bg */

@@ -45,7 +45,8 @@ typedef struct _VelocityWidget VelocityWidget;
 #define VELOCITY_SCHEMA_VERSION 1
 
 #define velocity_is_selected(r) \
-  arranger_object_is_selected ((ArrangerObject *) r)
+  arranger_object_is_selected ( \
+    (ArrangerObject *) r)
 
 /**
  * Default velocity.
@@ -129,7 +130,8 @@ velocity_set_val (Velocity * self, const int val);
  * Returns the owner MidiNote.
  */
 MidiNote *
-velocity_get_midi_note (const Velocity * const self);
+velocity_get_midi_note (
+  const Velocity * const self);
 
 const char *
 velocity_setting_enum_to_str (guint index);

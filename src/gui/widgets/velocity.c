@@ -48,7 +48,9 @@
  * relative coordinates.
  */
 void
-velocity_draw (Velocity * self, GtkSnapshot * snapshot)
+velocity_draw (
+  Velocity *    self,
+  GtkSnapshot * snapshot)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   MidiNote * mn = velocity_get_midi_note (self);
@@ -69,7 +71,8 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
 
   /* --- draw --- */
 
-  const int circle_radius = obj->full_rect.width / 2;
+  const int circle_radius =
+    obj->full_rect.width / 2;
 
   /* draw line */
   gtk_snapshot_append_color (

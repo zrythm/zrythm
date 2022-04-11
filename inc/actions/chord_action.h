@@ -104,12 +104,13 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t chord_action_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    ChordAction,
-    chord_action_fields_schema),
-};
+static const cyaml_schema_value_t
+  chord_action_schema = {
+    CYAML_VALUE_MAPPING (
+      CYAML_FLAG_POINTER,
+      ChordAction,
+      chord_action_fields_schema),
+  };
 
 void
 chord_action_init_loaded (ChordAction * self);
@@ -146,7 +147,9 @@ chord_action_perform (
   GError **                error);
 
 int
-chord_action_do (ChordAction * self, GError ** error);
+chord_action_do (
+  ChordAction * self,
+  GError **     error);
 
 int
 chord_action_undo (

@@ -146,7 +146,8 @@ on_reveal_changed (
 {
   if (self->position == PSE_POSITION_CHANNEL)
     {
-      Channel * ch = track_get_channel (self->track);
+      Channel * ch =
+        track_get_channel (self->track);
       if (self->slot_type == PLUGIN_SLOT_INSERT)
         {
           g_settings_set_boolean (
@@ -203,7 +204,8 @@ plugin_strip_expander_widget_setup (
   if (is_midi)
     {
       expander_box_widget_set_icon_name (
-        Z_EXPANDER_BOX_WIDGET (self), "midi-insert");
+        Z_EXPANDER_BOX_WIDGET (self),
+        "midi-insert");
     }
   else
     {
@@ -240,7 +242,8 @@ plugin_strip_expander_widget_setup (
                 ChannelSlotWidget * csw =
                   channel_slot_widget_new (
                     i, track, slot_type,
-                    position == PSE_POSITION_CHANNEL);
+                    position
+                      == PSE_POSITION_CHANNEL);
                 self->slots[i] = csw;
                 gtk_box_append (
                   strip_box, GTK_WIDGET (csw));
@@ -275,7 +278,8 @@ plugin_strip_expander_widget_setup (
         {
           expander_box_widget_set_reveal_callback (
             Z_EXPANDER_BOX_WIDGET (self),
-            (ExpanderBoxRevealFunc) on_reveal_changed,
+            (ExpanderBoxRevealFunc)
+              on_reveal_changed,
             self);
         }
       break;

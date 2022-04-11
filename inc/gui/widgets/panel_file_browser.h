@@ -29,7 +29,7 @@ typedef struct _FileAuditionerControlsWidget
 typedef struct FileBrowserLocation
   FileBrowserLocation;
 typedef struct _FileBrowserFiltersWidget
-                           FileBrowserFiltersWidget;
+  FileBrowserFiltersWidget;
 typedef struct ItemFactory ItemFactory;
 
 /**

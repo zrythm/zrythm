@@ -43,8 +43,10 @@ typedef struct _FolderChannelSlotWidget
   FolderChannelSlotWidget;
 typedef struct _EditableLabelWidget
   EditableLabelWidget;
-typedef struct _RotatedLabelWidget RotatedLabelWidget;
-typedef struct _FaderButtonsWidget FaderButtonsWidget;
+typedef struct _RotatedLabelWidget
+  RotatedLabelWidget;
+typedef struct _FaderButtonsWidget
+  FaderButtonsWidget;
 
 /**
  * @addtogroup widgets

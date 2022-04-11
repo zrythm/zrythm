@@ -84,7 +84,8 @@ typedef enum
   Z_UTILS_LOG_ERROR_FAILED,
 } ZUtilsLogError;
 
-#define Z_UTILS_LOG_ERROR z_utils_log_error_quark ()
+#define Z_UTILS_LOG_ERROR \
+  z_utils_log_error_quark ()
 GQuark
 z_utils_log_error_quark (void);
 G_DEFINE_QUARK (
@@ -536,9 +537,11 @@ log_writer_format_fields (
         log_domain = field->value;
       /*else if (g_strcmp0 (field->key, "CODE_FILE") == 0)*/
       /*file = field->value;*/
-      else if (g_strcmp0 (field->key, "CODE_FUNC") == 0)
+      else if (
+        g_strcmp0 (field->key, "CODE_FUNC") == 0)
         func = field->value;
-      else if (g_strcmp0 (field->key, "CODE_LINE") == 0)
+      else if (
+        g_strcmp0 (field->key, "CODE_LINE") == 0)
         line = field->value;
     }
 
@@ -586,7 +589,8 @@ log_writer_format_fields (
   now_secs = (time_t) (now / 1000000);
   now_tm = localtime (&now_secs);
   strftime (
-    time_buf, sizeof (time_buf), "%H:%M:%S", now_tm);
+    time_buf, sizeof (time_buf), "%H:%M:%S",
+    now_tm);
 
   g_string_append_printf (
     gstring,
@@ -799,8 +803,8 @@ log_idle_cb (Log * self)
 
   /* write queued messages */
   LogEvent * ev;
-  while (
-    mpmc_queue_dequeue (self->mqueue, (void *) &ev))
+  while (mpmc_queue_dequeue (
+    self->mqueue, (void *) &ev))
     {
       write_str (self, ev->log_level, ev->message);
 
@@ -1007,8 +1011,8 @@ log_writer (
   if (self->initialized)
     {
       /* queue the message */
-      LogEvent * ev = (LogEvent *) object_pool_get (
-        self->obj_pool);
+      LogEvent * ev = (LogEvent *)
+        object_pool_get (self->obj_pool);
       ev->log_level = log_level;
       ev->message = str;
 
@@ -1121,7 +1125,7 @@ free_log_event_obj (LogEvent * ev)
 #define LINE_SIZE 800
 typedef struct Line
 {
-  char   line[LINE_SIZE]; // content
+  char line[LINE_SIZE]; // content
   size_t storage_sz; // allocation size of line memory
   size_t
     sz; // size of line, not including terminating null byte ('\0')
@@ -1301,8 +1305,8 @@ log_generate_compressed_file (
     *ret_dir == NULL && *ret_path == NULL, false);
 
   GError * err = NULL;
-  char *   log_file_tmpdir =
-    g_dir_make_tmp ("zrythm-log-file-XXXXXX", &err);
+  char *   log_file_tmpdir = g_dir_make_tmp (
+      "zrythm-log-file-XXXXXX", &err);
   if (!log_file_tmpdir)
     {
       g_set_error_literal (
@@ -1313,7 +1317,8 @@ log_generate_compressed_file (
     }
 
   /* get zstd-compressed text */
-  char * log_txt = log_get_last_n_lines (LOG, 40000);
+  char * log_txt =
+    log_get_last_n_lines (LOG, 40000);
   g_return_val_if_fail (log_txt, false);
   size_t log_txt_sz = strlen (log_txt);
   size_t compress_bound =

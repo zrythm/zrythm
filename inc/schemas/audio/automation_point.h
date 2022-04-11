@@ -45,7 +45,9 @@ static const cyaml_schema_field_t
       AutomationPoint_v1,
       base,
       arranger_object_fields_schema_v1),
-    YAML_FIELD_INT (AutomationPoint_v1, schema_version),
+    YAML_FIELD_INT (
+      AutomationPoint_v1,
+      schema_version),
     YAML_FIELD_FLOAT (AutomationPoint_v1, fvalue),
     YAML_FIELD_FLOAT (
       AutomationPoint_v1,

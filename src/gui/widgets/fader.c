@@ -303,8 +303,8 @@ show_context_menu (
 
   char tmp[600];
   sprintf (tmp, "app.reset-fader::%p", self->fader);
-  menuitem =
-    z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
+  menuitem = z_gtk_create_menu_item (
+    _ ("Reset"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
   sprintf (
@@ -430,7 +430,8 @@ fader_widget_init (FaderWidget * self)
   self->start_color = UI_COLORS->fader_fill_start;
   self->end_color = UI_COLORS->fader_fill_end;
 
-  gtk_widget_set_focusable (GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (
+    GTK_WIDGET (self), true);
 
   self->popover_menu = GTK_POPOVER_MENU (
     gtk_popover_menu_new_from_model (NULL));
@@ -515,7 +516,8 @@ fader_widget_init (FaderWidget * self)
 static void
 fader_widget_class_init (FaderWidgetClass * klass)
 {
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   wklass->snapshot = fader_snapshot;
   gtk_widget_class_set_css_name (wklass, "fader");
 

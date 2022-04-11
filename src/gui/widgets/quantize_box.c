@@ -68,7 +68,8 @@ static void
 quantize_box_widget_class_init (
   QuantizeBoxWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "quantize_box.ui");
   gtk_widget_class_set_css_name (

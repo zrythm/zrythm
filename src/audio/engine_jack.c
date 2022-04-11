@@ -75,7 +75,8 @@ engine_jack_handle_sample_rate_change (
   if (P_TEMPO_TRACK)
     {
       int beats_per_bar =
-        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
       engine_update_frames_per_tick (
         self, beats_per_bar,
         tempo_track_get_current_bpm (P_TEMPO_TRACK),
@@ -144,7 +145,8 @@ engine_jack_handle_buf_size_change (
   AudioEngine * self,
   uint32_t      frames)
 {
-  engine_realloc_port_buffers (AUDIO_ENGINE, frames);
+  engine_realloc_port_buffers (
+    AUDIO_ENGINE, frames);
 #  ifdef HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
   AUDIO_ENGINE->midi_buf_size =
     jack_port_type_get_buffer_size (
@@ -413,7 +415,8 @@ port_connect_cb (
       if (ext_port)
         {
           g_message (
-            "setting '%s' to pending reconnect", id);
+            "setting '%s' to pending reconnect",
+            id);
           ext_port->pending_reconnect = true;
         }
       g_free (id);
@@ -586,7 +589,8 @@ engine_jack_setup (AudioEngine * self)
   ret = jack_set_port_connect_callback (
     self->client, port_connect_cb, self);
   g_return_val_if_fail (ret == 0, -1);
-  jack_on_shutdown (self->client, shutdown_cb, self);
+  jack_on_shutdown (
+    self->client, shutdown_cb, self);
   /*jack_set_latency_callback(client, &jack_latency_cb, arg);*/
 #  ifdef JALV_JACK_SESSION
   /*jack_set_session_callback(client, &jack_session_cb, arg);*/
@@ -703,7 +707,8 @@ engine_jack_reconnect_monitor (
     S_MONITOR, left ? "l-devices" : "r-devices");
 
   Port * port =
-    left ? self->monitor_out->l : self->monitor_out->r;
+    left ? self->monitor_out->l
+         : self->monitor_out->r;
 
   /* disconnect port */
   int ret = jack_port_disconnect (
@@ -713,7 +718,8 @@ engine_jack_reconnect_monitor (
       char msg[600];
       engine_jack_get_error_message (ret, msg);
       g_critical (
-        "failed to disconnect monitor out: %s", msg);
+        "failed to disconnect monitor out: %s",
+        msg);
       return ret;
     }
 
@@ -730,7 +736,8 @@ engine_jack_reconnect_monitor (
           /*g_return_val_if_reached (-1);*/
           ret = jack_connect (
             self->client,
-            jack_port_name (JACK_PORT_T (port->data)),
+            jack_port_name (
+              JACK_PORT_T (port->data)),
             ext_port->full_name);
           if (ret)
             {
@@ -835,8 +842,8 @@ engine_jack_activate (
         {
           return -1;
         }
-      ret =
-        engine_jack_reconnect_monitor (self, false);
+      ret = engine_jack_reconnect_monitor (
+        self, false);
       if (ret)
         {
           return -1;
@@ -890,7 +897,8 @@ engine_jack_is_pipewire (AudioEngine * self)
   void * lib_handle = dlopen (libname, RTLD_LAZY);
   g_return_val_if_fail (lib_handle, false);
 
-  const char * func_name = "jack_get_version_string";
+  const char * func_name =
+    "jack_get_version_string";
 
   const char * (*jack_get_version_string) (void);
   *(void **) (&jack_get_version_string) =
@@ -898,7 +906,8 @@ engine_jack_is_pipewire (AudioEngine * self)
   if (!jack_get_version_string)
     {
       g_message (
-        "%s () not found in %s", func_name, libname);
+        "%s () not found in %s", func_name,
+        libname);
       return false;
     }
   else

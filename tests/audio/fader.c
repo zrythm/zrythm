@@ -82,8 +82,8 @@ test_fader_process (void)
 
   (void) test_fader_process_with_instrument;
   test_fader_process_with_instrument (
-    TEST_INSTRUMENT_BUNDLE_URI, TEST_INSTRUMENT_URI,
-    true);
+    TEST_INSTRUMENT_BUNDLE_URI,
+    TEST_INSTRUMENT_URI, true);
 
   test_helper_zrythm_cleanup ();
 }
@@ -96,7 +96,8 @@ track_has_sound (Track * track)
     {
       if (
         fabsf (
-          track->channel->fader->stereo_out->l->buf[i])
+          track->channel->fader->stereo_out->l
+            ->buf[i])
         > 0.0001f)
         {
           return true;
@@ -106,7 +107,9 @@ track_has_sound (Track * track)
 }
 
 static void
-test_track_has_sound (Track * track, bool expect_sound)
+test_track_has_sound (
+  Track * track,
+  bool    expect_sound)
 {
   Position pos;
   position_set_to_bar (&pos, 1);

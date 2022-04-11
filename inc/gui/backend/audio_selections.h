@@ -22,7 +22,8 @@
 
 #define AUDIO_SELECTIONS_SCHEMA_VERSION 1
 
-#define AUDIO_SELECTIONS (PROJECT->audio_selections)
+#define AUDIO_SELECTIONS \
+  (PROJECT->audio_selections)
 
 /**
  * Selections to be used for the AudioArrangerWidget's

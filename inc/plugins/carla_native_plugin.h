@@ -298,7 +298,8 @@ carla_native_plugin_activate (
 
 NONNULL
 void
-carla_native_plugin_close (CarlaNativePlugin * self);
+carla_native_plugin_close (
+  CarlaNativePlugin * self);
 
 bool
 carla_native_plugin_has_custom_ui (

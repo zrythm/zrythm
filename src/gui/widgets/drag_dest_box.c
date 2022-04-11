@@ -110,8 +110,8 @@ on_dnd_leave (
     return;
 
   gdk_drop_read_value_async (
-    drop, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, 0,
-    NULL, on_dnd_leave_value_ready, self);
+    drop, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
+    0, NULL, on_dnd_leave_value_ready, self);
 }
 
 static void
@@ -164,7 +164,8 @@ on_dnd_motion_value_ready (
         wrapped_obj->type
         == WRAPPED_OBJECT_TYPE_TRACK)
         {
-          dropped_track = (Track *) wrapped_obj->obj;
+          dropped_track =
+            (Track *) wrapped_obj->obj;
         }
     }
 
@@ -281,7 +282,8 @@ on_dnd_drop (
         wrapped_obj->type
         == WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
         {
-          pd = (PluginDescriptor *) wrapped_obj->obj;
+          pd =
+            (PluginDescriptor *) wrapped_obj->obj;
         }
       else if (
         wrapped_obj->type
@@ -298,7 +300,8 @@ on_dnd_drop (
       char ** uris = NULL;
       if (G_VALUE_HOLDS (value, G_TYPE_FILE))
         {
-          GFile * gfile = g_value_get_object (value);
+          GFile * gfile =
+            g_value_get_object (value);
           StrvBuilder * uris_builder =
             strv_builder_new ();
           char * uri = g_file_get_uri (gfile);
@@ -347,7 +350,8 @@ on_dnd_drop (
           bool     ret =
             mixer_selections_action_perform_create (
               PLUGIN_SLOT_MODULATOR,
-              track_get_name_hash (P_MODULATOR_TRACK),
+              track_get_name_hash (
+                P_MODULATOR_TRACK),
               P_MODULATOR_TRACK->num_modulators,
               setting, 1, &err);
           if (!ret)
@@ -477,7 +481,8 @@ show_context_menu (
 
   GMenu * group_submenu = g_menu_new ();
   menuitem = z_gtk_create_menu_item (
-    _ (track_type_to_string (TRACK_TYPE_AUDIO_GROUP)),
+    _ (track_type_to_string (
+      TRACK_TYPE_AUDIO_GROUP)),
     NULL, "app.create-audio-group-track");
   g_menu_append_item (group_submenu, menuitem);
   menuitem = z_gtk_create_menu_item (
@@ -527,7 +532,8 @@ on_click_pressed (
   tracklist_selections_select_last_visible (
     TRACKLIST_SELECTIONS);
 
-  PROJECT->last_selection = SELECTION_TYPE_TRACKLIST;
+  PROJECT->last_selection =
+    SELECTION_TYPE_TRACKLIST;
   EVENTS_PUSH (
     ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
 }
@@ -556,8 +562,8 @@ setup_dnd (DragDestBoxWidget * self)
     drop_target, "drop", G_CALLBACK (on_dnd_drop),
     self);
   g_signal_connect (
-    drop_target, "leave", G_CALLBACK (on_dnd_leave),
-    self);
+    drop_target, "leave",
+    G_CALLBACK (on_dnd_leave), self);
 }
 
 /**
@@ -606,7 +612,8 @@ drag_dest_box_widget_init (DragDestBoxWidget * self)
   self->popover_menu = GTK_POPOVER_MENU (
     gtk_popover_menu_new_from_model (NULL));
   gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
 
   self->click =
     GTK_GESTURE_CLICK (gtk_gesture_click_new ());
@@ -658,7 +665,8 @@ static void
 drag_dest_box_widget_class_init (
   DragDestBoxWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "drag-dest-box");
 }

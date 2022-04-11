@@ -101,8 +101,9 @@ get_enclosed_velocities (
     object_new_n (velocities_size, Velocity *);
   *num_vels = 0;
   midi_region_get_velocities_in_range (
-    region, &selection_start_pos, &selection_end_pos,
-    &velocities, num_vels, &velocities_size, hit);
+    region, &selection_start_pos,
+    &selection_end_pos, &velocities, num_vels,
+    &velocities_size, hit);
 
   return velocities;
 }
@@ -118,8 +119,8 @@ midi_modifier_arranger_widget_select_vels_in_range (
     self, offset_x, &num_velocities, true);
 
   arranger_selections_clear (
-    (ArrangerSelections *) MA_SELECTIONS, F_NO_FREE,
-    F_NO_PUBLISH_EVENTS);
+    (ArrangerSelections *) MA_SELECTIONS,
+    F_NO_FREE, F_NO_PUBLISH_EVENTS);
   for (int i = 0; i < num_velocities; i++)
     {
       Velocity * vel = velocities[i];
@@ -196,8 +197,8 @@ midi_modifier_arranger_widget_ramp (
       MidiNote * mn = velocity_get_midi_note (vel);
       midi_note_get_global_start_pos (
         mn, &start_pos);
-      px =
-        ui_pos_to_px_editor (&start_pos, F_PADDING);
+      px = ui_pos_to_px_editor (
+        &start_pos, F_PADDING);
 
       x1 = self->start_x;
       x2 = self->start_x + offset_x;
@@ -277,13 +278,14 @@ midi_modifier_arranger_widget_resize_velocities (
   /*vel->widget, 1);*/
   /*g_message ("diff %d", diff);*/
 
-  for (int i = 0; i < MA_SELECTIONS->num_midi_notes;
-       i++)
+  for (int i = 0;
+       i < MA_SELECTIONS->num_midi_notes; i++)
     {
       Velocity * vel =
         MA_SELECTIONS->midi_notes[i]->vel;
       Velocity * vel_at_start =
-        ((MidiArrangerSelections *) self->sel_at_start)
+        ((MidiArrangerSelections *)
+           self->sel_at_start)
           ->midi_notes[i]
           ->vel;
 

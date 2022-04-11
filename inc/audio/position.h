@@ -392,7 +392,9 @@ position_to_string_full (
  */
 NONNULL
 void
-position_to_string (const Position * pos, char * buf);
+position_to_string (
+  const Position * pos,
+  char *           buf);
 
 /**
  * Parses a position from the given string.

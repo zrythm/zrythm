@@ -181,7 +181,8 @@ draw_arranger_object (
           obj = obj->transient;
         }
 
-      arranger_object_set_full_rectangle (obj, self);
+      arranger_object_set_full_rectangle (
+        obj, self);
 
       /* only draw if the object's rectangle is
        * hit by the drawable region (for regions,
@@ -195,8 +196,10 @@ draw_arranger_object (
         arranger_object_get_track (obj);
       bool should_be_visible =
         (track->visible
-         && self->is_pinned == track_is_pinned (track))
-        || self->type != ARRANGER_WIDGET_TYPE_TIMELINE;
+         && self->is_pinned
+              == track_is_pinned (track))
+        || self->type
+             != ARRANGER_WIDGET_TYPE_TIMELINE;
 
       if (rect_hit_or_region && should_be_visible)
         {
@@ -373,7 +376,8 @@ draw_timeline_bg (
                       0.7f, 0.7f, 0.7f, 0.4f),
                     &GRAPHENE_RECT_INIT (
                       0,
-                      (float) OFFSET_PLUS_TOTAL_HEIGHT,
+                      (float)
+                        OFFSET_PLUS_TOTAL_HEIGHT,
                       width, 1));
                 }
 
@@ -412,7 +416,8 @@ draw_timeline_bg (
                       0.7f, 0.7f, 0.7f, 0.2f),
                     &GRAPHENE_RECT_INIT (
                       0,
-                      (float) OFFSET_PLUS_TOTAL_HEIGHT,
+                      (float)
+                        OFFSET_PLUS_TOTAL_HEIGHT,
                       width, 1));
                 }
 
@@ -480,7 +485,8 @@ draw_midi_bg (
         {
           gtk_snapshot_append_color (
             snapshot,
-            &Z_GDK_RGBA_INIT (0.7f, 0.7f, 0.7f, 0.5f),
+            &Z_GDK_RGBA_INIT (
+              0.7f, 0.7f, 0.7f, 0.5f),
             &GRAPHENE_RECT_INIT (
               0, (float) y_offset, width, 1));
           if (piano_roll_is_key_black (
@@ -863,8 +869,8 @@ draw_vertical_lines (
               gtk_snapshot_append_color (
                 snapshot, &thinner_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0, thinner_width,
-                  height));
+                  (float) curr_px, 0,
+                  thinner_width, height));
             }
         }
       i = 0;
@@ -937,8 +943,8 @@ draw_vertical_lines (
               gtk_snapshot_append_color (
                 snapshot, &thinner_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0, thinner_width,
-                  height));
+                  (float) curr_px, 0,
+                  thinner_width, height));
             }
         }
       i = 0;
@@ -1004,7 +1010,8 @@ arranger_snapshot (
   GtkWidget *   widget,
   GtkSnapshot * snapshot)
 {
-  ArrangerWidget * self = Z_ARRANGER_WIDGET (widget);
+  ArrangerWidget * self =
+    Z_ARRANGER_WIDGET (widget);
   GtkScrolledWindow * scroll =
     arranger_widget_get_scrolled_window (self);
   graphene_rect_t visible_rect;
@@ -1147,7 +1154,8 @@ arranger_snapshot (
     {
       Position *range_first_pos, *range_second_pos;
       if (position_is_before_or_equal (
-            &TRANSPORT->range_1, &TRANSPORT->range_2))
+            &TRANSPORT->range_1,
+            &TRANSPORT->range_2))
         {
           range_first_pos =
             &AUDIO_SELECTIONS->sel_start;
@@ -1175,7 +1183,8 @@ arranger_snapshot (
       /* in order they appear */
       Position *range_first_pos, *range_second_pos;
       if (position_is_before_or_equal (
-            &TRANSPORT->range_1, &TRANSPORT->range_2))
+            &TRANSPORT->range_1,
+            &TRANSPORT->range_2))
         {
           range_first_pos = &TRANSPORT->range_1;
           range_second_pos = &TRANSPORT->range_2;
@@ -1188,8 +1197,8 @@ arranger_snapshot (
 
       range_first_px =
         ui_pos_to_px_timeline (range_first_pos, 1);
-      range_second_px =
-        ui_pos_to_px_timeline (range_second_pos, 1);
+      range_second_px = ui_pos_to_px_timeline (
+        range_second_pos, 1);
       have_range = true;
     }
 
@@ -1242,14 +1251,16 @@ arranger_snapshot (
   for (size_t j = 0;
        j < self->hit_objs_to_draw->len; j++)
     {
-      ArrangerObject * obj = (ArrangerObject *)
-        g_ptr_array_index (self->hit_objs_to_draw, j);
+      ArrangerObject * obj =
+        (ArrangerObject *) g_ptr_array_index (
+          self->hit_objs_to_draw, j);
       draw_arranger_object (
         self, obj, snapshot, &visible_rect_gdk);
     }
 
   /* draw dnd highlight */
-  draw_highlight (self, snapshot, &visible_rect_gdk);
+  draw_highlight (
+    self, snapshot, &visible_rect_gdk);
 
   /* draw selections */
   draw_selections (self, snapshot);

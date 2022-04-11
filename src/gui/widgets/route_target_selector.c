@@ -110,7 +110,8 @@ route_target_selector_widget_refresh (
    * internally */
   GtkWidget * parent_box =
     gtk_widget_get_parent (GTK_WIDGET (self->box));
-  gtk_widget_set_halign (parent_box, GTK_ALIGN_FILL);
+  gtk_widget_set_halign (
+    parent_box, GTK_ALIGN_FILL);
 }
 
 void
@@ -129,7 +130,8 @@ route_target_selector_widget_new (Channel * channel)
   RouteTargetSelectorWidget * self = g_object_new (
     ROUTE_TARGET_SELECTOR_WIDGET_TYPE, NULL);
 
-  route_target_selector_widget_setup (self, channel);
+  route_target_selector_widget_setup (
+    self, channel);
 
   return self;
 }
@@ -174,7 +176,8 @@ route_target_selector_widget_init (
   gtk_widget_set_name (
     GTK_WIDGET (self->box),
     "route-target-selector-menubutton-box");
-  self->img = GTK_IMAGE (gtk_image_new_from_icon_name (
+  self
+    ->img = GTK_IMAGE (gtk_image_new_from_icon_name (
     "gnome-builder-debug-step-out-symbolic-light"));
 
   self->label =
@@ -185,7 +188,8 @@ route_target_selector_widget_init (
   gtk_label_set_ellipsize (
     self->label, PANGO_ELLIPSIZE_END);
 
-  gtk_box_append (self->box, GTK_WIDGET (self->img));
+  gtk_box_append (
+    self->box, GTK_WIDGET (self->img));
   gtk_box_append (
     self->box, GTK_WIDGET (self->label));
   gtk_menu_button_set_child (

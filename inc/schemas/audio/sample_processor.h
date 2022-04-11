@@ -51,7 +51,9 @@ typedef struct SampleProcessor_v1
 
 static const cyaml_schema_field_t
   sample_processor_fields_schema_v1[] = {
-    YAML_FIELD_INT (SampleProcessor_v1, schema_version),
+    YAML_FIELD_INT (
+      SampleProcessor_v1,
+      schema_version),
     YAML_FIELD_MAPPING_PTR (
       SampleProcessor_v1,
       stereo_out,

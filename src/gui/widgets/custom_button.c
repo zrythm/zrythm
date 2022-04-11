@@ -73,7 +73,8 @@ custom_button_widget_new (
   const int texture_size = self->size - 2;
   self->icon_texture =
     z_gdk_texture_new_from_icon_name (
-      self->icon_name, texture_size, texture_size, 1);
+      self->icon_name, texture_size, texture_size,
+      1);
   if (!self->icon_texture)
     {
       g_critical (
@@ -127,7 +128,8 @@ draw_bg (
 {
   GskRoundedRect rounded_rect;
   graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
-    (float) x, (float) y, (float) width, self->size);
+    (float) x, (float) y, (float) width,
+    self->size);
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &graphene_rect,
     (float) self->corner_radius);
@@ -272,7 +274,8 @@ custom_button_widget_draw_with_text (
     layout,
     pango_units_from_double (x + width - text_x));
   gtk_snapshot_append_layout (
-    snapshot, layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+    snapshot, layout,
+    &Z_GDK_RGBA_INIT (1, 1, 1, 1));
   gtk_snapshot_restore (snapshot);
 
   self->width = (int) width;
@@ -306,7 +309,8 @@ custom_button_widget_set_text (
 }
 
 void
-custom_button_widget_free (CustomButtonWidget * self)
+custom_button_widget_free (
+  CustomButtonWidget * self)
 {
   object_free_w_func_and_null (g_free, self->text);
   object_free_w_func_and_null (

@@ -105,7 +105,8 @@ engine_sdl_setup (AudioEngine * self)
       S_P_GENERAL_ENGINE, "sample-rate"));
   req_specs.format = AUDIO_F32SYS;
   req_specs.channels = 2;
-  req_specs.samples = engine_buffer_size_enum_to_int (
+  req_specs
+    .samples = engine_buffer_size_enum_to_int (
     (AudioEngineBufferSize) g_settings_get_enum (
       S_P_GENERAL_ENGINE, "buffer-size"));
   req_specs.callback =
@@ -166,7 +167,9 @@ engine_sdl_setup (AudioEngine * self)
 }
 
 void
-engine_sdl_activate (AudioEngine * self, bool activate)
+engine_sdl_activate (
+  AudioEngine * self,
+  bool          activate)
 {
   if (activate)
     {

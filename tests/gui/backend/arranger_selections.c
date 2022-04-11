@@ -166,7 +166,8 @@ main (int argc, char * argv[])
   "/gui/backend/arranger selections/"
 
   g_test_add_func (
-    TEST_PREFIX "test contains object with property",
+    TEST_PREFIX
+    "test contains object with property",
     (GTestFunc) test_contains_object_with_property);
   g_test_add_func (
     TEST_PREFIX "test get last object",

@@ -69,7 +69,8 @@ right_dock_edge_widget_setup (
       self->right_notebook);
   int page_num =
     g_settings_get_int (S_UI, "right-panel-tab");
-  gtk_notebook_set_current_page (notebook, page_num);
+  gtk_notebook_set_current_page (
+    notebook, page_num);
 
   g_signal_connect (
     G_OBJECT (notebook), "switch-page",
@@ -84,7 +85,8 @@ right_dock_edge_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->right_notebook->pos_in_paned = GTK_POS_RIGHT;
+  self->right_notebook->pos_in_paned =
+    GTK_POS_RIGHT;
 
   GtkBox *      box;
   GtkNotebook * notebook =
@@ -129,7 +131,8 @@ right_dock_edge_widget_init (
     GTK_WIDGET (self->monitor_section));
   foldable_notebook_widget_add_page (
     self->right_notebook, GTK_WIDGET (box),
-    "speaker", _ ("Monitor"), _ ("Monitor section"));
+    "speaker", _ ("Monitor"),
+    _ ("Monitor section"));
 
   /* add chord preset browser */
   self->chord_pack_browser =
@@ -162,7 +165,8 @@ static void
 right_dock_edge_widget_class_init (
   RightDockEdgeWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "right_dock_edge.ui");
 

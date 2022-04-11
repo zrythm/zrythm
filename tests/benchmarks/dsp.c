@@ -158,7 +158,8 @@ _test_dsp_fill (bool optimized, bool large_buff)
   LOOP_END ("mix2", optimized);
 
   LOOP_START
-  dsp_mix_add2 (buf, src, src, 0.1f, 0.2f, buf_size);
+  dsp_mix_add2 (
+    buf, src, src, 0.1f, 0.2f, buf_size);
   LOOP_END ("mix_add2", optimized);
 
   free (buf);

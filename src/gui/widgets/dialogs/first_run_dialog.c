@@ -83,7 +83,8 @@ first_run_dialog_widget_ok (
   /* start plugin scanning in another thread */
   zrythm_app->init_thread = g_thread_new (
     "scan_plugins_after_first_run_thread",
-    (GThreadFunc) scan_plugins_after_first_run_thread,
+    (GThreadFunc)
+      scan_plugins_after_first_run_thread,
     zrythm_app);
 
   /* set a source func in the main GTK thread to

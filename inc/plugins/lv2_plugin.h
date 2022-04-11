@@ -624,7 +624,9 @@ lv2_plugin_allocate_port_buffers (
 
 NONNULL
 int
-lv2_plugin_activate (Lv2Plugin * self, bool activate);
+lv2_plugin_activate (
+  Lv2Plugin * self,
+  bool        activate);
 
 /**
  * Returns whether the plugin can be cleaned up

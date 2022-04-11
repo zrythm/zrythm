@@ -113,7 +113,8 @@ timeline_arranger_widget_get_track_lane_at_y (
   double           y)
 {
   Track * track =
-    timeline_arranger_widget_get_track_at_y (self, y);
+    timeline_arranger_widget_get_track_at_y (
+      self, y);
   if (!track || !track->lanes_visible)
     return NULL;
 
@@ -181,7 +182,8 @@ timeline_arranger_widget_get_at_at_y (
   double           y)
 {
   Track * track =
-    timeline_arranger_widget_get_track_at_y (self, y);
+    timeline_arranger_widget_get_track_at_y (
+      self, y);
   if (!track)
     return NULL;
 
@@ -273,7 +275,8 @@ timeline_arranger_widget_create_region (
       break;
     }
 
-  ArrangerObject * r_obj = (ArrangerObject *) region;
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
   self->start_object = r_obj;
   /*region_set_end_pos (*/
   /*region, &end_pos, AO_UPDATE_ALL);*/
@@ -348,8 +351,9 @@ timeline_arranger_widget_create_chord_or_scale (
   double           y,
   const Position * pos)
 {
-  int track_height = gtk_widget_get_allocated_height (
-    GTK_WIDGET (track->widget));
+  int track_height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (track->widget));
   double wy;
   gtk_widget_translate_coordinates (
     GTK_WIDGET (self), GTK_WIDGET (track->widget),
@@ -383,7 +387,7 @@ timeline_arranger_widget_create_scale (
   /* create a new scale */
   MusicalScale * descr =
     musical_scale_new (SCALE_AEOLIAN, NOTE_A);
-  ScaleObject *    scale = scale_object_new (descr);
+  ScaleObject * scale = scale_object_new (descr);
   ArrangerObject * scale_obj =
     (ArrangerObject *) scale;
 
@@ -421,7 +425,8 @@ timeline_arranger_widget_create_marker (
   self->action = UI_OVERLAY_ACTION_CREATING_MOVING;
 
   /* create a new marker */
-  Marker * marker = marker_new (_ ("Custom Marker"));
+  Marker * marker =
+    marker_new (_ ("Custom Marker"));
   ArrangerObject * marker_obj =
     (ArrangerObject *) marker;
 
@@ -452,7 +457,8 @@ timeline_arranger_widget_set_select_type (
   double           y)
 {
   Track * track =
-    timeline_arranger_widget_get_track_at_y (self, y);
+    timeline_arranger_widget_get_track_at_y (
+      self, y);
 
   if (track)
     {
@@ -526,8 +532,9 @@ snap_region_l (
         track, NULL, self->snap_grid);
     }
 
-  ArrangerObject * r_obj = (ArrangerObject *) region;
-  Position         cmp_pos;
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
+  Position cmp_pos;
   if (type == ARRANGER_OBJECT_RESIZE_FADE)
     {
       cmp_pos = r_obj->fade_out_pos;
@@ -550,7 +557,8 @@ snap_region_l (
             ARRANGER_OBJECT_POSITION_TYPE_FADE_IN);
           diff =
             position_to_ticks (new_pos)
-            - position_to_ticks (&r_obj->fade_in_pos);
+            - position_to_ticks (
+              &r_obj->fade_in_pos);
         }
       else
         {
@@ -619,7 +627,8 @@ timeline_arranger_widget_snap_regions_l (
   ZRegion *        region;
   ArrangerObject * r_obj;
   int              ret;
-  for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
+  for (int i = 0; i < TL_SELECTIONS->num_regions;
+       i++)
     {
       /* main trans region */
       region = TL_SELECTIONS->regions[i];
@@ -694,7 +703,8 @@ snap_region_r (
         track, NULL, self->snap_grid);
     }
 
-  ArrangerObject * r_obj = (ArrangerObject *) region;
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
   if (type == ARRANGER_OBJECT_RESIZE_FADE)
     {
       Position tmp;
@@ -815,7 +825,8 @@ timeline_arranger_widget_snap_regions_r (
   ZRegion *        region;
   ArrangerObject * r_obj;
   int              ret;
-  for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
+  for (int i = 0; i < TL_SELECTIONS->num_regions;
+       i++)
     {
       region = TL_SELECTIONS->regions[i];
       r_obj = (ArrangerObject *) region;
@@ -861,7 +872,8 @@ timeline_arranger_widget_snap_range_r (
         && !self->shift_held)
         {
           position_snap_simple (
-            &TRANSPORT->range_1, SNAP_GRID_TIMELINE);
+            &TRANSPORT->range_1,
+            SNAP_GRID_TIMELINE);
         }
       position_set_to_pos (
         &TRANSPORT->range_2, &TRANSPORT->range_1);
@@ -908,7 +920,8 @@ create_fade_preset_menu (
   g_ptr_array_unref (psets);
 
   g_menu_append_section (
-    menu, _ ("Fade Preset"), G_MENU_MODEL (section));
+    menu, _ ("Fade Preset"),
+    G_MENU_MODEL (section));
 }
 
 #if 0
@@ -1084,7 +1097,8 @@ timeline_arranger_widget_show_context_menu (
                   menuitem = z_gtk_create_menu_item (
                     _ ("Detect BPM"), NULL, tmp);
                   g_menu_append_item (
-                    audio_regions_submenu, menuitem);
+                    audio_regions_submenu,
+                    menuitem);
                   /* create fade menus */
                   if (arranger_object_is_fade_in (
                         obj, local_x, local_y, 0, 0))
@@ -1142,7 +1156,8 @@ timeline_arranger_widget_show_context_menu (
                   region_functions_subsubmenu));
               g_menu_append_section (
                 menu, _ ("Audio Regions"),
-                G_MENU_MODEL (audio_regions_submenu));
+                G_MENU_MODEL (
+                  audio_regions_submenu));
             }
 
           if (arranger_object_get_muted (obj, false))
@@ -1207,7 +1222,8 @@ timeline_arranger_widget_fade_up (
   double           offset_y,
   int              fade_in)
 {
-  for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
+  for (int i = 0; i < TL_SELECTIONS->num_regions;
+       i++)
     {
       ZRegion * r = TL_SELECTIONS->regions[i];
       ArrangerObject * obj = (ArrangerObject *) r;
@@ -1305,7 +1321,8 @@ on_dnd_drop (
   ArrangerWidget * self = Z_ARRANGER_WIDGET (data);
 
   Track * track =
-    timeline_arranger_widget_get_track_at_y (self, y);
+    timeline_arranger_widget_get_track_at_y (
+      self, y);
   TrackLane * lane =
     timeline_arranger_widget_get_track_lane_at_y (
       self, y);
@@ -1405,7 +1422,8 @@ on_dnd_drop (
       char ** uris = NULL;
       if (G_VALUE_HOLDS (value, G_TYPE_FILE))
         {
-          GFile * gfile = g_value_get_object (value);
+          GFile * gfile =
+            g_value_get_object (value);
           StrvBuilder * uris_builder =
             strv_builder_new ();
           char * uri = g_file_get_uri (gfile);
@@ -1619,6 +1637,6 @@ timeline_arranger_setup_drag_dest (
     G_CALLBACK (on_dnd_motion), self);
 #endif
   g_signal_connect (
-    drop_target, "leave", G_CALLBACK (on_dnd_leave),
-    self);
+    drop_target, "leave",
+    G_CALLBACK (on_dnd_leave), self);
 }

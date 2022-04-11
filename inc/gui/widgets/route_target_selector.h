@@ -62,7 +62,8 @@ typedef struct _RouteTargetSelectorWidget
 } RouteTargetSelectorWidget;
 
 RouteTargetSelectorWidget *
-route_target_selector_widget_new (Channel * channel);
+route_target_selector_widget_new (
+  Channel * channel);
 
 void
 route_target_selector_widget_setup (

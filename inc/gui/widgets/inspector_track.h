@@ -49,8 +49,9 @@ typedef struct _PluginStripExpanderWidget
   PluginStripExpanderWidget;
 typedef struct _FaderControlsExpanderWidget
   FaderControlsExpanderWidget;
-typedef struct _TextExpanderWidget TextExpanderWidget;
-typedef struct _ColorAreaWidget    ColorAreaWidget;
+typedef struct _TextExpanderWidget
+                                TextExpanderWidget;
+typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct _ChannelSendsExpanderWidget
   ChannelSendsExpanderWidget;
 

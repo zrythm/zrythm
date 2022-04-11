@@ -311,7 +311,8 @@ snap_grid_get_nearby_snap_point (
     fmod (pos->ticks, snap_ticks);
   if (return_prev)
     {
-      position_add_ticks (ret_pos, -ticks_from_prev);
+      position_add_ticks (
+        ret_pos, -ticks_from_prev);
     }
   else
     {

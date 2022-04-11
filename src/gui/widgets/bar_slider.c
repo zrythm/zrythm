@@ -52,7 +52,8 @@ get_real_val (BarSliderWidget * self, bool snapped)
     {
       if (snapped && self->snapped_getter)
         {
-          return self->snapped_getter (self->object);
+          return self->snapped_getter (
+            self->object);
         }
       else
         {
@@ -422,7 +423,8 @@ bar_slider_widget_init (BarSliderWidget * self)
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (self->drag));
 
-  gtk_widget_set_focusable (GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (
+    GTK_WIDGET (self), true);
 }
 
 static void

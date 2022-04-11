@@ -97,8 +97,8 @@ tick_cb (
         {
           char str[100];
           sprintf (
-            str, "<b>Ch%d - %s</b>", ctrl_change_ch,
-            ctrl_change);
+            str, "<b>Ch%d - %s</b>",
+            ctrl_change_ch, ctrl_change);
           gtk_label_set_markup (self->lbl, str);
         }
       else if (port_is_toggle)
@@ -134,8 +134,8 @@ bind_cc_dialog_widget_new (
   Port * port,
   bool   perform_action)
 {
-  BindCcDialogWidget * self =
-    g_object_new (BIND_CC_DIALOG_WIDGET_TYPE, NULL);
+  BindCcDialogWidget * self = g_object_new (
+    BIND_CC_DIALOG_WIDGET_TYPE, NULL);
 
   self->port = port;
   self->perform_action = perform_action;
@@ -148,7 +148,8 @@ finalize (BindCcDialogWidget * self)
 {
   AUDIO_ENGINE->capture_cc = 0;
 
-  G_OBJECT_CLASS (bind_cc_dialog_widget_parent_class)
+  G_OBJECT_CLASS (
+    bind_cc_dialog_widget_parent_class)
     ->finalize (G_OBJECT (self));
 }
 
@@ -156,7 +157,8 @@ static void
 bind_cc_dialog_widget_class_init (
   BindCcDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "bind_cc_dialog.ui");
 

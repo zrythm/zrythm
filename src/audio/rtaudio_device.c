@@ -111,7 +111,8 @@ rtaudio_device_new (
       for (int i = 0; i < dev_count; i++)
         {
           rtaudio_device_info_t cur_dev_nfo =
-            rtaudio_get_device_info (self->handle, i);
+            rtaudio_get_device_info (
+              self->handle, i);
           if (string_is_equal (
                 cur_dev_nfo.name, device_name))
             {
@@ -153,7 +154,8 @@ rtaudio_device_open (RtAudioDevice * self, int start)
     rtaudio_get_device_info (
       self->handle, (int) self->id);
   g_message (
-    "RtAudio device %d: %s", self->id, dev_nfo.name);
+    "RtAudio device %d: %s", self->id,
+    dev_nfo.name);
 
   /* prepare params */
   struct rtaudio_stream_parameters stream_params = {

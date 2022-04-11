@@ -189,7 +189,9 @@ typedef struct ExtPort
 static const cyaml_schema_field_t ext_port_fields_schema[] = {
   YAML_FIELD_INT (ExtPort, schema_version),
   YAML_FIELD_STRING_PTR (ExtPort, full_name),
-  YAML_FIELD_STRING_PTR_OPTIONAL (ExtPort, short_name),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    ExtPort,
+    short_name),
   YAML_FIELD_STRING_PTR_OPTIONAL (ExtPort, alias1),
   YAML_FIELD_STRING_PTR_OPTIONAL (ExtPort, alias2),
   YAML_FIELD_STRING_PTR_OPTIONAL (

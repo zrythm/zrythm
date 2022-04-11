@@ -43,7 +43,8 @@ typedef void                      MIDI_FILE;
 #define TRACK_LANE_SCHEMA_VERSION 1
 
 #define track_lane_is_auditioner(self) \
-  (self->track && track_is_auditioner (self->track))
+  (self->track \
+   && track_is_auditioner (self->track))
 
 #define track_lane_is_in_active_project(self) \
   (self->track \
@@ -221,7 +222,8 @@ track_lane_set_soloed (
 
 NONNULL
 bool
-track_lane_get_soloed (const TrackLane * const self);
+track_lane_get_soloed (
+  const TrackLane * const self);
 
 /**
  * Sets track lane muted, updates UI and optionally
@@ -264,7 +266,8 @@ track_lane_update_positions (
  * objects recursively.
  */
 void
-track_lane_update_track_name_hash (TrackLane * self);
+track_lane_update_track_name_hash (
+  TrackLane * self);
 
 /**
  * Clones the TrackLane.

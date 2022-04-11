@@ -38,8 +38,8 @@ test_get_parent_dir (void)
   parent =
     io_path_get_parent_dir ("C:\\ab\\cd\\ef\\gh");
   g_assert_cmpstr (parent, ==, "C:\\ab\\cd\\ef");
-  parent =
-    io_path_get_parent_dir ("C:\\ab\\cd\\ef\\gh\\");
+  parent = io_path_get_parent_dir (
+    "C:\\ab\\cd\\ef\\gh\\");
   g_assert_cmpstr (parent, ==, "C:\\ab\\cd\\ef");
   parent = io_path_get_parent_dir ("C:\\ab");
   g_assert_cmpstr (parent, ==, "C:\\");

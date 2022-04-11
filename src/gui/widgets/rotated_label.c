@@ -150,7 +150,8 @@ on_dispose (GObject * object)
 }
 
 static void
-rotated_label_widget_init (RotatedLabelWidget * self)
+rotated_label_widget_init (
+  RotatedLabelWidget * self)
 {
   self->lbl = GTK_LABEL (gtk_label_new (""));
   gtk_widget_set_parent (

@@ -162,7 +162,8 @@ lv2_state_apply_preset (
  * Deletes the current preset.
  */
 int
-lv2_state_delete_current_preset (Lv2Plugin * plugin);
+lv2_state_delete_current_preset (
+  Lv2Plugin * plugin);
 
 int
 lv2_state_load_presets (

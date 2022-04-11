@@ -320,7 +320,8 @@ file_browser_widget_new ()
   FileBrowserWidget * self =
     g_object_new (FILE_BROWSER_WIDGET_TYPE, NULL);
 
-  g_message ("Instantiating file_browser widget...");
+  g_message (
+    "Instantiating file_browser widget...");
 
   gtk_label_set_xalign (self->file_info, 0);
 
@@ -400,7 +401,8 @@ static void
 file_browser_widget_class_init (
   FileBrowserWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "file_browser.ui");
 

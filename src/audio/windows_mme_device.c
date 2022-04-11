@@ -186,7 +186,8 @@ windows_mme_device_dequeue_midi_event (
   zix_ring_read (self->midi_ring, &h, sizeof (h));
 
   /* read event body */
-  zix_ring_read (self->midi_ring, midi_data, h.size);
+  zix_ring_read (
+    self->midi_ring, midi_data, h.size);
   *timestamp = h.time;
   *data_size = h.size;
 
@@ -250,7 +251,9 @@ enqueue_midi_msg (
       return -1;
     }
 
-  if (zix_ring_write_space (self->midi_ring) < total_size)
+  if (
+    zix_ring_write_space (self->midi_ring)
+    < total_size)
     {
       g_critical (
         "WinMMEMidiInput: ring buffer overflow");
@@ -325,7 +328,8 @@ handle_sysex_msg (
   uint8_t * data = (uint8_t *) midi_header->lpData;
 
   g_message (
-    "WinMME sysex flags: %lu", midi_header->dwFlags);
+    "WinMME sysex flags: %lu",
+    midi_header->dwFlags);
 
   if (
     (data[0] != 0xf0)

@@ -126,7 +126,7 @@ on_selection_changed (
   bool is_empty = channel_send_is_empty (send);
 
   Track * src_track = channel_send_get_track (send);
-  Track * dest_track = NULL;
+  Track *          dest_track = NULL;
   StereoPorts *    dest_sidechain = NULL;
   PortConnection * conn = NULL;
   ;
@@ -275,7 +275,8 @@ setup_treeview (ChannelSendSelectorWidget * self)
 {
   /* icon, name, pointer to data */
   GtkListStore * list_store = gtk_list_store_new (
-    3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
+    3, G_TYPE_STRING, G_TYPE_STRING,
+    G_TYPE_POINTER);
 
   GtkTreeSelection * sel =
     gtk_tree_view_get_selection (
@@ -424,8 +425,8 @@ setup_treeview (ChannelSendSelectorWidget * self)
                 list_store, &iter);
               gtk_list_store_set (
                 list_store, &iter, 0,
-                "media-album-track", 1, designation,
-                2, target, -1);
+                "media-album-track", 1,
+                designation, 2, target, -1);
 
               if (channel_send_is_target_sidechain (
                     send))

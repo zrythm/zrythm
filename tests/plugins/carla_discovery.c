@@ -56,7 +56,8 @@ test_mock_au_plugin_scan (void)
       if (descriptor)
         {
           g_assert_cmpuint (
-            strlen (descriptor->category_str), >, 1);
+            strlen (descriptor->category_str), >,
+            1);
           g_assert_cmpuint (
             strlen (descriptor->category_str), <,
             40);

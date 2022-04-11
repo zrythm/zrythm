@@ -362,7 +362,8 @@ midi_get_note_name_with_octave (
     midi_get_note_number (short_msg);
   midi_byte_t note_idx =
     midi_get_chromatic_scale_index (note);
-  midi_byte_t octave = midi_get_octave_number (note);
+  midi_byte_t octave =
+    midi_get_octave_number (note);
   sprintf (
     buf, "%s%u", midi_get_note_name (note_idx),
     octave);
@@ -554,7 +555,8 @@ midi_print_short_msg_to_str (
     {
       char hex[3 * 4];
       midi_get_hex_str (short_msg, 3, hex);
-      sprintf (buf, "Unknown MIDI Message: %s", hex);
+      sprintf (
+        buf, "Unknown MIDI Message: %s", hex);
     }
 }
 

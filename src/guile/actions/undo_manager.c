@@ -61,10 +61,11 @@ SCM_DEFINE (
     (UndoManager *) scm_to_pointer (undo_manager);
 
   GError * err = NULL;
-  int      ret = undo_manager_undo (undo_mgr, &err);
+  int ret = undo_manager_undo (undo_mgr, &err);
   if (ret != 0)
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to undo"));
+      HANDLE_ERROR (
+        err, "%s", _ ("Failed to undo"));
     }
 
   return SCM_BOOL_T;
@@ -85,10 +86,11 @@ SCM_DEFINE (
     (UndoManager *) scm_to_pointer (undo_manager);
 
   GError * err = NULL;
-  int      ret = undo_manager_redo (undo_mgr, &err);
+  int ret = undo_manager_redo (undo_mgr, &err);
   if (ret != 0)
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to redo"));
+      HANDLE_ERROR (
+        err, "%s", _ ("Failed to redo"));
     }
 
   return SCM_BOOL_T;

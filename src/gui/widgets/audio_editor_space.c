@@ -111,7 +111,8 @@ static void
 audio_editor_space_widget_class_init (
   AudioEditorSpaceWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "audio_editor_space.ui");
 

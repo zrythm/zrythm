@@ -182,8 +182,9 @@ automation_point_set_fvalue (
         "received normalized val %f",
         (double) real_val);
       normalized_val = CLAMP (real_val, 0.f, 1.f);
-      real_val = control_port_normalized_val_to_real (
-        port, normalized_val);
+      real_val =
+        control_port_normalized_val_to_real (
+          port, normalized_val);
     }
   else
     {
@@ -218,7 +219,8 @@ automation_point_set_fvalue (
 
   if (pub_events)
     {
-      EVENTS_PUSH (ET_ARRANGER_OBJECT_CHANGED, self);
+      EVENTS_PUSH (
+        ET_ARRANGER_OBJECT_CHANGED, self);
     }
 }
 

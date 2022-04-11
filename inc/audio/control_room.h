@@ -108,11 +108,12 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t control_room_schema = {
-  YAML_VALUE_PTR (
-    ControlRoom,
-    control_room_fields_schema),
-};
+static const cyaml_schema_value_t
+  control_room_schema = {
+    YAML_VALUE_PTR (
+      ControlRoom,
+      control_room_fields_schema),
+  };
 
 /**
  * Inits the control room from a project.

@@ -103,12 +103,13 @@ setup (ActiveHardwarePopoverWidget * self)
   get_controllers (self, controllers);
   for (size_t i = 0; i < controllers->len; i++)
     {
-      char * controller_str =
-        (char *) g_ptr_array_index (controllers, i);
+      char * controller_str = (char *)
+        g_ptr_array_index (controllers, i);
       GtkWidget * chkbtn =
         gtk_check_button_new_with_label (
           controller_str);
-      gtk_box_append (self->controllers_box, chkbtn);
+      gtk_box_append (
+        self->controllers_box, chkbtn);
     }
 
   /* fetch saved controllers and tick them if they
@@ -164,7 +165,8 @@ static void
 active_hardware_popover_widget_class_init (
   ActiveHardwarePopoverWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "active_hardware_popover.ui");
 

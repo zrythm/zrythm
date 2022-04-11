@@ -85,9 +85,11 @@ piano_roll_keys_snapshot (
     snapshot, context, 0, 0, width, height);
 
   ChordObject * co =
-    chord_track_get_chord_at_playhead (P_CHORD_TRACK);
+    chord_track_get_chord_at_playhead (
+      P_CHORD_TRACK);
   ScaleObject * so =
-    chord_track_get_scale_at_playhead (P_CHORD_TRACK);
+    chord_track_get_scale_at_playhead (
+      P_CHORD_TRACK);
 
   bool drum_mode = tr->drum_mode;
 
@@ -214,7 +216,8 @@ piano_roll_keys_snapshot (
 
               char hex[18];
               ui_gdk_rgba_to_hex (
-                &UI_COLORS->highlight_scale_fg, hex);
+                &UI_COLORS->highlight_scale_fg,
+                hex);
               sprintf (
                 str,
                 "%s  <span size=\"small\" foreground=\"%s\">%s</span>",
@@ -232,7 +235,8 @@ piano_roll_keys_snapshot (
 
               char hex[18];
               ui_gdk_rgba_to_hex (
-                &UI_COLORS->highlight_chord_fg, hex);
+                &UI_COLORS->highlight_chord_fg,
+                hex);
               sprintf (
                 str,
                 "%s  <span size=\"small\" foreground=\"%s\">%s</span>",
@@ -312,7 +316,8 @@ piano_roll_keys_snapshot (
           gtk_snapshot_append_color (
             snapshot, &color,
             &GRAPHENE_RECT_INIT (
-              label_width + 4, (127 - i) * px_per_key,
+              label_width + 4,
+              (127 - i) * px_per_key,
               key_width - 4, px_per_key));
         }
 
@@ -371,7 +376,8 @@ send_note_event (
         midi_region_get_midi_ch (region),
         (midi_byte_t) note, 90, 1, 1);
 
-      piano_roll_add_current_note (PIANO_ROLL, note);
+      piano_roll_add_current_note (
+        PIANO_ROLL, note);
     }
   else
     {
@@ -395,8 +401,8 @@ on_motion (
   gdouble                    y,
   PianoRollKeysWidget *      self)
 {
-  int key =
-    piano_roll_keys_widget_get_key_from_y (self, y);
+  int key = piano_roll_keys_widget_get_key_from_y (
+    self, y);
 
   if (self->note_pressed && !self->note_released)
     {
@@ -427,8 +433,8 @@ on_pressed (
   self->note_pressed = 1;
   self->note_released = 0;
 
-  int key =
-    piano_roll_keys_widget_get_key_from_y (self, y);
+  int key = piano_roll_keys_widget_get_key_from_y (
+    self, y);
   self->last_key = key;
   self->start_key = key;
   send_note_event (self, key, 1);
@@ -543,8 +549,8 @@ piano_roll_keys_widget_init (
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self),
-    (GtkTickCallback) piano_roll_keys_tick_cb, self,
-    NULL);
+    (GtkTickCallback) piano_roll_keys_tick_cb,
+    self, NULL);
 }
 
 static void

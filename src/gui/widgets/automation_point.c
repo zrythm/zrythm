@@ -95,7 +95,8 @@ automation_point_draw (
   GdkRGBA color = track->color;
   ui_get_arranger_object_color (
     &color, arranger->hovered_object == obj,
-    automation_point_is_selected (ap), false, false);
+    automation_point_is_selected (ap), false,
+    false);
 
   GdkRectangle draw_rect;
   arranger_object_get_draw_rectangle (
@@ -152,7 +153,8 @@ automation_point_draw (
         obj->full_rect.width
         - (double) AP_WIDGET_POINT_SIZE;
       double height_for_curve =
-        obj->full_rect.height - AP_WIDGET_POINT_SIZE;
+        obj->full_rect.height
+        - AP_WIDGET_POINT_SIZE;
 
       double draw_offset =
         draw_rect.x - obj->full_rect.x;
@@ -276,7 +278,8 @@ automation_point_draw (
       cairo_set_source_rgba (cr, 1, 1, 1, 1);
       cairo_move_to (
         cr,
-        (obj->full_rect.x + AP_WIDGET_POINT_SIZE / 2),
+        (obj->full_rect.x
+         + AP_WIDGET_POINT_SIZE / 2),
         upslope
           ? (
             (obj->full_rect.y + obj->full_rect.height)
@@ -298,7 +301,8 @@ automation_point_draw (
       cairo_set_source_rgba (cr, 1, 1, 1, 1);
       z_cairo_draw_text_full (
         cr, GTK_WIDGET (arranger), layout, text,
-        (obj->full_rect.x + AP_WIDGET_POINT_SIZE / 2),
+        (obj->full_rect.x
+         + AP_WIDGET_POINT_SIZE / 2),
         upslope
           ? (
             (obj->full_rect.y + obj->full_rect.height)
@@ -360,7 +364,8 @@ automation_point_is_point_hit (
           ? (obj->full_rect.y + obj->full_rect.height)
                 - y
               < AP_WIDGET_POINT_SIZE
-          : y - obj->full_rect.y < AP_WIDGET_POINT_SIZE)
+          : y - obj->full_rect.y
+              < AP_WIDGET_POINT_SIZE)
         return true;
     }
 

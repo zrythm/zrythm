@@ -56,7 +56,8 @@ toggles_changed (
       g_signal_handlers_block_by_func (
         self->toggle_midi, toggles_changed, self);
       g_signal_handlers_block_by_func (
-        self->toggle_presets, toggles_changed, self);
+        self->toggle_presets, toggles_changed,
+        self);
 
       if (btn == self->toggle_audio)
         {
@@ -94,7 +95,8 @@ toggles_changed (
       g_signal_handlers_unblock_by_func (
         self->toggle_midi, toggles_changed, self);
       g_signal_handlers_unblock_by_func (
-        self->toggle_presets, toggles_changed, self);
+        self->toggle_presets, toggles_changed,
+        self);
     }
   else
     {
@@ -123,7 +125,8 @@ static void
 file_browser_filters_widget_class_init (
   FileBrowserFiltersWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "file_browser_filters.ui");
 

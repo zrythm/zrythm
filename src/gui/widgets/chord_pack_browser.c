@@ -143,10 +143,10 @@ create_model_for_psets (
   self->psets_filter = gtk_custom_filter_new (
     (GtkCustomFilterFunc) psets_filter_func, self,
     NULL);
-  self
-    ->psets_filter_model = gtk_filter_list_model_new (
-    G_LIST_MODEL (store),
-    GTK_FILTER (self->psets_filter));
+  self->psets_filter_model =
+    gtk_filter_list_model_new (
+      G_LIST_MODEL (store),
+      GTK_FILTER (self->psets_filter));
   self->psets_selection_model =
     gtk_single_selection_new (
       G_LIST_MODEL (self->psets_filter_model));
@@ -166,8 +166,9 @@ void
 chord_pack_browser_widget_refresh_presets (
   ChordPackBrowserWidget * self)
 {
-  self->psets_selection_model = GTK_SINGLE_SELECTION (
-    create_model_for_psets (self));
+  self->psets_selection_model =
+    GTK_SINGLE_SELECTION (
+      create_model_for_psets (self));
   gtk_list_view_set_model (
     self->psets_list_view,
     GTK_SELECTION_MODEL (
@@ -179,8 +180,9 @@ void
 chord_pack_browser_widget_refresh_packs (
   ChordPackBrowserWidget * self)
 {
-  self->packs_selection_model = GTK_SINGLE_SELECTION (
-    create_model_for_packs (self));
+  self->packs_selection_model =
+    GTK_SINGLE_SELECTION (
+      create_model_for_packs (self));
   gtk_list_view_set_model (
     self->packs_list_view,
     GTK_SELECTION_MODEL (
@@ -278,8 +280,8 @@ on_pset_activated (
   char params[800];
   sprintf (params, "%d,%d", pack_idx, pset_idx);
   gtk_widget_activate_action (
-    GTK_WIDGET (self), "app.load-chord-preset", "s",
-    params);
+    GTK_WIDGET (self), "app.load-chord-preset",
+    "s", params);
 }
 
 static void
@@ -433,8 +435,9 @@ chord_pack_browser_widget_new ()
     (GenericCallback) refilter_presets);
 
   /* populate packs */
-  self->packs_selection_model = GTK_SINGLE_SELECTION (
-    create_model_for_packs (self));
+  self->packs_selection_model =
+    GTK_SINGLE_SELECTION (
+      create_model_for_packs (self));
   packs_list_view_setup (
     self, self->packs_list_view,
     GTK_SELECTION_MODEL (
@@ -444,8 +447,9 @@ chord_pack_browser_widget_new ()
     G_CALLBACK (on_pack_activated), self);
 
   /* populate presets */
-  self->psets_selection_model = GTK_SINGLE_SELECTION (
-    create_model_for_psets (self));
+  self->psets_selection_model =
+    GTK_SINGLE_SELECTION (
+      create_model_for_psets (self));
   psets_list_view_setup (
     self, self->psets_list_view,
     GTK_SELECTION_MODEL (
@@ -473,7 +477,8 @@ static void
 chord_pack_browser_widget_class_init (
   ChordPackBrowserWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "chord_pack_browser.ui");
 
@@ -504,7 +509,8 @@ chord_pack_browser_widget_init (
   self->popover_menu = GTK_POPOVER_MENU (
     gtk_popover_menu_new_from_model (NULL));
   gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
 
   gtk_widget_set_hexpand (
     GTK_WIDGET (self->paned), true);

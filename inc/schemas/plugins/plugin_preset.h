@@ -115,7 +115,9 @@ static const cyaml_schema_field_t
       presets,
       plugin_preset_schema_v1),
     YAML_FIELD_STRING_PTR (PluginBank_v1, name),
-    YAML_FIELD_STRING_PTR_OPTIONAL (PluginBank_v1, uri),
+    YAML_FIELD_STRING_PTR_OPTIONAL (
+      PluginBank_v1,
+      uri),
     YAML_FIELD_MAPPING_EMBEDDED (
       PluginBank_v1,
       id,

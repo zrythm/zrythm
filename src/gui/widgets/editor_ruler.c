@@ -46,7 +46,8 @@
 
 #define ACTION_IS(x) \
   (self->action == UI_OVERLAY_ACTION_##x)
-#define TARGET_IS(x) (self->target == RW_TARGET_##x)
+#define TARGET_IS(x) \
+  (self->target == RW_TARGET_##x)
 
 void
 editor_ruler_on_drag_begin_no_marker_hit (
@@ -164,7 +165,8 @@ editor_ruler_on_drag_update (
                     &region_local_pos, &clip_frames))
                 {
                   position_set_to_pos (
-                    &region_local_pos, &clip_frames);
+                    &region_local_pos,
+                    &clip_frames);
                 }
             }
 
@@ -255,7 +257,8 @@ editor_ruler_on_drag_end (RulerWidget * self)
   ArrangerSelections * after_sel =
     arranger_selections_new (
       ARRANGER_SELECTIONS_TYPE_TIMELINE);
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (r);
   ArrangerObject * r_clone_obj_before =
     arranger_object_clone ((ArrangerObject *) r);
@@ -270,10 +273,11 @@ editor_ruler_on_drag_end (RulerWidget * self)
   r_clone_obj_before->pos_member = \
     self->drag_start_pos; \
   GError * err = NULL; \
-  bool ret = arranger_selections_action_perform_edit ( \
-    before_sel, after_sel, \
-    ARRANGER_SELECTIONS_ACTION_EDIT_POS, \
-    F_NOT_ALREADY_EDITED, &err); \
+  bool     ret = \
+    arranger_selections_action_perform_edit ( \
+      before_sel, after_sel, \
+      ARRANGER_SELECTIONS_ACTION_EDIT_POS, \
+      F_NOT_ALREADY_EDITED, &err); \
   if (!ret) \
     { \
       HANDLE_ERROR ( \

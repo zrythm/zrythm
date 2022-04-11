@@ -96,7 +96,8 @@ plugin_collection_clone (
   const PluginCollection * self);
 
 char *
-plugin_collection_get_name (PluginCollection * self);
+plugin_collection_get_name (
+  PluginCollection * self);
 
 void
 plugin_collection_set_name (

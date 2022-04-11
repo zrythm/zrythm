@@ -47,7 +47,8 @@ void
 tracklist_header_widget_setup (
   TracklistHeaderWidget * self)
 {
-  tracklist_header_widget_refresh_track_count (self);
+  tracklist_header_widget_refresh_track_count (
+    self);
 }
 
 static void
@@ -61,7 +62,8 @@ static void
 tracklist_header_widget_class_init (
   TracklistHeaderWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "tracklist_header.ui");
 

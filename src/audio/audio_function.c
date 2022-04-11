@@ -66,8 +66,8 @@ audio_function_get_detailed_action_for_type (
 {
   char * target =
     audio_function_get_action_target_for_type (type);
-  char * ret =
-    g_strdup_printf ("%s::%s", base_action, target);
+  char * ret = g_strdup_printf (
+    "%s::%s", base_action, target);
   g_free (target);
 
   return ret;
@@ -179,7 +179,8 @@ apply_plugin (
    * custom or generic) */
   pl->ev_box = GTK_BOX (
     gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
-  gtk_box_append (pl->vbox, GTK_WIDGET (pl->ev_box));
+  gtk_box_append (
+    pl->vbox, GTK_WIDGET (pl->ev_box));
   gtk_widget_set_vexpand (
     GTK_WIDGET (pl->ev_box), true);
 
@@ -267,8 +268,9 @@ apply_plugin (
 #endif
           g_return_val_if_fail (l_out, -1);
           g_return_val_if_fail (r_out, -1);
-          frames[actual_j * (signed_frame_t) channels] =
-            l_out->buf[j];
+          frames
+            [actual_j * (signed_frame_t) channels] =
+              l_out->buf[j];
           frames
             [actual_j * (signed_frame_t) channels
              + 1] = r_out->buf[j];
@@ -310,8 +312,9 @@ apply_plugin (
 #endif
           g_return_val_if_fail (l_out, -1);
           g_return_val_if_fail (r_out, -1);
-          frames[actual_j * (signed_frame_t) channels] =
-            l_out->buf[j];
+          frames
+            [actual_j * (signed_frame_t) channels] =
+              l_out->buf[j];
           frames
             [actual_j * (signed_frame_t) channels
              + 1] = r_out->buf[j];
@@ -495,14 +498,15 @@ audio_function_apply (
           audio_clip_new_from_float_array (
             src_frames, num_frames, channels,
             BIT_DEPTH_32, "tmp-clip");
-        tmp_clip =
-          audio_clip_edit_in_ext_program (tmp_clip);
+        tmp_clip = audio_clip_edit_in_ext_program (
+          tmp_clip);
         if (!tmp_clip)
           return -1;
         dsp_copy (
           &frames[0], &tmp_clip->frames[0],
           MIN (
-            num_frames, (size_t) tmp_clip->num_frames)
+            num_frames,
+            (size_t) tmp_clip->num_frames)
             * channels);
         if ((size_t) tmp_clip->num_frames < num_frames)
           {

@@ -93,7 +93,8 @@ test_perform_many_actions (void)
   for (
     int i = 0;
     !undo_stack_is_full (UNDO_MANAGER->redo_stack)
-    || undo_stack_is_empty (UNDO_MANAGER->redo_stack);
+    || undo_stack_is_empty (
+      UNDO_MANAGER->redo_stack);
     i++)
     {
       if (undo_stack_is_empty (

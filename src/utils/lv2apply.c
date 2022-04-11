@@ -66,7 +66,7 @@ typedef struct
   const LilvPort * lilv_port; ///< Port description
   PortType         type;      ///< Datatype
   uint32_t         index;     ///< Port index
-  float value;    ///< Control value (if applicable)
+  float value; ///< Control value (if applicable)
   bool  is_input; ///< True iff an input port
   bool  optional; ///< True iff connection optional
 } Port;
@@ -113,7 +113,7 @@ typedef struct
   LV2_URID_Unmap       unmap; ///< Int => URI map
   LV2ApplyURIDs        urids; ///< URIDs
   int                  block_length;
-  float                sample_rate; ///< Sample rate
+  float sample_rate; ///< Sample rate
 } LV2Apply;
 
 static LV2_URID
@@ -126,7 +126,9 @@ map_uri (LV2_URID_Map_Handle handle, const char * uri)
 }
 
 static const char *
-unmap_uri (LV2_URID_Unmap_Handle handle, LV2_URID urid)
+unmap_uri (
+  LV2_URID_Unmap_Handle handle,
+  LV2_URID              urid)
 {
   LV2Apply *   lv2apply = (LV2Apply *) handle;
   const char * uri =
@@ -272,7 +274,8 @@ create_ports (LV2Apply * self)
       port->value =
         isnan (values[i]) ? 0.0f : values[i];
       port->optional = lilv_port_has_property (
-        self->plugin, lport, lv2_connectionOptional);
+        self->plugin, lport,
+        lv2_connectionOptional);
 
       /* Check if port is an input or output */
       if (lilv_port_is_a (
@@ -425,7 +428,8 @@ init_features (LV2Apply * self)
     &self->features.unmap_feature,
     &self->features.options_feature, NULL
   };
-  self->feature_list = calloc (1, sizeof (features));
+  self->feature_list =
+    calloc (1, sizeof (features));
   if (!self->feature_list)
     {
       fatal (
@@ -433,7 +437,8 @@ init_features (LV2Apply * self)
         "Failed to allocate feature list\n");
     }
   memcpy (
-    self->feature_list, features, sizeof (features));
+    self->feature_list, features,
+    sizeof (features));
 }
 
 int
@@ -577,7 +582,8 @@ main (int argc, char ** argv)
             param->sym);
         }
 
-      self.ports[lilv_port_get_index (plugin, port)]
+      self
+        .ports[lilv_port_get_index (plugin, port)]
         .value = param->value;
     }
 
@@ -604,9 +610,11 @@ main (int argc, char ** argv)
   if (!self.instance)
     {
       return fatal (
-        &self, 11, "Failed to instantiate plugin\n");
+        &self, 11,
+        "Failed to instantiate plugin\n");
     }
-  for (uint32_t p = 0, i = 0, o = 0; p < n_ports; ++p)
+  for (uint32_t p = 0, i = 0, o = 0; p < n_ports;
+       ++p)
     {
       if (self.ports[p].type == TYPE_CONTROL)
         {

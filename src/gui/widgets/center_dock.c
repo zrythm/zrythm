@@ -79,7 +79,8 @@ void
 center_dock_widget_setup (CenterDockWidget * self)
 {
   bot_dock_edge_widget_setup (self->bot_dock_edge);
-  left_dock_edge_widget_setup (self->left_dock_edge);
+  left_dock_edge_widget_setup (
+    self->left_dock_edge);
   right_dock_edge_widget_setup (
     self->right_dock_edge);
   main_notebook_widget_setup (self->main_notebook);
@@ -170,7 +171,8 @@ static void
 center_dock_widget_class_init (
   CenterDockWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_layout_manager_type (
     klass, GTK_TYPE_BOX_LAYOUT);
   resources_set_class_template (

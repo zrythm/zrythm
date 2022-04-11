@@ -44,13 +44,15 @@ _test (
 {
   /* 1. add helm */
   test_plugin_manager_create_tracks_from_plugin (
-    pl_bundle, pl_uri, is_instrument, with_carla, 1);
+    pl_bundle, pl_uri, is_instrument, with_carla,
+    1);
 
   /* select it */
   Track * helm_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
-    helm_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
+    helm_track, F_SELECT, true,
+    F_NO_PUBLISH_EVENTS);
 
   /* 2. delete track */
   tracklist_selections_action_perform_delete (

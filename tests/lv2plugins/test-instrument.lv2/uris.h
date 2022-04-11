@@ -28,7 +28,9 @@ typedef struct
 } FifthsURIs;
 
 static inline void
-map_fifths_uris (LV2_URID_Map * map, FifthsURIs * uris)
+map_fifths_uris (
+  LV2_URID_Map * map,
+  FifthsURIs *   uris)
 {
   uris->atom_Path =
     map->map (map->handle, LV2_ATOM__Path);
@@ -38,8 +40,8 @@ map_fifths_uris (LV2_URID_Map * map, FifthsURIs * uris)
     map->map (map->handle, LV2_ATOM__Sequence);
   uris->atom_URID =
     map->map (map->handle, LV2_ATOM__URID);
-  uris->atom_eventTransfer =
-    map->map (map->handle, LV2_ATOM__eventTransfer);
+  uris->atom_eventTransfer = map->map (
+    map->handle, LV2_ATOM__eventTransfer);
   uris->midi_Event =
     map->map (map->handle, LV2_MIDI__MidiEvent);
   uris->patch_Set =

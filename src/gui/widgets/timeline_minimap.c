@@ -188,15 +188,17 @@ get_child_position (
   TimelineMinimapWidget * self =
     Z_TIMELINE_MINIMAP_WIDGET (user_data);
 
-  if (Z_IS_TIMELINE_MINIMAP_SELECTION_WIDGET (widget))
+  if (Z_IS_TIMELINE_MINIMAP_SELECTION_WIDGET (
+        widget))
     {
       if (
         MAIN_WINDOW && MW_CENTER_DOCK
         && MW_TIMELINE_PANEL
         && MW_TIMELINE_PANEL->ruler_viewport)
         {
-          int width = gtk_widget_get_allocated_width (
-            GTK_WIDGET (self));
+          int width =
+            gtk_widget_get_allocated_width (
+              GTK_WIDGET (self));
           int height =
             gtk_widget_get_allocated_height (
               GTK_WIDGET (self));
@@ -464,7 +466,8 @@ static void
 timeline_minimap_widget_class_init (
   TimelineMinimapWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "timeline-minimap");
   gtk_widget_class_set_layout_manager_type (

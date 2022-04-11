@@ -40,7 +40,9 @@ G_DEFINE_TYPE (
   GTK_TYPE_BOX)
 
 static void
-on_toggled (GtkToggleButton * tb, ToolboxWidget * self)
+on_toggled (
+  GtkToggleButton * tb,
+  ToolboxWidget *   self)
 {
   g_message ("toggling");
   if (tb == self->select_mode)
@@ -91,7 +93,8 @@ toolbox_widget_refresh (ToolboxWidget * self)
     self->select_mode, 0);
   gtk_toggle_button_set_active (self->edit_mode, 0);
   gtk_toggle_button_set_active (self->cut_mode, 0);
-  gtk_toggle_button_set_active (self->erase_mode, 0);
+  gtk_toggle_button_set_active (
+    self->erase_mode, 0);
   gtk_toggle_button_set_active (self->ramp_mode, 0);
   gtk_toggle_button_set_active (
     self->audition_mode, 0);
@@ -153,8 +156,10 @@ static void
 toolbox_widget_class_init (
   ToolboxWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass, "toolbox.ui");
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (
+    klass, "toolbox.ui");
   gtk_widget_class_set_css_name (klass, "toolbox");
 
 #define BIND_CHILD(x) \

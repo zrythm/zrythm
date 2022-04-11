@@ -103,7 +103,9 @@ typedef struct ChordDescriptor_v1
 
 static const cyaml_schema_field_t
   chord_descriptor_fields_schema_v1[] = {
-    YAML_FIELD_INT (ChordDescriptor_v1, schema_version),
+    YAML_FIELD_INT (
+      ChordDescriptor_v1,
+      schema_version),
     YAML_FIELD_INT (ChordDescriptor_v1, has_bass),
     YAML_FIELD_ENUM (
       ChordDescriptor,

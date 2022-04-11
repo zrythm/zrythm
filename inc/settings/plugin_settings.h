@@ -159,7 +159,8 @@ plugin_setting_print (const PluginSetting * self);
  */
 NONNULL
 void
-plugin_setting_activate (const PluginSetting * self);
+plugin_setting_activate (
+  const PluginSetting * self);
 
 /**
  * Frees the plugin setting.

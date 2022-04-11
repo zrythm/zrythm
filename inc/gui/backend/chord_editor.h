@@ -80,12 +80,13 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t chord_editor_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    ChordEditor,
-    chord_editor_fields_schema),
-};
+static const cyaml_schema_value_t
+  chord_editor_schema = {
+    CYAML_VALUE_MAPPING (
+      CYAML_FLAG_POINTER,
+      ChordEditor,
+      chord_editor_fields_schema),
+  };
 
 /**
  * Inits the ChordEditor after a Project has been

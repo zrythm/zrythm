@@ -59,8 +59,8 @@ lv2_ui_is_resizable (Lv2Plugin * plugin)
     LILV_WORLD, LV2_CORE__optionalFeature);
   LilvNode * fs =
     lilv_new_uri (LILV_WORLD, LV2_UI__fixedSize);
-  LilvNode * nrs =
-    lilv_new_uri (LILV_WORLD, LV2_UI__noUserResize);
+  LilvNode * nrs = lilv_new_uri (
+    LILV_WORLD, LV2_UI__noUserResize);
 
   LilvNodes * fs_matches =
     lilv_world_find_nodes (LILV_WORLD, s, p, fs);
@@ -269,7 +269,8 @@ lv2_ui_send_event_from_plugin_to_ui (
   /* TODO: Be more disciminate about what to send */
   char evbuf
     [sizeof (Lv2ControlChange) + sizeof (LV2_Atom)];
-  Lv2ControlChange * ev = (Lv2ControlChange *) evbuf;
+  Lv2ControlChange * ev =
+    (Lv2ControlChange *) evbuf;
   ev->index = port_index;
   ev->protocol = PM_URIDS.atom_eventTransfer;
   ev->size = (uint32_t) sizeof (LV2_Atom) + size;
@@ -279,7 +280,8 @@ lv2_ui_send_event_from_plugin_to_ui (
   atom->size = (uint32_t) size;
 
   if (
-    zix_ring_write_space (plugin->plugin_to_ui_events)
+    zix_ring_write_space (
+      plugin->plugin_to_ui_events)
     >= sizeof (evbuf) + size)
     {
       zix_ring_write (
@@ -550,8 +552,8 @@ lv2_ui_init (Lv2Plugin * plugin)
         && !(port->id.flags & PORT_FLAG_IS_PROPERTY))
         {
           lv2_gtk_ui_port_event (
-            plugin, (uint32_t) i, sizeof (float), 0,
-            &port->control);
+            plugin, (uint32_t) i, sizeof (float),
+            0, &port->control);
         }
     }
 

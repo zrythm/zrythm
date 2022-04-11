@@ -120,8 +120,8 @@ _array_double_size_if_full (
       if ((void *) array[ii] == (void *) element) \
         { \
           --size; \
-          for (size_t jj = ii; jj < (size_t) size; \
-               jj++) \
+          for (size_t jj = ii; \
+               jj < (size_t) size; jj++) \
             { \
               array[jj] = array[jj + 1]; \
             } \
@@ -142,8 +142,8 @@ _array_double_size_if_full (
         { \
           confirm = true; \
           --size; \
-          for (size_t jj = ii; jj < (size_t) size; \
-               jj++) \
+          for (size_t jj = ii; \
+               jj < (size_t) size; jj++) \
             { \
               array[jj] = array[jj + 1]; \
             } \
@@ -329,6 +329,8 @@ array_sort_long (long * array, int size);
  * Gets the count of a NULL-terminated array.
  */
 size_t
-_array_get_count (void ** array, size_t element_size);
+_array_get_count (
+  void ** array,
+  size_t  element_size);
 
 #endif /* __UTILS_ARRAYS_H__ */

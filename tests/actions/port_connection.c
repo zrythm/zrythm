@@ -74,9 +74,9 @@ test_modulator_connection (
 
   ModulatorMacroProcessor * macro =
     P_MODULATOR_TRACK->modulator_macros[0];
-  Plugin *    pl = P_MODULATOR_TRACK->modulators[0];
-  Port *      pl_cv_port = NULL;
-  Port *      pl_control_port = NULL;
+  Plugin * pl = P_MODULATOR_TRACK->modulators[0];
+  Port *   pl_cv_port = NULL;
+  Port *   pl_control_port = NULL;
   GPtrArray * ports = g_ptr_array_new ();
   plugin_append_ports (pl, ports);
   for (size_t i = 0; i < ports->len; i++)
@@ -182,7 +182,8 @@ _test_port_connection (
       track_create_empty_with_action (
         TRACK_TYPE_AUDIO_BUS, NULL);
       Track * last_track = tracklist_get_last_track (
-        TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
+        TRACKLIST, TRACKLIST_PIN_OPTION_BOTH,
+        false);
       mixer_selections_action_perform_create (
         PLUGIN_SLOT_INSERT,
         track_get_name_hash (last_track), 0,

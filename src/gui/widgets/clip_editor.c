@@ -84,7 +84,8 @@ void
 clip_editor_widget_on_region_changed (
   ClipEditorWidget * self)
 {
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
 
   if (r)
     {
@@ -133,7 +134,8 @@ static void
 clip_editor_widget_class_init (
   ClipEditorWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "clip_editor.ui");
 

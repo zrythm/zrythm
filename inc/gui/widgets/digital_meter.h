@@ -140,7 +140,7 @@ typedef struct _DigitalMeterWidget
   int update_note_length; ///< flag to update note length
   int start_note_length; ///< start note length
   int update_note_type; ///< flag to update note type
-  int start_note_type;  ///< start note type
+  int start_note_type; ///< start note type
 
   /* for time sig */
   int update_timesig_top;

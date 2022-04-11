@@ -271,7 +271,8 @@ on_creator_accent_child_activated (
         {
           gtk_flow_box_unselect_child (
             flowbox, child);
-          self->descr_clone->accent = CHORD_ACC_NONE;
+          self->descr_clone->accent =
+            CHORD_ACC_NONE;
         }
       /* else select it */
       else
@@ -411,7 +412,8 @@ setup_creator_tab (ChordSelectorWindowWidget * self)
 }
 
 static void
-setup_diatonic_tab (ChordSelectorWindowWidget * self)
+setup_diatonic_tab (
+  ChordSelectorWindowWidget * self)
 {
   if (self->scale)
     {
@@ -584,7 +586,8 @@ chord_selector_window_widget_new (
   self->chord_idx = chord_idx;
   const ChordDescriptor * descr =
     CHORD_EDITOR->chords[chord_idx];
-  self->descr_clone = chord_descriptor_clone (descr);
+  self->descr_clone =
+    chord_descriptor_clone (descr);
 
 #if 0
   ArrangerObject * region_obj =
@@ -613,7 +616,8 @@ static void
 chord_selector_window_widget_class_init (
   ChordSelectorWindowWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "chord_selector_window.ui");
 
@@ -756,11 +760,15 @@ chord_selector_window_widget_init (
   self->creator_types[5] = self->creator_type_aug;
 
   self->creator_accents[0] = self->creator_accent_7;
-  self->creator_accents[1] = self->creator_accent_j7;
-  self->creator_accents[2] = self->creator_accent_b9;
+  self->creator_accents[1] =
+    self->creator_accent_j7;
+  self->creator_accents[2] =
+    self->creator_accent_b9;
   self->creator_accents[3] = self->creator_accent_9;
-  self->creator_accents[4] = self->creator_accent_s9;
-  self->creator_accents[5] = self->creator_accent_11;
+  self->creator_accents[4] =
+    self->creator_accent_s9;
+  self->creator_accents[5] =
+    self->creator_accent_11;
   self->creator_accents[6] =
     self->creator_accent_b5_s11;
   self->creator_accents[7] =

@@ -186,8 +186,8 @@ on_dnd_drop (
 
   double wx, wy;
   gtk_widget_translate_coordinates (
-    GTK_WIDGET (self), GTK_WIDGET (hit_tw), (int) x,
-    (int) y, &wx, &wy);
+    GTK_WIDGET (self), GTK_WIDGET (hit_tw),
+    (int) x, (int) y, &wx, &wy);
 
   /* determine position to move to */
   TrackWidgetHighlight location =
@@ -262,7 +262,8 @@ tracklist_widget_handle_vertical_zoom_scroll (
         && state & GDK_SHIFT_MASK))
     return;
 
-  GtkScrolledWindow * scroll = self->unpinned_scroll;
+  GtkScrolledWindow * scroll =
+    self->unpinned_scroll;
 
   double y = self->hover_y;
   double delta_y = dy;
@@ -362,7 +363,8 @@ refresh_track_widget (Track * track)
     (GtkWidget *) track->widget,
     track_get_should_be_visible (track));
 
-  track_widget_recreate_group_colors (track->widget);
+  track_widget_recreate_group_colors (
+    track->widget);
   track_widget_update_icons (track->widget);
   track_widget_update_size (track->widget);
 }
@@ -545,7 +547,8 @@ tracklist_widget_init (TracklistWidget * self)
     GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
   gtk_viewport_set_child (
     viewport, GTK_WIDGET (self->unpinned_box));
-  gtk_viewport_set_scroll_to_focus (viewport, false);
+  gtk_viewport_set_scroll_to_focus (
+    viewport, false);
   gtk_scrolled_window_set_child (
     GTK_SCROLLED_WINDOW (self->unpinned_scroll),
     GTK_WIDGET (viewport));
@@ -559,7 +562,8 @@ tracklist_widget_init (TracklistWidget * self)
     GTK_WIDGET (self->ddbox), "tracklist-ddbox");
 
   gtk_orientable_set_orientation (
-    GTK_ORIENTABLE (self), GTK_ORIENTATION_VERTICAL);
+    GTK_ORIENTABLE (self),
+    GTK_ORIENTATION_VERTICAL);
 
   /* set as drag dest for track (the track will
    * be moved based on which half it was dropped in,
@@ -575,8 +579,8 @@ tracklist_widget_init (TracklistWidget * self)
     drop_target, "motion",
     G_CALLBACK (on_dnd_motion), self);
   g_signal_connect (
-    drop_target, "leave", G_CALLBACK (on_dnd_leave),
-    self);
+    drop_target, "leave",
+    G_CALLBACK (on_dnd_leave), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (drop_target));
@@ -621,6 +625,8 @@ static void
 tracklist_widget_class_init (
   TracklistWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass, "tracklist");
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (
+    klass, "tracklist");
 }

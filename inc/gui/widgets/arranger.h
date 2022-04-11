@@ -757,7 +757,8 @@ arranger_widget_get_playhead_px (
 
 #define arranger_widget_print_action(self) \
   g_debug ( \
-    "action: %s", ui_overlay_strings[self->action])
+    "action: %s", \
+    ui_overlay_strings[self->action])
 
 /**
  * Returns true if MIDI arranger and track mode

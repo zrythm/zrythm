@@ -147,7 +147,8 @@ static void
 string_entry_dialog_widget_class_init (
   StringEntryDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "string_entry_dialog.ui");
 

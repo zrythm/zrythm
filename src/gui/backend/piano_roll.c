@@ -50,7 +50,8 @@ midi_note_descriptor_new (void)
 }
 
 void
-midi_note_descriptor_free (MidiNoteDescriptor * self)
+midi_note_descriptor_free (
+  MidiNoteDescriptor * self)
 {
   g_free_and_null (self->custom_name);
   g_free_and_null (self->note_name);
@@ -283,7 +284,8 @@ piano_roll_set_highlighting (
  * being shown in the piano roll.
  */
 Track *
-piano_roll_get_current_track (const PianoRoll * self)
+piano_roll_get_current_track (
+  const PianoRoll * self)
 {
   /* TODO */
   return NULL;

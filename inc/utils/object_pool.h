@@ -84,7 +84,9 @@ object_pool_get_num_available (ObjectPool * self);
  * Puts an object back in the pool.
  */
 void
-object_pool_return (ObjectPool * self, void * object);
+object_pool_return (
+  ObjectPool * self,
+  void *       object);
 
 /**
  * Frees the pool and all its objects.

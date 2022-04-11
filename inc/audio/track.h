@@ -49,16 +49,16 @@ typedef struct ZRegion      ZRegion;
 typedef struct Position     Position;
 typedef struct _TrackWidget TrackWidget;
 typedef struct _FolderChannelWidget
-                                FolderChannelWidget;
-typedef struct Channel          Channel;
-typedef struct MidiEvents       MidiEvents;
-typedef struct AutomationTrack  AutomationTrack;
-typedef struct Automatable      Automatable;
-typedef struct AutomationPoint  AutomationPoint;
-typedef struct ChordObject      ChordObject;
-typedef struct MusicalScale     MusicalScale;
-typedef struct Modulator        Modulator;
-typedef struct Marker           Marker;
+                               FolderChannelWidget;
+typedef struct Channel         Channel;
+typedef struct MidiEvents      MidiEvents;
+typedef struct AutomationTrack AutomationTrack;
+typedef struct Automatable     Automatable;
+typedef struct AutomationPoint AutomationPoint;
+typedef struct ChordObject     ChordObject;
+typedef struct MusicalScale    MusicalScale;
+typedef struct Modulator       Modulator;
+typedef struct Marker          Marker;
 typedef struct PluginDescriptor PluginDescriptor;
 typedef struct Tracklist        Tracklist;
 typedef struct SupportedFile    SupportedFile;
@@ -591,7 +591,9 @@ static const cyaml_schema_field_t track_fields_schema[] = {
     Track,
     modulator_macros,
     modulator_macro_processor_schema),
-  YAML_FIELD_INT (Track, num_visible_modulator_macros),
+  YAML_FIELD_INT (
+    Track,
+    num_visible_modulator_macros),
   YAML_FIELD_MAPPING_PTR (
     Track,
     processor,
@@ -1051,7 +1053,7 @@ track_fill_events (
   const Track *                       self,
   const EngineProcessTimeInfo * const time_nfo,
   MidiEvents *                        midi_events,
-  StereoPorts *                       stereo_ports);
+  StereoPorts * stereo_ports);
 
 /**
  * Verifies the identifiers on a live Track
@@ -1185,7 +1187,8 @@ track_setup (Track * track);
  * or NULL if it doesn't (like chord tracks).
  */
 AutomationTracklist *
-track_get_automation_tracklist (Track * const track);
+track_get_automation_tracklist (
+  Track * const track);
 
 /**
  * Returns the channel of the track, if the track
@@ -1595,7 +1598,9 @@ TrackType
 track_type_get_from_string (const char * str);
 
 void
-track_get_total_bars (Track * self, int * total_bars);
+track_get_total_bars (
+  Track * self,
+  int *   total_bars);
 
 void
 track_set_caches (Track * self);
@@ -1627,7 +1632,8 @@ track_create_with_action (
  * Creates a new empty track at the end of the
  * tracklist.
  */
-#define track_create_empty_with_action(type, error) \
+#define track_create_empty_with_action( \
+  type, error) \
   track_create_empty_at_idx_with_action ( \
     type, TRACKLIST->num_tracks, error)
 

@@ -74,7 +74,8 @@ on_before_inserts_toggled (
   BounceStepSelectorWidget * self)
 {
   g_settings_set_enum (
-    S_UI, "bounce-step", BOUNCE_STEP_BEFORE_INSERTS);
+    S_UI, "bounce-step",
+    BOUNCE_STEP_BEFORE_INSERTS);
 
   block_all_handlers (self, true);
   gtk_toggle_button_set_active (
@@ -129,8 +130,8 @@ BounceStepSelectorWidget *
 bounce_step_selector_widget_new (void)
 {
   BounceStepSelectorWidget * self = g_object_new (
-    BOUNCE_STEP_SELECTOR_WIDGET_TYPE, "orientation",
-    GTK_ORIENTATION_VERTICAL, NULL);
+    BOUNCE_STEP_SELECTOR_WIDGET_TYPE,
+    "orientation", GTK_ORIENTATION_VERTICAL, NULL);
 
   gtk_widget_set_visible (GTK_WIDGET (self), true);
 
@@ -140,7 +141,8 @@ bounce_step_selector_widget_new (void)
       icon, _ (bounce_step_str[n]), false, \
       GTK_ORIENTATION_HORIZONTAL, 4); \
   gtk_box_append ( \
-    GTK_BOX (self), GTK_WIDGET (self->x##_toggle)); \
+    GTK_BOX (self), \
+    GTK_WIDGET (self->x##_toggle)); \
   self->x##_toggle_id = g_signal_connect ( \
     G_OBJECT (self->x##_toggle), "toggled", \
     G_CALLBACK (on_##x##_toggled), self)

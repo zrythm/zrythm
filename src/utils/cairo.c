@@ -108,7 +108,8 @@ z_cairo_create_default_pango_layout (
     gtk_widget_create_pango_layout (widget, NULL);
 
   PangoFontDescription * desc =
-    pango_font_description_from_string (Z_CAIRO_FONT);
+    pango_font_description_from_string (
+      Z_CAIRO_FONT);
   pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
 

@@ -64,7 +64,9 @@ test_helper_zrythm_init_optimized (void);
 void
 test_helper_zrythm_cleanup (void);
 void
-test_helper_zrythm_gui_init (int argc, char * argv[]);
+test_helper_zrythm_gui_init (
+  int    argc,
+  char * argv[]);
 
 /** Time to run fishbowl, in seconds */
 #define DEFAULT_FISHBOWL_TIME 20
@@ -156,7 +158,8 @@ _test_helper_zrythm_init (
   *log_ptr = log_obj;
   LOG = log_obj;
 
-  ZRYTHM = zrythm_new (NULL, false, true, optimized);
+  ZRYTHM =
+    zrythm_new (NULL, false, true, optimized);
   ZRYTHM->undo_stack_len = 64;
 
   /* init logic - note: will use a random dir in
@@ -177,7 +180,8 @@ _test_helper_zrythm_init (
   char * tmp_log_dir = g_build_filename (
     g_get_tmp_dir (), "zrythm_test_logs", NULL);
   io_mkdir (tmp_log_dir);
-  char * str_datetime = datetime_get_for_filename ();
+  char * str_datetime =
+    datetime_get_for_filename ();
   char * log_filepath = g_strdup_printf (
     "%s%slog_%s.log", tmp_log_dir,
     G_DIR_SEPARATOR_S, str_datetime);
@@ -287,7 +291,8 @@ test_helper_zrythm_gui_init (int argc, char * argv[])
     css_provider,
     "/org/zrythm/Zrythm/app/theme.css");
   gtk_style_context_add_provider_for_display (
-    display, GTK_STYLE_PROVIDER (css_provider), 800);
+    display, GTK_STYLE_PROVIDER (css_provider),
+    800);
   g_object_unref (css_provider);
   g_message ("set default css provider");
 

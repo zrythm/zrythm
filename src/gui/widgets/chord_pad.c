@@ -175,8 +175,8 @@ on_drag_update (
       /* begin drag */
       gdk_drag_begin (
         surface, device, provider,
-        GDK_ACTION_MOVE | GDK_ACTION_COPY, offset_x,
-        offset_y);
+        GDK_ACTION_MOVE | GDK_ACTION_COPY,
+        offset_x, offset_y);
     }
 }
 
@@ -399,7 +399,8 @@ static void
 chord_pad_widget_class_init (
   ChordPadWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (klass, "chord");
   gtk_widget_class_set_layout_manager_type (
     klass, GTK_TYPE_BIN_LAYOUT);

@@ -50,7 +50,8 @@ static void
 project_toolbar_widget_class_init (
   ProjectToolbarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "project_toolbar.ui");
 

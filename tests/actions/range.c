@@ -55,7 +55,8 @@
 
 /* audio region starts before the range start and
  * ends in the middle of the range */
-#define AUDIO_REGION_START_BAR (RANGE_START_BAR - 1)
+#define AUDIO_REGION_START_BAR \
+  (RANGE_START_BAR - 1)
 #define AUDIO_REGION_END_BAR (RANGE_START_BAR + 1)
 
 /* midi region starting after the range end */
@@ -72,22 +73,26 @@
 
 /* midi region starting before the range and ending
  * inside the range */
-#define MIDI_REGION3_START_BAR (RANGE_START_BAR - 1)
+#define MIDI_REGION3_START_BAR \
+  (RANGE_START_BAR - 1)
 #define MIDI_REGION3_END_BAR (RANGE_START_BAR + 2)
 
 /* another midi region starting before the range and
  * ending inside the range */
-#define MIDI_REGION4_START_BAR (RANGE_START_BAR - 2)
+#define MIDI_REGION4_START_BAR \
+  (RANGE_START_BAR - 2)
 #define MIDI_REGION4_END_BAR (RANGE_START_BAR + 1)
 
 /* midi region starting before the range and ending
  * after the range */
-#define MIDI_REGION5_START_BAR (RANGE_START_BAR - 1)
+#define MIDI_REGION5_START_BAR \
+  (RANGE_START_BAR - 1)
 #define MIDI_REGION5_END_BAR (RANGE_END_BAR + 1)
 
 /* midi region starting inside the range and ending
  * after the range */
-#define MIDI_REGION6_START_BAR (RANGE_START_BAR + 1)
+#define MIDI_REGION6_START_BAR \
+  (RANGE_START_BAR + 1)
 #define MIDI_REGION6_END_BAR (RANGE_END_BAR + 1)
 
 /* midi region ending before the range start */
@@ -112,8 +117,9 @@ test_prepare_common (void)
   position_set_to_bar (&start, start_bar); \
   position_set_to_bar (&end, end_bar); \
   midi_region = midi_region_new ( \
-    &start, &end, track_get_name_hash (midi_track), \
-    0, midi_track->lanes[0]->num_regions); \
+    &start, &end, \
+    track_get_name_hash (midi_track), 0, \
+    midi_track->lanes[0]->num_regions); \
   track_add_region ( \
     midi_track, midi_region, NULL, 0, F_GEN_NAME, \
     F_NO_PUBLISH_EVENTS); \
@@ -196,7 +202,8 @@ check_start_end_markers (void)
   /* check that start/end markers exist */
   Marker * start_m =
     marker_track_get_start_marker (P_MARKER_TRACK);
-  g_assert_true (start_m->type == MARKER_TYPE_START);
+  g_assert_true (
+    start_m->type == MARKER_TYPE_START);
   ArrangerObject * start_obj =
     (ArrangerObject *) start_m;
   Marker * end_m =
@@ -329,7 +336,8 @@ check_after_insert (void)
     (ArrangerObject *) audio_region2;
 
 #define CHECK_POS(obj, start_bar, end_bar) \
-  position_set_to_bar (&start_expected, start_bar); \
+  position_set_to_bar ( \
+    &start_expected, start_bar); \
   position_set_to_bar (&end_expected, end_bar); \
   g_assert_cmppos (&obj->pos, &start_expected); \
   g_assert_cmppos (&obj->end_pos, &end_expected)
@@ -501,7 +509,8 @@ check_after_remove (void)
     (ArrangerObject *) audio_region;
 
 #define CHECK_POS(obj, start_bar, end_bar) \
-  position_set_to_bar (&start_expected, start_bar); \
+  position_set_to_bar ( \
+    &start_expected, start_bar); \
   position_set_to_bar (&end_expected, end_bar); \
   g_assert_cmppos (&obj->pos, &start_expected); \
   g_assert_cmppos (&obj->end_pos, &end_expected)
@@ -679,7 +688,8 @@ test_remove_range_w_objects_inside (void)
   /* check scale and midi region removed */
   g_assert_cmpint (
     midi_track->lanes[0]->num_regions, ==, 0);
-  g_assert_cmpint (P_CHORD_TRACK->num_scales, ==, 0);
+  g_assert_cmpint (
+    P_CHORD_TRACK->num_scales, ==, 0);
 
   /* undo */
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -689,7 +699,8 @@ test_remove_range_w_objects_inside (void)
   /* check scale and midi region added */
   g_assert_cmpint (
     midi_track->lanes[0]->num_regions, ==, 1);
-  g_assert_cmpint (P_CHORD_TRACK->num_scales, ==, 1);
+  g_assert_cmpint (
+    P_CHORD_TRACK->num_scales, ==, 1);
 
   test_helper_zrythm_cleanup ();
 }
@@ -702,7 +713,8 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/actions/range/"
 
   g_test_add_func (
-    TEST_PREFIX "test remove range w objects inside",
+    TEST_PREFIX
+    "test remove range w objects inside",
     (GTestFunc) test_remove_range_w_objects_inside);
   g_test_add_func (
     TEST_PREFIX "test remove range w start marker",

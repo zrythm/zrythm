@@ -46,7 +46,9 @@ static const cyaml_schema_field_t
       ChordSelections_v1,
       base,
       arranger_selections_fields_schema_v1),
-    YAML_FIELD_INT (ChordSelections_v1, schema_version),
+    YAML_FIELD_INT (
+      ChordSelections_v1,
+      schema_version),
     YAML_FIELD_DYN_ARRAY_VAR_COUNT (
       ChordSelections_v1,
       chord_objects,

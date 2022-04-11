@@ -48,13 +48,16 @@ welcome_message_dialog_new (GtkWindow * parent)
 
 #if !defined(INSTALLER_VER) || defined(TRIAL_VER)
   char * donations = g_strdup_printf (
-    _ ("%sZrythm relies on donations and purchases "
-       "to sustain development%s. If you enjoy the "
-       "software, please consider %sdonating%s or "
-       "%sbuying an installer%s."),
+    _ (
+      "%sZrythm relies on donations and purchases "
+      "to sustain development%s. If you enjoy the "
+      "software, please consider %sdonating%s or "
+      "%sbuying an installer%s."),
     "<b>", "</b>", "<a href=\"" DONATION_URL "\">",
-    "</a>", "<a href=\"" PURCHASE_URL "\">", "</a>");
-  g_string_append_printf (gstr, "%s\n\n", donations);
+    "</a>", "<a href=\"" PURCHASE_URL "\">",
+    "</a>");
+  g_string_append_printf (
+    gstr, "%s\n\n", donations);
   g_free (donations);
 #endif
 
@@ -96,8 +99,8 @@ welcome_message_dialog_new (GtkWindow * parent)
 
   char * str = g_string_free (gstr, false);
 
-  GtkDialog * dialog =
-    GTK_DIALOG (gtk_message_dialog_new_with_markup (
+  GtkDialog * dialog = GTK_DIALOG (
+    gtk_message_dialog_new_with_markup (
       parent, GTK_DIALOG_DESTROY_WITH_PARENT,
       GTK_MESSAGE_INFO, GTK_BUTTONS_OK, NULL));
   gtk_message_dialog_set_markup (

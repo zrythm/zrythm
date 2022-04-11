@@ -311,7 +311,9 @@ static const cyaml_bitdef_t port_flags_bitvals[] = {
   { .name = "main_port",           .offset = 4,  .bits = 1},
   { .name = "manual_press",        .offset = 5,  .bits = 1},
   { .name = "amplitude",           .offset = 6,  .bits = 1},
-  { .name = "stereo_balance",      .offset = 7,  .bits = 1},
+  { .name = "stereo_balance",
+   .offset = 7,
+   .bits = 1                                              },
   { .name = "want_position",       .offset = 8,  .bits = 1},
   { .name = "trigger",             .offset = 9,  .bits = 1},
   { .name = "toggle",              .offset = 10, .bits = 1},
@@ -328,7 +330,9 @@ static const cyaml_bitdef_t port_flags_bitvals[] = {
    .offset = 16,
    .bits = 1                                              },
   { .name = "fader_mute",          .offset = 17, .bits = 1},
-  { .name = "channel_fader",       .offset = 18, .bits = 1},
+  { .name = "channel_fader",
+   .offset = 18,
+   .bits = 1                                              },
   { .name = "automatable",         .offset = 19, .bits = 1},
   { .name = "midi_automatable",
    .offset = 20,
@@ -342,7 +346,9 @@ static const cyaml_bitdef_t port_flags_bitvals[] = {
    .bits = 1                                              },
   { .name = "plugin_gain",         .offset = 24, .bits = 1},
   { .name = "tp_mono",             .offset = 25, .bits = 1},
-  { .name = "tp_input_gain",       .offset = 26, .bits = 1},
+  { .name = "tp_input_gain",
+   .offset = 26,
+   .bits = 1                                              },
   { .name = "hw",                  .offset = 27, .bits = 1},
   { .name = "modulator_macro",
    .offset = 28,
@@ -528,8 +534,12 @@ static const cyaml_schema_field_t port_identifier_fields_schema[] = {
   YAML_FIELD_STRING_PTR_OPTIONAL (
     PortIdentifier,
     label),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PortIdentifier, sym),
-  YAML_FIELD_STRING_PTR_OPTIONAL (PortIdentifier, uri),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    PortIdentifier,
+    sym),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    PortIdentifier,
+    uri),
   YAML_FIELD_STRING_PTR_OPTIONAL (
     PortIdentifier,
     comment),
@@ -662,7 +672,8 @@ port_identifier_clone (const PortIdentifier * src);
 
 NONNULL
 void
-port_identifier_free_members (PortIdentifier * self);
+port_identifier_free_members (
+  PortIdentifier * self);
 
 NONNULL
 void

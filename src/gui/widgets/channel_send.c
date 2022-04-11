@@ -172,7 +172,8 @@ channel_send_snapshot (
         {
           if (self->cache_tooltip)
             g_free (self->cache_tooltip);
-          self->cache_tooltip = g_strdup (dest_name);
+          self->cache_tooltip =
+            g_strdup (dest_name);
           gtk_widget_set_tooltip_text (
             widget, self->cache_tooltip);
         }
@@ -282,7 +283,8 @@ show_context_menu (
 
   char tmp[500];
   sprintf (
-    tmp, "app.bind-midi-cc::%p", self->send->amount);
+    tmp, "app.bind-midi-cc::%p",
+    self->send->amount);
   menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
@@ -377,7 +379,8 @@ channel_send_widget_init (ChannelSendWidget * self)
   self->cache_tooltip = NULL;
 
   gtk_widget_set_hexpand (GTK_WIDGET (self), true);
-  gtk_widget_set_focusable (GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (
+    GTK_WIDGET (self), true);
 
   self->selector_popover =
     channel_send_selector_widget_new (self);
@@ -452,7 +455,8 @@ static void
 channel_send_widget_class_init (
   ChannelSendWidgetClass * klass)
 {
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   gtk_widget_class_set_css_name (
     wklass, "channel-send");
   wklass->snapshot = channel_send_snapshot;

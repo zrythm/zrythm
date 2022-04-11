@@ -51,12 +51,13 @@ typedef enum PluginSlotType
   PLUGIN_SLOT_MODULATOR,
 } PluginSlotType;
 
-static const cyaml_strval_t plugin_slot_type_strings[] = {
-  {"Invalid",     PLUGIN_SLOT_INVALID   },
-  { "Insert",     PLUGIN_SLOT_INSERT    },
-  { "MIDI FX",    PLUGIN_SLOT_MIDI_FX   },
-  { "Instrument", PLUGIN_SLOT_INSTRUMENT},
-  { "Modulator",  PLUGIN_SLOT_MODULATOR },
+static const cyaml_strval_t
+  plugin_slot_type_strings[] = {
+    {"Invalid",     PLUGIN_SLOT_INVALID   },
+    { "Insert",     PLUGIN_SLOT_INSERT    },
+    { "MIDI FX",    PLUGIN_SLOT_MIDI_FX   },
+    { "Instrument", PLUGIN_SLOT_INSTRUMENT},
+    { "Modulator",  PLUGIN_SLOT_MODULATOR },
 };
 
 static inline const char *
@@ -94,7 +95,9 @@ static const cyaml_schema_field_t
       PluginIdentifier,
       slot_type,
       plugin_slot_type_strings),
-    YAML_FIELD_UINT (PluginIdentifier, track_name_hash),
+    YAML_FIELD_UINT (
+      PluginIdentifier,
+      track_name_hash),
     YAML_FIELD_INT (PluginIdentifier, slot),
 
     CYAML_FIELD_END

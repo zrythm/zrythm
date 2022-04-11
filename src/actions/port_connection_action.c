@@ -92,8 +92,8 @@ port_connection_action_perform (
   GError **                error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    port_connection_action_new, error, type, src_id,
-    dest_id, new_val, error);
+    port_connection_action_new, error, type,
+    src_id, dest_id, new_val, error);
 }
 
 static int
@@ -117,7 +117,8 @@ port_connection_action_do_or_undo (
     case PORT_CONNECTION_CONNECT:
     case PORT_CONNECTION_DISCONNECT:
       if (
-        (self->type == PORT_CONNECTION_CONNECT && _do)
+        (self->type == PORT_CONNECTION_CONNECT
+         && _do)
         || (self->type == PORT_CONNECTION_DISCONNECT && !_do))
         {
           if (!ports_can_be_connected (src, dest))
@@ -198,14 +199,16 @@ port_connection_action_stringize (
       return g_strdup (_ ("Disconnect ports"));
       break;
     case PORT_CONNECTION_ENABLE:
-      return g_strdup (_ ("Enable port connection"));
+      return g_strdup (
+        _ ("Enable port connection"));
       break;
     case PORT_CONNECTION_DISABLE:
       return g_strdup (
         _ ("Disable port connection"));
       break;
     case PORT_CONNECTION_CHANGE_MULTIPLIER:
-      return g_strdup (_ ("Change port connection"));
+      return g_strdup (
+        _ ("Change port connection"));
       break;
     default:
       g_warn_if_reached ();

@@ -299,7 +299,8 @@ plugin_setting_validate (PluginSetting * self)
         }
     }
 
-  g_debug ("plugin setting validated. new setting:");
+  g_debug (
+    "plugin setting validated. new setting:");
   plugin_setting_print (self);
 }
 
@@ -366,7 +367,8 @@ plugin_setting_activate (const PluginSetting * self)
       if (!ret)
         {
           HANDLE_ERROR (
-            err, "%s", _ ("Failed to create track"));
+            err, "%s",
+            _ ("Failed to create track"));
         }
       num_actions++;
 
@@ -380,7 +382,8 @@ plugin_setting_activate (const PluginSetting * self)
       if (!ret)
         {
           HANDLE_ERROR (
-            err, "%s", _ ("Failed to create track"));
+            err, "%s",
+            _ ("Failed to create track"));
         }
       num_actions++;
 
@@ -433,11 +436,13 @@ plugin_setting_activate (const PluginSetting * self)
       if (!ret)
         {
           HANDLE_ERROR (
-            err, "%s", _ ("Failed to rename track"));
+            err, "%s",
+            _ ("Failed to rename track"));
         }
       num_actions++;
 
-      GPtrArray * pl_audio_outs = g_ptr_array_new ();
+      GPtrArray * pl_audio_outs =
+        g_ptr_array_new ();
       for (int j = 0; j < pl->num_out_ports; j++)
         {
           Port * cur_port = pl->out_ports[j];
@@ -585,7 +590,8 @@ plugin_setting_activate (const PluginSetting * self)
       if (!ret)
         {
           HANDLE_ERROR (
-            err, "%s", _ ("Failed to create track"));
+            err, "%s",
+            _ ("Failed to create track"));
         }
     }
 }
@@ -779,8 +785,9 @@ plugin_settings_set (
 {
   g_message ("Saving plugin setting");
 
-  PluginSetting * own_setting = plugin_settings_find (
-    S_PLUGIN_SETTINGS, setting->descr);
+  PluginSetting * own_setting =
+    plugin_settings_find (
+      S_PLUGIN_SETTINGS, setting->descr);
 
   if (own_setting)
     {

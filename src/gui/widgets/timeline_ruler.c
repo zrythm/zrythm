@@ -48,7 +48,8 @@
 
 #define ACTION_IS(x) \
   (self->action == UI_OVERLAY_ACTION_##x)
-#define TARGET_IS(x) (self->target == RW_TARGET_##x)
+#define TARGET_IS(x) \
+  (self->target == RW_TARGET_##x)
 
 #define RESIZE_HANDLE_WIDTH 4
 
@@ -231,8 +232,8 @@ timeline_ruler_on_drag_update (
           ui_px_to_pos_timeline (
             self->start_x + offset_x, &tmp, true);
           const Position * start_pos;
-          const bool       snap = !self->shift_held;
-          bool             range1 = true;
+          const bool snap = !self->shift_held;
+          bool       range1 = true;
           if (
             (self->range1_first
              && ACTION_IS (RESIZING_L))
@@ -310,8 +311,8 @@ timeline_ruler_on_drag_update (
                 {
                   position_snap (
                     &self->range1_start_pos,
-                    &TRANSPORT->range_1, NULL, NULL,
-                    SNAP_GRID_TIMELINE);
+                    &TRANSPORT->range_1, NULL,
+                    NULL, SNAP_GRID_TIMELINE);
                 }
               position_set_to_pos (
                 &TRANSPORT->range_2,
@@ -333,8 +334,8 @@ timeline_ruler_on_drag_update (
                 {
                   position_snap (
                     &self->range2_start_pos,
-                    &TRANSPORT->range_2, NULL, NULL,
-                    SNAP_GRID_TIMELINE);
+                    &TRANSPORT->range_2, NULL,
+                    NULL, SNAP_GRID_TIMELINE);
                 }
               position_set_to_pos (
                 &TRANSPORT->range_1,
@@ -415,14 +416,16 @@ timeline_ruler_on_drag_update (
             {
               /* if position is acceptable */
               if (
-                position_compare (&tmp, &timeline_end)
+                position_compare (
+                  &tmp, &timeline_end)
                   <= 0
                 && position_compare (
                      &tmp, &TRANSPORT->punch_in_pos)
                      > 0)
                 {
                   position_set_to_pos (
-                    &TRANSPORT->punch_out_pos, &tmp);
+                    &TRANSPORT->punch_out_pos,
+                    &tmp);
                   transport_update_positions (
                     TRANSPORT, true);
                   EVENTS_PUSH (
@@ -456,7 +459,8 @@ timeline_ruler_on_drag_update (
             {
               /* if position is acceptable */
               if (
-                position_compare (&tmp, &timeline_end)
+                position_compare (
+                  &tmp, &timeline_end)
                   <= 0
                 && position_compare (
                      &tmp, &TRANSPORT->loop_start_pos)

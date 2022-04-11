@@ -128,7 +128,8 @@ transport_action_new_time_sig_change (
 
 NONNULL
 TransportAction *
-transport_action_clone (const TransportAction * src);
+transport_action_clone (
+  const TransportAction * src);
 
 bool
 transport_action_perform_bpm_change (

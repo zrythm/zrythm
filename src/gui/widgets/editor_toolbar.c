@@ -101,8 +101,8 @@ update_audio_funcs_menu (EditorToolbarWidget * self)
       const char * icon_name =
         audio_function_get_icon_name_for_type (i);
       g_menu_item_set_attribute (
-        item, G_MENU_ATTRIBUTE_ICON, "s", icon_name,
-        NULL);
+        item, G_MENU_ATTRIBUTE_ICON, "s",
+        icon_name, NULL);
       g_menu_append_item (
         G_MENU (self->audio_functions_menu), item);
     }
@@ -195,8 +195,8 @@ update_automation_funcs_menu (
     gen_apply_funcs_btn (self);
   button_with_menu_widget_setup (
     self->automation_functions_btn,
-    self->automation_apply_function_btn, NULL, true,
-    -1,
+    self->automation_apply_function_btn, NULL,
+    true, -1,
     gtk_button_get_label (
       self->automation_apply_function_btn),
     _ ("Select function"));
@@ -299,7 +299,8 @@ editor_toolbar_widget_refresh (
         gtk_button_set_label (
           self->audio_apply_function_btn, str);
         gtk_widget_set_tooltip_text (
-          GTK_WIDGET (self->audio_apply_function_btn),
+          GTK_WIDGET (
+            self->audio_apply_function_btn),
           tooltip_str);
         g_free (str);
         g_free (tooltip_str);
@@ -383,7 +384,8 @@ dispose (EditorToolbarWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->scroll));
 
-  G_OBJECT_CLASS (editor_toolbar_widget_parent_class)
+  G_OBJECT_CLASS (
+    editor_toolbar_widget_parent_class)
     ->dispose (G_OBJECT (self));
 }
 
@@ -447,7 +449,8 @@ static void
 editor_toolbar_widget_class_init (
   EditorToolbarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "editor_toolbar.ui");
 

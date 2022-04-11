@@ -41,7 +41,8 @@ respond (CreateProjectDialogWidget * self)
     S_GENERAL, "last-project-dir");
   ZRYTHM->create_project_path = g_build_filename (
     str,
-    gtk_editable_get_text (GTK_EDITABLE (self->name)),
+    gtk_editable_get_text (
+      GTK_EDITABLE (self->name)),
     NULL);
   g_free (str);
 
@@ -109,8 +110,8 @@ create_project_dialog_widget_new ()
 {
   CreateProjectDialogWidget * self = g_object_new (
     CREATE_PROJECT_DIALOG_WIDGET_TYPE, "title",
-    _ ("Create New Project"), "icon-name", "zrythm",
-    NULL);
+    _ ("Create New Project"), "icon-name",
+    "zrythm", NULL);
 
   char * str = g_settings_get_string (
     S_GENERAL, "last-project-dir");
@@ -162,7 +163,8 @@ static void
 create_project_dialog_widget_class_init (
   CreateProjectDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "create_project_dialog.ui");
 

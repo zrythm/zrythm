@@ -143,7 +143,8 @@ typedef struct MPMCQueue         MPMCQueue;
           _ev->backtrace = \
             backtrace_get ("", 40, false); \
           g_debug ( \
-            "pushing engine event " #et " (%s:%d)", \
+            "pushing engine event " #et \
+            " (%s:%d)", \
             __func__, __LINE__); \
         } \
       engine_queue_push_back_event ( \
@@ -274,14 +275,22 @@ audio_backend_is_rtaudio (AudioBackend backend)
 __attribute__ ((
   unused)) static const char * audio_backend_str[] = {
   /* TRANSLATORS: Dummy backend */
-  __ ("Dummy"),           __ ("Dummy (libsoundio)"),
-  "ALSA (not working)",   "ALSA (libsoundio)",
-  "ALSA (rtaudio)",       "JACK",
-  "JACK (libsoundio)",    "JACK (rtaudio)",
-  "PulseAudio",           "PulseAudio (libsoundio)",
-  "PulseAudio (rtaudio)", "CoreAudio (libsoundio)",
-  "CoreAudio (rtaudio)",  "SDL",
-  "WASAPI (libsoundio)",  "WASAPI (rtaudio)",
+  __ ("Dummy"),
+  __ ("Dummy (libsoundio)"),
+  "ALSA (not working)",
+  "ALSA (libsoundio)",
+  "ALSA (rtaudio)",
+  "JACK",
+  "JACK (libsoundio)",
+  "JACK (rtaudio)",
+  "PulseAudio",
+  "PulseAudio (libsoundio)",
+  "PulseAudio (rtaudio)",
+  "CoreAudio (libsoundio)",
+  "CoreAudio (rtaudio)",
+  "SDL",
+  "WASAPI (libsoundio)",
+  "WASAPI (rtaudio)",
   "ASIO (rtaudio)",
 };
 

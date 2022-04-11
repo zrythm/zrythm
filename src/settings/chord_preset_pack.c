@@ -163,7 +163,8 @@ chord_preset_pack_generate_context_menu (
 }
 
 ChordPresetPack *
-chord_preset_pack_clone (const ChordPresetPack * src)
+chord_preset_pack_clone (
+  const ChordPresetPack * src)
 {
   ChordPresetPack * self = chord_preset_pack_new (
     src->name, src->is_standard);

@@ -60,7 +60,8 @@ CcBindingsWidget *
 cc_bindings_widget_new (void);
 
 void
-cc_bindings_widget_refresh (CcBindingsWidget * self);
+cc_bindings_widget_refresh (
+  CcBindingsWidget * self);
 
 /**
  * @}

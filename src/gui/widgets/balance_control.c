@@ -295,9 +295,10 @@ show_context_menu (
 
   char tmp[600];
   sprintf (
-    tmp, "app.reset-stereo-balance::%p", self->port);
-  menuitem =
-    z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
+    tmp, "app.reset-stereo-balance::%p",
+    self->port);
+  menuitem = z_gtk_create_menu_item (
+    _ ("Reset"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
   sprintf (tmp, "app.bind-midi-cc::%p", self->port);
@@ -428,7 +429,8 @@ static void
 balance_control_widget_init (
   BalanceControlWidget * self)
 {
-  gtk_widget_set_focusable (GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (
+    GTK_WIDGET (self), true);
 
   gdk_rgba_parse (
     &self->start_color, "rgba(0%,100%,0%,1.0)");
@@ -441,7 +443,8 @@ balance_control_widget_init (
     GTK_WIDGET (self->popover_menu),
     GTK_WIDGET (self));
 
-  gtk_widget_set_margin_start (GTK_WIDGET (self), 2);
+  gtk_widget_set_margin_start (
+    GTK_WIDGET (self), 2);
   gtk_widget_set_margin_end (GTK_WIDGET (self), 2);
 
   /* TODO port to gtk_tooltip_set_custom() */
@@ -486,7 +489,8 @@ static void
 balance_control_widget_class_init (
   BalanceControlWidgetClass * klass)
 {
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   wklass->snapshot = balance_control_snapshot;
   gtk_widget_class_set_css_name (
     wklass, "balance-control");

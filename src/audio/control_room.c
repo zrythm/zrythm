@@ -16,7 +16,8 @@
 static void
 init_common (ControlRoom * self)
 {
-  self->schema_version = CONTROL_ROOM_SCHEMA_VERSION;
+  self->schema_version =
+    CONTROL_ROOM_SCHEMA_VERSION;
 
   /* set the monitor volume */
   float amp =
@@ -169,7 +170,8 @@ ControlRoom *
 control_room_clone (const ControlRoom * src)
 {
   ControlRoom * self = object_new (ControlRoom);
-  self->schema_version = CONTROL_ROOM_SCHEMA_VERSION;
+  self->schema_version =
+    CONTROL_ROOM_SCHEMA_VERSION;
 
   self->monitor_fader =
     fader_clone (src->monitor_fader);

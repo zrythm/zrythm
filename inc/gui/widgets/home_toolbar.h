@@ -77,7 +77,8 @@ home_toolbar_widget_refresh_undo_redo_buttons (
   HomeToolbarWidget * self);
 
 void
-home_toolbar_widget_setup (HomeToolbarWidget * self);
+home_toolbar_widget_setup (
+  HomeToolbarWidget * self);
 
 /**
  * @}

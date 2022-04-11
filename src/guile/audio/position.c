@@ -57,7 +57,8 @@ SCM_DEFINE (
     pos, scm_to_int (sixteenths) - 1);
   position_add_ticks (
     pos, (double) scm_to_int (ticks));
-  position_add_ticks (pos, scm_to_double (sub_tick));
+  position_add_ticks (
+    pos, scm_to_double (sub_tick));
   position_update_frames_from_ticks (pos);
 
   /* wrap the Position * in a new foreign object
@@ -83,7 +84,8 @@ ticks.sub_tick`.")
   position_to_string (refpos, buf);
 
   SCM out_port = scm_current_output_port ();
-  scm_display (scm_from_utf8_string (buf), out_port);
+  scm_display (
+    scm_from_utf8_string (buf), out_port);
 
   return SCM_UNSPECIFIED;
 }

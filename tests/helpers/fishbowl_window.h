@@ -156,7 +156,8 @@ static void
 fishbowl_window_widget_class_init (
   FishbowlWindowWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_template_from_resource (
     GTK_WIDGET_CLASS (klass),
     "/org/zrythm/Zrythm/app/ui/fishbowl_window.ui");

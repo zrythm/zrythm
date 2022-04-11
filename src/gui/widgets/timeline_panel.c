@@ -148,8 +148,8 @@ timeline_panel_widget_tear_down (
 TimelinePanelWidget *
 timeline_panel_widget_new (void)
 {
-  TimelinePanelWidget * self =
-    g_object_new (TIMELINE_PANEL_WIDGET_TYPE, NULL);
+  TimelinePanelWidget * self = g_object_new (
+    TIMELINE_PANEL_WIDGET_TYPE, NULL);
 
   return self;
 }
@@ -206,7 +206,8 @@ static void
 timeline_panel_widget_class_init (
   TimelinePanelWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "timeline_panel.ui");
 

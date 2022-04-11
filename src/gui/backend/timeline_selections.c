@@ -222,8 +222,9 @@ get_lowest_track_pos (TimelineSelections * ts)
   for (int i = 0; i < ts->num_regions; i++)
     {
       ZRegion * r = ts->regions[i];
-      Track * tr = tracklist_find_track_by_name_hash (
-        TRACKLIST, r->id.track_name_hash);
+      Track *   tr =
+        tracklist_find_track_by_name_hash (
+          TRACKLIST, r->id.track_name_hash);
       if (tr->pos < track_pos)
         {
           track_pos = tr->pos;
@@ -817,7 +818,8 @@ timeline_selections_export_to_midi_file (
 
       /* common time: 4 crochet beats, per bar */
       int beats_per_bar =
-        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
       midiSongAddSimpleTimeSig (
         mf, 1, beats_per_bar,
         math_round_double_to_signed_32 (
@@ -832,7 +834,8 @@ timeline_selections_export_to_midi_file (
 
       int          last_midi_track_pos = -1;
       MidiEvents * events = NULL;
-      for (int i = 0; i < sel_clone->num_regions; i++)
+      for (int i = 0; i < sel_clone->num_regions;
+           i++)
         {
           const ZRegion * r = sel_clone->regions[i];
 
@@ -849,7 +852,8 @@ timeline_selections_export_to_midi_file (
                 {
                   TrackLane * lane =
                     region_get_lane (r);
-                  g_return_val_if_fail (lane, false);
+                  g_return_val_if_fail (
+                    lane, false);
                   sprintf (
                     midi_track_name, "%s - %s",
                     track->name, lane->name);
@@ -878,7 +882,8 @@ timeline_selections_export_to_midi_file (
               if (events)
                 {
                   midi_events_write_to_midi_file (
-                    events, mf, last_midi_track_pos);
+                    events, mf,
+                    last_midi_track_pos);
                   object_free_w_func_and_null (
                     midi_events_free, events);
                 }

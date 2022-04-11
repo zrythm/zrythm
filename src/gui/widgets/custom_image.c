@@ -68,7 +68,8 @@ static void
 custom_image_widget_class_init (
   CustomImageWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   klass->snapshot = custom_image_snapshot;
   gtk_widget_class_set_css_name (
     klass, "custom-image");

@@ -74,7 +74,8 @@ test_midi_file_playback (void)
       Track * track = tracklist_get_last_track (
         TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, true);
 
-      ZRegion * region = track->lanes[0]->regions[0];
+      ZRegion * region =
+        track->lanes[0]->regions[0];
 
       /* set start pos to a bit before the first
        * note, send end pos a few cycles later */
@@ -108,7 +109,8 @@ test_midi_file_playback (void)
           for (int j = 0; j < BUFFER_SIZE; j++)
             {
               EngineProcessTimeInfo time_nfo = {
-                .g_start_frame = (unsigned_frame_t) i,
+                .g_start_frame =
+                  (unsigned_frame_t) i,
                 .local_offset = (nframes_t) j,
                 .nframes = BUFFER_SIZE,
               };

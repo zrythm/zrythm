@@ -56,7 +56,8 @@
  */
 #define object_realloc_n(obj, prev_n, n, type) \
   object_realloc_n_sizeof ( \
-    obj, prev_n * sizeof (type), n * sizeof (type))
+    obj, prev_n * sizeof (type), \
+    n * sizeof (type))
 
 /**
  * Zero's out the struct pointed to by \ref ptr.

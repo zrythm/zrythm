@@ -28,7 +28,8 @@
  * Creates and returns an open project dialog.
  */
 GtkDialog *
-dialogs_get_open_project_dialog (GtkWindow * parent);
+dialogs_get_open_project_dialog (
+  GtkWindow * parent);
 
 /**
  * Creates and returns the overwrite plugin dialog.

@@ -119,7 +119,8 @@ test_loading_fully_bridged_plugin (void)
   g_assert_cmpfloat_with_epsilon (
     val_before, 0.5f, 0.0001f);
   port_set_control_value (
-    port, val_after, F_NORMALIZED, F_PUBLISH_EVENTS);
+    port, val_after, F_NORMALIZED,
+    F_PUBLISH_EVENTS);
   g_assert_cmpfloat_with_epsilon (
     port->control, val_after, 0.0001f);
 
@@ -186,7 +187,8 @@ test_bypass_state_after_project_load (void)
       /* set bypass */
       plugin_set_enabled (
         pl, F_NOT_ENABLED, F_NO_PUBLISH_EVENTS);
-      g_assert_false (plugin_is_enabled (pl, false));
+      g_assert_false (
+        plugin_is_enabled (pl, false));
 
       /* reload project */
       test_project_save_and_reload ();
@@ -197,7 +199,8 @@ test_bypass_state_after_project_load (void)
       g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
       /* check bypass */
-      g_assert_false (plugin_is_enabled (pl, false));
+      g_assert_false (
+        plugin_is_enabled (pl, false));
     }
 
   test_helper_zrythm_cleanup ();
@@ -216,7 +219,8 @@ main (int argc, char * argv[])
   g_test_add_func (
     TEST_PREFIX
     "test bypass state after project load",
-    (GTestFunc) test_bypass_state_after_project_load);
+    (GTestFunc)
+      test_bypass_state_after_project_load);
 #if 0
   /* test does not work with carla */
   g_test_add_func (

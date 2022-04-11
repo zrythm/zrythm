@@ -171,8 +171,8 @@ on_knob_right_click (
 
   char tmp[600];
   sprintf (tmp, "app.reset-control::%p", port);
-  menuitem =
-    z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
+  menuitem = z_gtk_create_menu_item (
+    _ ("Reset"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
   sprintf (tmp, "app.bind-midi-cc::%p", port);
@@ -284,11 +284,11 @@ modulator_macro_widget_new (int modulator_macro_idx)
       ->cv_in);
 
   gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self->inputs), on_inputs_draw,
-    self, NULL);
+    GTK_DRAWING_AREA (self->inputs),
+    on_inputs_draw, self, NULL);
   gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self->output), on_output_draw,
-    self, NULL);
+    GTK_DRAWING_AREA (self->output),
+    on_output_draw, self, NULL);
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self->inputs),
@@ -323,7 +323,8 @@ static void
 modulator_macro_widget_class_init (
   ModulatorMacroWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
 
   resources_set_class_template (
     klass, "modulator_macro.ui");
@@ -344,7 +345,8 @@ modulator_macro_widget_class_init (
 
   GObjectClass * goklass = G_OBJECT_CLASS (_klass);
   goklass->dispose = (GObjectFinalizeFunc) dispose;
-  goklass->finalize = (GObjectFinalizeFunc) finalize;
+  goklass->finalize =
+    (GObjectFinalizeFunc) finalize;
 }
 
 static void

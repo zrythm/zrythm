@@ -123,7 +123,8 @@ chord_editor_space_widget_refresh_chords (
 {
   for (int j = 0; j < CHORD_EDITOR->num_chords; j++)
     {
-      chord_key_widget_refresh (self->chord_keys[j]);
+      chord_key_widget_refresh (
+        self->chord_keys[j]);
     }
 }
 
@@ -141,7 +142,8 @@ chord_editor_space_widget_setup (
 
   for (int i = 0; i < CHORD_EDITOR->num_chords; i++)
     {
-      self->chord_keys[i] = chord_key_widget_new (i);
+      self->chord_keys[i] =
+        chord_key_widget_new (i);
       GtkBox * box = GTK_BOX (gtk_box_new (
         GTK_ORIENTATION_HORIZONTAL, 0));
       gtk_box_append (
@@ -182,7 +184,8 @@ static void
 chord_editor_space_widget_class_init (
   ChordEditorSpaceWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "chord_editor_space.ui");
 

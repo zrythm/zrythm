@@ -220,8 +220,8 @@ track_lane_set_muted (
   else
     {
       g_debug (
-        "setting lane '%s' muted to %d", self->name,
-        mute);
+        "setting lane '%s' muted to %d",
+        self->name, mute);
       self->mute = mute;
     }
 
@@ -352,7 +352,9 @@ track_lane_update_track_name_hash (TrackLane * self)
  * @param track New owner track, if any.
  */
 TrackLane *
-track_lane_clone (const TrackLane * src, Track * track)
+track_lane_clone (
+  const TrackLane * src,
+  Track *           track)
 {
   TrackLane * self = object_new (TrackLane);
   self->schema_version = TRACK_LANE_SCHEMA_VERSION;
@@ -377,8 +379,9 @@ track_lane_clone (const TrackLane * src, Track * track)
     {
       /* clone region */
       region = src->regions[i];
-      new_region = (ZRegion *) arranger_object_clone (
-        (ArrangerObject *) region);
+      new_region =
+        (ZRegion *) arranger_object_clone (
+          (ArrangerObject *) region);
 
       self->regions[i] = new_region;
       region_set_lane (new_region, self);
@@ -422,7 +425,8 @@ track_lane_clear (TrackLane * self)
   g_message (
     "clearing track lane %d (%p) for track '%s' | "
     "num regions %d",
-    self->pos, self, track->name, self->num_regions);
+    self->pos, self, track->name,
+    self->num_regions);
 
   for (int i = self->num_regions - 1; i >= 0; i--)
     {
@@ -629,7 +633,8 @@ track_lane_free (TrackLane * self)
   for (int j = 0; j < self->num_buttons; j++)
     {
       if (self->buttons[j])
-        custom_button_widget_free (self->buttons[j]);
+        custom_button_widget_free (
+          self->buttons[j]);
     }
 
   object_zero_and_free (self);

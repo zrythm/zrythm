@@ -223,7 +223,8 @@ full_cb (
     }
   else
     {
-      g_string_append_printf (*msg_str, "%s", "???");
+      g_string_append_printf (
+        *msg_str, "%s", "???");
     }
 
   if (function)
@@ -297,11 +298,13 @@ _backtrace_get (
             datetime_get_for_filename ();
           char * user_bt_dir = zrythm_get_dir (
             ZRYTHM_DIR_USER_BACKTRACE);
-          char * backtrace_filepath = g_strdup_printf (
-            "%s%sbacktrace_%s.txt", user_bt_dir,
-            G_DIR_SEPARATOR_S, str_datetime);
+          char * backtrace_filepath =
+            g_strdup_printf (
+              "%s%sbacktrace_%s.txt", user_bt_dir,
+              G_DIR_SEPARATOR_S, str_datetime);
           io_mkdir (user_bt_dir);
-          FILE * f = fopen (backtrace_filepath, "a");
+          FILE * f =
+            fopen (backtrace_filepath, "a");
           if (!f)
             {
               g_message (
@@ -440,7 +443,8 @@ read_traditional_bt:
              size - 2 - i - 1)
              != 0)
         {
-          sprintf (current_line, "%s\n", strings[i]);
+          sprintf (
+            current_line, "%s\n", strings[i]);
         }
       strcat (message, current_line);
     }

@@ -49,8 +49,10 @@ static void
 top_bar_widget_class_init (
   TopBarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass, "top_bar.ui");
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (
+    klass, "top_bar.ui");
 
   gtk_widget_class_set_css_name (klass, "top-bar");
 

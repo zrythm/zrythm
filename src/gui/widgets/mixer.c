@@ -139,8 +139,8 @@ mixer_widget_hard_refresh (MixerWidget * self)
 
       if (
         track->type != TRACK_TYPE_MASTER
-        && !gtk_widget_get_parent (
-          GTK_WIDGET (ch->widget))) /* not master */
+        && !gtk_widget_get_parent (GTK_WIDGET (
+          ch->widget))) /* not master */
         {
           gtk_box_append (
             self->channels_box,
@@ -208,7 +208,8 @@ mixer_widget_new (void)
 static void
 mixer_widget_class_init (MixerWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "mixer.ui");
 
 #define BIND_CHILD(x) \

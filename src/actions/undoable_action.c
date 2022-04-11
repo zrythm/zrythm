@@ -641,7 +641,8 @@ undoable_action_to_string (UndoableAction * ua)
         port_connection);
       STRINGIZE_UA (PORT, Port, port);
       STRINGIZE_UA (RANGE, Range, range);
-      STRINGIZE_UA (TRANSPORT, Transport, transport);
+      STRINGIZE_UA (
+        TRANSPORT, Transport, transport);
       STRINGIZE_UA (CHORD, Chord, chord);
     default:
       g_return_val_if_reached (g_strdup (""));

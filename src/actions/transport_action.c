@@ -35,7 +35,8 @@
 #include <glib/gi18n.h>
 
 void
-transport_action_init_loaded (TransportAction * self)
+transport_action_init_loaded (
+  TransportAction * self)
 {
 }
 
@@ -62,7 +63,8 @@ transport_action_new_bpm_change (
   self->musical_mode =
     ZRYTHM_TESTING
       ? false
-      : g_settings_get_boolean (S_UI, "musical-mode");
+      : g_settings_get_boolean (
+        S_UI, "musical-mode");
 
   return ua;
 }
@@ -88,7 +90,8 @@ transport_action_new_time_sig_change (
   self->musical_mode =
     ZRYTHM_TESTING
       ? false
-      : g_settings_get_boolean (S_UI, "musical-mode");
+      : g_settings_get_boolean (
+        S_UI, "musical-mode");
 
   return ua;
 }
@@ -178,7 +181,8 @@ do_or_undo (TransportAction * self, bool _do)
     }
 
   /* queue change */
-  router_queue_control_port_change (ROUTER, &change);
+  router_queue_control_port_change (
+    ROUTER, &change);
 
   /* run engine to apply the change */
   engine_process_prepare (AUDIO_ENGINE, 1);
@@ -240,9 +244,10 @@ transport_action_do (
       self->already_done = false;
 
       int beats_per_bar =
-        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
-      bpm_t bpm =
-        tempo_track_get_current_bpm (P_TEMPO_TRACK);
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
+      bpm_t bpm = tempo_track_get_current_bpm (
+        P_TEMPO_TRACK);
 
       bool update_from_ticks =
         need_update_positions_from_ticks (self);

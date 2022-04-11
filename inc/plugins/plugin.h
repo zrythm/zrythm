@@ -81,7 +81,8 @@ typedef struct _WrappedObjectWithChangeSignal
 /** Whether the plugin is used for MIDI
  * auditioning in SampleProcessor. */
 #define plugin_is_auditioner(self) \
-  (self->track && track_is_auditioner (self->track))
+  (self->track \
+   && track_is_auditioner (self->track))
 
 /**
  * The base plugin

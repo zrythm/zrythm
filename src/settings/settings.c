@@ -82,8 +82,8 @@ settings_new (void)
 #define PREFERENCES_PREFIX \
   GSETTINGS_ZRYTHM_PREFIX ".preferences."
 #define NEW_PREFERENCES_SETTINGS(a, b) \
-  self->preferences_##a##_##b = \
-    g_settings_new (PREFERENCES_PREFIX #a "." #b); \
+  self->preferences_##a##_##b = g_settings_new ( \
+    PREFERENCES_PREFIX #a "." #b); \
   g_return_val_if_fail ( \
     self->preferences_##a##_##b, NULL)
 
@@ -123,7 +123,8 @@ settings_new (void)
 #endif
 
   self->plugin_settings = plugin_settings_new ();
-  g_return_val_if_fail (self->plugin_settings, NULL);
+  g_return_val_if_fail (
+    self->plugin_settings, NULL);
 
   self->user_shortcuts = user_shortcuts_new ();
   if (!self->user_shortcuts)
@@ -141,8 +142,9 @@ print_or_reset_schema (
   int               print_only,
   int               pretty_print)
 {
-  GSettings * settings = g_settings_new (schema_str);
-  char **     keys =
+  GSettings * settings =
+    g_settings_new (schema_str);
+  char ** keys =
     g_settings_schema_list_keys (schema);
 
   char tmp[8000];
@@ -155,7 +157,8 @@ print_or_reset_schema (
         pretty_print ? TERMINAL_RESET : "");
       printf (
         "%s%s\n",
-        pretty_print ? TERMINAL_UNDERLINE : "", tmp);
+        pretty_print ? TERMINAL_UNDERLINE : "",
+        tmp);
     }
   else
     {
@@ -471,7 +474,8 @@ settings_strv_contains_str (
   const char * key,
   const char * val)
 {
-  char ** strv = g_settings_get_strv (settings, key);
+  char ** strv =
+    g_settings_get_strv (settings, key);
 
   for (int i = 0;; i++)
     {

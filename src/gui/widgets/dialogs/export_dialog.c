@@ -176,7 +176,8 @@ get_mixdown_export_filename (
   const char * format =
     exporter_stringize_export_format (
       gtk_combo_box_get_active (self->format), true);
-  char * datetime_str = datetime_get_for_filename ();
+  char * datetime_str =
+    datetime_get_for_filename ();
   char * base = NULL;
   switch (g_settings_get_enum (
     S_EXPORT, "filename-pattern"))
@@ -240,7 +241,8 @@ get_stem_export_filenames (
   const char * format =
     exporter_stringize_export_format (
       gtk_combo_box_get_active (self->format), true);
-  char * datetime_str = datetime_get_for_filename ();
+  char * datetime_str =
+    datetime_get_for_filename ();
 
   GString * gstr = g_string_new (NULL);
 
@@ -422,7 +424,8 @@ update_text (ExportDialogWidget * self)
 
   g_signal_connect (
     G_OBJECT (self->output_label), "activate-link",
-    G_CALLBACK (z_gtk_activate_dir_link_func), self);
+    G_CALLBACK (z_gtk_activate_dir_link_func),
+    self);
 
 #undef ORANGIZE
 }
@@ -509,17 +512,21 @@ create_bit_depth_store (void)
   store = gtk_tree_store_new (1, G_TYPE_STRING);
 
   gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (store, &iter, 0, "16 bit", -1);
+  gtk_tree_store_set (
+    store, &iter, 0, "16 bit", -1);
   gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (store, &iter, 0, "24 bit", -1);
+  gtk_tree_store_set (
+    store, &iter, 0, "24 bit", -1);
   gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (store, &iter, 0, "32 bit", -1);
+  gtk_tree_store_set (
+    store, &iter, 0, "32 bit", -1);
 
   return GTK_TREE_MODEL (store);
 }
 
 static void
-setup_bit_depth_combo_box (ExportDialogWidget * self)
+setup_bit_depth_combo_box (
+  ExportDialogWidget * self)
 {
   GtkTreeModel * model = create_bit_depth_store ();
   gtk_combo_box_set_model (self->bit_depth, model);
@@ -639,10 +646,12 @@ on_format_changed (
   g_settings_set_enum (S_EXPORT, "format", format);
 
 #define SET_SENSITIVE(x) \
-  gtk_widget_set_sensitive (GTK_WIDGET (self->x), 1)
+  gtk_widget_set_sensitive ( \
+    GTK_WIDGET (self->x), 1)
 
 #define SET_UNSENSITIVE(x) \
-  gtk_widget_set_sensitive (GTK_WIDGET (self->x), 0)
+  gtk_widget_set_sensitive ( \
+    GTK_WIDGET (self->x), 0)
 
   SET_UNSENSITIVE (export_genre);
   SET_UNSENSITIVE (export_artist);
@@ -821,7 +830,8 @@ on_export_clicked (
         {
           Track * track = tracks[i];
           g_debug (
-            "~ bouncing stem for %s ~", track->name);
+            "~ bouncing stem for %s ~",
+            track->name);
 
           /* unmark all tracks for bounce */
           tracklist_mark_all_tracks_for_bounce (
@@ -848,9 +858,10 @@ on_export_clicked (
             &info);
 
           /* create a progress dialog and block */
-          ExportProgressDialogWidget * progress_dialog =
-            export_progress_dialog_widget_new (
-              &info, true, true, F_CANCELABLE);
+          ExportProgressDialogWidget *
+            progress_dialog =
+              export_progress_dialog_widget_new (
+                &info, true, true, F_CANCELABLE);
           gtk_window_set_transient_for (
             GTK_WINDOW (progress_dialog),
             GTK_WINDOW (self));
@@ -1433,7 +1444,8 @@ static void
 export_dialog_widget_class_init (
   ExportDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "export_dialog.ui");
 
@@ -1466,7 +1478,8 @@ export_dialog_widget_class_init (
 }
 
 static void
-export_dialog_widget_init (ExportDialogWidget * self)
+export_dialog_widget_init (
+  ExportDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 

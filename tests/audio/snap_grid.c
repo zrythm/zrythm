@@ -42,8 +42,8 @@ test_update_snap_points (void)
   gint64   before, after;
 
   snap_grid_init (
-    &sg, SNAP_GRID_TYPE_TIMELINE, NOTE_LENGTH_1_128,
-    false);
+    &sg, SNAP_GRID_TYPE_TIMELINE,
+    NOTE_LENGTH_1_128, false);
 
 #define TEST_WITH_MAX_BARS(x) \
   before = g_get_monotonic_time (); \

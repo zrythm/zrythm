@@ -47,7 +47,8 @@ _test_copy_plugins (
 
   /* create the plugin track */
   test_plugin_manager_create_tracks_from_plugin (
-    pl_bundle, pl_uri, is_instrument, with_carla, 1);
+    pl_bundle, pl_uri, is_instrument, with_carla,
+    1);
 
   num_master_children++;
   g_assert_cmpint (
@@ -56,7 +57,8 @@ _test_copy_plugins (
   Track * track = tracklist_get_track (
     TRACKLIST, TRACKLIST->num_tracks - 1);
   g_assert_cmpuint (
-    P_MASTER_TRACK->children[num_master_children - 1],
+    P_MASTER_TRACK
+      ->children[num_master_children - 1],
     ==, track_get_name_hash (track));
   track = tracklist_get_track (TRACKLIST, 5);
   g_assert_cmpuint (
@@ -72,7 +74,8 @@ _test_copy_plugins (
   track = tracklist_get_track (
     TRACKLIST, TRACKLIST->num_tracks - 1);
   g_assert_cmpuint (
-    P_MASTER_TRACK->children[num_master_children - 1],
+    P_MASTER_TRACK
+      ->children[num_master_children - 1],
     ==, track_get_name_hash (track));
   track = tracklist_get_track (TRACKLIST, 5);
   g_assert_cmpuint (
@@ -86,9 +89,10 @@ _test_copy_plugins (
     track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
 
-  bool ret = tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
-    TRACKLIST->num_tracks, NULL);
+  bool ret =
+    tracklist_selections_action_perform_copy (
+      TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
+      TRACKLIST->num_tracks, NULL);
   g_assert_true (ret);
   num_master_children++;
   g_assert_cmpint (
@@ -97,7 +101,8 @@ _test_copy_plugins (
   track = tracklist_get_track (
     TRACKLIST, TRACKLIST->num_tracks - 1);
   g_assert_cmpuint (
-    P_MASTER_TRACK->children[num_master_children - 1],
+    P_MASTER_TRACK
+      ->children[num_master_children - 1],
     ==, track_get_name_hash (track));
   track = tracklist_get_track (TRACKLIST, 5);
   g_assert_cmpuint (
@@ -203,8 +208,9 @@ test_midi_fx_slot_deletion (void)
   int     track_pos = TRACKLIST->num_tracks - 1;
   Track * track = TRACKLIST->tracks[track_pos];
   bool ret = mixer_selections_action_perform_create (
-    PLUGIN_SLOT_MIDI_FX, track_get_name_hash (track),
-    slot, setting, 1, NULL);
+    PLUGIN_SLOT_MIDI_FX,
+    track_get_name_hash (track), slot, setting, 1,
+    NULL);
   g_assert_true (ret);
 
   Plugin * pl = track->channel->midi_fx[slot];
@@ -302,7 +308,7 @@ _test_create_plugins (
        * plugin */
       track_create_empty_with_action (
         TRACK_TYPE_AUDIO_BUS, NULL);
-      int     track_pos = TRACKLIST->num_tracks - 1;
+      int track_pos = TRACKLIST->num_tracks - 1;
       Track * track = TRACKLIST->tracks[track_pos];
       bool    ret =
         mixer_selections_action_perform_create (
@@ -332,17 +338,19 @@ _test_create_plugins (
 
   test_project_save_and_reload ();
 
-  int     src_track_pos = TRACKLIST->num_tracks - 1;
+  int src_track_pos = TRACKLIST->num_tracks - 1;
   Track * src_track =
     TRACKLIST->tracks[src_track_pos];
 
   if (is_instrument)
     {
-      g_assert_true (src_track->channel->instrument);
+      g_assert_true (
+        src_track->channel->instrument);
     }
   else
     {
-      g_assert_true (src_track->channel->inserts[0]);
+      g_assert_true (
+        src_track->channel->inserts[0]);
     }
 
   /* duplicate the track */
@@ -428,8 +436,8 @@ test_create_plugins (void)
 #endif
 #ifdef HAVE_CARLA_RACK
       _test_create_plugins (
-        PROT_LV2, CARLA_RACK_BUNDLE, CARLA_RACK_URI,
-        true, i);
+        PROT_LV2, CARLA_RACK_BUNDLE,
+        CARLA_RACK_URI, true, i);
 #endif
 #if defined(HAVE_UNLIMITED_MEM) \
   && defined(HAVE_CALF_COMPRESSOR)
@@ -531,8 +539,8 @@ _test_port_and_plugin_track_pos_after_move (
   mixer_selections_clear (
     MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, src_track, PLUGIN_SLOT_INSERT,
-    0, F_NO_CLONE);
+    MIXER_SELECTIONS, src_track,
+    PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
   ret = mixer_selections_action_perform_move (
     MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
     PLUGIN_SLOT_INSERT,
@@ -562,8 +570,8 @@ _test_port_and_plugin_track_pos_after_move (
   mixer_selections_clear (
     MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, src_track, PLUGIN_SLOT_INSERT,
-    0, F_NO_CLONE);
+    MIXER_SELECTIONS, src_track,
+    PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
   ret = mixer_selections_action_perform_move (
     MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
     PLUGIN_SLOT_INSERT,
@@ -580,8 +588,8 @@ _test_port_and_plugin_track_pos_after_move (
     MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   src_track = TRACKLIST->tracks[src_track_pos];
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, src_track, PLUGIN_SLOT_INSERT,
-    1, F_NO_CLONE);
+    MIXER_SELECTIONS, src_track,
+    PLUGIN_SLOT_INSERT, 1, F_NO_CLONE);
   ret = mixer_selections_action_new_move (
     MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
     PLUGIN_SLOT_INSERT, 0, 0, NULL);
@@ -626,7 +634,8 @@ test_port_and_plugin_track_pos_after_move_with_carla (
 
 #  ifdef HAVE_LSP_COMPRESSOR
   _test_port_and_plugin_track_pos_after_move (
-    LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, true);
+    LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI,
+    true);
 #  endif
 
   test_helper_zrythm_cleanup ();
@@ -738,8 +747,8 @@ test_move_two_plugins_one_slot_up (void)
     F_NO_CLONE);
   ret = mixer_selections_action_perform_copy (
     MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
-    PLUGIN_SLOT_INSERT, track_get_name_hash (track),
-    1, NULL);
+    PLUGIN_SLOT_INSERT,
+    track_get_name_hash (track), 1, NULL);
   g_assert_true (ret);
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
@@ -777,8 +786,8 @@ test_move_two_plugins_one_slot_up (void)
     F_NO_CLONE);
   ret = mixer_selections_action_perform_move (
     MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
-    PLUGIN_SLOT_INSERT, track_get_name_hash (track),
-    1, NULL);
+    PLUGIN_SLOT_INSERT,
+    track_get_name_hash (track), 1, NULL);
   g_assert_true (ret);
   g_assert_true (track_validate (track));
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -803,8 +812,8 @@ test_move_two_plugins_one_slot_up (void)
     F_NO_CLONE);
   ret = mixer_selections_action_perform_move (
     MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
-    PLUGIN_SLOT_INSERT, track_get_name_hash (track),
-    2, NULL);
+    PLUGIN_SLOT_INSERT,
+    track_get_name_hash (track), 2, NULL);
   g_assert_true (ret);
   g_assert_true (track_validate (track));
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -829,8 +838,8 @@ test_move_two_plugins_one_slot_up (void)
     F_NO_CLONE);
   ret = mixer_selections_action_perform_move (
     MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
-    PLUGIN_SLOT_INSERT, track_get_name_hash (track),
-    1, NULL);
+    PLUGIN_SLOT_INSERT,
+    track_get_name_hash (track), 1, NULL);
   g_assert_true (ret);
   g_assert_true (track_validate (track));
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -855,8 +864,8 @@ test_move_two_plugins_one_slot_up (void)
     F_NO_CLONE);
   ret = mixer_selections_action_perform_move (
     MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
-    PLUGIN_SLOT_INSERT, track_get_name_hash (track),
-    0, NULL);
+    PLUGIN_SLOT_INSERT,
+    track_get_name_hash (track), 0, NULL);
   g_assert_true (ret);
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
@@ -875,8 +884,8 @@ test_move_two_plugins_one_slot_up (void)
     F_NO_CLONE);
   ret = mixer_selections_action_perform_move (
     MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
-    PLUGIN_SLOT_INSERT, track_get_name_hash (track),
-    0, NULL);
+    PLUGIN_SLOT_INSERT,
+    track_get_name_hash (track), 0, NULL);
   g_assert_true (ret);
 
   /* verify that first plugin was replaced by 2nd
@@ -955,8 +964,8 @@ test_move_two_plugins_one_slot_up (void)
     F_NO_CLONE);
   ret = mixer_selections_action_perform_move (
     MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
-    PLUGIN_SLOT_INSERT, track_get_name_hash (track),
-    0, NULL);
+    PLUGIN_SLOT_INSERT,
+    track_get_name_hash (track), 0, NULL);
   g_assert_true (ret);
 
   test_project_save_and_reload ();
@@ -1147,8 +1156,8 @@ test_move_pl_after_duplicating_track (void)
   mixer_selections_clear (
     MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, lsp_track, PLUGIN_SLOT_INSERT,
-    0, F_NO_CLONE);
+    MIXER_SELECTIONS, lsp_track,
+    PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
   ret = mixer_selections_action_perform_move (
     MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
     PLUGIN_SLOT_INSERT,
@@ -1253,7 +1262,8 @@ test_undoing_deletion_of_multiple_inserts (void)
     ins_track->channel->inserts[0];
   Plugin * no_delay_line =
     ins_track->channel->inserts[1];
-  g_assert_true (IS_PLUGIN_AND_NONNULL (compressor));
+  g_assert_true (
+    IS_PLUGIN_AND_NONNULL (compressor));
   g_assert_true (
     IS_PLUGIN_AND_NONNULL (no_delay_line));
   plugin_select (compressor, F_SELECT, F_EXCLUSIVE);
@@ -1318,7 +1328,7 @@ _test_replace_instrument (
   track_create_for_plugin_at_idx_w_action (
     TRACK_TYPE_INSTRUMENT, setting,
     TRACKLIST->num_tracks, NULL);
-  int     src_track_pos = TRACKLIST->num_tracks - 1;
+  int src_track_pos = TRACKLIST->num_tracks - 1;
   Track * src_track =
     TRACKLIST->tracks[src_track_pos];
   g_assert_true (track_validate (src_track));
@@ -1336,7 +1346,7 @@ _test_replace_instrument (
   int num_port_connection_actions =
     UNDO_MANAGER->undo_stack
       ->num_port_connection_actions;
-  int     lsp_track_pos = TRACKLIST->num_tracks - 2;
+  int lsp_track_pos = TRACKLIST->num_tracks - 2;
   Track * lsp_track =
     TRACKLIST->tracks[lsp_track_pos];
   Plugin * lsp = lsp_track->channel->inserts[0];
@@ -1362,7 +1372,8 @@ _test_replace_instrument (
   /*#if 0*/
   PortIdentifier helm_l_out_port_id;
   memset (
-    &helm_l_out_port_id, 0, sizeof (PortIdentifier));
+    &helm_l_out_port_id, 0,
+    sizeof (PortIdentifier));
   port_identifier_init (&helm_l_out_port_id);
   port_identifier_copy (
     &helm_l_out_port_id,
@@ -1437,8 +1448,8 @@ _test_replace_instrument (
   /* replace the instrument with a new instance */
   mixer_selections_action_perform_create (
     PLUGIN_SLOT_INSTRUMENT,
-    track_get_name_hash (src_track), -1, setting, 1,
-    NULL);
+    track_get_name_hash (src_track), -1, setting,
+    1, NULL);
   g_assert_true (track_validate (src_track));
 
   src_track = TRACKLIST->tracks[src_track_pos];
@@ -1583,8 +1594,8 @@ test_replace_instrument (void)
 #endif
 #ifdef HAVE_CARLA_RACK
       _test_replace_instrument (
-        PROT_LV2, CARLA_RACK_BUNDLE, CARLA_RACK_URI,
-        i);
+        PROT_LV2, CARLA_RACK_BUNDLE,
+        CARLA_RACK_URI, i);
 #endif
     }
 

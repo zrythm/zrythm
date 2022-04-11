@@ -216,12 +216,13 @@ create_and_load_lilv_word (PluginManager * self)
   self->lv2_path = NULL;
   LilvNode * lv2_path = NULL;
   char *     env_lv2_path = getenv ("LV2_PATH");
-  char *     builtin_plugins_path = zrythm_get_dir (
-        ZRYTHM_DIR_SYSTEM_LV2_PLUGINS_DIR);
+  char * builtin_plugins_path = zrythm_get_dir (
+    ZRYTHM_DIR_SYSTEM_LV2_PLUGINS_DIR);
   if (env_lv2_path && (strlen (env_lv2_path) > 0))
     {
       self->lv2_path = g_strdup_printf (
-        "%s:%s", env_lv2_path, builtin_plugins_path);
+        "%s:%s", env_lv2_path,
+        builtin_plugins_path);
     }
   else
     {
@@ -236,7 +237,8 @@ create_and_load_lilv_word (PluginManager * self)
           self->lv2_path = g_strdup_printf (
             "%s/.lv2:/usr/local/lib/lv2:"
             "/usr/lib/lv2:%s",
-            g_get_home_dir (), builtin_plugins_path);
+            g_get_home_dir (),
+            builtin_plugins_path);
         }
       else
         {
@@ -247,7 +249,8 @@ create_and_load_lilv_word (PluginManager * self)
             /* some distros report the wrong
                * LIBDIR_NAME so hardcode these */
             "/usr/local/lib/lv2:/usr/lib/lv2:%s",
-            g_get_home_dir (), builtin_plugins_path);
+            g_get_home_dir (),
+            builtin_plugins_path);
         }
 #  endif /* flatpak build */
     }
@@ -257,7 +260,8 @@ create_and_load_lilv_word (PluginManager * self)
   /* add zrythm custom path for installer */
   char * before_path = self->lv2_path;
   self->lv2_path = g_strdup_printf (
-    "%s:" PREFIX "/lib/zrythm/lib/lv2", before_path);
+    "%s:" PREFIX "/lib/zrythm/lib/lv2",
+    before_path);
   g_free (before_path);
 
   /* add test plugins if testing */
@@ -274,7 +278,8 @@ create_and_load_lilv_word (PluginManager * self)
       g_free (before_path);
     }
 
-  lv2_path = lilv_new_string (world, self->lv2_path);
+  lv2_path =
+    lilv_new_string (world, self->lv2_path);
 
   g_message (
     "%s: LV2 path: %s", __func__, self->lv2_path);
@@ -302,7 +307,8 @@ init_symap (PluginManager * self)
 {
   /* symap URIDs */
 #define SYMAP_MAP(target, uri) \
-  self->urids.target = symap_map (self->symap, uri);
+  self->urids.target = \
+    symap_map (self->symap, uri);
 
   SYMAP_MAP (atom_Float, LV2_ATOM__Float);
   SYMAP_MAP (atom_Int, LV2_ATOM__Int);
@@ -349,7 +355,8 @@ init_symap (PluginManager * self)
   SYMAP_MAP (ui_scaleFactor, LV2_UI__scaleFactor);
 #endif
 
-  SYMAP_MAP (z_hostInfo_name, Z_LV2_HOST_INFO__name);
+  SYMAP_MAP (
+    z_hostInfo_name, Z_LV2_HOST_INFO__name);
   SYMAP_MAP (
     z_hostInfo_version, Z_LV2_HOST_INFO__version);
 #undef SYMAP_MAP
@@ -360,7 +367,8 @@ load_bundled_lv2_plugins (PluginManager * self)
 {
 #ifndef _WOE32
   GError *     err;
-  const char * path = CONFIGURE_LIBDIR "/zrythm/lv2";
+  const char * path = CONFIGURE_LIBDIR
+    "/zrythm/lv2";
   if (g_file_test (
         path,
         G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
@@ -375,8 +383,8 @@ load_bundled_lv2_plugins (PluginManager * self)
             dir = g_dir_read_name (bundle_lv2_dir)))
             {
               str = g_strdup_printf (
-                "file://%s%s%s%smanifest.ttl", path,
-                G_DIR_SEPARATOR_S, dir,
+                "file://%s%s%s%smanifest.ttl",
+                path, G_DIR_SEPARATOR_S, dir,
                 G_DIR_SEPARATOR_S);
               LilvNode * uri = lilv_new_uri (
                 self->lilv_world, str);
@@ -418,8 +426,8 @@ plugin_manager_new (void)
   zix_sem_init (&self->symap_lock, 1);
 
   self->nodes_size = 1;
-  self->nodes =
-    malloc (self->nodes_size * sizeof (LilvNode *));
+  self->nodes = malloc (
+    self->nodes_size * sizeof (LilvNode *));
 
   /* init lv2 */
   create_and_load_lilv_word (self);
@@ -695,7 +703,8 @@ get_dssi_paths (PluginManager * self)
 {
   g_debug ("%s: getting paths...", __func__);
 
-  char * dssi_path = g_strdup (getenv ("DSSI_PATH"));
+  char * dssi_path =
+    g_strdup (getenv ("DSSI_PATH"));
   if (!dssi_path || (strlen (dssi_path) == 0))
     {
 #  ifdef FLATPAK_BUILD
@@ -748,8 +757,8 @@ get_ladspa_paths (PluginManager * self)
   if (!ladspa_path || (strlen (ladspa_path) == 0))
     {
 #  ifdef FLATPAK_BUILD
-      ladspa_path =
-        g_strdup ("/app/extensions/Plugins/ladspa");
+      ladspa_path = g_strdup (
+        "/app/extensions/Plugins/ladspa");
 #  else
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
@@ -865,7 +874,8 @@ scan_carla_descriptors_from_paths (
         protocol_str);
       return;
     }
-  g_message ("Scanning %s plugins...", protocol_str);
+  g_message (
+    "Scanning %s plugins...", protocol_str);
 
   /* get paths and suffix */
   char **      paths = NULL;
@@ -940,7 +950,8 @@ scan_carla_descriptors_from_paths (
                * of descriptors */
               PluginDescriptor * descriptor = NULL;
               int                i = 0;
-              while ((descriptor = descriptors[i++]))
+              while (
+                (descriptor = descriptors[i++]))
                 {
                   g_debug (
                     "Found cached %s %s",
@@ -949,7 +960,8 @@ scan_carla_descriptors_from_paths (
                     plugin_descriptor_clone (
                       descriptor);
                   g_ptr_array_add (
-                    self->plugin_descriptors, clone);
+                    self->plugin_descriptors,
+                    clone);
                   add_category_and_author (
                     self, clone->category_str,
                     clone->author);
@@ -1050,8 +1062,8 @@ scan_carla_descriptors_from_paths (
 
                   if (descriptors)
                     {
-                      PluginDescriptor * descriptor =
-                        NULL;
+                      PluginDescriptor *
+                          descriptor = NULL;
                       int i = 0;
                       while ((
                         descriptor =
@@ -1176,8 +1188,8 @@ plugin_manager_scan_plugins (
   size += (double) get_sf_count (self, PROT_SFZ);
   size += (double) get_sf_count (self, PROT_SF2);
 #  ifdef __APPLE__
-  size +=
-    carla_get_cached_plugin_count (PLUGIN_AU, NULL);
+  size += carla_get_cached_plugin_count (
+    PLUGIN_AU, NULL);
 #  endif
 #endif
 
@@ -1448,7 +1460,8 @@ plugin_manager_find_from_descriptor (
  * Returns an instrument plugin, if any.
  */
 PluginDescriptor *
-plugin_manager_pick_instrument (PluginManager * self)
+plugin_manager_pick_instrument (
+  PluginManager * self)
 {
   for (size_t i = 0;
        i < self->plugin_descriptors->len; i++)

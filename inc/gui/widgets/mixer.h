@@ -41,7 +41,8 @@ typedef struct Track              Track;
  * @{
  */
 
-#define MIXER_WIDGET_TYPE (mixer_widget_get_type ())
+#define MIXER_WIDGET_TYPE \
+  (mixer_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   MixerWidget,
   mixer_widget,

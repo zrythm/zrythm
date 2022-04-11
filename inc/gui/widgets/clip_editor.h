@@ -36,7 +36,8 @@ G_DECLARE_FINAL_TYPE (
   CLIP_EDITOR_WIDGET,
   GtkBox)
 
-#define MW_CLIP_EDITOR MW_BOT_DOCK_EDGE->clip_editor
+#define MW_CLIP_EDITOR \
+  MW_BOT_DOCK_EDGE->clip_editor
 
 typedef struct _ClipEditorInnerWidget
   ClipEditorInnerWidget;

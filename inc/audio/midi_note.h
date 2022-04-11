@@ -54,7 +54,8 @@ typedef struct Velocity        Velocity;
    && ((MidiNote *) tr)->magic == MIDI_NOTE_MAGIC)
 
 #define midi_note_is_selected(r) \
-  arranger_object_is_selected ((ArrangerObject *) r)
+  arranger_object_is_selected ( \
+    (ArrangerObject *) r)
 
 /**
  * A MIDI note inside a ZRegion shown in the

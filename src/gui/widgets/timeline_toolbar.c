@@ -45,8 +45,9 @@ timeline_toolbar_widget_refresh (
   TimelineToolbarWidget * self)
 {
   /* enable/disable merge button */
-  bool sensitive = arranger_selections_can_be_merged (
-    (ArrangerSelections *) TL_SELECTIONS);
+  bool sensitive =
+    arranger_selections_can_be_merged (
+      (ArrangerSelections *) TL_SELECTIONS);
   g_debug (
     "settings merge button sensitivity %d",
     sensitive);
@@ -97,7 +98,8 @@ static void
 timeline_toolbar_widget_class_init (
   TimelineToolbarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "timeline_toolbar.ui");
 

@@ -48,7 +48,8 @@ modulator_widget_refresh (ModulatorWidget * self)
 ModulatorWidget *
 modulator_widget_new (Plugin * modulator)
 {
-  g_return_val_if_fail (IS_PLUGIN (modulator), NULL);
+  g_return_val_if_fail (
+    IS_PLUGIN (modulator), NULL);
 
   ModulatorWidget * self =
     g_object_new (MODULATOR_WIDGET_TYPE, NULL);

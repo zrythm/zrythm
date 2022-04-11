@@ -88,7 +88,9 @@ static const cyaml_schema_field_t
   };
 
 static const cyaml_schema_value_t audio_pool_schema = {
-  YAML_VALUE_PTR (AudioPool, audio_pool_fields_schema),
+  YAML_VALUE_PTR (
+    AudioPool,
+    audio_pool_fields_schema),
 };
 
 /**
@@ -194,7 +196,8 @@ audio_pool_gen_name_for_recording_clip (
  * change in the project (eg, object added/removed).
  */
 void
-audio_pool_reload_clip_frame_bufs (AudioPool * self);
+audio_pool_reload_clip_frame_bufs (
+  AudioPool * self);
 
 /**
  * Writes all the clips to disk.

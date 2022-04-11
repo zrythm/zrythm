@@ -110,7 +110,8 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/audio/sample_processor/"
 
   g_test_add_func (
-    TEST_PREFIX "test queue midi and roll transport",
+    TEST_PREFIX
+    "test queue midi and roll transport",
     (GTestFunc) test_queue_midi_and_roll_transport);
   g_test_add_func (
     TEST_PREFIX "test queue file",

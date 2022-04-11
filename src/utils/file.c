@@ -89,8 +89,8 @@ file_path_relative_to (
 
   // Find the number of up references ("..") required
   size_t up = 0;
-  for (size_t i = last_shared_sep + 1; i < base_len;
-       ++i)
+  for (size_t i = last_shared_sep + 1;
+       i < base_len; ++i)
     {
       if (base[i] == G_DIR_SEPARATOR)
         {

@@ -348,7 +348,8 @@ vamp_feature_list_print (
 }
 
 void
-vamp_feature_set_print (const ZVampFeatureSet * self)
+vamp_feature_set_print (
+  const ZVampFeatureSet * self)
 {
   if (self->set->len == 0)
     return;
@@ -373,7 +374,8 @@ vamp_plugin_output_print (
     "identifier: %s\n"
     "name: %s\n"
     "description: %s",
-    self->identifier, self->name, self->description);
+    self->identifier, self->name,
+    self->description);
 }
 
 void
@@ -457,7 +459,8 @@ vamp_output_descriptor_free (void * descr)
 }
 
 void
-vamp_plugin_output_list_free (ZVampOutputList * self)
+vamp_plugin_output_list_free (
+  ZVampOutputList * self)
 {
   g_ptr_array_unref (self->outputs);
   free (self);

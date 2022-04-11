@@ -260,10 +260,10 @@ string_replace_regex (
   static PCRE2_UCHAR8 buf[10000];
   size_t              buf_sz = 10000;
   pcre2_substitute (
-    re, (PCRE2_SPTR) *str, PCRE2_ZERO_TERMINATED, 0,
-    PCRE2_SUBSTITUTE_GLOBAL, NULL, NULL,
-    (PCRE2_SPTR) replace_str, PCRE2_ZERO_TERMINATED,
-    buf, &buf_sz);
+    re, (PCRE2_SPTR) *str, PCRE2_ZERO_TERMINATED,
+    0, PCRE2_SUBSTITUTE_GLOBAL, NULL, NULL,
+    (PCRE2_SPTR) replace_str,
+    PCRE2_ZERO_TERMINATED, buf, &buf_sz);
   pcre2_code_free (re);
 
   g_free (*str);
@@ -352,8 +352,8 @@ string_get_regex_group (
     0, /* no extra data - pattern was not studied */
     str,          /* the string to match */
     strlen (str), /* the length of the string */
-    0,       /* start at offset 0 in the subject */
-    0,       /* default options */
+    0, /* start at offset 0 in the subject */
+    0, /* default options */
     ovector, /* output vector for substring information */
     OVECCOUNT); /* number of elements in the output vector */
 
@@ -442,8 +442,8 @@ string_get_int_after_last_space (
     0, /* no extra data - pattern was not studied */
     str,          /* the string to match */
     strlen (str), /* the length of the string */
-    0,       /* start at offset 0 in the subject */
-    0,       /* default options */
+    0, /* start at offset 0 in the subject */
+    0, /* default options */
     ovector, /* output vector for substring information */
     OVECCOUNT); /* number of elements in the output vector */
 

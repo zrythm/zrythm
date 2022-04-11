@@ -194,7 +194,8 @@ lv2_worker_schedule (
         worker->requests, (const char *) &size,
         sizeof (size));
       zix_ring_write (
-        worker->requests, (const char *) data, size);
+        worker->requests, (const char *) data,
+        size);
       zix_sem_post (&worker->sem);
     }
   return LV2_WORKER_SUCCESS;

@@ -190,12 +190,12 @@ PianoKeyboardWidget *
 piano_keyboard_widget_new (
   GtkOrientation orientation)
 {
-  PianoKeyboardWidget * self =
-    g_object_new (PIANO_KEYBOARD_WIDGET_TYPE, NULL);
+  PianoKeyboardWidget * self = g_object_new (
+    PIANO_KEYBOARD_WIDGET_TYPE, NULL);
 
   gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self), piano_keyboard_draw_cb,
-    self, NULL);
+    GTK_DRAWING_AREA (self),
+    piano_keyboard_draw_cb, self, NULL);
 
   return self;
 }

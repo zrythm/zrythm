@@ -65,7 +65,8 @@ get_real_val (KnobWidget * self, bool snapped)
     case KNOB_TYPE_NORMAL:
       if (snapped && self->snapped_getter)
         {
-          return self->snapped_getter (self->object);
+          return self->snapped_getter (
+            self->object);
         }
       else
         {
@@ -143,9 +144,11 @@ knob_draw_cb (
     3.f * (scale / 80.f);
 
   const float start_angle =
-    ((180.f - ARC_CUT_ANGLE) * (float) G_PI) / 180.f;
+    ((180.f - ARC_CUT_ANGLE) * (float) G_PI)
+    / 180.f;
   const float end_angle =
-    ((360.f + ARC_CUT_ANGLE) * (float) G_PI) / 180.f;
+    ((360.f + ARC_CUT_ANGLE) * (float) G_PI)
+    / 180.f;
 
   self->last_real_val = get_real_val (self, true);
   const float value =
@@ -180,7 +183,8 @@ knob_draw_cb (
         (outer_progress_radius
          - inner_progress_radius);
       float progress_radius =
-        inner_progress_radius + progress_width / 2.f;
+        inner_progress_radius
+        + progress_width / 2.f;
 
       /* dark surrounding arc background */
       cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
@@ -244,8 +248,8 @@ knob_draw_cb (
           cairo_set_source (cr, shade_pattern);
           cairo_arc (
             cr, 0, 0,
-            (double) outer_progress_radius - 1.0, 0,
-            2.0 * G_PI);
+            (double) outer_progress_radius - 1.0,
+            0, 2.0 * G_PI);
           cairo_fill (cr);
           cairo_pattern_destroy (shade_pattern);
         }
@@ -351,7 +355,8 @@ knob_draw_cb (
   //black knob border
   cairo_set_line_width (cr, border_width);
   cairo_set_source_rgba (cr, 0, 0, 0, 1);
-  cairo_arc (cr, 0, 0, center_radius, 0, 2.0 * G_PI);
+  cairo_arc (
+    cr, 0, 0, center_radius, 0, 2.0 * G_PI);
   cairo_stroke (cr);
 
   //line shadow
@@ -396,7 +401,8 @@ knob_draw_cb (
         {
           /* draw text */
           char str[50];
-          self->hover_str_getter (self->object, str);
+          self->hover_str_getter (
+            self->object, str);
           cairo_set_source_rgba (cr, 1, 1, 1, 1);
           int we, he;
           z_cairo_get_text_extents_for_widget (
@@ -404,7 +410,8 @@ knob_draw_cb (
           cairo_move_to (cr, -we / 2, -he / 2);
           z_cairo_draw_text_full (
             cr, widget, self->layout, str,
-            width / 2 - we / 2, height / 2 - he / 2);
+            width / 2 - we / 2,
+            height / 2 - he / 2);
         }
     }
 

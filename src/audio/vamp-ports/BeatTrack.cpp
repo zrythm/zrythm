@@ -403,7 +403,8 @@ BeatTracker::getOutputDescriptors () const
   df.binCount = 1;
   df.hasKnownExtents = false;
   df.isQuantized = false;
-  df.sampleType = OutputDescriptor::OneSamplePerStep;
+  df.sampleType =
+    OutputDescriptor::OneSamplePerStep;
 
   OutputDescriptor tempo;
   tempo.identifier = "tempo";

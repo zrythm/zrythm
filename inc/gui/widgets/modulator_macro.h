@@ -31,7 +31,8 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _KnobWithNameWidget KnobWithNameWidget;
+typedef struct _KnobWithNameWidget
+  KnobWithNameWidget;
 typedef struct _PortConnectionsPopoverWidget
   PortConnectionsPopoverWidget;
 

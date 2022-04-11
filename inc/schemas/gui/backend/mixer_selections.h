@@ -43,7 +43,9 @@ typedef struct MixerSelections_v1
 
 static const cyaml_schema_field_t
   mixer_selections_fields_schema_v1[] = {
-    YAML_FIELD_INT (MixerSelections_v1, schema_version),
+    YAML_FIELD_INT (
+      MixerSelections_v1,
+      schema_version),
     YAML_FIELD_ENUM (
       MixerSelections_v1,
       type,

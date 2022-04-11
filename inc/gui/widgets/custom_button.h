@@ -34,7 +34,8 @@
  * @{
  */
 
-#define CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES 9
+#define CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES \
+  9
 
 typedef enum CustomButtonWidgetState
 {

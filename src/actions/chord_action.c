@@ -80,7 +80,8 @@ chord_action_new (
            i < CHORD_EDITOR_NUM_CHORDS; i++)
         {
           self->chords_before[i] =
-            chord_descriptor_clone (chords_before[i]);
+            chord_descriptor_clone (
+              chords_before[i]);
           self->chords_after[i] =
             chord_descriptor_clone (chords_after[i]);
         }
@@ -162,7 +163,8 @@ do_or_undo (
     case CHORD_ACTION_SINGLE:
       chord_editor_apply_single_chord (
         CHORD_EDITOR,
-        (_do ? self->chord_after : self->chord_before),
+        (_do ? self->chord_after
+             : self->chord_before),
         self->chord_idx, false);
       EVENTS_PUSH (
         ET_CHORD_KEY_CHANGED,
@@ -180,7 +182,9 @@ chord_action_do (ChordAction * self, GError ** error)
 }
 
 int
-chord_action_undo (ChordAction * self, GError ** error)
+chord_action_undo (
+  ChordAction * self,
+  GError **     error)
 {
   return do_or_undo (self, false, error);
 }

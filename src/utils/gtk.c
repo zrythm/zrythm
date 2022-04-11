@@ -195,7 +195,8 @@ z_gtk_is_wayland (void)
 }
 
 void
-z_gtk_widget_remove_all_children (GtkWidget * widget)
+z_gtk_widget_remove_all_children (
+  GtkWidget * widget)
 {
   if (GTK_IS_BUTTON (widget))
     {
@@ -337,7 +338,8 @@ z_gtk_tree_view_remove_all_columns (
        iter = g_list_next (iter))
     {
       column = GTK_TREE_VIEW_COLUMN (iter->data);
-      gtk_tree_view_remove_column (treeview, column);
+      gtk_tree_view_remove_column (
+        treeview, column);
     }
   g_list_free (list);
 }
@@ -347,7 +349,8 @@ z_gtk_column_view_remove_all_columnes (
   GtkColumnView * column_view)
 {
   g_return_if_fail (
-    column_view && GTK_IS_COLUMN_VIEW (column_view));
+    column_view
+    && GTK_IS_COLUMN_VIEW (column_view));
 
   GListModel * list =
     gtk_column_view_get_columns (column_view);
@@ -593,7 +596,8 @@ z_gtk_button_set_emblem (
  * Creates a toggle button with the given icon name.
  */
 GtkToggleButton *
-z_gtk_toggle_button_new_with_icon (const char * name)
+z_gtk_toggle_button_new_with_icon (
+  const char * name)
 {
   GtkToggleButton * btn =
     GTK_TOGGLE_BUTTON (gtk_toggle_button_new ());
@@ -712,7 +716,8 @@ z_gtk_get_single_selection_pointer (
   GtkTreeView * tv,
   int           column)
 {
-  g_return_val_if_fail (GTK_IS_TREE_VIEW (tv), NULL);
+  g_return_val_if_fail (
+    GTK_IS_TREE_VIEW (tv), NULL);
   GtkTreeSelection * ts =
     gtk_tree_view_get_selection (tv);
   g_return_val_if_fail (
@@ -866,8 +871,9 @@ z_gtk_set_tooltip_for_actionable (
   if (target_value)
     {
       g_free (detailed_action);
-      detailed_action = g_action_print_detailed_name (
-        action_name, target_value);
+      detailed_action =
+        g_action_print_detailed_name (
+          action_name, target_value);
     }
   z_gtk_widget_set_tooltip_for_action (
     GTK_WIDGET (actionable), detailed_action,
@@ -986,7 +992,8 @@ z_gtk_widget_set_margin (
 }
 
 GtkFlowBoxChild *
-z_gtk_flow_box_get_selected_child (GtkFlowBox * self)
+z_gtk_flow_box_get_selected_child (
+  GtkFlowBox * self)
 {
   GList * list =
     gtk_flow_box_get_selected_children (self);
@@ -1160,8 +1167,8 @@ on_new_window_destroyed (
 
   GtkNotebook * new_notebook =
     g_ptr_array_index (data->new_notebooks, idx);
-  const char * name =
-    gtk_widget_get_name (GTK_WIDGET (new_notebook));
+  const char * name = gtk_widget_get_name (
+    GTK_WIDGET (new_notebook));
   g_debug ("widget %s (%p)", name, new_notebook);
   g_return_if_fail (GTK_IS_NOTEBOOK (new_notebook));
   g_ptr_array_remove_index (data->new_windows, idx);
@@ -1276,8 +1283,8 @@ on_create_window (
     MW_BOT_DOCK_EDGE->chord_pad_panel_box,
     _ ("Chord Pad"), "chord-pad");
   SET_TITLE_AND_ROLE (
-    MW_BOT_DOCK_EDGE->clip_editor_box, _ ("Editor"),
-    "editor");
+    MW_BOT_DOCK_EDGE->clip_editor_box,
+    _ ("Editor"), "editor");
   SET_TITLE_AND_ROLE (
     MW_LEFT_DOCK_EDGE->visibility_box,
     _ ("Visibility"), "track-visibility");
@@ -1301,7 +1308,8 @@ on_create_window (
     MW_RIGHT_DOCK_EDGE->monitor_section_box,
     _ ("Monitor"), "monitor");
   SET_TITLE_AND_ROLE (
-    MW_MAIN_NOTEBOOK->timeline_plus_event_viewer_paned,
+    MW_MAIN_NOTEBOOK
+      ->timeline_plus_event_viewer_paned,
     _ ("Timeline"), "timeline");
   SET_TITLE_AND_ROLE (
     MW_MAIN_NOTEBOOK->cc_bindings_box,
@@ -1622,8 +1630,9 @@ z_gtk_generate_screenshot_image (
       z_gtk_widget_get_surface (
         GTK_WIDGET (MAIN_WINDOW)));
   g_return_if_fail (renderer);
-  GdkTexture * texture = gsk_renderer_render_texture (
-    renderer, node, NULL);
+  GdkTexture * texture =
+    gsk_renderer_render_texture (
+      renderer, node, NULL);
 
   GError * err = NULL;
   *ret_dir =
@@ -1723,7 +1732,8 @@ z_gtk_is_event_button (GdkEvent * ev)
   g_return_val_if_fail (ev != NULL, false);
 
   return GDK_IS_EVENT_TYPE (ev, GDK_BUTTON_PRESS)
-         || GDK_IS_EVENT_TYPE (ev, GDK_BUTTON_RELEASE);
+         || GDK_IS_EVENT_TYPE (
+           ev, GDK_BUTTON_RELEASE);
 }
 
 /**
@@ -1809,7 +1819,9 @@ run_delete_handler (GtkDialog * dialog, gpointer data)
 }
 
 static void
-run_destroy_handler (GtkDialog * dialog, gpointer data)
+run_destroy_handler (
+  GtkDialog * dialog,
+  gpointer    data)
 {
   RunInfo * ri = data;
 
@@ -1856,7 +1868,8 @@ z_gtk_dialog_run (
   was_modal =
     gtk_window_get_modal (GTK_WINDOW (dialog));
   if (!was_modal)
-    gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
+    gtk_window_set_modal (
+      GTK_WINDOW (dialog), TRUE);
 
   if (!gtk_widget_get_visible (GTK_WIDGET (dialog)))
     gtk_widget_show (GTK_WIDGET (dialog));
@@ -1866,8 +1879,8 @@ z_gtk_dialog_run (
     G_CALLBACK (run_response_handler), &ri);
 
   unmap_handler = g_signal_connect (
-    dialog, "unmap", G_CALLBACK (run_unmap_handler),
-    &ri);
+    dialog, "unmap",
+    G_CALLBACK (run_unmap_handler), &ri);
 
   delete_handler = g_signal_connect (
     dialog, "close-request",
@@ -2018,7 +2031,8 @@ z_gdk_clipboard_get_text (GdkClipboard * clipboard)
    * process or clipboard is empty, return NULL */
   if (!provider)
     {
-      g_debug ("clipboard content provider is NULL");
+      g_debug (
+        "clipboard content provider is NULL");
       return NULL;
     }
 

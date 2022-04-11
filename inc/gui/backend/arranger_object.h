@@ -99,19 +99,20 @@ typedef enum ArrangerObjectType
 
 static const cyaml_strval_t
   arranger_object_type_strings[] = {
-    {__ ("None"),              ARRANGER_OBJECT_TYPE_NONE    },
-    { __ ("All"),              ARRANGER_OBJECT_TYPE_ALL     },
-    { __ ("Region"),           ARRANGER_OBJECT_TYPE_REGION  },
+    {__ ("None"),              ARRANGER_OBJECT_TYPE_NONE  },
+    { __ ("All"),              ARRANGER_OBJECT_TYPE_ALL   },
+    { __ ("Region"),           ARRANGER_OBJECT_TYPE_REGION},
     { __ ("Midi Note"),
-     ARRANGER_OBJECT_TYPE_MIDI_NOTE                         },
+     ARRANGER_OBJECT_TYPE_MIDI_NOTE                       },
     { __ ("Chord Object"),
-     ARRANGER_OBJECT_TYPE_CHORD_OBJECT                      },
+     ARRANGER_OBJECT_TYPE_CHORD_OBJECT                    },
     { __ ("Scale Object"),
-     ARRANGER_OBJECT_TYPE_SCALE_OBJECT                      },
-    { __ ("Marker"),           ARRANGER_OBJECT_TYPE_MARKER  },
+     ARRANGER_OBJECT_TYPE_SCALE_OBJECT                    },
+    { __ ("Marker"),           ARRANGER_OBJECT_TYPE_MARKER},
     { __ ("Automation Point"),
-     ARRANGER_OBJECT_TYPE_AUTOMATION_POINT                  },
-    { __ ("Velocity"),         ARRANGER_OBJECT_TYPE_VELOCITY},
+     ARRANGER_OBJECT_TYPE_AUTOMATION_POINT                },
+    { __ ("Velocity"),
+     ARRANGER_OBJECT_TYPE_VELOCITY                        },
 };
 
 /**
@@ -428,12 +429,14 @@ static const cyaml_schema_value_t
 
 #define arranger_object_can_mute(_obj) \
   ((_obj)->type == ARRANGER_OBJECT_TYPE_REGION \
-   || (_obj)->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
+   || (_obj)->type \
+        == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
 
 #define arranger_object_owned_by_region(_obj) \
   ((_obj)->type == ARRANGER_OBJECT_TYPE_VELOCITY \
    || (_obj)->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE \
-   || (_obj)->type == ARRANGER_OBJECT_TYPE_CHORD_OBJECT \
+   || (_obj)->type \
+        == ARRANGER_OBJECT_TYPE_CHORD_OBJECT \
    || (_obj)->type \
         == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
 
@@ -827,7 +830,8 @@ arranger_object_get_length_in_ticks (
   const ArrangerObject * const self)
 {
   g_return_val_if_fail (
-    arranger_object_type_has_length (self->type), 0);
+    arranger_object_type_has_length (self->type),
+    0);
 
   return self->end_pos.ticks - self->pos.ticks;
 }
@@ -845,7 +849,8 @@ arranger_object_get_length_in_frames (
   const ArrangerObject * const self)
 {
   g_return_val_if_fail (
-    arranger_object_type_has_length (self->type), 0);
+    arranger_object_type_has_length (self->type),
+    0);
 
   return self->end_pos.frames - self->pos.frames;
 }
@@ -859,7 +864,8 @@ arranger_object_get_loop_length_in_ticks (
   const ArrangerObject * const self)
 {
   g_return_val_if_fail (
-    arranger_object_type_has_length (self->type), 0);
+    arranger_object_type_has_length (self->type),
+    0);
 
   return self->loop_end_pos.ticks
          - self->loop_start_pos.ticks;
@@ -874,7 +880,8 @@ arranger_object_get_loop_length_in_frames (
   const ArrangerObject * const self)
 {
   g_return_val_if_fail (
-    arranger_object_type_has_length (self->type), 0);
+    arranger_object_type_has_length (self->type),
+    0);
 
   return self->loop_end_pos.frames
          - self->loop_start_pos.frames;

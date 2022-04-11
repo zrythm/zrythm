@@ -28,7 +28,8 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _DigitalMeterWidget DigitalMeterWidget;
+typedef struct _DigitalMeterWidget
+  DigitalMeterWidget;
 typedef struct _TransportControlsWidget
                           TransportControlsWidget;
 typedef struct _CpuWidget CpuWidget;

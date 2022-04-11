@@ -143,7 +143,8 @@ engine_windows_mme_activate (
     {
       /* skip for now */
       break;
-      WindowsMmeDevice * dev = self->mme_out_devs[i];
+      WindowsMmeDevice * dev =
+        self->mme_out_devs[i];
       if (activate)
         {
           g_return_val_if_fail (
@@ -187,7 +188,8 @@ engine_windows_mme_rescan_devices (
     }
   for (int i = 0; i < self->num_mme_out_devs; i++)
     {
-      WindowsMmeDevice * dev = self->mme_out_devs[i];
+      WindowsMmeDevice * dev =
+        self->mme_out_devs[i];
 
       if (dev->started)
         windows_mme_device_stop (dev);

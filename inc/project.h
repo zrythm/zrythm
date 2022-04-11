@@ -556,8 +556,10 @@ _project_compress (
 #define project_compress(a, b, c, d, e, f, error) \
   _project_compress (true, a, b, c, d, e, f, error)
 
-#define project_decompress(a, b, c, d, e, f, error) \
-  _project_compress (false, a, b, c, d, e, f, error)
+#define project_decompress( \
+  a, b, c, d, e, f, error) \
+  _project_compress ( \
+    false, a, b, c, d, e, f, error)
 
 /**
  * Returns the YAML representation of the saved

@@ -80,8 +80,8 @@ object_pool_get (ObjectPool * self)
   if (self->num_obj_available > 0)
     {
       ret =
-        self
-          ->obj_available[--self->num_obj_available];
+        self->obj_available
+          [--self->num_obj_available];
     }
   zix_sem_post (&self->access_sem);
 
@@ -101,8 +101,8 @@ object_pool_return (ObjectPool * self, void * obj)
     fail = 1;
   else
     {
-      self->obj_available[self->num_obj_available++] =
-        obj;
+      self->obj_available
+        [self->num_obj_available++] = obj;
     }
   zix_sem_post (&self->access_sem);
   g_return_if_fail (fail == 0);

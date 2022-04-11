@@ -71,8 +71,8 @@ automation_region_draw_cb (
         gtk_widget_get_allocated_height (widget);
 
       z_cairo_reset_caches (
-        &ao_prv->cached_cr, &ao_prv->cached_surface,
-        width, height, cr);
+        &ao_prv->cached_cr,
+        &ao_prv->cached_surface, width, height, cr);
 
       gtk_render_background (
         context, ao_prv->cached_cr, 0, 0, width,
@@ -204,7 +204,8 @@ automation_region_draw_cb (
                   /*x_end * width;*/
                   double y_start_real =
                     y_start * height;
-                  double y_end_real = y_end * height;
+                  double y_end_real =
+                    y_end * height;
 
                   /* draw ap */
                   int padding = 1;

@@ -239,7 +239,8 @@ arranger_object_is_resize_up (
     {
       AutomationPoint * ap =
         (AutomationPoint *) self;
-      int curve_up = automation_point_curves_up (ap);
+      int curve_up =
+        automation_point_curves_up (ap);
       if (curve_up)
         {
           if (
@@ -439,7 +440,8 @@ arranger_object_set_full_rectangle (
         } \
     } \
   g_warn_if_fail ( \
-    self->full_rect.x >= 0 && self->full_rect.y >= 0 \
+    self->full_rect.x >= 0 \
+    && self->full_rect.y >= 0 \
     && self->full_rect.width >= 0 \
     && self->full_rect.height >= 0)
 
@@ -447,7 +449,7 @@ arranger_object_set_full_rectangle (
     {
     case TYPE (CHORD_OBJECT):
       {
-        ChordObject *     co = (ChordObject *) self;
+        ChordObject * co = (ChordObject *) self;
         ChordDescriptor * descr =
           chord_object_get_chord_descriptor (co);
 
@@ -541,8 +543,8 @@ arranger_object_set_full_rectangle (
             g_warn_if_fail (
               self->full_rect.width >= 0);
 
-            int cur_y =
-              get_automation_point_y (ap, arranger);
+            int cur_y = get_automation_point_y (
+              ap, arranger);
             int next_y = get_automation_point_y (
               next_ap, arranger);
 
@@ -806,7 +808,8 @@ arranger_object_set_full_rectangle (
         /* use transient or non transient note
          * depending on which is visible */
         Velocity * vel = (Velocity *) self;
-        MidiNote * mn = velocity_get_midi_note (vel);
+        MidiNote * mn =
+          velocity_get_midi_note (vel);
         g_return_if_fail (mn);
         ArrangerObject * mn_obj =
           (ArrangerObject *) mn;
@@ -831,8 +834,9 @@ arranger_object_set_full_rectangle (
          * start of MIDI note */
         self->full_rect.x -= VELOCITY_WIDTH / 2;
 
-        int height = gtk_widget_get_allocated_height (
-          GTK_WIDGET (arranger));
+        int height =
+          gtk_widget_get_allocated_height (
+            GTK_WIDGET (arranger));
 
         int vel_px =
           (int) ((float) height * ((float) vel->vel / 127.f));
@@ -844,7 +848,8 @@ arranger_object_set_full_rectangle (
         WARN_IF_HAS_NEGATIVE_DIMENSIONS;
 
         /* adjust for circle radius */
-        self->full_rect.height += VELOCITY_WIDTH / 2;
+        self->full_rect.height +=
+          VELOCITY_WIDTH / 2;
         self->full_rect.y -= VELOCITY_WIDTH / 2;
       }
       break;
@@ -919,7 +924,8 @@ arranger_object_get_draw_rectangle (
   GdkRectangle *   full_rect,
   GdkRectangle *   draw_rect)
 {
-  g_return_val_if_fail (full_rect->width > 0, false);
+  g_return_val_if_fail (
+    full_rect->width > 0, false);
 
   if (!ui_rectangle_overlap (parent_rect, full_rect))
     return 0;
@@ -928,7 +934,8 @@ arranger_object_get_draw_rectangle (
   draw_rect->width = MIN (
     (parent_rect->x + parent_rect->width)
       - draw_rect->x,
-    (full_rect->x + full_rect->width) - draw_rect->x);
+    (full_rect->x + full_rect->width)
+      - draw_rect->x);
   g_warn_if_fail (draw_rect->width >= 0);
   draw_rect->y = MAX (full_rect->y, parent_rect->y);
   draw_rect->height = MIN (
@@ -979,7 +986,8 @@ arranger_object_draw (
         arranger->ap_layout);
       break;
     case TYPE (REGION):
-      region_draw ((ZRegion *) self, snapshot, rect);
+      region_draw (
+        (ZRegion *) self, snapshot, rect);
       break;
     case TYPE (MIDI_NOTE):
       midi_note_draw ((MidiNote *) self, snapshot);
@@ -1028,7 +1036,8 @@ arranger_object_should_orig_be_visible (
 
   if (!arranger)
     {
-      arranger = arranger_object_get_arranger (self);
+      arranger =
+        arranger_object_get_arranger (self);
       g_return_val_if_fail (arranger, false);
     }
 
@@ -1041,7 +1050,8 @@ arranger_object_should_orig_be_visible (
       return false;
     }
   else if (
-    ARRANGER_WIDGET_GET_ACTION (arranger, MOVING_COPY)
+    ARRANGER_WIDGET_GET_ACTION (
+      arranger, MOVING_COPY)
     || ARRANGER_WIDGET_GET_ACTION (
       arranger, MOVING_LINK))
     {

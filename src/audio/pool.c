@@ -101,15 +101,16 @@ audio_pool_ensure_unique_clip_name (
     io_file_strip_ext (clip->name);
   char * orig_path_in_pool =
     audio_clip_get_path_in_pool (clip, is_backup);
-  char * new_name = g_strdup (orig_name_without_ext);
+  char * new_name =
+    g_strdup (orig_name_without_ext);
 
   bool changed = false;
   while (name_exists (self, new_name))
     {
       char *       prev_new_name = new_name;
       const char * regex = "^.*\\((\\d+)\\)$";
-      char *       cur_val_str =
-        string_get_regex_group (new_name, regex, 1);
+      char * cur_val_str = string_get_regex_group (
+        new_name, regex, 1);
       int cur_val = string_get_regex_group_as_int (
         new_name, regex, 1, 0);
       if (cur_val == 0)
@@ -219,7 +220,8 @@ AudioClip *
 audio_pool_get_clip (AudioPool * self, int clip_id)
 {
   g_return_val_if_fail (
-    self && clip_id >= 0 && clip_id < self->num_clips,
+    self && clip_id >= 0
+      && clip_id < self->num_clips,
     NULL);
 
   for (int i = 0; i < self->num_clips; i++)

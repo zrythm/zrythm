@@ -104,7 +104,8 @@ tracklist_select_all (
       Track * track = self->tracks[i];
 
       track_select (
-        track, select, F_NOT_EXCLUSIVE, fire_events);
+        track, select, F_NOT_EXCLUSIVE,
+        fire_events);
 
       if (!select && i == self->num_tracks - 1)
         {
@@ -313,7 +314,8 @@ tracklist_insert_track (
       track_append_ports (track, ports, true);
       for (size_t i = 0; i < ports->len; i++)
         {
-          Port * port = g_ptr_array_index (ports, i);
+          Port * port =
+            g_ptr_array_index (ports, i);
           port->id.flags2 |=
             PORT_FLAG2_SAMPLE_PROCESSOR_TRACK;
         }
@@ -325,7 +327,8 @@ tracklist_insert_track (
    * position */
   if (pos != self->num_tracks - 1)
     {
-      for (int i = self->num_tracks - 1; i > pos; i--)
+      for (int i = self->num_tracks - 1; i > pos;
+           i--)
         {
           swap_tracks (self, i, i - 1);
         }
@@ -340,7 +343,8 @@ tracklist_insert_track (
     {
       /* make the track the only selected track */
       tracklist_selections_select_single (
-        TRACKLIST_SELECTIONS, track, publish_events);
+        TRACKLIST_SELECTIONS, track,
+        publish_events);
 
       /* set automation track on ports */
       AutomationTracklist * atl =
@@ -482,7 +486,8 @@ tracklist_find_track_by_name_hash (
 {
   if (
     G_LIKELY (tracklist_is_in_active_project (self))
-    && ROUTER && router_is_processing_thread (ROUTER)
+    && ROUTER
+    && router_is_processing_thread (ROUTER)
     && !tracklist_is_auditioner (self))
     {
       for (int i = 0; i < self->num_tracks; i++)
@@ -882,7 +887,8 @@ tracklist_remove_track (
     self->tracks, self->num_tracks, track);
   g_warn_if_fail (track->pos == idx);
 
-  track_disconnect (track, rm_pl, F_NO_RECALC_GRAPH);
+  track_disconnect (
+    track, rm_pl, F_NO_RECALC_GRAPH);
 
   /* move track to the end */
   int end_pos = self->num_tracks - 1;
@@ -893,7 +899,8 @@ tracklist_remove_track (
   if (!tracklist_is_auditioner (self))
     {
       tracklist_selections_remove_track (
-        TRACKLIST_SELECTIONS, track, publish_events);
+        TRACKLIST_SELECTIONS, track,
+        publish_events);
     }
 
   array_delete (
@@ -1010,7 +1017,8 @@ tracklist_move_track (
       track_unselect_all (track);
 
       tracklist_selections_remove_track (
-        TRACKLIST_SELECTIONS, track, publish_events);
+        TRACKLIST_SELECTIONS, track,
+        publish_events);
 
       /* if it was the only track selected, select
        * the next one */
@@ -1054,7 +1062,8 @@ tracklist_move_track (
     {
       /* make the track the only selected track */
       tracklist_selections_select_single (
-        TRACKLIST_SELECTIONS, track, publish_events);
+        TRACKLIST_SELECTIONS, track,
+        publish_events);
     }
 
   if (recalc_graph)
@@ -1356,7 +1365,8 @@ tracklist_handle_file_drop (
         {
           track_type = TRACK_TYPE_AUDIO;
         }
-      else if (supported_file_type_is_midi (file->type))
+      else if (supported_file_type_is_midi (
+                 file->type))
         {
           track_type = TRACK_TYPE_MIDI;
         }
@@ -1418,8 +1428,9 @@ tracklist_handle_file_drop (
                     {
                       ui_show_error_message (
                         MAIN_WINDOW, true,
-                        _ ("Can only drop MIDI files on "
-                           "MIDI/instrument tracks"));
+                        _ (
+                          "Can only drop MIDI files on "
+                          "MIDI/instrument tracks"));
                       goto free_file_array_and_return;
                     }
 
@@ -1550,7 +1561,8 @@ move_after_copying_or_moving_inside (
   int diff_between_track_below_and_parent)
 {
   Track * lowest_cloned_track =
-    tracklist_selections_get_lowest_track (after_tls);
+    tracklist_selections_get_lowest_track (
+      after_tls);
   int lowest_cloned_track_pos =
     lowest_cloned_track->pos;
 
@@ -1611,7 +1623,8 @@ tracklist_handle_move_or_copy (
         pos = next->pos;
       /* else if last track, move to end */
       else if (
-        this_track->pos == TRACKLIST->num_tracks - 1)
+        this_track->pos
+        == TRACKLIST->num_tracks - 1)
         pos = TRACKLIST->num_tracks;
       /* else if last visible track but not last
        * track */
@@ -1642,8 +1655,8 @@ tracklist_handle_move_or_copy (
           bool     ret =
             tracklist_selections_action_perform_copy_inside (
               TRACKLIST_SELECTIONS,
-              PORT_CONNECTIONS_MGR, this_track->pos,
-              &err);
+              PORT_CONNECTIONS_MGR,
+              this_track->pos, &err);
           if (!ret)
             {
               HANDLE_ERROR (
@@ -1747,7 +1760,8 @@ tracklist_handle_move_or_copy (
           /* else if copied inside and there is
            * a track difference, also move */
           else if (
-            diff_between_track_below_and_parent != 0)
+            diff_between_track_below_and_parent
+            != 0)
             {
               move_after_copying_or_moving_inside (
                 after_tls,
@@ -1886,7 +1900,8 @@ tracklist_handle_move_or_copy (
           /* else if moved inside and there is
            * a track difference, also move */
           else if (
-            diff_between_track_below_and_parent != 0)
+            diff_between_track_below_and_parent
+            != 0)
             {
               move_after_copying_or_moving_inside (
                 after_tls,
@@ -2003,8 +2018,9 @@ tracklist_free (Tracklist * self)
   if (self->tempo_track)
     {
       tracklist_remove_track (
-        self, self->tempo_track, F_REMOVE_PL, F_FREE,
-        F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+        self, self->tempo_track, F_REMOVE_PL,
+        F_FREE, F_NO_PUBLISH_EVENTS,
+        F_NO_RECALC_GRAPH);
       self->tempo_track = NULL;
     }
 

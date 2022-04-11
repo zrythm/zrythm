@@ -49,7 +49,9 @@ static const cyaml_schema_field_t
       AudioSelections_v1,
       base,
       arranger_selections_fields_schema_v1),
-    YAML_FIELD_INT (AudioSelections_v1, schema_version),
+    YAML_FIELD_INT (
+      AudioSelections_v1,
+      schema_version),
     YAML_FIELD_INT (AudioSelections_v1, has_selection),
     YAML_FIELD_MAPPING_EMBEDDED (
       AudioSelections_v1,

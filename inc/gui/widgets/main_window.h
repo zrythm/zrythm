@@ -34,11 +34,11 @@ G_DECLARE_FINAL_TYPE (
   MAIN_WINDOW_WIDGET,
   AdwApplicationWindow)
 
-typedef struct _HeaderWidget      HeaderWidget;
-typedef struct _CenterDockWidget  CenterDockWidget;
-typedef struct _BotBarWidget      BotBarWidget;
-typedef struct _TopBarWidget      TopBarWidget;
-typedef struct _ZrythmApp         ZrythmApp;
+typedef struct _HeaderWidget     HeaderWidget;
+typedef struct _CenterDockWidget CenterDockWidget;
+typedef struct _BotBarWidget     BotBarWidget;
+typedef struct _TopBarWidget     TopBarWidget;
+typedef struct _ZrythmApp        ZrythmApp;
 typedef struct ArrangerSelections ArrangerSelections;
 
 /**

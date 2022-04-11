@@ -62,7 +62,8 @@ void
 bot_dock_edge_widget_update_event_viewer_stack_page (
   BotDockEdgeWidget * self)
 {
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
   if (r)
     {
       switch (r->id.type)
@@ -96,14 +97,17 @@ bot_dock_edge_widget_update_event_viewer_stack_page (
 }
 
 void
-bot_dock_edge_widget_setup (BotDockEdgeWidget * self)
+bot_dock_edge_widget_setup (
+  BotDockEdgeWidget * self)
 {
   foldable_notebook_widget_setup (
-    self->bot_notebook, MW_CENTER_DOCK->center_paned,
-    GTK_POS_BOTTOM, true);
+    self->bot_notebook,
+    MW_CENTER_DOCK->center_paned, GTK_POS_BOTTOM,
+    true);
 
   event_viewer_widget_setup (
-    self->event_viewer_midi, EVENT_VIEWER_TYPE_MIDI);
+    self->event_viewer_midi,
+    EVENT_VIEWER_TYPE_MIDI);
   event_viewer_widget_setup (
     self->event_viewer_audio,
     EVENT_VIEWER_TYPE_AUDIO);
@@ -183,7 +187,9 @@ bot_dock_edge_widget_show_clip_editor (
   bot_dock_edge_widget_update_event_viewer_stack_page (
     self);
 
-  if (navigate_to_region_start && CLIP_EDITOR->has_region)
+  if (
+    navigate_to_region_start
+    && CLIP_EDITOR->has_region)
     {
       ZRegion * r =
         clip_editor_get_region (CLIP_EDITOR);
@@ -206,7 +212,8 @@ generate_bot_notebook (BotDockEdgeWidget * self)
   self->bot_notebook = foldable_notebook_widget_new (
     GTK_POS_BOTTOM, true);
   gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->bot_notebook));
+    GTK_BOX (self),
+    GTK_WIDGET (self->bot_notebook));
 
   self->clip_editor_box = GTK_BOX (
     gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
@@ -285,12 +292,14 @@ generate_bot_notebook (BotDockEdgeWidget * self)
     GTK_WIDGET (self->clip_editor_box),
     "piano-roll", _ ("Editor"), _ ("Editor view"));
   foldable_notebook_widget_add_page (
-    self->bot_notebook, GTK_WIDGET (self->mixer_box),
-    "mixer", _ ("Mixer"), _ ("Mixer view"));
+    self->bot_notebook,
+    GTK_WIDGET (self->mixer_box), "mixer",
+    _ ("Mixer"), _ ("Mixer view"));
   foldable_notebook_widget_add_page (
     self->bot_notebook,
     GTK_WIDGET (self->modulator_view_box),
-    "modulator", _ ("Modulators"), _ ("Modulators"));
+    "modulator", _ ("Modulators"),
+    _ ("Modulators"));
   foldable_notebook_widget_add_page (
     self->bot_notebook,
     GTK_WIDGET (self->chord_pad_panel_box),
@@ -321,7 +330,8 @@ static void
 bot_dock_edge_widget_init (BotDockEdgeWidget * self)
 {
   gtk_orientable_set_orientation (
-    GTK_ORIENTABLE (self), GTK_ORIENTATION_VERTICAL);
+    GTK_ORIENTABLE (self),
+    GTK_ORIENTATION_VERTICAL);
 
   generate_bot_notebook (self);
 
@@ -334,7 +344,8 @@ static void
 bot_dock_edge_widget_class_init (
   BotDockEdgeWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "bot-dock-edge");
 }

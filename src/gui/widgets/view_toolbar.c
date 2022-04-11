@@ -39,7 +39,8 @@ view_toolbar_widget_init (ViewToolbarWidget * self)
   SET_TOOLTIP (status_bar, _ ("Toggle Status Bar"));
   SET_TOOLTIP (fullscreen, _ ("Fullscreen"));
   SET_TOOLTIP (left_panel, _ ("Toggle Left Panel"));
-  SET_TOOLTIP (bot_panel, _ ("Toggle Bottom Panel"));
+  SET_TOOLTIP (
+    bot_panel, _ ("Toggle Bottom Panel"));
   SET_TOOLTIP (top_panel, _ ("Toggle Top Panel"));
   SET_TOOLTIP (
     right_panel, _ ("Toggle Right Panel"));
@@ -67,7 +68,8 @@ static void
 view_toolbar_widget_class_init (
   ViewToolbarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "view_toolbar.ui");
 

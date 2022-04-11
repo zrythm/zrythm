@@ -91,7 +91,8 @@ refresh_undo_or_redo_button (
 
           char tmp[600];
           sprintf (
-            tmp, "app.%s_n", redo ? "redo" : "undo");
+            tmp, "app.%s_n",
+            redo ? "redo" : "undo");
           menuitem = z_gtk_create_menu_item (
             action_str, NULL, tmp);
           g_menu_item_set_action_and_target_value (
@@ -169,7 +170,8 @@ home_toolbar_widget_init (HomeToolbarWidget * self)
   SET_TOOLTIP (
     clear_selection, _ ("Clear selection"));
   SET_TOOLTIP (select_all, _ ("Select all"));
-  SET_TOOLTIP (loop_selection, _ ("Loop selection"));
+  SET_TOOLTIP (
+    loop_selection, _ ("Loop selection"));
   SET_TOOLTIP (nudge_left, _ ("Nudge left"));
   SET_TOOLTIP (nudge_right, _ ("Nudge right"));
 #undef SET_TOOLTIP
@@ -200,7 +202,8 @@ static void
 home_toolbar_widget_class_init (
   HomeToolbarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "home_toolbar.ui");
 

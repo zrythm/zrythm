@@ -167,15 +167,17 @@ typedef enum ArrangerSelectionsActionEditType
 
 static const cyaml_strval_t
   arranger_selections_action_edit_type_strings[] = {
-    {"Name",             ARRANGER_SELECTIONS_ACTION_EDIT_NAME },
-    { "Pos",             ARRANGER_SELECTIONS_ACTION_EDIT_POS  },
+    {"Name",             ARRANGER_SELECTIONS_ACTION_EDIT_NAME},
+    { "Pos",             ARRANGER_SELECTIONS_ACTION_EDIT_POS },
     { "Primitive",
-     ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE                },
-    { "Scale",           ARRANGER_SELECTIONS_ACTION_EDIT_SCALE},
-    { "Fades",           ARRANGER_SELECTIONS_ACTION_EDIT_FADES},
-    { "Mute",            ARRANGER_SELECTIONS_ACTION_EDIT_MUTE },
+     ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE               },
+    { "Scale",
+     ARRANGER_SELECTIONS_ACTION_EDIT_SCALE                   },
+    { "Fades",
+     ARRANGER_SELECTIONS_ACTION_EDIT_FADES                   },
+    { "Mute",            ARRANGER_SELECTIONS_ACTION_EDIT_MUTE},
     { "Editor function",
-     ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION          },
+     ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION         },
 };
 
 /**
@@ -302,7 +304,9 @@ static const cyaml_schema_field_t arranger_selections_action_fields_schema[] = {
   YAML_FIELD_INT (
     ArrangerSelectionsAction,
     delta_pitch),
-  YAML_FIELD_INT (ArrangerSelectionsAction, delta_vel),
+  YAML_FIELD_INT (
+    ArrangerSelectionsAction,
+    delta_vel),
   YAML_FIELD_FLOAT (
     ArrangerSelectionsAction,
     delta_normalized_amount),
@@ -481,15 +485,15 @@ arranger_selections_action_new_move_or_duplicate (
   norm_amt, already_moved, error) \
   arranger_selections_action_new_move_or_duplicate ( \
     (ArrangerSelections *) sel, 1, ticks, chords, \
-    pitch, tracks, lanes, norm_amt, already_moved, \
-    error)
+    pitch, tracks, lanes, norm_amt, \
+    already_moved, error)
 #define arranger_selections_action_new_duplicate( \
   sel, ticks, chords, pitch, tracks, lanes, \
   norm_amt, already_moved, error) \
   arranger_selections_action_new_move_or_duplicate ( \
     (ArrangerSelections *) sel, 0, ticks, chords, \
-    pitch, tracks, lanes, norm_amt, already_moved, \
-    error)
+    pitch, tracks, lanes, norm_amt, \
+    already_moved, error)
 
 #define arranger_selections_action_new_move_timeline( \
   sel, ticks, delta_tracks, delta_lanes, \
@@ -736,15 +740,15 @@ arranger_selections_action_perform_move_or_duplicate (
   norm_amt, already_moved, error) \
   arranger_selections_action_perform_move_or_duplicate ( \
     (ArrangerSelections *) sel, 1, ticks, chords, \
-    pitch, tracks, lanes, norm_amt, already_moved, \
-    error)
+    pitch, tracks, lanes, norm_amt, \
+    already_moved, error)
 #define arranger_selections_action_perform_duplicate( \
   sel, ticks, chords, pitch, tracks, lanes, \
   norm_amt, already_moved, error) \
   arranger_selections_action_perform_move_or_duplicate ( \
     (ArrangerSelections *) sel, 0, ticks, chords, \
-    pitch, tracks, lanes, norm_amt, already_moved, \
-    error)
+    pitch, tracks, lanes, norm_amt, \
+    already_moved, error)
 
 #define arranger_selections_action_perform_move_timeline( \
   sel, ticks, delta_tracks, delta_lanes, \

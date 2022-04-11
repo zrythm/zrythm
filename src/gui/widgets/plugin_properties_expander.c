@@ -276,7 +276,8 @@ plugin_properties_expander_widget_setup (
   gtk_widget_set_visible (lbl, true);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), lbl);
-  self->presets = GTK_LIST_BOX (gtk_list_box_new ());
+  self->presets =
+    GTK_LIST_BOX (gtk_list_box_new ());
   gtk_widget_set_visible (
     GTK_WIDGET (self->presets), true);
   GtkScrolledWindow * scroll = GTK_SCROLLED_WINDOW (
@@ -285,7 +286,8 @@ plugin_properties_expander_widget_setup (
     scroll, 86);
   gtk_scrolled_window_set_policy (
     scroll, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-  gtk_widget_set_visible (GTK_WIDGET (scroll), true);
+  gtk_widget_set_visible (
+    GTK_WIDGET (scroll), true);
   gtk_scrolled_window_set_child (
     scroll, GTK_WIDGET (self->presets));
   two_col_expander_box_widget_add_single (

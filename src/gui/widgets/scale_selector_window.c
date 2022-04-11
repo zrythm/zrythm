@@ -43,8 +43,8 @@ on_close_request (
   ScaleSelectorWindowWidget * self)
 {
   arranger_selections_clear (
-    (ArrangerSelections *) TL_SELECTIONS, F_NO_FREE,
-    F_NO_PUBLISH_EVENTS);
+    (ArrangerSelections *) TL_SELECTIONS,
+    F_NO_FREE, F_NO_PUBLISH_EVENTS);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) self->scale);
@@ -229,7 +229,8 @@ static void
 scale_selector_window_widget_class_init (
   ScaleSelectorWindowWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "scale_selector_window.ui");
 

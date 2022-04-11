@@ -39,12 +39,13 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t float_struct_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    float_struct,
-    float_struct_fields_schema),
-};
+static const cyaml_schema_value_t
+  float_struct_schema = {
+    CYAML_VALUE_MAPPING (
+      CYAML_FLAG_POINTER,
+      float_struct,
+      float_struct_fields_schema),
+  };
 
 static void
 test_load_precise_float (void)

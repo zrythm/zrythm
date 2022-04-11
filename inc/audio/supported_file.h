@@ -136,7 +136,8 @@ supported_file_new_from_uri (const char * uri);
  * Example: wav -> "Wave file".
  */
 char *
-supported_file_type_get_description (ZFileType type);
+supported_file_type_get_description (
+  ZFileType type);
 
 /**
  * Clones the given SupportedFile.

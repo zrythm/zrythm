@@ -372,7 +372,8 @@ plugin_descriptor_is_valid_for_slot_type (
       break;
     case PLUGIN_SLOT_INSTRUMENT:
       return track_type == TRACK_TYPE_INSTRUMENT
-             && plugin_descriptor_is_instrument (self);
+             && plugin_descriptor_is_instrument (
+               self);
     default:
       break;
     }
@@ -453,8 +454,8 @@ plugin_descriptor_get_min_bridge_mode (
       const LilvUI *   picked_ui;
       const LilvNode * picked_ui_type;
       bool needs_bridging = lv2_plugin_pick_ui (
-        uis, LV2_PLUGIN_UI_FOR_BRIDGING, &picked_ui,
-        &picked_ui_type);
+        uis, LV2_PLUGIN_UI_FOR_BRIDGING,
+        &picked_ui, &picked_ui_type);
       if (needs_bridging)
         {
           const LilvNode * ui_uri =
@@ -462,7 +463,8 @@ plugin_descriptor_get_min_bridge_mode (
           LilvNodes * ui_required_features =
             lilv_world_find_nodes (
               LILV_WORLD, ui_uri,
-              PM_GET_NODE (LV2_CORE__requiredFeature),
+              PM_GET_NODE (
+                LV2_CORE__requiredFeature),
               NULL);
           if (
             lilv_nodes_contains (
@@ -622,7 +624,8 @@ plugin_descriptor_generate_context_menu (
   int     num_added = 0;
   for (
     int i = 0;
-    i < PLUGIN_MANAGER->collections->num_collections;
+    i
+    < PLUGIN_MANAGER->collections->num_collections;
     i++)
     {
       PluginCollection * coll =
@@ -655,11 +658,13 @@ plugin_descriptor_generate_context_menu (
     }
 
   /* remove from collection */
-  GMenu * remove_collections_submenu = g_menu_new ();
+  GMenu * remove_collections_submenu =
+    g_menu_new ();
   num_added = 0;
   for (
     int i = 0;
-    i < PLUGIN_MANAGER->collections->num_collections;
+    i
+    < PLUGIN_MANAGER->collections->num_collections;
     i++)
     {
       PluginCollection * coll =

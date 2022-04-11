@@ -425,7 +425,8 @@ channel_init_loaded (Channel * self, Track * track)
 
   fader_init_loaded (
     self->prefader, track, NULL, NULL);
-  fader_init_loaded (self->fader, track, NULL, NULL);
+  fader_init_loaded (
+    self->fader, track, NULL, NULL);
 
   PortType out_type = track->out_signal_type;
 
@@ -790,7 +791,8 @@ channel_reset_fader (Channel * self, bool fire_events)
 bool
 channel_get_mono_compat_enabled (Channel * self)
 {
-  return fader_get_mono_compat_enabled (self->fader);
+  return fader_get_mono_compat_enabled (
+    self->fader);
 }
 
 /**
@@ -899,7 +901,8 @@ channel_connect_plugins (Channel * self)
                 next_pl = self->instrument;
               else
                 {
-                  for (int k = 0; k < STRIP_SIZE; k++)
+                  for (int k = 0; k < STRIP_SIZE;
+                       k++)
                     {
                       next_pl = self->inserts[k];
                       if (next_pl)
@@ -936,7 +939,9 @@ channel_connect_plugins (Channel * self)
           /* if still not found and slot is insert,
            * check instrument or MIDI FX where
            * applicable */
-          if (!prev_pl && slot_type == PLUGIN_SLOT_INSERT)
+          if (
+            !prev_pl
+            && slot_type == PLUGIN_SLOT_INSERT)
             {
               if (self->instrument)
                 prev_pl = self->instrument;
@@ -969,7 +974,8 @@ channel_connect_plugins (Channel * self)
 
           if (!prev_pl && !next_pl)
             {
-              connect_no_prev_no_next (self, plugin);
+              connect_no_prev_no_next (
+                self, plugin);
             }
           else if (!prev_pl && next_pl)
             {
@@ -1017,11 +1023,13 @@ channel_connect (Channel * ch)
       ch->output_name_hash = 0;
       ch->has_output = 0;
       port_connections_manager_ensure_connect (
-        PORT_CONNECTIONS_MGR, &ch->stereo_out->l->id,
+        PORT_CONNECTIONS_MGR,
+        &ch->stereo_out->l->id,
         &MONITOR_FADER->stereo_in->l->id, 1.f,
         F_LOCKED, F_ENABLE);
       port_connections_manager_ensure_connect (
-        PORT_CONNECTIONS_MGR, &ch->stereo_out->r->id,
+        PORT_CONNECTIONS_MGR,
+        &ch->stereo_out->r->id,
         &MONITOR_FADER->stereo_in->r->id, 1.f,
         F_LOCKED, F_ENABLE);
     }
@@ -1033,13 +1041,13 @@ channel_connect (Channel * ch)
       port_connections_manager_ensure_connect (
         PORT_CONNECTIONS_MGR,
         &ch->prefader->stereo_out->l->id,
-        &ch->fader->stereo_in->l->id, 1.f, F_LOCKED,
-        F_ENABLE);
+        &ch->fader->stereo_in->l->id, 1.f,
+        F_LOCKED, F_ENABLE);
       port_connections_manager_ensure_connect (
         PORT_CONNECTIONS_MGR,
         &ch->prefader->stereo_out->r->id,
-        &ch->fader->stereo_in->r->id, 1.f, F_LOCKED,
-        F_ENABLE);
+        &ch->fader->stereo_in->r->id, 1.f,
+        F_LOCKED, F_ENABLE);
       port_connections_manager_ensure_connect (
         PORT_CONNECTIONS_MGR,
         &ch->fader->stereo_out->l->id,
@@ -1060,8 +1068,8 @@ channel_connect (Channel * ch)
         F_ENABLE);
       port_connections_manager_ensure_connect (
         PORT_CONNECTIONS_MGR,
-        &ch->fader->midi_out->id, &ch->midi_out->id,
-        1.f, F_LOCKED, F_ENABLE);
+        &ch->fader->midi_out->id,
+        &ch->midi_out->id, 1.f, F_LOCKED, F_ENABLE);
     }
 
   /** Connect MIDI in and piano roll to MIDI
@@ -1469,7 +1477,8 @@ channel_disconnect_plugin_from_strip (
     }
 
   /* unexpose all JACK ports */
-  plugin_expose_ports (pl, F_NOT_EXPOSE, true, true);
+  plugin_expose_ports (
+    pl, F_NOT_EXPOSE, true, true);
 }
 
 /**
@@ -1858,7 +1867,8 @@ channel_update_track_name_hash (
         out_track, old_name_hash);
       g_return_if_fail (child_idx >= 0);
 
-      out_track->children[child_idx] = new_name_hash;
+      out_track->children[child_idx] =
+        new_name_hash;
       g_debug (
         "%s: setting output of track '%s' to '%s'",
         __func__, self->track->name,
@@ -2119,15 +2129,15 @@ channel_disconnect (Channel * self, bool remove_pl)
           {
             channel_remove_plugin (
               self, PLUGIN_SLOT_INSERT, i,
-              F_NOT_MOVING_PLUGIN, remove_pl, false,
-              F_NO_RECALC_GRAPH);
+              F_NOT_MOVING_PLUGIN, remove_pl,
+              false, F_NO_RECALC_GRAPH);
           }
         if (self->midi_fx[i])
           {
             channel_remove_plugin (
               self, PLUGIN_SLOT_MIDI_FX, i,
-              F_NOT_MOVING_PLUGIN, remove_pl, false,
-              F_NO_RECALC_GRAPH);
+              F_NOT_MOVING_PLUGIN, remove_pl,
+              false, F_NO_RECALC_GRAPH);
           }
       }
       if (self->instrument)
@@ -2149,7 +2159,8 @@ channel_disconnect (Channel * self, bool remove_pl)
       g_return_if_fail (
         IS_TRACK_AND_NONNULL (out_track));
       group_target_track_remove_child (
-        out_track, track_get_name_hash (self->track),
+        out_track,
+        track_get_name_hash (self->track),
         F_DISCONNECT, F_NO_RECALC_GRAPH,
         F_NO_PUBLISH_EVENTS);
     }

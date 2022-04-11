@@ -98,7 +98,7 @@ typedef struct Track_v1
   int               num_modulators;
   size_t            modulators_size;
   ModulatorMacroProcessor_v1 * modulator_macros[128];
-  int                          num_modulator_macros;
+  int                 num_modulator_macros;
   int                 num_visible_modulator_macros;
   Channel_v1 *        channel;
   TrackProcessor_v1 * processor;

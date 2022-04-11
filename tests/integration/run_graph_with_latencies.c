@@ -69,7 +69,8 @@ _test (
 {
   /* 1. create instrument track */
   test_plugin_manager_create_tracks_from_plugin (
-    pl_bundle, pl_uri, is_instrument, with_carla, 1);
+    pl_bundle, pl_uri, is_instrument, with_carla,
+    1);
 
   Track * track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];

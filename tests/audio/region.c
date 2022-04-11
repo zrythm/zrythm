@@ -44,8 +44,8 @@ fixture_set_up (RegionFixture * fixture)
   Position start_pos, end_pos;
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
-  fixture->midi_region =
-    midi_region_new (&start_pos, &end_pos, 0, 0, 0);
+  fixture->midi_region = midi_region_new (
+    &start_pos, &end_pos, 0, 0, 0);
 }
 
 static void
@@ -155,9 +155,10 @@ test_new_region (void)
   Position start_pos, end_pos, tmp;
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
-  ZRegion * region =
-    midi_region_new (&start_pos, &end_pos, 0, 0, 0);
-  ArrangerObject * r_obj = (ArrangerObject *) region;
+  ZRegion * region = midi_region_new (
+    &start_pos, &end_pos, 0, 0, 0);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
 
   g_assert_nonnull (region);
   g_assert_true (

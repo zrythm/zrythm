@@ -302,7 +302,8 @@ val_change_finished (
       port_set_control_value (
         self->port,
         control_port_normalized_val_to_real (
-          self->port, self->normalized_init_port_val),
+          self->port,
+          self->normalized_init_port_val),
         F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
       GError * err = NULL;
@@ -408,8 +409,8 @@ bar_slider_tick_cb (
 InspectorPortWidget *
 inspector_port_widget_new (Port * port)
 {
-  InspectorPortWidget * self =
-    g_object_new (INSPECTOR_PORT_WIDGET_TYPE, NULL);
+  InspectorPortWidget * self = g_object_new (
+    INSPECTOR_PORT_WIDGET_TYPE, NULL);
 
   self->port = port;
   self->meter = meter_new_for_port (port);
@@ -542,11 +543,12 @@ inspector_port_widget_new (Port * port)
     GTK_GESTURE_SINGLE (self->right_click_gesture),
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
-    G_OBJECT (self->right_click_gesture), "pressed",
-    G_CALLBACK (on_right_click), self);
+    G_OBJECT (self->right_click_gesture),
+    "pressed", G_CALLBACK (on_right_click), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self->bar_slider),
-    GTK_EVENT_CONTROLLER (self->right_click_gesture));
+    GTK_EVENT_CONTROLLER (
+      self->right_click_gesture));
 
 inspector_port_new_end:
 
@@ -559,7 +561,8 @@ finalize (InspectorPortWidget * self)
   if (self->meter)
     meter_free (self->meter);
 
-  G_OBJECT_CLASS (inspector_port_widget_parent_class)
+  G_OBJECT_CLASS (
+    inspector_port_widget_parent_class)
     ->finalize (G_OBJECT (self));
 }
 
@@ -585,14 +588,16 @@ dispose (InspectorPortWidget * self)
   while (refcount > 0)
     {
       refcount = (int) GET_REFCOUNT;
-      g_debug ("unrefing... refcount: %d", refcount);
+      g_debug (
+        "unrefing... refcount: %d", refcount);
       g_object_unref (self->connections_popover);
       refcount--;
     }
 
 #undef GET_REFCOUNT
 
-  G_OBJECT_CLASS (inspector_port_widget_parent_class)
+  G_OBJECT_CLASS (
+    inspector_port_widget_parent_class)
     ->dispose (G_OBJECT (self));
 }
 
@@ -604,7 +609,8 @@ inspector_port_widget_class_init (
   oklass->finalize = (GObjectFinalizeFunc) finalize;
   oklass->dispose = (GObjectFinalizeFunc) dispose;
 
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   gtk_widget_class_set_layout_manager_type (
     wklass, GTK_TYPE_BIN_LAYOUT);
 }

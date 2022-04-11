@@ -183,7 +183,8 @@ transport_new (AudioEngine * engine)
   port_set_owner (
     self->roll, PORT_OWNER_TYPE_TRANSPORT, self);
   self->roll->id.flags |= PORT_FLAG_TOGGLE;
-  self->roll->id.flags2 |= PORT_FLAG2_TRANSPORT_ROLL;
+  self->roll->id.flags2 |=
+    PORT_FLAG2_TRANSPORT_ROLL;
 
   self->stop = port_new_with_type (
     TYPE_EVENT, FLOW_INPUT, "Stop");
@@ -191,13 +192,15 @@ transport_new (AudioEngine * engine)
   port_set_owner (
     self->stop, PORT_OWNER_TYPE_TRANSPORT, self);
   self->stop->id.flags |= PORT_FLAG_TOGGLE;
-  self->stop->id.flags2 |= PORT_FLAG2_TRANSPORT_STOP;
+  self->stop->id.flags2 |=
+    PORT_FLAG2_TRANSPORT_STOP;
 
   self->backward = port_new_with_type (
     TYPE_EVENT, FLOW_INPUT, "Backward");
   self->backward->id.sym = g_strdup ("backward");
   port_set_owner (
-    self->backward, PORT_OWNER_TYPE_TRANSPORT, self);
+    self->backward, PORT_OWNER_TYPE_TRANSPORT,
+    self);
   self->backward->id.flags |= PORT_FLAG_TOGGLE;
   self->backward->id.flags2 |=
     PORT_FLAG2_TRANSPORT_BACKWARD;
@@ -224,7 +227,8 @@ transport_new (AudioEngine * engine)
 
   self->rec_toggle = port_new_with_type (
     TYPE_EVENT, FLOW_INPUT, "Rec toggle");
-  self->rec_toggle->id.sym = g_strdup ("rec_toggle");
+  self->rec_toggle->id.sym =
+    g_strdup ("rec_toggle");
   port_set_owner (
     self->rec_toggle, PORT_OWNER_TYPE_TRANSPORT,
     self);
@@ -319,8 +323,8 @@ transport_prepare_audio_regions_for_stretch (
             {
               TrackLane * lane = track->lanes[j];
 
-              for (int k = 0; k < lane->num_regions;
-                   k++)
+              for (int k = 0;
+                   k < lane->num_regions; k++)
                 {
                   ZRegion * region =
                     lane->regions[k];
@@ -393,8 +397,8 @@ transport_stretch_regions (
             {
               TrackLane * lane = track->lanes[j];
 
-              for (int k = 0; k < lane->num_regions;
-                   k++)
+              for (int k = 0;
+                   k < lane->num_regions; k++)
                 {
                   ZRegion * region =
                     lane->regions[k];
@@ -709,8 +713,8 @@ transport_move_playhead (
                         midi_note, PLAYHEAD->frames))
                     {
                       midi_events =
-                        track->processor->piano_roll
-                          ->midi_events;
+                        track->processor
+                          ->piano_roll->midi_events;
 
                       zix_sem_wait (
                         &midi_events->access_sem);
@@ -1291,7 +1295,8 @@ transport_set_recording (
   if (fire_events)
     {
       EVENTS_PUSH (
-        ET_TRANSPORT_RECORDING_ON_OFF_CHANGED, NULL);
+        ET_TRANSPORT_RECORDING_ON_OFF_CHANGED,
+        NULL);
     }
 }
 

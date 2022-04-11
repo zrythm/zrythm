@@ -111,7 +111,8 @@ create_model (void)
 
   /* add data to the list store */
   for (int i = 0;
-       i < PORT_CONNECTIONS_MGR->num_connections; i++)
+       i < PORT_CONNECTIONS_MGR->num_connections;
+       i++)
     {
       PortConnection * conn =
         PORT_CONNECTIONS_MGR->connections[i];
@@ -130,7 +131,8 @@ create_model (void)
         NULL);
 
       char src_path[600];
-      port_get_full_designation (src_port, src_path);
+      port_get_full_designation (
+        src_port, src_path);
       char dest_path[600];
       port_get_full_designation (
         dest_port, dest_path);
@@ -138,7 +140,8 @@ create_model (void)
       /* get multiplier */
       char mult_str[40];
       sprintf (
-        mult_str, "%.4f", (double) conn->multiplier);
+        mult_str, "%.4f",
+        (double) conn->multiplier);
 
       gtk_list_store_append (store, &iter);
       gtk_list_store_set (
@@ -234,7 +237,8 @@ tree_view_setup (
   /* column for checkbox */
   renderer = gtk_cell_renderer_toggle_new ();
   column = gtk_tree_view_column_new_with_attributes (
-    _ ("On"), renderer, "active", COL_ENABLED, NULL);
+    _ ("On"), renderer, "active", COL_ENABLED,
+    NULL);
   gtk_tree_view_append_column (
     GTK_TREE_VIEW (tree_view), column);
   g_signal_connect (
@@ -350,5 +354,6 @@ port_connections_tree_widget_init (
   self->popover_menu = GTK_POPOVER_MENU (
     gtk_popover_menu_new_from_model (NULL));
   gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
 }

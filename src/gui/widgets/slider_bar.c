@@ -106,7 +106,8 @@ static void
 slider_bar_widget_class_init (
   SliderBarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "slider-bar");
 }

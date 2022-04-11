@@ -192,8 +192,8 @@ midi_arranger_widget_snap_midi_notes_l (
   Position   new_start_pos, new_global_start_pos;
   MidiNote * midi_note;
   ArrangerObject * mn_obj;
-  for (int i = 0; i < MA_SELECTIONS->num_midi_notes;
-       i++)
+  for (int i = 0;
+       i < MA_SELECTIONS->num_midi_notes; i++)
     {
       midi_note = MA_SELECTIONS->midi_notes[i];
       mn_obj = (ArrangerObject *) midi_note;
@@ -265,7 +265,8 @@ midi_arranger_widget_set_hovered_note (
   if (self->hovered_note != pitch)
     {
       GdkRectangle rect;
-      arranger_widget_get_visible_rect (self, &rect);
+      arranger_widget_get_visible_rect (
+        self, &rect);
       double adj_px_per_key =
         MW_PIANO_ROLL_KEYS->px_per_key + 1.0;
       if (self->hovered_note != -1)
@@ -323,8 +324,8 @@ midi_arranger_widget_snap_midi_notes_r (
 
   MidiNote * midi_note;
   Position   new_end_pos, new_global_end_pos;
-  for (int i = 0; i < MA_SELECTIONS->num_midi_notes;
-       i++)
+  for (int i = 0;
+       i < MA_SELECTIONS->num_midi_notes; i++)
     {
       midi_note = MA_SELECTIONS->midi_notes[i];
       ArrangerObject * mn_obj =
@@ -347,7 +348,8 @@ midi_arranger_widget_snap_midi_notes_r (
       if (
         SNAP_GRID_ANY_SNAP (self->snap_grid)
         && !self->shift_held
-        && position_is_positive (&new_global_end_pos))
+        && position_is_positive (
+          &new_global_end_pos))
         {
           position_snap (
             &self->earliest_obj_start_pos,
@@ -387,8 +389,8 @@ midi_arranger_calc_deltamax_for_note_movement (
   int y_delta)
 {
   MidiNote * midi_note;
-  for (int i = 0; i < MA_SELECTIONS->num_midi_notes;
-       i++)
+  for (int i = 0;
+       i < MA_SELECTIONS->num_midi_notes; i++)
     {
       midi_note = MA_SELECTIONS->midi_notes[i];
       /*g_message ("midi note val %d, y delta %d",*/
@@ -561,7 +563,7 @@ midi_arranger_handle_vertical_zoom_scroll (
 
   /* scroll down, zoom out */
   double size_after;
-  float  notes_zoom_before = PIANO_ROLL->notes_zoom;
+  float notes_zoom_before = PIANO_ROLL->notes_zoom;
   double _multiplier = 1.16;
   double multiplier =
     delta_y > 0 ? 1 / _multiplier : _multiplier;
@@ -582,7 +584,8 @@ midi_arranger_handle_vertical_zoom_scroll (
 
   /* get updated adjustment and set its value
    at the same offset as before */
-  adj = gtk_scrolled_window_get_vadjustment (scroll);
+  adj =
+    gtk_scrolled_window_get_vadjustment (scroll);
   gtk_adjustment_set_value (
     adj, adj_perc * size_after - diff);
 }

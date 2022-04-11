@@ -135,7 +135,8 @@ on_close_request (
   MainWindowWidget * self)
 {
   g_debug (
-    "%s: main window delete event called", __func__);
+    "%s: main window delete event called",
+    __func__);
 
   /* temporarily pause engine */
   EngineState state;
@@ -366,7 +367,8 @@ main_window_widget_setup (MainWindowWidget * self)
       return;
     }
 
-  header_widget_setup (self->header, PROJECT->title);
+  header_widget_setup (
+    self->header, PROJECT->title);
 
   /* setup center dock */
   center_dock_widget_setup (self->center_dock);
@@ -437,7 +439,8 @@ void
 main_window_widget_tear_down (
   MainWindowWidget * self)
 {
-  g_message ("tearing down main window %p...", self);
+  g_message (
+    "tearing down main window %p...", self);
 
   self->setup = false;
 
@@ -468,7 +471,8 @@ static void
 main_window_widget_class_init (
   MainWindowWidgetClass * klass)
 {
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   resources_set_class_template (
     wklass, "main_window.ui");
   gtk_widget_class_set_css_name (
@@ -540,8 +544,10 @@ main_window_widget_init (MainWindowWidget * self)
      activate_toggle_left_panel },
     { "toggle-right-panel",
      activate_toggle_right_panel },
-    { "toggle-bot-panel",                             activate_toggle_bot_panel },
-    { "toggle-top-panel",                                    activate_toggle_top_panel },
+    { "toggle-bot-panel",
+     activate_toggle_bot_panel },
+    { "toggle-top-panel",
+     activate_toggle_top_panel },
     { "toggle-status-bar",
      activate_toggle_status_bar },
     { "zoom-in",                    activate_zoom_in, "s" },
@@ -551,17 +557,17 @@ main_window_widget_init (MainWindowWidget * self)
 
  /* snapping, quantize */
     { "snap-to-grid",                                    activate_snap_to_grid, "s" },
-    { "snap-keep-offset",activate_snap_keep_offset,
-     "s" },
+    { "snap-keep-offset",
+     activate_snap_keep_offset, "s" },
     { "snap-events",                                    activate_snap_events, "s" },
     { "quick-quantize",            activate_quick_quantize,
      "s" },
-    { "quantize-options",                 activate_quantize_options,
-     "s" },
+    { "quantize-options",
+     activate_quantize_options, "s" },
 
  /* range actions */
     { "insert-silence",                                    activate_insert_silence },
-    { "remove-range",activate_remove_range },
+    { "remove-range",             activate_remove_range },
 
  /* playhead actions */
     { "timeline-playhead-scroll-edges",                   NULL, NULL,
@@ -617,7 +623,7 @@ main_window_widget_init (MainWindowWidget * self)
     { "add-region",                   activate_add_region },
 
  /* modes */
-    { "select-mode",                                   activate_select_mode },
+    { "select-mode",                                  activate_select_mode },
     { "edit-mode",                        activate_edit_mode },
     { "cut-mode",                                  activate_cut_mode },
     { "eraser-mode",                     activate_eraser_mode },
@@ -625,7 +631,7 @@ main_window_widget_init (MainWindowWidget * self)
     { "audition-mode",                   activate_audition_mode },
 
  /* transport */
-    { "toggle-metronome",                                   NULL, NULL,
+    { "toggle-metronome",                                  NULL, NULL,
      g_settings_get_boolean (
         S_TRANSPORT, "metronome-enabled")
         ? "true"
@@ -636,8 +642,10 @@ main_window_widget_init (MainWindowWidget * self)
         ? "true"
         : "false",
      change_state_loop },
-    { "goto-prev-marker",                                    activate_goto_prev_marker },
-    { "goto-next-marker",                                 activate_goto_next_marker },
+    { "goto-prev-marker",
+     activate_goto_prev_marker },
+    { "goto-next-marker",
+     activate_goto_next_marker },
     { "play-pause",     activate_play_pause },
     { "record-play",                                 activate_record_play },
     { "go-to-start",                     activate_go_to_start },
@@ -695,7 +703,8 @@ main_window_widget_init (MainWindowWidget * self)
      },
 
  /* piano roll */
-    { "toggle-drum-mode",      activate_toggle_drum_mode },
+    { "toggle-drum-mode",
+     activate_toggle_drum_mode },
     { "toggle-listen-notes",                NULL, NULL,
      g_settings_get_boolean (S_UI, "listen-notes")
         ? "true"
@@ -763,7 +772,7 @@ main_window_widget_init (MainWindowWidget * self)
 
  /* chord presets */
     {
-     "save-chord-preset",activate_save_chord_preset,
+     "save-chord-preset",             activate_save_chord_preset,
      },
     { "load-chord-preset",
      activate_load_chord_preset, "s" },
@@ -828,7 +837,8 @@ main_window_widget_init (MainWindowWidget * self)
     { "plugin-browser-add-to-collection",
      activate_plugin_browser_add_to_collection, "s" },
     { "plugin-browser-remove-from-collection",
-     activate_plugin_browser_remove_from_collection, "s" },
+     activate_plugin_browser_remove_from_collection,
+     "s" },
     { "plugin-browser-reset",
      activate_plugin_browser_reset, "s" },
     {

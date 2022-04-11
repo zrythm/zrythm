@@ -209,7 +209,8 @@ lv2_state_make_path_temp (
   if (!pl->temp_dir)
     {
       GError * err = NULL;
-      pl->temp_dir = g_dir_make_tmp ("XXXXXX", &err);
+      pl->temp_dir =
+        g_dir_make_tmp ("XXXXXX", &err);
       if (err)
         {
           g_critical (
@@ -218,7 +219,8 @@ lv2_state_make_path_temp (
         }
     }
 
-  return g_build_filename (pl->temp_dir, path, NULL);
+  return g_build_filename (
+    pl->temp_dir, path, NULL);
 }
 
 /**
@@ -226,7 +228,9 @@ lv2_state_make_path_temp (
  * returns the state.
  */
 LilvState *
-lv2_state_save_to_file (Lv2Plugin * pl, bool is_backup)
+lv2_state_save_to_file (
+  Lv2Plugin * pl,
+  bool        is_backup)
 {
   g_return_val_if_fail (
     pl->plugin->instantiated && pl->instance, NULL);
@@ -256,7 +260,8 @@ lv2_state_save_to_file (Lv2Plugin * pl, bool is_backup)
     }
 
   g_message (
-    "Lilv state saved to %s", pl->plugin->state_dir);
+    "Lilv state saved to %s",
+    pl->plugin->state_dir);
 
   return state;
 }
@@ -349,7 +354,8 @@ set_port_value (
     {
       /* update UI */
       char buf
-        [sizeof (Lv2ControlChange) + sizeof (fvalue)];
+        [sizeof (Lv2ControlChange)
+         + sizeof (fvalue)];
       Lv2ControlChange * ev =
         (Lv2ControlChange *) buf;
       ev->index = port->lilv_port_index;
@@ -387,10 +393,11 @@ lv2_state_apply_state (
     }
 
   g_message (
-    "applying state for LV2 plugin '%s'...", pl_str);
+    "applying state for LV2 plugin '%s'...",
+    pl_str);
   lilv_state_restore (
-    state, plugin->instance, set_port_value, plugin,
-    0, plugin->state_features);
+    state, plugin->instance, set_port_value,
+    plugin, 0, plugin->state_features);
   g_message (
     "LV2 state applied for plugin '%s'", pl_str);
 
@@ -455,8 +462,8 @@ lv2_state_save_preset (
   LilvState * const state =
     lilv_state_new_from_instance (
       plugin->lilv_plugin, plugin->instance,
-      &plugin->map, plugin->temp_dir, dir, dir, dir,
-      lv2_plugin_get_port_value, plugin,
+      &plugin->map, plugin->temp_dir, dir, dir,
+      dir, lv2_plugin_get_port_value, plugin,
       LV2_STATE_IS_PORTABLE, NULL);
 
   if (label)
@@ -465,8 +472,8 @@ lv2_state_save_preset (
     }
 
   int ret = lilv_state_save (
-    LILV_WORLD, &plugin->map, &plugin->unmap, state,
-    uri, dir, filename);
+    LILV_WORLD, &plugin->map, &plugin->unmap,
+    state, uri, dir, filename);
 
   lilv_state_free (plugin->preset);
   plugin->preset = state;
@@ -486,7 +493,8 @@ lv2_state_delete_current_preset (Lv2Plugin * plugin)
     }
 
   lilv_world_unload_resource (
-    LILV_WORLD, lilv_state_get_uri (plugin->preset));
+    LILV_WORLD,
+    lilv_state_get_uri (plugin->preset));
   lilv_state_delete (LILV_WORLD, plugin->preset);
   lilv_state_free (plugin->preset);
   plugin->preset = NULL;

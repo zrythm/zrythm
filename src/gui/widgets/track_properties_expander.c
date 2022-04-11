@@ -115,7 +115,8 @@ track_properties_expander_widget_setup (
 
   /* add direct out */
   self->direct_out =
-    route_target_selector_widget_new (track->channel);
+    route_target_selector_widget_new (
+      track->channel);
   CREATE_LABEL (_ ("Direct Out"));
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), lbl);

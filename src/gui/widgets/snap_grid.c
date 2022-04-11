@@ -110,8 +110,10 @@ snap_grid_widget_init (SnapGridWidget * self)
     gtk_image_new_from_icon_name ("snap-to-grid"));
   self->label = GTK_LABEL (gtk_label_new (""));
   gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self->box), _ ("Snap/Grid options"));
-  gtk_box_append (self->box, GTK_WIDGET (self->img));
+    GTK_WIDGET (self->box),
+    _ ("Snap/Grid options"));
+  gtk_box_append (
+    self->box, GTK_WIDGET (self->img));
   gtk_box_append (
     self->box, GTK_WIDGET (self->label));
   gtk_menu_button_set_child (

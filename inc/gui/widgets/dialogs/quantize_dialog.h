@@ -37,9 +37,10 @@ G_DECLARE_FINAL_TYPE (
   QUANTIZE_DIALOG_WIDGET,
   GtkDialog)
 
-typedef struct QuantizeOptions     QuantizeOptions;
-typedef struct _DigitalMeterWidget DigitalMeterWidget;
-typedef struct _BarSliderWidget    BarSliderWidget;
+typedef struct QuantizeOptions QuantizeOptions;
+typedef struct _DigitalMeterWidget
+                                DigitalMeterWidget;
+typedef struct _BarSliderWidget BarSliderWidget;
 
 /**
  * @addtogroup widgets

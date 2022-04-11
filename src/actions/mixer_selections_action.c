@@ -152,11 +152,11 @@ mixer_selections_action_new (
   const PortConnectionsManager * connections_mgr,
   MixerSelectionsActionType      type,
   PluginSlotType                 slot_type,
-  unsigned int                   to_track_name_hash,
-  int                            to_slot,
-  PluginSetting *                setting,
-  int                            num_plugins,
-  GError **                      error)
+  unsigned int    to_track_name_hash,
+  int             to_slot,
+  PluginSetting * setting,
+  int             num_plugins,
+  GError **       error)
 {
   MixerSelectionsAction * self =
     object_new (MixerSelectionsAction);
@@ -216,7 +216,8 @@ mixer_selections_action_clone (
   self->type = src->type;
   self->slot_type = src->slot_type;
   self->to_slot = src->to_slot;
-  self->to_track_name_hash = src->to_track_name_hash;
+  self->to_track_name_hash =
+    src->to_track_name_hash;
   self->new_channel = src->new_channel;
   self->num_plugins = src->num_plugins;
   if (src->setting)
@@ -238,8 +239,8 @@ mixer_selections_action_clone (
 
   for (int i = 0; i < src->num_deleted_ats; i++)
     {
-      self->deleted_ats[i] =
-        automation_track_clone (src->deleted_ats[i]);
+      self->deleted_ats[i] = automation_track_clone (
+        src->deleted_ats[i]);
     }
   self->num_deleted_ats = src->num_deleted_ats;
 
@@ -261,11 +262,11 @@ mixer_selections_action_perform (
   const PortConnectionsManager * connections_mgr,
   MixerSelectionsActionType      type,
   PluginSlotType                 slot_type,
-  unsigned int                   to_track_name_hash,
-  int                            to_slot,
-  PluginSetting *                setting,
-  int                            num_plugins,
-  GError **                      error)
+  unsigned int    to_track_name_hash,
+  int             to_slot,
+  PluginSetting * setting,
+  int             num_plugins,
+  GError **       error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
     mixer_selections_action_new, error, ms,
@@ -352,7 +353,8 @@ revert_automation (
           cloned_at->port_id.sym);
 
       copy_at_regions (actual_at, cloned_at);
-      num_reverted_regions += actual_at->num_regions;
+      num_reverted_regions +=
+        actual_at->num_regions;
       num_reverted_ats++;
     }
 
@@ -592,8 +594,8 @@ do_or_undo_create_or_delete (
 
               /* instantiate so that ports are
                * created */
-              int ret =
-                plugin_instantiate (pl, NULL, &err);
+              int ret = plugin_instantiate (
+                pl, NULL, &err);
               if (ret != 0)
                 {
                   HANDLE_ERROR (
@@ -639,8 +641,8 @@ do_or_undo_create_or_delete (
 
           /* save any plugin about to be deleted */
           save_existing_plugin (
-            self, self->deleted_ms, NULL, slot_type,
-            -1,
+            self, self->deleted_ms, NULL,
+            slot_type, -1,
             slot_type == PLUGIN_SLOT_MODULATOR
               ? P_MODULATOR_TRACK
               : track,
@@ -681,7 +683,8 @@ do_or_undo_create_or_delete (
             ET_PLUGIN_VISIBILITY_CHANGED, pl);
 
           /* activate */
-          int ret = plugin_activate (pl, F_ACTIVATE);
+          int ret =
+            plugin_activate (pl, F_ACTIVATE);
           g_return_val_if_fail (!ret, -1);
         }
 
@@ -696,7 +699,8 @@ do_or_undo_create_or_delete (
                 "restoring custom connections "
                 "for plugin '%s'",
                 pl->setting->descr->name);
-              GPtrArray * ports = g_ptr_array_new ();
+              GPtrArray * ports =
+                g_ptr_array_new ();
               plugin_append_ports (pl, ports);
               for (size_t j = 0; j < ports->len; j++)
                 {
@@ -748,7 +752,8 @@ do_or_undo_create_or_delete (
                 "remembering custom connections "
                 "for plugin '%s'",
                 own_pl->setting->descr->name);
-              GPtrArray * ports = g_ptr_array_new ();
+              GPtrArray * ports =
+                g_ptr_array_new ();
               plugin_append_ports (prj_pl, ports);
               GPtrArray * own_ports =
                 g_ptr_array_new ();
@@ -788,9 +793,10 @@ do_or_undo_create_or_delete (
 
           /* remove the plugin at given slot */
           track_remove_plugin (
-            track, slot_type, slot, F_NOT_REPLACING,
-            F_NOT_MOVING_PLUGIN, F_DELETING_PLUGIN,
-            F_NOT_DELETING_TRACK, F_NO_RECALC_GRAPH);
+            track, slot_type, slot,
+            F_NOT_REPLACING, F_NOT_MOVING_PLUGIN,
+            F_DELETING_PLUGIN, F_NOT_DELETING_TRACK,
+            F_NO_RECALC_GRAPH);
 
           /* if there was a plugin at the slot
            * before, bring it back */
@@ -915,7 +921,8 @@ do_or_undo_move_or_copy (
             own_pl->setting->descr->name);
           to_tr = track_new (
             TRACK_TYPE_AUDIO_BUS,
-            TRACKLIST->num_tracks, str, F_WITH_LANE);
+            TRACKLIST->num_tracks, str,
+            F_WITH_LANE);
           g_free (str);
           g_return_val_if_fail (to_tr, -1);
 
@@ -946,7 +953,8 @@ do_or_undo_move_or_copy (
 
       bool move_downwards_same_track =
         to_tr == from_tr && own_ms->num_slots > 0
-        && self->to_slot > own_ms->plugins[0]->id.slot;
+        && self->to_slot
+             > own_ms->plugins[0]->id.slot;
 #define FOREACH_SLOT \
   for ( \
     int i = \
@@ -1128,7 +1136,8 @@ do_or_undo_move_or_copy (
 
       bool move_downwards_same_track =
         to_tr == from_tr && own_ms->num_slots > 0
-        && self->to_slot < own_ms->plugins[0]->id.slot;
+        && self->to_slot
+             < own_ms->plugins[0]->id.slot;
       for (
         int i =
           move_downwards_same_track
@@ -1184,7 +1193,8 @@ do_or_undo_move_or_copy (
             {
               track_remove_plugin (
                 to_tr, to_slot_type, to_slot,
-                F_NOT_REPLACING, F_NOT_MOVING_PLUGIN,
+                F_NOT_REPLACING,
+                F_NOT_MOVING_PLUGIN,
                 F_DELETING_PLUGIN,
                 F_NOT_DELETING_TRACK,
                 F_NO_RECALC_GRAPH);

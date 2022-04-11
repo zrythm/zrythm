@@ -196,8 +196,9 @@ check_vs_orig_state:
   Track * midi_track = tracklist_find_track_by_name (
     TRACKLIST, MIDI_TRACK_NAME);
   g_assert_nonnull (midi_track);
-  Track * audio_track = tracklist_find_track_by_name (
-    TRACKLIST, AUDIO_TRACK_NAME);
+  Track * audio_track =
+    tracklist_find_track_by_name (
+      TRACKLIST, AUDIO_TRACK_NAME);
   g_assert_nonnull (audio_track);
 
   Position p1_before_move, p2_before_move;
@@ -229,7 +230,8 @@ check_vs_orig_state:
 
   /* check audio region */
   g_assert_cmpint (
-    audio_track->lanes[AUDIO_REGION_LANE]->num_regions,
+    audio_track->lanes[AUDIO_REGION_LANE]
+      ->num_regions,
     ==, 1);
   obj =
     (ArrangerObject *) audio_track
@@ -241,9 +243,10 @@ check_vs_orig_state:
   AutomationTracklist * atl =
     track_get_automation_tracklist (P_MASTER_TRACK);
   g_assert_nonnull (atl);
-  AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel,
-    PORT_FLAG_STEREO_BALANCE);
+  AutomationTrack * at =
+    channel_get_automation_track (
+      P_MASTER_TRACK->channel,
+      PORT_FLAG_STEREO_BALANCE);
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 1);
   obj = (ArrangerObject *) at->regions[0];
@@ -278,7 +281,8 @@ check_vs_orig_state:
   g_assert_cmpstr (m->name, ==, MARKER_NAME);
 
   /* check scale object */
-  g_assert_cmpint (P_CHORD_TRACK->num_scales, ==, 1);
+  g_assert_cmpint (
+    P_CHORD_TRACK->num_scales, ==, 1);
   obj = (ArrangerObject *) P_CHORD_TRACK->scales[0];
   ScaleObject * s = (ScaleObject *) obj;
   g_assert_cmppos (&obj->pos, p1);
@@ -351,7 +355,8 @@ test_project_rebootstrap_timeline (
     r->id.track_name_hash, ==, track_name_hash);
   g_assert_cmpint (
     r->id.lane_pos, ==, MIDI_REGION_LANE);
-  g_assert_cmpint (r->id.type, ==, REGION_TYPE_MIDI);
+  g_assert_cmpint (
+    r->id.type, ==, REGION_TYPE_MIDI);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);
@@ -369,9 +374,10 @@ test_project_rebootstrap_timeline (
 
   /* Create and add an automation region with
    * 2 AutomationPoint's */
-  AutomationTrack * at = channel_get_automation_track (
-    P_MASTER_TRACK->channel,
-    PORT_FLAG_STEREO_BALANCE);
+  AutomationTrack * at =
+    channel_get_automation_track (
+      P_MASTER_TRACK->channel,
+      PORT_FLAG_STEREO_BALANCE);
   track_name_hash =
     track_get_name_hash (P_MASTER_TRACK);
   r = automation_region_new (

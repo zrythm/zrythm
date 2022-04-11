@@ -39,9 +39,9 @@ dialogs_get_open_project_dialog (GtkWindow * parent)
     GTK_FILE_CHOOSER_ACTION_OPEN;
 
   GtkWidget * dialog = gtk_file_chooser_dialog_new (
-    _ ("Open Project"), GTK_WINDOW (parent), action,
-    _ ("_Cancel"), GTK_RESPONSE_CANCEL, _ ("_Open"),
-    GTK_RESPONSE_ACCEPT, NULL);
+    _ ("Open Project"), GTK_WINDOW (parent),
+    action, _ ("_Cancel"), GTK_RESPONSE_CANCEL,
+    _ ("_Open"), GTK_RESPONSE_ACCEPT, NULL);
 
   z_gtk_file_chooser_set_file_from_path (
     GTK_FILE_CHOOSER (dialog), PROJECT->dir);

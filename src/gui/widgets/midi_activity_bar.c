@@ -131,7 +131,8 @@ midi_activity_bar_snapshot (
     {
       /* draw fade */
       gint64 time_diff =
-        g_get_real_time () - self->last_trigger_time;
+        g_get_real_time ()
+        - self->last_trigger_time;
       if ((double) time_diff < MAX_TIME)
         {
           if (self->animation == MAB_ANIMATION_BAR)
@@ -149,7 +150,8 @@ midi_activity_bar_snapshot (
             {
               other_color.alpha =
                 1.f
-                - (float) time_diff / (float) MAX_TIME;
+                - (float) time_diff
+                    / (float) MAX_TIME;
               gtk_snapshot_append_color (
                 snapshot, &other_color,
                 &GRAPHENE_RECT_INIT (
@@ -227,7 +229,8 @@ static void
 midi_activity_bar_widget_class_init (
   MidiActivityBarWidgetClass * klass)
 {
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   gtk_widget_class_set_css_name (
     wklass, "midi-activity-bar");
   wklass->snapshot = midi_activity_bar_snapshot;

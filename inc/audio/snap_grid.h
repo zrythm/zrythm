@@ -40,7 +40,8 @@
 
 #define SNAP_GRID_TIMELINE \
   (PROJECT->snap_grid_timeline)
-#define SNAP_GRID_EDITOR (PROJECT->snap_grid_editor)
+#define SNAP_GRID_EDITOR \
+  (PROJECT->snap_grid_editor)
 
 #define SNAP_GRID_IS_EDITOR(sg) \
   (SNAP_GRID_EDITOR == sg)
@@ -150,9 +151,10 @@ typedef struct SnapGrid
   NoteLengthType length_type;
 } SnapGrid;
 
-static const cyaml_strval_t snap_grid_type_strings[] = {
-  {"timeline", SNAP_GRID_TYPE_TIMELINE},
-  { "editor",  SNAP_GRID_TYPE_EDITOR  },
+static const cyaml_strval_t
+  snap_grid_type_strings[] = {
+    {"timeline", SNAP_GRID_TYPE_TIMELINE},
+    { "editor",  SNAP_GRID_TYPE_EDITOR  },
 };
 
 static const cyaml_strval_t note_length_strings[] = {
@@ -186,10 +188,11 @@ static const cyaml_strval_t
  * These are not meant to be serialized, they are
  * only used for convenience.
  */
-static const cyaml_strval_t note_type_short_strings[] = {
-  {"",   NOTE_TYPE_NORMAL },
-  { ".", NOTE_TYPE_DOTTED },
-  { "t", NOTE_TYPE_TRIPLET},
+static const cyaml_strval_t
+  note_type_short_strings[] = {
+    {"",   NOTE_TYPE_NORMAL },
+    { ".", NOTE_TYPE_DOTTED },
+    { "t", NOTE_TYPE_TRIPLET},
 };
 
 static const cyaml_schema_field_t snap_grid_fields_schema[] = {

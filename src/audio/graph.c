@@ -129,7 +129,8 @@ is_valid (Graph * self)
   int num_triggers = self->num_setup_init_triggers;
   for (int i = 0; i < num_triggers; i++)
     {
-      triggers[i] = self->setup_init_trigger_list[i];
+      triggers[i] =
+        self->setup_init_trigger_list[i];
     }
 
   while (num_triggers > 0)
@@ -219,7 +220,8 @@ graph_rechain (Graph * self)
   /* --- end --- */
 
   array_dynamic_swap (
-    &self->init_trigger_list, &self->n_init_triggers,
+    &self->init_trigger_list,
+    &self->n_init_triggers,
     &self->setup_init_trigger_list,
     &self->num_setup_init_triggers);
   array_dynamic_swap (
@@ -517,7 +519,8 @@ connect_port (Graph * self, Port * port)
   for (int j = 0; j < port->num_dests; j++)
     {
       Port * dest = port->dests[j];
-      node2 = graph_find_node_from_port (self, dest);
+      node2 =
+        graph_find_node_from_port (self, dest);
       g_warn_if_fail (node);
       g_warn_if_fail (node2);
 #if 0
@@ -835,7 +838,8 @@ graph_setup (
        i < HW_IN_PROCESSOR->num_audio_ports; i++)
     {
       port = HW_IN_PROCESSOR->audio_ports[i];
-      node2 = graph_find_node_from_port (self, port);
+      node2 =
+        graph_find_node_from_port (self, port);
       g_warn_if_fail (node2);
       graph_node_connect (hw_processor_node, node2);
     }
@@ -843,34 +847,42 @@ graph_setup (
        i < HW_IN_PROCESSOR->num_midi_ports; i++)
     {
       port = HW_IN_PROCESSOR->midi_ports[i];
-      node2 = graph_find_node_from_port (self, port);
+      node2 =
+        graph_find_node_from_port (self, port);
       graph_node_connect (hw_processor_node, node2);
     }
 
   /* connect MIDI editor manual press */
   node2 = graph_find_node_from_port (
     self, AUDIO_ENGINE->midi_editor_manual_press);
-  graph_node_connect (node2, initial_processor_node);
+  graph_node_connect (
+    node2, initial_processor_node);
 
   /* connect the transport ports */
   node2 = graph_find_node_from_port (
     self, TRANSPORT->roll);
-  graph_node_connect (node2, initial_processor_node);
+  graph_node_connect (
+    node2, initial_processor_node);
   node2 = graph_find_node_from_port (
     self, TRANSPORT->stop);
-  graph_node_connect (node2, initial_processor_node);
+  graph_node_connect (
+    node2, initial_processor_node);
   node2 = graph_find_node_from_port (
     self, TRANSPORT->backward);
-  graph_node_connect (node2, initial_processor_node);
+  graph_node_connect (
+    node2, initial_processor_node);
   node2 = graph_find_node_from_port (
     self, TRANSPORT->forward);
-  graph_node_connect (node2, initial_processor_node);
+  graph_node_connect (
+    node2, initial_processor_node);
   node2 = graph_find_node_from_port (
     self, TRANSPORT->loop_toggle);
-  graph_node_connect (node2, initial_processor_node);
+  graph_node_connect (
+    node2, initial_processor_node);
   node2 = graph_find_node_from_port (
     self, TRANSPORT->rec_toggle);
-  graph_node_connect (node2, initial_processor_node);
+  graph_node_connect (
+    node2, initial_processor_node);
 
   /* connect tracks */
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -878,8 +890,8 @@ graph_setup (
       tr = TRACKLIST->tracks[i];
 
       /* connect the track */
-      node =
-        graph_find_node_from_track (self, tr, true);
+      node = graph_find_node_from_track (
+        self, tr, true);
       if (tr->in_signal_type == TYPE_AUDIO)
         {
           if (tr->type == TRACK_TYPE_AUDIO)
@@ -1024,7 +1036,8 @@ graph_setup (
           graph_node_connect (
             initial_processor_node, node);
 
-          for (int j = 0; j < tr->num_modulators; j++)
+          for (int j = 0; j < tr->num_modulators;
+               j++)
             {
               pl = tr->modulators[j];
 
@@ -1135,19 +1148,22 @@ graph_setup (
           graph_node_connect (node, node2);
         }
       port = fader->amp;
-      node2 = graph_find_node_from_port (self, port);
+      node2 =
+        graph_find_node_from_port (self, port);
       if (node2 || !drop_unnecessary_ports)
         {
           graph_node_connect (node2, node);
         }
       port = fader->balance;
-      node2 = graph_find_node_from_port (self, port);
+      node2 =
+        graph_find_node_from_port (self, port);
       if (node2 || !drop_unnecessary_ports)
         {
           graph_node_connect (node2, node);
         }
       port = fader->mute;
-      node2 = graph_find_node_from_port (self, port);
+      node2 =
+        graph_find_node_from_port (self, port);
       if (node2 || !drop_unnecessary_ports)
         {
           graph_node_connect (node2, node);
@@ -1176,7 +1192,8 @@ graph_setup (
             graph_find_node_from_port (self, port);
           graph_node_connect (node, node2);
         }
-      else if (prefader->type == FADER_TYPE_MIDI_CHANNEL)
+      else if (
+        prefader->type == FADER_TYPE_MIDI_CHANNEL)
         {
           port = prefader->midi_in;
           node2 =
@@ -1305,7 +1322,8 @@ graph_setup (
               (size_t) (1 + self->num_setup_init_triggers)
                 * sizeof (GraphNode *));
           self->setup_init_trigger_list
-            [self->num_setup_init_triggers++] = node;
+            [self->num_setup_init_triggers++] =
+            node;
         }
     }
 
@@ -1328,7 +1346,8 @@ graph_setup (
 
   clip_editor_set_caches (CLIP_EDITOR);
   tracklist_set_caches (TRACKLIST);
-  tracklist_set_caches (SAMPLE_PROCESSOR->tracklist);
+  tracklist_set_caches (
+    SAMPLE_PROCESSOR->tracklist);
 
   /*graph_print (self);*/
 
@@ -1399,8 +1418,8 @@ graph_validate_with_connection (
 int
 graph_start (Graph * graph)
 {
-  int num_cores =
-    MIN (MAX_GRAPH_THREADS, audio_get_num_cores ());
+  int num_cores = MIN (
+    MAX_GRAPH_THREADS, audio_get_num_cores ());
   graph->num_threads = env_get_int (
     "ZRYTHM_DSP_THREADS", num_cores - 2);
   g_warn_if_fail (graph->num_threads >= 0);
@@ -1462,7 +1481,8 @@ graph_new (Router * router)
 
   self->router = router;
   self->trigger_queue = mpmc_queue_new ();
-  self->init_trigger_list = object_new (GraphNode *);
+  self->init_trigger_list =
+    object_new (GraphNode *);
   self->terminal_nodes = object_new (GraphNode *);
   self->graph_nodes = g_hash_table_new_full (
     g_direct_hash, g_direct_equal, NULL,
@@ -1505,7 +1525,8 @@ graph_terminate (Graph * self)
     }
 
   /* wake-up sleeping threads */
-  int tc = g_atomic_int_get (&self->idle_thread_cnt);
+  int tc =
+    g_atomic_int_get (&self->idle_thread_cnt);
   if (tc != self->num_threads)
     {
       g_warning (
@@ -1531,7 +1552,8 @@ graph_terminate (Graph * self)
     }
   g_return_if_fail (self->main_thread);
   void * status;
-  pthread_join (self->main_thread->pthread, &status);
+  pthread_join (
+    self->main_thread->pthread, &status);
   self->main_thread = NULL;
 
   g_message ("graph terminated");
@@ -1560,8 +1582,9 @@ graph_find_node_from_plugin (
   const Graph *  self,
   const Plugin * pl)
 {
-  GraphNode * node = (GraphNode *)
-    g_hash_table_lookup (self->setup_graph_nodes, pl);
+  GraphNode * node =
+    (GraphNode *) g_hash_table_lookup (
+      self->setup_graph_nodes, pl);
   if (node && node->type == ROUTE_NODE_TYPE_PLUGIN)
     return node;
   else
@@ -1638,7 +1661,9 @@ graph_find_node_from_monitor_fader (
   GraphNode * node =
     (GraphNode *) g_hash_table_lookup (
       self->setup_graph_nodes, fader);
-  if (node && node->type == ROUTE_NODE_TYPE_MONITOR_FADER)
+  if (
+    node
+    && node->type == ROUTE_NODE_TYPE_MONITOR_FADER)
     return node;
   else
     return NULL;
@@ -1668,7 +1693,8 @@ graph_find_initial_processor_node (
       &self->initial_processor);
   if (
     node
-    && node->type == ROUTE_NODE_TYPE_INITIAL_PROCESSOR)
+    && node->type
+         == ROUTE_NODE_TYPE_INITIAL_PROCESSOR)
     return node;
   else
     return NULL;

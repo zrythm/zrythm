@@ -49,8 +49,10 @@ typedef struct _ViewToolbarWidget ViewToolbarWidget;
 typedef struct _HelpToolbarWidget HelpToolbarWidget;
 typedef struct _MidiActivityBarWidget
   MidiActivityBarWidget;
-typedef struct _LiveWaveformWidget LiveWaveformWidget;
-typedef struct _RotatedLabelWidget RotatedLabelWidget;
+typedef struct _LiveWaveformWidget
+  LiveWaveformWidget;
+typedef struct _RotatedLabelWidget
+  RotatedLabelWidget;
 
 /**
  * Header notebook to be used at the very top of the

@@ -41,15 +41,18 @@ static const cyaml_schema_field_t
       Tracklist_v1,
       tracks,
       track_schema_v1),
-    YAML_FIELD_INT (Tracklist_v1, pinned_tracks_cutoff),
+    YAML_FIELD_INT (
+      Tracklist_v1,
+      pinned_tracks_cutoff),
 
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t tracklist_schema_v1 = {
-  YAML_VALUE_PTR (
-    Tracklist_v1,
-    tracklist_fields_schema_v1),
-};
+static const cyaml_schema_value_t
+  tracklist_schema_v1 = {
+    YAML_VALUE_PTR (
+      Tracklist_v1,
+      tracklist_fields_schema_v1),
+  };
 
 #endif

@@ -40,7 +40,8 @@ set_values (
   self->obj = obj;
 
   char         tmp[600];
-  const char * name = arranger_object_get_name (obj);
+  const char * name =
+    arranger_object_get_name (obj);
   if (name)
     {
       gtk_label_set_text (self->name_lbl, name);
@@ -86,7 +87,8 @@ static void
 arranger_object_info_dialog_widget_class_init (
   ArrangerObjectInfoDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "arranger_object_info_dialog.ui");
 

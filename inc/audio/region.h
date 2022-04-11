@@ -63,7 +63,8 @@ typedef struct AudioClip        AudioClip;
 #define REGION_PRINTF_FILENAME "%s_%s.mid"
 
 #define region_is_selected(r) \
-  arranger_object_is_selected ((ArrangerObject *) r)
+  arranger_object_is_selected ( \
+    (ArrangerObject *) r)
 
 /**
  * Musical mode setting for audio regions.

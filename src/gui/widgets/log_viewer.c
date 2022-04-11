@@ -34,7 +34,9 @@ G_DEFINE_TYPE (
   GTK_TYPE_WINDOW)
 
 static void
-on_destroy (GtkWidget * widget, LogViewerWidget * self)
+on_destroy (
+  GtkWidget *       widget,
+  LogViewerWidget * self)
 {
   LOG->viewer = NULL;
 }
@@ -96,7 +98,8 @@ static void
 log_viewer_widget_class_init (
   LogViewerWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "log_viewer.ui");
 

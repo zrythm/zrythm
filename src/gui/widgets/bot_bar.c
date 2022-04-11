@@ -94,7 +94,8 @@ activate_jack_mode (
   GVariant *      _variant,
   gpointer        user_data)
 {
-  BotBarWidget * self = Z_BOT_BAR_WIDGET (user_data);
+  BotBarWidget * self =
+    Z_BOT_BAR_WIDGET (user_data);
 
   g_return_if_fail (_variant);
 
@@ -273,11 +274,12 @@ bot_bar_widget_refresh (BotBarWidget * self)
         gtk_icon_theme_get_for_display (display);
       GtkIconPaintable * icon_paintable =
         gtk_icon_theme_lookup_icon (
-          icon_theme, "jack-transport-client", NULL,
-          size, 1, GTK_TEXT_DIR_NONE,
+          icon_theme, "jack-transport-client",
+          NULL, size, 1, GTK_TEXT_DIR_NONE,
           GTK_ICON_LOOKUP_PRELOAD);
-      GtkWidget * img = gtk_image_new_from_paintable (
-        GDK_PAINTABLE (icon_paintable));
+      GtkWidget * img =
+        gtk_image_new_from_paintable (
+          GDK_PAINTABLE (icon_paintable));
       gtk_widget_set_halign (img, GTK_ALIGN_END);
       gtk_widget_set_valign (img, GTK_ALIGN_START);
       gtk_widget_set_visible (img, true);
@@ -484,7 +486,9 @@ bot_bar_widget_update_status (BotBarWidget * self)
     engine_midi_backend_to_string (
       AUDIO_ENGINE->midi_backend),
     midi_pipewire_str, color_suffix, _ ("Status"),
-    AUDIO_ENGINE->activated ? green_prefix : red_prefix,
+    AUDIO_ENGINE->activated
+      ? green_prefix
+      : red_prefix,
     AUDIO_ENGINE->activated ? _ ("On") : _ ("Off"),
     color_suffix,
     /* TRANSLATORS: buffer size, please keep the
@@ -551,7 +555,8 @@ setup_metronome (BotBarWidget * self)
   /* volume */
   GtkWidget * label = gtk_label_new (_ ("Volume"));
   gtk_grid_attach (
-    GTK_GRID (grid), GTK_WIDGET (label), 0, 0, 1, 1);
+    GTK_GRID (grid), GTK_WIDGET (label), 0, 0, 1,
+    1);
   GtkScale * scale =
     GTK_SCALE (gtk_scale_new_with_range (
       GTK_ORIENTATION_HORIZONTAL, 0.f, 2.f, 0.1f));
@@ -564,13 +569,15 @@ setup_metronome (BotBarWidget * self)
     GTK_RANGE (scale), METRONOME->volume);
   gtk_widget_set_visible (GTK_WIDGET (scale), true);
   gtk_grid_attach (
-    GTK_GRID (grid), GTK_WIDGET (scale), 1, 0, 1, 1);
+    GTK_GRID (grid), GTK_WIDGET (scale), 1, 0, 1,
+    1);
 
   /* countin */
   label = gtk_label_new (_ ("Count-in"));
   gtk_widget_set_visible (label, true);
   gtk_grid_attach (
-    GTK_GRID (grid), GTK_WIDGET (label), 0, 1, 1, 1);
+    GTK_GRID (grid), GTK_WIDGET (label), 0, 1, 1,
+    1);
   PrerollCountSelectorWidget * preroll_count =
     preroll_count_selector_widget_new (
       PREROLL_COUNT_SELECTOR_METRONOME_COUNTIN);
@@ -579,7 +586,8 @@ setup_metronome (BotBarWidget * self)
     1, 1, 1);
 
   gtk_menu_button_set_popover (
-    self->metronome->menu_btn, GTK_WIDGET (popover));
+    self->metronome->menu_btn,
+    GTK_WIDGET (popover));
 }
 
 /**
@@ -660,8 +668,9 @@ bot_bar_widget_init (BotBarWidget * self)
 
   self->label = GTK_LABEL (gtk_label_new (""));
   gtk_label_set_markup (self->label, "");
-  GtkBox * box = GTK_BOX (gtk_widget_get_first_child (
-    GTK_WIDGET (self->status_bar)));
+  GtkBox * box =
+    GTK_BOX (gtk_widget_get_first_child (
+      GTK_WIDGET (self->status_bar)));
   z_gtk_widget_remove_all_children (
     GTK_WIDGET (box));
   gtk_box_append (
@@ -679,8 +688,10 @@ static void
 bot_bar_widget_class_init (
   BotBarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass, "bot_bar.ui");
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (
+    klass, "bot_bar.ui");
 
   gtk_widget_class_set_css_name (klass, "bot-bar");
 

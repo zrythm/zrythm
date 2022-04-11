@@ -37,7 +37,8 @@
  * @{
  */
 
-#define recording_event_queue_push_back_event(q, x) \
+#define recording_event_queue_push_back_event( \
+  q, x) \
   mpmc_queue_push_back (q, (void *) x)
 
 #define recording_event_queue_dequeue_event(q, x) \

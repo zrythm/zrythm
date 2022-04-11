@@ -46,7 +46,8 @@ static void
 timeline_bot_box_widget_class_init (
   TimelineBotBoxWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "timeline_bot_box.ui");
 

@@ -159,7 +159,8 @@ chord_track_get_chord_at_pos (
   ChordObject *    chord = NULL;
   ArrangerObject * c_obj;
   int              i;
-  for (i = region->num_chord_objects - 1; i >= 0; i--)
+  for (i = region->num_chord_objects - 1; i >= 0;
+       i--)
     {
       chord = region->chord_objects[i];
       c_obj = (ArrangerObject *) chord;
@@ -228,8 +229,8 @@ chord_track_remove_scale (
 
   /* deselect */
   arranger_object_select (
-    (ArrangerObject *) scale, F_NO_SELECT, F_APPEND,
-    F_NO_PUBLISH_EVENTS);
+    (ArrangerObject *) scale, F_NO_SELECT,
+    F_APPEND, F_NO_PUBLISH_EVENTS);
 
   int pos = -1;
   array_delete_return_pos (

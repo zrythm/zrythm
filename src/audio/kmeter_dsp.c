@@ -42,7 +42,10 @@
  * @param n Number of samples.
  */
 void
-kmeter_dsp_process (KMeterDsp * self, float * p, int n)
+kmeter_dsp_process (
+  KMeterDsp * self,
+  float *     p,
+  int         n)
 {
   float s, t, z1, z2;
 
@@ -63,9 +66,13 @@ kmeter_dsp_process (KMeterDsp * self, float * p, int n)
   t = 0;
   // Get filter state.
   z1 =
-    self->z1 > 50 ? 50 : (self->z1 < 0 ? 0 : self->z1);
+    self->z1 > 50
+      ? 50
+      : (self->z1 < 0 ? 0 : self->z1);
   z2 =
-    self->z2 > 50 ? 50 : (self->z2 < 0 ? 0 : self->z2);
+    self->z2 > 50
+      ? 50
+      : (self->z2 < 0 ? 0 : self->z2);
 
   // Perform filtering. The second filter is evaluated
   // only every 4th sample - this is just an optimisation.
@@ -155,7 +162,8 @@ float
 kmeter_dsp_read_f (KMeterDsp * self)
 {
   float rv = self->rms;
-  self->flag = true; // Resets _rms in next process().
+  self->flag =
+    true; // Resets _rms in next process().
   return rv;
 }
 
@@ -167,13 +175,15 @@ kmeter_dsp_read (
 {
   *rms = self->rms;
   *peak = self->peak;
-  self->flag = true; // Resets _rms in next process().
+  self->flag =
+    true; // Resets _rms in next process().
 }
 
 void
 kmeter_dsp_reset (KMeterDsp * self)
 {
-  self->z1 = self->z2 = self->rms = self->peak = .0f;
+  self->z1 = self->z2 = self->rms = self->peak =
+    .0f;
   self->cnt = 0;
   self->flag = false;
 }

@@ -58,7 +58,8 @@ meter_get_value (
 
       float  buf[read_space_avail];
       size_t blocks_read = zix_ring_peek (
-        port->audio_ring, &buf[0], read_space_avail);
+        port->audio_ring, &buf[0],
+        read_space_avail);
       blocks_read /= size;
       num_cycles =
         MIN (num_cycles, (int) blocks_read);
@@ -88,7 +89,8 @@ meter_get_value (
           break;
         case METER_ALGORITHM_TRUE_PEAK:
           true_peak_dsp_process (
-            self->true_peak_processor, &port->buf[0],
+            self->true_peak_processor,
+            &port->buf[0],
             (int) AUDIO_ENGINE->block_length);
           amp = true_peak_dsp_read_f (
             self->true_peak_processor);
@@ -167,8 +169,10 @@ meter_get_value (
 
       /* use prev val plus falloff if higher than
        * current val */
-      float prev_val_after_falloff = math_dbfs_to_amp (
-        math_amp_to_dbfs (self->last_amp) - falloff);
+      float prev_val_after_falloff =
+        math_dbfs_to_amp (
+          math_amp_to_dbfs (self->last_amp)
+          - falloff);
       if (prev_val_after_falloff > amp)
         {
           amp = prev_val_after_falloff;
@@ -228,7 +232,8 @@ meter_new_for_port (Port * port)
       if (is_master_fader)
         {
           self->algorithm = METER_ALGORITHM_K;
-          self->kmeter_processor = kmeter_dsp_new ();
+          self->kmeter_processor =
+            kmeter_dsp_new ();
           kmeter_dsp_init (
             self->kmeter_processor,
             AUDIO_ENGINE->sample_rate);

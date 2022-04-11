@@ -122,7 +122,8 @@ engine_pulse_stream_underflow_callback (
   g_message ("Pulse buffer underflow");
 
   if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
-    g_idle_add (engine_pulse_notify_underflow, NULL);
+    g_idle_add (
+      engine_pulse_notify_underflow, NULL);
 
   self->pulse_notified_underflow = TRUE;
 }
@@ -275,8 +276,8 @@ engine_pulse_setup (AudioEngine * self)
 {
   char * msg = NULL;
   if (!engine_pulse_try_lock_connect_sync (
-        &self->pulse_mainloop, &self->pulse_context,
-        &msg))
+        &self->pulse_mainloop,
+        &self->pulse_context, &msg))
     {
       g_warning ("%s", msg);
       g_free (msg);
@@ -286,10 +287,10 @@ engine_pulse_setup (AudioEngine * self)
   pa_sample_spec requested_spec;
   requested_spec.channels = 2;
   requested_spec.format = PA_SAMPLE_FLOAT32;
-  requested_spec
-    .rate = (uint32_t) engine_samplerate_enum_to_int (
-    (AudioEngineSamplerate) g_settings_get_enum (
-      S_P_GENERAL_ENGINE, "sample-rate"));
+  requested_spec.rate =
+    (uint32_t) engine_samplerate_enum_to_int (
+      (AudioEngineSamplerate) g_settings_get_enum (
+        S_P_GENERAL_ENGINE, "sample-rate"));
 
   self->pulse_stream = pa_stream_new (
     self->pulse_context, ZRYTHM_PULSE_CLIENT,
@@ -313,7 +314,8 @@ engine_pulse_setup (AudioEngine * self)
       (AudioEngineBufferSize) g_settings_get_enum (
         S_P_GENERAL_ENGINE, "buffer-size")));
   requested_attr.maxlength = requested_attr.tlength;
-  requested_attr.minreq = requested_attr.tlength / 2;
+  requested_attr.minreq =
+    requested_attr.tlength / 2;
 
   pa_stream_set_state_callback (
     self->pulse_stream,
@@ -371,7 +373,8 @@ engine_pulse_setup (AudioEngine * self)
   if (P_TEMPO_TRACK)
     {
       int beats_per_bar =
-        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
       engine_update_frames_per_tick (
         self, beats_per_bar,
         tempo_track_get_current_bpm (P_TEMPO_TRACK),
@@ -383,7 +386,8 @@ engine_pulse_setup (AudioEngine * self)
   self->block_length =
     BYTES_TO_FRAMES (actual_attr->tlength);
 
-  pa_threaded_mainloop_unlock (self->pulse_mainloop);
+  pa_threaded_mainloop_unlock (
+    self->pulse_mainloop);
 
   return 0;
 }
@@ -426,7 +430,8 @@ engine_pulse_activate (
   while (
     pa_operation_get_state (op)
     == PA_OPERATION_RUNNING)
-    pa_threaded_mainloop_wait (self->pulse_mainloop);
+    pa_threaded_mainloop_wait (
+      self->pulse_mainloop);
 
   if (activate)
     {
@@ -445,7 +450,8 @@ engine_pulse_activate (
         self->pulse_stream, bytes, self);
     }
 
-  pa_threaded_mainloop_unlock (self->pulse_mainloop);
+  pa_threaded_mainloop_unlock (
+    self->pulse_mainloop);
 }
 
 /**

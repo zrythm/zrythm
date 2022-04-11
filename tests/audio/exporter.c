@@ -85,7 +85,8 @@ test_export_wav (void)
           settings.progress_info.has_error = false;
           settings.progress_info.cancelled = false;
           settings.format = EXPORT_FORMAT_WAV;
-          settings.artist = g_strdup ("Test Artist");
+          settings.artist =
+            g_strdup ("Test Artist");
           settings.title = g_strdup ("Test Title");
           settings.genre = g_strdup ("Test Genre");
           settings.depth = BIT_DEPTH_16;
@@ -212,7 +213,8 @@ bounce_region (bool with_bpm_automation)
     (GThreadFunc) exporter_generic_export_thread,
     &settings);
 
-  print_progress_and_sleep (&settings.progress_info);
+  print_progress_and_sleep (
+    &settings.progress_info);
 
   g_thread_join (thread);
 
@@ -300,7 +302,8 @@ test_mixdown_midi_routed_to_instrument_track (void)
     (GThreadFunc) exporter_generic_export_thread,
     &settings);
 
-  print_progress_and_sleep (&settings.progress_info);
+  print_progress_and_sleep (
+    &settings.progress_info);
 
   g_thread_join (thread);
 
@@ -346,7 +349,8 @@ test_bounce_region_with_first_note (void)
   ZRegion * region = midi_region_new_from_midi_file (
     &pos, midi_file, track_get_name_hash (track),
     lane_pos, idx_in_lane, 0);
-  ArrangerObject * r_obj = (ArrangerObject *) region;
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
   track_add_region (
     track, region, NULL, lane_pos, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
@@ -394,7 +398,8 @@ test_bounce_region_with_first_note (void)
     (GThreadFunc) exporter_generic_export_thread,
     &settings);
 
-  print_progress_and_sleep (&settings.progress_info);
+  print_progress_and_sleep (
+    &settings.progress_info);
 
   g_thread_join (thread);
 
@@ -405,8 +410,8 @@ test_bounce_region_with_first_note (void)
   AudioClip * clip =
     audio_clip_new_from_file (settings.file_uri);
   bool has_audio = false;
-  for (unsigned_frame_t i = 0; i < clip->num_frames;
-       i++)
+  for (unsigned_frame_t i = 0;
+       i < clip->num_frames; i++)
     {
       for (channels_t j = 0; j < clip->channels; j++)
         {
@@ -483,7 +488,8 @@ _test_bounce_midi_track_routed_to_instrument_track (
     (GThreadFunc) exporter_generic_export_thread,
     &settings);
 
-  print_progress_and_sleep (&settings.progress_info);
+  print_progress_and_sleep (
+    &settings.progress_info);
 
   g_thread_join (thread);
 
@@ -622,7 +628,8 @@ _test_bounce_instrument_track (
     char * filepath = \
       g_build_filename (dirname, x, NULL); \
     z_chromaprint_check_fingerprint_similarity ( \
-      filepath, settings.file_uri, match_rate, 34); \
+      filepath, settings.file_uri, match_rate, \
+      34); \
     g_free (filepath)
 
   if (
@@ -815,7 +822,8 @@ test_chord_routed_to_instrument (void)
     {
       /* bounce */
       ExportSettings settings;
-      memset (&settings, 0, sizeof (ExportSettings));
+      memset (
+        &settings, 0, sizeof (ExportSettings));
       settings.mode =
         i == 0 ? EXPORT_MODE_FULL : EXPORT_MODE_TRACKS;
       export_settings_set_bounce_defaults (
@@ -827,8 +835,8 @@ test_chord_routed_to_instrument (void)
         {
           tracklist_mark_all_tracks_for_bounce (
             TRACKLIST, false);
-          for (int j = 0; j < TRACKLIST->num_tracks;
-               j++)
+          for (int j = 0;
+               j < TRACKLIST->num_tracks; j++)
             {
               Track * track = TRACKLIST->tracks[j];
               track_mark_for_bounce (
@@ -932,8 +940,9 @@ test_export_send (void)
 
           /* mark only the audio fx track for bounce */
           track_mark_for_bounce (
-            audio_fx_track, F_BOUNCE, F_MARK_REGIONS,
-            F_MARK_CHILDREN, F_MARK_PARENTS);
+            audio_fx_track, F_BOUNCE,
+            F_MARK_REGIONS, F_MARK_CHILDREN,
+            F_MARK_PARENTS);
 
           GPtrArray * conns =
             exporter_prepare_tracks_for_export (
@@ -1046,7 +1055,8 @@ test_mixdown_midi (void)
     (GThreadFunc) exporter_generic_export_thread,
     &settings);
 
-  print_progress_and_sleep (&settings.progress_info);
+  print_progress_and_sleep (
+    &settings.progress_info);
 
   g_thread_join (thread);
 
@@ -1061,7 +1071,8 @@ test_mixdown_midi (void)
     TRACKLIST->num_tracks, 1, NULL);
 
   /* verify correct data */
-  g_assert_cmpint (exported_track->num_lanes, ==, 2);
+  g_assert_cmpint (
+    exported_track->num_lanes, ==, 2);
   g_assert_cmpint (
     exported_track->lanes[0]->num_regions, ==, 1);
   g_assert_cmpint (
@@ -1120,7 +1131,8 @@ main (int argc, char * argv[])
     (GTestFunc)
       test_bounce_midi_track_routed_to_instrument_track);
   g_test_add_func (
-    TEST_PREFIX "test bounce region with first note",
+    TEST_PREFIX
+    "test bounce region with first note",
     (GTestFunc) test_bounce_region_with_first_note);
   g_test_add_func (
     TEST_PREFIX "test bounce region",

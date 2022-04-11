@@ -41,8 +41,8 @@ inspector_chord_widget_show_chords (
     }
   else
     {
-      char * string =
-        g_strdup_printf ("Chords (%d)", num_chords);
+      char * string = g_strdup_printf (
+        "Chords (%d)", num_chords);
       gtk_label_set_text (self->header, string);
       g_free (string);
 
@@ -54,7 +54,8 @@ static void
 inspector_chord_widget_class_init (
   InspectorChordWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "inspector_chord.ui");
 

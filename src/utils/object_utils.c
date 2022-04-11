@@ -168,13 +168,15 @@ _free_later (
     object_new (FreeElement);
   free_element->obj = object;
   free_element->dfunc = dfunc;
-  free_element->time_added = g_get_monotonic_time ();
+  free_element->time_added =
+    g_get_monotonic_time ();
   free_element->func = func;
   free_element->line = line;
   free_element->file = file;
   /*stack_push (free_stack, (void *) free_element);*/
   mpmc_queue_push_back (
-    OBJECT_UTILS->free_queue, (void *) free_element);
+    OBJECT_UTILS->free_queue,
+    (void *) free_element);
 }
 
 /**

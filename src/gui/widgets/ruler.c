@@ -197,7 +197,8 @@ ruler_widget_get_10sec_interval (RulerWidget * self)
   for (i = 1; i <= ten_secs_per_min; i++)
     {
       if (ten_secs_per_min % i == 0)
-        ten_sec_divisors[num_ten_sec_divisors++] = i;
+        ten_sec_divisors[num_ten_sec_divisors++] =
+          i;
     }
 
   /* decide the raw interval to keep between
@@ -275,13 +276,15 @@ draw_other_region (
   int height = gtk_widget_get_allocated_height (
     GTK_WIDGET (self));
 
-  ArrangerObject * r_obj = (ArrangerObject *) region;
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
   Track * track = arranger_object_get_track (r_obj);
   GdkRGBA color = track->color;
   color.alpha = 0.5;
 
   int px_start, px_end;
-  px_start = ui_pos_to_px_editor (&r_obj->pos, true);
+  px_start =
+    ui_pos_to_px_editor (&r_obj->pos, true);
   px_end =
     ui_pos_to_px_editor (&r_obj->end_pos, true);
   gtk_snapshot_append_color (
@@ -351,8 +354,9 @@ draw_regions (
 
   /* draw the other regions */
   ZRegion * other_regions[1000];
-  int num_other_regions = track_get_regions_in_range (
-    track, NULL, NULL, other_regions);
+  int       num_other_regions =
+    track_get_regions_in_range (
+      track, NULL, NULL, other_regions);
   for (int i = 0; i < num_other_regions; i++)
     {
       ZRegion * other_region = other_regions[i];
@@ -460,7 +464,8 @@ get_loop_end_rect (
               &region_obj->loop_end_pos)
             + start_ticks;
           Position tmp;
-          position_from_ticks (&tmp, loop_end_ticks);
+          position_from_ticks (
+            &tmp, loop_end_ticks);
           rect->x =
             ui_pos_to_px_editor (&tmp, 1)
             - RW_RULER_MARKER_SIZE;
@@ -685,7 +690,8 @@ draw_cue_point (
       cairo_set_line_width (cr, 2);
       cairo_move_to (cr, dr.x, dr.y);
       cairo_line_to (
-        cr, (dr.x + dr.width), dr.y + dr.height / 2);
+        cr, (dr.x + dr.width),
+        dr.y + dr.height / 2);
       cairo_line_to (cr, dr.x, dr.y + dr.height);
       cairo_fill (cr);
     }
@@ -745,7 +751,8 @@ draw_playhead (
       cairo_set_line_width (cr, 2);
       cairo_move_to (cr, dr.x, dr.y);
       cairo_line_to (
-        cr, (dr.x + dr.width / 2), dr.y + dr.height);
+        cr, (dr.x + dr.width / 2),
+        dr.y + dr.height);
       cairo_line_to (cr, (dr.x + dr.width), dr.y);
       cairo_fill (cr);
 
@@ -786,7 +793,8 @@ draw_lines_and_labels (
   GdkRGBA secondary_text_color = {
     0.5f, 0.5f, 0.5f, 1
   };
-  GdkRGBA tertiary_text_color = secondary_text_color;
+  GdkRGBA tertiary_text_color =
+    secondary_text_color;
 
   /* if time display */
   if (
@@ -993,7 +1001,8 @@ draw_lines_and_labels (
         {
           while (
             (curr_px =
-               self->px_per_beat * (i += beat_interval)
+               self->px_per_beat
+                 * (i += beat_interval)
                + SPACE_BEFORE_START)
             < rect->x + rect->width)
             {
@@ -1196,8 +1205,8 @@ ruler_snapshot (
    * screen */
   if (
     end_px + 2.0 > visible_rect_gdk.x
-    && end_px
-         <= visible_rect_gdk.x + visible_rect_gdk.width)
+    && end_px <= visible_rect_gdk.x
+                   + visible_rect_gdk.width)
     {
       /* draw the loop end line */
       gtk_snapshot_append_color (
@@ -1310,7 +1319,8 @@ ruler_snapshot (
 
   /* ------ draw markers ------- */
 
-  draw_cue_point (self, snapshot, &visible_rect_gdk);
+  draw_cue_point (
+    self, snapshot, &visible_rect_gdk);
   draw_loop_start (
     self, snapshot, &visible_rect_gdk);
   draw_loop_end (self, snapshot, &visible_rect_gdk);
@@ -1426,7 +1436,8 @@ get_range_rect (
     {
       transport_get_range_pos (
         TRANSPORT, false, &tmp);
-      double px = ui_pos_to_px_timeline (&tmp, true);
+      double px =
+        ui_pos_to_px_timeline (&tmp, true);
       rect->width = (int) px;
     }
   else
@@ -1548,7 +1559,8 @@ on_right_click_pressed (
           S_UI, "ruler-display");
 
       g_action_map_add_action (
-        G_ACTION_MAP (action_group), display_action);
+        G_ACTION_MAP (action_group),
+        display_action);
       gtk_widget_insert_action_group (
         GTK_WIDGET (self), "ruler",
         G_ACTION_GROUP (action_group));
@@ -1598,7 +1610,8 @@ drag_begin (
 
   ZRegion * region =
     clip_editor_get_region (CLIP_EDITOR);
-  ArrangerObject * r_obj = (ArrangerObject *) region;
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
 
   /* if one of the markers hit */
   if (punch_in_hit)
@@ -1638,7 +1651,8 @@ drag_begin (
       if (self->type == TYPE (EDITOR))
         {
           g_return_if_fail (region);
-          self->drag_start_pos = r_obj->loop_end_pos;
+          self->drag_start_pos =
+            r_obj->loop_end_pos;
         }
       else
         {
@@ -1761,8 +1775,9 @@ on_motion (
       bool range_start_hit =
         ruler_widget_is_range_hit (
           self, RW_RANGE_START, x, y);
-      bool range_end_hit = ruler_widget_is_range_hit (
-        self, RW_RANGE_END, x, y);
+      bool range_end_hit =
+        ruler_widget_is_range_hit (
+          self, RW_RANGE_END, x, y);
 
       if (
         punch_in_hit || loop_start_hit
@@ -1908,8 +1923,8 @@ ruler_widget_set_zoom_level (
     {
       if (self->type == RULER_WIDGET_TYPE_TIMELINE)
         {
-          PRJ_TIMELINE->editor_settings.hzoom_level =
-            zoom_level;
+          PRJ_TIMELINE->editor_settings
+            .hzoom_level = zoom_level;
         }
       else if (self->type == RULER_WIDGET_TYPE_EDITOR)
         {
@@ -1917,7 +1932,8 @@ ruler_widget_set_zoom_level (
             clip_editor_inner_widget_get_visible_arranger (
               MW_CLIP_EDITOR_INNER);
           EditorSettings * settings =
-            arranger_widget_get_editor_settings (arr);
+            arranger_widget_get_editor_settings (
+              arr);
           g_return_val_if_fail (settings, false);
           settings->hzoom_level = zoom_level;
         }
@@ -2033,7 +2049,8 @@ ruler_widget_init (RulerWidget * self)
 static void
 ruler_widget_class_init (RulerWidgetClass * klass)
 {
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   wklass->snapshot = ruler_snapshot;
   gtk_widget_class_set_css_name (wklass, "ruler");
 

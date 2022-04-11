@@ -42,7 +42,8 @@ typedef struct Plugin Plugin;
 
 #define MIXER_SELECTIONS_SCHEMA_VERSION 1
 
-#define MIXER_SELECTIONS (PROJECT->mixer_selections)
+#define MIXER_SELECTIONS \
+  (PROJECT->mixer_selections)
 
 #define MIXER_SELECTIONS_MAX_SLOTS 60
 

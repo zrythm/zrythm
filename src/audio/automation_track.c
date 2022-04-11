@@ -158,7 +158,7 @@ automation_track_validate (AutomationTrack * self)
         }
       for (int k = 0; k < r->num_chord_objects; k++)
         {
-          ChordObject *    co = r->chord_objects[k];
+          ChordObject * co = r->chord_objects[k];
           ArrangerObject * obj =
             (ArrangerObject *) co;
           g_return_val_if_fail (
@@ -291,7 +291,8 @@ automation_track_get_region_before_pos (
 {
   if (ends_after)
     {
-      for (int i = self->num_regions - 1; i >= 0; i--)
+      for (int i = self->num_regions - 1; i >= 0;
+           i--)
         {
           ZRegion * region = self->regions[i];
           ArrangerObject * r_obj =
@@ -309,7 +310,8 @@ automation_track_get_region_before_pos (
       /* find latest region */
       ZRegion * latest_r = NULL;
       long      latest_distance = LONG_MIN;
-      for (int i = self->num_regions - 1; i >= 0; i--)
+      for (int i = self->num_regions - 1; i >= 0;
+           i--)
         {
           ZRegion * region = self->regions[i];
           ArrangerObject * r_obj =
@@ -472,7 +474,9 @@ automation_track_find_from_port (
                 }
               else
                 {
-                  if (dest->port_index == src->port_index)
+                  if (
+                    dest->port_index
+                    == src->port_index)
                     {
                       return at;
                     }
@@ -634,7 +638,9 @@ automation_track_should_be_recording (
       g_return_val_if_fail (
         IS_PORT_AND_NONNULL (port), false);
       gint64 diff = cur_time - port->last_change;
-      if (diff < AUTOMATION_RECORDING_TOUCH_REL_MS * 1000)
+      if (
+        diff
+        < AUTOMATION_RECORDING_TOUCH_REL_MS * 1000)
         {
           /* still recording */
           return true;
@@ -775,7 +781,8 @@ automation_track_get_val_at_pos (
 
   ZRegion * region =
     arranger_object_get_region (ap_obj);
-  ArrangerObject * r_obj = (ArrangerObject *) region;
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
 
   /* if region ends before pos, assume pos is the
    * region's end pos */

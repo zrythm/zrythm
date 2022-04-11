@@ -61,12 +61,13 @@ on_focus_leave (
     {
       GtkTextIter start_iter, end_iter;
       gtk_text_buffer_get_start_iter (
-        GTK_TEXT_BUFFER (self->buffer), &start_iter);
+        GTK_TEXT_BUFFER (self->buffer),
+        &start_iter);
       gtk_text_buffer_get_end_iter (
         GTK_TEXT_BUFFER (self->buffer), &end_iter);
       char * content = gtk_text_buffer_get_text (
-        GTK_TEXT_BUFFER (self->buffer), &start_iter,
-        &end_iter, false);
+        GTK_TEXT_BUFFER (self->buffer),
+        &start_iter, &end_iter, false);
       self->setter (self->obj, content);
       text_expander_widget_refresh (self);
     }
@@ -120,7 +121,8 @@ text_expander_widget_class_init (
 }
 
 static void
-text_expander_widget_init (TextExpanderWidget * self)
+text_expander_widget_init (
+  TextExpanderWidget * self)
 {
   GtkWidget * box =
     gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -178,7 +180,8 @@ text_expander_widget_init (TextExpanderWidget * self)
   gtk_widget_set_visible (
     GTK_WIDGET (self->editor), true);
   gtk_source_view_set_tab_width (self->editor, 2);
-  gtk_source_view_set_indent_width (self->editor, 2);
+  gtk_source_view_set_indent_width (
+    self->editor, 2);
   gtk_source_view_set_insert_spaces_instead_of_tabs (
     self->editor, true);
   gtk_source_view_set_smart_backspace (

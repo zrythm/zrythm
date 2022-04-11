@@ -77,7 +77,8 @@ create_model_for_locations (
 
   /* icon, file name, index */
   list_store = gtk_list_store_new (
-    3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
+    3, G_TYPE_STRING, G_TYPE_STRING,
+    G_TYPE_POINTER);
 
   for (guint i = 0;
        i < FILE_MANAGER->locations->len; i++)
@@ -305,10 +306,10 @@ create_model_for_files (
   self->files_filter = gtk_custom_filter_new (
     (GtkCustomFilterFunc) files_filter_func, self,
     NULL);
-  self
-    ->files_filter_model = gtk_filter_list_model_new (
-    G_LIST_MODEL (store),
-    GTK_FILTER (self->files_filter));
+  self->files_filter_model =
+    gtk_filter_list_model_new (
+      G_LIST_MODEL (store),
+      GTK_FILTER (self->files_filter));
   self->files_selection_model =
     gtk_single_selection_new (
       G_LIST_MODEL (self->files_filter_model));
@@ -328,14 +329,16 @@ on_bookmark_row_activated (
   GtkTreeIter iter;
   gtk_tree_model_get_iter (model, &iter, tp);
   GValue value = G_VALUE_INIT;
-  gtk_tree_model_get_value (model, &iter, 2, &value);
+  gtk_tree_model_get_value (
+    model, &iter, 2, &value);
   FileBrowserLocation * loc =
     g_value_get_pointer (&value);
 
   file_manager_set_selection (
     FILE_MANAGER, loc, true, true);
-  self->files_selection_model = GTK_SINGLE_SELECTION (
-    create_model_for_files (self));
+  self->files_selection_model =
+    GTK_SINGLE_SELECTION (
+      create_model_for_files (self));
   gtk_list_view_set_model (
     self->files_list_view,
     GTK_SELECTION_MODEL (
@@ -395,7 +398,8 @@ on_file_row_activated (
       if (!ret)
         {
           HANDLE_ERROR (
-            err, "%s", _ ("Failed to create track"));
+            err, "%s",
+            _ ("Failed to create track"));
         }
     }
   else if (descr->type == FILE_TYPE_MIDI)
@@ -407,7 +411,8 @@ on_file_row_activated (
       if (!ret)
         {
           HANDLE_ERROR (
-            err, "%s", _ ("Failed to create track"));
+            err, "%s",
+            _ ("Failed to create track"));
         }
     }
 }
@@ -631,8 +636,9 @@ panel_file_browser_widget_new ()
     G_CALLBACK (on_bookmark_row_activated), self);
 
   /* populate files */
-  self->files_selection_model = GTK_SINGLE_SELECTION (
-    create_model_for_files (self));
+  self->files_selection_model =
+    GTK_SINGLE_SELECTION (
+      create_model_for_files (self));
   files_list_view_setup (
     self, self->files_list_view,
     GTK_SELECTION_MODEL (
@@ -667,7 +673,8 @@ static void
 panel_file_browser_widget_class_init (
   PanelFileBrowserWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "panel_file_browser.ui");
 
@@ -700,7 +707,8 @@ panel_file_browser_widget_init (
   self->popover_menu = GTK_POPOVER_MENU (
     gtk_popover_menu_new_from_model (NULL));
   gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
 
   gtk_widget_set_hexpand (
     GTK_WIDGET (self->paned), true);

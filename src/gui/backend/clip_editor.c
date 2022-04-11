@@ -195,12 +195,12 @@ clip_editor_clone (const ClipEditor * src)
   self->has_region = src->has_region;
   self->piano_roll =
     piano_roll_clone (src->piano_roll);
-  self->automation_editor =
-    automation_editor_clone (src->automation_editor);
+  self->automation_editor = automation_editor_clone (
+    src->automation_editor);
   self->chord_editor =
     chord_editor_clone (src->chord_editor);
-  self->audio_clip_editor =
-    audio_clip_editor_clone (src->audio_clip_editor);
+  self->audio_clip_editor = audio_clip_editor_clone (
+    src->audio_clip_editor);
 
   return self;
 }
@@ -233,9 +233,11 @@ clip_editor_new (void)
   self->schema_version = CLIP_EDITOR_SCHEMA_VERSION;
 
   self->piano_roll = piano_roll_new ();
-  self->audio_clip_editor = audio_clip_editor_new ();
+  self->audio_clip_editor =
+    audio_clip_editor_new ();
   self->chord_editor = chord_editor_new ();
-  self->automation_editor = automation_editor_new ();
+  self->automation_editor =
+    automation_editor_new ();
 
   return self;
 }
@@ -260,11 +262,13 @@ clip_editor_free (ClipEditor * self)
   object_free_w_func_and_null (
     piano_roll_free, self->piano_roll);
   object_free_w_func_and_null (
-    audio_clip_editor_free, self->audio_clip_editor);
+    audio_clip_editor_free,
+    self->audio_clip_editor);
   object_free_w_func_and_null (
     chord_editor_free, self->chord_editor);
   object_free_w_func_and_null (
-    automation_editor_free, self->automation_editor);
+    automation_editor_free,
+    self->automation_editor);
 
   object_zero_and_free (self);
 }

@@ -84,7 +84,8 @@ on_bounce_clicked (
     {
     case BOUNCE_DIALOG_REGIONS:
       timeline_selections_mark_for_bounce (
-        TL_SELECTIONS, settings.bounce_with_parents);
+        TL_SELECTIONS,
+        settings.bounce_with_parents);
       settings.mode = EXPORT_MODE_REGIONS;
       arranger_selections_get_start_pos (
         (ArrangerSelections *) TL_SELECTIONS,
@@ -123,7 +124,8 @@ on_bounce_clicked (
     export_progress_dialog_widget_new (
       &settings, true, false, F_CANCELABLE);
   gtk_window_set_transient_for (
-    GTK_WINDOW (progress_dialog), GTK_WINDOW (self));
+    GTK_WINDOW (progress_dialog),
+    GTK_WINDOW (self));
   z_gtk_dialog_run (
     GTK_DIALOG (progress_dialog), true);
 
@@ -232,7 +234,8 @@ static void
 bounce_dialog_widget_class_init (
   BounceDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "bounce_dialog.ui");
 
@@ -254,7 +257,8 @@ bounce_dialog_widget_class_init (
 }
 
 static void
-bounce_dialog_widget_init (BounceDialogWidget * self)
+bounce_dialog_widget_init (
+  BounceDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -272,8 +276,9 @@ bounce_dialog_widget_init (BounceDialogWidget * self)
     GTK_WIDGET (self->bounce_step_box),
     !bounce_with_parents);
 
-  bool disable_after_bounce = g_settings_get_boolean (
-    S_UI, "disable-after-bounce");
+  bool disable_after_bounce =
+    g_settings_get_boolean (
+      S_UI, "disable-after-bounce");
   gtk_check_button_set_active (
     GTK_CHECK_BUTTON (self->disable_after_bounce),
     disable_after_bounce);

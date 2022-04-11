@@ -155,12 +155,13 @@ track_icon_chooser_dialog_widget_new (Track * track)
     g_strdup_printf (_ ("%s icon"), track->name);
   TrackIconChooserDialogWidget * self =
     object_new (TrackIconChooserDialogWidget);
-  self
-    ->dialog = GTK_DIALOG (gtk_dialog_new_with_buttons (
-    str, GTK_WINDOW (MAIN_WINDOW),
-    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-    _ ("_Cancel"), GTK_RESPONSE_REJECT,
-    _ ("_Select"), GTK_RESPONSE_ACCEPT, NULL));
+  self->dialog =
+    GTK_DIALOG (gtk_dialog_new_with_buttons (
+      str, GTK_WINDOW (MAIN_WINDOW),
+      GTK_DIALOG_MODAL
+        | GTK_DIALOG_DESTROY_WITH_PARENT,
+      _ ("_Cancel"), GTK_RESPONSE_REJECT,
+      _ ("_Select"), GTK_RESPONSE_ACCEPT, NULL));
   g_free (str);
   gtk_widget_add_css_class (
     GTK_WIDGET (self->dialog),
@@ -191,11 +192,13 @@ track_icon_chooser_dialog_widget_new (Track * track)
     scroll, 480);
   gtk_scrolled_window_set_min_content_height (
     scroll, 360);
-  gtk_widget_set_visible (GTK_WIDGET (scroll), true);
+  gtk_widget_set_visible (
+    GTK_WIDGET (scroll), true);
   gtk_scrolled_window_set_child (
     GTK_SCROLLED_WINDOW (scroll),
     GTK_WIDGET (self->icon_view));
-  gtk_box_append (content_area, GTK_WIDGET (scroll));
+  gtk_box_append (
+    content_area, GTK_WIDGET (scroll));
 
   self->track = track;
 

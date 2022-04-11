@@ -43,7 +43,8 @@ create_automation_region (int track_pos)
   position_set_to_bar (&start, 1);
   position_set_to_bar (&end, 3);
   ZRegion * region = automation_region_new (
-    &start, &end, track_get_name_hash (track), 0, 0);
+    &start, &end, track_get_name_hash (track), 0,
+    0);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
   track_add_region (
@@ -124,7 +125,8 @@ test_handle_drop_empty_midi_file (void)
   test_helper_zrythm_init ();
 
   char * path = g_build_filename (
-    TESTS_SRCDIR, "empty_midi_file_type1.mid", NULL);
+    TESTS_SRCDIR, "empty_midi_file_type1.mid",
+    NULL);
   SupportedFile * file =
     supported_file_new_from_path (path);
   g_free (path);

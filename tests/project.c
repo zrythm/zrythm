@@ -97,7 +97,8 @@ test_save_load_with_data (void)
   engine_resume (PROJECT->audio_engine, &state);
 
   /* verify that the data is correct */
-  test_project_check_vs_original_state (&p1, &p2, 0);
+  test_project_check_vs_original_state (
+    &p1, &p2, 0);
 
   test_helper_zrythm_cleanup ();
 }
@@ -157,8 +158,8 @@ test_save_as_load_w_pool (void)
     project_free, PROJECT);
 
   /* load the new one */
-  char * filepath =
-    g_build_filename (new_dir, "project.zpj", NULL);
+  char * filepath = g_build_filename (
+    new_dir, "project.zpj", NULL);
   ret = project_load (filepath, 0);
   g_assert_cmpint (ret, ==, 0);
 
@@ -196,7 +197,8 @@ test_save_backup_w_pool_and_plugins (void)
     F_NO_ASYNC);
   g_assert_cmpint (ret, ==, 0);
   g_assert_nonnull (PROJECT->backup_dir);
-  char * backup_dir = g_strdup (PROJECT->backup_dir);
+  char * backup_dir =
+    g_strdup (PROJECT->backup_dir);
 
   /* free the project */
   object_free_w_func_and_null (

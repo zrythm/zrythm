@@ -71,7 +71,8 @@ test_set_at_index (void)
     CLIP_EDITOR, region, F_NO_PUBLISH_EVENTS);
 
   AutomationTrack * first_invisible_at =
-    automation_tracklist_get_first_invisible_at (atl);
+    automation_tracklist_get_first_invisible_at (
+      atl);
   automation_tracklist_set_at_index (
     atl, first_invisible_at, first_vis_at->index,
     F_NO_PUSH_DOWN);

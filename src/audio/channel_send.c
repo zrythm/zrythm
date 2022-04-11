@@ -73,7 +73,8 @@ channel_send_new (
   Track *      track)
 {
   ChannelSend * self = object_new (ChannelSend);
-  self->schema_version = CHANNEL_SEND_SCHEMA_VERSION;
+  self->schema_version =
+    CHANNEL_SEND_SCHEMA_VERSION;
   self->track = track;
   self->track_name_hash = track_name_hash;
   self->slot = slot;
@@ -132,7 +133,8 @@ channel_send_new (
   SET_PORT_OWNER (midi_in);
 
   sprintf (
-    name, _ ("Channel Send %d audio out"), slot + 1);
+    name, _ ("Channel Send %d audio out"),
+    slot + 1);
   sprintf (
     sym, "channel_send_%d_audio_out", slot + 1);
   self->stereo_out = stereo_ports_new_generic (
@@ -167,7 +169,8 @@ channel_send_get_track (const ChannelSend * self)
  * sidechain port (rather than a target track).
  */
 bool
-channel_send_is_target_sidechain (ChannelSend * self)
+channel_send_is_target_sidechain (
+  ChannelSend * self)
 {
   return channel_send_is_enabled (self)
          && self->is_sidechain;
@@ -278,8 +281,8 @@ channel_send_get_target_track (
     case TYPE_EVENT:
       conn =
         port_connections_manager_get_source_or_dest (
-          PORT_CONNECTIONS_MGR, &self->midi_out->id,
-          false);
+          PORT_CONNECTIONS_MGR,
+          &self->midi_out->id, false);
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -378,7 +381,8 @@ channel_send_connect_to_owner (ChannelSend * self)
           /* make the connection if not exists */
           port_connections_manager_ensure_connect (
             PORT_CONNECTIONS_MGR, &src_port->id,
-            &self_port->id, 1.f, F_LOCKED, F_ENABLE);
+            &self_port->id, 1.f, F_LOCKED,
+            F_ENABLE);
         }
       break;
     case TYPE_EVENT:
@@ -572,7 +576,8 @@ disconnect_audio (ChannelSend * self)
           : self->stereo_out->r;
       PortConnection * conn =
         port_connections_manager_get_source_or_dest (
-          PORT_CONNECTIONS_MGR, &src_port->id, false);
+          PORT_CONNECTIONS_MGR, &src_port->id,
+          false);
       if (!conn)
         continue;
 
@@ -662,7 +667,8 @@ channel_send_get_dest_name (
       g_return_if_fail (IS_PORT_AND_NONNULL (dest));
       if (self->is_sidechain)
         {
-          Plugin * pl = port_get_plugin (dest, true);
+          Plugin * pl =
+            port_get_plugin (dest, true);
           g_return_if_fail (IS_PLUGIN (pl));
           plugin_get_full_port_group_designation (
             pl, dest->id.port_group, buf);
@@ -725,7 +731,8 @@ channel_send_is_enabled (const ChannelSend * self)
         ? self->stereo_out->l
         : self->midi_out;
 
-  if (G_LIKELY (router_is_processing_thread (ROUTER)))
+  if (G_LIKELY (
+        router_is_processing_thread (ROUTER)))
     {
       if (search_port->num_dests == 1)
         {

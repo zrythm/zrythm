@@ -176,8 +176,9 @@ draw_loop_points (
     {
       arranger->loop_line_node = gsk_cairo_node_new (
         &GRAPHENE_RECT_INIT (0, 0, 3, 800));
-      cairo_t * cr = gsk_cairo_node_get_draw_context (
-        arranger->loop_line_node);
+      cairo_t * cr =
+        gsk_cairo_node_get_draw_context (
+          arranger->loop_line_node);
 
       cairo_set_dash (cr, dashes, 1, 0);
       cairo_set_line_width (cr, line_width);
@@ -196,8 +197,9 @@ draw_loop_points (
         gsk_cairo_node_new (
           &GRAPHENE_RECT_INIT (0, 0, 3, 800));
 
-      cairo_t * cr = gsk_cairo_node_get_draw_context (
-        arranger->clip_start_line_node);
+      cairo_t * cr =
+        gsk_cairo_node_get_draw_context (
+          arranger->clip_start_line_node);
       gdk_cairo_set_source_rgba (
         cr, &UI_COLORS->bright_green);
       cairo_set_dash (cr, dashes, 1, 0);
@@ -257,7 +259,8 @@ draw_loop_points (
           gtk_snapshot_save (snapshot);
           gtk_snapshot_translate (
             snapshot,
-            &GRAPHENE_POINT_INIT (x_px - padding, 0));
+            &GRAPHENE_POINT_INIT (
+              x_px - padding, 0));
           gtk_snapshot_push_clip (
             snapshot,
             &GRAPHENE_RECT_INIT (
@@ -384,7 +387,8 @@ draw_midi_region (
             mn_start_ticks + loop_ticks * j;
           /* if should be clipped */
           if (position_is_after_or_equal (
-                &mn_obj->end_pos, &obj->loop_end_pos))
+                &mn_obj->end_pos,
+                &obj->loop_end_pos))
             tmp_end_ticks =
               loop_end_ticks + loop_ticks * j;
           else
@@ -424,18 +428,19 @@ draw_midi_region (
             || (x_end >= vis_offset_x && x_end < vis_offset_x + vis_width)
             || (x_start < vis_offset_x && x_end > vis_offset_x))
             {
-              float draw_x =
-                (float) MAX (x_start, vis_offset_x);
+              float draw_x = (float) MAX (
+                x_start, vis_offset_x);
               float draw_width = (float) MIN (
                 (x_end - x_start)
                   - (draw_x - x_start),
                 (vis_offset_x + vis_width) - draw_x);
-              float draw_y =
-                (float) MAX (y_start, vis_offset_y);
+              float draw_y = (float) MAX (
+                y_start, vis_offset_y);
               float draw_height = (float) MIN (
                 (y_note_size * (double) full_height)
                   - (draw_y - y_start),
-                (vis_offset_y + vis_height) - draw_y);
+                (vis_offset_y + vis_height)
+                  - draw_y);
               gtk_snapshot_append_color (
                 snapshot, &color,
                 &GRAPHENE_RECT_INIT (
@@ -711,7 +716,8 @@ draw_automation_region (
                 {
                   y_end =
                     1.0
-                    - (double) next_ap->normalized_val;
+                    - (double)
+                        next_ap->normalized_val;
                 }
               else
                 {
@@ -754,7 +760,8 @@ draw_automation_region (
                   if (use_cairo)
                     {
                       ap_draw_rect = Z_GDK_RECTANGLE_INIT (
-                        (int) MAX (x_start_real, 0.0),
+                        (int) MAX (
+                          x_start_real, 0.0),
                         0,
                         (int) (x_start_real + ac_width + 0.1),
                         full_height);
@@ -798,19 +805,19 @@ draw_automation_region (
                         -(ap_draw_rect.y));
                       gdk_cairo_set_source_rgba (
                         cr, &color);
-                      cairo_set_line_width (cr, 2.0);
+                      cairo_set_line_width (
+                        cr, 2.0);
                     }
 
                   double new_x, ap_y, new_y;
                   double ac_height =
                     fabs (y_end - y_start);
                   ac_height *= full_height;
-                  for (
-                    double k =
-                      MAX (x_start_real, 0.0);
-                    k
-                    < (x_start_real) + ac_width + 0.1;
-                    k += 0.1)
+                  for (double k =
+                         MAX (x_start_real, 0.0);
+                       k < (x_start_real)
+                             + ac_width + 0.1;
+                       k += 0.1)
                     {
                       if (math_doubles_equal (
                             ac_width, 0.0))
@@ -841,7 +848,8 @@ draw_automation_region (
                       if (new_x >= full_width)
                         break;
 
-                      if (math_doubles_equal (k, 0.0))
+                      if (math_doubles_equal (
+                            k, 0.0))
                         {
                           if (use_cairo)
                             {
@@ -893,7 +901,8 @@ draw_automation_region (
                       ap->last_settings_tl.fvalue =
                         ap->fvalue;
                       ap->last_settings_tl
-                        .curve_opts = ap->curve_opts;
+                        .curve_opts =
+                        ap->curve_opts;
                       ap->last_settings_tl
                         .draw_rect = ap_draw_rect;
                       ap->cairo_node_tl = cr_node;
@@ -961,7 +970,8 @@ draw_fade_part (
             snapshot,
             &GRAPHENE_RECT_INIT (
               vis_start_px, 0,
-              vis_fade_in_px - vis_start_px, height));
+              vis_fade_in_px - vis_start_px,
+              height));
           cairo_set_source_rgba (
             cr, 0.2, 0.2, 0.2, 0.6);
           /*cairo_set_line_width (cr, 3);*/
@@ -1101,7 +1111,8 @@ draw_fade_part (
                 {
                   /* paint a gradient in the faded
                    * out part */
-                  cairo_rel_line_to (cr, 0, -height);
+                  cairo_rel_line_to (
+                    cr, 0, -height);
                   cairo_rel_line_to (cr, -i, 0);
                   cairo_close_path (cr);
                   cairo_fill (cr);
@@ -1380,7 +1391,8 @@ draw_name (
   gsk_rounded_rect_init (
     &rounded_rect,
     &GRAPHENE_RECT_INIT (
-      0, 0, (pangorect.width + REGION_NAME_PADDING_R),
+      0, 0,
+      (pangorect.width + REGION_NAME_PADDING_R),
       black_box_height),
     &GRAPHENE_SIZE_INIT (0, 0),
     &GRAPHENE_SIZE_INIT (0, 0),
@@ -1404,7 +1416,8 @@ draw_name (
       REGION_NAME_BOX_PADDING,
       REGION_NAME_BOX_PADDING));
   gtk_snapshot_append_layout (
-    snapshot, layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+    snapshot, layout,
+    &Z_GDK_RGBA_INIT (1, 1, 1, 1));
   gtk_snapshot_restore (snapshot);
 
   /* pop rounded clip */
@@ -1554,8 +1567,8 @@ region_draw (
       GskRoundedRect  rounded_rect;
       graphene_rect_t graphene_rect =
         GRAPHENE_RECT_INIT (
-          full_rect.x, full_rect.y, full_rect.width,
-          full_rect.height);
+          full_rect.x, full_rect.y,
+          full_rect.width, full_rect.height);
       gsk_rounded_rect_init_from_rect (
         &rounded_rect, &graphene_rect, 6.f);
       gtk_snapshot_push_rounded_clip (
@@ -1724,7 +1737,8 @@ region_get_lane_full_rect (
   Track * track = arranger_object_get_track (obj);
   g_return_if_fail (track && track->lanes_visible);
 
-  TrackLane * lane = track->lanes[self->id.lane_pos];
+  TrackLane * lane =
+    track->lanes[self->id.lane_pos];
   g_return_if_fail (lane);
 
   *rect = obj->full_rect;

@@ -132,7 +132,8 @@ static void
 inspector_plugin_widget_class_init (
   InspectorPluginWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "inspector_plugin.ui");
 

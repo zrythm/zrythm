@@ -31,7 +31,8 @@ region_link_group_manager_init_loaded (
   self->groups_size = (size_t) self->num_groups;
   for (int i = 0; i < self->num_groups; i++)
     {
-      RegionLinkGroup * link_group = self->groups[i];
+      RegionLinkGroup * link_group =
+        self->groups[i];
       region_link_group_init_loaded (link_group);
     }
 }
@@ -42,7 +43,8 @@ region_link_group_manager_validate (
 {
   for (int i = 0; i < self->num_groups; i++)
     {
-      RegionLinkGroup * link_group = self->groups[i];
+      RegionLinkGroup * link_group =
+        self->groups[i];
       if (!region_link_group_validate (link_group))
         {
           g_return_val_if_reached (false);

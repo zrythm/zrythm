@@ -202,8 +202,9 @@ region_move_to_track (
   if (index_in_lane >= 0)
     {
       track_insert_region (
-        track, region, NULL, lane_pos, index_in_lane,
-        F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS);
+        track, region, NULL, lane_pos,
+        index_in_lane, F_NO_GEN_NAME,
+        F_NO_PUBLISH_EVENTS);
     }
   else
     {
@@ -267,13 +268,13 @@ region_stretch (ZRegion * self, double ratio)
     case REGION_TYPE_MIDI:
       for (int i = 0; i < self->num_midi_notes; i++)
         {
-          MidiNote *       mn = self->midi_notes[i];
+          MidiNote * mn = self->midi_notes[i];
           ArrangerObject * mn_obj =
             (ArrangerObject *) mn;
 
           /* set start pos */
-          double   before_ticks = mn_obj->pos.ticks;
-          double   new_ticks = before_ticks * ratio;
+          double before_ticks = mn_obj->pos.ticks;
+          double new_ticks = before_ticks * ratio;
           Position tmp;
           position_from_ticks (&tmp, new_ticks);
           arranger_object_pos_setter (mn_obj, &tmp);
@@ -294,8 +295,8 @@ region_stretch (ZRegion * self, double ratio)
             (ArrangerObject *) ap;
 
           /* set pos */
-          double   before_ticks = ap_obj->pos.ticks;
-          double   new_ticks = before_ticks * ratio;
+          double before_ticks = ap_obj->pos.ticks;
+          double new_ticks = before_ticks * ratio;
           Position tmp;
           position_from_ticks (&tmp, new_ticks);
           arranger_object_pos_setter (ap_obj, &tmp);
@@ -310,8 +311,8 @@ region_stretch (ZRegion * self, double ratio)
             (ArrangerObject *) co;
 
           /* set pos */
-          double   before_ticks = co_obj->pos.ticks;
-          double   new_ticks = before_ticks * ratio;
+          double before_ticks = co_obj->pos.ticks;
+          double new_ticks = before_ticks * ratio;
           Position tmp;
           position_from_ticks (&tmp, new_ticks);
           arranger_object_pos_setter (co_obj, &tmp);
@@ -337,7 +338,8 @@ region_stretch (ZRegion * self, double ratio)
             stretcher, new_clip->frames,
             (size_t) new_clip->num_frames,
             &new_clip->frames);
-        z_return_if_fail_cmp (returned_frames, >, 0);
+        z_return_if_fail_cmp (
+          returned_frames, >, 0);
         new_clip->num_frames =
           (unsigned_frame_t) returned_frames;
         audio_clip_write_to_pool (
@@ -479,13 +481,15 @@ region_set_automation_track (
   if (was_selected)
     {
       arranger_object_select (
-        (ArrangerObject *) self, F_SELECT, F_APPEND,
-        F_NO_PUBLISH_EVENTS);
+        (ArrangerObject *) self, F_SELECT,
+        F_APPEND, F_NO_PUBLISH_EVENTS);
     }
 }
 
 void
-region_get_type_as_string (RegionType type, char * buf)
+region_get_type_as_string (
+  RegionType type,
+  char *     buf)
 {
   g_return_if_fail (
     type >= 0 && type <= REGION_TYPE_CHORD);
@@ -584,7 +588,8 @@ region_get_link_group (ZRegion * self)
     NULL);
   RegionLinkGroup * group =
     region_link_group_manager_get_group (
-      REGION_LINK_GROUP_MANAGER, self->id.link_group);
+      REGION_LINK_GROUP_MANAGER,
+      self->id.link_group);
   return group;
 }
 
@@ -615,7 +620,8 @@ region_set_link_group (
         region_get_link_group (region);
       g_return_if_fail (link_group);
       region_link_group_remove_region (
-        link_group, region, true, update_identifier);
+        link_group, region, true,
+        update_identifier);
     }
   if (group_idx >= 0)
     {
@@ -655,7 +661,8 @@ region_create_link_group_if_none (ZRegion * region)
 
       region_print_to_str (region, buf, sz);
       g_debug (
-        "after link group (%d): %s", new_group, buf);
+        "after link group (%d): %s", new_group,
+        buf);
     }
 }
 
@@ -871,14 +878,16 @@ region_remove_all_children (ZRegion * region)
               region, mn, F_FREE,
               F_NO_PUBLISH_EVENTS);
           }
-        g_warn_if_fail (region->num_midi_notes == 0);
+        g_warn_if_fail (
+          region->num_midi_notes == 0);
       }
       break;
     case REGION_TYPE_AUDIO:
       break;
     case REGION_TYPE_AUTOMATION:
       {
-        for (int i = region->num_aps - 1; i >= 0; i--)
+        for (int i = region->num_aps - 1; i >= 0;
+             i--)
           {
             AutomationPoint * ap = region->aps[i];
             automation_region_remove_ap (
@@ -950,7 +959,8 @@ region_copy_children (ZRegion * dest, ZRegion * src)
               (ArrangerObject *) src_ap;
 
             dest_ap = automation_point_new_float (
-              src_ap->fvalue, src_ap->normalized_val,
+              src_ap->fvalue,
+              src_ap->normalized_val,
               &src_ap_obj->pos);
             automation_region_add_ap (
               dest, dest_ap, F_NO_PUBLISH_EVENTS);
@@ -1048,7 +1058,8 @@ region_print_to_str (
 {
   char from_pos_str[100], to_pos_str[100],
     loop_end_pos_str[100];
-  position_to_string (&self->base.pos, from_pos_str);
+  position_to_string (
+    &self->base.pos, from_pos_str);
   position_to_string (
     &self->base.end_pos, to_pos_str);
   position_to_string (
@@ -1282,8 +1293,10 @@ region_copy (ZRegion * src, ZRegion * dest)
   ArrangerObject * dest_obj =
     (ArrangerObject *) dest;
 
-  dest_obj->clip_start_pos = src_obj->clip_start_pos;
-  dest_obj->loop_start_pos = src_obj->loop_start_pos;
+  dest_obj->clip_start_pos =
+    src_obj->clip_start_pos;
+  dest_obj->loop_start_pos =
+    src_obj->loop_start_pos;
   dest_obj->loop_end_pos = src_obj->loop_end_pos;
   dest_obj->fade_in_pos = src_obj->fade_in_pos;
   dest_obj->fade_out_pos = src_obj->fade_out_pos;
@@ -1400,7 +1413,8 @@ region_get_frames_till_next_loop_or_end (
   ArrangerObject * r_obj = (ArrangerObject *) self;
 
   signed_frame_t loop_size =
-    arranger_object_get_loop_length_in_frames (r_obj);
+    arranger_object_get_loop_length_in_frames (
+      r_obj);
   z_return_if_fail_cmp (loop_size, >, 0);
 
   signed_frame_t local_frames =
@@ -1419,7 +1433,8 @@ region_get_frames_till_next_loop_or_end (
   signed_frame_t frames_till_end =
     r_obj->end_pos.frames - timeline_frames;
 
-  *is_loop = frames_till_next_loop < frames_till_end;
+  *is_loop =
+    frames_till_next_loop < frames_till_end;
   *ret_frames =
     MIN (frames_till_end, frames_till_next_loop);
 }

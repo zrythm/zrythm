@@ -222,7 +222,8 @@ port_connections_manager_get_sources_or_dests (
 {
   g_return_val_if_fail (
     self->dest_ht && self->src_ht, 0);
-  g_return_val_if_fail (ZRYTHM_APP_IS_GTK_THREAD, 0);
+  g_return_val_if_fail (
+    ZRYTHM_APP_IS_GTK_THREAD, 0);
   GPtrArray * res = g_hash_table_lookup (
     /* note: we look at the opposite hashtable */
     (sources ? self->dest_ht : self->src_ht), id);
@@ -485,7 +486,8 @@ port_connections_manager_reset (
   clear (self);
 
   self->connections = g_realloc_n (
-    self->connections, (size_t) src->num_connections,
+    self->connections,
+    (size_t) src->num_connections,
     sizeof (PortConnection *));
   self->connections_size =
     (size_t) src->num_connections;
@@ -564,7 +566,8 @@ port_connections_manager_clone (
     port_connections_manager_new ();
 
   self->connections = g_realloc_n (
-    self->connections, (size_t) src->num_connections,
+    self->connections,
+    (size_t) src->num_connections,
     sizeof (PortConnection *));
   self->connections_size =
     (size_t) src->num_connections;

@@ -63,7 +63,8 @@
 Symap *
 symap_new (void)
 {
-  Symap * map = (Symap *) calloc (1, sizeof (Symap));
+  Symap * map =
+    (Symap *) calloc (1, sizeof (Symap));
   return map;
 }
 
@@ -248,7 +249,8 @@ main ()
     {
       if (symap_try_map (map, syms[i]))
         {
-          g_error ("error: Symbol already mapped\n");
+          g_error (
+            "error: Symbol already mapped\n");
           return 1;
         }
 

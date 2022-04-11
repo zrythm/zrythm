@@ -145,8 +145,8 @@ sample_processor_remove_sample_playback (
       if (in_sp != sp)
         continue;
 
-      for (j = i; j < self->num_current_samples - 1;
-           j++)
+      for (j = i;
+           j < self->num_current_samples - 1; j++)
         {
           sp = &self->current_samples[j];
           next_sp = &self->current_samples[j + 1];
@@ -305,7 +305,8 @@ sample_processor_process (
       for (int i = self->tracklist->num_tracks - 1;
            i >= 1; i--)
         {
-          Track * track = self->tracklist->tracks[i];
+          Track * track =
+            self->tracklist->tracks[i];
 
           float *
             audio_data_l = NULL,
@@ -340,7 +341,8 @@ sample_processor_process (
                 self->midi_events,
                 track->processor->midi_out
                   ->midi_events,
-                cycle_offset, nframes, F_NOT_QUEUED);
+                cycle_offset, nframes,
+                F_NOT_QUEUED);
             }
           else if (track->type == TRACK_TYPE_INSTRUMENT)
             {
@@ -524,9 +526,10 @@ queue_file_or_chord_preset (
       /* remove state dir if instrument */
       if (track->type == TRACK_TYPE_INSTRUMENT)
         {
-          char * state_dir = plugin_get_abs_state_dir (
-            track->channel->instrument,
-            F_NOT_BACKUP);
+          char * state_dir =
+            plugin_get_abs_state_dir (
+              track->channel->instrument,
+              F_NOT_BACKUP);
           if (state_dir)
             {
               io_rmdir (state_dir, Z_F_FORCE);
@@ -567,8 +570,8 @@ queue_file_or_chord_preset (
       /* create an audio region & add to
        * track */
       ZRegion * ar = audio_region_new (
-        -1, file->abs_path, false, NULL, 0, NULL, 0,
-        0, &start_pos, 0, 0, 0);
+        -1, file->abs_path, false, NULL, 0, NULL,
+        0, 0, &start_pos, 0, 0, 0);
       track_add_region (
         track, ar, NULL, 0, F_GEN_NAME,
         F_NO_PUBLISH_EVENTS);
@@ -660,8 +663,8 @@ queue_file_or_chord_preset (
               ZRegion * mr =
                 midi_region_new_from_midi_file (
                   &start_pos, file->abs_path,
-                  track_get_name_hash (track), 0, 0,
-                  i);
+                  track_get_name_hash (track), 0,
+                  0, i);
               if (mr)
                 {
                   track_add_region (
@@ -699,7 +702,8 @@ queue_file_or_chord_preset (
               /* create a MIDI region from the chord
                * preset and add to track */
               Position end_pos;
-              position_from_seconds (&end_pos, 13.0);
+              position_from_seconds (
+                &end_pos, 13.0);
               ZRegion * mr = midi_region_new (
                 &start_pos, &end_pos,
                 track_get_name_hash (track), 0, 0);

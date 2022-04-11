@@ -132,7 +132,8 @@ float
 quantize_options_get_swing (QuantizeOptions * self);
 
 float
-quantize_options_get_amount (QuantizeOptions * self);
+quantize_options_get_amount (
+  QuantizeOptions * self);
 
 float
 quantize_options_get_randomization (
@@ -183,7 +184,8 @@ quantize_options_quantize_position (
  * Clones the QuantizeOptions.
  */
 QuantizeOptions *
-quantize_options_clone (const QuantizeOptions * src);
+quantize_options_clone (
+  const QuantizeOptions * src);
 
 QuantizeOptions *
 quantize_options_new (void);

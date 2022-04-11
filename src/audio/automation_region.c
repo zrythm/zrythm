@@ -176,7 +176,7 @@ automation_region_get_next_ap (
         ZRYTHM_HAVE_UI && MW_AUTOMATION_ARRANGER
         && MW_AUTOMATION_ARRANGER->action
              == UI_OVERLAY_ACTION_MOVING_COPY;
-      ArrangerObject *  obj = (ArrangerObject *) ap;
+      ArrangerObject * obj = (ArrangerObject *) ap;
       AutomationPoint * next_ap = NULL;
       ArrangerObject *  next_obj = NULL;
       for (int i = 0; i < self->num_aps; i++)
@@ -193,8 +193,8 @@ automation_region_get_next_ap (
                   if (cur_obj->transient)
                     {
                       cur_obj = cur_obj->transient;
-                      cur_ap =
-                        (AutomationPoint *) cur_obj;
+                      cur_ap = (AutomationPoint *)
+                        cur_obj;
                     }
                   else
                     continue;

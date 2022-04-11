@@ -165,7 +165,8 @@ static void
 two_col_expander_box_widget_class_init (
   TwoColExpanderBoxWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "two-col-expander-box");
 }
@@ -189,13 +190,15 @@ two_col_expander_box_widget_init (
   prv->scroll = GTK_SCROLLED_WINDOW (
     gtk_scrolled_window_new ());
   gtk_scrolled_window_set_policy (
-    prv->scroll, GTK_POLICY_NEVER, GTK_POLICY_NEVER);
+    prv->scroll, GTK_POLICY_NEVER,
+    GTK_POLICY_NEVER);
   prv->content = GTK_BOX (gtk_box_new (
     GTK_ORIENTATION_VERTICAL,
     prv->vertical_spacing));
   GtkViewport * viewport =
     GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
-  gtk_viewport_set_scroll_to_focus (viewport, false);
+  gtk_viewport_set_scroll_to_focus (
+    viewport, false);
   gtk_viewport_set_child (
     viewport, GTK_WIDGET (prv->content));
   gtk_scrolled_window_set_child (

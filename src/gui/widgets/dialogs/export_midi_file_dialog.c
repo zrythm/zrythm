@@ -76,7 +76,7 @@ on_response (GtkNativeDialog * native, int response)
           export_full = true;
         }
 
-      bool         lanes_as_separate_tracks = false;
+      bool lanes_as_separate_tracks = false;
       const char * lane_export_type_str =
         gtk_file_chooser_get_choice (
           GTK_FILE_CHOOSER (native),
@@ -145,8 +145,8 @@ export_midi_file_dialog_widget_run (
     GTK_FILE_CHOOSER_NATIVE (
       gtk_file_chooser_native_new (
         _ ("Select MIDI file"), parent,
-        GTK_FILE_CHOOSER_ACTION_SAVE, _ ("_Export"),
-        _ ("_Cancel")));
+        GTK_FILE_CHOOSER_ACTION_SAVE,
+        _ ("_Export"), _ ("_Cancel")));
 
   /* add region content choice */
   StrvBuilder * region_content_ids_builder =
@@ -180,7 +180,8 @@ export_midi_file_dialog_widget_run (
     strv_builder_new ();
   StrvBuilder * midi_format_labels_builder =
     strv_builder_new ();
-  strv_builder_add (midi_format_ids_builder, "zero");
+  strv_builder_add (
+    midi_format_ids_builder, "zero");
   strv_builder_add (
     midi_format_labels_builder, _ ("Format 0"));
   strv_builder_add (midi_format_ids_builder, "one");
@@ -209,14 +210,16 @@ export_midi_file_dialog_widget_run (
     lane_export_type_labels_builder,
     _ ("Part of parent track"));
   strv_builder_add (
-    lane_export_type_ids_builder, "separate-tracks");
+    lane_export_type_ids_builder,
+    "separate-tracks");
   strv_builder_add (
     lane_export_type_labels_builder,
     _ ("Separate tracks"));
-  char ** lane_export_type_ids =
-    strv_builder_end (lane_export_type_ids_builder);
-  char ** lane_export_type_labels = strv_builder_end (
-    lane_export_type_labels_builder);
+  char ** lane_export_type_ids = strv_builder_end (
+    lane_export_type_ids_builder);
+  char ** lane_export_type_labels =
+    strv_builder_end (
+      lane_export_type_labels_builder);
   gtk_file_chooser_add_choice (
     GTK_FILE_CHOOSER (fc_native),
     "lane-export-type", _ ("Export lanes as"),
@@ -243,8 +246,8 @@ export_midi_file_dialog_widget_run (
   g_free (file);
 
   g_signal_connect (
-    fc_native, "response", G_CALLBACK (on_response),
-    NULL);
+    fc_native, "response",
+    G_CALLBACK (on_response), NULL);
 
   g_object_set_data (
     G_OBJECT (fc_native), "sel", (void *) sel);

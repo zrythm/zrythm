@@ -43,9 +43,10 @@ timeline_minimap_selection_snapshot (
   int height =
     gtk_widget_get_allocated_height (widget);
 
-  GskRoundedRect rounded_rect;
-  graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
-    0, PADDING, width, height - PADDING * 2);
+  GskRoundedRect  rounded_rect;
+  graphene_rect_t graphene_rect =
+    GRAPHENE_RECT_INIT (
+      0, PADDING, width, height - PADDING * 2);
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &graphene_rect, 0);
   const float border_width = 2.f;
@@ -106,7 +107,8 @@ on_motion (
       if (
         self->parent->action
         != TIMELINE_MINIMAP_ACTION_MOVING)
-        ui_set_cursor_from_name (widget, "w-resize");
+        ui_set_cursor_from_name (
+          widget, "w-resize");
     }
   else if (x > width - UI_RESIZE_CURSOR_SPACE)
     {
@@ -114,7 +116,8 @@ on_motion (
       if (
         self->parent->action
         != TIMELINE_MINIMAP_ACTION_MOVING)
-        ui_set_cursor_from_name (widget, "e-resize");
+        ui_set_cursor_from_name (
+          widget, "e-resize");
     }
   else
     {
@@ -152,7 +155,8 @@ static void
 timeline_minimap_selection_widget_class_init (
   TimelineMinimapSelectionWidgetClass * klass)
 {
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   wklass->snapshot =
     timeline_minimap_selection_snapshot;
   gtk_widget_class_set_css_name (
@@ -163,7 +167,8 @@ static void
 timeline_minimap_selection_widget_init (
   TimelineMinimapSelectionWidget * self)
 {
-  gtk_widget_set_focusable (GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (
+    GTK_WIDGET (self), true);
 
   GtkEventController * motion_controller =
     gtk_event_controller_motion_new ();

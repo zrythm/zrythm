@@ -199,7 +199,8 @@ automation_tracklist_set_at_index (
       bool increase = at->index > index;
       if (increase)
         {
-          for (int i = at->index - 1; i >= index; i--)
+          for (int i = at->index - 1; i >= index;
+               i--)
             {
               int prev_idx = i;
               int new_idx = i + 1;
@@ -229,7 +230,8 @@ automation_tracklist_set_at_index (
         }
       else
         {
-          for (int i = at->index + 1; i <= index; i++)
+          for (int i = at->index + 1; i <= index;
+               i++)
             {
               int prev_idx = i;
               int new_idx = i - 1;
@@ -273,7 +275,8 @@ automation_tracklist_set_at_index (
        * affected */
       if (clip_editor_region_idx == index)
         {
-          CLIP_EDITOR->region_id.at_idx = prev_index;
+          CLIP_EDITOR->region_id.at_idx =
+            prev_index;
         }
       else if (clip_editor_region_idx == prev_index)
         {
@@ -683,7 +686,8 @@ automation_tracklist_set_caches (
     return;
 
   self->ats_in_record_mode = g_realloc_n (
-    self->ats_in_record_mode, (size_t) self->num_ats,
+    self->ats_in_record_mode,
+    (size_t) self->num_ats,
     sizeof (AutomationTrack *));
   self->num_ats_in_record_mode = 0;
 

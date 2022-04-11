@@ -71,14 +71,16 @@ _test_edit_tracks (
         ins_track->type == TRACK_TYPE_INSTRUMENT);
 
       g_assert_true (
-        ins_track->channel->instrument->instantiated);
+        ins_track->channel->instrument
+          ->instantiated);
       g_assert_true (
         ins_track->channel->instrument->activated);
     }
   else
     {
       g_assert_true (
-        ins_track->channel->inserts[0]->instantiated);
+        ins_track->channel->inserts[0]
+          ->instantiated);
       g_assert_true (
         ins_track->channel->inserts[0]->activated);
     }
@@ -141,8 +143,8 @@ _test_edit_tracks (
         g_assert_true (
           midi_track->channel->has_output);
         g_assert_cmpuint (
-          midi_track->channel->output_name_hash, ==,
-          track_get_name_hash (ins_track));
+          midi_track->channel->output_name_hash,
+          ==, track_get_name_hash (ins_track));
 
         /* undo and re-verify */
         undo_manager_undo (UNDO_MANAGER, NULL);
@@ -320,12 +322,13 @@ _test_edit_tracks (
     case EDIT_TRACK_ACTION_TYPE_PAN:
       {
         float new_val = 0.23f;
-        float val_before =
-          fader_get_amp (ins_track->channel->fader);
+        float val_before = fader_get_amp (
+          ins_track->channel->fader);
         if (type == EDIT_TRACK_ACTION_TYPE_PAN)
           {
-            val_before = channel_get_balance_control (
-              ins_track->channel);
+            val_before =
+              channel_get_balance_control (
+                ins_track->channel);
           }
         GError * err = NULL;
         ua =
@@ -567,7 +570,8 @@ test_edit_midi_direct_out_to_ins (void)
     ins_track, NULL);
 
   Channel * ch = midi_track->channel;
-  Track * direct_out = channel_get_output_track (ch);
+  Track *   direct_out =
+    channel_get_output_track (ch);
   g_assert_true (IS_TRACK (direct_out));
   g_assert_true (direct_out == ins_track);
   g_assert_cmpint (ins_track->num_children, ==, 1);
@@ -635,14 +639,16 @@ test_edit_multi_track_direct_out (void)
 
   Channel * ch = ins_track->channel;
   Channel * ch2 = ins_track2->channel;
-  Track * direct_out = channel_get_output_track (ch);
+  Track *   direct_out =
+    channel_get_output_track (ch);
   Track * direct_out2 =
     channel_get_output_track (ch2);
   g_assert_true (IS_TRACK (direct_out));
   g_assert_true (IS_TRACK (direct_out2));
   g_assert_true (direct_out == audio_group);
   g_assert_true (direct_out2 == audio_group);
-  g_assert_cmpint (audio_group->num_children, ==, 2);
+  g_assert_cmpint (
+    audio_group->num_children, ==, 2);
 
   /* delete the audio group, undo and verify that
    * the ins track output is the audio group */
@@ -797,7 +803,8 @@ main (int argc, char * argv[])
   "/actions/tracklist_selections_edit/"
 
   g_test_add_func (
-    TEST_PREFIX "test rename midi track with events",
+    TEST_PREFIX
+    "test rename midi track with events",
     (GTestFunc) test_rename_midi_track_with_events);
   g_test_add_func (
     TEST_PREFIX "test rename track with send",

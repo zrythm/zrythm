@@ -179,7 +179,8 @@ setup_instrument_dropdown (
             wrapped_object_with_change_signal_new (
               descr,
               WRAPPED_OBJECT_TYPE_PLUGIN_DESCR);
-          g_list_store_append (store, wrapped_descr);
+          g_list_store_append (
+            store, wrapped_descr);
 
           /* set selected instrument */
           if (
@@ -197,7 +198,8 @@ setup_instrument_dropdown (
     }
 
   gtk_drop_down_set_model (
-    self->instrument_dropdown, G_LIST_MODEL (store));
+    self->instrument_dropdown,
+    G_LIST_MODEL (store));
 
   GtkExpression * expr = gtk_cclosure_expression_new (
     G_TYPE_STRING, NULL, 0, NULL,
@@ -266,7 +268,8 @@ static void
 file_auditioner_controls_widget_class_init (
   FileAuditionerControlsWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "file_auditioner_controls.ui");
 

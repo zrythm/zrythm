@@ -65,7 +65,8 @@ add_tracks_to_group_dialog_widget_get_track (
 
       if (i == 0)
         signal_type = cur_track->out_signal_type;
-      else if (cur_track->out_signal_type != signal_type)
+      else if (
+        cur_track->out_signal_type != signal_type)
         {
           g_message ("mismatching signal type");
           return NULL;

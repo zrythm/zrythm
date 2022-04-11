@@ -137,7 +137,8 @@ export_audio (ExportSettings * info)
         info->progress_info.has_error = true;
         sprintf (
           info->progress_info.error_str,
-          _ ("Format %s not supported yet"), format);
+          _ ("Format %s not supported yet"),
+          format);
         g_warning (
           "%s", info->progress_info.error_str);
 
@@ -154,7 +155,8 @@ export_audio (ExportSettings * info)
 #ifdef HAVE_OPUS
   else if (info->format == EXPORT_FORMAT_OGG_OPUS)
     {
-      sfinfo.format = sfinfo.format | SF_FORMAT_OPUS;
+      sfinfo.format =
+        sfinfo.format | SF_FORMAT_OPUS;
     }
 #endif
   else if (info->depth == BIT_DEPTH_16)
@@ -261,8 +263,10 @@ export_audio (ExportSettings * info)
     sndfile, SF_STR_SOFTWARE, PROGRAM_NAME);
   sf_set_string (
     sndfile, SF_STR_ARTIST, info->artist);
-  sf_set_string (sndfile, SF_STR_TITLE, info->title);
-  sf_set_string (sndfile, SF_STR_GENRE, info->genre);
+  sf_set_string (
+    sndfile, SF_STR_TITLE, info->title);
+  sf_set_string (
+    sndfile, SF_STR_GENRE, info->genre);
 
   Position prev_playhead_pos;
   /* position to start at */
@@ -380,7 +384,8 @@ export_audio (ExportSettings * info)
       g_return_val_if_fail (nframes > 0, -1);
 
       /* run process code */
-      engine_process_prepare (AUDIO_ENGINE, nframes);
+      engine_process_prepare (
+        AUDIO_ENGINE, nframes);
       EngineProcessTimeInfo time_nfo = {
         .g_start_frame =
           (unsigned_frame_t) PLAYHEAD->frames,
@@ -438,8 +443,8 @@ export_audio (ExportSettings * info)
 
       /* write the frames for the current
        * cycle */
-      sf_count_t written_frames =
-        sf_writef_float (sndfile, out_ptr, nframes);
+      sf_count_t written_frames = sf_writef_float (
+        sndfile, out_ptr, nframes);
       g_warn_if_fail (written_frames == nframes);
 
       covered_frames += nframes;
@@ -550,7 +555,8 @@ export_midi (ExportSettings * info)
 
       /* common time: 4 crochet beats, per bar */
       int beats_per_bar =
-        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
       midiSongAddSimpleTimeSig (
         mf, 1, beats_per_bar,
         math_round_double_to_signed_32 (
@@ -567,7 +573,8 @@ export_midi (ExportSettings * info)
         {
           Track * track = TRACKLIST->tracks[i];
 
-          if (track_type_has_piano_roll (track->type))
+          if (track_type_has_piano_roll (
+                track->type))
             {
               MidiEvents * events = NULL;
               if (midi_version == 0)
@@ -907,7 +914,8 @@ exporter_create_audio_track_after_bounce (
   g_return_if_fail (!AUDIO_ENGINE->exporting);
 
   SupportedFile * descr =
-    supported_file_new_from_path (settings->file_uri);
+    supported_file_new_from_path (
+      settings->file_uri);
 
   /* find next track */
   Track * last_track = NULL;

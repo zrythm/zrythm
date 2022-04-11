@@ -116,7 +116,8 @@ z_carla_discovery_get_discovery_path (
   strcat (carla_discovery_filename, BIN_SUFFIX);
   char * zrythm_libdir = zrythm_get_dir (
     ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
-  g_debug ("using zrythm_libdir: %s", zrythm_libdir);
+  g_debug (
+    "using zrythm_libdir: %s", zrythm_libdir);
   char * carla_discovery = g_build_filename (
     zrythm_libdir, "carla",
     carla_discovery_filename, NULL);
@@ -217,11 +218,11 @@ z_carla_discovery_parse_plugin_info (
           plugin_info,
           "carla-discovery::audio.outs::(.*)" LINE_SEP,
           1, 0);
-      descr
-        ->num_ctrl_ins = string_get_regex_group_as_int (
-        plugin_info,
-        "carla-discovery::parameters.ins::(.*)" LINE_SEP,
-        1, 0);
+      descr->num_ctrl_ins =
+        string_get_regex_group_as_int (
+          plugin_info,
+          "carla-discovery::parameters.ins::(.*)" LINE_SEP,
+          1, 0);
       descr->num_midi_ins =
         string_get_regex_group_as_int (
           plugin_info,
@@ -292,8 +293,8 @@ z_carla_discovery_parse_plugin_info (
 
       g_free (plugin_info);
 
-      offset_str =
-        strstr (&offset_str[1], discovery_init_txt);
+      offset_str = strstr (
+        &offset_str[1], discovery_init_txt);
     }
 
   g_message (
@@ -387,7 +388,8 @@ z_carla_discovery_create_descriptors_from_file (
       descr->ghash = g_file_hash (file);
       g_object_unref (file);
       descr->min_bridge_mode =
-        plugin_descriptor_get_min_bridge_mode (descr);
+        plugin_descriptor_get_min_bridge_mode (
+          descr);
     }
 
   return descriptors;

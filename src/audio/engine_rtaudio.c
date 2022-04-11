@@ -216,7 +216,8 @@ engine_rtaudio_setup (AudioEngine * self)
    * of devices and get the id of the output device
    * to open */
   char * out_device = g_settings_get_string (
-    S_P_GENERAL_ENGINE, "rtaudio-audio-device-name");
+    S_P_GENERAL_ENGINE,
+    "rtaudio-audio-device-name");
   int out_device_id = -1;
   for (int i = 0; i < dev_count; i++)
     {

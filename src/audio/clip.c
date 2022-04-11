@@ -74,7 +74,8 @@ audio_clip_init_from_file (
 {
   g_return_if_fail (self);
 
-  self->samplerate = (int) AUDIO_ENGINE->sample_rate;
+  self->samplerate =
+    (int) AUDIO_ENGINE->sample_rate;
   g_return_if_fail (self->samplerate > 0);
 
   AudioEncoder * enc =
@@ -88,7 +89,8 @@ audio_clip_init_from_file (
   self->frames = g_realloc (
     self->frames, arr_size * sizeof (float));
   self->num_frames = enc->num_out_frames;
-  dsp_copy (self->frames, enc->out_frames, arr_size);
+  dsp_copy (
+    self->frames, enc->out_frames, arr_size);
   g_free_and_null (self->name);
   char * basename = g_path_get_basename (full_path);
   self->name = io_file_strip_ext (basename);
@@ -112,7 +114,8 @@ audio_clip_init_from_file (
       break;
     default:
       g_debug (
-        "unknown bit depth: %d", enc->nfo.bit_depth);
+        "unknown bit depth: %d",
+        enc->nfo.bit_depth);
       self->bit_depth = BIT_DEPTH_32;
       self->use_flac = false;
     }
@@ -181,7 +184,8 @@ audio_clip_new_from_float_array (
     (size_t) (nframes * channels), sample_t);
   self->num_frames = nframes;
   self->channels = channels;
-  self->samplerate = (int) AUDIO_ENGINE->sample_rate;
+  self->samplerate =
+    (int) AUDIO_ENGINE->sample_rate;
   g_return_val_if_fail (self->samplerate > 0, NULL);
   self->name = g_strdup (name);
   self->bit_depth = bit_depth;
@@ -223,7 +227,8 @@ audio_clip_new_recording (
   self->pool_id = -1;
   self->bpm =
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
-  self->samplerate = (int) AUDIO_ENGINE->sample_rate;
+  self->samplerate =
+    (int) AUDIO_ENGINE->sample_rate;
   self->bit_depth = BIT_DEPTH_32;
   self->use_flac = false;
   g_return_val_if_fail (self->samplerate > 0, NULL);
@@ -254,14 +259,16 @@ audio_clip_get_path_in_pool_from_name (
     PROJECT, PROJECT_PATH_POOL, is_backup);
   if (!file_exists (prj_pool_dir))
     {
-      g_critical ("%s does not exist", prj_pool_dir);
+      g_critical (
+        "%s does not exist", prj_pool_dir);
       return NULL;
     }
   char * without_ext = io_file_strip_ext (name);
   char * basename = g_strdup_printf (
-    "%s.%s", without_ext, use_flac ? "FLAC" : "wav");
-  char * new_path =
-    g_build_filename (prj_pool_dir, basename, NULL);
+    "%s.%s", without_ext,
+    use_flac ? "FLAC" : "wav");
+  char * new_path = g_build_filename (
+    prj_pool_dir, basename, NULL);
   g_free (without_ext);
   g_free (basename);
   g_free (prj_pool_dir);
@@ -298,8 +305,8 @@ audio_clip_write_to_pool (
   bool        parts,
   bool        is_backup)
 {
-  AudioClip * pool_clip =
-    audio_pool_get_clip (AUDIO_POOL, self->pool_id);
+  AudioClip * pool_clip = audio_pool_get_clip (
+    AUDIO_POOL, self->pool_id);
   g_return_if_fail (pool_clip);
   g_return_if_fail (pool_clip == self);
 
@@ -323,8 +330,9 @@ audio_clip_write_to_pool (
   /* skip if file with same hash already exists */
   if (file_exists (new_path) && !parts)
     {
-      char * existing_file_hash = hash_get_from_file (
-        new_path, HASH_ALGORITHM_XXH3_64);
+      char * existing_file_hash =
+        hash_get_from_file (
+          new_path, HASH_ALGORITHM_XXH3_64);
       bool same_hash =
         self->file_hash
         && string_is_equal (
@@ -385,8 +393,9 @@ audio_clip_write_to_pool (
                 "instead");
 
               /* copy */
-              GFile * src_file = g_file_new_for_path (
-                path_in_main_project);
+              GFile * src_file =
+                g_file_new_for_path (
+                  path_in_main_project);
               GFile * dest_file =
                 g_file_new_for_path (new_path);
               GError * err = NULL;
@@ -568,8 +577,8 @@ on_launch_clicked (
   GError * err = NULL;
   GList *  file_list = NULL;
   file_list = g_list_append (file_list, data->file);
-  GAppInfo * app_nfo =
-    gtk_app_chooser_get_app_info (data->app_chooser);
+  GAppInfo * app_nfo = gtk_app_chooser_get_app_info (
+    data->app_chooser);
   bool success = g_app_info_launch (
     app_nfo, file_list, NULL, &err);
   g_list_free (file_list);
@@ -617,13 +626,15 @@ audio_clip_edit_in_ext_program (AudioClip * self)
   GtkWidget * dialog = gtk_dialog_new_with_buttons (
     _ ("Edit in external app"),
     GTK_WINDOW (MAIN_WINDOW),
-    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+    GTK_DIALOG_MODAL
+      | GTK_DIALOG_DESTROY_WITH_PARENT,
     _ ("_OK"), GTK_RESPONSE_ACCEPT, _ ("_Cancel"),
     GTK_RESPONSE_REJECT, NULL);
 
   /* populate content area */
   GtkWidget * content_area =
-    gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+    gtk_dialog_get_content_area (
+      GTK_DIALOG (dialog));
   GtkWidget * main_box =
     gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
   gtk_widget_set_margin_start (main_box, 4);

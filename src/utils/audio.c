@@ -125,7 +125,8 @@ audio_write_raw_file (
 
   bool write_chunk =
     (frames_already_written > 0)
-    && g_file_test (filename, G_FILE_TEST_IS_REGULAR);
+    && g_file_test (
+      filename, G_FILE_TEST_IS_REGULAR);
 
   if (flac && write_chunk)
     {
@@ -271,7 +272,8 @@ audio_file_is_silent (const char * filepath)
   g_return_val_if_fail (
     frames_read == sfinfo.frames, true);
   g_debug (
-    "read %ld frames for %s", frames_read, filepath);
+    "read %ld frames for %s", frames_read,
+    filepath);
 
   bool is_empty =
     audio_frames_empty (data, (size_t) buf_size);

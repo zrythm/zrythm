@@ -66,7 +66,8 @@ monitor_section_widget_refresh (
   snprintf (
     str, 200, _ ("<small>%d muted</small>"),
     num_muted);
-  gtk_label_set_markup (self->muted_tracks_lbl, str);
+  gtk_label_set_markup (
+    self->muted_tracks_lbl, str);
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->muted_tracks_lbl),
     _ ("Currently muted tracks"));
@@ -220,7 +221,8 @@ on_mono_toggled (
   bool active = gtk_toggle_button_get_active (btn);
   fader_set_mono_compat_enabled (
     MONITOR_FADER, active, F_NO_PUBLISH_EVENTS);
-  g_settings_set_boolean (S_MONITOR, "mono", active);
+  g_settings_set_boolean (
+    S_MONITOR, "mono", active);
 }
 
 static void
@@ -241,7 +243,8 @@ on_mute_toggled (
 {
   bool active = gtk_toggle_button_get_active (btn);
   MONITOR_FADER->mute->control = active ? 1.f : 0.f;
-  g_settings_set_boolean (S_MONITOR, "mute", active);
+  g_settings_set_boolean (
+    S_MONITOR, "mute", active);
 }
 
 static void
@@ -249,7 +252,8 @@ on_devices_updated (MonitorSectionWidget * self)
 {
 #ifdef HAVE_JACK
   /* reconnect to devices */
-  engine_jack_reconnect_monitor (AUDIO_ENGINE, true);
+  engine_jack_reconnect_monitor (
+    AUDIO_ENGINE, true);
   engine_jack_reconnect_monitor (
     AUDIO_ENGINE, false);
 #endif
@@ -263,7 +267,8 @@ monitor_section_widget_setup (
   self->control_room = control_room;
 
   KnobWidget * knob = knob_widget_new_simple (
-    fader_get_fader_val, fader_get_default_fader_val,
+    fader_get_fader_val,
+    fader_get_default_fader_val,
     fader_set_fader_val, MONITOR_FADER, 0.f, 1.f,
     78, 0.f);
   knob->hover_str_getter = fader_db_string_getter;
@@ -276,7 +281,8 @@ monitor_section_widget_setup (
 
   /* mute */
   knob = knob_widget_new_simple (
-    fader_get_fader_val, fader_get_default_fader_val,
+    fader_get_fader_val,
+    fader_get_default_fader_val,
     fader_set_fader_val, CONTROL_ROOM->mute_fader,
     0.f, 1.f, 52, 0.f);
   knob->hover_str_getter = fader_db_string_getter;
@@ -289,9 +295,10 @@ monitor_section_widget_setup (
 
   /* listen */
   knob = knob_widget_new_simple (
-    fader_get_fader_val, fader_get_default_fader_val,
-    fader_set_fader_val, CONTROL_ROOM->listen_fader,
-    0.f, 1.f, 52, 0.f);
+    fader_get_fader_val,
+    fader_get_default_fader_val,
+    fader_set_fader_val,
+    CONTROL_ROOM->listen_fader, 0.f, 1.f, 52, 0.f);
   knob->hover_str_getter = fader_db_string_getter;
   self->listen_level = knob_with_name_widget_new (
     NULL, listen_name_getter, NULL, knob,
@@ -302,7 +309,8 @@ monitor_section_widget_setup (
 
   /* dim */
   knob = knob_widget_new_simple (
-    fader_get_fader_val, fader_get_default_fader_val,
+    fader_get_fader_val,
+    fader_get_default_fader_val,
     fader_set_fader_val, CONTROL_ROOM->dim_fader,
     0.f, 1.f, 52, 0.f);
   knob->hover_str_getter = fader_db_string_getter;
@@ -315,20 +323,22 @@ monitor_section_widget_setup (
 
   z_gtk_button_set_icon_name_and_text (
     GTK_BUTTON (self->mono_toggle), "mono",
-    _ ("Mono"), true, GTK_ORIENTATION_HORIZONTAL, 1);
+    _ ("Mono"), true, GTK_ORIENTATION_HORIZONTAL,
+    1);
   gtk_toggle_button_set_active (
     self->mono_toggle,
     fader_get_mono_compat_enabled (MONITOR_FADER));
 
   z_gtk_button_set_icon_name_and_text (
-    GTK_BUTTON (self->dim_toggle), "dim", _ ("Dim"),
-    true, GTK_ORIENTATION_HORIZONTAL, 1);
+    GTK_BUTTON (self->dim_toggle), "dim",
+    _ ("Dim"), true, GTK_ORIENTATION_HORIZONTAL, 1);
   gtk_toggle_button_set_active (
     self->dim_toggle, CONTROL_ROOM->dim_output);
 
   z_gtk_button_set_icon_name_and_text (
     GTK_BUTTON (self->mute_toggle), "mute",
-    _ ("Mute"), true, GTK_ORIENTATION_HORIZONTAL, 1);
+    _ ("Mute"), true, GTK_ORIENTATION_HORIZONTAL,
+    1);
   gtk_toggle_button_set_active (
     self->mute_toggle,
     control_port_is_toggled (MONITOR_FADER->mute));
@@ -339,8 +349,8 @@ monitor_section_widget_setup (
       self->left_outputs =
         active_hardware_mb_widget_new ();
       active_hardware_mb_widget_setup (
-        self->left_outputs, F_NOT_INPUT, F_NOT_MIDI,
-        S_MONITOR, "l-devices");
+        self->left_outputs, F_NOT_INPUT,
+        F_NOT_MIDI, S_MONITOR, "l-devices");
       self->left_outputs->callback =
         (GenericCallback) on_devices_updated;
       self->left_outputs->object = self;
@@ -441,7 +451,8 @@ static void
 monitor_section_widget_class_init (
   MonitorSectionWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "monitor_section.ui");
 

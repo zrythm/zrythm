@@ -204,7 +204,8 @@ plugin_collections_remove (
   bool                serialize)
 {
   bool found = false;
-  for (int i = self->num_collections - 1; i >= 0; i--)
+  for (int i = self->num_collections - 1; i >= 0;
+       i--)
     {
       PluginCollection * collection =
         self->collections[i];

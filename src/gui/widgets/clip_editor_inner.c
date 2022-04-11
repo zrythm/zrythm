@@ -126,7 +126,8 @@ clip_editor_inner_widget_refresh (
 {
   g_message ("refreshing...");
 
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   Track *          track = NULL;
 
@@ -166,7 +167,8 @@ clip_editor_inner_widget_refresh (
         }
       else if (
         visible_w
-        == GTK_WIDGET (self->automation_editor_space))
+        == GTK_WIDGET (
+          self->automation_editor_space))
         {
           automation_editor_space_widget_update_size_group (
             self->automation_editor_space, false);
@@ -204,7 +206,8 @@ clip_editor_inner_widget_refresh (
             GTK_ACTIONABLE (self->toggle_notation),
             NULL);
           gtk_toggle_button_set_active (
-            self->toggle_notation, track->drum_mode);
+            self->toggle_notation,
+            track->drum_mode);
           gtk_actionable_set_action_name (
             GTK_ACTIONABLE (self->toggle_notation),
             "app.toggle-drum-mode");
@@ -239,7 +242,8 @@ clip_editor_inner_widget_refresh (
           automation_editor_space_widget_refresh (
             self->automation_editor_space);
           gtk_widget_set_visible (
-            GTK_WIDGET (self->show_automation_values),
+            GTK_WIDGET (
+              self->show_automation_values),
             true);
           break;
         }
@@ -347,7 +351,8 @@ static void
 clip_editor_inner_widget_class_init (
   ClipEditorInnerWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "clip_editor_inner.ui");
 

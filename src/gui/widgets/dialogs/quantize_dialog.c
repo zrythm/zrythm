@@ -134,8 +134,9 @@ quantize_dialog_widget_new (QuantizeOptions * opts)
     GTK_BOX (self->note_length_box),
     GTK_WIDGET (self->note_length));
   self->note_type = digital_meter_widget_new (
-    DIGITAL_METER_TYPE_NOTE_TYPE, &opts->note_length,
-    &opts->note_type, _ ("note type"));
+    DIGITAL_METER_TYPE_NOTE_TYPE,
+    &opts->note_length, &opts->note_type,
+    _ ("note type"));
   gtk_box_append (
     GTK_BOX (self->note_type_box),
     GTK_WIDGET (self->note_type));
@@ -143,8 +144,8 @@ quantize_dialog_widget_new (QuantizeOptions * opts)
   int w = 100, h = -1;
   self->amount = bar_slider_widget_new (
     quantize_options_get_amount,
-    quantize_options_set_amount, opts, 0, 100, w, h,
-    0, 0, UI_DRAG_MODE_CURSOR, "%");
+    quantize_options_set_amount, opts, 0, 100, w,
+    h, 0, 0, UI_DRAG_MODE_CURSOR, "%");
   gtk_box_append (
     GTK_BOX (self->amount_box),
     GTK_WIDGET (self->amount));
@@ -171,7 +172,8 @@ static void
 quantize_dialog_widget_class_init (
   QuantizeDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "quantize_dialog.ui");
 

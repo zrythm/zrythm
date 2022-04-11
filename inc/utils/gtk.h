@@ -82,7 +82,8 @@
 
 #  define CREATE_SELECT_ALL_MENU_ITEM(action) \
     z_gtk_create_menu_item ( \
-      _ ("Select A_ll"), "edit-select-all", action)
+      _ ("Select A_ll"), "edit-select-all", \
+      action)
 
 #  define CREATE_DUPLICATE_MENU_ITEM(action) \
     z_gtk_create_menu_item ( \
@@ -510,7 +511,8 @@ z_gtk_keyval_is_ctrl (const guint keyval)
 static inline int
 z_gtk_keyval_is_arrow (const guint keyval)
 {
-  return keyval == GDK_KEY_Left || keyval == GDK_KEY_Right
+  return keyval == GDK_KEY_Left
+         || keyval == GDK_KEY_Right
          || keyval == GDK_KEY_Down
          || keyval == GDK_KEY_Up;
 }

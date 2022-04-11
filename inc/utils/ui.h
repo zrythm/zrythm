@@ -60,7 +60,9 @@ typedef struct Port     Port;
 
 #define UI_DELETE_ICON_NAME "z-edit-delete"
 
-static const GdkRGBA UI_COLOR_BLACK = { 0, 0, 0, 1 };
+static const GdkRGBA UI_COLOR_BLACK = {
+  0, 0, 0, 1
+};
 
 typedef enum UiDetail
 {
@@ -164,7 +166,8 @@ typedef struct UiCaches
 #define TARGET_ENTRY_PLUGIN_DESCR "PLUGIN_DESCR"
 
 /** For SupportedFile pointers. */
-#define TARGET_ENTRY_SUPPORTED_FILE "SUPPORTED_FILE"
+#define TARGET_ENTRY_SUPPORTED_FILE \
+  "SUPPORTED_FILE"
 
 /** Plugin ID, used to move/copy plugins. */
 #define TARGET_ENTRY_PLUGIN "PLUGIN"
@@ -216,7 +219,8 @@ typedef struct UiCaches
  * GTK main thread.
  */
 #define ui_show_notification_idle_printf(fmt, ...) \
-  char * text = g_strdup_printf (fmt, __VA_ARGS__); \
+  char * text = \
+    g_strdup_printf (fmt, __VA_ARGS__); \
   g_idle_add ( \
     (GSourceFunc) ui_show_notification_idle_func, \
     (void *) text)
@@ -356,7 +360,8 @@ static const char * ui_overlay_strings[] = {
 };
 
 static inline const char *
-ui_get_overlay_action_string (UiOverlayAction action)
+ui_get_overlay_action_string (
+  UiOverlayAction action)
 {
   return ui_overlay_strings[action];
 }
@@ -407,7 +412,8 @@ ui_set_pointer_cursor (GtkWidget * widget);
 
 #define ui_set_hand_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "transform-move", 10, 10);
+    GTK_WIDGET (widget), "transform-move", 10, \
+    10);
 
 #define ui_set_left_resize_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
@@ -416,8 +422,8 @@ ui_set_pointer_cursor (GtkWidget * widget);
 
 #define ui_set_left_stretch_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "object-stretch-left", 0, \
-    10);
+    GTK_WIDGET (widget), "object-stretch-left", \
+    0, 10);
 
 #define ui_set_left_resize_loop_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
@@ -601,7 +607,9 @@ ui_px_to_pos_timeline (
  *   padding.
  */
 signed_frame_t
-ui_px_to_frames_timeline (double px, int has_padding);
+ui_px_to_frames_timeline (
+  double px,
+  int    has_padding);
 
 /**
  * Converts from pixels to frames.
@@ -691,7 +699,8 @@ ui_setup_language_dropdown (GtkDropDown * dropdown);
  * Sets up an audio backends combo box.
  */
 void
-ui_setup_audio_backends_combo_box (GtkComboBox * cb);
+ui_setup_audio_backends_combo_box (
+  GtkComboBox * cb);
 
 /**
  * Sets up a MIDI backends combo box.
@@ -762,7 +771,9 @@ ui_get_locale_not_available_string (
  * @param dest The destination color to write to.
  */
 void
-ui_get_contrast_color (GdkRGBA * src, GdkRGBA * dest);
+ui_get_contrast_color (
+  GdkRGBA * src,
+  GdkRGBA * dest);
 
 /**
  * Returns the color in-between two colors.

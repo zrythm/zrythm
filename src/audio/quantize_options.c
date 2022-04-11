@@ -63,7 +63,8 @@ quantize_options_update_quantize_points (
         }
 
       position_set_to_pos (
-        &self->q_points[self->num_q_points++], &tmp);
+        &self->q_points[self->num_q_points++],
+        &tmp);
     }
 }
 
@@ -144,7 +145,9 @@ quantize_options_stringize (
 }
 
 static Position *
-get_prev_point (QuantizeOptions * self, Position * pos)
+get_prev_point (
+  QuantizeOptions * self,
+  Position *        pos)
 {
   g_return_val_if_fail (
     pos->frames >= 0 && pos->ticks >= 0, NULL);
@@ -159,7 +162,9 @@ get_prev_point (QuantizeOptions * self, Position * pos)
 }
 
 static Position *
-get_next_point (QuantizeOptions * self, Position * pos)
+get_next_point (
+  QuantizeOptions * self,
+  Position *        pos)
 {
   g_return_val_if_fail (
     pos->frames >= 0 && pos->ticks >= 0, NULL);
@@ -189,9 +194,12 @@ quantize_options_quantize_position (
   QuantizeOptions * self,
   Position *        pos)
 {
-  Position * prev_point = get_prev_point (self, pos);
-  Position * next_point = get_next_point (self, pos);
-  g_return_val_if_fail (prev_point && next_point, 0);
+  Position * prev_point =
+    get_prev_point (self, pos);
+  Position * next_point =
+    get_next_point (self, pos);
+  g_return_val_if_fail (
+    prev_point && next_point, 0);
 
   const double upper = self->rand_ticks;
   const double lower = -self->rand_ticks;

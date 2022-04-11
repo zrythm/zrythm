@@ -40,7 +40,8 @@ editor_selection_info_widget_refresh (
     arranger_selections_get_first_object (
       (ArrangerSelections *) mas, 0);
 
-  selection_info_widget_clear (self->selection_info);
+  selection_info_widget_clear (
+    self->selection_info);
   gtk_stack_set_visible_child (
     GTK_STACK (self),
     GTK_WIDGET (self->no_selection_label));
@@ -55,7 +56,8 @@ editor_selection_info_widget_refresh (
       digital_meter_set_draw_line (dm, 1);
 
       selection_info_widget_add_info (
-        self->selection_info, NULL, GTK_WIDGET (dm));
+        self->selection_info, NULL,
+        GTK_WIDGET (dm));
       gtk_stack_set_visible_child (
         GTK_STACK (self),
         GTK_WIDGET (self->selection_info));
@@ -66,7 +68,8 @@ static void
 editor_selection_info_widget_class_init (
   EditorSelectionInfoWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "piano-roll-selection-info");
 }
@@ -79,8 +82,8 @@ editor_selection_info_widget_init (
     gtk_label_new (_ ("No object selected")));
   gtk_widget_set_visible (
     GTK_WIDGET (self->no_selection_label), 1);
-  self->selection_info =
-    g_object_new (SELECTION_INFO_WIDGET_TYPE, NULL);
+  self->selection_info = g_object_new (
+    SELECTION_INFO_WIDGET_TYPE, NULL);
   gtk_widget_set_visible (
     GTK_WIDGET (self->selection_info), 1);
 

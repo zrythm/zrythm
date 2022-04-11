@@ -58,7 +58,8 @@ recreate_icon_texture (TrackCanvasWidget * self)
 {
   object_free_w_func_and_null (
     g_object_unref, self->track_icon);
-  self->track_icon = z_gdk_texture_new_from_icon_name (
+  self
+    ->track_icon = z_gdk_texture_new_from_icon_name (
     self->parent->track->icon_name,
     icon_texture_size, icon_texture_size, 1);
   object_free_w_func_and_null (
@@ -75,7 +76,8 @@ recreate_pango_layouts (
 {
   if (PANGO_IS_LAYOUT (self->layout))
     g_object_unref (self->layout);
-  if (PANGO_IS_LAYOUT (self->automation_value_layout))
+  if (PANGO_IS_LAYOUT (
+        self->automation_value_layout))
     g_object_unref (self->automation_value_layout);
 
   GtkWidget * widget = GTK_WIDGET (self);
@@ -293,7 +295,8 @@ draw_buttons (
         }
       else if (is_solo && track_get_soloed (track))
         {
-          state = CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (
         is_solo && track_get_implied_soloed (track))
@@ -303,65 +306,77 @@ draw_buttons (
         }
       else if (
         TRACK_CB_ICON_IS (SHOW_UI)
-        && instrument_track_is_plugin_visible (track))
+        && instrument_track_is_plugin_visible (
+          track))
         {
-          state = CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (
         TRACK_CB_ICON_IS (MUTE)
         && track_get_muted (track))
         {
-          state = CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (
         TRACK_CB_ICON_IS (LISTEN)
         && track_get_listened (track))
         {
-          state = CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (
         TRACK_CB_ICON_IS (MONITOR_AUDIO)
         && track_get_monitor_audio (track))
         {
-          state = CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (
         TRACK_CB_ICON_IS (FREEZE) && track->frozen)
         {
-          state = CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (
         TRACK_CB_ICON_IS (MONO_COMPAT)
         && channel_get_mono_compat_enabled (
           track->channel))
         {
-          state = CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (
         TRACK_CB_ICON_IS (RECORD)
         && track_get_recording (track))
         {
-          state = CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (
         TRACK_CB_ICON_IS (SHOW_TRACK_LANES)
         && track->lanes_visible)
         {
-          state = CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (
         TRACK_CB_ICON_IS (SHOW_AUTOMATION_LANES)
         && track->automation_visible)
         {
-          state = CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (TRACK_CB_ICON_IS (FOLD_OPEN))
         {
-          state = CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (hovered_cb == cb)
         {
-          state = CUSTOM_BUTTON_WIDGET_STATE_HOVERED;
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_HOVERED;
         }
 
       custom_button_widget_draw (
@@ -407,7 +422,8 @@ draw_lanes (
           total_height
             + TRACK_BUTTON_PADDING_FROM_EDGE));
       PangoLayout * layout = self->layout;
-      pango_layout_set_text (layout, lane->name, -1);
+      pango_layout_set_text (
+        layout, lane->name, -1);
       gtk_snapshot_append_layout (
         snapshot, layout,
         &Z_GDK_RGBA_INIT (1, 1, 1, 1));
@@ -417,8 +433,10 @@ draw_lanes (
       CustomButtonWidget * cb;
       if (lane->num_buttons == 0)
         {
-          lane->buttons[0] = custom_button_widget_new (
-            TRACK_ICON_NAME_SOLO, TRACK_BUTTON_SIZE);
+          lane
+            ->buttons[0] = custom_button_widget_new (
+            TRACK_ICON_NAME_SOLO,
+            TRACK_BUTTON_SIZE);
           cb = lane->buttons[0];
           cb->owner_type =
             CUSTOM_BUTTON_WIDGET_OWNER_LANE;
@@ -426,8 +444,10 @@ draw_lanes (
           cb->toggled_color =
             UI_COLORS->solo_checked;
           cb->held_color = UI_COLORS->solo_active;
-          lane->buttons[1] = custom_button_widget_new (
-            TRACK_ICON_NAME_MUTE, TRACK_BUTTON_SIZE);
+          lane
+            ->buttons[1] = custom_button_widget_new (
+            TRACK_ICON_NAME_MUTE,
+            TRACK_BUTTON_SIZE);
           cb = lane->buttons[1];
           cb->owner_type =
             CUSTOM_BUTTON_WIDGET_OWNER_LANE;
@@ -461,12 +481,14 @@ draw_lanes (
               state =
                 CUSTOM_BUTTON_WIDGET_STATE_ACTIVE;
             }
-          else if (TRACK_CB_ICON_IS (SOLO) && lane->solo)
+          else if (
+            TRACK_CB_ICON_IS (SOLO) && lane->solo)
             {
               state =
                 CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
             }
-          else if (TRACK_CB_ICON_IS (MUTE) && lane->mute)
+          else if (
+            TRACK_CB_ICON_IS (MUTE) && lane->mute)
             {
               state =
                 CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
@@ -533,10 +555,10 @@ draw_automation (
       CustomButtonWidget * cb;
       if (at->num_top_left_buttons == 0)
         {
-          at->top_left_buttons[0] =
-            custom_button_widget_new (
-              TRACK_ICON_NAME_SHOW_AUTOMATION_LANES,
-              TRACK_BUTTON_SIZE);
+          at->top_left_buttons
+            [0] = custom_button_widget_new (
+            TRACK_ICON_NAME_SHOW_AUTOMATION_LANES,
+            TRACK_BUTTON_SIZE);
           cb = at->top_left_buttons[0];
           cb->owner_type =
             CUSTOM_BUTTON_WIDGET_OWNER_AT;
@@ -567,8 +589,9 @@ draw_automation (
       if (at->num_bot_left_buttons == 0) { }
       if (!at->am_widget)
         {
-          at->am_widget = automation_mode_widget_new (
-            TRACK_BUTTON_SIZE, self->layout, at);
+          at->am_widget =
+            automation_mode_widget_new (
+              TRACK_BUTTON_SIZE, self->layout, at);
         }
       if (at->num_bot_right_buttons == 0)
         {
@@ -579,9 +602,10 @@ draw_automation (
           at->bot_right_buttons[0]->owner_type =
             CUSTOM_BUTTON_WIDGET_OWNER_AT;
           at->bot_right_buttons[0]->owner = at;
-          at->bot_right_buttons
-            [1] = custom_button_widget_new (
-            TRACK_ICON_NAME_PLUS, TRACK_BUTTON_SIZE);
+          at->bot_right_buttons[1] =
+            custom_button_widget_new (
+              TRACK_ICON_NAME_PLUS,
+              TRACK_BUTTON_SIZE);
           at->bot_right_buttons[1]->owner_type =
             CUSTOM_BUTTON_WIDGET_OWNER_AT;
           at->bot_right_buttons[1]->owner = at;
@@ -667,8 +691,8 @@ draw_automation (
       gtk_snapshot_restore (snapshot);
 
       /* draw top right buttons */
-      for (int j = 0; j < at->num_top_right_buttons;
-           j++)
+      for (int j = 0;
+           j < at->num_top_right_buttons; j++)
         {
           cb = at->top_right_buttons[j];
 
@@ -892,7 +916,8 @@ static void
 track_canvas_widget_class_init (
   TrackCanvasWidgetClass * klass)
 {
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   wklass->snapshot = track_canvas_snapshot;
   gtk_widget_class_set_css_name (
     wklass, "track-canvas");

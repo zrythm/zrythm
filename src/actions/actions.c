@@ -152,8 +152,9 @@ activate_manual (
   GVariant *      variant,
   gpointer        user_data)
 {
-  LocalizationLanguage lang = (LocalizationLanguage)
-    g_settings_get_enum (S_P_UI_GENERAL, "language");
+  LocalizationLanguage lang =
+    (LocalizationLanguage) g_settings_get_enum (
+      S_P_UI_GENERAL, "language");
   const char * lang_code =
     localization_get_string_code (lang);
 #ifdef MANUAL_PATH
@@ -311,7 +312,8 @@ activate_scripting_interface (
 #else
   GtkWidget * dialog = gtk_message_dialog_new_with_markup (
     GTK_WINDOW (MAIN_WINDOW),
-    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+    GTK_DIALOG_MODAL
+      | GTK_DIALOG_DESTROY_WITH_PARENT,
     GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
     _ ("Scripting extensibility with "
        "<a href=\"%s\">GNU Guile</a> "
@@ -620,7 +622,8 @@ activate_new (
   GtkWidget * dialog = gtk_dialog_new_with_buttons (
     _ ("Create new project"),
     GTK_WINDOW (MAIN_WINDOW),
-    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+    GTK_DIALOG_MODAL
+      | GTK_DIALOG_DESTROY_WITH_PARENT,
     _ ("Yes"), GTK_RESPONSE_ACCEPT, _ ("No"),
     GTK_RESPONSE_REJECT, NULL);
   GtkWidget * label = gtk_label_new (_ (
@@ -819,7 +822,8 @@ activate_export_graph (
 
   g_signal_connect (
     G_OBJECT (label), "activate-link",
-    G_CALLBACK (z_gtk_activate_dir_link_func), NULL);
+    G_CALLBACK (z_gtk_activate_dir_link_func),
+    NULL);
 
   gtk_box_append (GTK_BOX (content_area), label);
 
@@ -878,7 +882,8 @@ DEFINE_SIMPLE (activate_undo)
   int ret = undo_manager_undo (UNDO_MANAGER, &err);
   if (ret != 0)
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to undo"));
+      HANDLE_ERROR (
+        err, "%s", _ ("Failed to undo"));
     }
 }
 
@@ -935,7 +940,8 @@ DEFINE_SIMPLE (activate_redo)
   int ret = undo_manager_redo (UNDO_MANAGER, &err);
   if (ret != 0)
     {
-      HANDLE_ERROR (err, "%s", _ ("Failed to redo"));
+      HANDLE_ERROR (
+        err, "%s", _ ("Failed to redo"));
     }
 
   EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE, NULL);
@@ -980,7 +986,8 @@ activate_cut (
       break;
     case SELECTION_TYPE_INSERT:
     case SELECTION_TYPE_MIDI_FX:
-      if (mixer_selections_has_any (MIXER_SELECTIONS))
+      if (mixer_selections_has_any (
+            MIXER_SELECTIONS))
         {
           GError * err = NULL;
           bool     ret =
@@ -1040,7 +1047,8 @@ activate_copy (
       break;
     case SELECTION_TYPE_INSERT:
     case SELECTION_TYPE_MIDI_FX:
-      if (mixer_selections_has_any (MIXER_SELECTIONS))
+      if (mixer_selections_has_any (
+            MIXER_SELECTIONS))
         {
           Clipboard * clipboard =
             clipboard_new_for_mixer_selections (
@@ -1242,7 +1250,8 @@ activate_duplicate (
   if (sel && arranger_selections_has_any (sel))
     {
       double length =
-        arranger_selections_get_length_in_ticks (sel);
+        arranger_selections_get_length_in_ticks (
+          sel);
 
       GError * err = NULL;
       bool     ret =
@@ -1292,7 +1301,8 @@ activate_clear_selection (
           IS_TRACK_AND_NONNULL (track));
         if (track_type_has_channel (track->type))
           {
-            Channel * ch = track_get_channel (track);
+            Channel * ch =
+              track_get_channel (track);
             PluginSlotType slot_type =
               PLUGIN_SLOT_INSERT;
             if (
@@ -1345,7 +1355,8 @@ activate_select_all (
           IS_TRACK_AND_NONNULL (track));
         if (track_type_has_channel (track->type))
           {
-            Channel * ch = track_get_channel (track);
+            Channel * ch =
+              track_get_channel (track);
             PluginSlotType slot_type =
               PLUGIN_SLOT_INSERT;
             if (
@@ -1536,7 +1547,8 @@ activate_snap_to_grid (
           if (!ret)
             {
               HANDLE_ERROR (
-                err, "%s", _ ("Failed to quantize"));
+                err, "%s",
+                _ ("Failed to quantize"));
             }
         }
     }
@@ -1708,7 +1720,8 @@ DEFINE_SIMPLE (activate_duplicate_selected_tracks)
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _ ("Failed to duplicate tracks"));
+        err, "%s",
+        _ ("Failed to duplicate tracks"));
     }
 }
 
@@ -1867,15 +1880,17 @@ DEFINE_SIMPLE (activate_pin_selected_tracks)
     }
   else
     {
-      ret = tracklist_selections_action_perform_unpin (
-        TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
-        &err);
+      ret =
+        tracklist_selections_action_perform_unpin (
+          TRACKLIST_SELECTIONS,
+          PORT_CONNECTIONS_MGR, &err);
     }
 
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _ ("Failed to pin/unpin tracks"));
+        err, "%s",
+        _ ("Failed to pin/unpin tracks"));
     }
 }
 
@@ -2072,7 +2087,8 @@ do_quantize (const char * variant, bool quick)
           if (!ret)
             {
               HANDLE_ERROR (
-                err, "%s", _ ("Failed to quantize"));
+                err, "%s",
+                _ ("Failed to quantize"));
             }
         }
       else
@@ -2107,7 +2123,8 @@ do_quantize (const char * variant, bool quick)
           if (!ret)
             {
               HANDLE_ERROR (
-                err, "%s", _ ("Failed to quantize"));
+                err, "%s",
+                _ ("Failed to quantize"));
             }
         }
       else
@@ -2250,7 +2267,8 @@ DEFINE_SIMPLE (activate_merge_selection)
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _ ("Failed to merge selections"));
+        err, "%s",
+        _ ("Failed to merge selections"));
     }
 }
 
@@ -2393,13 +2411,15 @@ DEFINE_SIMPLE (
   g_simple_action_set_state (action, variant);
 
   g_settings_set_boolean (
-    S_UI, "timeline-playhead-scroll-edges", enabled);
+    S_UI, "timeline-playhead-scroll-edges",
+    enabled);
 
   EVENTS_PUSH (
     ET_PLAYHEAD_SCROLL_MODE_CHANGED, NULL);
 }
 
-DEFINE_SIMPLE (change_state_timeline_playhead_follow)
+DEFINE_SIMPLE (
+  change_state_timeline_playhead_follow)
 {
   int enabled = g_variant_get_boolean (variant);
 
@@ -2577,7 +2597,8 @@ DEFINE_SIMPLE (activate_editor_function)
             do_midi_func (
               MIDI_FUNCTION_FLIP_HORIZONTAL);
           }
-        else if (string_is_equal (str, "flip-vertical"))
+        else if (string_is_equal (
+                   str, "flip-vertical"))
           {
             do_midi_func (
               MIDI_FUNCTION_FLIP_VERTICAL);
@@ -2617,7 +2638,8 @@ DEFINE_SIMPLE (activate_editor_function)
             do_automation_func (
               AUTOMATION_FUNCTION_FLIP_HORIZONTAL);
           }
-        else if (string_is_equal (str, "flip-vertical"))
+        else if (string_is_equal (
+                   str, "flip-vertical"))
           {
             do_automation_func (
               AUTOMATION_FUNCTION_FLIP_VERTICAL);
@@ -2729,7 +2751,9 @@ DEFINE_SIMPLE (activate_rename_arranger_object)
     {
       ArrangerSelections * sel =
         arranger_widget_get_selections (MW_TIMELINE);
-      if (arranger_selections_get_num_objects (sel) == 1)
+      if (
+        arranger_selections_get_num_objects (sel)
+        == 1)
         {
           ArrangerObject * obj =
             arranger_selections_get_first_object (
@@ -2756,7 +2780,8 @@ DEFINE_SIMPLE (activate_rename_arranger_object)
         }
     }
   else if (
-    PROJECT->last_selection == SELECTION_TYPE_EDITOR)
+    PROJECT->last_selection
+    == SELECTION_TYPE_EDITOR)
     {
       /* nothing can be renamed yet */
     }
@@ -2888,7 +2913,8 @@ DEFINE_SIMPLE (activate_detect_bpm)
     }
   char * str = g_string_free (gstr, false);
   ui_show_message_printf (
-    MAIN_WINDOW, GTK_MESSAGE_INFO, false, "%s", str);
+    MAIN_WINDOW, GTK_MESSAGE_INFO, false, "%s",
+    str);
   g_free (str);
 }
 
@@ -2897,7 +2923,8 @@ DEFINE_SIMPLE (activate_timeline_function)
   AudioFunctionType type = (AudioFunctionType)
     g_variant_get_int32 (variant);
 
-  for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
+  for (int i = 0; i < TL_SELECTIONS->num_regions;
+       i++)
     {
       ZRegion * r = TL_SELECTIONS->regions[i];
       AudioSelections * sel = (AudioSelections *)
@@ -3043,8 +3070,8 @@ DEFINE_SIMPLE (activate_set_curve_algorithm)
 
   /* clone the selections before the change */
   ArrangerSelections * sel_before =
-    arranger_selections_clone (
-      (ArrangerSelections *) AUTOMATION_SELECTIONS);
+    arranger_selections_clone ((
+      ArrangerSelections *) AUTOMATION_SELECTIONS);
 
   /* change */
   ap->curve_opts.algo = curve_algo;
@@ -3054,8 +3081,8 @@ DEFINE_SIMPLE (activate_set_curve_algorithm)
   bool ret = arranger_selections_action_perform_edit (
     sel_before,
     (ArrangerSelections *) AUTOMATION_SELECTIONS,
-    ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, true,
-    &err);
+    ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
+    true, &err);
   if (!ret)
     {
       HANDLE_ERROR (
@@ -3071,7 +3098,7 @@ handle_region_fade_algo_preset (
   const char * pset_id,
   bool         fade_in)
 {
-  GPtrArray *       arr = curve_get_fade_presets ();
+  GPtrArray * arr = curve_get_fade_presets ();
   CurveFadePreset * pset = NULL;
   for (size_t i = 0; i < arr->len; i++)
     {
@@ -3112,7 +3139,8 @@ handle_region_fade_algo_preset (
 
   GError * err = NULL;
   bool ret = arranger_selections_action_perform_edit (
-    sel_before, (ArrangerSelections *) TL_SELECTIONS,
+    sel_before,
+    (ArrangerSelections *) TL_SELECTIONS,
     ARRANGER_SELECTIONS_ACTION_EDIT_FADES, true,
     &err);
   if (!ret)
@@ -3217,7 +3245,8 @@ DEFINE_SIMPLE (activate_load_chord_preset)
     CHORD_EDITOR, pset, true);
 }
 
-DEFINE_SIMPLE (activate_load_chord_preset_from_scale)
+DEFINE_SIMPLE (
+  activate_load_chord_preset_from_scale)
 {
   g_debug ("load chord preset from scale");
   gsize        size;
@@ -3284,7 +3313,8 @@ DEFINE_SIMPLE (activate_add_chord_preset_pack)
   StringEntryDialogWidget * dialog =
     string_entry_dialog_widget_new (
       _ ("Preset Pack Name"), pack,
-      (GenericStringGetter) chord_preset_pack_get_name,
+      (GenericStringGetter)
+        chord_preset_pack_get_name,
       (GenericStringSetter)
         chord_preset_pack_set_name);
   g_signal_connect_after (
@@ -3305,7 +3335,8 @@ DEFINE_SIMPLE (activate_delete_chord_preset_pack)
 
   GtkWidget * dialog = gtk_message_dialog_new (
     GTK_WINDOW (MAIN_WINDOW),
-    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+    GTK_DIALOG_MODAL
+      | GTK_DIALOG_DESTROY_WITH_PARENT,
     GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s",
     _ ("Are you sure you want to remove this "
        "chord preset pack?"));
@@ -3330,7 +3361,8 @@ DEFINE_SIMPLE (activate_rename_chord_preset_pack)
   StringEntryDialogWidget * dialog =
     string_entry_dialog_widget_new (
       _ ("Preset Pack Name"), pack,
-      (GenericStringGetter) chord_preset_pack_get_name,
+      (GenericStringGetter)
+        chord_preset_pack_get_name,
       (GenericStringSetter)
         chord_preset_pack_set_name);
   gtk_window_present (GTK_WINDOW (dialog));
@@ -3347,7 +3379,8 @@ DEFINE_SIMPLE (activate_delete_chord_preset)
 
   GtkWidget * dialog = gtk_message_dialog_new (
     GTK_WINDOW (MAIN_WINDOW),
-    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+    GTK_DIALOG_MODAL
+      | GTK_DIALOG_DESTROY_WITH_PARENT,
     GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s",
     _ ("Are you sure you want to remove this "
        "chord preset pack?"));
@@ -3511,8 +3544,8 @@ DEFINE_SIMPLE (activate_reset_control)
   g_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   GError * err = NULL;
-  bool     ret = port_action_perform_reset_control (
-        &port->id, &err);
+  bool ret = port_action_perform_reset_control (
+    &port->id, &err);
   if (!ret)
     {
       HANDLE_ERROR (
@@ -3564,7 +3597,8 @@ DEFINE_SIMPLE (
   file_manager_add_location_and_save (
     FILE_MANAGER, sfile->abs_path);
 
-  EVENTS_PUSH (ET_FILE_BROWSER_BOOKMARK_ADDED, NULL);
+  EVENTS_PUSH (
+    ET_FILE_BROWSER_BOOKMARK_ADDED, NULL);
 }
 
 DEFINE_SIMPLE (
@@ -3584,7 +3618,8 @@ DEFINE_SIMPLE (
 
   GtkWidget * dialog = gtk_message_dialog_new (
     GTK_WINDOW (MAIN_WINDOW),
-    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+    GTK_DIALOG_MODAL
+      | GTK_DIALOG_DESTROY_WITH_PARENT,
     GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s",
     _ ("Are you sure you want to remove this "
        "bookmark?"));
@@ -3782,8 +3817,8 @@ on_plugin_collection_add_response (
         {
           g_debug ("accept collection");
           plugin_collections_add (
-            PLUGIN_MANAGER->collections, collection,
-            F_SERIALIZE);
+            PLUGIN_MANAGER->collections,
+            collection, F_SERIALIZE);
           plugin_browser_widget_refresh_collections (
             MW_PLUGIN_BROWSER);
         }
@@ -3805,7 +3840,8 @@ DEFINE_SIMPLE (activate_plugin_collection_add)
   StringEntryDialogWidget * dialog =
     string_entry_dialog_widget_new (
       _ ("Collection name"), collection,
-      (GenericStringGetter) plugin_collection_get_name,
+      (GenericStringGetter)
+        plugin_collection_get_name,
       (GenericStringSetter)
         plugin_collection_set_name);
   g_signal_connect_after (
@@ -3835,12 +3871,14 @@ DEFINE_SIMPLE (activate_plugin_collection_rename)
   StringEntryDialogWidget * dialog =
     string_entry_dialog_widget_new (
       _ ("Collection name"), collection,
-      (GenericStringGetter) plugin_collection_get_name,
+      (GenericStringGetter)
+        plugin_collection_get_name,
       (GenericStringSetter)
         plugin_collection_set_name);
   g_signal_connect_after (
     G_OBJECT (dialog), "response",
-    G_CALLBACK (on_plugin_collection_rename_response),
+    G_CALLBACK (
+      on_plugin_collection_rename_response),
     collection);
   gtk_window_present (GTK_WINDOW (dialog));
 }
@@ -3909,14 +3947,16 @@ DEFINE_SIMPLE (activate_track_set_midi_channel)
     }
 }
 
-DEFINE_SIMPLE (activate_quick_bounce_selected_tracks)
+DEFINE_SIMPLE (
+  activate_quick_bounce_selected_tracks)
 {
   Track * track = TRACKLIST_SELECTIONS->tracks[0];
 
   ExportSettings settings;
   settings.mode = EXPORT_MODE_TRACKS;
   export_settings_set_bounce_defaults (
-    &settings, EXPORT_FORMAT_WAV, NULL, track->name);
+    &settings, EXPORT_FORMAT_WAV, NULL,
+    track->name);
   tracklist_selections_mark_for_bounce (
     TRACKLIST_SELECTIONS,
     settings.bounce_with_parents, F_NO_MARK_MASTER);
@@ -3994,7 +4034,8 @@ handle_direct_out_change (
   for (int i = 0; i < sel_before->num_tracks; i++)
     {
       Track * cur_track =
-        TRACKLIST->tracks[sel_before->tracks[i]->pos];
+        TRACKLIST
+          ->tracks[sel_before->tracks[i]->pos];
       if (!track_type_has_channel (cur_track->type))
         return;
 
@@ -4007,7 +4048,8 @@ handle_direct_out_change (
         }
 
       Channel * ch = track_get_channel (cur_track);
-      g_return_if_fail (IS_CHANNEL_AND_NONNULL (ch));
+      g_return_if_fail (
+        IS_CHANNEL_AND_NONNULL (ch));
       if (channel_get_output_track (ch) != direct_out)
         {
           need_change = true;
@@ -4026,7 +4068,8 @@ handle_direct_out_change (
       /* reset the selections */
       tracklist_selections_clear (
         TRACKLIST_SELECTIONS);
-      for (int i = 0; i < sel_before->num_tracks; i++)
+      for (int i = 0; i < sel_before->num_tracks;
+           i++)
         {
           Track * cur_track =
             TRACKLIST
@@ -4063,7 +4106,8 @@ handle_direct_out_change (
 DEFINE_SIMPLE (
   activate_selected_tracks_direct_out_to)
 {
-  int direct_out_pos = g_variant_get_int32 (variant);
+  int direct_out_pos =
+    g_variant_get_int32 (variant);
   handle_direct_out_change (direct_out_pos, false);
 }
 

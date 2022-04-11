@@ -66,12 +66,13 @@ typedef struct Project_v1
   ChordSelections_v1        chord_selections;
   TimelineSelections_v1     timeline_selections;
   MidiArrangerSelections_v1 midi_arranger_selections;
-  TracklistSelections_v1 *  tracklist_selections;
-  MixerSelections_v1        mixer_selections;
-  RegionLinkGroupManager_v1 region_link_group_manager;
-  AudioEngine_v1 *          audio_engine;
-  MidiMappings_v1 *         midi_mappings;
-  SelectionType_v1          last_selection;
+  TracklistSelections_v1 * tracklist_selections;
+  MixerSelections_v1       mixer_selections;
+  RegionLinkGroupManager_v1
+                    region_link_group_manager;
+  AudioEngine_v1 *  audio_engine;
+  MidiMappings_v1 * midi_mappings;
+  SelectionType_v1  last_selection;
 } Project_v1;
 
 static const cyaml_schema_field_t project_fields_schema_v1[] = {

@@ -565,7 +565,8 @@ tracklist_activate_all_plugins (
  * engine.
  */
 void
-tracklist_expose_ports_to_backend (Tracklist * self);
+tracklist_expose_ports_to_backend (
+  Tracklist * self);
 
 /**
  * Marks or unmarks all tracks for bounce.

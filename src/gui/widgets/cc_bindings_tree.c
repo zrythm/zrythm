@@ -261,8 +261,8 @@ cc_bindings_tree_widget_class_init (
   CcBindingsTreeWidgetClass * klass)
 {
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
-  oklass->finalize =
-    (GObjectFinalizeFunc) cc_bindings_tree_finalize;
+  oklass->finalize = (GObjectFinalizeFunc)
+    cc_bindings_tree_finalize;
 }
 
 static void

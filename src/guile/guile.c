@@ -64,9 +64,11 @@ guile_get_script_language_canonical_str (
 }
 
 GuileScriptLanguage
-guile_get_script_language_from_str (const char * str)
+guile_get_script_language_from_str (
+  const char * str)
 {
-  for (int i = 0; i < NUM_GUILE_SCRIPT_LANGUAGES; i++)
+  for (int i = 0; i < NUM_GUILE_SCRIPT_LANGUAGES;
+       i++)
     {
       if (string_is_equal (
             guile_lang_strings[i], str))
@@ -189,7 +191,7 @@ guile_mode_func (void * data)
     &captured_stack, preunwind_proc,
     &captured_stack);
 
-  SCM    str_scm = scm_get_output_string (out_port);
+  SCM str_scm = scm_get_output_string (out_port);
   char * str = scm_to_locale_string (str_scm);
   str_scm = scm_get_output_string (error_out_port);
   char * err_str = scm_to_locale_string (str_scm);

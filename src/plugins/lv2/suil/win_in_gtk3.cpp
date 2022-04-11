@@ -293,8 +293,10 @@ suil_wrapper_new_woe (
 
   gtk_container_add (
     GTK_CONTAINER (parent), GTK_WIDGET (wrap));
-  gtk_widget_set_can_focus (GTK_WIDGET (wrap), TRUE);
-  gtk_widget_set_sensitive (GTK_WIDGET (wrap), TRUE);
+  gtk_widget_set_can_focus (
+    GTK_WIDGET (wrap), TRUE);
+  gtk_widget_set_sensitive (
+    GTK_WIDGET (wrap), TRUE);
   gtk_widget_realize (GTK_WIDGET (wrap));
 
   GdkWindow * window =
@@ -338,8 +340,8 @@ suil_wrapper_new_woe (
       // Set UI update rate if given
       LV2_URID ui_updateRate =
         map->map (map->handle, LV2_UI__updateRate);
-      for (LV2_Options_Option * o = options; o->key;
-           ++o)
+      for (LV2_Options_Option * o = options;
+           o->key; ++o)
         {
           if (o->key == ui_updateRate)
             {

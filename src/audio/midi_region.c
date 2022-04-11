@@ -111,10 +111,12 @@ midi_region_new_from_chord_descr (
   /* get midi note positions */
   Position mn_pos, mn_end_pos;
   position_init (&mn_pos);
-  position_from_ticks (&mn_end_pos, mn_length_ticks);
+  position_from_ticks (
+    &mn_end_pos, mn_length_ticks);
 
   /* create midi notes */
-  for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES; i++)
+  for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES;
+       i++)
     {
       if (descr->notes[i])
         {
@@ -538,7 +540,8 @@ handle_note_off:
             case msgChangePressure:
               muGetControlName (
                 str,
-                msg.MsgData.ChangePressure.iPressure);
+                msg.MsgData.ChangePressure
+                  .iPressure);
               g_debug (
                 "(%.2d) %s",
                 msg.MsgData.ChangePressure.iChannel,
@@ -583,8 +586,8 @@ handle_note_off:
                     char tmp[6000];
                     strncpy (
                       tmp,
-                      (char *) msg.MsgData.MetaEvent
-                        .Data.Text.pData,
+                      (char *) msg.MsgData
+                        .MetaEvent.Data.Text.pData,
                       msg.iMsgSize - 3);
                     tmp[msg.iMsgSize - 3] = '\0';
                     arranger_object_set_name (
@@ -638,22 +641,22 @@ handle_note_off:
                 case metaSetTempo:
                   g_message (
                     "tempo %d",
-                    msg.MsgData.MetaEvent.Data.Tempo
-                      .iBPM);
+                    msg.MsgData.MetaEvent.Data
+                      .Tempo.iBPM);
                   break;
                 case metaSMPTEOffset:
                   g_message (
                     "SMPTE offset = %d:%d:%d.%d %d",
-                    msg.MsgData.MetaEvent.Data.SMPTE
-                      .iHours,
-                    msg.MsgData.MetaEvent.Data.SMPTE
-                      .iMins,
-                    msg.MsgData.MetaEvent.Data.SMPTE
-                      .iSecs,
-                    msg.MsgData.MetaEvent.Data.SMPTE
-                      .iFrames,
-                    msg.MsgData.MetaEvent.Data.SMPTE
-                      .iFF);
+                    msg.MsgData.MetaEvent.Data
+                      .SMPTE.iHours,
+                    msg.MsgData.MetaEvent.Data
+                      .SMPTE.iMins,
+                    msg.MsgData.MetaEvent.Data
+                      .SMPTE.iSecs,
+                    msg.MsgData.MetaEvent.Data
+                      .SMPTE.iFrames,
+                    msg.MsgData.MetaEvent.Data
+                      .SMPTE.iFF);
                   break;
                 case metaTimeSig:
                   g_message (
@@ -736,8 +739,8 @@ handle_note_off:
 
       while (self->num_unended_notes > 0)
         {
-          mn =
-            midi_region_pop_unended_note (self, -1);
+          mn = midi_region_pop_unended_note (
+            self, -1);
           arranger_object_end_pos_setter (
             (ArrangerObject *) mn, &end_pos);
         }
@@ -882,7 +885,8 @@ midi_region_export_to_midi_file (
 
       /* common time: 4 crochet beats, per bar */
       int beats_per_bar =
-        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
       midiSongAddSimpleTimeSig (
         mf, 1, beats_per_bar,
         math_round_double_to_signed_32 (

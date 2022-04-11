@@ -139,7 +139,8 @@ static void
 button_with_menu_widget_init (
   ButtonWithMenuWidget * self)
 {
-  gtk_widget_set_focusable (GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (
+    GTK_WIDGET (self), true);
 }
 
 static void

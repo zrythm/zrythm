@@ -58,8 +58,8 @@ get_modulator (ModulatorInnerWidget * self)
 static float
 get_snapped_control_value (Port * port)
 {
-  float val =
-    port_get_control_value (port, F_NOT_NORMALIZED);
+  float val = port_get_control_value (
+    port, F_NOT_NORMALIZED);
 
   return val;
 }
@@ -135,13 +135,13 @@ modulator_inner_widget_refresh (
 {
   Plugin * modulator = get_modulator (self);
   g_signal_handlers_block_by_func (
-    self->show_hide_ui_btn, on_show_hide_ui_toggled,
-    self);
+    self->show_hide_ui_btn,
+    on_show_hide_ui_toggled, self);
   gtk_toggle_button_set_active (
     self->show_hide_ui_btn, modulator->visible);
   g_signal_handlers_unblock_by_func (
-    self->show_hide_ui_btn, on_show_hide_ui_toggled,
-    self);
+    self->show_hide_ui_btn,
+    on_show_hide_ui_toggled, self);
 }
 
 static void
@@ -160,8 +160,8 @@ on_knob_right_click (
 
   char tmp[600];
   sprintf (tmp, "app.reset-control::%p", port);
-  menuitem =
-    z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
+  menuitem = z_gtk_create_menu_item (
+    _ ("Reset"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
   sprintf (tmp, "app.bind-midi-cc::%p", port);
@@ -181,7 +181,8 @@ on_knob_right_click (
  * Creates a new widget.
  */
 ModulatorInnerWidget *
-modulator_inner_widget_new (ModulatorWidget * parent)
+modulator_inner_widget_new (
+  ModulatorWidget * parent)
 {
   ModulatorInnerWidget * self = g_object_new (
     MODULATOR_INNER_WIDGET_TYPE, NULL);
@@ -202,8 +203,8 @@ modulator_inner_widget_new (ModulatorWidget * parent)
       KnobWidget * knob = knob_widget_new_simple (
         control_port_get_val,
         control_port_get_default_val,
-        control_port_set_real_val, port, port->minf,
-        port->maxf, 24, port->zerof);
+        control_port_set_real_val, port,
+        port->minf, port->maxf, 24, port->zerof);
       knob->snapped_getter = (GenericFloatGetter)
         get_snapped_control_value;
       KnobWithNameWidget * knob_with_name =
@@ -253,7 +254,8 @@ modulator_inner_widget_new (ModulatorWidget * parent)
       self->waveforms[index] =
         live_waveform_widget_new_port (port);
       gtk_widget_set_size_request (
-        GTK_WIDGET (self->waveforms[index]), 48, 48);
+        GTK_WIDGET (self->waveforms[index]), 48,
+        48);
       gtk_widget_set_visible (
         GTK_WIDGET (self->waveforms[index]), true);
 
@@ -291,8 +293,8 @@ modulator_inner_widget_new (ModulatorWidget * parent)
       g_signal_connect (
         G_OBJECT (
           self->waveform_automate_buttons[index]),
-        "clicked", G_CALLBACK (on_automate_clicked),
-        self);
+        "clicked",
+        G_CALLBACK (on_automate_clicked), self);
 
       gtk_box_append (
         GTK_BOX (self->waveforms_box),
@@ -355,7 +357,8 @@ static void
 modulator_inner_widget_class_init (
   ModulatorInnerWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "modulator_inner.ui");
   gtk_widget_class_set_css_name (

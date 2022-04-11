@@ -251,7 +251,8 @@ midi_events_set_channel (
   if ((ev->raw_buffer[0] & byte) == byte) \
     { \
       ev->raw_buffer[0] = \
-        (ev->raw_buffer[0] & byte) | (channel - 1); \
+        (ev->raw_buffer[0] & byte) \
+        | (channel - 1); \
       continue; \
     }
 
@@ -777,7 +778,9 @@ midi_event_cmpfunc (const void * _a, const void * _b)
  * Sorts the MidiEvents by time.
  */
 void
-midi_events_sort (MidiEvents * self, const bool queued)
+midi_events_sort (
+  MidiEvents * self,
+  const bool   queued)
 {
   MidiEvent * events;
   size_t      num_events;
@@ -859,7 +862,8 @@ midi_events_add_note_ons_from_chord_descr (
     __func__, velocity, _time);
 #endif
 
-  for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES; i++)
+  for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES;
+       i++)
     {
       if (descr->notes[i])
         {
@@ -881,7 +885,8 @@ midi_events_add_note_offs_from_chord_descr (
   midi_time_t             time,
   bool                    queued)
 {
-  for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES; i++)
+  for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES;
+       i++)
     {
       if (descr->notes[i])
         {
@@ -932,7 +937,8 @@ midi_events_add_event_from_buf (
         goto note_off;
 
       midi_events_add_note_on (
-        self, channel, buf[1], buf[2], time, queued);
+        self, channel, buf[1], buf[2], time,
+        queued);
       break;
     case MIDI_CH1_NOTE_OFF:
 note_off:
@@ -985,7 +991,8 @@ midi_events_delete_event (
         {
           for (int k = i; k < NUM_EVENTS - 1; k++)
             {
-              midi_event_copy (&arr[k + 1], &arr[k]);
+              midi_event_copy (
+                &arr[k + 1], &arr[k]);
             }
           if (queued)
             self->num_queued_events--;
@@ -1014,7 +1021,9 @@ midi_event_print (const MidiEvent * ev)
 }
 
 void
-midi_events_print (MidiEvents * self, const int queued)
+midi_events_print (
+  MidiEvents * self,
+  const int    queued)
 {
   MidiEvent * arr =
     queued ? self->queued_events : self->events;

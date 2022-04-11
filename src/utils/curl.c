@@ -128,7 +128,8 @@ z_curl_get_page_contents (
       g_warning ("failed getting page contents");
     }
 
-  g_debug ("done getting page contents for %s", url);
+  g_debug (
+    "done getting page contents for %s", url);
 
   return page;
 }
@@ -165,8 +166,9 @@ read_callback (
   size_t nmemb,
   void * userp)
 {
-  struct WriteThis * wt = (struct WriteThis *) userp;
-  size_t             buffer_size = size * nmemb;
+  struct WriteThis * wt =
+    (struct WriteThis *) userp;
+  size_t buffer_size = size * nmemb;
 
   if (wt->sizeleft)
     {

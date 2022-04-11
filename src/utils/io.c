@@ -182,7 +182,8 @@ io_path_get_parent_dir (const char * path)
 #  define ROOT_REGEX "/"
 #endif
   char regex[] =
-    "(" ROOT_REGEX ".*)" PATH_SEP "[^" PATH_SEP "]+";
+    "(" ROOT_REGEX ".*)" PATH_SEP "[^" PATH_SEP
+    "]+";
   char * parent =
     string_get_regex_group (path, regex, 1);
 #if 0
@@ -209,7 +210,8 @@ io_path_get_parent_dir (const char * path)
 }
 
 char *
-io_file_get_creation_datetime (const char * filename)
+io_file_get_creation_datetime (
+  const char * filename)
 {
   /* TODO */
   return NULL;
@@ -330,8 +332,8 @@ append_files_from_dir_ending_in (
       else
         {
           g_warning (
-            "Failed opening directory %s: %s", _dir,
-            error->message);
+            "Failed opening directory %s: %s",
+            _dir, error->message);
         }
       return;
     }
@@ -440,7 +442,8 @@ io_copy_dir (
             G_FILE_COPY_OVERWRITE;
           if (!follow_symlinks)
             {
-              flags |= G_FILE_COPY_NOFOLLOW_SYMLINKS;
+              flags |=
+                G_FILE_COPY_NOFOLLOW_SYMLINKS;
             }
           bool ret = g_file_copy (
             src_file, dest_file, flags, NULL, NULL,
@@ -513,8 +516,9 @@ io_get_next_available_filepath (
   int    i = 1;
   char * file_without_ext =
     io_file_strip_ext (filepath);
-  const char * file_ext = io_file_get_ext (filepath);
-  char *       new_path = g_strdup (filepath);
+  const char * file_ext =
+    io_file_get_ext (filepath);
+  char * new_path = g_strdup (filepath);
   while (file_exists (new_path))
     {
       if (g_file_test (new_path, G_FILE_TEST_IS_DIR))

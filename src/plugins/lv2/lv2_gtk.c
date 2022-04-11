@@ -320,7 +320,8 @@ patch_set_get (
     (*property)->atom.type
     != plugin->main_forge.URID)
     {
-      g_warning ("patch:Set property is not a URID");
+      g_warning (
+        "patch:Set property is not a URID");
       return 1;
     }
 
@@ -341,8 +342,9 @@ patch_put_get (
       g_warning ("patch:Put message with no body");
       return 1;
     }
-  else if (!lv2_atom_forge_is_object_type (
-             &plugin->main_forge, (*body)->atom.type))
+  else if (
+    !lv2_atom_forge_is_object_type (
+      &plugin->main_forge, (*body)->atom.type))
     {
       g_warning ("patch:Put body is not an object");
       return 1;
@@ -452,7 +454,8 @@ lv2_gtk_ui_port_event (
       else if (obj->body.otype == PM_URIDS.patch_Put)
         {
           const LV2_Atom_Object * body = NULL;
-          if (!patch_put_get (lv2_plugin, obj, &body))
+          if (!patch_put_get (
+                lv2_plugin, obj, &body))
             {
               LV2_ATOM_OBJECT_FOREACH (body, prop)
               {
@@ -501,7 +504,8 @@ lv2_gtk_open_ui (Lv2Plugin * plugin)
     {
       if (plugin->has_external_ui)
         {
-          g_message ("Instantiating external UI...");
+          g_message (
+            "Instantiating external UI...");
 
           plugin->extui.ui_closed =
             on_external_ui_closed;
@@ -558,7 +562,8 @@ lv2_gtk_open_ui (Lv2Plugin * plugin)
 
   if (!plugin->has_external_ui)
     {
-      g_return_val_if_fail (plugin->lilv_plugin, -1);
+      g_return_val_if_fail (
+        plugin->lilv_plugin, -1);
     }
 
   lv2_ui_init (plugin);

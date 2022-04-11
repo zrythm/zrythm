@@ -176,7 +176,8 @@ hash_create_state (void)
 void
 hash_free_state (void * in_state)
 {
-  XXH32_state_t * state = (XXH32_state_t *) in_state;
+  XXH32_state_t * state =
+    (XXH32_state_t *) in_state;
   XXH32_freeState (state);
 }
 

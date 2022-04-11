@@ -306,8 +306,8 @@ plugin_init (
   Port * port = port_new_with_type (
     TYPE_CONTROL, FLOW_INPUT, _ ("Enabled"));
   port->id.sym = g_strdup ("enabled");
-  port->id.comment =
-    g_strdup (_ ("Enables or disables the plugin"));
+  port->id.comment = g_strdup (
+    _ ("Enables or disables the plugin"));
   port->id.port_group = g_strdup ("[Zrythm]");
   plugin_add_in_port (plugin, port);
   port->id.flags |= PORT_FLAG_PLUGIN_ENABLED;
@@ -672,11 +672,13 @@ plugin_new_dummy (
   descr->category_str =
     g_strdup ("Dummy Plugin Category");
 
-  self->setting = plugin_setting_new_default (descr);
+  self->setting =
+    plugin_setting_new_default (descr);
   plugin_descriptor_free (descr);
 
   plugin_init (
-    self, track_name_hash, PLUGIN_SLOT_INSERT, slot);
+    self, track_name_hash, PLUGIN_SLOT_INSERT,
+    slot);
 
   return self;
 }
@@ -801,7 +803,7 @@ plugin_move (
 
   int            prev_slot = pl->id.slot;
   PluginSlotType prev_slot_type = pl->id.slot_type;
-  Track *        prev_track = plugin_get_track (pl);
+  Track * prev_track = plugin_get_track (pl);
   g_return_if_fail (
     IS_TRACK_AND_NONNULL (prev_track));
   Channel * prev_ch = plugin_get_channel (pl);
@@ -1042,7 +1044,8 @@ plugin_get_port_in_same_group (
   if (!port->id.port_group)
     {
       g_message (
-        "port %s has no port group", port->id.label);
+        "port %s has no port group",
+        port->id.label);
       return NULL;
     }
 
@@ -1096,7 +1099,8 @@ plugin_generate_window_title (Plugin * self)
 
   const PluginSetting * setting = self->setting;
 
-  const char * track_name = track ? track->name : "";
+  const char * track_name =
+    track ? track->name : "";
   const char * plugin_name = setting->descr->name;
   g_return_val_if_fail (
     track_name && plugin_name, NULL);
@@ -1120,8 +1124,9 @@ plugin_generate_window_title (Plugin * self)
 
   char title[500];
   sprintf (
-    title, "%s (%s %s%s%s)", plugin_name, track_name,
-    slot, setting->open_with_carla ? " carla" : "",
+    title, "%s (%s %s%s%s)", plugin_name,
+    track_name, slot,
+    setting->open_with_carla ? " carla" : "",
     bridge_mode);
 
   switch (self->setting->descr->protocol)
@@ -1220,7 +1225,8 @@ int
 plugin_cleanup (Plugin * self)
 {
   g_message (
-    "Cleaning up %s...", self->setting->descr->name);
+    "Cleaning up %s...",
+    self->setting->descr->name);
 
   if (!self->activated && self->instantiated)
     {
@@ -1241,7 +1247,8 @@ plugin_cleanup (Plugin * self)
               {
                 int ret =
                   lv2_plugin_cleanup (self->lv2);
-                g_return_val_if_fail (ret == 0, ret);
+                g_return_val_if_fail (
+                  ret == 0, ret);
               }
               break;
             default:
@@ -1280,7 +1287,8 @@ plugin_update_latency (Plugin * pl)
 #endif
       pl->setting->descr->protocol == PROT_LV2)
     {
-      pl->latency = lv2_plugin_get_latency (pl->lv2);
+      pl->latency =
+        lv2_plugin_get_latency (pl->lv2);
     }
 
   g_message (
@@ -1308,7 +1316,8 @@ plugin_update_latency (Plugin * pl)
   port_set_owner ( \
     port, PORT_OWNER_TYPE_PLUGIN, pl); \
   array_append ( \
-    pl->type##_ports, pl->num_##type##_ports, port)
+    pl->type##_ports, pl->num_##type##_ports, \
+    port)
 
 /**
  * Adds an in port to the plugin's list.
@@ -1483,7 +1492,8 @@ plugin_set_ui_refresh_rate (Plugin * self)
   /* clamp the scale factor to sensible limits */
   if (
     self->ui_scale_factor < PLUGIN_MIN_SCALE_FACTOR
-    || self->ui_scale_factor > PLUGIN_MAX_SCALE_FACTOR)
+    || self->ui_scale_factor
+         > PLUGIN_MAX_SCALE_FACTOR)
     {
       g_warning (
         "Invalid scale factor of %.01f received, "
@@ -1588,14 +1598,16 @@ plugin_update_identifier (Plugin * self)
     {
       Port * port = self->in_ports[i];
       port_update_track_name_hash (
-        port, self->track, self->id.track_name_hash);
+        port, self->track,
+        self->id.track_name_hash);
       port->id.plugin_id = self->id;
     }
   for (int i = 0; i < self->num_out_ports; i++)
     {
       Port * port = self->out_ports[i];
       port_update_track_name_hash (
-        port, self->track, self->id.track_name_hash);
+        port, self->track,
+        self->id.track_name_hash);
       port->id.plugin_id = self->id;
     }
 }
@@ -1737,8 +1749,8 @@ plugin_prepare_process (Plugin * self)
   for (size_t i = 0; i < self->audio_in_ports->len;
        i++)
     {
-      Port * port =
-        g_ptr_array_index (self->audio_in_ports, i);
+      Port * port = g_ptr_array_index (
+        self->audio_in_ports, i);
       port_clear_audio_cv_buffer (port);
     }
   for (size_t i = 0; i < self->cv_in_ports->len; i++)
@@ -1805,7 +1817,8 @@ plugin_process (
       switch (plugin->setting->descr->protocol)
         {
         case PROT_LV2:
-          lv2_plugin_process (plugin->lv2, time_nfo);
+          lv2_plugin_process (
+            plugin->lv2, time_nfo);
           break;
         default:
           break;
@@ -1815,8 +1828,8 @@ plugin_process (
 #endif
 
   /* turn off any trigger input controls */
-  for (size_t i = 0; i < plugin->ctrl_in_ports->len;
-       i++)
+  for (size_t i = 0;
+       i < plugin->ctrl_in_ports->len; i++)
     {
       Port * port = g_ptr_array_index (
         plugin->ctrl_in_ports, i);
@@ -1841,7 +1854,8 @@ plugin_process (
           /* if close to 0 set it to the denormal
            * prevention val */
           if (math_floats_equal_epsilon (
-                plugin->gain->control, 0.f, 0.00001f))
+                plugin->gain->control, 0.f,
+                0.00001f))
             {
               dsp_fill (
                 &port->buf[time_nfo->local_offset],
@@ -1989,7 +2003,8 @@ plugin_open_ui (Plugin * self)
       g_debug (
         "presenting plugin [%s] window %p", pl_str,
         self->window);
-      gtk_window_present (GTK_WINDOW (self->window));
+      gtk_window_present (
+        GTK_WINDOW (self->window));
     }
   else
     {
@@ -2148,7 +2163,9 @@ plugin_get_abs_state_dir (
  * Ensures the state dir exists or creates it.
  */
 void
-plugin_ensure_state_dir (Plugin * self, bool is_backup)
+plugin_ensure_state_dir (
+  Plugin * self,
+  bool     is_backup)
 {
   if (self->state_dir)
     {
@@ -2209,7 +2226,8 @@ plugin_get_all (
   GPtrArray * arr,
   bool        check_undo_manager)
 {
-  for (int i = 0; i < prj->tracklist->num_tracks; i++)
+  for (int i = 0; i < prj->tracklist->num_tracks;
+       i++)
     {
       Track * track = prj->tracklist->tracks[i];
       track_get_plugins (track, arr);
@@ -2259,8 +2277,9 @@ plugin_clone (Plugin * src, GError ** error)
         }
       else
         {
-          LilvState * state = lv2_state_save_to_file (
-            src->lv2, F_NOT_BACKUP);
+          LilvState * state =
+            lv2_state_save_to_file (
+              src->lv2, F_NOT_BACKUP);
           lilv_state_free (state);
         }
       g_message (
@@ -2346,7 +2365,8 @@ plugin_clone (Plugin * src, GError ** error)
   g_return_val_if_fail (
     src->num_in_ports == self->num_in_ports, NULL);
   g_return_val_if_fail (
-    src->num_out_ports == self->num_out_ports, NULL);
+    src->num_out_ports == self->num_out_ports,
+    NULL);
 
   return self;
 }
@@ -2421,10 +2441,10 @@ plugin_process_passthrough (
                 {
                   /* copy */
                   dsp_copy (
-                    &out_port
-                       ->buf[time_nfo->local_offset],
-                    &in_port
-                       ->buf[time_nfo->local_offset],
+                    &out_port->buf
+                       [time_nfo->local_offset],
+                    &in_port->buf
+                       [time_nfo->local_offset],
                     time_nfo->nframes);
 
                   last_audio_idx = j + 1;
@@ -2581,7 +2601,9 @@ plugin_connect_to_plugin (Plugin * src, Plugin * dest)
         num_dest_audio_ins++;
     }
 
-  if (num_src_audio_outs == 1 && num_dest_audio_ins == 1)
+  if (
+    num_src_audio_outs == 1
+    && num_dest_audio_ins == 1)
     {
       last_index = 0;
       for (i = 0; i < src->num_out_ports; i++)
@@ -2590,7 +2612,8 @@ plugin_connect_to_plugin (Plugin * src, Plugin * dest)
 
           if (out_port->id.type == TYPE_AUDIO)
             {
-              for (j = 0; j < dest->num_in_ports; j++)
+              for (j = 0; j < dest->num_in_ports;
+                   j++)
                 {
                   in_port = dest->in_ports[j];
 
@@ -2618,7 +2641,8 @@ done1:;
 
           if (out_port->id.type == TYPE_AUDIO)
             {
-              for (j = 0; j < dest->num_in_ports; j++)
+              for (j = 0; j < dest->num_in_ports;
+                   j++)
                 {
                   in_port = dest->in_ports[j];
 
@@ -2645,7 +2669,8 @@ done1:;
 
           if (in_port->id.type == TYPE_AUDIO)
             {
-              for (j = 0; j < src->num_out_ports; j++)
+              for (j = 0; j < src->num_out_ports;
+                   j++)
                 {
                   out_port = src->out_ports[j];
 
@@ -2662,7 +2687,8 @@ done1:;
 done2:;
     }
   else if (
-    num_src_audio_outs > 1 && num_dest_audio_ins > 1)
+    num_src_audio_outs > 1
+    && num_dest_audio_ins > 1)
     {
       /* connect to as many audio outs this
        * plugin has, or until we can't connect
@@ -2691,7 +2717,9 @@ done2:;
                       break;
                     }
                 }
-              if (ports_connected == num_ports_to_connect)
+              if (
+                ports_connected
+                == num_ports_to_connect)
                 break;
             }
         }
@@ -2795,11 +2823,13 @@ plugin_disconnect_from_prefader (
         && out_port->id.type == TYPE_AUDIO)
         {
           if (ports_connected (
-                out_port, ch->prefader->stereo_in->l))
+                out_port,
+                ch->prefader->stereo_in->l))
             port_disconnect (
               out_port, ch->prefader->stereo_in->l);
           if (ports_connected (
-                out_port, ch->prefader->stereo_in->r))
+                out_port,
+                ch->prefader->stereo_in->r))
             port_disconnect (
               out_port, ch->prefader->stereo_in->r);
         }
@@ -2847,7 +2877,9 @@ plugin_disconnect_from_plugin (
         num_dest_audio_ins++;
     }
 
-  if (num_src_audio_outs == 1 && num_dest_audio_ins == 1)
+  if (
+    num_src_audio_outs == 1
+    && num_dest_audio_ins == 1)
     {
       last_index = 0;
       for (i = 0; i < src->num_out_ports; i++)
@@ -2856,7 +2888,8 @@ plugin_disconnect_from_plugin (
 
           if (out_port->id.type == TYPE_AUDIO)
             {
-              for (j = 0; j < dest->num_in_ports; j++)
+              for (j = 0; j < dest->num_in_ports;
+                   j++)
                 {
                   in_port = dest->in_ports[j];
 
@@ -2884,7 +2917,8 @@ done1:;
 
           if (out_port->id.type == TYPE_AUDIO)
             {
-              for (j = 0; j < dest->num_in_ports; j++)
+              for (j = 0; j < dest->num_in_ports;
+                   j++)
                 {
                   in_port = dest->in_ports[j];
 
@@ -2911,7 +2945,8 @@ done1:;
 
           if (in_port->id.type == TYPE_AUDIO)
             {
-              for (j = 0; j < src->num_out_ports; j++)
+              for (j = 0; j < src->num_out_ports;
+                   j++)
                 {
                   out_port = src->out_ports[j];
 
@@ -2928,7 +2963,8 @@ done1:;
 done2:;
     }
   else if (
-    num_src_audio_outs > 1 && num_dest_audio_ins > 1)
+    num_src_audio_outs > 1
+    && num_dest_audio_ins > 1)
     {
       /* connect to as many audio outs this
        * plugin has, or until we can't connect
@@ -3206,7 +3242,8 @@ plugin_free (Plugin * self)
   g_return_if_fail (!self->visible);
 
   g_debug (
-    "freeing plugin %s", self->setting->descr->name);
+    "freeing plugin %s",
+    self->setting->descr->name);
 
   object_free_w_func_and_null (
     lv2_plugin_free, self->lv2);

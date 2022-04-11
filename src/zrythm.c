@@ -97,9 +97,8 @@ zrythm_add_to_recent_projects (
 
   /* set last element to NULL because the call
    * takes a NULL terminated array */
-  ZRYTHM
-    ->recent_projects[ZRYTHM->num_recent_projects] =
-    NULL;
+  ZRYTHM->recent_projects
+    [ZRYTHM->num_recent_projects] = NULL;
 
   g_settings_set_strv (
     S_GENERAL, "recent-projects",
@@ -276,7 +275,8 @@ zrythm_get_system_info (void)
       "/etc/os-release", &content, NULL, NULL);
   if (ret)
     {
-      g_string_append_printf (gstr, "%s\n", content);
+      g_string_append_printf (
+        gstr, "%s\n", content);
       g_free (content);
     }
 
@@ -691,7 +691,8 @@ zrythm_free (Zrythm * self)
   object_free_w_func_and_null (
     z_cairo_caches_free, self->cairo_caches);
   object_free_w_func_and_null (
-    recording_manager_free, self->recording_manager);
+    recording_manager_free,
+    self->recording_manager);
   object_free_w_func_and_null (
     plugin_manager_free, self->plugin_manager);
   object_free_w_func_and_null (
@@ -748,7 +749,8 @@ zrythm_new (
   self->use_optimized_dsp = optimized_dsp;
   self->settings = settings_new ();
   self->object_utils = object_utils_new ();
-  self->recording_manager = recording_manager_new ();
+  self->recording_manager =
+    recording_manager_new ();
   self->plugin_manager = plugin_manager_new ();
   self->symap = symap_new ();
   self->error_domain_symap = symap_new ();

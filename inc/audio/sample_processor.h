@@ -49,7 +49,8 @@ typedef struct ChordPreset   ChordPreset;
 #define SAMPLE_PROCESSOR \
   (AUDIO_ENGINE->sample_processor)
 
-#define sample_processor_is_in_active_project(self) \
+#define sample_processor_is_in_active_project( \
+  self) \
   (self->audio_engine \
    && engine_is_in_active_project ( \
      self->audio_engine))
@@ -211,13 +212,15 @@ sample_processor_stop_file_playback (
   SampleProcessor * self);
 
 void
-sample_processor_disconnect (SampleProcessor * self);
+sample_processor_disconnect (
+  SampleProcessor * self);
 
 /**
  * To be used for serialization.
  */
 SampleProcessor *
-sample_processor_clone (const SampleProcessor * src);
+sample_processor_clone (
+  const SampleProcessor * src);
 
 void
 sample_processor_free (SampleProcessor * self);

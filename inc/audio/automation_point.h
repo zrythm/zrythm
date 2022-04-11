@@ -48,7 +48,8 @@ typedef struct _AutomationPointWidget
 #define AP_WIDGET_POINT_SIZE 6
 
 #define automation_point_is_selected(r) \
-  arranger_object_is_selected ((ArrangerObject *) r)
+  arranger_object_is_selected ( \
+    (ArrangerObject *) r)
 
 /**
  * Used for caching.

@@ -201,11 +201,12 @@ channel_slot_snapshot (
   else
     {
       /* fill text */
-      int  w, h;
+      int w, h;
       if (self->type == PLUGIN_SLOT_INSTRUMENT)
         {
           snprintf (
-            txt, MAX_LEN, "%s", _ ("No instrument"));
+            txt, MAX_LEN, "%s",
+            _ ("No instrument"));
         }
       else
         {
@@ -305,16 +306,20 @@ on_dnd_drop (
                 {
                   ret = mixer_selections_action_perform_copy (
                     MIXER_SELECTIONS,
-                    PORT_CONNECTIONS_MGR, self->type,
-                    track_get_name_hash (self->track),
+                    PORT_CONNECTIONS_MGR,
+                    self->type,
+                    track_get_name_hash (
+                      self->track),
                     self->slot_index, &err);
                 }
               else if (action == GDK_ACTION_MOVE)
                 {
                   ret = mixer_selections_action_perform_move (
                     MIXER_SELECTIONS,
-                    PORT_CONNECTIONS_MGR, self->type,
-                    track_get_name_hash (self->track),
+                    PORT_CONNECTIONS_MGR,
+                    self->type,
+                    track_get_name_hash (
+                      self->track),
                     self->slot_index, &err);
                 }
               else
@@ -384,7 +389,8 @@ on_dnd_drop (
  * Control not pressed, no plugin exists,
  * not same channel */
 static inline void
-select_no_ctrl_no_pl_no_ch (ChannelSlotWidget * self)
+select_no_ctrl_no_pl_no_ch (
+  ChannelSlotWidget * self)
 {
   mixer_selections_clear (
     MIXER_SELECTIONS, F_PUBLISH_EVENTS);
@@ -570,11 +576,13 @@ drag_end (
     {
       bool new_visible = !pl->visible;
       g_message (
-        "%s: setting plugin %s visible %d", __func__,
-        pl->setting->descr->name, new_visible);
+        "%s: setting plugin %s visible %d",
+        __func__, pl->setting->descr->name,
+        new_visible);
       g_warn_if_fail (pl->instantiated);
       pl->visible = new_visible;
-      EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED, pl);
+      EVENTS_PUSH (
+        ET_PLUGIN_VISIBILITY_CHANGED, pl);
     }
   else if (self->n_press == 1)
     {
@@ -965,8 +973,9 @@ channel_slot_widget_new (
 ChannelSlotWidget *
 channel_slot_widget_new_instrument (void)
 {
-  ChannelSlotWidget * self = channel_slot_widget_new (
-    -1, NULL, PLUGIN_SLOT_INSTRUMENT, false);
+  ChannelSlotWidget * self =
+    channel_slot_widget_new (
+      -1, NULL, PLUGIN_SLOT_INSTRUMENT, false);
 
   return self;
 }
@@ -1055,7 +1064,8 @@ static void
 channel_slot_widget_class_init (
   ChannelSlotWidgetClass * klass)
 {
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   wklass->snapshot = channel_slot_snapshot;
   gtk_widget_class_set_css_name (
     wklass, "channel-slot");

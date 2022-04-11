@@ -61,8 +61,8 @@ typedef struct Track            Track;
 typedef struct PortConnection   PortConnection;
 typedef struct TrackProcessor   TrackProcessor;
 typedef struct ModulatorMacroProcessor
-                            ModulatorMacroProcessor;
-typedef struct RtMidiDevice RtMidiDevice;
+  ModulatorMacroProcessor;
+typedef struct RtMidiDevice    RtMidiDevice;
 typedef struct RtAudioDevice   RtAudioDevice;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct TruePeakDsp     TruePeakDsp;
@@ -384,7 +384,8 @@ typedef struct Port
 
   /** Pointer to owner modulator macro processor,
    * if any. */
-  ModulatorMacroProcessor * modulator_macro_processor;
+  ModulatorMacroProcessor *
+    modulator_macro_processor;
 
   /* ====== flags to indicate port owner ====== */
 
@@ -621,11 +622,12 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t stereo_ports_schema = {
-  YAML_VALUE_PTR (
-    StereoPorts,
-    stereo_ports_fields_schema),
-};
+static const cyaml_schema_value_t
+  stereo_ports_schema = {
+    YAML_VALUE_PTR (
+      StereoPorts,
+      stereo_ports_fields_schema),
+  };
 
 /**
  * This function finds the Ports corresponding to

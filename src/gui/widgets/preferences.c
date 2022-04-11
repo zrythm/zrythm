@@ -100,7 +100,7 @@ on_enum_drop_down_selection_changed (
   gpointer     user_data)
 {
   CallbackData * data = (CallbackData *) user_data;
-  GtkDropDown *  dropdown = GTK_DROP_DOWN (gobject);
+  GtkDropDown * dropdown = GTK_DROP_DOWN (gobject);
   g_settings_set_enum (
     data->info->settings, data->key,
     (int) gtk_drop_down_get_selected (dropdown));
@@ -214,7 +214,8 @@ get_path_type (
   else if (
     KEY_IS (
       "Plugins", "Paths", "vst-search-paths-windows")
-    || KEY_IS ("Plugins", "Paths", "sfz-search-paths")
+    || KEY_IS (
+      "Plugins", "Paths", "sfz-search-paths")
     || KEY_IS (
       "Plugins", "Paths", "sf2-search-paths"))
     {
@@ -238,7 +239,8 @@ should_be_hidden (
 #endif
 #ifndef HAVE_CARLA
     KEY_IS ("Plugins", "Paths", "sfz-search-paths")
-    || KEY_IS ("Plugins", "Paths", "sf2-search-paths")
+    || KEY_IS (
+      "Plugins", "Paths", "sf2-search-paths")
     ||
 #endif
     (AUDIO_ENGINE->audio_backend != AUDIO_BACKEND_SDL
@@ -287,16 +289,16 @@ get_range_vals (
         (double) g_variant_get_uint32 (lower_var);
       *upper =
         (double) g_variant_get_uint32 (upper_var);
-      *current =
-        (double) g_variant_get_uint32 (current_var);
+      *current = (double) g_variant_get_uint32 (
+        current_var);
     }
   else if (TYPE_EQUALS (DOUBLE))
     {
       *lower = g_variant_get_double (lower_var);
       *upper =
         (double) g_variant_get_double (upper_var);
-      *current =
-        (double) g_variant_get_double (current_var);
+      *current = (double) g_variant_get_double (
+        current_var);
     }
 #undef TYPE_EQUALS
 
@@ -339,7 +341,8 @@ make_control (
   GSettingsSchemaKey * schema_key =
     g_settings_schema_get_key (info->schema, key);
   const GVariantType * type =
-    g_settings_schema_key_get_value_type (schema_key);
+    g_settings_schema_key_get_value_type (
+      schema_key);
   GVariant * current_var =
     g_settings_get_value (info->settings, key);
   GVariant * range =
@@ -380,7 +383,8 @@ make_control (
           on_closure_notify_delete_data,
         G_CONNECT_AFTER);
     }
-  else if (KEY_IS ("General", "Engine", "midi-backend"))
+  else if (KEY_IS (
+             "General", "Engine", "midi-backend"))
     {
       widget = gtk_combo_box_new ();
       ui_setup_midi_backends_combo_box (
@@ -419,7 +423,8 @@ make_control (
           on_closure_notify_delete_data,
         G_CONNECT_AFTER);
     }
-  else if (KEY_IS ("General", "Engine", "audio-inputs"))
+  else if (KEY_IS (
+             "General", "Engine", "audio-inputs"))
     {
       widget = g_object_new (
         ACTIVE_HARDWARE_MB_WIDGET_TYPE, NULL);
@@ -444,8 +449,8 @@ make_control (
       get_range_vals (
         range, current_var, type, &lower, &upper,
         &current);
-      widget =
-        gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
+      widget = gtk_box_new (
+        GTK_ORIENTATION_HORIZONTAL, 2);
       gtk_widget_set_visible (widget, true);
       GtkWidget * scale = gtk_scale_new_with_range (
         GTK_ORIENTATION_HORIZONTAL, lower, upper,
@@ -676,7 +681,8 @@ make_control (
           data->key = g_strdup (key);
           g_signal_connect_data (
             G_OBJECT (widget), "changed",
-            G_CALLBACK (on_path_entry_changed), data,
+            G_CALLBACK (on_path_entry_changed),
+            data,
             (GClosureNotify)
               on_closure_notify_delete_data,
             G_CONNECT_AFTER);
@@ -747,7 +753,8 @@ add_subgroup (
       const char * summary;
       const char * description;
 
-      if (string_is_equal (reset_to_factory_key, key))
+      if (string_is_equal (
+            reset_to_factory_key, key))
         {
           summary = _ ("Reset to factory settings");
           description = _ (
@@ -890,8 +897,8 @@ add_group (PreferencesWidget * self, int group_idx)
   while ((schema_str = non_relocatable[i++]))
     {
       if (!string_contains_substr (
-            schema_str,
-            GSETTINGS_ZRYTHM_PREFIX ".preferences"))
+            schema_str, GSETTINGS_ZRYTHM_PREFIX
+            ".preferences"))
         continue;
 
       /* get the preferences.x.y schema */
@@ -904,8 +911,9 @@ add_group (PreferencesWidget * self, int group_idx)
         g_settings_new (schema_str);
       GVariant * info_val =
         g_settings_get_value (settings, "info");
-      int this_group_idx = (int) g_variant_get_int32 (
-        g_variant_get_child_value (info_val, 0));
+      int this_group_idx =
+        (int) g_variant_get_int32 (
+          g_variant_get_child_value (info_val, 0));
 
       if (this_group_idx != group_idx)
         continue;
@@ -924,7 +932,8 @@ add_group (PreferencesWidget * self, int group_idx)
       int subgroup_idx = (int) g_variant_get_int32 (
         g_variant_get_child_value (info_val, 1));
       SubgroupInfo * nfo =
-        &self->subgroup_infos[group_idx][subgroup_idx];
+        &self->subgroup_infos
+           [group_idx][subgroup_idx];
       nfo->schema = schema;
       nfo->settings = settings;
       nfo->group_name = group_name;

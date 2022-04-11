@@ -164,7 +164,8 @@ midi_is_short_message_type (
 }
 
 static inline midi_byte_t
-midi_get_note_number (const midi_byte_t short_msg[3])
+midi_get_note_number (
+  const midi_byte_t short_msg[3])
 {
   return short_msg[1];
 }
@@ -259,7 +260,8 @@ static inline uint32_t
 midi_get_14_bit_value (
   const midi_byte_t short_msg[3])
 {
-  return short_msg[1] | ((uint32_t) short_msg[2] << 7);
+  return short_msg[1]
+         | ((uint32_t) short_msg[2] << 7);
 }
 
 static inline midi_byte_t
@@ -361,7 +363,8 @@ midi_is_stop (const midi_byte_t short_msg[3])
 }
 
 static inline bool
-midi_is_active_sense (const midi_byte_t short_msg[3])
+midi_is_active_sense (
+  const midi_byte_t short_msg[3])
 {
   return short_msg[0] == 0xfe;
 }

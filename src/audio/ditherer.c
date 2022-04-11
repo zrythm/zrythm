@@ -59,8 +59,9 @@ ditherer_process (
           self->random2 = self->random1;
           self->random1 = rand ();
 
-          float * in_ptr = &frames[channels * j + i];
-          float   in = *in_ptr;
+          float * in_ptr =
+            &frames[channels * j + i];
+          float in = *in_ptr;
 
           // check for dodgy numbers coming in..
           if (in < -0.000001f || in > 0.000001f)

@@ -28,8 +28,9 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _DigitalMeterWidget DigitalMeterWidget;
-typedef struct _SnapGridWidget     SnapGridWidget;
+typedef struct _DigitalMeterWidget
+                               DigitalMeterWidget;
+typedef struct _SnapGridWidget SnapGridWidget;
 
 /**
  * @addtogroup widgets

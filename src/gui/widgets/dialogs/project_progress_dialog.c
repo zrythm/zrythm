@@ -69,8 +69,8 @@ project_progress_dialog_widget_new (
 
   generic_progress_dialog_widget_setup (
     generic_progress_dialog, _ ("Project Progress"),
-    &project_save_data->progress_info, F_AUTO_CLOSE,
-    F_NOT_CANCELABLE);
+    &project_save_data->progress_info,
+    F_AUTO_CLOSE, F_NOT_CANCELABLE);
 
   return self;
 }

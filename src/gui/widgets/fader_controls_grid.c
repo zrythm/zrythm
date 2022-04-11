@@ -137,8 +137,10 @@ setup_balance_control (
 
   if (track_type_has_channel (self->track->type))
     {
-      Channel * ch = track_get_channel (self->track);
-      g_return_if_fail (IS_CHANNEL_AND_NONNULL (ch));
+      Channel * ch =
+        track_get_channel (self->track);
+      g_return_if_fail (
+        IS_CHANNEL_AND_NONNULL (ch));
       self->balance_control =
         balance_control_widget_new (
           channel_get_balance_control,
@@ -198,8 +200,10 @@ setup_fader (FaderControlsGridWidget * self)
 {
   if (track_type_has_channel (self->track->type))
     {
-      Channel * ch = track_get_channel (self->track);
-      g_return_if_fail (IS_CHANNEL_AND_NONNULL (ch));
+      Channel * ch =
+        track_get_channel (self->track);
+      g_return_if_fail (
+        IS_CHANNEL_AND_NONNULL (ch));
       fader_widget_setup (
         self->fader, ch->fader, 36, 128);
       gtk_widget_set_margin_start (
@@ -286,7 +290,8 @@ static void
 fader_controls_grid_widget_class_init (
   FaderControlsGridWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "fader_controls_grid.ui");
 

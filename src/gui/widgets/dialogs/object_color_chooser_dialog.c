@@ -114,7 +114,8 @@ object_color_chooser_dialog_widget_run (
           GdkRGBA cur_color = track->color;
 
           /* if changed, apply the change */
-          if (!color_is_same (&sel_color, &cur_color))
+          if (!color_is_same (
+                &sel_color, &cur_color))
             {
               track_set_color (
                 track, &sel_color, F_UNDOABLE,

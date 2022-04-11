@@ -97,11 +97,12 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t midi_mapping_schema = {
-  YAML_VALUE_PTR (
-    MidiMapping,
-    midi_mapping_fields_schema),
-};
+static const cyaml_schema_value_t
+  midi_mapping_schema = {
+    YAML_VALUE_PTR (
+      MidiMapping,
+      midi_mapping_fields_schema),
+  };
 
 #if 0
 static const cyaml_schema_value_t

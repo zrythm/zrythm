@@ -38,7 +38,8 @@ static void
 inspector_editor_widget_class_init (
   InspectorEditorWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "inspector_editor.ui");
 }

@@ -129,8 +129,9 @@ channel_send_action_perform (
   GError **                      error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    channel_send_action_new, error, send, type, port,
-    stereo, amount, port_connections_mgr, error);
+    channel_send_action_new, error, send, type,
+    port, stereo, amount, port_connections_mgr,
+    error);
 }
 
 static bool
@@ -176,10 +177,12 @@ connect_or_disconnect (
               break;
             case TYPE_AUDIO:
               {
-                Port * l = port_find_from_identifier (
-                  self->l_id);
-                Port * r = port_find_from_identifier (
-                  self->r_id);
+                Port * l =
+                  port_find_from_identifier (
+                    self->l_id);
+                Port * r =
+                  port_find_from_identifier (
+                    self->r_id);
                 GError * err = NULL;
                 bool     connected =
                   channel_send_connect_stereo (

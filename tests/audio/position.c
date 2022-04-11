@@ -237,11 +237,14 @@ test_get_total_beats (void)
   beats =
     position_get_total_beats (&start_pos, false);
   g_assert_cmpint (beats, ==, 4);
-  beats = position_get_total_beats (&end_pos, false);
+  beats =
+    position_get_total_beats (&end_pos, false);
   g_assert_cmpint (beats, ==, 4);
 
-  position_from_ticks (&end_pos, 4800.0290249433119);
-  beats = position_get_total_beats (&end_pos, false);
+  position_from_ticks (
+    &end_pos, 4800.0290249433119);
+  beats =
+    position_get_total_beats (&end_pos, false);
   g_assert_cmpint (beats, ==, 5);
 
   test_helper_zrythm_cleanup ();

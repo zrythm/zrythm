@@ -131,7 +131,8 @@ lv2_evbuf_end (LV2_Evbuf * evbuf)
 bool
 lv2_evbuf_is_valid (LV2_Evbuf_Iterator iter)
 {
-  return iter.offset < lv2_evbuf_get_size (iter.evbuf);
+  return iter.offset
+         < lv2_evbuf_get_size (iter.evbuf);
 }
 
 LV2_Evbuf_Iterator

@@ -192,11 +192,13 @@ static void
 chord_pad_panel_widget_class_init (
   ChordPadPanelWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "chord_pad_panel.ui");
 
-  gtk_widget_class_set_css_name (klass, "chord-pad");
+  gtk_widget_class_set_css_name (
+    klass, "chord-pad");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

@@ -54,7 +54,8 @@ project_info_new (
     {
       self->filename = g_strdup (filename);
       self->modified =
-        io_file_get_last_modified_datetime (filename);
+        io_file_get_last_modified_datetime (
+          filename);
       if (self->modified == -1)
         {
           self->modified_str =
@@ -63,8 +64,9 @@ project_info_new (
         }
       else
         {
-          self->modified_str = datetime_epoch_to_str (
-            self->modified, NULL);
+          self->modified_str =
+            datetime_epoch_to_str (
+              self->modified, NULL);
         }
     }
   else
@@ -113,7 +115,8 @@ get_selected_project (ProjectAssistantWidget * self)
 }
 
 static ProjectInfo *
-get_selected_template (ProjectAssistantWidget * self)
+get_selected_template (
+  ProjectAssistantWidget * self)
 {
   GtkSingleSelection * sel = GTK_SINGLE_SELECTION (
     gtk_column_view_get_model (
@@ -149,7 +152,8 @@ on_visible_child_name_changed (
       gtk_button_set_label (
         self->ok_btn, _ ("_Open Selected"));
       gtk_widget_set_visible (
-        GTK_WIDGET (self->open_from_path_btn), true);
+        GTK_WIDGET (self->open_from_path_btn),
+        true);
     }
   else if (string_is_equal (child_name, "create-new"))
     {
@@ -609,8 +613,8 @@ set_column_view_model (GtkColumnView * column_view)
   sorter = g_object_ref (sorter);
   sort_list_model = gtk_sort_list_model_new (
     G_LIST_MODEL (store), sorter);
-  sel =
-    GTK_SINGLE_SELECTION (gtk_single_selection_new (
+  sel = GTK_SINGLE_SELECTION (
+    gtk_single_selection_new (
       G_LIST_MODEL (sort_list_model)));
   gtk_column_view_set_model (
     column_view, GTK_SELECTION_MODEL (sel));
@@ -629,8 +633,8 @@ add_column_view_columns (
   expression = gtk_cclosure_expression_new (
     G_TYPE_STRING, NULL, 0, NULL,
     G_CALLBACK (get_prj_name), NULL, NULL);
-  sorter =
-    GTK_SORTER (gtk_string_sorter_new (expression));
+  sorter = GTK_SORTER (
+    gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
     column_view, item_factories, ITEM_FACTORY_TEXT,
     Z_F_NOT_EDITABLE, Z_F_RESIZABLE, sorter,
@@ -642,8 +646,8 @@ add_column_view_columns (
   expression = gtk_cclosure_expression_new (
     G_TYPE_STRING, NULL, 0, NULL,
     G_CALLBACK (get_prj_path), NULL, NULL);
-  sorter =
-    GTK_SORTER (gtk_string_sorter_new (expression));
+  sorter = GTK_SORTER (
+    gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
     column_view, item_factories, ITEM_FACTORY_TEXT,
     Z_F_NOT_EDITABLE, Z_F_RESIZABLE, sorter,
@@ -667,7 +671,8 @@ project_assistant_finalize (
 {
   g_ptr_array_unref (
     self->recent_projects_item_factories);
-  g_ptr_array_unref (self->templates_item_factories);
+  g_ptr_array_unref (
+    self->templates_item_factories);
 
   G_OBJECT_CLASS (
     project_assistant_widget_parent_class)
@@ -678,7 +683,8 @@ static void
 project_assistant_widget_class_init (
   ProjectAssistantWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "project_assistant.ui");
   gtk_widget_class_set_css_name (
@@ -728,7 +734,8 @@ project_assistant_widget_init (
     self->recent_projects_column_view);
   g_signal_connect (
     sel, "selection-changed",
-    G_CALLBACK (on_project_selection_changed), self);
+    G_CALLBACK (on_project_selection_changed),
+    self);
   sel = gtk_column_view_get_model (
     self->templates_column_view);
   g_signal_connect (

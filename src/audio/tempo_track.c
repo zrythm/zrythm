@@ -47,7 +47,8 @@ tempo_track_init (Track * self)
   self->main_height = TRACK_DEF_HEIGHT / 2;
 
   gdk_rgba_parse (&self->color, "#2f6c52");
-  self->icon_name = g_strdup ("filename-bpm-amarok");
+  self->icon_name =
+    g_strdup ("filename-bpm-amarok");
 
   /* create bpm port */
   self->bpm_port = port_new_with_type_and_owner (
@@ -78,7 +79,8 @@ tempo_track_init (Track * self)
     TEMPO_TRACK_MIN_BEATS_PER_BAR;
   port_set_control_value (
     self->beats_per_bar_port,
-    TEMPO_TRACK_DEFAULT_BEATS_PER_BAR, false, false);
+    TEMPO_TRACK_DEFAULT_BEATS_PER_BAR, false,
+    false);
   self->beats_per_bar_port->id.flags2 |=
     PORT_FLAG2_BEATS_PER_BAR;
   self->beats_per_bar_port->id.flags |=
@@ -86,7 +88,8 @@ tempo_track_init (Track * self)
   self->beats_per_bar_port->id.flags |=
     PORT_FLAG_INTEGER;
 
-  self->beat_unit_port = port_new_with_type_and_owner (
+  self
+    ->beat_unit_port = port_new_with_type_and_owner (
     TYPE_CONTROL, FLOW_INPUT, _ ("Beat unit"),
     PORT_OWNER_TYPE_TRACK, self);
   self->beat_unit_port->id.sym =
@@ -211,8 +214,9 @@ tempo_track_set_bpm (
   else
     {
       GError * err = NULL;
-      bool ret = transport_action_perform_bpm_change (
-        start_bpm, bpm, false, &err);
+      bool     ret =
+        transport_action_perform_bpm_change (
+          start_bpm, bpm, false, &err);
       if (!ret)
         {
           HANDLE_ERROR (
@@ -313,7 +317,9 @@ tempo_track_get_beat_unit_enum (Track * self)
 }
 
 void
-tempo_track_set_beat_unit (Track * self, int beat_unit)
+tempo_track_set_beat_unit (
+  Track * self,
+  int     beat_unit)
 {
   BeatUnit ebu =
     tempo_track_beat_unit_to_enum (beat_unit);

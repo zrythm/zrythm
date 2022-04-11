@@ -95,8 +95,8 @@ editable_label_widget_show_popover_for_widget (
   g_return_if_fail (GTK_IS_WIDGET (parent));
   g_return_if_fail (GTK_IS_POPOVER (popover));
 
-  EditableLabelWidget * self =
-    g_object_new (EDITABLE_LABEL_WIDGET_TYPE, NULL);
+  EditableLabelWidget * self = g_object_new (
+    EDITABLE_LABEL_WIDGET_TYPE, NULL);
 
   self->object = object;
   self->getter = getter;
@@ -168,7 +168,8 @@ editable_label_widget_setup (
   if (self->getter)
     {
       gtk_label_set_text (
-        self->label, (*self->getter) (self->object));
+        self->label,
+        (*self->getter) (self->object));
     }
 }
 
@@ -187,8 +188,8 @@ editable_label_widget_new (
   GenericStringSetter setter,
   int                 width)
 {
-  EditableLabelWidget * self =
-    g_object_new (EDITABLE_LABEL_WIDGET_TYPE, NULL);
+  EditableLabelWidget * self = g_object_new (
+    EDITABLE_LABEL_WIDGET_TYPE, NULL);
 
   editable_label_widget_setup (
     self, object, getter, setter);
@@ -205,7 +206,8 @@ dispose (EditableLabelWidget * self)
   gtk_widget_unparent (GTK_WIDGET (self->popover));
   gtk_widget_unparent (GTK_WIDGET (self->label));
 
-  G_OBJECT_CLASS (editable_label_widget_parent_class)
+  G_OBJECT_CLASS (
+    editable_label_widget_parent_class)
     ->dispose (G_OBJECT (self));
 }
 
@@ -213,7 +215,8 @@ static void
 editable_label_widget_class_init (
   EditableLabelWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "editable-label");
 

@@ -119,9 +119,11 @@ header_widget_init (HeaderWidget * self)
 }
 
 static void
-header_widget_class_init (HeaderWidgetClass * _klass)
+header_widget_class_init (
+  HeaderWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
 
   resources_set_class_template (klass, "header.ui");
 

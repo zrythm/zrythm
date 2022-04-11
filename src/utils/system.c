@@ -230,7 +230,8 @@ system_get_cmd_output (
         out_ch, G_IO_IN, (GIOFunc) watch_out_cb,
         &data);
 
-      gint64 time_at_start = g_get_monotonic_time ();
+      gint64 time_at_start =
+        g_get_monotonic_time ();
       gint64 cur_time = time_at_start;
       while (
         !data.exited

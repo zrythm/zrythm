@@ -216,7 +216,8 @@ zrythm_app_check_for_updates (ZrythmApp * self)
         S_P_GENERAL_UPDATES, "check-for-updates",
         ret == GTK_RESPONSE_YES);
       g_settings_set_boolean (
-        S_GENERAL, "first-check-for-updates", false);
+        S_GENERAL, "first-check-for-updates",
+        false);
     }
 
   if (g_settings_get_boolean (
@@ -277,7 +278,8 @@ zrythm_app_check_for_updates (ZrythmApp * self)
                 gtk_message_dialog_new_with_markup (
                   GTK_WINDOW (MAIN_WINDOW),
                   GTK_DIALOG_DESTROY_WITH_PARENT,
-                  GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE,
+                  GTK_MESSAGE_INFO,
+                  GTK_BUTTONS_CLOSE,
                   _ ("A new version of Zrythm "
                      "has been released: "
                      "<b>%s</b>\n\n"
@@ -337,9 +339,8 @@ init_recent_projects (void)
 
   /* set last element to NULL because the call
    * takes a NULL terminated array */
-  ZRYTHM
-    ->recent_projects[ZRYTHM->num_recent_projects] =
-    NULL;
+  ZRYTHM->recent_projects
+    [ZRYTHM->num_recent_projects] = NULL;
 
   /* save the new list */
   g_settings_set_strv (
@@ -416,9 +417,11 @@ on_load_project (
   g_debug (
     "on_load_project called | open filename '%s' "
     "| opening template %d",
-    ZRYTHM->open_filename, ZRYTHM->opening_template);
+    ZRYTHM->open_filename,
+    ZRYTHM->opening_template);
   int ret = project_load (
-    ZRYTHM->open_filename, ZRYTHM->opening_template);
+    ZRYTHM->open_filename,
+    ZRYTHM->opening_template);
 
   if (ret != 0)
     {
@@ -509,15 +512,16 @@ init_thread (gpointer data)
  * initialization has finished.
  */
 int
-zrythm_app_prompt_for_project_func (ZrythmApp * self)
+zrythm_app_prompt_for_project_func (
+  ZrythmApp * self)
 {
   if (self->init_finished)
     {
       log_init_writer_idle (LOG, 3);
 
       g_action_group_activate_action (
-        G_ACTION_GROUP (self), "prompt_for_project",
-        NULL);
+        G_ACTION_GROUP (self),
+        "prompt_for_project", NULL);
 
       return G_SOURCE_REMOVE;
     }
@@ -566,11 +570,13 @@ license_info_dialog_response_cb (
   FirstRunDialogWidget * first_run_dialog =
     first_run_dialog_widget_new (
       GTK_WINDOW (self->splash));
-  gtk_window_present (GTK_WINDOW (first_run_dialog));
+  gtk_window_present (
+    GTK_WINDOW (first_run_dialog));
 
   g_signal_connect (
     G_OBJECT (first_run_dialog), "response",
-    G_CALLBACK (first_run_dialog_response_cb), self);
+    G_CALLBACK (first_run_dialog_response_cb),
+    self);
 }
 
 /**
@@ -593,7 +599,8 @@ on_prompt_for_project (
   if (ZRYTHM->open_filename)
     {
       g_action_group_activate_action (
-        G_ACTION_GROUP (self), "load_project", NULL);
+        G_ACTION_GROUP (self), "load_project",
+        NULL);
     }
   else
     {
@@ -749,7 +756,8 @@ print_gdk_pixbuf_format_info (
     "license: %s",
     name, description, mime_types, extensions,
     gdk_pixbuf_format_is_scalable (format),
-    gdk_pixbuf_format_is_disabled (format), license);
+    gdk_pixbuf_format_is_disabled (format),
+    license);
   g_free (name);
   g_free (description);
   g_free (license);
@@ -764,8 +772,8 @@ load_icon (
   g_message (
     "Attempting to load an icon from the icon "
     "theme...");
-  bool found =
-    gtk_icon_theme_has_icon (icon_theme, icon_name);
+  bool found = gtk_icon_theme_has_icon (
+    icon_theme, icon_name);
   g_message ("found: %d", found);
   if (!gtk_icon_theme_has_icon (
         icon_theme, icon_name))
@@ -1033,8 +1041,8 @@ zrythm_app_startup (GApplication * app)
       "under certain conditions. See the file 'COPYING' for details.\n\n"
       "Write comments and bugs to %s\n"
       "Support this project at https://liberapay.com/Zrythm\n\n"),
-    PROGRAM_NAME, ver, copyright_line, PROGRAM_NAME,
-    ISSUE_TRACKER_URL);
+    PROGRAM_NAME, ver, copyright_line,
+    PROGRAM_NAME, ISSUE_TRACKER_URL);
   g_free (ver);
 
   char * cur_dir = g_get_current_dir ();
@@ -1124,8 +1132,8 @@ zrythm_app_startup (GApplication * app)
   bool remote = g_application_get_is_remote (
     G_APPLICATION (self));
   g_message (
-    "application registered: %d, is remote %d", ret,
-    remote);
+    "application registered: %d, is remote %d",
+    ret, remote);
 
   g_message (
     "application resources base path: %s",
@@ -1153,8 +1161,8 @@ zrythm_app_startup (GApplication * app)
     self->default_settings, "gtk-font-name",
     "Segoe UI Normal 10", NULL);
   g_object_set (
-    self->default_settings, "gtk-cursor-theme-name",
-    "Adwaita", NULL);
+    self->default_settings,
+    "gtk-cursor-theme-name", "Adwaita", NULL);
 #elif defined(__APPLE__)
   g_object_set (
     self->default_settings, "gtk-font-name",
@@ -1310,7 +1318,8 @@ zrythm_app_startup (GApplication * app)
       system_themes_dir = zrythm_get_dir (
         ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR);
       css_theme_path = g_build_filename (
-        system_themes_dir, "zrythm-theme.css", NULL);
+        system_themes_dir, "zrythm-theme.css",
+        NULL);
       g_free (system_themes_dir);
     }
   g_free (css_theme_file);
@@ -1381,7 +1390,8 @@ zrythm_app_startup (GApplication * app)
   INSTALL_ACCEL ("<Control>n", "app.new");
   INSTALL_ACCEL ("<Control>o", "app.open");
   INSTALL_ACCEL ("<Control>s", "app.save");
-  INSTALL_ACCEL ("<Control><Shift>s", "app.save-as");
+  INSTALL_ACCEL (
+    "<Control><Shift>s", "app.save-as");
   INSTALL_ACCEL ("<Control>e", "app.export-as");
   INSTALL_ACCEL ("<Control>z", "app.undo");
   INSTALL_ACCEL ("<Control><Shift>z", "app.redo");
@@ -1403,13 +1413,15 @@ zrythm_app_startup (GApplication * app)
     "<Control>plus", "app.original-size::global");
   INSTALL_ACCEL (
     "<Control>bracketleft", "app.best-fit::global");
-  INSTALL_ACCEL ("<Control>l", "app.loop-selection");
+  INSTALL_ACCEL (
+    "<Control>l", "app.loop-selection");
   INSTALL_ACCEL_WITH_SECONDARY (
     "<Control>KP_4", "<Control>BackSpace",
     "app.goto-prev-marker");
   INSTALL_ACCEL (
     "<Control>KP_6", "app.goto-next-marker");
-  INSTALL_ACCEL ("<Control>space", "app.play-pause");
+  INSTALL_ACCEL (
+    "<Control>space", "app.play-pause");
   INSTALL_ACCEL (
     "<Alt>Q", "app.quantize-options::global");
   INSTALL_ACCEL (
@@ -1522,15 +1534,17 @@ convert_project (
         {
           ret = project_decompress (
             &self->output_file, NULL,
-            PROJECT_DECOMPRESS_FILE, file_to_convert,
-            0, PROJECT_DECOMPRESS_FILE, &err);
+            PROJECT_DECOMPRESS_FILE,
+            file_to_convert, 0,
+            PROJECT_DECOMPRESS_FILE, &err);
         }
       else
         {
           ret = project_decompress (
             &output, &output_size,
-            PROJECT_DECOMPRESS_DATA, file_to_convert,
-            0, PROJECT_DECOMPRESS_FILE, &err);
+            PROJECT_DECOMPRESS_DATA,
+            file_to_convert, 0,
+            PROJECT_DECOMPRESS_FILE, &err);
         }
     }
 
@@ -1748,7 +1762,8 @@ add_option_entries (ZrythmApp * self)
      "SCRIPT-FILE" },
     { "pretty",        0, G_OPTION_FLAG_NONE,
      G_OPTION_ARG_NONE, &self->pretty_print,
-     _ ("Print output in user-friendly way"), NULL },
+     _ ("Print output in user-friendly way"),
+     NULL },
     { "print-settings",   'p', G_OPTION_FLAG_NONE,
      G_OPTION_ARG_NONE, NULL,
      _ ("Print current settings"), NULL },
@@ -1784,8 +1799,8 @@ add_option_entries (ZrythmApp * self)
      "LOG-LEVEL" },
 #ifdef APPIMAGE_BUILD
     { "appimage-runtime-path",                 0,
-     G_OPTION_FLAG_NONE, G_OPTION_ARG_STRING, NULL,
-     "AppImage runtime path", "PATH" },
+     G_OPTION_FLAG_NONE, G_OPTION_ARG_STRING,
+     NULL, "AppImage runtime path", "PATH" },
 #endif
     { 0        },
   };

@@ -194,7 +194,8 @@ midi_editor_space_widget_setup (
     {
       arranger_widget_setup (
         Z_ARRANGER_WIDGET (self->arranger),
-        ARRANGER_WIDGET_TYPE_MIDI, SNAP_GRID_EDITOR);
+        ARRANGER_WIDGET_TYPE_MIDI,
+        SNAP_GRID_EDITOR);
     }
   if (self->modifier_arranger)
     {
@@ -286,7 +287,8 @@ static void
 midi_editor_space_widget_class_init (
   MidiEditorSpaceWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "midi_editor_space.ui");
 

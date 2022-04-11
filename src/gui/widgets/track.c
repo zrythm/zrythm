@@ -114,7 +114,8 @@ track_widget_get_hovered_button (
 #define IS_BUTTON_HOVERED \
   (x >= cb->x \
    && x <= cb->x + (cb->width ? cb->width : TRACK_BUTTON_SIZE) \
-   && y >= cb->y && y <= cb->y + TRACK_BUTTON_SIZE)
+   && y >= cb->y \
+   && y <= cb->y + TRACK_BUTTON_SIZE)
 #define RETURN_IF_HOVERED \
   if (IS_BUTTON_HOVERED) \
     return cb;
@@ -184,7 +185,8 @@ track_widget_get_hovered_button (
                   RETURN_IF_HOVERED;
                 }
               for (int j = 0;
-                   j < at->num_bot_right_buttons; j++)
+                   j < at->num_bot_right_buttons;
+                   j++)
                 {
                   cb = at->bot_right_buttons[j];
                   RETURN_IF_HOVERED;
@@ -204,7 +206,8 @@ track_widget_get_hovered_am_widget (
 #define IS_BUTTON_HOVERED \
   (x >= cb->x \
    && x <= cb->x + (cb->width ? cb->width : TRACK_BUTTON_SIZE) \
-   && y >= cb->y && y <= cb->y + TRACK_BUTTON_SIZE)
+   && y >= cb->y \
+   && y <= cb->y + TRACK_BUTTON_SIZE)
 #define RETURN_IF_HOVERED \
   if (IS_BUTTON_HOVERED) \
     return cb;
@@ -567,7 +570,8 @@ on_query_tooltip (
   TrackWidget * self)
 {
   /* TODO set tooltip rect */
-  gtk_tooltip_set_text (tooltip, self->tooltip_text);
+  gtk_tooltip_set_text (
+    tooltip, self->tooltip_text);
 
   return true;
 }
@@ -742,7 +746,8 @@ show_context_menu (
           if (num_selected == 1)
             str = g_strdup (_ ("_Duplicate Track"));
           else
-            str = g_strdup (_ ("_Duplicate Tracks"));
+            str =
+              g_strdup (_ ("_Duplicate Tracks"));
           menuitem = z_gtk_create_menu_item (
             str, "edit-copy",
             "app.duplicate-selected-tracks");
@@ -970,7 +975,8 @@ show_context_menu (
         }
 
       g_menu_append_submenu (
-        piano_roll_section, _ ("Track MIDI Channel"),
+        piano_roll_section,
+        _ ("Track MIDI Channel"),
         G_MENU_MODEL (track_midi_ch_submenu));
 
       if (lane)
@@ -1060,8 +1066,8 @@ show_edit_name_popover (
   if (lane)
     {
       editable_label_widget_show_popover_for_widget (
-        GTK_WIDGET (self), self->track_name_popover,
-        lane,
+        GTK_WIDGET (self),
+        self->track_name_popover, lane,
         (GenericStringGetter) track_lane_get_name,
         (GenericStringSetter)
           track_lane_rename_with_action);
@@ -1069,8 +1075,8 @@ show_edit_name_popover (
   else
     {
       editable_label_widget_show_popover_for_widget (
-        GTK_WIDGET (self), self->track_name_popover,
-        self->track,
+        GTK_WIDGET (self),
+        self->track_name_popover, self->track,
         (GenericStringGetter) track_get_name,
         (GenericStringSetter)
           track_set_name_with_action);
@@ -1126,8 +1132,8 @@ click_pressed (
   else if (self->color_area_hovered)
     {
       object_color_chooser_dialog_widget_run (
-        GTK_WINDOW (MAIN_WINDOW), self->track, NULL,
-        NULL);
+        GTK_WINDOW (MAIN_WINDOW), self->track,
+        NULL, NULL);
     }
 }
 
@@ -1151,7 +1157,8 @@ click_released (
 
   if (self->clicked_button)
     {
-      CustomButtonWidget * cb = self->clicked_button;
+      CustomButtonWidget * cb =
+        self->clicked_button;
 
       /* if track not selected, select it */
       if (!track_is_selected (track))
@@ -1240,7 +1247,8 @@ click_released (
         cb->owner_type
         == CUSTOM_BUTTON_WIDGET_OWNER_LANE)
         {
-          TrackLane * lane = (TrackLane *) cb->owner;
+          TrackLane * lane =
+            (TrackLane *) cb->owner;
 
           if (TRACK_CB_ICON_IS (SOLO))
             {
@@ -1303,15 +1311,17 @@ click_released (
                 {
                   at->visible = 0;
                   EVENTS_PUSH (
-                    ET_AUTOMATION_TRACK_REMOVED, at);
+                    ET_AUTOMATION_TRACK_REMOVED,
+                    at);
                 }
             }
           else if (TRACK_CB_ICON_IS (
                      SHOW_AUTOMATION_LANES))
             {
-              AutomatableSelectorPopoverWidget * popover =
-                automatable_selector_popover_widget_new (
-                  at);
+              AutomatableSelectorPopoverWidget *
+                popover =
+                  automatable_selector_popover_widget_new (
+                    at);
               /*gtk_popover_set_relative_to (*/
               /*GTK_POPOVER (popover),*/
               /*GTK_WIDGET (self));*/
@@ -1466,7 +1476,8 @@ on_drag_update (
         case TRACK_WIDGET_RESIZE_TARGET_AT:
           {
             AutomationTrack * at =
-              (AutomationTrack *) self->resize_target;
+              (AutomationTrack *)
+                self->resize_target;
             at->height = MAX (
               TRACK_MIN_HEIGHT, at->height + diff);
           }
@@ -1476,7 +1487,8 @@ on_drag_update (
             TrackLane * lane =
               (TrackLane *) self->resize_target;
             lane->height = MAX (
-              TRACK_MIN_HEIGHT, lane->height + diff);
+              TRACK_MIN_HEIGHT,
+              lane->height + diff);
             g_message (
               "lane %d height changed", lane->pos);
           }
@@ -1513,8 +1525,8 @@ on_drag_update (
       /* begin drag */
       gdk_drag_begin (
         surface, device, provider,
-        GDK_ACTION_MOVE | GDK_ACTION_COPY, offset_x,
-        offset_y);
+        GDK_ACTION_MOVE | GDK_ACTION_COPY,
+        offset_x, offset_y);
     }
 
   self->last_offset_y = offset_y;
@@ -1588,7 +1600,8 @@ track_widget_do_highlight (
   if (highlight)
     {
       TrackWidgetHighlight location =
-        track_widget_get_highlight_location (self, y);
+        track_widget_get_highlight_location (
+          self, y);
       if (location == TRACK_WIDGET_HIGHLIGHT_INSIDE)
         {
           /* highlight inside */
@@ -1781,8 +1794,9 @@ add_button (
   bool          top,
   const char *  icon_name)
 {
-  CustomButtonWidget * cb = custom_button_widget_new (
-    icon_name, TRACK_BUTTON_SIZE);
+  CustomButtonWidget * cb =
+    custom_button_widget_new (
+      icon_name, TRACK_BUTTON_SIZE);
   if (top)
     {
       self->top_buttons[self->num_top_buttons++] =
@@ -1832,8 +1846,8 @@ void
 track_widget_update_size (TrackWidget * self)
 {
   g_return_if_fail (self->track);
-  int height = (int) track_get_full_visible_height (
-    self->track);
+  int height = (int)
+    track_get_full_visible_height (self->track);
   int w;
   gtk_widget_get_size_request (
     (GtkWidget *) self, &w, NULL);
@@ -1850,7 +1864,8 @@ track_widget_update_icons (TrackWidget * self)
 {
   for (int i = 0; i < self->num_bot_buttons; i++)
     {
-      CustomButtonWidget * cb = self->bot_buttons[i];
+      CustomButtonWidget * cb =
+        self->bot_buttons[i];
 
       if (
         TRACK_CB_ICON_IS (FOLD_OPEN)
@@ -1898,7 +1913,8 @@ track_widget_new (Track * track)
 {
   g_return_val_if_fail (track, NULL);
   g_debug (
-    "creating new track widget for %s", track->name);
+    "creating new track widget for %s",
+    track->name);
 
   TrackWidget * self =
     g_object_new (TRACK_WIDGET_TYPE, NULL);
@@ -1915,7 +1931,8 @@ track_widget_new (Track * track)
         self, true, TRACK_ICON_NAME_LISTEN);
       add_button (
         self, true, TRACK_ICON_NAME_SHOW_UI);
-      add_button (self, false, TRACK_ICON_NAME_LOCK);
+      add_button (
+        self, false, TRACK_ICON_NAME_LOCK);
       add_button (
         self, false, TRACK_ICON_NAME_FREEZE);
       add_button (
@@ -2136,7 +2153,8 @@ track_widget_init (TrackWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  gtk_widget_set_focusable (GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (
+    GTK_WIDGET (self), true);
 
   gtk_orientable_set_orientation (
     GTK_ORIENTABLE (gtk_widget_get_layout_manager (
@@ -2235,7 +2253,8 @@ track_widget_init (TrackWidget * self)
 static void
 track_widget_class_init (TrackWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "track.ui");
 
 #define BIND_CHILD(x) \

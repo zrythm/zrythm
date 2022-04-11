@@ -38,12 +38,13 @@ typedef enum ExtPortType_v1
   EXT_PORT_TYPE_RTAUDIO_v1,
 } ExtPortType_v1;
 
-static const cyaml_strval_t ext_port_type_strings_v1[] = {
-  {"JACK",         EXT_PORT_TYPE_JACK_v1       },
-  { "ALSA",        EXT_PORT_TYPE_ALSA_v1       },
-  { "Windows MME", EXT_PORT_TYPE_WINDOWS_MME_v1},
-  { "RtMidi",      EXT_PORT_TYPE_RTMIDI_v1     },
-  { "RtAudio",     EXT_PORT_TYPE_RTAUDIO_v1    },
+static const cyaml_strval_t
+  ext_port_type_strings_v1[] = {
+    {"JACK",         EXT_PORT_TYPE_JACK_v1       },
+    { "ALSA",        EXT_PORT_TYPE_ALSA_v1       },
+    { "Windows MME", EXT_PORT_TYPE_WINDOWS_MME_v1},
+    { "RtMidi",      EXT_PORT_TYPE_RTMIDI_v1     },
+    { "RtAudio",     EXT_PORT_TYPE_RTAUDIO_v1    },
 };
 
 typedef struct ExtPort_v1
@@ -71,27 +72,32 @@ typedef struct ExtPort_v1
   void *         port;
 } ExtPort_v1;
 
-static const cyaml_schema_field_t ext_port_fields_schema_v1[] = {
-  YAML_FIELD_INT (ExtPort_v1, schema_version),
-  YAML_FIELD_STRING_PTR (ExtPort_v1, full_name),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    ExtPort_v1,
-    short_name),
-  YAML_FIELD_STRING_PTR_OPTIONAL (ExtPort_v1, alias1),
-  YAML_FIELD_STRING_PTR_OPTIONAL (ExtPort_v1, alias2),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    ExtPort_v1,
-    rtaudio_dev_name),
-  YAML_FIELD_INT (ExtPort_v1, num_aliases),
-  YAML_FIELD_INT (ExtPort_v1, is_midi),
-  YAML_FIELD_ENUM (
-    ExtPort_v1,
-    type,
-    ext_port_type_strings_v1),
-  YAML_FIELD_UINT (ExtPort_v1, rtaudio_channel_idx),
+static const cyaml_schema_field_t
+  ext_port_fields_schema_v1[] = {
+    YAML_FIELD_INT (ExtPort_v1, schema_version),
+    YAML_FIELD_STRING_PTR (ExtPort_v1, full_name),
+    YAML_FIELD_STRING_PTR_OPTIONAL (
+      ExtPort_v1,
+      short_name),
+    YAML_FIELD_STRING_PTR_OPTIONAL (
+      ExtPort_v1,
+      alias1),
+    YAML_FIELD_STRING_PTR_OPTIONAL (
+      ExtPort_v1,
+      alias2),
+    YAML_FIELD_STRING_PTR_OPTIONAL (
+      ExtPort_v1,
+      rtaudio_dev_name),
+    YAML_FIELD_INT (ExtPort_v1, num_aliases),
+    YAML_FIELD_INT (ExtPort_v1, is_midi),
+    YAML_FIELD_ENUM (
+      ExtPort_v1,
+      type,
+      ext_port_type_strings_v1),
+    YAML_FIELD_UINT (ExtPort_v1, rtaudio_channel_idx),
 
-  CYAML_FIELD_END
-};
+    CYAML_FIELD_END
+  };
 
 static const cyaml_schema_value_t ext_port_schema_v1 = {
   YAML_VALUE_PTR (

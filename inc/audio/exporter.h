@@ -204,7 +204,8 @@ void
 export_settings_print (const ExportSettings * self);
 
 void
-export_settings_free_members (ExportSettings * self);
+export_settings_free_members (
+  ExportSettings * self);
 
 void
 export_settings_free (ExportSettings * self);

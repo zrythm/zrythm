@@ -56,10 +56,11 @@ draw_lines (
     GTK_WIDGET (self));
 
   /* draw */
-  gdk_cairo_set_source_rgba (cr, &self->color_green);
-  float        half_height = (float) height / 2.0f;
-  uint32_t     nframes = AUDIO_ENGINE->block_length;
-  float        val;
+  gdk_cairo_set_source_rgba (
+    cr, &self->color_green);
+  float    half_height = (float) height / 2.0f;
+  uint32_t nframes = AUDIO_ENGINE->block_length;
+  float    val;
   unsigned int step =
     MAX (1, (nframes / (unsigned int) width));
 
@@ -230,8 +231,8 @@ live_waveform_draw_cb (
   else
     {
       draw_lines (
-        self, cr, self->bufs[0], NULL, lstart_index,
-        0);
+        self, cr, self->bufs[0], NULL,
+        lstart_index, 0);
     }
 }
 
@@ -305,7 +306,8 @@ finalize (LiveWaveformWidget * self)
 }
 
 static void
-live_waveform_widget_init (LiveWaveformWidget * self)
+live_waveform_widget_init (
+  LiveWaveformWidget * self)
 {
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self),
@@ -318,7 +320,8 @@ static void
 live_waveform_widget_class_init (
   LiveWaveformWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "live-waveform");
 

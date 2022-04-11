@@ -93,8 +93,9 @@ timeline_minimap_bg_snapshot (
       gtk_widget_translate_coordinates (
         GTK_WIDGET (track->widget),
         GTK_WIDGET (MW_TIMELINE), 0, 0, NULL, &wy);
-      track_height = gtk_widget_get_allocated_height (
-        GTK_WIDGET (track->widget));
+      track_height =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (track->widget));
 
       GdkRGBA color = track->color;
       color.alpha = 0.6f;
@@ -124,7 +125,8 @@ timeline_minimap_bg_snapshot (
                   ((float) wy
                    / (float) total_track_height)
                     * height,
-                  ((float) px_length / (float) song_px)
+                  ((float) px_length
+                   / (float) song_px)
                     * width,
                   ((float) track_height
                    / (float) total_track_height)
@@ -158,7 +160,8 @@ static void
 timeline_minimap_bg_widget_class_init (
   TimelineMinimapBgWidgetClass * klass)
 {
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   wklass->snapshot = timeline_minimap_bg_snapshot;
   gtk_widget_class_set_css_name (
     wklass, "timeline-minimap-bg");

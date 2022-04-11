@@ -41,7 +41,8 @@
 
 #define TL_SELECTIONS_SCHEMA_VERSION 1
 
-#define TL_SELECTIONS (PROJECT->timeline_selections)
+#define TL_SELECTIONS \
+  (PROJECT->timeline_selections)
 
 /**
  * Selections to be used for the timeline's current
@@ -83,7 +84,9 @@ static const cyaml_schema_field_t
       TimelineSelections,
       base,
       arranger_selections_fields_schema),
-    YAML_FIELD_INT (TimelineSelections, schema_version),
+    YAML_FIELD_INT (
+      TimelineSelections,
+      schema_version),
     YAML_FIELD_DYN_ARRAY_VAR_COUNT (
       TimelineSelections,
       regions,

@@ -138,12 +138,14 @@ control_port_get_snapped_val_from_val (
   PortFlags flags = self->id.flags;
   if (flags & PORT_FLAG_TOGGLE)
     {
-      return control_port_is_val_toggled (val) ? 1.f : 0.f;
+      return control_port_is_val_toggled (val)
+               ? 1.f
+               : 0.f;
     }
   else if (flags & PORT_FLAG_INTEGER)
     {
-      return (float) control_port_get_int_from_val (
-        val);
+      return (
+        float) control_port_get_int_from_val (val);
     }
 
   return val;
@@ -270,7 +272,8 @@ control_port_real_val_to_normalized (
   else
     {
       float sizef = self->maxf - self->minf;
-      return (sizef - (self->maxf - real_val)) / sizef;
+      return (sizef - (self->maxf - real_val))
+             / sizef;
     }
   g_return_val_if_reached (0.f);
 }
@@ -354,7 +357,7 @@ control_port_set_val_from_normalized (
     }
   else if (id->flags & PORT_FLAG_STEREO_BALANCE)
     {
-      Track *   track = port_get_track (self, true);
+      Track * track = port_get_track (self, true);
       Channel * ch = track_get_channel (track);
       g_return_if_fail (ch);
       if (!math_floats_equal (
@@ -368,7 +371,8 @@ control_port_set_val_from_normalized (
   else if (id->flags & PORT_FLAG_MIDI_AUTOMATABLE)
     {
       float real_val =
-        self->minf + val * (self->maxf - self->minf);
+        self->minf
+        + val * (self->maxf - self->minf);
       if (!math_floats_equal (val, self->control))
         {
           EVENTS_PUSH (

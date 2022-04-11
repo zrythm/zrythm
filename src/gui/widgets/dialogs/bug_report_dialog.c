@@ -101,7 +101,8 @@ get_report_template (
     ret = g_uri_escape_string (
       report_template, NULL, FALSE);
   else
-    ret = g_markup_escape_text (report_template, -1);
+    ret =
+      g_markup_escape_text (report_template, -1);
 
   g_free (steps_to_reproduce);
   g_free (report_template);
@@ -226,7 +227,8 @@ on_preview_and_send_automatically_response (
     _ ("_Cancel"), GTK_RESPONSE_CANCEL, NULL);
 
   GtkWidget * content_area =
-    gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+    gtk_dialog_get_content_area (
+      GTK_DIALOG (dialog));
   GtkGrid * grid = GTK_GRID (gtk_grid_new ());
   z_gtk_widget_set_margin (GTK_WIDGET (grid), 4);
   gtk_grid_set_row_spacing (grid, 2);
@@ -312,7 +314,8 @@ on_preview_and_send_automatically_response (
       /* create a zstd-compressed log file */
       GError * err = NULL;
       bool     ret = log_generate_compressed_file (
-            LOG, &log_file_tmpdir, &log_file_path, &err);
+            LOG, &log_file_tmpdir, &log_file_path,
+            &err);
       if (!ret)
         {
           g_warning (
@@ -358,8 +361,9 @@ on_preview_and_send_automatically_response (
       };
       z_gtk_generate_screenshot_image (
         GTK_WIDGET (MAIN_WINDOW), "jpeg",
-        (char **) option_keys, (char **) option_vals,
-        &screenshot_tmpdir, &screenshot_path, true);
+        (char **) option_keys,
+        (char **) option_vals, &screenshot_tmpdir,
+        &screenshot_path, true);
     }
   GtkWidget * img = gtk_image_new ();
   if (screenshot_path)
@@ -406,7 +410,8 @@ on_preview_and_send_automatically_response (
     _ ("Sending data..."));
   strcpy (
     data.progress_nfo.label_done_str, _ ("Done"));
-  strcpy (data.progress_nfo.error_str, _ ("Failed"));
+  strcpy (
+    data.progress_nfo.error_str, _ ("Failed"));
   GenericProgressDialogWidget * progress_dialog =
     generic_progress_dialog_widget_new ();
   generic_progress_dialog_widget_setup (
@@ -415,11 +420,13 @@ on_preview_and_send_automatically_response (
 
   /* start sending in a new thread */
   GThread * thread = g_thread_new (
-    "bounce_thread", (GThreadFunc) send_data, &data);
+    "bounce_thread", (GThreadFunc) send_data,
+    &data);
 
   /* run dialog */
   gtk_window_set_transient_for (
-    GTK_WINDOW (progress_dialog), GTK_WINDOW (self));
+    GTK_WINDOW (progress_dialog),
+    GTK_WINDOW (self));
   z_gtk_dialog_run (
     GTK_DIALOG (progress_dialog), true);
 

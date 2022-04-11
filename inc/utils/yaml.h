@@ -215,8 +215,8 @@
 
 #define YAML_FIELD_STRING_PTR(owner, member) \
   CYAML_FIELD_STRING_PTR ( \
-    #member, CYAML_FLAG_POINTER, owner, member, 0, \
-    CYAML_UNLIMITED)
+    #member, CYAML_FLAG_POINTER, owner, member, \
+    0, CYAML_UNLIMITED)
 
 #define YAML_FIELD_STRING_PTR_OPTIONAL( \
   owner, member) \
@@ -230,7 +230,8 @@
     #member, CYAML_FLAG_DEFAULT, owner, member, \
     strings, CYAML_ARRAY_LEN (strings))
 
-#define YAML_FIELD_BITFIELD(owner, member, bitvals) \
+#define YAML_FIELD_BITFIELD( \
+  owner, member, bitvals) \
   CYAML_FIELD_BITFIELD ( \
     #member, CYAML_FLAG_DEFAULT, owner, member, \
     bitvals, CYAML_ARRAY_LEN (bitvals))
@@ -248,7 +249,8 @@
  */
 #define YAML_VALUE_PTR_NULLABLE(cc, fields_schema) \
   CYAML_VALUE_MAPPING ( \
-    CYAML_FLAG_POINTER_NULL_STR, cc, fields_schema)
+    CYAML_FLAG_POINTER_NULL_STR, cc, \
+    fields_schema)
 
 /**
  * Schema to be used for arrays of structs directly

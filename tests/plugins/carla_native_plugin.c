@@ -57,8 +57,8 @@ test_mono_plugin (void)
   GError *         err = NULL;
   UndoableAction * ua =
     tracklist_selections_action_new_edit_single_float (
-      EDIT_TRACK_ACTION_TYPE_PAN, audio_track, 0.5f,
-      1.f, false, &err);
+      EDIT_TRACK_ACTION_TYPE_PAN, audio_track,
+      0.5f, 1.f, false, &err);
   undo_manager_perform (UNDO_MANAGER, ua, NULL);
 
   /* add a mono insert */
@@ -182,7 +182,8 @@ test_crash_handling (void)
 static void
 test_process (void)
 {
-#if defined(HAVE_TEST_SIGNAL) && defined(HAVE_CARLA)
+#if defined(HAVE_TEST_SIGNAL) \
+  && defined(HAVE_CARLA)
 
   test_helper_zrythm_init ();
 
@@ -208,7 +209,8 @@ test_process (void)
     .local_offset = 0,
     .nframes = local_offset
   };
-  carla_native_plugin_process (pl->carla, &time_nfo);
+  carla_native_plugin_process (
+    pl->carla, &time_nfo);
   for (nframes_t i = 1; i < local_offset; i++)
     {
       g_assert_true (fabsf (out->buf[i]) > 1e-10f);
@@ -217,7 +219,8 @@ test_process (void)
   time_nfo.local_offset = local_offset;
   time_nfo.nframes =
     AUDIO_ENGINE->block_length - local_offset;
-  carla_native_plugin_process (pl->carla, &time_nfo);
+  carla_native_plugin_process (
+    pl->carla, &time_nfo);
   for (nframes_t i = local_offset;
        i < AUDIO_ENGINE->block_length; i++)
     {

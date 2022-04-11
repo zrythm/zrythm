@@ -23,7 +23,8 @@
 
 G_BEGIN_DECLS
 
-#define GTK_TYPE_FISHBOWL (gtk_fishbowl_get_type ())
+#define GTK_TYPE_FISHBOWL \
+  (gtk_fishbowl_get_type ())
 #define GTK_FISHBOWL(obj) \
   (G_TYPE_CHECK_INSTANCE_CAST ( \
     (obj), GTK_TYPE_FISHBOWL, GtkFishbowl))
@@ -99,8 +100,9 @@ G_END_DECLS
 
 #include "config.h"
 
-typedef struct _GtkFishbowlPrivate GtkFishbowlPrivate;
-typedef struct _GtkFishbowlChild   GtkFishbowlChild;
+typedef struct _GtkFishbowlPrivate
+  GtkFishbowlPrivate;
+typedef struct _GtkFishbowlChild GtkFishbowlChild;
 
 struct _GtkFishbowlPrivate
 {
@@ -681,8 +683,8 @@ gtk_fishbowl_do_update (GtkFishbowl * fishbowl)
 
   start_counter =
     gdk_frame_clock_get_history_start (frame_clock);
-  end_counter =
-    gdk_frame_clock_get_frame_counter (frame_clock);
+  end_counter = gdk_frame_clock_get_frame_counter (
+    frame_clock);
   start = gdk_frame_clock_get_timings (
     frame_clock, start_counter);
   for (

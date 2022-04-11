@@ -126,7 +126,8 @@ automation_arranger_widget_create_ap (
   float normalized_val =
     (float) ((height - start_y) / height);
   g_message (
-    "normalized val is %f", (double) normalized_val);
+    "normalized val is %f",
+    (double) normalized_val);
 
   /* clamp the value because the cursor might be
    * outside the widget */
@@ -172,7 +173,8 @@ automation_arranger_widget_resize_curves (
   diff = diff / 120.0;
   for (
     int i = 0;
-    i < AUTOMATION_SELECTIONS->num_automation_points;
+    i
+    < AUTOMATION_SELECTIONS->num_automation_points;
     i++)
     {
       AutomationPoint * ap =
@@ -280,7 +282,8 @@ automation_arranger_move_hit_aps (
       x, -1);
   if (obj)
     {
-      AutomationPoint * ap = (AutomationPoint *) obj;
+      AutomationPoint * ap =
+        (AutomationPoint *) obj;
       if (automation_point_is_point_hit (ap, x, -1))
         {
           arranger_object_select (

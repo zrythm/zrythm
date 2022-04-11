@@ -42,7 +42,8 @@ typedef struct _FaderWidget FaderWidget;
 typedef struct _MeterWidget MeterWidget;
 typedef struct _BalanceControlWidget
   BalanceControlWidget;
-typedef struct _FaderButtonsWidget FaderButtonsWidget;
+typedef struct _FaderButtonsWidget
+  FaderButtonsWidget;
 
 /**
  * @addtogroup widgets

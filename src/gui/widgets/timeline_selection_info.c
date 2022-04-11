@@ -71,8 +71,9 @@ on_drag_begin_w_object ()
       return; \
     UndoableAction * ua = (UndoableAction *) \
       edit_timeline_selections_action_new ( \
-        TL_SELECTIONS, ETS_##caps##_##pos_name_caps, \
-        0, NULL, &new_pos); \
+        TL_SELECTIONS, \
+        ETS_##caps##_##pos_name_caps, 0, NULL, \
+        &new_pos); \
     undo_manager_perform (UNDO_MANAGER, ua); \
   }
 
@@ -96,10 +97,12 @@ DEFINE_DRAG_END_POS_SET (
   loop_end_pos);
 
 #define DEFINE_DRAG_END_POS_RESIZE_L(cc, sc) \
-  static void on_drag_end_##sc##_resize_l (cc * sc) \
+  static void on_drag_end_##sc##_resize_l ( \
+    cc * sc) \
   { \
     Position new_pos; \
-    position_set_to_pos (&new_pos, &sc->start_pos); \
+    position_set_to_pos ( \
+      &new_pos, &sc->start_pos); \
     /* set the actual pos back to the prev pos */ \
     position_set_to_pos ( \
       &TL_SELECTIONS->sc##s[0]->start_pos, \
@@ -123,7 +126,8 @@ DEFINE_DRAG_END_POS_SET (
 DEFINE_DRAG_END_POS_RESIZE_L (ZRegion, region);
 
 #define DEFINE_DRAG_END_POS_RESIZE_R(cc, sc) \
-  static void on_drag_end_##sc##_resize_r (cc * sc) \
+  static void on_drag_end_##sc##_resize_r ( \
+    cc * sc) \
   { \
     Position new_pos; \
     position_set_to_pos (&new_pos, &sc->end_pos); \
@@ -216,7 +220,8 @@ timeline_selection_info_widget_refresh (
     timeline_selections_get_last_object (ts, 0);
   int only_object = fo == lo;
 
-  selection_info_widget_clear (self->selection_info);
+  selection_info_widget_clear (
+    self->selection_info);
   gtk_stack_set_visible_child (
     GTK_STACK (self),
     GTK_WIDGET (self->no_selection_label));
@@ -232,8 +237,9 @@ timeline_selection_info_widget_refresh (
       if (Z_IS_REGION_WIDGET (fo))
         {
           REGION_WIDGET_GET_PRIVATE (fo);
-          ZRegion * r = region_get_main_trans_region (
-            rw_prv->region);
+          ZRegion * r =
+            region_get_main_trans_region (
+              rw_prv->region);
 
           DigitalMeterWidget * dm;
           dm = digital_meter_widget_new_for_position (
@@ -348,7 +354,8 @@ timeline_selection_info_widget_refresh (
    * for moving */
   else
     {
-      Position * pos = calloc (1, sizeof (Position));
+      Position * pos =
+        calloc (1, sizeof (Position));
       timeline_selections_get_start_pos (
         TL_SELECTIONS, pos, F_NO_TRANSIENTS);
       DigitalMeterWidget * dm;
@@ -368,7 +375,8 @@ static void
 timeline_selection_info_widget_class_init (
   TimelineSelectionInfoWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "timeline-selection-info");
 }
@@ -381,8 +389,8 @@ timeline_selection_info_widget_init (
     gtk_label_new (_ ("No object selected")));
   gtk_widget_set_visible (
     GTK_WIDGET (self->no_selection_label), 1);
-  self->selection_info =
-    g_object_new (SELECTION_INFO_WIDGET_TYPE, NULL);
+  self->selection_info = g_object_new (
+    SELECTION_INFO_WIDGET_TYPE, NULL);
   gtk_widget_set_visible (
     GTK_WIDGET (self->selection_info), 1);
 

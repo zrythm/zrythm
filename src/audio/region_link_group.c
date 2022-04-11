@@ -169,7 +169,8 @@ region_link_group_update (
 {
   for (int i = 0; i < self->num_ids; i++)
     {
-      ZRegion * region = region_find (&self->ids[i]);
+      ZRegion * region =
+        region_find (&self->ids[i]);
       g_return_if_fail (
         IS_REGION_AND_NONNULL (region));
 
@@ -192,7 +193,8 @@ region_link_group_validate (RegionLinkGroup * self)
 {
   for (int i = 0; i < self->num_ids; i++)
     {
-      ZRegion * region = region_find (&self->ids[i]);
+      ZRegion * region =
+        region_find (&self->ids[i]);
       g_return_val_if_fail (
         IS_REGION_AND_NONNULL (region), false);
       RegionLinkGroup * link_group =
@@ -238,7 +240,8 @@ region_link_group_move (
 #endif
 
 RegionLinkGroup *
-region_link_group_clone (const RegionLinkGroup * src)
+region_link_group_clone (
+  const RegionLinkGroup * src)
 {
   RegionLinkGroup * self =
     object_new (RegionLinkGroup);

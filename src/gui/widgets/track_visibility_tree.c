@@ -109,7 +109,8 @@ create_model (void)
       gtk_list_store_append (store, &iter);
       gtk_list_store_set (
         store, &iter, COL_CHECKBOX, track->visible,
-        COL_NAME, track->name, COL_TRACK, track, -1);
+        COL_NAME, track->name, COL_TRACK, track,
+        -1);
     }
 
   return GTK_TREE_MODEL (store);
@@ -130,8 +131,8 @@ tree_view_setup (
     renderer, "toggled",
     G_CALLBACK (visibility_toggled), self);
   column = gtk_tree_view_column_new_with_attributes (
-    _ ("Visible"), renderer, "active", COL_CHECKBOX,
-    NULL);
+    _ ("Visible"), renderer, "active",
+    COL_CHECKBOX, NULL);
 
   /* set this column to a fixed sizing (of 50
    * pixels) */

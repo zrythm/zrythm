@@ -125,7 +125,8 @@ router_start_cycle (
 
   /* read control port change events */
   while (
-    zix_ring_read_space (self->ctrl_port_change_queue)
+    zix_ring_read_space (
+      self->ctrl_port_change_queue)
     >= sizeof (ControlPortChange))
     {
       ControlPortChange change = { 0 };

@@ -172,7 +172,8 @@ worker_thread (void * arg)
       while (!to_run)
         {
           /* wait for work, fall asleep */
-          g_atomic_int_inc (&graph->idle_thread_cnt);
+          g_atomic_int_inc (
+            &graph->idle_thread_cnt);
           int idle_thread_cnt = g_atomic_int_get (
             &graph->idle_thread_cnt);
 #ifdef DEBUG_THREADS
@@ -334,8 +335,8 @@ get_absolute_rt_priority (int priority)
 {
   /* POSIX requires a spread of at least 32 steps
    * between min..max */
-  const int p_min =
-    sched_get_priority_min (SCHED_FIFO); // Linux: 1
+  const int p_min = sched_get_priority_min (
+    SCHED_FIFO); // Linux: 1
   const int p_max = sched_get_priority_max (
     SCHED_FIFO); // Linux: 99
   g_debug (
@@ -468,7 +469,8 @@ graph_thread_new (
   if (realtime)
     {
       g_debug ("creating RT thread");
-      priority = get_absolute_rt_priority (priority);
+      priority =
+        get_absolute_rt_priority (priority);
 
       if (priority > 0)
         {

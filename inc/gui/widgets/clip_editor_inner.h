@@ -47,8 +47,9 @@ typedef struct _ChordEditorSpaceWidget
   ChordEditorSpaceWidget;
 typedef struct _AutomationEditorSpaceWidget
   AutomationEditorSpaceWidget;
-typedef struct _ArrangerWidget     ArrangerWidget;
-typedef struct _RotatedLabelWidget RotatedLabelWidget;
+typedef struct _ArrangerWidget ArrangerWidget;
+typedef struct _RotatedLabelWidget
+  RotatedLabelWidget;
 
 /**
  * @addtogroup widgets

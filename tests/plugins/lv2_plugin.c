@@ -44,7 +44,8 @@ test_lilv_instance_activation (void)
         HELM_BUNDLE, HELM_URI, true, false, 1);
 
       Plugin * pl =
-        TRACKLIST->tracks[TRACKLIST->num_tracks - 1]
+        TRACKLIST
+          ->tracks[TRACKLIST->num_tracks - 1]
           ->channel->instrument;
       g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
@@ -75,8 +76,8 @@ check_state_contains_wav (void)
   Plugin * pl = track->channel->instrument;
   char *   state_dir =
     plugin_get_abs_state_dir (pl, false);
-  char * state_file =
-    g_build_filename (state_dir, "state.ttl", NULL);
+  char * state_file = g_build_filename (
+    state_dir, "state.ttl", NULL);
   GError * err = NULL;
   char *   content = NULL;
   g_file_get_contents (
@@ -113,8 +114,8 @@ test_save_state_w_files (void)
     NULL);
   char * pset_bundle_path_uri = g_strdup_printf (
     "file://%s/", pset_bundle_path);
-  LilvNode * pset_path_uri_node =
-    lilv_new_uri (LILV_WORLD, pset_bundle_path_uri);
+  LilvNode * pset_path_uri_node = lilv_new_uri (
+    LILV_WORLD, pset_bundle_path_uri);
   lilv_world_load_bundle (
     LILV_WORLD, pset_path_uri_node);
   lilv_node_free (pset_path_uri_node);
@@ -130,7 +131,8 @@ test_save_state_w_files (void)
       lilv_world_load_resource (LILV_WORLD, preset);
 
       g_message (
-        "Preset <%s>", lilv_node_as_string (preset));
+        "Preset <%s>",
+        lilv_node_as_string (preset));
 
       LilvNodes * labels = lilv_world_find_nodes (
         LILV_WORLD, preset,
@@ -173,8 +175,8 @@ test_save_state_w_files (void)
   track_add_region (
     track, r, NULL, 0, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
-  MidiNote * mn =
-    midi_note_new (&r->id, &pos, &end_pos, 57, 120);
+  MidiNote * mn = midi_note_new (
+    &r->id, &pos, &end_pos, 57, 120);
   midi_region_add_midi_note (
     r, mn, F_NO_PUBLISH_EVENTS);
 
@@ -202,7 +204,8 @@ test_save_state_w_files (void)
   check_state_contains_wav ();
 
   project_save (
-    PROJECT, PROJECT->dir, false, false, F_NO_ASYNC);
+    PROJECT, PROJECT->dir, false, false,
+    F_NO_ASYNC);
   check_state_contains_wav ();
 
   test_project_save_and_reload ();

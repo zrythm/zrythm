@@ -59,7 +59,9 @@ G_DEFINE_TYPE (
   GTK_TYPE_BOX)
 
 static void
-add_from_object (GPtrArray * arr, ArrangerObject * obj)
+add_from_object (
+  GPtrArray *      arr,
+  ArrangerObject * obj)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     wrapped_object_with_change_signal_new (
@@ -180,12 +182,14 @@ get_arranger_selections (EventViewerWidget * self)
     case EVENT_VIEWER_TYPE_MIDI:
       return (ArrangerSelections *) MA_SELECTIONS;
     case EVENT_VIEWER_TYPE_AUDIO:
-      return (ArrangerSelections *) AUDIO_SELECTIONS;
-    case EVENT_VIEWER_TYPE_CHORD:
-      return (ArrangerSelections *) CHORD_SELECTIONS;
-    case EVENT_VIEWER_TYPE_AUTOMATION:
       return (
-        ArrangerSelections *) AUTOMATION_SELECTIONS;
+        ArrangerSelections *) AUDIO_SELECTIONS;
+    case EVENT_VIEWER_TYPE_CHORD:
+      return (
+        ArrangerSelections *) CHORD_SELECTIONS;
+    case EVENT_VIEWER_TYPE_AUTOMATION:
+      return (ArrangerSelections *)
+        AUTOMATION_SELECTIONS;
     }
 
   g_return_val_if_reached (NULL);
@@ -582,8 +586,8 @@ add_timeline_columns (EventViewerWidget * self)
   expression = gtk_cclosure_expression_new (
     G_TYPE_STRING, NULL, 0, NULL,
     G_CALLBACK (get_obj_name), NULL, NULL);
-  sorter =
-    GTK_SORTER (gtk_string_sorter_new (expression));
+  sorter = GTK_SORTER (
+    gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_TEXT, Z_F_EDITABLE, Z_F_RESIZABLE,
@@ -593,8 +597,8 @@ add_timeline_columns (EventViewerWidget * self)
   expression = gtk_cclosure_expression_new (
     G_TYPE_STRING, NULL, 0, NULL,
     G_CALLBACK (get_obj_type), NULL, NULL);
-  sorter =
-    GTK_SORTER (gtk_string_sorter_new (expression));
+  sorter = GTK_SORTER (
+    gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_TEXT, Z_F_NOT_EDITABLE,
@@ -709,8 +713,8 @@ append_midi_columns (EventViewerWidget * self)
   expression = gtk_cclosure_expression_new (
     G_TYPE_STRING, NULL, 0, NULL,
     G_CALLBACK (get_obj_name), NULL, NULL);
-  sorter =
-    GTK_SORTER (gtk_string_sorter_new (expression));
+  sorter = GTK_SORTER (
+    gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_TEXT, Z_F_NOT_EDITABLE,
@@ -730,7 +734,8 @@ append_midi_columns (EventViewerWidget * self)
   /* column for velocity */
   expression = gtk_cclosure_expression_new (
     G_TYPE_UINT, NULL, 0, NULL,
-    G_CALLBACK (get_midi_note_velocity), NULL, NULL);
+    G_CALLBACK (get_midi_note_velocity), NULL,
+    NULL);
   sorter = GTK_SORTER (
     gtk_numeric_sorter_new (expression));
   item_factory_generate_and_append_column (
@@ -777,8 +782,8 @@ append_chord_columns (EventViewerWidget * self)
   expression = gtk_cclosure_expression_new (
     G_TYPE_STRING, NULL, 0, NULL,
     G_CALLBACK (get_obj_name), NULL, NULL);
-  sorter =
-    GTK_SORTER (gtk_string_sorter_new (expression));
+  sorter = GTK_SORTER (
+    gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_TEXT, Z_F_NOT_EDITABLE,
@@ -848,8 +853,8 @@ append_automation_columns (EventViewerWidget * self)
     G_TYPE_STRING, NULL, 0, NULL,
     G_CALLBACK (get_automation_point_curve_type_str),
     NULL, NULL);
-  sorter =
-    GTK_SORTER (gtk_string_sorter_new (expression));
+  sorter = GTK_SORTER (
+    gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories,
     ITEM_FACTORY_TEXT, Z_F_NOT_EDITABLE,
@@ -940,7 +945,8 @@ event_viewer_finalize (EventViewerWidget * self)
   g_ptr_array_unref (self->item_factories);
 
   object_free_w_func_and_null (
-    arranger_selections_free, self->last_selections);
+    arranger_selections_free,
+    self->last_selections);
 
   G_OBJECT_CLASS (event_viewer_widget_parent_class)
     ->finalize (G_OBJECT (self));
@@ -979,7 +985,8 @@ static void
 event_viewer_widget_class_init (
   EventViewerWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "event_viewer.ui");
   gtk_widget_class_set_css_name (

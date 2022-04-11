@@ -144,7 +144,8 @@ fader_new (
     && !passthrough)
     {
       self->amp->id.flags |= PORT_FLAG_AUTOMATABLE;
-      self->amp->id.flags |= PORT_FLAG_CHANNEL_FADER;
+      self->amp->id.flags |=
+        PORT_FLAG_CHANNEL_FADER;
     }
 
   /* set phase */
@@ -227,7 +228,8 @@ fader_new (
       : g_strdup ("fader_listen");
   control_port_set_toggled (
     self->listen, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
-  self->listen->id.flags2 |= PORT_FLAG2_FADER_LISTEN;
+  self->listen->id.flags2 |=
+    PORT_FLAG2_FADER_LISTEN;
   self->listen->id.flags |= PORT_FLAG_TOGGLE;
 
   /* set mono compat */
@@ -695,7 +697,8 @@ fader_set_mono_compat_enabled (
   bool    fire_events)
 {
   control_port_set_toggled (
-    self->mono_compat_enabled, enabled, fire_events);
+    self->mono_compat_enabled, enabled,
+    fire_events);
 
   if (
     self->type == FADER_TYPE_AUDIO_CHANNEL
@@ -764,7 +767,8 @@ fader_set_fader_val (Fader * self, float fader_val)
   else if (self == CONTROL_ROOM->listen_fader)
     {
       g_settings_set_double (
-        S_MONITOR, "listen-vol", (double) fader_amp);
+        S_MONITOR, "listen-vol",
+        (double) fader_amp);
     }
   else if (self == CONTROL_ROOM->dim_fader)
     {
@@ -1066,12 +1070,12 @@ fader_process (
                 {
                   /* dim signal */
                   dsp_mul_k2 (
-                    &self->stereo_out->l
-                       ->buf[time_nfo->local_offset],
+                    &self->stereo_out->l->buf
+                       [time_nfo->local_offset],
                     dim_amp, time_nfo->nframes);
                   dsp_mul_k2 (
-                    &self->stereo_out->r
-                       ->buf[time_nfo->local_offset],
+                    &self->stereo_out->r->buf
+                       [time_nfo->local_offset],
                     dim_amp, time_nfo->nframes);
 
                   /* add listened signal */
@@ -1083,7 +1087,8 @@ fader_process (
                   float listen_amp = fader_get_amp (
                     CONTROL_ROOM->listen_fader);
                   for (int i = 0;
-                       i < TRACKLIST->num_tracks; i++)
+                       i < TRACKLIST->num_tracks;
+                       i++)
                     {
                       Track * t =
                         TRACKLIST->tracks[i];
@@ -1096,19 +1101,24 @@ fader_process (
                         && track_get_listened (t))
                         {
                           Fader * f =
-                            track_get_fader (t, true);
+                            track_get_fader (
+                              t, true);
                           dsp_mix2 (
                             &self->stereo_out->l->buf
-                               [time_nfo->local_offset],
+                               [time_nfo
+                                  ->local_offset],
                             &f->stereo_out->l->buf
-                               [time_nfo->local_offset],
+                               [time_nfo
+                                  ->local_offset],
                             1.f, listen_amp,
                             time_nfo->nframes);
                           dsp_mix2 (
                             &self->stereo_out->r->buf
-                               [time_nfo->local_offset],
+                               [time_nfo
+                                  ->local_offset],
                             &f->stereo_out->r->buf
-                               [time_nfo->local_offset],
+                               [time_nfo
+                                  ->local_offset],
                             1.f, listen_amp,
                             time_nfo->nframes);
                         }
@@ -1119,12 +1129,12 @@ fader_process (
               if (CONTROL_ROOM->dim_output)
                 {
                   dsp_mul_k2 (
-                    &self->stereo_out->l
-                       ->buf[time_nfo->local_offset],
+                    &self->stereo_out->l->buf
+                       [time_nfo->local_offset],
                     dim_amp, time_nfo->nframes);
                   dsp_mul_k2 (
-                    &self->stereo_out->r
-                       ->buf[time_nfo->local_offset],
+                    &self->stereo_out->r->buf
+                       [time_nfo->local_offset],
                     dim_amp, time_nfo->nframes);
                 }
             } /* endif monitor fader */
@@ -1177,14 +1187,14 @@ fader_process (
               if (mute_amp < 0.00001f)
                 {
                   dsp_fill (
-                    &self->stereo_out->l
-                       ->buf[time_nfo->local_offset],
+                    &self->stereo_out->l->buf
+                       [time_nfo->local_offset],
                     AUDIO_ENGINE
                       ->denormal_prevention_val,
                     time_nfo->nframes);
                   dsp_fill (
-                    &self->stereo_out->r
-                       ->buf[time_nfo->local_offset],
+                    &self->stereo_out->r->buf
+                       [time_nfo->local_offset],
                     AUDIO_ENGINE
                       ->denormal_prevention_val,
                     time_nfo->nframes);
@@ -1192,12 +1202,12 @@ fader_process (
               else
                 {
                   dsp_mul_k2 (
-                    &self->stereo_out->l
-                       ->buf[time_nfo->local_offset],
+                    &self->stereo_out->l->buf
+                       [time_nfo->local_offset],
                     mute_amp, time_nfo->nframes);
                   dsp_mul_k2 (
-                    &self->stereo_out->r
-                       ->buf[time_nfo->local_offset],
+                    &self->stereo_out->r->buf
+                       [time_nfo->local_offset],
                     mute_amp, time_nfo->nframes);
                 }
             }
@@ -1335,7 +1345,8 @@ fader_free (Fader * self)
   DISCONNECT_AND_FREE (self->mono_compat_enabled);
 
 #define DISCONNECT_AND_FREE_STEREO(x) \
-  object_free_w_func_and_null (stereo_ports_free, x)
+  object_free_w_func_and_null ( \
+    stereo_ports_free, x)
 
   DISCONNECT_AND_FREE_STEREO (self->stereo_in);
   DISCONNECT_AND_FREE_STEREO (self->stereo_out);

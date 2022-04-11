@@ -79,11 +79,12 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t undo_manager_schema = {
-  YAML_VALUE_PTR (
-    UndoManager,
-    undo_manager_fields_schema),
-};
+static const cyaml_schema_value_t
+  undo_manager_schema = {
+    YAML_VALUE_PTR (
+      UndoManager,
+      undo_manager_fields_schema),
+  };
 
 /**
  * Inits the undo manager by populating the
@@ -140,7 +141,8 @@ undo_manager_perform (
   action, err, ...) \
   { \
     g_return_val_if_fail ( \
-      router_is_processing_thread (ROUTER) == false, \
+      router_is_processing_thread (ROUTER) \
+        == false, \
       false); \
     UndoableAction * ua = action (__VA_ARGS__); \
     if (ua) \

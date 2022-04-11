@@ -143,8 +143,10 @@ static void
 chord_key_widget_class_init (
   ChordKeyWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass, "chord-key");
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (
+    klass, "chord-key");
 
   resources_set_class_template (
     klass, "chord_key.ui");

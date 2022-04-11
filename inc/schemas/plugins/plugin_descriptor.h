@@ -188,7 +188,9 @@ typedef struct PluginDescriptor_v1
 } PluginDescriptor_v1;
 
 static const cyaml_schema_field_t plugin_descriptor_fields_schema_v1[] = {
-  YAML_FIELD_INT (PluginDescriptor_v1, schema_version),
+  YAML_FIELD_INT (
+    PluginDescriptor_v1,
+    schema_version),
   YAML_FIELD_STRING_PTR_OPTIONAL (
     PluginDescriptor_v1,
     author),
@@ -206,7 +208,9 @@ static const cyaml_schema_field_t plugin_descriptor_fields_schema_v1[] = {
     PluginDescriptor_v1,
     category_str),
   YAML_FIELD_INT (PluginDescriptor_v1, num_audio_ins),
-  YAML_FIELD_INT (PluginDescriptor_v1, num_audio_outs),
+  YAML_FIELD_INT (
+    PluginDescriptor_v1,
+    num_audio_outs),
   YAML_FIELD_INT (PluginDescriptor_v1, num_midi_ins),
   YAML_FIELD_INT (PluginDescriptor_v1, num_midi_outs),
   YAML_FIELD_INT (PluginDescriptor_v1, num_ctrl_ins),

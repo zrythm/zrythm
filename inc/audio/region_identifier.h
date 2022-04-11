@@ -98,7 +98,9 @@ static const cyaml_schema_field_t
       type,
       region_type_bitvals),
     YAML_FIELD_INT (RegionIdentifier, link_group),
-    YAML_FIELD_UINT (RegionIdentifier, track_name_hash),
+    YAML_FIELD_UINT (
+      RegionIdentifier,
+      track_name_hash),
     YAML_FIELD_INT (RegionIdentifier, lane_pos),
     YAML_FIELD_INT (RegionIdentifier, at_idx),
     YAML_FIELD_INT (RegionIdentifier, idx),
@@ -152,7 +154,8 @@ region_identifier_copy (
 }
 
 bool
-region_identifier_validate (RegionIdentifier * self);
+region_identifier_validate (
+  RegionIdentifier * self);
 
 static inline const char *
 region_identifier_get_region_type_name (

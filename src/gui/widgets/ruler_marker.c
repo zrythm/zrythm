@@ -151,7 +151,8 @@ ruler_marker_widget_update_tooltip (
         }
     }
   else
-    gtk_widget_hide (GTK_WIDGET (self->tooltip_win));
+    gtk_widget_hide (
+      GTK_WIDGET (self->tooltip_win));
 }
 
 RulerMarkerWidget *
@@ -191,7 +192,8 @@ ruler_marker_widget_init (RulerMarkerWidget * self)
   self->tooltip_win =
     GTK_WINDOW (gtk_window_new (GTK_WINDOW_POPUP));
   gtk_window_set_type_hint (
-    self->tooltip_win, GDK_WINDOW_TYPE_HINT_TOOLTIP);
+    self->tooltip_win,
+    GDK_WINDOW_TYPE_HINT_TOOLTIP);
   self->tooltip_label =
     GTK_LABEL (gtk_label_new ("label"));
   gtk_widget_set_visible (
@@ -221,7 +223,8 @@ static void
 ruler_marker_widget_class_init (
   RulerMarkerWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "ruler-marker");
 }

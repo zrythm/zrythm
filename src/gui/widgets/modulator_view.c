@@ -75,8 +75,8 @@ modulator_view_widget_refresh (
 ModulatorViewWidget *
 modulator_view_widget_new (void)
 {
-  ModulatorViewWidget * self =
-    g_object_new (MODULATOR_VIEW_WIDGET_TYPE, NULL);
+  ModulatorViewWidget * self = g_object_new (
+    MODULATOR_VIEW_WIDGET_TYPE, NULL);
 
   return self;
 }
@@ -89,7 +89,8 @@ modulator_view_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  rotated_label_widget_setup (self->track_name, -90);
+  rotated_label_widget_setup (
+    self->track_name, -90);
 
   GdkRGBA color;
   gdk_rgba_parse (&color, "gray");
@@ -119,7 +120,8 @@ static void
 modulator_view_widget_class_init (
   ModulatorViewWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "modulator_view.ui");
 

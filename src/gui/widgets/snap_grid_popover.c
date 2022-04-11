@@ -199,7 +199,8 @@ on_type_toggled (
           sg->snap_note_type = NOTE_TYPE_NORMAL;
         }
     }
-  else if (btn == GTK_WIDGET (self->snap_dotted_toggle))
+  else if (
+    btn == GTK_WIDGET (self->snap_dotted_toggle))
     {
       if (active)
         {
@@ -213,7 +214,8 @@ on_type_toggled (
         }
     }
   else if (
-    btn == GTK_WIDGET (self->default_triplet_toggle))
+    btn
+    == GTK_WIDGET (self->default_triplet_toggle))
     {
       if (active)
         {
@@ -261,7 +263,8 @@ on_type_toggled (
  * Creates a digital meter with the given type (bpm or position).
  */
 SnapGridPopoverWidget *
-snap_grid_popover_widget_new (SnapGridWidget * owner)
+snap_grid_popover_widget_new (
+  SnapGridWidget * owner)
 {
   SnapGridPopoverWidget * self = g_object_new (
     SNAP_GRID_POPOVER_WIDGET_TYPE, NULL);
@@ -314,7 +317,8 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
     ->snap_triplet_toggle_handler = g_signal_connect (
     GTK_WIDGET (self->snap_triplet_toggle),
     "toggled", G_CALLBACK (on_type_toggled), self);
-  self->snap_dotted_toggle_handler = g_signal_connect (
+  self
+    ->snap_dotted_toggle_handler = g_signal_connect (
     GTK_WIDGET (self->snap_dotted_toggle),
     "toggled", G_CALLBACK (on_type_toggled), self);
   self->snap_adaptive_handler = g_signal_connect (
@@ -335,8 +339,9 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
     GTK_WIDGET (self->link_toggle), "toggled",
     G_CALLBACK (on_linked_toggled), self);
   self->last_object_handler = g_signal_connect (
-    GTK_WIDGET (self->last_object_toggle), "toggled",
-    G_CALLBACK (on_last_object_toggled), self);
+    GTK_WIDGET (self->last_object_toggle),
+    "toggled", G_CALLBACK (on_last_object_toggled),
+    self);
 
   refresh_link_and_last_object (self);
 
@@ -347,7 +352,8 @@ static void
 snap_grid_popover_widget_class_init (
   SnapGridPopoverWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "snap_grid_popover.ui");
 

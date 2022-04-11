@@ -170,7 +170,8 @@ static void
 ruler_range_widget_class_init (
   RulerRangeWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "ruler-range");
 }

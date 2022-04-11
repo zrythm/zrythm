@@ -30,7 +30,8 @@
 
 #include <gtk/gtk.h>
 
-#define TRACK_WIDGET_TYPE (track_widget_get_type ())
+#define TRACK_WIDGET_TYPE \
+  (track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   TrackWidget,
   track_widget,
@@ -61,7 +62,8 @@ typedef struct _TrackCanvasWidget TrackCanvasWidget;
  * buttons */
 #define TRACK_BUTTON_PADDING_FROM_EDGE 3
 
-#define TRACK_BOT_BUTTONS_SHOULD_BE_VISIBLE(height) \
+#define TRACK_BOT_BUTTONS_SHOULD_BE_VISIBLE( \
+  height) \
   (height \
    >= (TRACK_BUTTON_SIZE \
        + TRACK_BUTTON_PADDING_FROM_EDGE) \

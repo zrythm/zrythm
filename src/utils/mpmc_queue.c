@@ -118,7 +118,8 @@ mpmc_queue_push_back (
            [(size_t) pos & self->buffer_mask];
       guint seq =
         (guint) g_atomic_int_get (&cell->sequence);
-      intptr_t dif = (intptr_t) seq - (intptr_t) pos;
+      intptr_t dif =
+        (intptr_t) seq - (intptr_t) pos;
       if (dif == 0)
         {
           if (g_atomic_int_compare_and_exchange (

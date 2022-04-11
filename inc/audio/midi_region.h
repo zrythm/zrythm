@@ -197,7 +197,8 @@ midi_region_get_last_midi_note (ZRegion * region);
  * Gets highest midi note
  */
 MidiNote *
-midi_region_get_highest_midi_note (ZRegion * region);
+midi_region_get_highest_midi_note (
+  ZRegion * region);
 
 /**
  * Gets lowest midi note
@@ -223,7 +224,8 @@ midi_region_remove_midi_note (
  * completely.
  */
 void
-midi_region_remove_all_midi_notes (ZRegion * region);
+midi_region_remove_all_midi_notes (
+  ZRegion * region);
 
 /**
  * Returns the midi note at given position with the given

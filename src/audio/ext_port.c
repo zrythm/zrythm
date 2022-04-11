@@ -46,7 +46,9 @@ ext_port_init_loaded (
  * Returns the buffer of the external port.
  */
 float *
-ext_port_get_buffer (ExtPort * self, nframes_t nframes)
+ext_port_get_buffer (
+  ExtPort * self,
+  nframes_t nframes)
 {
   switch (self->type)
     {
@@ -592,7 +594,8 @@ get_ext_ports_from_rtmidi (
   if (flow == FLOW_OUTPUT)
     {
       unsigned int num_ports =
-        engine_rtmidi_get_num_in_ports (AUDIO_ENGINE);
+        engine_rtmidi_get_num_in_ports (
+          AUDIO_ENGINE);
       unsigned int i;
       for (i = 0; i < num_ports; i++)
         {

@@ -51,7 +51,8 @@ G_DEFINE_TYPE (CpuWidget, cpu_widget, GTK_TYPE_WIDGET)
 #define ICON_SIZE BAR_HEIGHT
 #define TOTAL_H (PADDING * 3 + BAR_HEIGHT * 2)
 #define TOTAL_W \
-  (ICON_SIZE + PADDING * 3 + NUM_BARS * PADDING * 2)
+  (ICON_SIZE + PADDING * 3 \
+   + NUM_BARS * PADDING * 2)
 
 /**
  * Taken from
@@ -334,14 +335,14 @@ cpu_widget_init (CpuWidget * self)
   self->cpu = 0;
   self->dsp = 0;
 
-  self
-    ->cpu_texture = z_gdk_texture_new_from_icon_name (
-    "ext-iconfinder_cpu_2561419", ICON_SIZE,
-    ICON_SIZE, 1);
-  self
-    ->dsp_texture = z_gdk_texture_new_from_icon_name (
-    "font-awesome-wave-square-solid", ICON_SIZE,
-    ICON_SIZE, 1);
+  self->cpu_texture =
+    z_gdk_texture_new_from_icon_name (
+      "ext-iconfinder_cpu_2561419", ICON_SIZE,
+      ICON_SIZE, 1);
+  self->dsp_texture =
+    z_gdk_texture_new_from_icon_name (
+      "font-awesome-wave-square-solid", ICON_SIZE,
+      ICON_SIZE, 1);
 
   gtk_widget_set_size_request (
     GTK_WIDGET (self), TOTAL_W, TOTAL_H);
@@ -362,7 +363,8 @@ cpu_widget_init (CpuWidget * self)
 static void
 cpu_widget_class_init (CpuWidgetClass * klass)
 {
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   wklass->snapshot = cpu_snapshot;
   gtk_widget_class_set_css_name (wklass, "cpu");
 

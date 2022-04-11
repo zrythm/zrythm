@@ -71,14 +71,16 @@ test_midi_fx_routing (void)
   /* export loop and check that there is audio */
   char * audio_file = test_exporter_export_audio (
     TIME_RANGE_LOOP, EXPORT_MODE_FULL);
-  g_assert_false (audio_file_is_silent (audio_file));
+  g_assert_false (
+    audio_file_is_silent (audio_file));
   io_remove (audio_file);
   g_free (audio_file);
 
   /* create MIDI eat plugin and add to MIDI FX */
   setting = test_plugin_manager_get_plugin_setting (
     PLUMBING_BUNDLE_URI,
-    "http://gareus.org/oss/lv2/plumbing#eat1", true);
+    "http://gareus.org/oss/lv2/plumbing#eat1",
+    true);
   g_assert_nonnull (setting);
   GError * err = NULL;
   bool ret = mixer_selections_action_perform_create (
@@ -110,7 +112,8 @@ test_midi_fx_routing (void)
    * again */
   audio_file = test_exporter_export_audio (
     TIME_RANGE_LOOP, EXPORT_MODE_FULL);
-  g_assert_false (audio_file_is_silent (audio_file));
+  g_assert_false (
+    audio_file_is_silent (audio_file));
   io_remove (audio_file);
   g_free (audio_file);
 

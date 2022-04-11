@@ -63,7 +63,9 @@ foldable_track_is_direct_child (
  * @p self.
  */
 bool
-foldable_track_is_child (Track * self, Track * child);
+foldable_track_is_child (
+  Track * self,
+  Track * child);
 
 /**
  * Adds to the size recursively.

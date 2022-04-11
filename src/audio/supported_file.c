@@ -293,11 +293,12 @@ supported_file_get_info_text_for_label (
         }
 
       label = g_markup_printf_escaped (
-        _ ("<b>%s</b>\n"
-           "Sample rate: %d\n"
-           "Length: %ld s %ld ms | BPM: %.1f\n"
-           "Channel(s): %d | Bitrate: %'d.%d kb/s\n"
-           "Bit depth: %d bits"),
+        _ (
+          "<b>%s</b>\n"
+          "Sample rate: %d\n"
+          "Length: %ld s %ld ms | BPM: %.1f\n"
+          "Channel(s): %d | Bitrate: %'d.%d kb/s\n"
+          "Bit depth: %d bits"),
         self->label, enc->nfo.sample_rate,
         enc->nfo.length / 1000,
         enc->nfo.length % 1000,

@@ -150,7 +150,8 @@ m_connect_port (
         }
       else if (port == 1)
         {
-          self->midiout = (LV2_Atom_Sequence *) data;
+          self->midiout =
+            (LV2_Atom_Sequence *) data;
         }
       else
         {

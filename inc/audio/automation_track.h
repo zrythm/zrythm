@@ -50,11 +50,12 @@ typedef enum AutomationMode
   NUM_AUTOMATION_MODES,
 } AutomationMode;
 
-static const cyaml_strval_t automation_mode_strings[] = {
-  {"Read",       AUTOMATION_MODE_READ  },
-  { "Rec",       AUTOMATION_MODE_RECORD},
-  { "Off",       AUTOMATION_MODE_OFF   },
-  { "<invalid>", NUM_AUTOMATION_MODES  },
+static const cyaml_strval_t
+  automation_mode_strings[] = {
+    {"Read",       AUTOMATION_MODE_READ  },
+    { "Rec",       AUTOMATION_MODE_RECORD},
+    { "Off",       AUTOMATION_MODE_OFF   },
+    { "<invalid>", NUM_AUTOMATION_MODES  },
 };
 
 typedef enum AutomationRecordMode
@@ -494,7 +495,8 @@ automation_track_get_last_region (
 
 NONNULL
 void
-automation_track_set_caches (AutomationTrack * self);
+automation_track_set_caches (
+  AutomationTrack * self);
 
 NONNULL
 bool

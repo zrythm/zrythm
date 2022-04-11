@@ -85,7 +85,8 @@ typedef struct PluginManager
   size_t      nodes_size;
 
   /** Cached VST descriptors */
-  CachedPluginDescriptors * cached_plugin_descriptors;
+  CachedPluginDescriptors *
+    cached_plugin_descriptors;
 
   /** Plugin collections. */
   PluginCollections * collections;

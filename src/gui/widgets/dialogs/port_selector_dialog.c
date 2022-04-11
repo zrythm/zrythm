@@ -119,7 +119,8 @@ create_model_for_ports (
 
   /* icon, name, pointer to port */
   list_store = gtk_list_store_new (
-    3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
+    3, G_TYPE_STRING, G_TYPE_STRING,
+    G_TYPE_POINTER);
 
   PortType type = self->port->id.type;
   PortFlow flow = self->port->id.flow;
@@ -134,8 +135,8 @@ create_model_for_ports (
     { \
       gtk_list_store_append (list_store, &iter); \
       gtk_list_store_set ( \
-        list_store, &iter, 0, "node-type-cusp", 1, \
-        port->id.label, 2, port, -1); \
+        list_store, &iter, 0, "node-type-cusp", \
+        1, port->id.label, 2, port, -1); \
     }
 
   Port * port;
@@ -190,9 +191,10 @@ create_model_for_ports (
 
               if (track->type == TRACK_TYPE_MODULATOR)
                 {
-                  for (int j = 0;
-                       j < track->num_modulator_macros;
-                       j++)
+                  for (
+                    int j = 0;
+                    j < track->num_modulator_macros;
+                    j++)
                     {
                       port =
                         track->modulator_macros[j]
@@ -260,7 +262,8 @@ create_model_for_tracks (
 
   /* icon, name, pointer to channel */
   list_store = gtk_list_store_new (
-    3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
+    3, G_TYPE_STRING, G_TYPE_STRING,
+    G_TYPE_POINTER);
 
   Track * track;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -319,7 +322,8 @@ create_model_for_plugins (
 
   /* icon, name, pointer to plugin */
   list_store = gtk_list_store_new (
-    3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
+    3, G_TYPE_STRING, G_TYPE_STRING,
+    G_TYPE_POINTER);
 
   Port *           port = self->port;
   PortIdentifier * id = &port->id;
@@ -360,7 +364,8 @@ create_model_for_plugins (
             }
 
           add_plugin (
-            self, ch->instrument, list_store, &iter);
+            self, ch->instrument, list_store,
+            &iter);
         }
       for (int i = 0; i < track->num_modulators; i++)
         {
@@ -517,7 +522,8 @@ port_selector_dialog_widget_refresh (
   Port *                     port)
 {
   self->port = port;
-  self->track_model = create_model_for_tracks (self);
+  self->track_model =
+    create_model_for_tracks (self);
   tree_view_setup (
     self, self->track_model, !self->setup);
 
@@ -542,8 +548,8 @@ port_selector_dialog_widget_new (
   PortConnectionsPopoverWidget * owner)
 {
   PortSelectorDialogWidget * self = g_object_new (
-    PORT_SELECTOR_DIALOG_WIDGET_TYPE, "modal", true,
-    NULL);
+    PORT_SELECTOR_DIALOG_WIDGET_TYPE, "modal",
+    true, NULL);
 
   GtkRoot * root =
     gtk_widget_get_root (GTK_WIDGET (owner));
@@ -559,7 +565,8 @@ static void
 port_selector_dialog_widget_class_init (
   PortSelectorDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "port_selector_dialog.ui");
 

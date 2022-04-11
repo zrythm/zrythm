@@ -86,7 +86,8 @@ test_fill_stereo_ports (void)
       float adj_multiplier = MIN (
         1.f,
         ((float) i
-         / (float) AUDIO_REGION_BUILTIN_FADE_FRAMES));
+         / (float)
+           AUDIO_REGION_BUILTIN_FADE_FRAMES));
       float adj_clip_frame_l =
         r_clip->ch_frames[0][i] * adj_multiplier;
       float adj_clip_frame_r =
@@ -258,7 +259,7 @@ test_detect_bpm (void)
     NULL);
   SupportedFile * file =
     supported_file_new_from_path (filepath);
-  int     num_tracks_before = TRACKLIST->num_tracks;
+  int num_tracks_before = TRACKLIST->num_tracks;
   Track * track = track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, &pos,
     num_tracks_before, 1, NULL);

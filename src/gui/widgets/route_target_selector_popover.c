@@ -356,8 +356,8 @@ select_group_func (
   gtk_tree_model_get (
     model, iter, 1, &iter_track, -1);
 
-  Track * output_track =
-    channel_get_output_track (self->owner->channel);
+  Track * output_track = channel_get_output_track (
+    self->owner->channel);
   if (iter_track == output_track)
     {
       GtkTreeSelection * rts =
@@ -409,7 +409,8 @@ route_target_selector_popover_widget_new (
     GTK_BOX (self->route_treeview_box),
     GTK_WIDGET (self->route_treeview));
 
-  update_info_label (self, _ ("No output selected"));
+  update_info_label (
+    self, _ ("No output selected"));
 
   /* select output */
   if (
@@ -426,34 +427,40 @@ route_target_selector_popover_widget_new (
       if (output_track->type == TRACK_TYPE_MASTER)
         {
           /* select Master group */
-          path = gtk_tree_path_new_from_string ("1");
+          path =
+            gtk_tree_path_new_from_string ("1");
           gtk_tree_model_get_iter (
             self->type_model, &iter, path);
           GtkTreeSelection * tts =
             gtk_tree_view_get_selection (
               self->type_treeview);
-          gtk_tree_selection_select_path (tts, path);
+          gtk_tree_selection_select_path (
+            tts, path);
           gtk_tree_path_free (path);
 
           /* select master route */
-          path = gtk_tree_path_new_from_string ("0");
+          path =
+            gtk_tree_path_new_from_string ("0");
           gtk_tree_model_get_iter (
             self->route_model, &iter, path);
           GtkTreeSelection * rts =
             gtk_tree_view_get_selection (
               self->route_treeview);
-          gtk_tree_selection_select_path (rts, path);
+          gtk_tree_selection_select_path (
+            rts, path);
           gtk_tree_path_free (path);
         }
       else
         {
-          path = gtk_tree_path_new_from_string ("2");
+          path =
+            gtk_tree_path_new_from_string ("2");
           gtk_tree_model_get_iter (
             self->type_model, &iter, path);
           GtkTreeSelection * tts =
             gtk_tree_view_get_selection (
               self->type_treeview);
-          gtk_tree_selection_select_path (tts, path);
+          gtk_tree_selection_select_path (
+            tts, path);
           gtk_tree_path_free (path);
 
           gtk_tree_model_foreach (
@@ -471,7 +478,8 @@ static void
 route_target_selector_popover_widget_class_init (
   RouteTargetSelectorPopoverWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "route_target_selector.ui");
 

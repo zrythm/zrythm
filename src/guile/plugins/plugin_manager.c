@@ -45,7 +45,8 @@ SCM_DEFINE (
 
   if (descr)
     {
-      return scm_from_pointer ((void *) descr, NULL);
+      return scm_from_pointer (
+        (void *) descr, NULL);
     }
   else
     {

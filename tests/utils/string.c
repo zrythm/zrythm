@@ -38,17 +38,17 @@ test_get_int_after_last_space (void)
     "testハロー 34 56",
   };
 
-  int ret =
-    string_get_int_after_last_space (strs[0], NULL);
+  int ret = string_get_int_after_last_space (
+    strs[0], NULL);
   g_assert_cmpint (ret, ==, 1);
-  ret =
-    string_get_int_after_last_space (strs[1], NULL);
+  ret = string_get_int_after_last_space (
+    strs[1], NULL);
   g_assert_cmpint (ret, ==, 22);
-  ret =
-    string_get_int_after_last_space (strs[2], NULL);
+  ret = string_get_int_after_last_space (
+    strs[2], NULL);
   g_assert_cmpint (ret, ==, -1);
-  ret =
-    string_get_int_after_last_space (strs[4], NULL);
+  ret = string_get_int_after_last_space (
+    strs[4], NULL);
   g_assert_cmpint (ret, ==, 56);
 }
 
@@ -235,7 +235,8 @@ test_replace_regex (void)
 
   replace_str = "$1";
   regex = "(\\?\\?\\?\n)+\\1";
-  src_str = g_strdup ("???\n???\n???\n???\n??? abc");
+  src_str =
+    g_strdup ("???\n???\n???\n???\n??? abc");
   string_replace_regex (
     &src_str, regex, replace_str);
   g_assert_cmpstr (src_str, ==, "???\n??? abc");

@@ -154,7 +154,8 @@ a_connect_port (
     {
       self->input[port - self->n_out] = data;
     }
-  else if (port < self->n_out + self->n_in + self->n_out)
+  else if (
+    port < self->n_out + self->n_in + self->n_out)
     {
       self->output[port - self->n_in - self->n_out] =
         data;
@@ -187,7 +188,8 @@ a_run (LV2_Handle instance, uint32_t n_samples)
         && self->input[map[c] - 1] != self->output[c])
         {
           memcpy (
-            self->output[c], self->input[map[c] - 1],
+            self->output[c],
+            self->input[map[c] - 1],
             sizeof (float) * n_samples);
         }
     }

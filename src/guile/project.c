@@ -94,5 +94,6 @@ init_module (void * data)
 void
 guile_project_define_module (void)
 {
-  scm_c_define_module ("project", init_module, NULL);
+  scm_c_define_module (
+    "project", init_module, NULL);
 }

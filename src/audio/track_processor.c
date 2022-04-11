@@ -140,7 +140,9 @@ init_midi_port (TrackProcessor * self, int in)
 }
 
 static void
-init_midi_cc_ports (TrackProcessor * self, int loading)
+init_midi_cc_ports (
+  TrackProcessor * self,
+  int              loading)
 {
 #define INIT_MIDI_PORT(x, idx) \
   x->id.flags |= PORT_FLAG_MIDI_AUTOMATABLE; \
@@ -194,7 +196,8 @@ init_midi_cc_ports (TrackProcessor * self, int loading)
         PORT_FLAG2_MIDI_POLY_KEY_PRESSURE;
       self->poly_key_pressure[i] = cc;
 
-      sprintf (name, "Ch%d Channel pressure", i + 1);
+      sprintf (
+        name, "Ch%d Channel pressure", i + 1);
       cc = port_new_with_type_and_owner (
         TYPE_CONTROL, FLOW_INPUT, name,
         PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
@@ -282,10 +285,11 @@ track_processor_new (Track * tr)
         {
           self->piano_roll =
             port_new_with_type_and_owner (
-              TYPE_EVENT, FLOW_INPUT, "TP Piano Roll",
+              TYPE_EVENT, FLOW_INPUT,
+              "TP Piano Roll",
               PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
-          self->piano_roll->id.sym =
-            g_strdup ("track_processor_piano_roll");
+          self->piano_roll->id.sym = g_strdup (
+            "track_processor_piano_roll");
           self->piano_roll->id.flags =
             PORT_FLAG_PIANO_ROLL;
           if (tr->type != TRACK_TYPE_CHORD)
@@ -312,8 +316,8 @@ track_processor_new (Track * tr)
               TYPE_CONTROL, FLOW_INPUT,
               "TP Input Gain",
               PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
-          self->input_gain->id.sym =
-            g_strdup ("track_processor_input_gain");
+          self->input_gain->id.sym = g_strdup (
+            "track_processor_input_gain");
           self->input_gain->minf = 0.f;
           self->input_gain->maxf = 4.f;
           self->input_gain->zerof = 0.f;
@@ -321,8 +325,8 @@ track_processor_new (Track * tr)
           self->input_gain->id.flags |=
             PORT_FLAG_TP_INPUT_GAIN;
           port_set_control_value (
-            self->input_gain, 1.f, F_NOT_NORMALIZED,
-            F_NO_PUBLISH_EVENTS);
+            self->input_gain, 1.f,
+            F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
         }
       break;
     default:
@@ -442,7 +446,8 @@ track_processor_append_ports (
  * Clears all buffers.
  */
 void
-track_processor_clear_buffers (TrackProcessor * self)
+track_processor_clear_buffers (
+  TrackProcessor * self)
 {
   /*Track * track =*/
   /*track_processor_get_track (self);*/
@@ -635,8 +640,8 @@ handle_recording (
                     (unsigned_frame_t) TRANSPORT
                       ->punch_out_pos.frames;
                   each_nframes[2] =
-                    (unsigned_frame_t)
-                      TRANSPORT->loop_end_pos.frames
+                    (unsigned_frame_t) TRANSPORT
+                      ->loop_end_pos.frames
                     - (unsigned_frame_t) TRANSPORT
                         ->punch_out_pos.frames;
 
@@ -649,7 +654,8 @@ handle_recording (
 
                   /* adjust num frames for punch in
                    * pos */
-                  each_nframes[1] -= each_nframes[2];
+                  each_nframes[1] -=
+                    each_nframes[2];
                 }
               else
                 {
@@ -666,8 +672,8 @@ handle_recording (
                     (unsigned_frame_t) TRANSPORT
                       ->punch_out_pos.frames;
                   each_nframes[1] =
-                    (unsigned_frame_t)
-                      TRANSPORT->loop_end_pos.frames
+                    (unsigned_frame_t) TRANSPORT
+                      ->loop_end_pos.frames
                     - (unsigned_frame_t) TRANSPORT
                         ->punch_out_pos.frames;
                   /*loop_end_idx = 1;*/
@@ -680,7 +686,8 @@ handle_recording (
 
                   /* adjust num frames for init
                    * pos */
-                  each_nframes[0] -= each_nframes[1];
+                  each_nframes[0] -=
+                    each_nframes[1];
                 }
             }
         }
@@ -734,7 +741,8 @@ handle_recording (
 
                   /* adjust num frames for punch in
                    * pos */
-                  each_nframes[1] -= each_nframes[2];
+                  each_nframes[1] -=
+                    each_nframes[2];
                 }
               else
                 {
@@ -757,7 +765,8 @@ handle_recording (
 
                   /* adjust num frames for init
                    * pos */
-                  each_nframes[0] -= each_nframes[1];
+                  each_nframes[0] -=
+                    each_nframes[1];
                 }
             }
         }
@@ -960,8 +969,9 @@ track_processor_process (
       /* append the midi events from piano roll to
        * MIDI out */
       midi_events_append (
-        self->midi_out->midi_events, pr->midi_events,
-        local_offset, nframes, false);
+        self->midi_out->midi_events,
+        pr->midi_events, local_offset, nframes,
+        false);
 
 #if 0
       if (pr->midi_events->num_events > 0)
@@ -1002,7 +1012,8 @@ track_processor_process (
                   ->midi_editor_manual_press
                   ->midi_events,
                 tr->channel->midi_channels,
-                local_offset, nframes, F_NOT_QUEUED);
+                local_offset, nframes,
+                F_NOT_QUEUED);
             }
           /* otherwise append normally */
           else
@@ -1012,7 +1023,8 @@ track_processor_process (
                 AUDIO_ENGINE
                   ->midi_editor_manual_press
                   ->midi_events,
-                local_offset, nframes, F_NOT_QUEUED);
+                local_offset, nframes,
+                F_NOT_QUEUED);
             }
         }
     }
@@ -1227,11 +1239,11 @@ track_processor_connect_to_prefader (
     && tr->out_signal_type == TYPE_AUDIO)
     {
       port_connect (
-        self->stereo_out->l, prefader->stereo_in->l,
-        1);
+        self->stereo_out->l,
+        prefader->stereo_in->l, 1);
       port_connect (
-        self->stereo_out->r, prefader->stereo_in->r,
-        1);
+        self->stereo_out->r,
+        prefader->stereo_in->r, 1);
     }
   if (
     tr->in_signal_type == TYPE_EVENT

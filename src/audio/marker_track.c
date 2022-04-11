@@ -58,7 +58,8 @@ marker_track_default (int track_pos)
   Marker * marker;
   Position pos;
   marker = marker_new (_ ("start"));
-  ArrangerObject * m_obj = (ArrangerObject *) marker;
+  ArrangerObject * m_obj =
+    (ArrangerObject *) marker;
   position_set_to_bar (&pos, 1);
   arranger_object_pos_setter (m_obj, &pos);
   marker->type = MARKER_TYPE_START;

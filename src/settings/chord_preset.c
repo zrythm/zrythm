@@ -33,7 +33,8 @@ chord_preset_new (const char * name)
 {
   ChordPreset * self = object_new (ChordPreset);
 
-  self->schema_version = CHORD_PRESET_SCHEMA_VERSION;
+  self->schema_version =
+    CHORD_PRESET_SCHEMA_VERSION;
   self->name = g_strdup (name);
 
   return self;
@@ -59,7 +60,8 @@ chord_preset_clone (const ChordPreset * src)
  * Must be free'd by caller.
  */
 char *
-chord_preset_get_info_text (const ChordPreset * self)
+chord_preset_get_info_text (
+  const ChordPreset * self)
 {
   GString * gstr = g_string_new (_ ("Chords"));
   g_string_append (gstr, ":\n");

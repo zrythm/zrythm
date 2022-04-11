@@ -133,8 +133,8 @@ z_cairo_rounded_rectangle (
 #define z_cairo_get_text_extents_for_widget( \
   _widget, _layout, _text, _width, _height) \
   _z_cairo_get_text_extents_for_widget ( \
-    (GtkWidget *) _widget, _layout, _text, _width, \
-    _height)
+    (GtkWidget *) _widget, _layout, _text, \
+    _width, _height)
 
 /**
  * Gets the width of the given text in pixels
@@ -157,7 +157,8 @@ _z_cairo_get_text_extents_for_widget (
 /**
  * Draw text with default padding.
  */
-#define z_cairo_draw_text(cr, widget, layout, text) \
+#define z_cairo_draw_text( \
+  cr, widget, layout, text) \
   z_cairo_draw_text_full ( \
     cr, widget, layout, text, \
     Z_CAIRO_TEXT_PADDING, Z_CAIRO_TEXT_PADDING)

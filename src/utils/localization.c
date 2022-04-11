@@ -128,11 +128,14 @@ get_match (
   char * ret = NULL;
   for (int i = 0; i < num_installed_locales; i++)
     {
-      char * installed_locale = installed_locales[i];
-      if (g_str_has_prefix (installed_locale, prefix))
+      char * installed_locale =
+        installed_locales[i];
+      if (g_str_has_prefix (
+            installed_locale, prefix))
         {
           if (
-            g_str_has_suffix (installed_locale, upper)
+            g_str_has_suffix (
+              installed_locale, upper)
             || g_str_has_suffix (
               installed_locale, lower)
             || g_str_has_suffix (
@@ -182,7 +185,8 @@ localization_locale_exists (
     }
 
   /* Read the output a line at a time - output it. */
-  while (fgets (path, sizeof (path) - 1, fp) != NULL)
+  while (
+    fgets (path, sizeof (path) - 1, fp) != NULL)
     {
       installed_locales[num_installed_locales++] =
         g_strdup_printf ("%s", g_strchomp (path));
@@ -199,8 +203,9 @@ localization_locale_exists (
     if (!match) \
       { \
         match = get_match ( \
-          installed_locales, num_installed_locales, \
-          code, ALT_CODESET); \
+          installed_locales, \
+          num_installed_locales, code, \
+          ALT_CODESET); \
       } \
     break
 
@@ -294,7 +299,8 @@ localization_init (
       GSettings * prefs = g_settings_new (
         GSETTINGS_ZRYTHM_PREFIX
         ".preferences.ui.general");
-      lang = g_settings_get_enum (prefs, "language");
+      lang =
+        g_settings_get_enum (prefs, "language");
       g_object_unref (G_OBJECT (prefs));
 
       if (print_debug_messages)
@@ -327,8 +333,8 @@ localization_init (
       if (print_debug_messages)
         {
           g_message (
-            "setting locale to %s (found %s)", code,
-            match);
+            "setting locale to %s (found %s)",
+            code, match);
         }
 #if defined(_WOE32) || defined(__APPLE__)
       char buf[120];
@@ -374,7 +380,8 @@ localization_init (
 #endif
 
   /* set domain codeset */
-  bind_textdomain_codeset (GETTEXT_PACKAGE, CODESET);
+  bind_textdomain_codeset (
+    GETTEXT_PACKAGE, CODESET);
 
   /* set current domain */
   textdomain (GETTEXT_PACKAGE);

@@ -126,7 +126,8 @@ channel_widget_update_meter_reading (
   Track * track = channel_get_track (channel);
   if (track->out_signal_type == TYPE_EVENT)
     {
-      gtk_label_set_text (self->meter_reading, "-∞");
+      gtk_label_set_text (
+        self->meter_reading, "-∞");
       return G_SOURCE_CONTINUE;
     }
 
@@ -467,11 +468,11 @@ setup_meter (ChannelWidget * self)
       break;
     case TYPE_AUDIO:
       meter_widget_setup (
-        self->meter_l, self->channel->stereo_out->l,
-        12);
+        self->meter_l,
+        self->channel->stereo_out->l, 12);
       meter_widget_setup (
-        self->meter_r, self->channel->stereo_out->r,
-        12);
+        self->meter_r,
+        self->channel->stereo_out->r, 12);
       break;
     default:
       break;
@@ -557,7 +558,8 @@ setup_aux_buttons (ChannelWidget * self)
 }
 
 void
-channel_widget_refresh_buttons (ChannelWidget * self)
+channel_widget_refresh_buttons (
+  ChannelWidget * self)
 {
   fader_buttons_widget_refresh (
     self->fader_buttons,
@@ -861,7 +863,8 @@ on_dnd_drag_begin (
   /* set the widget as the drag icon */
   GdkPaintable * paintable =
     gtk_widget_paintable_new (GTK_WIDGET (self));
-  gtk_drag_source_set_icon (source, paintable, 0, 0);
+  gtk_drag_source_set_icon (
+    source, paintable, 0, 0);
   g_object_unref (paintable);
 
   Track * track = channel_get_track (self->channel);
@@ -967,10 +970,12 @@ channel_widget_new (Channel * channel)
   editable_label_widget_setup (
     self->name, track,
     (GenericStringGetter) track_get_name,
-    (GenericStringSetter) track_set_name_with_action);
+    (GenericStringSetter)
+      track_set_name_with_action);
   route_target_selector_widget_setup (
     self->output, self->channel);
-  color_area_widget_setup_track (self->color, track);
+  color_area_widget_setup_track (
+    self->color, track);
 
 #if 0
   /*if (self->channel->track->type ==*/
@@ -1030,8 +1035,10 @@ static void
 channel_widget_class_init (
   ChannelWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass, "channel.ui");
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (
+    klass, "channel.ui");
   gtk_widget_class_set_css_name (klass, "channel");
   klass->snapshot = channel_snapshot;
 
@@ -1073,14 +1080,16 @@ channel_widget_init (ChannelWidget * self)
   g_type_ensure (METER_WIDGET_TYPE);
   g_type_ensure (COLOR_AREA_WIDGET_TYPE);
   g_type_ensure (PLUGIN_STRIP_EXPANDER_WIDGET_TYPE);
-  g_type_ensure (CHANNEL_SENDS_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (
+    CHANNEL_SENDS_EXPANDER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
   self->popover_menu = GTK_POPOVER_MENU (
     gtk_popover_menu_new_from_model (NULL));
   gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
 
   self->last_midi_trigger_time = 0;
 

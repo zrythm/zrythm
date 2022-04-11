@@ -121,7 +121,8 @@ float
 peak_dsp_read_f (PeakDsp * self)
 {
   float rv = self->rms;
-  self->flag = true; // Resets _rms in next process().
+  self->flag =
+    true; // Resets _rms in next process().
   return rv;
 }
 
@@ -133,7 +134,8 @@ peak_dsp_read (
 {
   *rms = self->rms;
   *peak = self->peak;
-  self->flag = true; // Resets _rms in next process().
+  self->flag =
+    true; // Resets _rms in next process().
 }
 
 void

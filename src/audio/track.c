@@ -140,7 +140,8 @@ track_init_loaded (
         true);
     }
 
-  for (int i = 0; i < self->num_modulator_macros; i++)
+  for (int i = 0; i < self->num_modulator_macros;
+       i++)
     {
       ModulatorMacroProcessor * mmp =
         self->modulator_macros[i];
@@ -335,8 +336,9 @@ track_new (
   if (track_type_can_record (type))
     {
       self->recording = port_new_with_type_and_owner (
-        TYPE_CONTROL, FLOW_INPUT, _ ("Track record"),
-        PORT_OWNER_TYPE_TRACK, self);
+        TYPE_CONTROL, FLOW_INPUT,
+        _ ("Track record"), PORT_OWNER_TYPE_TRACK,
+        self);
       self->recording->id.sym =
         g_strdup ("track_record");
       control_port_set_toggled (
@@ -420,7 +422,8 @@ track_clone (Track * track, GError ** error)
   g_return_val_if_fail (
     IS_TRACK_AND_NONNULL (new_track), NULL);
 
-  new_track->icon_name = g_strdup (track->icon_name);
+  new_track->icon_name =
+    g_strdup (track->icon_name);
   new_track->comment = g_strdup (track->comment);
 
 #define COPY_MEMBER(a) new_track->a = track->a
@@ -504,7 +507,8 @@ track_clone (Track * track, GError ** error)
   new_track->num_lanes = track->num_lanes;
   new_track->lanes = g_realloc (
     new_track->lanes,
-    sizeof (TrackLane *) * (size_t) track->num_lanes);
+    sizeof (TrackLane *)
+      * (size_t) track->num_lanes);
   for (int j = 0; j < track->num_lanes; j++)
     {
       TrackLane * lane = track->lanes[j];
@@ -648,12 +652,14 @@ track_select (
       if (exclusive)
         {
           tracklist_selections_select_single (
-            TRACKLIST_SELECTIONS, self, fire_events);
+            TRACKLIST_SELECTIONS, self,
+            fire_events);
         }
       else
         {
           tracklist_selections_add_track (
-            TRACKLIST_SELECTIONS, self, fire_events);
+            TRACKLIST_SELECTIONS, self,
+            fire_events);
         }
     }
   else
@@ -863,7 +869,8 @@ track_set_muted (
   bool    fire_events)
 {
   g_message (
-    "Setting track %s muted (%d)", self->name, mute);
+    "Setting track %s muted (%d)", self->name,
+    mute);
 
   if (auto_select)
     {
@@ -886,7 +893,8 @@ track_set_muted (
       if (!ret)
         {
           HANDLE_ERROR (
-            err, "%s", _ ("Cannot set track muted"));
+            err, "%s",
+            _ ("Cannot set track muted"));
           return;
         }
     }
@@ -1033,7 +1041,8 @@ track_get_velocities_in_range (
           ZRegion * r = lane->regions[j];
           midi_region_get_velocities_in_range (
             r, start_pos, end_pos, velocities,
-            num_velocities, velocities_size, inside);
+            num_velocities, velocities_size,
+            inside);
         }
     }
 }
@@ -1070,7 +1079,8 @@ track_validate (Track * self)
         track_get_name_hash (self);
       for (size_t i = 0; i < ports->len; i++)
         {
-          Port * port = g_ptr_array_index (ports, i);
+          Port * port =
+            g_ptr_array_index (ports, i);
           g_return_val_if_fail (
             port->id.track_name_hash == name_hash,
             false);
@@ -1200,7 +1210,8 @@ track_validate (Track * self)
         r, track_is_in_active_project (self));
     }
 
-  g_debug ("done validating track '%s'", self->name);
+  g_debug (
+    "done validating track '%s'", self->name);
 
   return true;
 }
@@ -1719,7 +1730,8 @@ track_generate_automation_tracks (Track * track)
       at->visible = 1;
 
       /* balance */
-      at = automation_track_new (ch->fader->balance);
+      at =
+        automation_track_new (ch->fader->balance);
       automation_tracklist_add_at (atl, at);
 
       /* mute */
@@ -1761,7 +1773,8 @@ track_generate_automation_tracks (Track * track)
           at = automation_track_new (cc);
           automation_tracklist_add_at (atl, at);
 
-          cc = track->processor->channel_pressure[i];
+          cc =
+            track->processor->channel_pressure[i];
           at = automation_track_new (cc);
           automation_tracklist_add_at (atl, at);
         }
@@ -1896,7 +1909,8 @@ track_insert_region (
       track = automation_track_get_track (at);
     }
   g_return_if_fail (IS_TRACK (track));
-  g_return_if_fail (region_validate (region, false));
+  g_return_if_fail (
+    region_validate (region, false));
   g_return_if_fail (track_type_can_have_region_type (
     track->type, region->id.type));
 
@@ -1967,7 +1981,8 @@ track_insert_region (
       if (idx == -1)
         {
           chord_track_insert_chord_region (
-            track, region, track->num_chord_regions);
+            track, region,
+            track->num_chord_regions);
         }
       else
         {
@@ -2197,13 +2212,14 @@ track_insert_plugin (
     {
       modulator_track_insert_modulator (
         self, slot, pl, replacing_plugin, confirm,
-        gen_automatables, recalc_graph, fire_events);
+        gen_automatables, recalc_graph,
+        fire_events);
     }
   else
     {
       channel_add_plugin (
-        self->channel, slot_type, slot, pl, confirm,
-        moving_plugin, gen_automatables,
+        self->channel, slot_type, slot, pl,
+        confirm, moving_plugin, gen_automatables,
         recalc_graph, fire_events);
     }
 
@@ -2828,7 +2844,8 @@ track_fill_events (
           g_return_if_fail (IS_REGION (r));
 
           /* skip region if muted */
-          if (arranger_object_get_muted (r_obj, true))
+          if (arranger_object_get_muted (
+                r_obj, true))
             {
               continue;
             }
@@ -2847,7 +2864,8 @@ track_fill_events (
           if (
             !region_is_hit_by_range (
               r,
-              (signed_frame_t) time_nfo->g_start_frame,
+              (signed_frame_t)
+                time_nfo->g_start_frame,
               (signed_frame_t) (midi_events ? g_end_frames : (g_end_frames - 1)),
               F_INCLUSIVE))
             {
@@ -2905,7 +2923,8 @@ track_fill_events (
                 (TRANSPORT_IS_LOOPING
                  && (signed_frame_t) time_nfo->g_start_frame
                         + num_frames_to_process
-                      == TRANSPORT->loop_end_pos.frames);
+                      == TRANSPORT->loop_end_pos
+                           .frames);
 
               /* number of frames to process this
                * time */
@@ -2916,7 +2935,8 @@ track_fill_events (
 
               const EngineProcessTimeInfo nfo = {
                 .g_start_frame = cur_g_start_frame,
-                .local_offset = cur_local_start_frame,
+                .local_offset =
+                  cur_local_start_frame,
                 .nframes =
                   cur_num_frames_till_next_r_loop_or_end
               };
@@ -3021,7 +3041,8 @@ add_region_if_in_range (
   int *      count,
   ZRegion *  region)
 {
-  ArrangerObject * r_obj = (ArrangerObject *) region;
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
 
   if (!p1 && !p2)
     {
@@ -3175,7 +3196,8 @@ track_set_name (
     }
   self->name = new_name;
 
-  unsigned int new_hash = track_get_name_hash (self);
+  unsigned int new_hash =
+    track_get_name_hash (self);
 
   if (old_hash != 0)
     {
@@ -3212,7 +3234,8 @@ track_set_name (
       track_append_ports (self, ports, true);
       for (size_t i = 0; i < ports->len; i++)
         {
-          Port * port = g_ptr_array_index (ports, i);
+          Port * port =
+            g_ptr_array_index (ports, i);
           g_return_if_fail (
             IS_PORT_AND_NONNULL (port));
           port_update_track_name_hash (
@@ -3439,7 +3462,8 @@ track_set_color (
 
       if (fire_events)
         {
-          EVENTS_PUSH (ET_TRACK_COLOR_CHANGED, self);
+          EVENTS_PUSH (
+            ET_TRACK_COLOR_CHANGED, self);
         }
     }
 }
@@ -3517,7 +3541,9 @@ track_get_plugin_at_slot (
     case PLUGIN_SLOT_INSERT:
       return self->channel->inserts[slot];
     case PLUGIN_SLOT_MODULATOR:
-      if (self->modulators && slot < self->num_modulators)
+      if (
+        self->modulators
+        && slot < self->num_modulators)
         {
           return self->modulators[slot];
         }
@@ -3721,7 +3747,8 @@ track_set_enabled (
 
       if (fire_events)
         {
-          EVENTS_PUSH (ET_TRACK_STATE_CHANGED, self);
+          EVENTS_PUSH (
+            ET_TRACK_STATE_CHANGED, self);
         }
     }
 }
@@ -3736,7 +3763,8 @@ get_end_pos_from_objs (
     {
       ArrangerObject * obj = objs[i];
       Position         end_pos;
-      if (arranger_object_type_has_length (obj->type))
+      if (arranger_object_type_has_length (
+            obj->type))
         {
           arranger_object_get_end_pos (
             obj, &end_pos);
@@ -3914,7 +3942,8 @@ track_free (Track * self)
     }
   if (self->beats_per_bar_port)
     {
-      port_disconnect_all (self->beats_per_bar_port);
+      port_disconnect_all (
+        self->beats_per_bar_port);
       object_free_w_func_and_null (
         port_free, self->beats_per_bar_port);
     }
@@ -3944,7 +3973,8 @@ track_free (Track * self)
   g_free_and_null (self->comment);
   g_free_and_null (self->icon_name);
 
-  for (int i = 0; i < self->num_modulator_macros; i++)
+  for (int i = 0; i < self->num_modulator_macros;
+       i++)
     {
       modulator_macro_processor_free (
         self->modulator_macros[i]);

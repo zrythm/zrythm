@@ -126,8 +126,8 @@ wrapped_object_with_change_signal_class_init (
     NULL /* closure */, NULL /* accumulator */,
     NULL /* accumulator data */,
     NULL /* C marshaller */,
-    G_TYPE_NONE /* return_type */, 0 /* n_params */,
-    NULL /* param_types */);
+    G_TYPE_NONE /* return_type */,
+    0 /* n_params */, NULL /* param_types */);
 }
 
 static void

@@ -202,7 +202,9 @@ windows_mmcss_revert_thread_characteristics (
   if (AvRevertMmThreadCharacteristics == NULL)
     return -1;
 
-  if (AvRevertMmThreadCharacteristics (task_handle) == 0)
+  if (
+    AvRevertMmThreadCharacteristics (task_handle)
+    == 0)
     {
       g_critical (
         "MMCSS: Failed to set revert thread "
@@ -224,7 +226,9 @@ windows_mmcss_set_thread_priority (
   if (AvSetMmThreadPriority == NULL)
     return -1;
 
-  if (AvSetMmThreadPriority (task_handle, priority) == 0)
+  if (
+    AvSetMmThreadPriority (task_handle, priority)
+    == 0)
     {
       g_critical (
         "Failed to set thread priority %i",

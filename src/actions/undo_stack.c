@@ -172,8 +172,8 @@ undo_stack_clone (const UndoStack * src)
     channel_send_actions, channel_send_action,
     ChannelSendAction);
   CLONE_ACTIONS (
-    port_connection_actions, port_connection_action,
-    PortConnectionAction);
+    port_connection_actions,
+    port_connection_action, PortConnectionAction);
   CLONE_ACTIONS (
     port_actions, port_action, PortAction);
   CLONE_ACTIONS (
@@ -242,10 +242,12 @@ undo_stack_push (
 #define APPEND_ELEMENT(caps, cc, sc) \
   case UA_##caps: \
     array_double_size_if_full ( \
-      self->sc##_actions, self->num_##sc##_actions, \
+      self->sc##_actions, \
+      self->num_##sc##_actions, \
       self->sc##_actions_size, cc##Action *); \
     array_append ( \
-      self->sc##_actions, self->num_##sc##_actions, \
+      self->sc##_actions, \
+      self->num_##sc##_actions, \
       (cc##Action *) action); \
     break
 
@@ -270,7 +272,8 @@ undo_stack_push (
         TRANSPORT, Transport, transport);
       APPEND_ELEMENT (CHORD, Chord, chord);
       APPEND_ELEMENT (
-        ARRANGER_SELECTIONS, ArrangerSelections, as);
+        ARRANGER_SELECTIONS, ArrangerSelections,
+        as);
     }
 }
 
@@ -283,7 +286,8 @@ remove_action (
 #define REMOVE_ELEMENT(caps, cc, sc) \
   case UA_##caps: \
     array_delete_confirm ( \
-      self->sc##_actions, self->num_##sc##_actions, \
+      self->sc##_actions, \
+      self->num_##sc##_actions, \
       (cc##Action *) action, removed); \
     g_return_val_if_fail (removed, removed); \
     if ( \
@@ -295,7 +299,8 @@ remove_action (
           " actions (%zu) is greater " \
           "than current stack top (%d)", \
           self->num_##sc##_actions, \
-          g_atomic_int_get (&self->stack->top) + 1); \
+          g_atomic_int_get (&self->stack->top) \
+            + 1); \
         return removed; \
       } \
     break
@@ -335,7 +340,8 @@ remove_action (
 
   /* re-set the indices */
   for (int i = 0;
-       i <= g_atomic_int_get (&self->stack->top); i++)
+       i <= g_atomic_int_get (&self->stack->top);
+       i++)
     {
       UndoableAction * ua =
         (UndoableAction *) self->stack->elements[i];
@@ -371,8 +377,8 @@ undo_stack_pop_last (UndoStack * self)
     g_atomic_int_get (&self->stack->top));
 
   /* pop from stack */
-  UndoableAction * action =
-    (UndoableAction *) stack_pop_last (self->stack);
+  UndoableAction * action = (UndoableAction *)
+    stack_pop_last (self->stack);
 
   /* remove the action */
   bool removed = remove_action (self, action);
@@ -463,7 +469,8 @@ undo_stack_free (UndoStack * self)
       UndoableAction * ua = undo_stack_pop (self);
       char *           type_str =
         undoable_action_to_string (ua);
-      g_debug ("%s: freeing %s", __func__, type_str);
+      g_debug (
+        "%s: freeing %s", __func__, type_str);
       g_free (type_str);
       undoable_action_free (ua);
     }

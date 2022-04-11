@@ -57,12 +57,12 @@ typedef struct
   const LV2UI_Idle_Interface * idle_iface;
   guint                        idle_id;
   guint                        idle_ms;
-  guint                        idle_size_request_id;
-  SuilX11SizeHints             max_size;
-  SuilX11SizeHints             custom_size;
-  SuilX11SizeHints             base_size;
-  SuilX11SizeHints             min_size;
-  bool                         query_wm;
+  guint            idle_size_request_id;
+  SuilX11SizeHints max_size;
+  SuilX11SizeHints custom_size;
+  SuilX11SizeHints base_size;
+  SuilX11SizeHints min_size;
+  bool             query_wm;
 } SuilX11Wrapper;
 
 typedef struct
@@ -192,8 +192,9 @@ suil_x11_wrapper_finalize (GObject * gobject)
 static void
 suil_x11_wrapper_realize (GtkWidget * w)
 {
-  SuilX11Wrapper * const wrap = SUIL_X11_WRAPPER (w);
-  GtkSocket * const      socket = GTK_SOCKET (w);
+  SuilX11Wrapper * const wrap =
+    SUIL_X11_WRAPPER (w);
+  GtkSocket * const socket = GTK_SOCKET (w);
 
   if (GTK_WIDGET_CLASS (suil_x11_wrapper_parent_class)
         ->realize)
@@ -215,12 +216,13 @@ suil_x11_wrapper_realize (GtkWidget * w)
   gtk_widget_grab_focus (GTK_WIDGET (wrap->plug));
 
   // Setup drag/drop proxy from parent/grandparent window
-  GdkWindow * gwindow =
-    gtk_widget_get_window (GTK_WIDGET (wrap->plug));
+  GdkWindow * gwindow = gtk_widget_get_window (
+    GTK_WIDGET (wrap->plug));
   Window xwindow = GDK_WINDOW_XID (gwindow);
   Atom   xdnd_proxy_atom =
     gdk_x11_get_xatom_by_name ("XdndProxy");
-  Window plugin = (Window) wrap->instance->ui_widget;
+  Window plugin =
+    (Window) wrap->instance->ui_widget;
 
   while (xwindow)
     {
@@ -238,7 +240,8 @@ suil_x11_wrapper_realize (GtkWidget * w)
 static void
 suil_x11_wrapper_show (GtkWidget * w)
 {
-  SuilX11Wrapper * const wrap = SUIL_X11_WRAPPER (w);
+  SuilX11Wrapper * const wrap =
+    SUIL_X11_WRAPPER (w);
 
   if (GTK_WIDGET_CLASS (suil_x11_wrapper_parent_class)
         ->show)
@@ -321,8 +324,8 @@ idle_size_request (gpointer user_data)
 static void
 query_wm_hints (SuilX11Wrapper * wrap)
 {
-  GdkWindow * window =
-    gtk_widget_get_window (GTK_WIDGET (wrap->plug));
+  GdkWindow * window = gtk_widget_get_window (
+    GTK_WIDGET (wrap->plug));
   XSizeHints hints = { 0 };
   long       supplied = 0;
 
@@ -548,12 +551,14 @@ suil_x11_wrapper_init (SuilX11Wrapper * self)
   self->instance = NULL;
   self->idle_iface = NULL;
   self->idle_ms = 1000 / 30; // 30 Hz default
-  self->max_size = (SuilX11SizeHints){ false, 0, 0 };
+  self->max_size =
+    (SuilX11SizeHints){ false, 0, 0 };
   self->custom_size =
     (SuilX11SizeHints){ false, 0, 0 };
   self->base_size =
     (SuilX11SizeHints){ false, 0, 0 };
-  self->min_size = (SuilX11SizeHints){ false, 0, 0 };
+  self->min_size =
+    (SuilX11SizeHints){ false, 0, 0 };
   self->query_wm = true;
 }
 
@@ -568,7 +573,8 @@ wrapper_resize (
 
   wrap->custom_size.width = width;
   wrap->custom_size.height = height;
-  wrap->custom_size.is_set = width > 0 && height > 0;
+  wrap->custom_size.is_set =
+    width > 0 && height > 0;
 
   // Assume the plugin has also updated min/max size constraints
   wrap->query_wm = true;
@@ -600,8 +606,8 @@ wrapper_wrap (
   wrap->wrapper = wrapper;
   wrap->instance = instance;
 
-  GdkWindow * window =
-    gtk_widget_get_window (GTK_WIDGET (wrap->plug));
+  GdkWindow * window = gtk_widget_get_window (
+    GTK_WIDGET (wrap->plug));
   GdkDisplay * display =
     gdk_window_get_display (window);
   Display * xdisplay = GDK_WINDOW_XDISPLAY (window);
@@ -687,8 +693,10 @@ suil_wrapper_new_x11 (
   wrapper->resize.handle = wrap;
   wrapper->resize.ui_resize = wrapper_resize;
 
-  gtk_widget_set_sensitive (GTK_WIDGET (wrap), TRUE);
-  gtk_widget_set_can_focus (GTK_WIDGET (wrap), TRUE);
+  gtk_widget_set_sensitive (
+    GTK_WIDGET (wrap), TRUE);
+  gtk_widget_set_can_focus (
+    GTK_WIDGET (wrap), TRUE);
 
   const intptr_t parent_id =
     (intptr_t) gtk_plug_get_id (wrap->plug);
@@ -724,8 +732,8 @@ suil_wrapper_new_x11 (
       // Set UI update rate if given
       LV2_URID ui_updateRate =
         map->map (map->handle, LV2_UI__updateRate);
-      for (LV2_Options_Option * o = options; o->key;
-           ++o)
+      for (LV2_Options_Option * o = options;
+           o->key; ++o)
         {
           if (o->key == ui_updateRate)
             {

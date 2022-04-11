@@ -45,7 +45,8 @@ typedef struct MusicalScale MusicalScale;
 #define SCALE_OBJECT_SCHEMA_VERSION 1
 
 #define scale_object_is_selected(r) \
-  arranger_object_is_selected ((ArrangerObject *) r)
+  arranger_object_is_selected ( \
+    (ArrangerObject *) r)
 
 #define SCALE_OBJECT_MAGIC 13187994
 #define IS_SCALE_OBJECT(tr) \
@@ -87,11 +88,12 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t scale_object_schema = {
-  YAML_VALUE_PTR (
-    ScaleObject,
-    scale_object_fields_schema),
-};
+static const cyaml_schema_value_t
+  scale_object_schema = {
+    YAML_VALUE_PTR (
+      ScaleObject,
+      scale_object_fields_schema),
+  };
 
 /**
  * Creates a ScaleObject.

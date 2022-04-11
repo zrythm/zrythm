@@ -200,9 +200,11 @@ volume_widget_new (Port * port)
 }
 
 static void
-volume_widget_class_init (VolumeWidgetClass * _klass)
+volume_widget_class_init (
+  VolumeWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
 
   gtk_widget_class_set_css_name (klass, "volume");
 }

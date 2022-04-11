@@ -123,8 +123,8 @@ ui_set_cursor_from_icon_name (
     offset_y, gdk_texture_get_height (texture) - 1);
   GdkCursor * gdk_cursor =
     gdk_cursor_new_from_texture (
-      texture, adjusted_offset_x, adjusted_offset_y,
-      NULL);
+      texture, adjusted_offset_x,
+      adjusted_offset_y, NULL);
   g_object_unref (texture);
 
   /* add the cursor to the caches */
@@ -250,7 +250,8 @@ ui_get_hit_child (
         continue;
 
       GtkAllocation allocation;
-      gtk_widget_get_allocation (child, &allocation);
+      gtk_widget_get_allocation (
+        child, &allocation);
 
       double wx, wy;
       gtk_widget_translate_coordinates (
@@ -259,8 +260,8 @@ ui_get_hit_child (
 
       /* if hit */
       if (
-        wx >= 0 && wx <= allocation.width && wy >= 0
-        && wy <= allocation.height)
+        wx >= 0 && wx <= allocation.width
+        && wy >= 0 && wy <= allocation.height)
         {
           /* if type matches */
           if (G_TYPE_CHECK_INSTANCE_TYPE (
@@ -317,7 +318,8 @@ ui_px_to_pos_timeline (
     return;
 
   px_to_pos (
-    px, pos, has_padding, Z_RULER_WIDGET (MW_RULER));
+    px, pos, has_padding,
+    Z_RULER_WIDGET (MW_RULER));
 }
 
 /**
@@ -364,7 +366,9 @@ pos_to_px (
  * ruler padding.
  */
 int
-ui_pos_to_px_timeline (Position * pos, int use_padding)
+ui_pos_to_px_timeline (
+  Position * pos,
+  int        use_padding)
 {
   if (!MAIN_WINDOW || !MW_RULER)
     return 0;
@@ -384,7 +388,8 @@ ui_pos_to_px_editor (Position * pos, bool use_padding)
     return 0;
 
   return pos_to_px (
-    pos, use_padding, Z_RULER_WIDGET (EDITOR_RULER));
+    pos, use_padding,
+    Z_RULER_WIDGET (EDITOR_RULER));
 }
 
 /**
@@ -776,7 +781,8 @@ ui_create_audio_backends_model (void)
          [AUDIO_BACKEND_WASAPI_LIBSOUNDIO]),
 #  endif
 #  ifdef HAVE_RTAUDIO
-    _ (audio_backend_str[AUDIO_BACKEND_WASAPI_RTAUDIO]),
+    _ (audio_backend_str
+         [AUDIO_BACKEND_WASAPI_RTAUDIO]),
     _ (audio_backend_str[AUDIO_BACKEND_ASIO_RTAUDIO]),
 #  endif
 #endif /* _WOE32 */
@@ -1092,7 +1098,8 @@ ui_setup_samplerate_combo_box (GtkComboBox * cb)
  * Sets up a pan law combo box.
  */
 void
-ui_setup_device_name_combo_box (GtkComboBoxText * cb)
+ui_setup_device_name_combo_box (
+  GtkComboBoxText * cb)
 {
   AudioBackend backend =
     (AudioBackend) g_settings_get_enum (

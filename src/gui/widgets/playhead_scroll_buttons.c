@@ -46,7 +46,8 @@ static void
 playhead_scroll_buttons_widget_class_init (
   PlayheadScrollButtonsWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "playhead_scroll_buttons.ui");
   gtk_widget_class_set_css_name (

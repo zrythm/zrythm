@@ -91,12 +91,13 @@ typedef enum FaderType
 } FaderType;
 
 static const cyaml_strval_t fader_type_strings[] = {
-  {"none",              FADER_TYPE_NONE            },
-  { "monitor",          FADER_TYPE_MONITOR         },
-  { "sample processor", FADER_TYPE_SAMPLE_PROCESSOR},
-  { "audio channel",    FADER_TYPE_AUDIO_CHANNEL   },
-  { "midi channel",     FADER_TYPE_MIDI_CHANNEL    },
-  { "generic",          FADER_TYPE_GENERIC         },
+  {"none",              FADER_TYPE_NONE         },
+  { "monitor",          FADER_TYPE_MONITOR      },
+  { "sample processor",
+   FADER_TYPE_SAMPLE_PROCESSOR                  },
+  { "audio channel",    FADER_TYPE_AUDIO_CHANNEL},
+  { "midi channel",     FADER_TYPE_MIDI_CHANNEL },
+  { "generic",          FADER_TYPE_GENERIC      },
 };
 
 typedef enum MidiFaderMode
@@ -108,10 +109,11 @@ typedef enum MidiFaderMode
   MIDI_FADER_MODE_CC_VOLUME,
 } MidiFaderMode;
 
-static const cyaml_strval_t midi_fader_mode_strings[] = {
-  {"vel_multiplier",
-   MIDI_FADER_MODE_VEL_MULTIPLIER             },
-  { "cc_volume",     MIDI_FADER_MODE_CC_VOLUME},
+static const cyaml_strval_t
+  midi_fader_mode_strings[] = {
+    {"vel_multiplier",
+     MIDI_FADER_MODE_VEL_MULTIPLIER             },
+    { "cc_volume",     MIDI_FADER_MODE_CC_VOLUME},
 };
 
 /**

@@ -178,7 +178,9 @@ _project_compress (
     }
   else /* decompress */
     {
-#if (ZSTD_VERSION_MAJOR == 1 && ZSTD_VERSION_MINOR < 3)
+#if ( \
+  ZSTD_VERSION_MAJOR == 1 \
+  && ZSTD_VERSION_MINOR < 3)
       unsigned long long const frame_content_size =
         ZSTD_getDecompressedSize (src, src_size);
       if (frame_content_size == 0)
@@ -384,8 +386,8 @@ set_and_create_next_available_backup_dir (
         }
       else
         {
-          char * bak_title =
-            g_strdup_printf ("%s.bak", self->title);
+          char * bak_title = g_strdup_printf (
+            "%s.bak", self->title);
           self->backup_dir = g_build_filename (
             backups_dir, bak_title, NULL);
           g_free (bak_title);
@@ -492,7 +494,8 @@ ArrangerSelections *
 project_get_arranger_selections_for_last_selection (
   Project * self)
 {
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
   switch (self->last_selection)
     {
     case SELECTION_TYPE_TIMELINE:
@@ -510,8 +513,8 @@ project_get_arranger_selections_for_last_selection (
               return (ArrangerSelections *)
                 AUTOMATION_SELECTIONS;
             case REGION_TYPE_MIDI:
-              return (
-                ArrangerSelections *) MA_SELECTIONS;
+              return (ArrangerSelections *)
+                MA_SELECTIONS;
             case REGION_TYPE_CHORD:
               return (ArrangerSelections *)
                 CHORD_SELECTIONS;
@@ -690,8 +693,8 @@ project_create_default (
 
   /* modulator */
   g_message ("adding modulator track...");
-  track =
-    modulator_track_default (TRACKLIST->num_tracks);
+  track = modulator_track_default (
+    TRACKLIST->num_tracks);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
@@ -807,7 +810,9 @@ project_create_default (
  *   from the most recent backup.
  */
 char *
-project_get_existing_yaml (Project * self, bool backup)
+project_get_existing_yaml (
+  Project * self,
+  bool      backup)
 {
   /* get file contents */
   char * project_file_path = project_get_path (
@@ -830,7 +835,8 @@ project_get_existing_yaml (Project * self, bool backup)
       sprintf (
         str, _ ("Unable to read file: %s"),
         err->message);
-      ui_show_error_message (MAIN_WINDOW, true, str);
+      ui_show_error_message (
+        MAIN_WINDOW, true, str);
       g_error_free (err);
       return NULL;
     }
@@ -855,7 +861,8 @@ project_get_existing_yaml (Project * self, bool backup)
     }
 
   /* make string null-terminated */
-  yaml = g_realloc (yaml, yaml_size + sizeof (char));
+  yaml =
+    g_realloc (yaml, yaml_size + sizeof (char));
   yaml[yaml_size] = '\0';
 
   return yaml;
@@ -912,7 +919,8 @@ load (const char * filename, const int is_template)
                 NULL,
                 GTK_DIALOG_MODAL
                   | GTK_DIALOG_DESTROY_WITH_PARENT,
-                GTK_MESSAGE_INFO, GTK_BUTTONS_YES_NO,
+                GTK_MESSAGE_INFO,
+                GTK_BUTTONS_YES_NO,
                 _ ("Newer backup found:\n  %s.\n"
                    "Use the newer backup?"),
                 PROJECT->backup_dir);
@@ -951,8 +959,8 @@ load (const char * filename, const int is_template)
   bool use_backup = PROJECT->backup_dir != NULL;
   PROJECT->loading_from_backup = use_backup;
 
-  char * yaml =
-    project_get_existing_yaml (PROJECT, use_backup);
+  char * yaml = project_get_existing_yaml (
+    PROJECT, use_backup);
   g_return_val_if_fail (yaml, -1);
 
   g_message ("project from yaml...");
@@ -1035,7 +1043,8 @@ load (const char * filename, const int is_template)
   if (use_backup)
     {
       char * prev_plugins_dir = g_build_filename (
-        self->backup_dir, PROJECT_PLUGINS_DIR, NULL);
+        self->backup_dir, PROJECT_PLUGINS_DIR,
+        NULL);
       char * new_plugins_dir = g_build_filename (
         dir, PROJECT_PLUGINS_DIR, NULL);
       io_copy_dir (
@@ -1055,7 +1064,8 @@ load (const char * filename, const int is_template)
   if (PROJECT)
     {
       g_message (
-        "%s: freeing previous project...", __func__);
+        "%s: freeing previous project...",
+        __func__);
       object_free_w_func_and_null (
         project_free, PROJECT);
     }
@@ -1251,8 +1261,8 @@ project_load (
   else
     {
       project_create_default (
-        PROJECT, ZRYTHM->create_project_path, false,
-        true);
+        PROJECT, ZRYTHM->create_project_path,
+        false, true);
     }
 
   if (is_template || !filename)
@@ -1265,7 +1275,8 @@ project_load (
 
   /* pause engine */
   EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, true);
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, true);
 
   /* connect channel inputs to hardware. has to
    * be done after engine activation */
@@ -1386,7 +1397,8 @@ project_get_path (
   bool        backup)
 {
   g_return_val_if_fail (self->dir, NULL);
-  char * dir = backup ? self->backup_dir : self->dir;
+  char * dir =
+    backup ? self->backup_dir : self->dir;
   switch (path)
     {
     case PROJECT_PATH_BACKUPS:
@@ -1397,8 +1409,8 @@ project_get_path (
         dir, PROJECT_EXPORTS_DIR, NULL);
     case PROJECT_PATH_EXPORTS_STEMS:
       return g_build_filename (
-        dir, PROJECT_EXPORTS_DIR, PROJECT_STEMS_DIR,
-        NULL);
+        dir, PROJECT_EXPORTS_DIR,
+        PROJECT_STEMS_DIR, NULL);
     case PROJECT_PATH_PLUGINS:
       return g_build_filename (
         dir, PROJECT_PLUGINS_DIR, NULL);
@@ -1429,8 +1441,8 @@ project_get_path (
         char * plugins_dir = project_get_path (
           self, PROJECT_PATH_PLUGINS, backup);
         char * ret = g_build_filename (
-          plugins_dir, PROJECT_PLUGIN_EXT_LINKS_DIR,
-          NULL);
+          plugins_dir,
+          PROJECT_PLUGIN_EXT_LINKS_DIR, NULL);
         g_free (plugins_dir);
         return ret;
       }
@@ -1512,8 +1524,8 @@ serialize_project_thread (ProjectSaveData * data)
   g_message ("serializing project to yaml...");
   GError * err = NULL;
   gint64   time_before = g_get_monotonic_time ();
-  char *   yaml =
-    yaml_serialize (data->project, &project_schema);
+  char *   yaml = yaml_serialize (
+      data->project, &project_schema);
   gint64 time_after = g_get_monotonic_time ();
   g_message (
     "time to serialize: %ldms",
@@ -1585,7 +1597,8 @@ project_idle_saved_cb (ProjectSaveData * data)
       g_message (_ ("Backup saved."));
       if (ZRYTHM_HAVE_UI)
         {
-          ui_show_notification (_ ("Backup saved."));
+          ui_show_notification (
+            _ ("Backup saved."));
         }
     }
   else
@@ -1803,11 +1816,13 @@ project_save (
           GtkAdjustment * adj =
             gtk_scrolled_window_get_hadjustment (
               scroll);
-          PIANO_ROLL->editor_settings.scroll_start_x =
+          PIANO_ROLL->editor_settings
+            .scroll_start_x =
             (int) gtk_adjustment_get_value (adj);
           adj = gtk_scrolled_window_get_vadjustment (
             scroll);
-          PIANO_ROLL->editor_settings.scroll_start_y =
+          PIANO_ROLL->editor_settings
+            .scroll_start_y =
             (int) gtk_adjustment_get_value (adj);
         }
       if (MW_AUTOMATION_ARRANGER)
@@ -1869,7 +1884,8 @@ project_save (
     self, PROJECT_PATH_PROJECT_FILE, is_backup);
   data->show_notification = show_notification;
   data->is_backup = is_backup;
-  data->project = project_clone (PROJECT, is_backup);
+  data->project =
+    project_clone (PROJECT, is_backup);
   g_return_val_if_fail (data->project, -1);
   g_return_val_if_fail (
     data->project->tracklist_selections, -1);
@@ -1927,7 +1943,8 @@ project_save (
     {
       /* copy plugin states */
       char * prj_pl_states_dir = project_get_path (
-        PROJECT, PROJECT_PATH_PLUGINS, F_NOT_BACKUP);
+        PROJECT, PROJECT_PATH_PLUGINS,
+        F_NOT_BACKUP);
       char * prj_backup_pl_states_dir =
         project_get_path (
           PROJECT, PROJECT_PATH_PLUGINS, F_BACKUP);
@@ -1957,7 +1974,8 @@ project_save (
 
           /* show progress while saving */
           ProjectProgressDialogWidget * dialog =
-            project_progress_dialog_widget_new (data);
+            project_progress_dialog_widget_new (
+              data);
           g_return_val_if_fail (
             Z_IS_MAIN_WINDOW_WIDGET (MAIN_WINDOW),
             -1);
@@ -2020,7 +2038,8 @@ project_clone (const Project * src, bool for_backup)
   self->title = g_strdup (src->title);
   self->datetime_str = g_strdup (src->datetime_str);
   self->version = g_strdup (src->version);
-  self->tracklist = tracklist_clone (src->tracklist);
+  self->tracklist =
+    tracklist_clone (src->tracklist);
   self->clip_editor =
     clip_editor_clone (src->clip_editor);
   self->timeline = timeline_clone (src->timeline);
@@ -2040,7 +2059,8 @@ project_clone (const Project * src, bool for_backup)
     src->mixer_selections, F_PROJECT);
   self->timeline_selections = (TimelineSelections *)
     arranger_selections_clone (
-      (ArrangerSelections *) src->timeline_selections);
+      (ArrangerSelections *)
+        src->timeline_selections);
   self->midi_arranger_selections =
     (MidiArrangerSelections *)
       arranger_selections_clone (
@@ -2050,9 +2070,10 @@ project_clone (const Project * src, bool for_backup)
     (ChordSelections *) arranger_selections_clone (
       (ArrangerSelections *) src->chord_selections);
   self->automation_selections =
-    (AutomationSelections *) arranger_selections_clone (
-      (ArrangerSelections *)
-        src->automation_selections);
+    (AutomationSelections *)
+      arranger_selections_clone (
+        (ArrangerSelections *)
+          src->automation_selections);
   self->audio_selections =
     (AudioSelections *) arranger_selections_clone (
       (ArrangerSelections *) src->audio_selections);
@@ -2119,7 +2140,9 @@ project_free (Project * self)
 
   g_free_and_null (self->title);
 
-  if (self->audio_engine && self->audio_engine->activated)
+  if (
+    self->audio_engine
+    && self->audio_engine->activated)
     {
       engine_activate (self->audio_engine, false);
     }

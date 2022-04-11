@@ -221,7 +221,8 @@ editable_label_changed_source (gpointer user_data)
   ArrangerObject * obj = self->obj;
   ArrangerWidget * arranger =
     arranger_object_get_arranger (obj);
-  ArrangerObject * prev_obj = arranger->start_object;
+  ArrangerObject * prev_obj =
+    arranger->start_object;
   if (
     string_is_equal (column_name, _ ("Start"))
     || string_is_equal (column_name, _ ("Position")))
@@ -335,7 +336,8 @@ editable_label_changed_source (gpointer user_data)
     }
   else if (string_is_equal (column_name, _ ("Value")))
     {
-      AutomationPoint * ap = (AutomationPoint *) obj;
+      AutomationPoint * ap =
+        (AutomationPoint *) obj;
       Port * port = automation_point_get_port (ap);
 
       float val;
@@ -439,8 +441,8 @@ on_editable_label_editing_changed (
           {
             EditableChangedInfo * nfo =
               object_new (EditableChangedInfo);
-            nfo->column_name =
-              g_strdup (data->factory->column_name);
+            nfo->column_name = g_strdup (
+              data->factory->column_name);
             nfo->text = g_strdup (text);
             nfo->obj = obj;
             g_idle_add_full (
@@ -659,7 +661,8 @@ item_factory_bind_cb (
         ItemFactoryData * data =
           item_factory_data_new (self, obj);
         g_object_set_data (
-          G_OBJECT (bin), "item-factory-data", data);
+          G_OBJECT (bin), "item-factory-data",
+          data);
         g_signal_connect_data (
           G_OBJECT (check_btn), "toggled",
           G_CALLBACK (on_toggled), data,
@@ -796,8 +799,8 @@ item_factory_bind_cb (
                         arr_obj->type))
                     {
                       position_to_string_full (
-                        &arr_obj->loop_end_pos, str,
-                        1);
+                        &arr_obj->loop_end_pos,
+                        str, 1);
                     }
                   else
                     {
@@ -845,8 +848,8 @@ item_factory_bind_cb (
                         arr_obj))
                     {
                       position_to_string_full (
-                        &arr_obj->fade_out_pos, str,
-                        1);
+                        &arr_obj->fade_out_pos,
+                        str, 1);
                     }
                   else
                     {
@@ -910,7 +913,8 @@ item_factory_bind_cb (
                 }
               else if (
                 string_is_equal (
-                  self->column_name, _ ("Curviness")))
+                  self->column_name,
+                  _ ("Curviness")))
                 {
                   AutomationPoint * ap =
                     (AutomationPoint *) arr_obj;
@@ -962,7 +966,8 @@ item_factory_bind_cb (
               G_OBJECT (bin), "item-factory-data",
               data);
             g_signal_handlers_disconnect_by_func (
-              bin, on_editable_label_editing_changed,
+              bin,
+              on_editable_label_editing_changed,
               data);
             g_signal_connect_data (
               G_OBJECT (label), "notify::editing",
@@ -1011,8 +1016,8 @@ item_factory_bind_cb (
               ItemFactoryData * data =
                 item_factory_data_new (self, obj);
               g_object_set_data (
-                G_OBJECT (bin), "item-factory-data",
-                data);
+                G_OBJECT (bin),
+                "item-factory-data", data);
               g_signal_connect_data (
                 G_OBJECT (drag_source), "prepare",
                 G_CALLBACK (on_dnd_drag_prepare),
@@ -1037,8 +1042,10 @@ item_factory_bind_cb (
 
               gtk_image_set_from_icon_name (
                 img,
-                supported_file_get_icon_name (descr));
-              gtk_label_set_text (lbl, descr->label);
+                supported_file_get_icon_name (
+                  descr));
+              gtk_label_set_text (
+                lbl, descr->label);
 
               /* set as drag source */
               GtkDragSource * drag_source =
@@ -1046,8 +1053,8 @@ item_factory_bind_cb (
               ItemFactoryData * data =
                 item_factory_data_new (self, obj);
               g_object_set_data (
-                G_OBJECT (bin), "item-factory-data",
-                data);
+                G_OBJECT (bin),
+                "item-factory-data", data);
               g_signal_connect_data (
                 G_OBJECT (drag_source), "prepare",
                 G_CALLBACK (on_dnd_drag_prepare),
@@ -1136,8 +1143,8 @@ item_factory_unbind_cb (
         gpointer data = g_object_get_data (
           G_OBJECT (bin), "item-factory-data");
         g_signal_handlers_disconnect_by_func (
-          widget, on_editable_label_editing_changed,
-          data);
+          widget,
+          on_editable_label_editing_changed, data);
       }
       break;
     case ITEM_FACTORY_ICON_AND_TEXT:

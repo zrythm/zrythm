@@ -89,7 +89,8 @@ scale_object_draw (
   gtk_snapshot_append_color (
     snapshot, &color, &graphene_rect);
 
-  char * str = musical_scale_to_string (self->scale);
+  char * str =
+    musical_scale_to_string (self->scale);
 
   GdkRGBA c2;
   ui_get_contrast_color (&color, &c2);

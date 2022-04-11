@@ -397,7 +397,8 @@ plugin_gtk_on_save_preset_activate (
 #ifdef HAVE_CARLA
           const char * prefix = "";
           const char * sep = "";
-          char * dirname = g_path_get_dirname (path);
+          char *       dirname =
+            g_path_get_dirname (path);
           char * basename =
             g_path_get_basename (path);
           char * sym = string_symbolify (basename);
@@ -406,7 +407,8 @@ plugin_gtk_on_save_preset_activate (
               prefix = descr->name;
               sep = "_";
             }
-          char * sprefix = string_symbolify (prefix);
+          char * sprefix =
+            string_symbolify (prefix);
           char * bundle = g_strjoin (
             NULL, sprefix, sep, sym,
             ".preset.carla", NULL);
@@ -538,7 +540,8 @@ plugin_gtk_add_control_row (
       control_left_attach = 2;
       gtk_grid_attach (
         GTK_GRID (table),
-        GTK_WIDGET (controller->spin), 1, row, 1, 1);
+        GTK_WIDGET (controller->spin), 1, row, 1,
+        1);
     }
   gtk_grid_attach (
     GTK_GRID (table), controller->control,
@@ -646,7 +649,8 @@ on_close_request (GtkWindow * window, Plugin * plugin)
 {
   plugin->visible = 0;
   plugin->window = NULL;
-  EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED, plugin);
+  EVENTS_PUSH (
+    ET_PLUGIN_VISIBILITY_CHANGED, plugin);
 
   char pl_str[700];
   plugin_print (plugin, pl_str, 700);
@@ -906,7 +910,8 @@ static gboolean
 spin_changed (GtkSpinButton * spin, Port * port)
 {
   PluginGtkController * controller = port->widget;
-  GtkRange * range = GTK_RANGE (controller->control);
+  GtkRange *            range =
+    GTK_RANGE (controller->control);
   const double value =
     gtk_spin_button_get_value (spin);
   if (!math_doubles_equal (
@@ -940,7 +945,8 @@ static gboolean
 log_spin_changed (GtkSpinButton * spin, Port * port)
 {
   PluginGtkController * controller = port->widget;
-  GtkRange * range = GTK_RANGE (controller->control);
+  GtkRange *            range =
+    GTK_RANGE (controller->control);
   const double value =
     gtk_spin_button_get_value (spin);
   if (!math_floats_equal (
@@ -1189,7 +1195,8 @@ make_slider (Port * port, float value)
     GTK_SPIN_BUTTON (spin), value);
   if (port->num_scale_points > 0)
     {
-      for (int i = 0; i < port->num_scale_points; i++)
+      for (int i = 0; i < port->num_scale_points;
+           i++)
         {
           const PortScalePoint * point =
             port->scale_points[i];
@@ -1495,8 +1502,9 @@ plugin_gtk_generic_set_widget_value (
               GTK_COMBO_BOX (widget));
           GValue      value = { 0, { { 0 } } };
           GtkTreeIter i;
-          bool valid = gtk_tree_model_get_iter_first (
-            model, &i);
+          bool        valid =
+            gtk_tree_model_get_iter_first (
+              model, &i);
           while (valid)
             {
               gtk_tree_model_get_value (
@@ -1581,8 +1589,8 @@ plugin_gtk_update_plugin_ui (Plugin * pl)
       Lv2Plugin * lv2_plugin = pl->lv2;
 
       Lv2ControlChange ev;
-      const size_t     space = zix_ring_read_space (
-            lv2_plugin->plugin_to_ui_events);
+      const size_t space = zix_ring_read_space (
+        lv2_plugin->plugin_to_ui_events);
       for (size_t i = 0; i + sizeof (ev) < space;
            i += sizeof (ev) + ev.size)
         {
@@ -1628,7 +1636,8 @@ plugin_gtk_update_plugin_ui (Plugin * pl)
             lv2_plugin, ev.index, ev.size,
             ev.protocol,
             ev.protocol == 0
-              ? (void *) &pl->lilv_ports[ev.index]->control
+              ? (void *) &pl->lilv_ports[ev.index]
+                  ->control
               : buf);
 
 #if 0
@@ -1734,7 +1743,8 @@ plugin_gtk_open_generic_ui (
     "Update frequency (Hz): %.01f",
     (double) plugin->ui_update_hz);
   g_return_if_fail (
-    plugin->ui_update_hz >= PLUGIN_MIN_REFRESH_RATE);
+    plugin->ui_update_hz
+    >= PLUGIN_MIN_REFRESH_RATE);
 
   plugin->update_ui_source_id = g_timeout_add (
     (guint) (1000.f / plugin->ui_update_hz),

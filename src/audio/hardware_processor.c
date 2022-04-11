@@ -38,7 +38,8 @@ hardware_processor_new (
 {
   HardwareProcessor * self =
     object_new (HardwareProcessor);
-  self->schema_version = HW_PROCESSOR_SCHEMA_VERSION;
+  self->schema_version =
+    HW_PROCESSOR_SCHEMA_VERSION;
   self->engine = engine;
   self->is_input = input;
 
@@ -192,7 +193,8 @@ hardware_processor_rescan_ext_ports (
             self->ext_audio_ports,
             self->num_ext_audio_ports, ext_port);
           char * id = ext_port_get_id (ext_port);
-          g_message ("[HW] Added audio port %s", id);
+          g_message (
+            "[HW] Added audio port %s", id);
           g_free (id);
         }
       else
@@ -403,8 +405,8 @@ hardware_processor_activate (
 
   /* go through each selected port and activate/
    * deactivate */
-  for (int i = 0; i < self->num_selected_midi_ports;
-       i++)
+  for (int i = 0;
+       i < self->num_selected_midi_ports; i++)
     {
       char * selected_port =
         self->selected_midi_ports[i];
@@ -421,7 +423,8 @@ hardware_processor_activate (
       else
         {
           g_message (
-            "could not find port %s", selected_port);
+            "could not find port %s",
+            selected_port);
         }
     }
   for (int i = 0;
@@ -442,14 +445,16 @@ hardware_processor_activate (
       else
         {
           g_message (
-            "could not find port %s", selected_port);
+            "could not find port %s",
+            selected_port);
         }
     }
 
   if (activate && !self->rescan_timeout_id)
     {
       /* add timer to keep rescanning */
-      self->rescan_timeout_id = g_timeout_add_seconds (
+      self
+        ->rescan_timeout_id = g_timeout_add_seconds (
         7,
         (GSourceFunc)
           hardware_processor_rescan_ext_ports,
@@ -565,7 +570,8 @@ hardware_processor_clone (
 {
   HardwareProcessor * self =
     object_new (HardwareProcessor);
-  self->schema_version = HW_PROCESSOR_SCHEMA_VERSION;
+  self->schema_version =
+    HW_PROCESSOR_SCHEMA_VERSION;
 
   self->is_input = src->is_input;
 
@@ -586,7 +592,8 @@ hardware_processor_clone (
       self->ext_midi_ports[i] =
         ext_port_clone (src->ext_midi_ports[i]);
     }
-  self->num_ext_midi_ports = src->num_ext_midi_ports;
+  self->num_ext_midi_ports =
+    src->num_ext_midi_ports;
 
   self->audio_ports = object_new_n (
     (size_t) src->num_audio_ports, Port *);
@@ -612,10 +619,11 @@ hardware_processor_clone (
 void
 hardware_processor_free (HardwareProcessor * self)
 {
-  for (int i = 0; i < self->num_selected_midi_ports;
-       i++)
+  for (int i = 0;
+       i < self->num_selected_midi_ports; i++)
     {
-      g_free_and_null (self->selected_midi_ports[i]);
+      g_free_and_null (
+        self->selected_midi_ports[i]);
     }
   object_zero_and_free_if_nonnull (
     self->selected_midi_ports);
@@ -658,7 +666,8 @@ hardware_processor_free (HardwareProcessor * self)
       object_free_w_func_and_null (
         port_free, self->midi_ports[i]);
     }
-  object_zero_and_free_if_nonnull (self->midi_ports);
+  object_zero_and_free_if_nonnull (
+    self->midi_ports);
 
   object_zero_and_free (self);
 }

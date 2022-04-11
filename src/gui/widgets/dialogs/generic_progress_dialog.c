@@ -92,7 +92,8 @@ tick_cb (
     {
       if (prv->autoclose || info->cancelled)
         {
-          gtk_dialog_response (GTK_DIALOG (self), 0);
+          gtk_dialog_response (
+            GTK_DIALOG (self), 0);
         }
       else
         {
@@ -121,7 +122,8 @@ tick_cb (
             gtk_window_get_transient_for (
               GTK_WINDOW (self));
           ui_show_error_message (
-            transient_parent, true, info->error_str);
+            transient_parent, true,
+            info->error_str);
         }
       return G_SOURCE_REMOVE;
     }
@@ -219,7 +221,8 @@ static void
 generic_progress_dialog_widget_class_init (
   GenericProgressDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "generic_progress_dialog.ui");
 

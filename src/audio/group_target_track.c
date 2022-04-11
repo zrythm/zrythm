@@ -68,7 +68,8 @@ update_child_output (
           break;
         case TYPE_EVENT:
           port_disconnect (
-            ch->midi_out, track->processor->midi_in);
+            ch->midi_out,
+            track->processor->midi_in);
           break;
         default:
           break;
@@ -152,7 +153,8 @@ group_target_track_remove_child (
   g_return_if_fail (
     contains_child (self, child_name_hash));
 
-  Tracklist * tracklist = track_get_tracklist (self);
+  Tracklist * tracklist =
+    track_get_tracklist (self);
 
   Track * child = tracklist_find_track_by_name_hash (
     tracklist, child_name_hash);

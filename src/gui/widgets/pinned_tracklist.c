@@ -62,13 +62,13 @@ pinned_tracklist_widget_get_hit_track (
         GTK_WIDGET (tw), &allocation);
 
       gtk_widget_translate_coordinates (
-        GTK_WIDGET (self), GTK_WIDGET (tw), (int) x,
-        (int) y, &wx, &wy);
+        GTK_WIDGET (self), GTK_WIDGET (tw),
+        (int) x, (int) y, &wx, &wy);
 
       /* if hit */
       if (
-        wx >= 0 && wx <= allocation.width && wy >= 0
-        && wy <= allocation.height)
+        wx >= 0 && wx <= allocation.width
+        && wy >= 0 && wy <= allocation.height)
         {
           return tw;
         }
@@ -186,7 +186,8 @@ static void
 pinned_tracklist_widget_class_init (
   PinnedTracklistWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
 
   gtk_widget_class_set_css_name (
     klass, "ruler-tracklist");
@@ -197,6 +198,7 @@ pinned_tracklist_widget_init (
   PinnedTracklistWidget * self)
 {
   gtk_orientable_set_orientation (
-    GTK_ORIENTABLE (self), GTK_ORIENTATION_VERTICAL);
+    GTK_ORIENTABLE (self),
+    GTK_ORIENTATION_VERTICAL);
   gtk_box_set_spacing (GTK_BOX (self), 1);
 }

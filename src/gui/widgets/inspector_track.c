@@ -278,7 +278,8 @@ static void
 inspector_track_widget_class_init (
   InspectorTrackWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "inspector_track.ui");
 
@@ -310,7 +311,8 @@ inspector_track_widget_init (
   g_type_ensure (TRACK_INPUT_EXPANDER_WIDGET_TYPE);
   g_type_ensure (PORTS_EXPANDER_WIDGET_TYPE);
   g_type_ensure (PLUGIN_STRIP_EXPANDER_WIDGET_TYPE);
-  g_type_ensure (CHANNEL_SENDS_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (
+    CHANNEL_SENDS_EXPANDER_WIDGET_TYPE);
   g_type_ensure (
     FADER_CONTROLS_EXPANDER_WIDGET_TYPE);
   g_type_ensure (TEXT_EXPANDER_WIDGET_TYPE);

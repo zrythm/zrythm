@@ -106,7 +106,9 @@ sort_slots_asc_func (const void * _a, const void * _b)
 }
 
 static int
-sort_slots_desc_func (const void * _a, const void * _b)
+sort_slots_desc_func (
+  const void * _a,
+  const void * _b)
 {
   return -sort_slots_asc_func (_a, _b);
 }
@@ -129,7 +131,8 @@ mixer_selections_sort (
   qsort (
     self->slots, (size_t) self->num_slots,
     sizeof (int),
-    asc ? sort_slots_asc_func : sort_slots_desc_func);
+    asc ? sort_slots_asc_func
+        : sort_slots_desc_func);
   qsort (
     self->plugins, (size_t) self->num_slots,
     sizeof (Plugin *),
@@ -269,8 +272,8 @@ mixer_selections_add_slot (
         }
 
       array_double_append (
-        ms->slots, ms->plugins, ms->num_slots, slot,
-        pl_to_append);
+        ms->slots, ms->plugins, ms->num_slots,
+        slot, pl_to_append);
     }
 
   if (pl && plugin_is_in_active_project (pl))
@@ -349,7 +352,8 @@ mixer_selections_contains_plugin (
   MixerSelections * ms,
   Plugin *          pl)
 {
-  g_return_val_if_fail (ms && IS_PLUGIN (pl), false);
+  g_return_val_if_fail (
+    ms && IS_PLUGIN (pl), false);
 
   if (ms->track_name_hash != pl->id.track_name_hash)
     return false;
@@ -487,7 +491,8 @@ mixer_selections_get_plugins (
                   ->midi_fx[self->slots[i]];
               break;
             case PLUGIN_SLOT_MODULATOR:
-              pl = track->modulators[self->slots[i]];
+              pl =
+                track->modulators[self->slots[i]];
               break;
             default:
               g_return_val_if_reached (false);

@@ -162,7 +162,8 @@ FixedTempoEstimator::D::getParameterDescriptors ()
 }
 
 float
-FixedTempoEstimator::D::getParameter (string id) const
+FixedTempoEstimator::D::getParameter (
+  string id) const
 {
   if (id == "minbpm")
     {
@@ -382,7 +383,8 @@ FixedTempoEstimator::D::process (
       float imag = inputBuffers[0][i * 2 + 1];
 
       float sqrmag = real * real + imag * imag;
-      value += fabsf (sqrmag - m_priorMagnitudes[i]);
+      value +=
+        fabsf (sqrmag - m_priorMagnitudes[i]);
 
       m_priorMagnitudes[i] = sqrmag;
     }
@@ -449,7 +451,8 @@ FixedTempoEstimator::D::calculate ()
     m_n; // length of actual df array (m_dfsize is the theoretical max)
 
   m_r = new float[n / 2]; // raw autocorrelation
-  m_fr = new float[n / 2]; // filtered autocorrelation
+  m_fr =
+    new float[n / 2]; // filtered autocorrelation
   m_t = new float
     [n / 2]; // averaged tempo estimate for each lag value
 
@@ -484,10 +487,11 @@ FixedTempoEstimator::D::calculate ()
 
       int div = 1;
 
-      for (int j = 0;
-           j < int (
-             sizeof (related) / sizeof (related[0]));
-           ++j)
+      for (
+        int j = 0;
+        j < int (
+          sizeof (related) / sizeof (related[0]));
+        ++j)
         {
 
           // Check for an obvious peak at each metrically related lag
@@ -707,7 +711,8 @@ FixedTempoEstimator::D::assembleFeatures ()
     {
       if (m_t[ci->second] > 0)
         {
-          feature.values.push_back (m_t[ci->second]);
+          feature.values.push_back (
+            m_t[ci->second]);
         }
       else
         {

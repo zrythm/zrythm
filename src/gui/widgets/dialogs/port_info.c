@@ -50,7 +50,8 @@ set_values (PortInfoDialogWidget * self, Port * port)
   gtk_label_set_text (
     self->full_designation_lbl, tmp);
   gtk_label_set_text (
-    self->type_lbl, port_type_strings[id->type].str);
+    self->type_lbl,
+    port_type_strings[id->type].str);
   sprintf (
     tmp, _ ("%.1f to %.1f"), (double) port->minf,
     (double) port->maxf);
@@ -68,9 +69,10 @@ set_values (PortInfoDialogWidget * self, Port * port)
       gtk_label_set_text (
         self->current_val_lbl, _ ("N/A"));
     }
-  for (int i = 0;
-       i < (int) CYAML_ARRAY_LEN (port_flags_bitvals);
-       i++)
+  for (
+    int i = 0;
+    i < (int) CYAML_ARRAY_LEN (port_flags_bitvals);
+    i++)
     {
       if (!(id->flags & (1 << i)))
         continue;
@@ -90,8 +92,8 @@ set_values (PortInfoDialogWidget * self, Port * port)
       if (!(id->flags2 & (unsigned int) (1 << i)))
         continue;
 
-      GtkWidget * lbl =
-        gtk_label_new (port_flags2_bitvals[i].name);
+      GtkWidget * lbl = gtk_label_new (
+        port_flags2_bitvals[i].name);
       gtk_widget_set_visible (lbl, 1);
       gtk_widget_set_hexpand (lbl, 1);
       gtk_box_append (
@@ -119,7 +121,8 @@ static void
 port_info_dialog_widget_class_init (
   PortInfoDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "port_info_dialog.ui");
 

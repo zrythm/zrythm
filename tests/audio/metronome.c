@@ -115,8 +115,8 @@ test_find_and_queue_metronome (void)
         SAMPLE_PROCESSOR->num_current_samples = 0;
         metronome_queue_events (AUDIO_ENGINE, 0, 1);
         g_assert_cmpint (
-          SAMPLE_PROCESSOR->num_current_samples, ==,
-          i == 4);
+          SAMPLE_PROCESSOR->num_current_samples,
+          ==, i == 4);
         transport_add_to_playhead (TRANSPORT, 1);
       }
 
@@ -130,8 +130,8 @@ test_find_and_queue_metronome (void)
         SAMPLE_PROCESSOR->num_current_samples = 0;
         metronome_queue_events (AUDIO_ENGINE, 0, 2);
         g_assert_cmpint (
-          SAMPLE_PROCESSOR->num_current_samples, ==,
-          (i >= 3 && i <= 4));
+          SAMPLE_PROCESSOR->num_current_samples,
+          ==, (i >= 3 && i <= 4));
         transport_add_to_playhead (TRANSPORT, 1);
       }
   }
@@ -158,7 +158,8 @@ test_find_and_queue_metronome (void)
        * end */
       SAMPLE_PROCESSOR->num_current_samples = 0;
       metronome_queue_events (
-        AUDIO_ENGINE, 0, AUDIO_ENGINE->block_length);
+        AUDIO_ENGINE, 0,
+        AUDIO_ENGINE->block_length);
       g_assert_cmpint (
         SAMPLE_PROCESSOR->num_current_samples, ==,
         0);
@@ -169,7 +170,8 @@ test_find_and_queue_metronome (void)
         TRANSPORT, AUDIO_ENGINE->block_length);
       SAMPLE_PROCESSOR->num_current_samples = 0;
       metronome_queue_events (
-        AUDIO_ENGINE, 0, AUDIO_ENGINE->block_length);
+        AUDIO_ENGINE, 0,
+        AUDIO_ENGINE->block_length);
       g_assert_cmpint (
         SAMPLE_PROCESSOR->num_current_samples, ==,
         1);

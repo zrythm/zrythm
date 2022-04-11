@@ -73,11 +73,12 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t chord_preset_schema = {
-  YAML_VALUE_PTR (
-    ChordPreset,
-    chord_preset_fields_schema),
-};
+static const cyaml_schema_value_t
+  chord_preset_schema = {
+    YAML_VALUE_PTR (
+      ChordPreset,
+      chord_preset_fields_schema),
+  };
 
 ChordPreset *
 chord_preset_new (const char * name);

@@ -57,8 +57,8 @@ z_chromaprint_get_fingerprint (
   g_return_val_if_fail (sndfile, NULL);
   g_return_val_if_fail (sfinfo.frames > 0, NULL);
 
-  ChromaprintContext * ctx =
-    chromaprint_new (CHROMAPRINT_ALGORITHM_DEFAULT);
+  ChromaprintContext * ctx = chromaprint_new (
+    CHROMAPRINT_ALGORITHM_DEFAULT);
   g_return_val_if_fail (ctx, NULL);
   ret = chromaprint_start (
     ctx, sfinfo.samplerate, sfinfo.channels);
@@ -116,11 +116,13 @@ z_chromaprint_check_fingerprint_similarity (
     audio_get_num_frames (file1),
     audio_get_num_frames (file2));
   ChromaprintFingerprint * fp1 =
-    z_chromaprint_get_fingerprint (file1, max_frames);
+    z_chromaprint_get_fingerprint (
+      file1, max_frames);
   g_return_if_fail (fp1);
   g_return_if_fail (fp1->size == expected_size);
   ChromaprintFingerprint * fp2 =
-    z_chromaprint_get_fingerprint (file2, max_frames);
+    z_chromaprint_get_fingerprint (
+      file2, max_frames);
   g_return_if_fail (fp2);
 
   int min = MIN (fp1->size, fp2->size);

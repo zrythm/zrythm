@@ -142,10 +142,12 @@ PortConnectionsPopoverWidget *
 port_connections_popover_widget_new (
   GtkWidget * owner)
 {
-  g_return_val_if_fail (GTK_IS_WIDGET (owner), NULL);
+  g_return_val_if_fail (
+    GTK_IS_WIDGET (owner), NULL);
 
-  PortConnectionsPopoverWidget * self = g_object_new (
-    PORT_CONNECTIONS_POPOVER_WIDGET_TYPE, NULL);
+  PortConnectionsPopoverWidget * self =
+    g_object_new (
+      PORT_CONNECTIONS_POPOVER_WIDGET_TYPE, NULL);
 
   return self;
 }
@@ -205,5 +207,6 @@ port_connections_popover_widget_init (
 
   /* add to popover */
   gtk_popover_set_child (
-    GTK_POPOVER (self), GTK_WIDGET (self->main_box));
+    GTK_POPOVER (self),
+    GTK_WIDGET (self->main_box));
 }

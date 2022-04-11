@@ -42,7 +42,8 @@ zoom_buttons_widget_setup (
   sprintf ( \
     detailed_action, "app." name "::%s", type); \
   gtk_actionable_set_detailed_action_name ( \
-    GTK_ACTIONABLE (self->widget), detailed_action)
+    GTK_ACTIONABLE (self->widget), \
+    detailed_action)
 
   SET_ACTION ("zoom-in", zoom_in);
   SET_ACTION ("zoom-out", zoom_out);
@@ -63,11 +64,13 @@ zoom_buttons_widget_init (ZoomButtonsWidget * self)
     "app." action "::global", tooltip)
 
   SET_TOOLTIP (zoom_in, "zoom-in", _ ("Zoom In"));
-  SET_TOOLTIP (zoom_out, "zoom-out", _ ("Zoom Out"));
+  SET_TOOLTIP (
+    zoom_out, "zoom-out", _ ("Zoom Out"));
   SET_TOOLTIP (
     original_size, "original-size",
     _ ("Original Size"));
-  SET_TOOLTIP (best_fit, "best-fit", _ ("Best Fit"));
+  SET_TOOLTIP (
+    best_fit, "best-fit", _ ("Best Fit"));
 
 #undef SET_TOOLTIP
 }
@@ -76,7 +79,8 @@ static void
 zoom_buttons_widget_class_init (
   ZoomButtonsWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "zoom_buttons.ui");
 

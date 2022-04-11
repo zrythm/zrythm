@@ -31,9 +31,11 @@ G_DECLARE_FINAL_TYPE (
   MODULATOR_INNER_WIDGET,
   GtkBox)
 
-typedef struct _KnobWithNameWidget KnobWithNameWidget;
-typedef struct _LiveWaveformWidget LiveWaveformWidget;
-typedef struct _ModulatorWidget    ModulatorWidget;
+typedef struct _KnobWithNameWidget
+  KnobWithNameWidget;
+typedef struct _LiveWaveformWidget
+                                LiveWaveformWidget;
+typedef struct _ModulatorWidget ModulatorWidget;
 typedef struct _PortConnectionsPopoverWidget
   PortConnectionsPopoverWidget;
 

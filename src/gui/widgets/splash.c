@@ -106,7 +106,8 @@ static void
 splash_window_widget_class_init (
   SplashWindowWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "splash.ui");
 
 #define BIND_CHILD(x) \
@@ -125,7 +126,8 @@ splash_window_widget_class_init (
 }
 
 static void
-splash_window_widget_init (SplashWindowWidget * self)
+splash_window_widget_init (
+  SplashWindowWidget * self)
 {
   g_type_ensure (CUSTOM_IMAGE_WIDGET_TYPE);
 

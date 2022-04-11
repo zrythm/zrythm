@@ -76,7 +76,8 @@ instrument_track_is_plugin_visible (Track * self)
  * instrument Track is visible.
  */
 void
-instrument_track_toggle_plugin_visible (Track * self)
+instrument_track_toggle_plugin_visible (
+  Track * self)
 {
   Plugin * plugin =
     instrument_track_get_instrument (self);
@@ -84,5 +85,6 @@ instrument_track_toggle_plugin_visible (Track * self)
 
   plugin->visible = !plugin->visible;
 
-  EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED, plugin);
+  EVENTS_PUSH (
+    ET_PLUGIN_VISIBILITY_CHANGED, plugin);
 }

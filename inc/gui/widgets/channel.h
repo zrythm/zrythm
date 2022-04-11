@@ -48,7 +48,8 @@ typedef struct _BalanceControlWidget
   BalanceControlWidget;
 typedef struct _EditableLabelWidget
   EditableLabelWidget;
-typedef struct _FaderButtonsWidget FaderButtonsWidget;
+typedef struct _FaderButtonsWidget
+  FaderButtonsWidget;
 typedef struct _ChannelSendsExpanderWidget
   ChannelSendsExpanderWidget;
 

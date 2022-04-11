@@ -68,7 +68,8 @@ G_DEFINE_TYPE (
 
 #define DISPLAY_TIME \
   (self->is_transport \
-   && g_settings_get_enum (S_UI, "transport-display") \
+   && g_settings_get_enum ( \
+        S_UI, "transport-display") \
         == TRANSPORT_DISPLAY_TIME)
 
 #define SET_POS ((*self->setter) (self->obj, &pos))
@@ -117,14 +118,14 @@ init_dm (DigitalMeterWidget * self)
         gtk_widget_set_tooltip_text (
           (GtkWidget *) self, _ ("Tempo/BPM"));
         z_cairo_get_text_extents_for_widget (
-          self, self->seg7_layout, "888888", &textw,
-          &texth);
+          self, self->seg7_layout, "888888",
+          &textw, &texth);
         /* caption + padding between caption and
          * BPM + padding top/bottom */
         gtk_widget_set_size_request (
           GTK_WIDGET (self), textw + PADDING_W * 2,
-          caption_texth + HALF_SPACE_BETWEEN + texth
-            + PADDING_TOP * 2);
+          caption_texth + HALF_SPACE_BETWEEN
+            + texth + PADDING_TOP * 2);
       }
       break;
     case DIGITAL_METER_TYPE_POSITION:
@@ -165,8 +166,8 @@ init_dm (DigitalMeterWidget * self)
          * BPM + padding top/bottom */
         gtk_widget_set_size_request (
           GTK_WIDGET (self), textw + PADDING_W * 2,
-          caption_texth + HALF_SPACE_BETWEEN + texth
-            + PADDING_TOP * 2);
+          caption_texth + HALF_SPACE_BETWEEN
+            + texth + PADDING_TOP * 2);
       }
       break;
     }
@@ -340,15 +341,15 @@ digital_meter_snapshot (
             ((width / 2) - textw / 2)
             - HALF_SPACE_BETWEEN * 3;
           z_cairo_get_text_extents_for_widget (
-            widget, self->seg7_layout, "88", &textw,
-            &texth);
+            widget, self->seg7_layout, "88",
+            &textw, &texth);
           self->minutes_end_pos =
             self->minutes_start_pos + textw;
           self->seconds_start_pos =
             self->minutes_end_pos + SPACE_BETWEEN;
           z_cairo_get_text_extents_for_widget (
-            widget, self->seg7_layout, "88", &textw,
-            &texth);
+            widget, self->seg7_layout, "88",
+            &textw, &texth);
           self->seconds_end_pos =
             self->seconds_start_pos + textw;
           self->ms_start_pos =
@@ -424,8 +425,8 @@ digital_meter_snapshot (
           beats = position_get_beats (&pos, true);
           sixteenths =
             position_get_sixteenths (&pos, true);
-          ticks =
-            (int) floor (position_get_ticks (&pos));
+          ticks = (int) floor (
+            position_get_ticks (&pos));
 
           z_cairo_get_text_extents_for_widget (
             widget, self->seg7_layout,
@@ -450,7 +451,8 @@ digital_meter_snapshot (
           self->sixteenths_end_pos =
             self->sixteenths_start_pos + textw;
           self->ticks_start_pos =
-            self->sixteenths_end_pos + SPACE_BETWEEN;
+            self->sixteenths_end_pos
+            + SPACE_BETWEEN;
           z_cairo_get_text_extents_for_widget (
             widget, self->seg7_layout, "888",
             &textw, &texth);
@@ -608,7 +610,8 @@ digital_meter_snapshot (
       const char * beat_unit =
         beat_unit_strings[bu].str;
       int beats_per_bar =
-        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
       if (beats_per_bar < 10)
         {
           text[0] = ' ';
@@ -769,7 +772,8 @@ on_change_started (DigitalMeterWidget * self)
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
       self->beats_per_bar_at_start =
-        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
       self->beat_unit_at_start =
         tempo_track_get_beat_unit (P_TEMPO_TRACK);
       break;
@@ -843,9 +847,11 @@ on_change_finished (DigitalMeterWidget * self)
         int beats_per_bar =
           tempo_track_get_beats_per_bar (
             P_TEMPO_TRACK);
-        int beat_unit =
-          tempo_track_get_beat_unit (P_TEMPO_TRACK);
-        if (self->beats_per_bar_at_start != beats_per_bar)
+        int beat_unit = tempo_track_get_beat_unit (
+          P_TEMPO_TRACK);
+        if (
+          self->beats_per_bar_at_start
+          != beats_per_bar)
           {
             GError * err = NULL;
             bool     ret =
@@ -868,8 +874,8 @@ on_change_finished (DigitalMeterWidget * self)
             bool     ret =
               transport_action_perform_time_sig_change (
                 TRANSPORT_ACTION_BEAT_UNIT_CHANGE,
-                self->beat_unit_at_start, beat_unit,
-                F_ALREADY_EDITED, &err);
+                self->beat_unit_at_start,
+                beat_unit, F_ALREADY_EDITED, &err);
             if (!ret)
               {
                 HANDLE_ERROR (
@@ -953,7 +959,8 @@ on_scroll (
       else if (self->update_dec)
         {
           change.real_val =
-            self->last_set_bpm + (bpm_t) num / 100.f;
+            self->last_set_bpm
+            + (bpm_t) num / 100.f;
           self->last_set_bpm = change.real_val;
           router_queue_control_port_change (
             ROUTER, &change);
@@ -1050,8 +1057,9 @@ on_scroll (
         }
       else if (self->update_timesig_bot)
         {
-          num += (int) tempo_track_beat_unit_to_enum (
-            self->beat_unit_at_start);
+          num +=
+            (int) tempo_track_beat_unit_to_enum (
+              self->beat_unit_at_start);
           change.flag2 = PORT_FLAG2_BEAT_UNIT;
           if (num < 0)
             {
@@ -1420,7 +1428,8 @@ static void
 digital_meter_widget_class_init (
   DigitalMeterWidgetClass * klass)
 {
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   wklass->snapshot = digital_meter_snapshot;
   gtk_widget_class_set_css_name (
     wklass, "digital-meter");
@@ -1430,7 +1439,8 @@ digital_meter_widget_class_init (
 }
 
 static void
-digital_meter_widget_init (DigitalMeterWidget * self)
+digital_meter_widget_init (
+  DigitalMeterWidget * self)
 {
   g_return_if_fail (
     Z_IS_DIGITAL_METER_WIDGET (self));

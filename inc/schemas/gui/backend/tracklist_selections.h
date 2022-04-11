@@ -47,7 +47,9 @@ static const cyaml_schema_field_t
       TracklistSelections_v1,
       tracks,
       track_schema_v1),
-    YAML_FIELD_INT (TracklistSelections_v1, is_project),
+    YAML_FIELD_INT (
+      TracklistSelections_v1,
+      is_project),
 
     CYAML_FIELD_END
   };

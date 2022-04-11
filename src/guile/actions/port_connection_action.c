@@ -37,8 +37,8 @@ SCM_DEFINE (
   "Connects 2 ports as an undoable action.")
 #define FUNC_NAME s_
 {
-  PortIdentifier * src_id =
-    (PortIdentifier *) scm_to_pointer (src_port_id);
+  PortIdentifier * src_id = (PortIdentifier *)
+    scm_to_pointer (src_port_id);
   PortIdentifier * dest_id = (PortIdentifier *)
     scm_to_pointer (dest_port_id);
 

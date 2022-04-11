@@ -117,7 +117,8 @@ static void
 automation_editor_space_widget_class_init (
   AutomationEditorSpaceWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "automation_editor_space.ui");
 

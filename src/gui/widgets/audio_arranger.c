@@ -42,8 +42,8 @@ audio_arranger_widget_snap_range_r (
     {
       /* set range 1 at current point */
       ui_px_to_pos_editor (
-        self->start_x, &AUDIO_SELECTIONS->sel_start,
-        true);
+        self->start_x,
+        &AUDIO_SELECTIONS->sel_start, true);
       if (
         SNAP_GRID_ANY_SNAP (self->snap_grid)
         && !self->shift_held)
@@ -90,7 +90,8 @@ audio_arranger_widget_is_cursor_in_fade (
   bool             fade_in,
   bool             resize)
 {
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   g_return_val_if_fail (
     IS_REGION_AND_NONNULL (r), false);
@@ -166,7 +167,8 @@ audio_arranger_widget_is_cursor_gain (
   double           x,
   double           y)
 {
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   g_return_val_if_fail (
     IS_REGION_AND_NONNULL (r), false);
@@ -194,7 +196,8 @@ audio_arranger_widget_get_action_on_drag_begin (
   self->action = UI_OVERLAY_ACTION_NONE;
   ArrangerCursor cursor =
     arranger_widget_get_cursor (self);
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   g_return_val_if_fail (
     IS_REGION_AND_NONNULL (r), false);
@@ -244,7 +247,8 @@ audio_arranger_widget_fade_up (
   double           offset_y,
   bool             fade_in)
 {
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   g_return_if_fail (IS_REGION_AND_NONNULL (r));
 
@@ -274,7 +278,8 @@ audio_arranger_widget_update_gain (
   ArrangerWidget * self,
   double           offset_y)
 {
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (IS_REGION_AND_NONNULL (r));
 
   int height = gtk_widget_get_allocated_height (
@@ -314,7 +319,8 @@ audio_arranger_widget_snap_fade (
   bool             fade_in,
   bool             dry_run)
 {
-  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   g_return_val_if_fail (
     IS_REGION_AND_NONNULL (r), -1);
@@ -372,8 +378,8 @@ audio_arranger_widget_snap_fade (
           fade_in ? &r_obj->fade_in_pos
                   : &r_obj->fade_out_pos);
       arranger_object_resize (
-        r_obj, fade_in, ARRANGER_OBJECT_RESIZE_FADE,
-        diff, true);
+        r_obj, fade_in,
+        ARRANGER_OBJECT_RESIZE_FADE, diff, true);
     }
 
   if (fade_in)

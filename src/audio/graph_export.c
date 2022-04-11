@@ -114,8 +114,8 @@ get_parent_graph (
               g_return_val_if_fail (
                 tr->channel, NULL);
               ChannelSend * send =
-                tr->channel
-                  ->sends[node->port->id.port_index];
+                tr->channel->sends
+                  [node->port->id.port_index];
               g_return_val_if_fail (send, NULL);
               parent_node =
                 graph_find_node_from_channel_send (
@@ -226,7 +226,8 @@ create_anode (
         case TYPE_CONTROL:
           agsafeset (
             anode, (char *) "color",
-            (char *) "darkviolet", (char *) "black");
+            (char *) "darkviolet",
+            (char *) "black");
           break;
         case TYPE_CV:
           agsafeset (
@@ -283,7 +284,8 @@ fill_anodes (
       if (
         node->type != ROUTE_NODE_TYPE_TRACK
         && node->type != ROUTE_NODE_TYPE_SAMPLE_PROCESSOR
-        && node->type != ROUTE_NODE_TYPE_MONITOR_FADER)
+        && node->type
+             != ROUTE_NODE_TYPE_MONITOR_FADER)
         {
           continue;
         }
@@ -322,24 +324,27 @@ fill_anodes (
           {
             Plugin * pl = node->pl;
             Track *  tr = plugin_get_track (pl);
-            parent_node = graph_find_node_from_track (
-              node->graph, tr, true);
+            parent_node =
+              graph_find_node_from_track (
+                node->graph, tr, true);
           }
           break;
         case ROUTE_NODE_TYPE_FADER:
           {
             Fader * fader = node->fader;
             Track * tr = fader_get_track (fader);
-            parent_node = graph_find_node_from_track (
-              node->graph, tr, true);
+            parent_node =
+              graph_find_node_from_track (
+                node->graph, tr, true);
           }
           break;
         case ROUTE_NODE_TYPE_PREFADER:
           {
             Fader * prefader = node->prefader;
             Track * tr = fader_get_track (prefader);
-            parent_node = graph_find_node_from_track (
-              node->graph, tr, true);
+            parent_node =
+              graph_find_node_from_track (
+                node->graph, tr, true);
           }
           break;
         case ROUTE_NODE_TYPE_CHANNEL_SEND:
@@ -350,8 +355,9 @@ fill_anodes (
               channel_send_get_track (send);
             g_return_if_fail (
               IS_TRACK_AND_NONNULL (tr));
-            parent_node = graph_find_node_from_track (
-              node->graph, tr, true);
+            parent_node =
+              graph_find_node_from_track (
+                node->graph, tr, true);
           }
           break;
         case ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
@@ -361,8 +367,9 @@ fill_anodes (
             Track * tr =
               modulator_macro_processor_get_track (
                 mmp);
-            parent_node = graph_find_node_from_track (
-              node->graph, tr, true);
+            parent_node =
+              graph_find_node_from_track (
+                node->graph, tr, true);
           }
           break;
         default:

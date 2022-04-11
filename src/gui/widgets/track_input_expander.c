@@ -556,7 +556,8 @@ track_input_expander_widget_refresh (
       setup_midi_channels_cb (self);
 
       expander_box_widget_set_icon_name (
-        Z_EXPANDER_BOX_WIDGET (self), "midi-insert");
+        Z_EXPANDER_BOX_WIDGET (self),
+        "midi-insert");
     }
   else if (track->type == TRACK_TYPE_AUDIO)
     {
@@ -662,8 +663,8 @@ track_input_expander_widget_init (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->stereo_l_input),
     GTK_WIDGET (self->mono));
-  GtkWidget * parent_box =
-    gtk_widget_get_parent (GTK_WIDGET (self->mono));
+  GtkWidget * parent_box = gtk_widget_get_parent (
+    GTK_WIDGET (self->mono));
   (void) parent_box;
   /*gtk_box_set_child_packing (*/
   /*GTK_BOX (parent_box),*/

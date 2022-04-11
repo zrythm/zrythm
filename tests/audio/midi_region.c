@@ -48,7 +48,8 @@ test_export (void)
       g_assert_cmpint (track->num_lanes, >, 0);
       g_assert_cmpint (
         track->lanes[0]->num_regions, >, 0);
-      ZRegion * region = track->lanes[0]->regions[0];
+      ZRegion * region =
+        track->lanes[0]->regions[0];
       g_assert_true (IS_REGION (region));
 
       char * basename =
@@ -64,7 +65,8 @@ test_export (void)
 
       g_assert_true (g_file_test (
         export_filepath,
-        G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR));
+        G_FILE_TEST_EXISTS
+          | G_FILE_TEST_IS_REGULAR));
 
       io_remove (export_filepath);
 
@@ -178,7 +180,8 @@ test_full_export (void)
         full_export_test_loop_positions[iter * 2]);
       position_from_ticks (
         &loop_end_pos,
-        full_export_test_loop_positions[iter * 2 + 1]);
+        full_export_test_loop_positions
+          [iter * 2 + 1]);
 
       g_message (
         "testing loop %lf, %lf",
@@ -204,13 +207,15 @@ test_full_export (void)
       io_remove (export_filepath);
       g_free (export_filepath);
 
-      sprintf (export_file_name, "loop%d.mid", iter);
+      sprintf (
+        export_file_name, "loop%d.mid", iter);
       export_filepath = g_build_filename (
         export_dir, export_file_name, NULL);
 
       char reference_file_name[20];
       sprintf (
-        reference_file_name, "loop%d_ref.mid", iter);
+        reference_file_name, "loop%d_ref.mid",
+        iter);
       char * reference_filepath = g_build_filename (
         TESTS_SRCDIR, reference_file_name, NULL);
 

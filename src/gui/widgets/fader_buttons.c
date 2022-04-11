@@ -288,14 +288,16 @@ fader_buttons_finalize (FaderButtonsWidget * self)
 }
 
 static void
-fader_buttons_widget_init (FaderButtonsWidget * self)
+fader_buttons_widget_init (
+  FaderButtonsWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
   self->popover_menu = GTK_POPOVER_MENU (
     gtk_popover_menu_new_from_model (NULL));
   gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
 
   /* add css classes */
   GtkStyleContext * context =
@@ -332,12 +334,14 @@ fader_buttons_widget_init (FaderButtonsWidget * self)
   mp = \
     GTK_GESTURE_CLICK (gtk_gesture_click_new ()); \
   gtk_gesture_single_set_button ( \
-    GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY); \
+    GTK_GESTURE_SINGLE (mp), \
+    GDK_BUTTON_SECONDARY); \
   g_signal_connect ( \
     G_OBJECT (mp), "pressed", \
     G_CALLBACK (on_btn_right_click), self); \
   gtk_widget_add_controller ( \
-    GTK_WIDGET (widget), GTK_EVENT_CONTROLLER (mp))
+    GTK_WIDGET (widget), \
+    GTK_EVENT_CONTROLLER (mp))
 
   ADD_RIGHT_CLICK_CB (self->mute);
   ADD_RIGHT_CLICK_CB (self->solo);
@@ -352,7 +356,8 @@ static void
 fader_buttons_widget_class_init (
   FaderButtonsWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "fader_buttons.ui");
 

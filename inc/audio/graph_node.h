@@ -155,7 +155,8 @@ typedef struct GraphNode
   /** Hardware processor, if hardware processor. */
   HardwareProcessor * hw_processor;
 
-  ModulatorMacroProcessor * modulator_macro_processor;
+  ModulatorMacroProcessor *
+    modulator_macro_processor;
 
   ChannelSend * send;
 
@@ -244,7 +245,9 @@ graph_node_trigger (GraphNode * self);
 //GraphNode * src);
 
 void
-graph_node_connect (GraphNode * from, GraphNode * to);
+graph_node_connect (
+  GraphNode * from,
+  GraphNode * to);
 
 GraphNode *
 graph_node_new (

@@ -161,7 +161,8 @@ tracklist_selections_add_track (
     && !track_get_recording (track)
     && track->channel)
     {
-      track_set_recording (track, true, fire_events);
+      track_set_recording (
+        track, true, fire_events);
       track->record_set_automatically = true;
     }
 }
@@ -277,8 +278,8 @@ tracklist_selections_handle_click (
           if (TRACKLIST_SELECTIONS->num_tracks > 1)
             {
               track_select (
-                track, F_NO_SELECT, F_NOT_EXCLUSIVE,
-                F_PUBLISH_EVENTS);
+                track, F_NO_SELECT,
+                F_NOT_EXCLUSIVE, F_PUBLISH_EVENTS);
             }
         }
       else
@@ -313,8 +314,9 @@ tracklist_selections_handle_click (
                 {
                   /* select all tracks in between */
                   tracklist_selections_add_tracks_in_range (
-                    TRACKLIST_SELECTIONS, track->pos,
-                    lowest->pos, F_PUBLISH_EVENTS);
+                    TRACKLIST_SELECTIONS,
+                    track->pos, lowest->pos,
+                    F_PUBLISH_EVENTS);
                 }
             }
         }
@@ -383,7 +385,8 @@ tracklist_selections_remove_track (
   if (
     track->channel && track->record_set_automatically
     && !(
-      TRANSPORT_IS_RECORDING && TRANSPORT_IS_ROLLING))
+      TRANSPORT_IS_RECORDING
+      && TRANSPORT_IS_ROLLING))
     {
       track_set_recording (track, 0, fire_events);
       track->record_set_automatically = false;
@@ -815,8 +818,8 @@ tracklist_selections_free (
     {
       for (int i = 0; i < self->num_tracks; i++)
         {
-          g_return_if_fail (
-            IS_TRACK_AND_NONNULL (self->tracks[i]));
+          g_return_if_fail (IS_TRACK_AND_NONNULL (
+            self->tracks[i]));
 
 #if 0
           /* skip project tracks */

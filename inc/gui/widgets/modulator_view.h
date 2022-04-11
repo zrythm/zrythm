@@ -40,9 +40,10 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _ModulatorWidget ModulatorWidget;
 typedef struct _ModulatorMacroWidget
   ModulatorMacroWidget;
-typedef struct _ColorAreaWidget    ColorAreaWidget;
-typedef struct Track               Track;
-typedef struct _RotatedLabelWidget RotatedLabelWidget;
+typedef struct _ColorAreaWidget ColorAreaWidget;
+typedef struct Track            Track;
+typedef struct _RotatedLabelWidget
+  RotatedLabelWidget;
 
 /**
  * @addtogroup widgets

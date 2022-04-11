@@ -118,7 +118,8 @@ save_tree_view_selection (
        l = g_list_next (l))
     {
       GtkTreePath * tp = (GtkTreePath *) l->data;
-      char * path_str = gtk_tree_path_to_string (tp);
+      char *        path_str =
+        gtk_tree_path_to_string (tp);
       path_strings[num_path_strings++] = path_str;
     }
   path_strings[num_path_strings] = NULL;
@@ -176,7 +177,8 @@ restore_tree_view_selection (
       GtkTreePath * tp =
         gtk_tree_path_new_from_string (
           selection_path);
-      gtk_tree_selection_select_path (selection, tp);
+      gtk_tree_selection_select_path (
+        selection, tp);
     }
 
   g_strfreev (selection_paths);
@@ -243,7 +245,9 @@ on_plugin_row_activated (
  * matches selected.
  */
 static gboolean
-plugin_filter_func (GObject * item, gpointer user_data)
+plugin_filter_func (
+  GObject * item,
+  gpointer  user_data)
 {
   PluginBrowserWidget * self =
     Z_PLUGIN_BROWSER_WIDGET (user_data);
@@ -324,7 +328,8 @@ plugin_filter_func (GObject * item, gpointer user_data)
                i < self->num_selected_authors; i++)
             {
               if (
-                symap_map (self->symap, descr->author)
+                symap_map (
+                  self->symap, descr->author)
                 == self->selected_authors[i])
                 {
                   visible = true;
@@ -568,8 +573,8 @@ on_category_right_click (
     (int) x_dbl, (int) y_dbl, &x, &y);
 
   if (!gtk_tree_view_get_path_at_pos (
-        GTK_TREE_VIEW (self->category_tree_view), x,
-        y, &path, &column, NULL, NULL))
+        GTK_TREE_VIEW (self->category_tree_view),
+        x, y, &path, &column, NULL, NULL))
     {
       g_message ("no path at position %d %d", x, y);
       return;
@@ -669,8 +674,8 @@ author_selected_foreach (
   char * str;
   gtk_tree_model_get (model, iter, 0, &str, -1);
 
-  self
-    ->selected_authors[self->num_selected_authors++] =
+  self->selected_authors
+    [self->num_selected_authors++] =
     symap_map (self->symap, str);
 
   g_free (str);
@@ -684,7 +689,8 @@ protocol_selected_foreach (
   PluginBrowserWidget * self)
 {
   PluginProtocol protocol;
-  gtk_tree_model_get (model, iter, 2, &protocol, -1);
+  gtk_tree_model_get (
+    model, iter, 2, &protocol, -1);
 
   self->selected_protocols
     [self->num_selected_protocols++] = protocol;
@@ -868,7 +874,8 @@ create_model_for_categories (void)
   GtkTreeIter iter;
 
   for (int i = 0;
-       i < PLUGIN_MANAGER->num_plugin_categories; i++)
+       i < PLUGIN_MANAGER->num_plugin_categories;
+       i++)
     {
       const gchar * name =
         PLUGIN_MANAGER->plugin_categories[i];
@@ -961,7 +968,8 @@ create_model_for_protocols (void)
 }
 
 static GListModel *
-create_model_for_plugins (PluginBrowserWidget * self)
+create_model_for_plugins (
+  PluginBrowserWidget * self)
 {
   GListStore * store = g_list_store_new (
     WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
@@ -990,7 +998,8 @@ create_model_for_plugins (PluginBrowserWidget * self)
     gtk_single_selection_new (
       G_LIST_MODEL (self->plugin_filter_model));
 
-  return G_LIST_MODEL (self->plugin_selection_model);
+  return G_LIST_MODEL (
+    self->plugin_selection_model);
 }
 
 /* TODO */
@@ -1202,7 +1211,8 @@ toggles_changed (
         self->toggle_instruments, toggles_changed,
         self);
       g_signal_handlers_block_by_func (
-        self->toggle_effects, toggles_changed, self);
+        self->toggle_effects, toggles_changed,
+        self);
       g_signal_handlers_block_by_func (
         self->toggle_modulators, toggles_changed,
         self);
@@ -1267,7 +1277,8 @@ toggles_changed (
         self->toggle_instruments, toggles_changed,
         self);
       g_signal_handlers_unblock_by_func (
-        self->toggle_effects, toggles_changed, self);
+        self->toggle_effects, toggles_changed,
+        self);
       g_signal_handlers_unblock_by_func (
         self->toggle_modulators, toggles_changed,
         self);
@@ -1278,7 +1289,8 @@ toggles_changed (
   else
     {
       S_SET_ENUM (
-        S_UI_PLUGIN_BROWSER, "plugin-browser-filter",
+        S_UI_PLUGIN_BROWSER,
+        "plugin-browser-filter",
         PLUGIN_BROWSER_FILTER_NONE);
     }
   gtk_filter_changed (
@@ -1287,7 +1299,9 @@ toggles_changed (
 }
 
 static void
-on_map (GtkWidget * widget, PluginBrowserWidget * self)
+on_map (
+  GtkWidget *           widget,
+  PluginBrowserWidget * self)
 {
   /*g_message ("PLUGIN MAP EVENT");*/
   if (gtk_widget_get_mapped (GTK_WIDGET (self)))
@@ -1377,15 +1391,16 @@ finalize (PluginBrowserWidget * self)
 {
   symap_free (self->symap);
 
-  G_OBJECT_CLASS (plugin_browser_widget_parent_class)
+  G_OBJECT_CLASS (
+    plugin_browser_widget_parent_class)
     ->finalize (G_OBJECT (self));
 }
 
 PluginBrowserWidget *
 plugin_browser_widget_new ()
 {
-  PluginBrowserWidget * self =
-    g_object_new (PLUGIN_BROWSER_WIDGET_TYPE, NULL);
+  PluginBrowserWidget * self = g_object_new (
+    PLUGIN_BROWSER_WIDGET_TYPE, NULL);
 
   self->symap = symap_new ();
 
@@ -1569,7 +1584,8 @@ static void
 plugin_browser_widget_class_init (
   PluginBrowserWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "plugin_browser.ui");
 
@@ -1612,7 +1628,8 @@ plugin_browser_widget_class_init (
 #undef BIND_SIGNAL
 
   GObjectClass * goklass = G_OBJECT_CLASS (_klass);
-  goklass->finalize = (GObjectFinalizeFunc) finalize;
+  goklass->finalize =
+    (GObjectFinalizeFunc) finalize;
 }
 
 static void
@@ -1624,7 +1641,8 @@ plugin_browser_widget_init (
   self->popover_menu = GTK_POPOVER_MENU (
     gtk_popover_menu_new_from_model (NULL));
   gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
 
   self->stack_switcher =
     ADW_VIEW_SWITCHER (adw_view_switcher_new ());

@@ -156,7 +156,7 @@ HOT NONNULL void
 audio_region_fill_stereo_ports (
   ZRegion *                           self,
   const EngineProcessTimeInfo * const time_nfo,
-  StereoPorts *                       stereo_ports);
+  StereoPorts * stereo_ports);
 
 float
 audio_region_detect_bpm (

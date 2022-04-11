@@ -16,7 +16,8 @@
 static void
 flip (AutomationSelections * sel, bool vertical)
 {
-  for (int i = 0; i < sel->num_automation_points; i++)
+  for (int i = 0; i < sel->num_automation_points;
+       i++)
     {
       AutomationPoint * ap =
         sel->automation_points[i];

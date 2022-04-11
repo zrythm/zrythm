@@ -166,7 +166,8 @@ _knob_widget_new (
 #define knob_widget_new_port(conn, size) \
   _knob_widget_new ( \
     NULL, NULL, (void *) conn, \
-    KNOB_TYPE_PORT_MULTIPLIER, 0.f, 1.f, size, 0.f)
+    KNOB_TYPE_PORT_MULTIPLIER, 0.f, 1.f, size, \
+    0.f)
 
 /**
  * @}

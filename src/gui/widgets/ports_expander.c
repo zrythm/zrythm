@@ -125,7 +125,8 @@ ports_expander_widget_refresh (
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin
-                  && self->plugin->setting->descr->num_cv_outs
+                  && self->plugin->setting->descr
+                         ->num_cv_outs
                        > 0);
             }
         }
@@ -373,8 +374,10 @@ ports_expander_widget_setup_plugin (
             GTK_LABEL (group_label), 0.f);
           gtk_widget_add_css_class (
             group_label, "port-group-lbl");
-          gtk_widget_set_visible (group_label, true);
-          gtk_widget_set_margin_top (group_label, 3);
+          gtk_widget_set_visible (
+            group_label, true);
+          gtk_widget_set_margin_top (
+            group_label, 3);
           gtk_widget_set_margin_bottom (
             group_label, 3);
           two_col_expander_box_widget_add_single (
@@ -442,7 +445,8 @@ ports_expander_widget_setup_track (
       break;
     case PE_TRACK_PORT_TYPE_MIDI_IN:
       expander_box_widget_set_label (
-        Z_EXPANDER_BOX_WIDGET (self), _ ("MIDI In"));
+        Z_EXPANDER_BOX_WIDGET (self),
+        _ ("MIDI In"));
       self->owner_type = PORT_OWNER_TYPE_TRACK;
       self->flow = FLOW_INPUT;
       self->type = TYPE_EVENT;
@@ -489,9 +493,11 @@ ports_expander_widget_setup_track (
           if (out_type == TYPE_AUDIO)
             {
               ADD_SINGLE (
-                tr->channel->prefader->stereo_out->l);
+                tr->channel->prefader->stereo_out
+                  ->l);
               ADD_SINGLE (
-                tr->channel->prefader->stereo_out->r);
+                tr->channel->prefader->stereo_out
+                  ->r);
               ADD_SINGLE (
                 tr->channel->fader->stereo_out->l);
               ADD_SINGLE (

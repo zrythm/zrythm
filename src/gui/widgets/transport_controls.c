@@ -146,7 +146,8 @@ forward_rb_released (
 
   char tmp[500];
   sprintf (
-    tmp, "app.bind-midi-cc::%p", TRANSPORT->forward);
+    tmp, "app.bind-midi-cc::%p",
+    TRANSPORT->forward);
   menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
@@ -491,7 +492,8 @@ static void
 transport_controls_widget_class_init (
   TransportControlsWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "transport_controls.ui");
 
@@ -524,7 +526,8 @@ transport_controls_widget_init (
   self->popover_menu = GTK_POPOVER_MENU (
     gtk_popover_menu_new_from_model (NULL));
   gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
 
   /* setup record button */
   setup_record_btn (self);

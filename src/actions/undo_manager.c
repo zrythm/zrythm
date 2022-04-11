@@ -70,7 +70,8 @@ undo_manager_new (void)
 {
   g_message ("%s: creating...", __func__);
   UndoManager * self = object_new (UndoManager);
-  self->schema_version = UNDO_MANAGER_SCHEMA_VERSION;
+  self->schema_version =
+    UNDO_MANAGER_SCHEMA_VERSION;
 
   self->undo_stack = undo_stack_new ();
   self->redo_stack = undo_stack_new ();
@@ -127,7 +128,8 @@ do_or_undo_action (
     {
       /* invalid stack */
       g_critical (
-        "%s: invalid stack (err %d)", __func__, ret);
+        "%s: invalid stack (err %d)", __func__,
+        ret);
       return -1;
     }
 
@@ -179,7 +181,9 @@ do_or_undo_action (
  * Undo last action.
  */
 int
-undo_manager_undo (UndoManager * self, GError ** error)
+undo_manager_undo (
+  UndoManager * self,
+  GError **     error)
 {
   g_warn_if_fail (
     !undo_stack_is_empty (self->undo_stack));
@@ -234,7 +238,9 @@ undo_manager_undo (UndoManager * self, GError ** error)
  * Redo last undone action.
  */
 int
-undo_manager_redo (UndoManager * self, GError ** error)
+undo_manager_redo (
+  UndoManager * self,
+  GError **     error)
 {
   g_warn_if_fail (
     !undo_stack_is_empty (self->redo_stack));
@@ -404,7 +410,8 @@ UndoManager *
 undo_manager_clone (const UndoManager * src)
 {
   UndoManager * self = object_new (UndoManager);
-  self->schema_version = UNDO_MANAGER_SCHEMA_VERSION;
+  self->schema_version =
+    UNDO_MANAGER_SCHEMA_VERSION;
 
   self->undo_stack =
     undo_stack_clone (src->undo_stack);

@@ -190,8 +190,8 @@ on_multipress_released (
   FoldableNotebookWidget * self)
 {
   bool hit = ui_is_child_hit (
-    GTK_WIDGET (self), self->tab_during_press, 1, 1,
-    x, y, 16, 3);
+    GTK_WIDGET (self), self->tab_during_press, 1,
+    1, x, y, 16, 3);
   if (hit)
     {
 

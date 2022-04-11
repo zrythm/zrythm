@@ -89,7 +89,9 @@ typedef struct ArrangerSelections
 
 static const cyaml_schema_field_t
   arranger_selections_fields_schema[] = {
-    YAML_FIELD_INT (ArrangerSelections, schema_version),
+    YAML_FIELD_INT (
+      ArrangerSelections,
+      schema_version),
     YAML_FIELD_ENUM (
       ArrangerSelections,
       type,
@@ -372,7 +374,8 @@ arranger_selections_free_members (
  */
 NONNULL
 void
-arranger_selections_free (ArrangerSelections * self);
+arranger_selections_free (
+  ArrangerSelections * self);
 
 /**
  * Frees all the objects as well.

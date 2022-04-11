@@ -44,8 +44,8 @@ call_proc (void * data)
    *     (display "script called") (newline)))
    */
   scm_c_primitive_load (full_path);
-  SCM func =
-    scm_variable_ref (scm_c_lookup ("zrythm-test"));
+  SCM func = scm_variable_ref (
+    scm_c_lookup ("zrythm-test"));
   scm_call_0 (func);
 
   return SCM_BOOL_T;

@@ -67,7 +67,10 @@ enum
   N_PROPS
 };
 
-G_DEFINE_TYPE (GtkFlipper, gtk_flipper, GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (
+  GtkFlipper,
+  gtk_flipper,
+  GTK_TYPE_WIDGET)
 
 static GParamSpec * properties[N_PROPS] = {
   NULL,
@@ -162,7 +165,8 @@ gtk_flipper_size_allocate (
   if (self->flip_vertical)
     {
       transform = gsk_transform_translate (
-        transform, &GRAPHENE_POINT_INIT (0, height));
+        transform,
+        &GRAPHENE_POINT_INIT (0, height));
       transform =
         gsk_transform_scale (transform, 1, -1);
       baseline = -1;
@@ -182,7 +186,8 @@ gtk_flipper_size_allocate (
     }
 
   gtk_widget_allocate (
-    self->child, width, height, baseline, transform);
+    self->child, width, height, baseline,
+    transform);
 }
 
 static void
@@ -198,7 +203,8 @@ gtk_flipper_compute_expand (
       if (self->rotate)
         {
           *hexpand = gtk_widget_compute_expand (
-            self->child, GTK_ORIENTATION_HORIZONTAL);
+            self->child,
+            GTK_ORIENTATION_HORIZONTAL);
           *vexpand = gtk_widget_compute_expand (
             self->child, GTK_ORIENTATION_VERTICAL);
         }
@@ -207,7 +213,8 @@ gtk_flipper_compute_expand (
           *hexpand = gtk_widget_compute_expand (
             self->child, GTK_ORIENTATION_VERTICAL);
           *vexpand = gtk_widget_compute_expand (
-            self->child, GTK_ORIENTATION_HORIZONTAL);
+            self->child,
+            GTK_ORIENTATION_HORIZONTAL);
         }
     }
   else
@@ -353,11 +360,12 @@ gtk_flipper_class_init (GtkFlipperClass * klass)
    *
    * If the flipper should automatically begin playing.
    */
-  properties[PROP_FLIP_VERTICAL] = g_param_spec_boolean (
-    "flip-vertical", "Flip vertical",
-    "Swap the top and bottom of the child", FALSE,
-    G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY
-      | G_PARAM_STATIC_STRINGS);
+  properties[PROP_FLIP_VERTICAL] =
+    g_param_spec_boolean (
+      "flip-vertical", "Flip vertical",
+      "Swap the top and bottom of the child", FALSE,
+      G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY
+        | G_PARAM_STATIC_STRINGS);
 
   /**
    * GtkFlipper:rotate: (attributes org.gtk.Property.get=gtk_flipper_get_rotate org.gtk.Property.set=gtk_flipper_set_rotate)
@@ -539,7 +547,8 @@ gtk_flipper_set_flip_vertical (
   gtk_widget_queue_allocate (GTK_WIDGET (self));
 
   g_object_notify_by_pspec (
-    G_OBJECT (self), properties[PROP_FLIP_VERTICAL]);
+    G_OBJECT (self),
+    properties[PROP_FLIP_VERTICAL]);
 }
 
 /**

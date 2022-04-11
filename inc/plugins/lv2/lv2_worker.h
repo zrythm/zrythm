@@ -30,9 +30,9 @@ typedef struct
   Lv2Plugin * plugin; ///< Pointer back to the plugin
   ZixRing *   requests; ///< Requests to the worker
   ZixRing * responses; ///< Responses from the worker
-  void *    response;  ///< Worker response buffer
-  ZixSem    sem;       ///< Worker semaphore
-  ZixThread thread;    ///< Worker thread
+  void *    response; ///< Worker response buffer
+  ZixSem    sem;      ///< Worker semaphore
+  ZixThread thread;   ///< Worker thread
   const LV2_Worker_Interface *
        iface;    ///< Plugin worker interface
   bool threaded; ///< Run work in another thread

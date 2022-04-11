@@ -167,7 +167,8 @@ position_ms_to_frames (const signed_ms_t ms)
 void
 position_add_ms (Position * pos, const signed_ms_t ms)
 {
-  signed_frame_t frames = position_ms_to_frames (ms);
+  signed_frame_t frames =
+    position_ms_to_frames (ms);
   position_add_frames (pos, frames);
 }
 
@@ -289,7 +290,7 @@ get_prev_snap_point (
           TrackLane * lane = track->lanes[i];
           for (int j = 0; j < lane->num_regions; j++)
             {
-              ZRegion *        r = lane->regions[j];
+              ZRegion * r = lane->regions[j];
               ArrangerObject * r_obj =
                 (ArrangerObject *) r;
               snap_point = r_obj->pos;
@@ -390,7 +391,7 @@ get_next_snap_point (
           TrackLane * lane = track->lanes[i];
           for (int j = 0; j < lane->num_regions; j++)
             {
-              ZRegion *        r = lane->regions[j];
+              ZRegion * r = lane->regions[j];
               ArrangerObject * r_obj =
                 (ArrangerObject *) r;
               snap_point = r_obj->pos;
@@ -895,12 +896,15 @@ position_get_total_sixteenths (
     {
       ret = (int) math_round_double_to_signed_32 (
         floor (
-          pos->ticks / TICKS_PER_SIXTEENTH_NOTE_DBL));
+          pos->ticks
+          / TICKS_PER_SIXTEENTH_NOTE_DBL));
     }
   else
     {
-      ret = (int) math_round_double_to_signed_32 (ceil (
-        pos->ticks / TICKS_PER_SIXTEENTH_NOTE_DBL));
+      ret = (int) math_round_double_to_signed_32 (
+        ceil (
+          pos->ticks
+          / TICKS_PER_SIXTEENTH_NOTE_DBL));
     }
 
   if (include_current || ret == 0)

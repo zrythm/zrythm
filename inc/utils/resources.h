@@ -36,7 +36,8 @@
  */
 
 #define RESOURCES_PATH "/org/zrythm/Zrythm/app"
-#define RESOURCES_TEMPLATE_PATH RESOURCES_PATH "/ui"
+#define RESOURCES_TEMPLATE_PATH \
+  RESOURCES_PATH "/ui"
 #define RESOURCES_ICON_PATH RESOURCES_PATH "/icons"
 #define RESOURCES_GL_SHADERS_PATH \
   RESOURCES_PATH "/gl/shaders"

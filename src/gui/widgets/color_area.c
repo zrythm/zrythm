@@ -136,8 +136,8 @@ multipress_pressed (
   if (n_press == 1 && self->track)
     {
       object_color_chooser_dialog_widget_run (
-        GTK_WINDOW (MAIN_WINDOW), self->track, NULL,
-        NULL);
+        GTK_WINDOW (MAIN_WINDOW), self->track,
+        NULL, NULL);
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
@@ -192,7 +192,8 @@ color_area_widget_setup_track (
   self->type = COLOR_AREA_TYPE_TRACK;
 
   g_message (
-    "setting up track %s for %p", track->name, self);
+    "setting up track %s for %p", track->name,
+    self);
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
@@ -225,7 +226,8 @@ finalize (ColorAreaWidget * self)
 static void
 color_area_widget_init (ColorAreaWidget * self)
 {
-  gtk_widget_set_focusable (GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (
+    GTK_WIDGET (self), true);
 
   GtkGestureClick * mp =
     GTK_GESTURE_CLICK (gtk_gesture_click_new ());
@@ -253,7 +255,8 @@ static void
 color_area_widget_class_init (
   ColorAreaWidgetClass * klass)
 {
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
   wklass->snapshot = color_area_snapshot;
   gtk_widget_class_set_css_name (
     wklass, "color-area");

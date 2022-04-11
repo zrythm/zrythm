@@ -73,7 +73,9 @@ static const cyaml_schema_field_t
       descr,
       plugin_descriptor_fields_schema_v1),
     YAML_FIELD_INT (PluginSetting_v1, open_with_carla),
-    YAML_FIELD_INT (PluginSetting_v1, force_generic_ui),
+    YAML_FIELD_INT (
+      PluginSetting_v1,
+      force_generic_ui),
     YAML_FIELD_ENUM (
       PluginSetting_v1,
       bridge_mode,

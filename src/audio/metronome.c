@@ -88,8 +88,8 @@ metronome_new (void)
       * (size_t) enc->channels);
   audio_encoder_free (enc);
 
-  enc =
-    audio_encoder_new_from_file (self->normal_path);
+  enc = audio_encoder_new_from_file (
+    self->normal_path);
   audio_encoder_decode (
     enc, (int) AUDIO_ENGINE->sample_rate,
     F_NO_SHOW_PROGRESS);
@@ -274,7 +274,8 @@ metronome_queue_events (
   position_init (&bar_pos);
   position_init (&beat_pos);
   position_set_to_pos (&playhead_pos, PLAYHEAD);
-  position_set_to_pos (&unlooped_playhead, PLAYHEAD);
+  position_set_to_pos (
+    &unlooped_playhead, PLAYHEAD);
   transport_position_add_frames (
     self->transport, &playhead_pos, nframes);
   position_add_frames (

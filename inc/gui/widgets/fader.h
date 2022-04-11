@@ -28,7 +28,8 @@
 
 #include <gtk/gtk.h>
 
-#define FADER_WIDGET_TYPE (fader_widget_get_type ())
+#define FADER_WIDGET_TYPE \
+  (fader_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   FaderWidget,
   fader_widget,

@@ -156,7 +156,8 @@ graph_node_print_to_str (
       dest = node->childnodes[j];
       name = graph_node_get_name (dest);
       str2 = g_strdup_printf (
-        "%s (dest [(%d) %s])", str1, dest->id, name);
+        "%s (dest [(%d) %s])", str1, dest->id,
+        name);
       g_free (str1);
       g_free (name);
       str1 = str2;
@@ -266,7 +267,8 @@ process_node (
           == AUDIO_ENGINE->midi_editor_manual_press)
           {
             midi_events_dequeue (
-              AUDIO_ENGINE->midi_editor_manual_press
+              AUDIO_ENGINE
+                ->midi_editor_manual_press
                 ->midi_events);
           }
 

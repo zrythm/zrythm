@@ -49,7 +49,8 @@ on_notebook_switch_page (
   guint                page_num,
   LeftDockEdgeWidget * self)
 {
-  g_debug ("setting left dock page to %u", page_num);
+  g_debug (
+    "setting left dock page to %u", page_num);
 
   g_settings_set_int (
     S_UI, "left-panel-tab", (int) page_num);
@@ -79,14 +80,16 @@ left_dock_edge_widget_refresh (
     self->track_inspector, TRACKLIST_SELECTIONS,
     false);
   inspector_plugin_widget_show (
-    self->plugin_inspector, MIXER_SELECTIONS, false);
+    self->plugin_inspector, MIXER_SELECTIONS,
+    false);
 
   int page_num =
     g_settings_get_int (S_UI, "left-panel-tab");
   GtkNotebook * notebook =
     foldable_notebook_widget_get_notebook (
       self->inspector_notebook);
-  gtk_notebook_set_current_page (notebook, page_num);
+  gtk_notebook_set_current_page (
+    notebook, page_num);
 }
 
 void
@@ -159,7 +162,8 @@ dispose (LeftDockEdgeWidget * self)
   gtk_widget_unparent (
     GTK_WIDGET (self->inspector_notebook));
 
-  G_OBJECT_CLASS (left_dock_edge_widget_parent_class)
+  G_OBJECT_CLASS (
+    left_dock_edge_widget_parent_class)
     ->dispose (G_OBJECT (self));
 }
 
@@ -239,7 +243,8 @@ static void
 left_dock_edge_widget_class_init (
   LeftDockEdgeWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "left_dock_edge.ui");
 

@@ -248,7 +248,8 @@ suil_instance_new (
     descriptor, plugin_uri, ui_bundle_path,
     host->write_func, controller,
     &instance->ui_widget,
-    (const LV2_Feature * const *) instance->features);
+    (const LV2_Feature * const *)
+      instance->features);
 
   // Failed to instantiate UI
   if (!instance->handle)
@@ -286,7 +287,8 @@ suil_instance_free (SuilInstance * instance)
   g_message ("freeing suil instance %p", instance);
   if (instance)
     {
-      for (unsigned i = 0; instance->features[i]; ++i)
+      for (unsigned i = 0; instance->features[i];
+           ++i)
         {
           free (instance->features[i]);
         }

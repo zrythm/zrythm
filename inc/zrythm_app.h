@@ -28,8 +28,9 @@ G_DECLARE_FINAL_TYPE (
   (zrythm_app \
    && zrythm_app->gtk_thread == g_thread_self ())
 
-typedef struct _MainWindowWidget   MainWindowWidget;
-typedef struct _SplashWindowWidget SplashWindowWidget;
+typedef struct _MainWindowWidget MainWindowWidget;
+typedef struct _SplashWindowWidget
+  SplashWindowWidget;
 typedef struct _FirstRunAssistantWidget
   FirstRunAssistantWidget;
 typedef struct _ProjectAssistantWidget

@@ -69,9 +69,13 @@ true_peak_dsp_process (
   float m = self->res ? 0 : self->m;
   float p = self->res ? 0 : self->p;
   float z1 =
-    self->z1 > 20 ? 20 : (self->z1 < 0 ? 0 : self->z1);
+    self->z1 > 20
+      ? 20
+      : (self->z1 < 0 ? 0 : self->z1);
   float z2 =
-    self->z2 > 20 ? 20 : (self->z2 < 0 ? 0 : self->z2);
+    self->z2 > 20
+      ? 20
+      : (self->z2 < 0 ? 0 : self->z2);
   float * b = self->buf;
 
   while (n--)

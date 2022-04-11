@@ -108,7 +108,8 @@ static void
 setup_lang_selection (ScriptingDialogWidget * self)
 {
   adw_preferences_row_set_title (
-    ADW_PREFERENCES_ROW (self->lang_select_combo_row),
+    ADW_PREFERENCES_ROW (
+      self->lang_select_combo_row),
     _ ("Language"));
   adw_action_row_set_subtitle (
     ADW_ACTION_ROW (self->lang_select_combo_row),
@@ -116,7 +117,8 @@ setup_lang_selection (ScriptingDialogWidget * self)
 
   GtkStringList * string_list =
     gtk_string_list_new (NULL);
-  for (int i = 0; i < NUM_GUILE_SCRIPT_LANGUAGES; i++)
+  for (int i = 0; i < NUM_GUILE_SCRIPT_LANGUAGES;
+       i++)
     {
       gtk_string_list_append (
         string_list,
@@ -166,8 +168,10 @@ scripting_dialog_widget_init (
   gtk_box_append (top_box, GTK_WIDGET (scroll));
   gtk_widget_set_size_request (
     GTK_WIDGET (scroll), 596, 320);
-  gtk_widget_set_hexpand (GTK_WIDGET (scroll), true);
-  gtk_widget_set_vexpand (GTK_WIDGET (scroll), true);
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (scroll), true);
+  gtk_widget_set_vexpand (
+    GTK_WIDGET (scroll), true);
   self->source_viewport =
     GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
   gtk_scrolled_window_set_child (
@@ -235,8 +239,8 @@ scripting_dialog_widget_init (
     GTK_VIEWPORT (self->source_viewport),
     GTK_WIDGET (self->editor));
   gtk_text_buffer_set_text (
-    GTK_TEXT_BUFFER (self->buffer), script_contents,
-    -1);
+    GTK_TEXT_BUFFER (self->buffer),
+    script_contents, -1);
   gtk_source_view_set_show_line_numbers (
     self->editor, true);
   gtk_source_view_set_auto_indent (
@@ -244,7 +248,8 @@ scripting_dialog_widget_init (
   gtk_source_view_set_indent_on_tab (
     self->editor, true);
   gtk_source_view_set_tab_width (self->editor, 2);
-  gtk_source_view_set_indent_width (self->editor, 2);
+  gtk_source_view_set_indent_width (
+    self->editor, 2);
   gtk_source_view_set_insert_spaces_instead_of_tabs (
     self->editor, true);
   gtk_source_view_set_smart_backspace (
@@ -299,8 +304,10 @@ scripting_dialog_widget_init (
   gtk_box_append (bot_box, GTK_WIDGET (scroll));
   gtk_widget_set_size_request (
     GTK_WIDGET (scroll), -1, 105);
-  gtk_widget_set_hexpand (GTK_WIDGET (scroll), true);
-  gtk_widget_set_vexpand (GTK_WIDGET (scroll), true);
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (scroll), true);
+  gtk_widget_set_vexpand (
+    GTK_WIDGET (scroll), true);
   self->output = GTK_LABEL (gtk_label_new (
     _ ("The result will be printed here")));
   gtk_label_set_selectable (self->output, true);

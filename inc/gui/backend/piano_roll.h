@@ -241,7 +241,9 @@ static const cyaml_schema_field_t
   };
 
 static const cyaml_schema_value_t piano_roll_schema = {
-  YAML_VALUE_PTR (PianoRoll, piano_roll_fields_schema),
+  YAML_VALUE_PTR (
+    PianoRoll,
+    piano_roll_fields_schema),
 };
 
 /**
@@ -366,7 +368,8 @@ piano_roll_get_visible_notes (
           arr[*num].value = descr->value;
           arr[*num].marked = descr->marked;
           arr[*num].visible = descr->visible;
-          arr[*num].custom_name = descr->custom_name;
+          arr[*num].custom_name =
+            descr->custom_name;
           arr[*num].note_name = descr->note_name;
           (*num)++;
         }

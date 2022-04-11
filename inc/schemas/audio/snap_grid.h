@@ -88,9 +88,10 @@ typedef enum SnapGridType_v1
   SNAP_GRID_TYPE_EDITOR_v1,
 } SnapGridType_v1;
 
-static const cyaml_strval_t snap_grid_type_strings[] = {
-  {"timeline", SNAP_GRID_TYPE_TIMELINE_v1},
-  { "editor",  SNAP_GRID_TYPE_EDITOR_v1  },
+static const cyaml_strval_t
+  snap_grid_type_strings[] = {
+    {"timeline", SNAP_GRID_TYPE_TIMELINE_v1},
+    { "editor",  SNAP_GRID_TYPE_EDITOR_v1  },
 };
 
 typedef struct SnapGrid_v1

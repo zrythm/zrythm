@@ -88,7 +88,8 @@ popover_menu_bin_widget_set_child (
 {
   self->child = child;
   if (child)
-    gtk_widget_set_parent (child, GTK_WIDGET (self));
+    gtk_widget_set_parent (
+      child, GTK_WIDGET (self));
 }
 
 GtkWidget *

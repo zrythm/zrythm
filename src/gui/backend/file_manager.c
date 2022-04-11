@@ -72,12 +72,14 @@ file_manager_new (void)
     {
       /* add bookmarks */
       char ** bookmarks = g_settings_get_strv (
-        S_UI_FILE_BROWSER, "file-browser-bookmarks");
+        S_UI_FILE_BROWSER,
+        "file-browser-bookmarks");
       for (size_t i = 0; bookmarks[i] != NULL; i++)
         {
           char * bookmark = bookmarks[i];
           fl = file_browser_location_new ();
-          fl->label = g_path_get_basename (bookmark);
+          fl->label =
+            g_path_get_basename (bookmark);
           fl->path = g_strdup (bookmark);
           fl->special_location = FILE_MANAGER_NONE;
           g_ptr_array_add (self->locations, fl);
