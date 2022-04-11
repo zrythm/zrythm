@@ -774,3 +774,13 @@ License: CC0-1.0
 Comment:
   Simple files for testing. Might be useful for other
   projects so put under public domain (CC-0).
+
+Files:
+  tests/loop0_ref.mid
+  tests/loop1_ref.mid
+  tests/loop2_ref.mid
+  tests/loop3_ref.mid
+  tests/loop4_ref.mid
+  tests/loopbase.mid
+Copyright: 2022 Robert Panovics
+License: LicenseRef-ZrythmLicense
