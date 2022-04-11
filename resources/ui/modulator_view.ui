@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="ModulatorViewWidget" parent="GtkBox">
+  <template class="ModulatorViewWidget" parent="GtkWidget">
     <property name="hexpand">1</property>
     <child>
       <object class="ColorAreaWidget" id="color">
-        <property name="visible">1</property>
         <property name="width-request">5</property>
       </object>
     </child>
@@ -26,51 +25,28 @@
                   <object class="GtkBox" id="modulators_and_macros_box">
                     <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkBox" id="modulators_box">
-                        <property name="vexpand">1</property>
+                      <object class="GtkBox" id="modulators_box_container">
+                        <property name="orientation">horizontal</property>
                         <child>
-                          <placeholder/>
+                          <object class="AdwStatusPage" id="no_modulators_status_page">
+                            <style>
+                              <class name="compact"/>
+                            </style>
+                            <property name="hexpand">1</property>
+                            <property name="title" translatable="yes">No modulators</property>
+                            <property name="description" translatable="yes">Drag and drop a modulator plugin from the plugin browser</property>
+                            <property name="icon-name">modulator</property>
+                          </object>
                         </child>
                         <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
+                          <object class="GtkBox" id="modulators_box">
+                            <property name="vexpand">1</property>
+                          </object>
                         </child>
                       </object>
                     </child>
                     <child>
                       <object class="GtkBox" id="macros_box">
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
                       </object>
                     </child>
                   </object>

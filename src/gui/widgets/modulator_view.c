@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/track.h"
 #include "audio/tracklist.h"
@@ -33,7 +17,7 @@
 G_DEFINE_TYPE (
   ModulatorViewWidget,
   modulator_view_widget,
-  GTK_TYPE_BOX)
+  GTK_TYPE_WIDGET)
 
 void
 modulator_view_widget_refresh (
@@ -70,6 +54,10 @@ modulator_view_widget_refresh (
   gtk_box_append (
     GTK_BOX (self->modulators_box),
     GTK_WIDGET (drag_dest));
+
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->no_modulators_status_page),
+    self->track->num_modulators == 0);
 }
 
 ModulatorViewWidget *
@@ -136,4 +124,10 @@ modulator_view_widget_class_init (
   BIND_CHILD (track_name);
   BIND_CHILD (modulators_box);
   BIND_CHILD (macros_box);
+  BIND_CHILD (no_modulators_status_page);
+
+#undef BIND_CHILD
+
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BOX_LAYOUT);
 }

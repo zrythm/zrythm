@@ -16,13 +16,11 @@
             <property name="orientation">vertical</property>
             <child>
               <object class="EditorToolbarWidget" id="editor_toolbar">
-                <property name="visible">1</property>
                 <property name="vexpand">0</property>
               </object>
             </child>
             <child>
               <object class="ClipEditorInnerWidget" id="clip_editor_inner">
-                <property name="visible">1</property>
               </object>
             </child>
           </object>

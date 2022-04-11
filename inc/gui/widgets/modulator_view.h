@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -26,6 +10,7 @@
 #ifndef __GUI_WIDGETS_MODULATOR_VIEW_H__
 #define __GUI_WIDGETS_MODULATOR_VIEW_H__
 
+#include <adwaita.h>
 #include <gtk/gtk.h>
 
 #define MODULATOR_VIEW_WIDGET_TYPE \
@@ -35,15 +20,13 @@ G_DECLARE_FINAL_TYPE (
   modulator_view_widget,
   Z,
   MODULATOR_VIEW_WIDGET,
-  GtkBox)
+  GtkWidget)
 
-typedef struct _ModulatorWidget ModulatorWidget;
-typedef struct _ModulatorMacroWidget
-  ModulatorMacroWidget;
-typedef struct _ColorAreaWidget ColorAreaWidget;
-typedef struct Track            Track;
-typedef struct _RotatedLabelWidget
-  RotatedLabelWidget;
+TYPEDEF_STRUCT_UNDERSCORED (ModulatorWidget);
+TYPEDEF_STRUCT_UNDERSCORED (ModulatorMacroWidget);
+TYPEDEF_STRUCT_UNDERSCORED (ColorAreaWidget);
+TYPEDEF_STRUCT_UNDERSCORED (RotatedLabelWidget);
+TYPEDEF_STRUCT (Track);
 
 /**
  * @addtogroup widgets
@@ -67,7 +50,8 @@ typedef struct _RotatedLabelWidget
  */
 typedef struct _ModulatorViewWidget
 {
-  GtkBox                 parent_instance;
+  GtkWidget              parent_instance;
+  AdwStatusPage *        no_modulators_status_page;
   GtkBox *               modulators_box;
   GtkBox *               macros_box;
   ColorAreaWidget *      color;
