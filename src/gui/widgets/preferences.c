@@ -759,7 +759,7 @@ add_subgroup (
           summary = _ ("Reset to factory settings");
           description = _ (
             "Reset all preferences to initial "
-            "values");
+            "values.");
         }
       else
         {
