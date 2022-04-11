@@ -425,6 +425,8 @@ add_object_if_overlap (
   double           x = nfo->x;
   double           y = nfo->y;
   ArrangerObject * obj = nfo->obj;
+  RulerWidget *    ruler =
+    arranger_widget_get_ruler (self);
 
   g_return_val_if_fail (
     IS_ARRANGER_OBJECT (obj), false);
@@ -467,7 +469,8 @@ add_object_if_overlap (
         }
     }
 
-  /* skip objects that start after the end */
+  /* skip objects that start a few pixels after
+   * the end */
   Position g_obj_start_pos;
   if (arranger_object_type_has_global_pos (
         obj->type))
@@ -484,6 +487,8 @@ add_object_if_overlap (
       position_add_ticks (
         &g_obj_start_pos, obj->pos.ticks);
     }
+  position_add_ticks (
+    &g_obj_start_pos, -12.0 / ruler->px_per_tick);
   if (position_is_after (
         &g_obj_start_pos, &nfo->end_pos))
     {
@@ -5878,12 +5883,11 @@ get_automation_arranger_cursor (
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
 
-  int is_hit =
+  ArrangerObject * hit_obj =
     arranger_widget_get_hit_arranger_object (
       (ArrangerWidget *) self,
       ARRANGER_OBJECT_TYPE_AUTOMATION_POINT,
-      self->hover_x, self->hover_y)
-    != NULL;
+      self->hover_x, self->hover_y);
 
   switch (action)
     {
@@ -5892,9 +5896,18 @@ get_automation_arranger_cursor (
         {
         case TOOL_SELECT_NORMAL:
           {
-            if (is_hit)
+            if (hit_obj)
               {
-                return ARRANGER_CURSOR_GRAB;
+                if (automation_point_is_point_hit (
+                      (AutomationPoint *) hit_obj,
+                      self->hover_x, self->hover_y))
+                  {
+                    return ARRANGER_CURSOR_GRAB;
+                  }
+                else
+                  {
+                    return ARRANGER_CURSOR_RESIZING_UP;
+                  }
               }
             else
               {

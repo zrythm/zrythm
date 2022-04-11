@@ -8,6 +8,7 @@
 #include "gui/backend/arranger_object.h"
 #include "gui/widgets/arranger_draw.h"
 #include "gui/widgets/arranger_object.h"
+#include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -782,6 +783,30 @@ draw_audio_bg (
 }
 
 static void
+draw_automation_bg (
+  ArrangerWidget * self,
+  GtkSnapshot *    snapshot,
+  const int        width,
+  const int        height,
+  GdkRectangle *   rect)
+{
+  /* draws horizontal lines at the cut-off points
+   * where automation can be drawn */
+#if 0
+  gtk_snapshot_append_color (
+    snapshot, &thick_grid_line_color,
+    &GRAPHENE_RECT_INIT (
+      0, (float) AUTOMATION_ARRANGER_VPADDING,
+      width, 1));
+  gtk_snapshot_append_color (
+    snapshot, &thick_grid_line_color,
+    &GRAPHENE_RECT_INIT (
+      0, (float) (height - AUTOMATION_ARRANGER_VPADDING),
+      width, 1));
+#endif
+}
+
+static void
 draw_vertical_lines (
   ArrangerWidget * self,
   RulerWidget *    ruler,
@@ -1213,6 +1238,12 @@ arranger_snapshot (
     {
       draw_audio_bg (
         self, snapshot, height, &visible_rect_gdk);
+    }
+  else if (self->type == TYPE (AUTOMATION))
+    {
+      draw_automation_bg (
+        self, snapshot, width, height,
+        &visible_rect_gdk);
     }
 
   /* draw each arranger object */

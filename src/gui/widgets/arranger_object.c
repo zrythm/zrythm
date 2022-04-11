@@ -8,6 +8,7 @@
 #include "gui/backend/arranger_object.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_object.h"
+#include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -373,10 +374,11 @@ get_automation_point_y (
 
   int allocated_h = gtk_widget_get_allocated_height (
     GTK_WIDGET (arranger));
+  allocated_h -= AUTOMATION_ARRANGER_VPADDING * 2;
   int point =
     allocated_h
     - (int) (ap_ratio * (float) allocated_h);
-  return point;
+  return point + AUTOMATION_ARRANGER_VPADDING;
 }
 
 /**

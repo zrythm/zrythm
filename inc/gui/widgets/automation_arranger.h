@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2020, 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -34,15 +18,13 @@
 
 #include <gtk/gtk.h>
 
-typedef struct AutomationPoint AutomationPoint;
-typedef struct AutomationCurve AutomationCurve;
-typedef struct _AutomationPointWidget
-  AutomationPointWidget;
-typedef struct _AutomationCurveWidget
-                        AutomationCurveWidget;
-typedef struct SnapGrid SnapGrid;
-typedef struct AutomationTrack AutomationTrack;
-typedef struct _RegionWidget   RegionWidget;
+TYPEDEF_STRUCT (AutomationPoint);
+TYPEDEF_STRUCT (AutomationCurve);
+TYPEDEF_STRUCT_UNDERSCORED (AutomationPointWidget);
+TYPEDEF_STRUCT_UNDERSCORED (AutomationCurveWidget);
+TYPEDEF_STRUCT (SnapGrid);
+TYPEDEF_STRUCT (AutomationTrack);
+TYPEDEF_STRUCT_UNDERSCORED (RegionWidget);
 
 /**
  * @addtogroup widgets
@@ -52,6 +34,10 @@ typedef struct _RegionWidget   RegionWidget;
 
 #define MW_AUTOMATION_ARRANGER \
   MW_AUTOMATION_EDITOR_SPACE->arranger
+
+/** Padding to leave before and after the usable
+ * vertical range for automation. */
+#define AUTOMATION_ARRANGER_VPADDING 4
 
 /**
  * Create an AutomationPointat the given Position

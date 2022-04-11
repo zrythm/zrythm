@@ -16,6 +16,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
+#include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
@@ -85,6 +86,15 @@ automation_point_draw (
   GdkRectangle draw_rect;
   arranger_object_get_draw_rectangle (
     obj, rect, &obj->full_rect, &draw_rect);
+
+#if 0
+  gtk_snapshot_append_color (
+    snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.2),
+    &GRAPHENE_RECT_INIT (
+      obj->full_rect.x, obj->full_rect.y,
+      obj->full_rect.width,
+      obj->full_rect.height));
+#endif
 
   GskRenderNode * cr_node = NULL;
   if (automation_point_settings_changed (
