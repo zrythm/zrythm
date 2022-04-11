@@ -115,7 +115,6 @@ widget_srcs = files([
   'quantize_box.c',
   'region.c',
   'right_dock_edge.c',
-  'rotated_label.c',
   'route_target_selector.c',
   'route_target_selector_popover.c',
   'ruler.c',

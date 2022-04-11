@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="HeaderWidget" parent="GtkBox">
+  <template class="HeaderWidget" parent="GtkWidget">
     <property name="focusable">1</property>
     <child>
       <object class="AdwViewStack" id="stack">
@@ -61,7 +61,19 @@
             <property name="margin_top">4</property>
             <property name="margin_bottom">4</property>
             <child>
-              <object class="RotatedLabelWidget" id="midi_in_rotated_lbl">
+              <object class="GtkFlipper">
+                <property name="flip-horizontal">1</property>
+                <property name="flip-vertical">1</property>
+                <property name="rotate">1</property>
+                <property name="child">
+                  <object class="GtkLabel" id="midi_in_lbl">
+                    <style>
+                      <class name="small-vertical-lbl"/>
+                    </style>
+                    <!-- TRANSLATORS: either leave this untranslated or make sure the translated text is max 7 characters -->
+                    <property name="label" translatable="yes">MIDI in</property>
+                  </object>
+                </property>
               </object>
             </child>
             <child>

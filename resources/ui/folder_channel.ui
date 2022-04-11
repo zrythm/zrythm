@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="FolderChannelWidget" parent="GtkBox">
+  <template class="FolderChannelWidget" parent="GtkWidget">
     <property name="margin-top">2</property>
     <property name="margin-bottom">4</property>
     <child>
@@ -23,8 +23,21 @@
                   </object>
                 </child>
                 <child>
-                  <object class="RotatedLabelWidget" id="name">
+                  <object class="GtkFlipper">
+                    <property name="flip-horizontal">1</property>
+                    <property name="flip-vertical">1</property>
+                    <property name="rotate">1</property>
                     <property name="vexpand">1</property>
+                    <property name="child">
+                      <object class="GtkLabel" id="name_lbl">
+                        <style>
+                          <class name="folder_channel_label"/>
+                        </style>
+                        <property name="max-width-chars">10</property>
+                        <property name="ellipsize">end</property>
+                        <property name="hexpand">1</property>
+                      </object>
+                    </property>
                   </object>
                 </child>
               </object>

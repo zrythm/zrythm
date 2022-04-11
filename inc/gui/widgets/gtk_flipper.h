@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: © 2021 Benjamin Otte
+// SPDX-License-Identifier: LGPL-2.1-or-later
 /*
  * Copyright © 2021 Benjamin Otte
  *

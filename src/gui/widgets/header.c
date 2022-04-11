@@ -1,32 +1,16 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
 
 #include "gui/accel.h"
+#include "gui/widgets/gtk_flipper.h"
 #include "gui/widgets/header.h"
 #include "gui/widgets/help_toolbar.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/live_waveform.h"
 #include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/project_toolbar.h"
-#include "gui/widgets/rotated_label.h"
 #include "gui/widgets/snap_box.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/toolbox.h"
@@ -39,7 +23,7 @@
 G_DEFINE_TYPE (
   HeaderWidget,
   header_widget,
-  GTK_TYPE_BOX)
+  GTK_TYPE_WIDGET)
 
 void
 header_widget_refresh (HeaderWidget * self)
@@ -78,7 +62,7 @@ header_widget_init (HeaderWidget * self)
   g_type_ensure (PROJECT_TOOLBAR_WIDGET_TYPE);
   g_type_ensure (LIVE_WAVEFORM_WIDGET_TYPE);
   g_type_ensure (MIDI_ACTIVITY_BAR_WIDGET_TYPE);
-  g_type_ensure (ROTATED_LABEL_WIDGET_TYPE);
+  g_type_ensure (GTK_TYPE_FLIPPER);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -93,24 +77,6 @@ header_widget_init (HeaderWidget * self)
     self->midi_activity);
   midi_activity_bar_widget_set_animation (
     self->midi_activity, MAB_ANIMATION_FLASH);
-
-  /* setup the rotated label */
-  rotated_label_widget_setup (
-    self->midi_in_rotated_lbl, -90);
-  GtkLabel * lbl = rotated_label_widget_get_label (
-    self->midi_in_rotated_lbl);
-  gtk_widget_add_css_class (
-    GTK_WIDGET (lbl), "small-vertical-lbl");
-  const char * midi_in_txt_translated =
-    /* TRANSLATORS: either leave this
-     * untranslated or make sure the translated text
-     * is max 7 characters */
-    _ ("MIDI in");
-  const char * midi_in_txt = midi_in_txt_translated;
-  if (g_utf8_strlen (midi_in_txt, -1) > 8)
-    midi_in_txt = "MIDI in";
-  rotated_label_widget_set_markup (
-    self->midi_in_rotated_lbl, midi_in_txt);
 
   /* set tooltips */
   char about_tooltip[500];
@@ -138,7 +104,9 @@ header_widget_class_init (
   BIND_CHILD (help_toolbar);
   BIND_CHILD (live_waveform);
   BIND_CHILD (midi_activity);
-  BIND_CHILD (midi_in_rotated_lbl);
 
 #undef BIND_CHILD
+
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BOX_LAYOUT);
 }

@@ -25,7 +25,6 @@ G_DECLARE_FINAL_TYPE (
 TYPEDEF_STRUCT_UNDERSCORED (ModulatorWidget);
 TYPEDEF_STRUCT_UNDERSCORED (ModulatorMacroWidget);
 TYPEDEF_STRUCT_UNDERSCORED (ColorAreaWidget);
-TYPEDEF_STRUCT_UNDERSCORED (RotatedLabelWidget);
 TYPEDEF_STRUCT (Track);
 
 /**
@@ -55,7 +54,7 @@ typedef struct _ModulatorViewWidget
   GtkBox *               modulators_box;
   GtkBox *               macros_box;
   ColorAreaWidget *      color;
-  RotatedLabelWidget *   track_name;
+  GtkLabel *             track_name_lbl;
   Track *                track;
   ModulatorWidget *      modulators[14];
   ModulatorMacroWidget * macros[8];

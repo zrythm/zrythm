@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * @file
@@ -35,7 +19,7 @@ G_DECLARE_FINAL_TYPE (
   folder_channel_widget,
   Z,
   FOLDER_CHANNEL_WIDGET,
-  GtkBox)
+  GtkWidget)
 
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct Track            Track;
@@ -43,8 +27,6 @@ typedef struct _FolderChannelSlotWidget
   FolderChannelSlotWidget;
 typedef struct _EditableLabelWidget
   EditableLabelWidget;
-typedef struct _RotatedLabelWidget
-  RotatedLabelWidget;
 typedef struct _FaderButtonsWidget
   FaderButtonsWidget;
 
@@ -56,12 +38,12 @@ typedef struct _FaderButtonsWidget
 
 typedef struct _FolderChannelWidget
 {
-  GtkBox               parent_instance;
-  GtkGrid *            grid;
-  ColorAreaWidget *    color_top;
-  ColorAreaWidget *    color_left;
-  GtkBox *             icon_and_name_event_box;
-  RotatedLabelWidget * name;
+  GtkWidget         parent_instance;
+  GtkGrid *         grid;
+  ColorAreaWidget * color_top;
+  ColorAreaWidget * color_left;
+  GtkBox *          icon_and_name_event_box;
+  GtkLabel *        name_lbl;
 
   GtkImage * icon;
 

@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_HEADER_H__
 #define __GUI_WIDGETS_HEADER_H__
@@ -32,7 +16,7 @@ G_DECLARE_FINAL_TYPE (
   header_widget,
   Z,
   HEADER_WIDGET,
-  GtkBox)
+  GtkWidget)
 
 /**
  * \file
@@ -51,8 +35,6 @@ typedef struct _MidiActivityBarWidget
   MidiActivityBarWidget;
 typedef struct _LiveWaveformWidget
   LiveWaveformWidget;
-typedef struct _RotatedLabelWidget
-  RotatedLabelWidget;
 
 /**
  * Header notebook to be used at the very top of the
@@ -60,7 +42,7 @@ typedef struct _RotatedLabelWidget
  */
 typedef struct _HeaderWidget
 {
-  GtkBox parent_instance;
+  GtkWidget parent_instance;
 
   /** Notebook toolbars. */
   HomeToolbarWidget *    home_toolbar;
@@ -72,7 +54,7 @@ typedef struct _HeaderWidget
 
   LiveWaveformWidget *    live_waveform;
   MidiActivityBarWidget * midi_activity;
-  RotatedLabelWidget *    midi_in_rotated_lbl;
+  GtkLabel *              midi_in_lbl;
 } HeaderWidget;
 
 void

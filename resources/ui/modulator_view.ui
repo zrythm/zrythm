@@ -16,7 +16,14 @@
           <object class="GtkBox">
             <property name="vexpand">1</property>
             <child>
-              <object class="RotatedLabelWidget" id="track_name">
+              <object class="GtkFlipper">
+                <property name="flip-horizontal">1</property>
+                <property name="flip-vertical">1</property>
+                <property name="rotate">1</property>
+                <property name="child">
+                  <object class="GtkLabel" id="track_name_lbl">
+                  </object>
+                </property>
               </object>
             </child>
             <child>

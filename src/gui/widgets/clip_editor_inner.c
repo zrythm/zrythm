@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/channel.h"
@@ -18,12 +18,12 @@
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/editor_ruler.h"
+#include "gui/widgets/gtk_flipper.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
-#include "gui/widgets/rotated_label.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
 #include "utils/gtk.h"
@@ -35,7 +35,7 @@
 G_DEFINE_TYPE (
   ClipEditorInnerWidget,
   clip_editor_inner_widget,
-  GTK_TYPE_BOX)
+  GTK_TYPE_WIDGET)
 
 /**
  * Adds or remove the widget from the
@@ -121,8 +121,8 @@ clip_editor_inner_widget_refresh (
 
       color_area_widget_set_color (
         self->color_bar, &track->color);
-      rotated_label_widget_set_markup (
-        self->track_name_rotated_label, r->name);
+      gtk_label_set_markup (
+        self->track_name_lbl, r->name);
 
       /* remove all from the size group */
       GtkWidget * visible_w =
@@ -274,7 +274,7 @@ clip_editor_inner_widget_init (
   g_type_ensure (CHORD_EDITOR_SPACE_WIDGET_TYPE);
   g_type_ensure (
     AUTOMATION_EDITOR_SPACE_WIDGET_TYPE);
-  g_type_ensure (ROTATED_LABEL_WIDGET_TYPE);
+  g_type_ensure (GTK_TYPE_FLIPPER);
 
   self->ruler_arranger_hsize_group =
     gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -304,17 +304,6 @@ clip_editor_inner_widget_init (
     self->ruler_arranger_hsize_group,
     GTK_WIDGET (
       self->automation_editor_space->arranger));
-
-  /* setup the rotated label */
-  rotated_label_widget_setup (
-    self->track_name_rotated_label, -90);
-  GtkLabel * lbl = rotated_label_widget_get_label (
-    self->track_name_rotated_label);
-  gtk_widget_add_css_class (
-    GTK_WIDGET (lbl), "editor-track-name-lbl");
-  rotated_label_widget_set_markup (
-    self->track_name_rotated_label,
-    _ ("Select a region..."));
 
   self->left_of_ruler_size_group =
     gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -346,7 +335,7 @@ clip_editor_inner_widget_class_init (
 
   BIND_CHILD (color_bar);
   BIND_CHILD (bot_of_arranger_toolbar);
-  BIND_CHILD (track_name_rotated_label);
+  BIND_CHILD (track_name_lbl);
   BIND_CHILD (left_of_ruler_box);
   BIND_CHILD (ruler_scroll);
   BIND_CHILD (ruler_viewport);
@@ -364,4 +353,7 @@ clip_editor_inner_widget_class_init (
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;
+
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BOX_LAYOUT);
 }

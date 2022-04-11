@@ -20,11 +20,11 @@
 #include "gui/widgets/fader.h"
 #include "gui/widgets/fader_buttons.h"
 #include "gui/widgets/folder_channel.h"
+#include "gui/widgets/gtk_flipper.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/meter.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/plugin_strip_expander.h"
-#include "gui/widgets/rotated_label.h"
 #include "gui/widgets/route_target_selector.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
@@ -46,7 +46,7 @@
 G_DEFINE_TYPE (
   FolderChannelWidget,
   folder_channel_widget,
-  GTK_TYPE_BOX)
+  GTK_TYPE_WIDGET)
 
 static void
 folder_channel_snapshot (
@@ -437,16 +437,15 @@ refresh_name (FolderChannelWidget * self)
   Track * track = self->track;
   if (track_is_enabled (track))
     {
-      rotated_label_widget_set_markup (
-        self->name, track->name);
+      gtk_label_set_markup (
+        self->name_lbl, track->name);
     }
   else
     {
       char * markup = g_strdup_printf (
         "<span foreground=\"grey\">%s</span>",
         track->name);
-      rotated_label_widget_set_markup (
-        self->name, markup);
+      gtk_label_set_markup (self->name_lbl, markup);
     }
 }
 
@@ -646,6 +645,16 @@ folder_channel_widget_tear_down (
 }
 
 static void
+dispose (FolderChannelWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->popover_menu));
+
+  G_OBJECT_CLASS (folder_channel_widget_parent_class)
+    ->dispose (G_OBJECT (self));
+}
+
+static void
 folder_channel_widget_class_init (
   FolderChannelWidgetClass * _klass)
 {
@@ -665,7 +674,7 @@ folder_channel_widget_class_init (
   BIND_CHILD (color_top);
   BIND_CHILD (grid);
   BIND_CHILD (icon_and_name_event_box);
-  BIND_CHILD (name);
+  BIND_CHILD (name_lbl);
   BIND_CHILD (fader_buttons);
   BIND_CHILD (icon);
   BIND_CHILD (fold_toggle);
@@ -673,6 +682,12 @@ folder_channel_widget_class_init (
   BIND_CHILD (highlight_right_box);
 
 #undef BIND_CHILD
+
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BOX_LAYOUT);
+
+  GObjectClass * oklass = G_OBJECT_CLASS (_klass);
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
 }
 
 static void
@@ -681,29 +696,17 @@ folder_channel_widget_init (
 {
   g_type_ensure (FADER_BUTTONS_WIDGET_TYPE);
   g_type_ensure (COLOR_AREA_WIDGET_TYPE);
-  g_type_ensure (ROTATED_LABEL_WIDGET_TYPE);
+  g_type_ensure (GTK_TYPE_FLIPPER);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
   self->popover_menu = GTK_POPOVER_MENU (
     gtk_popover_menu_new_from_model (NULL));
-  gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->popover_menu));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu),
+    GTK_WIDGET (self));
 
   gtk_widget_set_hexpand (GTK_WIDGET (self), 0);
-
-  /* set font sizes */
-  rotated_label_widget_setup (self->name, -90);
-  GtkLabel * lbl =
-    rotated_label_widget_get_label (self->name);
-  gtk_label_set_ellipsize (
-    lbl, PANGO_ELLIPSIZE_END);
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (GTK_WIDGET (lbl));
-  gtk_style_context_add_class (
-    context, "folder_channel_label");
-  gtk_label_set_max_width_chars (lbl, 10);
 
   self->drag =
     GTK_GESTURE_DRAG (gtk_gesture_drag_new ());

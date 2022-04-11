@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="ClipEditorInnerWidget" parent="GtkBox">
+  <template class="ClipEditorInnerWidget" parent="GtkWidget">
     <property name="hexpand">1</property>
+    <property name="vexpand">1</property>
     <child>
       <object class="ColorAreaWidget" id="color_bar">
         <property name="width-request">5</property>
@@ -16,7 +17,18 @@
           <object class="GtkBox" id="top_box">
             <property name="vexpand">1</property>
             <child>
-              <object class="RotatedLabelWidget" id="track_name_rotated_label">
+              <object class="GtkFlipper">
+                <property name="flip-horizontal">1</property>
+                <property name="flip-vertical">1</property>
+                <property name="rotate">1</property>
+                <property name="child">
+                  <object class="GtkLabel" id="track_name_lbl">
+                    <style>
+                      <class name="editor-track-name-lbl"/>
+                    </style>
+                    <property name="label" translatable="yes">Select a region...</property>
+                  </object>
+                </property>
               </object>
             </child>
             <child>
