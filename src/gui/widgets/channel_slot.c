@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/mixer_selections_action.h"
 #include "actions/undo_manager.h"
@@ -168,20 +152,24 @@ channel_slot_snapshot (
       recreate_pango_layouts (self);
     }
 
+#define MAX_LEN 400
+  char txt[MAX_LEN];
+
   if (plugin)
     {
       const PluginDescriptor * descr =
         plugin->setting->descr;
 
       /* fill text */
-      char txt[strlen (descr->name) + 40];
       if (plugin->instantiation_failed)
         {
-          sprintf (txt, "(!) %s", descr->name);
+          snprintf (
+            txt, MAX_LEN, "(!) %s", descr->name);
         }
       else
         {
-          strcpy (txt, descr->name);
+          strncpy (txt, descr->name, MAX_LEN);
+          txt[MAX_LEN - 1] = '\0';
         }
       int w, h;
       z_cairo_get_text_extents_for_widget (
@@ -214,22 +202,22 @@ channel_slot_snapshot (
     {
       /* fill text */
       int  w, h;
-      char text[400];
       if (self->type == PLUGIN_SLOT_INSTRUMENT)
         {
-          sprintf (text, "%s", _ ("No instrument"));
+          snprintf (
+            txt, MAX_LEN, "%s", _ ("No instrument"));
         }
       else
         {
-          sprintf (
-            text, _ ("Slot #%d"),
+          snprintf (
+            txt, MAX_LEN, _ ("Slot #%d"),
             self->slot_index + 1);
         }
       z_cairo_get_text_extents_for_widget (
-        widget, self->empty_slot_layout, text, &w,
+        widget, self->empty_slot_layout, txt, &w,
         &h);
       pango_layout_set_markup (
-        self->empty_slot_layout, text, -1);
+        self->empty_slot_layout, txt, -1);
       gtk_snapshot_save (snapshot);
       gtk_snapshot_translate (
         snapshot,
@@ -245,9 +233,10 @@ channel_slot_snapshot (
         {
           g_free (self->pl_name);
           self->pl_name = NULL;
-          gtk_widget_set_tooltip_text (widget, text);
+          gtk_widget_set_tooltip_text (widget, txt);
         }
     }
+#undef MAX_LEN
 }
 
 static gboolean

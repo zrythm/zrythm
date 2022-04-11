@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <string.h>
 
@@ -50,24 +34,8 @@ on_closed (
 static void
 get_controllers (
   ActiveHardwarePopoverWidget * self,
-  char **                       controllers,
-  int *                         num_controllers,
-  int                           max_controllers)
+  GPtrArray *                   controllers)
 {
-#if 0
-  ExtPort * ports[EXT_PORTS_MAX];
-  int size = 0;
-  ext_ports_get (
-    TYPE_EVENT, FLOW_OUTPUT, 1, ports, &size);
-
-  for (int i = 0; i < size; i++)
-    {
-      controllers[(*num_controllers)++] =
-        g_strdup (ports[i]->full_name);
-    }
-  ext_ports_free (ports, size);
-#endif
-
   HardwareProcessor * processor =
     self->owner->input
       ? AUDIO_ENGINE->hw_in_processor
@@ -86,14 +54,8 @@ get_controllers (
         self->owner->is_midi
           ? processor->ext_midi_ports[i]
           : processor->ext_audio_ports[i];
-      controllers[(*num_controllers)++] =
-        ext_port_get_id (port);
-
-      if (*num_controllers == max_controllers)
-        {
-          g_warn_if_reached ();
-          return;
-        }
+      g_ptr_array_add (
+        controllers, ext_port_get_id (port));
     }
 }
 
@@ -130,25 +92,22 @@ find_checkbutton (
 static void
 setup (ActiveHardwarePopoverWidget * self)
 {
-  int         max_controllers = 6000;
-  char *      controllers[max_controllers];
-  int         num_controllers = 0;
-  int         i;
-  GtkWidget * chkbtn;
+  GPtrArray * controllers = g_ptr_array_new_full (
+    100, (GDestroyNotify) g_free);
 
   /* remove pre-existing controllers */
   z_gtk_widget_destroy_all_children (
     GTK_WIDGET (self->controllers_box));
 
   /* scan controllers and add them */
-  get_controllers (
-    self, controllers, &num_controllers,
-    max_controllers);
-  for (i = 0; i < num_controllers; i++)
+  get_controllers (self, controllers);
+  for (size_t i = 0; i < controllers->len; i++)
     {
-      chkbtn = gtk_check_button_new_with_label (
-        controllers[i]);
-      gtk_widget_set_visible (chkbtn, 1);
+      char * controller_str =
+        (char *) g_ptr_array_index (controllers, i);
+      GtkWidget * chkbtn =
+        gtk_check_button_new_with_label (
+          controller_str);
       gtk_box_append (self->controllers_box, chkbtn);
     }
 
@@ -157,11 +116,13 @@ setup (ActiveHardwarePopoverWidget * self)
   gchar ** saved_controllers = g_settings_get_strv (
     self->owner->settings, self->owner->key);
   char * tmp;
-  i = 0;
+  size_t i = 0;
   while ((tmp = saved_controllers[i]) != NULL)
     {
-      /* find checkbutton matching saved controller */
-      chkbtn = find_checkbutton (self, tmp);
+      /* find checkbutton matching saved
+       * controller */
+      GtkWidget * chkbtn =
+        find_checkbutton (self, tmp);
 
       if (chkbtn)
         {
@@ -174,8 +135,7 @@ setup (ActiveHardwarePopoverWidget * self)
     }
 
   /* cleanup */
-  for (i = 0; i < num_controllers; i++)
-    g_free (controllers[i]);
+  g_ptr_array_unref (controllers);
 }
 
 static void
