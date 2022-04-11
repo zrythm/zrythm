@@ -7,9 +7,6 @@
     </style>
     <child>
       <object class="GtkBox">
-        <style>
-          <class name="linked"/>
-        </style>
         <child>
           <object class="GtkButton" id="new">
             <property name="action_name">app.new</property>
@@ -46,9 +43,6 @@
     </child>
     <child>
       <object class="GtkBox">
-        <style>
-          <class name="linked"/>
-        </style>
         <child>
           <object class="GtkButton" id="export_as">
             <property name="icon-name">document-export</property>

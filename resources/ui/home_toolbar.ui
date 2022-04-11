@@ -6,11 +6,25 @@
       <class name="toolbar"/>
     </style>
     <child>
-      <object class="ButtonWithMenuWidget" id="undo">
+      <object class="AdwSplitButton" id="undo_btn">
+        <style>
+          <class name="raised"/>
+        </style>
+        <property name="sensitive">0</property>
+        <property name="action-name">app.undo</property>
+        <property name="icon-name">edit-undo</property>
+        <property name="tooltip-text">Undo</property>
       </object>
     </child>
     <child>
-      <object class="ButtonWithMenuWidget" id="redo">
+      <object class="AdwSplitButton" id="redo_btn">
+        <style>
+          <class name="raised"/>
+        </style>
+        <property name="sensitive">0</property>
+        <property name="action-name">app.redo</property>
+        <property name="icon-name">edit-redo</property>
+        <property name="tooltip-text">Redo</property>
       </object>
     </child>
     <child>
@@ -23,9 +37,6 @@
     </child>
     <child>
       <object class="GtkBox">
-        <style>
-          <class name="linked"/>
-        </style>
         <child>
           <object class="GtkButton" id="cut">
             <property name="icon-name">edit-cut</property>
@@ -68,9 +79,6 @@
     </child>
     <child>
       <object class="GtkBox">
-        <style>
-          <class name="linked"/>
-        </style>
         <child>
           <object class="GtkButton" id="nudge_left">
             <property name="icon-name">arrow-left</property>
@@ -97,9 +105,6 @@
     </child>
     <child>
       <object class="GtkBox">
-        <style>
-          <class name="linked"/>
-        </style>
         <child>
           <object class="GtkButton" id="clear_selection">
             <property name="icon-name">edit-clear</property>

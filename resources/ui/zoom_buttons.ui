@@ -2,9 +2,6 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="ZoomButtonsWidget" parent="GtkBox">
-    <style>
-      <class name="linked"/>
-    </style>
     <child>
       <object class="GtkButton" id="zoom_in">
         <property name="icon-name">zoom-in</property>

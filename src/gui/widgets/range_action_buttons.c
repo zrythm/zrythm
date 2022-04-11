@@ -40,8 +40,6 @@ range_action_buttons_widget_class_init (
     GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "range_action_buttons.ui");
-  gtk_widget_class_set_css_name (
-    klass, "range-action-buttons");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

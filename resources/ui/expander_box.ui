@@ -8,7 +8,6 @@
     </child>
     <child>
       <object class="GtkButton" id="button">
-        <property name="name">expander-box-button</property>
         <property name="focusable">1</property>
         <property name="receives_default">1</property>
         <child>

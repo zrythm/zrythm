@@ -1,27 +1,10 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/undo_manager.h"
 #include "actions/undo_stack.h"
 #include "actions/undoable_action.h"
 #include "gui/accel.h"
-#include "gui/widgets/button_with_menu.h"
 #include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/main_window.h"
@@ -48,21 +31,19 @@ refresh_undo_or_redo_button (
 {
   g_warn_if_fail (UNDO_MANAGER);
 
-  ButtonWithMenuWidget * btn_w_menu =
-    redo ? self->redo : self->undo;
+  AdwSplitButton * split_btn =
+    redo ? self->redo_btn : self->undo_btn;
   UndoStack * stack =
     redo ? UNDO_MANAGER->redo_stack
          : UNDO_MANAGER->undo_stack;
-  GtkButton * btn =
-    redo ? self->redo_btn : self->undo_btn;
 
   gtk_widget_set_sensitive (
-    GTK_WIDGET (btn_w_menu),
+    GTK_WIDGET (split_btn),
     !undo_stack_is_empty (stack));
 
 #define SET_TOOLTIP(tooltip) \
   z_gtk_set_tooltip_for_actionable ( \
-    GTK_ACTIONABLE (btn), (tooltip))
+    GTK_ACTIONABLE (split_btn), (tooltip))
 
   const char * undo_or_redo_str =
     redo ? _ ("Redo") : _ ("Undo");
@@ -125,8 +106,8 @@ refresh_undo_or_redo_button (
 
   if (menu)
     {
-      gtk_menu_button_set_menu_model (
-        btn_w_menu->menu_btn, G_MENU_MODEL (menu));
+      adw_split_button_set_menu_model (
+        split_btn, G_MENU_MODEL (menu));
     }
 }
 
@@ -155,8 +136,6 @@ home_toolbar_widget_setup (HomeToolbarWidget * self)
 static void
 home_toolbar_widget_init (HomeToolbarWidget * self)
 {
-  g_type_ensure (BUTTON_WITH_MENU_WIDGET_TYPE);
-
   gtk_widget_init_template (GTK_WIDGET (self));
 
 #define SET_TOOLTIP(x, tooltip) \
@@ -175,27 +154,6 @@ home_toolbar_widget_init (HomeToolbarWidget * self)
   SET_TOOLTIP (nudge_left, _ ("Nudge left"));
   SET_TOOLTIP (nudge_right, _ ("Nudge right"));
 #undef SET_TOOLTIP
-
-  self->undo_btn = GTK_BUTTON (
-    gtk_button_new_from_icon_name ("edit-undo"));
-  gtk_actionable_set_action_name (
-    GTK_ACTIONABLE (self->undo_btn), "app.undo");
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->undo_btn), true);
-  self->redo_btn = GTK_BUTTON (
-    gtk_button_new_from_icon_name ("edit-redo"));
-  gtk_actionable_set_action_name (
-    GTK_ACTIONABLE (self->redo_btn), "app.redo");
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->redo_btn), true);
-
-  /* setup button with menu widget */
-  button_with_menu_widget_setup (
-    self->undo, GTK_BUTTON (self->undo_btn), NULL,
-    true, 34, _ ("Undo"), _ ("Undo..."));
-  button_with_menu_widget_setup (
-    self->redo, GTK_BUTTON (self->redo_btn), NULL,
-    true, 34, _ ("Redo"), _ ("Redo..."));
 }
 
 static void
@@ -214,8 +172,8 @@ home_toolbar_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, HomeToolbarWidget, x)
 
-  BIND_CHILD (undo);
-  BIND_CHILD (redo);
+  BIND_CHILD (undo_btn);
+  BIND_CHILD (redo_btn);
   BIND_CHILD (cut);
   BIND_CHILD (copy);
   BIND_CHILD (paste);

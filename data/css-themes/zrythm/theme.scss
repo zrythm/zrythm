@@ -39,13 +39,18 @@ entry selection,
 treeview.view:hover,
 listview row:hover,
 columnview row:hover,
-list row:hover,
-scrollbar,
-box.sidebar,
-filechooser list
+list row:hover
 {
   background-color: $hover_color;
 }
+
+/*
+scrollbar,
+box.sidebar,
+filechooser list {
+  background-color: $hover_color;
+}
+*/
 
 progressbar > trough > progress {
   background-color: $z_purple;
@@ -70,9 +75,8 @@ ruler,
 piano-roll-labels,
 window,
 filechooser #pathbarbox,
-paned
-{
-background-color: $bg_dark_variant1;
+paned {
+  background-color: $bg_dark_variant1;
 }
 
 left-dock-edge notebook header,
@@ -114,23 +118,20 @@ menubar
   background-color: $bg_darker_variant2;
 }
 
+.linked > button {
+  margin-left: 0px;
+}
+
 button {
   /* override button size from theme */
   min-width: 4px;
   min-height: 4px;
 
-  &.toggle,
-  &.popup,
-  &:not(.flat) {
-    background-color: $bg_light_variant2;
-  }
-
   &.toggle:hover,
   &.popup:hover,
   &:hover,
   &.flat:hover,
-  &.text-button:hover
-  {
+  &.text-button:hover {
     background-color: $bg_lighter_variant1;
   }
 
@@ -230,6 +231,18 @@ modulator-view two-col-expander-box
   border-radius: 6px;
   /* FIXME use predefined colors */
   border-color: #555555;
+
+  button {
+    &.toggle,
+    &.popup,
+    &:not(.flat) {
+      background-color: $bg_light_variant2;
+    }
+
+    &:hover {
+      background-color: $bg_lighter_variant1;
+    }
+  }
 }
 
 /* curve the bottom edges of the fader section
@@ -407,16 +420,6 @@ right-dock-edge notebook tab
   min-height: 24px;
 }
 
-/*.button-with-menu separator*/
-/*{*/
-  /*background-color: gtkalpha (grey, 0.6);*/
-  /*margin-top: 2px;*/
-  /*margin-bottom: 2px;*/
-  /*margin-left: 0px;*/
-  /*margin-right: 0px;*/
-  /*min-height: 24px;*/
-/*}*/
-
 /* make snap grid popover buttons small */
 popover.snap-grid-popover button.note-type {
   padding: 0px 4px 0px 4px;
@@ -438,12 +441,6 @@ label.small-vertical-lbl {
   font-family: sans-serif;
   font-size: 6pt;
 }
-
-/*
-spinbutton text {
-  background-color: $bg_light_variant2;
-}
-*/
 
 headerbar {
   background-color: $bg_darker_variant2;

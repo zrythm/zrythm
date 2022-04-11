@@ -35,9 +35,6 @@
     </child>
     <child>
       <object class="GtkBox">
-        <style>
-          <class name="linked"/>
-        </style>
         <child>
           <object class="GtkButton" id="left_panel">
             <property name="icon-name">gnome-builder-builder-view-left-pane-symbolic-light</property>

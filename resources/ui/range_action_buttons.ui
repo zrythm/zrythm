@@ -2,33 +2,22 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="RangeActionButtonsWidget" parent="GtkBox">
-    <style>
-      <class name="linked"/>
-    </style>
     <child>
       <object class="GtkButton" id="insert_silence">
         <property name="focusable">1</property>
         <property name="receives_default">1</property>
+        <property name="icon-name">timeline-insert</property>
         <property name="action_name">app.insert-silence</property>
         <property name="tooltip-text" translatable="yes">Insert silence</property>
-        <child>
-          <object class="GtkImage">
-            <property name="icon-name">timeline-insert</property>
-          </object>
-        </child>
       </object>
     </child>
     <child>
       <object class="GtkButton" id="remove">
         <property name="focusable">1</property>
         <property name="receives_default">1</property>
+        <property name="icon-name">timeline-extract</property>
         <property name="action_name">app.remove-range</property>
         <property name="tooltip-text" translatable="yes">Remove range</property>
-        <child>
-          <object class="GtkImage">
-            <property name="icon-name">timeline-extract</property>
-          </object>
-        </child>
       </object>
     </child>
   </template>

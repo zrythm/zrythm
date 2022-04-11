@@ -2,6 +2,9 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="FaderButtonsWidget" parent="GtkBox">
+    <style>
+      <class name="linked"/>
+    </style>
     <property name="margin_top">4</property>
     <child>
       <object class="GtkToggleButton" id="mono_compat">

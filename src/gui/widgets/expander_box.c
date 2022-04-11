@@ -251,10 +251,12 @@ expander_box_widget_init (ExpanderBoxWidget * self)
   gtk_box_append (
     GTK_BOX (box),
     GTK_WIDGET (prv->btn_label_flipper));
-  gtk_box_append (
-    GTK_BOX (box),
+  GtkWidget * separator =
     GTK_WIDGET (gtk_separator_new (
-      GTK_ORIENTATION_VERTICAL)));
+      GTK_ORIENTATION_VERTICAL));
+  gtk_widget_add_css_class (separator, "spacer");
+  gtk_box_append (
+    GTK_BOX (box), separator);
   gtk_box_append (
     GTK_BOX (box), GTK_WIDGET (prv->btn_img));
   gtk_button_set_child (

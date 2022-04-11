@@ -21,9 +21,6 @@
     </child>
     <child>
       <object class="GtkBox">
-        <style>
-          <class name="linked"/>
-        </style>
         <child>
           <object class="GtkButton" id="chat">
             <property name="action_name">app.chat</property>
