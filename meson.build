@@ -653,15 +653,19 @@ if get_option ('profiling')
 endif
 
 common_cflags = []
+extra_optimizations_cflags = []
 
 if get_option ('native_build')
   test_cflags += [
     '-march=native',
     '-mtune=native',
     ]
+else
+  extra_optimizations_cflags += [
+    '-mtune=generic',
+    ]
 endif
 
-extra_optimizations_cflags = []
 if host_machine.cpu() == 'x86_64'
   extra_optimizations_cflags += [
     '-ffast-math',
@@ -676,12 +680,6 @@ if host_machine.cpu() == 'x86_64'
     '-mfpmath=sse',
     #'-fvisibility=hidden',
     '-fno-math-errno',
-    ]
-endif
-
-if not get_option ('native_build')
-  extra_optimizations_cflags += [
-    '-mtune=generic',
     ]
 endif
 
