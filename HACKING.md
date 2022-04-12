@@ -154,15 +154,9 @@ print this info*
 
 ## Environment Variables
 In addition to GTK/GLib variables, Zrythm
-understands the following environment variables.
-- `ZRYTHM_DSP_THREADS` - number of threads
-  to use for DSP, including the main one
-- `ZRYTHM_SKIP_PLUGIN_SCAN` - disable plugin scanning
-- `ZRYTHM_DEBUG` - shows additional debug info about
-  objects
-
-**FIXME** these are not up to date. link to user
-manual or point to the manpage
+understands the environment variables mentioned
+in the
+[Environment Variables section in the user manual](https://manual.zrythm.org/en/appendix/environment.html).
 
 ## UI Debugging
 [GTK inspector](https://wiki.gnome.org/action/show/Projects/GTK/Inspector)
