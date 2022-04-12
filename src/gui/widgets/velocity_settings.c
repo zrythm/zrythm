@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/velocity_settings.h"
@@ -80,6 +64,9 @@ velocity_settings_widget_class_init (
   gtk_widget_class_set_css_name (
     klass, "velocity-settings");
 
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BOX_LAYOUT);
+
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->dispose = on_dispose;
 }
@@ -88,15 +75,10 @@ static void
 velocity_settings_widget_init (
   VelocitySettingsWidget * self)
 {
-  GtkBoxLayout * box_layout = GTK_BOX_LAYOUT (
-    gtk_box_layout_new (GTK_ORIENTATION_HORIZONTAL));
-  gtk_box_layout_set_spacing (box_layout, 1);
-  gtk_widget_set_layout_manager (
-    GTK_WIDGET (self),
-    GTK_LAYOUT_MANAGER (box_layout));
+  gtk_widget_add_css_class (
+    GTK_WIDGET (self), "toolbar-child-box");
 
-  GtkWidget * lbl =
-    gtk_label_new (_ ("Default Velocity"));
+  GtkWidget * lbl = gtk_label_new (_ ("Velocity"));
   gtk_widget_set_parent (lbl, GTK_WIDGET (self));
 
   const char * list[] = {
@@ -104,6 +86,9 @@ velocity_settings_widget_init (
   };
   self->default_velocity_dropdown = GTK_DROP_DOWN (
     gtk_drop_down_new_from_strings (list));
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->default_velocity_dropdown),
+    _ ("Velocity used on newly created notes"));
   gtk_widget_set_parent (
     GTK_WIDGET (self->default_velocity_dropdown),
     GTK_WIDGET (self));

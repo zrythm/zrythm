@@ -44,14 +44,6 @@ list row:hover
   background-color: $hover_color;
 }
 
-/*
-scrollbar,
-box.sidebar,
-filechooser list {
-  background-color: $hover_color;
-}
-*/
-
 progressbar > trough > progress {
   background-color: $z_purple;
 }
@@ -316,7 +308,6 @@ channel button.flat
   }
 }
 
-.header label,
 .splash label,
 statusbar {
   font-size: 10.5pt;
@@ -444,11 +435,14 @@ headerbar {
 }
 
 /* this is used in adwaita preferences window */
-.header .title,
-.header > box,
-.boxed-list box {
-  background-color: transparent;
-  border-color: transparent;
+preferencesgroup,
+row {
+  .header .title,
+  .header > box,
+  .boxed-list box {
+    background-color: transparent;
+    border-color: transparent;
+  }
 }
 
 /* make channel tint look better */
@@ -487,4 +481,10 @@ popover {
     font-size: small;
     color: $bright_orange;
   }
+}
+
+/* Used on toolbar children that use a box layout
+ * to get uniform spacing between the children */
+.toolbar-child-box {
+  border-spacing: 6px;
 }
