@@ -9,8 +9,6 @@
           <object class="GtkBox">
             <style>
               <class name="toolbar"/>
-              <class name="arranger-toolbar"/>
-              <class name="editor-toolbar"/>
             </style>
             <child>
               <object class="SnapBoxWidget" id="snap_box">
@@ -58,7 +56,7 @@
                   <object class="GtkStackPage">
                     <property name="name">midi-page</property>
                     <property name="child">
-                      <object class="ButtonWithMenuWidget" id="midi_functions_btn">
+                      <object class="AdwSplitButton" id="midi_functions_btn">
                       </object>
                     </property>
                   </object>
@@ -67,7 +65,7 @@
                   <object class="GtkStackPage">
                     <property name="name">audio-page</property>
                     <property name="child">
-                      <object class="ButtonWithMenuWidget" id="audio_functions_btn">
+                      <object class="AdwSplitButton" id="audio_functions_btn">
                       </object>
                     </property>
                   </object>
@@ -76,7 +74,7 @@
                   <object class="GtkStackPage">
                     <property name="name">automation-page</property>
                     <property name="child">
-                      <object class="ButtonWithMenuWidget" id="automation_functions_btn">
+                      <object class="AdwSplitButton" id="automation_functions_btn">
                       </object>
                     </property>
                   </object>

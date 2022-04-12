@@ -40,22 +40,18 @@ on_highlighting_changed (
     PIANO_ROLL, gtk_combo_box_get_active (widget));
 }
 
-static GtkButton *
-gen_apply_funcs_btn (EditorToolbarWidget * self)
+static void
+setup_funcs_btn (AdwSplitButton * split_btn)
 {
-  const char * str = "Legato";
-  GtkButton *  btn =
-    GTK_BUTTON (gtk_button_new_from_icon_name (
-      /*"mathmode",*/
-      "code-context"));
+  adw_split_button_set_icon_name (
+    split_btn, "code-context");
   gtk_actionable_set_detailed_action_name (
-    GTK_ACTIONABLE (btn),
+    GTK_ACTIONABLE (split_btn),
     "app.editor-function::current");
-  gtk_button_set_label (btn, str);
-  /*gtk_button_set_always_show_image (*/
-  /*self->apply_function_btn, true);*/
-
-  return btn;
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (split_btn), _ ("Apply function"));
+  gtk_widget_add_css_class (
+    GTK_WIDGET (split_btn), "raised");
 }
 
 /**
@@ -142,15 +138,7 @@ update_audio_funcs_menu (EditorToolbarWidget * self)
   g_menu_freeze (
     G_MENU (self->audio_functions_menu));
 
-  self->audio_apply_function_btn =
-    gen_apply_funcs_btn (self);
-  button_with_menu_widget_setup (
-    self->audio_functions_btn,
-    self->audio_apply_function_btn, NULL, true, -1,
-    gtk_button_get_label (
-      self->audio_apply_function_btn),
-    _ ("Select function"));
-  button_with_menu_widget_set_menu_model (
+  adw_split_button_set_menu_model (
     self->audio_functions_btn,
     self->audio_functions_menu);
 }
@@ -158,15 +146,7 @@ update_audio_funcs_menu (EditorToolbarWidget * self)
 static void
 update_midi_funcs_menu (EditorToolbarWidget * self)
 {
-  self->midi_apply_function_btn =
-    gen_apply_funcs_btn (self);
-  button_with_menu_widget_setup (
-    self->midi_functions_btn,
-    self->midi_apply_function_btn, NULL, true, -1,
-    gtk_button_get_label (
-      self->midi_apply_function_btn),
-    _ ("Select function"));
-  button_with_menu_widget_set_menu_model (
+  adw_split_button_set_menu_model (
     self->midi_functions_btn,
     self->midi_functions_menu);
 }
@@ -175,16 +155,7 @@ static void
 update_automation_funcs_menu (
   EditorToolbarWidget * self)
 {
-  self->automation_apply_function_btn =
-    gen_apply_funcs_btn (self);
-  button_with_menu_widget_setup (
-    self->automation_functions_btn,
-    self->automation_apply_function_btn, NULL,
-    true, -1,
-    gtk_button_get_label (
-      self->automation_apply_function_btn),
-    _ ("Select function"));
-  button_with_menu_widget_set_menu_model (
+  adw_split_button_set_menu_model (
     self->automation_functions_btn,
     self->automation_functions_menu);
 }
@@ -224,10 +195,10 @@ editor_toolbar_widget_refresh (
         char * tooltip_str = g_strdup_printf (
           _ ("Apply %s with previous settings"),
           _ (midi_function_type_to_string (type)));
-        gtk_button_set_label (
-          self->midi_apply_function_btn, str);
+        adw_split_button_set_label (
+          self->midi_functions_btn, str);
         gtk_widget_set_tooltip_text (
-          GTK_WIDGET (self->midi_apply_function_btn),
+          GTK_WIDGET (self->midi_functions_btn),
           tooltip_str);
         g_free (str);
         g_free (tooltip_str);
@@ -258,11 +229,11 @@ editor_toolbar_widget_refresh (
           _ ("Apply %s with previous settings"),
           _ (automation_function_type_to_string (
             type)));
-        gtk_button_set_label (
-          self->automation_apply_function_btn, str);
+        adw_split_button_set_label (
+          self->automation_functions_btn, str);
         gtk_widget_set_tooltip_text (
           GTK_WIDGET (
-            self->automation_apply_function_btn),
+            self->automation_functions_btn),
           tooltip_str);
         g_free (str);
         g_free (tooltip_str);
@@ -280,11 +251,10 @@ editor_toolbar_widget_refresh (
         char * tooltip_str = g_strdup_printf (
           _ ("Apply %s with previous settings"),
           _ (audio_function_type_to_string (type)));
-        gtk_button_set_label (
-          self->audio_apply_function_btn, str);
+        adw_split_button_set_label (
+          self->audio_functions_btn, str);
         gtk_widget_set_tooltip_text (
-          GTK_WIDGET (
-            self->audio_apply_function_btn),
+          GTK_WIDGET (self->audio_functions_btn),
           tooltip_str);
         g_free (str);
         g_free (tooltip_str);
@@ -384,6 +354,10 @@ editor_toolbar_widget_init (
   g_type_ensure (ZOOM_BUTTONS_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  setup_funcs_btn (self->midi_functions_btn);
+  setup_funcs_btn (self->audio_functions_btn);
+  setup_funcs_btn (self->automation_functions_btn);
 
   /* add action group wrapper */
   GSimpleActionGroup * action_group =

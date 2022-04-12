@@ -100,6 +100,8 @@ piano-roll-selection-info,
 piano-roll-toolbar,
 .plugin-browser .toolbar,
 .file-browser .toolbar,
+bot-dock-edge .toolbar,
+bot-dock-edge .toolbar > stack,
 dialog
 {
   background-color: $bg_dark_variant2;
@@ -164,11 +166,6 @@ button {
       }
     }
   }
-}
-
-bot-dock-edge .toolbar
-{
-  background-color: $bg_dark_variant2;
 }
 
 arranger-bg,
