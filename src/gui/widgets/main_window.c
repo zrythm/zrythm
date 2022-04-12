@@ -122,89 +122,19 @@ on_close_request (
     "%s: main window delete event called",
     __func__);
 
-  /* temporarily pause engine */
-  EngineState state;
-  engine_wait_for_pause (
-    AUDIO_ENGINE, &state, Z_F_NO_FORCE);
-
-  /* get yaml for live project */
-  char * live_yaml =
-    yaml_serialize (PROJECT, &project_schema);
-  if (!live_yaml)
-    {
-      ui_show_error_message (
-        self, false,
-        _ ("Failed to serialize current project"));
-
-      /* restart engine */
-      engine_resume (AUDIO_ENGINE, &state);
-
-      /* return true to stop other handlers from
-       * running */
-      return true;
-    }
-
-  /* get yaml for existing project file */
-  char * file_yaml = project_get_existing_yaml (
-    PROJECT, F_NOT_BACKUP);
+  /* check if we have unsaved changes - simply
+   * check if the last performed action matches
+   * the last action when the project was last
+   * saved/loaded */
+  UndoableAction * last_performed_action =
+    undo_manager_get_last_action (UNDO_MANAGER);
 
   /* ask for save if project has unsaved changes */
   bool ret = false;
-  if (!string_is_equal (file_yaml, live_yaml))
+  if (
+    last_performed_action
+    != PROJECT->last_saved_action)
     {
-      bool   show_diff = false;
-      char * diff = NULL;
-
-      /* no need, usually diff is too large so this
-       * is a waste of time */
-#if 0
-#  ifndef _WOE32
-      /* get diff using `diff` */
-      const size_t max_diff_len = 400;
-      GError * err = NULL;
-      char * tmp_dir =
-        g_dir_make_tmp ("zrythm-diff-XXXXXX", &err);
-      g_return_val_if_fail (err == NULL, false);
-      char * tmp_live_fp =
-        g_build_filename (
-          tmp_dir, "live.yaml", NULL);
-      char * tmp_file_fp =
-        g_build_filename (
-          tmp_dir, "file.yaml", NULL);
-      err = NULL;
-      g_file_set_contents (
-        tmp_live_fp, live_yaml, -1, &err);
-      g_return_val_if_fail (err == NULL, false);
-      err = NULL;
-      g_file_set_contents (
-        tmp_file_fp, file_yaml, -1, &err);
-      g_return_val_if_fail (err == NULL, false);
-
-      char * diff_bin =
-        g_find_program_in_path ("diff");
-      diff = NULL;
-      if (diff_bin)
-        {
-          const char * argv[] = {
-            diff_bin, tmp_live_fp, tmp_file_fp, NULL };
-          diff =
-            system_get_cmd_output (
-              (char **) argv, -1, false);
-          g_debug ("diff: %s", diff);
-          g_free (diff_bin);
-        }
-      show_diff =
-        diff && strlen (diff) < max_diff_len;
-
-      io_remove (tmp_live_fp);
-      io_remove (tmp_file_fp);
-      io_rmdir (tmp_dir, F_NO_FORCE);
-      g_free (tmp_dir);
-      g_free (tmp_live_fp);
-      g_free (tmp_file_fp);
-#  endif
-#endif
-
       GtkWidget * dialog = gtk_dialog_new_with_buttons (
         _ ("Unsaved changes"),
         GTK_WINDOW (MAIN_WINDOW),
@@ -220,12 +150,8 @@ on_close_request (
         "The project contains unsaved changes.\n"
         "If you quit without saving, unsaved "
         "changes will be lost.");
-      char label_str[4000];
-      sprintf (
-        label_str,
-        show_diff ? _ ("%s\n\nChanges:\n%s") : "%s%s",
-        label_question, show_diff ? diff : "");
-      GtkWidget * label = gtk_label_new (label_str);
+      GtkWidget * label =
+        gtk_label_new (label_question);
       gtk_widget_set_margin_top (label, 4);
       gtk_widget_set_margin_bottom (label, 4);
       gtk_widget_set_visible (label, true);
@@ -259,15 +185,7 @@ on_close_request (
           break;
         }
 
-      if (diff)
-        g_free (diff);
-
     } /* endif project has unsaved changes */
-  g_free (live_yaml);
-  free (file_yaml);
-
-  /* restart engine */
-  engine_resume (AUDIO_ENGINE, &state);
 
   g_debug (
     "%s: main window delete event returning %d",

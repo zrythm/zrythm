@@ -1255,6 +1255,9 @@ project_load (
         PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
     }
 
+  PROJECT->last_saved_action =
+    undo_manager_get_last_action (UNDO_MANAGER);
+
   engine_activate (AUDIO_ENGINE, true);
 
   /* pause engine */
@@ -1992,6 +1995,13 @@ project_save (
 
   if (ZRYTHM_TESTING)
     tracklist_validate (self->tracklist);
+
+  if (!is_backup)
+    {
+      self->last_saved_action =
+        undo_manager_get_last_action (
+          self->undo_manager);
+    }
 
   if (engine_paused)
     {
