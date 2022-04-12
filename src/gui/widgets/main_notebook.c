@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -38,7 +22,7 @@
 G_DEFINE_TYPE (
   MainNotebookWidget,
   main_notebook_widget,
-  GTK_TYPE_BOX)
+  GTK_TYPE_WIDGET)
 
 void
 main_notebook_widget_setup (
@@ -84,15 +68,25 @@ main_notebook_widget_tear_down (
 }
 
 static void
+dispose (MainNotebookWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->foldable_notebook));
+
+  G_OBJECT_CLASS (main_notebook_widget_parent_class)
+    ->dispose (G_OBJECT (self));
+}
+
+static void
 main_notebook_widget_init (
   MainNotebookWidget * self)
 {
   self->foldable_notebook =
     foldable_notebook_widget_new (
       GTK_POS_BOTTOM, true);
-  gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->foldable_notebook));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->foldable_notebook),
+    GTK_WIDGET (self));
 
   GtkNotebook * notebook =
     foldable_notebook_widget_get_notebook (
@@ -186,4 +180,10 @@ main_notebook_widget_class_init (
     GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "main-notebook");
+
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BIN_LAYOUT);
+
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
 }

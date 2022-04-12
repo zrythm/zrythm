@@ -39,13 +39,13 @@ typedef struct _ButtonWithMenuWidget
  */
 typedef struct _HomeToolbarWidget
 {
-  GtkBox                 parent_instance;
+  GtkBox           parent_instance;
   AdwSplitButton * undo_btn;
   AdwSplitButton * redo_btn;
-  GtkButton *            cut;
-  GtkButton *            copy;
-  GtkButton *            paste;
-  GtkButton *            duplicate;
+  GtkButton *      cut;
+  GtkButton *      copy;
+  GtkButton *      paste;
+  GtkButton *      duplicate;
   GtkButton * delete;
   GtkButton *     nudge_left;
   GtkButton *     nudge_right;

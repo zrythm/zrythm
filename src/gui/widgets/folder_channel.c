@@ -650,7 +650,8 @@ dispose (FolderChannelWidget * self)
   gtk_widget_unparent (
     GTK_WIDGET (self->popover_menu));
 
-  G_OBJECT_CLASS (folder_channel_widget_parent_class)
+  G_OBJECT_CLASS (
+    folder_channel_widget_parent_class)
     ->dispose (G_OBJECT (self));
 }
 
