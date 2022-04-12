@@ -257,6 +257,7 @@ Files:
   ext/midilib/src/*
   ext/midilib/Makefile
   ext/midilib/CHANGES
+  ext/midilib/README.md
   ext/midilib/.gitignore
 Copyright: 1998-2010 Steven Goodwin <StevenGoodwin@gmail.com>
 License: GPL-2.0-or-later

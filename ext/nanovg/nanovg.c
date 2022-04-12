@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Zlib
 //
 // Copyright (c) 2013 Mikko Mononen memon@inside.org
 //
@@ -28,7 +29,7 @@
 #ifndef NVG_NO_STB
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#endif 
+#endif
 
 #ifdef _MSC_VER
 #pragma warning(disable: 4100)  // unreferenced formal parameter

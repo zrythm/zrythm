@@ -1,8 +1,7 @@
 #!@PYTHON3@
 #
-# This is part of the Zrythm Manual.
-# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
-# See the file index.rst for copying conditions.
+# SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: FSFAP
 
 # This is a script to remove GFDL translations from the PO
 # files when "make gettext" is run for the manual

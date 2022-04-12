@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: CC0-1.0
 /* stb_image - v2.10 - public domain image loader - http://nothings.org/stb_image.h
                                      no warranty implied; use at your own risk
 

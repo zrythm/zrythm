@@ -14,6 +14,8 @@
 #
 #  You should have received a copy of the GNU General Public License version 3
 #  along with git-packaging-hooks.  If not, see <http://www.gnu.org/licenses/>.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 # trace helpers
 function TraceStage() { local message=$* ; echo -e "HOOKS: $message" ;                  }
