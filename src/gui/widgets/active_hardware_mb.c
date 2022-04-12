@@ -3,12 +3,6 @@
 
 #include "gui/widgets/active_hardware_mb.h"
 #include "gui/widgets/active_hardware_popover.h"
-#include "settings/settings.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>

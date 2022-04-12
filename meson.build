@@ -80,6 +80,8 @@ get_vst_path_bin = find_program (
 manpage_completions_run_sh = find_program (
   'ext/sh-manpage-completions/run.sh')
 xmllint = find_program ('xmllint')
+iwyu_tool = find_program (
+  'iwyu_tool', 'iwyu-tool', required: false)
 
 # --- Set common variables ---
 
@@ -1414,6 +1416,19 @@ meson.add_install_script (
 
 meson.add_dist_script (
   'scripts/meson_dist.sh')
+
+# --- Run targets ---
+
+if iwyu_tool.found ()
+  run_target (
+    'iwyu',
+    command: [
+      iwyu_tool, '-p', meson.project_build_root (),
+      '../src',
+      ])
+endif
+
+# --- Summary ---
 
 summary ({
   'Program name': get_option ('program_name'),

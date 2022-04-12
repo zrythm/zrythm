@@ -3,18 +3,16 @@
 
 #include <string.h>
 
-#include "audio/engine.h"
+#include "audio/channel.h"
 #include "audio/ext_port.h"
 #include "audio/hardware_processor.h"
 #include "gui/widgets/active_hardware_mb.h"
 #include "gui/widgets/active_hardware_popover.h"
 #include "project.h"
-#include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "zrythm.h"
-#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 
