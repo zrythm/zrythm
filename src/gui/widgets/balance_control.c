@@ -33,7 +33,7 @@ G_DEFINE_TYPE (
 #define SET_VAL(real) \
   ((*self->setter) (self->object, real))
 
-#define TEXT_FONT "Sans SemiBold 8"
+#define TEXT_FONT "Bold 8"
 #define TEXT_PADDING 3.0
 #define LINE_WIDTH 3.0
 

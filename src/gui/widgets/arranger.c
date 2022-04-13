@@ -6981,11 +6981,6 @@ arranger_widget_init (ArrangerWidget * self)
     GTK_WIDGET (self->popover_menu),
     GTK_WIDGET (self));
 
-  /* make widget able to notify */
-  /*gtk_widget_add_events (*/
-  /*GTK_WIDGET (self),*/
-  /*GDK_ALL_EVENTS_MASK);*/
-
   /* make widget able to focus */
   gtk_widget_set_focus_on_click (
     GTK_WIDGET (self), true);

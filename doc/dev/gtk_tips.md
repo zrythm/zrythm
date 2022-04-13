@@ -64,3 +64,11 @@ max height with `max-content-height`.
 
 First need to set style provider in
 `zrythm_app_startup()` otherwise we get segfaults.
+
+# Custom widget text node styling
+
+mclasen:
+```
+if you call append_layout, you provide the pango layout that specifies what fonts to use
+if it is a pango layout created with gtk_widget_create_pango_layout then yes, css may influence what font is used
+```

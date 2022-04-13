@@ -36,7 +36,7 @@
  * @{
  */
 
-#define MARKER_NAME_FONT "Sans SemiBold 8"
+#define MARKER_NAME_FONT "Bold 8"
 #define MARKER_NAME_PADDING 2
 
 /**
