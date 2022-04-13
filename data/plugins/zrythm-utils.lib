@@ -1,0 +1,17 @@
+// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+declare name "Zrythm utils";
+declare copyright "© 2022 Alexandros Theodotou";
+declare version "1.0";
+declare license "AGPL-3.0-or-later";
+
+// fxctrl : add an input gain and a wet-dry control to a stereo FX
+// This function is Copyright (c) GRAME 2006 under the BSD license
+//----------------------------------------------------------------
+fxctrl(g,w,Fx) =  _,_ <: (*(g),*(g) : Fx : *(w),*(w)), *(1-w), *(1-w) +> _,_;
+
+// wetdry : use when there are separate dry/wet controls
+// by Christopher Arndt under MIT license
+wetdry(wet_l, wet_r, in_l, in_r) =
+    in_l * dry + wet_l * wet, in_r * dry + wet_r * wet;

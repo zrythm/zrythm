@@ -1,23 +1,10 @@
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
+ *
+ * ---
  *
  * Copyright (C) 2008-2012 Paul Davis
  * Copyright (C) David Robillard
@@ -34,6 +21,10 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ * ---
  */
 
 #include "zrythm-config.h"
@@ -257,12 +248,17 @@ create_and_load_lilv_word (PluginManager * self)
 
   g_return_if_fail (self->lv2_path);
 
+  /* bundled plugins path */
+  char * bundled_plugins_path = zrythm_get_dir (
+    ZRYTHM_DIR_SYSTEM_BUNDLED_PLUGINSDIR);
+
   /* add zrythm custom path for installer */
   char * before_path = self->lv2_path;
   self->lv2_path = g_strdup_printf (
-    "%s:" PREFIX "/lib/zrythm/lib/lv2",
-    before_path);
+    "%s:" PREFIX "/lib/zrythm/lib/lv2:%s",
+    before_path, bundled_plugins_path);
   g_free (before_path);
+  g_free (bundled_plugins_path);
 
   /* add test plugins if testing */
   if (ZRYTHM_TESTING)
@@ -367,8 +363,8 @@ load_bundled_lv2_plugins (PluginManager * self)
 {
 #ifndef _WOE32
   GError *     err;
-  const char * path = CONFIGURE_LIBDIR
-    "/zrythm/lv2";
+  const char * path = CONFIGURE_ZRYTHM_LIBDIR
+    "/lv2";
   if (g_file_test (
         path,
         G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
@@ -1207,40 +1203,40 @@ plugin_manager_scan_plugins (
 
       if (descriptor)
         {
+          /* add descriptor to list */
+          g_ptr_array_add (
+            self->plugin_descriptors, descriptor);
+          add_category_and_author (
+            self, descriptor->category_str,
+            descriptor->author);
 
+          /* update descriptor in cached */
           const PluginDescriptor * found_descr =
             cached_plugin_descriptors_find (
               self->cached_plugin_descriptors,
               descriptor, F_CHECK_VALID,
               F_CHECK_BLACKLISTED);
-
-          /* if cached descriptor found, use it */
           if (found_descr)
             {
-              g_ptr_array_add (
-                self->plugin_descriptors,
-                plugin_descriptor_clone (
-                  found_descr));
-              add_category_and_author (
-                self, found_descr->category_str,
-                found_descr->author);
-
-              plugin_descriptor_free (descriptor);
-              descriptor = g_ptr_array_index (
-                self->plugin_descriptors,
-                self->plugin_descriptors->len - 1);
+              if (
+                found_descr->num_audio_ins
+                  != descriptor->num_audio_ins
+                || found_descr->num_audio_outs
+                     != descriptor->num_audio_outs
+                || found_descr->num_midi_ins
+                     != descriptor->num_midi_ins
+                || found_descr->num_midi_outs
+                     != descriptor->num_midi_outs
+                || found_descr->num_cv_ins
+                     != descriptor->num_cv_ins
+                || found_descr->num_cv_outs
+                     != descriptor->num_cv_outs)
+                cached_plugin_descriptors_replace (
+                  self->cached_plugin_descriptors,
+                  descriptor, F_SERIALIZE);
             }
           else
             {
-              /* add descriptor to list */
-              g_ptr_array_add (
-                self->plugin_descriptors,
-                descriptor);
-              add_category_and_author (
-                self, descriptor->category_str,
-                descriptor->author);
-
-              /* add descriptor to cached */
               cached_plugin_descriptors_add (
                 self->cached_plugin_descriptors,
                 descriptor, F_NO_SERIALIZE);

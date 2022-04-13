@@ -1,0 +1,21 @@
+#!@BASH@
+#
+# SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+#
+# This script generates the given LV2 plugin using
+# the pre-generated plugin source (to be used on
+# platforms where faust2lv2 is not available).
+
+set -ex
+
+pl_underscored_name="$1"
+compiled_lib="$2"
+manifest_ttl="$3"
+pl_ttl="$4"
+out_dir="$5"
+
+mkdir -p "$out_dir"
+cp "$compiled_lib" "$out_dir"/
+cp "$pl_ttl" "$out_dir"/
+cp "$manifest_ttl" "$out_dir"/

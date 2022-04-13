@@ -4,12 +4,14 @@ image: archlinux
 packages:
   - alsa-lib
   - binutils
+  - boost
   - carla
   - clang
   - cmake
   - chromaprint
   - cppcheck
   - dpf-plugins
+  - faust
   - fftw
   - ffmpeg
   - gtk3

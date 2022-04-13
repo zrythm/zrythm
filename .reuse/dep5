@@ -729,6 +729,16 @@ Files:
 Copyright: 2015 Robin Gareus <robin@gareus.org>
 License: GPL-2.0-or-later
 
+Files: data/plugins/generated/*/*.ttl
+Copyright: 2022 Alexandros Theodotou <alex@zrythm.org>
+License: LicenseRef-ZrythmLicense
+
+Files: data/plugins/generated/*/*.cpp
+Copyright:
+  2009-2016 Albert Graef <aggraef@gmail.com>
+  2003-2022 GRAME, Centre National de Creation Musicale
+License: LGPL-3.0-or-later
+
 Files:
   CONTRIBUTOR_CERTIFICATE_OF_ORIGIN
   data/samples/klick/README

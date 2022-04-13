@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
 
@@ -40,6 +24,7 @@
 #  include "plugins/plugin_manager.h"
 #  include "project.h"
 #  include "settings/settings.h"
+#  include "utils/debug.h"
 #  include "utils/dsp.h"
 #  include "utils/error.h"
 #  include "utils/file.h"
@@ -1136,9 +1121,9 @@ create_ports (CarlaNativePlugin * self, bool loading)
       const CarlaPortCountInfo * audio_port_count_nfo =
         carla_get_audio_port_count_info (
           self->host_handle, 0);
-      g_return_if_fail (
-        (int) audio_port_count_nfo->ins
-        == descr->num_audio_ins);
+      z_return_if_fail_cmp (
+        (int) audio_port_count_nfo->ins, ==,
+        descr->num_audio_ins);
       int audio_ins_to_create =
         descr->num_audio_ins == 1
           ? 2
@@ -1800,6 +1785,9 @@ carla_native_plugin_instantiate (
   g_free (carla_binaries_dir);
 
   /* set lv2 path */
+  g_message (
+    "setting carla LV2 path to '%s'",
+    PLUGIN_MANAGER->lv2_path);
   carla_set_engine_option (
     self->host_handle, ENGINE_OPTION_PLUGIN_PATH,
     PLUGIN_LV2, PLUGIN_MANAGER->lv2_path);

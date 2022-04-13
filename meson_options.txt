@@ -275,3 +275,9 @@ option (
   type: 'boolean',
   value: false,
   description: 'Whether we want the clang-tidy ninja targets. This is off by default because it causes long configuration times. Only useful for developers')
+
+option (
+  'bundled_plugins',
+  type: 'boolean',
+  value: true,
+  description: 'Build and install bundled plugins.')

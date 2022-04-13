@@ -1,0 +1,56 @@
+// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+/*
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * ---
+ *
+ * Copyright 2012 Kjetil S. Matheussen
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+ * Code is written By Julius O. Smith III, and modified slightly.
+ *
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ * ---
+ */
+
+declare name "@NAME@";
+declare description "@DESCRIPTION@";
+declare author "@AUTHOR@";
+declare copyright "© 2022 Alexandros Theodotou";
+declare version "1.0";
+declare license "AGPL-3.0-or-later";
+
+import ("stdfaust.lib");
+import ("zrythm-utils.lib");
+
+fsmax = 192000.0;  // highest sampling rate that will be used
+
+rdel = hslider ("[1] Pre-Delay [unit:ms]", 20, 0, 100, 1);
+f1 = hslider ("[2] F1 [unit:Hz]", 200, 50, 1000, 1);
+f2 = hslider ("[3] F2 [unit:Hz]", 6000, 1500, 0.49*fsmax, 1);
+t60dc = hslider("[4] Low RT60 [unit:s]
+          [tooltip: T60 = time (in seconds) to decay 60dB in low-frequency band]",
+	  3, 1, 8, 0.1);
+t60m = hslider("[5] Mid RT60 [unit:s]
+				[tooltip: T60 = time (in seconds) to decay 60dB in middle band]",
+	2, 1, 8, 0.1);
+mix = hslider("[6] Mix [unit:percentage]
+				[tooltip: Mix amount]",
+	50, 0, 100, 0.1);
+
+res = re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax);
+
+process = fxctrl (1, mix / 100, res);

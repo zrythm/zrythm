@@ -518,6 +518,14 @@ zrythm_get_dir (ZrythmDirType type)
               parent_path, "zrythm", NULL);
           }
           break;
+        case ZRYTHM_DIR_SYSTEM_BUNDLED_PLUGINSDIR:
+          {
+            char * parent_path = zrythm_get_dir (
+              ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
+            res = g_build_filename (
+              parent_path, "lv2", NULL);
+          }
+          break;
         case ZRYTHM_DIR_SYSTEM_LOCALEDIR:
           res = g_build_filename (
             prefix, "share", "locale", NULL);

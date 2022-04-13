@@ -33,6 +33,7 @@ jobs:
             mingw-w64-ucrt-x86_64-libyaml
             mingw-w64-ucrt-x86_64-libsndfile
             mingw-w64-ucrt-x86_64-rubberband
+            mingw-w64-ucrt-x86_64-boost
             mingw-w64-ucrt-x86_64-dlfcn
             mingw-w64-ucrt-x86_64-SDL2
             mingw-w64-ucrt-x86_64-chromaprint

@@ -93,6 +93,9 @@ typedef enum ZrythmDirType
   /** libdir/zrythm */
   ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR,
 
+  /** libdir/zrythm/lv2 */
+  ZRYTHM_DIR_SYSTEM_BUNDLED_PLUGINSDIR,
+
   /** Localization under "share". */
   ZRYTHM_DIR_SYSTEM_LOCALEDIR,
 

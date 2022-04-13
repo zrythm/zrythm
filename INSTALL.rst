@@ -93,6 +93,9 @@ Required
 Recommended
 +++++++++++
 
+`boost (Boost) <https://www.boost.org/>`_
+  C++ utilities required for bundled plugins
+
 `jack (LGPLv2.1+) <https://jackaudio.org/>`_
   Low latency audio/MIDI backend
 

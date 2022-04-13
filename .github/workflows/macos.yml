@@ -18,7 +18,7 @@ jobs:
           brew update || true
           echo "installing deps"
           # use || true because it returns 1
-          brew install gnu-sed fftw meson libsamplerate sdl2 chromaprint libgtop lilv librsvg adwaita-icon-theme guile gtksourceview5 graphviz zstd npm rt-audio rtmidi jack qjackctl cmake help2man xxhash vamp-plugin-sdk json-glib libsass sassc carla || true
+          brew install gnu-sed fftw meson libsamplerate sdl2 chromaprint libgtop lilv librsvg adwaita-icon-theme guile gtksourceview5 graphviz zstd npm rt-audio rtmidi jack qjackctl cmake help2man xxhash vamp-plugin-sdk json-glib libsass sassc carla faust boost || true
           echo "linking python"
           brew link --overwrite python
           #npm install -g appdmg

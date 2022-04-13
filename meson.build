@@ -82,6 +82,8 @@ manpage_completions_run_sh = find_program (
 xmllint = find_program ('xmllint')
 iwyu_tool = find_program (
   'iwyu_tool', 'iwyu-tool', required: false)
+faust2lv2 = find_program (
+  'faust2lv2', required: false)
 
 # --- Set common variables ---
 
@@ -407,6 +409,8 @@ if get_option ('check_updates')
   cdata.set ('CHECK_UPDATES', 1)
 endif
 cdata.set_quoted ('CONFIGURE_LIBDIR', libdir)
+cdata.set_quoted (
+  'CONFIGURE_ZRYTHM_LIBDIR', zrythm_libdir)
 cdata.set_quoted ('CONFIGURE_BINDIR', bindir)
 cdata.set_quoted ('LIB_SUFFIX', lib_suffix)
 cdata.set_quoted ('BIN_SUFFIX', bin_suffix)
@@ -1441,6 +1445,7 @@ summary ({
   'Extra optimizations': get_option ('extra_optimizations'),
   'Extra extra optimizations': get_option ('extra_extra_optimizations'),
   'Native build': get_option ('native_build'),
+  'Bundled plugins': get_option ('bundled_plugins'),
   'Build/install manpage': get_option ('manpage'),
   'Build/install completions': get_option ('completions'),
   'Build/install user manual': get_option ('user_manual'),

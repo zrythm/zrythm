@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: © 2022 Alexandros Theodotou
 # SPDX-License-Identifier: FSFAP
+data/plugins/generated/**/*
 doc/dev/m.css/**/*
 ext/**/*
 inc/plugins/lv2/suil/*
