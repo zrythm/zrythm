@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/control_port.h"
 #include "audio/instrument_track.h"
@@ -38,11 +22,9 @@ G_DEFINE_TYPE (
   GTK_TYPE_WIDGET)
 
 #ifdef _WOE32
-#  define NAME_FONT "9"
 #  define AUTOMATABLE_NAME_FONT "8.5"
 #  define AUTOMATABLE_VAL_FONT "7"
 #else
-#  define NAME_FONT "10"
 #  define AUTOMATABLE_NAME_FONT "9.5"
 #  define AUTOMATABLE_VAL_FONT "8"
 #endif
@@ -69,37 +51,37 @@ recreate_icon_texture (TrackCanvasWidget * self)
 }
 
 static void
-recreate_pango_layouts (
+update_pango_layouts (
   TrackCanvasWidget * self,
   int                 w,
   int                 h)
 {
-  if (PANGO_IS_LAYOUT (self->layout))
-    g_object_unref (self->layout);
-  if (PANGO_IS_LAYOUT (
-        self->automation_value_layout))
-    g_object_unref (self->automation_value_layout);
+  if (!self->layout)
+    {
+      self->layout = gtk_widget_create_pango_layout (
+        GTK_WIDGET (self), NULL);
+      pango_layout_set_ellipsize (
+        self->layout, PANGO_ELLIPSIZE_END);
+    }
 
-  GtkWidget * widget = GTK_WIDGET (self);
+  if (!self->automation_value_layout)
+    {
+      self->automation_value_layout =
+        gtk_widget_create_pango_layout (
+          GTK_WIDGET (self), NULL);
+      PangoFontDescription * desc =
+        pango_font_description_from_string (
+          AUTOMATABLE_VAL_FONT);
+      pango_layout_set_font_description (
+        self->automation_value_layout, desc);
+      pango_font_description_free (desc);
+    }
 
-  PangoFontDescription * desc;
-  self->layout =
-    gtk_widget_create_pango_layout (widget, NULL);
-  desc =
-    pango_font_description_from_string (NAME_FONT);
-  pango_layout_set_font_description (
-    self->layout, desc);
-  pango_font_description_free (desc);
-  pango_layout_set_ellipsize (
-    self->layout, PANGO_ELLIPSIZE_END);
-
-  self->automation_value_layout =
-    gtk_widget_create_pango_layout (widget, NULL);
-  desc = pango_font_description_from_string (
-    AUTOMATABLE_VAL_FONT);
-  pango_layout_set_font_description (
-    self->automation_value_layout, desc);
-  pango_font_description_free (desc);
+  pango_layout_set_width (
+    self->layout, pango_units_from_double (w));
+  pango_layout_set_width (
+    self->automation_value_layout,
+    pango_units_from_double (w));
 }
 
 /**
@@ -201,13 +183,6 @@ draw_name (
   TrackWidget * tw = self->parent;
   Track *       track = tw->track;
 
-  /* draw text */
-  GdkRGBA color;
-  if (track_is_enabled (track))
-    color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
-  else
-    color = Z_GDK_RGBA_INIT (0.5, 0.5, 0.5, 1);
-
   char name[strlen (track->name) + 10];
   if (DEBUGGING)
     {
@@ -224,17 +199,16 @@ draw_name (
     - (TRACK_BUTTON_SIZE + TRACK_BUTTON_PADDING)
         * tw->num_top_buttons;
 
-  gtk_snapshot_save (snapshot);
-  gtk_snapshot_translate (
-    snapshot, &GRAPHENE_POINT_INIT (22, 2));
   PangoLayout * layout = self->layout;
   pango_layout_set_text (layout, name, -1);
   pango_layout_set_width (
     layout,
     pango_units_from_double (first_button_x - 22));
-  gtk_snapshot_append_layout (
-    snapshot, layout, &color);
-  gtk_snapshot_restore (snapshot);
+
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (GTK_WIDGET (self));
+  gtk_snapshot_render_layout (
+    snapshot, context, 22, 2, layout);
 }
 
 /**
@@ -815,7 +789,7 @@ track_canvas_snapshot (
     self->last_width != width
     || self->last_height != height)
     {
-      recreate_pango_layouts (self, width, height);
+      update_pango_layouts (self, width, height);
     }
 
   TrackWidget * tw = self->parent;
@@ -907,9 +881,42 @@ finalize (TrackCanvasWidget * self)
     ->finalize (G_OBJECT (self));
 }
 
+static gboolean
+tick_cb (
+  GtkWidget *     widget,
+  GdkFrameClock * frame_clock,
+  gpointer        user_data)
+{
+  TrackCanvasWidget * self =
+    Z_TRACK_CANVAS_WIDGET (user_data);
+
+  TrackWidget * tw = self->parent;
+  Track *       track = tw->track;
+  if (!track)
+    return G_SOURCE_CONTINUE;
+
+  if (track_is_selected (track))
+    {
+      gtk_widget_add_css_class (
+        widget, "caption-heading");
+      gtk_widget_remove_css_class (
+        widget, "caption");
+    }
+  else
+    {
+      gtk_widget_add_css_class (widget, "caption");
+      gtk_widget_remove_css_class (
+        widget, "caption-heading");
+    }
+
+  return G_SOURCE_CONTINUE;
+}
+
 static void
 track_canvas_widget_init (TrackCanvasWidget * self)
 {
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self), tick_cb, self, NULL);
 }
 
 static void

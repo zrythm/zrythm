@@ -49,6 +49,15 @@ G_DEFINE_TYPE (
   channel_widget,
   GTK_TYPE_BOX)
 
+/**
+ * Updates the meter reading
+ */
+static gboolean
+channel_widget_tick_cb (
+  GtkWidget *     widget,
+  GdkFrameClock * frame_clock,
+  gpointer        user_data);
+
 static void
 channel_snapshot (
   GtkWidget *   widget,
@@ -92,22 +101,39 @@ channel_snapshot (
  * that would be done via gtk_widget_set_tick_functions()
  * gtk_widget_set_tick_function()
  */
-gboolean
-channel_widget_update_meter_reading (
-  ChannelWidget * self,
+static gboolean
+channel_widget_tick_cb (
+  GtkWidget *     widget,
   GdkFrameClock * frame_clock,
   gpointer        user_data)
 {
-  double    prev = self->meter_reading_val;
-  Channel * channel = self->channel;
+  ChannelWidget * self = Z_CHANNEL_WIDGET (widget);
+  double          prev = self->meter_reading_val;
+  Channel *       channel = self->channel;
 
   if (!gtk_widget_get_mapped (GTK_WIDGET (self)))
     {
       return G_SOURCE_CONTINUE;
     }
 
-  /* TODO */
   Track * track = channel_get_track (channel);
+
+  if (track_is_selected (track))
+    {
+      gtk_widget_add_css_class (
+        GTK_WIDGET (self->name), "caption-heading");
+      gtk_widget_remove_css_class (
+        GTK_WIDGET (self->name), "caption");
+    }
+  else
+    {
+      gtk_widget_add_css_class (
+        GTK_WIDGET (self->name), "caption");
+      gtk_widget_remove_css_class (
+        GTK_WIDGET (self->name), "caption-heading");
+    }
+
+  /* TODO */
   if (track->out_signal_type == TYPE_EVENT)
     {
       gtk_label_set_text (
@@ -577,8 +603,8 @@ channel_widget_refresh (ChannelWidget * self)
 {
   refresh_name (self);
   refresh_output (self);
-  channel_widget_update_meter_reading (
-    self, NULL, NULL);
+  /*channel_widget_update_meter_reading (*/
+  /*self, NULL, NULL);*/
   channel_widget_refresh_buttons (self);
   refresh_color (self);
   update_reveal_status (self);
@@ -983,9 +1009,8 @@ channel_widget_new (Channel * channel)
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self),
-    (GtkTickCallback)
-      channel_widget_update_meter_reading,
-    self, NULL);
+    (GtkTickCallback) channel_widget_tick_cb, self,
+    NULL);
 
   g_signal_connect (
     self, "destroy", G_CALLBACK (on_destroy), NULL);
@@ -1078,11 +1103,6 @@ channel_widget_init (ChannelWidget * self)
   self->last_midi_trigger_time = 0;
 
   /* set font sizes */
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self->name->label));
-  gtk_style_context_add_class (
-    context, "channel_label");
   gtk_label_set_max_width_chars (
     self->name->label, 10);
   gtk_label_set_max_width_chars (
