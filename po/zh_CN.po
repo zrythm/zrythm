@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-07 18:40+0100\n"
-"PO-Revision-Date: 2022-04-04 03:09+0000\n"
+"PO-Revision-Date: 2022-04-09 18:10+0000\n"
 "Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -3517,9 +3517,8 @@ msgid "Scripting Interface"
 msgstr "脚本接口"
 
 #: src/gui/widgets/dialogs/scripting_dialog.c:113
-#, fuzzy
 msgid "Select the language of the script"
-msgstr "Zrythm接口的语言"
+msgstr "选择脚本的语言"
 
 #: src/gui/widgets/dialogs/scripting_dialog.c:280
 msgid "Execute"

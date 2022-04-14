@@ -18,10 +18,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-07 18:40+0100\n"
-"PO-Revision-Date: 2022-04-04 03:09+0000\n"
+"PO-Revision-Date: 2022-04-09 18:09+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -495,9 +495,8 @@ msgid "Double Harmonic"
 msgstr "Double Harmonique"
 
 #: inc/audio/scale.h:170
-#, fuzzy
 msgid "Chinese"
-msgstr "Chinois  [zh]"
+msgstr "Chinois"
 
 #: inc/audio/scale.h:171
 msgid "Diminished"
@@ -2578,6 +2577,8 @@ msgstr "Accrocher/options de la grille"
 #: src/gui/widgets/preferences.c:172
 msgid "All preferences have been successfully reset to initial values"
 msgstr ""
+"Toutes les préférences ont été réinitialisées aux valeurs initiales avec "
+"succès"
 
 #: src/gui/widgets/preferences.c:504
 msgid "Select a folder"
@@ -2595,7 +2596,7 @@ msgstr "Bruit de dispersion"
 
 #: src/gui/widgets/preferences.c:754
 msgid "Reset all preferences to initial values"
-msgstr ""
+msgstr "Remettre toutes les préférences aux valeurs initiales"
 
 #: src/gui/widgets/preferences.c:977
 #, c-format
@@ -3314,11 +3315,11 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:74
 msgid "Flatpak limitation"
-msgstr ""
+msgstr "Limitation de Flatpak"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:75
 msgid "Only Flatpak-installed plugins are supported."
-msgstr ""
+msgstr "Seuls les greffons installés par Flatpak sont pris en charge."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:88
 #, fuzzy, c-format
@@ -3593,15 +3594,15 @@ msgstr "Fermer"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:756
 msgid "Submit on _SourceHut"
-msgstr ""
+msgstr "Soumettre sur _SourceHut"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:758
 msgid "Send via _email (publicly visible)"
-msgstr ""
+msgstr "Envoyer par _courriel (visible publiquement)"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:760
 msgid "Preview and send _automatically (privately)"
-msgstr ""
+msgstr "Prévisualisation et envoi _automatique (en privé)"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:55
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:67
@@ -3641,7 +3642,7 @@ msgstr "Configurer Zrythm"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:233
 msgid "Initial Configuration"
-msgstr ""
+msgstr "Configuration initiale"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:243
 #: src/gui/widgets/dialogs/scripting_dialog.c:110
@@ -3660,7 +3661,7 @@ msgstr "Sélectionner tout"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:265
 msgid "Location to save user files"
-msgstr ""
+msgstr "Emplacement de sauvegarde des fichiers utilisateur"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:267
 #, fuzzy
@@ -3825,7 +3826,7 @@ msgstr "Échec de l'écriture du fichier : %s"
 #: src/utils/log.c:827
 #, c-format
 msgid "%s has encountered an error\n"
-msgstr ""
+msgstr "%s a rencontré une erreur\n"
 
 #: src/utils/gtk.c:1286
 #, fuzzy
@@ -4160,7 +4161,7 @@ msgstr "Type de fichier non-supporté %s"
 
 #: src/audio/tracklist.c:1390
 msgid "This MIDI file contains no data"
-msgstr ""
+msgstr "Ce fichier MIDI ne contient aucune donnée"
 
 #: src/audio/tracklist.c:1407
 msgid "Can only drop 1 file at a time on existing tracks"
@@ -8046,6 +8047,12 @@ msgid ""
 "automation capabilities, powerful mixing features, chord assistance and "
 "support for various plugin and file formats."
 msgstr ""
+"Zrythm est une station de travail audio numérique conçue pour être riche en "
+"fonctionnalités et facile à utiliser. Elle offre des manières de travailler "
+"l'édition rationalisées avec des outils flexibles, des capacités "
+"d'automatisation illimitées, des fonctions de mixage puissantes, une "
+"assistance pour les accords et la prise en charge de divers greffons et "
+"formats de fichiers."
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:17
 #, fuzzy
@@ -8066,24 +8073,25 @@ msgstr "Fenêtre principale avec panneaux détachés"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:115
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:135
 msgid "Fixed:"
-msgstr ""
+msgstr "Corrigé :"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 msgid "Fix PDF manual build"
-msgstr ""
+msgstr "Correction de la construction du manuel PDF"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:67
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:124
 msgid "Added:"
-msgstr ""
+msgstr "Ajouté :"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:69
 msgid "Use one instance for each channel for mono plugins"
-msgstr ""
+msgstr "Utilisez une instance pour chaque canal pour les greffons mono"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:70
 msgid "Include release changelog info in appstream data"
 msgstr ""
+"Inclure les informations de changement de version dans les données appstream"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:72
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:108
@@ -8099,77 +8107,107 @@ msgstr "Entendre les notes MIDI pendant qu'on les place dans le piano-roll."
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
 msgid "Update Hungarian translations"
-msgstr ""
+msgstr "Mise à jour des traductions en Hongrois"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:76
 msgid "INSTALL: clarify build instructions"
-msgstr ""
+msgstr "INSTALLATION : clarification des instructions de construction"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 msgid "Enable locale detection for all languages"
 msgstr ""
+"Activer la détection des paramètres linguistiques pour toutes les langues"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:78
 msgid ""
 "TRADEMARKS: simplify some wording and reserve right to review and object to "
 "use deemed outside the policy"
 msgstr ""
+"MARQUES DÉPOSÉES : simplifier certaines formulations et se réserver le droit "
+"d'examiner et de s'opposer à une utilisation jugée non conforme à la "
+"politique"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:79
 msgid ""
 "Make sure UI event queue is cleared before freeing (fixes occasional errors)"
 msgstr ""
+"Assurez-vous que la file d'attente des événements de l'interface utilisateur "
+"est effacée avant de la libérer (corrige des erreurs occasionnelles)."
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:80
 msgid ""
 "User manual: update Routing, Chords and Scales, Modulators, Scripting, "
 "Theming, User Media, Contributing and Credits chapters"
 msgstr ""
+"Manuel utilisateur : mise à jour des chapitres Routage, Accords et Gammes, "
+"Modulateurs, Scriptage, Thèmes, User Media, Contribuer et Crédits"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:81
 msgid "User manual: update some URLs (fix permanent redirects)"
 msgstr ""
+"Manuel utilisateur : mise à jour de certaines URL (correction des "
+"redirections permanentes)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:85
 msgid "Fix automation lanes not being shown immediately when made visible"
 msgstr ""
+"Correction des lignes d'automatisation qui ne s'affichaient pas "
+"immédiatement lorsque rendues visibles"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:86
 msgid "Fix MIDI files not being activatable in the file browser"
 msgstr ""
+"Correction des fichiers MIDI qui n'étaient pas activables dans le navigateur "
+"de fichiers"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:87
 msgid "Fix audio engine not being resumed after running Guile scripts"
 msgstr ""
+"Correction du moteur audio qui n'est pas repris après l'exécution de scripts "
+"Guile"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:88
 msgid ""
 "Fix engine preprocessing sometimes running while the graph is being updated"
 msgstr ""
+"Correction du prétraitement du moteur qui s'exécutait parfois pendant que le "
+"graphe était mis à jour"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:89
 msgid "Fix various invalid accesses reported by GCC address sanitizer"
 msgstr ""
+"Correction de divers accès invalides signalés par le vérificateur d'adresses "
+"de GCC"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:90
 msgid "Fix various memory leaks reported by GCC leak sanitizer"
 msgstr ""
+"Correction de diverses fuites de mémoire signalées par le vérificateur de "
+"fuites de GCC"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:91
 msgid "Fix various custom widget children not being unparented during dispose"
 msgstr ""
+"Correction de divers enfants de widgets personnalisés qui ne sont pas dé-"
+"liés pendant l'élimination"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:92
 msgid "Fix segfault when attempting to add a plugin to a collection"
 msgstr ""
+"Correction d'une erreur de segmentation lors de la tentative d'ajouter un "
+"greffon à une collection"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:93
 msgid "Fix scale objects throwing errors in the event viewer"
 msgstr ""
+"Correction des objets d'échelle lançant des erreurs dans le visualiseur "
+"d'événements"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:94
 msgid "Fix plugin sidechain options not being available in channel sends"
 msgstr ""
+"Correction des options de chaînage latéral (sidechain) des greffons non "
+"disponibles dans les envois de canaux."
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:96
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:141
@@ -8182,41 +8220,56 @@ msgid ""
 "Remove clang-tidy targets from meson configuration (speeds up "
 "reconfiguration)"
 msgstr ""
+"Suppression des cibles clang-tidy de la configuration meson (accélère la "
+"reconfiguration)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:99
 msgid "User manual: remove copyright and license info from translatables"
 msgstr ""
+"Manuel utilisateur : supprimer les informations de copyright et de licence "
+"des traductions possible"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:100
+#, fuzzy
 msgid ""
 "Remove drop motion handler from timeline (should fix errors on drag and "
 "hover)"
 msgstr ""
+"Suppression du gestionnaire de mouvement de dépôt de la timeline (devrait "
+"corriger les erreurs sur le glisser et le survol)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:101
 msgid "Remove emails from AUTHORS/THANKS/TRANSLATORS"
-msgstr ""
+msgstr "Supprimer les adresses courriel de AUTHORS/THANKS/TRANSLATORS"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:110
 msgid "User manual: update Editing, Mixing, Playback &amp; Recording chapters"
 msgstr ""
+"Manuel utilisateur : mise à jour des chapitres Édition, Mixage, Lecture &amp "
+"; Enregistrement"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:111
 msgid "Show warning when attempting to load unsupported projects"
 msgstr ""
+"Afficher un avertissement lors de la tentative de chargement de projets non "
+"pris en charge"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:112
 msgid ""
 "Ignore CRITICAL message when opening native file chooser in Flatpak builds"
 msgstr ""
+"Ignorer le message CRITIQUE lors de l'ouverture du sélecteur de fichiers "
+"natif dans les constructions Flatpak"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:113
 msgid "Make editor toolbar scrollable"
-msgstr ""
+msgstr "Rendre la barre d'outils de l'éditeur défilable"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:117
 msgid "Fix opening projects from latest backup missing plugin states"
 msgstr ""
+"Correction de l'ouverture des projets à partir de la dernière sauvegarde "
+"dans laquelle il manquait les états du greffon"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:126
 #, fuzzy
@@ -8228,14 +8281,16 @@ msgid ""
 "User manual: update Getting Started, Interface, Configuration, Projects, "
 "Plugins &amp; Files, Tracks chapter"
 msgstr ""
+"Manuel utilisateur : mise à jour des chapitres Démarrage, Interface, "
+"Configuration, Projets, Greffons &amp ; Fichiers, Pistes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:131
 msgid "Update GTK-related subproject versions"
-msgstr ""
+msgstr "Mise à jour des versions des sous-projets liés à GTK"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:132
 msgid "Disable scroll-to-focus on arrangers"
-msgstr ""
+msgstr "Désactiver la fonction \"scroll-to-focus\" sur les arrangeurs"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:133
 #, fuzzy
@@ -8245,18 +8300,23 @@ msgstr "Échec de l'instanciation du greffon Carla"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:137
 msgid "Fix applying audio function not updating clip frames"
 msgstr ""
+"Correction de l'application de la fonction audio qui ne met pas à jour les "
+"images du clip"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:138
 msgid "Fix MIDI export adding silence between regions"
 msgstr ""
+"Correction de l'exportation MIDI qui ajoutait un silence entre les régions"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:139
 msgid "Fix non-fatal error when importing empty MIDI files"
 msgstr ""
+"Correction d'une erreur non fatale lors de l'importation de fichiers MIDI "
+"vides"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:143
 msgid "Remove message that says Zrythm is in alpha"
-msgstr ""
+msgstr "Supprimer le message indiquant que Zrythm est en alpha"
 
 #~ msgid ""
 #~ "Interval to auto-save projects, in minutes. Auto-saving will be disabled "
