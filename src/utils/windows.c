@@ -36,9 +36,9 @@
 
 #ifdef _WOE32
 
-#include <shlobj.h>
+#  include <shlobj.h>
 
-#include "utils/windows.h"
+#  include "utils/windows.h"
 
 char *
 windows_get_special_path (
@@ -46,25 +46,24 @@ windows_get_special_path (
 {
   int csidl;
   switch (path_type)
-  {
-  case WINDOWS_SPECIAL_PATH_APPDATA:
-    csidl = CSIDL_APPDATA;
-    break;
-  case WINDOWS_SPECIAL_PATH_COMMON_PROGRAM_FILES:
-    csidl = CSIDL_PROGRAM_FILES_COMMON;
-    break;
-  default:
-    g_return_val_if_reached (NULL);
-  }
+    {
+    case WINDOWS_SPECIAL_PATH_APPDATA:
+      csidl = CSIDL_APPDATA;
+      break;
+    case WINDOWS_SPECIAL_PATH_COMMON_PROGRAM_FILES:
+      csidl = CSIDL_PROGRAM_FILES_COMMON;
+      break;
+    default:
+      g_return_val_if_reached (NULL);
+    }
 
   WCHAR path[MAX_PATH + 256];
 
   if (SHGetSpecialFolderPathW (
         NULL, path, csidl, FALSE))
     {
-      char * ret =
-        g_utf16_to_utf8 (
-          path, -1, NULL, NULL, NULL);
+      char * ret = g_utf16_to_utf8 (
+        path, -1, NULL, NULL, NULL);
       g_return_val_if_fail (ret, NULL);
     }
 
