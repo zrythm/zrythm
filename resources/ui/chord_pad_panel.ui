@@ -22,15 +22,23 @@
           <class name="toolbar"/>
         </style>
         <child>
-          <object class="GtkButton" id="save_preset_btn">
-          </object>
-        </child>
-        <child>
-          <object class="GtkMenuButton" id="load_preset_btn">
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <child>
+              <object class="GtkButton" id="save_preset_btn">
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuButton" id="load_preset_btn">
+              </object>
+            </child>
           </object>
         </child>
         <child>
           <object class="GtkSeparator">
+            <style>
+              <class name="spacer"/>
+            </style>
             <property name="orientation">vertical</property>
           </object>
         </child>
@@ -38,7 +46,7 @@
           <object class="GtkBox">
             <property name="orientation">horizontal</property>
             <style>
-              <class name="linked"/>
+              <class name="toolbar-child-box"/>
             </style>
             <child>
               <object class="GtkLabel">
@@ -46,13 +54,18 @@
               </object>
             </child>
             <child>
-              <object class="GtkButton" id="transpose_up_btn">
-                <property name="icon-name">arrow-up-small</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="transpose_down_btn">
-                <property name="icon-name">arrow-down-small</property>
+              <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <child>
+                  <object class="GtkButton" id="transpose_up_btn">
+                    <property name="icon-name">arrow-up-small</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="transpose_down_btn">
+                    <property name="icon-name">arrow-down-small</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
