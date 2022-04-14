@@ -249,7 +249,8 @@ create_and_load_lilv_word (PluginManager * self)
       self->lv2_path = g_strdup_printf (
         "%s/Library/Audio/Plug-Ins/LV2:"
         "/Library/Audio/Plug-Ins/LV2:"
-        "/usr/local/lib/lv2:/usr/lib/lv2:%s" g_get_home_dir (),
+        "/usr/local/lib/lv2:/usr/lib/lv2:%s",
+        g_get_home_dir (),
         extra_zrythm_plugin_paths);
 #else  // else if GNU or similar
       if (string_is_equal (LIBDIR_NAME, "lib"))
