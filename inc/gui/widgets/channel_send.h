@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -70,10 +54,11 @@ typedef struct _ChannelSendWidget
   /** Cache tooltip string. */
   char * cache_tooltip;
 
-  /** Layout cache for empty slot. */
-  PangoLayout * empty_slot_layout;
-  /** Layout cache for name. */
-  PangoLayout * name_layout;
+  PangoLayout * txt_layout;
+
+  /** Flag used for adding/removing .empty CSS
+   * class. */
+  bool was_empty;
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;

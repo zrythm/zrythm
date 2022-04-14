@@ -57,10 +57,11 @@ typedef struct _ChannelSlotWidget
 
   GtkGestureClick * right_mouse_mp;
 
-  /** Layout cache for empty slot. */
-  PangoLayout * empty_slot_layout;
-  /** Layout cache for plugin name. */
-  PangoLayout * pl_name_layout;
+  PangoLayout * txt_layout;
+
+  /** Flag used for adding/removing .empty CSS
+   * class. */
+  bool was_empty;
 
   /** Cache to check if the selection state was
    * changed. */

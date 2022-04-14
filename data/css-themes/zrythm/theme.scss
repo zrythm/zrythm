@@ -488,3 +488,17 @@ popover {
 .toolbar-child-box {
   border-spacing: 6px;
 }
+
+channel-send,
+channel-slot {
+  font-size: x-small;
+
+  &:not(.empty) {
+    font-weight: bold;
+  }
+
+  &.empty {
+    font-style: italic;
+    color: grey;
+  }
+}

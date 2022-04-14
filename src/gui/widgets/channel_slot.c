@@ -73,22 +73,38 @@ get_plugin (ChannelSlotWidget * self)
 }
 
 static void
-recreate_pango_layouts (ChannelSlotWidget * self)
+update_pango_layouts (ChannelSlotWidget * self)
 {
-  if (PANGO_IS_LAYOUT (self->empty_slot_layout))
-    g_object_unref (self->empty_slot_layout);
-  if (PANGO_IS_LAYOUT (self->pl_name_layout))
-    g_object_unref (self->pl_name_layout);
+  if (!self->txt_layout)
+    {
+      PangoLayout * layout =
+        gtk_widget_create_pango_layout (
+          GTK_WIDGET (self), NULL);
+      pango_layout_set_ellipsize (
+        layout, PANGO_ELLIPSIZE_END);
 
-  self->empty_slot_layout =
-    z_cairo_create_pango_layout_from_string (
-      (GtkWidget *) self, "Arial Italic 7.5",
-      PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+      self->txt_layout = layout;
+    }
 
-  self->pl_name_layout =
-    z_cairo_create_pango_layout_from_string (
-      (GtkWidget *) self, "Arial Bold 7.5",
-      PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+  pango_layout_set_width (
+    self->txt_layout,
+    pango_units_from_double (MAX (
+      gtk_widget_get_allocated_width (
+        GTK_WIDGET (self))
+        - ELLIPSIZE_PADDING * 2,
+      1)));
+
+  bool empty = get_plugin (self) == NULL;
+  if (empty != self->was_empty)
+    {
+      self->was_empty = empty;
+      if (empty)
+        gtk_widget_add_css_class (
+          GTK_WIDGET (self), "empty");
+      else
+        gtk_widget_remove_css_class (
+          GTK_WIDGET (self), "empty");
+    }
 }
 
 static void
@@ -112,10 +128,9 @@ channel_slot_snapshot (
 
   int      padding = 2;
   Plugin * plugin = get_plugin (self);
-  GdkRGBA  bg, fg;
+  GdkRGBA  bg;
   if (plugin)
     {
-      fg = UI_COLOR_BLACK;
       if (!plugin_is_enabled (plugin, false))
         {
           bg.red = 0.6f;
@@ -137,7 +152,6 @@ channel_slot_snapshot (
   else
     {
       bg = Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, 0.9f);
-      fg = Z_GDK_RGBA_INIT (0.3f, 0.3f, 0.3f, 1);
     }
 
   /* fill background */
@@ -147,10 +161,7 @@ channel_slot_snapshot (
       padding, padding, width - padding * 2,
       height - padding * 2));
 
-  if (!self->empty_slot_layout || !self->pl_name_layout)
-    {
-      recreate_pango_layouts (self);
-    }
+  update_pango_layouts (self);
 
 #define MAX_LEN 400
   char txt[MAX_LEN];
@@ -173,18 +184,14 @@ channel_slot_snapshot (
         }
       int w, h;
       z_cairo_get_text_extents_for_widget (
-        widget, self->pl_name_layout, txt, &w, &h);
+        widget, self->txt_layout, txt, &w, &h);
       pango_layout_set_markup (
-        self->pl_name_layout, txt, -1);
-      gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &GRAPHENE_POINT_INIT (
-          width / 2.f - w / 2.f,
-          height / 2.f - h / 2.f));
-      gtk_snapshot_append_layout (
-        snapshot, self->pl_name_layout, &fg);
-      gtk_snapshot_restore (snapshot);
+        self->txt_layout, txt, -1);
+      gtk_snapshot_render_layout (
+        snapshot, context,
+        width / 2 - w / 2,
+        height / 2 - h / 2,
+        self->txt_layout);
 
       /* update tooltip */
       if (
@@ -215,19 +222,14 @@ channel_slot_snapshot (
             self->slot_index + 1);
         }
       z_cairo_get_text_extents_for_widget (
-        widget, self->empty_slot_layout, txt, &w,
-        &h);
+        widget, self->txt_layout, txt, &w, &h);
       pango_layout_set_markup (
-        self->empty_slot_layout, txt, -1);
-      gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &GRAPHENE_POINT_INIT (
-          width / 2.f - w / 2.f,
-          height / 2.f - h / 2.f));
-      gtk_snapshot_append_layout (
-        snapshot, self->empty_slot_layout, &fg);
-      gtk_snapshot_restore (snapshot);
+        self->txt_layout, txt, -1);
+      gtk_snapshot_render_layout (
+        snapshot, context,
+        width / 2 - w / 2,
+        height / 2 - h / 2,
+        self->txt_layout);
 
       /* update tooltip */
       if (self->pl_name)
@@ -832,10 +834,8 @@ finalize (ChannelSlotWidget * self)
 {
   if (self->pl_name)
     g_free (self->pl_name);
-  if (self->empty_slot_layout)
-    g_object_unref (self->empty_slot_layout);
-  if (self->pl_name_layout)
-    g_object_unref (self->pl_name_layout);
+  if (self->txt_layout)
+    g_object_unref (self->txt_layout);
 
   G_OBJECT_CLASS (channel_slot_widget_parent_class)
     ->finalize (G_OBJECT (self));

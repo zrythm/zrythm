@@ -24,21 +24,38 @@ G_DEFINE_TYPE (
 #define ELLIPSIZE_PADDING 2
 
 static void
-recreate_pango_layouts (ChannelSendWidget * self)
+update_pango_layout (ChannelSendWidget * self)
 {
-  if (PANGO_IS_LAYOUT (self->empty_slot_layout))
-    g_object_unref (self->empty_slot_layout);
-  if (PANGO_IS_LAYOUT (self->name_layout))
-    g_object_unref (self->name_layout);
+  if (!self->txt_layout)
+    {
+      PangoLayout * layout =
+        gtk_widget_create_pango_layout (
+          GTK_WIDGET (self), NULL);
+      pango_layout_set_ellipsize (
+        layout, PANGO_ELLIPSIZE_END);
 
-  self->empty_slot_layout =
-    z_cairo_create_pango_layout_from_string (
-      (GtkWidget *) self, "Arial Italic 7.5",
-      PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
-  self->name_layout =
-    z_cairo_create_pango_layout_from_string (
-      (GtkWidget *) self, "Arial Bold 7.5",
-      PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+      self->txt_layout = layout;
+    }
+
+  pango_layout_set_width (
+    self->txt_layout,
+    pango_units_from_double (MAX (
+      gtk_widget_get_allocated_width (
+        GTK_WIDGET (self))
+        - ELLIPSIZE_PADDING * 2,
+      1)));
+
+  bool empty = channel_send_is_empty (self->send);
+  if (empty != self->was_empty)
+    {
+      self->was_empty = empty;
+      if (empty)
+        gtk_widget_add_css_class (
+          GTK_WIDGET (self), "empty");
+      else
+        gtk_widget_remove_css_class (
+          GTK_WIDGET (self), "empty");
+    }
 }
 
 static void
@@ -60,7 +77,7 @@ channel_send_snapshot (
   gtk_snapshot_render_background (
     snapshot, context, 0, 0, width, height);
 
-  recreate_pango_layouts (self);
+  update_pango_layout (self);
 
   int           padding = 2;
   ChannelSend * send = self->send;
@@ -79,19 +96,14 @@ channel_send_snapshot (
       /* fill text */
       int w, h;
       pango_layout_set_markup (
-        self->empty_slot_layout, dest_name, -1);
+        self->txt_layout, dest_name, -1);
       pango_layout_get_pixel_size (
-        self->empty_slot_layout, &w, &h);
-      gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &GRAPHENE_POINT_INIT (
-          width / 2.f - w / 2.f,
-          height / 2.f - h / 2.f));
-      gtk_snapshot_append_layout (
-        snapshot, self->empty_slot_layout,
-        &Z_GDK_RGBA_INIT (0.3f, 0.3f, 0.3f, 1.f));
-      gtk_snapshot_restore (snapshot);
+        self->txt_layout, &w, &h);
+      gtk_snapshot_render_layout (
+        snapshot, context,
+        width / 2 - w / 2,
+        height / 2 - h / 2,
+        self->txt_layout);
 
       /* update tooltip */
       if (self->cache_tooltip)
@@ -104,8 +116,7 @@ channel_send_snapshot (
     }
   else
     {
-      GdkRGBA bg, fg;
-      fg = UI_COLOR_BLACK;
+      GdkRGBA bg;
       if (channel_send_is_prefader (self->send))
         bg = UI_COLORS->prefader_send;
       else
@@ -135,18 +146,14 @@ channel_send_snapshot (
       /* fill text */
       int w, h;
       pango_layout_set_markup (
-        self->name_layout, dest_name, -1);
+        self->txt_layout, dest_name, -1);
       pango_layout_get_pixel_size (
-        self->name_layout, &w, &h);
-      gtk_snapshot_save (snapshot);
-      gtk_snapshot_translate (
-        snapshot,
-        &GRAPHENE_POINT_INIT (
-          width / 2.f - w / 2.f,
-          height / 2.f - h / 2.f));
-      gtk_snapshot_append_layout (
-        snapshot, self->name_layout, &fg);
-      gtk_snapshot_restore (snapshot);
+        self->txt_layout, &w, &h);
+      gtk_snapshot_render_layout (
+        snapshot, context,
+        width / 2 - w / 2,
+        height / 2 - h / 2,
+        self->txt_layout);
 
       /* update tooltip */
       if (
@@ -331,10 +338,8 @@ finalize (ChannelSendWidget * self)
 {
   if (self->cache_tooltip)
     g_free (self->cache_tooltip);
-  if (self->empty_slot_layout)
-    g_object_unref (self->empty_slot_layout);
-  if (self->name_layout)
-    g_object_unref (self->name_layout);
+  if (self->txt_layout)
+    g_object_unref (self->txt_layout);
 
   G_OBJECT_CLASS (channel_send_widget_parent_class)
     ->finalize (G_OBJECT (self));
