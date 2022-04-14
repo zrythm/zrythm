@@ -40,6 +40,7 @@ util_srcs = [
   'system.c',
   'ui.c',
   'vamp.cpp',
+  'windows.c',
   'windows_errors.c',
   'yaml.c',
   ]

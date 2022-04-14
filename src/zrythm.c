@@ -1,7 +1,5 @@
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- */
 
 #include "zrythm-config.h"
 
@@ -565,7 +563,7 @@ zrythm_get_dir (ZrythmDirType type)
             prefix, "share", "zrythm", "themes",
             "css", NULL);
           break;
-        case ZRYTHM_DIR_SYSTEM_LV2_PLUGINS_DIR:
+        case ZRYTHM_DIR_SYSTEM_SPECIAL_LV2_PLUGINS_DIR:
           res = g_build_filename (
             prefix, "share", "zrythm", "lv2", NULL);
           break;

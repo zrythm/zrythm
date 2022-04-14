@@ -47,6 +47,7 @@
 #include "utils/sort.h"
 #include "utils/string.h"
 #include "utils/ui.h"
+#include "utils/windows.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -203,33 +204,61 @@ create_and_load_lilv_word (PluginManager * self)
   self->lilv_world = world;
 
   /* load all installed plugins on system */
-#if !defined(_WOE32) && !defined(__APPLE__)
   self->lv2_path = NULL;
   LilvNode * lv2_path = NULL;
   char *     env_lv2_path = getenv ("LV2_PATH");
   char * builtin_plugins_path = zrythm_get_dir (
-    ZRYTHM_DIR_SYSTEM_LV2_PLUGINS_DIR);
+    ZRYTHM_DIR_SYSTEM_BUNDLED_PLUGINSDIR);
+  char * special_plugins_path = zrythm_get_dir (
+    ZRYTHM_DIR_SYSTEM_SPECIAL_LV2_PLUGINS_DIR);
+  char * extra_zrythm_plugin_paths = g_strdup_printf (
+    "%s" G_SEARCHPATH_SEPARATOR_S "%s",
+    builtin_plugins_path, special_plugins_path);
+  g_free_and_null (builtin_plugins_path);
+  g_free_and_null (special_plugins_path);
   if (env_lv2_path && (strlen (env_lv2_path) > 0))
     {
       self->lv2_path = g_strdup_printf (
-        "%s:%s", env_lv2_path,
-        builtin_plugins_path);
+        "%s" G_SEARCHPATH_SEPARATOR_S "%s",
+        env_lv2_path, extra_zrythm_plugin_paths);
     }
+  /* else if no LV2_PATH passed */
   else
     {
-#  ifdef FLATPAK_BUILD
+#ifdef FLATPAK_BUILD
       self->lv2_path = g_strdup_printf (
         "%s/.lv2:/app/lib/lv2:"
         "/app/extensions/Plugins/lv2:%s",
-        g_get_home_dir (), builtin_plugins_path);
-#  else
+        g_get_home_dir (),
+        extra_zrythm_plugin_paths);
+#elif defined(_WOE32)
+      char * appdata_path =
+        windows_get_special_path (
+          WINDOWS_SPECIAL_PATH_APPDATA);
+      char * common_program_files_path =
+        windows_get_special_path (
+          WINDOWS_SPECIAL_PATH_COMMON_PROGRAM_FILES);
+      self->lv2_path = g_strdup_printf (
+        "%s" G_SEARCHPATH_SEPARATOR_S
+        "%s" G_SEARCHPATH_SEPARATOR_S "%s",
+        appdata_path, common_program_files_path,
+        extra_zrythm_plugin_paths);
+      g_free_and_null (appdata_path);
+      g_free_and_null (common_program_files_path);
+#elif defined(__APPLE__)
+      self->lv2_path = g_strdup_printf (
+        "%s/Library/Audio/Plug-Ins/LV2:"
+        "/Library/Audio/Plug-Ins/LV2:"
+        "/usr/local/lib/lv2:/usr/lib/lv2:%s" g_get_home_dir (),
+        extra_zrythm_plugin_paths);
+#else  // else if GNU or similar
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
           self->lv2_path = g_strdup_printf (
             "%s/.lv2:/usr/local/lib/lv2:"
             "/usr/lib/lv2:%s",
             g_get_home_dir (),
-            builtin_plugins_path);
+            extra_zrythm_plugin_paths);
         }
       else
         {
@@ -241,24 +270,14 @@ create_and_load_lilv_word (PluginManager * self)
                * LIBDIR_NAME so hardcode these */
             "/usr/local/lib/lv2:/usr/lib/lv2:%s",
             g_get_home_dir (),
-            builtin_plugins_path);
+            extra_zrythm_plugin_paths);
         }
-#  endif /* flatpak build */
+#endif // end per-OS logic
     }
 
+  g_message ("LV2 path: %s", self->lv2_path);
+
   g_return_if_fail (self->lv2_path);
-
-  /* bundled plugins path */
-  char * bundled_plugins_path = zrythm_get_dir (
-    ZRYTHM_DIR_SYSTEM_BUNDLED_PLUGINSDIR);
-
-  /* add zrythm custom path for installer */
-  char * before_path = self->lv2_path;
-  self->lv2_path = g_strdup_printf (
-    "%s:" PREFIX "/lib/zrythm/lib/lv2:%s",
-    before_path, bundled_plugins_path);
-  g_free (before_path);
-  g_free (bundled_plugins_path);
 
   /* add test plugins if testing */
   if (ZRYTHM_TESTING)
@@ -267,7 +286,7 @@ create_and_load_lilv_word (PluginManager * self)
         g_getenv ("G_TEST_BUILDDIR");
       g_return_if_fail (tests_builddir);
 
-      before_path = self->lv2_path;
+      char * before_path = self->lv2_path;
       self->lv2_path = g_strdup_printf (
         "%s:%s/lv2plugins", before_path,
         tests_builddir);
@@ -281,7 +300,7 @@ create_and_load_lilv_word (PluginManager * self)
     "%s: LV2 path: %s", __func__, self->lv2_path);
   lilv_world_set_option (
     world, LILV_OPTION_LV2_PATH, lv2_path);
-#endif
+
   if (ZRYTHM_TESTING)
     {
       g_message (

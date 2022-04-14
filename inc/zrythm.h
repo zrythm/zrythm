@@ -126,8 +126,13 @@ typedef enum ZrythmDirType
   /** CSS themes. */
   ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR,
 
-  /** Built-in plugins path. */
-  ZRYTHM_DIR_SYSTEM_LV2_PLUGINS_DIR,
+  /**
+   * Special external Zrythm plugins path (not
+   * part of the Zrythm source code).
+   *
+   * Used for ZLFO and other plugins.
+   */
+  ZRYTHM_DIR_SYSTEM_SPECIAL_LV2_PLUGINS_DIR,
 
   /** The directory fonts/zrythm under datadir. */
   ZRYTHM_DIR_SYSTEM_FONTSDIR,

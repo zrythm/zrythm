@@ -81,7 +81,7 @@ IncludeCategories:
   - Regex:           '^"(zrythm-|zrythm-test-)config\.h"$'
     Priority:        -10
     CaseSensitive:   true
-  - Regex:           '^<windows.h>$'
+  - Regex:           '^<(windows|shlobj).h>$'
     Priority:        -6
     CaseSensitive:   false
   - Regex:           '^<(assert|errno|inttypes|signal|string|std.+|sys/.+|math)\.h>$'
