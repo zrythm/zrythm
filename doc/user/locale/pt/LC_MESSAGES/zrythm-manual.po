@@ -13,15 +13,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-04-07 18:26+0100\n"
-"PO-Revision-Date: 2022-02-02 23:24+0000\n"
+"PO-Revision-Date: 2022-04-09 18:10+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.12-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -571,24 +572,20 @@ msgstr ""
 "correspondentes à escala, acorde ou ambos na posição da cabeça de reprodução."
 
 #: ../../chords-and-scales/piano-roll-integration.rst:22
-#, fuzzy
 msgid "No highlighting"
-msgstr "Destaque de acordes."
+msgstr "Sem destaque"
 
 #: ../../chords-and-scales/piano-roll-integration.rst:28
-#, fuzzy
 msgid "Chord highlighting"
-msgstr "Destaque de acordes."
+msgstr "Destaque de acordes"
 
 #: ../../chords-and-scales/piano-roll-integration.rst:34
-#, fuzzy
 msgid "Scale highlighting"
-msgstr "Destaques de escala."
+msgstr "Destaque de escala"
 
 #: ../../chords-and-scales/piano-roll-integration.rst:40
-#, fuzzy
 msgid "Scale and chord highlighting"
-msgstr "Destaques de escala e acordes."
+msgstr "Destaque de escala e acorde"
 
 #: ../../configuration/additional-settings.rst:7
 msgid "Additional Settings"
@@ -1645,9 +1642,8 @@ msgstr ""
 "esquerdo do editor."
 
 #: ../../editing/clip-editors/chord-editor.rst:29
-#, fuzzy
 msgid "Chords inside the chord editor"
-msgstr "Regiões de acordes aparecem na faixa de acordes."
+msgstr "Acordes no editor de acordes"
 
 #: ../../editing/clip-editors/chord-editor.rst:31
 msgid ""
@@ -2179,9 +2175,9 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:63
-#, fuzzy
 msgid "`The chord editor toolbar includes no additional sections.`"
-msgstr "Os cilindros de piano contém os seguintes controles adicionais."
+msgstr ""
+"`A barra de ferramentas do editor de acordes não inclui secções adicionais.`"
 
 #: ../../editing/common-operations.rst:8
 msgid "Common Operations"
