@@ -183,13 +183,7 @@ various plugin and file formats.")
                        (@ (type "source"))
                        "@MAIN_SCREENSHOT_URL@")
                      (caption
-                       "Main window with plugins"))
-                   (screenshot
-                     (image
-                       (@ (type "source"))
-                       "@MAIN_SCREENSHOT2_URL@")
-                     (caption
-                       "Main window with detached panels")))
+                       "Main window with plugins")))
                  (update_contact "alex_at_zrythm.org")
                  (keywords
                    (keyword "Zrythm")
