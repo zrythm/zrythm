@@ -6,6 +6,27 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.1.5.1] - 2022-04-14
+### Added
+- Add status page to modulators tab
+- Add bundled plugins: compressor, delay, gate, distortion, reverb
+
+### Changed
+- Add some vertical padding to automation editor
+- Port some split buttons to AdwSplitButton
+- Simplify check for unsaved changes (only look at last performed action)
+- Update French, Chinese (Simplified), Portuguese, Catalan translations
+- User manual: update some sections
+- User manual: change PDF author to 'The Zrythm contributors'
+- Hardcode standard LV2 paths for all OSes
+- Update screenshot URL in metainfo
+
+### Fixed
+- Fix preference rows not being centered
+- Fix arranger objects not being draggable from their bottom/left side
+- Various CSS/style fixes
+- Fix issues with fonts in some custom widgets
+
 ## [1.0.0-beta.1.4.1] - 2022-04-10
 ### Changed
 - Become a full libadwaita app
