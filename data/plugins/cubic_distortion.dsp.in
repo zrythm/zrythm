@@ -1,0 +1,47 @@
+// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+/*
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * ---
+
+ * declare name "Cubic Distortion";
+ * declare author "Julius O. Smith (jos at ccrma.stanford.edu)";
+ * declare copyright "Julius O. Smith III";
+ * declare license "STK-4.3"; // Synthesis Tool Kit 4.3 (MIT style license)
+ * declare reference "http://asa.aip.org/publications.html";
+ *
+ The Synthesis ToolKit in C++ (STK) Copyright (c) 1995--2017 Perry R. Cook and Gary P. Scavone
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+Any person wishing to distribute modifications to the Software is asked to send the modifications to the original developer so that they can be incorporated into the canonical version. This is, however, not a binding provision of this license.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * ---
+ */
+
+declare name "@NAME@";
+declare description "@DESCRIPTION@";
+declare author "@AUTHOR@";
+declare copyright "© 2022 Alexandros Theodotou";
+declare version "1.0";
+declare license "AGPL-3.0-or-later";
+
+import ("stdfaust.lib");
+import ("zrythm-utils.lib");
+
+fl = library("filter.lib");
+el = library("effect.lib");
+process = _ : el.cubicnl_nodc(drive:fl.smooth(0.999),offset:fl.smooth(0.999))
+        with {
+             cnl_group(x)  = vgroup("CUBIC NONLINEARITY cubicnl [tooltip: Reference:
+                           https://ccrma.stanford.edu/~jos/pasp/Cubic_Soft_Clipper.html]", x);
+             slider_group(x)  = cnl_group(hgroup("[1]", x));
+             drive = slider_group(hslider("[1] Drive [tooltip: Amount of distortion]", 0, 0, 1, 0.01));
+             offset = slider_group(hslider("[2] Offset [tooltip: Brings in even harmonics]", 0, 0, 1, 0.01));
+};
