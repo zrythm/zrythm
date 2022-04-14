@@ -249,7 +249,6 @@ inc/gui/widgets/velocity.h
 inc/gui/widgets/pinned_tracklist.h
 inc/gui/widgets/plugin_properties_expander.h
 inc/gui/widgets/knob_with_name.h
-inc/gui/widgets/rotated_label.h
 inc/gui/widgets/midi_activity_bar.h
 inc/gui/widgets/bounce_step_selector.h
 inc/gui/widgets/dialogs/export_progress_dialog.h
@@ -653,7 +652,6 @@ src/gui/widgets/active_hardware_popover.c
 src/gui/widgets/zoom_buttons.c
 src/gui/widgets/inspector_midi.c
 src/gui/widgets/chord_editor_space.c
-src/gui/widgets/rotated_label.c
 src/gui/widgets/fader.c
 src/gui/widgets/chord_selector_window.c
 src/gui/widgets/chord_key.c

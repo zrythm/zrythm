@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-04-07 18:26+0100\n"
+"POT-Creation-Date: 2022-04-14 12:08+0100\n"
 "PO-Revision-Date: 2022-03-31 17:07+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -280,13 +280,11 @@ msgstr "メニューアクション"
 msgid "Troubleshooting"
 msgstr "トラブルシューティング"
 
-#: ../../appendix/troubleshooting.rst:11
-#: ../../configuration/additional-settings.rst:35
-#: ../../configuration/shortcuts.rst:47
-#: ../../editing/clip-editors/automation-editor.rst:55
-#: ../../editing/clip-editors/piano-roll.rst:148
-#: ../../exporting/audio-and-midi.rst:38
-#: ../../plugins-files/audio-midi-files/file-browser.rst:69
+#: ../../appendix/troubleshooting.rst:11 ../../configuration/shortcuts.rst:47
+#: ../../editing/clip-editors/automation-editor.rst:56
+#: ../../editing/clip-editors/piano-roll.rst:149
+#: ../../exporting/audio-and-midi.rst:39
+#: ../../plugins-files/audio-midi-files/file-browser.rst:70
 #: ../../tracks/inspector-page.rst:157 ../../tracks/overview.rst:70
 #: ../../zrythm-interface/right-panel.rst:23
 msgid "Todo"
@@ -301,10 +299,10 @@ msgid "Chord Pad"
 msgstr "コードパッド"
 
 #: ../../chords-and-scales/chord-pad.rst:10
-#: ../../editing/clip-editors/overview.rst:6 ../../editing/overview.rst:6
-#: ../../editing/timeline/overview.rst:6
-#: ../../playback-and-recording/overview.rst:6
-#: ../../plugins-files/audio-midi-files/overview.rst:6
+#: ../../editing/clip-editors/overview.rst:7 ../../editing/overview.rst:7
+#: ../../editing/timeline/overview.rst:7
+#: ../../playback-and-recording/overview.rst:7
+#: ../../plugins-files/audio-midi-files/overview.rst:7
 #: ../../scripting/overview.rst:7 ../../tracks/overview.rst:6
 #: ../../zrythm-interface/overview.rst:6
 msgid "Overview"
@@ -329,7 +327,7 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:23
 #: ../../getting-started/getting-plugins.rst:86
-#: ../../plugins-files/audio-midi-files/file-browser.rst:67
+#: ../../plugins-files/audio-midi-files/file-browser.rst:68
 msgid "Presets"
 msgstr "プリセット"
 
@@ -355,7 +353,7 @@ msgid "Chord preset browser"
 msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:42
-#: ../../plugins-files/audio-midi-files/file-browser.rst:47
+#: ../../plugins-files/audio-midi-files/file-browser.rst:48
 msgid "Filtering"
 msgstr "フィルタリング"
 
@@ -366,7 +364,7 @@ msgid ""
 msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:48
-#: ../../plugins-files/audio-midi-files/file-browser.rst:86
+#: ../../plugins-files/audio-midi-files/file-browser.rst:87
 msgid "Auditioning"
 msgstr "オーディション"
 
@@ -618,22 +616,21 @@ msgid "See :option:`zrythm --print-settings`."
 msgstr ":option:`zrythm --print-settings` を参照してください。"
 
 #: ../../configuration/additional-settings.rst:31
+#: ../../configuration/preferences.rst:106
 msgid "Reset to Factory Settings"
 msgstr "初期設定にリセット"
 
 #: ../../configuration/additional-settings.rst:33
-msgid "See :option:`zrythm --reset-to-factory`."
-msgstr ":option:`zrythm --reset-to-factory` を参照してください。"
-
-#: ../../configuration/additional-settings.rst:35
-msgid "Add this to the UI."
+msgid ""
+"See :option:`zrythm --reset-to-factory` and :ref:`configuration/preferences:"
+"Reset to Factory Settings`."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:38
+#: ../../configuration/additional-settings.rst:37
 msgid "Plugin Settings"
 msgstr "プラグイン設定"
 
-#: ../../configuration/additional-settings.rst:39
+#: ../../configuration/additional-settings.rst:38
 msgid ""
 "Located at :file:`plugin-settings.yaml` under the :term:`Zrythm user path`, "
 "this is a collection of per-plugin settings, such as whether to open the "
@@ -642,14 +639,14 @@ msgid ""
 "ref:`generic UI <plugins-files/plugins/plugin-window:Generic UIs>`."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:47
+#: ../../configuration/additional-settings.rst:46
 msgid ""
 "Zrythm will remember the last setting used for each plugin and automatically "
 "apply it when you choose to instantiate that plugin from the :doc:`plugin "
 "browser <../plugins-files/plugins/plugin-browser>`."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:52
+#: ../../configuration/additional-settings.rst:51
 msgid ""
 "This file is generated and maintained automatically by Zrythm and users are "
 "not expected to edit it."
@@ -774,7 +771,7 @@ msgid "Configuration"
 msgstr "設定"
 
 #: ../../configuration/preferences.rst:11
-#: ../../plugins-files/audio-midi-files/file-browser.rst:116
+#: ../../plugins-files/audio-midi-files/file-browser.rst:117
 #: ../../zrythm-interface/main-toolbar.rst:110
 msgid "Preferences"
 msgstr "設定"
@@ -905,6 +902,17 @@ msgid ""
 "The language of the user interface can be changed under :menuselection:`UI --"
 "> General`."
 msgstr ""
+
+#: ../../configuration/preferences.rst:108
+msgid ""
+"There is an option to reset Zrythm to its default settings under :"
+"menuselection:`General --> Other`."
+msgstr ""
+
+#: ../../configuration/preferences.rst:111
+#, fuzzy
+msgid "This behaves similarly to :option:`zrythm --reset-to-factory`."
+msgstr ":option:`zrythm --reset-to-factory` を参照してください。"
 
 #: ../../configuration/shortcuts.rst:7
 msgid "Shortcuts"
@@ -1218,7 +1226,7 @@ msgid "Other Contributors"
 msgstr "その他の貢献者"
 
 #: ../../editing/clip-editors/audio-editor.rst:9
-#: ../../editing/clip-editors/toolbar.rst:53
+#: ../../editing/clip-editors/toolbar.rst:54
 msgid "Audio Editor"
 msgstr "オーディオエディタ"
 
@@ -1337,8 +1345,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:73
-#: ../../editing/clip-editors/automation-editor.rst:63
-#: ../../editing/clip-editors/piano-roll.rst:123
+#: ../../editing/clip-editors/automation-editor.rst:64
+#: ../../editing/clip-editors/piano-roll.rst:124
 #, fuzzy
 msgid "The following functions are available."
 msgstr "以下のトグルが用意されています。"
@@ -1439,28 +1447,28 @@ msgstr ""
 msgid "Not available yet."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:8
-#: ../../editing/clip-editors/toolbar.rst:45
+#: ../../editing/clip-editors/automation-editor.rst:9
+#: ../../editing/clip-editors/toolbar.rst:46
 msgid "Automation Editor"
 msgstr "オートメーションエディター"
 
-#: ../../editing/clip-editors/automation-editor.rst:9
+#: ../../editing/clip-editors/automation-editor.rst:10
 msgid ""
 "The automation editor is displayed when an automation region is selected."
 msgstr ""
 "オートメーションエディターは、オートメーションリージョンを選択すると表示され"
 "ます。"
 
-#: ../../editing/clip-editors/automation-editor.rst:15
+#: ../../editing/clip-editors/automation-editor.rst:16
 #, fuzzy
 msgid "Automation editor"
 msgstr "オートメーションエディター"
 
-#: ../../editing/clip-editors/automation-editor.rst:18
+#: ../../editing/clip-editors/automation-editor.rst:19
 msgid "Automation Arranger"
 msgstr "オートメーションアレンジャー"
 
-#: ../../editing/clip-editors/automation-editor.rst:19
+#: ../../editing/clip-editors/automation-editor.rst:20
 msgid ""
 "The automation arranger refers to the arranger section of the automation "
 "editor."
@@ -1468,12 +1476,12 @@ msgstr ""
 "オートメーションアレンジャーとは、オートメーションエディターのアレンジャー部"
 "を指します。"
 
-#: ../../editing/clip-editors/automation-editor.rst:25
+#: ../../editing/clip-editors/automation-editor.rst:26
 #, fuzzy
 msgid "Automation arranger"
 msgstr "オートメーションアレンジャー"
 
-#: ../../editing/clip-editors/automation-editor.rst:27
+#: ../../editing/clip-editors/automation-editor.rst:28
 #, fuzzy
 msgid ""
 "The automation arranger contains automation points drawn as circles and "
@@ -1484,7 +1492,7 @@ msgstr ""
 "オートメーションポイントが含まれています。Zrythm は、再生中に、カーブに基づい"
 "て自動化されるコントロールの値を補間します。"
 
-#: ../../editing/clip-editors/automation-editor.rst:32
+#: ../../editing/clip-editors/automation-editor.rst:33
 #, fuzzy
 msgid ""
 "Editing inside the automation arranger generally follows :ref:`edit-tools` "
@@ -1495,11 +1503,11 @@ msgstr ""
 "ref:`common-operations` に従います。曲線を上下にドラッグして「曲線度」を変更"
 "できる機能が追加されています。"
 
-#: ../../editing/clip-editors/automation-editor.rst:41
+#: ../../editing/clip-editors/automation-editor.rst:42
 msgid "Curves"
 msgstr "カーブ"
 
-#: ../../editing/clip-editors/automation-editor.rst:42
+#: ../../editing/clip-editors/automation-editor.rst:43
 #, fuzzy
 msgid ""
 "Right-clicking on a curve allows you to change the curve algorithm used. The "
@@ -1508,79 +1516,79 @@ msgstr ""
 "カーブを右クリックすると、使用する曲線アルゴリズムを変更できます。以下の曲線"
 "アルゴリズムが利用可能です。"
 
-#: ../../editing/clip-editors/automation-editor.rst:45
+#: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Exponent"
 msgstr "指数"
 
-#: ../../editing/clip-editors/automation-editor.rst:46
+#: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Exponential curve."
 msgstr "指数曲線。"
 
-#: ../../editing/clip-editors/automation-editor.rst:47
+#: ../../editing/clip-editors/automation-editor.rst:48
 msgid "Superellipse"
 msgstr "超楕円"
 
-#: ../../editing/clip-editors/automation-editor.rst:48
+#: ../../editing/clip-editors/automation-editor.rst:49
 msgid "Elliptical curve."
 msgstr "楕円曲線。"
 
-#: ../../editing/clip-editors/automation-editor.rst:50
-#: ../../editing/timeline/arranger.rst:276
+#: ../../editing/clip-editors/automation-editor.rst:51
+#: ../../editing/timeline/arranger.rst:277
 msgid "Vital"
 msgstr "Vital"
 
-#: ../../editing/clip-editors/automation-editor.rst:50
+#: ../../editing/clip-editors/automation-editor.rst:51
 msgid "The curve that Vital synth uses, similar to exponential curve."
 msgstr "Vitalシンセが使用している曲線で、指数関数的な曲線に似ています。"
 
-#: ../../editing/clip-editors/automation-editor.rst:53
+#: ../../editing/clip-editors/automation-editor.rst:54
 msgid "Pulse"
 msgstr "パルス"
 
-#: ../../editing/clip-editors/automation-editor.rst:53
+#: ../../editing/clip-editors/automation-editor.rst:54
 msgid "Pulse wave."
 msgstr "パルス波。"
 
-#: ../../editing/clip-editors/automation-editor.rst:55
+#: ../../editing/clip-editors/automation-editor.rst:56
 msgid "Create table with illustrations."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:58
+#: ../../editing/clip-editors/automation-editor.rst:59
 #, fuzzy
 msgid "Automation Functions"
 msgstr "オートメーションリージョン"
 
-#: ../../editing/clip-editors/automation-editor.rst:60
+#: ../../editing/clip-editors/automation-editor.rst:61
 msgid ""
 "Automation functions are logic that can be applied to transform the selected "
 "automation points/curves."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:66
-#: ../../editing/clip-editors/piano-roll.rst:133
+#: ../../editing/clip-editors/automation-editor.rst:67
+#: ../../editing/clip-editors/piano-roll.rst:134
 #, fuzzy
 msgid "Flip"
 msgstr "クリップ"
 
-#: ../../editing/clip-editors/automation-editor.rst:66
+#: ../../editing/clip-editors/automation-editor.rst:67
 msgid "Reverse/flip the selected automation horizontally or vertically."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:8
-#: ../../editing/clip-editors/toolbar.rst:61
+#: ../../editing/clip-editors/chord-editor.rst:9
+#: ../../editing/clip-editors/toolbar.rst:62
 msgid "Chord Editor"
 msgstr "コードエディター"
 
-#: ../../editing/clip-editors/chord-editor.rst:9
+#: ../../editing/clip-editors/chord-editor.rst:10
 msgid "The chord editor is displayed when a chord region is selected."
 msgstr "コードエディターは、コードリージョンを選択すると表示されます。"
 
-#: ../../editing/clip-editors/chord-editor.rst:15
+#: ../../editing/clip-editors/chord-editor.rst:16
 #, fuzzy
 msgid "Chord editor"
 msgstr "コードエディター"
 
-#: ../../editing/clip-editors/chord-editor.rst:17
+#: ../../editing/clip-editors/chord-editor.rst:18
 #, fuzzy
 msgid ""
 "The chord editor has a list of chords on the left side that can be changed, "
@@ -1589,11 +1597,11 @@ msgstr ""
 "コードエディタには、変更可能なコードの左側のリストと、コード進行を作成するた"
 "めの右側のアレンジャーが含まれます。"
 
-#: ../../editing/clip-editors/chord-editor.rst:22
+#: ../../editing/clip-editors/chord-editor.rst:23
 msgid "Chords"
 msgstr "和音"
 
-#: ../../editing/clip-editors/chord-editor.rst:23
+#: ../../editing/clip-editors/chord-editor.rst:24
 msgid ""
 "A chord in the context of the chord editor refers to a chord on the left "
 "side of the editor."
@@ -1601,37 +1609,37 @@ msgstr ""
 "コードエディターの文脈でのコードとは、エディターの左側にあるコードのことを指"
 "します。"
 
-#: ../../editing/clip-editors/chord-editor.rst:29
+#: ../../editing/clip-editors/chord-editor.rst:30
 #, fuzzy
 msgid "Chords inside the chord editor"
 msgstr "コード リージョンは、コード トラック内に表示されます。"
 
-#: ../../editing/clip-editors/chord-editor.rst:31
+#: ../../editing/clip-editors/chord-editor.rst:32
 msgid ""
 "These chords correspond to each chord in the :ref:`Chord pad <chords-and-"
 "scales/chord-pad:Chord Pad>`."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:34
+#: ../../editing/clip-editors/chord-editor.rst:35
 msgid "The controls available are similar to those in the chord pad."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:38
+#: ../../editing/clip-editors/chord-editor.rst:39
 msgid "Chord Arranger"
 msgstr "コードアレンジャー"
 
-#: ../../editing/clip-editors/chord-editor.rst:39
+#: ../../editing/clip-editors/chord-editor.rst:40
 msgid "The chord arranger refers to the arranger section of the chord editor."
 msgstr ""
 "コードアレンジャーとは、コードエディターのアレンジャーセクションのことを指し"
 "ます。"
 
-#: ../../editing/clip-editors/chord-editor.rst:45
+#: ../../editing/clip-editors/chord-editor.rst:46
 #, fuzzy
 msgid "Chord arranger"
 msgstr "コードアレンジャー"
 
-#: ../../editing/clip-editors/chord-editor.rst:47
+#: ../../editing/clip-editors/chord-editor.rst:48
 #, fuzzy
 msgid ""
 "The chord editor contains `chord objects` that signify the start of a chord."
@@ -1639,11 +1647,11 @@ msgstr ""
 "コードエディタには、コードの開始を示す `コードオブジェクト` が含まれていま"
 "す。弦オブジェクトには長さが含まれていません。"
 
-#: ../../editing/clip-editors/chord-editor.rst:50
+#: ../../editing/clip-editors/chord-editor.rst:51
 msgid "Chord objects do not have a length."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:52
+#: ../../editing/clip-editors/chord-editor.rst:53
 msgid ""
 "Editing in the chord arranger follows :ref:`edit-tools` and :ref:`common-"
 "operations`."
@@ -1651,11 +1659,11 @@ msgstr ""
 "コードエディターでの操作は :ref:`edit-tools` と :ref:`common-operations` と共"
 "通です。"
 
-#: ../../editing/clip-editors/intro.rst:8
+#: ../../editing/clip-editors/intro.rst:9
 msgid "Editors"
 msgstr "エディター"
 
-#: ../../editing/clip-editors/overview.rst:7
+#: ../../editing/clip-editors/overview.rst:8
 msgid ""
 "When regions are selected in the timeline, their contents will be shown "
 "inside the Editor tab in the :ref:`bottom-panel`. Although there are some "
@@ -1663,12 +1671,12 @@ msgid ""
 "differ depending on the type of region selected."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:8
-#: ../../editing/clip-editors/toolbar.rst:29
+#: ../../editing/clip-editors/piano-roll.rst:9
+#: ../../editing/clip-editors/toolbar.rst:30
 msgid "Piano Roll"
 msgstr "ピアノロール"
 
-#: ../../editing/clip-editors/piano-roll.rst:10
+#: ../../editing/clip-editors/piano-roll.rst:11
 #, fuzzy
 msgid ""
 "The piano roll is the main editor for editing MIDI regions, and is displayed "
@@ -1677,64 +1685,64 @@ msgstr ""
 "オートメーションエディターは、オートメーションリージョンを選択すると表示され"
 "ます。"
 
-#: ../../editing/clip-editors/piano-roll.rst:17
+#: ../../editing/clip-editors/piano-roll.rst:18
 #, fuzzy
 msgid "Piano roll"
 msgstr "ピアノロール"
 
-#: ../../editing/clip-editors/piano-roll.rst:20
+#: ../../editing/clip-editors/piano-roll.rst:21
 msgid "Additional Controls"
 msgstr "その他のコントロール"
 
-#: ../../editing/clip-editors/piano-roll.rst:21
+#: ../../editing/clip-editors/piano-roll.rst:22
 msgid "The piano roll contains the following additional controls."
 msgstr "ピアノロールには、以下の追加コントロールが含まれています。"
 
-#: ../../editing/clip-editors/piano-roll.rst:27
+#: ../../editing/clip-editors/piano-roll.rst:28
 #, fuzzy
 msgid "Piano roll controls"
 msgstr "メインツールバー"
 
-#: ../../editing/clip-editors/piano-roll.rst:38
+#: ../../editing/clip-editors/piano-roll.rst:39
 msgid "Drum View"
 msgstr "ドラムビュー"
 
-#: ../../editing/clip-editors/piano-roll.rst:30
+#: ../../editing/clip-editors/piano-roll.rst:31
 msgid ""
 "Switch to drum editor view (or `Drum mode`), where each :term:`MIDI note` is "
 "drawn as a diamond and the piano roll keys display the name of each drum."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:38
+#: ../../editing/clip-editors/piano-roll.rst:39
 #, fuzzy
 msgid "Drum mode"
 msgstr "ドラムモード"
 
-#: ../../editing/clip-editors/piano-roll.rst:42
+#: ../../editing/clip-editors/piano-roll.rst:43
 msgid "Listen to notes"
 msgstr "音符を聞く"
 
-#: ../../editing/clip-editors/piano-roll.rst:41
+#: ../../editing/clip-editors/piano-roll.rst:42
 #, fuzzy
 msgid "Play back each note as you drag it inside the piano roll."
 msgstr ""
 "これを有効にすると、ピアノロール内でドラッグすると、各ノートが再生されます。"
 "これは、自分のやっていることを「聞きたい」場合に便利です。"
 
-#: ../../editing/clip-editors/piano-roll.rst:47
+#: ../../editing/clip-editors/piano-roll.rst:48
 msgid "Piano Roll Keys"
 msgstr "ピアノロールキー"
 
-#: ../../editing/clip-editors/piano-roll.rst:48
+#: ../../editing/clip-editors/piano-roll.rst:49
 msgid "These are the keys corresponding to each key found on a piano."
 msgstr "ピアノにある鍵盤に対応する鍵盤です。"
 
-#: ../../editing/clip-editors/piano-roll.rst:54
+#: ../../editing/clip-editors/piano-roll.rst:55
 #, fuzzy
 msgid "Piano roll keys"
 msgstr "ピアノロールキー"
 
-#: ../../editing/clip-editors/piano-roll.rst:56
+#: ../../editing/clip-editors/piano-roll.rst:57
 #, fuzzy
 msgid ""
 "Clicking on each key allows you to listen to it, much like pressing a key on "
@@ -1743,14 +1751,14 @@ msgstr ""
 "各キーをクリックすると、実際のピアノのキーを押すのと同じように、それを聴くこ"
 "とができます。"
 
-#: ../../editing/clip-editors/piano-roll.rst:59
+#: ../../editing/clip-editors/piano-roll.rst:60
 msgid ""
 "A label for each key is shown on the left side of the black/white keys, in "
 "addition to any highlighting (if selected). See :ref:`chord-highlighting` "
 "for more information."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:64
+#: ../../editing/clip-editors/piano-roll.rst:65
 #, fuzzy
 msgid ""
 "The vertical zoom level can be changed by holding down :kbd:`Ctrl` and :kbd:"
@@ -1759,19 +1767,19 @@ msgstr ""
 "ズームレベルは、 :kbd:`Ctrl` と :kbd:`Shift` を押しながらスクロールすることで"
 "変更できます。"
 
-#: ../../editing/clip-editors/piano-roll.rst:69
+#: ../../editing/clip-editors/piano-roll.rst:70
 msgid "MIDI Arranger"
 msgstr "MIDIアレンジャー"
 
-#: ../../editing/clip-editors/piano-roll.rst:70
+#: ../../editing/clip-editors/piano-roll.rst:71
 msgid "The MIDI arranger refers to the arranger section of the piano roll."
 msgstr "MIDIアレンジャーとは、ピアノロールのアレンジャー部のことを指します。"
 
-#: ../../editing/clip-editors/piano-roll.rst:76
+#: ../../editing/clip-editors/piano-roll.rst:77
 msgid "MIDI arranger with notes"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:78
+#: ../../editing/clip-editors/piano-roll.rst:79
 #, fuzzy
 msgid ""
 "The MIDI arranger contains MIDI notes drawn as rectangles from their start "
@@ -1783,7 +1791,7 @@ msgstr ""
 "ノートが含まれています。Zrythmは、ノートの開始位置に達すると信号にMIDIノート"
 "を送信し、ノートの終了位置に達するとノートオフ信号を送信します。"
 
-#: ../../editing/clip-editors/piano-roll.rst:84
+#: ../../editing/clip-editors/piano-roll.rst:85
 msgid ""
 "Editing inside the MIDI arranger is covered in :ref:`edit-tools` and :ref:"
 "`common-operations`."
@@ -1791,11 +1799,11 @@ msgstr ""
 "MIDIエディター内での操作については :ref:`edit-tools` と :ref:`common-"
 "operations` を参照してください。"
 
-#: ../../editing/clip-editors/piano-roll.rst:88
+#: ../../editing/clip-editors/piano-roll.rst:89
 msgid "Velocity Editor"
 msgstr "ベロシティエディタ"
 
-#: ../../editing/clip-editors/piano-roll.rst:89
+#: ../../editing/clip-editors/piano-roll.rst:90
 msgid ""
 "There is another arranger at the bottom of the MIDI arranger for editing the "
 "velocity of each note."
@@ -1803,7 +1811,7 @@ msgstr ""
 "MIDI アレンジャーの下部には、各音符のベロシティーを編集するためのアレンジャー"
 "がもう 1 つあります。"
 
-#: ../../editing/clip-editors/piano-roll.rst:95
+#: ../../editing/clip-editors/piano-roll.rst:96
 msgid ""
 "Velocity refers to the force with which a note is played. Each instrument "
 "handles various velocities for the same note differently, but generally a "
@@ -1811,7 +1819,7 @@ msgid ""
 "useful for adding expression to melodies."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:101
+#: ../../editing/clip-editors/piano-roll.rst:102
 #, fuzzy
 msgid ""
 "The velocity of each note is drawn as a bar, where higher means a larger "
@@ -1821,7 +1829,7 @@ msgstr ""
 "各ノートのベロシティはバーとして描画され、高いほど大きな値が意味します。各ベ"
 "ロシティバーの先端をクリックしてドラッグすると、それを変更できます。"
 
-#: ../../editing/clip-editors/piano-roll.rst:105
+#: ../../editing/clip-editors/piano-roll.rst:106
 msgid ""
 "You can also edit multiple velocities at once by selecting multiple MIDI "
 "notes before editing a velocity bar."
@@ -1829,7 +1837,7 @@ msgstr ""
 "ベロシティバーを編集する前に複数の MIDI ノートを選択して、複数のベロシティを"
 "一括編集することもできます。"
 
-#: ../../editing/clip-editors/piano-roll.rst:109
+#: ../../editing/clip-editors/piano-roll.rst:110
 msgid ""
 "The :ref:`ramp-mode` can also be used in the velocity editor to `ramp` "
 "velocities."
@@ -1837,101 +1845,101 @@ msgstr ""
 ":ref:`ramp-mode` は、ベロシティエディターでベロシティを `ランプ` するために使"
 "用することもできます。"
 
-#: ../../editing/clip-editors/piano-roll.rst:115
+#: ../../editing/clip-editors/piano-roll.rst:116
 msgid "Using the ramp tool on MIDI note velocities"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:118
+#: ../../editing/clip-editors/piano-roll.rst:119
 msgid "MIDI Functions"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:120
+#: ../../editing/clip-editors/piano-roll.rst:121
 msgid ""
 "MIDI functions are logic that can be applied to transform the selected MIDI "
 "notes."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:126
+#: ../../editing/clip-editors/piano-roll.rst:127
 msgid "Crescendo"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:126
+#: ../../editing/clip-editors/piano-roll.rst:127
 msgid ""
 "Gradually increase the velocities of the selected notes from low to high. "
 "Used to create a climax."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:130
+#: ../../editing/clip-editors/piano-roll.rst:131
 msgid "Flam"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:129
+#: ../../editing/clip-editors/piano-roll.rst:130
 msgid ""
 "Create additional MIDI notes right after the start position of each selected "
 "note. This is usually used on snares."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:133
+#: ../../editing/clip-editors/piano-roll.rst:134
 msgid "Reverse/flip the selected notes horizontally or vertically."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:136
+#: ../../editing/clip-editors/piano-roll.rst:137
 msgid "Legato"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:136
+#: ../../editing/clip-editors/piano-roll.rst:137
 msgid "Connect all selected notes so that they play smoothly."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:139
+#: ../../editing/clip-editors/piano-roll.rst:140
 #, fuzzy
 msgid "Portato"
 msgstr "フォーマット"
 
-#: ../../editing/clip-editors/piano-roll.rst:139
+#: ../../editing/clip-editors/piano-roll.rst:140
 msgid "Similar to legato, but leaves some space between the notes."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:141
+#: ../../editing/clip-editors/piano-roll.rst:142
 #, fuzzy
 msgid "Staccato"
 msgstr "インストール"
 
-#: ../../editing/clip-editors/piano-roll.rst:142
+#: ../../editing/clip-editors/piano-roll.rst:143
 msgid "Make the selected notes short and punctuated."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:146
+#: ../../editing/clip-editors/piano-roll.rst:147
 msgid "Strum Up/Down"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:144
+#: ../../editing/clip-editors/piano-roll.rst:145
 msgid ""
 "Shift the position and velocity of notes that start at the same position "
 "(chords) to simulate strumming, like when playing guitar."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:148
+#: ../../editing/clip-editors/piano-roll.rst:149
 #, fuzzy
 msgid "Add illustrations."
 msgstr "イラストを追加すること。"
 
-#: ../../editing/clip-editors/piano-roll.rst:150
+#: ../../editing/clip-editors/piano-roll.rst:151
 #, fuzzy
 msgid "Some of these are not implemented yet."
 msgstr "この機能はまだ実装されていません。"
 
-#: ../../editing/clip-editors/piano-roll.rst:152
+#: ../../editing/clip-editors/piano-roll.rst:153
 msgid ""
 "In the future, it will be possible to implement custom functions using user "
 "scripts."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:8
+#: ../../editing/clip-editors/ruler.rst:9
 msgid "Editor Ruler"
 msgstr "エディタールーラー"
 
-#: ../../editing/clip-editors/ruler.rst:9
+#: ../../editing/clip-editors/ruler.rst:10
 msgid ""
 "The editor ruler is similar to the timeline ruler explained in :ref:"
 "`timeline-ruler`, with some differences."
@@ -1939,12 +1947,12 @@ msgstr ""
 "エディターのルーラーは、 :ref:`timeline-ruler` で説明されているタイムライン"
 "ルーラーに似ていますが、いくつかの違いがあります。"
 
-#: ../../editing/clip-editors/ruler.rst:16
+#: ../../editing/clip-editors/ruler.rst:17
 #, fuzzy
 msgid "Editor ruler"
 msgstr "エディタールーラー"
 
-#: ../../editing/clip-editors/ruler.rst:18
+#: ../../editing/clip-editors/ruler.rst:19
 msgid ""
 "The ruler will display more or less information depending on the current "
 "zoom level. It will also display the following markers and indicators."
@@ -1952,74 +1960,74 @@ msgstr ""
 "ルーラーは、現在のズームレベルに応じて多かれ少なかれ情報を表示します。また、"
 "以下のマーカーとインジケータも表示されます。"
 
-#: ../../editing/clip-editors/ruler.rst:23
-#: ../../editing/timeline/arranger.rst:126 ../../tracks/track-types.rst:54
+#: ../../editing/clip-editors/ruler.rst:24
+#: ../../editing/timeline/arranger.rst:127 ../../tracks/track-types.rst:54
 msgid "Markers"
 msgstr "マーカー"
 
-#: ../../editing/clip-editors/ruler.rst:27
+#: ../../editing/clip-editors/ruler.rst:28
 msgid "Clip Start"
 msgstr "クリップの開始点"
 
-#: ../../editing/clip-editors/ruler.rst:26
+#: ../../editing/clip-editors/ruler.rst:27
 msgid ""
 "Controls the position where the clip will start playback from. Displayed as "
 "a blue, right-pointing arrow."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:30
-#: ../../playback-and-recording/overview.rst:12
+#: ../../editing/clip-editors/ruler.rst:31
+#: ../../playback-and-recording/overview.rst:13
 msgid "Playhead"
 msgstr "再生ヘッド"
 
-#: ../../editing/clip-editors/ruler.rst:30
+#: ../../editing/clip-editors/ruler.rst:31
 msgid ""
 "Current position of the playhead. Displayed as a grey, down-facing arrow."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:35
-#: ../../playback-and-recording/loop-points-and-markers.rst:11
+#: ../../editing/clip-editors/ruler.rst:36
+#: ../../playback-and-recording/loop-points-and-markers.rst:12
 msgid "Loop Points"
 msgstr "ループポイント"
 
-#: ../../editing/clip-editors/ruler.rst:33
+#: ../../editing/clip-editors/ruler.rst:34
 msgid ""
 "These control the range where the clip will loop after it reaches the loop "
 "end point. Displayed as 2 green arrows."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:37
+#: ../../editing/clip-editors/ruler.rst:38
 #, fuzzy
 msgid "You can move these markers by clicking and dragging."
 msgstr "MIDIノートは、ダブルクリックしてドラッグすることで作成されます。"
 
-#: ../../editing/clip-editors/ruler.rst:39
+#: ../../editing/clip-editors/ruler.rst:40
 msgid ""
 "Clicking and dragging on empty space will allow you to reposition the "
 "playhead."
 msgstr ""
 "空のスペースをクリックしてドラッグすると、再生ヘッドの位置を変更できます。"
 
-#: ../../editing/clip-editors/ruler.rst:43
-#: ../../editing/timeline/arranger.rst:32
+#: ../../editing/clip-editors/ruler.rst:44
+#: ../../editing/timeline/arranger.rst:33
 msgid "Regions"
 msgstr "リージョン"
 
-#: ../../editing/clip-editors/ruler.rst:45
+#: ../../editing/clip-editors/ruler.rst:46
 msgid ""
 "All regions in the same track as the active region will be shown inside the "
 "ruler. The active region will be displayed in a more prominent color."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:52
+#: ../../editing/clip-editors/ruler.rst:53
 msgid "Regions in the editor ruler"
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:8
+#: ../../editing/clip-editors/toolbar.rst:9
 msgid "Editor Toolbar"
 msgstr "エディターツールバー"
 
-#: ../../editing/clip-editors/toolbar.rst:9
+#: ../../editing/clip-editors/toolbar.rst:10
 msgid ""
 "The editor toolbar contains controls and buttons for actions specific to the "
 "current editor."
@@ -2027,124 +2035,124 @@ msgstr ""
 "エディターのツールバーには、現在のエディターに固有のアクションのコントロール"
 "とボタンが含まれています。"
 
-#: ../../editing/clip-editors/toolbar.rst:15
+#: ../../editing/clip-editors/toolbar.rst:16
 #, fuzzy
 msgid "Piano roll toolbar"
 msgstr "メインツールバー"
 
-#: ../../editing/clip-editors/toolbar.rst:18
+#: ../../editing/clip-editors/toolbar.rst:19
 #, fuzzy
 msgid "Common sections"
 msgstr "共通操作"
 
-#: ../../editing/clip-editors/toolbar.rst:20
+#: ../../editing/clip-editors/toolbar.rst:21
 #, fuzzy
 msgid "All editor toolbars include the following sections."
 msgstr "メイン ツールバーには、次のウィジェットも含まれています。"
 
-#: ../../editing/clip-editors/toolbar.rst:22
-#: ../../editing/timeline/toolbar.rst:18
+#: ../../editing/clip-editors/toolbar.rst:23
+#: ../../editing/timeline/toolbar.rst:19
 msgid ""
 ":ref:`Snapping options <editing/snapping-grid-options:Snapping and Grid "
 "Options>`"
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:23
-#: ../../editing/timeline/toolbar.rst:19
+#: ../../editing/clip-editors/toolbar.rst:24
+#: ../../editing/timeline/toolbar.rst:20
 msgid ":ref:`Quantization options <editing/quantization:Quantization>`"
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:24
-#: ../../editing/timeline/toolbar.rst:22
+#: ../../editing/clip-editors/toolbar.rst:25
+#: ../../editing/timeline/toolbar.rst:23
 msgid ""
 ":ref:`Playhead tracking options <editing/common-operations:Playhead "
 "Tracking>`"
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:25
-#: ../../editing/timeline/toolbar.rst:24
+#: ../../editing/clip-editors/toolbar.rst:26
+#: ../../editing/timeline/toolbar.rst:25
 msgid ":ref:`Zoom options <editing/common-operations:Zooming>`"
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:26
-#: ../../editing/timeline/toolbar.rst:25
+#: ../../editing/clip-editors/toolbar.rst:27
+#: ../../editing/timeline/toolbar.rst:26
 msgid ":ref:`Event viewer options <editing/event-viewers:Event Viewers>`"
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:31
+#: ../../editing/clip-editors/toolbar.rst:32
 #, fuzzy
 msgid "The piano roll toolbar includes the following additional sections."
 msgstr "ピアノロールには、以下の追加コントロールが含まれています。"
 
-#: ../../editing/clip-editors/toolbar.rst:34
+#: ../../editing/clip-editors/toolbar.rst:35
 msgid ""
 ":ref:`Chord highlighting options <chords-and-scales/piano-roll-integration:"
 "Highlighting>`"
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:35
+#: ../../editing/clip-editors/toolbar.rst:36
 msgid ":ref:`MIDI functions <editing/clip-editors/piano-roll:MIDI Functions>`"
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:36
+#: ../../editing/clip-editors/toolbar.rst:37
 msgid "Default velocity options"
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:39
+#: ../../editing/clip-editors/toolbar.rst:40
 msgid "Default Velocity"
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:41
+#: ../../editing/clip-editors/toolbar.rst:42
 msgid "This is the velocity that will be used when creating new MIDI notes."
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:47
+#: ../../editing/clip-editors/toolbar.rst:48
 #, fuzzy
 msgid ""
 "The automation editor toolbar includes the following additional sections."
 msgstr "ピアノロールには、以下の追加コントロールが含まれています。"
 
-#: ../../editing/clip-editors/toolbar.rst:50
+#: ../../editing/clip-editors/toolbar.rst:51
 msgid ""
 ":ref:`Automation functions <editing/clip-editors/automation-editor:"
 "Automation Functions>`"
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:55
+#: ../../editing/clip-editors/toolbar.rst:56
 #, fuzzy
 msgid "The audio editor toolbar includes the following additional sections."
 msgstr "ピアノロールには、以下の追加コントロールが含まれています。"
 
-#: ../../editing/clip-editors/toolbar.rst:58
+#: ../../editing/clip-editors/toolbar.rst:59
 msgid ""
 ":ref:`Audio functions <editing/clip-editors/audio-editor:Audio Functions>`"
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:63
+#: ../../editing/clip-editors/toolbar.rst:64
 #, fuzzy
 msgid "`The chord editor toolbar includes no additional sections.`"
 msgstr "ピアノロールには、以下の追加コントロールが含まれています。"
 
-#: ../../editing/common-operations.rst:8
+#: ../../editing/common-operations.rst:9
 msgid "Common Operations"
 msgstr "共通操作"
 
-#: ../../editing/common-operations.rst:10
+#: ../../editing/common-operations.rst:11
 msgid "These operations are common to most editors."
 msgstr ""
 
-#: ../../editing/common-operations.rst:13
+#: ../../editing/common-operations.rst:14
 msgid "Undo/Redo"
 msgstr "元に戻す/やり直す"
 
-#: ../../editing/common-operations.rst:14
+#: ../../editing/common-operations.rst:15
 msgid ""
 "Most actions in Zrythm are undoable, which means that you can go back to the "
 "state before that action was made, or you can come back to a state that you "
 "undo'ed from."
 msgstr "Zrythm のほとんどのアクションは元に戻すことができます。"
 
-#: ../../editing/common-operations.rst:19
+#: ../../editing/common-operations.rst:20
 #, fuzzy
 msgid ""
 "For example, if you create a MIDI note and press undo, the MIDI note will be "
@@ -2158,18 +2166,18 @@ msgstr ""
 "押すと、MIDI ノートが再び作成され、元に戻す操作とやり直しの間に何度でも戻るこ"
 "とができます。"
 
-#: ../../editing/common-operations.rst:27
+#: ../../editing/common-operations.rst:28
 msgid ""
 "It is also possible to go back/forth more than one action, by clicking the "
 "arrow next to the :guilabel:`Undo` and :guilabel:`Redo` buttons."
 msgstr ""
 
-#: ../../editing/common-operations.rst:34
+#: ../../editing/common-operations.rst:35
 #, fuzzy
 msgid "Undoing multiple actions"
 msgstr "プラグインコレクション"
 
-#: ../../editing/common-operations.rst:36
+#: ../../editing/common-operations.rst:37
 msgid ""
 "The shortcuts for undo and redo are :kbd:`Control-z` and :kbd:`Control-Shift-"
 "z`."
@@ -2177,20 +2185,20 @@ msgstr ""
 "元に戻しのショートカットは :kbd:`Control` + :kbd:`Z` で、やり直しのショート"
 "カットは :kbd:`Ctrl` + :kbd:`Shift` + :kbd:`Z` です。"
 
-#: ../../editing/common-operations.rst:39
+#: ../../editing/common-operations.rst:40
 msgid ""
 "If you Undo and then perform a new action, the Redo history will be deleted."
 msgstr "元に戻して新しい操作を実行すると、やり直し履歴は削除されます。"
 
-#: ../../editing/common-operations.rst:43
+#: ../../editing/common-operations.rst:44
 msgid "Object Operations"
 msgstr "オブジェクト操作"
 
-#: ../../editing/common-operations.rst:45
+#: ../../editing/common-operations.rst:46
 msgid "Cut"
 msgstr "切り取り"
 
-#: ../../editing/common-operations.rst:46
+#: ../../editing/common-operations.rst:47
 #, fuzzy
 msgid ""
 "Delete and copy the selected objects and save them in the clipboard so that "
@@ -2200,11 +2208,11 @@ msgstr ""
 "貼り付けられるようにします。カットのショートカットは :zbutton:`Ctrl` + :"
 "zbutton:`X` です。"
 
-#: ../../editing/common-operations.rst:52
+#: ../../editing/common-operations.rst:53
 msgid "Copy"
 msgstr "コピー"
 
-#: ../../editing/common-operations.rst:53
+#: ../../editing/common-operations.rst:54
 #, fuzzy
 msgid ""
 "Copy the selected objects to the clipboard so that they can be pasted "
@@ -2213,11 +2221,11 @@ msgstr ""
 "選択したオブジェクトをクリップボードにコピーして、他の場所に貼り付けることが"
 "できます。コピーのショートカットは :zbutton:`Control` + :zbutton:`C` です。"
 
-#: ../../editing/common-operations.rst:59
+#: ../../editing/common-operations.rst:60
 msgid "Paste"
 msgstr "貼り付け"
 
-#: ../../editing/common-operations.rst:60
+#: ../../editing/common-operations.rst:61
 #, fuzzy
 msgid ""
 "Paste the objects currently in the clipboard to the current playhead "
@@ -2226,11 +2234,11 @@ msgstr ""
 "クリップボードに置かれているオブジェクトを再生ヘッド位置に貼り付けます。貼り"
 "付けのショートカットは次のとおりです。 :zbutton:`Control` + :zbutton:`V`"
 
-#: ../../editing/common-operations.rst:66
+#: ../../editing/common-operations.rst:67
 msgid "Duplicate"
 msgstr "複製"
 
-#: ../../editing/common-operations.rst:67
+#: ../../editing/common-operations.rst:68
 #, fuzzy
 msgid ""
 "Create a copy of the selected objects adjacent to them. The shortcut for "
@@ -2239,95 +2247,95 @@ msgstr ""
 "コピーを作成し、選択したオブジェクトに隣接します。 複製のショートカットは :"
 "zbutton:`Control`+:zbutton:`D` です。"
 
-#: ../../editing/common-operations.rst:74
+#: ../../editing/common-operations.rst:75
 msgid "Duplicating a region"
 msgstr "リージョンの複製"
 
-#: ../../editing/common-operations.rst:77
+#: ../../editing/common-operations.rst:78
 msgid "Delete"
 msgstr "削除"
 
-#: ../../editing/common-operations.rst:78
+#: ../../editing/common-operations.rst:79
 msgid "Delete the selected objects. You can also press :kbd:`Delete`."
 msgstr ""
 "選択したオブジェクトを削除します。 :kbd:`Delete` を押すこともできます。"
 
-#: ../../editing/common-operations.rst:83
+#: ../../editing/common-operations.rst:84
 msgid "Selections"
 msgstr "選択範囲"
 
-#: ../../editing/common-operations.rst:85
+#: ../../editing/common-operations.rst:86
 msgid "Clear Selection"
 msgstr "選択をクリア"
 
-#: ../../editing/common-operations.rst:86
+#: ../../editing/common-operations.rst:87
 msgid "Clear current selection (unselect all objects)."
 msgstr "現在の選択を解除します(すべてのオブジェクトの選択を解除)。"
 
-#: ../../editing/common-operations.rst:89
+#: ../../editing/common-operations.rst:90
 msgid "Select All"
 msgstr "すべてを選択"
 
-#: ../../editing/common-operations.rst:90
+#: ../../editing/common-operations.rst:91
 msgid "Select all objects in the current editor (:kbd:`Control-a`)."
 msgstr ""
 "現在のエディター内のすべてのオブジェクトを選択します (:kbd:`Control-a`)。"
 
-#: ../../editing/common-operations.rst:94
+#: ../../editing/common-operations.rst:95
 msgid "Loop Selection"
 msgstr "ループ選択"
 
-#: ../../editing/common-operations.rst:95
+#: ../../editing/common-operations.rst:96
 msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
 msgstr "ループマーカーを選択範囲の周囲に配置します(:kbd:`Control-l`)。"
 
-#: ../../editing/common-operations.rst:99
+#: ../../editing/common-operations.rst:100
 #, fuzzy
 msgid "Zooming"
 msgstr "ループ"
 
-#: ../../editing/common-operations.rst:101
+#: ../../editing/common-operations.rst:102
 msgid ""
 "The timeline arranger and each arranger in the editor include zooming "
 "functionality that can also be accessed from their corresponding toolbars."
 msgstr ""
 
-#: ../../editing/common-operations.rst:108
+#: ../../editing/common-operations.rst:109
 #, fuzzy
 msgid "Zoom buttons"
 msgstr "下部ボタン"
 
-#: ../../editing/common-operations.rst:110
+#: ../../editing/common-operations.rst:111
 msgid "Zoom In"
 msgstr "ズーム イン"
 
-#: ../../editing/common-operations.rst:111
+#: ../../editing/common-operations.rst:112
 msgid "Zoom in at the location of the playhead"
 msgstr ""
 
-#: ../../editing/common-operations.rst:112
+#: ../../editing/common-operations.rst:113
 msgid "Zoom Out"
 msgstr "ズームアウト"
 
-#: ../../editing/common-operations.rst:113
+#: ../../editing/common-operations.rst:114
 #, fuzzy
 msgid "Zoom out"
 msgstr "縮小する。"
 
-#: ../../editing/common-operations.rst:114
+#: ../../editing/common-operations.rst:115
 msgid "Original Size"
 msgstr "オリジナル サイズ"
 
-#: ../../editing/common-operations.rst:115
+#: ../../editing/common-operations.rst:116
 #, fuzzy
 msgid "Zoom back to the default zoom level"
 msgstr "デフォルトのズームレベルに戻ります。"
 
-#: ../../editing/common-operations.rst:118
+#: ../../editing/common-operations.rst:119
 msgid "Best Fit"
 msgstr "ベストフィット"
 
-#: ../../editing/common-operations.rst:117
+#: ../../editing/common-operations.rst:118
 #, fuzzy
 msgid ""
 "Zoom in or out as much as required to show all of the events in the arranger"
@@ -2335,51 +2343,51 @@ msgstr ""
 "タイムライン内のすべてのイベントを表示するために必要なだけズームインまたは"
 "ズームアウトします。"
 
-#: ../../editing/common-operations.rst:120
+#: ../../editing/common-operations.rst:121
 msgid ""
 "Zooming in/out can also be conveniently performed by moving the cursor to "
 "the desired location and holding down :kbd:`Control` while scrolling up with "
 "the mouse wheel to zoom in or scrolling down to zoom out."
 msgstr ""
 
-#: ../../editing/common-operations.rst:127
+#: ../../editing/common-operations.rst:128
 msgid "Playhead Tracking"
 msgstr ""
 
-#: ../../editing/common-operations.rst:129
+#: ../../editing/common-operations.rst:130
 msgid ""
 "Zrythm includes functionality for forcing the playhead to remain inside the "
 "visibile area during playback."
 msgstr ""
 
-#: ../../editing/common-operations.rst:136
+#: ../../editing/common-operations.rst:137
 msgid ""
 "Toggles for controlling playhead tracking, found in each arranger toolbar"
 msgstr ""
 
-#: ../../editing/common-operations.rst:140
+#: ../../editing/common-operations.rst:141
 msgid "Scroll when Playhead Reaches Edge"
 msgstr ""
 
-#: ../../editing/common-operations.rst:140
+#: ../../editing/common-operations.rst:141
 msgid ""
 "Automatically  scroll the visible area when the playhead moves outside it"
 msgstr ""
 
-#: ../../editing/common-operations.rst:143
+#: ../../editing/common-operations.rst:144
 #, fuzzy
 msgid "Follow Playhead"
 msgstr "再生ヘッド"
 
-#: ../../editing/common-operations.rst:143
+#: ../../editing/common-operations.rst:144
 msgid "Keep the visible area centered at the position of the playhead"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:8
+#: ../../editing/edit-tools.rst:9
 msgid "Edit Tools"
 msgstr "編集ツール"
 
-#: ../../editing/edit-tools.rst:10
+#: ../../editing/edit-tools.rst:11
 #, fuzzy
 msgid ""
 "When working in each editor or arranger, you will most likely be using the "
@@ -2390,15 +2398,15 @@ msgstr ""
 "クトを作成、編集、削除する場合がほとんどです。各カーソルは個別の編集モードを"
 "示し、Zrythm は次の編集モードを提供します。"
 
-#: ../../editing/edit-tools.rst:20
+#: ../../editing/edit-tools.rst:21
 msgid "Select/Stretch Tool"
 msgstr "選択・ストレッチツール"
 
-#: ../../editing/edit-tools.rst:21
+#: ../../editing/edit-tools.rst:22
 msgid "This can be toggled to switch between Select and Stretch."
 msgstr "これを切り替えて、選択とストレッチを切り替えることができます。"
 
-#: ../../editing/edit-tools.rst:24
+#: ../../editing/edit-tools.rst:25
 #, fuzzy
 msgid ""
 "In Select mode, you can make object selections and create, move, clone and "
@@ -2409,7 +2417,7 @@ msgstr ""
 "きます。これは最も一般的なモードであり、最も一般的な操作は、これを使用するだ"
 "けで実行できます。"
 
-#: ../../editing/edit-tools.rst:29
+#: ../../editing/edit-tools.rst:30
 msgid ""
 "Stretch mode is similar to the Select mode, with the exception that when you "
 "resize objects, their contents will be stretched to fit the new size."
@@ -2417,11 +2425,11 @@ msgstr ""
 "ストレッチ モードは選択モードと似ていますが、オブジェクトのサイズを変更する"
 "と、その内容が新しいサイズに合わせて拡大されます。"
 
-#: ../../editing/edit-tools.rst:34
+#: ../../editing/edit-tools.rst:35
 msgid "Creating Objects"
 msgstr "オブジェクトの作成"
 
-#: ../../editing/edit-tools.rst:35
+#: ../../editing/edit-tools.rst:36
 #, fuzzy
 msgid ""
 "Using the select (default) tool, all objects are created by double clicking "
@@ -2431,15 +2439,15 @@ msgstr ""
 "選択（デフォルト）モードでは、アレンジャーの内側をダブルクリックしてドラッグ"
 "し、位置/サイズに満足したら解放することで、オブジェクトが作成されます。"
 
-#: ../../editing/edit-tools.rst:43
+#: ../../editing/edit-tools.rst:44
 msgid "Creating a region"
 msgstr "リージョンの作成"
 
-#: ../../editing/edit-tools.rst:46
+#: ../../editing/edit-tools.rst:47
 msgid "Selecting Objects"
 msgstr "オブジェクトの選択"
 
-#: ../../editing/edit-tools.rst:47
+#: ../../editing/edit-tools.rst:48
 msgid ""
 "To select objects, you can either click on them, click in empty space and "
 "keep dragging to make a selection, or :kbd:`Control`-click to add/remove "
@@ -2449,22 +2457,22 @@ msgstr ""
 "リックしてドラッグし続けるか、または :kbd:`Control` + クリックして選択にオブ"
 "ジェクトを追加/削除します。"
 
-#: ../../editing/edit-tools.rst:52
+#: ../../editing/edit-tools.rst:53
 msgid "Selected objects will have brighter color than non-selected objects."
 msgstr ""
 "選択したオブジェクトは、選択されていないオブジェクトよりも明るい色になりま"
 "す。"
 
-#: ../../editing/edit-tools.rst:58
+#: ../../editing/edit-tools.rst:59
 #, fuzzy
 msgid "Selecting objects"
 msgstr "オブジェクトの選択"
 
-#: ../../editing/edit-tools.rst:61
+#: ../../editing/edit-tools.rst:62
 msgid "Moving Objects"
 msgstr "オブジェクトの移動"
 
-#: ../../editing/edit-tools.rst:62
+#: ../../editing/edit-tools.rst:63
 msgid ""
 "Objects are moved by clicking and dragging them around. You can move regions "
 "to other tracks if the track types are compatible."
@@ -2472,15 +2480,15 @@ msgstr ""
 "オブジェクトは、クリックしてドラッグすることで移動します。トラック種類に互換"
 "性がある場合は、リージョンを他のトラックに移動できます。"
 
-#: ../../editing/edit-tools.rst:69
+#: ../../editing/edit-tools.rst:70
 msgid "Moving a region"
 msgstr "リージョンの移動"
 
-#: ../../editing/edit-tools.rst:72
+#: ../../editing/edit-tools.rst:73
 msgid "Cloning (Copy-Moving) Objects"
 msgstr "オブジェクトのクローン (複製・移動)"
 
-#: ../../editing/edit-tools.rst:74
+#: ../../editing/edit-tools.rst:75
 msgid ""
 "Holding down :kbd:`Ctrl` while moving objects will allow you to copy-and-"
 "move the objects to the new location."
@@ -2488,15 +2496,15 @@ msgstr ""
 "オブジェクトを移動中に :kbd:`Ctrl` を押したままにすると、オブジェクトを新しい"
 "場所にコピーして移動することができます。"
 
-#: ../../editing/edit-tools.rst:81
+#: ../../editing/edit-tools.rst:82
 msgid "Copy-moving a region"
 msgstr "リージョンの複製・移動"
 
-#: ../../editing/edit-tools.rst:84
+#: ../../editing/edit-tools.rst:85
 msgid "Resizing Objects"
 msgstr "オブジェクトのサイズ変更"
 
-#: ../../editing/edit-tools.rst:85
+#: ../../editing/edit-tools.rst:86
 msgid ""
 "Objects that have length, such as regions and MIDI notes, can be resized by "
 "clicking and dragging their edges."
@@ -2504,7 +2512,7 @@ msgstr ""
 "リージョンや MIDI ノートなどの長さを持つオブジェクトは、その端をクリックして"
 "ドラッグすることでサイズ変更できます。"
 
-#: ../../editing/edit-tools.rst:88
+#: ../../editing/edit-tools.rst:89
 msgid ""
 "On objects that can be repeated, such as regions, moving the cursor on the "
 "bottom half of the object will allow you to resize the object by repeating "
@@ -2514,7 +2522,7 @@ msgstr ""
 "を移動すると、オブジェクトのサイズを変更するのではなく、オブジェクトの内容を"
 "繰り返してサイズ変更できます。"
 
-#: ../../editing/edit-tools.rst:93
+#: ../../editing/edit-tools.rst:94
 msgid ""
 "When resizing, already repeated objects can only be repeated. To resize them "
 "instead of repeat them, their length must be changed or their clip markers "
@@ -2524,21 +2532,21 @@ msgstr ""
 "繰り返しではなくサイズを変更するには、長さを変更するか、クリップマーカーを移"
 "動して繰り返し表示しないようにする必要があります。"
 
-#: ../../editing/edit-tools.rst:101
+#: ../../editing/edit-tools.rst:102
 msgid "Cutting Objects"
 msgstr "オブジェクトの切り取り"
 
-#: ../../editing/edit-tools.rst:102
+#: ../../editing/edit-tools.rst:103
 msgid "You can :kbd:`Alt`-click inside objects to break them up."
 msgstr ""
 "オブジェクトの中に :kbd:`Alt` を押したままでクリックすると、オブジェクトが分"
 "割されます。"
 
-#: ../../editing/edit-tools.rst:106
+#: ../../editing/edit-tools.rst:107
 msgid "Edit Tool"
 msgstr "鉛筆ツール"
 
-#: ../../editing/edit-tools.rst:107
+#: ../../editing/edit-tools.rst:108
 #, fuzzy
 msgid ""
 "This tool is used to quickly create or delete objects. While you can still "
@@ -2551,7 +2559,7 @@ msgstr ""
 "集モードではクリックとドラッグを 1 回だけ行うことで、多数のオブジェクトを作成"
 "する場合の方が効率的です。"
 
-#: ../../editing/edit-tools.rst:113
+#: ../../editing/edit-tools.rst:114
 #, fuzzy
 msgid ""
 "Holding down :kbd:`Control` while clicking will allow you to create multiple "
@@ -2562,11 +2570,11 @@ msgstr ""
 "スナップ設定で指定された長さで、複数のオブジェクトを(可能な場合は)行に作成で"
 "きます。"
 
-#: ../../editing/edit-tools.rst:119
+#: ../../editing/edit-tools.rst:120
 msgid "Cut Tool"
 msgstr "カットツール"
 
-#: ../../editing/edit-tools.rst:120
+#: ../../editing/edit-tools.rst:121
 #, fuzzy
 msgid ""
 "The Cut tool behaves similarly to what is mentioned in :ref:`cutting-"
@@ -2576,11 +2584,11 @@ msgstr ""
 "カットモードは、 :ref:`cutting-objects` で述べられるものと同様に動作します"
 "が、 :kbd:`Alt` + クリックの代わりにクリックするだけで済みます。"
 
-#: ../../editing/edit-tools.rst:125
+#: ../../editing/edit-tools.rst:126
 msgid "Erase Tool"
 msgstr "消しゴムツール"
 
-#: ../../editing/edit-tools.rst:126
+#: ../../editing/edit-tools.rst:127
 #, fuzzy
 msgid ""
 "Using the Erase tool you can just click on objects to delete them, or click "
@@ -2589,11 +2597,11 @@ msgstr ""
 "オブジェクトをクリックするだけで削除したり、クリックしてドラッグして選択を"
 "行ったりして、セレクション内のすべてのオブジェクトを削除することができます。"
 
-#: ../../editing/edit-tools.rst:133
+#: ../../editing/edit-tools.rst:134
 msgid "Ramp Tool"
 msgstr "ランプツール"
 
-#: ../../editing/edit-tools.rst:134
+#: ../../editing/edit-tools.rst:135
 #, fuzzy
 msgid ""
 "This tool is currently only used for editing velocities for MIDI notes. You "
@@ -2602,40 +2610,40 @@ msgstr ""
 "このモードは現在、MIDI ノートのベロシティの編集にのみ使用されます。ベロシティ"
 "エディターでクリックしてドラッグすると、ベロシティランプを作成できます。"
 
-#: ../../editing/edit-tools.rst:141
+#: ../../editing/edit-tools.rst:142
 msgid "Using the ramp tool on velocities"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:144
+#: ../../editing/edit-tools.rst:145
 msgid "Audition Tool"
 msgstr "試聴ツール"
 
-#: ../../editing/edit-tools.rst:146
+#: ../../editing/edit-tools.rst:147
 msgid ""
 "The Audition tool is used to listen to specific parts of the song quickly. "
 "After enabling the audition tool, click anywhere to start playback from the "
 "position of the cursor and release the mouse button to stop."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:155
+#: ../../editing/edit-tools.rst:156
 #, fuzzy
 msgid "Using the audition tool"
 msgstr "ファイルの試聴コントロール"
 
-#: ../../editing/edit-tools.rst:157
+#: ../../editing/edit-tools.rst:158
 msgid "Where applicable, hold :kbd:`Shift` to bypass snapping."
 msgstr "一時的にスナップを無効にするには、 :kbd:`Shift` を押します"
 
-#: ../../editing/edit-tools.rst:160
+#: ../../editing/edit-tools.rst:161
 msgid "Pressing :kbd:`Escape` will cancel any current action."
 msgstr ""
 
-#: ../../editing/event-viewers.rst:6
+#: ../../editing/event-viewers.rst:7
 #, fuzzy
 msgid "Event Viewers"
 msgstr "イベントビューア"
 
-#: ../../editing/event-viewers.rst:8
+#: ../../editing/event-viewers.rst:9
 #, fuzzy
 msgid ""
 "An event viewer (or `list editor`) displays all events in the corresponding "
@@ -2643,62 +2651,62 @@ msgid ""
 msgstr ""
 "イベントビューアは、タイムライン上のすべてのイベントを一覧として表示します。"
 
-#: ../../editing/event-viewers.rst:14
+#: ../../editing/event-viewers.rst:15
 #, fuzzy
 msgid "Timeline event viewer"
 msgstr "イベントビューア"
 
-#: ../../editing/event-viewers.rst:16
+#: ../../editing/event-viewers.rst:17
 msgid ""
 "The event viewer can be shown by clicking the :guilabel:`Toggle event "
 "viewer` button in the corresponding arranger toolbar."
 msgstr ""
 
-#: ../../editing/event-viewers.rst:21
+#: ../../editing/event-viewers.rst:22
 #, fuzzy
 msgid "Sorting"
 msgstr "エクスポート"
 
-#: ../../editing/event-viewers.rst:23
+#: ../../editing/event-viewers.rst:24
 msgid ""
 "Columns in the header row can be clicked to sort the events in ascending or "
 "descending order."
 msgstr ""
 
-#: ../../editing/event-viewers.rst:27 ../../editing/intro.rst:8
+#: ../../editing/event-viewers.rst:28 ../../editing/intro.rst:9
 msgid "Editing"
 msgstr "編集"
 
-#: ../../editing/event-viewers.rst:29
+#: ../../editing/event-viewers.rst:30
 msgid ""
 "Some values can be changed by clicking in the corresponding field to enter "
 "edit mode, then pressing :kbd:`Enter` when done."
 msgstr ""
 
-#: ../../editing/event-viewers.rst:36
+#: ../../editing/event-viewers.rst:37
 #, fuzzy
 msgid "Edit mode"
 msgstr "編集モード"
 
-#: ../../editing/event-viewers.rst:39
+#: ../../editing/event-viewers.rst:40
 #, fuzzy
 msgid "Object Selection"
 msgstr "プロジェクトの選択"
 
-#: ../../editing/event-viewers.rst:41
+#: ../../editing/event-viewers.rst:42
 msgid ""
 "The object selection in the event viewer is linked to the arranger. This "
 "means that selecting objects inside the event viewer will also select them "
 "inside the arranger and vice-versa."
 msgstr ""
 
-#: ../../editing/overview.rst:8
+#: ../../editing/overview.rst:9
 msgid ""
 "Editing refers to any work done in the timeline arranger and the editors."
 msgstr ""
 "編集とは、タイムラインアレンジャーとエディターで行われた作業のことです。"
 
-#: ../../editing/overview.rst:11
+#: ../../editing/overview.rst:12
 #, fuzzy
 msgid ""
 "While each editor has its own toolbar to assist with various operations, "
@@ -2709,11 +2717,11 @@ msgstr ""
 "ツールバーには、各エディタで共通の機能を持つグローバルな :guilabel:`Edit` セ"
 "クションがあります。"
 
-#: ../../editing/quantization.rst:8
+#: ../../editing/quantization.rst:9
 msgid "Quantization"
 msgstr "量子 化"
 
-#: ../../editing/quantization.rst:10
+#: ../../editing/quantization.rst:11
 msgid ""
 "Objects can be quantized to specified positions by using the Quantize and "
 "Quick-Quantize actions."
@@ -2721,11 +2729,11 @@ msgstr ""
 "クオンタイズ アクションとクイック クオンタイズ アクションを使用して、オブジェ"
 "クトを指定された位置クオンタイズできます。"
 
-#: ../../editing/quantization.rst:17
+#: ../../editing/quantization.rst:18
 msgid "Quantize"
 msgstr "クオンタイズ"
 
-#: ../../editing/quantization.rst:18
+#: ../../editing/quantization.rst:19
 #, fuzzy
 msgid ""
 "Clicking the Quantize button will open up a popup that will let you specify "
@@ -2734,19 +2742,19 @@ msgstr ""
 "[クオンタイズ]ボタンをクリックするとポップアップが開き、現在の選択項目をクオ"
 "ンタイズする設定を指定できます。"
 
-#: ../../editing/quantization.rst:25
+#: ../../editing/quantization.rst:26
 msgid "Quantize to"
 msgstr "…にクオンタイズ"
 
-#: ../../editing/quantization.rst:26
+#: ../../editing/quantization.rst:27
 msgid "Select the note length and type to quantize to."
 msgstr "クオンタイズするノートの長さと種類を選択します。"
 
-#: ../../editing/quantization.rst:28
+#: ../../editing/quantization.rst:29
 msgid "Adjust"
 msgstr "調整する"
 
-#: ../../editing/quantization.rst:28
+#: ../../editing/quantization.rst:29
 msgid ""
 "Select if you want to quantize the start positions, the end positions (on "
 "objects that have length), or both."
@@ -2754,11 +2762,11 @@ msgstr ""
 "開始位置、終了位置(長さを持つオブジェクト)、またはその両方をクオンタイズする"
 "場合に選択します。"
 
-#: ../../editing/quantization.rst:32
+#: ../../editing/quantization.rst:33
 msgid "Amount"
 msgstr "量"
 
-#: ../../editing/quantization.rst:31
+#: ../../editing/quantization.rst:32
 msgid ""
 "Select the amount to quantize by. 100% will quantize to the given options "
 "fully, while 0% will perform no quantization."
@@ -2766,19 +2774,19 @@ msgstr ""
 "クオンタイズする量を選択します。100%の場合は指定されたオプションに完全にクオ"
 "ンタイズされ、0%の場合はクオンタイズされません。"
 
-#: ../../editing/quantization.rst:34
+#: ../../editing/quantization.rst:35
 msgid "Swing"
 msgstr "スイング"
 
-#: ../../editing/quantization.rst:35
+#: ../../editing/quantization.rst:36
 msgid "Select a swing amount."
 msgstr "スイング量を選択してください。"
 
-#: ../../editing/quantization.rst:39
+#: ../../editing/quantization.rst:40
 msgid "Randomization"
 msgstr "ランダム化"
 
-#: ../../editing/quantization.rst:37
+#: ../../editing/quantization.rst:38
 msgid ""
 "This will randomize the resulting positions by the given amount of ticks, "
 "and is useful for adding a \"human feel\" to quantized events."
@@ -2786,7 +2794,7 @@ msgstr ""
 "これは、結果として得られる位置を指定されたティック数でランダム化し、クオンタ"
 "イズされたイベントに \"人間味 \"を加えるのに便利です。"
 
-#: ../../editing/quantization.rst:41
+#: ../../editing/quantization.rst:42
 msgid ""
 "Clicking Quantize will perform the quantization and save the settings for "
 "quick quantization with Quick-Quantize."
@@ -2794,24 +2802,24 @@ msgstr ""
 "Quantizeをクリックすると、クオンタイズが実行され、Quick-Quantizeで素早くクオ"
 "ンタイズするための設定が保存されます。"
 
-#: ../../editing/quantization.rst:45
+#: ../../editing/quantization.rst:46
 msgid "Quick-Quantize"
 msgstr "クイック・クアンタイズ"
 
-#: ../../editing/quantization.rst:46
+#: ../../editing/quantization.rst:47
 msgid "This will perform quantization based on the last known settings."
 msgstr "これは、最後の既知の設定に基づいてクオンタイズを実行します。"
 
-#: ../../editing/snapping-grid-options.rst:8
+#: ../../editing/snapping-grid-options.rst:9
 msgid "Snapping and Grid Options"
 msgstr "スナップとグリッドのオプション"
 
-#: ../../editing/snapping-grid-options.rst:11
+#: ../../editing/snapping-grid-options.rst:12
 #, fuzzy
 msgid "Snap Toolbar"
 msgstr "メインツールバー"
 
-#: ../../editing/snapping-grid-options.rst:12
+#: ../../editing/snapping-grid-options.rst:13
 #, fuzzy
 msgid ""
 "Zrythm will snap according to the options currently specified by the snap "
@@ -2820,134 +2828,134 @@ msgstr ""
 "Zrythmは、現在スナップツールバーのボタンで指定されている設定に従ってスナップ"
 "します。"
 
-#: ../../editing/snapping-grid-options.rst:18
+#: ../../editing/snapping-grid-options.rst:19
 #, fuzzy
 msgid "Snap toolbar"
 msgstr "メインツールバー"
 
-#: ../../editing/snapping-grid-options.rst:20
+#: ../../editing/snapping-grid-options.rst:21
 #, fuzzy
 msgid "Snap to Grid"
 msgstr "スナップとグリッド"
 
-#: ../../editing/snapping-grid-options.rst:21
+#: ../../editing/snapping-grid-options.rst:22
 msgid "Turn snapping on/off"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:26
+#: ../../editing/snapping-grid-options.rst:27
 msgid "Keep Offset"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:23
+#: ../../editing/snapping-grid-options.rst:24
 msgid ""
 "When snapping, keep the offset of objects from the nearest snap point on "
 "their left"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:26
-#: ../../editing/snapping-grid-options.rst:32
+#: ../../editing/snapping-grid-options.rst:27
+#: ../../editing/snapping-grid-options.rst:33
 msgid "Requires Snap to Grid to be toggled on"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:32
+#: ../../editing/snapping-grid-options.rst:33
 #, fuzzy
 msgid "Snap to Events"
 msgstr "音符を聞く"
 
-#: ../../editing/snapping-grid-options.rst:29
+#: ../../editing/snapping-grid-options.rst:30
 msgid "When snapping, snap to the start/end positions other objects"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:35
+#: ../../editing/snapping-grid-options.rst:36
 #, fuzzy
 msgid "Snap/Grid Options"
 msgstr "元に戻すオプション。"
 
-#: ../../editing/snapping-grid-options.rst:37
+#: ../../editing/snapping-grid-options.rst:38
 msgid ""
 "The Snap/Grid options control allows fine-tuning snapping behavior inside "
 "arrangers."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:43
+#: ../../editing/snapping-grid-options.rst:44
 #, fuzzy
 msgid "Snap/Grid options"
 msgstr "元に戻すオプション。"
 
-#: ../../editing/snapping-grid-options.rst:46
+#: ../../editing/snapping-grid-options.rst:47
 msgid "Snap"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:47
+#: ../../editing/snapping-grid-options.rst:48
 msgid ""
 "The Snap section controls the snapping behavior of the start position of "
 "objects."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:50
+#: ../../editing/snapping-grid-options.rst:51
 msgid "Note Length"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:51
+#: ../../editing/snapping-grid-options.rst:52
 #, fuzzy
 msgid "Note length to snap to"
 msgstr "スナップするノートの長さ。"
 
-#: ../../editing/snapping-grid-options.rst:53
+#: ../../editing/snapping-grid-options.rst:54
 msgid "Triplet (t)"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:53
+#: ../../editing/snapping-grid-options.rst:54
 msgid "Use triplet note (2/3rds of the selected note length)"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:56
+#: ../../editing/snapping-grid-options.rst:57
 msgid "Dotted (.)"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:56
+#: ../../editing/snapping-grid-options.rst:57
 msgid "Use dotted note (3/2nds, or 1.5 times the selected note length)"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:59
+#: ../../editing/snapping-grid-options.rst:60
 #, fuzzy
 msgid "Adaptive"
 msgstr "適応型グリッド"
 
-#: ../../editing/snapping-grid-options.rst:59
+#: ../../editing/snapping-grid-options.rst:60
 msgid "Adapt snapping to the current zoom level"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:62
+#: ../../editing/snapping-grid-options.rst:63
 msgid "Length"
 msgstr "長さ"
 
-#: ../../editing/snapping-grid-options.rst:63
+#: ../../editing/snapping-grid-options.rst:64
 msgid "The Length section controls the default length of objects."
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:66
+#: ../../editing/snapping-grid-options.rst:67
 #, fuzzy
 msgid "Link"
 msgstr "プラグイン"
 
-#: ../../editing/snapping-grid-options.rst:67
+#: ../../editing/snapping-grid-options.rst:68
 msgid "Use the same options as Snap"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:68
+#: ../../editing/snapping-grid-options.rst:69
 msgid "Last Object"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:69
+#: ../../editing/snapping-grid-options.rst:70
 msgid "Use the length of the last created object"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:8
+#: ../../editing/timeline/arranger.rst:9
 msgid "Timeline Arranger"
 msgstr "タイムラインアレンジャー"
 
-#: ../../editing/timeline/arranger.rst:10
+#: ../../editing/timeline/arranger.rst:11
 #, fuzzy
 msgid ""
 "The timeline arranger is the main area where the song is composed. It "
@@ -2959,7 +2967,7 @@ msgstr ""
 "して配置されたリージョンなどのイベントのコレクションで構成されます。一部のイ"
 "ベントは、クリックすると別のウィンドウを開いて編集します。"
 
-#: ../../editing/timeline/arranger.rst:19
+#: ../../editing/timeline/arranger.rst:20
 msgid ""
 "The timeline arranger is split into a top arranger that remains fixed on top "
 "and a bottom arranger below it. This way you can pin tracks you want to "
@@ -2969,55 +2977,55 @@ msgstr ""
 "イムラインに分割されます。これにより、常に一番上に表示するトラックをピン留め"
 "できます。"
 
-#: ../../editing/timeline/arranger.rst:25
+#: ../../editing/timeline/arranger.rst:26
 msgid "Arranger Objects"
 msgstr "アレンジャー オブジェクト"
 
-#: ../../editing/timeline/arranger.rst:26
+#: ../../editing/timeline/arranger.rst:27
 msgid "The following arranger objects can exist inside the timeline."
 msgstr "タイムライン内に次のアレンジャー オブジェクトを配置できます。"
 
-#: ../../editing/timeline/arranger.rst:33
+#: ../../editing/timeline/arranger.rst:34
 msgid ""
 "Regions (or :term:`clips <Clip>`) are containers for events or data (such as "
 "MIDI notes and audio clips - see below) that can be edited in an :ref:"
 "`editor <editors>`. Regions can be repeated, like below."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:42 ../../glossary/intro.rst:134
+#: ../../editing/timeline/arranger.rst:43 ../../glossary/intro.rst:135
 msgid "Region"
 msgstr "リージョン"
 
-#: ../../editing/timeline/arranger.rst:44
+#: ../../editing/timeline/arranger.rst:45
 msgid "The following types of regions exist."
 msgstr "次の種類のリージョンがあります。"
 
-#: ../../editing/timeline/arranger.rst:47
+#: ../../editing/timeline/arranger.rst:48
 msgid "Audio Regions"
 msgstr "オーディオリージョン"
 
-#: ../../editing/timeline/arranger.rst:48
+#: ../../editing/timeline/arranger.rst:49
 msgid "Audio regions contain audio clips from audio files."
 msgstr ""
 "オーディオリージョンには、オーディオファイルのオーディオデータが含まれていま"
 "す。"
 
-#: ../../editing/timeline/arranger.rst:53
+#: ../../editing/timeline/arranger.rst:54
 #, fuzzy
 msgid "Audio region"
 msgstr "オーディオリージョン"
 
-#: ../../editing/timeline/arranger.rst:55
+#: ../../editing/timeline/arranger.rst:56
 msgid "Audio regions belong to track lanes and appear inside Audio tracks."
 msgstr ""
 "オーディオリージョンは、トラックレーンに属し、オーディオトラック内に表示され"
 "ます。"
 
-#: ../../editing/timeline/arranger.rst:61
+#: ../../editing/timeline/arranger.rst:62
 msgid "Audio track with audio region"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:63
+#: ../../editing/timeline/arranger.rst:64
 msgid ""
 "Double-clicking an audio region will bring up the :doc:`Audio Editor <../../"
 "editing/clip-editors/audio-editor>`."
@@ -3025,19 +3033,19 @@ msgstr ""
 "オーディオリージョンをダブルクリックすると、 :doc:`オーディオエディター "
 "<../../editing/clip-editors/audio-editor>` が表示されます。"
 
-#: ../../editing/timeline/arranger.rst:67
+#: ../../editing/timeline/arranger.rst:68
 msgid "MIDI Regions"
 msgstr "MIDIリージョン"
 
-#: ../../editing/timeline/arranger.rst:68
+#: ../../editing/timeline/arranger.rst:69
 msgid "MIDI regions contain :term:`MIDI` notes."
 msgstr "MIDI リージョンには :term:`MIDI` ノートが含まれています。"
 
-#: ../../editing/timeline/arranger.rst:73
+#: ../../editing/timeline/arranger.rst:74
 msgid "MIDI region"
 msgstr "MIDI リージョン"
 
-#: ../../editing/timeline/arranger.rst:75
+#: ../../editing/timeline/arranger.rst:76
 msgid ""
 "MIDI regions belong to track lanes and appear inside MIDI or Instrument "
 "tracks."
@@ -3045,12 +3053,12 @@ msgstr ""
 "MIDIリージョンは、トラックレーンに属し、MIDIトラックやインストゥルメントト"
 "ラックの中に表示されます。"
 
-#: ../../editing/timeline/arranger.rst:81
+#: ../../editing/timeline/arranger.rst:82
 #, fuzzy
 msgid "MIDI track with MIDI region"
 msgstr "新しい MIDI リージョンを返します。"
 
-#: ../../editing/timeline/arranger.rst:83
+#: ../../editing/timeline/arranger.rst:84
 msgid ""
 "Double-clicking a MIDI region will bring up the :doc:`Piano Roll <../../"
 "editing/clip-editors/piano-roll>`."
@@ -3058,29 +3066,29 @@ msgstr ""
 "MIDIリージョンをダブルクリックすると、 :doc:`ピアノロール <../../editing/"
 "clip-editors/piano-roll>` が表示されます。"
 
-#: ../../editing/timeline/arranger.rst:87
+#: ../../editing/timeline/arranger.rst:88
 msgid "Automation Regions"
 msgstr "オートメーションリージョン"
 
-#: ../../editing/timeline/arranger.rst:88
+#: ../../editing/timeline/arranger.rst:89
 msgid "Automation regions contain automation events."
 msgstr ""
 "オートメーション・リージョンには、オートメーション・イベントが含まれます。"
 
-#: ../../editing/timeline/arranger.rst:93
+#: ../../editing/timeline/arranger.rst:94
 #, fuzzy
 msgid "Automation region"
 msgstr "オートメーションリージョン"
 
-#: ../../editing/timeline/arranger.rst:95
+#: ../../editing/timeline/arranger.rst:96
 msgid "Automation regions appear inside automation lanes."
 msgstr "オートメーションリージョンはオートメーションレーン内に表示されます。"
 
-#: ../../editing/timeline/arranger.rst:100
+#: ../../editing/timeline/arranger.rst:101
 msgid "Automation lane with automation region"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:102
+#: ../../editing/timeline/arranger.rst:103
 msgid ""
 "Double-clicking an automation region will bring up the :doc:`Automation "
 "Editor <../../editing/clip-editors/automation-editor>`."
@@ -3088,29 +3096,29 @@ msgstr ""
 "オートメーションリージョンをダブルクリックすると、 :doc:`オートメーションエ"
 "ディター <../../editing/clip-editors/automation-editor>` が表示されます。"
 
-#: ../../editing/timeline/arranger.rst:107
+#: ../../editing/timeline/arranger.rst:108
 msgid "Chord regions"
 msgstr "コードリージョン"
 
-#: ../../editing/timeline/arranger.rst:108
+#: ../../editing/timeline/arranger.rst:109
 msgid "Chord regions contain sequences of chords."
 msgstr "コード・リージョンは、コードのシーケンスを含みます。"
 
-#: ../../editing/timeline/arranger.rst:113
+#: ../../editing/timeline/arranger.rst:114
 #, fuzzy
 msgid "Chord region"
 msgstr "コードリージョン"
 
-#: ../../editing/timeline/arranger.rst:115
+#: ../../editing/timeline/arranger.rst:116
 msgid "Chord regions appear inside the chord track."
 msgstr "コード リージョンは、コード トラック内に表示されます。"
 
-#: ../../editing/timeline/arranger.rst:120
+#: ../../editing/timeline/arranger.rst:121
 #, fuzzy
 msgid "Chord track with chord region"
 msgstr "上のコードリージョン内のコードオブジェクト。"
 
-#: ../../editing/timeline/arranger.rst:122
+#: ../../editing/timeline/arranger.rst:123
 msgid ""
 "Double-clicking a chord region will bring up the :doc:`Chord Editor <../../"
 "editing/clip-editors/chord-editor>`."
@@ -3118,7 +3126,7 @@ msgstr ""
 "コード・リージョンをダブルクリックすると、 :doc:`コードエディター <../../"
 "editing/clip-editors/chord-editor>` が表示されます。"
 
-#: ../../editing/timeline/arranger.rst:127
+#: ../../editing/timeline/arranger.rst:128
 msgid ""
 "Markers are used to mark the start of a logical section inside the song, "
 "such as `Chorus` or `Intro`."
@@ -3126,19 +3134,19 @@ msgstr ""
 "マーカーは、 `コーラス` や `イントロ` のような、曲の中の論理的なセクションの"
 "始まりをマークするために使われます。"
 
-#: ../../editing/timeline/arranger.rst:134 ../../tracks/track-types.rst:50
+#: ../../editing/timeline/arranger.rst:135 ../../tracks/track-types.rst:50
 msgid "Marker"
 msgstr "マーカー"
 
-#: ../../editing/timeline/arranger.rst:136
+#: ../../editing/timeline/arranger.rst:137
 msgid "Markers appear inside the marker track."
 msgstr "マーカーはマーカー トラック内に表示されます。"
 
-#: ../../editing/timeline/arranger.rst:141
+#: ../../editing/timeline/arranger.rst:142
 msgid "Marker track with marker"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:143
+#: ../../editing/timeline/arranger.rst:144
 msgid ""
 "There are two special markers that signify the start and end of the song "
 "that are used for exporting the song and cannot be deleted."
@@ -3146,11 +3154,11 @@ msgstr ""
 "曲の書き出しに使用され、削除できない曲の開始と終了を示す 2 つの特殊なマーカー"
 "があります。"
 
-#: ../../editing/timeline/arranger.rst:148
+#: ../../editing/timeline/arranger.rst:149
 msgid "Scales"
 msgstr "スケール（音階）"
 
-#: ../../editing/timeline/arranger.rst:149
+#: ../../editing/timeline/arranger.rst:150
 msgid ""
 "Scales are used to indicate the start of a section using a specific musical "
 "scale."
@@ -3158,33 +3166,33 @@ msgstr ""
 "スケール（音階）は、特定の音階を使用したセクションの開始を示すために使用され"
 "ます。"
 
-#: ../../editing/timeline/arranger.rst:155
+#: ../../editing/timeline/arranger.rst:156
 #, fuzzy
 msgid "Scale"
 msgstr "スケール（音階）"
 
-#: ../../editing/timeline/arranger.rst:157
+#: ../../editing/timeline/arranger.rst:158
 msgid "Scales appear inside the Chord track."
 msgstr "スケールはコード トラック内に表示されます。"
 
-#: ../../editing/timeline/arranger.rst:162
+#: ../../editing/timeline/arranger.rst:163
 #, fuzzy
 msgid "Chord track with scale"
 msgstr "コード・リージョン、音階"
 
-#: ../../editing/timeline/arranger.rst:165
+#: ../../editing/timeline/arranger.rst:166
 msgid "Editing Regions"
 msgstr "リージョンの編集"
 
-#: ../../editing/timeline/arranger.rst:166
+#: ../../editing/timeline/arranger.rst:167
 msgid "The following operations apply to regions."
 msgstr "次の操作はリージョンに適用されます。"
 
-#: ../../editing/timeline/arranger.rst:169
+#: ../../editing/timeline/arranger.rst:170
 msgid "Looping"
 msgstr "ループ"
 
-#: ../../editing/timeline/arranger.rst:170
+#: ../../editing/timeline/arranger.rst:171
 msgid ""
 "Regions can be repeated, and hence they have :ref:`editable loop points and "
 "a clip start position <editing/clip-editors/ruler:Markers>` in the :doc:"
@@ -3192,7 +3200,7 @@ msgid ""
 "(repeating) behavior."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:176
+#: ../../editing/timeline/arranger.rst:177
 msgid ""
 "Regions can also be looped inside the timeline, by moving the cursor to the "
 "bottom-left or bottom-right edge of the region, then clicking and dragging."
@@ -3200,11 +3208,11 @@ msgstr ""
 "リージョンは、カーソルをリージョンの左下または右下の端に移動し、クリックして"
 "ドラッグすることにより、タイムライン内でループすることもできます。"
 
-#: ../../editing/timeline/arranger.rst:184
+#: ../../editing/timeline/arranger.rst:185
 msgid "Looping (loop-resizing) a region"
 msgstr "リージョンのループ（ループ・リサイズ）"
 
-#: ../../editing/timeline/arranger.rst:186
+#: ../../editing/timeline/arranger.rst:187
 msgid ""
 "If the region is already repeated, it cannot be resized anymore until its "
 "loop points match exactly the region's start and end points."
@@ -3213,22 +3221,22 @@ msgstr ""
 "始点と終了点に正確に一致するまで、ループ・リサイズ以上のサイズ変更はできませ"
 "ん。"
 
-#: ../../editing/timeline/arranger.rst:191
+#: ../../editing/timeline/arranger.rst:192
 msgid "Link-Moving"
 msgstr "リンク・移動"
 
-#: ../../editing/timeline/arranger.rst:192
+#: ../../editing/timeline/arranger.rst:193
 msgid "Linked regions can be created by holding down :kbd:`Alt` while moving."
 msgstr ""
 "リンクされたリージョンは、 :kbd:`Alt` を押しながら移動することで作成できま"
 "す。"
 
-#: ../../editing/timeline/arranger.rst:198
+#: ../../editing/timeline/arranger.rst:199
 #, fuzzy
 msgid "Link-moving a MIDI region"
 msgstr "リージョンの複製・移動"
 
-#: ../../editing/timeline/arranger.rst:200
+#: ../../editing/timeline/arranger.rst:201
 msgid ""
 "You can verify that a link exists on a region by the link icon that shows in "
 "the top right."
@@ -3236,54 +3244,54 @@ msgstr ""
 "リージョン上にリンクが存在することは、右上に表示されるリンク アイコンで確認で"
 "きます。"
 
-#: ../../editing/timeline/arranger.rst:206
+#: ../../editing/timeline/arranger.rst:207
 #, fuzzy
 msgid "Linked MIDI regions"
 msgstr "オーディオリージョン"
 
-#: ../../editing/timeline/arranger.rst:209
+#: ../../editing/timeline/arranger.rst:210
 msgid "Renaming"
 msgstr "名前の変更"
 
-#: ../../editing/timeline/arranger.rst:210
+#: ../../editing/timeline/arranger.rst:211
 msgid "Regions can be renamed by selecting them and pressing :kbd:`F2`."
 msgstr ""
 "リージョンを選択して :kbd:`F2` を押すと、リージョンの名前を変更できます。"
 
-#: ../../editing/timeline/arranger.rst:216
+#: ../../editing/timeline/arranger.rst:217
 msgid "Renaming a region"
 msgstr "リージョン名の変更"
 
-#: ../../editing/timeline/arranger.rst:219
+#: ../../editing/timeline/arranger.rst:220
 msgid "Adjusting Fades"
 msgstr "フェードの調整"
 
-#: ../../editing/timeline/arranger.rst:220
+#: ../../editing/timeline/arranger.rst:221
 msgid ""
 "Audio regions can have fades. Fades are gradual increases or decreases in "
 "the level of the audio signal, and their positions can be adjusted by "
 "clicking and dragging the top left/right corners of the region."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:229
+#: ../../editing/timeline/arranger.rst:230
 msgid "Adjusting fade out point (click & drag)"
 msgstr "フェードアウトポイントの調整 (クリック＆ドラッグ)"
 
-#: ../../editing/timeline/arranger.rst:234
+#: ../../editing/timeline/arranger.rst:235
 msgid "Adjusting fade out point (drop)"
 msgstr "フェードアウトポイントの調整 (ドロップ)"
 
-#: ../../editing/timeline/arranger.rst:236
+#: ../../editing/timeline/arranger.rst:237
 msgid ""
 "Clicking and dragging the grey part up or down will adjust the curviness of "
 "the fade."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:242
+#: ../../editing/timeline/arranger.rst:243
 msgid "Adjusting curviness"
 msgstr "曲率の調整"
 
-#: ../../editing/timeline/arranger.rst:244
+#: ../../editing/timeline/arranger.rst:245
 #, fuzzy
 msgid ""
 "The type of fade algorithm used can also be changed by right-clicking on the "
@@ -3292,41 +3300,41 @@ msgstr ""
 "トラックを右クリックして :zbutton:`Delete` を選択すると、トラックを削除するこ"
 "とができます。"
 
-#: ../../editing/timeline/arranger.rst:251
+#: ../../editing/timeline/arranger.rst:252
 msgid "Fade context menu"
 msgstr "フェードのコンテキストメニュー"
 
-#: ../../editing/timeline/arranger.rst:253
+#: ../../editing/timeline/arranger.rst:254
 msgid "The various types of fade algorithms available are illustrated below."
 msgstr "フェードのアルゴリズムには、以下のような種類があります。"
 
-#: ../../editing/timeline/arranger.rst:256
+#: ../../editing/timeline/arranger.rst:257
 msgid "Fade algorithms"
 msgstr "フェードのアルゴリズム"
 
-#: ../../editing/timeline/arranger.rst:261
+#: ../../editing/timeline/arranger.rst:262
 msgid "Linear"
 msgstr "リニア (Linear)"
 
-#: ../../editing/timeline/arranger.rst:266
+#: ../../editing/timeline/arranger.rst:267
 msgid "Exponential"
 msgstr "指数関数"
 
-#: ../../editing/timeline/arranger.rst:271
+#: ../../editing/timeline/arranger.rst:272
 msgid "Elliptic (Superellipse)"
 msgstr "超楕円 (Superellipse)"
 
-#: ../../editing/timeline/arranger.rst:278
+#: ../../editing/timeline/arranger.rst:279
 msgid ""
 "All audio regions have some additional, built-in fade in and fade out that "
 "cannot be disabled. This is used to avoid clipping and should be unnoticable."
 msgstr ""
 
-#: ../../editing/timeline/intro.rst:8
+#: ../../editing/timeline/intro.rst:9
 msgid "Timeline"
 msgstr "タイムライン"
 
-#: ../../editing/timeline/overview.rst:7
+#: ../../editing/timeline/overview.rst:8
 #, fuzzy
 msgid ""
 "Editing in the timeline is the most common workflow inside Zrythm. The "
@@ -3337,11 +3345,11 @@ msgstr ""
 "セクションは、左側のトラックリストと右側のルーラー/アレンジャーで構成されてい"
 "ます。"
 
-#: ../../editing/timeline/overview.rst:19
+#: ../../editing/timeline/overview.rst:20
 msgid "Tracklist"
 msgstr "トラックリスト"
 
-#: ../../editing/timeline/overview.rst:21
+#: ../../editing/timeline/overview.rst:22
 #, fuzzy
 msgid ""
 "The Tracklist contains all of the Tracks in the project. It is split into "
@@ -3350,7 +3358,7 @@ msgstr ""
 "トラックリストには、プロジェクト内のすべてのトラックが含まれます。これは、上"
 "部(ピン留め)トラックリストと下部(メイン)トラックリストに分割されます。"
 
-#: ../../editing/timeline/overview.rst:28
+#: ../../editing/timeline/overview.rst:29
 #, fuzzy
 msgid ""
 "At the top of the tracklist, the number of visible tracks over the number of "
@@ -3360,7 +3368,7 @@ msgstr ""
 "トラックリストの上部には、トラックの合計数に対する表示トラックの数と、名前で"
 "トラックを検索するための検索ボックスが表示されます(現時点では動作しません)。"
 
-#: ../../editing/timeline/overview.rst:33
+#: ../../editing/timeline/overview.rst:34
 msgid ""
 "You can pin tracks to make them stick to the top, and this is useful for "
 "chord progressions and markers, so you can always see them."
@@ -3368,21 +3376,21 @@ msgstr ""
 "トラックをピンで留めてトップにくっつけることができるので、コード進行やマー"
 "カーにも便利で、いつでも見られるようになっています。"
 
-#: ../../editing/timeline/overview.rst:37
+#: ../../editing/timeline/overview.rst:38
 msgid "The rest of the tracklist is briefly touched upon in :ref:`tracklist`."
 msgstr ""
 "トラックリストの残りの部分については :ref:`tracklist` で簡単に触れています。"
 
-#: ../../editing/timeline/overview.rst:40
+#: ../../editing/timeline/overview.rst:41
 msgid "For more details about track operations, see the :ref:`tracks` section."
 msgstr ""
 "トラック操作の詳細については、 :ref:`tracks` のセクションを参照してください。"
 
-#: ../../editing/timeline/overview.rst:44
+#: ../../editing/timeline/overview.rst:45
 msgid "Minimap"
 msgstr "ミニマップ"
 
-#: ../../editing/timeline/overview.rst:45
+#: ../../editing/timeline/overview.rst:46
 #, fuzzy
 msgid ""
 "The timeline minimap is a little box that represents the current visible "
@@ -3392,20 +3400,20 @@ msgstr ""
 "タイムラインミニマップは、タイムラインの現在の表示領域を表す小さなボックスで"
 "す。この領域を移動したり、サイズを変更したりして、表示領域を変更できます。"
 
-#: ../../editing/timeline/overview.rst:52
+#: ../../editing/timeline/overview.rst:53
 msgid ""
 "The rest of the timeline elements are explained in the following sections."
 msgstr "タイムラインの残りの要素については、以下のセクションで説明します。"
 
-#: ../../editing/timeline/ruler.rst:8
+#: ../../editing/timeline/ruler.rst:9
 msgid "Timeline Ruler"
 msgstr "タイムラインルーラー"
 
-#: ../../editing/timeline/ruler.rst:10
+#: ../../editing/timeline/ruler.rst:11
 msgid "The ruler is mainly used to control looping and playback."
 msgstr "ルーラーは主にループと再生を制御するために使用されます。"
 
-#: ../../editing/timeline/ruler.rst:16
+#: ../../editing/timeline/ruler.rst:17
 msgid ""
 "The ruler will display more or less information depending on the current "
 "zoom level. It will also display the following markers/indicators discussed "
@@ -3415,27 +3423,27 @@ msgstr ""
 "た、 :ref:`loop-points-and-markers` で説明した以下のマーカーや指標も表示され"
 "ます。"
 
-#: ../../editing/timeline/ruler.rst:21
+#: ../../editing/timeline/ruler.rst:22
 msgid "Cue point"
 msgstr "キューポイント"
 
-#: ../../editing/timeline/ruler.rst:22
+#: ../../editing/timeline/ruler.rst:23
 msgid "Displayed as a blue, right-pointing arrow."
 msgstr "青色の右向き矢印で表示されます。"
 
-#: ../../editing/timeline/ruler.rst:23
+#: ../../editing/timeline/ruler.rst:24
 msgid "Playhead position"
 msgstr "再生ヘッドの位置"
 
-#: ../../editing/timeline/ruler.rst:24
+#: ../../editing/timeline/ruler.rst:25
 msgid "Shown as a grey, down-facing arrow."
 msgstr "灰色の下向きの矢印で表示されます。"
 
-#: ../../editing/timeline/ruler.rst:28
+#: ../../editing/timeline/ruler.rst:29
 msgid "Loop points"
 msgstr "ループポイント"
 
-#: ../../editing/timeline/ruler.rst:26
+#: ../../editing/timeline/ruler.rst:27
 #, fuzzy
 msgid ""
 "Shown as 2 green arrows, and the area between them is shown in bright green "
@@ -3445,7 +3453,7 @@ msgstr ""
 "い緑色で表示され、無効になっている場合はグレーで表示されます。ドラッグして位"
 "置を変更できます。"
 
-#: ../../editing/timeline/ruler.rst:30
+#: ../../editing/timeline/ruler.rst:31
 #, fuzzy
 msgid ""
 "Clicking and dragging on empty space in the bottom half of the ruler will "
@@ -3454,11 +3462,11 @@ msgstr ""
 "ルーラーの空の領域をクリックしてドラッグすると、再生ヘッドの位置を変更できま"
 "す。"
 
-#: ../../editing/timeline/ruler.rst:35
+#: ../../editing/timeline/ruler.rst:36
 msgid "Setting the Cue Point"
 msgstr "キューポイントを設定する"
 
-#: ../../editing/timeline/ruler.rst:36
+#: ../../editing/timeline/ruler.rst:37
 msgid ""
 "Double click inside the ruler to set the cue point. This will be used to "
 "return to when playback is stopped."
@@ -3466,67 +3474,67 @@ msgstr ""
 "ルーラーの内側をダブルクリックするとキューポイントを設定します。これは再生停"
 "止時に戻るときに使用します。"
 
-#: ../../editing/timeline/ruler.rst:40
+#: ../../editing/timeline/ruler.rst:41
 #, fuzzy
 msgid "Range Selection"
 msgstr "言語の選択"
 
-#: ../../editing/timeline/ruler.rst:41
+#: ../../editing/timeline/ruler.rst:42
 msgid ""
 "Clicking and dragging in the top half of the ruler will create a :term:"
 "`range <Range>` selection. If an existing range exists, you can click an "
 "drag it to move it."
 msgstr ""
 
-#: ../../editing/timeline/ruler.rst:49
+#: ../../editing/timeline/ruler.rst:50
 #, fuzzy
 msgid "Range selection"
 msgstr "言語の選択"
 
-#: ../../editing/timeline/toolbar.rst:6
+#: ../../editing/timeline/toolbar.rst:7
 msgid "Toolbar"
 msgstr "ツールバー"
 
-#: ../../editing/timeline/toolbar.rst:8
+#: ../../editing/timeline/toolbar.rst:9
 msgid "The timeline has its own toolbar for timeline-specific operations."
 msgstr ""
 "タイムラインには、タイムラインに特化した操作のためのツールバーがあります。"
 
-#: ../../editing/timeline/toolbar.rst:14
+#: ../../editing/timeline/toolbar.rst:15
 #, fuzzy
 msgid "Timeline toolbar"
 msgstr "タイムラインルーラー"
 
-#: ../../editing/timeline/toolbar.rst:16
+#: ../../editing/timeline/toolbar.rst:17
 #, fuzzy
 msgid "It includes the following sections:"
 msgstr "Zrythm は、ポジションに次の形式を使用しています。"
 
-#: ../../editing/timeline/toolbar.rst:20
+#: ../../editing/timeline/toolbar.rst:21
 #, fuzzy
 msgid "Audio region options"
 msgstr "オーディオリージョンセクション"
 
-#: ../../editing/timeline/toolbar.rst:21
+#: ../../editing/timeline/toolbar.rst:22
 #, fuzzy
 msgid "Range actions"
 msgstr "翻訳"
 
-#: ../../editing/timeline/toolbar.rst:23
+#: ../../editing/timeline/toolbar.rst:24
 #, fuzzy
 msgid "Object merge options"
 msgstr "オブジェクト操作"
 
-#: ../../editing/timeline/toolbar.rst:28
+#: ../../editing/timeline/toolbar.rst:29
 #, fuzzy
 msgid "Audio Region Options"
 msgstr "オーディオリージョンセクション"
 
-#: ../../editing/timeline/toolbar.rst:31
+#: ../../editing/timeline/toolbar.rst:32
 msgid "Musical Mode"
 msgstr "ミュージカルモード"
 
-#: ../../editing/timeline/toolbar.rst:32
+#: ../../editing/timeline/toolbar.rst:33
 #, fuzzy
 msgid ""
 "When this is on, audio regions will be automatically time-stretched to match "
@@ -3539,54 +3547,54 @@ msgstr ""
 "ディオ・リージョンはタイムストレッチされることなく、新しいBPMに合わせて繰り返"
 "されます。"
 
-#: ../../editing/timeline/toolbar.rst:39
+#: ../../editing/timeline/toolbar.rst:40
 #, fuzzy
 msgid "Range Actions"
 msgstr "翻訳"
 
-#: ../../editing/timeline/toolbar.rst:41
+#: ../../editing/timeline/toolbar.rst:42
 msgid "Range actions are performed on the selected :term:`Range`."
 msgstr ""
 
-#: ../../editing/timeline/toolbar.rst:45
+#: ../../editing/timeline/toolbar.rst:46
 msgid "Insert Silence"
 msgstr ""
 
-#: ../../editing/timeline/toolbar.rst:45
+#: ../../editing/timeline/toolbar.rst:46
 msgid ""
 "Inserts silence at the selected range and pushes all events in the range "
 "forward"
 msgstr ""
 
-#: ../../editing/timeline/toolbar.rst:49
+#: ../../editing/timeline/toolbar.rst:50
 #, fuzzy
 msgid "Remove Range"
 msgstr "時間の範囲"
 
-#: ../../editing/timeline/toolbar.rst:48
+#: ../../editing/timeline/toolbar.rst:49
 msgid ""
 "Deletes all events in the range and moves events after the range backwards"
 msgstr ""
 
-#: ../../editing/timeline/toolbar.rst:52
+#: ../../editing/timeline/toolbar.rst:53
 #, fuzzy
 msgid "Object Merging"
 msgstr "プロジェクト設定。"
 
-#: ../../editing/timeline/toolbar.rst:55
+#: ../../editing/timeline/toolbar.rst:56
 #, fuzzy
 msgid "Merge Selections"
 msgstr "プロジェクトの選択"
 
-#: ../../editing/timeline/toolbar.rst:55
+#: ../../editing/timeline/toolbar.rst:56
 msgid "Merge the selected objects into a single object, if possible"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:8
+#: ../../exporting/audio-and-midi.rst:9
 msgid "Audio & MIDI"
 msgstr "オーディオ＆MIDI"
 
-#: ../../exporting/audio-and-midi.rst:10
+#: ../../exporting/audio-and-midi.rst:11
 #, fuzzy
 msgid ""
 "The Export dialog below is used to export the project or part of the project "
@@ -3597,19 +3605,19 @@ msgstr ""
 "オまたはMIDIファイルに書き出すために使用されます。 :ref:`zrythm-interface/"
 "main-toolbar:Export As` をクリックしてアクセスできます。"
 
-#: ../../exporting/audio-and-midi.rst:18
+#: ../../exporting/audio-and-midi.rst:19
 msgid "Export dialog"
 msgstr "エクスポートダイアログ"
 
-#: ../../exporting/audio-and-midi.rst:21
+#: ../../exporting/audio-and-midi.rst:22
 msgid "Fields"
 msgstr "項目"
 
-#: ../../exporting/audio-and-midi.rst:24
+#: ../../exporting/audio-and-midi.rst:25
 msgid "Artist and Genre"
 msgstr "アーティストとジャンル"
 
-#: ../../exporting/audio-and-midi.rst:25
+#: ../../exporting/audio-and-midi.rst:26
 msgid ""
 "These will be included as metadata to the exported file if the format "
 "supports it. The title used will be the project title."
@@ -3618,30 +3626,30 @@ msgstr ""
 "ファイルにメタデータとして含まれます。使用するタイトルはプロジェクトタイトル"
 "になります。"
 
-#: ../../exporting/audio-and-midi.rst:30
+#: ../../exporting/audio-and-midi.rst:31
 msgid "Format"
 msgstr "フォーマット"
 
-#: ../../exporting/audio-and-midi.rst:31
+#: ../../exporting/audio-and-midi.rst:32
 msgid ""
 "The format to export to. The formats mentioned in :ref:`Supported Formats "
 "<plugins-files/audio-midi-files/overview:Supported Formats>` are available, "
 "with the exception of MP3."
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:36
+#: ../../exporting/audio-and-midi.rst:37
 msgid "Dither"
 msgstr "ディザ"
 
-#: ../../exporting/audio-and-midi.rst:38 ../../tracks/inspector-page.rst:157
+#: ../../exporting/audio-and-midi.rst:39 ../../tracks/inspector-page.rst:157
 msgid "Implement."
 msgstr "実装。"
 
-#: ../../exporting/audio-and-midi.rst:41
+#: ../../exporting/audio-and-midi.rst:42
 msgid "Bit Depth"
 msgstr "ビット深度"
 
-#: ../../exporting/audio-and-midi.rst:42
+#: ../../exporting/audio-and-midi.rst:43
 msgid ""
 "This is the bit depth that will be used when exporting audio. The higher the "
 "bit depth the larger the file will be, but it will have better quality."
@@ -3649,11 +3657,11 @@ msgstr ""
 "これは、オーディオを書き出すときに使用されるビット深度です。ビット深度が高い"
 "ほどファイルは大きくなりますが、品質は向上します。"
 
-#: ../../exporting/audio-and-midi.rst:48
+#: ../../exporting/audio-and-midi.rst:49
 msgid "Time Range"
 msgstr "時間の範囲"
 
-#: ../../exporting/audio-and-midi.rst:49
+#: ../../exporting/audio-and-midi.rst:50
 msgid ""
 "The time range to export. You can choose to export the whole song (defined "
 "by the start/end markers), the current loop range or a custom time range."
@@ -3661,37 +3669,37 @@ msgstr ""
 "エクスポートする時間の範囲。曲全体(開始/終了マーカーで定義)、現在のループ範"
 "囲、またはカスタム時間の範囲をエクスポートすることができます。"
 
-#: ../../exporting/audio-and-midi.rst:54
+#: ../../exporting/audio-and-midi.rst:55
 msgid "Filename Pattern"
 msgstr "ファイル名のパターン"
 
-#: ../../exporting/audio-and-midi.rst:55
+#: ../../exporting/audio-and-midi.rst:56
 msgid "The pattern to use as the name of the file."
 msgstr "ファイルの名前として使用するパターン。"
 
-#: ../../exporting/audio-and-midi.rst:58
+#: ../../exporting/audio-and-midi.rst:59
 msgid "Mixdown"
 msgstr "ミックスダウン"
 
-#: ../../exporting/audio-and-midi.rst:59
+#: ../../exporting/audio-and-midi.rst:60
 msgid ""
 "When exporting the mixdown, sound from all selected tracks will be included "
 "in the resulting file. This is the option to use when exporting your song."
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:66
+#: ../../exporting/audio-and-midi.rst:67
 msgid "Export options for mixdown"
 msgstr "ミックスダウンの書き出し設定"
 
-#: ../../exporting/audio-and-midi.rst:71
+#: ../../exporting/audio-and-midi.rst:72
 msgid "Exported file"
 msgstr "書き出したファイル"
 
-#: ../../exporting/audio-and-midi.rst:74
+#: ../../exporting/audio-and-midi.rst:75
 msgid "Stems"
 msgstr "ステム"
 
-#: ../../exporting/audio-and-midi.rst:75
+#: ../../exporting/audio-and-midi.rst:76
 msgid ""
 "Exporting stems means that each selected track will be exported in its own "
 "file. This is useful when you want to share the components of your song "
@@ -3699,23 +3707,23 @@ msgid ""
 "bass as separate audio files."
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:85
+#: ../../exporting/audio-and-midi.rst:86
 msgid "Export options for stems"
 msgstr "ステムの書き出し設定"
 
-#: ../../exporting/audio-and-midi.rst:90
+#: ../../exporting/audio-and-midi.rst:91
 msgid "Exported files"
 msgstr "エクスポートされたファイル"
 
-#: ../../exporting/intro.rst:6
+#: ../../exporting/intro.rst:7
 msgid "Exporting"
 msgstr "エクスポート"
 
-#: ../../exporting/routing-graph.rst:8 ../../routing/connections.rst:96
+#: ../../exporting/routing-graph.rst:9 ../../routing/connections.rst:96
 msgid "Routing Graph"
 msgstr "ルーティング図"
 
-#: ../../exporting/routing-graph.rst:9
+#: ../../exporting/routing-graph.rst:10
 msgid ""
 "Zrythm allows you to export its routing graph. This is useful for debugging "
 "and also helps visualizing the internals of Zrythm."
@@ -3723,14 +3731,14 @@ msgstr ""
 "Zrythm はルーティング図をエクスポートすることができます。これはデバッグに便利"
 "で、Zrythmの内部を可視化するのにも役立ちます。"
 
-#: ../../exporting/routing-graph.rst:13
+#: ../../exporting/routing-graph.rst:14
 msgid ""
 "Clicking the :guilabel:`Export Graph` button in the :doc:`../zrythm-"
 "interface/main-toolbar` will show the following selection. The routing graph "
 "can be exported as either a PNG image or a .dot graph."
 msgstr ""
 
-#: ../../exporting/routing-graph.rst:22
+#: ../../exporting/routing-graph.rst:23
 msgid ""
 "For large projects, it may take a while to generate the PNG graph and the "
 "resulting image will be extremely large."
@@ -3743,15 +3751,15 @@ msgid "Getting Plugins, Instruments and Samples"
 msgstr "プラグイン、インストゥルメント、サンプルの入手"
 
 #: ../../getting-started/getting-plugins.rst:12
-#: ../../plugins-files/plugins/intro.rst:6
+#: ../../plugins-files/plugins/intro.rst:7
 msgid "Plugins"
 msgstr "プラグイン"
 
 #: ../../getting-started/getting-plugins.rst:14
+#, fuzzy
 msgid ""
 "Zrythm ships with a few bundled plugins to help users get started, but users "
-"are expected to download and install their own plugins that suit their "
-"preferences."
+"can also download and install their own plugins that suit their preferences."
 msgstr ""
 "Zrythmには、ユーザーが使い始めるのに役立ついくつかのプラグインが同梱されてい"
 "ますが、ユーザーは自分の好みに合ったプラグインをダウンロードしてインストール"
@@ -3921,15 +3929,15 @@ msgstr ""
 msgid "We will also be offering sample packs for download in the future."
 msgstr ""
 
-#: ../../getting-started/installation.rst:8
+#: ../../getting-started/installation.rst:9
 msgid "Installation"
 msgstr "インストール"
 
-#: ../../getting-started/installation.rst:13
+#: ../../getting-started/installation.rst:14
 msgid "Installers"
 msgstr "インストーラ"
 
-#: ../../getting-started/installation.rst:14
+#: ../../getting-started/installation.rst:15
 msgid ""
 "You can install the latest version of Zrythm for your distro or operating "
 "system using an installer from the `Download <https://www.zrythm.org/en/"
@@ -3939,7 +3947,7 @@ msgstr ""
 "download.html>`_ ページからインストーラーを使ってインストールすることができま"
 "す。"
 
-#: ../../getting-started/installation.rst:20
+#: ../../getting-started/installation.rst:21
 msgid ""
 "This is the easiest and recommended way to install the latest version for "
 "most users, and we provide support for it."
@@ -3947,23 +3955,23 @@ msgstr ""
 "これは、ほとんどのユーザーに最新バージョンをインストールする最も簡単で推奨さ"
 "れる方法であり、サポートを提供します。"
 
-#: ../../getting-started/installation.rst:24
+#: ../../getting-started/installation.rst:25
 msgid "The installers also include bundled plugins."
 msgstr "インストーラにはバンドルされているプラグインも含まれています。"
 
-#: ../../getting-started/installation.rst:27
+#: ../../getting-started/installation.rst:28
 msgid "Flatpak"
 msgstr "Flatpak"
 
-#: ../../getting-started/installation.rst:28
+#: ../../getting-started/installation.rst:29
 msgid "Zrythm is available on `Flathub`_ under the ID `org.zrythm.Zrythm`_."
 msgstr ""
 
-#: ../../getting-started/installation.rst:32
+#: ../../getting-started/installation.rst:33
 msgid "Distribution Repositories"
 msgstr ""
 
-#: ../../getting-started/installation.rst:33
+#: ../../getting-started/installation.rst:34
 #, fuzzy
 msgid ""
 "If Zrythm is available in your distro's repositories, you can also install "
@@ -3972,11 +3980,11 @@ msgstr ""
 "ディストリビューションが Zrythm パッケージを提供している場合は、そこからイン"
 "ストールすることもできます。"
 
-#: ../../getting-started/installation.rst:37
+#: ../../getting-started/installation.rst:38
 msgid "Building from Source"
 msgstr ""
 
-#: ../../getting-started/installation.rst:38
+#: ../../getting-started/installation.rst:39
 #, fuzzy
 msgid ""
 "You can build Zrythm from source, either using a `source distribution "
@@ -3987,7 +3995,7 @@ msgstr ""
 "zrythm.org/releases/>`_ または `git <https://git.zrythm.org/cgit/zrythm/>`_ "
 "を使用して、ソースから Zrythm をビルドすることもできます。"
 
-#: ../../getting-started/installation.rst:42
+#: ../../getting-started/installation.rst:43
 #, fuzzy
 msgid ""
 "See ``INSTALL.rst`` in the source distribution for installation instructions."
@@ -3995,20 +4003,20 @@ msgstr ""
 "インストール方法については、ソース配布物の ``INSTALL.md`` ファイルを参照して"
 "ください。"
 
-#: ../../getting-started/intro.rst:8
+#: ../../getting-started/intro.rst:9
 msgid "Getting Started"
 msgstr "はじめに"
 
-#: ../../getting-started/running-zrythm.rst:8
+#: ../../getting-started/running-zrythm.rst:9
 msgid "Running Zrythm"
 msgstr "Zrythmの実行"
 
-#: ../../getting-started/running-zrythm.rst:11
+#: ../../getting-started/running-zrythm.rst:12
 #, fuzzy
 msgid "Initial Configuration"
 msgstr "設定"
 
-#: ../../getting-started/running-zrythm.rst:13
+#: ../../getting-started/running-zrythm.rst:14
 #, fuzzy
 msgid ""
 "When you first run Zrythm, it will display a dialog that lets you configure "
@@ -4019,16 +4027,16 @@ msgstr ""
 "示されます。これには :term:`Zrythm user path` 、ユーザーインターフェースの言"
 "語、オーディオ/MIDI バックエンドが含まれます。"
 
-#: ../../getting-started/running-zrythm.rst:22
+#: ../../getting-started/running-zrythm.rst:23
 msgid "Initial configuration dialog"
 msgstr ""
 
-#: ../../getting-started/running-zrythm.rst:30
+#: ../../getting-started/running-zrythm.rst:31
 #, fuzzy
 msgid "Language"
 msgstr "選択範囲 (Range)"
 
-#: ../../getting-started/running-zrythm.rst:25
+#: ../../getting-started/running-zrythm.rst:26
 msgid ""
 "Zrythm lets you choose the language of the interface. The interface is "
 "already translated in `multiple languages <https://hosted.weblate.org/"
@@ -4039,27 +4047,27 @@ msgstr ""
 "すでに `複数の言語 <https://hosted.weblate.org/projects/zrythm/#languages>`_ "
 "で翻訳されているので、最も快適な言語を選択してください。"
 
-#: ../../getting-started/running-zrythm.rst:30
+#: ../../getting-started/running-zrythm.rst:31
 msgid "You must have a locale enabled for the language you want to use."
 msgstr "使用したい言語のロケールを有効にしておく必要があります。"
 
-#: ../../getting-started/running-zrythm.rst:33
+#: ../../getting-started/running-zrythm.rst:34
 msgid "Path"
 msgstr "パス"
 
-#: ../../getting-started/running-zrythm.rst:33
+#: ../../getting-started/running-zrythm.rst:34
 msgid "This is the :term:`Zrythm user path`."
 msgstr "これは :term:`Zrythm user path` です。"
 
-#: ../../getting-started/running-zrythm.rst:35
+#: ../../getting-started/running-zrythm.rst:36
 msgid "More settings are available in the :ref:`preferences`."
 msgstr ""
 
-#: ../../getting-started/running-zrythm.rst:39
+#: ../../getting-started/running-zrythm.rst:40
 msgid "Plugin Scan"
 msgstr "プラグインのスキャン"
 
-#: ../../getting-started/running-zrythm.rst:40
+#: ../../getting-started/running-zrythm.rst:41
 msgid ""
 "When the first run wizard is completed, Zrythm will start :doc:`scanning for "
 "plugins <../plugins-files/plugins/scanning>`."
@@ -4067,11 +4075,11 @@ msgstr ""
 "最初の実行ウィザードが完了すると、Zrythm は :doc:`プラグインのスキャン <../"
 "plugins-files/plugins/scanning>` を開始します。"
 
-#: ../../getting-started/running-zrythm.rst:48
+#: ../../getting-started/running-zrythm.rst:49
 msgid "Project Selection"
 msgstr "プロジェクトの選択"
 
-#: ../../getting-started/running-zrythm.rst:49
+#: ../../getting-started/running-zrythm.rst:50
 #, fuzzy
 msgid ""
 "Finally, Zrythm will ask you to :doc:`load or create a project <../projects/"
@@ -4082,24 +4090,24 @@ msgstr ""
 "saving-loading>` を尋ねてきます。そうすると :doc:`メインインターフェイス <../"
 "zrythm-interface/zrythm-interface-overview>` が表示されます。"
 
-#: ../../getting-started/running-zrythm.rst:58
+#: ../../getting-started/running-zrythm.rst:59
 #: ../../projects/saving-loading.rst:20
 msgid "Project selection"
 msgstr "プロジェクトの選択"
 
-#: ../../getting-started/running-zrythm.rst:63
+#: ../../getting-started/running-zrythm.rst:64
 msgid "Main interface"
 msgstr "メインインタフェース"
 
-#: ../../getting-started/system-requirements.rst:6
+#: ../../getting-started/system-requirements.rst:7
 msgid "System Requirements"
 msgstr "システム要件"
 
-#: ../../getting-started/system-requirements.rst:9
+#: ../../getting-started/system-requirements.rst:10
 msgid "Hardware"
 msgstr "ハードウェア"
 
-#: ../../getting-started/system-requirements.rst:10
+#: ../../getting-started/system-requirements.rst:11
 msgid ""
 "x86_64 (64-bit), i686 (32-bit), powerpc64le (PowerPC), armhf (ARMv7) or "
 "aarch64 (ARMv8)"
@@ -4107,23 +4115,23 @@ msgstr ""
 "x86_64 (64 ビット)、i686 (32 ビット)、powerpc64le (PowerPC)、armhf (ARMv7) ま"
 "たは aarch64 (ARMv8)"
 
-#: ../../getting-started/system-requirements.rst:13
+#: ../../getting-started/system-requirements.rst:14
 msgid "Operating System"
 msgstr "OS"
 
-#: ../../getting-started/system-requirements.rst:14
+#: ../../getting-started/system-requirements.rst:15
 msgid "GNU/Linux, FreeBSD, Windows or MacOS"
 msgstr "GNU/Linux、FreeBSD、WindowsまたはMacOS"
 
-#: ../../getting-started/system-requirements.rst:17
+#: ../../getting-started/system-requirements.rst:18
 msgid "Recommendations"
 msgstr "お勧め"
 
-#: ../../getting-started/system-requirements.rst:21
+#: ../../getting-started/system-requirements.rst:22
 msgid "CPU"
 msgstr "CPU"
 
-#: ../../getting-started/system-requirements.rst:20
+#: ../../getting-started/system-requirements.rst:21
 msgid ""
 "For smooth operation, we recommend using a CPU with at least 2GHz clock "
 "speed and at least 4 cores in total."
@@ -4131,12 +4139,12 @@ msgstr ""
 "スムーズな動作を実現するには、2GHz以上のクロック速度と、合計で最低4コアのCPU"
 "を使用することをお勧めします。"
 
-#: ../../getting-started/system-requirements.rst:24
+#: ../../getting-started/system-requirements.rst:25
 #: ../../tracks/track-controls.rst:37
 msgid "Monitor"
 msgstr "モニター"
 
-#: ../../getting-started/system-requirements.rst:24
+#: ../../getting-started/system-requirements.rst:25
 msgid ""
 "It is recommended to have at least 16 inches of monitor space to work "
 "efficiently with Zrythm."
@@ -4144,11 +4152,11 @@ msgstr ""
 "Zrythmで効率よく作業するためには、最低でも16インチのモニタースペースを確保す"
 "ることをお勧めします。"
 
-#: ../../getting-started/system-requirements.rst:28
+#: ../../getting-started/system-requirements.rst:29
 msgid "Audio interface"
 msgstr "オーディオインターフェイス"
 
-#: ../../getting-started/system-requirements.rst:27
+#: ../../getting-started/system-requirements.rst:28
 msgid ""
 "An audio interface offers low latency and better quality than integrated "
 "sound cards (especially if recording audio)."
@@ -4156,21 +4164,21 @@ msgstr ""
 "オーディオインターフェイスは、低レイテンシーと統合されたサウンドカードよりも"
 "優れた品質を提供します（特にオーディオを録音する場合）。"
 
-#: ../../getting-started/system-requirements.rst:32
+#: ../../getting-started/system-requirements.rst:33
 msgid "MIDI keyboard"
 msgstr "MIDIキーボード"
 
-#: ../../getting-started/system-requirements.rst:31
+#: ../../getting-started/system-requirements.rst:32
 #, fuzzy
 msgid ""
 "For quickly trying out melodies, recording and controlling knobs and buttons."
 msgstr "メロディをすぐに試したり、録音したりするのに便利です。"
 
-#: ../../getting-started/system-requirements.rst:35 ../../glossary/intro.rst:73
+#: ../../getting-started/system-requirements.rst:36 ../../glossary/intro.rst:74
 msgid "JACK"
 msgstr "JACK"
 
-#: ../../getting-started/system-requirements.rst:36
+#: ../../getting-started/system-requirements.rst:37
 #, python-format
 msgid ""
 "When using the :term:`JACK` backend, JACK needs to be set up and configured "
@@ -4181,68 +4189,68 @@ msgid ""
 "html>`_, so we will skip this part."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:45
+#: ../../getting-started/system-requirements.rst:46
 msgid "Memory Locking"
 msgstr "メモリーロック"
 
-#: ../../getting-started/system-requirements.rst:46
+#: ../../getting-started/system-requirements.rst:47
 msgid ""
 "Zrythm requires memory locking privileges for reliable, dropout-free "
 "operation. In short, if data is not locked into memory, it can be swapped by "
 "the kernel, causing xruns when attempting to access the data."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:53
+#: ../../getting-started/system-requirements.rst:54
 msgid "Realtime Scheduling"
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:54
+#: ../../getting-started/system-requirements.rst:55
 msgid ""
 "Zrythm requires realtime scheduling privileges for reliable, dropout-free "
 "operation. Realtime (RT) scheduling is a feature that enables applications "
 "to meet timing deadlines more reliably."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:60
+#: ../../getting-started/system-requirements.rst:61
 msgid "GNU/Linux"
 msgstr "GNU/Linux"
 
-#: ../../getting-started/system-requirements.rst:61
+#: ../../getting-started/system-requirements.rst:62
 msgid ""
 "To set up these privileges for your user, see `How do I configure my linux "
 "system to allow JACK to use realtime scheduling? <https://jackaudio.org/faq/"
 "linux_rt_config.html#systems-using-pam>`_."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:65
+#: ../../getting-started/system-requirements.rst:66
 msgid "FreeBSD"
 msgstr "FreeBSD"
 
-#: ../../getting-started/system-requirements.rst:66
+#: ../../getting-started/system-requirements.rst:67
 msgid ""
 "To set up these privileges for your user, change the user class' "
 "``memorylocked`` value in :file:`/etc/login.conf`."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:71
+#: ../../getting-started/system-requirements.rst:72
 msgid "Open File Limit"
 msgstr "開けるファイル数の制限"
 
-#: ../../getting-started/system-requirements.rst:72
+#: ../../getting-started/system-requirements.rst:73
 msgid ""
 "On startup, Zrythm will attempt to increase the maximum limit of files it "
 "can open. You should give your user enough permissions to allow this."
 msgstr ""
 
-#: ../../glossary/intro.rst:8
+#: ../../glossary/intro.rst:9
 msgid "Glossary"
 msgstr "用語集"
 
-#: ../../glossary/intro.rst:11
+#: ../../glossary/intro.rst:12
 msgid "a2jmidid"
 msgstr "a2jmidid"
 
-#: ../../glossary/intro.rst:13
+#: ../../glossary/intro.rst:14
 msgid ""
 "a2jmidid is an application that bridges between the system MIDI ports and :"
 "term:`JACK`."
@@ -4250,11 +4258,11 @@ msgstr ""
 "a2jmididはシステムのMIDIポートと :term:`JACK` の間のブリッジとなるアプリケー"
 "ションです。"
 
-#: ../../glossary/intro.rst:15
+#: ../../glossary/intro.rst:16
 msgid "AU"
 msgstr "AU"
 
-#: ../../glossary/intro.rst:17
+#: ../../glossary/intro.rst:18
 msgid ""
 "A proprietary plugin standard, mainly used on MacOS. We recommend using :"
 "term:`LV2` instead."
@@ -4262,11 +4270,11 @@ msgstr ""
 "プロプライエタリなプラグインの規格で、主にMacOSで使われています。代わりに :"
 "term:`LV2` を使うことをお勧めします。"
 
-#: ../../glossary/intro.rst:19
+#: ../../glossary/intro.rst:20
 msgid "Balance"
 msgstr "バランス"
 
-#: ../../glossary/intro.rst:21
+#: ../../glossary/intro.rst:22
 msgid ""
 "Balance (or :term:`Stereo` balance) is the left-right balance of a stereo "
 "audio signal."
@@ -4274,39 +4282,39 @@ msgstr ""
 "バランス（または :term:`Stereo` バランス）とは、ステレオオーディオ信号の左右"
 "のバランスのことです。"
 
-#: ../../glossary/intro.rst:23
+#: ../../glossary/intro.rst:24
 msgid "Bounce"
 msgstr "バウンス"
 
-#: ../../glossary/intro.rst:25
+#: ../../glossary/intro.rst:26
 msgid "Bouncing means exporting to audio."
 msgstr "バウンスとは、オーディオに書き出すことを意味します。"
 
-#: ../../glossary/intro.rst:26
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:9
+#: ../../glossary/intro.rst:27
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:10
 msgid "BPM"
 msgstr "BPM"
 
-#: ../../glossary/intro.rst:28
+#: ../../glossary/intro.rst:29
 msgid "The :abbr:`BPM (Beats Per Minute)` is the tempo of the song."
 msgstr ":abbr:`BPM (Beats Per Minute)` は、曲のテンポを表します。"
 
-#: ../../glossary/intro.rst:30
+#: ../../glossary/intro.rst:31
 msgid "Carla"
 msgstr "Carla"
 
-#: ../../glossary/intro.rst:32
+#: ../../glossary/intro.rst:33
 msgid ""
 "A `plugin host <https://kx.studio/Applications:Carla>`_ that provides a "
 "library Zrythm uses to load some plugins. Plugins loaded through Carla can "
 "be bridged to separate processes."
 msgstr ""
 
-#: ../../glossary/intro.rst:37
+#: ../../glossary/intro.rst:38
 msgid "CLI"
 msgstr "CLI"
 
-#: ../../glossary/intro.rst:39
+#: ../../glossary/intro.rst:40
 #, fuzzy
 msgid ""
 ":abbr:`CLI (Command Line Interface)` is the interface users interact with "
@@ -4315,19 +4323,19 @@ msgstr ""
 ":abbr:`CLI (Command Line Interface)` は、ユーザがターミナルでコマンドを入力す"
 "る際に対話するインターフェースです。"
 
-#: ../../glossary/intro.rst:42
+#: ../../glossary/intro.rst:43
 msgid "Clip"
 msgstr "クリップ"
 
-#: ../../glossary/intro.rst:44
+#: ../../glossary/intro.rst:45
 msgid "Used interchangeably with :ref:`region <regions>`."
 msgstr ":ref:`リージョン <regions>` と互換的に使用されます。"
 
-#: ../../glossary/intro.rst:46 ../../routing/ports.rst:47
+#: ../../glossary/intro.rst:47 ../../routing/ports.rst:47
 msgid "Control"
 msgstr "コントロール"
 
-#: ../../glossary/intro.rst:48
+#: ../../glossary/intro.rst:49
 #, fuzzy
 msgid ""
 "A control is a :doc:`port <../routing/ports>` with a user-changeable control "
@@ -4338,11 +4346,11 @@ msgstr ""
 "に影響を与えるユーザーが変更可能なコントロール値を持ちます。例えば、ゲインコ"
 "ントロールなどです。 :term:`parameter` と互換的に使用される。"
 
-#: ../../glossary/intro.rst:53 ../../routing/ports.rst:51
+#: ../../glossary/intro.rst:54 ../../routing/ports.rst:51
 msgid "CV"
 msgstr "CV"
 
-#: ../../glossary/intro.rst:55
+#: ../../glossary/intro.rst:56
 msgid ""
 "In a software environment, :abbr:`CV (Control Voltage)` represents audio-"
 "rate control data."
@@ -4350,11 +4358,11 @@ msgstr ""
 "ソフトウェア環境では、 :abbr:`CV (Control Voltage)` はオーディオレート制御"
 "データを表します。"
 
-#: ../../glossary/intro.rst:58
+#: ../../glossary/intro.rst:59
 msgid "DAW"
 msgstr "DAW"
 
-#: ../../glossary/intro.rst:60
+#: ../../glossary/intro.rst:61
 #, fuzzy
 msgid ""
 "A :abbr:`DAW (Digital Audio Workstation)` is software used to compose, "
@@ -4363,11 +4371,11 @@ msgstr ""
 ":abbr:`DAW (デジタルオーディオワークステーション)` は、音楽を構成、録音、編"
 "集、アレンジ、ミックス、マスターに使用されるソフトウェアです。"
 
-#: ../../glossary/intro.rst:63
+#: ../../glossary/intro.rst:64
 msgid "DSP"
 msgstr "DSP"
 
-#: ../../glossary/intro.rst:65
+#: ../../glossary/intro.rst:66
 msgid ""
 "In the context of a :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
 "means audio signal processing."
@@ -4375,11 +4383,11 @@ msgstr ""
 ":term:`DAW` の文脈では、 :abbr:`DSP (Digital Signal Processing)` はオーディオ"
 "信号処理を意味します。"
 
-#: ../../glossary/intro.rst:68
+#: ../../glossary/intro.rst:69
 msgid "Free software"
 msgstr "自由なソフトウェア"
 
-#: ../../glossary/intro.rst:70
+#: ../../glossary/intro.rst:71
 msgid ""
 "Free/libre software means users control the program, as opposed to "
 "proprietary software, where the program controls the users."
@@ -4388,7 +4396,7 @@ msgstr ""
 "エタリなソフトウェアとは対照的に、ユーザーがプログラムをコントロールすること"
 "を意味します。"
 
-#: ../../glossary/intro.rst:75
+#: ../../glossary/intro.rst:76
 msgid ""
 ":abbr:`JACK (JACK Audio Connection Kit)` is a sound server that offers low "
 "latency for users and provides a simple API for developers. It is the de "
@@ -4398,11 +4406,11 @@ msgstr ""
 "発者にシンプルな API を提供するサウンドサーバです。これは GNU/Linux 上のプロ"
 "用オーディオのための事実上の標準的なサウンドサーバです。"
 
-#: ../../glossary/intro.rst:81
+#: ../../glossary/intro.rst:82
 msgid "LV2"
 msgstr "LV2"
 
-#: ../../glossary/intro.rst:83
+#: ../../glossary/intro.rst:84
 msgid ""
 ":abbr:`LV2 (LADSPA Version 2)` is an extensible, cross-platform open "
 "standard for audio plugins. LV2 has a simple core interface, which is "
@@ -4412,9 +4420,9 @@ msgstr ""
 "スプラットフォームオープンスタンダードです。LV2にはシンプルなコアインター"
 "フェースがあり、より高度な機能を追加する拡張機能が付属しています。"
 
-#: ../../glossary/intro.rst:88
-#: ../../plugins-files/audio-midi-files/file-browser.rst:64
-#: ../../plugins-files/audio-midi-files/overview.rst:58
+#: ../../glossary/intro.rst:89
+#: ../../plugins-files/audio-midi-files/file-browser.rst:65
+#: ../../plugins-files/audio-midi-files/overview.rst:59
 #: ../../tracks/track-types.rst:36 ../../tracks/track-types.rst:37
 #: ../../tracks/track-types.rst:46 ../../tracks/track-types.rst:65
 #: ../../tracks/track-types.rst:66 ../../tracks/track-types.rst:67
@@ -4423,7 +4431,7 @@ msgstr ""
 msgid "MIDI"
 msgstr "MIDI"
 
-#: ../../glossary/intro.rst:90
+#: ../../glossary/intro.rst:91
 msgid ""
 ":abbr:`MIDI (Musical Instrument Digital Interface)` is a technical standard "
 "for communication between musical instruments and computers."
@@ -4431,38 +4439,38 @@ msgstr ""
 "abbr:`MIDI (Musical Instrument Digital Interface)` は、楽器とコンピュータ間の"
 "通信のための技術規格です。"
 
-#: ../../glossary/intro.rst:93
+#: ../../glossary/intro.rst:94
 msgid "MIDI note"
 msgstr "MIDIノート"
 
-#: ../../glossary/intro.rst:95
+#: ../../glossary/intro.rst:96
 msgid ""
 ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
 ":term:`MIDI` ノートは仮想（またはハードウェア）楽器をトリガーするために使用さ"
 "れます。"
 
-#: ../../glossary/intro.rst:100 ../../routing/monitor-section.rst:65
+#: ../../glossary/intro.rst:101 ../../routing/monitor-section.rst:65
 msgid "Mono"
 msgstr "モノ"
 
-#: ../../glossary/intro.rst:102
+#: ../../glossary/intro.rst:103
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
 msgstr "単一チャンネルのオーディオ信号 (:term:`Stereo` も参照)。"
 
-#: ../../glossary/intro.rst:104
+#: ../../glossary/intro.rst:105
 msgid "Pan law"
 msgstr "パン・ロー"
 
-#: ../../glossary/intro.rst:106
+#: ../../glossary/intro.rst:107
 msgid "TODO"
 msgstr "TODO"
 
-#: ../../glossary/intro.rst:107
+#: ../../glossary/intro.rst:108
 msgid "Panning"
 msgstr "パンニング"
 
-#: ../../glossary/intro.rst:109
+#: ../../glossary/intro.rst:110
 #, fuzzy
 msgid ""
 "Panning is the distribution of a :term:`Mono` signal into a new stereo or "
@@ -4471,29 +4479,29 @@ msgstr ""
 "パンニングとは、 :term:`mono` 信号を新しいステレオやマルチチャンネルの音場に"
 "分配することです。"
 
-#: ../../glossary/intro.rst:112
+#: ../../glossary/intro.rst:113
 msgid "Parameter"
 msgstr "パラメータ"
 
-#: ../../glossary/intro.rst:114
+#: ../../glossary/intro.rst:115
 msgid "Used interchangeably with :term:`Control`."
 msgstr ":term:`Control` と互換的に使用されます。"
 
-#: ../../glossary/intro.rst:115
+#: ../../glossary/intro.rst:116
 msgid "Plugin"
 msgstr "プラグイン"
 
-#: ../../glossary/intro.rst:117
+#: ../../glossary/intro.rst:118
 msgid ""
 "A plugin is an external module that provides audio processing capabilities "
 "to Zrythm, such as an :term:`SFZ` instrument or an :term:`LV2` reverb plugin."
 msgstr ""
 
-#: ../../glossary/intro.rst:121
+#: ../../glossary/intro.rst:122
 msgid "Project"
 msgstr "プロジェクト"
 
-#: ../../glossary/intro.rst:123
+#: ../../glossary/intro.rst:124
 #, fuzzy
 msgid ""
 "A project refers to a work session. It is saved as a directory containing a "
@@ -4504,15 +4512,15 @@ msgstr ""
 "クトリとして、他の補助ファイルと共に保存されます。詳細については、:"
 "ref:'Projects' を参照してください。"
 
-#: ../../glossary/intro.rst:127
+#: ../../glossary/intro.rst:128
 msgid "Range"
 msgstr "選択範囲 (Range)"
 
-#: ../../glossary/intro.rst:129
+#: ../../glossary/intro.rst:130
 msgid "A Range is a selection of time between two positions."
 msgstr "選択範囲 (Range)は、2つの位置間の範囲の選択です。"
 
-#: ../../glossary/intro.rst:136
+#: ../../glossary/intro.rst:137
 #, fuzzy
 msgid ""
 "A region (or :term:`Clip`) is a container for MIDI Notes, audio or other "
@@ -4521,35 +4529,35 @@ msgstr ""
 "リージョン(または :term:`clip` )は、MIDI ノート、オーディオ、その他のイベント"
 "のコンテナです。 :ref:`regions` を参照してください。"
 
-#: ../../glossary/intro.rst:139
+#: ../../glossary/intro.rst:140
 msgid "SFZ"
 msgstr "SFZ"
 
-#: ../../glossary/intro.rst:141
+#: ../../glossary/intro.rst:142
 msgid "SFZ is a file format for sample-based virtual instruments."
 msgstr "SFZ は、サンプルベースの仮想楽器用のファイルフォーマットです。"
 
-#: ../../glossary/intro.rst:143
+#: ../../glossary/intro.rst:144
 msgid "SF2"
 msgstr "SF2"
 
-#: ../../glossary/intro.rst:145
+#: ../../glossary/intro.rst:146
 msgid "SF2 is the successor of :term:`SFZ`."
 msgstr "SF2は :term:`SFZ` の後継である。"
 
-#: ../../glossary/intro.rst:146
+#: ../../glossary/intro.rst:147
 msgid "Stereo"
 msgstr "ステレオ"
 
-#: ../../glossary/intro.rst:148
+#: ../../glossary/intro.rst:149
 msgid "A two-channel audio signal (left and right) (see also :term:`Mono`)."
 msgstr "2 チャンネルのオーディオ信号(左と右) ( :term:`mono` も参照)。"
 
-#: ../../glossary/intro.rst:150
+#: ../../glossary/intro.rst:151
 msgid "VST2"
 msgstr "VST2"
 
-#: ../../glossary/intro.rst:152
+#: ../../glossary/intro.rst:153
 msgid ""
 "A proprietary plugin standard and the predecessor of VST3. We do not "
 "recommend using this standard."
@@ -4557,22 +4565,22 @@ msgstr ""
 "プロプライエタリのプラグイン標準と VST3 の前身。この標準を使用することはお勧"
 "めしません。"
 
-#: ../../glossary/intro.rst:154
+#: ../../glossary/intro.rst:155
 msgid "VST3"
 msgstr "VST3"
 
-#: ../../glossary/intro.rst:156
+#: ../../glossary/intro.rst:157
 msgid ""
 "VST3 is a plugin standard that supersedes :term:`VST2`. It is better to use "
 "VST3 than VST2, because it is released as :term:`Free software`. However, we "
 "recommend using the :term:`LV2` standard instead."
 msgstr ""
 
-#: ../../glossary/intro.rst:161
+#: ../../glossary/intro.rst:162
 msgid "XRUN"
 msgstr ""
 
-#: ../../glossary/intro.rst:163
+#: ../../glossary/intro.rst:164
 msgid ""
 "A buffer overrun or underrun. This means that Zrythm was either not fast "
 "enough to deliver data to the backend or not fast enough to process incoming "
@@ -4583,11 +4591,11 @@ msgid ""
 "increased to ease the work done by the sound card."
 msgstr ""
 
-#: ../../glossary/intro.rst:175
+#: ../../glossary/intro.rst:176
 msgid "Zrythm user path"
 msgstr "Zrythm ユーザー パス"
 
-#: ../../glossary/intro.rst:177
+#: ../../glossary/intro.rst:178
 msgid ""
 "The path where Zrythm will save user data, such as projects, temporary "
 "files, presets and exported audio. The default is :file:`zrythm` under"
@@ -4596,14 +4604,14 @@ msgstr ""
 "Zrythmがユーザーデータを保存するパス。デフォルトは下記の下の :file:`zrythm` "
 "です。"
 
-#: ../../glossary/intro.rst:182
+#: ../../glossary/intro.rst:183
 msgid ""
 ":envvar:`XDG_DATA_HOME` (see the `XDG Base Directory Specification <https://"
 "specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_) on "
 "freedesktop-compliant systems (or if :envvar:`XDG_DATA_HOME` is defined), or"
 msgstr ""
 
-#: ../../glossary/intro.rst:187
+#: ../../glossary/intro.rst:188
 msgid "the directory for local application data on Windows"
 msgstr "Windowsでは、ローカル アプリケーション データのディレクトリ"
 
@@ -4623,11 +4631,11 @@ msgstr ""
 "* ZrythmおよびZrythmのロゴは、英国におけるAlexandrosTheodotouの登録商標です。"
 "*"
 
-#: ../../invoking-from-command-line/intro.rst:10
+#: ../../invoking-from-command-line/intro.rst:11
 msgid "Command Line"
 msgstr "コマンドライン"
 
-#: ../../invoking-from-command-line/intro.rst:12
+#: ../../invoking-from-command-line/intro.rst:13
 msgid ""
 "Zrythm comes with a few utilities below that can be used from the :term:"
 "`CLI`."
@@ -4635,23 +4643,23 @@ msgstr ""
 "Zrythm には、以下に示すいくつかのユーティリティが付属しており、このユーティリ"
 "ティは :term:`CLI` から使用できます。"
 
-#: ../../invoking-from-command-line/intro.rst:16
+#: ../../invoking-from-command-line/intro.rst:17
 msgid "zrythm"
 msgstr "zrythm"
 
-#: ../../invoking-from-command-line/intro.rst:17
+#: ../../invoking-from-command-line/intro.rst:18
 msgid "Zrythm executable."
 msgstr "Zrythmの実行ファイル。"
 
-#: ../../invoking-from-command-line/intro.rst:23
+#: ../../invoking-from-command-line/intro.rst:24
 msgid "Print a list of available options."
 msgstr "使用可能なオプションの一覧を出力します。"
 
-#: ../../invoking-from-command-line/intro.rst:27
+#: ../../invoking-from-command-line/intro.rst:28
 msgid "Pretty-print the output (where applicable)."
 msgstr "出力をプリティープリントする（該当する場合）。"
 
-#: ../../invoking-from-command-line/intro.rst:31
+#: ../../invoking-from-command-line/intro.rst:32
 #, fuzzy
 msgid ""
 "Print all the user settings. Can be combined with :option:`--pretty` to get "
@@ -4660,11 +4668,11 @@ msgstr ""
 "すべてのユーザ設定を出力します。 :option:`--pretty` と組み合わせることで、以"
 "下のようなきれいな出力を得ることができます。"
 
-#: ../../invoking-from-command-line/intro.rst:40
+#: ../../invoking-from-command-line/intro.rst:41
 msgid "Reset user settings to their default values."
 msgstr "ユーザー設定を初期値に戻します。"
 
-#: ../../invoking-from-command-line/intro.rst:42
+#: ../../invoking-from-command-line/intro.rst:43
 msgid ""
 "Only affects the settings printed with :option:`-p`. This will *not* affect "
 "any files in the :term:`Zrythm user path`."
@@ -4672,27 +4680,27 @@ msgstr ""
 ":option:`-p` で出力される設定にのみ影響します。これは、 :term:`Zrythm user "
 "path` 内のファイルには*影響しません*。"
 
-#: ../../invoking-from-command-line/intro.rst:47
+#: ../../invoking-from-command-line/intro.rst:48
 msgid "This will clear ALL your user settings."
 msgstr "これにより、すべてのユーザー設定がクリアされます。"
 
-#: ../../invoking-from-command-line/intro.rst:54
+#: ../../invoking-from-command-line/intro.rst:55
 msgid "Convert a .zpj project file to YAML."
 msgstr ".zpj プロジェクト ファイルを YAML に変換します。"
 
-#: ../../invoking-from-command-line/intro.rst:58
+#: ../../invoking-from-command-line/intro.rst:59
 msgid "Convert a YAML file to the .zpj format."
 msgstr "YAML ファイルを .zpj 形式に変換します。"
 
-#: ../../invoking-from-command-line/intro.rst:60
+#: ../../invoking-from-command-line/intro.rst:61
 msgid "Prints the Zrythm version."
 msgstr "Zrythmのバージョンを出力します。"
 
-#: ../../invoking-from-command-line/intro.rst:63
+#: ../../invoking-from-command-line/intro.rst:64
 msgid "zrythm_launch"
 msgstr "zrythm_launch"
 
-#: ../../invoking-from-command-line/intro.rst:64
+#: ../../invoking-from-command-line/intro.rst:65
 msgid ""
 "Wrapper over :program:`zrythm` that sets the correct paths before launching "
 "Zrythm. All of the options for :program:`zrythm` can also be passed to :"
@@ -4702,15 +4710,15 @@ msgstr ""
 "program:`zrythm` のすべてのオプションは :program:`zrythm_launch` にも渡すこと"
 "ができます。"
 
-#: ../../mixing/intro.rst:8
+#: ../../mixing/intro.rst:9
 msgid "Mixing"
 msgstr "ミキシング"
 
-#: ../../mixing/overview.rst:10
+#: ../../mixing/overview.rst:11
 msgid "Mixing Overview"
 msgstr "ミキシングの概要"
 
-#: ../../mixing/overview.rst:11
+#: ../../mixing/overview.rst:12
 msgid ""
 "Mixing refers to any actions made inside the mixer, such as routing signals "
 "around, controlling the fader level of various channels and setting their "
@@ -4720,15 +4728,15 @@ msgstr ""
 "を制御し、ステレオバランスを設定するなど、ミキサー内で行われたすべてのアク"
 "ションを指します。"
 
-#: ../../mixing/overview.rst:19
+#: ../../mixing/overview.rst:20
 msgid "The mixer"
 msgstr ""
 
-#: ../../mixing/overview.rst:24
+#: ../../mixing/overview.rst:25
 msgid "Mixer"
 msgstr "ミキサー"
 
-#: ../../mixing/overview.rst:25
+#: ../../mixing/overview.rst:26
 #, fuzzy
 msgid ""
 "The mixer contains all of the channels in the project corresponding to "
@@ -4738,7 +4746,7 @@ msgstr ""
 "ミキサーには、プロジェクト内のすべての表示状態になっているトラックに対応する"
 "チャンネルが含まれます。"
 
-#: ../../mixing/overview.rst:30
+#: ../../mixing/overview.rst:31
 #, fuzzy
 msgid ""
 "Most of the activities that can be performed in the mixer are also available "
@@ -4747,20 +4755,20 @@ msgstr ""
 "ミキサーで実行できるアクティビティのほとんどは、 :ref:`track-inspector` で説"
 "明されているトラックインスペクタでも利用できます。"
 
-#: ../../mixing/overview.rst:37
+#: ../../mixing/overview.rst:38
 msgid "Channels"
 msgstr "チャンネル"
 
-#: ../../mixing/overview.rst:38
+#: ../../mixing/overview.rst:39
 msgid "A channel is part of a track, if the track type has a channel."
 msgstr "トラックの種類にチャンネルがある場合、チャンネルはトラックの一部です。"
 
-#: ../../mixing/overview.rst:44
+#: ../../mixing/overview.rst:45
 #, fuzzy
 msgid "Channel for an instrument track"
 msgstr "送信接続を作成するための新しいアクションを返します。"
 
-#: ../../mixing/overview.rst:46
+#: ../../mixing/overview.rst:47
 msgid ""
 "Channels contain a fader, controls such as mute and solo, a meter, a direct "
 "out selector and a strip of insert plugins. These are covered in :ref:`track-"
@@ -4770,11 +4778,11 @@ msgstr ""
 "レクトアウトセレクター、インサートプラグインのストリップがあります。これらに"
 "ついては :ref:`track-inspector` で説明しています。"
 
-#: ../../mixing/overview.rst:52
+#: ../../mixing/overview.rst:53
 msgid "Master Channel"
 msgstr ""
 
-#: ../../mixing/overview.rst:54
+#: ../../mixing/overview.rst:55
 #, fuzzy
 msgid ""
 "The master channel, a special channel used to route audio to the output "
@@ -4783,16 +4791,16 @@ msgstr ""
 "出力オーディオデバイスにオーディオをルーティングするために使用される特殊な"
 "チャンネルであるマスターチャンネルは、ミキサーの右側にピン留めされます。"
 
-#: ../../mixing/overview.rst:61
+#: ../../mixing/overview.rst:62
 #, fuzzy
 msgid "The master channel"
 msgstr "最新の変更履歴を表示する。"
 
-#: ../../mixing/overview.rst:64
+#: ../../mixing/overview.rst:65
 msgid "Changing the Track Name"
 msgstr "トラック名の変更"
 
-#: ../../mixing/overview.rst:65
+#: ../../mixing/overview.rst:66
 #, fuzzy
 msgid ""
 "The name of the track the channel corresponds to can be changed by double "
@@ -4801,19 +4809,19 @@ msgstr ""
 "チャンネルの上部にある名前をダブルクリックすると、チャンネルが対応するトラッ"
 "クの名前を変更できます。"
 
-#: ../../mixing/overview.rst:72
+#: ../../mixing/overview.rst:73
 msgid "Changing the track name from the channel view"
 msgstr ""
 
-#: ../../mixing/routing.rst:6 ../../routing/intro.rst:6
+#: ../../mixing/routing.rst:7 ../../routing/intro.rst:7
 msgid "Routing"
 msgstr "ルーティング"
 
-#: ../../mixing/routing.rst:9
+#: ../../mixing/routing.rst:10
 msgid "Groups"
 msgstr "グループ"
 
-#: ../../mixing/routing.rst:10
+#: ../../mixing/routing.rst:11
 #, fuzzy
 msgid ""
 ":ref:`Audio group tracks <tracks/track-types:Audio Group Track>` and :ref:"
@@ -4824,36 +4832,36 @@ msgstr ""
 "track` と :ref:`midi-group-track` で説明)を作成して信号をグループ化することが"
 "できます。"
 
-#: ../../mixing/routing.rst:15
+#: ../../mixing/routing.rst:16
 msgid ""
 "To route channels to these tracks, you can click the direct out selector and "
 "choose them, similar to how it works in the :ref:`track properties in the "
 "track inspector <tracks/inspector-page:Track Properties>`."
 msgstr ""
 
-#: ../../mixing/routing.rst:20
+#: ../../mixing/routing.rst:21
 msgid "The Master track is also a group."
 msgstr ""
 
-#: ../../mixing/routing.rst:23
+#: ../../mixing/routing.rst:24
 msgid "Buses/FX Tracks"
 msgstr "バス/FXトラック"
 
-#: ../../mixing/routing.rst:25
+#: ../../mixing/routing.rst:26
 msgid ""
 ":ref:`Audio FX tracks <tracks/track-types:Audio FX Track>` and :ref:`MIDI FX "
 "tracks <tracks/track-types:MIDI FX Track>` can be created for sending "
 "additional signals to them, in addition to the channel's main direct output."
 msgstr ""
 
-#: ../../mixing/routing.rst:32
+#: ../../mixing/routing.rst:33
 msgid ""
 "This is useful for example for applying reverb and controlling the reverb "
 "signal separately."
 msgstr ""
 "これは、例えばリバーブを適用し、リバーブ信号を個別に取り扱うのに便利です。"
 
-#: ../../mixing/routing.rst:35
+#: ../../mixing/routing.rst:36
 msgid ""
 "You can send to these tracks/channels using the Sends section in the track "
 "inspector explained in :ref:`track-sends`."
@@ -4861,7 +4869,7 @@ msgstr ""
 "これらのトラック/チャンネルにセンドするには、トラックインスペクタのセンドセク"
 "ションで説明されている :ref:`track-sends` を使用します。"
 
-#: ../../mixing/routing.rst:39
+#: ../../mixing/routing.rst:40
 msgid ""
 "Some other DAWs use the term `bus` to refer to what Zrythm refers to as "
 "`group`. Please keep this in mind if you are coming from other DAWs as they "
@@ -4871,21 +4879,21 @@ msgstr ""
 "用語を使用します。Zrythm では他の DAW から来ている場合は、この点に注意してく"
 "ださい。"
 
-#: ../../mixing/routing.rst:45 ../../routing/connections.rst:47
+#: ../../mixing/routing.rst:46 ../../routing/connections.rst:47
 msgid "Sidechaining"
 msgstr "サイドチェーン"
 
-#: ../../mixing/routing.rst:46
+#: ../../mixing/routing.rst:47
 msgid ""
 "Similar to sending signals to FX tracks, you can also send signals to plugin "
 "sidechain ports, if the plugin has any. See :ref:`track-sends` for details."
 msgstr ""
 
-#: ../../modulators/intro.rst:8 ../../tracks/track-types.rst:60
+#: ../../modulators/intro.rst:9 ../../tracks/track-types.rst:60
 msgid "Modulators"
 msgstr "モジュレーター"
 
-#: ../../modulators/intro.rst:9
+#: ../../modulators/intro.rst:10
 msgid ""
 "Modulators are any plugins that have at least one :term:`CV` output port. "
 "These CV ports can be routed to any automatable parameter inside Zrythm. For "
@@ -4897,11 +4905,11 @@ msgstr ""
 "することができます。例えば、LFOをフィルターカットオフパラメータにルーティング"
 "して、その値をモジュレートすることができます。"
 
-#: ../../modulators/intro.rst:16
+#: ../../modulators/intro.rst:17
 msgid "Modulators Tab"
 msgstr "モジュレーター タブ"
 
-#: ../../modulators/intro.rst:17
+#: ../../modulators/intro.rst:18
 #, fuzzy
 msgid ""
 "Zrythm has a modulators tab in the bottom panel that can hold any number of "
@@ -4910,7 +4918,7 @@ msgstr ""
 "Zrythmの下部パネルには、任意の数のモジュレータを保持できるモジュレータタブが"
 "あります。"
 
-#: ../../modulators/intro.rst:24
+#: ../../modulators/intro.rst:25
 #, fuzzy
 msgid ""
 "Modulators and macro knobs are associated with the :ref:`Modulator Track "
@@ -4920,11 +4928,11 @@ msgstr ""
 ":term:`プロジェクト <Project>` 内のすべてのモジュレータは :doc:`../tracks/"
 "modulator-track` に付属しています。"
 
-#: ../../modulators/intro.rst:29
+#: ../../modulators/intro.rst:30
 msgid "Adding Modulators"
 msgstr "モジュレーターの追加"
 
-#: ../../modulators/intro.rst:30
+#: ../../modulators/intro.rst:31
 msgid ""
 "Modulator plugins can be drag-n-dropped from the :doc:`../plugins-files/"
 "plugins/plugin-browser` into the Modulators tab. Modulator plugins can be :"
@@ -4936,11 +4944,11 @@ msgstr ""
 "ザ の中で :ref:`フィルタリングすることができます <plugins-files/plugins/"
 "plugin-browser:Filter Buttons>` 。"
 
-#: ../../modulators/intro.rst:36
+#: ../../modulators/intro.rst:37
 msgid "Routing Modulators"
 msgstr "モジュレーターのルーティング"
 
-#: ../../modulators/intro.rst:37
+#: ../../modulators/intro.rst:38
 #, fuzzy
 msgid ""
 "Modulator outputs can be routed to automatable :term:`controls <Control>` by "
@@ -4949,45 +4957,45 @@ msgstr ""
 "変調器の出力は、矢印をクリックしてプロンプトに従って宛先を選択することで、自"
 "動化可能な :term:`コントロール <control>` にルーティングすることができます。"
 
-#: ../../modulators/intro.rst:49
+#: ../../modulators/intro.rst:50
 #, fuzzy
 msgid "Macro Knobs"
 msgstr "ゲイン"
 
-#: ../../modulators/intro.rst:51
+#: ../../modulators/intro.rst:52
 msgid ""
 "Macro knobs are simple controls that can be used to control multiple "
 "parameters. They can be automated in the :ref:`Modulator Track <tracks/track-"
 "types:Modulator Track>`, and you can also route envelopes like LFOs to them."
 msgstr ""
 
-#: ../../modulators/intro.rst:58
+#: ../../modulators/intro.rst:59
 #, fuzzy
 msgid "Adding Inputs"
 msgstr "オーディオ入力"
 
-#: ../../modulators/intro.rst:60
+#: ../../modulators/intro.rst:61
 msgid ""
 "Click the :guilabel:`Add` button on the left side of a macro knob to add "
 "inputs to modulate the macro knob."
 msgstr ""
 
-#: ../../modulators/intro.rst:65
+#: ../../modulators/intro.rst:66
 #, fuzzy
 msgid "Routing to Outputs"
 msgstr "モニターアウト"
 
-#: ../../modulators/intro.rst:67
+#: ../../modulators/intro.rst:68
 msgid ""
 "Click the arrow button on the right side of a macro knob to route it to one "
 "or more controls. The process is similar to modulator output routing."
 msgstr ""
 
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:6
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:7
 msgid "BPM and Time Signatures"
 msgstr "BPM と拍子"
 
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:11
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:12
 #, fuzzy
 msgid ""
 "The :term:`BPM` can be set to between 40 and 360 by clicking and dragging "
@@ -4996,7 +5004,7 @@ msgstr ""
 "BPMウィジェットをクリックしてドラッグすることで、BPMを40～360の間に設定するこ"
 "とができます。"
 
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:17
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:18
 #, fuzzy
 msgid ""
 "Clicking and dragging on the integer counterpart will change the integer (e."
@@ -5007,19 +5015,19 @@ msgstr ""
 "へ）、10進数の部分をクリックしてドラッグすると10進数が変更されます（例："
 "140.24から140.25へ）。"
 
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:25
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:26
 msgid "Time Signature"
 msgstr "拍子記号"
 
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:30
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:31
 msgid "The Time Signature is split into the following"
 msgstr "拍子記号は下記ように分割されています"
 
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:34
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:35
 msgid "Beats per Bar"
 msgstr "バーあたりのビート数"
 
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:33
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:34
 #, fuzzy
 msgid ""
 "This is the top number that indicates the number of Beats that should be in "
@@ -5028,11 +5036,11 @@ msgstr ""
 "これは、バーにあるべきビートの数を示すトップ番号です。1から16まで設定できま"
 "す。"
 
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:39
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:40
 msgid "Beat Unit"
 msgstr "ビートユニット"
 
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:37
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:38
 #, fuzzy
 msgid ""
 "This is the bottom number that indicates the beat unit to be used. It can be "
@@ -5041,7 +5049,7 @@ msgstr ""
 "使用するビート単位を示す一番下の数字です。2、4、8、16のいずれかに設定できま"
 "す。"
 
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:41
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:42
 #, fuzzy
 msgid ""
 "Widgets like the BPM and Time Signature can be changed by clicking and "
@@ -5050,34 +5058,34 @@ msgstr ""
 "BPMメーターなどのウィジェットは、クリックしてドラッグするか、カーソルをその上"
 "に置いてスクロールすることで変更できます"
 
-#: ../../playback-and-recording/intro.rst:6
+#: ../../playback-and-recording/intro.rst:8
 msgid "Playback and Recording"
 msgstr "再生と録音"
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:6
+#: ../../playback-and-recording/loop-points-and-markers.rst:7
 msgid "Loop Points and Markers"
 msgstr "ループポイントとマーカー"
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:16
+#: ../../playback-and-recording/loop-points-and-markers.rst:17
 msgid ""
 "The loop points indicate the area that will be looped during playback, if "
 "looping is enabled."
 msgstr ""
 "ループポイントは、ループ再生が有効な場合、再生中にループする領域を示します。"
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:19
-#: ../../playback-and-recording/loop-points-and-markers.rst:32
+#: ../../playback-and-recording/loop-points-and-markers.rst:20
+#: ../../playback-and-recording/loop-points-and-markers.rst:33
 msgid ""
 "This only applies to the timeline ruler, covered in :ref:`timeline-ruler`."
 msgstr ""
 "これは、タイムラインルーラーにのみ適用され、 :ref:`timeline-ruler` で説明され"
 "ています。"
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:23
+#: ../../playback-and-recording/loop-points-and-markers.rst:24
 msgid "Cue Point"
 msgstr "キューポイント"
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:28
+#: ../../playback-and-recording/loop-points-and-markers.rst:29
 #, fuzzy
 msgid ""
 "The cue point is where the playhead will move to when Play is clicked while "
@@ -5086,11 +5094,11 @@ msgstr ""
 "キューポイントは、再生中に再生がクリックされたとき、または一時停止中に「停"
 "止」をクリックしたときに再生ヘッドが移動する場所です。"
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:36
+#: ../../playback-and-recording/loop-points-and-markers.rst:37
 msgid "Song Start & End Markers"
 msgstr "曲の開始と終了マーカー"
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:41
+#: ../../playback-and-recording/loop-points-and-markers.rst:42
 #, fuzzy
 msgid ""
 "The song start marker signifies the position in the timeline where the Song "
@@ -5099,7 +5107,7 @@ msgstr ""
 "ソングの開始マーカーは、ソングが開始されるタイムライン内の位置を示します。こ"
 "れは主に、オーディオにミックスダウンをエクスポートするために使用されます。"
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:46
+#: ../../playback-and-recording/loop-points-and-markers.rst:47
 #, fuzzy
 msgid ""
 "The song end marker signifies the position in the timeline where the Song "
@@ -5108,25 +5116,25 @@ msgstr ""
 "ソングエンドマーカーは、タイムライン上でソングが終了する位置を示します。同様"
 "に、主にミックスダウンをオーディオにエクスポートする際に使用します。"
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:51
+#: ../../playback-and-recording/loop-points-and-markers.rst:52
 #, fuzzy
 msgid ""
 "These markers are part of the :ref:`Marker Track <tracks/track-types:Marker "
 "Track>`."
 msgstr "これらのマーカーは :ref:`marker-track` の一部です。"
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:55
+#: ../../playback-and-recording/loop-points-and-markers.rst:56
 msgid "Custom Markers"
 msgstr "カスタム マーカー"
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:56
+#: ../../playback-and-recording/loop-points-and-markers.rst:57
 #, fuzzy
 msgid ""
 "Custom Markers can also be created inside the :ref:`Marker Track <tracks/"
 "track-types:Marker Track>`."
 msgstr "カスタム マーカーは、 :ref:`marker-track` 内に作成することもできます。"
 
-#: ../../playback-and-recording/loop-points-and-markers.rst:62
+#: ../../playback-and-recording/loop-points-and-markers.rst:63
 #, fuzzy
 msgid ""
 "These can be used to jump to when moving forwards or backwards, and are also "
@@ -5135,62 +5143,62 @@ msgstr ""
 "これらは、前後に移動するときにジャンプするために使用することができ、また、曲"
 "の各部分が開始し、終了する場所を視覚的に見るために一般的に有用です。"
 
-#: ../../playback-and-recording/overview.rst:8
+#: ../../playback-and-recording/overview.rst:9
 msgid ""
 "Here is a list of terms and definitions that will be useful in the following "
 "sections."
 msgstr "ここでは、以下の項目で役立つ用語や定義をまとめてみました。"
 
-#: ../../playback-and-recording/overview.rst:13
+#: ../../playback-and-recording/overview.rst:14
 msgid ""
 "The :dfn:`playhead` is the current position in the song. It is displayed as "
 "a red line inside arrangers."
 msgstr ""
 
-#: ../../playback-and-recording/overview.rst:20
+#: ../../playback-and-recording/overview.rst:21
 #, fuzzy
 msgid "The playhead"
 msgstr "再生ヘッド"
 
-#: ../../playback-and-recording/overview.rst:23
+#: ../../playback-and-recording/overview.rst:24
 msgid "Position"
 msgstr "位置"
 
-#: ../../playback-and-recording/overview.rst:25
+#: ../../playback-and-recording/overview.rst:26
 msgid "Zrythm uses the following format for positions:"
 msgstr "Zrythm は、ポジションに次の形式を使用しています。"
 
-#: ../../playback-and-recording/overview.rst:31
+#: ../../playback-and-recording/overview.rst:32
 msgid "Each sixteenth note is fixed to have 240 ticks."
 msgstr "各16分音符は240 ticksで固定されています。"
 
-#: ../../playback-and-recording/overview.rst:34
+#: ../../playback-and-recording/overview.rst:35
 msgid "Ticks are expressed in decimals."
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:6 ../../tracks/track-lanes.rst:30
+#: ../../playback-and-recording/recording.rst:7 ../../tracks/track-lanes.rst:30
 msgid "Recording"
 msgstr "録音中"
 
-#: ../../playback-and-recording/recording.rst:9
+#: ../../playback-and-recording/recording.rst:10
 msgid "Arming Tracks"
 msgstr "トラックのアーム"
 
-#: ../../playback-and-recording/recording.rst:10
+#: ../../playback-and-recording/recording.rst:11
 msgid ""
 "Tracks can be armed for recording by clicking the record button, either "
 "inside the track or inside its fader section in the channel or :ref:`track "
 "inspector <track-inspector>`."
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:18
+#: ../../playback-and-recording/recording.rst:19
 msgid ""
 "When tracks are armed for recording, they start listening for signals in "
 "their :ref:`track-inputs` and these signals will be passed along in the "
 "processing chain."
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:23
+#: ../../playback-and-recording/recording.rst:24
 #, fuzzy
 msgid ""
 "For example, if an instrument track is armed for recording and it has a MIDI "
@@ -5201,11 +5209,11 @@ msgstr ""
 "にMIDIキーボードが接続されている場合、MIDIキーボードのキーを押すと音が聞こえ"
 "ます。"
 
-#: ../../playback-and-recording/recording.rst:29
+#: ../../playback-and-recording/recording.rst:30
 msgid "Recording Audio & MIDI"
 msgstr "オーディオとMIDIの録音"
 
-#: ../../playback-and-recording/recording.rst:30
+#: ../../playback-and-recording/recording.rst:31
 #, fuzzy
 msgid ""
 "After arming the tracks you want to record events into, enable recording in :"
@@ -5215,101 +5223,101 @@ msgstr ""
 "イベントを記録したいトラックをアームした後、 :ref:transport-controls` で録音"
 "を有効にして、再生を押します。"
 
-#: ../../playback-and-recording/recording.rst:38
+#: ../../playback-and-recording/recording.rst:39
 msgid "Recording audio"
 msgstr "オーディオの録音"
 
-#: ../../playback-and-recording/recording.rst:41
+#: ../../playback-and-recording/recording.rst:42
 #: ../../tracks/inspector-page.rst:45
 msgid "Inputs"
 msgstr "入力"
 
-#: ../../playback-and-recording/recording.rst:42
+#: ../../playback-and-recording/recording.rst:43
 msgid ""
 "Audio and MIDI/Instrument tracks have an :ref:`tracks/inspector-page:Inputs` "
 "section in their :ref:`Inspector Page <tracks/inspector-page:Track "
 "Inspector>` to adjust inputs for recording."
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:51
+#: ../../playback-and-recording/recording.rst:52
 msgid "Track inputs"
 msgstr "トラック入力"
 
-#: ../../playback-and-recording/recording.rst:54
+#: ../../playback-and-recording/recording.rst:55
 msgid "Recording Settings"
 msgstr "録音設定"
 
-#: ../../playback-and-recording/recording.rst:55
+#: ../../playback-and-recording/recording.rst:56
 msgid ""
 "Clicking the arrow next to the record button will bring up the recording "
 "settings where various options and recording modes can be selected."
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:62
+#: ../../playback-and-recording/recording.rst:63
 msgid "Recording settings"
 msgstr "録音設定"
 
-#: ../../playback-and-recording/recording.rst:65
+#: ../../playback-and-recording/recording.rst:66
 msgid "Options"
 msgstr "設定"
 
-#: ../../playback-and-recording/recording.rst:75
+#: ../../playback-and-recording/recording.rst:76
 msgid "Punch in/out"
 msgstr "パンチイン/アウト (Punch in/out)"
 
-#: ../../playback-and-recording/recording.rst:67
+#: ../../playback-and-recording/recording.rst:68
 msgid ""
 "Whether to use punch in/out markers. When this is enabled, recording will "
 "start when the playhead reaches the punch in marker and stop when the "
 "playhead reaches the punch out marker."
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:75
+#: ../../playback-and-recording/recording.rst:76
 msgid "Punch in/out range, indicated by red markers"
 msgstr "赤いマーカーで示されたパンチイン/アウトの選択範囲 (Range)"
 
-#: ../../playback-and-recording/recording.rst:79
+#: ../../playback-and-recording/recording.rst:80
 msgid "Start on MIDI input"
 msgstr "MIDI 入力時に開始"
 
-#: ../../playback-and-recording/recording.rst:78
+#: ../../playback-and-recording/recording.rst:79
 msgid ""
 "Automatically start recording when an event is received from a MIDI device"
 msgstr "MIDI機器からイベントを受信すると自動的に録音を開始する"
 
-#: ../../playback-and-recording/recording.rst:82
+#: ../../playback-and-recording/recording.rst:83
 msgid "Recording Modes"
 msgstr "録音モード"
 
-#: ../../playback-and-recording/recording.rst:84
+#: ../../playback-and-recording/recording.rst:85
 msgid "Overwrite events"
 msgstr "イベントを上書きする"
 
-#: ../../playback-and-recording/recording.rst:84
+#: ../../playback-and-recording/recording.rst:85
 msgid "Overwrite any existing events in the track during recording"
 msgstr "録音中にトラック内の既存のイベントを上書きする"
 
-#: ../../playback-and-recording/recording.rst:87
+#: ../../playback-and-recording/recording.rst:88
 msgid "Merge events"
 msgstr "イベントを結合する"
 
-#: ../../playback-and-recording/recording.rst:87
+#: ../../playback-and-recording/recording.rst:88
 msgid "Merge the newly recorded events with the existing events in the track"
 msgstr "新たに記録されたイベントを、トラック内の既存のイベントとマージする"
 
-#: ../../playback-and-recording/recording.rst:89
+#: ../../playback-and-recording/recording.rst:90
 msgid "Create takes"
 msgstr "テイクを作成する"
 
-#: ../../playback-and-recording/recording.rst:90
+#: ../../playback-and-recording/recording.rst:91
 msgid "Create a new lane (`take`) for each new recording"
 msgstr "新規録音のたびに新しいレーン（`take`）を作成する"
 
-#: ../../playback-and-recording/recording.rst:98
+#: ../../playback-and-recording/recording.rst:99
 msgid "Create takes (mute previous)"
 msgstr "テイクを作成する (前のテイクをミュート)"
 
-#: ../../playback-and-recording/recording.rst:92
+#: ../../playback-and-recording/recording.rst:93
 msgid ""
 "Similar to `Create takes` but mutes the last recorded take before creating a "
 "new one"
@@ -5317,21 +5325,21 @@ msgstr ""
 "`テイクを作成` に似ていますが、新しいものを作成する前に最後に記録されたテイク"
 "をミュートします"
 
-#: ../../playback-and-recording/recording.rst:101
+#: ../../playback-and-recording/recording.rst:102
 msgid "Recording Automation"
 msgstr "オートメーションを記録中"
 
-#: ../../playback-and-recording/recording.rst:102
+#: ../../playback-and-recording/recording.rst:103
 msgid ""
 "Automation can be recorded in `latch` mode or `touch` mode. The mode can be "
 "selected and toggled by clicking on it inside automation tracks."
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:107
+#: ../../playback-and-recording/recording.rst:108
 msgid "Latch"
 msgstr "ラッチ"
 
-#: ../../playback-and-recording/recording.rst:112
+#: ../../playback-and-recording/recording.rst:113
 msgid ""
 "In latch mode, automation will be written constantly and overwrite previous "
 "automation."
@@ -5339,11 +5347,11 @@ msgstr ""
 "ラッチモードでは、オートメーションは常に書き込まれ、以前のオートメーションを"
 "上書きします。"
 
-#: ../../playback-and-recording/recording.rst:116
+#: ../../playback-and-recording/recording.rst:117
 msgid "Touch"
 msgstr "タッチ"
 
-#: ../../playback-and-recording/recording.rst:121
+#: ../../playback-and-recording/recording.rst:122
 #, fuzzy
 msgid ""
 "In touch mode, automation will be written only when there are changes. When "
@@ -5355,7 +5363,7 @@ msgstr ""
 "更が受信されなくなると (短時間で)、変更が再び受け取られるまで、自動化は書き込"
 "みが停止します。これは、既存の自動化に小さな変更を加える場合に便利です。"
 
-#: ../../playback-and-recording/recording.rst:128
+#: ../../playback-and-recording/recording.rst:129
 msgid ""
 "Unlike MIDI/audio recording, automation recording does not require `Record` "
 "to be enabled in the :ref:`transport-controls`."
@@ -5363,28 +5371,28 @@ msgstr ""
 "MIDI/オーディオ録音とは異なり、オートメーション録音は :ref:`transport-"
 "controls` で `録音` を有効にする必要はありません。"
 
-#: ../../playback-and-recording/transport-controls.rst:8
+#: ../../playback-and-recording/transport-controls.rst:9
 #: ../../zrythm-interface/transport-bar.rst:24
 msgid "Transport Controls"
 msgstr "トランスポート コントロール"
 
-#: ../../playback-and-recording/transport-controls.rst:10
+#: ../../playback-and-recording/transport-controls.rst:11
 msgid "Playback is controlled by the following transport controls."
 msgstr "再生は以下のトランスポートコントロールで制御されます。"
 
-#: ../../playback-and-recording/transport-controls.rst:17
+#: ../../playback-and-recording/transport-controls.rst:18
 msgid "Controls"
 msgstr "コントロール"
 
-#: ../../playback-and-recording/transport-controls.rst:31
+#: ../../playback-and-recording/transport-controls.rst:32
 msgid "Metronome toggle"
 msgstr "メトロノームのON/OFFの切り替え"
 
-#: ../../playback-and-recording/transport-controls.rst:20
+#: ../../playback-and-recording/transport-controls.rst:21
 msgid "Toggles the metronome on/off."
 msgstr "メトロノームのオン/オフの切り替え。"
 
-#: ../../playback-and-recording/transport-controls.rst:22
+#: ../../playback-and-recording/transport-controls.rst:23
 #, fuzzy
 msgid ""
 "When the metronome is enabled, you will hear metronome ticks during playback "
@@ -5395,7 +5403,7 @@ msgstr ""
 "ティックが聞こえます。各バーのティックがより強調されます。これは、曲がビート"
 "のままであることを確認するのに便利です。"
 
-#: ../../playback-and-recording/transport-controls.rst:29
+#: ../../playback-and-recording/transport-controls.rst:30
 #, fuzzy
 msgid ""
 "The metronome samples can be overridden by placing your own samples in your "
@@ -5404,19 +5412,19 @@ msgstr ""
 "メトロノームサンプルは、Zrythmディレクトリに独自のサンプルを配置することで"
 "オーバーライドできます。これは TODO 機能です。"
 
-#: ../../playback-and-recording/transport-controls.rst:33
+#: ../../playback-and-recording/transport-controls.rst:34
 msgid "Metronome options"
 msgstr "メトロノームの設定"
 
-#: ../../playback-and-recording/transport-controls.rst:34
+#: ../../playback-and-recording/transport-controls.rst:35
 msgid "Sets the volume of the metronome"
 msgstr "メトロノームの音量を設定します。"
 
-#: ../../playback-and-recording/transport-controls.rst:37
+#: ../../playback-and-recording/transport-controls.rst:38
 msgid "Return to cue point on stop"
 msgstr "停止時にキューポイントに戻る"
 
-#: ../../playback-and-recording/transport-controls.rst:36
+#: ../../playback-and-recording/transport-controls.rst:37
 msgid ""
 "Toggles whether to return to the :ref:`playback-and-recording/loop-points-"
 "and-markers:Cue Point` when playback stops."
@@ -5424,28 +5432,28 @@ msgstr ""
 "再生停止時に :ref:`playback-and-recording/loop-points-and-markers:Cue Point` "
 "に戻るかどうかを切り替えます。"
 
-#: ../../playback-and-recording/transport-controls.rst:39
+#: ../../playback-and-recording/transport-controls.rst:40
 #: ../../tracks/track-controls.rst:16
 msgid "Record"
 msgstr "録音"
 
-#: ../../playback-and-recording/transport-controls.rst:40
+#: ../../playback-and-recording/transport-controls.rst:41
 msgid "Arms the project for recording."
 msgstr "録音のためにプロジェクトをアームする。"
 
-#: ../../playback-and-recording/transport-controls.rst:41
+#: ../../playback-and-recording/transport-controls.rst:42
 msgid "Record options"
 msgstr "録音設定"
 
-#: ../../playback-and-recording/transport-controls.rst:42
+#: ../../playback-and-recording/transport-controls.rst:43
 msgid "Sets the settings to use when recording."
 msgstr "録音時に使用する設定をセットします。"
 
-#: ../../playback-and-recording/transport-controls.rst:45
+#: ../../playback-and-recording/transport-controls.rst:46
 msgid "Play"
 msgstr "再生"
 
-#: ../../playback-and-recording/transport-controls.rst:44
+#: ../../playback-and-recording/transport-controls.rst:45
 #, fuzzy
 msgid ""
 "If stopped, the song will start playing. If already playing, the Playhead "
@@ -5454,35 +5462,35 @@ msgstr ""
 "停止している場合は、曲の再生を開始します。すでに再生中の場合、プレイヘッドは"
 "キューポイントに移動します。"
 
-#: ../../playback-and-recording/transport-controls.rst:48
+#: ../../playback-and-recording/transport-controls.rst:49
 msgid "Stop"
 msgstr "停止"
 
-#: ../../playback-and-recording/transport-controls.rst:48
+#: ../../playback-and-recording/transport-controls.rst:49
 msgid "Pauses playback. If clicked twice, goes back to the Cue point."
 msgstr "再生を一時停止します。2回クリックするとキューポイントに戻ります。"
 
-#: ../../playback-and-recording/transport-controls.rst:51
+#: ../../playback-and-recording/transport-controls.rst:52
 msgid "Backward"
 msgstr "後戻り"
 
-#: ../../playback-and-recording/transport-controls.rst:51
+#: ../../playback-and-recording/transport-controls.rst:52
 msgid "Moves the Playhead backward by the size of 1 snap point."
 msgstr "プレイヘッドを 1 スナップポイントの大きさで後方に移動します。"
 
-#: ../../playback-and-recording/transport-controls.rst:54
+#: ../../playback-and-recording/transport-controls.rst:55
 msgid "Forward"
 msgstr "前方"
 
-#: ../../playback-and-recording/transport-controls.rst:54
+#: ../../playback-and-recording/transport-controls.rst:55
 msgid "Moves the Playhead forward by the size of 1 snap point."
 msgstr "プレイヘッドを 1 スナップポイントの大きさで前方に移動します。"
 
-#: ../../playback-and-recording/transport-controls.rst:59
+#: ../../playback-and-recording/transport-controls.rst:60
 msgid "Loop"
 msgstr "ループ"
 
-#: ../../playback-and-recording/transport-controls.rst:57
+#: ../../playback-and-recording/transport-controls.rst:58
 #, fuzzy
 msgid ""
 "If enabled, the Playhead will move back to the Loop Start point when it "
@@ -5491,22 +5499,22 @@ msgstr ""
 "有効にすると、プレイヘッドはループ終了ポイントに到達するとループ開始ポイント"
 "に戻ります。"
 
-#: ../../playback-and-recording/transport-controls.rst:62
+#: ../../playback-and-recording/transport-controls.rst:63
 msgid "Playhead Display"
 msgstr "プレイヘッド表示"
 
-#: ../../playback-and-recording/transport-controls.rst:63
+#: ../../playback-and-recording/transport-controls.rst:64
 msgid ""
 "The playhead position can be displayed in either BBT notation (`bars.beats."
 "sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be toggled by right-"
 "clicking on the playhead position display."
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:72
+#: ../../playback-and-recording/transport-controls.rst:73
 msgid "JACK Transport"
 msgstr "JACK トランスポート"
 
-#: ../../playback-and-recording/transport-controls.rst:73
+#: ../../playback-and-recording/transport-controls.rst:74
 msgid ""
 "Zrythm can sync to `JACK transport <https://jackaudio.org/api/transport-"
 "design.html>`_ or become the JACK transport master. These options are "
@@ -5514,11 +5522,11 @@ msgid ""
 "JACK audio backend and will be remembered across projects."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:8
+#: ../../plugins-files/audio-midi-files/file-browser.rst:9
 msgid "File Browser"
 msgstr "ファイルブラウザ"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:10
+#: ../../plugins-files/audio-midi-files/file-browser.rst:11
 msgid ""
 "The File Browser makes it easy to navigate through files on your computer or "
 "through your custom collections."
@@ -5526,31 +5534,31 @@ msgstr ""
 "ファイル ブラウザを使用すると、パソコン上のファイルやカスタム コレクションを"
 "簡単にナビゲードすることができます。"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:18
+#: ../../plugins-files/audio-midi-files/file-browser.rst:19
 msgid "Bookmarks"
 msgstr "ブックマーク"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:19
+#: ../../plugins-files/audio-midi-files/file-browser.rst:20
 msgid ""
 "The Bookmarks section contains a list of bookmarked directories. Double-"
 "clicking on a directory will show its contents in the file list below."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:24
+#: ../../plugins-files/audio-midi-files/file-browser.rst:25
 msgid "Standard Bookmarks"
 msgstr "標準ブックマーク"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:25
+#: ../../plugins-files/audio-midi-files/file-browser.rst:26
 msgid ""
 "Zrythm provides standard bookmarks for :file:`Home` and :file:`Desktop`, "
 "which correspond to the home and desktop directories of the current user."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:31
+#: ../../plugins-files/audio-midi-files/file-browser.rst:32
 msgid "Custom Bookmarks"
 msgstr "カスタムブックマーク"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:32
+#: ../../plugins-files/audio-midi-files/file-browser.rst:33
 #, fuzzy
 msgid ""
 "Custom bookmarks can be added by right-clicking on a directory in the file "
@@ -5559,7 +5567,7 @@ msgstr ""
 "トラックを右クリックして :guilabel:`Delete` を選択すると、トラックを削除する"
 "ことができます。"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:39
+#: ../../plugins-files/audio-midi-files/file-browser.rst:40
 #, fuzzy
 msgid ""
 "Similarly, custom bookmarks can be removed by right-clicking on the bookmark "
@@ -5568,28 +5576,28 @@ msgstr ""
 "トラックを右クリックして :guilabel:`Delete` を選択すると、トラックを削除する"
 "ことができます。"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:50
-#: ../../plugins-files/plugins/plugin-browser.rst:43
+#: ../../plugins-files/audio-midi-files/file-browser.rst:51
+#: ../../plugins-files/plugins/plugin-browser.rst:48
 msgid "Filter Buttons"
 msgstr "フィルター ボタン"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:51
+#: ../../plugins-files/audio-midi-files/file-browser.rst:52
 #, fuzzy
 msgid ""
 "Similarly to the :doc:`plugin browser <../plugins/plugin-browser>`, files "
 "can be filtered based on their type."
 msgstr "さらに、プラグインは種類に基づいてフィルタリングすることができます。"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:58
+#: ../../plugins-files/audio-midi-files/file-browser.rst:59
 msgid "Filtering by audio files"
 msgstr "オーディオファイルによるフィルタリング"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:60
+#: ../../plugins-files/audio-midi-files/file-browser.rst:61
 msgid "The following toggles are available."
 msgstr "以下のトグルが用意されています。"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:62
-#: ../../plugins-files/audio-midi-files/overview.rst:18
+#: ../../plugins-files/audio-midi-files/file-browser.rst:63
+#: ../../plugins-files/audio-midi-files/overview.rst:19
 #: ../../routing/ports.rst:41 ../../tracks/track-types.rst:20
 #: ../../tracks/track-types.rst:21 ../../tracks/track-types.rst:22
 #: ../../tracks/track-types.rst:26 ../../tracks/track-types.rst:27
@@ -5599,28 +5607,28 @@ msgstr "以下のトグルが用意されています。"
 msgid "Audio"
 msgstr "オーディオ"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:63
+#: ../../plugins-files/audio-midi-files/file-browser.rst:64
 msgid "Only show audio files."
 msgstr "オーディオファイルのみを表示。"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:65
+#: ../../plugins-files/audio-midi-files/file-browser.rst:66
 msgid "Only show MIDI files."
 msgstr "MIDI ファイルのみを表示。"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:67
+#: ../../plugins-files/audio-midi-files/file-browser.rst:68
 msgid "Only show preset files."
 msgstr "プリセットファイルのみ表示。"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:69
+#: ../../plugins-files/audio-midi-files/file-browser.rst:70
 #, fuzzy
 msgid "Preset filtering is not implemented yet."
 msgstr "この機能はまだ実装されていません。"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:72
+#: ../../plugins-files/audio-midi-files/file-browser.rst:73
 msgid "Showing Unsupported Files"
 msgstr "対応されていないファイルの表示"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:73
+#: ../../plugins-files/audio-midi-files/file-browser.rst:74
 msgid ""
 "By default, only supported files will be shown in the file list. To also "
 "show unsupported files, enable :guilabel:`Show unsupported files` in the :"
@@ -5628,11 +5636,11 @@ msgid ""
 "Preferences>`."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:79
+#: ../../plugins-files/audio-midi-files/file-browser.rst:80
 msgid "Showing Hidden Files"
 msgstr "隠しファイルの表示"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:80
+#: ../../plugins-files/audio-midi-files/file-browser.rst:81
 msgid ""
 "By default, only files that are not hidden will be shown in the file list. "
 "To also show hidden files, enable :guilabel:`Show hidden files` in the :ref:"
@@ -5640,89 +5648,89 @@ msgid ""
 "Preferences>`."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:87
+#: ../../plugins-files/audio-midi-files/file-browser.rst:88
 msgid ""
 "Audio and MIDI files can be auditioned by making use of the auditioning "
 "controls at the bottom of the file list."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:94
+#: ../../plugins-files/audio-midi-files/file-browser.rst:95
 msgid "File auditioning controls"
 msgstr "ファイルの試聴コントロール"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:96
+#: ../../plugins-files/audio-midi-files/file-browser.rst:97
 msgid "|icon_media-playback-start| Play"
 msgstr "|icon_media-playback-start| 再生"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:97
+#: ../../plugins-files/audio-midi-files/file-browser.rst:98
 msgid "Trigger playback of the selected file."
 msgstr "選択したファイルの再生を開始する。"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:98
+#: ../../plugins-files/audio-midi-files/file-browser.rst:99
 msgid "|icon_media-playback-stop| Stop"
 msgstr "|icon_media-playback-stop| 再生停止"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:99
+#: ../../plugins-files/audio-midi-files/file-browser.rst:100
 msgid "Stop playback of the selected file."
 msgstr "選択したファイルの再生を停止する。"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:101
+#: ../../plugins-files/audio-midi-files/file-browser.rst:102
 msgid "Volume"
 msgstr "音量"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:101
+#: ../../plugins-files/audio-midi-files/file-browser.rst:102
 msgid "Control the loudness of the output audio."
 msgstr "出力される音声の大きさをコントロールします。"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:104
+#: ../../plugins-files/audio-midi-files/file-browser.rst:105
 #: ../../tracks/inspector-page.rst:40 ../../tracks/track-types.rst:45
 msgid "Instrument"
 msgstr "音源"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:105
+#: ../../plugins-files/audio-midi-files/file-browser.rst:106
 msgid ""
 "The selected instrument will be used for playing back MIDI files. In the "
 "above example, the `Helm` instrument is selected."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:110
+#: ../../plugins-files/audio-midi-files/file-browser.rst:111
 msgid "Autoplay"
 msgstr "自動再生"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:111
+#: ../../plugins-files/audio-midi-files/file-browser.rst:112
 msgid ""
 "Auto-play (automatically playing back the selected file when the selection "
 "changes) can be enabled in the preferences below."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:118
+#: ../../plugins-files/audio-midi-files/file-browser.rst:119
 msgid ""
 "Clicking the cog icon will bring up the preferences for the file browser."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:124
+#: ../../plugins-files/audio-midi-files/file-browser.rst:125
 msgid "File browser preferences"
 msgstr "ファイルブラウザの設定"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:127
+#: ../../plugins-files/audio-midi-files/file-browser.rst:128
 msgid "File Info"
 msgstr "ファイル情報"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:128
+#: ../../plugins-files/audio-midi-files/file-browser.rst:129
 msgid ""
 "Information, such as metadata, for the selected file is always shown at the "
 "bottom of the file panel."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:134
+#: ../../plugins-files/audio-midi-files/file-browser.rst:135
 msgid "Information about the selected audio file"
 msgstr "選択したオーディオファイルの情報"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:137
+#: ../../plugins-files/audio-midi-files/file-browser.rst:138
 msgid "Importing Files"
 msgstr "ファイルのインポート"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:138
+#: ../../plugins-files/audio-midi-files/file-browser.rst:139
 #, fuzzy
 msgid ""
 "Files are imported into the project by either double-clicking or dragging "
@@ -5731,26 +5739,26 @@ msgstr ""
 "ファイルは、ブラウザでダブルクリックするか、トラックにドラッグアンドドロップ"
 "してインポートされます。"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:145
+#: ../../plugins-files/audio-midi-files/file-browser.rst:146
 msgid "Drag-n-dropping an audio file into a new track"
 msgstr "オーディオファイルを新しいトラックにドラッグ＆ドロップ"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:148
+#: ../../plugins-files/audio-midi-files/file-browser.rst:149
 msgid "Pop-up File Browser"
 msgstr "ポップアップファイルブラウザ"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:149
+#: ../../plugins-files/audio-midi-files/file-browser.rst:150
 msgid ""
 "An additional file browser with similar functionalities is available by "
 "clicking the :guilabel:`Popup File Browser` button near the bottom right of "
 "the main window."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/intro.rst:6
+#: ../../plugins-files/audio-midi-files/intro.rst:7
 msgid "Audio & MIDI Files"
 msgstr "オーディオと MIDI ファイル"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:8
+#: ../../plugins-files/audio-midi-files/overview.rst:9
 #, fuzzy
 msgid ""
 "Zrythm can import MIDI and audio files into the project. The files can be "
@@ -5761,56 +5769,56 @@ msgstr ""
 "ます。ファイルは、コンピュータまたはファイルブラウザからトラックにドラッグア"
 "ンドドロップすることでインポートできます。"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:15
+#: ../../plugins-files/audio-midi-files/overview.rst:16
 msgid "Supported Formats"
 msgstr "対応フォーマット"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:19
+#: ../../plugins-files/audio-midi-files/overview.rst:20
 msgid "The following file formats are supported."
 msgstr "以下の形式のファイルが対応されています。"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:22
+#: ../../plugins-files/audio-midi-files/overview.rst:23
 msgid "OGG (Vorbis and OPUS)"
 msgstr "OGG (VorbisおよびOPUS)"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:22
+#: ../../plugins-files/audio-midi-files/overview.rst:23
 msgid ""
 "An open and patent-free container format mostly used for lossy audio files."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:25
+#: ../../plugins-files/audio-midi-files/overview.rst:26
 msgid ":abbr:`FLAC (Free Lossless Audio Codec)`"
 msgstr ":abbr:`FLAC (Free Lossless Audio Codec)`"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:25
+#: ../../plugins-files/audio-midi-files/overview.rst:26
 msgid ""
 "An open and royalty-free audio coding format for lossless compression of "
 "digital audio."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:28
+#: ../../plugins-files/audio-midi-files/overview.rst:29
 msgid ":abbr:`WAV (Waveform Audio File Format)`"
 msgstr ":abbr:`WAV (Waveform Audio File Format)`"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:28
+#: ../../plugins-files/audio-midi-files/overview.rst:29
 msgid "An audio file format for storing audio bistreams (uncompressed audio)."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:33
+#: ../../plugins-files/audio-midi-files/overview.rst:34
 msgid "MP3"
 msgstr "MP3"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:31
+#: ../../plugins-files/audio-midi-files/overview.rst:32
 msgid ""
 "An (originally patented) coding format for compressed audio. Although the "
 "patents have expired, we recommend using OGG instead."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:35
+#: ../../plugins-files/audio-midi-files/overview.rst:36
 msgid "OPUS support requires specific project samplerates to work properly."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:38
+#: ../../plugins-files/audio-midi-files/overview.rst:39
 msgid ""
 "A software patent is a 20-year monopoly on the use of a feature in a "
 "computer program. When a company has a patent on nested menus, a video "
@@ -5818,68 +5826,68 @@ msgid ""
 "years unless they get permission from the patent holder."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:46
+#: ../../plugins-files/audio-midi-files/overview.rst:47
 msgid ""
 "Computer programs typically contain hundreds or thousands of features, and "
 "many features that users expect, are patented."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:50
+#: ../../plugins-files/audio-midi-files/overview.rst:51
 msgid ""
 "The End Software Patents campaign is against software monopolies, and for "
 "software development."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:53
+#: ../../plugins-files/audio-midi-files/overview.rst:54
 msgid "Learn more at `EndSoftPatents`_."
 msgstr "詳しくは `EndSoftPatents`_ を参照してください。"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:59
+#: ../../plugins-files/audio-midi-files/overview.rst:60
 msgid ""
 "Zrythm supports :abbr:`SMF (Standard MIDI File)` files of type 0 and type 1. "
 "Each type is explained below for reference."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:63
+#: ../../plugins-files/audio-midi-files/overview.rst:64
 msgid "Type 0"
 msgstr "タイプ 0"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:64
+#: ../../plugins-files/audio-midi-files/overview.rst:65
 msgid "An entire performance merged into a single track."
 msgstr "プロジェクト全体が単一のトラックにマージされた状態。"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:66
+#: ../../plugins-files/audio-midi-files/overview.rst:67
 msgid "Type 1"
 msgstr "タイプ 1"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:66
+#: ../../plugins-files/audio-midi-files/overview.rst:67
 msgid ""
 "An entire performance in one or more tracks that are performed simultaneously"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:70
+#: ../../plugins-files/audio-midi-files/overview.rst:71
 msgid "Type 2"
 msgstr "タイプ 2"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:69
+#: ../../plugins-files/audio-midi-files/overview.rst:70
 msgid ""
 "Multiple arrangements, each having its own track and intended to be played "
 "in sequence"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:72
+#: ../../plugins-files/audio-midi-files/overview.rst:73
 msgid "Type 2 SMF files are rarely used and are not supported."
 msgstr ""
 
-#: ../../plugins-files/intro.rst:6
+#: ../../plugins-files/intro.rst:7
 msgid "Plugins & Files"
 msgstr "プラグインとファイル"
 
-#: ../../plugins-files/plugins/inspector-page.rst:8
+#: ../../plugins-files/plugins/inspector-page.rst:9
 msgid "Inspector Page"
 msgstr "インスペクターページ"
 
-#: ../../plugins-files/plugins/inspector-page.rst:10
+#: ../../plugins-files/plugins/inspector-page.rst:11
 #, fuzzy
 msgid ""
 "When a plugin is selected in the Mixer, or when using :menuselection:`right "
@@ -5889,12 +5897,12 @@ msgstr ""
 "ミキサーでプラグインを選択すると、そのページがインスペクタに次のように表示さ"
 "れます。"
 
-#: ../../plugins-files/plugins/inspector-page.rst:18
+#: ../../plugins-files/plugins/inspector-page.rst:19
 #, fuzzy
 msgid "Plugin inspector"
 msgstr "プラグインインスペクター"
 
-#: ../../plugins-files/plugins/inspector-page.rst:20
+#: ../../plugins-files/plugins/inspector-page.rst:21
 #, fuzzy
 msgid ""
 "This page will display information about the plugin and its ports and allow "
@@ -5903,11 +5911,11 @@ msgstr ""
 "このページには、プラグインとそのポートに関する情報が表示され、変更を行うこと"
 "ができます。"
 
-#: ../../plugins-files/plugins/inspector-page.rst:25
+#: ../../plugins-files/plugins/inspector-page.rst:26
 msgid "Plugin Properties"
 msgstr "プラグインの属性"
 
-#: ../../plugins-files/plugins/inspector-page.rst:26
+#: ../../plugins-files/plugins/inspector-page.rst:27
 msgid ""
 "The plugin properties show the name and type of the plugin, as well as "
 "preset and bank selectors."
@@ -5915,16 +5923,16 @@ msgstr ""
 "プラグインのプロパティには、プラグインの名前と種類、プリセットとバンクセレク"
 "タが表示されます。"
 
-#: ../../plugins-files/plugins/inspector-page.rst:33
-#: ../../plugins-files/plugins/plugin-info.rst:51
+#: ../../plugins-files/plugins/inspector-page.rst:34
+#: ../../plugins-files/plugins/plugin-info.rst:52
 msgid "Plugin Ports"
 msgstr "プラグインポート"
 
-#: ../../plugins-files/plugins/inspector-page.rst:34
+#: ../../plugins-files/plugins/inspector-page.rst:35
 msgid "These are the ports that the plugin has."
 msgstr "これらはプラグインが持っているポートです。"
 
-#: ../../plugins-files/plugins/inspector-page.rst:39
+#: ../../plugins-files/plugins/inspector-page.rst:40
 #, fuzzy
 msgid ""
 "Control input ports can be changed by clicking and dragging, and can also be "
@@ -5934,28 +5942,28 @@ msgstr ""
 "トラックを使用して自動化することもできます。ポートは、Zrythm 内の任意の場所に"
 "ある他のポートに、ダブルクリックすることでルーティングできます。"
 
-#: ../../plugins-files/plugins/inspector-page.rst:43
+#: ../../plugins-files/plugins/inspector-page.rst:44
 msgid ""
 "Ports can be routed to other ports anywhere within Zrythm by double clicking "
 "on them."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:46
+#: ../../plugins-files/plugins/inspector-page.rst:47
 msgid "Ports are explained in more detail in :ref:`ports`."
 msgstr "ポートについては :ref:`ports` で詳しく説明しています。"
 
-#: ../../plugins-files/plugins/inspector-page.rst:48
+#: ../../plugins-files/plugins/inspector-page.rst:49
 msgid ""
 "Depending on the type of plugin, there may be different categories of ports "
 "being shown."
 msgstr ""
 "プラグインの種類によって、表示されるポートのカテゴリが異なる場合があります。"
 
-#: ../../plugins-files/plugins/inspector-page.rst:52
+#: ../../plugins-files/plugins/inspector-page.rst:53
 msgid "Display"
 msgstr "表示"
 
-#: ../../plugins-files/plugins/inspector-page.rst:53
+#: ../../plugins-files/plugins/inspector-page.rst:54
 #, fuzzy
 msgid ""
 "The number in the top right of each port name will display the current "
@@ -5965,15 +5973,15 @@ msgstr ""
 "各ポート名の右上の番号には、このポートとの間の現在の接続数が表示されます。:d "
 "oc:'を参照してください。/../ルーティング/接続を作成する'詳細については。"
 
-#: ../../plugins-files/plugins/inspector-page.rst:58
+#: ../../plugins-files/plugins/inspector-page.rst:59
 msgid ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
 msgstr ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:8
+#: ../../plugins-files/plugins/plugin-browser.rst:9
 msgid "Plugin Browser"
 msgstr "プラグインブラウザ"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:10
+#: ../../plugins-files/plugins/plugin-browser.rst:11
 #, fuzzy
 msgid ""
 "The plugin browser makes it easy to browse and filter plugins installed on "
@@ -5982,26 +5990,26 @@ msgstr ""
 "プラグインブラウザを使用すると、コンピュータにインストールされているプラグイ"
 "ンを簡単に閲覧してフィルタリングできます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:16
+#: ../../plugins-files/plugins/plugin-browser.rst:17
 #, fuzzy
 msgid "Plugin browser"
 msgstr "プラグインブラウザ"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:19
+#: ../../plugins-files/plugins/plugin-browser.rst:20
 msgid "Filter Tabs"
 msgstr "フィルタ・タブ"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:20
+#: ../../plugins-files/plugins/plugin-browser.rst:21
 msgid ""
 "Plugins can be filtered based on various conditions using the filter tabs at "
 "the top. The following tabs are available:"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:26
+#: ../../plugins-files/plugins/plugin-browser.rst:27
 msgid "Collection"
 msgstr "コレクション"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:25
+#: ../../plugins-files/plugins/plugin-browser.rst:26
 #, fuzzy
 msgid ""
 "This tab contains your collections. You can create collections such as "
@@ -6010,35 +6018,43 @@ msgstr ""
 "このタブには、コレクションが含まれています。\"MySynths\" などのコレクションを"
 "作成し、選択したコレクションでフィルター処理できます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:28
+#: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "Author"
 msgstr "作者"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:29
+#: ../../plugins-files/plugins/plugin-browser.rst:30
 msgid "Filter by plugin manufacturer/author."
 msgstr "プラグインのメーカー/作者で絞り込む。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:30
+#: ../../plugins-files/plugins/plugin-browser.rst:32
+msgid "Built-in plugins can be found under"
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:33
+msgid "`Zrythm DAW` here."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:35
 msgid "Category"
 msgstr "カテゴリー"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:31
+#: ../../plugins-files/plugins/plugin-browser.rst:36
 msgid "Filter by category (`Delay`, `Distortion`, etc.)."
 msgstr "カテゴリ ( `Delay` 、 `Distortion` など) でフィルタリングする。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:33
+#: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "Protocol"
 msgstr "プロトコル"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:33
+#: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "Filter by protocol (`LV2`, `SFZ`, etc.)."
 msgstr "プロトコル ( `LV2` 、 `SFZ` など) でフィルタリングする。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:35
+#: ../../plugins-files/plugins/plugin-browser.rst:40
 msgid "You can mix filters from various tabs for a custom search."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:38
+#: ../../plugins-files/plugins/plugin-browser.rst:43
 msgid ""
 "Where applicable, you can :kbd:`Control`-click to select multiple rows or "
 "deselect a row."
@@ -6046,15 +6062,15 @@ msgstr ""
 "該当する場合は、 :kbd:`Control` を押しながらクリックして、複数の行を選択した"
 "り、行の選択を解除したりすることができます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:44
+#: ../../plugins-files/plugins/plugin-browser.rst:49
 msgid "Additionally to the above, plugins can be filtered based on their type."
 msgstr "さらに、プラグインは種類に基づいてフィルタリングすることができます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:50
+#: ../../plugins-files/plugins/plugin-browser.rst:55
 msgid "Filtering by modulator plugins"
 msgstr "モジュレータープラグインによるフィルタリング"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:52
+#: ../../plugins-files/plugins/plugin-browser.rst:57
 msgid ""
 "See :ref:`plugin-types` for more information about the various types of "
 "plugins there are."
@@ -6062,27 +6078,27 @@ msgstr ""
 "様々な種類のプラグインについての詳細は、 :ref:`plugin-types` を参照してくださ"
 "い。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:56
+#: ../../plugins-files/plugins/plugin-browser.rst:61
 msgid "Keyword Search"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:58
+#: ../../plugins-files/plugins/plugin-browser.rst:63
 msgid "Plugins can also be searched by keywords using the provided search bar."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:64
+#: ../../plugins-files/plugins/plugin-browser.rst:69
 msgid "Instantiating Plugins"
 msgstr "プラグインのインスタンス化"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:65
+#: ../../plugins-files/plugins/plugin-browser.rst:70
 msgid "There are a couple of ways to instantiate plugins:"
 msgstr "プラグインをインスタンス化する方法はいくつかあります。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:68
+#: ../../plugins-files/plugins/plugin-browser.rst:73
 msgid "Drag-n-Drop"
 msgstr "ドラッグアンドドロップ"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:70
+#: ../../plugins-files/plugins/plugin-browser.rst:75
 msgid ""
 "You can drag and drop the selected plugin into empty space in the Tracklist "
 "or into empty space in the Mixer to create a new track using that plugin."
@@ -6091,7 +6107,7 @@ msgstr ""
 "るか、ミキサーの空きスペースにドロップして、そのプラグインを使用して新しいト"
 "ラックを作成できます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:80
+#: ../../plugins-files/plugins/plugin-browser.rst:85
 msgid ""
 "Alternatively, you can drag the plugin on a mixer slot to add it there or "
 "replace the previous plugin."
@@ -6099,16 +6115,16 @@ msgstr ""
 "または、ミキサースロットにプラグインをドラッグして追加したり、前のプラグイン"
 "を置き換えたりすることもできます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:86
+#: ../../plugins-files/plugins/plugin-browser.rst:91
 msgid "If the plugin is a modulator, you can drop it into the Modulators tab."
 msgstr ""
 "プラグインがモジュレーターの場合は、モジュレータータブにドロップできます。"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:93
+#: ../../plugins-files/plugins/plugin-browser.rst:98
 msgid "Double Click/Enter"
 msgstr "ダブルクリック/リターン"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:95
+#: ../../plugins-files/plugins/plugin-browser.rst:100
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."
@@ -6116,11 +6132,11 @@ msgstr ""
 "プラグインをダブルクリックするか、それを選択し、そのプラグインを使用して新し"
 "いトラックを作成するためにキーボードのリターンキーを押します。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:6
+#: ../../plugins-files/plugins/plugin-info.rst:7
 msgid "Plugin Overview"
 msgstr "プラグインの概要"
 
-#: ../../plugins-files/plugins/plugin-info.rst:8
+#: ../../plugins-files/plugins/plugin-info.rst:9
 #, fuzzy
 msgid ""
 "There are various :term:`plugin <Plugin>` formats supported by Zrythm, "
@@ -6129,24 +6145,24 @@ msgstr ""
 "Zrythmでサポートされている :term:`プラグイン <Plugin>` には様々な種類があ"
 "り、 :ref:`scanning-plugins` に記載されています。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:12
+#: ../../plugins-files/plugins/plugin-info.rst:13
 msgid "In Zrythm, :term:`SFZ`/:term:`SF2` are also used as plugins."
 msgstr ""
 "Zrythmでは、:term:`SFZ` / :term:`SF2` もプラグインとして使用されています。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:18
+#: ../../plugins-files/plugins/plugin-info.rst:19
 msgid "Plugin Types"
 msgstr "プラグインの種類"
 
-#: ../../plugins-files/plugins/plugin-info.rst:20
+#: ../../plugins-files/plugins/plugin-info.rst:21
 msgid "Plugins are classified into the following categories."
 msgstr "プラグインは、次のカテゴリに分類されます。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:25
+#: ../../plugins-files/plugins/plugin-info.rst:26
 msgid "|icon_instrument| Instrument"
 msgstr "|icon_instrument| インストゥルメント"
 
-#: ../../plugins-files/plugins/plugin-info.rst:23
+#: ../../plugins-files/plugins/plugin-info.rst:24
 #, fuzzy
 msgid ""
 "These plugins will create an :ref:`Instrument Track <tracks/track-types:"
@@ -6155,11 +6171,11 @@ msgstr ""
 "これらのプラグインは、プロジェクトに追加されたときにインストゥルメントトラッ"
 "クを作成します。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:31
+#: ../../plugins-files/plugins/plugin-info.rst:32
 msgid "|icon_audio-insert| Effect"
 msgstr "|icon_audio-insert| エフェクト"
 
-#: ../../plugins-files/plugins/plugin-info.rst:28
+#: ../../plugins-files/plugins/plugin-info.rst:29
 #, fuzzy
 msgid ""
 "These plugins can be dragged into the insert slots of existing channels in "
@@ -6170,11 +6186,11 @@ msgstr ""
 "ることができ、または新しいバストラックを作成するためにインスタンス化すること"
 "ができます。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:35
+#: ../../plugins-files/plugins/plugin-info.rst:36
 msgid "|icon_modulator| Modulator"
 msgstr "|icon_modulator| モジュレータ"
 
-#: ../../plugins-files/plugins/plugin-info.rst:34
+#: ../../plugins-files/plugins/plugin-info.rst:35
 msgid ""
 "These plugins output :term:`CV` signals and can be used to modulate other "
 "plugin or track parameters."
@@ -6182,18 +6198,18 @@ msgstr ""
 "これらのプラグインは :term:`CV` 信号を出力し、他のプラグインやトラックパラ"
 "メータを変調するために使用することができます。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:41
+#: ../../plugins-files/plugins/plugin-info.rst:42
 msgid "|icon_signal-midi| MIDI Effect"
 msgstr "|icon_signal-midi| MIDI エフェクト"
 
-#: ../../plugins-files/plugins/plugin-info.rst:38
+#: ../../plugins-files/plugins/plugin-info.rst:39
 msgid ""
 "These plugins modify incoming :term:`MIDI` signals and can be used in the "
 "MIDI signal chain of an :ref:`Instrument <tracks/track-types:Instrument "
 "Track>` or :ref:`MIDI Track <tracks/track-types:MIDI Track>`."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-info.rst:44
+#: ../../plugins-files/plugins/plugin-info.rst:45
 #, fuzzy
 msgid ""
 "Zrythm looks inside the plugin's metadata to determine what type the plugin "
@@ -6204,13 +6220,13 @@ msgstr ""
 "します。それだけでは不十分な場合、Zrythmはプラグインのオーディオ、MIDI、コン"
 "トロール、CV入出力ポートの数に基づいて判断します。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:52
+#: ../../plugins-files/plugins/plugin-info.rst:53
 msgid ""
 "Plugins consist of controls (parameters) and a variety of audio, :term:"
 "`MIDI` and :term:`CV` :ref:`ports <ports>`."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-info.rst:56
+#: ../../plugins-files/plugins/plugin-info.rst:57
 #, fuzzy
 msgid ""
 "Zrythm first creates all plugins with the following special control ports. "
@@ -6218,23 +6234,23 @@ msgid ""
 msgstr ""
 "上記のポートが作成された後、Zrythmはプラグインの残りのポートを追加します。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:62
+#: ../../plugins-files/plugins/plugin-info.rst:63
 msgid "Enabled"
 msgstr "有効"
 
-#: ../../plugins-files/plugins/plugin-info.rst:62
+#: ../../plugins-files/plugins/plugin-info.rst:63
 msgid "Controls whether the plugin is active or bypassed."
 msgstr "プラグインがアクティブかバイパス状態かを制御します。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:66
+#: ../../plugins-files/plugins/plugin-info.rst:67
 msgid "Gain"
 msgstr "ゲイン"
 
-#: ../../plugins-files/plugins/plugin-info.rst:65
+#: ../../plugins-files/plugins/plugin-info.rst:66
 msgid "Increases the output volume of the plugin (if applicable)."
 msgstr "プラグインの出力ボリュームを上げます (該当する場合)。"
 
-#: ../../plugins-files/plugins/plugin-info.rst:69
+#: ../../plugins-files/plugins/plugin-info.rst:70
 #, fuzzy
 msgid ""
 "All of the plugin's ports will be shown in the plugin's :ref:`inspector page "
@@ -6243,15 +6259,15 @@ msgstr ""
 "プラグインのすべてのポートが :ref:`Inspector Page <plugins-files/plugins/"
 "inspector-page:Inspector Page>` に表示されます"
 
-#: ../../plugins-files/plugins/plugin-window.rst:6
+#: ../../plugins-files/plugins/plugin-window.rst:7
 msgid "Plugin Window"
 msgstr "プラグインウィンドウ"
 
-#: ../../plugins-files/plugins/plugin-window.rst:9
+#: ../../plugins-files/plugins/plugin-window.rst:10
 msgid "Custom UIs"
 msgstr "カスタムUI"
 
-#: ../../plugins-files/plugins/plugin-window.rst:10
+#: ../../plugins-files/plugins/plugin-window.rst:11
 #, fuzzy
 msgid ""
 "When Plugin UIs are opened, a window such as the following will be "
@@ -6261,21 +6277,21 @@ msgstr ""
 "プラグイン UI が表示されると、プラグインが独自の UI がある場合、次のような"
 "ウィンドウが表示されます。"
 
-#: ../../plugins-files/plugins/plugin-window.rst:20
+#: ../../plugins-files/plugins/plugin-window.rst:21
 msgid "Generic UIs"
 msgstr "汎用UI"
 
-#: ../../plugins-files/plugins/plugin-window.rst:21
+#: ../../plugins-files/plugins/plugin-window.rst:22
 msgid ""
 "If the plugin does not ship with its own UI, the following generic UI will "
 "be generated for it."
 msgstr "プラグインが独自の UI を持たない場合は、次の汎用 UI が生成されます。"
 
-#: ../../plugins-files/plugins/plugin-window.rst:29
+#: ../../plugins-files/plugins/plugin-window.rst:30
 msgid "Bridging"
 msgstr "ブリッジ"
 
-#: ../../plugins-files/plugins/plugin-window.rst:30
+#: ../../plugins-files/plugins/plugin-window.rst:31
 msgid ""
 "Most plugins are instantiated in the same process as Zrythm. This has the "
 "advantage that :term:`DSP` is very fast, however, some plugin UIs are not "
@@ -6287,7 +6303,7 @@ msgstr ""
 "グインのUIはZrythmと互換性がなく、ブリッジする必要があります(すなわち、別々の"
 "プロセスとして実行されます)。"
 
-#: ../../plugins-files/plugins/plugin-window.rst:37
+#: ../../plugins-files/plugins/plugin-window.rst:38
 #, fuzzy
 msgid ""
 "When it is possible to bridge only the UI, Zrythm will do so, and this will "
@@ -6300,17 +6316,17 @@ msgstr ""
 "別のプロセスでプラグインと通信する必要があるため、これはパフォーマンスに影響"
 "を与えます。"
 
-#: ../../plugins-files/plugins/plugin-window.rst:44
+#: ../../plugins-files/plugins/plugin-window.rst:45
 msgid ""
 "This process is transparent to the user and only mentioned for reference."
 msgstr ""
 "このプロセスはユーザーにとって透明であり、参考までにしか言及されていません。"
 
-#: ../../plugins-files/plugins/plugin-window.rst:48
+#: ../../plugins-files/plugins/plugin-window.rst:49
 msgid "Opening Plugins in Bridged Mode"
 msgstr "ブリッジモードでプラグインを開く"
 
-#: ../../plugins-files/plugins/plugin-window.rst:49
+#: ../../plugins-files/plugins/plugin-window.rst:50
 #, fuzzy
 msgid ""
 "Sometimes, you may need to manually tell Zrythm to open plugins in a "
@@ -6321,16 +6337,16 @@ msgstr ""
 "要があります。各プラグインで利用可能なオプションは、 :ref:`plugin-browser` で"
 "プラグインを右クリックして見つけることができます。"
 
-#: ../../plugins-files/plugins/plugin-window.rst:57
+#: ../../plugins-files/plugins/plugin-window.rst:58
 #, fuzzy
 msgid "Opening ZynAddSubFX in bridged mode"
 msgstr "ブリッジモードでプラグインを開く"
 
-#: ../../plugins-files/plugins/scanning.rst:8
+#: ../../plugins-files/plugins/scanning.rst:9
 msgid "Scanning for Plugins"
 msgstr "プラグインのスキャン"
 
-#: ../../plugins-files/plugins/scanning.rst:10
+#: ../../plugins-files/plugins/scanning.rst:11
 #, fuzzy
 msgid ""
 "Zrythm will scan for plugins on startup and will remember those plugins "
@@ -6341,7 +6357,7 @@ msgstr ""
 "えています。Zrythm は LV2 と VST の両方のプラグインを対応していますが、LV2 は"
 "推奨される標準です。"
 
-#: ../../plugins-files/plugins/scanning.rst:17
+#: ../../plugins-files/plugins/scanning.rst:18
 msgid ""
 ":term:`SFZ` and :term:`SF2` instruments are also supported, and they are "
 "scanned as instrument plugins."
@@ -6349,7 +6365,7 @@ msgstr ""
 ":term:`SFZ` と :term:`SF2` のインストゥルメントもサポートされており、インス"
 "トゥルメントプラグインとしてスキャンされます。"
 
-#: ../../plugins-files/plugins/scanning.rst:21
+#: ../../plugins-files/plugins/scanning.rst:22
 #, fuzzy
 msgid ""
 "Plugin scanning can be disabled by passing :envvar:`ZRYTHM_SKIP_PLUGIN_SCAN` "
@@ -6358,11 +6374,11 @@ msgstr ""
 "プラグインのスキャンは、Zrythmの実行時に :envvar:`NO_SCAN_PLUGINS` を渡すこと"
 "で無効にできます。"
 
-#: ../../plugins-files/plugins/scanning.rst:26
+#: ../../plugins-files/plugins/scanning.rst:27
 msgid "LV2 Scan"
 msgstr "LV2 スキャン"
 
-#: ../../plugins-files/plugins/scanning.rst:28
+#: ../../plugins-files/plugins/scanning.rst:29
 #, fuzzy
 msgid ""
 "Zrythm will scan for LV2 plugins in the `standard paths specified here "
@@ -6372,39 +6388,39 @@ msgstr ""
 "hierarchy-standard.html>`_ でLV2プラグインをスキャンします。 :envvar:"
 "`LV2_PATH` を渡すことで、この動作を回避できます。"
 
-#: ../../plugins-files/plugins/scanning.rst:31
+#: ../../plugins-files/plugins/scanning.rst:32
 #, fuzzy
 msgid ""
 "On Flatpak builds, Zrythm will scan for LV2 plugins in the following paths."
 msgstr "Zrythmは、次のパスで VST2 プラグインをスキャンします。"
 
-#: ../../plugins-files/plugins/scanning.rst:38
+#: ../../plugins-files/plugins/scanning.rst:39
 #, fuzzy
 msgid "You can bypass this behavior by passing :envvar:`LV2_PATH`."
 msgstr ""
 ":envvar:`VST_PATH` と :envvar:`VST3_PATH` を渡すことで、この動作をオーバーラ"
 "イドすることができます。"
 
-#: ../../plugins-files/plugins/scanning.rst:42
+#: ../../plugins-files/plugins/scanning.rst:43
 msgid "VST2/VST3 Scan"
 msgstr "VST2/VST3 スキャン"
 
-#: ../../plugins-files/plugins/scanning.rst:45
+#: ../../plugins-files/plugins/scanning.rst:46
 msgid "GNU/Linux and FreeBSD"
 msgstr "GNU/LinuxとFreeBSD"
 
-#: ../../plugins-files/plugins/scanning.rst:46
+#: ../../plugins-files/plugins/scanning.rst:47
 msgid "Zrythm will scan for VST2 plugins in the following paths,"
 msgstr "Zrythmは、次のパスで VST2 プラグインをスキャンします。"
 
-#: ../../plugins-files/plugins/scanning.rst:54
-#: ../../plugins-files/plugins/scanning.rst:69
+#: ../../plugins-files/plugins/scanning.rst:55
+#: ../../plugins-files/plugins/scanning.rst:70
 msgid "and VST3 plugins in the following paths."
 msgstr "と以下のパスのVST3プラグイン。"
 
-#: ../../plugins-files/plugins/scanning.rst:60
-#: ../../plugins-files/plugins/scanning.rst:117
-#: ../../plugins-files/plugins/scanning.rst:137
+#: ../../plugins-files/plugins/scanning.rst:61
+#: ../../plugins-files/plugins/scanning.rst:118
+#: ../../plugins-files/plugins/scanning.rst:138
 msgid ""
 "If your system uses a libdir other than ``lib`` (for example ``lib64``), "
 "Zrythm will scan for plugins in both locations."
@@ -6412,13 +6428,13 @@ msgstr ""
 "システムが ``lib`` 以外の libdir (例えば ``lib64`` ) を使用している場合、"
 "Zrythm は両方の場所でプラグインをスキャンします。"
 
-#: ../../plugins-files/plugins/scanning.rst:64
+#: ../../plugins-files/plugins/scanning.rst:65
 #, fuzzy
 msgid ""
 "On Flatpak builds, Zrythm will scan for VST2 plugins in the following paths"
 msgstr "Zrythmは、次のパスで VST2 プラグインをスキャンします。"
 
-#: ../../plugins-files/plugins/scanning.rst:73
+#: ../../plugins-files/plugins/scanning.rst:74
 #, fuzzy
 msgid ""
 "You can bypass this behavior by passing :envvar:`VST_PATH` and :envvar:"
@@ -6427,11 +6443,11 @@ msgstr ""
 ":envvar:`VST_PATH` と :envvar:`VST3_PATH` を渡すことで、この動作をオーバーラ"
 "イドすることができます。"
 
-#: ../../plugins-files/plugins/scanning.rst:78
+#: ../../plugins-files/plugins/scanning.rst:79
 msgid "Windows"
 msgstr "Windows"
 
-#: ../../plugins-files/plugins/scanning.rst:79
+#: ../../plugins-files/plugins/scanning.rst:80
 #, fuzzy
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in the :ref:"
@@ -6440,11 +6456,11 @@ msgstr ""
 "Zrythm は 、 :ref:`vst-paths` で指定されたパス内の VST プラグインをスキャンし"
 "ます。"
 
-#: ../../plugins-files/plugins/scanning.rst:84
+#: ../../plugins-files/plugins/scanning.rst:85
 msgid "MacOS"
 msgstr "MacOS"
 
-#: ../../plugins-files/plugins/scanning.rst:85
+#: ../../plugins-files/plugins/scanning.rst:86
 #, fuzzy
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in `VST plug-in "
@@ -6455,15 +6471,15 @@ msgstr ""
 "helpcenter.steinberg.de/hc/en-us/articles/115000177084-VST-plug-in-locations-"
 "on-Windows>`_ で指定されたパス内のプラグインをスキャンします。"
 
-#: ../../plugins-files/plugins/scanning.rst:88
+#: ../../plugins-files/plugins/scanning.rst:89
 msgid ":file:`/Library/Audio/Plug-Ins/VST` for VST2"
 msgstr "VST2は:file:`/Library/Audio/Plug-Ins/VST`"
 
-#: ../../plugins-files/plugins/scanning.rst:89
+#: ../../plugins-files/plugins/scanning.rst:90
 msgid ":file:`/Library/Audio/Plug-Ins/VST3` for VST3"
 msgstr "VST3は:file:`/Library/Audio/Plug-Ins/VST3`"
 
-#: ../../plugins-files/plugins/scanning.rst:91
+#: ../../plugins-files/plugins/scanning.rst:92
 #, fuzzy
 msgid ""
 "Zrythm will remember scanned VST plugins and save this information in :file:"
@@ -6475,7 +6491,7 @@ msgstr ""
 "たプラグインの再スキャンを強制するには、このファイルを削除または編集すること"
 "ができます。"
 
-#: ../../plugins-files/plugins/scanning.rst:97
+#: ../../plugins-files/plugins/scanning.rst:98
 #, fuzzy
 msgid ""
 "New plugins will be scanned on each start-up, and you can delete or edit "
@@ -6487,56 +6503,56 @@ msgstr ""
 "たプラグインの再スキャンを強制するには、このファイルを削除または編集すること"
 "ができます。"
 
-#: ../../plugins-files/plugins/scanning.rst:102
+#: ../../plugins-files/plugins/scanning.rst:103
 msgid "DSSI Scan"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:103
+#: ../../plugins-files/plugins/scanning.rst:104
 #, fuzzy
 msgid "Zrythm will scan for DSSI plugins in the following paths,"
 msgstr "Zrythmは、次のパスで VST2 プラグインをスキャンします。"
 
-#: ../../plugins-files/plugins/scanning.rst:109
+#: ../../plugins-files/plugins/scanning.rst:110
 #, fuzzy
 msgid ""
 "On Flatpak builds, Zrythm will scan for DSSI plugins in the following paths."
 msgstr "Zrythmは、次のパスで VST2 プラグインをスキャンします。"
 
-#: ../../plugins-files/plugins/scanning.rst:114
+#: ../../plugins-files/plugins/scanning.rst:115
 #, fuzzy
 msgid "You can bypass this behavior by passing :envvar:`DSSI_PATH`."
 msgstr ""
 ":envvar:`VST_PATH` と :envvar:`VST3_PATH` を渡すことで、この動作をオーバーラ"
 "イドすることができます。"
 
-#: ../../plugins-files/plugins/scanning.rst:122
+#: ../../plugins-files/plugins/scanning.rst:123
 msgid "LADSPA Scan"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:123
+#: ../../plugins-files/plugins/scanning.rst:124
 #, fuzzy
 msgid "Zrythm will scan for LADSPA plugins in the following paths,"
 msgstr "Zrythmは、次のパスで VST2 プラグインをスキャンします。"
 
-#: ../../plugins-files/plugins/scanning.rst:129
+#: ../../plugins-files/plugins/scanning.rst:130
 #, fuzzy
 msgid ""
 "On Flatpak builds, Zrythm will scan for LADSPA plugins in the following "
 "paths."
 msgstr "Zrythmは、次のパスで VST2 プラグインをスキャンします。"
 
-#: ../../plugins-files/plugins/scanning.rst:134
+#: ../../plugins-files/plugins/scanning.rst:135
 #, fuzzy
 msgid "You can bypass this behavior by passing :envvar:`LADSPA_PATH`."
 msgstr ""
 ":envvar:`VST_PATH` と :envvar:`VST3_PATH` を渡すことで、この動作をオーバーラ"
 "イドすることができます。"
 
-#: ../../plugins-files/plugins/scanning.rst:142
+#: ../../plugins-files/plugins/scanning.rst:143
 msgid "AU Scan"
 msgstr "AUスキャン"
 
-#: ../../plugins-files/plugins/scanning.rst:143
+#: ../../plugins-files/plugins/scanning.rst:144
 msgid ""
 "On MacOS, :term:`AU` plugins will be scanned at their standard location at :"
 "file:`/Library/Audio/Plug-Ins/Components`."
@@ -6544,11 +6560,11 @@ msgstr ""
 "MacOSでは、 :term:`AU` プラグインは :file:`/Library/Audio/Plug-Ins/"
 "Components` にある標準の場所でスキャンされます。"
 
-#: ../../plugins-files/plugins/scanning.rst:148
+#: ../../plugins-files/plugins/scanning.rst:149
 msgid "SFZ/SF2 Scan"
 msgstr "SFZ/SF2 スキャン"
 
-#: ../../plugins-files/plugins/scanning.rst:149
+#: ../../plugins-files/plugins/scanning.rst:150
 #, fuzzy
 msgid ""
 ":term:`SFZ` and :term:`SF2` instruments will be scanned in all  directories "
@@ -6558,7 +6574,7 @@ msgstr ""
 ":term:`SFZ` と :term:`SF2` のインストゥルメントは、 :ref:`vst-paths` で指定さ"
 "れたすべてのディレクトリとサブディレクトリでスキャンされます。"
 
-#: ../../projects/intro.rst:8
+#: ../../projects/intro.rst:9
 msgid "Projects"
 msgstr "プロジェクト"
 
@@ -7479,11 +7495,11 @@ msgid ""
 "Changing the language will also affect code highlighting."
 msgstr ""
 
-#: ../../theming/css.rst:8
+#: ../../theming/css.rst:9
 msgid "CSS"
 msgstr "CSS"
 
-#: ../../theming/css.rst:9
+#: ../../theming/css.rst:10
 msgid ""
 "You can override the GTK theme that Zrythm uses along with much of the color "
 "scheme in a special CSS file. It is a good idea to start by copying the "
@@ -7499,7 +7515,7 @@ msgstr ""
 "はアプリケーション内にある :file:`share/zrythm/themes/zrythm-theme.css` ）か"
 "らコピーすることから始めるのが良いでしょう。"
 
-#: ../../theming/css.rst:18
+#: ../../theming/css.rst:19
 msgid ""
 "You should create a file called :file:`theme.css` under the :file:`themes` "
 "directory in your Zrythm directory. For example, if your Zrythm directory "
@@ -7511,21 +7527,11 @@ msgstr ""
 "home/me/zrythm` の場合は、:file:`/home/me/zrythm/themes/theme.css` を作成する"
 "必要があります 。"
 
-#: ../../theming/css.rst:23
-msgid ""
-"The Zrythm theme inherits from the `Matcha GTK theme <https://github.com/"
-"vinceliuice/Matcha-gtk-theme>`_, so additional CSS rules may need to be "
-"overridden."
-msgstr ""
-"Zrythm テーマは `Matcha GTK テーマ <https://github.com/vinceliuice/Matcha-"
-"gtk-theme>`_ から継承するため、追加の CSS ルールをオーバーライドする必要があ"
-"る場合があります。"
-
-#: ../../theming/css.rst:28
+#: ../../theming/css.rst:25
 msgid "Color Scheme"
 msgstr "カラースキーム"
 
-#: ../../theming/css.rst:29
+#: ../../theming/css.rst:26
 #, fuzzy
 msgid ""
 "Inside the theme file, you will find lots of colors defined using ``@define-"
@@ -7536,11 +7542,11 @@ msgstr ""
 "れらの色を自分の色で上書きすることができ、Zrythmは可能な限りその色を使用しま"
 "す。"
 
-#: ../../theming/css.rst:34
+#: ../../theming/css.rst:31
 msgid "Other GTK-Specific Rules"
 msgstr "その他のGTK固有のルール"
 
-#: ../../theming/css.rst:35
+#: ../../theming/css.rst:32
 msgid ""
 "You will find lots of information about changing CSS rules for general GTK "
 "widgets online."
@@ -7548,25 +7554,25 @@ msgstr ""
 "一般的なGTKウィジェットのCSSルールの変更については、オンラインで多くの情報が"
 "得られます。"
 
-#: ../../theming/css.rst:38
+#: ../../theming/css.rst:35
 msgid "Here are some links by official GNOME sources:"
 msgstr "以下は公式GNOMEソースによるリンクです。"
 
-#: ../../theming/css.rst:40
+#: ../../theming/css.rst:37
 #, fuzzy
 msgid "`GTK+ CSS Overview <https://docs.gtk.org/gtk4/css-overview.html>`_"
 msgstr ""
 "`GTK + CSSの概要 <https://developer.gnome.org/gtk3/stable/chap-css-overview."
 "html>`_"
 
-#: ../../theming/css.rst:41
+#: ../../theming/css.rst:38
 #, fuzzy
 msgid "`GTK+ CSS Properties <https://docs.gtk.org/gtk4/css-properties.html>`_"
 msgstr ""
 "`GTK+のCSSプロパティ <https://developer.gnome.org/gtk3/stable/chap-css-"
 "properties.html>`_"
 
-#: ../../theming/css.rst:42
+#: ../../theming/css.rst:39
 msgid ""
 "`Styling GTK with CSS <https://thegnomejournal.wordpress.com/2011/03/15/"
 "styling-gtk-with-css/>`_"
@@ -7574,11 +7580,11 @@ msgstr ""
 "`GTK を CSS でスタイリングする <https://thegnomejournal.wordpress."
 "com/2011/03/15/styling-gtk-with-css/>`_"
 
-#: ../../theming/icon-themes.rst:8
+#: ../../theming/icon-themes.rst:9
 msgid "Icon Themes"
 msgstr "アイコンテーマ"
 
-#: ../../theming/icon-themes.rst:9
+#: ../../theming/icon-themes.rst:10
 msgid ""
 "The icon theme that Zrythm uses is freedesktop-compliant, so it can be "
 "easily overridden."
@@ -7586,7 +7592,7 @@ msgstr ""
 "Zrythmが使用しているアイコンテーマはfreedesktopに対応しているので、簡単に上書"
 "きすることができます。"
 
-#: ../../theming/icon-themes.rst:12
+#: ../../theming/icon-themes.rst:13
 #, fuzzy
 msgid ""
 "To override the Zrythm icon theme with your own icon theme, you need to "
@@ -7597,7 +7603,7 @@ msgstr ""
 "ストールディレクトリの下に ``share/zrythm/themes/icons/zrythm-dark`` のような"
 "ディレクトリを作る必要があります。"
 
-#: ../../theming/icon-themes.rst:17
+#: ../../theming/icon-themes.rst:18
 msgid ""
 "For example, if your Zrythm directory is :file:`/home/me/zrythm`, you should "
 "create a directory at :file:`/home/me/zrythm/themes/icons/zrythm-dark` with "
@@ -7607,7 +7613,7 @@ msgstr ""
 "me/zrythm/themes/icons/zrythm-dark` に :file:`index.theme` ファイルと上書きし"
 "たいアイコンを含むディレクトリを作成する必要があります。"
 
-#: ../../theming/icon-themes.rst:23
+#: ../../theming/icon-themes.rst:24
 #, fuzzy
 msgid ""
 "An easy way to do it is by copying the directory that Zrythm comes with and "
@@ -7616,7 +7622,7 @@ msgstr ""
 "簡単な方法は、Zrythmが付属しているディレクトリをコピーして、アイコンを自分の"
 "ものに置き換えることです。"
 
-#: ../../theming/icon-themes.rst:26
+#: ../../theming/icon-themes.rst:27
 #, fuzzy
 msgid ""
 "A more elegant way to do it is by following the `Freedesktop Icon Theme "
@@ -7626,11 +7632,11 @@ msgstr ""
 "よりエレガントな方法は、 `Freedesktop Icon Theme Specification <https://"
 "specifications.freedesktop.org/icon-theme-spec/latest/>`_ に従うことです。"
 
-#: ../../theming/intro.rst:6 ../../theming/overview.rst:6
+#: ../../theming/intro.rst:7 ../../theming/overview.rst:7
 msgid "Theming"
 msgstr "テーマ"
 
-#: ../../theming/overview.rst:7
+#: ../../theming/overview.rst:8
 #, fuzzy
 msgid ""
 "Zrythm aims to allow extensive theming support. You can override many "
@@ -7643,7 +7649,7 @@ msgstr ""
 "リに配置する必要があります。このディレクトリは :ref:`preferences` の中にあ"
 "り、この章では `Zrythm ディレクトリ` と呼ぶことにします。"
 
-#: ../../theming/overview.rst:13
+#: ../../theming/overview.rst:15
 msgid ""
 "The `Zrythm installation directory` refers to where Zrythm was installed in. "
 "This is normally :file:`/usr` on GNU/Linux, :file:`C:\\\\Program Files\\"
@@ -9468,6 +9474,15 @@ msgid ""
 "% usage at the bottom. If the DSP % exceeds 100 (all bars filled), audio "
 "will start clipping."
 msgstr ""
+
+#~ msgid ""
+#~ "The Zrythm theme inherits from the `Matcha GTK theme <https://github.com/"
+#~ "vinceliuice/Matcha-gtk-theme>`_, so additional CSS rules may need to be "
+#~ "overridden."
+#~ msgstr ""
+#~ "Zrythm テーマは `Matcha GTK テーマ <https://github.com/vinceliuice/Matcha-"
+#~ "gtk-theme>`_ から継承するため、追加の CSS ルールをオーバーライドする必要が"
+#~ "ある場合があります。"
 
 #~ msgid "First Run Wizard"
 #~ msgstr "最初実行ウィザード"
