@@ -31,13 +31,6 @@ gen_lv2_sh = configure_file (
     'URI_PREFIX': 'https://lv2.zrythm.org/faust-builtin',
     },
   )
-gen_lv2_from_generated_sh = configure_file (
-  output: 'gen-lv2-from-generated.sh',
-  input: 'gen-lv2-from-generated.sh.in',
-  configuration: {
-    'BASH': bash.full_path (),
-    },
-  )
 
 pl_generate_targets = []
 
@@ -72,9 +65,12 @@ foreach pl : plugins
     pl_generate_targets += plugin
   endif
 
-  pl_cpp = 'generated' / pl_underscored_name + '.lv2' / pl_underscored_name + '.cpp'
+  pl_generated_dir = 'generated' / pl_underscored_name + '.lv2'
+  pl_install_dir = zrythm_libdir / 'lv2' / pl_underscored_name + '.lv2'
+
+  pl_cpp = pl_generated_dir / pl_underscored_name + '.cpp'
   if fs.is_file (pl_cpp)
-    pl_lib = shared_module (
+    shared_module (
       pl_underscored_name,
       cpp_args: [
         '-std=c++11', '-O3' ],
@@ -84,24 +80,16 @@ foreach pl : plugins
       dependencies: dependency ('boost'),
       override_options: [
         'b_sanitize=none',
-        ]
-      )
-
-    plugin = custom_target (
-      pl_underscored_name + '-lv2',
-      input: [
-        pl_lib,
-        'generated' / pl_underscored_name + '.lv2' / 'manifest.ttl',
-        'generated' / pl_underscored_name + '.lv2' / pl_underscored_name + '.ttl',
         ],
-      output: pl_underscored_name + '.lv2',
-      command: [
-        gen_lv2_from_generated_sh,
-        pl_underscored_name, '@INPUT0@',
-        '@INPUT1@', '@INPUT2@', '@OUTPUT@',
-        ],
-      install_dir: zrythm_libdir / 'lv2',
+      install_dir: pl_install_dir,
       install: true)
+
+    install_data (
+      pl_generated_dir / 'manifest.ttl',
+      install_dir: pl_install_dir)
+    install_data (
+      pl_generated_dir / pl_underscored_name + '.ttl',
+      install_dir: pl_install_dir)
   else
     warning (
       pl_cpp + ' not found. Run `ninja -C build gen-faust-plugins` to generate it')
