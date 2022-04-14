@@ -249,7 +249,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'Zrythm.tex', 'Zrythm User Manual',
-     'Alexandros Theodotou', 'manual'),
+     'The Zrythm contributors', 'manual'),
 ]
 
 
