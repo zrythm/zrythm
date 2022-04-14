@@ -9,6 +9,7 @@
         <style>
           <class name="toolbar"/>
         </style>
+        <property name="homogeneous">1</property>
         <child>
           <object class="GtkButton" id="play_btn">
             <property name="tooltip-text" translatable="yes">Play/Pause</property>
