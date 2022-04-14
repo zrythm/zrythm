@@ -188,10 +188,8 @@ channel_slot_snapshot (
       pango_layout_set_markup (
         self->txt_layout, txt, -1);
       gtk_snapshot_render_layout (
-        snapshot, context,
-        width / 2 - w / 2,
-        height / 2 - h / 2,
-        self->txt_layout);
+        snapshot, context, width / 2 - w / 2,
+        height / 2 - h / 2, self->txt_layout);
 
       /* update tooltip */
       if (
@@ -226,10 +224,8 @@ channel_slot_snapshot (
       pango_layout_set_markup (
         self->txt_layout, txt, -1);
       gtk_snapshot_render_layout (
-        snapshot, context,
-        width / 2 - w / 2,
-        height / 2 - h / 2,
-        self->txt_layout);
+        snapshot, context, width / 2 - w / 2,
+        height / 2 - h / 2, self->txt_layout);
 
       /* update tooltip */
       if (self->pl_name)

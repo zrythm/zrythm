@@ -100,10 +100,8 @@ channel_send_snapshot (
       pango_layout_get_pixel_size (
         self->txt_layout, &w, &h);
       gtk_snapshot_render_layout (
-        snapshot, context,
-        width / 2 - w / 2,
-        height / 2 - h / 2,
-        self->txt_layout);
+        snapshot, context, width / 2 - w / 2,
+        height / 2 - h / 2, self->txt_layout);
 
       /* update tooltip */
       if (self->cache_tooltip)
@@ -150,10 +148,8 @@ channel_send_snapshot (
       pango_layout_get_pixel_size (
         self->txt_layout, &w, &h);
       gtk_snapshot_render_layout (
-        snapshot, context,
-        width / 2 - w / 2,
-        height / 2 - h / 2,
-        self->txt_layout);
+        snapshot, context, width / 2 - w / 2,
+        height / 2 - h / 2, self->txt_layout);
 
       /* update tooltip */
       if (

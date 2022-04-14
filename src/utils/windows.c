@@ -40,7 +40,7 @@
 
 #  include "utils/windows.h"
 
-#include <glib.h>
+#  include <glib.h>
 
 char *
 windows_get_special_path (
