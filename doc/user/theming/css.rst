@@ -1,5 +1,6 @@
+.. SPDX-FileCopyrightText: © 2020, 2022 Alexandros Theodotou <alex@zrythm.org>
+   SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2020, 2022 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. _css:
@@ -19,10 +20,6 @@ You should create a file called :file:`theme.css` under the
 :file:`themes` directory in your Zrythm directory. For example,
 if your Zrythm directory is :file:`/home/me/zrythm`, you should
 create a file at :file:`/home/me/zrythm/themes/theme.css`.
-
-.. note:: The Zrythm theme inherits from the
-  `Matcha GTK theme <https://github.com/vinceliuice/Matcha-gtk-theme>`_, so additional CSS rules may need to be
-  overridden.
 
 Color Scheme
 ------------

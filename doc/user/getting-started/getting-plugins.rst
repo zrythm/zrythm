@@ -1,5 +1,5 @@
 .. SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
-.. SPDX-License-Identifier: GFDL-1.3-invariants-or-later
+   SPDX-License-Identifier: GFDL-1.3-invariants-or-later
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
 
@@ -12,7 +12,7 @@ Plugins
 -------
 
 Zrythm ships with a few bundled plugins to help users
-get started, but users are expected to download and
+get started, but users can also download and
 install their own plugins that suit their
 preferences.
 

@@ -101,3 +101,12 @@ User Interface Language
 
 The language of the user interface can be changed
 under :menuselection:`UI --> General`.
+
+Reset to Factory Settings
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There is an option to reset Zrythm to its default
+settings under :menuselection:`General --> Other`.
+
+.. seealso:: This behaves similarly to
+   :option:`zrythm --reset-to-factory`.

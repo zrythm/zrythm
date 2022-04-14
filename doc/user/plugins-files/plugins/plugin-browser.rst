@@ -28,6 +28,10 @@ Collection
   selected collections.
 Author
   Filter by plugin manufacturer/author.
+
+  .. hint:: Built-in plugins can be found under
+  `Zrythm DAW` here.
+
 Category
   Filter by category (`Delay`, `Distortion`, etc.).
 Protocol
@@ -36,7 +40,7 @@ Protocol
 .. tip:: You can mix filters from various tabs for
    a custom search.
 
-.. hint:: Where applicable, you can
+.. tip:: Where applicable, you can
    :kbd:`Control`-click to select multiple rows
    or deselect a row.
 

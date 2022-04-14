@@ -30,9 +30,8 @@ See :option:`zrythm --print-settings`.
 Reset to Factory Settings
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-See :option:`zrythm --reset-to-factory`.
-
-.. todo:: Add this to the UI.
+See :option:`zrythm --reset-to-factory` and
+:ref:`configuration/preferences:Reset to Factory Settings`.
 
 Plugin Settings
 ---------------
