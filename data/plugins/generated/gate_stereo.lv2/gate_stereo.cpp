@@ -807,9 +807,10 @@ class gate_stereo : public dsp {
 	virtual void buildUserInterface(UI* ui_interface) {
 		ui_interface->openVerticalBox("Gate Stereo");
 		ui_interface->declare(&fHslider2, "1", "");
+		ui_interface->declare(&fHslider2, "unit", "dB");
 		ui_interface->addHorizontalSlider("Threshold", &fHslider2, FAUSTFLOAT(-30.0f), FAUSTFLOAT(-120.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(0.100000001f));
 		ui_interface->declare(&fHslider0, "2", "");
-		ui_interface->declare(&fHslider0, "scale", "exp");
+		ui_interface->declare(&fHslider0, "scale", "log");
 		ui_interface->addHorizontalSlider("Attack", &fHslider0, FAUSTFLOAT(10.0f), FAUSTFLOAT(10.0f), FAUSTFLOAT(10000.0f), FAUSTFLOAT(1.0f));
 		ui_interface->declare(&fHslider3, "3", "");
 		ui_interface->declare(&fHslider3, "scale", "log");

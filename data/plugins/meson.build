@@ -29,6 +29,7 @@ gen_lv2_sh = configure_file (
   configuration: {
     'BASH': bash.full_path (),
     'URI_PREFIX': 'https://lv2.zrythm.org/faust-builtin',
+    'LIB_SUFFIX': '@LIB_SUFFIX@',
     },
   )
 
@@ -84,12 +85,21 @@ foreach pl : plugins
       install_dir: pl_install_dir,
       install: true)
 
+    pl_manifest_ttl = configure_file (
+      output: pl_underscored_name + '-manifest.ttl',
+      input: pl_generated_dir / 'manifest.ttl',
+      configuration: { 'LIB_SUFFIX': lib_suffix })
     install_data (
-      pl_generated_dir / 'manifest.ttl',
+      pl_manifest_ttl,
+      rename: 'manifest.ttl',
       install_dir: pl_install_dir)
+
+    pl_ttl = configure_file (
+      output: pl_underscored_name + '.ttl',
+      input: pl_generated_dir / pl_underscored_name + '.ttl',
+      configuration: { 'LIB_SUFFIX': lib_suffix })
     install_data (
-      pl_generated_dir / pl_underscored_name + '.ttl',
-      install_dir: pl_install_dir)
+      pl_ttl, install_dir: pl_install_dir)
   else
     warning (
       pl_cpp + ' not found. Run `ninja -C build gen-faust-plugins` to generate it')

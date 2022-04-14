@@ -11,7 +11,7 @@
 <https://lv2.zrythm.org/faust-builtin/cubic_distortion>
        a lv2:DistortionPlugin, lv2:Plugin ;
        doap:name "Cubic Distortion" ;
-       lv2:binary <cubic_distortion.so> ;
+       lv2:binary <cubic_distortion@LIB_SUFFIX@> ;
        lv2:requiredFeature urid:map ;
        lv2:optionalFeature epp:supportsStrictBounds ;
        lv2:optionalFeature lv2:hardRTCapable ;

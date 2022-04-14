@@ -11,7 +11,7 @@
 <https://lv2.zrythm.org/faust-builtin/zita_rev1>
        a lv2:ReverbPlugin, lv2:Plugin ;
        doap:name "Zita Rev1" ;
-       lv2:binary <zita_rev1.so> ;
+       lv2:binary <zita_rev1@LIB_SUFFIX@> ;
        lv2:requiredFeature urid:map ;
        lv2:optionalFeature epp:supportsStrictBounds ;
        lv2:optionalFeature lv2:hardRTCapable ;

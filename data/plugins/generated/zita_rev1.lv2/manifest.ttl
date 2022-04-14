@@ -8,7 +8,7 @@
 
 <https://lv2.zrythm.org/faust-builtin/zita_rev1>
     a lv2:Plugin ;
-    lv2:binary <zita_rev1.so> ;
+    lv2:binary <zita_rev1@LIB_SUFFIX@> ;
     rdfs:seeAlso <zita_rev1.ttl> .
 
 # Here's how you can declare the category of the plugin. (For instruments,

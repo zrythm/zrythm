@@ -8,7 +8,7 @@
 
 <https://lv2.zrythm.org/faust-builtin/gate_stereo>
     a lv2:Plugin ;
-    lv2:binary <gate_stereo.so> ;
+    lv2:binary <gate_stereo@LIB_SUFFIX@> ;
     rdfs:seeAlso <gate_stereo.ttl> .
 
 # Here's how you can declare the category of the plugin. (For instruments,

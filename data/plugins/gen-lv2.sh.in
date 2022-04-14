@@ -41,6 +41,8 @@ popd
 dest_lv2_dir="$generated_src_output/$pl_underscored_name.lv2"
 mkdir -p "$dest_lv2_dir"
 cp "$prv_dir/$pl_underscored_name.lv2/"*.ttl "$dest_lv2_dir"/
+sed -i -e "s|<$pl_underscored_name.so>|<$pl_underscored_name@LIB_SUFFIX@>|" "$dest_lv2_dir/$pl_underscored_name.ttl"
+sed -i -e "s|<$pl_underscored_name.so>|<$pl_underscored_name@LIB_SUFFIX@>|" "$dest_lv2_dir/manifest.ttl"
 cp "$prv_dir/$pl_underscored_name/$pl_underscored_name.cpp" \
   "$dest_lv2_dir/$pl_underscored_name.cpp"
 sed -i -e 's|"https://faustlv2.bitbucket.io"|"@URI_PREFIX@"|' "$dest_lv2_dir/$pl_underscored_name.cpp"

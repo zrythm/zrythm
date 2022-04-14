@@ -11,7 +11,7 @@
 <https://lv2.zrythm.org/faust-builtin/compressor>
        a lv2:CompressorPlugin, lv2:Plugin ;
        doap:name "Compressor" ;
-       lv2:binary <compressor.so> ;
+       lv2:binary <compressor@LIB_SUFFIX@> ;
        lv2:requiredFeature urid:map ;
        lv2:optionalFeature epp:supportsStrictBounds ;
        lv2:optionalFeature lv2:hardRTCapable ;

@@ -11,7 +11,7 @@
 <https://lv2.zrythm.org/faust-builtin/gate_stereo>
        a lv2:GatePlugin, lv2:Plugin ;
        doap:name "Gate Stereo" ;
-       lv2:binary <gate_stereo.so> ;
+       lv2:binary <gate_stereo@LIB_SUFFIX@> ;
        lv2:requiredFeature urid:map ;
        lv2:optionalFeature epp:supportsStrictBounds ;
        lv2:optionalFeature lv2:hardRTCapable ;
@@ -30,6 +30,12 @@
 	lv2:default -30 ;
 	lv2:minimum -120 ;
 	lv2:maximum 0 ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "dB" ;
+            units:symbol "dB" ;
+            units:render "%f dB"
+	] ;
     ] , [
 	a lv2:InputPort ;
 	a lv2:ControlPort ;

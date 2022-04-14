@@ -8,7 +8,7 @@
 
 <https://lv2.zrythm.org/faust-builtin/compressor>
     a lv2:Plugin ;
-    lv2:binary <compressor.so> ;
+    lv2:binary <compressor@LIB_SUFFIX@> ;
     rdfs:seeAlso <compressor.ttl> .
 
 # Here's how you can declare the category of the plugin. (For instruments,

@@ -8,7 +8,7 @@
 
 <https://lv2.zrythm.org/faust-builtin/smooth_delay>
     a lv2:Plugin ;
-    lv2:binary <smooth_delay.so> ;
+    lv2:binary <smooth_delay@LIB_SUFFIX@> ;
     rdfs:seeAlso <smooth_delay.ttl> .
 
 # Here's how you can declare the category of the plugin. (For instruments,
