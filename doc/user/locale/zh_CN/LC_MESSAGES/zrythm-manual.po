@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-04-07 18:26+0100\n"
-"PO-Revision-Date: 2022-04-04 03:09+0000\n"
+"PO-Revision-Date: 2022-04-09 18:10+0000\n"
 "Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
-"Language: zh_CN\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.12-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -6476,9 +6477,8 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/scripting-interface.rst:23
-#, fuzzy
 msgid "Execution"
-msgstr "选择"
+msgstr "执行"
 
 #: ../../scripting/scripting-interface.rst:25
 msgid ""
