@@ -40,6 +40,7 @@ typedef struct CallbackData
   PreferencesWidget * preferences_widget;
   SubgroupInfo *      info;
   char *              key;
+  GtkWidget *         widget;
 } CallbackData;
 
 #define KEY_IS(a, b, c) \
@@ -125,6 +126,11 @@ on_file_set (
     data->info->settings, data->key, str);
   g_free (str);
   g_object_unref (file);
+
+  FileChooserButtonWidget * fc_btn =
+    Z_FILE_CHOOSER_BUTTON_WIDGET (data->widget);
+  file_chooser_button_widget_std_response (
+    fc_btn, dialog, response_id);
 }
 
 static void
@@ -506,6 +512,7 @@ make_control (
           data->info = info;
           data->preferences_widget = self;
           data->key = g_strdup (key);
+          data->widget = widget;
           file_chooser_button_widget_set_response_callback (
             Z_FILE_CHOOSER_BUTTON_WIDGET (widget),
             G_CALLBACK (on_file_set), data,

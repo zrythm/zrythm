@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/channel.h"
@@ -55,15 +55,16 @@ update_btn_label (
     }
 }
 
-static void
-on_std_response (
-  GtkNativeDialog * dialog,
-  gint              response_id,
-  gpointer          user_data)
+/**
+ * This must be called at the end of the
+ * user-provided response callback.
+ */
+void
+file_chooser_button_widget_std_response (
+  FileChooserButtonWidget * self,
+  GtkNativeDialog *         dialog,
+  gint                      response_id)
 {
-  FileChooserButtonWidget * self =
-    Z_FILE_CHOOSER_BUTTON_WIDGET (user_data);
-
   g_debug (
     "std response - setting label and hiding dialog");
 
@@ -115,9 +116,6 @@ on_btn_clicked (
     GTK_NATIVE_DIALOG (fc_native), self->parent);
   gtk_native_dialog_show (
     GTK_NATIVE_DIALOG (fc_native));
-  g_signal_connect (
-    G_OBJECT (fc_native), "response",
-    G_CALLBACK (on_std_response), self);
   if (self->response_cb)
     {
       if (self->destroy_notify)
@@ -135,6 +133,10 @@ on_btn_clicked (
             G_OBJECT (fc_native), "response",
             self->response_cb, self->user_data);
         }
+    }
+  else
+    {
+      g_return_if_reached ();
     }
 }
 

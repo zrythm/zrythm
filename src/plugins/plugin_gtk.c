@@ -1,23 +1,10 @@
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
+ *
+ * ---
  *
   Copyright 2007-2016 David Robillard <http://drobilla.net>
 
@@ -32,6 +19,8 @@
   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+  ---
  */
 
 #include "zrythm-config.h"
@@ -1025,12 +1014,27 @@ string_changed (GtkEntry * widget, Port * port)
     }
 }
 
+typedef struct FileChangedData
+{
+  Port *                    port;
+  FileChooserButtonWidget * fc_btn;
+} FileChangedData;
+
+static void
+file_changed_data_closure_notify (
+  gpointer   data,
+  GClosure * closure)
+{
+  free (data);
+}
+
 static void
 file_changed (
   GtkNativeDialog * dialog,
   gint              response_id,
-  Port *            port)
+  FileChangedData * data)
 {
+  Port *                 port = data->port;
   GtkFileChooserNative * file_chooser_native =
     GTK_FILE_CHOOSER_NATIVE (dialog);
   GtkFileChooser * file_chooser =
@@ -1050,6 +1054,9 @@ file_changed (
         pl->lv2->main_forge.Path, filename);
     }
   g_free (filename);
+
+  file_chooser_button_widget_std_response (
+    data->fc_btn, dialog, response_id);
 }
 
 static PluginGtkController *
@@ -1280,9 +1287,15 @@ make_file_chooser (Port * port)
 
   if (is_input)
     {
+      FileChangedData * data =
+        object_new (FileChangedData);
+      data->port = port;
+      data->fc_btn =
+        Z_FILE_CHOOSER_BUTTON_WIDGET (button);
       file_chooser_button_widget_set_response_callback (
         Z_FILE_CHOOSER_BUTTON_WIDGET (button),
-        G_CALLBACK (file_changed), port, NULL);
+        G_CALLBACK (file_changed), data,
+        file_changed_data_closure_notify);
     }
 
   return new_controller (NULL, button);

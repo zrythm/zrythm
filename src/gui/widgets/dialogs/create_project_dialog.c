@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/dialogs/create_project_dialog.h"
 #include "gui/widgets/file_chooser_button.h"
@@ -95,6 +79,9 @@ on_fc_file_set (
   gint              response_id,
   gpointer          user_data)
 {
+  CreateProjectDialogWidget * self =
+    Z_CREATE_PROJECT_DIALOG_WIDGET (user_data);
+
   GtkFileChooser * file_chooser =
     GTK_FILE_CHOOSER (dialog);
   GFile * file =
@@ -103,6 +90,10 @@ on_fc_file_set (
   g_settings_set_string (
     S_GENERAL, "last-project-dir", str);
   g_free (str);
+
+  file_chooser_button_widget_std_response (
+    Z_FILE_CHOOSER_BUTTON_WIDGET (self->fc),
+    dialog, response_id);
 }
 
 CreateProjectDialogWidget *
