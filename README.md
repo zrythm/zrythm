@@ -12,7 +12,7 @@ Zrythm
 *a highly automated and intuitive digital audio
 workstation*
 
-![screenshot](https://www.zrythm.org/static/images/screenshots/mar-16-2022.png)
+![screenshot](https://www.zrythm.org/static/images/screenshots/apr-14-2022.png)
 
 Zrythm is a digital audio workstation designed to be
 featureful and easy to use.
