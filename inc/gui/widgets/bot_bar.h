@@ -110,8 +110,6 @@ typedef struct _BotBarWidget
   char green_hex[8];
   char red_hex[8];
 
-  /** Popover to be reused for context menus. */
-  GtkPopoverMenu * popover_menu;
 } BotBarWidget;
 
 void

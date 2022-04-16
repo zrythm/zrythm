@@ -147,8 +147,8 @@ on_bpm_right_click (
     _ ("Tap"), NULL, "app.tap-bpm");
   g_menu_append_item (menu, menuitem);
 
-  z_gtk_show_context_menu_from_g_menu (
-    self->popover_menu, x, y, menu);
+  digital_meter_show_context_menu (
+    self->digital_bpm, menu);
 }
 
 static void
@@ -214,11 +214,11 @@ on_transport_playhead_right_click (
 #endif
 
   gtk_widget_insert_action_group (
-    GTK_WIDGET (self), "bot-bar",
+    GTK_WIDGET (self->digital_transport), "bot-bar",
     G_ACTION_GROUP (action_group));
 
-  z_gtk_show_context_menu_from_g_menu (
-    self->popover_menu, x, y, menu);
+  digital_meter_show_context_menu (
+    self->digital_transport, menu);
 }
 
 void
@@ -599,8 +599,6 @@ static void
 dispose (BotBarWidget * self)
 {
   gtk_widget_unparent (
-    GTK_WIDGET (self->popover_menu));
-  gtk_widget_unparent (
     GTK_WIDGET (self->center_box));
 
   G_OBJECT_CLASS (bot_bar_widget_parent_class)
@@ -616,12 +614,6 @@ bot_bar_widget_init (BotBarWidget * self)
   g_type_ensure (BUTTON_WITH_MENU_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
-
-  self->popover_menu = GTK_POPOVER_MENU (
-    gtk_popover_menu_new_from_model (NULL));
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu),
-    GTK_WIDGET (self));
 
   ui_gdk_rgba_to_hex (
     &UI_COLORS->bright_orange, self->hex_color);

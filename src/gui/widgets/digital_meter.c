@@ -884,6 +884,19 @@ digital_meter_set_draw_line (
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
+void
+digital_meter_show_context_menu (
+  DigitalMeterWidget * self,
+  GMenu *              menu)
+{
+  z_gtk_show_context_menu_from_g_menu (
+    self->popover_menu,
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (self))
+      / 2.0,
+    0.0, menu);
+}
+
 /**
  * Motion callback.
  */
@@ -1393,6 +1406,16 @@ _digital_meter_widget_new_for_position (
 }
 
 static void
+dispose (DigitalMeterWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->popover_menu));
+
+  G_OBJECT_CLASS (digital_meter_widget_parent_class)
+    ->dispose (G_OBJECT (self));
+}
+
+static void
 finalize (DigitalMeterWidget * self)
 {
   if (self->caption)
@@ -1418,8 +1441,12 @@ digital_meter_widget_class_init (
   gtk_widget_class_set_css_name (
     wklass, "digital-meter");
 
+  gtk_widget_class_set_layout_manager_type (
+    wklass, GTK_TYPE_BIN_LAYOUT);
+
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
 }
 
 static void
@@ -1473,4 +1500,10 @@ digital_meter_widget_init (
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (click_gesture));
+
+  self->popover_menu = GTK_POPOVER_MENU (
+    gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu),
+    GTK_WIDGET (self));
 }

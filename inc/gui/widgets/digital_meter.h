@@ -180,6 +180,8 @@ typedef struct _DigitalMeterWidget
   PangoLayout * normal_layout;
 
   bool initialized;
+
+  GtkPopoverMenu * popover_menu;
 } DigitalMeterWidget;
 
 /**
@@ -230,6 +232,16 @@ void
 digital_meter_set_draw_line (
   DigitalMeterWidget * self,
   int                  draw_line);
+
+/**
+ * Shows the widgets popover menu with the provided content
+ *
+ * @param menu content of the popover menu
+ */
+void
+digital_meter_show_context_menu (
+  DigitalMeterWidget * self,
+  GMenu *              menu);
 
 /**
  * @}
