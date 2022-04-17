@@ -214,8 +214,8 @@ on_transport_playhead_right_click (
 #endif
 
   gtk_widget_insert_action_group (
-    GTK_WIDGET (self->digital_transport), "bot-bar",
-    G_ACTION_GROUP (action_group));
+    GTK_WIDGET (self->digital_transport),
+    "bot-bar", G_ACTION_GROUP (action_group));
 
   digital_meter_show_context_menu (
     self->digital_transport, menu);

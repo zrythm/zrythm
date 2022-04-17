@@ -831,6 +831,8 @@ test_strict_cflags += [
   '-Werror=redundant-decls',
   '-Werror=strict-prototypes',
   '-Werror=sizeof-array-argument',
+  '-Werror=lto-type-mismatch',
+  '-Werror=odr',
   ]
 
 if is_gcc
