@@ -1,0 +1,36 @@
+// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+/*
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * ---
+ *
+ * Author: Julius Smith
+ * License: MIT
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * ---
+ */
+
+declare name "@NAME@";
+declare description "@DESCRIPTION@";
+declare author "@AUTHOR@";
+declare copyright "© 2022 Alexandros Theodotou";
+declare version "1.0";
+declare license "AGPL-3.0-or-later";
+
+import ("stdfaust.lib");
+import ("zrythm-utils.lib");
+
+wah4_demo = ve.wah4(fr : si.smooth (0.999))
+with{
+    wah4_group(x) = hgroup("WAH4 [tooltip: Fourth-order wah effect made using moog_vcf]", x);
+    fr = wah4_group(hslider("[1] Resonance [scale:log] [unit:Hz] [tooltip: wah resonance
+        frequency in Hz]", 200,100,2000,1));
+};
+
+res = sp.stereoize (wah4_demo);
+
+process = res;
