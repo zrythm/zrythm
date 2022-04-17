@@ -26,14 +26,26 @@ cp "$utils_lib" "$prv_dir/$utils_lib_filename"
 
 pushd "$prv_dir"
 
+faust_args="-keep"
+if [ $pl_type = "InstrumentPlugin" ]; then
+  faust_args="$faust_args -novoicectrls"
+fi
+
 # compile
 faust2lv2 \
   -uri-prefix "@URI_PREFIX@" \
-  -keep \
+  $faust_args \
   "$dsp_filename"
 
-# add type
-sed -i -e "s|a lv2:Plugin|a lv2:$pl_type, lv2:Plugin|" "$pl_underscored_name.lv2/$pl_underscored_name.ttl"
+if [[ $pl_type == "InstrumentPlugin" ]]; then
+  # set polyphony to 12
+  sed -i -e "s|lv2:default 6 ;|lv2:default 12 ;|" "$pl_underscored_name.lv2/$pl_underscored_name.ttl"
+  # hide polyphony ctrl
+  sed -i -e "s|lv2:maximum 12 ;|lv2:maximum 12 ;\n\tlv2:portProperty <http://lv2plug.in/ns/ext/port-props#notOnGUI>|" "$pl_underscored_name.lv2/$pl_underscored_name.ttl"
+else
+  # add type
+  sed -i -e "s|a lv2:Plugin|a lv2:$pl_type, lv2:Plugin|" "$pl_underscored_name.lv2/$pl_underscored_name.ttl"
+fi
 
 popd
 
