@@ -1,0 +1,80 @@
+// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+declare name "@NAME@";
+declare description "@DESCRIPTION@";
+declare author "@AUTHOR@";
+declare copyright "© 2022 Alexandros Theodotou";
+declare version "1.0";
+declare license "AGPL-3.0-or-later";
+declare options "[midi:on][nvoices:12]";
+declare nvoices "12";
+
+import ("stdfaust.lib");
+import ("zrythm-utils.lib");
+
+freq = nentry ("freq", 200, 40, 2000, 0.01);
+pitchwheel = nentry ("Pitchwheel[midi:pitchwheel]", 0, -2, 2, 0.001);
+//bend = ba.semi2ratio (pitchwheel);
+
+envelope = hgroup (
+  "[0] Envelope",
+  en.adsr (at, dt, sl, rt, gate) * gain * 0.3)
+  with {
+    at = hslider ("[0]Attack", 0.03, 0.001, 2, 0.001) : si.smoo;
+    dt = hslider ("[1]Decay", 0.3, 0.001, 4, 0.001) : si.smoo;
+    sl = hslider ("[2]Sustain", 1, 0, 1, 0.01) : si.smoo;
+    rt = hslider ("[3]Release", 0.4, 0.001, 4, 0.001) : si.smoo;
+    gain = nentry ("[4]gain", 1, 0, 1, 0.01);
+    gate = button ("[5]gate");
+  };
+
+detune_semitones = hslider ("[6] Detune", 0.1, 0, 1, 0.001) : si.smoo;
+vibrato_freq = hslider ("[8] Vibrato Freq [unit:Hz]", 0, 0, 20, 0.02) : si.smoo;
+vibrato_depth = hslider ("[9] Vibrato Depth", 0, 0, 1, 0.001) : si.smoo;
+tremolo_freq = hslider ("[10] Tremolo Freq [unit:Hz]", 0, 0, 20, 0.02) : si.smoo;
+tremolo_depth = hslider ("[11] Tremolo Depth", 0, 0, 1, 0.001) : si.smoo;
+midi_key = ba.hz2midikey (freq);
+
+voice (note) =
+  par (
+    i, 3,
+    oscillator (note + (i - 1) * detune_semitones))
+  : _ , (_ <: _, _ ), _
+  : + , +
+    with {
+      oscillator (note) =
+        wave_generator (ba.midikey2hz (note));
+      wave_generator (wave_freq) =
+        ba.selectmulti (ma.SR / 10, (os.osc (wave_freq), os.triangle (wave_freq), os.square (wave_freq), os.sawtooth (wave_freq)), wave_type);
+      wave_type = nentry ("Waveform", 3, 0, 3, 1);
+    };
+
+filter = hgroup (
+  "[1] Filter",
+  fi.resonlp (cutoff_freq, cutoff_q, 1)
+  : fi.lowpass(5, 18000))
+    with {
+      cutoff_freq = hslider ("[0] Cutoff [scale:log]", 10000, 110, 20000, 0.01) : si.smoo : min (20000) : max (20);
+      cutoff_q = hslider ("[1] Cutoff Q", 1, 1, 20, 0.1) : si.smoo;
+    };
+
+tremolo (tremolo_freq) =  _ * trem_gain
+  with {
+    trem_gain = os.osc(tremolo_freq) - 1
+      : _ / 2 : _ * tremolo_depth : _ + 1;
+  };
+
+note = midi_key + vibrato + pitchwheel
+  with {
+    vibrato = os.osc (vibrato_freq) * vibrato_depth;
+  };
+
+process =
+  vgroup (
+    "Synth",
+    voice (note)
+    : par (
+      i, 2,
+      _ * envelope : filter
+      : tremolo (tremolo_freq)));
