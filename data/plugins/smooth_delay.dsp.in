@@ -40,9 +40,9 @@ res = par(i, 2, voice)
   {
     voice   = (+ : de.sdelay(N, interp, dtime)) ~ *(fback);
     N     = int(2^19);
-    interp   = hslider("[1] interpolation[unit:ms]",10,1,100,0.1)*ma.SR/1000.0;
-    dtime  = hslider("[2] delay[unit:ms]", 100, 0, 5000, 0.1)*ma.SR/1000.0;
-    fback   = hslider("[3] feedback",0,0,100,0.1)/100.0;
+    interp   = hslider("[1] Interpolation[unit:ms]",10,1,100,0.1)*ma.SR/1000.0;
+    dtime  = hslider("[2] Delay[unit:ms]", 100, 0, 5000, 0.1)*ma.SR/1000.0;
+    fback   = hslider("[3] Feedback",0,0,100,0.1)/100.0;
   };
 
 process = fxctrl (1, mix / 100, res);

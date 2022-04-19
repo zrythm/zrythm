@@ -820,12 +820,12 @@ class smooth_delay : public dsp {
 		ui_interface->openVerticalBox("Smooth Delay");
 		ui_interface->declare(&fHslider3, "1", "");
 		ui_interface->declare(&fHslider3, "unit", "ms");
-		ui_interface->addHorizontalSlider("interpolation", &fHslider3, FAUSTFLOAT(10.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(100.0f), FAUSTFLOAT(0.100000001f));
+		ui_interface->addHorizontalSlider("Interpolation", &fHslider3, FAUSTFLOAT(10.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(100.0f), FAUSTFLOAT(0.100000001f));
 		ui_interface->declare(&fHslider2, "2", "");
 		ui_interface->declare(&fHslider2, "unit", "ms");
-		ui_interface->addHorizontalSlider("delay", &fHslider2, FAUSTFLOAT(100.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(5000.0f), FAUSTFLOAT(0.100000001f));
+		ui_interface->addHorizontalSlider("Delay", &fHslider2, FAUSTFLOAT(100.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(5000.0f), FAUSTFLOAT(0.100000001f));
 		ui_interface->declare(&fHslider1, "3", "");
-		ui_interface->addHorizontalSlider("feedback", &fHslider1, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(100.0f), FAUSTFLOAT(0.100000001f));
+		ui_interface->addHorizontalSlider("Feedback", &fHslider1, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(100.0f), FAUSTFLOAT(0.100000001f));
 		ui_interface->declare(&fHslider0, "4", "");
 		ui_interface->declare(&fHslider0, "tooltip", "Mix amount");
 		ui_interface->declare(&fHslider0, "unit", "percentage");
