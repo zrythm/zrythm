@@ -155,7 +155,7 @@ set_hw_params (
       &period_size, &dir);
   if (err < 0)
     g_warning (
-      "Unable to set perriod size %lu for playback: "
+      "Unable to set period size %lu for playback: "
       "%s",
       period_size,
       snd_strerror (err));
@@ -165,7 +165,7 @@ set_hw_params (
       self->hw_params, &period_size, &dir);
   if (err < 0)
     g_warning (
-      "Unable to perriod size %lu for playback: %s",
+      "Unable to period size %lu for playback: %s",
       period_size,
       snd_strerror (err));
   self->block_length = (nframes_t) period_size;

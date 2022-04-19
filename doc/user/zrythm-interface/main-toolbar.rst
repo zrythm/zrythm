@@ -68,7 +68,7 @@ Toggle Status Bar
 Fullscreen
   Toggles fullscreen mode.
 Toggle Left/Right/Bottom/Main Panels
-  Toggles the visiblity of the selected panel.
+  Toggles the visibility of the selected panel.
 
 Help Menu
 ~~~~~~~~~
