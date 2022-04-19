@@ -318,10 +318,6 @@ bot_dock_edge_widget_init (BotDockEdgeWidget * self)
     GTK_ORIENTATION_VERTICAL);
 
   generate_bot_notebook (self);
-
-  /* set icons */
-  gtk_button_set_icon_name (
-    GTK_BUTTON (self->mixer->channels_add), "add");
 }
 
 static void

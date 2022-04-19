@@ -12,14 +12,7 @@
             <property name="child">
               <object class="GtkBox" id="channels_box">
                 <child>
-                  <object class="GtkButton" id="channels_add">
-                    <property name="focusable">1</property>
-                    <property name="receives_default">1</property>
-                    <child>
-                      <object class="GtkImage">
-                        <property name="icon_name">plus</property>
-                      </object>
-                    </child>
+                  <object class="AddTrackMenuButtonWidget" id="channels_add">
                   </object>
                 </child>
               </object>

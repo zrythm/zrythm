@@ -19,6 +19,7 @@
 
 #include "audio/channel.h"
 #include "audio/track.h"
+#include "gui/widgets/add_track_menu_button.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
@@ -227,8 +228,13 @@ static void
 mixer_widget_init (MixerWidget * self)
 {
   g_type_ensure (DRAG_DEST_BOX_WIDGET_TYPE);
+  g_type_ensure (ADD_TRACK_MENU_BUTTON_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  gtk_widget_set_name (
+    GTK_WIDGET (self->channels_add),
+    "mixer-add-channel");
 
   /* add dummy box for dnd */
   self->ddbox = drag_dest_box_widget_new (

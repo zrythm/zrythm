@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_TRACKLIST_H__
 #define __GUI_WIDGETS_TRACKLIST_H__
@@ -46,6 +30,8 @@ typedef struct _DragDestBoxWidget DragDestBoxWidget;
 typedef struct _ChordTrackWidget  ChordTrackWidget;
 typedef struct Track              InstrumentTrack;
 typedef struct Tracklist          Tracklist;
+typedef struct _AddTrackMenuButtonWidget
+  AddTrackMenuButtonWidget;
 
 /**
  * The TracklistWidget holds all the Track's
@@ -78,6 +64,8 @@ typedef struct _TracklistWidget
    * Internal tracklist.
    */
   Tracklist * tracklist;
+
+  AddTrackMenuButtonWidget * channel_add;
 
   /** Size group to set the pinned track box and
    * the pinned timeline to the same height. */
@@ -113,6 +101,12 @@ tracklist_widget_tear_down (TracklistWidget * self);
 void
 tracklist_widget_update_track_visibility (
   TracklistWidget * self);
+
+/**
+ * Generates a menu for adding tracks to the tracklist.
+ */
+GMenu *
+tracklist_widget_generate_add_track_menu (void);
 
 /**
  * Gets hit TrackWidget and the given coordinates.

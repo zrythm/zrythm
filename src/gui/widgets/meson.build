@@ -4,6 +4,7 @@
 widget_srcs = files([
   'active_hardware_mb.c',
   'active_hardware_popover.c',
+  'add_track_menu_button.c',
   'arranger.c',
   'arranger_draw.c',
   'arranger_object.c',

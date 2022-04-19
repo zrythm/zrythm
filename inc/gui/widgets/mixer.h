@@ -34,6 +34,8 @@ typedef struct _DragDestBoxWidget DragDestBoxWidget;
 typedef struct Channel            Channel;
 typedef struct _ChannelSlotWidget ChannelSlotWidget;
 typedef struct Track              Track;
+typedef struct _AddTrackMenuButtonWidget
+  AddTrackMenuButtonWidget;
 
 /**
  * @addtogroup widgets
@@ -72,8 +74,8 @@ typedef struct _MixerWidget
    */
   Track * start_drag_track;
 
-  GtkButton * channels_add;
-  GtkBox *    master_box;
+  AddTrackMenuButtonWidget * channels_add;
+  GtkBox *                   master_box;
 
   /**
    * Selected slot to paste selections (when

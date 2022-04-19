@@ -28,6 +28,7 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
+#include "gui/widgets/add_track_menu_button.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
@@ -46,10 +47,63 @@
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
+#include <glib/gi18n.h>
+
 G_DEFINE_TYPE (
   TracklistWidget,
   tracklist_widget,
   GTK_TYPE_BOX)
+
+GMenu *
+tracklist_widget_generate_add_track_menu ()
+{
+  GMenu *     menu = g_menu_new ();
+  GMenuItem * menuitem;
+
+  menuitem = z_gtk_create_menu_item (
+    _ ("Add _MIDI Track"), NULL,
+    "app.create-midi-track");
+  g_menu_append_item (menu, menuitem);
+
+  menuitem = z_gtk_create_menu_item (
+    _ ("Add Audio Track"), NULL,
+    "app.create-audio-track");
+  g_menu_append_item (menu, menuitem);
+
+  GMenu * bus_submenu = g_menu_new ();
+  menuitem = z_gtk_create_menu_item (
+    _ (track_type_to_string (TRACK_TYPE_AUDIO_BUS)),
+    NULL, "app.create-audio-bus-track");
+  g_menu_append_item (bus_submenu, menuitem);
+  menuitem = z_gtk_create_menu_item (
+    _ (track_type_to_string (TRACK_TYPE_MIDI_BUS)),
+    NULL, "app.create-midi-bus-track");
+  g_menu_append_item (bus_submenu, menuitem);
+  g_menu_append_section (
+    menu, _ ("Add FX Track"),
+    G_MENU_MODEL (bus_submenu));
+
+  GMenu * group_submenu = g_menu_new ();
+  menuitem = z_gtk_create_menu_item (
+    _ (track_type_to_string (
+      TRACK_TYPE_AUDIO_GROUP)),
+    NULL, "app.create-audio-group-track");
+  g_menu_append_item (group_submenu, menuitem);
+  menuitem = z_gtk_create_menu_item (
+    _ (track_type_to_string (TRACK_TYPE_MIDI_GROUP)),
+    NULL, "app.create-midi-group-track");
+  g_menu_append_item (group_submenu, menuitem);
+  g_menu_append_section (
+    menu, _ ("Add Group Track"),
+    G_MENU_MODEL (group_submenu));
+
+  menuitem = z_gtk_create_menu_item (
+    _ ("Add Folder Track"), NULL,
+    "app.create-folder-track");
+  g_menu_append_item (menu, menuitem);
+
+  return menu;
+}
 
 static void
 on_dnd_leave (
@@ -394,6 +448,7 @@ tracklist_widget_hard_refresh (
 {
   g_debug ("hard refreshing tracklist");
 
+  g_object_ref (self->channel_add);
   g_object_ref (self->ddbox);
 
   /* remove all children */
@@ -421,6 +476,15 @@ tracklist_widget_hard_refresh (
           GTK_WIDGET (track->widget));
     }
 
+  /* re-add chanel_add */
+  g_return_if_fail (
+    gtk_widget_get_parent (
+      GTK_WIDGET (self->channel_add))
+    == NULL);
+  gtk_box_append (
+    GTK_BOX (self->unpinned_box),
+    GTK_WIDGET (self->channel_add));
+
   /* re-add ddbox */
   g_return_if_fail (
     gtk_widget_get_parent (GTK_WIDGET (self->ddbox))
@@ -429,6 +493,7 @@ tracklist_widget_hard_refresh (
     GTK_BOX (self->unpinned_box),
     GTK_WIDGET (self->ddbox));
 
+  g_object_unref (self->channel_add);
   g_object_unref (self->ddbox);
 
   g_debug ("done hard refreshing tracklist");
@@ -560,6 +625,12 @@ tracklist_widget_init (TracklistWidget * self)
     DRAG_DEST_BOX_TYPE_TRACKLIST);
   gtk_widget_set_name (
     GTK_WIDGET (self->ddbox), "tracklist-ddbox");
+
+  self->channel_add =
+    add_track_menu_button_widget_new ();
+  gtk_widget_set_name (
+    GTK_WIDGET (self->channel_add),
+    "tracklist-add-channel");
 
   gtk_orientable_set_orientation (
     GTK_ORIENTABLE (self),
