@@ -5,7 +5,7 @@ license: "AGPL-3.0-or-later"
 name: "Phaser"
 version: "1.0"
 Code generated with Faust 2.40.0 (https://faust.grame.fr)
-Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn phaser -es 1 -mcd 16 -single -ftz 0
+Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn phaser -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
 #ifndef  __phaser_H__
@@ -709,32 +709,32 @@ class phaser : public dsp {
  private:
 	
 	FAUSTFLOAT fHslider0;
-	FAUSTFLOAT fCheckbox0;
-	FAUSTFLOAT fHslider1;
+	float fRec5_perm[4];
 	int fSampleRate;
 	float fConst1;
+	FAUSTFLOAT fHslider1;
+	float fRec6_perm[4];
+	int iVec0_perm[4];
+	float fRec7_perm[4];
 	FAUSTFLOAT fHslider2;
 	FAUSTFLOAT fHslider3;
-	int iVec0[2];
-	FAUSTFLOAT fHslider4;
-	float fRec5[2];
 	float fConst2;
+	FAUSTFLOAT fHslider4;
 	FAUSTFLOAT fHslider5;
 	FAUSTFLOAT fHslider6;
+	float fRec4_perm[4];
+	float fRec3_perm[4];
+	float fRec2_perm[4];
+	float fRec1_perm[4];
+	float fRec0_perm[4];
+	FAUSTFLOAT fCheckbox0;
 	FAUSTFLOAT fHslider7;
-	float fRec6[2];
-	float fRec7[2];
-	float fRec4[3];
-	float fRec3[3];
-	float fRec2[3];
-	float fRec1[3];
-	float fRec0[2];
 	FAUSTFLOAT fCheckbox1;
-	float fRec12[3];
-	float fRec11[3];
-	float fRec10[3];
-	float fRec9[3];
-	float fRec8[2];
+	float fRec12_perm[4];
+	float fRec11_perm[4];
+	float fRec10_perm[4];
+	float fRec9_perm[4];
+	float fRec8_perm[4];
 	
  public:
 	
@@ -742,7 +742,7 @@ class phaser : public dsp {
 		m->declare("author", "Zrythm DAW");
 		m->declare("basics.lib/name", "Faust Basic Element Library");
 		m->declare("basics.lib/version", "0.5");
-		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn phaser -es 1 -mcd 16 -single -ftz 0");
+		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn phaser -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
 		m->declare("description", "Phaser effect");
 		m->declare("filename", "phaser.dsp");
@@ -796,65 +796,65 @@ class phaser : public dsp {
 	virtual void instanceConstants(int sample_rate) {
 		fSampleRate = sample_rate;
 		float fConst0 = std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate)));
-		fConst1 = 1.0f / fConst0;
-		fConst2 = 6.28318548f / fConst0;
+		fConst1 = 6.28318548f / fConst0;
+		fConst2 = 1.0f / fConst0;
 	}
 	
 	virtual void instanceResetUserInterface() {
-		fHslider0 = FAUSTFLOAT(0.0f);
-		fCheckbox0 = FAUSTFLOAT(0.0f);
-		fHslider1 = FAUSTFLOAT(1.0f);
-		fHslider2 = FAUSTFLOAT(1000.0f);
+		fHslider0 = FAUSTFLOAT(1.5f);
+		fHslider1 = FAUSTFLOAT(0.5f);
+		fHslider2 = FAUSTFLOAT(0.0f);
 		fHslider3 = FAUSTFLOAT(0.0f);
-		fHslider4 = FAUSTFLOAT(1.5f);
+		fHslider4 = FAUSTFLOAT(1000.0f);
 		fHslider5 = FAUSTFLOAT(100.0f);
 		fHslider6 = FAUSTFLOAT(800.0f);
-		fHslider7 = FAUSTFLOAT(0.5f);
+		fCheckbox0 = FAUSTFLOAT(0.0f);
+		fHslider7 = FAUSTFLOAT(1.0f);
 		fCheckbox1 = FAUSTFLOAT(0.0f);
 	}
 	
 	virtual void instanceClear() {
-		for (int l0 = 0; l0 < 2; l0 = l0 + 1) {
-			iVec0[l0] = 0;
+		for (int l0 = 0; l0 < 4; l0 = l0 + 1) {
+			fRec5_perm[l0] = 0.0f;
 		}
-		for (int l1 = 0; l1 < 2; l1 = l1 + 1) {
-			fRec5[l1] = 0.0f;
+		for (int l1 = 0; l1 < 4; l1 = l1 + 1) {
+			fRec6_perm[l1] = 0.0f;
 		}
-		for (int l2 = 0; l2 < 2; l2 = l2 + 1) {
-			fRec6[l2] = 0.0f;
+		for (int l2 = 0; l2 < 4; l2 = l2 + 1) {
+			iVec0_perm[l2] = 0;
 		}
-		for (int l3 = 0; l3 < 2; l3 = l3 + 1) {
-			fRec7[l3] = 0.0f;
+		for (int l3 = 0; l3 < 4; l3 = l3 + 1) {
+			fRec7_perm[l3] = 0.0f;
 		}
-		for (int l4 = 0; l4 < 3; l4 = l4 + 1) {
-			fRec4[l4] = 0.0f;
+		for (int l4 = 0; l4 < 4; l4 = l4 + 1) {
+			fRec4_perm[l4] = 0.0f;
 		}
-		for (int l5 = 0; l5 < 3; l5 = l5 + 1) {
-			fRec3[l5] = 0.0f;
+		for (int l5 = 0; l5 < 4; l5 = l5 + 1) {
+			fRec3_perm[l5] = 0.0f;
 		}
-		for (int l6 = 0; l6 < 3; l6 = l6 + 1) {
-			fRec2[l6] = 0.0f;
+		for (int l6 = 0; l6 < 4; l6 = l6 + 1) {
+			fRec2_perm[l6] = 0.0f;
 		}
-		for (int l7 = 0; l7 < 3; l7 = l7 + 1) {
-			fRec1[l7] = 0.0f;
+		for (int l7 = 0; l7 < 4; l7 = l7 + 1) {
+			fRec1_perm[l7] = 0.0f;
 		}
-		for (int l8 = 0; l8 < 2; l8 = l8 + 1) {
-			fRec0[l8] = 0.0f;
+		for (int l8 = 0; l8 < 4; l8 = l8 + 1) {
+			fRec0_perm[l8] = 0.0f;
 		}
-		for (int l9 = 0; l9 < 3; l9 = l9 + 1) {
-			fRec12[l9] = 0.0f;
+		for (int l9 = 0; l9 < 4; l9 = l9 + 1) {
+			fRec12_perm[l9] = 0.0f;
 		}
-		for (int l10 = 0; l10 < 3; l10 = l10 + 1) {
-			fRec11[l10] = 0.0f;
+		for (int l10 = 0; l10 < 4; l10 = l10 + 1) {
+			fRec11_perm[l10] = 0.0f;
 		}
-		for (int l11 = 0; l11 < 3; l11 = l11 + 1) {
-			fRec10[l11] = 0.0f;
+		for (int l11 = 0; l11 < 4; l11 = l11 + 1) {
+			fRec10_perm[l11] = 0.0f;
 		}
-		for (int l12 = 0; l12 < 3; l12 = l12 + 1) {
-			fRec9[l12] = 0.0f;
+		for (int l12 = 0; l12 < 4; l12 = l12 + 1) {
+			fRec9_perm[l12] = 0.0f;
 		}
-		for (int l13 = 0; l13 < 2; l13 = l13 + 1) {
-			fRec8[l13] = 0.0f;
+		for (int l13 = 0; l13 < 4; l13 = l13 + 1) {
+			fRec8_perm[l13] = 0.0f;
 		}
 	}
 	
@@ -888,24 +888,24 @@ class phaser : public dsp {
 		ui_interface->closeBox();
 		ui_interface->declare(0, "1", "");
 		ui_interface->openHorizontalBox("0x00");
-		ui_interface->declare(&fHslider7, "1", "");
-		ui_interface->declare(&fHslider7, "style", "knob");
-		ui_interface->declare(&fHslider7, "unit", "Hz");
-		ui_interface->addHorizontalSlider("Speed", &fHslider7, FAUSTFLOAT(0.5f), FAUSTFLOAT(0.0f), FAUSTFLOAT(10.0f), FAUSTFLOAT(0.00100000005f));
-		ui_interface->declare(&fHslider1, "2", "");
+		ui_interface->declare(&fHslider1, "1", "");
 		ui_interface->declare(&fHslider1, "style", "knob");
-		ui_interface->addHorizontalSlider("Notch Depth (Intensity)", &fHslider1, FAUSTFLOAT(1.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.00100000005f));
+		ui_interface->declare(&fHslider1, "unit", "Hz");
+		ui_interface->addHorizontalSlider("Speed", &fHslider1, FAUSTFLOAT(0.5f), FAUSTFLOAT(0.0f), FAUSTFLOAT(10.0f), FAUSTFLOAT(0.00100000005f));
+		ui_interface->declare(&fHslider7, "2", "");
+		ui_interface->declare(&fHslider7, "style", "knob");
+		ui_interface->addHorizontalSlider("Notch Depth (Intensity)", &fHslider7, FAUSTFLOAT(1.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.00100000005f));
 		ui_interface->declare(&fHslider3, "3", "");
 		ui_interface->declare(&fHslider3, "style", "knob");
 		ui_interface->addHorizontalSlider("Feedback Gain", &fHslider3, FAUSTFLOAT(0.0f), FAUSTFLOAT(-0.999000013f), FAUSTFLOAT(0.999000013f), FAUSTFLOAT(0.00100000005f));
 		ui_interface->closeBox();
 		ui_interface->declare(0, "2", "");
 		ui_interface->openHorizontalBox("0x00");
-		ui_interface->declare(&fHslider2, "1", "");
-		ui_interface->declare(&fHslider2, "scale", "log");
-		ui_interface->declare(&fHslider2, "style", "knob");
-		ui_interface->declare(&fHslider2, "unit", "Hz");
-		ui_interface->addHorizontalSlider("Notch width", &fHslider2, FAUSTFLOAT(1000.0f), FAUSTFLOAT(10.0f), FAUSTFLOAT(5000.0f), FAUSTFLOAT(1.0f));
+		ui_interface->declare(&fHslider4, "1", "");
+		ui_interface->declare(&fHslider4, "scale", "log");
+		ui_interface->declare(&fHslider4, "style", "knob");
+		ui_interface->declare(&fHslider4, "unit", "Hz");
+		ui_interface->addHorizontalSlider("Notch width", &fHslider4, FAUSTFLOAT(1000.0f), FAUSTFLOAT(10.0f), FAUSTFLOAT(5000.0f), FAUSTFLOAT(1.0f));
 		ui_interface->declare(&fHslider5, "2", "");
 		ui_interface->declare(&fHslider5, "scale", "log");
 		ui_interface->declare(&fHslider5, "style", "knob");
@@ -916,94 +916,439 @@ class phaser : public dsp {
 		ui_interface->declare(&fHslider6, "style", "knob");
 		ui_interface->declare(&fHslider6, "unit", "Hz");
 		ui_interface->addHorizontalSlider("Max Notch1 Freq", &fHslider6, FAUSTFLOAT(800.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(10000.0f), FAUSTFLOAT(1.0f));
-		ui_interface->declare(&fHslider4, "4", "");
-		ui_interface->declare(&fHslider4, "style", "knob");
-		ui_interface->addHorizontalSlider("Notch Freq Ratio: NotchFreq(n+1)/NotchFreq(n)", &fHslider4, FAUSTFLOAT(1.5f), FAUSTFLOAT(1.10000002f), FAUSTFLOAT(4.0f), FAUSTFLOAT(0.00100000005f));
+		ui_interface->declare(&fHslider0, "4", "");
+		ui_interface->declare(&fHslider0, "style", "knob");
+		ui_interface->addHorizontalSlider("Notch Freq Ratio: NotchFreq(n+1)/NotchFreq(n)", &fHslider0, FAUSTFLOAT(1.5f), FAUSTFLOAT(1.10000002f), FAUSTFLOAT(4.0f), FAUSTFLOAT(0.00100000005f));
 		ui_interface->closeBox();
 		ui_interface->declare(0, "3", "");
 		ui_interface->openHorizontalBox("0x00");
-		ui_interface->declare(&fHslider0, "unit", "dB");
-		ui_interface->addHorizontalSlider("Phaser Output Level", &fHslider0, FAUSTFLOAT(0.0f), FAUSTFLOAT(-60.0f), FAUSTFLOAT(10.0f), FAUSTFLOAT(0.100000001f));
+		ui_interface->declare(&fHslider2, "unit", "dB");
+		ui_interface->addHorizontalSlider("Phaser Output Level", &fHslider2, FAUSTFLOAT(0.0f), FAUSTFLOAT(-60.0f), FAUSTFLOAT(10.0f), FAUSTFLOAT(0.100000001f));
 		ui_interface->closeBox();
 		ui_interface->closeBox();
 	}
 	
 	virtual void compute(int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOAT** RESTRICT outputs) {
-		FAUSTFLOAT* input0 = inputs[0];
-		FAUSTFLOAT* input1 = inputs[1];
-		FAUSTFLOAT* output0 = outputs[0];
-		FAUSTFLOAT* output1 = outputs[1];
-		float fSlow0 = std::pow(10.0f, 0.0500000007f * float(fHslider0));
-		float fThen0 = float(fHslider1);
-		float fSlow1 = 0.5f * ((int(float(fCheckbox0))) ? 2.0f : fThen0);
-		float fSlow2 = 1.0f - fSlow1;
-		float fSlow3 = std::exp(fConst1 * (0.0f - 3.14159274f * float(fHslider2)));
-		float fSlow4 = phaser_faustpower2_f(fSlow3);
-		float fSlow5 = 0.0f - 2.0f * fSlow3;
-		float fSlow6 = float(fHslider3);
-		float fSlow7 = 0.00100000005f * float(fHslider4);
+		FAUSTFLOAT* input0_ptr = inputs[0];
+		FAUSTFLOAT* input1_ptr = inputs[1];
+		FAUSTFLOAT* output0_ptr = outputs[0];
+		FAUSTFLOAT* output1_ptr = outputs[1];
+		float fSlow0 = 0.00100000005f * float(fHslider0);
+		float fRec5_tmp[36];
+		float* fRec5 = &fRec5_tmp[4];
+		float fSlow1 = fConst1 * float(fHslider1);
+		float fSlow2 = std::sin(fSlow1);
+		float fSlow3 = std::cos(fSlow1);
+		float fRec6_tmp[36];
+		float* fRec6 = &fRec6_tmp[4];
+		int iVec0_tmp[36];
+		int* iVec0 = &iVec0_tmp[4];
+		float fRec7_tmp[36];
+		float* fRec7 = &fRec7_tmp[4];
+		float fSlow4 = std::pow(10.0f, 0.0500000007f * float(fHslider2));
+		float fSlow5 = float(fHslider3);
+		float fSlow6 = std::exp(fConst2 * (0.0f - 3.14159274f * float(fHslider4)));
+		float fSlow7 = 0.0f - 2.0f * fSlow6;
 		float fSlow8 = float(fHslider5);
-		float fSlow9 = fConst2 * fSlow8;
-		float fSlow10 = 0.5f * (0.0f - fConst2 * (fSlow8 - std::max<float>(fSlow8, float(fHslider6))));
-		float fSlow11 = fConst2 * float(fHslider7);
-		float fSlow12 = std::sin(fSlow11);
-		float fSlow13 = std::cos(fSlow11);
-		float fElse1 = -1.0f * fSlow1;
-		float fSlow14 = ((int(float(fCheckbox1))) ? fElse1 : fSlow1);
-		for (int i0 = 0; i0 < count; i0 = i0 + 1) {
-			float fTemp0 = float(input0[i0]);
-			iVec0[0] = 1;
-			fRec5[0] = fSlow7 + 0.999000013f * fRec5[1];
-			fRec6[0] = fSlow12 * fRec7[1] + fSlow13 * fRec6[1];
-			fRec7[0] = (float(1 - iVec0[1]) + fSlow13 * fRec7[1]) - fSlow12 * fRec6[1];
-			float fTemp1 = fSlow9 + fSlow10 * (1.0f - fRec6[0]);
-			float fTemp2 = fRec4[1] * std::cos(fRec5[0] * fTemp1);
-			fRec4[0] = (fSlow0 * fTemp0 + fSlow6 * fRec0[1]) - (fSlow5 * fTemp2 + fSlow4 * fRec4[2]);
-			float fTemp3 = phaser_faustpower2_f(fRec5[0]);
-			float fTemp4 = fRec3[1] * std::cos(fTemp3 * fTemp1);
-			fRec3[0] = fSlow5 * (fTemp2 - fTemp4) + fRec4[2] + fSlow4 * (fRec4[0] - fRec3[2]);
-			float fTemp5 = phaser_faustpower3_f(fRec5[0]);
-			float fTemp6 = fRec2[1] * std::cos(fTemp5 * fTemp1);
-			fRec2[0] = fSlow5 * (fTemp4 - fTemp6) + fRec3[2] + fSlow4 * (fRec3[0] - fRec2[2]);
-			float fTemp7 = phaser_faustpower4_f(fRec5[0]);
-			float fTemp8 = fRec1[1] * std::cos(fTemp7 * fTemp1);
-			fRec1[0] = fSlow5 * (fTemp6 - fTemp8) + fRec2[2] + fSlow4 * (fRec2[0] - fRec1[2]);
-			fRec0[0] = fSlow4 * fRec1[0] + fSlow5 * fTemp8 + fRec1[2];
-			output0[i0] = FAUSTFLOAT(fSlow0 * fTemp0 * fSlow2 + fRec0[0] * fSlow14);
-			float fTemp9 = float(input1[i0]);
-			float fTemp10 = fSlow9 + fSlow10 * (1.0f - fRec7[0]);
-			float fTemp11 = fRec12[1] * std::cos(fRec5[0] * fTemp10);
-			fRec12[0] = (fSlow0 * fTemp9 + fSlow6 * fRec8[1]) - (fSlow5 * fTemp11 + fSlow4 * fRec12[2]);
-			float fTemp12 = fRec11[1] * std::cos(fTemp3 * fTemp10);
-			fRec11[0] = fSlow5 * (fTemp11 - fTemp12) + fRec12[2] + fSlow4 * (fRec12[0] - fRec11[2]);
-			float fTemp13 = fRec10[1] * std::cos(fTemp5 * fTemp10);
-			fRec10[0] = fSlow5 * (fTemp12 - fTemp13) + fRec11[2] + fSlow4 * (fRec11[0] - fRec10[2]);
-			float fTemp14 = fRec9[1] * std::cos(fTemp7 * fTemp10);
-			fRec9[0] = fSlow5 * (fTemp13 - fTemp14) + fRec10[2] + fSlow4 * (fRec10[0] - fRec9[2]);
-			fRec8[0] = fSlow4 * fRec9[0] + fSlow5 * fTemp14 + fRec9[2];
-			output1[i0] = FAUSTFLOAT(fSlow0 * fTemp9 * fSlow2 + fRec8[0] * fSlow14);
-			iVec0[1] = iVec0[0];
-			fRec5[1] = fRec5[0];
-			fRec6[1] = fRec6[0];
-			fRec7[1] = fRec7[0];
-			fRec4[2] = fRec4[1];
-			fRec4[1] = fRec4[0];
-			fRec3[2] = fRec3[1];
-			fRec3[1] = fRec3[0];
-			fRec2[2] = fRec2[1];
-			fRec2[1] = fRec2[0];
-			fRec1[2] = fRec1[1];
-			fRec1[1] = fRec1[0];
-			fRec0[1] = fRec0[0];
-			fRec12[2] = fRec12[1];
-			fRec12[1] = fRec12[0];
-			fRec11[2] = fRec11[1];
-			fRec11[1] = fRec11[0];
-			fRec10[2] = fRec10[1];
-			fRec10[1] = fRec10[0];
-			fRec9[2] = fRec9[1];
-			fRec9[1] = fRec9[0];
-			fRec8[1] = fRec8[0];
+		float fSlow9 = fConst1 * fSlow8;
+		float fSlow10 = 0.5f * (0.0f - fConst1 * (fSlow8 - std::max<float>(fSlow8, float(fHslider6))));
+		float fZec0[32];
+		float fZec1[32];
+		float fSlow11 = phaser_faustpower2_f(fSlow6);
+		float fRec4_tmp[36];
+		float* fRec4 = &fRec4_tmp[4];
+		float fZec2[32];
+		float fZec3[32];
+		float fRec3_tmp[36];
+		float* fRec3 = &fRec3_tmp[4];
+		float fZec4[32];
+		float fZec5[32];
+		float fRec2_tmp[36];
+		float* fRec2 = &fRec2_tmp[4];
+		float fZec6[32];
+		float fZec7[32];
+		float fRec1_tmp[36];
+		float* fRec1 = &fRec1_tmp[4];
+		float fRec0_tmp[36];
+		float* fRec0 = &fRec0_tmp[4];
+		float fThen0 = float(fHslider7);
+		float fSlow12 = 0.5f * ((int(float(fCheckbox0))) ? 2.0f : fThen0);
+		float fSlow13 = 1.0f - fSlow12;
+		float fElse1 = -1.0f * fSlow12;
+		float fSlow14 = ((int(float(fCheckbox1))) ? fElse1 : fSlow12);
+		float fZec8[32];
+		float fZec9[32];
+		float fRec12_tmp[36];
+		float* fRec12 = &fRec12_tmp[4];
+		float fZec10[32];
+		float fRec11_tmp[36];
+		float* fRec11 = &fRec11_tmp[4];
+		float fZec11[32];
+		float fRec10_tmp[36];
+		float* fRec10 = &fRec10_tmp[4];
+		float fZec12[32];
+		float fRec9_tmp[36];
+		float* fRec9 = &fRec9_tmp[4];
+		float fRec8_tmp[36];
+		float* fRec8 = &fRec8_tmp[4];
+		int vindex = 0;
+		/* Main loop */
+		for (vindex = 0; vindex <= count - 32; vindex = vindex + 32) {
+			FAUSTFLOAT* input0 = &input0_ptr[vindex];
+			FAUSTFLOAT* input1 = &input1_ptr[vindex];
+			FAUSTFLOAT* output0 = &output0_ptr[vindex];
+			FAUSTFLOAT* output1 = &output1_ptr[vindex];
+			int vsize = 32;
+			/* Vectorizable loop 0 */
+			/* Pre code */
+			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
+				iVec0_tmp[j4] = iVec0_perm[j4];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				iVec0[i] = 1;
+			}
+			/* Post code */
+			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
+				iVec0_perm[j5] = iVec0_tmp[vsize + j5];
+			}
+			/* Recursive loop 1 */
+			/* Pre code */
+			for (int j0 = 0; j0 < 4; j0 = j0 + 1) {
+				fRec5_tmp[j0] = fRec5_perm[j0];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec5[i] = fSlow0 + 0.999000013f * fRec5[i - 1];
+			}
+			/* Post code */
+			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
+				fRec5_perm[j1] = fRec5_tmp[vsize + j1];
+			}
+			/* Recursive loop 2 */
+			/* Pre code */
+			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
+				fRec6_tmp[j2] = fRec6_perm[j2];
+			}
+			for (int j6 = 0; j6 < 4; j6 = j6 + 1) {
+				fRec7_tmp[j6] = fRec7_perm[j6];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec6[i] = fSlow2 * fRec7[i - 1] + fSlow3 * fRec6[i - 1];
+				fRec7[i] = (float(1 - iVec0[i - 1]) + fSlow3 * fRec7[i - 1]) - fSlow2 * fRec6[i - 1];
+			}
+			/* Post code */
+			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
+				fRec6_perm[j3] = fRec6_tmp[vsize + j3];
+			}
+			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
+				fRec7_perm[j7] = fRec7_tmp[vsize + j7];
+			}
+			/* Vectorizable loop 3 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec0[i] = fSlow9 + fSlow10 * (1.0f - fRec6[i]);
+			}
+			/* Vectorizable loop 4 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec2[i] = phaser_faustpower2_f(fRec5[i]);
+			}
+			/* Vectorizable loop 5 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec4[i] = phaser_faustpower3_f(fRec5[i]);
+			}
+			/* Vectorizable loop 6 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec6[i] = phaser_faustpower4_f(fRec5[i]);
+			}
+			/* Vectorizable loop 7 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec8[i] = fSlow9 + fSlow10 * (1.0f - fRec7[i]);
+			}
+			/* Recursive loop 8 */
+			/* Pre code */
+			for (int j8 = 0; j8 < 4; j8 = j8 + 1) {
+				fRec4_tmp[j8] = fRec4_perm[j8];
+			}
+			for (int j10 = 0; j10 < 4; j10 = j10 + 1) {
+				fRec3_tmp[j10] = fRec3_perm[j10];
+			}
+			for (int j12 = 0; j12 < 4; j12 = j12 + 1) {
+				fRec2_tmp[j12] = fRec2_perm[j12];
+			}
+			for (int j14 = 0; j14 < 4; j14 = j14 + 1) {
+				fRec1_tmp[j14] = fRec1_perm[j14];
+			}
+			for (int j16 = 0; j16 < 4; j16 = j16 + 1) {
+				fRec0_tmp[j16] = fRec0_perm[j16];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec1[i] = fRec4[i - 1] * std::cos(fRec5[i] * fZec0[i]);
+				fRec4[i] = (fSlow4 * float(input0[i]) + fSlow5 * fRec0[i - 1]) - (fSlow7 * fZec1[i] + fSlow11 * fRec4[i - 2]);
+				fZec3[i] = fRec3[i - 1] * std::cos(fZec2[i] * fZec0[i]);
+				fRec3[i] = fSlow7 * (fZec1[i] - fZec3[i]) + fRec4[i - 2] + fSlow11 * (fRec4[i] - fRec3[i - 2]);
+				fZec5[i] = fRec2[i - 1] * std::cos(fZec4[i] * fZec0[i]);
+				fRec2[i] = fSlow7 * (fZec3[i] - fZec5[i]) + fRec3[i - 2] + fSlow11 * (fRec3[i] - fRec2[i - 2]);
+				fZec7[i] = fRec1[i - 1] * std::cos(fZec6[i] * fZec0[i]);
+				fRec1[i] = fSlow7 * (fZec5[i] - fZec7[i]) + fRec2[i - 2] + fSlow11 * (fRec2[i] - fRec1[i - 2]);
+				fRec0[i] = fSlow11 * fRec1[i] + fSlow7 * fZec7[i] + fRec1[i - 2];
+			}
+			/* Post code */
+			for (int j9 = 0; j9 < 4; j9 = j9 + 1) {
+				fRec4_perm[j9] = fRec4_tmp[vsize + j9];
+			}
+			for (int j11 = 0; j11 < 4; j11 = j11 + 1) {
+				fRec3_perm[j11] = fRec3_tmp[vsize + j11];
+			}
+			for (int j13 = 0; j13 < 4; j13 = j13 + 1) {
+				fRec2_perm[j13] = fRec2_tmp[vsize + j13];
+			}
+			for (int j15 = 0; j15 < 4; j15 = j15 + 1) {
+				fRec1_perm[j15] = fRec1_tmp[vsize + j15];
+			}
+			for (int j17 = 0; j17 < 4; j17 = j17 + 1) {
+				fRec0_perm[j17] = fRec0_tmp[vsize + j17];
+			}
+			/* Recursive loop 9 */
+			/* Pre code */
+			for (int j18 = 0; j18 < 4; j18 = j18 + 1) {
+				fRec12_tmp[j18] = fRec12_perm[j18];
+			}
+			for (int j20 = 0; j20 < 4; j20 = j20 + 1) {
+				fRec11_tmp[j20] = fRec11_perm[j20];
+			}
+			for (int j22 = 0; j22 < 4; j22 = j22 + 1) {
+				fRec10_tmp[j22] = fRec10_perm[j22];
+			}
+			for (int j24 = 0; j24 < 4; j24 = j24 + 1) {
+				fRec9_tmp[j24] = fRec9_perm[j24];
+			}
+			for (int j26 = 0; j26 < 4; j26 = j26 + 1) {
+				fRec8_tmp[j26] = fRec8_perm[j26];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec9[i] = fRec12[i - 1] * std::cos(fRec5[i] * fZec8[i]);
+				fRec12[i] = (fSlow4 * float(input1[i]) + fSlow5 * fRec8[i - 1]) - (fSlow7 * fZec9[i] + fSlow11 * fRec12[i - 2]);
+				fZec10[i] = fRec11[i - 1] * std::cos(fZec2[i] * fZec8[i]);
+				fRec11[i] = fSlow7 * (fZec9[i] - fZec10[i]) + fRec12[i - 2] + fSlow11 * (fRec12[i] - fRec11[i - 2]);
+				fZec11[i] = fRec10[i - 1] * std::cos(fZec4[i] * fZec8[i]);
+				fRec10[i] = fSlow7 * (fZec10[i] - fZec11[i]) + fRec11[i - 2] + fSlow11 * (fRec11[i] - fRec10[i - 2]);
+				fZec12[i] = fRec9[i - 1] * std::cos(fZec6[i] * fZec8[i]);
+				fRec9[i] = fSlow7 * (fZec11[i] - fZec12[i]) + fRec10[i - 2] + fSlow11 * (fRec10[i] - fRec9[i - 2]);
+				fRec8[i] = fSlow11 * fRec9[i] + fSlow7 * fZec12[i] + fRec9[i - 2];
+			}
+			/* Post code */
+			for (int j19 = 0; j19 < 4; j19 = j19 + 1) {
+				fRec12_perm[j19] = fRec12_tmp[vsize + j19];
+			}
+			for (int j21 = 0; j21 < 4; j21 = j21 + 1) {
+				fRec11_perm[j21] = fRec11_tmp[vsize + j21];
+			}
+			for (int j23 = 0; j23 < 4; j23 = j23 + 1) {
+				fRec10_perm[j23] = fRec10_tmp[vsize + j23];
+			}
+			for (int j25 = 0; j25 < 4; j25 = j25 + 1) {
+				fRec9_perm[j25] = fRec9_tmp[vsize + j25];
+			}
+			for (int j27 = 0; j27 < 4; j27 = j27 + 1) {
+				fRec8_perm[j27] = fRec8_tmp[vsize + j27];
+			}
+			/* Vectorizable loop 10 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output0[i] = FAUSTFLOAT(fSlow4 * float(input0[i]) * fSlow13 + fRec0[i] * fSlow14);
+			}
+			/* Vectorizable loop 11 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output1[i] = FAUSTFLOAT(fSlow4 * float(input1[i]) * fSlow13 + fRec8[i] * fSlow14);
+			}
+		}
+		/* Remaining frames */
+		if ((vindex < count)) {
+			FAUSTFLOAT* input0 = &input0_ptr[vindex];
+			FAUSTFLOAT* input1 = &input1_ptr[vindex];
+			FAUSTFLOAT* output0 = &output0_ptr[vindex];
+			FAUSTFLOAT* output1 = &output1_ptr[vindex];
+			int vsize = count - vindex;
+			/* Vectorizable loop 0 */
+			/* Pre code */
+			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
+				iVec0_tmp[j4] = iVec0_perm[j4];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				iVec0[i] = 1;
+			}
+			/* Post code */
+			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
+				iVec0_perm[j5] = iVec0_tmp[vsize + j5];
+			}
+			/* Recursive loop 1 */
+			/* Pre code */
+			for (int j0 = 0; j0 < 4; j0 = j0 + 1) {
+				fRec5_tmp[j0] = fRec5_perm[j0];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec5[i] = fSlow0 + 0.999000013f * fRec5[i - 1];
+			}
+			/* Post code */
+			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
+				fRec5_perm[j1] = fRec5_tmp[vsize + j1];
+			}
+			/* Recursive loop 2 */
+			/* Pre code */
+			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
+				fRec6_tmp[j2] = fRec6_perm[j2];
+			}
+			for (int j6 = 0; j6 < 4; j6 = j6 + 1) {
+				fRec7_tmp[j6] = fRec7_perm[j6];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec6[i] = fSlow2 * fRec7[i - 1] + fSlow3 * fRec6[i - 1];
+				fRec7[i] = (float(1 - iVec0[i - 1]) + fSlow3 * fRec7[i - 1]) - fSlow2 * fRec6[i - 1];
+			}
+			/* Post code */
+			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
+				fRec6_perm[j3] = fRec6_tmp[vsize + j3];
+			}
+			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
+				fRec7_perm[j7] = fRec7_tmp[vsize + j7];
+			}
+			/* Vectorizable loop 3 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec0[i] = fSlow9 + fSlow10 * (1.0f - fRec6[i]);
+			}
+			/* Vectorizable loop 4 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec2[i] = phaser_faustpower2_f(fRec5[i]);
+			}
+			/* Vectorizable loop 5 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec4[i] = phaser_faustpower3_f(fRec5[i]);
+			}
+			/* Vectorizable loop 6 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec6[i] = phaser_faustpower4_f(fRec5[i]);
+			}
+			/* Vectorizable loop 7 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec8[i] = fSlow9 + fSlow10 * (1.0f - fRec7[i]);
+			}
+			/* Recursive loop 8 */
+			/* Pre code */
+			for (int j8 = 0; j8 < 4; j8 = j8 + 1) {
+				fRec4_tmp[j8] = fRec4_perm[j8];
+			}
+			for (int j10 = 0; j10 < 4; j10 = j10 + 1) {
+				fRec3_tmp[j10] = fRec3_perm[j10];
+			}
+			for (int j12 = 0; j12 < 4; j12 = j12 + 1) {
+				fRec2_tmp[j12] = fRec2_perm[j12];
+			}
+			for (int j14 = 0; j14 < 4; j14 = j14 + 1) {
+				fRec1_tmp[j14] = fRec1_perm[j14];
+			}
+			for (int j16 = 0; j16 < 4; j16 = j16 + 1) {
+				fRec0_tmp[j16] = fRec0_perm[j16];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec1[i] = fRec4[i - 1] * std::cos(fRec5[i] * fZec0[i]);
+				fRec4[i] = (fSlow4 * float(input0[i]) + fSlow5 * fRec0[i - 1]) - (fSlow7 * fZec1[i] + fSlow11 * fRec4[i - 2]);
+				fZec3[i] = fRec3[i - 1] * std::cos(fZec2[i] * fZec0[i]);
+				fRec3[i] = fSlow7 * (fZec1[i] - fZec3[i]) + fRec4[i - 2] + fSlow11 * (fRec4[i] - fRec3[i - 2]);
+				fZec5[i] = fRec2[i - 1] * std::cos(fZec4[i] * fZec0[i]);
+				fRec2[i] = fSlow7 * (fZec3[i] - fZec5[i]) + fRec3[i - 2] + fSlow11 * (fRec3[i] - fRec2[i - 2]);
+				fZec7[i] = fRec1[i - 1] * std::cos(fZec6[i] * fZec0[i]);
+				fRec1[i] = fSlow7 * (fZec5[i] - fZec7[i]) + fRec2[i - 2] + fSlow11 * (fRec2[i] - fRec1[i - 2]);
+				fRec0[i] = fSlow11 * fRec1[i] + fSlow7 * fZec7[i] + fRec1[i - 2];
+			}
+			/* Post code */
+			for (int j9 = 0; j9 < 4; j9 = j9 + 1) {
+				fRec4_perm[j9] = fRec4_tmp[vsize + j9];
+			}
+			for (int j11 = 0; j11 < 4; j11 = j11 + 1) {
+				fRec3_perm[j11] = fRec3_tmp[vsize + j11];
+			}
+			for (int j13 = 0; j13 < 4; j13 = j13 + 1) {
+				fRec2_perm[j13] = fRec2_tmp[vsize + j13];
+			}
+			for (int j15 = 0; j15 < 4; j15 = j15 + 1) {
+				fRec1_perm[j15] = fRec1_tmp[vsize + j15];
+			}
+			for (int j17 = 0; j17 < 4; j17 = j17 + 1) {
+				fRec0_perm[j17] = fRec0_tmp[vsize + j17];
+			}
+			/* Recursive loop 9 */
+			/* Pre code */
+			for (int j18 = 0; j18 < 4; j18 = j18 + 1) {
+				fRec12_tmp[j18] = fRec12_perm[j18];
+			}
+			for (int j20 = 0; j20 < 4; j20 = j20 + 1) {
+				fRec11_tmp[j20] = fRec11_perm[j20];
+			}
+			for (int j22 = 0; j22 < 4; j22 = j22 + 1) {
+				fRec10_tmp[j22] = fRec10_perm[j22];
+			}
+			for (int j24 = 0; j24 < 4; j24 = j24 + 1) {
+				fRec9_tmp[j24] = fRec9_perm[j24];
+			}
+			for (int j26 = 0; j26 < 4; j26 = j26 + 1) {
+				fRec8_tmp[j26] = fRec8_perm[j26];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec9[i] = fRec12[i - 1] * std::cos(fRec5[i] * fZec8[i]);
+				fRec12[i] = (fSlow4 * float(input1[i]) + fSlow5 * fRec8[i - 1]) - (fSlow7 * fZec9[i] + fSlow11 * fRec12[i - 2]);
+				fZec10[i] = fRec11[i - 1] * std::cos(fZec2[i] * fZec8[i]);
+				fRec11[i] = fSlow7 * (fZec9[i] - fZec10[i]) + fRec12[i - 2] + fSlow11 * (fRec12[i] - fRec11[i - 2]);
+				fZec11[i] = fRec10[i - 1] * std::cos(fZec4[i] * fZec8[i]);
+				fRec10[i] = fSlow7 * (fZec10[i] - fZec11[i]) + fRec11[i - 2] + fSlow11 * (fRec11[i] - fRec10[i - 2]);
+				fZec12[i] = fRec9[i - 1] * std::cos(fZec6[i] * fZec8[i]);
+				fRec9[i] = fSlow7 * (fZec11[i] - fZec12[i]) + fRec10[i - 2] + fSlow11 * (fRec10[i] - fRec9[i - 2]);
+				fRec8[i] = fSlow11 * fRec9[i] + fSlow7 * fZec12[i] + fRec9[i - 2];
+			}
+			/* Post code */
+			for (int j19 = 0; j19 < 4; j19 = j19 + 1) {
+				fRec12_perm[j19] = fRec12_tmp[vsize + j19];
+			}
+			for (int j21 = 0; j21 < 4; j21 = j21 + 1) {
+				fRec11_perm[j21] = fRec11_tmp[vsize + j21];
+			}
+			for (int j23 = 0; j23 < 4; j23 = j23 + 1) {
+				fRec10_perm[j23] = fRec10_tmp[vsize + j23];
+			}
+			for (int j25 = 0; j25 < 4; j25 = j25 + 1) {
+				fRec9_perm[j25] = fRec9_tmp[vsize + j25];
+			}
+			for (int j27 = 0; j27 < 4; j27 = j27 + 1) {
+				fRec8_perm[j27] = fRec8_tmp[vsize + j27];
+			}
+			/* Vectorizable loop 10 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output0[i] = FAUSTFLOAT(fSlow4 * float(input0[i]) * fSlow13 + fRec0[i] * fSlow14);
+			}
+			/* Vectorizable loop 11 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output1[i] = FAUSTFLOAT(fSlow4 * float(input1[i]) * fSlow13 + fRec8[i] * fSlow14);
+			}
 		}
 	}
 

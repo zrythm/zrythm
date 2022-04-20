@@ -1,0 +1,56 @@
+// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+/*
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * ---
+ *
+ * Author: Julius Smith
+ * License: MIT
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * ---
+ */
+
+declare name "@NAME@";
+declare description "@DESCRIPTION@";
+declare author "@AUTHOR@";
+declare copyright "© 2022 Alexandros Theodotou";
+declare version "1.0";
+declare license "AGPL-3.0-or-later";
+
+import ("stdfaust.lib");
+import ("zrythm-utils.lib");
+
+parametric_eq_demo =
+  fi.low_shelf (LL,FL) : fi.peak_eq_cq (peak_gain,peak_freq,Q) : fi.high_shelf (LH,FH)
+with{
+    eq_group(x) = hgroup("[0] PARAMETRIC EQ SECTIONS [tooltip: See Faust's filters.lib
+        for info and pointers]",x);
+    ls_group(x) = eq_group(vgroup("[1] Low Shelf",x));
+
+    LL = ls_group(hslider("[0] Low Shelf Gain [unit:dB] [style:knob]
+        [tooltip: Amount of low-frequency boost or cut in decibels]",0,-40,40,0.1));
+    FL = ls_group(hslider("[1] Low Shelf Transition Frequency [unit:Hz] [style:knob] [scale:log]
+        [tooltip: Transition-frequency from boost (cut) to unity gain]",200,10,5000,1));
+
+    pq_group(x) = eq_group(vgroup("[2] Peaking Equalizer[tooltip: Parametric Equalizer
+        sections from filters.lib]",x));
+    peak_gain = pq_group(hslider("[0] Peak Gain [unit:dB] [style:knob][tooltip: Amount of
+        local boost or cut in decibels]",0,-40,40,0.1));
+    peak_freq = pq_group(hslider("[1] Peak Frequency [unit:Hz] [style:knob] [tooltip: Peak
+        Frequency]", 720, 20, 16000, 1)) : si.smooth(0.999);
+    Q = pq_group(hslider("[2] Peak Q [style:knob] [scale:log] [tooltip: Quality factor
+        (Q) of the peak = center-frequency/bandwidth]",1, 1, 20, 0.01));
+
+    hs_group(x) = eq_group(vgroup("[3] High Shelf [tooltip: A high shelf provides a boost
+        or cut above some frequency]",x));
+    LH = hs_group(hslider("[0] High Shelf Gain [unit:dB] [style:knob] [tooltip: Amount of
+        high-frequency boost or cut in decibels]",0,-40,40,.1));
+    FH = hs_group(hslider("[1] High Shelf Transition Frequency [unit:Hz] [style:knob] [scale:log]
+    [tooltip: Transition-frequency from boost (cut) to unity gain]",8000,20,18000,1));
+};
+
+process = par (i, 2, parametric_eq_demo);

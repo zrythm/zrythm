@@ -5,7 +5,7 @@ license: "AGPL-3.0-or-later"
 name: "Cubic Distortion"
 version: "1.0"
 Code generated with Faust 2.40.0 (https://faust.grame.fr)
-Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn cubic_distortion -es 1 -mcd 16 -single -ftz 0
+Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn cubic_distortion -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
 #ifndef  __cubic_distortion_H__
@@ -702,18 +702,18 @@ class cubic_distortion : public dsp {
  private:
 	
 	FAUSTFLOAT fHslider0;
-	float fRec1[2];
+	float fRec1_perm[4];
 	FAUSTFLOAT fHslider1;
-	float fRec2[2];
-	float fVec0[2];
-	float fRec0[2];
+	float fRec2_perm[4];
+	float fYec0_perm[4];
+	float fRec0_perm[4];
 	int fSampleRate;
 	
  public:
 	
 	void metadata(Meta* m) { 
 		m->declare("author", "Zrythm DAW");
-		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn cubic_distortion -es 1 -mcd 16 -single -ftz 0");
+		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn cubic_distortion -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
 		m->declare("description", "Cubic distortion");
 		m->declare("effect.lib/author", "Julius O. Smith (jos at ccrma.stanford.edu)");
@@ -776,17 +776,17 @@ class cubic_distortion : public dsp {
 	}
 	
 	virtual void instanceClear() {
-		for (int l0 = 0; l0 < 2; l0 = l0 + 1) {
-			fRec1[l0] = 0.0f;
+		for (int l0 = 0; l0 < 4; l0 = l0 + 1) {
+			fRec1_perm[l0] = 0.0f;
 		}
-		for (int l1 = 0; l1 < 2; l1 = l1 + 1) {
-			fRec2[l1] = 0.0f;
+		for (int l1 = 0; l1 < 4; l1 = l1 + 1) {
+			fRec2_perm[l1] = 0.0f;
 		}
-		for (int l2 = 0; l2 < 2; l2 = l2 + 1) {
-			fVec0[l2] = 0.0f;
+		for (int l2 = 0; l2 < 4; l2 = l2 + 1) {
+			fYec0_perm[l2] = 0.0f;
 		}
-		for (int l3 = 0; l3 < 2; l3 = l3 + 1) {
-			fRec0[l3] = 0.0f;
+		for (int l3 = 0; l3 < 4; l3 = l3 + 1) {
+			fRec0_perm[l3] = 0.0f;
 		}
 	}
 	
@@ -824,22 +824,155 @@ class cubic_distortion : public dsp {
 	}
 	
 	virtual void compute(int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOAT** RESTRICT outputs) {
-		FAUSTFLOAT* input0 = inputs[0];
-		FAUSTFLOAT* output0 = outputs[0];
+		FAUSTFLOAT* input0_ptr = inputs[0];
+		FAUSTFLOAT* output0_ptr = outputs[0];
 		float fSlow0 = 0.00100000005f * float(fHslider0);
+		float fRec1_tmp[36];
+		float* fRec1 = &fRec1_tmp[4];
 		float fSlow1 = 0.00100000005f * float(fHslider1);
-		for (int i0 = 0; i0 < count; i0 = i0 + 1) {
-			fRec1[0] = fSlow0 + 0.999000013f * fRec1[1];
-			fRec2[0] = fSlow1 + 0.999000013f * fRec2[1];
-			float fTemp0 = std::max<float>(-1.0f, std::min<float>(1.0f, fRec1[0] + float(input0[i0]) * std::pow(10.0f, 2.0f * fRec2[0])));
-			float fTemp1 = fTemp0 * (1.0f - 0.333333343f * cubic_distortion_faustpower2_f(fTemp0));
-			fVec0[0] = fTemp1;
-			fRec0[0] = (0.995000005f * fRec0[1] + fTemp1) - fVec0[1];
-			output0[i0] = FAUSTFLOAT(fRec0[0]);
-			fRec1[1] = fRec1[0];
-			fRec2[1] = fRec2[0];
-			fVec0[1] = fVec0[0];
-			fRec0[1] = fRec0[0];
+		float fRec2_tmp[36];
+		float* fRec2 = &fRec2_tmp[4];
+		float fZec0[32];
+		float fYec0_tmp[36];
+		float* fYec0 = &fYec0_tmp[4];
+		float fRec0_tmp[36];
+		float* fRec0 = &fRec0_tmp[4];
+		int vindex = 0;
+		/* Main loop */
+		for (vindex = 0; vindex <= count - 32; vindex = vindex + 32) {
+			FAUSTFLOAT* input0 = &input0_ptr[vindex];
+			FAUSTFLOAT* output0 = &output0_ptr[vindex];
+			int vsize = 32;
+			/* Recursive loop 0 */
+			/* Pre code */
+			for (int j0 = 0; j0 < 4; j0 = j0 + 1) {
+				fRec1_tmp[j0] = fRec1_perm[j0];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec1[i] = fSlow0 + 0.999000013f * fRec1[i - 1];
+			}
+			/* Post code */
+			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
+				fRec1_perm[j1] = fRec1_tmp[vsize + j1];
+			}
+			/* Recursive loop 1 */
+			/* Pre code */
+			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
+				fRec2_tmp[j2] = fRec2_perm[j2];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec2[i] = fSlow1 + 0.999000013f * fRec2[i - 1];
+			}
+			/* Post code */
+			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
+				fRec2_perm[j3] = fRec2_tmp[vsize + j3];
+			}
+			/* Vectorizable loop 2 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec0[i] = std::max<float>(-1.0f, std::min<float>(1.0f, fRec1[i] + float(input0[i]) * std::pow(10.0f, 2.0f * fRec2[i])));
+			}
+			/* Vectorizable loop 3 */
+			/* Pre code */
+			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
+				fYec0_tmp[j4] = fYec0_perm[j4];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec0[i] = fZec0[i] * (1.0f - 0.333333343f * cubic_distortion_faustpower2_f(fZec0[i]));
+			}
+			/* Post code */
+			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
+				fYec0_perm[j5] = fYec0_tmp[vsize + j5];
+			}
+			/* Recursive loop 4 */
+			/* Pre code */
+			for (int j6 = 0; j6 < 4; j6 = j6 + 1) {
+				fRec0_tmp[j6] = fRec0_perm[j6];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec0[i] = (0.995000005f * fRec0[i - 1] + fYec0[i]) - fYec0[i - 1];
+			}
+			/* Post code */
+			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
+				fRec0_perm[j7] = fRec0_tmp[vsize + j7];
+			}
+			/* Vectorizable loop 5 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output0[i] = FAUSTFLOAT(fRec0[i]);
+			}
+		}
+		/* Remaining frames */
+		if ((vindex < count)) {
+			FAUSTFLOAT* input0 = &input0_ptr[vindex];
+			FAUSTFLOAT* output0 = &output0_ptr[vindex];
+			int vsize = count - vindex;
+			/* Recursive loop 0 */
+			/* Pre code */
+			for (int j0 = 0; j0 < 4; j0 = j0 + 1) {
+				fRec1_tmp[j0] = fRec1_perm[j0];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec1[i] = fSlow0 + 0.999000013f * fRec1[i - 1];
+			}
+			/* Post code */
+			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
+				fRec1_perm[j1] = fRec1_tmp[vsize + j1];
+			}
+			/* Recursive loop 1 */
+			/* Pre code */
+			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
+				fRec2_tmp[j2] = fRec2_perm[j2];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec2[i] = fSlow1 + 0.999000013f * fRec2[i - 1];
+			}
+			/* Post code */
+			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
+				fRec2_perm[j3] = fRec2_tmp[vsize + j3];
+			}
+			/* Vectorizable loop 2 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec0[i] = std::max<float>(-1.0f, std::min<float>(1.0f, fRec1[i] + float(input0[i]) * std::pow(10.0f, 2.0f * fRec2[i])));
+			}
+			/* Vectorizable loop 3 */
+			/* Pre code */
+			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
+				fYec0_tmp[j4] = fYec0_perm[j4];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec0[i] = fZec0[i] * (1.0f - 0.333333343f * cubic_distortion_faustpower2_f(fZec0[i]));
+			}
+			/* Post code */
+			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
+				fYec0_perm[j5] = fYec0_tmp[vsize + j5];
+			}
+			/* Recursive loop 4 */
+			/* Pre code */
+			for (int j6 = 0; j6 < 4; j6 = j6 + 1) {
+				fRec0_tmp[j6] = fRec0_perm[j6];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec0[i] = (0.995000005f * fRec0[i - 1] + fYec0[i]) - fYec0[i - 1];
+			}
+			/* Post code */
+			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
+				fRec0_perm[j7] = fRec0_tmp[vsize + j7];
+			}
+			/* Vectorizable loop 5 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output0[i] = FAUSTFLOAT(fRec0[i]);
+			}
 		}
 	}
 

@@ -26,13 +26,13 @@ cp "$utils_lib" "$prv_dir/$utils_lib_filename"
 
 pushd "$prv_dir"
 
-faust_args="-keep"
+faust_args="-keep -vec"
 if [ $pl_type = "InstrumentPlugin" ]; then
   faust_args="$faust_args -novoicectrls"
 fi
 
 # compile
-faust2lv2 \
+"$faust2lv2" \
   -uri-prefix "@URI_PREFIX@" \
   $faust_args \
   "$dsp_filename"

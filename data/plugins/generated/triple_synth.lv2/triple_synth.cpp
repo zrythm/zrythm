@@ -5,7 +5,7 @@ license: "AGPL-3.0-or-later"
 name: "Triple Synth"
 version: "1.0"
 Code generated with Faust 2.40.0 (https://faust.grame.fr)
-Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn triple_synth -es 1 -mcd 16 -single -ftz 0
+Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn triple_synth -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
 #ifndef  __triple_synth_H__
@@ -698,8 +698,8 @@ class triple_synthSIG0 {
 	
   private:
 	
-	int iVec1[2];
-	int iRec6[2];
+	int iVec0[2];
+	int iRec11[2];
 	
   public:
 	
@@ -711,21 +711,21 @@ class triple_synthSIG0 {
 	}
 	
 	void instanceInittriple_synthSIG0(int sample_rate) {
-		for (int l3 = 0; l3 < 2; l3 = l3 + 1) {
-			iVec1[l3] = 0;
+		for (int l6 = 0; l6 < 2; l6 = l6 + 1) {
+			iVec0[l6] = 0;
 		}
-		for (int l4 = 0; l4 < 2; l4 = l4 + 1) {
-			iRec6[l4] = 0;
+		for (int l7 = 0; l7 < 2; l7 = l7 + 1) {
+			iRec11[l7] = 0;
 		}
 	}
 	
 	void filltriple_synthSIG0(int count, float* table) {
 		for (int i1 = 0; i1 < count; i1 = i1 + 1) {
-			iVec1[0] = 1;
-			iRec6[0] = (iVec1[1] + iRec6[1]) % 65536;
-			table[i1] = std::sin(9.58738019e-05f * float(iRec6[0]));
-			iVec1[1] = iVec1[0];
-			iRec6[1] = iRec6[0];
+			iVec0[0] = 1;
+			iRec11[0] = (iVec0[1] + iRec11[1]) % 65536;
+			table[i1] = std::sin(9.58738019e-05f * float(iRec11[0]));
+			iVec0[1] = iVec0[0];
+			iRec11[1] = iRec11[0];
 		}
 	}
 
@@ -745,87 +745,92 @@ class triple_synth : public dsp {
 	
 	int fSampleRate;
 	float fConst0;
-	float fConst3;
-	float fConst4;
-	float fConst5;
-	float fConst6;
-	int iVec0[2];
+	float fConst1;
 	FAUSTFLOAT fEntry0;
-	float fConst7;
-	FAUSTFLOAT fEntry1;
-	float fRec4[2];
-	float fRec5[2];
-	float fConst8;
-	FAUSTFLOAT fEntry2;
-	FAUSTFLOAT fEntry3;
-	float fConst9;
+	float fRec4_perm[4];
+	float fRec5_perm[4];
+	float fConst2;
 	FAUSTFLOAT fHslider0;
-	float fConst10;
-	float fRec8[2];
-	float fConst11;
+	float fConst3;
+	float fRec7_perm[4];
 	FAUSTFLOAT fHslider1;
-	float fRec10[2];
-	float fRec9[2];
+	float fRec9_perm[4];
+	float fConst4;
+	float fRec8_perm[4];
 	FAUSTFLOAT fHslider2;
-	float fRec11[2];
-	float fRec7[2];
+	float fRec10_perm[4];
+	float fConst5;
+	FAUSTFLOAT fEntry1;
+	FAUSTFLOAT fEntry2;
+	float fRec6_perm[4];
+	float fRec13_perm[4];
+	float fConst6;
+	int iVec1_perm[4];
+	float fYec0_perm[4];
+	float fYec1[4096];
+	int fYec1_idx;
+	int fYec1_idx_save;
+	float fConst7;
+	float fRec12_perm[4];
+	float fRec14_perm[4];
+	float fRec16_perm[4];
+	float fYec2_perm[4];
+	float fYec3[4096];
+	int fYec3_idx;
+	int fYec3_idx_save;
+	float fRec15_perm[4];
+	float fRec17_perm[4];
+	float fRec18_perm[4];
+	float fRec20_perm[4];
+	FAUSTFLOAT fButton0;
+	float fVec2_perm[4];
+	float fRec22_perm[4];
+	FAUSTFLOAT fHslider3;
+	float fRec23_perm[4];
+	FAUSTFLOAT fHslider4;
+	float fRec24_perm[4];
+	FAUSTFLOAT fHslider5;
+	float fRec25_perm[4];
+	int iRec26_perm[4];
+	FAUSTFLOAT fHslider6;
+	float fRec27_perm[4];
+	FAUSTFLOAT fHslider7;
+	float fRec28_perm[4];
+	FAUSTFLOAT fHslider8;
+	float fRec29_perm[4];
+	FAUSTFLOAT fEntry3;
+	float fConst8;
+	float fConst9;
+	float fRec3_perm[4];
 	float fConst12;
 	float fConst13;
-	float fRec13[2];
-	float fVec2[2];
-	int IOTA0;
-	float fVec3[4096];
+	float fYec4_perm[4];
+	float fRec2_perm[4];
 	float fConst14;
-	float fRec12[2];
-	float fRec14[2];
-	float fRec16[2];
-	float fVec4[2];
-	float fVec5[4096];
-	float fRec15[2];
-	float fRec17[2];
-	float fRec18[2];
-	float fRec20[2];
-	FAUSTFLOAT fButton0;
-	float fVec6[2];
-	float fRec22[2];
-	FAUSTFLOAT fHslider3;
-	float fRec23[2];
-	FAUSTFLOAT fHslider4;
-	float fRec24[2];
-	FAUSTFLOAT fHslider5;
-	float fRec25[2];
-	int iRec26[2];
-	FAUSTFLOAT fHslider6;
-	float fRec27[2];
 	float fConst15;
-	FAUSTFLOAT fHslider7;
-	float fRec28[2];
-	FAUSTFLOAT fHslider8;
-	float fRec29[2];
-	float fRec3[3];
-	float fVec7[2];
-	float fRec2[2];
 	float fConst16;
+	float fRec1_perm[4];
 	float fConst17;
-	float fRec1[3];
 	float fConst18;
-	float fRec0[3];
+	float fRec0_perm[4];
 	FAUSTFLOAT fHslider9;
-	float fRec30[2];
+	float fRec30_perm[4];
 	FAUSTFLOAT fHslider10;
-	float fRec32[2];
-	float fRec31[2];
-	float fRec37[2];
-	float fRec39[2];
-	float fVec8[2];
-	float fVec9[4096];
-	float fRec38[2];
-	float fRec40[2];
-	float fRec36[3];
-	float fVec10[2];
-	float fRec35[2];
-	float fRec34[3];
-	float fRec33[3];
+	float fRec32_perm[4];
+	float fRec31_perm[4];
+	float fRec37_perm[4];
+	float fRec39_perm[4];
+	float fYec5_perm[4];
+	float fYec6[4096];
+	int fYec6_idx;
+	int fYec6_idx_save;
+	float fRec38_perm[4];
+	float fRec40_perm[4];
+	float fRec36_perm[4];
+	float fYec7_perm[4];
+	float fRec35_perm[4];
+	float fRec34_perm[4];
+	float fRec33_perm[4];
 	
  public:
 	
@@ -833,7 +838,7 @@ class triple_synth : public dsp {
 		m->declare("author", "Zrythm DAW");
 		m->declare("basics.lib/name", "Faust Basic Element Library");
 		m->declare("basics.lib/version", "0.5");
-		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn triple_synth -es 1 -mcd 16 -single -ftz 0");
+		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn triple_synth -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
 		m->declare("description", "Synth with 3 detuned oscillators");
 		m->declare("envelopes.lib/adsr:author", "Yann Orlarey and Andrey Bundin");
@@ -915,34 +920,33 @@ class triple_synth : public dsp {
 	virtual void instanceConstants(int sample_rate) {
 		fSampleRate = sample_rate;
 		fConst0 = std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate)));
-		float fConst1 = std::tan(56548.668f / fConst0);
-		float fConst2 = 1.0f / fConst1;
-		fConst3 = 1.0f / ((fConst2 + 0.618034005f) / fConst1 + 1.0f);
-		fConst4 = 1.0f / ((fConst2 + 1.61803401f) / fConst1 + 1.0f);
-		fConst5 = 1.0f / (fConst2 + 1.0f);
-		fConst6 = 1.0f - fConst2;
-		fConst7 = 10.0f / fConst0;
-		fConst8 = 440.0f / fConst0;
-		fConst9 = 44.0999985f / fConst0;
-		fConst10 = 1.0f - fConst9;
-		fConst11 = 1.0f / fConst0;
-		fConst12 = 1760.0f / fConst0;
-		fConst13 = 0.25f * fConst0;
-		fConst14 = 0.5f * fConst0;
-		fConst15 = 3.14159274f / fConst0;
-		fConst16 = (fConst2 + -1.61803401f) / fConst1 + 1.0f;
-		fConst17 = 2.0f * (1.0f - 1.0f / triple_synth_faustpower2_f(fConst1));
-		fConst18 = (fConst2 + -0.618034005f) / fConst1 + 1.0f;
+		fConst1 = 10.0f / fConst0;
+		fConst2 = 44.0999985f / fConst0;
+		fConst3 = 1.0f - fConst2;
+		fConst4 = 1.0f / fConst0;
+		fConst5 = 440.0f / fConst0;
+		fConst6 = 0.25f * fConst0;
+		fConst7 = 0.5f * fConst0;
+		fConst8 = 1760.0f / fConst0;
+		fConst9 = 3.14159274f / fConst0;
+		float fConst10 = std::tan(56548.668f / fConst0);
+		float fConst11 = 1.0f / fConst10;
+		fConst12 = 1.0f / (fConst11 + 1.0f);
+		fConst13 = 1.0f - fConst11;
+		fConst14 = 1.0f / ((fConst11 + 1.61803401f) / fConst10 + 1.0f);
+		fConst15 = (fConst11 + -1.61803401f) / fConst10 + 1.0f;
+		fConst16 = 2.0f * (1.0f - 1.0f / triple_synth_faustpower2_f(fConst10));
+		fConst17 = 1.0f / ((fConst11 + 0.618034005f) / fConst10 + 1.0f);
+		fConst18 = (fConst11 + -0.618034005f) / fConst10 + 1.0f;
 	}
 	
 	virtual void instanceResetUserInterface() {
-		fEntry0 = FAUSTFLOAT(1.0f);
-		fEntry1 = FAUSTFLOAT(3.0f);
-		fEntry2 = FAUSTFLOAT(0.0f);
-		fEntry3 = FAUSTFLOAT(200.0f);
+		fEntry0 = FAUSTFLOAT(3.0f);
 		fHslider0 = FAUSTFLOAT(0.0f);
 		fHslider1 = FAUSTFLOAT(0.0f);
 		fHslider2 = FAUSTFLOAT(0.10000000000000001f);
+		fEntry1 = FAUSTFLOAT(0.0f);
+		fEntry2 = FAUSTFLOAT(200.0f);
 		fButton0 = FAUSTFLOAT(0.0f);
 		fHslider3 = FAUSTFLOAT(0.029999999999999999f);
 		fHslider4 = FAUSTFLOAT(1.0f);
@@ -950,155 +954,161 @@ class triple_synth : public dsp {
 		fHslider6 = FAUSTFLOAT(0.40000000000000002f);
 		fHslider7 = FAUSTFLOAT(10000.0f);
 		fHslider8 = FAUSTFLOAT(1.0f);
+		fEntry3 = FAUSTFLOAT(1.0f);
 		fHslider9 = FAUSTFLOAT(0.0f);
 		fHslider10 = FAUSTFLOAT(0.0f);
 	}
 	
 	virtual void instanceClear() {
-		for (int l0 = 0; l0 < 2; l0 = l0 + 1) {
-			iVec0[l0] = 0;
+		for (int l0 = 0; l0 < 4; l0 = l0 + 1) {
+			fRec4_perm[l0] = 0.0f;
 		}
-		for (int l1 = 0; l1 < 2; l1 = l1 + 1) {
-			fRec4[l1] = 0.0f;
+		for (int l1 = 0; l1 < 4; l1 = l1 + 1) {
+			fRec5_perm[l1] = 0.0f;
 		}
-		for (int l2 = 0; l2 < 2; l2 = l2 + 1) {
-			fRec5[l2] = 0.0f;
+		for (int l2 = 0; l2 < 4; l2 = l2 + 1) {
+			fRec7_perm[l2] = 0.0f;
 		}
-		for (int l5 = 0; l5 < 2; l5 = l5 + 1) {
-			fRec8[l5] = 0.0f;
+		for (int l3 = 0; l3 < 4; l3 = l3 + 1) {
+			fRec9_perm[l3] = 0.0f;
 		}
-		for (int l6 = 0; l6 < 2; l6 = l6 + 1) {
-			fRec10[l6] = 0.0f;
+		for (int l4 = 0; l4 < 4; l4 = l4 + 1) {
+			fRec8_perm[l4] = 0.0f;
 		}
-		for (int l7 = 0; l7 < 2; l7 = l7 + 1) {
-			fRec9[l7] = 0.0f;
+		for (int l5 = 0; l5 < 4; l5 = l5 + 1) {
+			fRec10_perm[l5] = 0.0f;
 		}
-		for (int l8 = 0; l8 < 2; l8 = l8 + 1) {
-			fRec11[l8] = 0.0f;
+		for (int l8 = 0; l8 < 4; l8 = l8 + 1) {
+			fRec6_perm[l8] = 0.0f;
 		}
-		for (int l9 = 0; l9 < 2; l9 = l9 + 1) {
-			fRec7[l9] = 0.0f;
+		for (int l9 = 0; l9 < 4; l9 = l9 + 1) {
+			fRec13_perm[l9] = 0.0f;
 		}
-		for (int l10 = 0; l10 < 2; l10 = l10 + 1) {
-			fRec13[l10] = 0.0f;
+		for (int l10 = 0; l10 < 4; l10 = l10 + 1) {
+			iVec1_perm[l10] = 0;
 		}
-		for (int l11 = 0; l11 < 2; l11 = l11 + 1) {
-			fVec2[l11] = 0.0f;
+		for (int l11 = 0; l11 < 4; l11 = l11 + 1) {
+			fYec0_perm[l11] = 0.0f;
 		}
-		IOTA0 = 0;
 		for (int l12 = 0; l12 < 4096; l12 = l12 + 1) {
-			fVec3[l12] = 0.0f;
+			fYec1[l12] = 0.0f;
 		}
-		for (int l13 = 0; l13 < 2; l13 = l13 + 1) {
-			fRec12[l13] = 0.0f;
+		fYec1_idx = 0;
+		fYec1_idx_save = 0;
+		for (int l13 = 0; l13 < 4; l13 = l13 + 1) {
+			fRec12_perm[l13] = 0.0f;
 		}
-		for (int l14 = 0; l14 < 2; l14 = l14 + 1) {
-			fRec14[l14] = 0.0f;
+		for (int l14 = 0; l14 < 4; l14 = l14 + 1) {
+			fRec14_perm[l14] = 0.0f;
 		}
-		for (int l15 = 0; l15 < 2; l15 = l15 + 1) {
-			fRec16[l15] = 0.0f;
+		for (int l15 = 0; l15 < 4; l15 = l15 + 1) {
+			fRec16_perm[l15] = 0.0f;
 		}
-		for (int l16 = 0; l16 < 2; l16 = l16 + 1) {
-			fVec4[l16] = 0.0f;
+		for (int l16 = 0; l16 < 4; l16 = l16 + 1) {
+			fYec2_perm[l16] = 0.0f;
 		}
 		for (int l17 = 0; l17 < 4096; l17 = l17 + 1) {
-			fVec5[l17] = 0.0f;
+			fYec3[l17] = 0.0f;
 		}
-		for (int l18 = 0; l18 < 2; l18 = l18 + 1) {
-			fRec15[l18] = 0.0f;
+		fYec3_idx = 0;
+		fYec3_idx_save = 0;
+		for (int l18 = 0; l18 < 4; l18 = l18 + 1) {
+			fRec15_perm[l18] = 0.0f;
 		}
-		for (int l19 = 0; l19 < 2; l19 = l19 + 1) {
-			fRec17[l19] = 0.0f;
+		for (int l19 = 0; l19 < 4; l19 = l19 + 1) {
+			fRec17_perm[l19] = 0.0f;
 		}
-		for (int l20 = 0; l20 < 2; l20 = l20 + 1) {
-			fRec18[l20] = 0.0f;
+		for (int l20 = 0; l20 < 4; l20 = l20 + 1) {
+			fRec18_perm[l20] = 0.0f;
 		}
-		for (int l21 = 0; l21 < 2; l21 = l21 + 1) {
-			fRec20[l21] = 0.0f;
+		for (int l21 = 0; l21 < 4; l21 = l21 + 1) {
+			fRec20_perm[l21] = 0.0f;
 		}
-		for (int l22 = 0; l22 < 2; l22 = l22 + 1) {
-			fVec6[l22] = 0.0f;
+		for (int l22 = 0; l22 < 4; l22 = l22 + 1) {
+			fVec2_perm[l22] = 0.0f;
 		}
-		for (int l23 = 0; l23 < 2; l23 = l23 + 1) {
-			fRec22[l23] = 0.0f;
+		for (int l23 = 0; l23 < 4; l23 = l23 + 1) {
+			fRec22_perm[l23] = 0.0f;
 		}
-		for (int l24 = 0; l24 < 2; l24 = l24 + 1) {
-			fRec23[l24] = 0.0f;
+		for (int l24 = 0; l24 < 4; l24 = l24 + 1) {
+			fRec23_perm[l24] = 0.0f;
 		}
-		for (int l25 = 0; l25 < 2; l25 = l25 + 1) {
-			fRec24[l25] = 0.0f;
+		for (int l25 = 0; l25 < 4; l25 = l25 + 1) {
+			fRec24_perm[l25] = 0.0f;
 		}
-		for (int l26 = 0; l26 < 2; l26 = l26 + 1) {
-			fRec25[l26] = 0.0f;
+		for (int l26 = 0; l26 < 4; l26 = l26 + 1) {
+			fRec25_perm[l26] = 0.0f;
 		}
-		for (int l27 = 0; l27 < 2; l27 = l27 + 1) {
-			iRec26[l27] = 0;
+		for (int l27 = 0; l27 < 4; l27 = l27 + 1) {
+			iRec26_perm[l27] = 0;
 		}
-		for (int l28 = 0; l28 < 2; l28 = l28 + 1) {
-			fRec27[l28] = 0.0f;
+		for (int l28 = 0; l28 < 4; l28 = l28 + 1) {
+			fRec27_perm[l28] = 0.0f;
 		}
-		for (int l29 = 0; l29 < 2; l29 = l29 + 1) {
-			fRec28[l29] = 0.0f;
+		for (int l29 = 0; l29 < 4; l29 = l29 + 1) {
+			fRec28_perm[l29] = 0.0f;
 		}
-		for (int l30 = 0; l30 < 2; l30 = l30 + 1) {
-			fRec29[l30] = 0.0f;
+		for (int l30 = 0; l30 < 4; l30 = l30 + 1) {
+			fRec29_perm[l30] = 0.0f;
 		}
-		for (int l31 = 0; l31 < 3; l31 = l31 + 1) {
-			fRec3[l31] = 0.0f;
+		for (int l31 = 0; l31 < 4; l31 = l31 + 1) {
+			fRec3_perm[l31] = 0.0f;
 		}
-		for (int l32 = 0; l32 < 2; l32 = l32 + 1) {
-			fVec7[l32] = 0.0f;
+		for (int l32 = 0; l32 < 4; l32 = l32 + 1) {
+			fYec4_perm[l32] = 0.0f;
 		}
-		for (int l33 = 0; l33 < 2; l33 = l33 + 1) {
-			fRec2[l33] = 0.0f;
+		for (int l33 = 0; l33 < 4; l33 = l33 + 1) {
+			fRec2_perm[l33] = 0.0f;
 		}
-		for (int l34 = 0; l34 < 3; l34 = l34 + 1) {
-			fRec1[l34] = 0.0f;
+		for (int l34 = 0; l34 < 4; l34 = l34 + 1) {
+			fRec1_perm[l34] = 0.0f;
 		}
-		for (int l35 = 0; l35 < 3; l35 = l35 + 1) {
-			fRec0[l35] = 0.0f;
+		for (int l35 = 0; l35 < 4; l35 = l35 + 1) {
+			fRec0_perm[l35] = 0.0f;
 		}
-		for (int l36 = 0; l36 < 2; l36 = l36 + 1) {
-			fRec30[l36] = 0.0f;
+		for (int l36 = 0; l36 < 4; l36 = l36 + 1) {
+			fRec30_perm[l36] = 0.0f;
 		}
-		for (int l37 = 0; l37 < 2; l37 = l37 + 1) {
-			fRec32[l37] = 0.0f;
+		for (int l37 = 0; l37 < 4; l37 = l37 + 1) {
+			fRec32_perm[l37] = 0.0f;
 		}
-		for (int l38 = 0; l38 < 2; l38 = l38 + 1) {
-			fRec31[l38] = 0.0f;
+		for (int l38 = 0; l38 < 4; l38 = l38 + 1) {
+			fRec31_perm[l38] = 0.0f;
 		}
-		for (int l39 = 0; l39 < 2; l39 = l39 + 1) {
-			fRec37[l39] = 0.0f;
+		for (int l39 = 0; l39 < 4; l39 = l39 + 1) {
+			fRec37_perm[l39] = 0.0f;
 		}
-		for (int l40 = 0; l40 < 2; l40 = l40 + 1) {
-			fRec39[l40] = 0.0f;
+		for (int l40 = 0; l40 < 4; l40 = l40 + 1) {
+			fRec39_perm[l40] = 0.0f;
 		}
-		for (int l41 = 0; l41 < 2; l41 = l41 + 1) {
-			fVec8[l41] = 0.0f;
+		for (int l41 = 0; l41 < 4; l41 = l41 + 1) {
+			fYec5_perm[l41] = 0.0f;
 		}
 		for (int l42 = 0; l42 < 4096; l42 = l42 + 1) {
-			fVec9[l42] = 0.0f;
+			fYec6[l42] = 0.0f;
 		}
-		for (int l43 = 0; l43 < 2; l43 = l43 + 1) {
-			fRec38[l43] = 0.0f;
+		fYec6_idx = 0;
+		fYec6_idx_save = 0;
+		for (int l43 = 0; l43 < 4; l43 = l43 + 1) {
+			fRec38_perm[l43] = 0.0f;
 		}
-		for (int l44 = 0; l44 < 2; l44 = l44 + 1) {
-			fRec40[l44] = 0.0f;
+		for (int l44 = 0; l44 < 4; l44 = l44 + 1) {
+			fRec40_perm[l44] = 0.0f;
 		}
-		for (int l45 = 0; l45 < 3; l45 = l45 + 1) {
-			fRec36[l45] = 0.0f;
+		for (int l45 = 0; l45 < 4; l45 = l45 + 1) {
+			fRec36_perm[l45] = 0.0f;
 		}
-		for (int l46 = 0; l46 < 2; l46 = l46 + 1) {
-			fVec10[l46] = 0.0f;
+		for (int l46 = 0; l46 < 4; l46 = l46 + 1) {
+			fYec7_perm[l46] = 0.0f;
 		}
-		for (int l47 = 0; l47 < 2; l47 = l47 + 1) {
-			fRec35[l47] = 0.0f;
+		for (int l47 = 0; l47 < 4; l47 = l47 + 1) {
+			fRec35_perm[l47] = 0.0f;
 		}
-		for (int l48 = 0; l48 < 3; l48 = l48 + 1) {
-			fRec34[l48] = 0.0f;
+		for (int l48 = 0; l48 < 4; l48 = l48 + 1) {
+			fRec34_perm[l48] = 0.0f;
 		}
-		for (int l49 = 0; l49 < 3; l49 = l49 + 1) {
-			fRec33[l49] = 0.0f;
+		for (int l49 = 0; l49 < 4; l49 = l49 + 1) {
+			fRec33_perm[l49] = 0.0f;
 		}
 	}
 	
@@ -1122,9 +1132,9 @@ class triple_synth : public dsp {
 	
 	virtual void buildUserInterface(UI* ui_interface) {
 		ui_interface->openVerticalBox("Synth");
-		ui_interface->declare(&fEntry2, "midi", "pitchwheel");
-		ui_interface->addNumEntry("Pitchwheel", &fEntry2, FAUSTFLOAT(0.0f), FAUSTFLOAT(-2.0f), FAUSTFLOAT(2.0f), FAUSTFLOAT(0.00100000005f));
-		ui_interface->addNumEntry("Waveform", &fEntry1, FAUSTFLOAT(3.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(3.0f), FAUSTFLOAT(1.0f));
+		ui_interface->declare(&fEntry1, "midi", "pitchwheel");
+		ui_interface->addNumEntry("Pitchwheel", &fEntry1, FAUSTFLOAT(0.0f), FAUSTFLOAT(-2.0f), FAUSTFLOAT(2.0f), FAUSTFLOAT(0.00100000005f));
+		ui_interface->addNumEntry("Waveform", &fEntry0, FAUSTFLOAT(3.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(3.0f), FAUSTFLOAT(1.0f));
 		ui_interface->declare(0, "0", "");
 		ui_interface->openHorizontalBox("Envelope");
 		ui_interface->declare(&fHslider3, "0", "");
@@ -1135,8 +1145,8 @@ class triple_synth : public dsp {
 		ui_interface->addHorizontalSlider("Sustain", &fHslider4, FAUSTFLOAT(1.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.00999999978f));
 		ui_interface->declare(&fHslider6, "3", "");
 		ui_interface->addHorizontalSlider("Release", &fHslider6, FAUSTFLOAT(0.400000006f), FAUSTFLOAT(0.00100000005f), FAUSTFLOAT(4.0f), FAUSTFLOAT(0.00100000005f));
-		ui_interface->declare(&fEntry0, "4", "");
-		ui_interface->addNumEntry("gain", &fEntry0, FAUSTFLOAT(1.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.00999999978f));
+		ui_interface->declare(&fEntry3, "4", "");
+		ui_interface->addNumEntry("gain", &fEntry3, FAUSTFLOAT(1.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.00999999978f));
 		ui_interface->declare(&fButton0, "5", "");
 		ui_interface->addButton("gate", &fButton0);
 		ui_interface->closeBox();
@@ -1160,218 +1170,1971 @@ class triple_synth : public dsp {
 		ui_interface->addHorizontalSlider("Vibrato Freq", &fHslider1, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(0.0199999996f));
 		ui_interface->declare(&fHslider0, "9", "");
 		ui_interface->addHorizontalSlider("Vibrato Depth", &fHslider0, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.00100000005f));
-		ui_interface->addNumEntry("freq", &fEntry3, FAUSTFLOAT(200.0f), FAUSTFLOAT(40.0f), FAUSTFLOAT(2000.0f), FAUSTFLOAT(0.00999999978f));
+		ui_interface->addNumEntry("freq", &fEntry2, FAUSTFLOAT(200.0f), FAUSTFLOAT(40.0f), FAUSTFLOAT(2000.0f), FAUSTFLOAT(0.00999999978f));
 		ui_interface->closeBox();
 	}
 	
 	virtual void compute(int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOAT** RESTRICT outputs) {
-		FAUSTFLOAT* output0 = outputs[0];
-		FAUSTFLOAT* output1 = outputs[1];
-		float fSlow0 = 0.300000012f * float(fEntry0);
-		float fSlow1 = float(fEntry1);
-		float fSlow2 = float(fSlow1 >= 2.0f);
-		float fSlow3 = float(fSlow1 >= 1.0f);
-		float fSlow4 = float(fEntry2) + 17.3123398f * std::log(0.0022727272f * float(fEntry3));
-		float fSlow5 = fConst9 * float(fHslider0);
-		float fSlow6 = fConst9 * float(fHslider1);
-		float fSlow7 = fConst9 * float(fHslider2);
-		float fSlow8 = float(fSlow1 >= 3.0f);
-		float fSlow9 = float(fButton0);
-		float fSlow10 = fConst9 * float(fHslider3);
-		float fSlow11 = fConst9 * float(fHslider4);
-		float fSlow12 = fConst9 * float(fHslider5);
-		int iSlow13 = fSlow9 == 0.0f;
-		float fSlow14 = fConst9 * float(fHslider6);
-		float fSlow15 = fConst9 * float(fHslider7);
-		float fSlow16 = fConst9 * float(fHslider8);
-		float fSlow17 = fConst9 * float(fHslider9);
-		float fSlow18 = fConst9 * float(fHslider10);
-		for (int i0 = 0; i0 < count; i0 = i0 + 1) {
-			iVec0[0] = 1;
-			float fTemp0 = fConst7 + fRec4[1];
-			float fTemp1 = fRec4[1] - fConst7;
-			float fThen1 = ((fTemp1 > fSlow2) ? fTemp1 : fSlow2);
-			fRec4[0] = ((fTemp0 < fSlow2) ? fTemp0 : fThen1);
-			float fTemp2 = 1.0f - fRec4[0];
-			float fTemp3 = fConst7 + fRec5[1];
-			float fTemp4 = fRec5[1] - fConst7;
-			float fThen3 = ((fTemp4 > fSlow3) ? fTemp4 : fSlow3);
-			fRec5[0] = ((fTemp3 < fSlow3) ? fTemp3 : fThen3);
-			float fTemp5 = 1.0f - fRec5[0];
-			fRec8[0] = fSlow5 + fConst10 * fRec8[1];
-			fRec10[0] = fSlow6 + fConst10 * fRec10[1];
-			float fTemp6 = fRec9[1] + fConst11 * fRec10[0];
-			fRec9[0] = fTemp6 - std::floor(fTemp6);
-			float fTemp7 = fRec8[0] * ftbl0triple_synthSIG0[int(65536.0f * fRec9[0])];
-			fRec11[0] = fSlow7 + fConst10 * fRec11[1];
-			float fTemp8 = std::pow(2.0f, 0.0833333358f * (fSlow4 + fTemp7 - fRec11[0]));
-			float fTemp9 = fRec7[1] + fConst8 * fTemp8;
-			fRec7[0] = fTemp9 - std::floor(fTemp9);
-			float fTemp10 = float(iVec0[1]);
-			float fTemp11 = 440.0f * fTemp8;
-			float fTemp12 = std::max<float>(fTemp11, 23.4489498f);
-			float fTemp13 = std::max<float>(20.0f, std::fabs(fTemp12));
-			float fTemp14 = fRec13[1] + fConst11 * fTemp13;
-			fRec13[0] = fTemp14 - std::floor(fTemp14);
-			float fTemp15 = triple_synth_faustpower2_f(2.0f * fRec13[0] + -1.0f);
-			fVec2[0] = fTemp15;
-			float fTemp16 = (fTemp10 * (fTemp15 - fVec2[1])) / fTemp13;
-			fVec3[IOTA0 & 4095] = fTemp16;
-			float fTemp17 = std::max<float>(0.0f, std::min<float>(2047.0f, fConst14 / fTemp12));
-			int iTemp18 = int(fTemp17);
-			float fTemp19 = std::floor(fTemp17);
-			float fTemp20 = fTemp16 - fVec3[(IOTA0 - iTemp18) & 4095] * (fTemp19 + 1.0f - fTemp17) - (fTemp17 - fTemp19) * fVec3[(IOTA0 - (iTemp18 + 1)) & 4095];
-			fRec12[0] = 0.999000013f * fRec12[1] + fConst13 * fTemp20;
-			float fTemp21 = std::pow(2.0f, 0.0833333358f * (fSlow4 + fTemp7));
-			float fTemp22 = fRec14[1] + fConst8 * fTemp21;
-			fRec14[0] = fTemp22 - std::floor(fTemp22);
-			float fTemp23 = 440.0f * fTemp21;
-			float fTemp24 = std::max<float>(fTemp23, 23.4489498f);
-			float fTemp25 = std::max<float>(20.0f, std::fabs(fTemp24));
-			float fTemp26 = fRec16[1] + fConst11 * fTemp25;
-			fRec16[0] = fTemp26 - std::floor(fTemp26);
-			float fTemp27 = triple_synth_faustpower2_f(2.0f * fRec16[0] + -1.0f);
-			fVec4[0] = fTemp27;
-			float fTemp28 = (fTemp10 * (fTemp27 - fVec4[1])) / fTemp25;
-			fVec5[IOTA0 & 4095] = fTemp28;
-			float fTemp29 = std::max<float>(0.0f, std::min<float>(2047.0f, fConst14 / fTemp24));
-			int iTemp30 = int(fTemp29);
-			float fTemp31 = std::floor(fTemp29);
-			float fTemp32 = fTemp28 - fVec5[(IOTA0 - iTemp30) & 4095] * (fTemp31 + 1.0f - fTemp29) - (fTemp29 - fTemp31) * fVec5[(IOTA0 - (iTemp30 + 1)) & 4095];
-			fRec15[0] = 0.999000013f * fRec15[1] + fConst13 * fTemp32;
-			float fTemp33 = fTemp5 * ftbl0triple_synthSIG0[int(65536.0f * fRec14[0])] + fConst12 * fRec5[0] * fRec15[0] * fTemp21;
-			float fTemp34 = fConst7 + fRec17[1];
-			float fTemp35 = fRec17[1] - fConst7;
-			float fThen5 = ((fTemp35 > fSlow8) ? fTemp35 : fSlow8);
-			fRec17[0] = ((fTemp34 < fSlow8) ? fTemp34 : fThen5);
-			float fTemp36 = 1.0f - fRec17[0];
-			float fTemp37 = std::max<float>(1.1920929e-07f, std::fabs(fTemp11));
-			float fTemp38 = fRec18[1] + fConst11 * fTemp37;
-			float fTemp39 = fTemp38 + -1.0f;
-			int iTemp40 = fTemp39 < 0.0f;
-			fRec18[0] = ((iTemp40) ? fTemp38 : fTemp39);
-			float fThen7 = fTemp38 + fTemp39 * (1.0f - fConst0 / fTemp37);
-			float fRec19 = ((iTemp40) ? fTemp38 : fThen7);
-			float fTemp41 = std::max<float>(1.1920929e-07f, std::fabs(fTemp23));
-			float fTemp42 = fRec20[1] + fConst11 * fTemp41;
-			float fTemp43 = fTemp42 + -1.0f;
-			int iTemp44 = fTemp43 < 0.0f;
-			fRec20[0] = ((iTemp44) ? fTemp42 : fTemp43);
-			float fThen9 = fTemp42 + fTemp43 * (1.0f - fConst0 / fTemp41);
-			float fRec21 = ((iTemp44) ? fTemp42 : fThen9);
-			float fTemp45 = fConst13 * fTemp36 * fTemp32 + fRec17[0] * (2.0f * fRec21 + -1.0f);
-			fVec6[0] = fSlow9;
-			fRec22[0] = fSlow9 + fRec22[1] * float(fVec6[1] >= fSlow9);
-			fRec23[0] = fSlow10 + fConst10 * fRec23[1];
-			float fTemp46 = std::max<float>(1.0f, fConst0 * fRec23[0]);
-			fRec24[0] = fSlow11 + fConst10 * fRec24[1];
-			fRec25[0] = fSlow12 + fConst10 * fRec25[1];
-			iRec26[0] = iSlow13 * (iRec26[1] + 1);
-			fRec27[0] = fSlow14 + fConst10 * fRec27[1];
-			float fTemp47 = std::max<float>(0.0f, std::min<float>(fRec22[0] / fTemp46, std::max<float>(((1.0f - fRec24[0]) * (fTemp46 - fRec22[0])) / std::max<float>(1.0f, fConst0 * fRec25[0]) + 1.0f, fRec24[0])) * (1.0f - float(iRec26[0]) / std::max<float>(1.0f, fConst0 * fRec27[0])));
-			fRec28[0] = fSlow15 + fConst10 * fRec28[1];
-			float fTemp48 = std::tan(fConst15 * std::max<float>(20.0f, std::min<float>(20000.0f, fRec28[0])));
-			float fTemp49 = 1.0f / fTemp48;
-			fRec29[0] = fSlow16 + fConst10 * fRec29[1];
-			float fTemp50 = 1.0f / fRec29[0];
-			float fTemp51 = (fTemp49 - fTemp50) / fTemp48 + 1.0f;
-			float fTemp52 = 1.0f - 1.0f / triple_synth_faustpower2_f(fTemp48);
-			float fTemp53 = (fTemp50 + fTemp49) / fTemp48 + 1.0f;
-			fRec3[0] = fSlow0 * (fTemp2 * (fTemp5 * ftbl0triple_synthSIG0[int(65536.0f * fRec7[0])] + fConst12 * fRec5[0] * fRec12[0] * fTemp8 + fTemp33) + fRec4[0] * (fConst13 * fTemp36 * fTemp20 + fRec17[0] * (2.0f * fRec19 + -1.0f) + fTemp45)) * fTemp47 - (fRec3[2] * fTemp51 + 2.0f * fRec3[1] * fTemp52) / fTemp53;
-			float fTemp54 = (fRec3[2] + fRec3[0] + 2.0f * fRec3[1]) / fTemp53;
-			fVec7[0] = fTemp54;
-			fRec2[0] = 0.0f - fConst5 * (fConst6 * fRec2[1] - (fTemp54 + fVec7[1]));
-			fRec1[0] = fRec2[0] - fConst4 * (fConst16 * fRec1[2] + fConst17 * fRec1[1]);
-			fRec0[0] = fConst4 * (fRec1[2] + fRec1[0] + 2.0f * fRec1[1]) - fConst3 * (fConst18 * fRec0[2] + fConst17 * fRec0[1]);
-			fRec30[0] = fSlow17 + fConst10 * fRec30[1];
-			fRec32[0] = fSlow18 + fConst10 * fRec32[1];
-			float fTemp55 = fRec31[1] + fConst11 * fRec32[0];
-			fRec31[0] = fTemp55 - std::floor(fTemp55);
-			float fTemp56 = 0.5f * fRec30[0] * (ftbl0triple_synthSIG0[int(65536.0f * fRec31[0])] + -1.0f) + 1.0f;
-			output0[i0] = FAUSTFLOAT(fConst3 * (fRec0[2] + fRec0[0] + 2.0f * fRec0[1]) * fTemp56);
-			float fTemp57 = std::pow(2.0f, 0.0833333358f * (fSlow4 + fRec11[0] + fTemp7));
-			float fTemp58 = fRec37[1] + fConst8 * fTemp57;
-			fRec37[0] = fTemp58 - std::floor(fTemp58);
-			float fTemp59 = 440.0f * fTemp57;
-			float fTemp60 = std::max<float>(fTemp59, 23.4489498f);
-			float fTemp61 = std::max<float>(20.0f, std::fabs(fTemp60));
-			float fTemp62 = fRec39[1] + fConst11 * fTemp61;
-			fRec39[0] = fTemp62 - std::floor(fTemp62);
-			float fTemp63 = triple_synth_faustpower2_f(2.0f * fRec39[0] + -1.0f);
-			fVec8[0] = fTemp63;
-			float fTemp64 = (fTemp10 * (fTemp63 - fVec8[1])) / fTemp61;
-			fVec9[IOTA0 & 4095] = fTemp64;
-			float fTemp65 = std::max<float>(0.0f, std::min<float>(2047.0f, fConst14 / fTemp60));
-			int iTemp66 = int(fTemp65);
-			float fTemp67 = std::floor(fTemp65);
-			float fTemp68 = fTemp64 - fVec9[(IOTA0 - iTemp66) & 4095] * (fTemp67 + 1.0f - fTemp65) - (fTemp65 - fTemp67) * fVec9[(IOTA0 - (iTemp66 + 1)) & 4095];
-			fRec38[0] = 0.999000013f * fRec38[1] + fConst13 * fTemp68;
-			float fTemp69 = std::max<float>(1.1920929e-07f, std::fabs(fTemp59));
-			float fTemp70 = fRec40[1] + fConst11 * fTemp69;
-			float fTemp71 = fTemp70 + -1.0f;
-			int iTemp72 = fTemp71 < 0.0f;
-			fRec40[0] = ((iTemp72) ? fTemp70 : fTemp71);
-			float fThen11 = fTemp70 + fTemp71 * (1.0f - fConst0 / fTemp69);
-			float fRec41 = ((iTemp72) ? fTemp70 : fThen11);
-			fRec36[0] = fSlow0 * fTemp47 * (fTemp2 * (fTemp33 + fTemp5 * ftbl0triple_synthSIG0[int(65536.0f * fRec37[0])] + fConst12 * fRec5[0] * fRec38[0] * fTemp57) + fRec4[0] * (fTemp45 + fConst13 * fTemp36 * fTemp68 + fRec17[0] * (2.0f * fRec41 + -1.0f))) - (fTemp51 * fRec36[2] + 2.0f * fTemp52 * fRec36[1]) / fTemp53;
-			float fTemp73 = (fRec36[2] + fRec36[0] + 2.0f * fRec36[1]) / fTemp53;
-			fVec10[0] = fTemp73;
-			fRec35[0] = 0.0f - fConst5 * (fConst6 * fRec35[1] - (fTemp73 + fVec10[1]));
-			fRec34[0] = fRec35[0] - fConst4 * (fConst16 * fRec34[2] + fConst17 * fRec34[1]);
-			fRec33[0] = fConst4 * (fRec34[2] + fRec34[0] + 2.0f * fRec34[1]) - fConst3 * (fConst18 * fRec33[2] + fConst17 * fRec33[1]);
-			output1[i0] = FAUSTFLOAT(fConst3 * fTemp56 * (fRec33[2] + fRec33[0] + 2.0f * fRec33[1]));
-			iVec0[1] = iVec0[0];
-			fRec4[1] = fRec4[0];
-			fRec5[1] = fRec5[0];
-			fRec8[1] = fRec8[0];
-			fRec10[1] = fRec10[0];
-			fRec9[1] = fRec9[0];
-			fRec11[1] = fRec11[0];
-			fRec7[1] = fRec7[0];
-			fRec13[1] = fRec13[0];
-			fVec2[1] = fVec2[0];
-			IOTA0 = IOTA0 + 1;
-			fRec12[1] = fRec12[0];
-			fRec14[1] = fRec14[0];
-			fRec16[1] = fRec16[0];
-			fVec4[1] = fVec4[0];
-			fRec15[1] = fRec15[0];
-			fRec17[1] = fRec17[0];
-			fRec18[1] = fRec18[0];
-			fRec20[1] = fRec20[0];
-			fVec6[1] = fVec6[0];
-			fRec22[1] = fRec22[0];
-			fRec23[1] = fRec23[0];
-			fRec24[1] = fRec24[0];
-			fRec25[1] = fRec25[0];
-			iRec26[1] = iRec26[0];
-			fRec27[1] = fRec27[0];
-			fRec28[1] = fRec28[0];
-			fRec29[1] = fRec29[0];
-			fRec3[2] = fRec3[1];
-			fRec3[1] = fRec3[0];
-			fVec7[1] = fVec7[0];
-			fRec2[1] = fRec2[0];
-			fRec1[2] = fRec1[1];
-			fRec1[1] = fRec1[0];
-			fRec0[2] = fRec0[1];
-			fRec0[1] = fRec0[0];
-			fRec30[1] = fRec30[0];
-			fRec32[1] = fRec32[0];
-			fRec31[1] = fRec31[0];
-			fRec37[1] = fRec37[0];
-			fRec39[1] = fRec39[0];
-			fVec8[1] = fVec8[0];
-			fRec38[1] = fRec38[0];
-			fRec40[1] = fRec40[0];
-			fRec36[2] = fRec36[1];
-			fRec36[1] = fRec36[0];
-			fVec10[1] = fVec10[0];
-			fRec35[1] = fRec35[0];
-			fRec34[2] = fRec34[1];
-			fRec34[1] = fRec34[0];
-			fRec33[2] = fRec33[1];
-			fRec33[1] = fRec33[0];
+		FAUSTFLOAT* output0_ptr = outputs[0];
+		FAUSTFLOAT* output1_ptr = outputs[1];
+		float fZec0[32];
+		float fSlow0 = float(fEntry0);
+		float fSlow1 = float(fSlow0 >= 2.0f);
+		float fZec1[32];
+		float fRec4_tmp[36];
+		float* fRec4 = &fRec4_tmp[4];
+		float fZec2[32];
+		float fSlow2 = float(fSlow0 >= 1.0f);
+		float fZec3[32];
+		float fRec5_tmp[36];
+		float* fRec5 = &fRec5_tmp[4];
+		float fSlow3 = fConst2 * float(fHslider0);
+		float fRec7_tmp[36];
+		float* fRec7 = &fRec7_tmp[4];
+		float fSlow4 = fConst2 * float(fHslider1);
+		float fRec9_tmp[36];
+		float* fRec9 = &fRec9_tmp[4];
+		float fZec4[32];
+		float fRec8_tmp[36];
+		float* fRec8 = &fRec8_tmp[4];
+		float fSlow5 = fConst2 * float(fHslider2);
+		float fRec10_tmp[36];
+		float* fRec10 = &fRec10_tmp[4];
+		float fSlow6 = float(fEntry1) + 17.3123398f * std::log(0.0022727272f * float(fEntry2));
+		float fZec5[32];
+		float fZec6[32];
+		float fZec7[32];
+		float fRec6_tmp[36];
+		float* fRec6 = &fRec6_tmp[4];
+		float fZec8[32];
+		float fZec9[32];
+		float fZec10[32];
+		float fZec11[32];
+		float fRec13_tmp[36];
+		float* fRec13 = &fRec13_tmp[4];
+		int iVec1_tmp[36];
+		int* iVec1 = &iVec1_tmp[4];
+		float fZec12[32];
+		float fYec0_tmp[36];
+		float* fYec0 = &fYec0_tmp[4];
+		float fZec13[32];
+		int iZec14[32];
+		float fZec15[32];
+		float fZec16[32];
+		float fRec12_tmp[36];
+		float* fRec12 = &fRec12_tmp[4];
+		float fZec17[32];
+		float fZec18[32];
+		float fRec14_tmp[36];
+		float* fRec14 = &fRec14_tmp[4];
+		float fZec19[32];
+		float fZec20[32];
+		float fZec21[32];
+		float fZec22[32];
+		float fRec16_tmp[36];
+		float* fRec16 = &fRec16_tmp[4];
+		float fYec2_tmp[36];
+		float* fYec2 = &fYec2_tmp[4];
+		float fZec23[32];
+		int iZec24[32];
+		float fZec25[32];
+		float fZec26[32];
+		float fRec15_tmp[36];
+		float* fRec15 = &fRec15_tmp[4];
+		float fZec27[32];
+		float fSlow7 = float(fSlow0 >= 3.0f);
+		float fZec28[32];
+		float fRec17_tmp[36];
+		float* fRec17 = &fRec17_tmp[4];
+		float fZec29[32];
+		float fZec30[32];
+		float fZec31[32];
+		int iZec32[32];
+		float fRec18_tmp[36];
+		float* fRec18 = &fRec18_tmp[4];
+		float fRec19[32];
+		float fZec33[32];
+		float fZec34[32];
+		float fZec35[32];
+		int iZec36[32];
+		float fRec20_tmp[36];
+		float* fRec20 = &fRec20_tmp[4];
+		float fRec21[32];
+		float fSlow8 = float(fButton0);
+		float fVec2_tmp[36];
+		float* fVec2 = &fVec2_tmp[4];
+		float fRec22_tmp[36];
+		float* fRec22 = &fRec22_tmp[4];
+		float fSlow9 = fConst2 * float(fHslider3);
+		float fRec23_tmp[36];
+		float* fRec23 = &fRec23_tmp[4];
+		float fSlow10 = fConst2 * float(fHslider4);
+		float fRec24_tmp[36];
+		float* fRec24 = &fRec24_tmp[4];
+		float fSlow11 = fConst2 * float(fHslider5);
+		float fRec25_tmp[36];
+		float* fRec25 = &fRec25_tmp[4];
+		int iSlow12 = fSlow8 == 0.0f;
+		int iRec26_tmp[36];
+		int* iRec26 = &iRec26_tmp[4];
+		float fSlow13 = fConst2 * float(fHslider6);
+		float fRec27_tmp[36];
+		float* fRec27 = &fRec27_tmp[4];
+		float fSlow14 = fConst2 * float(fHslider7);
+		float fRec28_tmp[36];
+		float* fRec28 = &fRec28_tmp[4];
+		float fSlow15 = fConst2 * float(fHslider8);
+		float fRec29_tmp[36];
+		float* fRec29 = &fRec29_tmp[4];
+		float fSlow16 = 0.300000012f * float(fEntry3);
+		float fZec37[32];
+		float fZec38[32];
+		float fZec39[32];
+		float fZec40[32];
+		float fZec41[32];
+		float fZec42[32];
+		float fZec43[32];
+		float fZec44[32];
+		float fZec45[32];
+		float fZec46[32];
+		float fZec47[32];
+		float fZec48[32];
+		float fZec49[32];
+		float fRec3_tmp[36];
+		float* fRec3 = &fRec3_tmp[4];
+		float fYec4_tmp[36];
+		float* fYec4 = &fYec4_tmp[4];
+		float fRec2_tmp[36];
+		float* fRec2 = &fRec2_tmp[4];
+		float fRec1_tmp[36];
+		float* fRec1 = &fRec1_tmp[4];
+		float fRec0_tmp[36];
+		float* fRec0 = &fRec0_tmp[4];
+		float fSlow17 = fConst2 * float(fHslider9);
+		float fRec30_tmp[36];
+		float* fRec30 = &fRec30_tmp[4];
+		float fSlow18 = fConst2 * float(fHslider10);
+		float fRec32_tmp[36];
+		float* fRec32 = &fRec32_tmp[4];
+		float fZec50[32];
+		float fRec31_tmp[36];
+		float* fRec31 = &fRec31_tmp[4];
+		float fZec51[32];
+		float fZec52[32];
+		float fZec53[32];
+		float fRec37_tmp[36];
+		float* fRec37 = &fRec37_tmp[4];
+		float fZec54[32];
+		float fZec55[32];
+		float fZec56[32];
+		float fZec57[32];
+		float fRec39_tmp[36];
+		float* fRec39 = &fRec39_tmp[4];
+		float fYec5_tmp[36];
+		float* fYec5 = &fYec5_tmp[4];
+		float fZec58[32];
+		int iZec59[32];
+		float fZec60[32];
+		float fZec61[32];
+		float fRec38_tmp[36];
+		float* fRec38 = &fRec38_tmp[4];
+		float fZec62[32];
+		float fZec63[32];
+		float fZec64[32];
+		int iZec65[32];
+		float fRec40_tmp[36];
+		float* fRec40 = &fRec40_tmp[4];
+		float fRec41[32];
+		float fRec36_tmp[36];
+		float* fRec36 = &fRec36_tmp[4];
+		float fYec7_tmp[36];
+		float* fYec7 = &fYec7_tmp[4];
+		float fRec35_tmp[36];
+		float* fRec35 = &fRec35_tmp[4];
+		float fRec34_tmp[36];
+		float* fRec34 = &fRec34_tmp[4];
+		float fRec33_tmp[36];
+		float* fRec33 = &fRec33_tmp[4];
+		int vindex = 0;
+		/* Main loop */
+		for (vindex = 0; vindex <= count - 32; vindex = vindex + 32) {
+			FAUSTFLOAT* output0 = &output0_ptr[vindex];
+			FAUSTFLOAT* output1 = &output1_ptr[vindex];
+			int vsize = 32;
+			/* Recursive loop 0 */
+			/* Pre code */
+			for (int j6 = 0; j6 < 4; j6 = j6 + 1) {
+				fRec9_tmp[j6] = fRec9_perm[j6];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec9[i] = fSlow4 + fConst3 * fRec9[i - 1];
+			}
+			/* Post code */
+			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
+				fRec9_perm[j7] = fRec9_tmp[vsize + j7];
+			}
+			/* Recursive loop 1 */
+			/* Pre code */
+			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
+				fRec7_tmp[j4] = fRec7_perm[j4];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec7[i] = fSlow3 + fConst3 * fRec7[i - 1];
+			}
+			/* Post code */
+			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
+				fRec7_perm[j5] = fRec7_tmp[vsize + j5];
+			}
+			/* Recursive loop 2 */
+			/* Pre code */
+			for (int j8 = 0; j8 < 4; j8 = j8 + 1) {
+				fRec8_tmp[j8] = fRec8_perm[j8];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec4[i] = fRec8[i - 1] + fConst4 * fRec9[i];
+				fRec8[i] = fZec4[i] - std::floor(fZec4[i]);
+			}
+			/* Post code */
+			for (int j9 = 0; j9 < 4; j9 = j9 + 1) {
+				fRec8_perm[j9] = fRec8_tmp[vsize + j9];
+			}
+			/* Vectorizable loop 3 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec5[i] = fRec7[i] * ftbl0triple_synthSIG0[int(65536.0f * fRec8[i])];
+			}
+			/* Recursive loop 4 */
+			/* Pre code */
+			for (int j10 = 0; j10 < 4; j10 = j10 + 1) {
+				fRec10_tmp[j10] = fRec10_perm[j10];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec10[i] = fSlow5 + fConst3 * fRec10[i - 1];
+			}
+			/* Post code */
+			for (int j11 = 0; j11 < 4; j11 = j11 + 1) {
+				fRec10_perm[j11] = fRec10_tmp[vsize + j11];
+			}
+			/* Vectorizable loop 5 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec17[i] = std::pow(2.0f, 0.0833333358f * (fSlow6 + fZec5[i]));
+			}
+			/* Vectorizable loop 6 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec6[i] = std::pow(2.0f, 0.0833333358f * (fSlow6 + fZec5[i] - fRec10[i]));
+			}
+			/* Vectorizable loop 7 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec19[i] = 440.0f * fZec17[i];
+			}
+			/* Vectorizable loop 8 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec52[i] = std::pow(2.0f, 0.0833333358f * (fSlow6 + fRec10[i] + fZec5[i]));
+			}
+			/* Vectorizable loop 9 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec8[i] = 440.0f * fZec6[i];
+			}
+			/* Vectorizable loop 10 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec20[i] = std::max<float>(fZec19[i], 23.4489498f);
+			}
+			/* Vectorizable loop 11 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec54[i] = 440.0f * fZec52[i];
+			}
+			/* Vectorizable loop 12 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec9[i] = std::max<float>(fZec8[i], 23.4489498f);
+			}
+			/* Vectorizable loop 13 */
+			/* Pre code */
+			for (int j16 = 0; j16 < 4; j16 = j16 + 1) {
+				iVec1_tmp[j16] = iVec1_perm[j16];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				iVec1[i] = 1;
+			}
+			/* Post code */
+			for (int j17 = 0; j17 < 4; j17 = j17 + 1) {
+				iVec1_perm[j17] = iVec1_tmp[vsize + j17];
+			}
+			/* Vectorizable loop 14 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec21[i] = std::max<float>(20.0f, std::fabs(fZec20[i]));
+			}
+			/* Vectorizable loop 15 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec55[i] = std::max<float>(fZec54[i], 23.4489498f);
+			}
+			/* Vectorizable loop 16 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec10[i] = std::max<float>(20.0f, std::fabs(fZec9[i]));
+			}
+			/* Recursive loop 17 */
+			/* Pre code */
+			for (int j24 = 0; j24 < 4; j24 = j24 + 1) {
+				fRec16_tmp[j24] = fRec16_perm[j24];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec22[i] = fRec16[i - 1] + fConst4 * fZec21[i];
+				fRec16[i] = fZec22[i] - std::floor(fZec22[i]);
+			}
+			/* Post code */
+			for (int j25 = 0; j25 < 4; j25 = j25 + 1) {
+				fRec16_perm[j25] = fRec16_tmp[vsize + j25];
+			}
+			/* Vectorizable loop 18 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec56[i] = std::max<float>(20.0f, std::fabs(fZec55[i]));
+			}
+			/* Recursive loop 19 */
+			/* Pre code */
+			for (int j14 = 0; j14 < 4; j14 = j14 + 1) {
+				fRec13_tmp[j14] = fRec13_perm[j14];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec11[i] = fRec13[i - 1] + fConst4 * fZec10[i];
+				fRec13[i] = fZec11[i] - std::floor(fZec11[i]);
+			}
+			/* Post code */
+			for (int j15 = 0; j15 < 4; j15 = j15 + 1) {
+				fRec13_perm[j15] = fRec13_tmp[vsize + j15];
+			}
+			/* Vectorizable loop 20 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec12[i] = float(iVec1[i - 1]);
+			}
+			/* Vectorizable loop 21 */
+			/* Pre code */
+			for (int j26 = 0; j26 < 4; j26 = j26 + 1) {
+				fYec2_tmp[j26] = fYec2_perm[j26];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec2[i] = triple_synth_faustpower2_f(2.0f * fRec16[i] + -1.0f);
+			}
+			/* Post code */
+			for (int j27 = 0; j27 < 4; j27 = j27 + 1) {
+				fYec2_perm[j27] = fYec2_tmp[vsize + j27];
+			}
+			/* Vectorizable loop 22 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec23[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst7 / fZec20[i]));
+			}
+			/* Recursive loop 23 */
+			/* Pre code */
+			for (int j72 = 0; j72 < 4; j72 = j72 + 1) {
+				fRec39_tmp[j72] = fRec39_perm[j72];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec57[i] = fRec39[i - 1] + fConst4 * fZec56[i];
+				fRec39[i] = fZec57[i] - std::floor(fZec57[i]);
+			}
+			/* Post code */
+			for (int j73 = 0; j73 < 4; j73 = j73 + 1) {
+				fRec39_perm[j73] = fRec39_tmp[vsize + j73];
+			}
+			/* Vectorizable loop 24 */
+			/* Pre code */
+			for (int j18 = 0; j18 < 4; j18 = j18 + 1) {
+				fYec0_tmp[j18] = fYec0_perm[j18];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec0[i] = triple_synth_faustpower2_f(2.0f * fRec13[i] + -1.0f);
+			}
+			/* Post code */
+			for (int j19 = 0; j19 < 4; j19 = j19 + 1) {
+				fYec0_perm[j19] = fYec0_tmp[vsize + j19];
+			}
+			/* Vectorizable loop 25 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec13[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst7 / fZec9[i]));
+			}
+			/* Vectorizable loop 26 */
+			/* Pre code */
+			fYec3_idx = (fYec3_idx + fYec3_idx_save) & 4095;
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec3[(i + fYec3_idx) & 4095] = (fZec12[i] * (fYec2[i] - fYec2[i - 1])) / fZec21[i];
+			}
+			/* Post code */
+			fYec3_idx_save = vsize;
+			/* Vectorizable loop 27 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				iZec24[i] = int(fZec23[i]);
+			}
+			/* Vectorizable loop 28 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec25[i] = std::floor(fZec23[i]);
+			}
+			/* Recursive loop 29 */
+			/* Pre code */
+			for (int j50 = 0; j50 < 4; j50 = j50 + 1) {
+				fRec28_tmp[j50] = fRec28_perm[j50];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec28[i] = fSlow14 + fConst3 * fRec28[i - 1];
+			}
+			/* Post code */
+			for (int j51 = 0; j51 < 4; j51 = j51 + 1) {
+				fRec28_perm[j51] = fRec28_tmp[vsize + j51];
+			}
+			/* Vectorizable loop 30 */
+			/* Pre code */
+			for (int j74 = 0; j74 < 4; j74 = j74 + 1) {
+				fYec5_tmp[j74] = fYec5_perm[j74];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec5[i] = triple_synth_faustpower2_f(2.0f * fRec39[i] + -1.0f);
+			}
+			/* Post code */
+			for (int j75 = 0; j75 < 4; j75 = j75 + 1) {
+				fYec5_perm[j75] = fYec5_tmp[vsize + j75];
+			}
+			/* Vectorizable loop 31 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec58[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst7 / fZec55[i]));
+			}
+			/* Recursive loop 32 */
+			/* Pre code */
+			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
+				fRec5_tmp[j2] = fRec5_perm[j2];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec2[i] = fConst1 + fRec5[i - 1];
+				fZec3[i] = fRec5[i - 1] - fConst1;
+				float fElse2 = fZec3[i];
+				float fThen3 = ((fZec3[i] > fSlow2) ? fElse2 : fSlow2);
+				float fElse3 = fZec2[i];
+				fRec5[i] = ((fZec2[i] < fSlow2) ? fElse3 : fThen3);
+			}
+			/* Post code */
+			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
+				fRec5_perm[j3] = fRec5_tmp[vsize + j3];
+			}
+			/* Vectorizable loop 33 */
+			/* Pre code */
+			fYec1_idx = (fYec1_idx + fYec1_idx_save) & 4095;
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec1[(i + fYec1_idx) & 4095] = (fZec12[i] * (fYec0[i] - fYec0[i - 1])) / fZec10[i];
+			}
+			/* Post code */
+			fYec1_idx_save = vsize;
+			/* Vectorizable loop 34 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				iZec14[i] = int(fZec13[i]);
+			}
+			/* Vectorizable loop 35 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec15[i] = std::floor(fZec13[i]);
+			}
+			/* Vectorizable loop 36 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec26[i] = fYec3[(i + fYec3_idx) & 4095] - fYec3[((i + fYec3_idx) - iZec24[i]) & 4095] * (fZec25[i] + 1.0f - fZec23[i]) - (fZec23[i] - fZec25[i]) * fYec3[((i + fYec3_idx) - (iZec24[i] + 1)) & 4095];
+			}
+			/* Recursive loop 37 */
+			/* Pre code */
+			for (int j30 = 0; j30 < 4; j30 = j30 + 1) {
+				fRec17_tmp[j30] = fRec17_perm[j30];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec27[i] = fConst1 + fRec17[i - 1];
+				fZec28[i] = fRec17[i - 1] - fConst1;
+				float fElse4 = fZec28[i];
+				float fThen5 = ((fZec28[i] > fSlow7) ? fElse4 : fSlow7);
+				float fElse5 = fZec27[i];
+				fRec17[i] = ((fZec27[i] < fSlow7) ? fElse5 : fThen5);
+			}
+			/* Post code */
+			for (int j31 = 0; j31 < 4; j31 = j31 + 1) {
+				fRec17_perm[j31] = fRec17_tmp[vsize + j31];
+			}
+			/* Vectorizable loop 38 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec33[i] = std::max<float>(1.1920929e-07f, std::fabs(fZec19[i]));
+			}
+			/* Vectorizable loop 39 */
+			/* Pre code */
+			for (int j36 = 0; j36 < 4; j36 = j36 + 1) {
+				fVec2_tmp[j36] = fVec2_perm[j36];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fVec2[i] = fSlow8;
+			}
+			/* Post code */
+			for (int j37 = 0; j37 < 4; j37 = j37 + 1) {
+				fVec2_perm[j37] = fVec2_tmp[vsize + j37];
+			}
+			/* Recursive loop 40 */
+			/* Pre code */
+			for (int j40 = 0; j40 < 4; j40 = j40 + 1) {
+				fRec23_tmp[j40] = fRec23_perm[j40];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec23[i] = fSlow9 + fConst3 * fRec23[i - 1];
+			}
+			/* Post code */
+			for (int j41 = 0; j41 < 4; j41 = j41 + 1) {
+				fRec23_perm[j41] = fRec23_tmp[vsize + j41];
+			}
+			/* Recursive loop 41 */
+			/* Pre code */
+			for (int j52 = 0; j52 < 4; j52 = j52 + 1) {
+				fRec29_tmp[j52] = fRec29_perm[j52];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec29[i] = fSlow15 + fConst3 * fRec29[i - 1];
+			}
+			/* Post code */
+			for (int j53 = 0; j53 < 4; j53 = j53 + 1) {
+				fRec29_perm[j53] = fRec29_tmp[vsize + j53];
+			}
+			/* Vectorizable loop 42 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec44[i] = std::tan(fConst9 * std::max<float>(20.0f, std::min<float>(20000.0f, fRec28[i])));
+			}
+			/* Vectorizable loop 43 */
+			/* Pre code */
+			fYec6_idx = (fYec6_idx + fYec6_idx_save) & 4095;
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec6[(i + fYec6_idx) & 4095] = (fZec12[i] * (fYec5[i] - fYec5[i - 1])) / fZec56[i];
+			}
+			/* Post code */
+			fYec6_idx_save = vsize;
+			/* Vectorizable loop 44 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				iZec59[i] = int(fZec58[i]);
+			}
+			/* Vectorizable loop 45 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec60[i] = std::floor(fZec58[i]);
+			}
+			/* Recursive loop 46 */
+			/* Pre code */
+			for (int j0 = 0; j0 < 4; j0 = j0 + 1) {
+				fRec4_tmp[j0] = fRec4_perm[j0];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec0[i] = fConst1 + fRec4[i - 1];
+				fZec1[i] = fRec4[i - 1] - fConst1;
+				float fElse0 = fZec1[i];
+				float fThen1 = ((fZec1[i] > fSlow1) ? fElse0 : fSlow1);
+				float fElse1 = fZec0[i];
+				fRec4[i] = ((fZec0[i] < fSlow1) ? fElse1 : fThen1);
+			}
+			/* Post code */
+			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
+				fRec4_perm[j1] = fRec4_tmp[vsize + j1];
+			}
+			/* Vectorizable loop 47 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec16[i] = fYec1[(i + fYec1_idx) & 4095] - fYec1[((i + fYec1_idx) - iZec14[i]) & 4095] * (fZec15[i] + 1.0f - fZec13[i]) - (fZec13[i] - fZec15[i]) * fYec1[((i + fYec1_idx) - (iZec14[i] + 1)) & 4095];
+			}
+			/* Recursive loop 48 */
+			/* Pre code */
+			for (int j22 = 0; j22 < 4; j22 = j22 + 1) {
+				fRec14_tmp[j22] = fRec14_perm[j22];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec18[i] = fRec14[i - 1] + fConst5 * fZec17[i];
+				fRec14[i] = fZec18[i] - std::floor(fZec18[i]);
+			}
+			/* Post code */
+			for (int j23 = 0; j23 < 4; j23 = j23 + 1) {
+				fRec14_perm[j23] = fRec14_tmp[vsize + j23];
+			}
+			/* Recursive loop 49 */
+			/* Pre code */
+			for (int j28 = 0; j28 < 4; j28 = j28 + 1) {
+				fRec15_tmp[j28] = fRec15_perm[j28];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec15[i] = 0.999000013f * fRec15[i - 1] + fConst6 * fZec26[i];
+			}
+			/* Post code */
+			for (int j29 = 0; j29 < 4; j29 = j29 + 1) {
+				fRec15_perm[j29] = fRec15_tmp[vsize + j29];
+			}
+			/* Vectorizable loop 50 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec29[i] = std::max<float>(1.1920929e-07f, std::fabs(fZec8[i]));
+			}
+			/* Recursive loop 51 */
+			/* Pre code */
+			for (int j34 = 0; j34 < 4; j34 = j34 + 1) {
+				fRec20_tmp[j34] = fRec20_perm[j34];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec34[i] = fRec20[i - 1] + fConst4 * fZec33[i];
+				fZec35[i] = fZec34[i] + -1.0f;
+				iZec36[i] = fZec35[i] < 0.0f;
+				float fThen8 = fZec35[i];
+				float fElse8 = fZec34[i];
+				fRec20[i] = ((iZec36[i]) ? fElse8 : fThen8);
+				float fThen9 = fZec34[i] + fZec35[i] * (1.0f - fConst0 / fZec33[i]);
+				float fElse9 = fZec34[i];
+				fRec21[i] = ((iZec36[i]) ? fElse9 : fThen9);
+			}
+			/* Post code */
+			for (int j35 = 0; j35 < 4; j35 = j35 + 1) {
+				fRec20_perm[j35] = fRec20_tmp[vsize + j35];
+			}
+			/* Recursive loop 52 */
+			/* Pre code */
+			for (int j38 = 0; j38 < 4; j38 = j38 + 1) {
+				fRec22_tmp[j38] = fRec22_perm[j38];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec22[i] = fSlow8 + fRec22[i - 1] * float(fVec2[i - 1] >= fSlow8);
+			}
+			/* Post code */
+			for (int j39 = 0; j39 < 4; j39 = j39 + 1) {
+				fRec22_perm[j39] = fRec22_tmp[vsize + j39];
+			}
+			/* Recursive loop 53 */
+			/* Pre code */
+			for (int j42 = 0; j42 < 4; j42 = j42 + 1) {
+				fRec24_tmp[j42] = fRec24_perm[j42];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec24[i] = fSlow10 + fConst3 * fRec24[i - 1];
+			}
+			/* Post code */
+			for (int j43 = 0; j43 < 4; j43 = j43 + 1) {
+				fRec24_perm[j43] = fRec24_tmp[vsize + j43];
+			}
+			/* Recursive loop 54 */
+			/* Pre code */
+			for (int j44 = 0; j44 < 4; j44 = j44 + 1) {
+				fRec25_tmp[j44] = fRec25_perm[j44];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec25[i] = fSlow11 + fConst3 * fRec25[i - 1];
+			}
+			/* Post code */
+			for (int j45 = 0; j45 < 4; j45 = j45 + 1) {
+				fRec25_perm[j45] = fRec25_tmp[vsize + j45];
+			}
+			/* Recursive loop 55 */
+			/* Pre code */
+			for (int j46 = 0; j46 < 4; j46 = j46 + 1) {
+				iRec26_tmp[j46] = iRec26_perm[j46];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				iRec26[i] = iSlow12 * (iRec26[i - 1] + 1);
+			}
+			/* Post code */
+			for (int j47 = 0; j47 < 4; j47 = j47 + 1) {
+				iRec26_perm[j47] = iRec26_tmp[vsize + j47];
+			}
+			/* Recursive loop 56 */
+			/* Pre code */
+			for (int j48 = 0; j48 < 4; j48 = j48 + 1) {
+				fRec27_tmp[j48] = fRec27_perm[j48];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec27[i] = fSlow13 + fConst3 * fRec27[i - 1];
+			}
+			/* Post code */
+			for (int j49 = 0; j49 < 4; j49 = j49 + 1) {
+				fRec27_perm[j49] = fRec27_tmp[vsize + j49];
+			}
+			/* Vectorizable loop 57 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec38[i] = 1.0f - fRec5[i];
+			}
+			/* Vectorizable loop 58 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec40[i] = 1.0f - fRec17[i];
+			}
+			/* Vectorizable loop 59 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec42[i] = std::max<float>(1.0f, fConst0 * fRec23[i]);
+			}
+			/* Vectorizable loop 60 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec45[i] = 1.0f / fZec44[i];
+			}
+			/* Vectorizable loop 61 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec46[i] = 1.0f / fRec29[i];
+			}
+			/* Vectorizable loop 62 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec61[i] = fYec6[(i + fYec6_idx) & 4095] - fYec6[((i + fYec6_idx) - iZec59[i]) & 4095] * (fZec60[i] + 1.0f - fZec58[i]) - (fZec58[i] - fZec60[i]) * fYec6[((i + fYec6_idx) - (iZec59[i] + 1)) & 4095];
+			}
+			/* Vectorizable loop 63 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec62[i] = std::max<float>(1.1920929e-07f, std::fabs(fZec54[i]));
+			}
+			/* Recursive loop 64 */
+			/* Pre code */
+			for (int j12 = 0; j12 < 4; j12 = j12 + 1) {
+				fRec6_tmp[j12] = fRec6_perm[j12];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec7[i] = fRec6[i - 1] + fConst5 * fZec6[i];
+				fRec6[i] = fZec7[i] - std::floor(fZec7[i]);
+			}
+			/* Post code */
+			for (int j13 = 0; j13 < 4; j13 = j13 + 1) {
+				fRec6_perm[j13] = fRec6_tmp[vsize + j13];
+			}
+			/* Recursive loop 65 */
+			/* Pre code */
+			for (int j20 = 0; j20 < 4; j20 = j20 + 1) {
+				fRec12_tmp[j20] = fRec12_perm[j20];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec12[i] = 0.999000013f * fRec12[i - 1] + fConst6 * fZec16[i];
+			}
+			/* Post code */
+			for (int j21 = 0; j21 < 4; j21 = j21 + 1) {
+				fRec12_perm[j21] = fRec12_tmp[vsize + j21];
+			}
+			/* Recursive loop 66 */
+			/* Pre code */
+			for (int j32 = 0; j32 < 4; j32 = j32 + 1) {
+				fRec18_tmp[j32] = fRec18_perm[j32];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec30[i] = fRec18[i - 1] + fConst4 * fZec29[i];
+				fZec31[i] = fZec30[i] + -1.0f;
+				iZec32[i] = fZec31[i] < 0.0f;
+				float fThen6 = fZec31[i];
+				float fElse6 = fZec30[i];
+				fRec18[i] = ((iZec32[i]) ? fElse6 : fThen6);
+				float fThen7 = fZec30[i] + fZec31[i] * (1.0f - fConst0 / fZec29[i]);
+				float fElse7 = fZec30[i];
+				fRec19[i] = ((iZec32[i]) ? fElse7 : fThen7);
+			}
+			/* Post code */
+			for (int j33 = 0; j33 < 4; j33 = j33 + 1) {
+				fRec18_perm[j33] = fRec18_tmp[vsize + j33];
+			}
+			/* Vectorizable loop 67 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec37[i] = 1.0f - fRec4[i];
+			}
+			/* Vectorizable loop 68 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec39[i] = fZec38[i] * ftbl0triple_synthSIG0[int(65536.0f * fRec14[i])] + fConst8 * fRec5[i] * fRec15[i] * fZec17[i];
+			}
+			/* Vectorizable loop 69 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec41[i] = fConst6 * fZec40[i] * fZec26[i] + fRec17[i] * (2.0f * fRec21[i] + -1.0f);
+			}
+			/* Vectorizable loop 70 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec43[i] = std::max<float>(0.0f, std::min<float>(fRec22[i] / fZec42[i], std::max<float>(((1.0f - fRec24[i]) * (fZec42[i] - fRec22[i])) / std::max<float>(1.0f, fConst0 * fRec25[i]) + 1.0f, fRec24[i])) * (1.0f - float(iRec26[i]) / std::max<float>(1.0f, fConst0 * fRec27[i])));
+			}
+			/* Vectorizable loop 71 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec47[i] = (fZec45[i] - fZec46[i]) / fZec44[i] + 1.0f;
+			}
+			/* Vectorizable loop 72 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec48[i] = 1.0f - 1.0f / triple_synth_faustpower2_f(fZec44[i]);
+			}
+			/* Vectorizable loop 73 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec49[i] = (fZec46[i] + fZec45[i]) / fZec44[i] + 1.0f;
+			}
+			/* Recursive loop 74 */
+			/* Pre code */
+			for (int j70 = 0; j70 < 4; j70 = j70 + 1) {
+				fRec37_tmp[j70] = fRec37_perm[j70];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec53[i] = fRec37[i - 1] + fConst5 * fZec52[i];
+				fRec37[i] = fZec53[i] - std::floor(fZec53[i]);
+			}
+			/* Post code */
+			for (int j71 = 0; j71 < 4; j71 = j71 + 1) {
+				fRec37_perm[j71] = fRec37_tmp[vsize + j71];
+			}
+			/* Recursive loop 75 */
+			/* Pre code */
+			for (int j76 = 0; j76 < 4; j76 = j76 + 1) {
+				fRec38_tmp[j76] = fRec38_perm[j76];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec38[i] = 0.999000013f * fRec38[i - 1] + fConst6 * fZec61[i];
+			}
+			/* Post code */
+			for (int j77 = 0; j77 < 4; j77 = j77 + 1) {
+				fRec38_perm[j77] = fRec38_tmp[vsize + j77];
+			}
+			/* Recursive loop 76 */
+			/* Pre code */
+			for (int j78 = 0; j78 < 4; j78 = j78 + 1) {
+				fRec40_tmp[j78] = fRec40_perm[j78];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec63[i] = fRec40[i - 1] + fConst4 * fZec62[i];
+				fZec64[i] = fZec63[i] + -1.0f;
+				iZec65[i] = fZec64[i] < 0.0f;
+				float fThen10 = fZec64[i];
+				float fElse10 = fZec63[i];
+				fRec40[i] = ((iZec65[i]) ? fElse10 : fThen10);
+				float fThen11 = fZec63[i] + fZec64[i] * (1.0f - fConst0 / fZec62[i]);
+				float fElse11 = fZec63[i];
+				fRec41[i] = ((iZec65[i]) ? fElse11 : fThen11);
+			}
+			/* Post code */
+			for (int j79 = 0; j79 < 4; j79 = j79 + 1) {
+				fRec40_perm[j79] = fRec40_tmp[vsize + j79];
+			}
+			/* Recursive loop 77 */
+			/* Pre code */
+			for (int j54 = 0; j54 < 4; j54 = j54 + 1) {
+				fRec3_tmp[j54] = fRec3_perm[j54];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec3[i] = fSlow16 * (fZec37[i] * (fZec38[i] * ftbl0triple_synthSIG0[int(65536.0f * fRec6[i])] + fConst8 * fRec5[i] * fRec12[i] * fZec6[i] + fZec39[i]) + fRec4[i] * (fConst6 * fZec40[i] * fZec16[i] + fRec17[i] * (2.0f * fRec19[i] + -1.0f) + fZec41[i])) * fZec43[i] - (fRec3[i - 2] * fZec47[i] + 2.0f * fRec3[i - 1] * fZec48[i]) / fZec49[i];
+			}
+			/* Post code */
+			for (int j55 = 0; j55 < 4; j55 = j55 + 1) {
+				fRec3_perm[j55] = fRec3_tmp[vsize + j55];
+			}
+			/* Recursive loop 78 */
+			/* Pre code */
+			for (int j80 = 0; j80 < 4; j80 = j80 + 1) {
+				fRec36_tmp[j80] = fRec36_perm[j80];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec36[i] = fSlow16 * fZec43[i] * (fZec37[i] * (fZec39[i] + fZec38[i] * ftbl0triple_synthSIG0[int(65536.0f * fRec37[i])] + fConst8 * fRec5[i] * fRec38[i] * fZec52[i]) + fRec4[i] * (fZec41[i] + fConst6 * fZec40[i] * fZec61[i] + fRec17[i] * (2.0f * fRec41[i] + -1.0f))) - (fZec47[i] * fRec36[i - 2] + 2.0f * fZec48[i] * fRec36[i - 1]) / fZec49[i];
+			}
+			/* Post code */
+			for (int j81 = 0; j81 < 4; j81 = j81 + 1) {
+				fRec36_perm[j81] = fRec36_tmp[vsize + j81];
+			}
+			/* Vectorizable loop 79 */
+			/* Pre code */
+			for (int j56 = 0; j56 < 4; j56 = j56 + 1) {
+				fYec4_tmp[j56] = fYec4_perm[j56];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec4[i] = (fRec3[i - 2] + fRec3[i] + 2.0f * fRec3[i - 1]) / fZec49[i];
+			}
+			/* Post code */
+			for (int j57 = 0; j57 < 4; j57 = j57 + 1) {
+				fYec4_perm[j57] = fYec4_tmp[vsize + j57];
+			}
+			/* Vectorizable loop 80 */
+			/* Pre code */
+			for (int j82 = 0; j82 < 4; j82 = j82 + 1) {
+				fYec7_tmp[j82] = fYec7_perm[j82];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec7[i] = (fRec36[i - 2] + fRec36[i] + 2.0f * fRec36[i - 1]) / fZec49[i];
+			}
+			/* Post code */
+			for (int j83 = 0; j83 < 4; j83 = j83 + 1) {
+				fYec7_perm[j83] = fYec7_tmp[vsize + j83];
+			}
+			/* Recursive loop 81 */
+			/* Pre code */
+			for (int j58 = 0; j58 < 4; j58 = j58 + 1) {
+				fRec2_tmp[j58] = fRec2_perm[j58];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec2[i] = 0.0f - fConst12 * (fConst13 * fRec2[i - 1] - (fYec4[i] + fYec4[i - 1]));
+			}
+			/* Post code */
+			for (int j59 = 0; j59 < 4; j59 = j59 + 1) {
+				fRec2_perm[j59] = fRec2_tmp[vsize + j59];
+			}
+			/* Recursive loop 82 */
+			/* Pre code */
+			for (int j66 = 0; j66 < 4; j66 = j66 + 1) {
+				fRec32_tmp[j66] = fRec32_perm[j66];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec32[i] = fSlow18 + fConst3 * fRec32[i - 1];
+			}
+			/* Post code */
+			for (int j67 = 0; j67 < 4; j67 = j67 + 1) {
+				fRec32_perm[j67] = fRec32_tmp[vsize + j67];
+			}
+			/* Recursive loop 83 */
+			/* Pre code */
+			for (int j84 = 0; j84 < 4; j84 = j84 + 1) {
+				fRec35_tmp[j84] = fRec35_perm[j84];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec35[i] = 0.0f - fConst12 * (fConst13 * fRec35[i - 1] - (fYec7[i] + fYec7[i - 1]));
+			}
+			/* Post code */
+			for (int j85 = 0; j85 < 4; j85 = j85 + 1) {
+				fRec35_perm[j85] = fRec35_tmp[vsize + j85];
+			}
+			/* Recursive loop 84 */
+			/* Pre code */
+			for (int j60 = 0; j60 < 4; j60 = j60 + 1) {
+				fRec1_tmp[j60] = fRec1_perm[j60];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec1[i] = fRec2[i] - fConst14 * (fConst15 * fRec1[i - 2] + fConst16 * fRec1[i - 1]);
+			}
+			/* Post code */
+			for (int j61 = 0; j61 < 4; j61 = j61 + 1) {
+				fRec1_perm[j61] = fRec1_tmp[vsize + j61];
+			}
+			/* Recursive loop 85 */
+			/* Pre code */
+			for (int j64 = 0; j64 < 4; j64 = j64 + 1) {
+				fRec30_tmp[j64] = fRec30_perm[j64];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec30[i] = fSlow17 + fConst3 * fRec30[i - 1];
+			}
+			/* Post code */
+			for (int j65 = 0; j65 < 4; j65 = j65 + 1) {
+				fRec30_perm[j65] = fRec30_tmp[vsize + j65];
+			}
+			/* Recursive loop 86 */
+			/* Pre code */
+			for (int j68 = 0; j68 < 4; j68 = j68 + 1) {
+				fRec31_tmp[j68] = fRec31_perm[j68];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec50[i] = fRec31[i - 1] + fConst4 * fRec32[i];
+				fRec31[i] = fZec50[i] - std::floor(fZec50[i]);
+			}
+			/* Post code */
+			for (int j69 = 0; j69 < 4; j69 = j69 + 1) {
+				fRec31_perm[j69] = fRec31_tmp[vsize + j69];
+			}
+			/* Recursive loop 87 */
+			/* Pre code */
+			for (int j86 = 0; j86 < 4; j86 = j86 + 1) {
+				fRec34_tmp[j86] = fRec34_perm[j86];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec34[i] = fRec35[i] - fConst14 * (fConst15 * fRec34[i - 2] + fConst16 * fRec34[i - 1]);
+			}
+			/* Post code */
+			for (int j87 = 0; j87 < 4; j87 = j87 + 1) {
+				fRec34_perm[j87] = fRec34_tmp[vsize + j87];
+			}
+			/* Recursive loop 88 */
+			/* Pre code */
+			for (int j62 = 0; j62 < 4; j62 = j62 + 1) {
+				fRec0_tmp[j62] = fRec0_perm[j62];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec0[i] = fConst14 * (fRec1[i - 2] + fRec1[i] + 2.0f * fRec1[i - 1]) - fConst17 * (fConst18 * fRec0[i - 2] + fConst16 * fRec0[i - 1]);
+			}
+			/* Post code */
+			for (int j63 = 0; j63 < 4; j63 = j63 + 1) {
+				fRec0_perm[j63] = fRec0_tmp[vsize + j63];
+			}
+			/* Vectorizable loop 89 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec51[i] = 0.5f * fRec30[i] * (ftbl0triple_synthSIG0[int(65536.0f * fRec31[i])] + -1.0f) + 1.0f;
+			}
+			/* Recursive loop 90 */
+			/* Pre code */
+			for (int j88 = 0; j88 < 4; j88 = j88 + 1) {
+				fRec33_tmp[j88] = fRec33_perm[j88];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec33[i] = fConst14 * (fRec34[i - 2] + fRec34[i] + 2.0f * fRec34[i - 1]) - fConst17 * (fConst18 * fRec33[i - 2] + fConst16 * fRec33[i - 1]);
+			}
+			/* Post code */
+			for (int j89 = 0; j89 < 4; j89 = j89 + 1) {
+				fRec33_perm[j89] = fRec33_tmp[vsize + j89];
+			}
+			/* Vectorizable loop 91 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output0[i] = FAUSTFLOAT(fConst17 * (fRec0[i - 2] + fRec0[i] + 2.0f * fRec0[i - 1]) * fZec51[i]);
+			}
+			/* Vectorizable loop 92 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output1[i] = FAUSTFLOAT(fConst17 * fZec51[i] * (fRec33[i - 2] + fRec33[i] + 2.0f * fRec33[i - 1]));
+			}
+		}
+		/* Remaining frames */
+		if ((vindex < count)) {
+			FAUSTFLOAT* output0 = &output0_ptr[vindex];
+			FAUSTFLOAT* output1 = &output1_ptr[vindex];
+			int vsize = count - vindex;
+			/* Recursive loop 0 */
+			/* Pre code */
+			for (int j6 = 0; j6 < 4; j6 = j6 + 1) {
+				fRec9_tmp[j6] = fRec9_perm[j6];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec9[i] = fSlow4 + fConst3 * fRec9[i - 1];
+			}
+			/* Post code */
+			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
+				fRec9_perm[j7] = fRec9_tmp[vsize + j7];
+			}
+			/* Recursive loop 1 */
+			/* Pre code */
+			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
+				fRec7_tmp[j4] = fRec7_perm[j4];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec7[i] = fSlow3 + fConst3 * fRec7[i - 1];
+			}
+			/* Post code */
+			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
+				fRec7_perm[j5] = fRec7_tmp[vsize + j5];
+			}
+			/* Recursive loop 2 */
+			/* Pre code */
+			for (int j8 = 0; j8 < 4; j8 = j8 + 1) {
+				fRec8_tmp[j8] = fRec8_perm[j8];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec4[i] = fRec8[i - 1] + fConst4 * fRec9[i];
+				fRec8[i] = fZec4[i] - std::floor(fZec4[i]);
+			}
+			/* Post code */
+			for (int j9 = 0; j9 < 4; j9 = j9 + 1) {
+				fRec8_perm[j9] = fRec8_tmp[vsize + j9];
+			}
+			/* Vectorizable loop 3 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec5[i] = fRec7[i] * ftbl0triple_synthSIG0[int(65536.0f * fRec8[i])];
+			}
+			/* Recursive loop 4 */
+			/* Pre code */
+			for (int j10 = 0; j10 < 4; j10 = j10 + 1) {
+				fRec10_tmp[j10] = fRec10_perm[j10];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec10[i] = fSlow5 + fConst3 * fRec10[i - 1];
+			}
+			/* Post code */
+			for (int j11 = 0; j11 < 4; j11 = j11 + 1) {
+				fRec10_perm[j11] = fRec10_tmp[vsize + j11];
+			}
+			/* Vectorizable loop 5 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec17[i] = std::pow(2.0f, 0.0833333358f * (fSlow6 + fZec5[i]));
+			}
+			/* Vectorizable loop 6 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec6[i] = std::pow(2.0f, 0.0833333358f * (fSlow6 + fZec5[i] - fRec10[i]));
+			}
+			/* Vectorizable loop 7 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec19[i] = 440.0f * fZec17[i];
+			}
+			/* Vectorizable loop 8 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec52[i] = std::pow(2.0f, 0.0833333358f * (fSlow6 + fRec10[i] + fZec5[i]));
+			}
+			/* Vectorizable loop 9 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec8[i] = 440.0f * fZec6[i];
+			}
+			/* Vectorizable loop 10 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec20[i] = std::max<float>(fZec19[i], 23.4489498f);
+			}
+			/* Vectorizable loop 11 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec54[i] = 440.0f * fZec52[i];
+			}
+			/* Vectorizable loop 12 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec9[i] = std::max<float>(fZec8[i], 23.4489498f);
+			}
+			/* Vectorizable loop 13 */
+			/* Pre code */
+			for (int j16 = 0; j16 < 4; j16 = j16 + 1) {
+				iVec1_tmp[j16] = iVec1_perm[j16];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				iVec1[i] = 1;
+			}
+			/* Post code */
+			for (int j17 = 0; j17 < 4; j17 = j17 + 1) {
+				iVec1_perm[j17] = iVec1_tmp[vsize + j17];
+			}
+			/* Vectorizable loop 14 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec21[i] = std::max<float>(20.0f, std::fabs(fZec20[i]));
+			}
+			/* Vectorizable loop 15 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec55[i] = std::max<float>(fZec54[i], 23.4489498f);
+			}
+			/* Vectorizable loop 16 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec10[i] = std::max<float>(20.0f, std::fabs(fZec9[i]));
+			}
+			/* Recursive loop 17 */
+			/* Pre code */
+			for (int j24 = 0; j24 < 4; j24 = j24 + 1) {
+				fRec16_tmp[j24] = fRec16_perm[j24];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec22[i] = fRec16[i - 1] + fConst4 * fZec21[i];
+				fRec16[i] = fZec22[i] - std::floor(fZec22[i]);
+			}
+			/* Post code */
+			for (int j25 = 0; j25 < 4; j25 = j25 + 1) {
+				fRec16_perm[j25] = fRec16_tmp[vsize + j25];
+			}
+			/* Vectorizable loop 18 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec56[i] = std::max<float>(20.0f, std::fabs(fZec55[i]));
+			}
+			/* Recursive loop 19 */
+			/* Pre code */
+			for (int j14 = 0; j14 < 4; j14 = j14 + 1) {
+				fRec13_tmp[j14] = fRec13_perm[j14];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec11[i] = fRec13[i - 1] + fConst4 * fZec10[i];
+				fRec13[i] = fZec11[i] - std::floor(fZec11[i]);
+			}
+			/* Post code */
+			for (int j15 = 0; j15 < 4; j15 = j15 + 1) {
+				fRec13_perm[j15] = fRec13_tmp[vsize + j15];
+			}
+			/* Vectorizable loop 20 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec12[i] = float(iVec1[i - 1]);
+			}
+			/* Vectorizable loop 21 */
+			/* Pre code */
+			for (int j26 = 0; j26 < 4; j26 = j26 + 1) {
+				fYec2_tmp[j26] = fYec2_perm[j26];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec2[i] = triple_synth_faustpower2_f(2.0f * fRec16[i] + -1.0f);
+			}
+			/* Post code */
+			for (int j27 = 0; j27 < 4; j27 = j27 + 1) {
+				fYec2_perm[j27] = fYec2_tmp[vsize + j27];
+			}
+			/* Vectorizable loop 22 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec23[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst7 / fZec20[i]));
+			}
+			/* Recursive loop 23 */
+			/* Pre code */
+			for (int j72 = 0; j72 < 4; j72 = j72 + 1) {
+				fRec39_tmp[j72] = fRec39_perm[j72];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec57[i] = fRec39[i - 1] + fConst4 * fZec56[i];
+				fRec39[i] = fZec57[i] - std::floor(fZec57[i]);
+			}
+			/* Post code */
+			for (int j73 = 0; j73 < 4; j73 = j73 + 1) {
+				fRec39_perm[j73] = fRec39_tmp[vsize + j73];
+			}
+			/* Vectorizable loop 24 */
+			/* Pre code */
+			for (int j18 = 0; j18 < 4; j18 = j18 + 1) {
+				fYec0_tmp[j18] = fYec0_perm[j18];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec0[i] = triple_synth_faustpower2_f(2.0f * fRec13[i] + -1.0f);
+			}
+			/* Post code */
+			for (int j19 = 0; j19 < 4; j19 = j19 + 1) {
+				fYec0_perm[j19] = fYec0_tmp[vsize + j19];
+			}
+			/* Vectorizable loop 25 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec13[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst7 / fZec9[i]));
+			}
+			/* Vectorizable loop 26 */
+			/* Pre code */
+			fYec3_idx = (fYec3_idx + fYec3_idx_save) & 4095;
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec3[(i + fYec3_idx) & 4095] = (fZec12[i] * (fYec2[i] - fYec2[i - 1])) / fZec21[i];
+			}
+			/* Post code */
+			fYec3_idx_save = vsize;
+			/* Vectorizable loop 27 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				iZec24[i] = int(fZec23[i]);
+			}
+			/* Vectorizable loop 28 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec25[i] = std::floor(fZec23[i]);
+			}
+			/* Recursive loop 29 */
+			/* Pre code */
+			for (int j50 = 0; j50 < 4; j50 = j50 + 1) {
+				fRec28_tmp[j50] = fRec28_perm[j50];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec28[i] = fSlow14 + fConst3 * fRec28[i - 1];
+			}
+			/* Post code */
+			for (int j51 = 0; j51 < 4; j51 = j51 + 1) {
+				fRec28_perm[j51] = fRec28_tmp[vsize + j51];
+			}
+			/* Vectorizable loop 30 */
+			/* Pre code */
+			for (int j74 = 0; j74 < 4; j74 = j74 + 1) {
+				fYec5_tmp[j74] = fYec5_perm[j74];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec5[i] = triple_synth_faustpower2_f(2.0f * fRec39[i] + -1.0f);
+			}
+			/* Post code */
+			for (int j75 = 0; j75 < 4; j75 = j75 + 1) {
+				fYec5_perm[j75] = fYec5_tmp[vsize + j75];
+			}
+			/* Vectorizable loop 31 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec58[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst7 / fZec55[i]));
+			}
+			/* Recursive loop 32 */
+			/* Pre code */
+			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
+				fRec5_tmp[j2] = fRec5_perm[j2];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec2[i] = fConst1 + fRec5[i - 1];
+				fZec3[i] = fRec5[i - 1] - fConst1;
+				float fElse2 = fZec3[i];
+				float fThen3 = ((fZec3[i] > fSlow2) ? fElse2 : fSlow2);
+				float fElse3 = fZec2[i];
+				fRec5[i] = ((fZec2[i] < fSlow2) ? fElse3 : fThen3);
+			}
+			/* Post code */
+			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
+				fRec5_perm[j3] = fRec5_tmp[vsize + j3];
+			}
+			/* Vectorizable loop 33 */
+			/* Pre code */
+			fYec1_idx = (fYec1_idx + fYec1_idx_save) & 4095;
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec1[(i + fYec1_idx) & 4095] = (fZec12[i] * (fYec0[i] - fYec0[i - 1])) / fZec10[i];
+			}
+			/* Post code */
+			fYec1_idx_save = vsize;
+			/* Vectorizable loop 34 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				iZec14[i] = int(fZec13[i]);
+			}
+			/* Vectorizable loop 35 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec15[i] = std::floor(fZec13[i]);
+			}
+			/* Vectorizable loop 36 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec26[i] = fYec3[(i + fYec3_idx) & 4095] - fYec3[((i + fYec3_idx) - iZec24[i]) & 4095] * (fZec25[i] + 1.0f - fZec23[i]) - (fZec23[i] - fZec25[i]) * fYec3[((i + fYec3_idx) - (iZec24[i] + 1)) & 4095];
+			}
+			/* Recursive loop 37 */
+			/* Pre code */
+			for (int j30 = 0; j30 < 4; j30 = j30 + 1) {
+				fRec17_tmp[j30] = fRec17_perm[j30];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec27[i] = fConst1 + fRec17[i - 1];
+				fZec28[i] = fRec17[i - 1] - fConst1;
+				float fElse4 = fZec28[i];
+				float fThen5 = ((fZec28[i] > fSlow7) ? fElse4 : fSlow7);
+				float fElse5 = fZec27[i];
+				fRec17[i] = ((fZec27[i] < fSlow7) ? fElse5 : fThen5);
+			}
+			/* Post code */
+			for (int j31 = 0; j31 < 4; j31 = j31 + 1) {
+				fRec17_perm[j31] = fRec17_tmp[vsize + j31];
+			}
+			/* Vectorizable loop 38 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec33[i] = std::max<float>(1.1920929e-07f, std::fabs(fZec19[i]));
+			}
+			/* Vectorizable loop 39 */
+			/* Pre code */
+			for (int j36 = 0; j36 < 4; j36 = j36 + 1) {
+				fVec2_tmp[j36] = fVec2_perm[j36];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fVec2[i] = fSlow8;
+			}
+			/* Post code */
+			for (int j37 = 0; j37 < 4; j37 = j37 + 1) {
+				fVec2_perm[j37] = fVec2_tmp[vsize + j37];
+			}
+			/* Recursive loop 40 */
+			/* Pre code */
+			for (int j40 = 0; j40 < 4; j40 = j40 + 1) {
+				fRec23_tmp[j40] = fRec23_perm[j40];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec23[i] = fSlow9 + fConst3 * fRec23[i - 1];
+			}
+			/* Post code */
+			for (int j41 = 0; j41 < 4; j41 = j41 + 1) {
+				fRec23_perm[j41] = fRec23_tmp[vsize + j41];
+			}
+			/* Recursive loop 41 */
+			/* Pre code */
+			for (int j52 = 0; j52 < 4; j52 = j52 + 1) {
+				fRec29_tmp[j52] = fRec29_perm[j52];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec29[i] = fSlow15 + fConst3 * fRec29[i - 1];
+			}
+			/* Post code */
+			for (int j53 = 0; j53 < 4; j53 = j53 + 1) {
+				fRec29_perm[j53] = fRec29_tmp[vsize + j53];
+			}
+			/* Vectorizable loop 42 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec44[i] = std::tan(fConst9 * std::max<float>(20.0f, std::min<float>(20000.0f, fRec28[i])));
+			}
+			/* Vectorizable loop 43 */
+			/* Pre code */
+			fYec6_idx = (fYec6_idx + fYec6_idx_save) & 4095;
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec6[(i + fYec6_idx) & 4095] = (fZec12[i] * (fYec5[i] - fYec5[i - 1])) / fZec56[i];
+			}
+			/* Post code */
+			fYec6_idx_save = vsize;
+			/* Vectorizable loop 44 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				iZec59[i] = int(fZec58[i]);
+			}
+			/* Vectorizable loop 45 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec60[i] = std::floor(fZec58[i]);
+			}
+			/* Recursive loop 46 */
+			/* Pre code */
+			for (int j0 = 0; j0 < 4; j0 = j0 + 1) {
+				fRec4_tmp[j0] = fRec4_perm[j0];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec0[i] = fConst1 + fRec4[i - 1];
+				fZec1[i] = fRec4[i - 1] - fConst1;
+				float fElse0 = fZec1[i];
+				float fThen1 = ((fZec1[i] > fSlow1) ? fElse0 : fSlow1);
+				float fElse1 = fZec0[i];
+				fRec4[i] = ((fZec0[i] < fSlow1) ? fElse1 : fThen1);
+			}
+			/* Post code */
+			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
+				fRec4_perm[j1] = fRec4_tmp[vsize + j1];
+			}
+			/* Vectorizable loop 47 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec16[i] = fYec1[(i + fYec1_idx) & 4095] - fYec1[((i + fYec1_idx) - iZec14[i]) & 4095] * (fZec15[i] + 1.0f - fZec13[i]) - (fZec13[i] - fZec15[i]) * fYec1[((i + fYec1_idx) - (iZec14[i] + 1)) & 4095];
+			}
+			/* Recursive loop 48 */
+			/* Pre code */
+			for (int j22 = 0; j22 < 4; j22 = j22 + 1) {
+				fRec14_tmp[j22] = fRec14_perm[j22];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec18[i] = fRec14[i - 1] + fConst5 * fZec17[i];
+				fRec14[i] = fZec18[i] - std::floor(fZec18[i]);
+			}
+			/* Post code */
+			for (int j23 = 0; j23 < 4; j23 = j23 + 1) {
+				fRec14_perm[j23] = fRec14_tmp[vsize + j23];
+			}
+			/* Recursive loop 49 */
+			/* Pre code */
+			for (int j28 = 0; j28 < 4; j28 = j28 + 1) {
+				fRec15_tmp[j28] = fRec15_perm[j28];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec15[i] = 0.999000013f * fRec15[i - 1] + fConst6 * fZec26[i];
+			}
+			/* Post code */
+			for (int j29 = 0; j29 < 4; j29 = j29 + 1) {
+				fRec15_perm[j29] = fRec15_tmp[vsize + j29];
+			}
+			/* Vectorizable loop 50 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec29[i] = std::max<float>(1.1920929e-07f, std::fabs(fZec8[i]));
+			}
+			/* Recursive loop 51 */
+			/* Pre code */
+			for (int j34 = 0; j34 < 4; j34 = j34 + 1) {
+				fRec20_tmp[j34] = fRec20_perm[j34];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec34[i] = fRec20[i - 1] + fConst4 * fZec33[i];
+				fZec35[i] = fZec34[i] + -1.0f;
+				iZec36[i] = fZec35[i] < 0.0f;
+				float fThen8 = fZec35[i];
+				float fElse8 = fZec34[i];
+				fRec20[i] = ((iZec36[i]) ? fElse8 : fThen8);
+				float fThen9 = fZec34[i] + fZec35[i] * (1.0f - fConst0 / fZec33[i]);
+				float fElse9 = fZec34[i];
+				fRec21[i] = ((iZec36[i]) ? fElse9 : fThen9);
+			}
+			/* Post code */
+			for (int j35 = 0; j35 < 4; j35 = j35 + 1) {
+				fRec20_perm[j35] = fRec20_tmp[vsize + j35];
+			}
+			/* Recursive loop 52 */
+			/* Pre code */
+			for (int j38 = 0; j38 < 4; j38 = j38 + 1) {
+				fRec22_tmp[j38] = fRec22_perm[j38];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec22[i] = fSlow8 + fRec22[i - 1] * float(fVec2[i - 1] >= fSlow8);
+			}
+			/* Post code */
+			for (int j39 = 0; j39 < 4; j39 = j39 + 1) {
+				fRec22_perm[j39] = fRec22_tmp[vsize + j39];
+			}
+			/* Recursive loop 53 */
+			/* Pre code */
+			for (int j42 = 0; j42 < 4; j42 = j42 + 1) {
+				fRec24_tmp[j42] = fRec24_perm[j42];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec24[i] = fSlow10 + fConst3 * fRec24[i - 1];
+			}
+			/* Post code */
+			for (int j43 = 0; j43 < 4; j43 = j43 + 1) {
+				fRec24_perm[j43] = fRec24_tmp[vsize + j43];
+			}
+			/* Recursive loop 54 */
+			/* Pre code */
+			for (int j44 = 0; j44 < 4; j44 = j44 + 1) {
+				fRec25_tmp[j44] = fRec25_perm[j44];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec25[i] = fSlow11 + fConst3 * fRec25[i - 1];
+			}
+			/* Post code */
+			for (int j45 = 0; j45 < 4; j45 = j45 + 1) {
+				fRec25_perm[j45] = fRec25_tmp[vsize + j45];
+			}
+			/* Recursive loop 55 */
+			/* Pre code */
+			for (int j46 = 0; j46 < 4; j46 = j46 + 1) {
+				iRec26_tmp[j46] = iRec26_perm[j46];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				iRec26[i] = iSlow12 * (iRec26[i - 1] + 1);
+			}
+			/* Post code */
+			for (int j47 = 0; j47 < 4; j47 = j47 + 1) {
+				iRec26_perm[j47] = iRec26_tmp[vsize + j47];
+			}
+			/* Recursive loop 56 */
+			/* Pre code */
+			for (int j48 = 0; j48 < 4; j48 = j48 + 1) {
+				fRec27_tmp[j48] = fRec27_perm[j48];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec27[i] = fSlow13 + fConst3 * fRec27[i - 1];
+			}
+			/* Post code */
+			for (int j49 = 0; j49 < 4; j49 = j49 + 1) {
+				fRec27_perm[j49] = fRec27_tmp[vsize + j49];
+			}
+			/* Vectorizable loop 57 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec38[i] = 1.0f - fRec5[i];
+			}
+			/* Vectorizable loop 58 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec40[i] = 1.0f - fRec17[i];
+			}
+			/* Vectorizable loop 59 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec42[i] = std::max<float>(1.0f, fConst0 * fRec23[i]);
+			}
+			/* Vectorizable loop 60 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec45[i] = 1.0f / fZec44[i];
+			}
+			/* Vectorizable loop 61 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec46[i] = 1.0f / fRec29[i];
+			}
+			/* Vectorizable loop 62 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec61[i] = fYec6[(i + fYec6_idx) & 4095] - fYec6[((i + fYec6_idx) - iZec59[i]) & 4095] * (fZec60[i] + 1.0f - fZec58[i]) - (fZec58[i] - fZec60[i]) * fYec6[((i + fYec6_idx) - (iZec59[i] + 1)) & 4095];
+			}
+			/* Vectorizable loop 63 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec62[i] = std::max<float>(1.1920929e-07f, std::fabs(fZec54[i]));
+			}
+			/* Recursive loop 64 */
+			/* Pre code */
+			for (int j12 = 0; j12 < 4; j12 = j12 + 1) {
+				fRec6_tmp[j12] = fRec6_perm[j12];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec7[i] = fRec6[i - 1] + fConst5 * fZec6[i];
+				fRec6[i] = fZec7[i] - std::floor(fZec7[i]);
+			}
+			/* Post code */
+			for (int j13 = 0; j13 < 4; j13 = j13 + 1) {
+				fRec6_perm[j13] = fRec6_tmp[vsize + j13];
+			}
+			/* Recursive loop 65 */
+			/* Pre code */
+			for (int j20 = 0; j20 < 4; j20 = j20 + 1) {
+				fRec12_tmp[j20] = fRec12_perm[j20];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec12[i] = 0.999000013f * fRec12[i - 1] + fConst6 * fZec16[i];
+			}
+			/* Post code */
+			for (int j21 = 0; j21 < 4; j21 = j21 + 1) {
+				fRec12_perm[j21] = fRec12_tmp[vsize + j21];
+			}
+			/* Recursive loop 66 */
+			/* Pre code */
+			for (int j32 = 0; j32 < 4; j32 = j32 + 1) {
+				fRec18_tmp[j32] = fRec18_perm[j32];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec30[i] = fRec18[i - 1] + fConst4 * fZec29[i];
+				fZec31[i] = fZec30[i] + -1.0f;
+				iZec32[i] = fZec31[i] < 0.0f;
+				float fThen6 = fZec31[i];
+				float fElse6 = fZec30[i];
+				fRec18[i] = ((iZec32[i]) ? fElse6 : fThen6);
+				float fThen7 = fZec30[i] + fZec31[i] * (1.0f - fConst0 / fZec29[i]);
+				float fElse7 = fZec30[i];
+				fRec19[i] = ((iZec32[i]) ? fElse7 : fThen7);
+			}
+			/* Post code */
+			for (int j33 = 0; j33 < 4; j33 = j33 + 1) {
+				fRec18_perm[j33] = fRec18_tmp[vsize + j33];
+			}
+			/* Vectorizable loop 67 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec37[i] = 1.0f - fRec4[i];
+			}
+			/* Vectorizable loop 68 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec39[i] = fZec38[i] * ftbl0triple_synthSIG0[int(65536.0f * fRec14[i])] + fConst8 * fRec5[i] * fRec15[i] * fZec17[i];
+			}
+			/* Vectorizable loop 69 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec41[i] = fConst6 * fZec40[i] * fZec26[i] + fRec17[i] * (2.0f * fRec21[i] + -1.0f);
+			}
+			/* Vectorizable loop 70 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec43[i] = std::max<float>(0.0f, std::min<float>(fRec22[i] / fZec42[i], std::max<float>(((1.0f - fRec24[i]) * (fZec42[i] - fRec22[i])) / std::max<float>(1.0f, fConst0 * fRec25[i]) + 1.0f, fRec24[i])) * (1.0f - float(iRec26[i]) / std::max<float>(1.0f, fConst0 * fRec27[i])));
+			}
+			/* Vectorizable loop 71 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec47[i] = (fZec45[i] - fZec46[i]) / fZec44[i] + 1.0f;
+			}
+			/* Vectorizable loop 72 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec48[i] = 1.0f - 1.0f / triple_synth_faustpower2_f(fZec44[i]);
+			}
+			/* Vectorizable loop 73 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec49[i] = (fZec46[i] + fZec45[i]) / fZec44[i] + 1.0f;
+			}
+			/* Recursive loop 74 */
+			/* Pre code */
+			for (int j70 = 0; j70 < 4; j70 = j70 + 1) {
+				fRec37_tmp[j70] = fRec37_perm[j70];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec53[i] = fRec37[i - 1] + fConst5 * fZec52[i];
+				fRec37[i] = fZec53[i] - std::floor(fZec53[i]);
+			}
+			/* Post code */
+			for (int j71 = 0; j71 < 4; j71 = j71 + 1) {
+				fRec37_perm[j71] = fRec37_tmp[vsize + j71];
+			}
+			/* Recursive loop 75 */
+			/* Pre code */
+			for (int j76 = 0; j76 < 4; j76 = j76 + 1) {
+				fRec38_tmp[j76] = fRec38_perm[j76];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec38[i] = 0.999000013f * fRec38[i - 1] + fConst6 * fZec61[i];
+			}
+			/* Post code */
+			for (int j77 = 0; j77 < 4; j77 = j77 + 1) {
+				fRec38_perm[j77] = fRec38_tmp[vsize + j77];
+			}
+			/* Recursive loop 76 */
+			/* Pre code */
+			for (int j78 = 0; j78 < 4; j78 = j78 + 1) {
+				fRec40_tmp[j78] = fRec40_perm[j78];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec63[i] = fRec40[i - 1] + fConst4 * fZec62[i];
+				fZec64[i] = fZec63[i] + -1.0f;
+				iZec65[i] = fZec64[i] < 0.0f;
+				float fThen10 = fZec64[i];
+				float fElse10 = fZec63[i];
+				fRec40[i] = ((iZec65[i]) ? fElse10 : fThen10);
+				float fThen11 = fZec63[i] + fZec64[i] * (1.0f - fConst0 / fZec62[i]);
+				float fElse11 = fZec63[i];
+				fRec41[i] = ((iZec65[i]) ? fElse11 : fThen11);
+			}
+			/* Post code */
+			for (int j79 = 0; j79 < 4; j79 = j79 + 1) {
+				fRec40_perm[j79] = fRec40_tmp[vsize + j79];
+			}
+			/* Recursive loop 77 */
+			/* Pre code */
+			for (int j54 = 0; j54 < 4; j54 = j54 + 1) {
+				fRec3_tmp[j54] = fRec3_perm[j54];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec3[i] = fSlow16 * (fZec37[i] * (fZec38[i] * ftbl0triple_synthSIG0[int(65536.0f * fRec6[i])] + fConst8 * fRec5[i] * fRec12[i] * fZec6[i] + fZec39[i]) + fRec4[i] * (fConst6 * fZec40[i] * fZec16[i] + fRec17[i] * (2.0f * fRec19[i] + -1.0f) + fZec41[i])) * fZec43[i] - (fRec3[i - 2] * fZec47[i] + 2.0f * fRec3[i - 1] * fZec48[i]) / fZec49[i];
+			}
+			/* Post code */
+			for (int j55 = 0; j55 < 4; j55 = j55 + 1) {
+				fRec3_perm[j55] = fRec3_tmp[vsize + j55];
+			}
+			/* Recursive loop 78 */
+			/* Pre code */
+			for (int j80 = 0; j80 < 4; j80 = j80 + 1) {
+				fRec36_tmp[j80] = fRec36_perm[j80];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec36[i] = fSlow16 * fZec43[i] * (fZec37[i] * (fZec39[i] + fZec38[i] * ftbl0triple_synthSIG0[int(65536.0f * fRec37[i])] + fConst8 * fRec5[i] * fRec38[i] * fZec52[i]) + fRec4[i] * (fZec41[i] + fConst6 * fZec40[i] * fZec61[i] + fRec17[i] * (2.0f * fRec41[i] + -1.0f))) - (fZec47[i] * fRec36[i - 2] + 2.0f * fZec48[i] * fRec36[i - 1]) / fZec49[i];
+			}
+			/* Post code */
+			for (int j81 = 0; j81 < 4; j81 = j81 + 1) {
+				fRec36_perm[j81] = fRec36_tmp[vsize + j81];
+			}
+			/* Vectorizable loop 79 */
+			/* Pre code */
+			for (int j56 = 0; j56 < 4; j56 = j56 + 1) {
+				fYec4_tmp[j56] = fYec4_perm[j56];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec4[i] = (fRec3[i - 2] + fRec3[i] + 2.0f * fRec3[i - 1]) / fZec49[i];
+			}
+			/* Post code */
+			for (int j57 = 0; j57 < 4; j57 = j57 + 1) {
+				fYec4_perm[j57] = fYec4_tmp[vsize + j57];
+			}
+			/* Vectorizable loop 80 */
+			/* Pre code */
+			for (int j82 = 0; j82 < 4; j82 = j82 + 1) {
+				fYec7_tmp[j82] = fYec7_perm[j82];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec7[i] = (fRec36[i - 2] + fRec36[i] + 2.0f * fRec36[i - 1]) / fZec49[i];
+			}
+			/* Post code */
+			for (int j83 = 0; j83 < 4; j83 = j83 + 1) {
+				fYec7_perm[j83] = fYec7_tmp[vsize + j83];
+			}
+			/* Recursive loop 81 */
+			/* Pre code */
+			for (int j58 = 0; j58 < 4; j58 = j58 + 1) {
+				fRec2_tmp[j58] = fRec2_perm[j58];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec2[i] = 0.0f - fConst12 * (fConst13 * fRec2[i - 1] - (fYec4[i] + fYec4[i - 1]));
+			}
+			/* Post code */
+			for (int j59 = 0; j59 < 4; j59 = j59 + 1) {
+				fRec2_perm[j59] = fRec2_tmp[vsize + j59];
+			}
+			/* Recursive loop 82 */
+			/* Pre code */
+			for (int j66 = 0; j66 < 4; j66 = j66 + 1) {
+				fRec32_tmp[j66] = fRec32_perm[j66];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec32[i] = fSlow18 + fConst3 * fRec32[i - 1];
+			}
+			/* Post code */
+			for (int j67 = 0; j67 < 4; j67 = j67 + 1) {
+				fRec32_perm[j67] = fRec32_tmp[vsize + j67];
+			}
+			/* Recursive loop 83 */
+			/* Pre code */
+			for (int j84 = 0; j84 < 4; j84 = j84 + 1) {
+				fRec35_tmp[j84] = fRec35_perm[j84];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec35[i] = 0.0f - fConst12 * (fConst13 * fRec35[i - 1] - (fYec7[i] + fYec7[i - 1]));
+			}
+			/* Post code */
+			for (int j85 = 0; j85 < 4; j85 = j85 + 1) {
+				fRec35_perm[j85] = fRec35_tmp[vsize + j85];
+			}
+			/* Recursive loop 84 */
+			/* Pre code */
+			for (int j60 = 0; j60 < 4; j60 = j60 + 1) {
+				fRec1_tmp[j60] = fRec1_perm[j60];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec1[i] = fRec2[i] - fConst14 * (fConst15 * fRec1[i - 2] + fConst16 * fRec1[i - 1]);
+			}
+			/* Post code */
+			for (int j61 = 0; j61 < 4; j61 = j61 + 1) {
+				fRec1_perm[j61] = fRec1_tmp[vsize + j61];
+			}
+			/* Recursive loop 85 */
+			/* Pre code */
+			for (int j64 = 0; j64 < 4; j64 = j64 + 1) {
+				fRec30_tmp[j64] = fRec30_perm[j64];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec30[i] = fSlow17 + fConst3 * fRec30[i - 1];
+			}
+			/* Post code */
+			for (int j65 = 0; j65 < 4; j65 = j65 + 1) {
+				fRec30_perm[j65] = fRec30_tmp[vsize + j65];
+			}
+			/* Recursive loop 86 */
+			/* Pre code */
+			for (int j68 = 0; j68 < 4; j68 = j68 + 1) {
+				fRec31_tmp[j68] = fRec31_perm[j68];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec50[i] = fRec31[i - 1] + fConst4 * fRec32[i];
+				fRec31[i] = fZec50[i] - std::floor(fZec50[i]);
+			}
+			/* Post code */
+			for (int j69 = 0; j69 < 4; j69 = j69 + 1) {
+				fRec31_perm[j69] = fRec31_tmp[vsize + j69];
+			}
+			/* Recursive loop 87 */
+			/* Pre code */
+			for (int j86 = 0; j86 < 4; j86 = j86 + 1) {
+				fRec34_tmp[j86] = fRec34_perm[j86];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec34[i] = fRec35[i] - fConst14 * (fConst15 * fRec34[i - 2] + fConst16 * fRec34[i - 1]);
+			}
+			/* Post code */
+			for (int j87 = 0; j87 < 4; j87 = j87 + 1) {
+				fRec34_perm[j87] = fRec34_tmp[vsize + j87];
+			}
+			/* Recursive loop 88 */
+			/* Pre code */
+			for (int j62 = 0; j62 < 4; j62 = j62 + 1) {
+				fRec0_tmp[j62] = fRec0_perm[j62];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec0[i] = fConst14 * (fRec1[i - 2] + fRec1[i] + 2.0f * fRec1[i - 1]) - fConst17 * (fConst18 * fRec0[i - 2] + fConst16 * fRec0[i - 1]);
+			}
+			/* Post code */
+			for (int j63 = 0; j63 < 4; j63 = j63 + 1) {
+				fRec0_perm[j63] = fRec0_tmp[vsize + j63];
+			}
+			/* Vectorizable loop 89 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec51[i] = 0.5f * fRec30[i] * (ftbl0triple_synthSIG0[int(65536.0f * fRec31[i])] + -1.0f) + 1.0f;
+			}
+			/* Recursive loop 90 */
+			/* Pre code */
+			for (int j88 = 0; j88 < 4; j88 = j88 + 1) {
+				fRec33_tmp[j88] = fRec33_perm[j88];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec33[i] = fConst14 * (fRec34[i - 2] + fRec34[i] + 2.0f * fRec34[i - 1]) - fConst17 * (fConst18 * fRec33[i - 2] + fConst16 * fRec33[i - 1]);
+			}
+			/* Post code */
+			for (int j89 = 0; j89 < 4; j89 = j89 + 1) {
+				fRec33_perm[j89] = fRec33_tmp[vsize + j89];
+			}
+			/* Vectorizable loop 91 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output0[i] = FAUSTFLOAT(fConst17 * (fRec0[i - 2] + fRec0[i] + 2.0f * fRec0[i - 1]) * fZec51[i]);
+			}
+			/* Vectorizable loop 92 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output1[i] = FAUSTFLOAT(fConst17 * fZec51[i] * (fRec33[i - 2] + fRec33[i] + 2.0f * fRec33[i - 1]));
+			}
 		}
 	}
 

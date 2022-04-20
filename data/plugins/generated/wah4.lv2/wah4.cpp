@@ -5,7 +5,7 @@ license: "AGPL-3.0-or-later"
 name: "Wah4"
 version: "1.0"
 Code generated with Faust 2.40.0 (https://faust.grame.fr)
-Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn wah4 -es 1 -mcd 16 -single -ftz 0
+Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn wah4 -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
 #ifndef  __wah4_H__
@@ -699,27 +699,27 @@ class wah4 : public dsp {
 	
  private:
 	
+	FAUSTFLOAT fHslider0;
+	float fRec6_perm[4];
+	float fRec5_perm[4];
 	int fSampleRate;
 	float fConst0;
-	FAUSTFLOAT fHslider0;
-	float fRec6[2];
-	float fRec5[2];
-	float fRec4[2];
-	float fRec3[2];
-	float fRec2[2];
-	float fRec1[2];
-	float fRec0[2];
-	float fRec11[2];
-	float fRec10[2];
-	float fRec9[2];
-	float fRec8[2];
-	float fRec7[2];
+	float fRec4_perm[4];
+	float fRec3_perm[4];
+	float fRec2_perm[4];
+	float fRec1_perm[4];
+	float fRec0_perm[4];
+	float fRec11_perm[4];
+	float fRec10_perm[4];
+	float fRec9_perm[4];
+	float fRec8_perm[4];
+	float fRec7_perm[4];
 	
  public:
 	
 	void metadata(Meta* m) { 
 		m->declare("author", "Zrythm DAW");
-		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn wah4 -es 1 -mcd 16 -single -ftz 0");
+		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn wah4 -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
 		m->declare("description", "Wah pedal");
 		m->declare("filename", "wah4.dsp");
@@ -774,41 +774,41 @@ class wah4 : public dsp {
 	}
 	
 	virtual void instanceClear() {
-		for (int l0 = 0; l0 < 2; l0 = l0 + 1) {
-			fRec6[l0] = 0.0f;
+		for (int l0 = 0; l0 < 4; l0 = l0 + 1) {
+			fRec6_perm[l0] = 0.0f;
 		}
-		for (int l1 = 0; l1 < 2; l1 = l1 + 1) {
-			fRec5[l1] = 0.0f;
+		for (int l1 = 0; l1 < 4; l1 = l1 + 1) {
+			fRec5_perm[l1] = 0.0f;
 		}
-		for (int l2 = 0; l2 < 2; l2 = l2 + 1) {
-			fRec4[l2] = 0.0f;
+		for (int l2 = 0; l2 < 4; l2 = l2 + 1) {
+			fRec4_perm[l2] = 0.0f;
 		}
-		for (int l3 = 0; l3 < 2; l3 = l3 + 1) {
-			fRec3[l3] = 0.0f;
+		for (int l3 = 0; l3 < 4; l3 = l3 + 1) {
+			fRec3_perm[l3] = 0.0f;
 		}
-		for (int l4 = 0; l4 < 2; l4 = l4 + 1) {
-			fRec2[l4] = 0.0f;
+		for (int l4 = 0; l4 < 4; l4 = l4 + 1) {
+			fRec2_perm[l4] = 0.0f;
 		}
-		for (int l5 = 0; l5 < 2; l5 = l5 + 1) {
-			fRec1[l5] = 0.0f;
+		for (int l5 = 0; l5 < 4; l5 = l5 + 1) {
+			fRec1_perm[l5] = 0.0f;
 		}
-		for (int l6 = 0; l6 < 2; l6 = l6 + 1) {
-			fRec0[l6] = 0.0f;
+		for (int l6 = 0; l6 < 4; l6 = l6 + 1) {
+			fRec0_perm[l6] = 0.0f;
 		}
-		for (int l7 = 0; l7 < 2; l7 = l7 + 1) {
-			fRec11[l7] = 0.0f;
+		for (int l7 = 0; l7 < 4; l7 = l7 + 1) {
+			fRec11_perm[l7] = 0.0f;
 		}
-		for (int l8 = 0; l8 < 2; l8 = l8 + 1) {
-			fRec10[l8] = 0.0f;
+		for (int l8 = 0; l8 < 4; l8 = l8 + 1) {
+			fRec10_perm[l8] = 0.0f;
 		}
-		for (int l9 = 0; l9 < 2; l9 = l9 + 1) {
-			fRec9[l9] = 0.0f;
+		for (int l9 = 0; l9 < 4; l9 = l9 + 1) {
+			fRec9_perm[l9] = 0.0f;
 		}
-		for (int l10 = 0; l10 < 2; l10 = l10 + 1) {
-			fRec8[l10] = 0.0f;
+		for (int l10 = 0; l10 < 4; l10 = l10 + 1) {
+			fRec8_perm[l10] = 0.0f;
 		}
-		for (int l11 = 0; l11 < 2; l11 = l11 + 1) {
-			fRec7[l11] = 0.0f;
+		for (int l11 = 0; l11 < 4; l11 = l11 + 1) {
+			fRec7_perm[l11] = 0.0f;
 		}
 	}
 	
@@ -842,41 +842,320 @@ class wah4 : public dsp {
 	}
 	
 	virtual void compute(int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOAT** RESTRICT outputs) {
-		FAUSTFLOAT* input0 = inputs[0];
-		FAUSTFLOAT* input1 = inputs[1];
-		FAUSTFLOAT* output0 = outputs[0];
-		FAUSTFLOAT* output1 = outputs[1];
+		FAUSTFLOAT* input0_ptr = inputs[0];
+		FAUSTFLOAT* input1_ptr = inputs[1];
+		FAUSTFLOAT* output0_ptr = outputs[0];
+		FAUSTFLOAT* output1_ptr = outputs[1];
 		float fSlow0 = 0.00100000005f * float(fHslider0);
-		for (int i0 = 0; i0 < count; i0 = i0 + 1) {
-			fRec6[0] = fSlow0 + 0.999000013f * fRec6[1];
-			fRec5[0] = 0.00100000005f * fRec6[0] + 0.999000013f * fRec5[1];
-			float fTemp0 = fConst0 * fRec5[0];
-			float fTemp1 = 1.0f - fTemp0;
-			fRec4[0] = (float(input0[i0]) + fTemp1 * fRec4[1]) - 3.20000005f * fRec0[1];
-			fRec3[0] = fRec4[0] + fTemp1 * fRec3[1];
-			fRec2[0] = fRec3[0] + fTemp1 * fRec2[1];
-			fRec1[0] = fRec2[0] + fRec1[1] * fTemp1;
-			float fTemp2 = std::pow(fTemp0, 4.0f);
-			fRec0[0] = fRec1[0] * fTemp2;
-			output0[i0] = FAUSTFLOAT(4.0f * fRec0[0]);
-			fRec11[0] = (float(input1[i0]) + fTemp1 * fRec11[1]) - 3.20000005f * fRec7[1];
-			fRec10[0] = fRec11[0] + fTemp1 * fRec10[1];
-			fRec9[0] = fRec10[0] + fTemp1 * fRec9[1];
-			fRec8[0] = fRec9[0] + fTemp1 * fRec8[1];
-			fRec7[0] = fRec8[0] * fTemp2;
-			output1[i0] = FAUSTFLOAT(4.0f * fRec7[0]);
-			fRec6[1] = fRec6[0];
-			fRec5[1] = fRec5[0];
-			fRec4[1] = fRec4[0];
-			fRec3[1] = fRec3[0];
-			fRec2[1] = fRec2[0];
-			fRec1[1] = fRec1[0];
-			fRec0[1] = fRec0[0];
-			fRec11[1] = fRec11[0];
-			fRec10[1] = fRec10[0];
-			fRec9[1] = fRec9[0];
-			fRec8[1] = fRec8[0];
-			fRec7[1] = fRec7[0];
+		float fRec6_tmp[36];
+		float* fRec6 = &fRec6_tmp[4];
+		float fRec5_tmp[36];
+		float* fRec5 = &fRec5_tmp[4];
+		float fZec0[32];
+		float fZec1[32];
+		float fRec4_tmp[36];
+		float* fRec4 = &fRec4_tmp[4];
+		float fRec3_tmp[36];
+		float* fRec3 = &fRec3_tmp[4];
+		float fRec2_tmp[36];
+		float* fRec2 = &fRec2_tmp[4];
+		float fRec1_tmp[36];
+		float* fRec1 = &fRec1_tmp[4];
+		float fZec2[32];
+		float fRec0_tmp[36];
+		float* fRec0 = &fRec0_tmp[4];
+		float fRec11_tmp[36];
+		float* fRec11 = &fRec11_tmp[4];
+		float fRec10_tmp[36];
+		float* fRec10 = &fRec10_tmp[4];
+		float fRec9_tmp[36];
+		float* fRec9 = &fRec9_tmp[4];
+		float fRec8_tmp[36];
+		float* fRec8 = &fRec8_tmp[4];
+		float fRec7_tmp[36];
+		float* fRec7 = &fRec7_tmp[4];
+		int vindex = 0;
+		/* Main loop */
+		for (vindex = 0; vindex <= count - 32; vindex = vindex + 32) {
+			FAUSTFLOAT* input0 = &input0_ptr[vindex];
+			FAUSTFLOAT* input1 = &input1_ptr[vindex];
+			FAUSTFLOAT* output0 = &output0_ptr[vindex];
+			FAUSTFLOAT* output1 = &output1_ptr[vindex];
+			int vsize = 32;
+			/* Recursive loop 0 */
+			/* Pre code */
+			for (int j0 = 0; j0 < 4; j0 = j0 + 1) {
+				fRec6_tmp[j0] = fRec6_perm[j0];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec6[i] = fSlow0 + 0.999000013f * fRec6[i - 1];
+			}
+			/* Post code */
+			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
+				fRec6_perm[j1] = fRec6_tmp[vsize + j1];
+			}
+			/* Recursive loop 1 */
+			/* Pre code */
+			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
+				fRec5_tmp[j2] = fRec5_perm[j2];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec5[i] = 0.00100000005f * fRec6[i] + 0.999000013f * fRec5[i - 1];
+			}
+			/* Post code */
+			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
+				fRec5_perm[j3] = fRec5_tmp[vsize + j3];
+			}
+			/* Vectorizable loop 2 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec0[i] = fConst0 * fRec5[i];
+			}
+			/* Vectorizable loop 3 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec1[i] = 1.0f - fZec0[i];
+			}
+			/* Vectorizable loop 4 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec2[i] = std::pow(fZec0[i], 4.0f);
+			}
+			/* Recursive loop 5 */
+			/* Pre code */
+			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
+				fRec4_tmp[j4] = fRec4_perm[j4];
+			}
+			for (int j6 = 0; j6 < 4; j6 = j6 + 1) {
+				fRec3_tmp[j6] = fRec3_perm[j6];
+			}
+			for (int j8 = 0; j8 < 4; j8 = j8 + 1) {
+				fRec2_tmp[j8] = fRec2_perm[j8];
+			}
+			for (int j10 = 0; j10 < 4; j10 = j10 + 1) {
+				fRec1_tmp[j10] = fRec1_perm[j10];
+			}
+			for (int j12 = 0; j12 < 4; j12 = j12 + 1) {
+				fRec0_tmp[j12] = fRec0_perm[j12];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec4[i] = (float(input0[i]) + fZec1[i] * fRec4[i - 1]) - 3.20000005f * fRec0[i - 1];
+				fRec3[i] = fRec4[i] + fZec1[i] * fRec3[i - 1];
+				fRec2[i] = fRec3[i] + fZec1[i] * fRec2[i - 1];
+				fRec1[i] = fRec2[i] + fRec1[i - 1] * fZec1[i];
+				fRec0[i] = fRec1[i] * fZec2[i];
+			}
+			/* Post code */
+			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
+				fRec4_perm[j5] = fRec4_tmp[vsize + j5];
+			}
+			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
+				fRec3_perm[j7] = fRec3_tmp[vsize + j7];
+			}
+			for (int j9 = 0; j9 < 4; j9 = j9 + 1) {
+				fRec2_perm[j9] = fRec2_tmp[vsize + j9];
+			}
+			for (int j11 = 0; j11 < 4; j11 = j11 + 1) {
+				fRec1_perm[j11] = fRec1_tmp[vsize + j11];
+			}
+			for (int j13 = 0; j13 < 4; j13 = j13 + 1) {
+				fRec0_perm[j13] = fRec0_tmp[vsize + j13];
+			}
+			/* Recursive loop 6 */
+			/* Pre code */
+			for (int j14 = 0; j14 < 4; j14 = j14 + 1) {
+				fRec11_tmp[j14] = fRec11_perm[j14];
+			}
+			for (int j16 = 0; j16 < 4; j16 = j16 + 1) {
+				fRec10_tmp[j16] = fRec10_perm[j16];
+			}
+			for (int j18 = 0; j18 < 4; j18 = j18 + 1) {
+				fRec9_tmp[j18] = fRec9_perm[j18];
+			}
+			for (int j20 = 0; j20 < 4; j20 = j20 + 1) {
+				fRec8_tmp[j20] = fRec8_perm[j20];
+			}
+			for (int j22 = 0; j22 < 4; j22 = j22 + 1) {
+				fRec7_tmp[j22] = fRec7_perm[j22];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec11[i] = (float(input1[i]) + fZec1[i] * fRec11[i - 1]) - 3.20000005f * fRec7[i - 1];
+				fRec10[i] = fRec11[i] + fZec1[i] * fRec10[i - 1];
+				fRec9[i] = fRec10[i] + fZec1[i] * fRec9[i - 1];
+				fRec8[i] = fRec9[i] + fZec1[i] * fRec8[i - 1];
+				fRec7[i] = fRec8[i] * fZec2[i];
+			}
+			/* Post code */
+			for (int j15 = 0; j15 < 4; j15 = j15 + 1) {
+				fRec11_perm[j15] = fRec11_tmp[vsize + j15];
+			}
+			for (int j17 = 0; j17 < 4; j17 = j17 + 1) {
+				fRec10_perm[j17] = fRec10_tmp[vsize + j17];
+			}
+			for (int j19 = 0; j19 < 4; j19 = j19 + 1) {
+				fRec9_perm[j19] = fRec9_tmp[vsize + j19];
+			}
+			for (int j21 = 0; j21 < 4; j21 = j21 + 1) {
+				fRec8_perm[j21] = fRec8_tmp[vsize + j21];
+			}
+			for (int j23 = 0; j23 < 4; j23 = j23 + 1) {
+				fRec7_perm[j23] = fRec7_tmp[vsize + j23];
+			}
+			/* Vectorizable loop 7 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output0[i] = FAUSTFLOAT(4.0f * fRec0[i]);
+			}
+			/* Vectorizable loop 8 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output1[i] = FAUSTFLOAT(4.0f * fRec7[i]);
+			}
+		}
+		/* Remaining frames */
+		if ((vindex < count)) {
+			FAUSTFLOAT* input0 = &input0_ptr[vindex];
+			FAUSTFLOAT* input1 = &input1_ptr[vindex];
+			FAUSTFLOAT* output0 = &output0_ptr[vindex];
+			FAUSTFLOAT* output1 = &output1_ptr[vindex];
+			int vsize = count - vindex;
+			/* Recursive loop 0 */
+			/* Pre code */
+			for (int j0 = 0; j0 < 4; j0 = j0 + 1) {
+				fRec6_tmp[j0] = fRec6_perm[j0];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec6[i] = fSlow0 + 0.999000013f * fRec6[i - 1];
+			}
+			/* Post code */
+			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
+				fRec6_perm[j1] = fRec6_tmp[vsize + j1];
+			}
+			/* Recursive loop 1 */
+			/* Pre code */
+			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
+				fRec5_tmp[j2] = fRec5_perm[j2];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec5[i] = 0.00100000005f * fRec6[i] + 0.999000013f * fRec5[i - 1];
+			}
+			/* Post code */
+			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
+				fRec5_perm[j3] = fRec5_tmp[vsize + j3];
+			}
+			/* Vectorizable loop 2 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec0[i] = fConst0 * fRec5[i];
+			}
+			/* Vectorizable loop 3 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec1[i] = 1.0f - fZec0[i];
+			}
+			/* Vectorizable loop 4 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec2[i] = std::pow(fZec0[i], 4.0f);
+			}
+			/* Recursive loop 5 */
+			/* Pre code */
+			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
+				fRec4_tmp[j4] = fRec4_perm[j4];
+			}
+			for (int j6 = 0; j6 < 4; j6 = j6 + 1) {
+				fRec3_tmp[j6] = fRec3_perm[j6];
+			}
+			for (int j8 = 0; j8 < 4; j8 = j8 + 1) {
+				fRec2_tmp[j8] = fRec2_perm[j8];
+			}
+			for (int j10 = 0; j10 < 4; j10 = j10 + 1) {
+				fRec1_tmp[j10] = fRec1_perm[j10];
+			}
+			for (int j12 = 0; j12 < 4; j12 = j12 + 1) {
+				fRec0_tmp[j12] = fRec0_perm[j12];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec4[i] = (float(input0[i]) + fZec1[i] * fRec4[i - 1]) - 3.20000005f * fRec0[i - 1];
+				fRec3[i] = fRec4[i] + fZec1[i] * fRec3[i - 1];
+				fRec2[i] = fRec3[i] + fZec1[i] * fRec2[i - 1];
+				fRec1[i] = fRec2[i] + fRec1[i - 1] * fZec1[i];
+				fRec0[i] = fRec1[i] * fZec2[i];
+			}
+			/* Post code */
+			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
+				fRec4_perm[j5] = fRec4_tmp[vsize + j5];
+			}
+			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
+				fRec3_perm[j7] = fRec3_tmp[vsize + j7];
+			}
+			for (int j9 = 0; j9 < 4; j9 = j9 + 1) {
+				fRec2_perm[j9] = fRec2_tmp[vsize + j9];
+			}
+			for (int j11 = 0; j11 < 4; j11 = j11 + 1) {
+				fRec1_perm[j11] = fRec1_tmp[vsize + j11];
+			}
+			for (int j13 = 0; j13 < 4; j13 = j13 + 1) {
+				fRec0_perm[j13] = fRec0_tmp[vsize + j13];
+			}
+			/* Recursive loop 6 */
+			/* Pre code */
+			for (int j14 = 0; j14 < 4; j14 = j14 + 1) {
+				fRec11_tmp[j14] = fRec11_perm[j14];
+			}
+			for (int j16 = 0; j16 < 4; j16 = j16 + 1) {
+				fRec10_tmp[j16] = fRec10_perm[j16];
+			}
+			for (int j18 = 0; j18 < 4; j18 = j18 + 1) {
+				fRec9_tmp[j18] = fRec9_perm[j18];
+			}
+			for (int j20 = 0; j20 < 4; j20 = j20 + 1) {
+				fRec8_tmp[j20] = fRec8_perm[j20];
+			}
+			for (int j22 = 0; j22 < 4; j22 = j22 + 1) {
+				fRec7_tmp[j22] = fRec7_perm[j22];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec11[i] = (float(input1[i]) + fZec1[i] * fRec11[i - 1]) - 3.20000005f * fRec7[i - 1];
+				fRec10[i] = fRec11[i] + fZec1[i] * fRec10[i - 1];
+				fRec9[i] = fRec10[i] + fZec1[i] * fRec9[i - 1];
+				fRec8[i] = fRec9[i] + fZec1[i] * fRec8[i - 1];
+				fRec7[i] = fRec8[i] * fZec2[i];
+			}
+			/* Post code */
+			for (int j15 = 0; j15 < 4; j15 = j15 + 1) {
+				fRec11_perm[j15] = fRec11_tmp[vsize + j15];
+			}
+			for (int j17 = 0; j17 < 4; j17 = j17 + 1) {
+				fRec10_perm[j17] = fRec10_tmp[vsize + j17];
+			}
+			for (int j19 = 0; j19 < 4; j19 = j19 + 1) {
+				fRec9_perm[j19] = fRec9_tmp[vsize + j19];
+			}
+			for (int j21 = 0; j21 < 4; j21 = j21 + 1) {
+				fRec8_perm[j21] = fRec8_tmp[vsize + j21];
+			}
+			for (int j23 = 0; j23 < 4; j23 = j23 + 1) {
+				fRec7_perm[j23] = fRec7_tmp[vsize + j23];
+			}
+			/* Vectorizable loop 7 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output0[i] = FAUSTFLOAT(4.0f * fRec0[i]);
+			}
+			/* Vectorizable loop 8 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output1[i] = FAUSTFLOAT(4.0f * fRec7[i]);
+			}
 		}
 	}
 

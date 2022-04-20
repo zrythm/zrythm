@@ -5,7 +5,7 @@ license: "AGPL-3.0-or-later"
 name: "Compressor"
 version: "1.0"
 Code generated with Faust 2.40.0 (https://faust.grame.fr)
-Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn compressor -es 1 -mcd 16 -single -ftz 0
+Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn compressor -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
 #ifndef  __compressor_H__
@@ -700,15 +700,15 @@ class compressor : public dsp {
  private:
 	
 	FAUSTFLOAT fHslider0;
-	FAUSTFLOAT fHslider1;
-	FAUSTFLOAT fHslider2;
 	int fSampleRate;
 	float fConst0;
+	FAUSTFLOAT fHslider1;
+	float fRec2_perm[4];
+	float fRec1_perm[4];
+	FAUSTFLOAT fHslider2;
 	FAUSTFLOAT fHslider3;
-	float fRec2[2];
-	float fRec1[2];
+	float fRec0_perm[4];
 	FAUSTFLOAT fHslider4;
-	float fRec0[2];
 	
  public:
 	
@@ -718,7 +718,7 @@ class compressor : public dsp {
 		m->declare("author", "Zrythm DAW");
 		m->declare("basics.lib/name", "Faust Basic Element Library");
 		m->declare("basics.lib/version", "0.5");
-		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn compressor -es 1 -mcd 16 -single -ftz 0");
+		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn compressor -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32");
 		m->declare("compressors.lib/compression_gain_mono:author", "Julius O. Smith III");
 		m->declare("compressors.lib/compression_gain_mono:copyright", "Copyright (C) 2014-2020 by Julius O. Smith III <jos@ccrma.stanford.edu>");
 		m->declare("compressors.lib/compression_gain_mono:license", "MIT-style STK-4.3 license");
@@ -764,22 +764,22 @@ class compressor : public dsp {
 	}
 	
 	virtual void instanceResetUserInterface() {
-		fHslider0 = FAUSTFLOAT(50.0f);
-		fHslider1 = FAUSTFLOAT(1.0f);
-		fHslider2 = FAUSTFLOAT(10.0f);
-		fHslider3 = FAUSTFLOAT(10.0f);
-		fHslider4 = FAUSTFLOAT(-20.0f);
+		fHslider0 = FAUSTFLOAT(10.0f);
+		fHslider1 = FAUSTFLOAT(10.0f);
+		fHslider2 = FAUSTFLOAT(1.0f);
+		fHslider3 = FAUSTFLOAT(-20.0f);
+		fHslider4 = FAUSTFLOAT(50.0f);
 	}
 	
 	virtual void instanceClear() {
-		for (int l0 = 0; l0 < 2; l0 = l0 + 1) {
-			fRec2[l0] = 0.0f;
+		for (int l0 = 0; l0 < 4; l0 = l0 + 1) {
+			fRec2_perm[l0] = 0.0f;
 		}
-		for (int l1 = 0; l1 < 2; l1 = l1 + 1) {
-			fRec1[l1] = 0.0f;
+		for (int l1 = 0; l1 < 4; l1 = l1 + 1) {
+			fRec1_perm[l1] = 0.0f;
 		}
-		for (int l2 = 0; l2 < 2; l2 = l2 + 1) {
-			fRec0[l2] = 0.0f;
+		for (int l2 = 0; l2 < 4; l2 = l2 + 1) {
+			fRec0_perm[l2] = 0.0f;
 		}
 	}
 	
@@ -803,61 +803,180 @@ class compressor : public dsp {
 	
 	virtual void buildUserInterface(UI* ui_interface) {
 		ui_interface->openVerticalBox("Compressor");
-		ui_interface->declare(&fHslider1, "1", "");
-		ui_interface->addHorizontalSlider("Ratio", &fHslider1, FAUSTFLOAT(1.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(0.100000001f));
-		ui_interface->declare(&fHslider4, "2", "");
-		ui_interface->declare(&fHslider4, "unit", "Hz");
-		ui_interface->addHorizontalSlider("Threshold", &fHslider4, FAUSTFLOAT(-20.0f), FAUSTFLOAT(-50.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(0.100000001f));
-		ui_interface->declare(&fHslider2, "3", "");
-		ui_interface->declare(&fHslider2, "unit", "ms");
-		ui_interface->addHorizontalSlider("Attack", &fHslider2, FAUSTFLOAT(10.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(200.0f), FAUSTFLOAT(1.0f));
-		ui_interface->declare(&fHslider3, "4", "");
-		ui_interface->declare(&fHslider3, "unit", "ms");
-		ui_interface->addHorizontalSlider("Release", &fHslider3, FAUSTFLOAT(10.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(200.0f), FAUSTFLOAT(1.0f));
-		ui_interface->declare(&fHslider0, "5", "");
-		ui_interface->declare(&fHslider0, "tooltip", "Mix amount");
-		ui_interface->declare(&fHslider0, "unit", "percentage");
-		ui_interface->addHorizontalSlider("Mix", &fHslider0, FAUSTFLOAT(50.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(100.0f), FAUSTFLOAT(0.100000001f));
+		ui_interface->declare(&fHslider2, "1", "");
+		ui_interface->addHorizontalSlider("Ratio", &fHslider2, FAUSTFLOAT(1.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(0.100000001f));
+		ui_interface->declare(&fHslider3, "2", "");
+		ui_interface->declare(&fHslider3, "unit", "Hz");
+		ui_interface->addHorizontalSlider("Threshold", &fHslider3, FAUSTFLOAT(-20.0f), FAUSTFLOAT(-50.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(0.100000001f));
+		ui_interface->declare(&fHslider0, "3", "");
+		ui_interface->declare(&fHslider0, "unit", "ms");
+		ui_interface->addHorizontalSlider("Attack", &fHslider0, FAUSTFLOAT(10.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(200.0f), FAUSTFLOAT(1.0f));
+		ui_interface->declare(&fHslider1, "4", "");
+		ui_interface->declare(&fHslider1, "unit", "ms");
+		ui_interface->addHorizontalSlider("Release", &fHslider1, FAUSTFLOAT(10.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(200.0f), FAUSTFLOAT(1.0f));
+		ui_interface->declare(&fHslider4, "5", "");
+		ui_interface->declare(&fHslider4, "tooltip", "Mix amount");
+		ui_interface->declare(&fHslider4, "unit", "percentage");
+		ui_interface->addHorizontalSlider("Mix", &fHslider4, FAUSTFLOAT(50.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(100.0f), FAUSTFLOAT(0.100000001f));
 		ui_interface->closeBox();
 	}
 	
 	virtual void compute(int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOAT** RESTRICT outputs) {
-		FAUSTFLOAT* input0 = inputs[0];
-		FAUSTFLOAT* input1 = inputs[1];
-		FAUSTFLOAT* output0 = outputs[0];
-		FAUSTFLOAT* output1 = outputs[1];
-		float fSlow0 = 0.00999999978f * float(fHslider0);
-		float fSlow1 = 1.0f - fSlow0;
-		float fSlow2 = 1.0f / std::max<float>(1.1920929e-07f, float(fHslider1)) + -1.0f;
-		float fSlow3 = float(fHslider2);
-		float fSlow4 = 0.00100000005f * fSlow3;
+		FAUSTFLOAT* input0_ptr = inputs[0];
+		FAUSTFLOAT* input1_ptr = inputs[1];
+		FAUSTFLOAT* output0_ptr = outputs[0];
+		FAUSTFLOAT* output1_ptr = outputs[1];
+		float fZec0[32];
+		float fSlow0 = float(fHslider0);
+		float fSlow1 = 0.00100000005f * fSlow0;
+		int iSlow2 = std::fabs(fSlow1) < 1.1920929e-07f;
+		float fThen1 = std::exp(0.0f - fConst0 / ((iSlow2) ? 1.0f : fSlow1));
+		float fSlow3 = ((iSlow2) ? 0.0f : fThen1);
+		float fSlow4 = 0.00100000005f * float(fHslider1);
 		int iSlow5 = std::fabs(fSlow4) < 1.1920929e-07f;
-		float fThen1 = std::exp(0.0f - fConst0 / ((iSlow5) ? 1.0f : fSlow4));
-		float fSlow6 = ((iSlow5) ? 0.0f : fThen1);
-		float fSlow7 = 0.00100000005f * float(fHslider3);
-		int iSlow8 = std::fabs(fSlow7) < 1.1920929e-07f;
-		float fThen3 = std::exp(0.0f - fConst0 / ((iSlow8) ? 1.0f : fSlow7));
-		float fSlow9 = ((iSlow8) ? 0.0f : fThen3);
-		float fSlow10 = float(fHslider4);
-		float fSlow11 = 0.000500000024f * fSlow3;
-		int iSlow12 = std::fabs(fSlow11) < 1.1920929e-07f;
-		float fThen6 = std::exp(0.0f - fConst0 / ((iSlow12) ? 1.0f : fSlow11));
-		float fSlow13 = ((iSlow12) ? 0.0f : fThen6);
+		float fThen3 = std::exp(0.0f - fConst0 / ((iSlow5) ? 1.0f : fSlow4));
+		float fSlow6 = ((iSlow5) ? 0.0f : fThen3);
+		float fZec1[32];
+		float fRec2_tmp[36];
+		float* fRec2 = &fRec2_tmp[4];
+		float fRec1_tmp[36];
+		float* fRec1 = &fRec1_tmp[4];
+		float fSlow7 = 1.0f / std::max<float>(1.1920929e-07f, float(fHslider2)) + -1.0f;
+		float fSlow8 = float(fHslider3);
+		float fSlow9 = 0.000500000024f * fSlow0;
+		int iSlow10 = std::fabs(fSlow9) < 1.1920929e-07f;
+		float fThen6 = std::exp(0.0f - fConst0 / ((iSlow10) ? 1.0f : fSlow9));
+		float fSlow11 = ((iSlow10) ? 0.0f : fThen6);
+		float fSlow12 = 1.0f - fSlow11;
+		float fRec0_tmp[36];
+		float* fRec0 = &fRec0_tmp[4];
+		float fSlow13 = 0.00999999978f * float(fHslider4);
 		float fSlow14 = 1.0f - fSlow13;
-		for (int i0 = 0; i0 < count; i0 = i0 + 1) {
-			float fTemp0 = float(input0[i0]);
-			float fTemp1 = float(input1[i0]);
-			float fTemp2 = std::fabs(std::fabs(fTemp0) + std::fabs(fTemp1));
-			float fTemp3 = ((fRec1[1] > fTemp2) ? fSlow9 : fSlow6);
-			fRec2[0] = fTemp2 * (1.0f - fTemp3) + fTemp3 * fRec2[1];
-			fRec1[0] = fRec2[0];
-			fRec0[0] = fSlow2 * std::max<float>(20.0f * std::log10(std::max<float>(1.17549435e-38f, fRec1[0])) - fSlow10, 0.0f) * fSlow14 + fSlow13 * fRec0[1];
-			float fTemp4 = fSlow1 + fSlow0 * std::pow(10.0f, 0.0500000007f * fRec0[0]);
-			output0[i0] = FAUSTFLOAT(fTemp0 * fTemp4);
-			output1[i0] = FAUSTFLOAT(fTemp1 * fTemp4);
-			fRec2[1] = fRec2[0];
-			fRec1[1] = fRec1[0];
-			fRec0[1] = fRec0[0];
+		float fZec2[32];
+		int vindex = 0;
+		/* Main loop */
+		for (vindex = 0; vindex <= count - 32; vindex = vindex + 32) {
+			FAUSTFLOAT* input0 = &input0_ptr[vindex];
+			FAUSTFLOAT* input1 = &input1_ptr[vindex];
+			FAUSTFLOAT* output0 = &output0_ptr[vindex];
+			FAUSTFLOAT* output1 = &output1_ptr[vindex];
+			int vsize = 32;
+			/* Vectorizable loop 0 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec0[i] = std::fabs(std::fabs(float(input0[i])) + std::fabs(float(input1[i])));
+			}
+			/* Recursive loop 1 */
+			/* Pre code */
+			for (int j0 = 0; j0 < 4; j0 = j0 + 1) {
+				fRec2_tmp[j0] = fRec2_perm[j0];
+			}
+			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
+				fRec1_tmp[j2] = fRec1_perm[j2];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec1[i] = ((fRec1[i - 1] > fZec0[i]) ? fSlow6 : fSlow3);
+				fRec2[i] = fZec0[i] * (1.0f - fZec1[i]) + fZec1[i] * fRec2[i - 1];
+				fRec1[i] = fRec2[i];
+			}
+			/* Post code */
+			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
+				fRec2_perm[j1] = fRec2_tmp[vsize + j1];
+			}
+			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
+				fRec1_perm[j3] = fRec1_tmp[vsize + j3];
+			}
+			/* Recursive loop 2 */
+			/* Pre code */
+			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
+				fRec0_tmp[j4] = fRec0_perm[j4];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec0[i] = fSlow7 * std::max<float>(20.0f * std::log10(std::max<float>(1.17549435e-38f, fRec1[i])) - fSlow8, 0.0f) * fSlow12 + fSlow11 * fRec0[i - 1];
+			}
+			/* Post code */
+			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
+				fRec0_perm[j5] = fRec0_tmp[vsize + j5];
+			}
+			/* Vectorizable loop 3 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec2[i] = fSlow14 + fSlow13 * std::pow(10.0f, 0.0500000007f * fRec0[i]);
+			}
+			/* Vectorizable loop 4 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output0[i] = FAUSTFLOAT(float(input0[i]) * fZec2[i]);
+			}
+			/* Vectorizable loop 5 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output1[i] = FAUSTFLOAT(float(input1[i]) * fZec2[i]);
+			}
+		}
+		/* Remaining frames */
+		if ((vindex < count)) {
+			FAUSTFLOAT* input0 = &input0_ptr[vindex];
+			FAUSTFLOAT* input1 = &input1_ptr[vindex];
+			FAUSTFLOAT* output0 = &output0_ptr[vindex];
+			FAUSTFLOAT* output1 = &output1_ptr[vindex];
+			int vsize = count - vindex;
+			/* Vectorizable loop 0 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec0[i] = std::fabs(std::fabs(float(input0[i])) + std::fabs(float(input1[i])));
+			}
+			/* Recursive loop 1 */
+			/* Pre code */
+			for (int j0 = 0; j0 < 4; j0 = j0 + 1) {
+				fRec2_tmp[j0] = fRec2_perm[j0];
+			}
+			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
+				fRec1_tmp[j2] = fRec1_perm[j2];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec1[i] = ((fRec1[i - 1] > fZec0[i]) ? fSlow6 : fSlow3);
+				fRec2[i] = fZec0[i] * (1.0f - fZec1[i]) + fZec1[i] * fRec2[i - 1];
+				fRec1[i] = fRec2[i];
+			}
+			/* Post code */
+			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
+				fRec2_perm[j1] = fRec2_tmp[vsize + j1];
+			}
+			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
+				fRec1_perm[j3] = fRec1_tmp[vsize + j3];
+			}
+			/* Recursive loop 2 */
+			/* Pre code */
+			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
+				fRec0_tmp[j4] = fRec0_perm[j4];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec0[i] = fSlow7 * std::max<float>(20.0f * std::log10(std::max<float>(1.17549435e-38f, fRec1[i])) - fSlow8, 0.0f) * fSlow12 + fSlow11 * fRec0[i - 1];
+			}
+			/* Post code */
+			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
+				fRec0_perm[j5] = fRec0_tmp[vsize + j5];
+			}
+			/* Vectorizable loop 3 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec2[i] = fSlow14 + fSlow13 * std::pow(10.0f, 0.0500000007f * fRec0[i]);
+			}
+			/* Vectorizable loop 4 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output0[i] = FAUSTFLOAT(float(input0[i]) * fZec2[i]);
+			}
+			/* Vectorizable loop 5 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output1[i] = FAUSTFLOAT(float(input1[i]) * fZec2[i]);
+			}
 		}
 	}
 

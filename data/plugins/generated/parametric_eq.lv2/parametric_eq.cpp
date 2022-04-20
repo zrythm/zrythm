@@ -2,14 +2,14 @@
 author: "Zrythm DAW"
 copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
-name: "Flanger"
+name: "Parametric EQ"
 version: "1.0"
 Code generated with Faust 2.40.0 (https://faust.grame.fr)
-Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn flanger -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
+Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn parametric_eq -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
-#ifndef  __flanger_H__
-#define  __flanger_H__
+#ifndef  __parametric_eq_H__
+#define  __parametric_eq_H__
 
 /************************************************************************
  ************************************************************************
@@ -680,7 +680,7 @@ void LV2UI::run() {}
 #include <math.h>
 
 #ifndef FAUSTCLASS 
-#define FAUSTCLASS flanger
+#define FAUSTCLASS parametric_eq
 #endif
 
 #ifdef __APPLE__ 
@@ -694,53 +694,104 @@ void LV2UI::run() {}
 #define RESTRICT __restrict__
 #endif
 
+static float parametric_eq_faustpower2_f(float value) {
+	return value * value;
+}
 
-class flanger : public dsp {
+class parametric_eq : public dsp {
 	
  private:
 	
 	int fSampleRate;
 	float fConst1;
 	FAUSTFLOAT fHslider0;
-	float fRec0_perm[4];
-	int iVec0_perm[4];
-	float fRec1_perm[4];
-	float fConst2;
-	FAUSTFLOAT fHslider1;
-	float fRec3_perm[4];
-	FAUSTFLOAT fHslider2;
+	float fYec0_perm[4];
 	float fRec4_perm[4];
+	float fRec3_perm[4];
+	float fRec6_perm[4];
+	float fRec5_perm[4];
+	FAUSTFLOAT fHslider1;
+	float fRec7_perm[4];
+	FAUSTFLOAT fHslider2;
 	FAUSTFLOAT fHslider3;
 	FAUSTFLOAT fHslider4;
-	FAUSTFLOAT fHbargraph0;
-	float fYec0[4096];
-	int fYec0_idx;
-	int fYec0_idx_save;
+	float fConst2;
 	float fRec2_perm[4];
-	FAUSTFLOAT fCheckbox0;
 	FAUSTFLOAT fHslider5;
-	float fYec1[4096];
-	int fYec1_idx;
-	int fYec1_idx_save;
-	float fRec5_perm[4];
+	float fYec1_perm[4];
+	float fRec1_perm[4];
+	float fRec0_perm[4];
+	float fRec9_perm[4];
+	float fRec8_perm[4];
+	FAUSTFLOAT fHslider6;
+	float fYec2_perm[4];
+	float fRec14_perm[4];
+	float fRec13_perm[4];
+	float fRec16_perm[4];
+	float fRec15_perm[4];
+	float fRec12_perm[4];
+	float fYec3_perm[4];
+	float fRec11_perm[4];
+	float fRec10_perm[4];
+	float fRec18_perm[4];
+	float fRec17_perm[4];
 	
  public:
 	
 	void metadata(Meta* m) { 
+		m->declare("analyzers.lib/name", "Faust Analyzer Library");
+		m->declare("analyzers.lib/version", "0.1");
 		m->declare("author", "Zrythm DAW");
 		m->declare("basics.lib/name", "Faust Basic Element Library");
 		m->declare("basics.lib/version", "0.5");
-		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn flanger -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32");
+		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn parametric_eq -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
-		m->declare("delays.lib/name", "Faust Delay Library");
-		m->declare("delays.lib/version", "0.1");
-		m->declare("description", "Flanger effect");
-		m->declare("filename", "flanger.dsp");
+		m->declare("description", "Parametric equalizer");
+		m->declare("filename", "parametric_eq.dsp");
+		m->declare("filters.lib/filterbank:author", "Julius O. Smith III");
+		m->declare("filters.lib/filterbank:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("filters.lib/filterbank:license", "MIT-style STK-4.3 license");
+		m->declare("filters.lib/fir:author", "Julius O. Smith III");
+		m->declare("filters.lib/fir:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("filters.lib/fir:license", "MIT-style STK-4.3 license");
+		m->declare("filters.lib/highpass:author", "Julius O. Smith III");
+		m->declare("filters.lib/highpass:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("filters.lib/highshelf:author", "Julius O. Smith III");
+		m->declare("filters.lib/highshelf:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("filters.lib/highshelf:license", "MIT-style STK-4.3 license");
+		m->declare("filters.lib/iir:author", "Julius O. Smith III");
+		m->declare("filters.lib/iir:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("filters.lib/iir:license", "MIT-style STK-4.3 license");
+		m->declare("filters.lib/low_shelf:author", "Julius O. Smith III");
+		m->declare("filters.lib/low_shelf:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("filters.lib/low_shelf:license", "MIT-style STK-4.3 license");
 		m->declare("filters.lib/lowpass0_highpass1", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("filters.lib/lowpass0_highpass1:author", "Julius O. Smith III");
+		m->declare("filters.lib/lowpass:author", "Julius O. Smith III");
+		m->declare("filters.lib/lowpass:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("filters.lib/lowpass:license", "MIT-style STK-4.3 license");
+		m->declare("filters.lib/lowshelf:author", "Julius O. Smith III");
+		m->declare("filters.lib/lowshelf:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("filters.lib/lowshelf:license", "MIT-style STK-4.3 license");
 		m->declare("filters.lib/name", "Faust Filters Library");
-		m->declare("filters.lib/nlf2:author", "Julius O. Smith III");
-		m->declare("filters.lib/nlf2:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
-		m->declare("filters.lib/nlf2:license", "MIT-style STK-4.3 license");
+		m->declare("filters.lib/peak_eq:author", "Julius O. Smith III");
+		m->declare("filters.lib/peak_eq:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("filters.lib/peak_eq:license", "MIT-style STK-4.3 license");
+		m->declare("filters.lib/peak_eq_cq:author", "Julius O. Smith III");
+		m->declare("filters.lib/peak_eq_cq:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("filters.lib/peak_eq_cq:license", "MIT-style STK-4.3 license");
+		m->declare("filters.lib/tf1:author", "Julius O. Smith III");
+		m->declare("filters.lib/tf1:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("filters.lib/tf1:license", "MIT-style STK-4.3 license");
+		m->declare("filters.lib/tf1s:author", "Julius O. Smith III");
+		m->declare("filters.lib/tf1s:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("filters.lib/tf1s:license", "MIT-style STK-4.3 license");
+		m->declare("filters.lib/tf2:author", "Julius O. Smith III");
+		m->declare("filters.lib/tf2:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("filters.lib/tf2:license", "MIT-style STK-4.3 license");
+		m->declare("filters.lib/tf2s:author", "Julius O. Smith III");
+		m->declare("filters.lib/tf2s:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("filters.lib/tf2s:license", "MIT-style STK-4.3 license");
 		m->declare("filters.lib/version", "0.3");
 		m->declare("license", "AGPL-3.0-or-later");
 		m->declare("maths.lib/author", "GRAME");
@@ -748,11 +799,7 @@ class flanger : public dsp {
 		m->declare("maths.lib/license", "LGPL with exception");
 		m->declare("maths.lib/name", "Faust Math Library");
 		m->declare("maths.lib/version", "2.5");
-		m->declare("name", "Flanger");
-		m->declare("oscillators.lib/name", "Faust Oscillator Library");
-		m->declare("oscillators.lib/version", "0.3");
-		m->declare("phaflangers.lib/name", "Faust Phaser and Flanger Library");
-		m->declare("phaflangers.lib/version", "0.1");
+		m->declare("name", "Parametric EQ");
 		m->declare("platform.lib/name", "Generic Platform Library");
 		m->declare("platform.lib/version", "0.2");
 		m->declare("signals.lib/name", "Faust Signal Routing Library");
@@ -777,51 +824,89 @@ class flanger : public dsp {
 	virtual void instanceConstants(int sample_rate) {
 		fSampleRate = sample_rate;
 		float fConst0 = std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate)));
-		fConst1 = 6.28318548f / fConst0;
-		fConst2 = 9.99999997e-07f * fConst0;
+		fConst1 = 3.14159274f / fConst0;
+		fConst2 = 6.28318548f / fConst0;
 	}
 	
 	virtual void instanceResetUserInterface() {
-		fHslider0 = FAUSTFLOAT(0.5f);
-		fHslider1 = FAUSTFLOAT(1.0f);
-		fHslider2 = FAUSTFLOAT(10.0f);
+		fHslider0 = FAUSTFLOAT(200.0f);
+		fHslider1 = FAUSTFLOAT(720.0f);
+		fHslider2 = FAUSTFLOAT(0.0f);
 		fHslider3 = FAUSTFLOAT(0.0f);
-		fHslider4 = FAUSTFLOAT(0.0f);
-		fCheckbox0 = FAUSTFLOAT(0.0f);
-		fHslider5 = FAUSTFLOAT(1.0f);
+		fHslider4 = FAUSTFLOAT(1.0f);
+		fHslider5 = FAUSTFLOAT(8000.0f);
+		fHslider6 = FAUSTFLOAT(0.0f);
 	}
 	
 	virtual void instanceClear() {
 		for (int l0 = 0; l0 < 4; l0 = l0 + 1) {
-			fRec0_perm[l0] = 0.0f;
+			fYec0_perm[l0] = 0.0f;
 		}
 		for (int l1 = 0; l1 < 4; l1 = l1 + 1) {
-			iVec0_perm[l1] = 0;
+			fRec4_perm[l1] = 0.0f;
 		}
 		for (int l2 = 0; l2 < 4; l2 = l2 + 1) {
-			fRec1_perm[l2] = 0.0f;
+			fRec3_perm[l2] = 0.0f;
 		}
 		for (int l3 = 0; l3 < 4; l3 = l3 + 1) {
-			fRec3_perm[l3] = 0.0f;
+			fRec6_perm[l3] = 0.0f;
 		}
 		for (int l4 = 0; l4 < 4; l4 = l4 + 1) {
-			fRec4_perm[l4] = 0.0f;
+			fRec5_perm[l4] = 0.0f;
 		}
-		for (int l5 = 0; l5 < 4096; l5 = l5 + 1) {
-			fYec0[l5] = 0.0f;
+		for (int l5 = 0; l5 < 4; l5 = l5 + 1) {
+			fRec7_perm[l5] = 0.0f;
 		}
-		fYec0_idx = 0;
-		fYec0_idx_save = 0;
 		for (int l6 = 0; l6 < 4; l6 = l6 + 1) {
 			fRec2_perm[l6] = 0.0f;
 		}
-		for (int l7 = 0; l7 < 4096; l7 = l7 + 1) {
-			fYec1[l7] = 0.0f;
+		for (int l7 = 0; l7 < 4; l7 = l7 + 1) {
+			fYec1_perm[l7] = 0.0f;
 		}
-		fYec1_idx = 0;
-		fYec1_idx_save = 0;
 		for (int l8 = 0; l8 < 4; l8 = l8 + 1) {
-			fRec5_perm[l8] = 0.0f;
+			fRec1_perm[l8] = 0.0f;
+		}
+		for (int l9 = 0; l9 < 4; l9 = l9 + 1) {
+			fRec0_perm[l9] = 0.0f;
+		}
+		for (int l10 = 0; l10 < 4; l10 = l10 + 1) {
+			fRec9_perm[l10] = 0.0f;
+		}
+		for (int l11 = 0; l11 < 4; l11 = l11 + 1) {
+			fRec8_perm[l11] = 0.0f;
+		}
+		for (int l12 = 0; l12 < 4; l12 = l12 + 1) {
+			fYec2_perm[l12] = 0.0f;
+		}
+		for (int l13 = 0; l13 < 4; l13 = l13 + 1) {
+			fRec14_perm[l13] = 0.0f;
+		}
+		for (int l14 = 0; l14 < 4; l14 = l14 + 1) {
+			fRec13_perm[l14] = 0.0f;
+		}
+		for (int l15 = 0; l15 < 4; l15 = l15 + 1) {
+			fRec16_perm[l15] = 0.0f;
+		}
+		for (int l16 = 0; l16 < 4; l16 = l16 + 1) {
+			fRec15_perm[l16] = 0.0f;
+		}
+		for (int l17 = 0; l17 < 4; l17 = l17 + 1) {
+			fRec12_perm[l17] = 0.0f;
+		}
+		for (int l18 = 0; l18 < 4; l18 = l18 + 1) {
+			fYec3_perm[l18] = 0.0f;
+		}
+		for (int l19 = 0; l19 < 4; l19 = l19 + 1) {
+			fRec11_perm[l19] = 0.0f;
+		}
+		for (int l20 = 0; l20 < 4; l20 = l20 + 1) {
+			fRec10_perm[l20] = 0.0f;
+		}
+		for (int l21 = 0; l21 < 4; l21 = l21 + 1) {
+			fRec18_perm[l21] = 0.0f;
+		}
+		for (int l22 = 0; l22 < 4; l22 = l22 + 1) {
+			fRec17_perm[l22] = 0.0f;
 		}
 	}
 	
@@ -835,8 +920,8 @@ class flanger : public dsp {
 		instanceClear();
 	}
 	
-	virtual flanger* clone() {
-		return new flanger();
+	virtual parametric_eq* clone() {
+		return new parametric_eq();
 	}
 	
 	virtual int getSampleRate() {
@@ -844,45 +929,56 @@ class flanger : public dsp {
 	}
 	
 	virtual void buildUserInterface(UI* ui_interface) {
-		ui_interface->declare(0, "tooltip", "Reference: https://ccrma.stanford.edu/~jos/pasp/Flanging.html");
-		ui_interface->openVerticalBox("FLANGER");
 		ui_interface->declare(0, "0", "");
-		ui_interface->openHorizontalBox("0x00");
-		ui_interface->declare(&fCheckbox0, "1", "");
-		ui_interface->addCheckButton("Invert Flange Sum", &fCheckbox0);
-		ui_interface->declare(&fHbargraph0, "2", "");
-		ui_interface->declare(&fHbargraph0, "style", "led");
-		ui_interface->declare(&fHbargraph0, "tooltip", "Display sum of flange delays");
-		ui_interface->addHorizontalBargraph("Flange LFO", &fHbargraph0, FAUSTFLOAT(-1.5f), FAUSTFLOAT(1.5f));
-		ui_interface->closeBox();
+		ui_interface->declare(0, "tooltip", "See Faust's filters.lib         for info and pointers");
+		ui_interface->openHorizontalBox("PARAMETRIC EQ SECTIONS");
 		ui_interface->declare(0, "1", "");
-		ui_interface->openHorizontalBox("0x00");
+		ui_interface->openVerticalBox("Low Shelf");
+		ui_interface->declare(&fHslider2, "0", "");
+		ui_interface->declare(&fHslider2, "style", "knob");
+		ui_interface->declare(&fHslider2, "tooltip", "Amount of low-frequency boost or cut in decibels");
+		ui_interface->declare(&fHslider2, "unit", "dB");
+		ui_interface->addHorizontalSlider("Low Shelf Gain", &fHslider2, FAUSTFLOAT(0.0f), FAUSTFLOAT(-40.0f), FAUSTFLOAT(40.0f), FAUSTFLOAT(0.100000001f));
 		ui_interface->declare(&fHslider0, "1", "");
+		ui_interface->declare(&fHslider0, "scale", "log");
 		ui_interface->declare(&fHslider0, "style", "knob");
+		ui_interface->declare(&fHslider0, "tooltip", "Transition-frequency from boost (cut) to unity gain");
 		ui_interface->declare(&fHslider0, "unit", "Hz");
-		ui_interface->addHorizontalSlider("Speed", &fHslider0, FAUSTFLOAT(0.5f), FAUSTFLOAT(0.0f), FAUSTFLOAT(10.0f), FAUSTFLOAT(0.00999999978f));
-		ui_interface->declare(&fHslider5, "2", "");
-		ui_interface->declare(&fHslider5, "style", "knob");
-		ui_interface->addHorizontalSlider("Depth", &fHslider5, FAUSTFLOAT(1.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.00100000005f));
-		ui_interface->declare(&fHslider3, "3", "");
-		ui_interface->declare(&fHslider3, "style", "knob");
-		ui_interface->addHorizontalSlider("Feedback", &fHslider3, FAUSTFLOAT(0.0f), FAUSTFLOAT(-0.999000013f), FAUSTFLOAT(0.999000013f), FAUSTFLOAT(0.00100000005f));
+		ui_interface->addHorizontalSlider("Low Shelf Transition Frequency", &fHslider0, FAUSTFLOAT(200.0f), FAUSTFLOAT(10.0f), FAUSTFLOAT(5000.0f), FAUSTFLOAT(1.0f));
 		ui_interface->closeBox();
 		ui_interface->declare(0, "2", "");
-		ui_interface->openHorizontalBox("Delay Controls");
-		ui_interface->declare(&fHslider2, "1", "");
-		ui_interface->declare(&fHslider2, "style", "knob");
-		ui_interface->declare(&fHslider2, "unit", "ms");
-		ui_interface->addHorizontalSlider("Flange Delay", &fHslider2, FAUSTFLOAT(10.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(0.00100000005f));
-		ui_interface->declare(&fHslider1, "2", "");
+		ui_interface->declare(0, "tooltip", "Parametric Equalizer         sections from filters.lib");
+		ui_interface->openVerticalBox("Peaking Equalizer");
+		ui_interface->declare(&fHslider3, "0", "");
+		ui_interface->declare(&fHslider3, "style", "knob");
+		ui_interface->declare(&fHslider3, "tooltip", "Amount of         local boost or cut in decibels");
+		ui_interface->declare(&fHslider3, "unit", "dB");
+		ui_interface->addHorizontalSlider("Peak Gain", &fHslider3, FAUSTFLOAT(0.0f), FAUSTFLOAT(-20.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(0.100000001f));
+		ui_interface->declare(&fHslider1, "1", "");
 		ui_interface->declare(&fHslider1, "style", "knob");
-		ui_interface->declare(&fHslider1, "unit", "ms");
-		ui_interface->addHorizontalSlider("Delay Offset", &fHslider1, FAUSTFLOAT(1.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(0.00100000005f));
+		ui_interface->declare(&fHslider1, "tooltip", "Peak         Frequency");
+		ui_interface->declare(&fHslider1, "unit", "Hz");
+		ui_interface->addHorizontalSlider("Peak Frequency", &fHslider1, FAUSTFLOAT(720.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(16000.0f), FAUSTFLOAT(1.0f));
+		ui_interface->declare(&fHslider4, "2", "");
+		ui_interface->declare(&fHslider4, "scale", "log");
+		ui_interface->declare(&fHslider4, "style", "knob");
+		ui_interface->declare(&fHslider4, "tooltip", "Quality factor         (Q) of the peak = center-frequency/bandwidth");
+		ui_interface->addHorizontalSlider("Peak Q", &fHslider4, FAUSTFLOAT(1.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(0.00999999978f));
 		ui_interface->closeBox();
 		ui_interface->declare(0, "3", "");
-		ui_interface->openHorizontalBox("0x00");
-		ui_interface->declare(&fHslider4, "unit", "dB");
-		ui_interface->addHorizontalSlider("Flanger Output Level", &fHslider4, FAUSTFLOAT(0.0f), FAUSTFLOAT(-60.0f), FAUSTFLOAT(10.0f), FAUSTFLOAT(0.100000001f));
+		ui_interface->declare(0, "tooltip", "A high shelf provides a boost         or cut above some frequency");
+		ui_interface->openVerticalBox("High Shelf");
+		ui_interface->declare(&fHslider6, "0", "");
+		ui_interface->declare(&fHslider6, "style", "knob");
+		ui_interface->declare(&fHslider6, "tooltip", "Amount of         high-frequency boost or cut in decibels");
+		ui_interface->declare(&fHslider6, "unit", "dB");
+		ui_interface->addHorizontalSlider("High Shelf Gain", &fHslider6, FAUSTFLOAT(0.0f), FAUSTFLOAT(-40.0f), FAUSTFLOAT(40.0f), FAUSTFLOAT(0.100000001f));
+		ui_interface->declare(&fHslider5, "1", "");
+		ui_interface->declare(&fHslider5, "scale", "log");
+		ui_interface->declare(&fHslider5, "style", "knob");
+		ui_interface->declare(&fHslider5, "tooltip", "Transition-frequency from boost (cut) to unity gain");
+		ui_interface->declare(&fHslider5, "unit", "Hz");
+		ui_interface->addHorizontalSlider("High Shelf Transition Frequency", &fHslider5, FAUSTFLOAT(8000.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(18000.0f), FAUSTFLOAT(1.0f));
 		ui_interface->closeBox();
 		ui_interface->closeBox();
 	}
@@ -892,38 +988,98 @@ class flanger : public dsp {
 		FAUSTFLOAT* input1_ptr = inputs[1];
 		FAUSTFLOAT* output0_ptr = outputs[0];
 		FAUSTFLOAT* output1_ptr = outputs[1];
-		float fSlow0 = fConst1 * float(fHslider0);
-		float fSlow1 = std::sin(fSlow0);
-		float fSlow2 = std::cos(fSlow0);
-		float fRec0_tmp[36];
-		float* fRec0 = &fRec0_tmp[4];
-		int iVec0_tmp[36];
-		int* iVec0 = &iVec0_tmp[4];
-		float fRec1_tmp[36];
-		float* fRec1 = &fRec1_tmp[4];
-		float fSlow3 = fConst2 * float(fHslider1);
-		float fRec3_tmp[36];
-		float* fRec3 = &fRec3_tmp[4];
-		float fSlow4 = fConst2 * float(fHslider2);
+		float fSlow0 = std::tan(fConst1 * float(fHslider0));
+		float fSlow1 = 1.0f / fSlow0;
+		float fSlow2 = fSlow1 + 1.0f;
+		float fSlow3 = 0.0f - 1.0f / (fSlow0 * fSlow2);
+		float fYec0_tmp[36];
+		float* fYec0 = &fYec0_tmp[4];
+		float fSlow4 = 1.0f / fSlow2;
+		float fSlow5 = 1.0f - fSlow1;
 		float fRec4_tmp[36];
 		float* fRec4 = &fRec4_tmp[4];
-		float fSlow5 = float(fHslider3);
-		float fSlow6 = std::pow(10.0f, 0.0500000007f * float(fHslider4));
-		float fZec0[32];
-		float fZec1[32];
-		int iZec2[32];
-		float fZec3[32];
-		float fRec2_tmp[36];
-		float* fRec2 = &fRec2_tmp[4];
-		float fSlow7 = float(fHslider5);
-		float fElse0 = -1.0f * fSlow7;
-		float fSlow8 = ((int(float(fCheckbox0))) ? fElse0 : fSlow7);
-		float fZec4[32];
-		float fZec5[32];
-		int iZec6[32];
-		float fZec7[32];
+		float fSlow6 = 1.0f / ((fSlow1 + 1.0f) / fSlow0 + 1.0f);
+		float fSlow7 = (fSlow1 + -1.0f) / fSlow0 + 1.0f;
+		float fSlow8 = parametric_eq_faustpower2_f(fSlow0);
+		float fSlow9 = 1.0f / fSlow8;
+		float fSlow10 = 2.0f * (1.0f - fSlow9);
+		float fRec3_tmp[36];
+		float* fRec3 = &fRec3_tmp[4];
+		float fRec6_tmp[36];
+		float* fRec6 = &fRec6_tmp[4];
 		float fRec5_tmp[36];
 		float* fRec5 = &fRec5_tmp[4];
+		float fSlow11 = 0.00100000005f * float(fHslider1);
+		float fRec7_tmp[36];
+		float* fRec7 = &fRec7_tmp[4];
+		float fSlow12 = 0.0f - 2.0f / fSlow8;
+		float fSlow13 = std::pow(10.0f, 0.0500000007f * float(fHslider2));
+		float fZec0[32];
+		float fZec1[32];
+		float fSlow14 = float(fHslider3);
+		int iSlow15 = fSlow14 > 0.0f;
+		float fSlow16 = float(fHslider4);
+		float fSlow17 = fConst1 * std::pow(10.0f, 0.0500000007f * std::fabs(fSlow14)) / fSlow16;
+		float fZec2[32];
+		float fZec3[32];
+		float fSlow18 = fConst1 / fSlow16;
+		float fZec4[32];
+		float fZec5[32];
+		float fZec6[32];
+		float fZec7[32];
+		float fZec8[32];
+		float fZec9[32];
+		float fRec2_tmp[36];
+		float* fRec2 = &fRec2_tmp[4];
+		float fSlow19 = std::tan(fConst1 * float(fHslider5));
+		float fSlow20 = 1.0f / fSlow19;
+		float fSlow21 = fSlow20 + 1.0f;
+		float fSlow22 = 1.0f / fSlow21;
+		float fSlow23 = 1.0f - fSlow20;
+		float fZec10[32];
+		float fZec11[32];
+		float fZec12[32];
+		float fYec1_tmp[36];
+		float* fYec1 = &fYec1_tmp[4];
+		float fRec1_tmp[36];
+		float* fRec1 = &fRec1_tmp[4];
+		float fSlow24 = 1.0f / ((fSlow20 + 1.0f) / fSlow19 + 1.0f);
+		float fSlow25 = (fSlow20 + -1.0f) / fSlow19 + 1.0f;
+		float fSlow26 = parametric_eq_faustpower2_f(fSlow19);
+		float fSlow27 = 1.0f / fSlow26;
+		float fSlow28 = 2.0f * (1.0f - fSlow27);
+		float fRec0_tmp[36];
+		float* fRec0 = &fRec0_tmp[4];
+		float fSlow29 = 0.0f - 1.0f / (fSlow19 * fSlow21);
+		float fRec9_tmp[36];
+		float* fRec9 = &fRec9_tmp[4];
+		float fRec8_tmp[36];
+		float* fRec8 = &fRec8_tmp[4];
+		float fSlow30 = std::pow(10.0f, 0.0500000007f * float(fHslider6));
+		float fSlow31 = 0.0f - 2.0f / fSlow26;
+		float fYec2_tmp[36];
+		float* fYec2 = &fYec2_tmp[4];
+		float fRec14_tmp[36];
+		float* fRec14 = &fRec14_tmp[4];
+		float fRec13_tmp[36];
+		float* fRec13 = &fRec13_tmp[4];
+		float fRec16_tmp[36];
+		float* fRec16 = &fRec16_tmp[4];
+		float fRec15_tmp[36];
+		float* fRec15 = &fRec15_tmp[4];
+		float fZec13[32];
+		float fRec12_tmp[36];
+		float* fRec12 = &fRec12_tmp[4];
+		float fYec3_tmp[36];
+		float* fYec3 = &fYec3_tmp[4];
+		float fRec11_tmp[36];
+		float* fRec11 = &fRec11_tmp[4];
+		float fRec10_tmp[36];
+		float* fRec10 = &fRec10_tmp[4];
+		float fRec18_tmp[36];
+		float* fRec18 = &fRec18_tmp[4];
+		float fRec17_tmp[36];
+		float* fRec17 = &fRec17_tmp[4];
 		int vindex = 0;
 		/* Main loop */
 		for (vindex = 0; vindex <= count - 32; vindex = vindex + 32) {
@@ -932,147 +1088,380 @@ class flanger : public dsp {
 			FAUSTFLOAT* output0 = &output0_ptr[vindex];
 			FAUSTFLOAT* output1 = &output1_ptr[vindex];
 			int vsize = 32;
-			/* Vectorizable loop 0 */
+			/* Recursive loop 0 */
 			/* Pre code */
-			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
-				iVec0_tmp[j2] = iVec0_perm[j2];
+			for (int j10 = 0; j10 < 4; j10 = j10 + 1) {
+				fRec7_tmp[j10] = fRec7_perm[j10];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				iVec0[i] = 1;
+				fRec7[i] = fSlow11 + 0.999000013f * fRec7[i - 1];
 			}
 			/* Post code */
-			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
-				iVec0_perm[j3] = iVec0_tmp[vsize + j3];
+			for (int j11 = 0; j11 < 4; j11 = j11 + 1) {
+				fRec7_perm[j11] = fRec7_tmp[vsize + j11];
 			}
-			/* Recursive loop 1 */
+			/* Vectorizable loop 1 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec2[i] = fRec7[i] / std::sin(fConst2 * fRec7[i]);
+			}
+			/* Vectorizable loop 2 */
 			/* Pre code */
 			for (int j0 = 0; j0 < 4; j0 = j0 + 1) {
-				fRec0_tmp[j0] = fRec0_perm[j0];
-			}
-			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
-				fRec1_tmp[j4] = fRec1_perm[j4];
+				fYec0_tmp[j0] = fYec0_perm[j0];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec0[i] = fSlow1 * fRec1[i - 1] + fSlow2 * fRec0[i - 1];
-				fRec1[i] = (float(1 - iVec0[i - 1]) + fSlow2 * fRec1[i - 1]) - fSlow1 * fRec0[i - 1];
+				fYec0[i] = float(input0[i]);
 			}
 			/* Post code */
 			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
-				fRec0_perm[j1] = fRec0_tmp[vsize + j1];
+				fYec0_perm[j1] = fYec0_tmp[vsize + j1];
 			}
-			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
-				fRec1_perm[j5] = fRec1_tmp[vsize + j5];
-			}
-			/* Recursive loop 2 */
-			/* Pre code */
-			for (int j6 = 0; j6 < 4; j6 = j6 + 1) {
-				fRec3_tmp[j6] = fRec3_perm[j6];
-			}
+			/* Vectorizable loop 3 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec3[i] = fSlow3 + 0.999000013f * fRec3[i - 1];
-			}
-			/* Post code */
-			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
-				fRec3_perm[j7] = fRec3_tmp[vsize + j7];
-			}
-			/* Recursive loop 3 */
-			/* Pre code */
-			for (int j8 = 0; j8 < 4; j8 = j8 + 1) {
-				fRec4_tmp[j8] = fRec4_perm[j8];
-			}
-			/* Compute code */
-			for (int i = 0; i < vsize; i = i + 1) {
-				fRec4[i] = fSlow4 + 0.999000013f * fRec4[i - 1];
-			}
-			/* Post code */
-			for (int j9 = 0; j9 < 4; j9 = j9 + 1) {
-				fRec4_perm[j9] = fRec4_tmp[vsize + j9];
+				fZec0[i] = std::tan(fConst1 * fRec7[i]);
 			}
 			/* Vectorizable loop 4 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec1[i] = fRec3[i] + 0.5f * fRec4[i] * (fRec0[i] + 1.0f);
+				fZec3[i] = fSlow17 * fZec2[i];
 			}
 			/* Vectorizable loop 5 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec5[i] = fRec3[i] + 0.5f * fRec4[i] * (fRec1[i] + 1.0f);
+				fZec4[i] = fSlow18 * fZec2[i];
 			}
 			/* Vectorizable loop 6 */
-			/* Compute code */
-			for (int i = 0; i < vsize; i = i + 1) {
-				fHbargraph0 = FAUSTFLOAT(fRec1[i] + fRec0[i]);
-				fZec0[i] = fSlow6 * float(input0[i]);
+			/* Pre code */
+			for (int j24 = 0; j24 < 4; j24 = j24 + 1) {
+				fYec2_tmp[j24] = fYec2_perm[j24];
 			}
-			/* Vectorizable loop 7 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				iZec2[i] = int(fZec1[i]);
+				fYec2[i] = float(input1[i]);
 			}
-			/* Vectorizable loop 8 */
+			/* Post code */
+			for (int j25 = 0; j25 < 4; j25 = j25 + 1) {
+				fYec2_perm[j25] = fYec2_tmp[vsize + j25];
+			}
+			/* Recursive loop 7 */
+			/* Pre code */
+			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
+				fRec4_tmp[j2] = fRec4_perm[j2];
+			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec3[i] = std::floor(fZec1[i]);
+				fRec4[i] = fSlow3 * fYec0[i - 1] - fSlow4 * (fSlow5 * fRec4[i - 1] - fSlow1 * float(input0[i]));
+			}
+			/* Post code */
+			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
+				fRec4_perm[j3] = fRec4_tmp[vsize + j3];
+			}
+			/* Recursive loop 8 */
+			/* Pre code */
+			for (int j6 = 0; j6 < 4; j6 = j6 + 1) {
+				fRec6_tmp[j6] = fRec6_perm[j6];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec6[i] = 0.0f - fSlow4 * (fSlow5 * fRec6[i - 1] - (float(input0[i]) + fYec0[i - 1]));
+			}
+			/* Post code */
+			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
+				fRec6_perm[j7] = fRec6_tmp[vsize + j7];
 			}
 			/* Vectorizable loop 9 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec4[i] = fSlow6 * float(input1[i]);
+				fZec1[i] = 1.0f / fZec0[i];
 			}
 			/* Vectorizable loop 10 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				iZec6[i] = int(fZec5[i]);
+				float fThen0 = fZec3[i];
+				float fElse0 = fZec4[i];
+				fZec5[i] = ((iSlow15) ? fElse0 : fThen0);
 			}
-			/* Vectorizable loop 11 */
+			/* Recursive loop 11 */
+			/* Pre code */
+			for (int j26 = 0; j26 < 4; j26 = j26 + 1) {
+				fRec14_tmp[j26] = fRec14_perm[j26];
+			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec7[i] = std::floor(fZec5[i]);
+				fRec14[i] = fSlow3 * fYec2[i - 1] - fSlow4 * (fSlow5 * fRec14[i - 1] - fSlow1 * float(input1[i]));
+			}
+			/* Post code */
+			for (int j27 = 0; j27 < 4; j27 = j27 + 1) {
+				fRec14_perm[j27] = fRec14_tmp[vsize + j27];
 			}
 			/* Recursive loop 12 */
 			/* Pre code */
-			fYec0_idx = (fYec0_idx + fYec0_idx_save) & 4095;
-			for (int j10 = 0; j10 < 4; j10 = j10 + 1) {
-				fRec2_tmp[j10] = fRec2_perm[j10];
+			for (int j30 = 0; j30 < 4; j30 = j30 + 1) {
+				fRec16_tmp[j30] = fRec16_perm[j30];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec0[(i + fYec0_idx) & 4095] = fSlow5 * fRec2[i - 1] - fZec0[i];
-				fRec2[i] = fYec0[((i + fYec0_idx) - std::min<int>(2049, std::max<int>(0, iZec2[i]))) & 4095] * (fZec3[i] + 1.0f - fZec1[i]) + (fZec1[i] - fZec3[i]) * fYec0[((i + fYec0_idx) - std::min<int>(2049, std::max<int>(0, iZec2[i] + 1))) & 4095];
+				fRec16[i] = 0.0f - fSlow4 * (fSlow5 * fRec16[i - 1] - (float(input1[i]) + fYec2[i - 1]));
 			}
 			/* Post code */
-			fYec0_idx_save = vsize;
-			for (int j11 = 0; j11 < 4; j11 = j11 + 1) {
-				fRec2_perm[j11] = fRec2_tmp[vsize + j11];
+			for (int j31 = 0; j31 < 4; j31 = j31 + 1) {
+				fRec16_perm[j31] = fRec16_tmp[vsize + j31];
 			}
 			/* Recursive loop 13 */
 			/* Pre code */
-			fYec1_idx = (fYec1_idx + fYec1_idx_save) & 4095;
-			for (int j12 = 0; j12 < 4; j12 = j12 + 1) {
-				fRec5_tmp[j12] = fRec5_perm[j12];
+			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
+				fRec3_tmp[j4] = fRec3_perm[j4];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec1[(i + fYec1_idx) & 4095] = fSlow5 * fRec5[i - 1] - fZec4[i];
-				fRec5[i] = fYec1[((i + fYec1_idx) - std::min<int>(2049, std::max<int>(0, iZec6[i]))) & 4095] * (fZec7[i] + 1.0f - fZec5[i]) + (fZec5[i] - fZec7[i]) * fYec1[((i + fYec1_idx) - std::min<int>(2049, std::max<int>(0, iZec6[i] + 1))) & 4095];
+				fRec3[i] = fRec4[i] - fSlow6 * (fSlow7 * fRec3[i - 2] + fSlow10 * fRec3[i - 1]);
 			}
 			/* Post code */
-			fYec1_idx_save = vsize;
-			for (int j13 = 0; j13 < 4; j13 = j13 + 1) {
-				fRec5_perm[j13] = fRec5_tmp[vsize + j13];
+			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
+				fRec3_perm[j5] = fRec3_tmp[vsize + j5];
 			}
-			/* Vectorizable loop 14 */
+			/* Recursive loop 14 */
+			/* Pre code */
+			for (int j8 = 0; j8 < 4; j8 = j8 + 1) {
+				fRec5_tmp[j8] = fRec5_perm[j8];
+			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output0[i] = FAUSTFLOAT(0.5f * (fZec0[i] + fRec2[i] * fSlow8));
+				fRec5[i] = fRec6[i] - fSlow6 * (fSlow7 * fRec5[i - 2] + fSlow10 * fRec5[i - 1]);
+			}
+			/* Post code */
+			for (int j9 = 0; j9 < 4; j9 = j9 + 1) {
+				fRec5_perm[j9] = fRec5_tmp[vsize + j9];
 			}
 			/* Vectorizable loop 15 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output1[i] = FAUSTFLOAT(0.5f * (fZec4[i] + fRec5[i] * fSlow8));
+				fZec6[i] = (fZec1[i] - fZec5[i]) / fZec0[i] + 1.0f;
+			}
+			/* Vectorizable loop 16 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec7[i] = 1.0f - 1.0f / parametric_eq_faustpower2_f(fZec0[i]);
+			}
+			/* Vectorizable loop 17 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec9[i] = (fZec1[i] + fZec5[i]) / fZec0[i] + 1.0f;
+			}
+			/* Vectorizable loop 18 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				float fThen1 = fZec4[i];
+				float fElse1 = fZec3[i];
+				fZec10[i] = ((iSlow15) ? fElse1 : fThen1);
+			}
+			/* Recursive loop 19 */
+			/* Pre code */
+			for (int j28 = 0; j28 < 4; j28 = j28 + 1) {
+				fRec13_tmp[j28] = fRec13_perm[j28];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec13[i] = fRec14[i] - fSlow6 * (fSlow7 * fRec13[i - 2] + fSlow10 * fRec13[i - 1]);
+			}
+			/* Post code */
+			for (int j29 = 0; j29 < 4; j29 = j29 + 1) {
+				fRec13_perm[j29] = fRec13_tmp[vsize + j29];
+			}
+			/* Recursive loop 20 */
+			/* Pre code */
+			for (int j32 = 0; j32 < 4; j32 = j32 + 1) {
+				fRec15_tmp[j32] = fRec15_perm[j32];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec15[i] = fRec16[i] - fSlow6 * (fSlow7 * fRec15[i - 2] + fSlow10 * fRec15[i - 1]);
+			}
+			/* Post code */
+			for (int j33 = 0; j33 < 4; j33 = j33 + 1) {
+				fRec15_perm[j33] = fRec15_tmp[vsize + j33];
+			}
+			/* Recursive loop 21 */
+			/* Pre code */
+			for (int j12 = 0; j12 < 4; j12 = j12 + 1) {
+				fRec2_tmp[j12] = fRec2_perm[j12];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec8[i] = 2.0f * fRec2[i - 1] * fZec7[i];
+				fRec2[i] = fSlow6 * (fSlow9 * fRec3[i] + fSlow12 * fRec3[i - 1] + fSlow9 * fRec3[i - 2] + fSlow13 * (fRec5[i - 2] + fRec5[i] + 2.0f * fRec5[i - 1])) - (fRec2[i - 2] * fZec6[i] + fZec8[i]) / fZec9[i];
+			}
+			/* Post code */
+			for (int j13 = 0; j13 < 4; j13 = j13 + 1) {
+				fRec2_perm[j13] = fRec2_tmp[vsize + j13];
+			}
+			/* Vectorizable loop 22 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec11[i] = (fZec1[i] + fZec10[i]) / fZec0[i] + 1.0f;
+			}
+			/* Vectorizable loop 23 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec12[i] = (fZec1[i] - fZec10[i]) / fZec0[i] + 1.0f;
+			}
+			/* Recursive loop 24 */
+			/* Pre code */
+			for (int j34 = 0; j34 < 4; j34 = j34 + 1) {
+				fRec12_tmp[j34] = fRec12_perm[j34];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec13[i] = 2.0f * fZec7[i] * fRec12[i - 1];
+				fRec12[i] = fSlow6 * (fSlow9 * fRec13[i] + fSlow12 * fRec13[i - 1] + fSlow9 * fRec13[i - 2] + fSlow13 * (fRec15[i - 2] + fRec15[i] + 2.0f * fRec15[i - 1])) - (fZec6[i] * fRec12[i - 2] + fZec13[i]) / fZec9[i];
+			}
+			/* Post code */
+			for (int j35 = 0; j35 < 4; j35 = j35 + 1) {
+				fRec12_perm[j35] = fRec12_tmp[vsize + j35];
+			}
+			/* Vectorizable loop 25 */
+			/* Pre code */
+			for (int j14 = 0; j14 < 4; j14 = j14 + 1) {
+				fYec1_tmp[j14] = fYec1_perm[j14];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec1[i] = (fZec8[i] + fRec2[i] * fZec11[i] + fRec2[i - 2] * fZec12[i]) / fZec9[i];
+			}
+			/* Post code */
+			for (int j15 = 0; j15 < 4; j15 = j15 + 1) {
+				fYec1_perm[j15] = fYec1_tmp[vsize + j15];
+			}
+			/* Vectorizable loop 26 */
+			/* Pre code */
+			for (int j36 = 0; j36 < 4; j36 = j36 + 1) {
+				fYec3_tmp[j36] = fYec3_perm[j36];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec3[i] = (fZec13[i] + fRec12[i] * fZec11[i] + fZec12[i] * fRec12[i - 2]) / fZec9[i];
+			}
+			/* Post code */
+			for (int j37 = 0; j37 < 4; j37 = j37 + 1) {
+				fYec3_perm[j37] = fYec3_tmp[vsize + j37];
+			}
+			/* Recursive loop 27 */
+			/* Pre code */
+			for (int j16 = 0; j16 < 4; j16 = j16 + 1) {
+				fRec1_tmp[j16] = fRec1_perm[j16];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec1[i] = 0.0f - fSlow22 * (fSlow23 * fRec1[i - 1] - (fYec1[i] + fYec1[i - 1]));
+			}
+			/* Post code */
+			for (int j17 = 0; j17 < 4; j17 = j17 + 1) {
+				fRec1_perm[j17] = fRec1_tmp[vsize + j17];
+			}
+			/* Recursive loop 28 */
+			/* Pre code */
+			for (int j20 = 0; j20 < 4; j20 = j20 + 1) {
+				fRec9_tmp[j20] = fRec9_perm[j20];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec9[i] = fSlow29 * fYec1[i - 1] - fSlow22 * (fSlow23 * fRec9[i - 1] - fSlow20 * fYec1[i]);
+			}
+			/* Post code */
+			for (int j21 = 0; j21 < 4; j21 = j21 + 1) {
+				fRec9_perm[j21] = fRec9_tmp[vsize + j21];
+			}
+			/* Recursive loop 29 */
+			/* Pre code */
+			for (int j38 = 0; j38 < 4; j38 = j38 + 1) {
+				fRec11_tmp[j38] = fRec11_perm[j38];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec11[i] = 0.0f - fSlow22 * (fSlow23 * fRec11[i - 1] - (fYec3[i] + fYec3[i - 1]));
+			}
+			/* Post code */
+			for (int j39 = 0; j39 < 4; j39 = j39 + 1) {
+				fRec11_perm[j39] = fRec11_tmp[vsize + j39];
+			}
+			/* Recursive loop 30 */
+			/* Pre code */
+			for (int j42 = 0; j42 < 4; j42 = j42 + 1) {
+				fRec18_tmp[j42] = fRec18_perm[j42];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec18[i] = fSlow29 * fYec3[i - 1] - fSlow22 * (fSlow23 * fRec18[i - 1] - fSlow20 * fYec3[i]);
+			}
+			/* Post code */
+			for (int j43 = 0; j43 < 4; j43 = j43 + 1) {
+				fRec18_perm[j43] = fRec18_tmp[vsize + j43];
+			}
+			/* Recursive loop 31 */
+			/* Pre code */
+			for (int j18 = 0; j18 < 4; j18 = j18 + 1) {
+				fRec0_tmp[j18] = fRec0_perm[j18];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec0[i] = fRec1[i] - fSlow24 * (fSlow25 * fRec0[i - 2] + fSlow28 * fRec0[i - 1]);
+			}
+			/* Post code */
+			for (int j19 = 0; j19 < 4; j19 = j19 + 1) {
+				fRec0_perm[j19] = fRec0_tmp[vsize + j19];
+			}
+			/* Recursive loop 32 */
+			/* Pre code */
+			for (int j22 = 0; j22 < 4; j22 = j22 + 1) {
+				fRec8_tmp[j22] = fRec8_perm[j22];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec8[i] = fRec9[i] - fSlow24 * (fSlow25 * fRec8[i - 2] + fSlow28 * fRec8[i - 1]);
+			}
+			/* Post code */
+			for (int j23 = 0; j23 < 4; j23 = j23 + 1) {
+				fRec8_perm[j23] = fRec8_tmp[vsize + j23];
+			}
+			/* Recursive loop 33 */
+			/* Pre code */
+			for (int j40 = 0; j40 < 4; j40 = j40 + 1) {
+				fRec10_tmp[j40] = fRec10_perm[j40];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec10[i] = fRec11[i] - fSlow24 * (fSlow25 * fRec10[i - 2] + fSlow28 * fRec10[i - 1]);
+			}
+			/* Post code */
+			for (int j41 = 0; j41 < 4; j41 = j41 + 1) {
+				fRec10_perm[j41] = fRec10_tmp[vsize + j41];
+			}
+			/* Recursive loop 34 */
+			/* Pre code */
+			for (int j44 = 0; j44 < 4; j44 = j44 + 1) {
+				fRec17_tmp[j44] = fRec17_perm[j44];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec17[i] = fRec18[i] - fSlow24 * (fSlow25 * fRec17[i - 2] + fSlow28 * fRec17[i - 1]);
+			}
+			/* Post code */
+			for (int j45 = 0; j45 < 4; j45 = j45 + 1) {
+				fRec17_perm[j45] = fRec17_tmp[vsize + j45];
+			}
+			/* Vectorizable loop 35 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output0[i] = FAUSTFLOAT(fSlow24 * (fRec0[i - 2] + fRec0[i] + 2.0f * fRec0[i - 1] + fSlow30 * (fSlow27 * fRec8[i] + fSlow31 * fRec8[i - 1] + fSlow27 * fRec8[i - 2])));
+			}
+			/* Vectorizable loop 36 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output1[i] = FAUSTFLOAT(fSlow24 * (fRec10[i - 2] + fRec10[i] + 2.0f * fRec10[i - 1] + fSlow30 * (fSlow27 * fRec17[i] + fSlow31 * fRec17[i - 1] + fSlow27 * fRec17[i - 2])));
 			}
 		}
 		/* Remaining frames */
@@ -1082,147 +1471,380 @@ class flanger : public dsp {
 			FAUSTFLOAT* output0 = &output0_ptr[vindex];
 			FAUSTFLOAT* output1 = &output1_ptr[vindex];
 			int vsize = count - vindex;
-			/* Vectorizable loop 0 */
+			/* Recursive loop 0 */
 			/* Pre code */
-			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
-				iVec0_tmp[j2] = iVec0_perm[j2];
+			for (int j10 = 0; j10 < 4; j10 = j10 + 1) {
+				fRec7_tmp[j10] = fRec7_perm[j10];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				iVec0[i] = 1;
+				fRec7[i] = fSlow11 + 0.999000013f * fRec7[i - 1];
 			}
 			/* Post code */
-			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
-				iVec0_perm[j3] = iVec0_tmp[vsize + j3];
+			for (int j11 = 0; j11 < 4; j11 = j11 + 1) {
+				fRec7_perm[j11] = fRec7_tmp[vsize + j11];
 			}
-			/* Recursive loop 1 */
+			/* Vectorizable loop 1 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec2[i] = fRec7[i] / std::sin(fConst2 * fRec7[i]);
+			}
+			/* Vectorizable loop 2 */
 			/* Pre code */
 			for (int j0 = 0; j0 < 4; j0 = j0 + 1) {
-				fRec0_tmp[j0] = fRec0_perm[j0];
-			}
-			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
-				fRec1_tmp[j4] = fRec1_perm[j4];
+				fYec0_tmp[j0] = fYec0_perm[j0];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec0[i] = fSlow1 * fRec1[i - 1] + fSlow2 * fRec0[i - 1];
-				fRec1[i] = (float(1 - iVec0[i - 1]) + fSlow2 * fRec1[i - 1]) - fSlow1 * fRec0[i - 1];
+				fYec0[i] = float(input0[i]);
 			}
 			/* Post code */
 			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
-				fRec0_perm[j1] = fRec0_tmp[vsize + j1];
+				fYec0_perm[j1] = fYec0_tmp[vsize + j1];
 			}
-			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
-				fRec1_perm[j5] = fRec1_tmp[vsize + j5];
-			}
-			/* Recursive loop 2 */
-			/* Pre code */
-			for (int j6 = 0; j6 < 4; j6 = j6 + 1) {
-				fRec3_tmp[j6] = fRec3_perm[j6];
-			}
+			/* Vectorizable loop 3 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec3[i] = fSlow3 + 0.999000013f * fRec3[i - 1];
-			}
-			/* Post code */
-			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
-				fRec3_perm[j7] = fRec3_tmp[vsize + j7];
-			}
-			/* Recursive loop 3 */
-			/* Pre code */
-			for (int j8 = 0; j8 < 4; j8 = j8 + 1) {
-				fRec4_tmp[j8] = fRec4_perm[j8];
-			}
-			/* Compute code */
-			for (int i = 0; i < vsize; i = i + 1) {
-				fRec4[i] = fSlow4 + 0.999000013f * fRec4[i - 1];
-			}
-			/* Post code */
-			for (int j9 = 0; j9 < 4; j9 = j9 + 1) {
-				fRec4_perm[j9] = fRec4_tmp[vsize + j9];
+				fZec0[i] = std::tan(fConst1 * fRec7[i]);
 			}
 			/* Vectorizable loop 4 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec1[i] = fRec3[i] + 0.5f * fRec4[i] * (fRec0[i] + 1.0f);
+				fZec3[i] = fSlow17 * fZec2[i];
 			}
 			/* Vectorizable loop 5 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec5[i] = fRec3[i] + 0.5f * fRec4[i] * (fRec1[i] + 1.0f);
+				fZec4[i] = fSlow18 * fZec2[i];
 			}
 			/* Vectorizable loop 6 */
-			/* Compute code */
-			for (int i = 0; i < vsize; i = i + 1) {
-				fHbargraph0 = FAUSTFLOAT(fRec1[i] + fRec0[i]);
-				fZec0[i] = fSlow6 * float(input0[i]);
+			/* Pre code */
+			for (int j24 = 0; j24 < 4; j24 = j24 + 1) {
+				fYec2_tmp[j24] = fYec2_perm[j24];
 			}
-			/* Vectorizable loop 7 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				iZec2[i] = int(fZec1[i]);
+				fYec2[i] = float(input1[i]);
 			}
-			/* Vectorizable loop 8 */
+			/* Post code */
+			for (int j25 = 0; j25 < 4; j25 = j25 + 1) {
+				fYec2_perm[j25] = fYec2_tmp[vsize + j25];
+			}
+			/* Recursive loop 7 */
+			/* Pre code */
+			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
+				fRec4_tmp[j2] = fRec4_perm[j2];
+			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec3[i] = std::floor(fZec1[i]);
+				fRec4[i] = fSlow3 * fYec0[i - 1] - fSlow4 * (fSlow5 * fRec4[i - 1] - fSlow1 * float(input0[i]));
+			}
+			/* Post code */
+			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
+				fRec4_perm[j3] = fRec4_tmp[vsize + j3];
+			}
+			/* Recursive loop 8 */
+			/* Pre code */
+			for (int j6 = 0; j6 < 4; j6 = j6 + 1) {
+				fRec6_tmp[j6] = fRec6_perm[j6];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec6[i] = 0.0f - fSlow4 * (fSlow5 * fRec6[i - 1] - (float(input0[i]) + fYec0[i - 1]));
+			}
+			/* Post code */
+			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
+				fRec6_perm[j7] = fRec6_tmp[vsize + j7];
 			}
 			/* Vectorizable loop 9 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec4[i] = fSlow6 * float(input1[i]);
+				fZec1[i] = 1.0f / fZec0[i];
 			}
 			/* Vectorizable loop 10 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				iZec6[i] = int(fZec5[i]);
+				float fThen0 = fZec3[i];
+				float fElse0 = fZec4[i];
+				fZec5[i] = ((iSlow15) ? fElse0 : fThen0);
 			}
-			/* Vectorizable loop 11 */
+			/* Recursive loop 11 */
+			/* Pre code */
+			for (int j26 = 0; j26 < 4; j26 = j26 + 1) {
+				fRec14_tmp[j26] = fRec14_perm[j26];
+			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec7[i] = std::floor(fZec5[i]);
+				fRec14[i] = fSlow3 * fYec2[i - 1] - fSlow4 * (fSlow5 * fRec14[i - 1] - fSlow1 * float(input1[i]));
+			}
+			/* Post code */
+			for (int j27 = 0; j27 < 4; j27 = j27 + 1) {
+				fRec14_perm[j27] = fRec14_tmp[vsize + j27];
 			}
 			/* Recursive loop 12 */
 			/* Pre code */
-			fYec0_idx = (fYec0_idx + fYec0_idx_save) & 4095;
-			for (int j10 = 0; j10 < 4; j10 = j10 + 1) {
-				fRec2_tmp[j10] = fRec2_perm[j10];
+			for (int j30 = 0; j30 < 4; j30 = j30 + 1) {
+				fRec16_tmp[j30] = fRec16_perm[j30];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec0[(i + fYec0_idx) & 4095] = fSlow5 * fRec2[i - 1] - fZec0[i];
-				fRec2[i] = fYec0[((i + fYec0_idx) - std::min<int>(2049, std::max<int>(0, iZec2[i]))) & 4095] * (fZec3[i] + 1.0f - fZec1[i]) + (fZec1[i] - fZec3[i]) * fYec0[((i + fYec0_idx) - std::min<int>(2049, std::max<int>(0, iZec2[i] + 1))) & 4095];
+				fRec16[i] = 0.0f - fSlow4 * (fSlow5 * fRec16[i - 1] - (float(input1[i]) + fYec2[i - 1]));
 			}
 			/* Post code */
-			fYec0_idx_save = vsize;
-			for (int j11 = 0; j11 < 4; j11 = j11 + 1) {
-				fRec2_perm[j11] = fRec2_tmp[vsize + j11];
+			for (int j31 = 0; j31 < 4; j31 = j31 + 1) {
+				fRec16_perm[j31] = fRec16_tmp[vsize + j31];
 			}
 			/* Recursive loop 13 */
 			/* Pre code */
-			fYec1_idx = (fYec1_idx + fYec1_idx_save) & 4095;
-			for (int j12 = 0; j12 < 4; j12 = j12 + 1) {
-				fRec5_tmp[j12] = fRec5_perm[j12];
+			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
+				fRec3_tmp[j4] = fRec3_perm[j4];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec1[(i + fYec1_idx) & 4095] = fSlow5 * fRec5[i - 1] - fZec4[i];
-				fRec5[i] = fYec1[((i + fYec1_idx) - std::min<int>(2049, std::max<int>(0, iZec6[i]))) & 4095] * (fZec7[i] + 1.0f - fZec5[i]) + (fZec5[i] - fZec7[i]) * fYec1[((i + fYec1_idx) - std::min<int>(2049, std::max<int>(0, iZec6[i] + 1))) & 4095];
+				fRec3[i] = fRec4[i] - fSlow6 * (fSlow7 * fRec3[i - 2] + fSlow10 * fRec3[i - 1]);
 			}
 			/* Post code */
-			fYec1_idx_save = vsize;
-			for (int j13 = 0; j13 < 4; j13 = j13 + 1) {
-				fRec5_perm[j13] = fRec5_tmp[vsize + j13];
+			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
+				fRec3_perm[j5] = fRec3_tmp[vsize + j5];
 			}
-			/* Vectorizable loop 14 */
+			/* Recursive loop 14 */
+			/* Pre code */
+			for (int j8 = 0; j8 < 4; j8 = j8 + 1) {
+				fRec5_tmp[j8] = fRec5_perm[j8];
+			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output0[i] = FAUSTFLOAT(0.5f * (fZec0[i] + fRec2[i] * fSlow8));
+				fRec5[i] = fRec6[i] - fSlow6 * (fSlow7 * fRec5[i - 2] + fSlow10 * fRec5[i - 1]);
+			}
+			/* Post code */
+			for (int j9 = 0; j9 < 4; j9 = j9 + 1) {
+				fRec5_perm[j9] = fRec5_tmp[vsize + j9];
 			}
 			/* Vectorizable loop 15 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output1[i] = FAUSTFLOAT(0.5f * (fZec4[i] + fRec5[i] * fSlow8));
+				fZec6[i] = (fZec1[i] - fZec5[i]) / fZec0[i] + 1.0f;
+			}
+			/* Vectorizable loop 16 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec7[i] = 1.0f - 1.0f / parametric_eq_faustpower2_f(fZec0[i]);
+			}
+			/* Vectorizable loop 17 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec9[i] = (fZec1[i] + fZec5[i]) / fZec0[i] + 1.0f;
+			}
+			/* Vectorizable loop 18 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				float fThen1 = fZec4[i];
+				float fElse1 = fZec3[i];
+				fZec10[i] = ((iSlow15) ? fElse1 : fThen1);
+			}
+			/* Recursive loop 19 */
+			/* Pre code */
+			for (int j28 = 0; j28 < 4; j28 = j28 + 1) {
+				fRec13_tmp[j28] = fRec13_perm[j28];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec13[i] = fRec14[i] - fSlow6 * (fSlow7 * fRec13[i - 2] + fSlow10 * fRec13[i - 1]);
+			}
+			/* Post code */
+			for (int j29 = 0; j29 < 4; j29 = j29 + 1) {
+				fRec13_perm[j29] = fRec13_tmp[vsize + j29];
+			}
+			/* Recursive loop 20 */
+			/* Pre code */
+			for (int j32 = 0; j32 < 4; j32 = j32 + 1) {
+				fRec15_tmp[j32] = fRec15_perm[j32];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec15[i] = fRec16[i] - fSlow6 * (fSlow7 * fRec15[i - 2] + fSlow10 * fRec15[i - 1]);
+			}
+			/* Post code */
+			for (int j33 = 0; j33 < 4; j33 = j33 + 1) {
+				fRec15_perm[j33] = fRec15_tmp[vsize + j33];
+			}
+			/* Recursive loop 21 */
+			/* Pre code */
+			for (int j12 = 0; j12 < 4; j12 = j12 + 1) {
+				fRec2_tmp[j12] = fRec2_perm[j12];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec8[i] = 2.0f * fRec2[i - 1] * fZec7[i];
+				fRec2[i] = fSlow6 * (fSlow9 * fRec3[i] + fSlow12 * fRec3[i - 1] + fSlow9 * fRec3[i - 2] + fSlow13 * (fRec5[i - 2] + fRec5[i] + 2.0f * fRec5[i - 1])) - (fRec2[i - 2] * fZec6[i] + fZec8[i]) / fZec9[i];
+			}
+			/* Post code */
+			for (int j13 = 0; j13 < 4; j13 = j13 + 1) {
+				fRec2_perm[j13] = fRec2_tmp[vsize + j13];
+			}
+			/* Vectorizable loop 22 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec11[i] = (fZec1[i] + fZec10[i]) / fZec0[i] + 1.0f;
+			}
+			/* Vectorizable loop 23 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec12[i] = (fZec1[i] - fZec10[i]) / fZec0[i] + 1.0f;
+			}
+			/* Recursive loop 24 */
+			/* Pre code */
+			for (int j34 = 0; j34 < 4; j34 = j34 + 1) {
+				fRec12_tmp[j34] = fRec12_perm[j34];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec13[i] = 2.0f * fZec7[i] * fRec12[i - 1];
+				fRec12[i] = fSlow6 * (fSlow9 * fRec13[i] + fSlow12 * fRec13[i - 1] + fSlow9 * fRec13[i - 2] + fSlow13 * (fRec15[i - 2] + fRec15[i] + 2.0f * fRec15[i - 1])) - (fZec6[i] * fRec12[i - 2] + fZec13[i]) / fZec9[i];
+			}
+			/* Post code */
+			for (int j35 = 0; j35 < 4; j35 = j35 + 1) {
+				fRec12_perm[j35] = fRec12_tmp[vsize + j35];
+			}
+			/* Vectorizable loop 25 */
+			/* Pre code */
+			for (int j14 = 0; j14 < 4; j14 = j14 + 1) {
+				fYec1_tmp[j14] = fYec1_perm[j14];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec1[i] = (fZec8[i] + fRec2[i] * fZec11[i] + fRec2[i - 2] * fZec12[i]) / fZec9[i];
+			}
+			/* Post code */
+			for (int j15 = 0; j15 < 4; j15 = j15 + 1) {
+				fYec1_perm[j15] = fYec1_tmp[vsize + j15];
+			}
+			/* Vectorizable loop 26 */
+			/* Pre code */
+			for (int j36 = 0; j36 < 4; j36 = j36 + 1) {
+				fYec3_tmp[j36] = fYec3_perm[j36];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fYec3[i] = (fZec13[i] + fRec12[i] * fZec11[i] + fZec12[i] * fRec12[i - 2]) / fZec9[i];
+			}
+			/* Post code */
+			for (int j37 = 0; j37 < 4; j37 = j37 + 1) {
+				fYec3_perm[j37] = fYec3_tmp[vsize + j37];
+			}
+			/* Recursive loop 27 */
+			/* Pre code */
+			for (int j16 = 0; j16 < 4; j16 = j16 + 1) {
+				fRec1_tmp[j16] = fRec1_perm[j16];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec1[i] = 0.0f - fSlow22 * (fSlow23 * fRec1[i - 1] - (fYec1[i] + fYec1[i - 1]));
+			}
+			/* Post code */
+			for (int j17 = 0; j17 < 4; j17 = j17 + 1) {
+				fRec1_perm[j17] = fRec1_tmp[vsize + j17];
+			}
+			/* Recursive loop 28 */
+			/* Pre code */
+			for (int j20 = 0; j20 < 4; j20 = j20 + 1) {
+				fRec9_tmp[j20] = fRec9_perm[j20];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec9[i] = fSlow29 * fYec1[i - 1] - fSlow22 * (fSlow23 * fRec9[i - 1] - fSlow20 * fYec1[i]);
+			}
+			/* Post code */
+			for (int j21 = 0; j21 < 4; j21 = j21 + 1) {
+				fRec9_perm[j21] = fRec9_tmp[vsize + j21];
+			}
+			/* Recursive loop 29 */
+			/* Pre code */
+			for (int j38 = 0; j38 < 4; j38 = j38 + 1) {
+				fRec11_tmp[j38] = fRec11_perm[j38];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec11[i] = 0.0f - fSlow22 * (fSlow23 * fRec11[i - 1] - (fYec3[i] + fYec3[i - 1]));
+			}
+			/* Post code */
+			for (int j39 = 0; j39 < 4; j39 = j39 + 1) {
+				fRec11_perm[j39] = fRec11_tmp[vsize + j39];
+			}
+			/* Recursive loop 30 */
+			/* Pre code */
+			for (int j42 = 0; j42 < 4; j42 = j42 + 1) {
+				fRec18_tmp[j42] = fRec18_perm[j42];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec18[i] = fSlow29 * fYec3[i - 1] - fSlow22 * (fSlow23 * fRec18[i - 1] - fSlow20 * fYec3[i]);
+			}
+			/* Post code */
+			for (int j43 = 0; j43 < 4; j43 = j43 + 1) {
+				fRec18_perm[j43] = fRec18_tmp[vsize + j43];
+			}
+			/* Recursive loop 31 */
+			/* Pre code */
+			for (int j18 = 0; j18 < 4; j18 = j18 + 1) {
+				fRec0_tmp[j18] = fRec0_perm[j18];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec0[i] = fRec1[i] - fSlow24 * (fSlow25 * fRec0[i - 2] + fSlow28 * fRec0[i - 1]);
+			}
+			/* Post code */
+			for (int j19 = 0; j19 < 4; j19 = j19 + 1) {
+				fRec0_perm[j19] = fRec0_tmp[vsize + j19];
+			}
+			/* Recursive loop 32 */
+			/* Pre code */
+			for (int j22 = 0; j22 < 4; j22 = j22 + 1) {
+				fRec8_tmp[j22] = fRec8_perm[j22];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec8[i] = fRec9[i] - fSlow24 * (fSlow25 * fRec8[i - 2] + fSlow28 * fRec8[i - 1]);
+			}
+			/* Post code */
+			for (int j23 = 0; j23 < 4; j23 = j23 + 1) {
+				fRec8_perm[j23] = fRec8_tmp[vsize + j23];
+			}
+			/* Recursive loop 33 */
+			/* Pre code */
+			for (int j40 = 0; j40 < 4; j40 = j40 + 1) {
+				fRec10_tmp[j40] = fRec10_perm[j40];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec10[i] = fRec11[i] - fSlow24 * (fSlow25 * fRec10[i - 2] + fSlow28 * fRec10[i - 1]);
+			}
+			/* Post code */
+			for (int j41 = 0; j41 < 4; j41 = j41 + 1) {
+				fRec10_perm[j41] = fRec10_tmp[vsize + j41];
+			}
+			/* Recursive loop 34 */
+			/* Pre code */
+			for (int j44 = 0; j44 < 4; j44 = j44 + 1) {
+				fRec17_tmp[j44] = fRec17_perm[j44];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec17[i] = fRec18[i] - fSlow24 * (fSlow25 * fRec17[i - 2] + fSlow28 * fRec17[i - 1]);
+			}
+			/* Post code */
+			for (int j45 = 0; j45 < 4; j45 = j45 + 1) {
+				fRec17_perm[j45] = fRec17_tmp[vsize + j45];
+			}
+			/* Vectorizable loop 35 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output0[i] = FAUSTFLOAT(fSlow24 * (fRec0[i - 2] + fRec0[i] + 2.0f * fRec0[i - 1] + fSlow30 * (fSlow27 * fRec8[i] + fSlow31 * fRec8[i - 1] + fSlow27 * fRec8[i - 2])));
+			}
+			/* Vectorizable loop 36 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output1[i] = FAUSTFLOAT(fSlow24 * (fRec10[i - 2] + fRec10[i] + 2.0f * fRec10[i - 1] + fSlow30 * (fSlow27 * fRec17[i] + fSlow31 * fRec17[i - 1] + fSlow27 * fRec17[i - 2])));
 			}
 		}
 	}
@@ -1257,7 +1879,7 @@ class flanger : public dsp {
 #endif
 
 #ifndef PLUGIN_URI
-#define PLUGIN_URI URI_PREFIX "/flanger"
+#define PLUGIN_URI URI_PREFIX "/parametric_eq"
 #endif
 
 #define MIDI_EVENT_URI "http://lv2plug.in/ns/ext/midi#MidiEvent"
@@ -1498,7 +2120,7 @@ struct LV2Plugin {
   int rate;		// sampling rate
   int nvoices;		// current number of voices (<= maxvoices)
   int tuning_no;	// current tuning number (<= n_tunings)
-  flanger **dsp;		// the dsps
+  parametric_eq **dsp;		// the dsps
   LV2UI **ui;		// their Faust interface descriptions
   int n_in, n_out;	// number of input and output control ports
   int *ctrls;		// Faust ui elements (indices into ui->elems)
@@ -1537,7 +2159,7 @@ struct LV2Plugin {
       // stack space is precious (e.g., Reaper). Note that if any of these
       // allocations fail then no meta data will be available, but at least we
       // won't make the host crash and burn.
-      flanger* tmp_dsp = new flanger();
+      parametric_eq* tmp_dsp = new parametric_eq();
       if (tmp_dsp) {
 	tmp_dsp->metadata(meta);
 	delete tmp_dsp;
@@ -1552,7 +2174,7 @@ struct LV2Plugin {
 
   static const char *pluginName()
   {
-    return meta_get("name", "flanger");
+    return meta_get("name", "parametric_eq");
   }
 
   static const char *pluginAuthor()
@@ -1648,7 +2270,7 @@ struct LV2Plugin {
     if (num_voices>0) load_sysex_data();
 #endif
     // Allocate data structures and set some reasonable defaults.
-    dsp = (flanger**)calloc(ndsps, sizeof(flanger*));
+    dsp = (parametric_eq**)calloc(ndsps, sizeof(parametric_eq*));
     ui = (LV2UI**)calloc(ndsps, sizeof(LV2UI*));
     assert(dsp && ui);
     if (vd) {
@@ -1689,7 +2311,7 @@ struct LV2Plugin {
     memset(midivals, 0, sizeof(midivals));
     // Initialize the Faust DSPs.
     for (int i = 0; i < ndsps; i++) {
-      dsp[i] = new flanger();
+      dsp[i] = new parametric_eq();
       ui[i] = new LV2UI(num_voices);
       dsp[i]->init(rate);
       dsp[i]->buildUserInterface(ui[i]);
@@ -2780,7 +3402,7 @@ int lv2_dyn_manifest_get_data(LV2_Dyn_Manifest_Handle handle,
   plugin_version = plugin->pluginVersion();
   plugin_license = plugin->pluginLicense();
 #endif
-  if (!plugin_name || !*plugin_name) plugin_name = "flanger";
+  if (!plugin_name || !*plugin_name) plugin_name = "parametric_eq";
   fprintf(fp, "@prefix doap:  <http://usefulinc.com/ns/doap#> .\n\
 @prefix foaf:  <http://xmlns.com/foaf/0.1/> .\n\
 @prefix lv2:   <http://lv2plug.in/ns/lv2core#> .\n\
@@ -2794,7 +3416,7 @@ int lv2_dyn_manifest_get_data(LV2_Dyn_Manifest_Handle handle,
 <%s>\n\
        a lv2:Plugin%s ;\n\
        doap:name \"%s\" ;\n\
-       lv2:binary <flanger%s> ;\n\
+       lv2:binary <parametric_eq%s> ;\n\
        lv2:requiredFeature urid:map ;\n\
        lv2:optionalFeature epp:supportsStrictBounds ;\n\
        lv2:optionalFeature lv2:hardRTCapable ;\n", PLUGIN_URI,
