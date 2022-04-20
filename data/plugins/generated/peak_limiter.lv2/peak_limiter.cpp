@@ -2,14 +2,14 @@
 author: "Zrythm DAW"
 copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
-name: "Lowpass Filter"
+name: "Peak Limiter"
 version: "1.0"
 Code generated with Faust 2.40.0 (https://faust.grame.fr)
-Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn lowpass_filter -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
+Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn peak_limiter -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
-#ifndef  __lowpass_filter_H__
-#define  __lowpass_filter_H__
+#ifndef  __peak_limiter_H__
+#define  __peak_limiter_H__
 
 /************************************************************************
  ************************************************************************
@@ -680,7 +680,7 @@ void LV2UI::run() {}
 #include <math.h>
 
 #ifndef FAUSTCLASS 
-#define FAUSTCLASS lowpass_filter
+#define FAUSTCLASS peak_limiter
 #endif
 
 #ifdef __APPLE__ 
@@ -694,11 +694,8 @@ void LV2UI::run() {}
 #define RESTRICT __restrict__
 #endif
 
-static float lowpass_filter_faustpower2_f(float value) {
-	return value * value;
-}
 
-class lowpass_filter : public dsp {
+class peak_limiter : public dsp {
 	
  private:
 	
@@ -706,45 +703,47 @@ class lowpass_filter : public dsp {
 	float fConst1;
 	FAUSTFLOAT fHslider0;
 	float fConst2;
-	float fRec1_perm[4];
 	float fConst3;
-	float fRec0_perm[4];
+	float fRec3_perm[4];
+	float fConst4;
+	FAUSTFLOAT fHslider1;
+	float fRec4_perm[4];
+	float fConst5;
 	float fRec2_perm[4];
+	float fRec1_perm[4];
+	FAUSTFLOAT fHslider2;
+	float fRec5_perm[4];
+	FAUSTFLOAT fHslider3;
+	float fRec6_perm[4];
+	float fRec0_perm[4];
 	
  public:
 	
 	void metadata(Meta* m) { 
+		m->declare("analyzers.lib/name", "Faust Analyzer Library");
+		m->declare("analyzers.lib/version", "0.1");
 		m->declare("author", "Zrythm DAW");
-		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn lowpass_filter -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32");
+		m->declare("basics.lib/name", "Faust Basic Element Library");
+		m->declare("basics.lib/version", "0.5");
+		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn peak_limiter -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32");
+		m->declare("compressors.lib/compression_gain_mono:author", "Julius O. Smith III");
+		m->declare("compressors.lib/compression_gain_mono:copyright", "Copyright (C) 2014-2020 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("compressors.lib/compression_gain_mono:license", "MIT-style STK-4.3 license");
+		m->declare("compressors.lib/compressor_stereo:author", "Julius O. Smith III");
+		m->declare("compressors.lib/compressor_stereo:copyright", "Copyright (C) 2014-2020 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("compressors.lib/compressor_stereo:license", "MIT-style STK-4.3 license");
+		m->declare("compressors.lib/name", "Faust Compressor Effect Library");
+		m->declare("compressors.lib/version", "0.2");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
-		m->declare("description", "2nd-order Butterworth lowpass filter");
-		m->declare("filename", "lowpass_filter.dsp");
-		m->declare("filters.lib/fir:author", "Julius O. Smith III");
-		m->declare("filters.lib/fir:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
-		m->declare("filters.lib/fir:license", "MIT-style STK-4.3 license");
-		m->declare("filters.lib/iir:author", "Julius O. Smith III");
-		m->declare("filters.lib/iir:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
-		m->declare("filters.lib/iir:license", "MIT-style STK-4.3 license");
-		m->declare("filters.lib/lowpass0_highpass1", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
-		m->declare("filters.lib/lowpass0_highpass1:author", "Julius O. Smith III");
-		m->declare("filters.lib/lowpass:author", "Julius O. Smith III");
-		m->declare("filters.lib/lowpass:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
-		m->declare("filters.lib/lowpass:license", "MIT-style STK-4.3 license");
-		m->declare("filters.lib/name", "Faust Filters Library");
-		m->declare("filters.lib/tf2:author", "Julius O. Smith III");
-		m->declare("filters.lib/tf2:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
-		m->declare("filters.lib/tf2:license", "MIT-style STK-4.3 license");
-		m->declare("filters.lib/tf2s:author", "Julius O. Smith III");
-		m->declare("filters.lib/tf2s:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
-		m->declare("filters.lib/tf2s:license", "MIT-style STK-4.3 license");
-		m->declare("filters.lib/version", "0.3");
+		m->declare("description", "1176 Peak limiter");
+		m->declare("filename", "peak_limiter.dsp");
 		m->declare("license", "AGPL-3.0-or-later");
 		m->declare("maths.lib/author", "GRAME");
 		m->declare("maths.lib/copyright", "GRAME");
 		m->declare("maths.lib/license", "LGPL with exception");
 		m->declare("maths.lib/name", "Faust Math Library");
 		m->declare("maths.lib/version", "2.5");
-		m->declare("name", "Lowpass Filter");
+		m->declare("name", "Peak Limiter");
 		m->declare("platform.lib/name", "Generic Platform Library");
 		m->declare("platform.lib/version", "0.2");
 		m->declare("signals.lib/name", "Faust Signal Routing Library");
@@ -769,24 +768,41 @@ class lowpass_filter : public dsp {
 	virtual void instanceConstants(int sample_rate) {
 		fSampleRate = sample_rate;
 		float fConst0 = std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate)));
-		fConst1 = 44.0999985f / fConst0;
-		fConst2 = 1.0f - fConst1;
-		fConst3 = 3.14159274f / fConst0;
+		fConst1 = 4.41000011e-05f / fConst0;
+		fConst2 = 44.0999985f / fConst0;
+		fConst3 = 1.0f - fConst2;
+		fConst4 = 0.0441000015f / fConst0;
+		fConst5 = 1.0f / fConst0;
 	}
 	
 	virtual void instanceResetUserInterface() {
-		fHslider0 = FAUSTFLOAT(5000.0f);
+		fHslider0 = FAUSTFLOAT(800.0f);
+		fHslider1 = FAUSTFLOAT(500.0f);
+		fHslider2 = FAUSTFLOAT(-6.0f);
+		fHslider3 = FAUSTFLOAT(4.0f);
 	}
 	
 	virtual void instanceClear() {
 		for (int l0 = 0; l0 < 4; l0 = l0 + 1) {
-			fRec1_perm[l0] = 0.0f;
+			fRec3_perm[l0] = 0.0f;
 		}
 		for (int l1 = 0; l1 < 4; l1 = l1 + 1) {
-			fRec0_perm[l1] = 0.0f;
+			fRec4_perm[l1] = 0.0f;
 		}
 		for (int l2 = 0; l2 < 4; l2 = l2 + 1) {
 			fRec2_perm[l2] = 0.0f;
+		}
+		for (int l3 = 0; l3 < 4; l3 = l3 + 1) {
+			fRec1_perm[l3] = 0.0f;
+		}
+		for (int l4 = 0; l4 < 4; l4 = l4 + 1) {
+			fRec5_perm[l4] = 0.0f;
+		}
+		for (int l5 = 0; l5 < 4; l5 = l5 + 1) {
+			fRec6_perm[l5] = 0.0f;
+		}
+		for (int l6 = 0; l6 < 4; l6 = l6 + 1) {
+			fRec0_perm[l6] = 0.0f;
 		}
 	}
 	
@@ -800,8 +816,8 @@ class lowpass_filter : public dsp {
 		instanceClear();
 	}
 	
-	virtual lowpass_filter* clone() {
-		return new lowpass_filter();
+	virtual peak_limiter* clone() {
+		return new peak_limiter();
 	}
 	
 	virtual int getSampleRate() {
@@ -809,11 +825,20 @@ class lowpass_filter : public dsp {
 	}
 	
 	virtual void buildUserInterface(UI* ui_interface) {
-		ui_interface->openVerticalBox("Lowpass Filter");
-		ui_interface->declare(&fHslider0, "scale", "log");
-		ui_interface->declare(&fHslider0, "tooltip", "Transition frequency");
-		ui_interface->declare(&fHslider0, "unit", "Hz");
-		ui_interface->addHorizontalSlider("Frequency", &fHslider0, FAUSTFLOAT(5000.0f), FAUSTFLOAT(10.0f), FAUSTFLOAT(18000.0f), FAUSTFLOAT(1.0f));
+		ui_interface->openVerticalBox("Peak Limiter");
+		ui_interface->declare(&fHslider3, "0", "");
+		ui_interface->addHorizontalSlider("Ratio", &fHslider3, FAUSTFLOAT(4.0f), FAUSTFLOAT(4.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(0.00999999978f));
+		ui_interface->declare(&fHslider2, "1", "");
+		ui_interface->declare(&fHslider2, "tooltip", "Threshold");
+		ui_interface->declare(&fHslider2, "unit", "dB");
+		ui_interface->addHorizontalSlider("Threshold", &fHslider2, FAUSTFLOAT(-6.0f), FAUSTFLOAT(-6.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(0.100000001f));
+		ui_interface->declare(&fHslider0, "2", "");
+		ui_interface->declare(&fHslider0, "tooltip", "Attack time in microseconds");
+		ui_interface->addHorizontalSlider("Attack", &fHslider0, FAUSTFLOAT(800.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(800.0f), FAUSTFLOAT(1.0f));
+		ui_interface->declare(&fHslider1, "3", "");
+		ui_interface->declare(&fHslider1, "tooltip", "Release time in ms");
+		ui_interface->declare(&fHslider1, "unit", "ms");
+		ui_interface->addHorizontalSlider("Release", &fHslider1, FAUSTFLOAT(500.0f), FAUSTFLOAT(50.0f), FAUSTFLOAT(1100.0f), FAUSTFLOAT(1.0f));
 		ui_interface->closeBox();
 	}
 	
@@ -823,17 +848,31 @@ class lowpass_filter : public dsp {
 		FAUSTFLOAT* output0_ptr = outputs[0];
 		FAUSTFLOAT* output1_ptr = outputs[1];
 		float fSlow0 = fConst1 * float(fHslider0);
-		float fRec1_tmp[36];
-		float* fRec1 = &fRec1_tmp[4];
+		float fRec3_tmp[36];
+		float* fRec3 = &fRec3_tmp[4];
+		float fSlow1 = fConst4 * float(fHslider1);
+		float fRec4_tmp[36];
+		float* fRec4 = &fRec4_tmp[4];
 		float fZec0[32];
-		float fZec1[32];
-		float fZec2[32];
+		int iZec1[32];
+		int iZec2[32];
 		float fZec3[32];
-		float fZec4[32];
-		float fRec0_tmp[36];
-		float* fRec0 = &fRec0_tmp[4];
 		float fRec2_tmp[36];
 		float* fRec2 = &fRec2_tmp[4];
+		float fRec1_tmp[36];
+		float* fRec1 = &fRec1_tmp[4];
+		float fSlow2 = fConst2 * float(fHslider2);
+		float fRec5_tmp[36];
+		float* fRec5 = &fRec5_tmp[4];
+		float fSlow3 = fConst2 * float(fHslider3);
+		float fRec6_tmp[36];
+		float* fRec6 = &fRec6_tmp[4];
+		float fZec4[32];
+		int iZec5[32];
+		float fZec6[32];
+		float fRec0_tmp[36];
+		float* fRec0 = &fRec0_tmp[4];
+		float fZec7[32];
 		int vindex = 0;
 		/* Main loop */
 		for (vindex = 0; vindex <= count - 32; vindex = vindex + 32) {
@@ -845,76 +884,141 @@ class lowpass_filter : public dsp {
 			/* Recursive loop 0 */
 			/* Pre code */
 			for (int j0 = 0; j0 < 4; j0 = j0 + 1) {
-				fRec1_tmp[j0] = fRec1_perm[j0];
+				fRec3_tmp[j0] = fRec3_perm[j0];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec1[i] = fSlow0 + fConst2 * fRec1[i - 1];
+				fRec3[i] = fSlow0 + fConst3 * fRec3[i - 1];
 			}
 			/* Post code */
 			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
-				fRec1_perm[j1] = fRec1_tmp[vsize + j1];
+				fRec3_perm[j1] = fRec3_tmp[vsize + j1];
 			}
-			/* Vectorizable loop 1 */
+			/* Recursive loop 1 */
+			/* Pre code */
+			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
+				fRec4_tmp[j2] = fRec4_perm[j2];
+			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec0[i] = std::tan(fConst3 * fRec1[i]);
+				fRec4[i] = fSlow1 + fConst3 * fRec4[i - 1];
+			}
+			/* Post code */
+			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
+				fRec4_perm[j3] = fRec4_tmp[vsize + j3];
 			}
 			/* Vectorizable loop 2 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec1[i] = 1.0f / fZec0[i];
+				fZec4[i] = 0.5f * fRec3[i];
 			}
 			/* Vectorizable loop 3 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec2[i] = (fZec1[i] + -1.41421354f) / fZec0[i] + 1.0f;
+				fZec0[i] = std::fabs(std::fabs(float(input1[i])) + std::fabs(float(input0[i])));
 			}
 			/* Vectorizable loop 4 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec3[i] = 1.0f - 1.0f / lowpass_filter_faustpower2_f(fZec0[i]);
+				iZec1[i] = std::fabs(fRec3[i]) < 1.1920929e-07f;
 			}
 			/* Vectorizable loop 5 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec4[i] = (fZec1[i] + 1.41421354f) / fZec0[i] + 1.0f;
+				iZec2[i] = std::fabs(fRec4[i]) < 1.1920929e-07f;
 			}
-			/* Recursive loop 6 */
-			/* Pre code */
-			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
-				fRec0_tmp[j2] = fRec0_perm[j2];
-			}
+			/* Vectorizable loop 6 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec0[i] = float(input0[i]) - (fRec0[i - 2] * fZec2[i] + 2.0f * fRec0[i - 1] * fZec3[i]) / fZec4[i];
-			}
-			/* Post code */
-			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
-				fRec0_perm[j3] = fRec0_tmp[vsize + j3];
+				iZec5[i] = std::fabs(fZec4[i]) < 1.1920929e-07f;
 			}
 			/* Recursive loop 7 */
 			/* Pre code */
 			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
 				fRec2_tmp[j4] = fRec2_perm[j4];
 			}
+			for (int j6 = 0; j6 < 4; j6 = j6 + 1) {
+				fRec1_tmp[j6] = fRec1_perm[j6];
+			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec2[i] = float(input1[i]) - (fZec2[i] * fRec2[i - 2] + 2.0f * fZec3[i] * fRec2[i - 1]) / fZec4[i];
+				float fThen0 = fRec3[i];
+				float fThen1 = std::exp(0.0f - fConst5 / ((iZec1[i]) ? 1.0f : fThen0));
+				float fThen2 = fRec4[i];
+				float fThen3 = std::exp(0.0f - fConst5 / ((iZec2[i]) ? 1.0f : fThen2));
+				float fThen4 = ((iZec1[i]) ? 0.0f : fThen1);
+				float fElse4 = ((iZec2[i]) ? 0.0f : fThen3);
+				fZec3[i] = ((fRec1[i - 1] > fZec0[i]) ? fElse4 : fThen4);
+				fRec2[i] = fZec0[i] * (1.0f - fZec3[i]) + fZec3[i] * fRec2[i - 1];
+				fRec1[i] = fRec2[i];
 			}
 			/* Post code */
 			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
 				fRec2_perm[j5] = fRec2_tmp[vsize + j5];
 			}
-			/* Vectorizable loop 8 */
-			/* Compute code */
-			for (int i = 0; i < vsize; i = i + 1) {
-				output0[i] = FAUSTFLOAT((fRec0[i - 2] + fRec0[i] + 2.0f * fRec0[i - 1]) / fZec4[i]);
+			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
+				fRec1_perm[j7] = fRec1_tmp[vsize + j7];
 			}
-			/* Vectorizable loop 9 */
+			/* Recursive loop 8 */
+			/* Pre code */
+			for (int j8 = 0; j8 < 4; j8 = j8 + 1) {
+				fRec5_tmp[j8] = fRec5_perm[j8];
+			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output1[i] = FAUSTFLOAT((fRec2[i - 2] + fRec2[i] + 2.0f * fRec2[i - 1]) / fZec4[i]);
+				fRec5[i] = fSlow2 + fConst3 * fRec5[i - 1];
+			}
+			/* Post code */
+			for (int j9 = 0; j9 < 4; j9 = j9 + 1) {
+				fRec5_perm[j9] = fRec5_tmp[vsize + j9];
+			}
+			/* Recursive loop 9 */
+			/* Pre code */
+			for (int j10 = 0; j10 < 4; j10 = j10 + 1) {
+				fRec6_tmp[j10] = fRec6_perm[j10];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec6[i] = fSlow3 + fConst3 * fRec6[i - 1];
+			}
+			/* Post code */
+			for (int j11 = 0; j11 < 4; j11 = j11 + 1) {
+				fRec6_perm[j11] = fRec6_tmp[vsize + j11];
+			}
+			/* Vectorizable loop 10 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				float fThen5 = fZec4[i];
+				float fThen6 = std::exp(0.0f - fConst5 / ((iZec5[i]) ? 1.0f : fThen5));
+				fZec6[i] = ((iZec5[i]) ? 0.0f : fThen6);
+			}
+			/* Recursive loop 11 */
+			/* Pre code */
+			for (int j12 = 0; j12 < 4; j12 = j12 + 1) {
+				fRec0_tmp[j12] = fRec0_perm[j12];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec0[i] = std::max<float>(20.0f * std::log10(std::max<float>(1.17549435e-38f, fRec1[i])) - fRec5[i], 0.0f) * (1.0f - fZec6[i]) * (1.0f / std::max<float>(1.1920929e-07f, fRec6[i]) + -1.0f) + fZec6[i] * fRec0[i - 1];
+			}
+			/* Post code */
+			for (int j13 = 0; j13 < 4; j13 = j13 + 1) {
+				fRec0_perm[j13] = fRec0_tmp[vsize + j13];
+			}
+			/* Vectorizable loop 12 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec7[i] = std::pow(10.0f, 0.0500000007f * fRec0[i]);
+			}
+			/* Vectorizable loop 13 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output0[i] = FAUSTFLOAT(float(input0[i]) * fZec7[i]);
+			}
+			/* Vectorizable loop 14 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output1[i] = FAUSTFLOAT(float(input1[i]) * fZec7[i]);
 			}
 		}
 		/* Remaining frames */
@@ -927,76 +1031,141 @@ class lowpass_filter : public dsp {
 			/* Recursive loop 0 */
 			/* Pre code */
 			for (int j0 = 0; j0 < 4; j0 = j0 + 1) {
-				fRec1_tmp[j0] = fRec1_perm[j0];
+				fRec3_tmp[j0] = fRec3_perm[j0];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec1[i] = fSlow0 + fConst2 * fRec1[i - 1];
+				fRec3[i] = fSlow0 + fConst3 * fRec3[i - 1];
 			}
 			/* Post code */
 			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
-				fRec1_perm[j1] = fRec1_tmp[vsize + j1];
+				fRec3_perm[j1] = fRec3_tmp[vsize + j1];
 			}
-			/* Vectorizable loop 1 */
+			/* Recursive loop 1 */
+			/* Pre code */
+			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
+				fRec4_tmp[j2] = fRec4_perm[j2];
+			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec0[i] = std::tan(fConst3 * fRec1[i]);
+				fRec4[i] = fSlow1 + fConst3 * fRec4[i - 1];
+			}
+			/* Post code */
+			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
+				fRec4_perm[j3] = fRec4_tmp[vsize + j3];
 			}
 			/* Vectorizable loop 2 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec1[i] = 1.0f / fZec0[i];
+				fZec4[i] = 0.5f * fRec3[i];
 			}
 			/* Vectorizable loop 3 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec2[i] = (fZec1[i] + -1.41421354f) / fZec0[i] + 1.0f;
+				fZec0[i] = std::fabs(std::fabs(float(input1[i])) + std::fabs(float(input0[i])));
 			}
 			/* Vectorizable loop 4 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec3[i] = 1.0f - 1.0f / lowpass_filter_faustpower2_f(fZec0[i]);
+				iZec1[i] = std::fabs(fRec3[i]) < 1.1920929e-07f;
 			}
 			/* Vectorizable loop 5 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec4[i] = (fZec1[i] + 1.41421354f) / fZec0[i] + 1.0f;
+				iZec2[i] = std::fabs(fRec4[i]) < 1.1920929e-07f;
 			}
-			/* Recursive loop 6 */
-			/* Pre code */
-			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
-				fRec0_tmp[j2] = fRec0_perm[j2];
-			}
+			/* Vectorizable loop 6 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec0[i] = float(input0[i]) - (fRec0[i - 2] * fZec2[i] + 2.0f * fRec0[i - 1] * fZec3[i]) / fZec4[i];
-			}
-			/* Post code */
-			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
-				fRec0_perm[j3] = fRec0_tmp[vsize + j3];
+				iZec5[i] = std::fabs(fZec4[i]) < 1.1920929e-07f;
 			}
 			/* Recursive loop 7 */
 			/* Pre code */
 			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
 				fRec2_tmp[j4] = fRec2_perm[j4];
 			}
+			for (int j6 = 0; j6 < 4; j6 = j6 + 1) {
+				fRec1_tmp[j6] = fRec1_perm[j6];
+			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec2[i] = float(input1[i]) - (fZec2[i] * fRec2[i - 2] + 2.0f * fZec3[i] * fRec2[i - 1]) / fZec4[i];
+				float fThen0 = fRec3[i];
+				float fThen1 = std::exp(0.0f - fConst5 / ((iZec1[i]) ? 1.0f : fThen0));
+				float fThen2 = fRec4[i];
+				float fThen3 = std::exp(0.0f - fConst5 / ((iZec2[i]) ? 1.0f : fThen2));
+				float fThen4 = ((iZec1[i]) ? 0.0f : fThen1);
+				float fElse4 = ((iZec2[i]) ? 0.0f : fThen3);
+				fZec3[i] = ((fRec1[i - 1] > fZec0[i]) ? fElse4 : fThen4);
+				fRec2[i] = fZec0[i] * (1.0f - fZec3[i]) + fZec3[i] * fRec2[i - 1];
+				fRec1[i] = fRec2[i];
 			}
 			/* Post code */
 			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
 				fRec2_perm[j5] = fRec2_tmp[vsize + j5];
 			}
-			/* Vectorizable loop 8 */
-			/* Compute code */
-			for (int i = 0; i < vsize; i = i + 1) {
-				output0[i] = FAUSTFLOAT((fRec0[i - 2] + fRec0[i] + 2.0f * fRec0[i - 1]) / fZec4[i]);
+			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
+				fRec1_perm[j7] = fRec1_tmp[vsize + j7];
 			}
-			/* Vectorizable loop 9 */
+			/* Recursive loop 8 */
+			/* Pre code */
+			for (int j8 = 0; j8 < 4; j8 = j8 + 1) {
+				fRec5_tmp[j8] = fRec5_perm[j8];
+			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output1[i] = FAUSTFLOAT((fRec2[i - 2] + fRec2[i] + 2.0f * fRec2[i - 1]) / fZec4[i]);
+				fRec5[i] = fSlow2 + fConst3 * fRec5[i - 1];
+			}
+			/* Post code */
+			for (int j9 = 0; j9 < 4; j9 = j9 + 1) {
+				fRec5_perm[j9] = fRec5_tmp[vsize + j9];
+			}
+			/* Recursive loop 9 */
+			/* Pre code */
+			for (int j10 = 0; j10 < 4; j10 = j10 + 1) {
+				fRec6_tmp[j10] = fRec6_perm[j10];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec6[i] = fSlow3 + fConst3 * fRec6[i - 1];
+			}
+			/* Post code */
+			for (int j11 = 0; j11 < 4; j11 = j11 + 1) {
+				fRec6_perm[j11] = fRec6_tmp[vsize + j11];
+			}
+			/* Vectorizable loop 10 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				float fThen5 = fZec4[i];
+				float fThen6 = std::exp(0.0f - fConst5 / ((iZec5[i]) ? 1.0f : fThen5));
+				fZec6[i] = ((iZec5[i]) ? 0.0f : fThen6);
+			}
+			/* Recursive loop 11 */
+			/* Pre code */
+			for (int j12 = 0; j12 < 4; j12 = j12 + 1) {
+				fRec0_tmp[j12] = fRec0_perm[j12];
+			}
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fRec0[i] = std::max<float>(20.0f * std::log10(std::max<float>(1.17549435e-38f, fRec1[i])) - fRec5[i], 0.0f) * (1.0f - fZec6[i]) * (1.0f / std::max<float>(1.1920929e-07f, fRec6[i]) + -1.0f) + fZec6[i] * fRec0[i - 1];
+			}
+			/* Post code */
+			for (int j13 = 0; j13 < 4; j13 = j13 + 1) {
+				fRec0_perm[j13] = fRec0_tmp[vsize + j13];
+			}
+			/* Vectorizable loop 12 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				fZec7[i] = std::pow(10.0f, 0.0500000007f * fRec0[i]);
+			}
+			/* Vectorizable loop 13 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output0[i] = FAUSTFLOAT(float(input0[i]) * fZec7[i]);
+			}
+			/* Vectorizable loop 14 */
+			/* Compute code */
+			for (int i = 0; i < vsize; i = i + 1) {
+				output1[i] = FAUSTFLOAT(float(input1[i]) * fZec7[i]);
 			}
 		}
 	}
@@ -1031,7 +1200,7 @@ class lowpass_filter : public dsp {
 #endif
 
 #ifndef PLUGIN_URI
-#define PLUGIN_URI URI_PREFIX "/lowpass_filter"
+#define PLUGIN_URI URI_PREFIX "/peak_limiter"
 #endif
 
 #define MIDI_EVENT_URI "http://lv2plug.in/ns/ext/midi#MidiEvent"
@@ -1272,7 +1441,7 @@ struct LV2Plugin {
   int rate;		// sampling rate
   int nvoices;		// current number of voices (<= maxvoices)
   int tuning_no;	// current tuning number (<= n_tunings)
-  lowpass_filter **dsp;		// the dsps
+  peak_limiter **dsp;		// the dsps
   LV2UI **ui;		// their Faust interface descriptions
   int n_in, n_out;	// number of input and output control ports
   int *ctrls;		// Faust ui elements (indices into ui->elems)
@@ -1311,7 +1480,7 @@ struct LV2Plugin {
       // stack space is precious (e.g., Reaper). Note that if any of these
       // allocations fail then no meta data will be available, but at least we
       // won't make the host crash and burn.
-      lowpass_filter* tmp_dsp = new lowpass_filter();
+      peak_limiter* tmp_dsp = new peak_limiter();
       if (tmp_dsp) {
 	tmp_dsp->metadata(meta);
 	delete tmp_dsp;
@@ -1326,7 +1495,7 @@ struct LV2Plugin {
 
   static const char *pluginName()
   {
-    return meta_get("name", "lowpass_filter");
+    return meta_get("name", "peak_limiter");
   }
 
   static const char *pluginAuthor()
@@ -1422,7 +1591,7 @@ struct LV2Plugin {
     if (num_voices>0) load_sysex_data();
 #endif
     // Allocate data structures and set some reasonable defaults.
-    dsp = (lowpass_filter**)calloc(ndsps, sizeof(lowpass_filter*));
+    dsp = (peak_limiter**)calloc(ndsps, sizeof(peak_limiter*));
     ui = (LV2UI**)calloc(ndsps, sizeof(LV2UI*));
     assert(dsp && ui);
     if (vd) {
@@ -1463,7 +1632,7 @@ struct LV2Plugin {
     memset(midivals, 0, sizeof(midivals));
     // Initialize the Faust DSPs.
     for (int i = 0; i < ndsps; i++) {
-      dsp[i] = new lowpass_filter();
+      dsp[i] = new peak_limiter();
       ui[i] = new LV2UI(num_voices);
       dsp[i]->init(rate);
       dsp[i]->buildUserInterface(ui[i]);
@@ -2554,7 +2723,7 @@ int lv2_dyn_manifest_get_data(LV2_Dyn_Manifest_Handle handle,
   plugin_version = plugin->pluginVersion();
   plugin_license = plugin->pluginLicense();
 #endif
-  if (!plugin_name || !*plugin_name) plugin_name = "lowpass_filter";
+  if (!plugin_name || !*plugin_name) plugin_name = "peak_limiter";
   fprintf(fp, "@prefix doap:  <http://usefulinc.com/ns/doap#> .\n\
 @prefix foaf:  <http://xmlns.com/foaf/0.1/> .\n\
 @prefix lv2:   <http://lv2plug.in/ns/lv2core#> .\n\
@@ -2568,7 +2737,7 @@ int lv2_dyn_manifest_get_data(LV2_Dyn_Manifest_Handle handle,
 <%s>\n\
        a lv2:Plugin%s ;\n\
        doap:name \"%s\" ;\n\
-       lv2:binary <lowpass_filter%s> ;\n\
+       lv2:binary <peak_limiter%s> ;\n\
        lv2:requiredFeature urid:map ;\n\
        lv2:optionalFeature epp:supportsStrictBounds ;\n\
        lv2:optionalFeature lv2:hardRTCapable ;\n", PLUGIN_URI,

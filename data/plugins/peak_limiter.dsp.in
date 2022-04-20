@@ -1,0 +1,23 @@
+// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+declare name "@NAME@";
+declare description "@DESCRIPTION@";
+declare author "@AUTHOR@";
+declare copyright "© 2022 Alexandros Theodotou";
+declare version "1.0";
+declare license "AGPL-3.0-or-later";
+
+import ("stdfaust.lib");
+import ("zrythm-utils.lib");
+
+peak_limiter = co.compressor_stereo (
+  compression_ratio, thresh, att, rel)
+  with {
+    compression_ratio = hslider ("[0] Ratio", 4, 4, 20, 0.01) : si.smoo;
+    thresh = hslider ("[1] Threshold [unit:dB] [tooltip: Threshold]", -6, -6, 0, 0.1) : si.smoo;
+    att = hslider ("[2] Attack [tooltip: Attack time in microseconds]", 800, 20, 800, 1) / 1000000 : si.smoo;
+    rel = hslider ("[3] Release [unit:ms] [tooltip: Release time in ms]", 500, 50, 1100, 1) / 1000 : si.smoo;
+  };
+
+process = peak_limiter;
