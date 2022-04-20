@@ -48,6 +48,7 @@ jobs:
             mingw-w64-ucrt-x86_64-python-setuptools
             mingw-w64-ucrt-x86_64-ninja
             mingw-w64-ucrt-x86_64-python-pip
+            mingw-w64-ucrt-x86_64-libadwaita
             mingw-w64-ucrt-x86_64-meson
             mingw-w64-ucrt-x86_64-python3
             mingw-w64-ucrt-x86_64-gtk-doc
@@ -74,7 +75,7 @@ jobs:
         run: |
           cd /c/src/zrythm-installer
           meson build -Ddistro=windows10-msys
-          ninja -C build run-mingw-lilv mingw-carla-ucrt64-build mingw-carla-mingw32-build run-mingw-libadwaita
+          ninja -C build run-mingw-lilv mingw-carla-ucrt64-build mingw-carla-mingw32-build
       - name: Replace non-ASCII chars in TRANSLATORS
         run: |
           cd /c/src/zrythm
@@ -85,7 +86,7 @@ jobs:
       - name: Build and test
         run: |
           cd /c/src/zrythm
-          sed -i -e 's|-lssp|-Wl,-allow-multiple-definition|g' meson.build
+          sed -i -e "s|'-lssp'|'-Wl,-allow-multiple-definition'|g" meson.build
           meson build -Dtests=true -Dcarla_binaries_dir_32bit=D:/a/_temp/msys64/mingw32/lib/carla -Db_lto=false -Dmanpage=false
           ninja -C build
           meson test -C build

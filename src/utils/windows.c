@@ -67,6 +67,7 @@ windows_get_special_path (
       char * ret = g_utf16_to_utf8 (
         path, -1, NULL, NULL, NULL);
       g_return_val_if_fail (ret, NULL);
+      return ret;
     }
 
   g_return_val_if_reached (NULL);

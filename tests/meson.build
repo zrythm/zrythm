@@ -317,7 +317,14 @@ if get_option ('tests')
     endif
   endif
 
-  test_link_libs = [ zrythm_lib.get_shared_lib () ]
+  test_link_libs = []
+  if os_windows
+    # tests fail to link otherwise
+    test_link_libs += zrythm_lib.get_static_lib ()
+  else
+    test_link_libs += zrythm_lib.get_shared_lib ()
+  endif
+
   if have_guile
     test_link_libs += guilelib
   endif
