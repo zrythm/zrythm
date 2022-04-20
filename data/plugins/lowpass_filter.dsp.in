@@ -1,0 +1,19 @@
+// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+declare name "@NAME@";
+declare description "@DESCRIPTION@";
+declare author "@AUTHOR@";
+declare copyright "© 2022 Alexandros Theodotou";
+declare version "1.0";
+declare license "AGPL-3.0-or-later";
+
+import ("stdfaust.lib");
+import ("zrythm-utils.lib");
+
+lp_filter = fi.lowpass (2, filter_freq)
+  with {
+    filter_freq = hslider ("Frequency [unit:Hz] [scale:log] [tooltip: Transition frequency]", 5000, 10, 18000, 1) : si.smoo;
+  };
+
+process = par (i, 2, lp_filter);
