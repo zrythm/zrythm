@@ -1,0 +1,19 @@
+// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+declare name "@NAME@";
+declare description "@DESCRIPTION@";
+declare author "@AUTHOR@";
+declare copyright "© 2022 Alexandros Theodotou";
+declare version "1.0";
+declare license "AGPL-3.0-or-later";
+
+import ("stdfaust.lib");
+import ("zrythm-utils.lib");
+
+white_noise = no.noise * amp
+  with {
+    amp = hslider("Amp [unit:dB]",-10,-70,10,0.1) : ba.db2linear : si.smoo;
+  };
+
+process = par (i, 2, white_noise);
