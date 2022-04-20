@@ -46,6 +46,7 @@
 #include "utils/objects.h"
 #include "utils/sort.h"
 #include "utils/string.h"
+#include "utils/strv_builder.h"
 #include "utils/ui.h"
 #include "utils/windows.h"
 #include "zrythm.h"
@@ -467,8 +468,18 @@ get_vst_paths (PluginManager * self)
   g_message ("%s: getting paths...", __func__);
 
 #  ifdef _WOE32
-  char ** paths = g_settings_get_strv (
-    S_P_PLUGINS_PATHS, "vst-search-paths-windows");
+  char ** paths;
+  if (ZRYTHM_TESTING)
+    {
+      StrvBuilder * builder = strv_builder_new ();
+      paths = strv_builder_end (builder);
+    }
+  else
+    {
+      paths = g_settings_get_strv (
+        S_P_PLUGINS_PATHS,
+        "vst-search-paths-windows");
+    }
   g_return_val_if_fail (paths, NULL);
 #  elif defined(__APPLE__)
   char ** paths = g_strsplit (
