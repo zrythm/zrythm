@@ -1,23 +1,10 @@
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
+ *
+ * ---
  *
  *  Copyright 2000 Red Hat, Inc.
  *
@@ -33,6 +20,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, see <http://www.gnu.org/licenses/>.
+ *
+ * ---
  */
 
 #include "zrythm-config.h"
@@ -56,6 +45,7 @@
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+#include "utils/strv_builder.h"
 #include "utils/system.h"
 #include "zrythm.h"
 
@@ -465,6 +455,37 @@ io_copy_dir (
       g_free (dest_full_path);
     }
   g_dir_close (srcdir);
+}
+
+char **
+io_get_files_in_dir_as_basenames (
+  const char * dir,
+  bool         allow_empty,
+  bool         with_ext)
+{
+  if (!with_ext)
+    {
+      g_critical ("unimplemented");
+      return NULL;
+    }
+
+  char ** files =
+    io_get_files_in_dir (dir, allow_empty);
+  if (!files)
+    return NULL;
+
+  int           i = 0;
+  StrvBuilder * builder = strv_builder_new ();
+  char *        f;
+  while ((f = files[i++]))
+    {
+      char * new_str = g_path_get_basename (f);
+      strv_builder_add (builder, new_str);
+      g_free (new_str);
+    }
+  g_strfreev (files);
+
+  return strv_builder_end (builder);
 }
 
 /**

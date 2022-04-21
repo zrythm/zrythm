@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: LicenseRef-ZrythmLicense */
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -126,6 +124,9 @@ typedef enum ZrythmDirType
   /** CSS themes. */
   ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR,
 
+  /** Icon themes. */
+  ZRYTHM_DIR_SYSTEM_THEMES_ICONS_DIR,
+
   /**
    * Special external Zrythm plugins path (not
    * part of the Zrythm source code).
@@ -156,6 +157,9 @@ typedef enum ZrythmDirType
 
   /** User CSS themes. */
   ZRYTHM_DIR_USER_THEMES_CSS,
+
+  /** User icon themes. */
+  ZRYTHM_DIR_USER_THEMES_ICONS,
 
   /** User scripts. */
   ZRYTHM_DIR_USER_SCRIPTS,

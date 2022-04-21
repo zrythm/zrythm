@@ -559,9 +559,20 @@ zrythm_get_dir (ZrythmDirType type)
             NULL);
           break;
         case ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR:
-          res = g_build_filename (
-            prefix, "share", "zrythm", "themes",
-            "css", NULL);
+          {
+            char * parent_path = zrythm_get_dir (
+              ZRYTHM_DIR_SYSTEM_THEMESDIR);
+            res = g_build_filename (
+              parent_path, "css", NULL);
+          }
+          break;
+        case ZRYTHM_DIR_SYSTEM_THEMES_ICONS_DIR:
+          {
+            char * parent_path = zrythm_get_dir (
+              ZRYTHM_DIR_SYSTEM_THEMESDIR);
+            res = g_build_filename (
+              parent_path, "icons", NULL);
+          }
           break;
         case ZRYTHM_DIR_SYSTEM_SPECIAL_LV2_PLUGINS_DIR:
           res = g_build_filename (
@@ -611,6 +622,10 @@ zrythm_get_dir (ZrythmDirType type)
         case ZRYTHM_DIR_USER_THEMES_CSS:
           res = g_build_filename (
             user_dir, "themes", "css", NULL);
+          break;
+        case ZRYTHM_DIR_USER_THEMES_ICONS:
+          res = g_build_filename (
+            user_dir, "themes", "icons", NULL);
           break;
         case ZRYTHM_DIR_USER_PROFILING:
           res = g_build_filename (

@@ -13,6 +13,7 @@
 #include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/io.h"
 #include "utils/localization.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
@@ -89,6 +90,23 @@ on_enum_drop_down_selection_changed (
   g_settings_set_enum (
     data->info->settings, data->key,
     (int) gtk_drop_down_get_selected (dropdown));
+}
+
+static void
+on_string_drop_down_selection_changed (
+  GObject *    gobject,
+  GParamSpec * pspec,
+  gpointer     user_data)
+{
+  CallbackData * data = (CallbackData *) user_data;
+  GtkDropDown * dropdown = GTK_DROP_DOWN (gobject);
+  GtkStringObject * str_obj = GTK_STRING_OBJECT (
+    gtk_drop_down_get_selected_item (dropdown));
+  g_return_if_fail (str_obj);
+  const char * str =
+    gtk_string_object_get_string (str_obj);
+  g_settings_set_string (
+    data->info->settings, data->key, str);
 }
 
 static void
@@ -460,6 +478,68 @@ make_control (
         adj, "value-changed",
         G_CALLBACK (font_scale_adjustment_changed),
         NULL);
+    }
+  else if (
+    KEY_IS ("UI", "General", "css-theme")
+    || KEY_IS ("UI", "General", "icon-theme"))
+    {
+      char * user_css_theme_path = zrythm_get_dir (
+        (KEY_IS ("UI", "General", "css-theme"))
+          ? ZRYTHM_DIR_USER_THEMES_CSS
+          : ZRYTHM_DIR_USER_THEMES_ICONS);
+      char ** css_themes =
+        io_get_files_in_dir_as_basenames (
+          user_css_theme_path, true, true);
+      const char * default_themes[] = {
+        (KEY_IS ("UI", "General", "css-theme"))
+          ? "zrythm-theme.css"
+          : "zrythm-dark",
+        NULL
+      };
+      GtkStringList * string_list =
+        gtk_string_list_new (default_themes);
+      gtk_string_list_splice (
+        string_list, 1, 0,
+        (const char **) css_themes);
+      g_strfreev (css_themes);
+      widget = gtk_drop_down_new (
+        G_LIST_MODEL (string_list), NULL);
+
+      /* select */
+      char * selected_str = g_settings_get_string (
+        info->settings, key);
+      guint n_items = g_list_model_get_n_items (
+        G_LIST_MODEL (string_list));
+      guint selected_idx = 0;
+      for (guint i = 0; i < n_items; i++)
+        {
+          const char * cur_str =
+            gtk_string_list_get_string (
+              string_list, i);
+          if (string_is_equal (
+                cur_str, selected_str))
+            {
+              selected_idx = i;
+              break;
+            }
+        }
+      g_free (selected_str);
+      gtk_drop_down_set_selected (
+        GTK_DROP_DOWN (widget), selected_idx);
+
+      CallbackData * data =
+        object_new (CallbackData);
+      data->info = info;
+      data->preferences_widget = self;
+      data->key = g_strdup (key);
+      g_signal_connect_data (
+        G_OBJECT (widget), "notify::selected",
+        G_CALLBACK (
+          on_string_drop_down_selection_changed),
+        data,
+        (GClosureNotify)
+          on_closure_notify_delete_data,
+        G_CONNECT_AFTER);
     }
   else if (TYPE_EQUALS (BOOLEAN))
     {
