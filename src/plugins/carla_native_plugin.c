@@ -1106,6 +1106,24 @@ carla_native_plugin_new_from_setting (
   return 0;
 }
 
+/**
+ * Sets the unit of the given control port.
+ */
+static void
+set_unit_from_str (Port * port, const char * unit_str)
+{
+#  define SET_UNIT(caps, str) \
+    if (string_is_equal (unit_str, str)) \
+    port->id.unit = PORT_UNIT_##caps
+
+  SET_UNIT (HZ, "Hz");
+  SET_UNIT (MS, "ms");
+  SET_UNIT (DB, "dB");
+  SET_UNIT (SECONDS, "s");
+
+#  undef SET_UNIT
+}
+
 static void
 create_ports (CarlaNativePlugin * self, bool loading)
 {
@@ -1302,6 +1320,13 @@ create_ports (CarlaNativePlugin * self, bool loading)
             {
               port->id.comment =
                 g_strdup (param_info->comment);
+            }
+          if (
+            param_info->unit
+            && strlen (param_info->unit) > 0)
+            {
+              set_unit_from_str (
+                port, param_info->unit);
             }
           if (
             param_info->groupName

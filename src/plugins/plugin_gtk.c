@@ -20,6 +20,8 @@
   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+  SPDX-License-Identifier: ISC
+
   ---
  */
 
@@ -60,15 +62,6 @@
 #undef Bool
 
 #if 0
-static void
-on_quit_activate (
-  GtkWidget * widget,
-  gpointer    data)
-{
-  GtkWindow * window = GTK_WINDOW (data);
-  gtk_window_destroy (window);
-}
-
 static void
 on_save_activate (
   GtkWidget* widget,
