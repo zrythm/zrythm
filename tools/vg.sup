@@ -290,3 +290,126 @@
    fun:start_thread
    fun:clone
 }
+
+{
+   g_application_register_race
+   Helgrind:Race
+   ...
+   fun:g_application_register
+   ...
+}
+
+{
+   g_main_context_check_race
+   Helgrind:Race
+   obj:*/libglib-2.0.*
+   fun:g_main_context_check
+   obj:*/libglib-2.0.*
+   fun:g_main_context_iteration
+   obj:*/libglib-2.0.*
+   obj:*/libglib-2.0.*
+   ...
+   fun:start_thread
+   fun:clone
+}
+
+{
+   g_main_context_release_race
+   Helgrind:Race
+   fun:g_main_context_release
+   obj:*/libglib-2.0.*
+   fun:g_main_context_iteration
+   obj:*/libglib-2.0.*
+   obj:*/libglib-2.0.*
+   ...
+   fun:start_thread
+   fun:clone
+}
+
+{
+   g_main_context_check_race
+   Helgrind:Race
+   ...
+   fun:g_main_context_check
+   ...
+}
+
+{
+   g_main_context_dispatch_race
+   Helgrind:Race
+   ...
+   fun:g_main_context_dispatch
+   ...
+}
+
+{
+   g_main_context_prepare_race
+   Helgrind:Race
+   ...
+   fun:g_main_context_prepare
+   ...
+}
+
+{
+   g_main_context_acquire_race
+   Helgrind:Race
+   ...
+   fun:g_main_context_acquire
+   ...
+}
+
+{
+   g_source_attach_race
+   Helgrind:Race
+   ...
+   fun:g_source_attach
+   ...
+}
+
+{
+   log_writer_format_fields_race
+   Helgrind:Race
+   ...
+   fun:strdup_convert
+   fun:log_writer_format_fields
+   ...
+}
+
+{
+   unknown_glib_race1
+   Helgrind:Race
+   obj:*/libglib-2.0.*
+   obj:*/libglib-2.0.*
+   obj:*/valgrind/*
+   fun:start_thread
+   fun:clone
+}
+
+{
+   g_queue_peek_tail_link_race
+   Helgrind:Race
+   fun:g_queue_peek_tail_link
+   ...
+}
+
+{
+   g_queue_pop_tail_race
+   Helgrind:Race
+   fun:g_queue_pop_tail
+   ...
+}
+
+{
+   g_source_ref_race
+   Helgrind:Race
+   fun:g_source_ref
+   ...
+}
+
+{
+   adw_init_race
+   Helgrind:Race
+   ...
+   fun:adw_init
+   ...
+}
