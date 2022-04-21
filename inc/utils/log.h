@@ -68,12 +68,13 @@ typedef struct Log
   guint writer_source_id;
 
   /**
-   * Last timestamp a bug report popup was shown.
+   * Last timestamp a backtrace was obtained.
    *
-   * This is used to avoid showing too many error popups
-   * at once.
+   * This is used to avoid calculating too many
+   * backtraces and showing too many error
+   * popups at once.
    */
-  gint64 last_popup_time;
+  gint64 last_bt_time;
 } Log;
 
 /** Global variable, available to all files. */

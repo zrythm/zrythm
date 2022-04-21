@@ -660,66 +660,81 @@ log_writer_standard_streams (
 }
 
 static bool
-need_backtrace (const LogEvent * const ev)
+need_backtrace (Log * self, const LogEvent * const ev)
 {
-  return ev->log_level == G_LOG_LEVEL_CRITICAL
-         && !string_contains_substr (
-           ev->message,
-           "assertion 'size >= 0' failed in "
-           "GtkScrollbar")
-         && !string_contains_substr (
-           ev->message,
-           "assertion 'size >= 0' failed in "
-           "GtkNotebook")
-         && !string_contains_substr (
-           ev->message,
-           "gtk_window_set_titlebar() called on a "
-           "realized window")
-         && !string_contains_substr (
-           ev->message, "attempt to allocate widget")
-         && !string_contains_substr (
-           ev->message,
-           "Theme file for default has no directories")
-         && !string_contains_substr (
-           ev->message,
-           "gsk_render_node_unref: assertion 'GSK_IS_RENDER_NODE (node)' failed")
-         && !string_contains_substr (
-           ev->message,
-           "A floating object GtkAdjustment")
-         && !string_contains_substr (
-           ev->message,
-           "gtk_css_node_insert_after: assertion 'previous_sibling == NULL || previous_sibling->parent == parent' failed")
-         && !string_contains_substr (
-           ev->message,
-           "you are running a non-free operating system")
-         && !string_contains_substr (
-           ev->message, "Allocation height too small")
-         && !string_contains_substr (
-           ev->message, "Allocation width too small")
-         && !string_contains_substr (
-           ev->message, "GDK_DROP_STATE_NONE")
-         &&
-         /* this happens with portals when opening
+  /* cooldown time in to avoid excessive sequential
+   * backtraces - we are only interested in the
+   * first one in almost every case */
+  /* 16 seconds */
+#define BT_COOLDOWN_TIME (16 * 1000 * 1000)
+
+  gint64 time_now = g_get_monotonic_time ();
+
+  bool ret =
+    (time_now - self->last_bt_time
+     > BT_COOLDOWN_TIME)
+    && ev->log_level == G_LOG_LEVEL_CRITICAL
+    && !string_contains_substr (
+      ev->message,
+      "assertion 'size >= 0' failed in "
+      "GtkScrollbar")
+    && !string_contains_substr (
+      ev->message,
+      "assertion 'size >= 0' failed in "
+      "GtkNotebook")
+    && !string_contains_substr (
+      ev->message,
+      "gtk_window_set_titlebar() called on a "
+      "realized window")
+    && !string_contains_substr (
+      ev->message, "attempt to allocate widget")
+    && !string_contains_substr (
+      ev->message,
+      "Theme file for default has no directories")
+    && !string_contains_substr (
+      ev->message,
+      "gsk_render_node_unref: assertion 'GSK_IS_RENDER_NODE (node)' failed")
+    && !string_contains_substr (
+      ev->message, "A floating object GtkAdjustment")
+    && !string_contains_substr (
+      ev->message,
+      "gtk_css_node_insert_after: assertion 'previous_sibling == NULL || previous_sibling->parent == parent' failed")
+    && !string_contains_substr (
+      ev->message,
+      "you are running a non-free operating system")
+    && !string_contains_substr (
+      ev->message, "Allocation height too small")
+    && !string_contains_substr (
+      ev->message, "Allocation width too small")
+    && !string_contains_substr (
+      ev->message, "GDK_DROP_STATE_NONE")
+    &&
+    /* this happens with portals when opening
      * the native file chooser (either flatpak
      * builds or when using GTK_USE_PORTAL=1
      * TODO: only do this if using portals, find
      * a way to check if using portals via code */
-         !string_contains_substr (
-           ev->message,
-           "g_variant_new_string: assertion "
-           "'string != NULL' failed")
-         &&
-         /* this happens in the first run dialog and
+    !string_contains_substr (
+      ev->message,
+      "g_variant_new_string: assertion "
+      "'string != NULL' failed")
+    &&
+    /* this happens in the first run dialog and
      * bug report dialog */
-         !string_contains_substr (
-           ev->message,
-           "gtk_box_append: assertion "
-           "'gtk_widget_get_parent (child) == NULL' "
-           "failed")
-         && !string_contains_substr (
-           ev->message,
-           "assertion 'self->drop == "
-           "gdk_dnd_event_get_drop (event)'");
+    !string_contains_substr (
+      ev->message,
+      "gtk_box_append: assertion "
+      "'gtk_widget_get_parent (child) == NULL' "
+      "failed")
+    && !string_contains_substr (
+      ev->message,
+      "assertion 'self->drop == "
+      "gdk_dnd_event_get_drop (event)'");
+
+  if (ret)
+    self->last_bt_time = time_now;
+
+  return ret;
 }
 
 /**
@@ -807,15 +822,10 @@ log_idle_cb (Log * self)
                 "Backtrace: %s", ev->backtrace);
             }
 
-          gint64 time_now = g_get_monotonic_time ();
           if (
             ev->log_level == G_LOG_LEVEL_CRITICAL
-            && ZRYTHM_HAVE_UI
-            && (time_now - self->last_popup_time)
-                 > 8000000)
+            && ZRYTHM_HAVE_UI)
             {
-              self->last_popup_time = time_now;
-
               char msg[500];
               sprintf (
                 msg,
@@ -840,7 +850,7 @@ log_idle_cb (Log * self)
                 ev->backtrace);
               fflush (self->logfile);
             }
-        }
+        } /* endif ev->backtrace */
 
       if (
         ev->log_level == G_LOG_LEVEL_WARNING
@@ -1007,7 +1017,9 @@ log_writer (
       ev->log_level = log_level;
       ev->message = str;
 
-      if (need_backtrace (ev) && !RUNNING_ON_VALGRIND)
+      if (
+        need_backtrace (self, ev)
+        && !RUNNING_ON_VALGRIND)
         {
           ev->backtrace = backtrace_get_with_lines (
             "", 100, true);
