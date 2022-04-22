@@ -1374,6 +1374,13 @@ create_ports (CarlaNativePlugin * self, bool loading)
             }
           else if (
             native_param->hints
+            & NATIVE_PARAMETER_USES_SCALEPOINTS)
+            {
+              port->id.flags2 |=
+                PORT_FLAG2_ENUMERATION;
+            }
+          else if (
+            native_param->hints
             & NATIVE_PARAMETER_IS_INTEGER)
             {
               port->id.flags |= PORT_FLAG_INTEGER;
