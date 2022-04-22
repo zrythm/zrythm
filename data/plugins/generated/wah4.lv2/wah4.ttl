@@ -31,7 +31,7 @@
 	lv2:minimum 100 ;
 	lv2:maximum 2000 ;
 	lv2:portProperty epp:logarithmic ;
-	rdfs:comment "wah resonance         frequency in Hz" ;
+	rdfs:comment "Wah resonance frequency" ;
 	units:unit [
             a            units:Unit ;
             units:name   "Hz" ;

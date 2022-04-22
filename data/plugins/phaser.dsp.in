@@ -56,7 +56,7 @@ with{
         100, 20, 5000, 1));
     frqmax = nch_group(hslider("[3] Max Notch1 Freq [unit:Hz] [style:knob] [scale:log]",
         800, 20, 10000, 1)) : max(frqmin);
-    fratio = nch_group(hslider("[4] Notch Freq Ratio: NotchFreq(n+1)/NotchFreq(n) [style:knob]",
+    fratio = nch_group(hslider("[4] Notch Freq Ratio [style:knob] [tooltip:NotchFreq(n+1)/NotchFreq(n)]",
         1.5, 1.1, 4, 0.001)) : si.smooth (0.999);
 
     level  = lvl_group(hslider("Phaser Output Level [unit:dB]", 0, -60, 10, 0.1)) :

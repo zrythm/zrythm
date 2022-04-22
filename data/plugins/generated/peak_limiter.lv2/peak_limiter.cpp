@@ -834,6 +834,7 @@ class peak_limiter : public dsp {
 		ui_interface->addHorizontalSlider("Threshold", &fHslider2, FAUSTFLOAT(-6.0f), FAUSTFLOAT(-6.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(0.100000001f));
 		ui_interface->declare(&fHslider0, "2", "");
 		ui_interface->declare(&fHslider0, "tooltip", "Attack time in microseconds");
+		ui_interface->declare(&fHslider0, "unit", "us");
 		ui_interface->addHorizontalSlider("Attack", &fHslider0, FAUSTFLOAT(800.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(800.0f), FAUSTFLOAT(1.0f));
 		ui_interface->declare(&fHslider1, "3", "");
 		ui_interface->declare(&fHslider1, "tooltip", "Release time in ms");

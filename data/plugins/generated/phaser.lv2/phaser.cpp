@@ -918,7 +918,8 @@ class phaser : public dsp {
 		ui_interface->addHorizontalSlider("Max Notch1 Freq", &fHslider6, FAUSTFLOAT(800.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(10000.0f), FAUSTFLOAT(1.0f));
 		ui_interface->declare(&fHslider0, "4", "");
 		ui_interface->declare(&fHslider0, "style", "knob");
-		ui_interface->addHorizontalSlider("Notch Freq Ratio: NotchFreq(n+1)/NotchFreq(n)", &fHslider0, FAUSTFLOAT(1.5f), FAUSTFLOAT(1.10000002f), FAUSTFLOAT(4.0f), FAUSTFLOAT(0.00100000005f));
+		ui_interface->declare(&fHslider0, "tooltip", "NotchFreq(n+1)/NotchFreq(n)");
+		ui_interface->addHorizontalSlider("Notch Freq Ratio", &fHslider0, FAUSTFLOAT(1.5f), FAUSTFLOAT(1.10000002f), FAUSTFLOAT(4.0f), FAUSTFLOAT(0.00100000005f));
 		ui_interface->closeBox();
 		ui_interface->declare(0, "3", "");
 		ui_interface->openHorizontalBox("0x00");

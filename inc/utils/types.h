@@ -52,8 +52,12 @@ typedef double curviness_t;
 /** Signed type for frame index. */
 typedef int_fast64_t signed_frame_t;
 
+#define SIGNED_FRAME_FORMAT PRId64
+
 /** Unsigned type for frame index. */
 typedef uint_fast64_t unsigned_frame_t;
+
+#define UNSIGNED_FRAME_FORMAT PRIu64
 
 /** Signed millisecond index. */
 typedef signed_frame_t signed_ms_t;

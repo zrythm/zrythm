@@ -16,7 +16,7 @@ peak_limiter = co.compressor_stereo (
   with {
     compression_ratio = hslider ("[0] Ratio", 4, 4, 20, 0.01) : si.smoo;
     thresh = hslider ("[1] Threshold [unit:dB] [tooltip: Threshold]", -6, -6, 0, 0.1) : si.smoo;
-    att = hslider ("[2] Attack [tooltip: Attack time in microseconds]", 800, 20, 800, 1) / 1000000 : si.smoo;
+    att = hslider ("[2] Attack [unit:us] [tooltip: Attack time in microseconds]", 800, 20, 800, 1) / 1000000 : si.smoo;
     rel = hslider ("[3] Release [unit:ms] [tooltip: Release time in ms]", 500, 50, 1100, 1) / 1000 : si.smoo;
   };
 

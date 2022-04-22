@@ -60,6 +60,12 @@
 	lv2:minimum 20 ;
 	lv2:maximum 800 ;
 	rdfs:comment "Attack time in microseconds" ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "us" ;
+            units:symbol "us" ;
+            units:render "%f us"
+	] ;
     ] , [
 	a lv2:InputPort ;
 	a lv2:ControlPort ;

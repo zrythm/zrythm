@@ -27,8 +27,7 @@ import ("zrythm-utils.lib");
 wah4_demo = ve.wah4(fr : si.smooth (0.999))
 with{
     wah4_group(x) = hgroup("WAH4 [tooltip: Fourth-order wah effect made using moog_vcf]", x);
-    fr = wah4_group(hslider("[1] Resonance [scale:log] [unit:Hz] [tooltip: wah resonance
-        frequency in Hz]", 200,100,2000,1));
+    fr = wah4_group(hslider("[1] Resonance [scale:log] [unit:Hz] [tooltip:Wah resonance frequency]", 200,100,2000,1));
 };
 
 res = sp.stereoize (wah4_demo);

@@ -33,7 +33,7 @@ with{
 
     LL = ls_group(hslider("[0] Low Shelf Gain [unit:dB] [style:knob]
         [tooltip: Amount of low-frequency boost or cut in decibels]",0,-40,40,0.1));
-    FL = ls_group(hslider("[1] Low Shelf Transition Frequency [unit:Hz] [style:knob] [scale:log]
+    FL = ls_group(hslider("[1] Low Shelf Frequency [unit:Hz] [style:knob] [scale:log]
         [tooltip: Transition-frequency from boost (cut) to unity gain]",200,10,5000,1));
 
     pq_group(x) = eq_group(vgroup("[2] Peaking Equalizer[tooltip: Parametric Equalizer
@@ -42,14 +42,13 @@ with{
         local boost or cut in decibels]",0,-40,40,0.1));
     peak_freq = pq_group(hslider("[1] Peak Frequency [unit:Hz] [style:knob] [tooltip: Peak
         Frequency]", 720, 20, 16000, 1)) : si.smooth(0.999);
-    Q = pq_group(hslider("[2] Peak Q [style:knob] [scale:log] [tooltip: Quality factor
-        (Q) of the peak = center-frequency/bandwidth]",1, 1, 20, 0.01));
+    Q = pq_group(hslider("[2] Peak Q [style:knob] [scale:log] [tooltip: Quality factor (Q) of the peak = center-frequency/bandwidth]",1, 1, 20, 0.01));
 
     hs_group(x) = eq_group(vgroup("[3] High Shelf [tooltip: A high shelf provides a boost
         or cut above some frequency]",x));
     LH = hs_group(hslider("[0] High Shelf Gain [unit:dB] [style:knob] [tooltip: Amount of
         high-frequency boost or cut in decibels]",0,-40,40,.1));
-    FH = hs_group(hslider("[1] High Shelf Transition Frequency [unit:Hz] [style:knob] [scale:log]
+    FH = hs_group(hslider("[1] High Shelf Frequency [unit:Hz] [style:knob] [scale:log]
     [tooltip: Transition-frequency from boost (cut) to unity gain]",8000,20,18000,1));
 };
 

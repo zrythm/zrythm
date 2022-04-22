@@ -835,7 +835,7 @@ class wah4 : public dsp {
 		ui_interface->openHorizontalBox("WAH4");
 		ui_interface->declare(&fHslider0, "1", "");
 		ui_interface->declare(&fHslider0, "scale", "log");
-		ui_interface->declare(&fHslider0, "tooltip", "wah resonance         frequency in Hz");
+		ui_interface->declare(&fHslider0, "tooltip", "Wah resonance frequency");
 		ui_interface->declare(&fHslider0, "unit", "Hz");
 		ui_interface->addHorizontalSlider("Resonance", &fHslider0, FAUSTFLOAT(200.0f), FAUSTFLOAT(100.0f), FAUSTFLOAT(2000.0f), FAUSTFLOAT(1.0f));
 		ui_interface->closeBox();

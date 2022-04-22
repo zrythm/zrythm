@@ -13,7 +13,7 @@ import ("zrythm-utils.lib");
 
 lp_filter = fi.lowpass (2, filter_freq)
   with {
-    filter_freq = hslider ("Frequency [unit:Hz] [scale:log] [tooltip: Transition frequency]", 5000, 10, 18000, 1) : si.smoo;
+    filter_freq = hslider ("Frequency [unit:Hz] [scale:log] [tooltip:Transition frequency]", 5000, 10, 18000, 1) : si.smoo;
   };
 
 process = par (i, 2, lp_filter);

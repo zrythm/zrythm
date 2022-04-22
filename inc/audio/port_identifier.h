@@ -81,6 +81,9 @@ typedef enum PortUnit
 
   /** Milliseconds. */
   PORT_UNIT_MS,
+
+  /** Microseconds. */
+  PORT_UNIT_US,
 } PortUnit;
 
 static const cyaml_strval_t port_unit_strings[] = {
@@ -91,6 +94,7 @@ static const cyaml_strval_t port_unit_strings[] = {
   { "°",  PORT_UNIT_DEGREES},
   { "s",   PORT_UNIT_SECONDS},
   { "ms",  PORT_UNIT_MS     },
+  { "μs", PORT_UNIT_US     },
 };
 
 /**

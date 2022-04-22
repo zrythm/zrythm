@@ -14,7 +14,7 @@ import ("zrythm-utils.lib");
 process = _,_ : ef.gate_stereo (thresh, att, hold, rel)
   with {
     thresh = hslider ("[1] Threshold [unit:dB]", -30, -120, 0, 0.1);
-    att = hslider ("[2] Attack [scale:log]", 10, 10, 10000, 1) / 1000;
-    hold = hslider ("[3] Hold [scale:log]", 200, 1, 1000, 1) / 1000;
-    rel = hslider ("[4] Release [scale:log]", 100, 1, 1000, 1) / 1000;
+    att = hslider ("[2] Attack [unit:ms] [scale:log]", 10, 10, 10000, 1) / 1000;
+    hold = hslider ("[3] Hold [unit:ms] [scale:log]", 200, 1, 1000, 1) / 1000;
+    rel = hslider ("[4] Release [unit:ms] [scale:log]", 100, 1, 1000, 1) / 1000;
     };

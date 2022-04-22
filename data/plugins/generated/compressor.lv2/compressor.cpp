@@ -804,6 +804,7 @@ class compressor : public dsp {
 	virtual void buildUserInterface(UI* ui_interface) {
 		ui_interface->openVerticalBox("Compressor");
 		ui_interface->declare(&fHslider2, "1", "");
+		ui_interface->declare(&fHslider2, "tooltip", "Compression ratio");
 		ui_interface->addHorizontalSlider("Ratio", &fHslider2, FAUSTFLOAT(1.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(0.100000001f));
 		ui_interface->declare(&fHslider3, "2", "");
 		ui_interface->declare(&fHslider3, "unit", "Hz");

@@ -48,6 +48,12 @@
 	lv2:minimum 10 ;
 	lv2:maximum 10000 ;
 	lv2:portProperty epp:logarithmic ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "ms" ;
+            units:symbol "ms" ;
+            units:render "%f ms"
+	] ;
     ] , [
 	a lv2:InputPort ;
 	a lv2:ControlPort ;
@@ -60,6 +66,12 @@
 	lv2:minimum 1 ;
 	lv2:maximum 1000 ;
 	lv2:portProperty epp:logarithmic ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "ms" ;
+            units:symbol "ms" ;
+            units:render "%f ms"
+	] ;
     ] , [
 	a lv2:InputPort ;
 	a lv2:ControlPort ;
@@ -72,6 +84,12 @@
 	lv2:minimum 1 ;
 	lv2:maximum 1000 ;
 	lv2:portProperty epp:logarithmic ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "ms" ;
+            units:symbol "ms" ;
+            units:render "%f ms"
+	] ;
     ] , [
 	a lv2:InputPort ;
 	a lv2:AudioPort ;

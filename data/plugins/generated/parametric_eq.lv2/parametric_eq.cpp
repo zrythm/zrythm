@@ -944,7 +944,7 @@ class parametric_eq : public dsp {
 		ui_interface->declare(&fHslider0, "style", "knob");
 		ui_interface->declare(&fHslider0, "tooltip", "Transition-frequency from boost (cut) to unity gain");
 		ui_interface->declare(&fHslider0, "unit", "Hz");
-		ui_interface->addHorizontalSlider("Low Shelf Transition Frequency", &fHslider0, FAUSTFLOAT(200.0f), FAUSTFLOAT(10.0f), FAUSTFLOAT(5000.0f), FAUSTFLOAT(1.0f));
+		ui_interface->addHorizontalSlider("Low Shelf Frequency", &fHslider0, FAUSTFLOAT(200.0f), FAUSTFLOAT(10.0f), FAUSTFLOAT(5000.0f), FAUSTFLOAT(1.0f));
 		ui_interface->closeBox();
 		ui_interface->declare(0, "2", "");
 		ui_interface->declare(0, "tooltip", "Parametric Equalizer         sections from filters.lib");
@@ -962,7 +962,7 @@ class parametric_eq : public dsp {
 		ui_interface->declare(&fHslider4, "2", "");
 		ui_interface->declare(&fHslider4, "scale", "log");
 		ui_interface->declare(&fHslider4, "style", "knob");
-		ui_interface->declare(&fHslider4, "tooltip", "Quality factor         (Q) of the peak = center-frequency/bandwidth");
+		ui_interface->declare(&fHslider4, "tooltip", "Quality factor (Q) of the peak = center-frequency/bandwidth");
 		ui_interface->addHorizontalSlider("Peak Q", &fHslider4, FAUSTFLOAT(1.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(0.00999999978f));
 		ui_interface->closeBox();
 		ui_interface->declare(0, "3", "");
@@ -978,7 +978,7 @@ class parametric_eq : public dsp {
 		ui_interface->declare(&fHslider5, "style", "knob");
 		ui_interface->declare(&fHslider5, "tooltip", "Transition-frequency from boost (cut) to unity gain");
 		ui_interface->declare(&fHslider5, "unit", "Hz");
-		ui_interface->addHorizontalSlider("High Shelf Transition Frequency", &fHslider5, FAUSTFLOAT(8000.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(18000.0f), FAUSTFLOAT(1.0f));
+		ui_interface->addHorizontalSlider("High Shelf Frequency", &fHslider5, FAUSTFLOAT(8000.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(18000.0f), FAUSTFLOAT(1.0f));
 		ui_interface->closeBox();
 		ui_interface->closeBox();
 	}

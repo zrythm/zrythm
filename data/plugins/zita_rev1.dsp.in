@@ -41,13 +41,13 @@ fsmax = 192000.0;  // highest sampling rate that will be used
 rdel = hslider ("[1] Pre-Delay [unit:ms]", 20, 0, 100, 1);
 f1 = hslider ("[2] F1 [unit:Hz]", 200, 50, 1000, 1);
 f2 = hslider ("[3] F2 [unit:Hz]", 6000, 1500, 0.49*fsmax, 1);
-t60dc = hslider("[4] Low RT60 [unit:s]
+t60dc = hslider ("[4] Low RT60 [unit:s]
           [tooltip: T60 = time (in seconds) to decay 60dB in low-frequency band]",
     3, 1, 8, 0.1);
-t60m = hslider("[5] Mid RT60 [unit:s]
+t60m = hslider ("[5] Mid RT60 [unit:s]
         [tooltip: T60 = time (in seconds) to decay 60dB in middle band]",
   2, 1, 8, 0.1);
-mix = hslider("[6] Mix [unit:percentage]
+mix = hslider ("[6] Mix [unit:percentage]
         [tooltip: Mix amount]",
   50, 0, 100, 0.1);
 

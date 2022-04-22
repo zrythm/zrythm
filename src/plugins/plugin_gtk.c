@@ -483,31 +483,18 @@ plugin_gtk_add_control_row (
 {
   char name[600];
   strcpy (name, _name);
-  int preformatted = false;
+  bool preformatted = false;
 
   if (controller && controller->port)
     {
       PortIdentifier id = controller->port->id;
 
-#define FORMAT_UNIT(caps) \
-  case PORT_UNIT_##caps: \
-    sprintf ( \
-      name, "%s <small>(%s)</small>", _name, \
-      port_unit_strings[id.unit].str); \
-    break
-
-      switch (id.unit)
+      if (id.unit > PORT_UNIT_NONE)
         {
-          FORMAT_UNIT (HZ);
-          FORMAT_UNIT (DB);
-          FORMAT_UNIT (DEGREES);
-          FORMAT_UNIT (SECONDS);
-          FORMAT_UNIT (MS);
-        default:
-          break;
+          sprintf (
+            name, "%s <small>(%s)</small>", _name,
+            port_unit_strings[id.unit].str);
         }
-
-#undef FORMAT_UNIT
 
       preformatted = true;
     }

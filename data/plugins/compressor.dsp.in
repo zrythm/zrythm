@@ -11,12 +11,12 @@ declare license "AGPL-3.0-or-later";
 import ("stdfaust.lib");
 import ("zrythm-utils.lib");
 
-ratio = hslider ("[1] Ratio", 1, 1, 20, 0.1);
+ratio = hslider ("[1] Ratio [tooltip:Compression ratio]", 1, 1, 20, 0.1);
 thresh = hslider ("[2] Threshold [unit:Hz]", -20, -50, 0, 0.1);
 att = hslider ("[3] Attack [unit:ms]", 10, 1, 200, 1);
 rel = hslider ("[4] Release [unit:ms]", 10, 1, 200, 1);
 mix = hslider(
-  "[5] Mix [unit:percentage] [tooltip: Mix amount]",
+  "[5] Mix [unit:percentage] [tooltip:Mix amount]",
   50, 0, 100, 0.1);
 
 res = co.compressor_stereo (ratio, thresh, att / 1000, rel / 1000);

@@ -1120,6 +1120,7 @@ set_unit_from_str (Port * port, const char * unit_str)
   SET_UNIT (MS, "ms");
   SET_UNIT (DB, "dB");
   SET_UNIT (SECONDS, "s");
+  SET_UNIT (US, "us");
 
 #  undef SET_UNIT
 }
@@ -1359,9 +1360,8 @@ create_ports (CarlaNativePlugin * self, bool loading)
               port->id.flags |=
                 PORT_FLAG_AUTOMATABLE;
             }
-          if (
-            !(native_param->hints
-            & NATIVE_PARAMETER_IS_ENABLED))
+          if (!(native_param->hints
+                & NATIVE_PARAMETER_IS_ENABLED))
             {
               port->id.flags |=
                 PORT_FLAG_NOT_ON_GUI;
