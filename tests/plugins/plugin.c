@@ -31,6 +31,7 @@
 
 #include <lilv/lilv.h>
 
+#ifdef HAVE_HELM
 static void
 _test_loading_non_existing_plugin (
   const char * pl_bundle,
@@ -68,6 +69,7 @@ _test_loading_non_existing_plugin (
   /* assert expected messages */
   g_test_assert_expected_messages ();
 }
+#endif
 
 static void
 test_loading_non_existing_plugin (void)

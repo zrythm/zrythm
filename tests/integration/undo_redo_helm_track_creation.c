@@ -35,6 +35,7 @@
 #include "tests/helpers/project.h"
 #include "tests/helpers/zrythm.h"
 
+#ifdef HAVE_HELM
 static void
 _test (
   const char * pl_bundle,
@@ -77,6 +78,7 @@ _test (
   /* let the engine run */
   g_usleep (1000000);
 }
+#endif
 
 static void
 test (void)

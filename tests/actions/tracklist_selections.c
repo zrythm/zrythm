@@ -114,6 +114,8 @@ test_create_ins_when_redo_stack_nonempty (void)
   test_helper_zrythm_cleanup ();
 }
 
+#if defined(HAVE_HELM) \
+  || defined(HAVE_LSP_COMPRESSOR)
 static void
 _test_port_and_plugin_track_pos_after_duplication (
   const char * pl_bundle,
@@ -245,6 +247,7 @@ _test_port_and_plugin_track_pos_after_duplication (
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_undo (UNDO_MANAGER, NULL);
 }
+#endif
 
 static void
 test_port_and_plugin_track_pos_after_duplication (
@@ -286,6 +289,7 @@ test_port_and_plugin_track_pos_after_duplication_with_carla (
 }
 #endif
 
+#ifdef HAVE_HELM
 static void
 _test_undo_track_deletion (
   const char * pl_bundle,
@@ -374,6 +378,7 @@ _test_undo_track_deletion (
   /* let the engine run */
   g_usleep (1000000);
 }
+#endif
 
 static void
 test_undo_track_deletion (void)
@@ -1037,6 +1042,8 @@ test_no_visible_tracks_after_track_deletion (void)
   test_helper_zrythm_cleanup ();
 }
 
+#if defined(HAVE_HELM) \
+  || defined(HAVE_LSP_COMPRESSOR)
 static void
 _test_move_tracks (
   const char * pl_bundle,
@@ -1184,7 +1191,7 @@ _test_move_tracks (
       &P_MASTER_TRACK->processor->stereo_in->r->id));
 
   /* TODO replace below */
-#if 0
+#  if 0
   /* verify fx track out ports */
   port_verify_src_and_dests (
     fx_track->channel->stereo_out->l);
@@ -1196,7 +1203,7 @@ _test_move_tracks (
     P_MASTER_TRACK->processor->stereo_in->l);
   port_verify_src_and_dests (
     P_MASTER_TRACK->processor->stereo_in->r);
-#endif
+#  endif
 
   /* unswap tracks */
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -1239,7 +1246,7 @@ _test_move_tracks (
       &fx_track->channel->stereo_out->r->id,
       &P_MASTER_TRACK->processor->stereo_in->r->id));
 
-#if 0
+#  if 0
   /* verify fx track out ports */
   port_verify_src_and_dests (
     fx_track->channel->stereo_out->l);
@@ -1251,8 +1258,9 @@ _test_move_tracks (
     P_MASTER_TRACK->processor->stereo_in->l);
   port_verify_src_and_dests (
     P_MASTER_TRACK->processor->stereo_in->r);
-#endif
+#  endif
 }
+#endif
 
 static void
 __test_move_tracks (bool with_carla)

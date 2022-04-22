@@ -231,7 +231,7 @@ test_save_state_w_files (void)
   test_helper_zrythm_cleanup ();
 #endif
 }
-
+#if defined(HAVE_SFIZZ) || defined(HAVE_DROPS)
 static void
 test_reloading_project_with_instrument (
   const char * pl_bundle,
@@ -267,6 +267,7 @@ test_reloading_project_with_instrument (
 
   test_helper_zrythm_cleanup ();
 }
+#endif
 
 /**
  * Test a plugin with lots of parameters.

@@ -24,6 +24,8 @@
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project.h"
 
+#if defined(HAVE_CHIPWAVE) || defined(HAVE_HELM) \
+  || defined(HAVE_LSP_COMPRESSOR)
 static Track *
 get_ins_track (void)
 {
@@ -226,23 +228,23 @@ _test_edit_tracks (
 
         Port * l =
           ins_track->channel->fader->stereo_out->l;
-#if 0
+#  if 0
         Port * ins_out_l =
           plugin_get_port_by_symbol (
           ins_track->channel->instrument,
           /*"lv2_audio_out_1");*/
           "lv2_audio_out_1");
-#endif
+#  endif
         for (nframes_t i = 0;
              i < AUDIO_ENGINE->block_length; i++)
           {
-#if 0
+#  if 0
             g_message (
               "[%u] %.16f", i, (double) l->buf[i]);
             g_message (
               "[%u i] %.16f", i,
               (double) ins_out_l->buf[i]);
-#endif
+#  endif
             if (l->buf[i] > 0.0001f)
               {
                 has_signal = true;
@@ -472,6 +474,7 @@ _test_edit_tracks (
       break;
     }
 }
+#endif
 
 static void
 __test_edit_tracks (bool with_carla)

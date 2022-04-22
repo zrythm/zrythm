@@ -18,6 +18,8 @@
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project.h"
 
+#if defined(HAVE_HELM) \
+  || defined(HAVE_NO_DELAY_LINE)
 static int num_master_children = 0;
 
 static void
@@ -103,7 +105,7 @@ _test_copy_plugins (
    * plugins */
   if (is_instrument)
     {
-#if 0
+#  if 0
       if (!with_carla)
         {
           g_assert_true (
@@ -128,7 +130,7 @@ _test_copy_plugins (
       undo_manager_undo (UNDO_MANAGER, NULL);
       undo_manager_redo (UNDO_MANAGER, NULL);
       undo_manager_undo (UNDO_MANAGER, NULL);
-#endif
+#  endif
     }
   else
     {
@@ -146,6 +148,7 @@ _test_copy_plugins (
 
   g_usleep (100);
 }
+#endif
 
 static void
 test_copy_plugins (void)
@@ -225,6 +228,12 @@ test_midi_fx_slot_deletion (void)
   test_helper_zrythm_cleanup ();
 }
 
+#if defined(HAVE_HELM) \
+  || defined(HAVE_LSP_COMPRESSOR) \
+  || defined(HAVE_CARLA_RACK) \
+  || (defined(HAVE_CARLA) && defined(HAVE_NOIZEMAKER)) \
+  || defined(HAVE_SHERLOCK_ATOM_INSPECTOR) \
+  || (defined(HAVE_UNLIMITED_MEM) && defined(HAVE_CALF_COMPRESSOR))
 static void
 _test_create_plugins (
   PluginProtocol prot,
@@ -235,7 +244,7 @@ _test_create_plugins (
 {
   PluginSetting * setting = NULL;
 
-#ifdef HAVE_SHERLOCK_ATOM_INSPECTOR
+#  ifdef HAVE_SHERLOCK_ATOM_INSPECTOR
   if (string_is_equal (
         pl_uri, SHERLOCK_ATOM_INSPECTOR_URI))
     {
@@ -250,7 +259,7 @@ _test_create_plugins (
             "*Failed from water*");
         }
     }
-#endif
+#  endif
 
   switch (prot)
     {
@@ -263,7 +272,7 @@ _test_create_plugins (
         setting, F_NO_VALIDATE);
       break;
     case PROT_VST:
-#ifdef HAVE_CARLA
+#  ifdef HAVE_CARLA
       {
         PluginDescriptor ** descriptors =
           z_carla_discovery_create_descriptors_from_file (
@@ -272,7 +281,7 @@ _test_create_plugins (
           descriptors[0]);
         free (descriptors);
       }
-#endif
+#  endif
       break;
     default:
       break;
@@ -364,7 +373,7 @@ _test_create_plugins (
 
   test_project_save_and_reload ();
 
-#ifdef HAVE_SHERLOCK_ATOM_INSPECTOR
+#  ifdef HAVE_SHERLOCK_ATOM_INSPECTOR
   if (string_is_equal (
         pl_uri, SHERLOCK_ATOM_INSPECTOR_URI))
     {
@@ -378,10 +387,11 @@ _test_create_plugins (
       undo_manager_undo (UNDO_MANAGER, NULL);
       undo_manager_undo (UNDO_MANAGER, NULL);
     }
-#endif
+#  endif
 
   g_message ("done");
 }
+#endif
 
 static void
 test_create_plugins (void)
@@ -1267,6 +1277,9 @@ test_undoing_deletion_of_multiple_inserts (void)
   test_helper_zrythm_cleanup ();
 }
 
+#if defined(HAVE_HELM) \
+  || defined(HAVE_CARLA_RACK) \
+  || (defined(HAVE_CARLA) && defined(HAVE_NOIZEMAKER))
 static void
 _test_replace_instrument (
   PluginProtocol prot,
@@ -1274,7 +1287,7 @@ _test_replace_instrument (
   const char *   pl_uri,
   bool           with_carla)
 {
-#ifdef HAVE_LSP_COMPRESSOR
+#  ifdef HAVE_LSP_COMPRESSOR
   PluginSetting * setting = NULL;
 
   switch (prot)
@@ -1288,7 +1301,7 @@ _test_replace_instrument (
         setting, F_NO_VALIDATE);
       break;
     case PROT_VST:
-#  ifdef HAVE_CARLA
+#    ifdef HAVE_CARLA
       {
         PluginDescriptor ** descriptors =
           z_carla_discovery_create_descriptors_from_file (
@@ -1297,7 +1310,7 @@ _test_replace_instrument (
           descriptors[0]);
         free (descriptors);
       }
-#  endif
+#    endif
       break;
     default:
       break;
@@ -1550,8 +1563,9 @@ _test_replace_instrument (
   test_project_save_and_reload ();
 
   plugin_setting_free (setting);
-#endif /* HAVE LSP_COMPRESSOR */
+#  endif /* HAVE LSP_COMPRESSOR */
 }
+#endif
 
 static void
 test_replace_instrument (void)

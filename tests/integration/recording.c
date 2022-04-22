@@ -63,6 +63,7 @@ prepare (void)
   port_allocate_bufs (AUDIO_ENGINE->dummy_input->r);
 }
 
+#ifdef HAVE_HELM
 static void
 do_takes_no_loop_no_punch (
   Track * ins_track,
@@ -358,7 +359,7 @@ do_takes_loop_no_punch (
   transport_set_punch_mode_enabled (
     TRANSPORT, false);
 
-#define FRAMES_BEFORE_LOOP 4
+#  define FRAMES_BEFORE_LOOP 4
 
   /* move playhead to 4 ticks before loop */
   Position pos;
@@ -557,18 +558,18 @@ do_takes_loop_no_punch (
   g_assert_cmppos (&pos, &ap_obj->pos);
   g_assert_cmpfloat_with_epsilon (
     ap->fvalue, latch_val_at_start, 0.0001f);
-#if 0
+#  if 0
   ap = latch_r->aps[1];
   ap_obj = (ArrangerObject *) ap;
   position_from_frames (&pos, FRAMES_BEFORE_LOOP);
   g_assert_cmppos (&pos, &ap_obj->pos);
   g_assert_cmpfloat_with_epsilon (
     ap->fvalue, latch_val_at_start, 0.0001f);
-#endif
+#  endif
 
   /* TODO try the above steps again with data like
    * below */
-#if 0
+#  if 0
   /* send a MIDI event */
   Port * port = ins_track->processor->midi_in;
   midi_events_add_note_on (
@@ -689,9 +690,9 @@ do_takes_loop_no_punch (
   engine_process (AUDIO_ENGINE, CYCLE_SIZE);
   recording_manager_process_events (
     RECORDING_MANAGER);
-#endif
+#  endif
 
-#undef FRAMES_BEFORE_LOOP
+#  undef FRAMES_BEFORE_LOOP
 
   /* save and undo/redo */
   test_project_save_and_reload ();
@@ -724,7 +725,6 @@ test_recording_takes (
     ins_track, audio_track, master_track);
 }
 
-#ifdef HAVE_HELM
 static void
 test_recording (void)
 {
