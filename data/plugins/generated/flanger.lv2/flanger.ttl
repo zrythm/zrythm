@@ -39,6 +39,7 @@
 	lv2:default -1.5 ;
 	lv2:minimum -1.5 ;
 	lv2:maximum 1.5 ;
+	rdfs:comment "Display sum of flange delays" ;
     ] , [
 	a lv2:InputPort ;
 	a lv2:ControlPort ;

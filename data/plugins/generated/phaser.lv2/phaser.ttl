@@ -91,6 +91,7 @@
 	lv2:default 1000 ;
 	lv2:minimum 10 ;
 	lv2:maximum 5000 ;
+	lv2:portProperty epp:logarithmic ;
 	units:unit [
             a            units:Unit ;
             units:name   "Hz" ;
@@ -108,6 +109,7 @@
 	lv2:default 100 ;
 	lv2:minimum 20 ;
 	lv2:maximum 5000 ;
+	lv2:portProperty epp:logarithmic ;
 	units:unit [
             a            units:Unit ;
             units:name   "Hz" ;
@@ -125,6 +127,7 @@
 	lv2:default 800 ;
 	lv2:minimum 20 ;
 	lv2:maximum 10000 ;
+	lv2:portProperty epp:logarithmic ;
 	units:unit [
             a            units:Unit ;
             units:name   "Hz" ;

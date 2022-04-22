@@ -81,6 +81,7 @@
 	lv2:default 3 ;
 	lv2:minimum 1 ;
 	lv2:maximum 8 ;
+	rdfs:comment "T60 = time (in seconds) to decay 60dB in low-frequency band" ;
 	units:unit [
             a            units:Unit ;
             units:name   "s" ;
@@ -98,6 +99,7 @@
 	lv2:default 2 ;
 	lv2:minimum 1 ;
 	lv2:maximum 8 ;
+	rdfs:comment "T60 = time (in seconds) to decay 60dB in middle band" ;
 	units:unit [
             a            units:Unit ;
             units:name   "s" ;
@@ -115,6 +117,7 @@
 	lv2:default 50 ;
 	lv2:minimum 0 ;
 	lv2:maximum 100 ;
+	rdfs:comment "Mix amount" ;
 	units:unit [
             a            units:Unit ;
             units:name   "percentage" ;

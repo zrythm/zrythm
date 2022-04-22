@@ -55,7 +55,7 @@ filter = hgroup (
   fi.resonlp (cutoff_freq, cutoff_q, 1)
   : fi.lowpass(5, 18000))
     with {
-      cutoff_freq = hslider ("[0] Cutoff [unit:Hz] [scale:log]", 10000, 110, 20000, 0.01) : si.smoo : min (20000) : max (20);
+      cutoff_freq = hslider ("[0] Cutoff [unit:Hz] [scale:log] [tooltip:Filter cutoff frequency]", 10000, 110, 20000, 0.01) : si.smoo : min (20000) : max (20);
       cutoff_q = hslider ("[1] Cutoff Q", 1, 1, 20, 0.1) : si.smoo;
     };
 

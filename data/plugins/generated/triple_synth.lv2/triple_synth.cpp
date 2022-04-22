@@ -1166,6 +1166,7 @@ class triple_synth : public dsp {
 		ui_interface->openHorizontalBox("Filter");
 		ui_interface->declare(&fHslider7, "0", "");
 		ui_interface->declare(&fHslider7, "scale", "log");
+		ui_interface->declare(&fHslider7, "tooltip", "Filter cutoff frequency");
 		ui_interface->declare(&fHslider7, "unit", "Hz");
 		ui_interface->addHorizontalSlider("Cutoff", &fHslider7, FAUSTFLOAT(10000.0f), FAUSTFLOAT(110.0f), FAUSTFLOAT(20000.0f), FAUSTFLOAT(0.00999999978f));
 		ui_interface->declare(&fHslider8, "1", "");
@@ -4820,10 +4821,19 @@ int lv2_dyn_manifest_get_data(LV2_Dyn_Manifest_Handle handle,
             units:symbol \"%s\" ;\n\
             units:render \"%%f %s\"\n\
 	] ;\n", val, val, val);
+	if (!strcmp(key, "scale") && !strcmp(val, "log"))
+	  fprintf(fp, "\
+	lv2:portProperty epp:logarithmic ;\n");
+	if (!strcmp(key, "tooltip"))
+	  fprintf(fp, "\
+	rdfs:comment \"%s\" ;\n", val);
 	if (strcmp(key, "lv2")) continue;
 	if (!strcmp(val, "integer"))
 	  fprintf(fp, "\
 	lv2:portProperty lv2:integer ;\n");
+	else if (!strcmp(val, "enumeration"))
+	  fprintf(fp, "\
+	lv2:portProperty lv2:enumeration ;\n");
 	else if (!strcmp(val, "reportsLatency"))
 	  fprintf(fp, "\
 	lv2:portProperty lv2:reportsLatency ;\n\

@@ -30,6 +30,8 @@
 	lv2:default 200 ;
 	lv2:minimum 10 ;
 	lv2:maximum 18000 ;
+	lv2:portProperty epp:logarithmic ;
+	rdfs:comment "Transition frequency" ;
 	units:unit [
             a            units:Unit ;
             units:name   "Hz" ;

@@ -47,6 +47,7 @@
 	lv2:default 10 ;
 	lv2:minimum 10 ;
 	lv2:maximum 10000 ;
+	lv2:portProperty epp:logarithmic ;
     ] , [
 	a lv2:InputPort ;
 	a lv2:ControlPort ;
@@ -58,6 +59,7 @@
 	lv2:default 200 ;
 	lv2:minimum 1 ;
 	lv2:maximum 1000 ;
+	lv2:portProperty epp:logarithmic ;
     ] , [
 	a lv2:InputPort ;
 	a lv2:ControlPort ;
@@ -69,6 +71,7 @@
 	lv2:default 100 ;
 	lv2:minimum 1 ;
 	lv2:maximum 1000 ;
+	lv2:portProperty epp:logarithmic ;
     ] , [
 	a lv2:InputPort ;
 	a lv2:AudioPort ;

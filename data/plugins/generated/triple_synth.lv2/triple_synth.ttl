@@ -146,6 +146,8 @@
 	lv2:default 10000 ;
 	lv2:minimum 110 ;
 	lv2:maximum 20000 ;
+	lv2:portProperty epp:logarithmic ;
+	rdfs:comment "Filter cutoff frequency" ;
 	units:unit [
             a            units:Unit ;
             units:name   "Hz" ;

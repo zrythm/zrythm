@@ -2570,10 +2570,19 @@ int lv2_dyn_manifest_get_data(LV2_Dyn_Manifest_Handle handle,
             units:symbol \"%s\" ;\n\
             units:render \"%%f %s\"\n\
 	] ;\n", val, val, val);
+	if (!strcmp(key, "scale") && !strcmp(val, "log"))
+	  fprintf(fp, "\
+	lv2:portProperty epp:logarithmic ;\n");
+	if (!strcmp(key, "tooltip"))
+	  fprintf(fp, "\
+	rdfs:comment \"%s\" ;\n", val);
 	if (strcmp(key, "lv2")) continue;
 	if (!strcmp(val, "integer"))
 	  fprintf(fp, "\
 	lv2:portProperty lv2:integer ;\n");
+	else if (!strcmp(val, "enumeration"))
+	  fprintf(fp, "\
+	lv2:portProperty lv2:enumeration ;\n");
 	else if (!strcmp(val, "reportsLatency"))
 	  fprintf(fp, "\
 	lv2:portProperty lv2:reportsLatency ;\n\

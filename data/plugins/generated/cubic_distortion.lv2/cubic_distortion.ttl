@@ -30,6 +30,7 @@
 	lv2:default 0 ;
 	lv2:minimum 0 ;
 	lv2:maximum 1 ;
+	rdfs:comment "Amount of distortion" ;
     ] , [
 	a lv2:InputPort ;
 	a lv2:ControlPort ;
@@ -41,6 +42,7 @@
 	lv2:default 0 ;
 	lv2:minimum 0 ;
 	lv2:maximum 1 ;
+	rdfs:comment "Brings in even harmonics" ;
     ] , [
 	a lv2:InputPort ;
 	a lv2:AudioPort ;
