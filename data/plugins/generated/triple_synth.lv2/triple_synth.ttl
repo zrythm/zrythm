@@ -41,6 +41,10 @@
 	lv2:default 3 ;
 	lv2:minimum 0 ;
 	lv2:maximum 3 ;
+	lv2:scalePoint [ rdfs:label "Saw"; rdf:value 3 ] ;
+	lv2:scalePoint [ rdfs:label "Sine"; rdf:value 0 ] ;
+	lv2:scalePoint [ rdfs:label "Square"; rdf:value 2 ] ;
+	lv2:scalePoint [ rdfs:label "Triangle"; rdf:value 1 ] ;
     ] , [
 	a lv2:InputPort ;
 	a lv2:ControlPort ;
@@ -52,6 +56,12 @@
 	lv2:default 0.03 ;
 	lv2:minimum 0.001 ;
 	lv2:maximum 2 ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "s" ;
+            units:symbol "s" ;
+            units:render "%f s"
+	] ;
     ] , [
 	a lv2:InputPort ;
 	a lv2:ControlPort ;
@@ -63,6 +73,12 @@
 	lv2:default 0.3 ;
 	lv2:minimum 0.001 ;
 	lv2:maximum 4 ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "s" ;
+            units:symbol "s" ;
+            units:render "%f s"
+	] ;
     ] , [
 	a lv2:InputPort ;
 	a lv2:ControlPort ;
@@ -85,6 +101,12 @@
 	lv2:default 0.4 ;
 	lv2:minimum 0.001 ;
 	lv2:maximum 4 ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "s" ;
+            units:symbol "s" ;
+            units:render "%f s"
+	] ;
     ] , [
 	a lv2:InputPort ;
 	a lv2:ControlPort ;
@@ -124,6 +146,12 @@
 	lv2:default 10000 ;
 	lv2:minimum 110 ;
 	lv2:maximum 20000 ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "Hz" ;
+            units:symbol "Hz" ;
+            units:render "%f Hz"
+	] ;
     ] , [
 	a lv2:InputPort ;
 	a lv2:ControlPort ;
@@ -203,10 +231,9 @@
         lv2:portProperty epp:hasStrictBounds ;
 #       lv2:portProperty epp:expensive ;
         lv2:portProperty lv2:integer ;
-        epp:rangeSteps 11 ;
-	lv2:default 12 ;
+        epp:rangeSteps 15 ;
+	lv2:default 8 ;
 	lv2:minimum 1 ;
-	lv2:maximum 12 ;
-	lv2:portProperty <http://lv2plug.in/ns/ext/port-props#notOnGUI>
+	lv2:maximum 16 ;
     ]
 .

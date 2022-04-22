@@ -1360,6 +1360,13 @@ create_ports (CarlaNativePlugin * self, bool loading)
                 PORT_FLAG_AUTOMATABLE;
             }
           if (
+            !(native_param->hints
+            & NATIVE_PARAMETER_IS_ENABLED))
+            {
+              port->id.flags |=
+                PORT_FLAG_NOT_ON_GUI;
+            }
+          if (
             native_param->hints
             & NATIVE_PARAMETER_IS_BOOLEAN)
             {
