@@ -6,6 +6,24 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.2.0.1] - 2022-04-23
+### Added
+- Add more bundled plugins: Flanger, Phaser, Wah4, Triple Synth, Parametric EQ, Highpass Filter, Lowpass Filter, Peak Limiter, White Noise
+- Implement add track button on tracklist and mixer
+- Add more metadata in bundled plugins
+- Enable vectorization optimizations on bundled plugins
+- Extract more control port info from Carla plugins
+
+### Changed
+- Change port symbols for some bundled plugins
+- Avoid attempting to get too many backtraces at once
+- Preferences: convert icon and CSS theme selection entries to dropdowns
+
+### Fixed
+- Fix paths not being updated when selected from a file chooser button
+- Fix positioning of context menu on BPM and playhead position widgets
+- Fix saving a backup removing files from the main project's audio pool instead of the backup's
+
 ## [1.0.0-beta.1.5.1] - 2022-04-14
 ### Added
 - Add status page to modulators tab
