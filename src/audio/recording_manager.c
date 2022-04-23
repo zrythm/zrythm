@@ -1421,7 +1421,8 @@ handle_start_recording (
     start_frames + ev->nframes;
 
   g_message (
-    "start %" UNSIGNED_FRAME_FORMAT ", "
+    "start %" UNSIGNED_FRAME_FORMAT
+    ", "
     "end %" UNSIGNED_FRAME_FORMAT,
     start_frames, end_frames);
 

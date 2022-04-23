@@ -780,7 +780,8 @@ position_print (const Position * pos)
   char buf[140];
   position_to_string (pos, buf);
   g_message (
-    "%s (%" SIGNED_FRAME_FORMAT " frames | "
+    "%s (%" SIGNED_FRAME_FORMAT
+    " frames | "
     "%f ticks)",
     buf, pos->frames, pos->ticks);
 }
@@ -795,9 +796,12 @@ position_print_range (
   char buf2[140];
   position_to_string (pos2, buf2);
   g_message (
-    "%s (%" SIGNED_FRAME_FORMAT ") - "
-    "%s (%" SIGNED_FRAME_FORMAT ") "
-    "<delta %" SIGNED_FRAME_FORMAT " frames "
+    "%s (%" SIGNED_FRAME_FORMAT
+    ") - "
+    "%s (%" SIGNED_FRAME_FORMAT
+    ") "
+    "<delta %" SIGNED_FRAME_FORMAT
+    " frames "
     "%f ticks>",
     buf, pos->frames, buf2, pos2->frames,
     pos2->frames - pos->frames,

@@ -436,7 +436,7 @@ graph_thread_new (
       return NULL;
     }
 
-#if defined (HAVE_JACK) || defined (__linux__)
+#if defined(HAVE_JACK) || defined(__linux__)
   bool realtime = true;
 
   int priority = -22; /* RT priority (from ardour) */
