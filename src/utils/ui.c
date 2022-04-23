@@ -1018,7 +1018,7 @@ ui_get_locale_not_available_string (
 {
   /* show warning */
 #ifdef _WOE32
-  char template = _ (
+  char * template = _ (
     "A locale for the language you have \
 selected (%s) is not available. Please install one first \
 and restart %s");

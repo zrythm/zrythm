@@ -30,7 +30,7 @@ Author
   Filter by plugin manufacturer/author.
 
   .. hint:: Built-in plugins can be found under
-  `Zrythm DAW` here.
+     `Zrythm DAW` here.
 
 Category
   Filter by category (`Delay`, `Distortion`, etc.).

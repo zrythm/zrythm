@@ -436,9 +436,12 @@ graph_thread_new (
       return NULL;
     }
 
+#if defined (HAVE_JACK) || defined (__linux__)
   bool realtime = true;
 
   int priority = -22; /* RT priority (from ardour) */
+#endif
+
 #ifdef HAVE_JACK
   if (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK)
     {

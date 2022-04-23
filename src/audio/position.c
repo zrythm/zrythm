@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <math.h>
 
@@ -796,8 +780,9 @@ position_print (const Position * pos)
   char buf[140];
   position_to_string (pos, buf);
   g_message (
-    "%s (%ld frames | %f ticks)", buf, pos->frames,
-    pos->ticks);
+    "%s (%" SIGNED_FRAME_FORMAT " frames | "
+    "%f ticks)",
+    buf, pos->frames, pos->ticks);
 }
 
 void
@@ -810,8 +795,10 @@ position_print_range (
   char buf2[140];
   position_to_string (pos2, buf2);
   g_message (
-    "%s (%ld) - %s (%ld) "
-    "<delta %ld frames %f ticks>",
+    "%s (%" SIGNED_FRAME_FORMAT ") - "
+    "%s (%" SIGNED_FRAME_FORMAT ") "
+    "<delta %" SIGNED_FRAME_FORMAT " frames "
+    "%f ticks>",
     buf, pos->frames, buf2, pos2->frames,
     pos2->frames - pos->frames,
     pos2->ticks - pos->ticks);

@@ -827,7 +827,8 @@ arranger_object_print (const ArrangerObject * self)
             position_to_string (&pos, pos_str);
             extra_info = g_strdup_printf (
               " | audio clip total ticks %s "
-              "(%ld frames)",
+              "(%" UNSIGNED_FRAME_FORMAT
+              " frames)",
               pos_str, clip->num_frames);
             g_free (tmp);
           }
