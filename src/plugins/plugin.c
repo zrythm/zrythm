@@ -1867,7 +1867,6 @@ plugin_process (
 void
 plugin_print (Plugin * self, char * buf, size_t buf_sz)
 {
-  const char * fmt = "%s (%d):%s:%d - %s";
   if (buf)
     {
       Track * track =
@@ -1875,7 +1874,7 @@ plugin_print (Plugin * self, char * buf, size_t buf_sz)
           ? self->track
           : NULL;
       snprintf (
-        buf, buf_sz, fmt,
+        buf, buf_sz, "%s (%d):%s:%d - %s",
         track ? track->name : "<no track>",
         track ? track->pos : -1,
         plugin_slot_type_strings[self->id.slot_type]

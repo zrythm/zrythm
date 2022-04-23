@@ -119,16 +119,12 @@ piano_roll_keys_snapshot (
         piano_roll_find_midi_note_descriptor_by_val (
           PIANO_ROLL, drum_mode, i);
 
-      char fontize_str[120];
-      int  fontsize =
+      int fontsize =
         piano_roll_keys_widget_get_font_size (self);
-      sprintf (
-        fontize_str, "<span size=\"%d\">",
-        fontsize * 1000 - 4000);
-      strcat (fontize_str, "%s</span>");
       char note_name[120];
       sprintf (
-        note_name, fontize_str,
+        note_name, "<span size=\"%d\">%s</span>",
+        fontsize * 1000 - 4000,
         drum_mode
           ? descr->custom_name
           : descr->note_name_pango);

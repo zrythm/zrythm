@@ -7,6 +7,9 @@ project (
   license: 'AGPL-3-or-later',
   meson_version: '>= 0.57.0',
   default_options: [
+    # 1: -Wall
+    # 2: -Wall -Wextra
+    # 3: -Wall -Wextra -Wpedantic
     'warning_level=2',
     'buildtype=debugoptimized',
     'c_std=gnu11',
@@ -722,7 +725,7 @@ if get_option ('extra_extra_optimizations')
 endif
 
 if get_option ('extra_debug_info')
-  test_cflags += '-ggdb3'
+  test_cflags += '-g3'
 endif
 
 common_cflags += cc.get_supported_arguments (
@@ -744,9 +747,16 @@ elif os_windows
 endif
 
 test_strict_cflags += [
+  '-Werror=format=2',
+  '-Werror=format-overflow',
+  '-Werror=format-truncation',
   #'-Werror=cast-qual',
   '-Werror=clobbered',
+
+  # this is too strict - it complains when
+  # converting int to float
   #'-Werror=conversion',
+
   '-Werror=disabled-optimization',
   '-Werror=float-equal',
   '-Werror=logical-op',
@@ -756,7 +766,10 @@ test_strict_cflags += [
   '-Werror=stringop-truncation',
   '-Werror=missing-declarations',
   '-Werror=int-to-pointer-cast',
+  # fails with graphene
+  # https://github.com/ebassi/graphene/issues/249
   #'-Werror=double-promotion',
+
   #'-Werror=redundant-decls',
   '-Werror=shadow',
   '-Werror=undef',
@@ -786,7 +799,6 @@ test_strict_cflags += [
   '-Werror=maybe-uninitialized',
   '-Werror=return-type',
   '-Werror=int-conversion',
-  '-Werror=format-security',
   '-Werror=incompatible-pointer-types',
   '-Werror=implicit-int',
   '-Werror=multistatement-macros',
@@ -798,8 +810,6 @@ test_strict_cflags += [
   '-Werror=int-in-bool-context',
   '-Werror=type-limits',
   '-Werror=deprecated-declarations',
-  '-Werror=format-extra-args',
-  '-Werror=format',
   '-Werror=endif-labels',
   '-Werror=logical-not-parentheses',
   '-Werror=parentheses',
@@ -837,7 +847,6 @@ test_strict_cflags += [
 
 if is_gcc
   test_strict_cflags += [
-    '-Wextra',
     '-Weverything',
 
     '-Wsuggest-attribute=pure',
@@ -858,14 +867,6 @@ strict_cflags = []
 if get_option ('strict_flags')
   strict_cflags = cc.get_supported_arguments (
     test_strict_cflags)
-endif
-
-# add -Wformat -Werror=format-security
-if cc.get_id() == 'gcc'
-  common_cflags += [
-    '-Wformat',
-    '-Werror=format-security',
-    ]
 endif
 
 test_ldflags = []

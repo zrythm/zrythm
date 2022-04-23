@@ -1018,26 +1018,30 @@ ui_get_locale_not_available_string (
 {
   /* show warning */
 #ifdef _WOE32
-  char * template = _ (
-    "A locale for the language you have \
+#  define _TEMPLATE \
+    _ ( \
+      "A locale for the language you have \
 selected (%s) is not available. Please install one first \
-and restart %s");
+and restart %s")
 #else
-  char * template = _ (
-    "A locale for the language you have selected is \
+#  define _TEMPLATE \
+    _ ( \
+      "A locale for the language you have selected is \
 not available. Please enable one first using \
 the steps below and try again.\n\
 1. Uncomment any locale starting with the \
 language code <b>%s</b> in <b>/etc/locale.gen</b> (needs \
 root privileges)\n\
 2. Run <b>locale-gen</b> as root\n\
-3. Restart %s");
+3. Restart %s")
 #endif
 
   const char * code =
     localization_get_string_code (lang);
-  char * str =
-    g_strdup_printf (template, code, PROGRAM_NAME);
+  char * str = g_strdup_printf (
+    _TEMPLATE, code, PROGRAM_NAME);
+
+#undef _TEMPLATE
 
   return str;
 }

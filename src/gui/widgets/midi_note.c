@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -135,20 +119,16 @@ midi_note_draw (
   /* draw text */
   char str[30];
   midi_note_get_val_as_string (self, str, 1);
-  char fontize_str[120];
-  int  fontsize =
+  int fontsize =
     piano_roll_keys_widget_get_font_size (
       MW_PIANO_ROLL_KEYS);
   if ((DEBUGGING || !drum_mode) && fontsize > 10)
     {
+      char fontize_str[120];
       sprintf (
-        fontize_str, "<span size=\"%d\">",
+        fontize_str, "<span size=\"%d\">%s</span>",
         /* subtract half a point for the padding */
-        fontsize * 1000 - 4000);
-      strcat (fontize_str, "%s</span>");
-
-      char str_to_use[120];
-      sprintf (str_to_use, fontize_str, str);
+        fontsize * 1000 - 4000, str);
 
       double fontsize_ratio =
         (double) fontsize / 12.0;
@@ -167,7 +147,7 @@ midi_note_draw (
           (fontsize_ratio * REGION_NAME_BOX_PADDING +
              full_rect.y)));
       pango_layout_set_markup (
-        self->layout, str_to_use, -1);
+        self->layout, fontize_str, -1);
       gtk_snapshot_append_layout (
         snapshot, self->layout, &c2);
       gtk_snapshot_restore (snapshot);

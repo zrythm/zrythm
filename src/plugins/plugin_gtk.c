@@ -456,17 +456,19 @@ plugin_gtk_new_label (
   float        xalign,
   float        yalign)
 {
-  GtkWidget *  label = gtk_label_new (NULL);
-  const char * fmt = title ? "<b>%s</b>" : "%s: ";
-  gchar *      str;
+  GtkWidget * label = gtk_label_new (NULL);
+#define PRINTF_FMT (title ? "<b>%s</b>" : "%s: ")
+  gchar * str;
   if (preformatted)
     {
-      str = g_strdup_printf (fmt, text);
+      str = g_strdup_printf (PRINTF_FMT, text);
     }
   else
     {
-      str = g_markup_printf_escaped (fmt, text);
+      str =
+        g_markup_printf_escaped (PRINTF_FMT, text);
     }
+#undef PRINTF_FMT
   gtk_label_set_markup (GTK_LABEL (label), str);
   g_free (str);
   gtk_label_set_xalign (GTK_LABEL (label), xalign);

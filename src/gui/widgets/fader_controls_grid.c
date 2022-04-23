@@ -77,29 +77,33 @@ update_meter_reading (
       widget->meter_readings, "-∞");
   else
     {
-      char format_str[400];
-      strcpy (format_str, _ ("Peak"));
-      strcat (format_str, ":\n<small>");
+      char str[800];
+      strcpy (str, _ ("Peak"));
+      strcat (str, ":\n<small>");
+      char peak_str[400];
       if (peak_val < -10.)
         {
-          strcat (format_str, "%.0fdb</small>");
+          sprintf (
+            peak_str, "%.0fdb</small>", peak_val);
         }
       else
         {
           if (peak_val > 0)
             {
-              strcat (
-                format_str,
+              sprintf (
+                peak_str,
                 "<span foreground=\"#FF0A05\">"
-                "%.1fdb</span></small>");
+                "%.1fdb</span></small>",
+                peak_val);
             }
           else
             {
-              strcat (format_str, "%.1fdb</small>");
+              sprintf (
+                peak_str, "%.1fdb</small>",
+                peak_val);
             }
         }
-      char str[800];
-      sprintf (str, format_str, peak_val);
+      strcat (str, peak_str);
       gtk_label_set_markup (
         widget->meter_readings, str);
     }

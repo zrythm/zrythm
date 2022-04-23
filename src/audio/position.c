@@ -699,12 +699,9 @@ position_to_string_full (
     position_get_sixteenths (pos, true);
   double ticks = position_get_ticks (pos);
   g_return_if_fail (bars > -80000);
-  char template[32];
   sprintf (
-    template, "%%d.%%d.%%d.%%.%df", decimal_places);
-  sprintf (
-    buf, template, bars, abs (beats),
-    abs (sixteenths), fabs (ticks));
+    buf, "%d.%d.%d.%.*f", bars, abs (beats),
+    abs (sixteenths), decimal_places, fabs (ticks));
 }
 
 /**
