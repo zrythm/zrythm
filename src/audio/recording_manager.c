@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <inttypes.h>
+
 #include "actions/arranger_selections.h"
 #include "audio/audio_region.h"
 #include "audio/automation_region.h"
