@@ -6,7 +6,7 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-beta.2.0.1] - 2022-04-23
+## [1.0.0-beta.2.0.3] - 2022-04-23
 ### Added
 - Add more bundled plugins: Flanger, Phaser, Wah4, Triple Synth, Parametric EQ, Highpass Filter, Lowpass Filter, Peak Limiter, White Noise
 - Implement add track button on tracklist and mixer
