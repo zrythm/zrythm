@@ -702,8 +702,8 @@ audio_clip_remove_and_free (
   AudioClip * self,
   bool        backup)
 {
-  char * path = audio_clip_get_path_in_pool (
-    self, F_NOT_BACKUP);
+  char * path =
+    audio_clip_get_path_in_pool (self, backup);
   g_message ("removing clip at %s", path);
   g_return_if_fail (path);
   io_remove (path);

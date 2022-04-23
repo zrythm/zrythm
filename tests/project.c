@@ -46,7 +46,8 @@ test_empty_save_load (void)
 
   /* resave it */
   ret = project_save (
-    PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
+    PROJECT, PROJECT->dir, F_NOT_BACKUP, 0,
+    F_NO_ASYNC);
   g_assert_cmpint (ret, ==, 0);
 
   test_helper_zrythm_cleanup ();
@@ -206,7 +207,7 @@ test_save_backup_w_pool_and_plugins (void)
 
   /* load the backup directly */
   char * filepath = g_build_filename (
-    backup_dir, "project.zpj", NULL);
+    backup_dir, PROJECT_FILE, NULL);
   ret = project_load (filepath, false);
   g_free (filepath);
   g_assert_cmpint (ret, ==, 0);

@@ -1277,8 +1277,7 @@ test_undoing_deletion_of_multiple_inserts (void)
   test_helper_zrythm_cleanup ();
 }
 
-#if defined(HAVE_HELM) \
-  || defined(HAVE_CARLA_RACK) \
+#if defined(HAVE_HELM) || defined(HAVE_CARLA_RACK) \
   || (defined(HAVE_CARLA) && defined(HAVE_NOIZEMAKER))
 static void
 _test_replace_instrument (
