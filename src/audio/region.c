@@ -560,6 +560,10 @@ TrackLane *
 region_get_lane (const ZRegion * self)
 {
   g_return_val_if_fail (IS_REGION (self), NULL);
+  g_return_val_if_fail (
+    self->id.type == REGION_TYPE_MIDI
+      || self->id.type == REGION_TYPE_AUDIO,
+    NULL);
 
   Track * track = arranger_object_get_track (
     (ArrangerObject *) self);

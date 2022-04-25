@@ -259,20 +259,46 @@ arranger_object_get_muted (
     check_parent
     && self->type == ARRANGER_OBJECT_TYPE_REGION)
     {
-      ZRegion *   region = (ZRegion *) self;
-      TrackLane * lane = region_get_lane (region);
-      g_return_val_if_fail (lane, true);
-      if (track_lane_get_muted (lane))
-        return true;
+      ZRegion * region = (ZRegion *) self;
 
-      /* if lane is non-soloed while other soloed
-       * lanes exist, this should be muted */
-      Track * track = track_lane_get_track (lane);
-      g_return_val_if_fail (track, true);
-      if (
-        track_has_soloed_lanes (track)
-        && !track_lane_get_soloed (lane))
-        return true;
+      switch (region->id.type)
+        {
+        case REGION_TYPE_MIDI:
+        case REGION_TYPE_AUDIO:
+          {
+            TrackLane * lane =
+              region_get_lane (region);
+            g_return_val_if_fail (lane, true);
+            if (track_lane_get_muted (lane))
+              return true;
+
+            /* if lane is non-soloed while other
+             * soloed lanes exist, this should be
+             * muted */
+            Track * track =
+              track_lane_get_track (lane);
+            g_return_val_if_fail (track, true);
+            if (
+              track_has_soloed_lanes (track)
+              && !track_lane_get_soloed (lane))
+              return true;
+          }
+          break;
+        case REGION_TYPE_AUTOMATION:
+          {
+            AutomationTrack * at =
+              region_get_automation_track (region);
+            g_return_val_if_fail (at, true);
+
+            if (
+              at->automation_mode
+              == AUTOMATION_MODE_OFF)
+              return true;
+          }
+          break;
+        default:
+          break;
+        }
     }
 
   return self->muted;
