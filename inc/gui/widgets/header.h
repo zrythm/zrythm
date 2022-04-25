@@ -51,6 +51,7 @@ typedef struct _HeaderWidget
   HelpToolbarWidget *    help_toolbar;
 
   AdwViewStack * stack;
+  GtkBox *       end_box;
 
   LiveWaveformWidget *    live_waveform;
   MidiActivityBarWidget * midi_activity;

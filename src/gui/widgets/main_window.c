@@ -48,6 +48,7 @@
 #include "gui/widgets/timeline_toolbar.h"
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/tracklist.h"
+#include "gui/widgets/view_toolbar.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/flags.h"
@@ -61,6 +62,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <libpanel.h>
 
 G_DEFINE_TYPE (
   MainWindowWidget,
@@ -387,6 +389,8 @@ main_window_widget_class_init (
   BIND_CHILD (toast_overlay);
   BIND_CHILD (main_box);
   BIND_CHILD (header_bar);
+  BIND_CHILD (start_dock_switcher);
+  BIND_CHILD (end_dock_switcher);
   BIND_CHILD (window_title);
   BIND_CHILD (view_switcher);
   BIND_CHILD (preferences);
@@ -767,8 +771,25 @@ main_window_widget_init (MainWindowWidget * self)
   g_type_ensure (TOP_BAR_WIDGET_TYPE);
   g_type_ensure (CENTER_DOCK_WIDGET_TYPE);
   g_type_ensure (BOT_BAR_WIDGET_TYPE);
+  g_type_ensure (PANEL_TYPE_DOCK_SWITCHER);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+#define SET_DOCK(child) \
+  g_object_set ( \
+    G_OBJECT (child), "dock", \
+    self->center_dock->dock, NULL)
+
+  SET_DOCK (self->start_dock_switcher);
+  SET_DOCK (self->end_dock_switcher);
+  SET_DOCK (self->bot_bar->bot_dock_switcher);
+  SET_DOCK (self->header->view_toolbar->left_panel);
+  SET_DOCK (
+    self->header->view_toolbar->right_panel);
+  SET_DOCK (self->header->view_toolbar->bot_panel);
+  SET_DOCK (self->header->view_toolbar->top_panel);
+
+#undef SET_DOCK
 
 #define SET_TOOLTIP(x, tooltip) \
   z_gtk_set_tooltip_for_actionable ( \

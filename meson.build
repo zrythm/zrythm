@@ -954,6 +954,15 @@ libadwaita_dep = dependency (
     # resources are not found with static
     'default_library=shared'])
 
+libpanel_dep = dependency (
+  'libpanel-1', version: '>=1.0.0',
+  fallback: ['libpanel', 'libpanel_static_dep'],
+  default_options: [
+    'vapi=false',
+    'install-examples=false',
+    'introspection=disabled',
+    'default_library=static'])
+
 min_version = '>=1.0.25'
 if get_option ('opus')
   cdata.set('HAVE_OPUS', 1)
@@ -1257,6 +1266,7 @@ pcre2_dep = dependency (
 
 zrythm_deps = [
   libadwaita_dep,
+  libpanel_dep,
   fontconfig_dep,
   pangoft2_dep,
   gtk_dep,

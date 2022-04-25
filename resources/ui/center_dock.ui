@@ -1,35 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
+  <requires lib="Panel" version="1.0"/>
   <template class="CenterDockWidget" parent="GtkWidget">
     <child>
-      <object class="GtkPaned" id="left_rest_paned">
-        <property name="name">left-rest-paned</property>
-        <property name="shrink-start-child">0</property>
+      <object class="PanelDock" id="dock">
+        <property name="reveal-start">true</property>
+        <property name="reveal-bottom">true</property>
+        <property name="reveal-end">true</property>
+        <property name="hexpand">true</property>
+        <property name="vexpand">true</property>
         <child>
-          <object class="LeftDockEdgeWidget" id="left_dock_edge">
-          </object>
-        </child>
-        <child>
-          <object class="GtkPaned" id="center_right_paned">
-            <property name="name">center-right-paned</property>
-            <property name="shrink-end-child">0</property>
-            <property name="resize-end-child">0</property>
-            <property name="shrink-start-child">0</property>
+          <object class="PanelPaned">
             <child>
-              <object class="GtkPaned" id="center_paned">
-                <property name="name">center-paned</property>
-                <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
-                <child>
-                  <object class="MainNotebookWidget" id="main_notebook">
-                    <property name="hexpand">1</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="BotDockEdgeWidget" id="bot_dock_edge"/>
-                </child>
+              <object class="MainNotebookWidget" id="main_notebook">
+                <property name="hexpand">true</property>
               </object>
             </child>
+          </object>
+        </child>
+        <child type="start">
+          <object class="PanelPaned">
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="LeftDockEdgeWidget" id="left_dock_edge">
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="bottom">
+          <object class="PanelPaned">
+            <child>
+              <object class="BotDockEdgeWidget" id="bot_dock_edge"/>
+            </child>
+          </object>
+        </child>
+        <child type="end">
+          <object class="PanelPaned">
+            <property name="orientation">vertical</property>
             <child>
               <object class="RightDockEdgeWidget" id="right_dock_edge"/>
             </child>

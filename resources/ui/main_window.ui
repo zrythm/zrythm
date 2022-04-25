@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
+  <requires lib="Adw" version="1.0"/>
+  <requires lib="Panel" version="1.0"/>
   <template class="MainWindowWidget" parent="AdwApplicationWindow">
     <property name="focusable">1</property>
     <property name="icon_name">zrythm</property>
@@ -20,6 +22,21 @@
                     </style>
                   </object>
                 </child>
+                <child>
+                  <object class="GtkSeparator">
+                    <style>
+                      <class name="spacer"/>
+                      <class name="thick-separator"/>
+                    </style>
+                    <property name="orientation">vertical</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="PanelDockSwitcher" id="start_dock_switcher">
+                    <property name="position">start</property>
+                    <property name="tooltip-text" translatable="yes">Toggle Left Panel</property>
+                  </object>
+                </child>
               </object>
             </child>
             <property name="title-widget">
@@ -28,6 +45,21 @@
             </property>
             <child type="end">
               <object class="GtkBox" id="header_end_box">
+                <child>
+                  <object class="PanelDockSwitcher" id="end_dock_switcher">
+                    <property name="position">end</property>
+                    <property name="tooltip-text" translatable="yes">Toggle Right Panel</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkSeparator">
+                    <style>
+                      <class name="spacer"/>
+                      <class name="thick-separator"/>
+                    </style>
+                    <property name="orientation">vertical</property>
+                  </object>
+                </child>
                 <child>
                   <object class="GtkButton" id="scripting_interface">
                     <property name="action_name">app.scripting-interface</property>

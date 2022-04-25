@@ -48,6 +48,21 @@
                 <property name="margin-end">4</property>
               </object>
             </child>
+            <child>
+              <object class="GtkSeparator">
+                <style>
+                  <class name="spacer"/>
+                  <class name="thick-separator"/>
+                </style>
+                <property name="orientation">vertical</property>
+              </object>
+            </child>
+            <child>
+              <object class="PanelDockSwitcher" id="bot_dock_switcher">
+                <property name="position">bottom</property>
+                <property name="tooltip-text" translatable="yes">Toggle Bottom Panel</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>

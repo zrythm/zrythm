@@ -33,13 +33,6 @@ main_notebook_widget_setup (
   event_viewer_widget_setup (
     self->event_viewer, EVENT_VIEWER_TYPE_TIMELINE);
 
-  /* make detachable */
-  GtkNotebook * notebook =
-    foldable_notebook_widget_get_notebook (
-      self->foldable_notebook);
-  z_gtk_notebook_make_detachable (
-    notebook, GTK_WINDOW (MAIN_WINDOW));
-
   /* set event viewer visibility */
   gtk_widget_set_visible (
     GTK_WIDGET (self->event_viewer),
@@ -71,7 +64,7 @@ static void
 dispose (MainNotebookWidget * self)
 {
   gtk_widget_unparent (
-    GTK_WIDGET (self->foldable_notebook));
+    GTK_WIDGET (self->panel_frame));
 
   G_OBJECT_CLASS (main_notebook_widget_parent_class)
     ->dispose (G_OBJECT (self));
@@ -81,16 +74,14 @@ static void
 main_notebook_widget_init (
   MainNotebookWidget * self)
 {
-  self->foldable_notebook =
-    foldable_notebook_widget_new (
-      GTK_POS_BOTTOM, true);
+  self->panel_frame =
+    PANEL_FRAME (panel_frame_new ());
+  gtk_orientable_set_orientation (
+    GTK_ORIENTABLE (self->panel_frame),
+    GTK_ORIENTATION_HORIZONTAL);
   gtk_widget_set_parent (
-    GTK_WIDGET (self->foldable_notebook),
+    GTK_WIDGET (self->panel_frame),
     GTK_WIDGET (self));
-
-  GtkNotebook * notebook =
-    foldable_notebook_widget_get_notebook (
-      self->foldable_notebook);
 
   self->timeline_plus_event_viewer_paned =
     GTK_PANED (
@@ -124,32 +115,33 @@ main_notebook_widget_init (
     gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
 
   /* add tabs */
-  foldable_notebook_widget_add_page (
-    self->foldable_notebook,
+#define ADD_TAB(widget, icon, title) \
+  { \
+    PanelWidget * panel_widget = \
+      PANEL_WIDGET (panel_widget_new ()); \
+    panel_widget_set_child ( \
+      panel_widget, GTK_WIDGET (widget)); \
+    panel_widget_set_icon_name ( \
+      panel_widget, icon); \
+    panel_widget_set_title (panel_widget, title); \
+    panel_frame_add ( \
+      self->panel_frame, panel_widget); \
+  }
+
+  ADD_TAB (
     GTK_WIDGET (
       self->timeline_plus_event_viewer_paned),
-    "roadmap", _ ("Timeline"), _ ("Timeline"));
-  foldable_notebook_widget_add_page (
-    self->foldable_notebook,
+    "roadmap", _ ("Timeline"));
+  ADD_TAB (
     GTK_WIDGET (self->port_connections_box),
-    "connector", _ ("Connections"),
-    _ ("Port connections"));
-  foldable_notebook_widget_add_page (
-    self->foldable_notebook,
+    "connector", _ ("Port Connections"));
+  ADD_TAB (
     GTK_WIDGET (self->cc_bindings_box),
-    "signal-midi", _ ("Bindings"),
-    _ ("MIDI CC bindings"));
-  foldable_notebook_widget_add_page (
-    self->foldable_notebook,
+    "signal-midi", _ ("MIDI CC Bindings"));
+  ADD_TAB (
     GTK_WIDGET (self->scenes_box),
-    "carousel-horizontal", _ ("Scenes"),
-    _ ("Scenes (live view)"));
-
-  /* add action widget */
-  self->end_stack = GTK_STACK (gtk_stack_new ());
-  gtk_notebook_set_action_widget (
-    notebook, GTK_WIDGET (self->end_stack),
-    GTK_PACK_END);
+    "carousel-horizontal",
+    _ ("Scenes (Live View)"));
 
   /* setup CC bindings */
   self->cc_bindings = cc_bindings_widget_new ();
@@ -167,9 +159,6 @@ main_notebook_widget_init (
   gtk_box_append (
     self->port_connections_box,
     GTK_WIDGET (self->port_connections));
-
-  gtk_notebook_set_tab_pos (
-    notebook, GTK_POS_BOTTOM);
 }
 
 static void

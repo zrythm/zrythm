@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="RightDockEdgeWidget" parent="GtkBox">
-    <property name="orientation">vertical</property>
+  <requires lib="Panel" version="1.0"/>
+  <template class="RightDockEdgeWidget" parent="GtkWidget">
     <child>
-      <object class="FoldableNotebookWidget" id="right_notebook">
-        <property name="vexpand">1</property>
+      <object class="PanelFrame" id="panel_frame">
+        <property name="vexpand">true</property>
       </object>
     </child>
   </template>

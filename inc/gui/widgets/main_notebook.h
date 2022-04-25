@@ -14,6 +14,7 @@
 #include "utils/types.h"
 
 #include <gtk/gtk.h>
+#include <libpanel.h>
 
 #define MAIN_NOTEBOOK_WIDGET_TYPE \
   (main_notebook_widget_get_type ())
@@ -42,13 +43,12 @@ typedef struct _MainNotebookWidget
 {
   GtkWidget parent_instance;
 
-  FoldableNotebookWidget * foldable_notebook;
+  PanelFrame * panel_frame;
 
   /** Event viewr + timeline panel. */
   GtkPaned * timeline_plus_event_viewer_paned;
   TimelinePanelWidget * timeline_panel;
   EventViewerWidget *   event_viewer;
-  GtkStack *            end_stack;
 
   GtkBox *           cc_bindings_box;
   CcBindingsWidget * cc_bindings;

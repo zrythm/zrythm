@@ -38,6 +38,7 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
+
 #include <json-glib/json-glib.h>
 
 G_DEFINE_TYPE (

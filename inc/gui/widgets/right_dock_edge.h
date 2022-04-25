@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -27,6 +11,7 @@
 #define __GUI_WIDGETS_RIGHT_DOCK_EDGE_H__
 
 #include <gtk/gtk.h>
+#include <libpanel.h>
 
 #define RIGHT_DOCK_EDGE_WIDGET_TYPE \
   (right_dock_edge_widget_get_type ())
@@ -35,7 +20,7 @@ G_DECLARE_FINAL_TYPE (
   right_dock_edge_widget,
   Z,
   RIGHT_DOCK_EDGE_WIDGET,
-  GtkBox)
+  GtkWidget)
 
 /**
  * @addtogroup widgets
@@ -60,8 +45,8 @@ typedef struct _ChordPackBrowserWidget
 
 typedef struct _RightDockEdgeWidget
 {
-  GtkBox                   parent_instance;
-  FoldableNotebookWidget * right_notebook;
+  GtkWidget    parent_instance;
+  PanelFrame * panel_frame;
 
   GtkBox *              plugin_browser_box;
   PluginBrowserWidget * plugin_browser;

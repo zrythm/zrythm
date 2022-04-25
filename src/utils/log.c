@@ -729,7 +729,12 @@ need_backtrace (Log * self, const LogEvent * const ev)
     && !string_contains_substr (
       ev->message,
       "assertion 'self->drop == "
-      "gdk_dnd_event_get_drop (event)'");
+      "gdk_dnd_event_get_drop (event)'")
+    &&
+    /* libpanel */
+    !string_contains_substr (
+      ev->message,
+      "gdk_drop_status: assertion 'gdk_drag_action_is_unique (preferred)' failed");
 
   if (ret)
     self->last_bt_time = time_now;

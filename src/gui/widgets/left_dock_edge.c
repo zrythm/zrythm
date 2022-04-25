@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/cc_bindings.h"
@@ -42,6 +26,8 @@ G_DEFINE_TYPE (
   left_dock_edge_widget,
   GTK_TYPE_WIDGET)
 
+/* TODO implement after workspaces */
+#if 0
 static void
 on_notebook_switch_page (
   GtkNotebook *        notebook,
@@ -55,6 +41,7 @@ on_notebook_switch_page (
   g_settings_set_int (
     S_UI, "left-panel-tab", (int) page_num);
 }
+#endif
 
 /**
  * Refreshes the widget and switches to the given
@@ -83,6 +70,8 @@ left_dock_edge_widget_refresh (
     self->plugin_inspector, MIXER_SELECTIONS,
     false);
 
+  /* TODO load from workspaces */
+#if 0
   int page_num =
     g_settings_get_int (S_UI, "left-panel-tab");
   GtkNotebook * notebook =
@@ -90,28 +79,17 @@ left_dock_edge_widget_refresh (
       self->inspector_notebook);
   gtk_notebook_set_current_page (
     notebook, page_num);
+#endif
 }
 
 void
 left_dock_edge_widget_setup (
   LeftDockEdgeWidget * self)
 {
-  foldable_notebook_widget_setup (
-    self->inspector_notebook,
-    MW_CENTER_DOCK->left_rest_paned, GTK_POS_LEFT,
-    false);
-
   inspector_track_widget_setup (
     self->track_inspector, TRACKLIST_SELECTIONS);
 
   visibility_widget_refresh (self->visibility);
-
-  GtkNotebook * notebook =
-    foldable_notebook_widget_get_notebook (
-      self->inspector_notebook);
-  g_signal_connect (
-    G_OBJECT (notebook), "switch-page",
-    G_CALLBACK (on_notebook_switch_page), self);
 }
 
 static GtkScrolledWindow *
@@ -160,7 +138,7 @@ static void
 dispose (LeftDockEdgeWidget * self)
 {
   gtk_widget_unparent (
-    GTK_WIDGET (self->inspector_notebook));
+    GTK_WIDGET (self->panel_frame));
 
   G_OBJECT_CLASS (
     left_dock_edge_widget_parent_class)
@@ -186,6 +164,19 @@ left_dock_edge_widget_init (
   GtkBox *            inspector_wrap;
   GtkScrolledWindow * scroll;
 
+#define ADD_TAB(widget, icon, title) \
+  { \
+    PanelWidget * panel_widget = \
+      PANEL_WIDGET (panel_widget_new ()); \
+    panel_widget_set_child ( \
+      panel_widget, GTK_WIDGET (widget)); \
+    panel_widget_set_icon_name ( \
+      panel_widget, icon); \
+    panel_widget_set_title (panel_widget, title); \
+    panel_frame_add ( \
+      self->panel_frame, panel_widget); \
+  }
+
   /* setup track inspector */
   self->track_inspector =
     inspector_track_widget_new ();
@@ -200,10 +191,9 @@ left_dock_edge_widget_init (
   scroll = wrap_inspector_in_scrolled_window (
     self, GTK_WIDGET (inspector_wrap));
   self->track_inspector_scroll = scroll;
-  foldable_notebook_widget_add_page (
-    self->inspector_notebook, GTK_WIDGET (scroll),
-    "track-inspector", _ ("Track"),
-    _ ("Track inspector"));
+  ADD_TAB (
+    scroll, "track-inspector",
+    _ ("Track Inspector"));
 
   /* setup plugin inspector */
   self->plugin_inspector =
@@ -219,9 +209,7 @@ left_dock_edge_widget_init (
   scroll = wrap_inspector_in_scrolled_window (
     self, GTK_WIDGET (inspector_wrap));
   self->plugin_inspector_scroll = scroll;
-  foldable_notebook_widget_add_page (
-    self->inspector_notebook, GTK_WIDGET (scroll),
-    "plug", _ ("Plugin"), _ ("Plugin inspector"));
+  ADD_TAB (scroll, "plug", _ ("Plugin Inspector"));
 
   /* setup visibility */
   self->visibility = visibility_widget_new ();
@@ -232,11 +220,11 @@ left_dock_edge_widget_init (
   gtk_box_append (
     self->visibility_box,
     GTK_WIDGET (self->visibility));
-  foldable_notebook_widget_add_page (
-    self->inspector_notebook,
-    GTK_WIDGET (self->visibility_box),
-    "view-visible", _ ("Visibility"),
-    _ ("Track visibility"));
+  ADD_TAB (
+    self->visibility_box, "view-visible",
+    _ ("Track Visibility"));
+
+#undef ADD_TAB
 }
 
 static void
@@ -255,7 +243,7 @@ left_dock_edge_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, LeftDockEdgeWidget, x)
 
-  BIND_CHILD (inspector_notebook);
+  BIND_CHILD (panel_frame);
 
 #undef BIND_CHILD
 

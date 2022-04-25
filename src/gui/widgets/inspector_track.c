@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/event_manager.h"
 #include "gui/backend/tracklist_selections.h"
@@ -107,17 +91,20 @@ inspector_track_widget_show_tracks (
   TracklistSelections *  tls,
   bool                   set_notebook_page)
 {
-  g_debug ("showing %d tracks", tls->num_tracks);
+  g_debug (
+    "showing %d tracks (set notebook page: %d)",
+    tls->num_tracks, set_notebook_page);
 
-  if (
-    set_notebook_page
-    && foldable_notebook_widget_get_current_page (
-         MW_LEFT_DOCK_EDGE->inspector_notebook)
-         != 0)
+  if (set_notebook_page)
     {
-      foldable_notebook_widget_set_current_page (
-        MW_LEFT_DOCK_EDGE->inspector_notebook, 0,
-        false);
+      PanelWidget * panel_widget =
+        PANEL_WIDGET (gtk_widget_get_ancestor (
+          GTK_WIDGET (
+            MW_LEFT_DOCK_EDGE->track_inspector),
+          PANEL_TYPE_WIDGET));
+      g_return_if_fail (panel_widget);
+      panel_widget_raise (panel_widget);
+      g_debug ("raised track inspector");
     }
 
   /* show info for first track */

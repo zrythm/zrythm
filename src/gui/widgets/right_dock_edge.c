@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/control_room.h"
 #include "gui/widgets/center_dock.h"
@@ -36,8 +20,10 @@
 G_DEFINE_TYPE (
   RightDockEdgeWidget,
   right_dock_edge_widget,
-  GTK_TYPE_BOX)
+  GTK_TYPE_WIDGET)
 
+/* TODO implement after workspaces */
+#if 0
 static void
 on_notebook_switch_page (
   GtkNotebook *         notebook,
@@ -51,19 +37,17 @@ on_notebook_switch_page (
   g_settings_set_int (
     S_UI, "right-panel-tab", (int) page_num);
 }
+#endif
 
 void
 right_dock_edge_widget_setup (
   RightDockEdgeWidget * self)
 {
-  foldable_notebook_widget_setup (
-    self->right_notebook,
-    MW_CENTER_DOCK->center_right_paned,
-    GTK_POS_RIGHT, false);
-
   monitor_section_widget_setup (
     self->monitor_section, CONTROL_ROOM);
 
+  /* TODO load from workspaces */
+#if 0
   GtkNotebook * notebook =
     foldable_notebook_widget_get_notebook (
       self->right_notebook);
@@ -75,6 +59,18 @@ right_dock_edge_widget_setup (
   g_signal_connect (
     G_OBJECT (notebook), "switch-page",
     G_CALLBACK (on_notebook_switch_page), self);
+#endif
+}
+
+static void
+dispose (RightDockEdgeWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->panel_frame));
+
+  G_OBJECT_CLASS (
+    right_dock_edge_widget_parent_class)
+    ->dispose (G_OBJECT (self));
 }
 
 static void
@@ -85,13 +81,20 @@ right_dock_edge_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->right_notebook->pos_in_paned =
-    GTK_POS_RIGHT;
+  GtkBox * box;
 
-  GtkBox *      box;
-  GtkNotebook * notebook =
-    foldable_notebook_widget_get_notebook (
-      self->right_notebook);
+#define ADD_TAB(widget, icon, title) \
+  { \
+    PanelWidget * panel_widget = \
+      PANEL_WIDGET (panel_widget_new ()); \
+    panel_widget_set_child ( \
+      panel_widget, GTK_WIDGET (widget)); \
+    panel_widget_set_icon_name ( \
+      panel_widget, icon); \
+    panel_widget_set_title (panel_widget, title); \
+    panel_frame_add ( \
+      self->panel_frame, panel_widget); \
+  }
 
   /* add plugin browser */
   self->plugin_browser =
@@ -102,10 +105,9 @@ right_dock_edge_widget_init (
   gtk_box_append (
     GTK_BOX (box),
     GTK_WIDGET (self->plugin_browser));
-  foldable_notebook_widget_add_page (
-    self->right_notebook, GTK_WIDGET (box),
-    "plugin-solid", _ ("Plugins"),
-    _ ("Plugin browser"));
+  ADD_TAB (
+    GTK_WIDGET (box), "plugin-solid",
+    _ ("Plugin Browser"));
 
   /* add file browser */
   self->file_browser =
@@ -115,10 +117,9 @@ right_dock_edge_widget_init (
   self->file_browser_box = box;
   gtk_box_append (
     GTK_BOX (box), GTK_WIDGET (self->file_browser));
-  foldable_notebook_widget_add_page (
-    self->right_notebook, GTK_WIDGET (box),
-    "folder-music-line", _ ("Files"),
-    _ ("File browser"));
+  ADD_TAB (
+    GTK_WIDGET (box), "folder-music-line",
+    _ ("File Browser"));
 
   /* add control room */
   self->monitor_section =
@@ -129,10 +130,9 @@ right_dock_edge_widget_init (
   gtk_box_append (
     GTK_BOX (box),
     GTK_WIDGET (self->monitor_section));
-  foldable_notebook_widget_add_page (
-    self->right_notebook, GTK_WIDGET (box),
-    "speaker", _ ("Monitor"),
-    _ ("Monitor section"));
+  ADD_TAB (
+    GTK_WIDGET (box), "speaker",
+    _ ("Monitor Section"));
 
   /* add chord preset browser */
   self->chord_pack_browser =
@@ -143,22 +143,25 @@ right_dock_edge_widget_init (
   gtk_box_append (
     GTK_BOX (box),
     GTK_WIDGET (self->chord_pack_browser));
-  foldable_notebook_widget_add_page (
-    self->right_notebook, GTK_WIDGET (box),
-    "minuet-chords", _ ("Chords"),
-    _ ("Chord preset browser"));
+  ADD_TAB (
+    GTK_WIDGET (box), "minuet-chords",
+    _ ("Chord Preset Browser"));
 
+  /* TODO: uncomment after
+   * https://gitlab.gnome.org/chergert/libpanel/-/issues/10 */
+#if 0
   /* add file browser button */
+  PanelFrameHeader * header =
+    panel_frame_get_header (self->panel_frame);
   GtkButton * tb = GTK_BUTTON (
     gtk_button_new_from_icon_name ("hdd"));
   gtk_widget_set_tooltip_text (
-    GTK_WIDGET (tb), _ ("Show file browser"));
+    GTK_WIDGET (tb), _ ("File Browser"));
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (tb), "app.show-file-browser");
-  gtk_notebook_set_action_widget (
-    notebook, GTK_WIDGET (tb), GTK_PACK_END);
-
-  gtk_notebook_set_current_page (notebook, 0);
+  panel_frame_header_add_suffix (
+    header, 0, GTK_WIDGET (tb));
+#endif
 }
 
 static void
@@ -177,5 +180,13 @@ right_dock_edge_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, RightDockEdgeWidget, x)
 
-  BIND_CHILD (right_notebook);
+  BIND_CHILD (panel_frame);
+
+#undef BIND_CHILD
+
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BIN_LAYOUT);
+
+  GObjectClass * oklass = G_OBJECT_CLASS (_klass);
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
 }

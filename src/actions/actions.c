@@ -1381,8 +1381,11 @@ activate_toggle_left_panel (
   GVariant *      variant,
   gpointer        user_data)
 {
-  foldable_notebook_widget_toggle_visibility (
-    MW_LEFT_DOCK_EDGE->inspector_notebook);
+  g_return_if_fail (MW_CENTER_DOCK);
+  panel_dock_set_reveal_start (
+    MW_CENTER_DOCK->dock,
+    !panel_dock_get_reveal_start (
+      MW_CENTER_DOCK->dock));
 }
 
 void
@@ -1391,8 +1394,11 @@ activate_toggle_right_panel (
   GVariant *      variant,
   gpointer        user_data)
 {
-  foldable_notebook_widget_toggle_visibility (
-    MW_RIGHT_DOCK_EDGE->right_notebook);
+  g_return_if_fail (MW_CENTER_DOCK);
+  panel_dock_set_reveal_end (
+    MW_CENTER_DOCK->dock,
+    !panel_dock_get_reveal_end (
+      MW_CENTER_DOCK->dock));
 }
 
 void
@@ -1401,8 +1407,11 @@ activate_toggle_bot_panel (
   GVariant *      variant,
   gpointer        user_data)
 {
-  foldable_notebook_widget_toggle_visibility (
-    MW_BOT_DOCK_EDGE->bot_notebook);
+  g_return_if_fail (MW_CENTER_DOCK);
+  panel_dock_set_reveal_bottom (
+    MW_CENTER_DOCK->dock,
+    !panel_dock_get_reveal_bottom (
+      MW_CENTER_DOCK->dock));
 }
 
 /**
@@ -1414,12 +1423,11 @@ activate_toggle_top_panel (
   GVariant *      variant,
   gpointer        user_data)
 {
-  g_return_if_fail (
-    MW_CENTER_DOCK && MW_MAIN_NOTEBOOK);
-  GtkWidget * widget =
-    (GtkWidget *) MW_MAIN_NOTEBOOK;
-  gtk_widget_set_visible (
-    widget, !gtk_widget_get_visible (widget));
+  g_return_if_fail (MW_CENTER_DOCK);
+  panel_dock_set_reveal_top (
+    MW_CENTER_DOCK->dock,
+    !panel_dock_get_reveal_top (
+      MW_CENTER_DOCK->dock));
 }
 
 void

@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_MAIN_WINDOW_H__
 #define __GUI_WIDGETS_MAIN_WINDOW_H__
@@ -24,6 +8,7 @@
 
 #include <adwaita.h>
 #include <gtk/gtk.h>
+#include <libpanel.h>
 
 #define MAIN_WINDOW_WIDGET_TYPE \
   (main_window_widget_get_type ())
@@ -61,8 +46,10 @@ typedef struct _MainWindowWidget
 {
   AdwApplicationWindow parent_instance;
 
-  GtkHeaderBar *   header_bar;
-  AdwWindowTitle * window_title;
+  GtkHeaderBar *      header_bar;
+  PanelDockSwitcher * start_dock_switcher;
+  AdwWindowTitle *    window_title;
+  PanelDockSwitcher * end_dock_switcher;
 
   AdwViewSwitcher * view_switcher;
 

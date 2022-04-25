@@ -612,6 +612,7 @@ bot_bar_widget_init (BotBarWidget * self)
   g_type_ensure (TRANSPORT_CONTROLS_WIDGET_TYPE);
   g_type_ensure (CPU_WIDGET_TYPE);
   g_type_ensure (BUTTON_WITH_MENU_WIDGET_TYPE);
+  g_type_ensure (PANEL_TYPE_DOCK_SWITCHER);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -682,6 +683,7 @@ bot_bar_widget_class_init (
   BIND_CHILD (cpu_load);
   BIND_CHILD (status_bar);
   BIND_CHILD (playhead_box);
+  BIND_CHILD (bot_dock_switcher);
 
 #undef BIND_CHILD
 

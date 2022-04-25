@@ -1481,13 +1481,9 @@ plugin_browser_widget_new ()
   gtk_search_entry_set_key_capture_widget (
     self->plugin_search_entry,
     GTK_WIDGET (self->plugin_list_view));
-  GValue val = G_VALUE_INIT;
-  g_value_init (&val, G_TYPE_STRING);
-  g_value_set_string (&val, _ ("Search..."));
-  g_object_set_property (
+  g_object_set (
     G_OBJECT (self->plugin_search_entry),
-    "placeholder-text", &val);
-  g_value_unset (&val);
+    "placeholder-text", _ ("Search..."), NULL);
   g_signal_connect (
     G_OBJECT (self->plugin_search_entry),
     "search-changed",

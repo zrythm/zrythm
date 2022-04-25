@@ -24,8 +24,10 @@
 G_DEFINE_TYPE (
   BotDockEdgeWidget,
   bot_dock_edge_widget,
-  GTK_TYPE_BOX)
+  GTK_TYPE_WIDGET)
 
+/* TODO implement after workspaces */
+#if 0
 static void
 on_notebook_switch_page (
   GtkNotebook *       notebook,
@@ -38,6 +40,7 @@ on_notebook_switch_page (
   g_settings_set_int (
     S_UI, "bot-panel-tab", (int) page_num);
 }
+#endif
 
 /**
  * Sets the appropriate stack page.
@@ -84,11 +87,6 @@ void
 bot_dock_edge_widget_setup (
   BotDockEdgeWidget * self)
 {
-  foldable_notebook_widget_setup (
-    self->bot_notebook,
-    MW_CENTER_DOCK->center_paned, GTK_POS_BOTTOM,
-    true);
-
   event_viewer_widget_setup (
     self->event_viewer_midi,
     EVENT_VIEWER_TYPE_MIDI);
@@ -122,6 +120,8 @@ bot_dock_edge_widget_setup (
     GTK_WIDGET (self->event_viewer_stack),
     visibility);
 
+  /* TODO load from workspaces */
+#if 0
   GtkNotebook * notebook =
     foldable_notebook_widget_get_notebook (
       self->bot_notebook);
@@ -133,6 +133,7 @@ bot_dock_edge_widget_setup (
   g_signal_connect (
     notebook, "switch-page",
     G_CALLBACK (on_notebook_switch_page), self);
+#endif
 }
 
 /**
@@ -146,27 +147,12 @@ bot_dock_edge_widget_show_clip_editor (
   BotDockEdgeWidget * self,
   bool                navigate_to_region_start)
 {
-  GtkNotebook * notebook =
-    foldable_notebook_widget_get_notebook (
-      self->bot_notebook);
-
-  int num_pages =
-    gtk_notebook_get_n_pages (notebook);
-  for (int i = 0; i < num_pages; i++)
-    {
-      GtkWidget * widget =
-        gtk_notebook_get_nth_page (notebook, i);
-      if (widget == GTK_WIDGET (self->clip_editor_box))
-        {
-          gtk_widget_set_visible (
-            GTK_WIDGET (self), true);
-          foldable_notebook_widget_set_visibility (
-            self->bot_notebook, true);
-          gtk_notebook_set_current_page (
-            notebook, i);
-          break;
-        }
-    }
+  PanelWidget * panel_widget =
+    PANEL_WIDGET (gtk_widget_get_ancestor (
+      GTK_WIDGET (self->clip_editor_box),
+      PANEL_TYPE_WIDGET));
+  g_return_if_fail (panel_widget);
+  panel_widget_raise (panel_widget);
 
   bot_dock_edge_widget_update_event_viewer_stack_page (
     self);
@@ -191,13 +177,33 @@ bot_dock_edge_widget_show_clip_editor (
 }
 
 static void
-generate_bot_notebook (BotDockEdgeWidget * self)
+dispose (BotDockEdgeWidget * self)
 {
-  self->bot_notebook = foldable_notebook_widget_new (
-    GTK_POS_BOTTOM, true);
-  gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->bot_notebook));
+  gtk_widget_unparent (
+    GTK_WIDGET (self->panel_frame));
+
+  G_OBJECT_CLASS (bot_dock_edge_widget_parent_class)
+    ->dispose (G_OBJECT (self));
+}
+
+static void
+bot_dock_edge_widget_init (BotDockEdgeWidget * self)
+{
+  self->panel_frame =
+    PANEL_FRAME (panel_frame_new ());
+  gtk_orientable_set_orientation (
+    GTK_ORIENTABLE (self->panel_frame),
+    GTK_ORIENTATION_HORIZONTAL);
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->panel_frame),
+    GTK_WIDGET (self));
+
+  PanelFrameHeader * header =
+    panel_frame_get_header (self->panel_frame);
+  header = PANEL_FRAME_HEADER (
+    panel_frame_switcher_new ());
+  panel_frame_set_header (
+    self->panel_frame, header);
 
   self->clip_editor_box = GTK_BOX (
     gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
@@ -271,53 +277,32 @@ generate_bot_notebook (BotDockEdgeWidget * self)
     GTK_WIDGET (self->chord_pad_panel));
 
   /* add tabs */
-  foldable_notebook_widget_add_page (
-    self->bot_notebook,
-    GTK_WIDGET (self->clip_editor_box),
-    "piano-roll", _ ("Editor"), _ ("Editor view"));
-  foldable_notebook_widget_add_page (
-    self->bot_notebook,
-    GTK_WIDGET (self->mixer_box), "mixer",
-    _ ("Mixer"), _ ("Mixer view"));
-  foldable_notebook_widget_add_page (
-    self->bot_notebook,
-    GTK_WIDGET (self->modulator_view_box),
-    "modulator", _ ("Modulators"),
+#define ADD_TAB(widget, icon, title) \
+  { \
+    PanelWidget * panel_widget = \
+      PANEL_WIDGET (panel_widget_new ()); \
+    panel_widget_set_child ( \
+      panel_widget, GTK_WIDGET (widget)); \
+    panel_widget_set_icon_name ( \
+      panel_widget, icon); \
+    panel_widget_set_title (panel_widget, title); \
+    panel_frame_add ( \
+      self->panel_frame, panel_widget); \
+  }
+
+  ADD_TAB (
+    self->clip_editor_box, "piano-roll",
+    _ ("Editor view"));
+  ADD_TAB (
+    self->mixer_box, "mixer", _ ("Mixer view"));
+  ADD_TAB (
+    self->modulator_view_box, "modulator",
     _ ("Modulators"));
-  foldable_notebook_widget_add_page (
-    self->bot_notebook,
-    GTK_WIDGET (self->chord_pad_panel_box),
-    "chord-pad", _ ("Chord Pad"), _ ("Chord pad"));
+  ADD_TAB (
+    self->chord_pad_panel_box, "chord-pad",
+    _ ("Chord pad"));
 
-  GtkNotebook * notebook =
-    foldable_notebook_widget_get_notebook (
-      self->bot_notebook);
-  self->toggle_top_panel =
-    GTK_BUTTON (gtk_button_new_from_icon_name (
-      "gnome-builder-builder-"
-      "view-top-pane-symbolic-light"));
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self->toggle_top_panel),
-    _ ("Show/hide top panel"));
-  gtk_actionable_set_action_name (
-    GTK_ACTIONABLE (self->toggle_top_panel),
-    "app.toggle-top-panel");
-  gtk_notebook_set_action_widget (
-    notebook, GTK_WIDGET (self->toggle_top_panel),
-    GTK_PACK_END);
-
-  gtk_notebook_set_tab_pos (
-    notebook, GTK_POS_BOTTOM);
-}
-
-static void
-bot_dock_edge_widget_init (BotDockEdgeWidget * self)
-{
-  gtk_orientable_set_orientation (
-    GTK_ORIENTABLE (self),
-    GTK_ORIENTATION_VERTICAL);
-
-  generate_bot_notebook (self);
+#undef ADD_TAB
 }
 
 static void
@@ -328,4 +313,10 @@ bot_dock_edge_widget_class_init (
     GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "bot-dock-edge");
+
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BIN_LAYOUT);
+
+  GObjectClass * oklass = G_OBJECT_CLASS (_klass);
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
 }

@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/mixer_selections.h"
 #include "gui/widgets/center_dock.h"
@@ -69,14 +53,18 @@ inspector_plugin_widget_show (
   MixerSelections *       ms,
   bool                    set_notebook_page)
 {
-  g_debug ("showing plugin inspector contents...");
+  g_debug (
+    "showing plugin inspector contents (set notebook page: %d)...",
+    set_notebook_page);
 
   if (set_notebook_page)
     {
-      gtk_notebook_set_current_page (
-        GTK_NOTEBOOK (
-          MW_LEFT_DOCK_EDGE->inspector_notebook),
-        1);
+      PanelWidget * panel_widget =
+        PANEL_WIDGET (gtk_widget_get_ancestor (
+          GTK_WIDGET (self), PANEL_TYPE_WIDGET));
+      g_return_if_fail (panel_widget);
+      panel_widget_raise (panel_widget);
+      g_debug ("raised plugin inspector");
     }
 
   /* show info for first plugin */

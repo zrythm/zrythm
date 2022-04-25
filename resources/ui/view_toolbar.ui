@@ -36,27 +36,27 @@
     <child>
       <object class="GtkBox">
         <child>
-          <object class="GtkButton" id="left_panel">
-            <property name="icon-name">gnome-builder-builder-view-left-pane-symbolic-light</property>
-            <property name="action_name">app.toggle-left-panel</property>
+          <object class="PanelDockSwitcher" id="left_panel">
+            <property name="position">start</property>
+            <property name="tooltip-text" translatable="yes">Toggle Left Panel</property>
           </object>
         </child>
         <child>
-          <object class="GtkButton" id="bot_panel">
-            <property name="icon-name">gnome-builder-builder-view-bottom-pane-symbolic-light</property>
-            <property name="action_name">app.toggle-bot-panel</property>
+          <object class="PanelDockSwitcher" id="bot_panel">
+            <property name="position">bottom</property>
+            <property name="tooltip-text" translatable="yes">Toggle Bottom Panel</property>
           </object>
         </child>
         <child>
-          <object class="GtkButton" id="top_panel">
-            <property name="icon-name">gnome-builder-builder-view-top-pane-symbolic-light</property>
-            <property name="action_name">app.toggle-top-panel</property>
+          <object class="PanelDockSwitcher" id="top_panel">
+            <property name="position">top</property>
+            <property name="tooltip-text" translatable="yes">Toggle Top Panel</property>
           </object>
         </child>
         <child>
-          <object class="GtkButton" id="right_panel">
-            <property name="icon-name">gnome-builder-builder-view-right-pane-symbolic-light</property>
-            <property name="action_name">app.toggle-right-panel</property>
+          <object class="PanelDockSwitcher" id="right_panel">
+            <property name="position">end</property>
+            <property name="tooltip-text" translatable="yes">Toggle Right Panel</property>
           </object>
         </child>
       </object>
