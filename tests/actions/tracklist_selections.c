@@ -1039,6 +1039,10 @@ test_no_visible_tracks_after_track_deletion (void)
   g_assert_cmpint (
     TRACKLIST_SELECTIONS->num_tracks, >, 0);
 
+  /* assert undo history is not empty */
+  g_assert_false (undo_stack_is_empty (
+    UNDO_MANAGER->undo_stack));
+
   test_helper_zrythm_cleanup ();
 }
 
@@ -3191,13 +3195,13 @@ main (int argc, char * argv[])
 
   g_test_add_func (
     TEST_PREFIX
-    "test track deletion with lv2 worker",
-    (GTestFunc) test_track_deletion_with_lv2_worker);
-  g_test_add_func (
-    TEST_PREFIX
     "test no visible tracks after track deletion",
     (GTestFunc)
       test_no_visible_tracks_after_track_deletion);
+  g_test_add_func (
+    TEST_PREFIX
+    "test track deletion with lv2 worker",
+    (GTestFunc) test_track_deletion_with_lv2_worker);
   g_test_add_func (
     TEST_PREFIX
     "test track deletion w mixer selections",

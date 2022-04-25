@@ -1860,8 +1860,20 @@ activate_delete_selected_tracks (
       return;
     }
 
-  on_delete_tracks_response (
-    NULL, GTK_RESPONSE_YES, NULL);
+  GError * err = NULL;
+  bool     ret =
+    tracklist_selections_action_perform_delete (
+      TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
+      &err);
+  if (ret)
+    {
+      EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE, NULL);
+    }
+  else
+    {
+      HANDLE_ERROR (
+        err, "%s", _ ("Failed to delete tracks"));
+    }
 }
 
 DEFINE_SIMPLE (activate_hide_selected_tracks)

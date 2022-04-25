@@ -133,7 +133,6 @@ automation_point_draw (
 
   int upslope =
     next_ap && ap->fvalue < next_ap->fvalue;
-  (void) upslope;
   (void) next_obj;
 
   if (next_ap)
