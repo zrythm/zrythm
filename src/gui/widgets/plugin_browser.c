@@ -37,7 +37,7 @@
 G_DEFINE_TYPE (
   PluginBrowserWidget,
   plugin_browser_widget,
-  GTK_TYPE_BOX)
+  GTK_TYPE_WIDGET)
 
 enum
 {
@@ -1387,6 +1387,17 @@ on_plugin_search_changed (
 }
 
 static void
+dispose (PluginBrowserWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->popover_menu));
+
+  G_OBJECT_CLASS (
+    plugin_browser_widget_parent_class)
+    ->dispose (G_OBJECT (self));
+}
+
+static void
 finalize (PluginBrowserWidget * self)
 {
   symap_free (self->symap);
@@ -1623,7 +1634,11 @@ plugin_browser_widget_class_init (
 
 #undef BIND_SIGNAL
 
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BIN_LAYOUT);
+
   GObjectClass * goklass = G_OBJECT_CLASS (_klass);
+  goklass->dispose = (GObjectFinalizeFunc) dispose;
   goklass->finalize =
     (GObjectFinalizeFunc) finalize;
 }
@@ -1636,9 +1651,9 @@ plugin_browser_widget_init (
 
   self->popover_menu = GTK_POPOVER_MENU (
     gtk_popover_menu_new_from_model (NULL));
-  gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->popover_menu));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu),
+    GTK_WIDGET (self));
 
   self->stack_switcher =
     ADW_VIEW_SWITCHER (adw_view_switcher_new ());

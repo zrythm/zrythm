@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -48,6 +32,7 @@
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
+#include "utils/string.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -57,7 +42,7 @@
 G_DEFINE_TYPE (
   PanelFileBrowserWidget,
   panel_file_browser_widget,
-  GTK_TYPE_BOX)
+  GTK_TYPE_WIDGET)
 
 enum
 {
@@ -214,6 +199,17 @@ files_filter_func (GObject * item, gpointer user_data)
   bool all_toggles_off =
     !show_audio && !show_midi && !show_presets;
 
+  /* filter by name */
+  const char * text = gtk_editable_get_text (
+    GTK_EDITABLE (self->file_search_entry));
+  if (
+    text && strlen (text) > 0
+    && !string_contains_substr_case_insensitive (
+      descr->label, text))
+    {
+      return false;
+    }
+
   bool visible = false;
   switch (descr->type)
     {
@@ -343,6 +339,16 @@ on_bookmark_row_activated (
     self->files_list_view,
     GTK_SELECTION_MODEL (
       self->files_selection_model));
+}
+
+static void
+on_file_search_changed (
+  GtkSearchEntry *      search_entry,
+  PanelFileBrowserWidget * self)
+{
+  gtk_filter_changed (
+    GTK_FILTER (self->files_filter),
+    GTK_FILTER_CHANGE_DIFFERENT);
 }
 
 static void
@@ -647,6 +653,18 @@ panel_file_browser_widget_new ()
     self->files_list_view, "activate",
     G_CALLBACK (on_file_row_activated), self);
 
+  /* setup file search entry */
+  gtk_search_entry_set_key_capture_widget (
+    self->file_search_entry,
+    GTK_WIDGET (self->files_list_view));
+  g_object_set (
+    G_OBJECT (self->file_search_entry),
+    "placeholder-text", _ ("Search..."), NULL);
+  g_signal_connect (
+    G_OBJECT (self->file_search_entry),
+    "search-changed",
+    G_CALLBACK (on_file_search_changed), self);
+
   g_signal_connect (
     G_OBJECT (self), "map", G_CALLBACK (on_map),
     self);
@@ -668,6 +686,25 @@ panel_file_browser_widget_new ()
 
   return self;
 }
+static void
+dispose (PanelFileBrowserWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->popover_menu));
+
+  G_OBJECT_CLASS (
+    panel_file_browser_widget_parent_class)
+    ->dispose (G_OBJECT (self));
+}
+
+static void
+finalize (PanelFileBrowserWidget * self)
+{
+
+  G_OBJECT_CLASS (
+    panel_file_browser_widget_parent_class)
+    ->finalize (G_OBJECT (self));
+}
 
 static void
 panel_file_browser_widget_class_init (
@@ -686,12 +723,21 @@ panel_file_browser_widget_class_init (
   BIND_CHILD (browser_top);
   BIND_CHILD (browser_bot);
   BIND_CHILD (file_info);
+  BIND_CHILD (file_search_entry);
   BIND_CHILD (files_list_view);
   BIND_CHILD (filters_toolbar);
   BIND_CHILD (bookmarks_tree_view);
   BIND_CHILD (auditioner_controls);
 
 #undef BIND_CHILD
+
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BIN_LAYOUT);
+
+  GObjectClass * goklass = G_OBJECT_CLASS (_klass);
+  goklass->dispose = (GObjectFinalizeFunc) dispose;
+  goklass->finalize =
+    (GObjectFinalizeFunc) finalize;
 }
 
 static void
@@ -706,9 +752,9 @@ panel_file_browser_widget_init (
 
   self->popover_menu = GTK_POPOVER_MENU (
     gtk_popover_menu_new_from_model (NULL));
-  gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->popover_menu));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu),
+    GTK_WIDGET (self));
 
   gtk_widget_set_hexpand (
     GTK_WIDGET (self->paned), true);

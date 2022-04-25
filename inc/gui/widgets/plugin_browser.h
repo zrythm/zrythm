@@ -22,7 +22,7 @@ G_DECLARE_FINAL_TYPE (
   plugin_browser_widget,
   Z,
   PLUGIN_BROWSER_WIDGET,
-  GtkBox)
+  GtkWidget)
 
 TYPEDEF_STRUCT_UNDERSCORED (ExpanderBoxWidget);
 TYPEDEF_STRUCT (PluginCollection);
@@ -64,7 +64,7 @@ typedef enum
  */
 typedef struct _PluginBrowserWidget
 {
-  GtkBox parent_instance;
+  GtkWidget parent_instance;
 
   GtkPaned * paned;
 

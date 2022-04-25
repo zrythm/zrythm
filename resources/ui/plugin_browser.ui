@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="PluginBrowserWidget" parent="GtkBox">
+  <template class="PluginBrowserWidget" parent="GtkWidget">
+    <property name="vexpand">true</property>
     <child>
       <object class="GtkPaned" id="paned">
         <property name="shrink-end-child">0</property>
