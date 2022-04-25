@@ -69,6 +69,9 @@ Required
 `libcyaml (ISC) <https://github.com/tlsa/libcyaml/>`_
   Serialization into YAML
 
+`libpanel (LGPLv3+) <https://gitlab.gnome.org/chergert/libpanel/>`_
+  Dock and panel widgets
+
 `lilv (ISC) <https://drobilla.net/software/lilv>`_
   LV2 host support
 
