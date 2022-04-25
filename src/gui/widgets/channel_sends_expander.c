@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/channel.h"
@@ -84,7 +84,9 @@ channel_sends_expander_widget_setup (
         }
     }
 
-  if (track != self->track || position != self->position)
+  if (
+    track
+    && (track != self->track || position != self->position))
     {
       /* remove children */
       z_gtk_widget_destroy_all_children (

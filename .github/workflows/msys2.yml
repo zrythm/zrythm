@@ -75,7 +75,7 @@ jobs:
         run: |
           cd /c/src/zrythm-installer
           meson build -Ddistro=windows10-msys
-          ninja -C build run-mingw-lilv mingw-carla-ucrt64-build mingw-carla-mingw32-build
+          ninja -C build run-mingw-lilv mingw-carla-ucrt64-build mingw-carla-mingw32-build run-mingw-libpanel
       - name: Replace non-ASCII chars in TRANSLATORS
         run: |
           cd /c/src/zrythm

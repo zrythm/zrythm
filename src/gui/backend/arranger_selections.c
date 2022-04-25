@@ -1478,12 +1478,6 @@ arranger_selections_clear (
       return;
     }
 
-  int                      i;
-  TimelineSelections *     ts;
-  ChordSelections *        cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections *   as;
-
 /* use caches because ts->* will be operated on. */
 #define REMOVE_OBJS(sel, sc) \
   { \
@@ -1491,12 +1485,12 @@ arranger_selections_clear (
       "%s", "clearing " #sc " selections"); \
     int num_##sc##s = sel->num_##sc##s; \
     ArrangerObject * sc##s[num_##sc##s]; \
-    for (i = 0; i < num_##sc##s; i++) \
+    for (int i = 0; i < num_##sc##s; i++) \
       { \
         sc##s[i] = \
           (ArrangerObject *) sel->sc##s[i]; \
       } \
-    for (i = 0; i < num_##sc##s; i++) \
+    for (int i = 0; i < num_##sc##s; i++) \
       { \
         ArrangerObject * sc = sc##s[i]; \
         arranger_selections_remove_object ( \
@@ -1516,22 +1510,34 @@ arranger_selections_clear (
   switch (self->type)
     {
     case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      REMOVE_OBJS (ts, region);
-      REMOVE_OBJS (ts, scale_object);
-      REMOVE_OBJS (ts, marker);
+      {
+        TimelineSelections * ts =
+          (TimelineSelections *) self;
+        REMOVE_OBJS (ts, region);
+        REMOVE_OBJS (ts, scale_object);
+        REMOVE_OBJS (ts, marker);
+      }
       break;
     case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      REMOVE_OBJS (mas, midi_note);
+      {
+        MidiArrangerSelections * mas =
+          (MidiArrangerSelections *) self;
+        REMOVE_OBJS (mas, midi_note);
+      }
       break;
     case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      REMOVE_OBJS (as, automation_point);
+      {
+        AutomationSelections * as =
+          (AutomationSelections *) self;
+        REMOVE_OBJS (as, automation_point);
+      }
       break;
     case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      REMOVE_OBJS (cs, chord_object);
+      {
+        ChordSelections * cs =
+          (ChordSelections *) self;
+        REMOVE_OBJS (cs, chord_object);
+      }
       break;
     case TYPE (AUDIO):
       {
@@ -2465,6 +2471,10 @@ arranger_selections_paste_to_pos (
 {
   g_return_if_fail (IS_ARRANGER_SELECTIONS (self));
 
+  /* FIXME this is not free'd properly and also
+   * its objects are directly used. its objects
+   * must be cloned if used and then this whole
+   * instance should be freed */
   ArrangerSelections * clone_sel =
     arranger_selections_clone (self);
   g_return_if_fail (clone_sel);

@@ -3049,6 +3049,10 @@ add_region_if_in_range (
       regions[(*count)++] = region;
       return;
     }
+  else
+    {
+      g_return_if_fail (p1 && p2);
+    }
 
   /* start inside */
   if (

@@ -277,11 +277,13 @@ engine_process_events (AudioEngine * self)
   /*g_debug ("%d EVENTS, waiting for pause", num_events);*/
 
   EngineState state;
+  bool        need_resume = false;
   if (self->activated && num_events > 0)
     {
       /* pause engine */
       engine_wait_for_pause (
         self, &state, Z_F_FORCE);
+      need_resume = true;
     }
 
   /*g_debug ("waited");*/
@@ -344,7 +346,7 @@ engine_process_events (AudioEngine * self)
   /*g_usleep (8000);*/
   /*project_validate (PROJECT);*/
 
-  if (self->activated && num_events > 0)
+  if (self->activated && need_resume)
     {
       /* continue engine */
       engine_resume (self, &state);
@@ -1132,22 +1134,22 @@ engine_resume (
 {
   g_message ("resuming engine...");
 
-  TRANSPORT->loop = state->looping;
+  Transport * xport = self->transport;
+  xport->loop = state->looping;
 
   if (state->playing)
     {
       position_update_frames_from_ticks (
-        &TRANSPORT->playhead_before_pause);
+        &xport->playhead_before_pause);
       transport_move_playhead (
-        TRANSPORT,
-        &TRANSPORT->playhead_before_pause,
+        xport, &xport->playhead_before_pause,
         F_NO_PANIC, F_NO_SET_CUE_POINT,
         F_NO_PUBLISH_EVENTS);
-      transport_request_roll (TRANSPORT, true);
+      transport_request_roll (xport, true);
     }
   else
     {
-      transport_request_pause (TRANSPORT, true);
+      transport_request_pause (xport, true);
     }
 
   g_atomic_int_set (

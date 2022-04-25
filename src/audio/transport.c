@@ -130,10 +130,7 @@ transport_new (AudioEngine * engine)
   self->audio_engine = engine;
   self->schema_version = TRANSPORT_SCHEMA_VERSION;
 
-  if (engine)
-    {
-      engine->transport = self;
-    }
+  engine->transport = self;
 
   // set initial total number of beats
   // this is applied to the ruler

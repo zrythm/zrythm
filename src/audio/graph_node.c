@@ -266,6 +266,10 @@ process_node (
           port
           == AUDIO_ENGINE->midi_editor_manual_press)
           {
+            g_return_if_fail (
+              AUDIO_ENGINE
+                ->midi_editor_manual_press
+                ->midi_events);
             midi_events_dequeue (
               AUDIO_ENGINE
                 ->midi_editor_manual_press

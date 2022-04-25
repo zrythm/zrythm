@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <stdlib.h>
@@ -24,8 +24,8 @@ group_target_track_init_loaded (Track * self)
   if (self->num_children == 0)
     {
       self->children_size = 1;
-      self->children = calloc (
-        (size_t) self->children_size, sizeof (int));
+      self->children = object_new_n (
+        (size_t) self->children_size, unsigned int);
     }
 }
 
@@ -33,8 +33,8 @@ void
 group_target_track_init (Track * self)
 {
   self->children_size = 1;
-  self->children = calloc (
-    (size_t) self->children_size, sizeof (int));
+  self->children = object_new_n (
+    (size_t) self->children_size, unsigned int);
 }
 
 /**

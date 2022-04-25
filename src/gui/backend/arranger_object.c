@@ -3057,6 +3057,7 @@ arranger_object_split (
           size_t num_frames =
             (size_t) r2_local_end.frames
             * prev_r2_clip->channels;
+          z_return_if_fail_cmp (num_frames, >, 0);
           float frames[num_frames];
           dsp_copy (
             &frames[0],

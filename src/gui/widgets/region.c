@@ -1474,6 +1474,7 @@ region_draw (
     arranger_object_get_arranger (obj);
 
   Track * track = arranger_object_get_track (obj);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
 
   /* set color */
   GdkRGBA color;
