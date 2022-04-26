@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-04-14 12:08+0100\n"
-"PO-Revision-Date: 2022-04-24 18:08+0000\n"
-"Last-Translator: Romain Alb <romain.alb@lilo.org>\n"
+"PO-Revision-Date: 2022-04-26 14:22+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/fr/>\n"
 "Language: fr\n"
@@ -851,18 +851,16 @@ msgstr ""
 "en utilisant le périphérique MIDI."
 
 #: ../../configuration/device-setup.rst:76
-#, fuzzy
 msgid "Managing Bindings"
-msgstr "Gérer les liaisons"
+msgstr "Gérer les cartographies"
 
 #: ../../configuration/device-setup.rst:78
-#, fuzzy
 msgid ""
 "Device mappings (bindings) can be found under the :guilabel:`Bindings` tab "
 "in the :ref:`main panel <zrythm-interface/main-panel:Main Panel>`."
 msgstr ""
-"Les liaisons de périphériques peuvent être trouvées dans l'onglet :guilabel: "
-"`Bindings`qui se trouve dans le panneau principal <zrythm-interface/main-"
+"Les cartographies de périphérique (bindings) peuvent être trouvées sous "
+"l'onglet :guilabel: `Bindings`du panneau principal <zrythm-interface/main-"
 "panel:Main Panel>`."
 
 #: ../../configuration/device-setup.rst:86
@@ -870,18 +868,16 @@ msgid "MIDI CC bindings"
 msgstr "Mappage CC MIDI"
 
 #: ../../configuration/device-setup.rst:88
-#, fuzzy
 msgid ""
 "Bindings can be deleted by right-clicking on a row and selecting :guilabel:"
 "`Delete`."
 msgstr ""
-"Les liaisons peuvent être effacées en cliquant-droit et en sélectionnant "
-":zbutton:`Effacer`."
+"Les cartographies peuvent être effacées en cliquant-droit sur une ligne et "
+"en sélectionnant :guilabel:`Effacer`."
 
 #: ../../configuration/device-setup.rst:94
-#, fuzzy
 msgid "Deleting a binding"
-msgstr "Effacer une liaison"
+msgstr "Effacer une cartographie"
 
 #: ../../configuration/intro.rst:9
 msgid "Configuration"
@@ -908,93 +904,85 @@ msgid "Preferences dialog"
 msgstr "Préférences"
 
 #: ../../configuration/preferences.rst:22
-#, fuzzy
 msgid ""
 "Preferences are grouped by sections, such as :guilabel:`General` and :"
 "guilabel:`Plugins`, and each item in the preferences contains a tooltip that "
 "explains what it does."
 msgstr ""
-"Les préférences sont groupées par sections. Exemple :guilabel: `General`et "
-":guilabel: `Plugins`, et chaque élément contient une bulle d'aide expliquant "
-"son fonctionnement."
+"Les préférences sont groupées par sections, comme par exemple :guilabel: "
+"`General`et :guilabel: `Plugins`, et chaque élément dans les préférences "
+"contient une bulle d'aide expliquant son fonctionnement."
 
 #: ../../configuration/preferences.rst:27
-#, fuzzy
 msgid "Zrythm must be restarted for changes to take effect."
 msgstr "Zrythm doit être redémarré pour que les changements prennent effet."
 
 #: ../../configuration/preferences.rst:31
-#, fuzzy
 msgid "Searching"
 msgstr "Recherche"
 
 #: ../../configuration/preferences.rst:33
-#, fuzzy
 msgid ""
 "The preferences are searchable. You can simply start typing a keyword and "
 "results will appear automatically. Clicking on one of the results will "
 "navigate to the corresponding item in the preferences."
 msgstr ""
-"On peut rechercher dans les préférences. Vous pouvez simplement taper un mot-"
-"clé et les résultats apparaîtront automatiquement. Cliquer sur un résultat "
-"vous fera amènera à l'élément correspondant dans les préférences."
+"Il est possible de rechercher dans les préférences. Vous pouvez simplement "
+"commencer à taper un mot-clé et les résultats apparaîtront automatiquement. "
+"Cliquer sur un des résultats vous emmènera à l'élément correspondant dans "
+"les préférences."
 
 #: ../../configuration/preferences.rst:42
 msgid "Searching the user preferences"
-msgstr "Recherches dans les préférences utilsateur"
+msgstr "Rechercher dans les préférences utilisateur"
 
 #: ../../configuration/preferences.rst:45
-#, fuzzy
 msgid "Notable Preferences"
 msgstr "Préférences notables"
 
 #: ../../configuration/preferences.rst:47
-#, fuzzy
 msgid ""
 "Below is a list of notable preference items with some comments about them."
 msgstr ""
-"Au dessous se trouvent les éléments des préférences notables, avec des "
-"commentaires."
+"Ci-dessous se trouve une liste des éléments de préférences notables "
+"accompagnés de quelques commentaires à leur sujet."
 
 #: ../../configuration/preferences.rst:51
-#, fuzzy
 msgid "Backend Selection"
-msgstr "Sélection du moteur audio"
+msgstr "Sélection de moteur"
 
 #: ../../configuration/preferences.rst:53
-#, fuzzy
 msgid ""
 "The audio/MIDI backend in under :menuselection:`General --> Engine` controls "
 "which audio engine implementation Zrythm will use to receive input from and "
 "send output to devices. :term:`JACK`/JACK MIDI is the recommended backend "
 "combination on all systems."
 msgstr ""
-"La sélection du moteur Audio/MIDI se trouve dans :menuselection:`General --> "
-"Engine`, il définit quel moteur audio Zrythm utilisera pour envoyer et "
-"recevoir des signaux Audio et MIDI :term: `JACK`.JACK MIDI est le moteur "
-"audio recommandé sur tous les sytèmes."
+"Le moteur audio/MIDI sous :menuselection:`General --> Engine`définit quelle "
+"implémentation de moteur audio Zrythm utilisera pour recevoir depuis et "
+"envoyer vers les périphériques. :term: `JACK`/JACK MIDI est la combinaison "
+"de moteurs recommandée sur tous les systèmes."
 
 #: ../../configuration/preferences.rst:61
 msgid "Input Devices/Controllers"
-msgstr "Entrées Périphériques/Contrôleurs"
+msgstr "Périphériques/contrôleurs d'entrée"
 
 #: ../../configuration/preferences.rst:63
-#, fuzzy
 msgid ""
 "In order to be able to record input from MIDI/audio devices, the devices "
 "must be explicitly enabled using the :guilabel:`MIDI controllers` and :"
 "guilabel:`Audio inputs` settings under :menuselection:`General --> Engine`."
 msgstr ""
-"Pour pouvoir enregistrer un signal d'entrée à partir des périphériques Audio/"
-"MIDI, les périphériques doivent être activés en utilisant explicitement le "
-"label :guilabel: `MIDI controllers`et `Audio inputs`dans :menuselection:`"
+"Pour pouvoir enregistrer un signal d'entrée à partir des périphériques audio/"
+"MIDI, les périphériques doivent être explicitement activés en utilisant les "
+"réglages :guilabel: `MIDI controllers`et `Audio inputs`dans :menuselection:`"
 "General --> Engine`."
 
 #: ../../configuration/preferences.rst:69
-#, fuzzy
 msgid "Zrythm will ignore input from any devices not explicitly enabled."
 msgstr ""
-"Zrythm ignorera toutes les entrées qui ne sont pas explicitement activées."
+"Zrythm ignorera les entrées provenant de tout périphérique non explicitement "
+"activé."
 
 #: ../../configuration/preferences.rst:73
 #, fuzzy
@@ -1022,7 +1010,6 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/preferences.rst:91
-#, fuzzy
 msgid "Backup Saving"
 msgstr "Sauvegarde"
 
@@ -1564,33 +1551,28 @@ msgid "Invert the polarity of the audio."
 msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:77
-#, fuzzy
 msgid "Normalize Peak"
 msgstr "Normalisation de crête"
 
 #: ../../editing/clip-editors/audio-editor.rst:78
 msgid "Normalize the audio so that its peak is 0dB."
-msgstr "Normalise l'audio (0dB)."
+msgstr "Normalise l'audio pour que sa crête soit de 0dB."
 
 #: ../../editing/clip-editors/audio-editor.rst:79
-#, fuzzy
 msgid "Linear Fade In"
-msgstr "Fondu d'entrée linéaire"
+msgstr "Fondu à l'ouverture linéaire"
 
 #: ../../editing/clip-editors/audio-editor.rst:80
-#, fuzzy
 msgid "Fade the audio from silence to full amplitude."
-msgstr "Créé un fondu audio, du silence jusqu'à son amplitude maximum."
+msgstr "Crée un fondu audio, du silence jusqu'à son amplitude maximum."
 
 #: ../../editing/clip-editors/audio-editor.rst:81
-#, fuzzy
 msgid "Linear Fade Out"
-msgstr "Fondu de sortie linéaire"
+msgstr "Fondu à la fermeture linéaire"
 
 #: ../../editing/clip-editors/audio-editor.rst:82
-#, fuzzy
 msgid "Fade the audio from full amplitude to silence."
-msgstr "Créé un fondu audio, de son amplitude maximum jusqu'au silence."
+msgstr "Crée un fondu audio, de son amplitude maximum jusqu'au silence."
 
 #: ../../editing/clip-editors/audio-editor.rst:83
 #, fuzzy
@@ -1599,34 +1581,29 @@ msgstr "Langue"
 
 #: ../../editing/clip-editors/audio-editor.rst:84
 msgid "Shift the audio by 1 sample backward or forward."
-msgstr "Déplace l'audio de 1 sample en avant/en arrière."
+msgstr "Déplace l'audio de 1 échantillon en avant/en arrière."
 
 #: ../../editing/clip-editors/audio-editor.rst:85
-#, fuzzy
 msgid "Reverse"
 msgstr "Inversion"
 
 #: ../../editing/clip-editors/audio-editor.rst:86
-#, fuzzy
 msgid "Reverse the audio (play back backwards)."
 msgstr "Inverse l'audio (joue l'échantillon à l'envers)."
 
 #: ../../editing/clip-editors/audio-editor.rst:111
-#, fuzzy
 msgid "External Program"
 msgstr "Programme externe"
 
 #: ../../editing/clip-editors/audio-editor.rst:88
-#, fuzzy
 msgid ""
 "Run an external program (such as `Audacity <https://www.audacityteam.org/"
 ">`_) to edit the audio."
 msgstr ""
-"Lancer un programme externe (ex : `Audacity <https://www.audacityteam.org/"
-">`_) pour éditer l'audio."
+"Lancer un programme externe (par exemple `Audacity <https://www.audacityteam."
+"org/>`_) pour éditer l'audio."
 
 #: ../../editing/clip-editors/audio-editor.rst:95
-#, fuzzy
 msgid "Edit the selected audio in an external app"
 msgstr "Éditer l'audio sélectionné dans une application externe"
 
