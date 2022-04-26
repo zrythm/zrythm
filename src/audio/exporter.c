@@ -28,6 +28,7 @@
 #include "utils/io.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -38,68 +39,48 @@
 
 #define AMPLITUDE (1.0 * 0x7F000000)
 
+static const char * pretty_formats[] = {
+  "FLAC",        "OGG (Vorbis)", "OGG (OPUS)",
+  "WAV",         "MP3",          "RAW",
+  "MIDI Type 0", "MIDI Type 1",
+};
+
+static const char * format_exts[] = {
+  "FLAC", "ogg", "ogg", "wav",
+  "mp3",  "raw", "mid", "mid",
+};
+
 /**
- * Returns the audio format as string.
- *
- * @param extension Whether to return the extension
- *   for this format, or a human friendly label.
+ * Returns the format as a human friendly label.
  */
 const char *
-exporter_stringize_export_format (
-  ExportFormat format,
-  bool         extension)
+export_format_to_pretty_str (ExportFormat format)
 {
-  switch (format)
+  return pretty_formats[format];
+}
+
+/**
+ * Returns the audio format as a file extension.
+ */
+const char *
+export_format_to_ext (ExportFormat format)
+{
+  return format_exts[format];
+}
+
+ExportFormat
+export_format_from_pretty_str (
+  const char * pretty_str)
+{
+  for (ExportFormat i = 0; i < NUM_EXPORT_FORMATS;
+       i++)
     {
-    case EXPORT_FORMAT_FLAC:
-      return "FLAC";
-    case EXPORT_FORMAT_OGG_VORBIS:
-      if (extension)
-        {
-          return "ogg";
-        }
-      else
-        {
-          return "ogg (Vorbis)";
-        }
-    case EXPORT_FORMAT_OGG_OPUS:
-      if (extension)
-        {
-          return "ogg";
-        }
-      else
-        {
-          return "ogg (OPUS)";
-        }
-    case EXPORT_FORMAT_WAV:
-      return "wav";
-    case EXPORT_FORMAT_MP3:
-      return "mp3";
-    case EXPORT_FORMAT_MIDI0:
-      if (extension)
-        {
-          return "mid";
-        }
-      else
-        {
-          return "MIDI type 0";
-        }
-    case EXPORT_FORMAT_MIDI1:
-      if (extension)
-        {
-          return "mid";
-        }
-      else
-        {
-          return "MIDI type 1";
-        }
-    case EXPORT_FORMAT_RAW:
-      return "raw";
-    case NUM_EXPORT_FORMATS:
-      break;
+      if (string_is_equal (
+            pretty_str, pretty_formats[i]))
+        return i;
     }
 
-  g_return_val_if_reached (NULL);
+  g_return_val_if_reached (EXPORT_FORMAT_FLAC);
 }
 
 static int
@@ -129,8 +110,7 @@ export_audio (ExportSettings * info)
     default:
       {
         const char * format =
-          exporter_stringize_export_format (
-            info->format, false);
+          export_format_to_pretty_str (info->format);
 
         info->progress_info.has_error = true;
         sprintf (
@@ -709,8 +689,7 @@ export_settings_set_bounce_defaults (
       char * tmp_dir = g_dir_make_tmp (
         "zrythm_bounce_XXXXXX", NULL);
       const char * ext =
-        exporter_stringize_export_format (
-          self->format, true);
+        export_format_to_ext (self->format);
       char filename[800];
       sprintf (filename, "%s.%s", bounce_name, ext);
       self->file_uri =
@@ -876,8 +855,7 @@ export_settings_print (const ExportSettings * self)
     "dither: %d\n"
     "file: %s\n"
     "num files: %d\n",
-    exporter_stringize_export_format (
-      self->format, true),
+    export_format_to_pretty_str (self->format),
     self->artist, self->title, self->genre,
     audio_bit_depth_enum_to_int (self->depth),
     "TODO", export_mode_to_str (self->mode),

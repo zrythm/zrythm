@@ -1,436 +1,277 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
+  <requires lib="Adw" version="4.0"/>
   <requires lib="gtk" version="4.0"/>
   <template class="ExportDialogWidget" parent="GtkDialog">
     <property name="title" translatable="yes">Export As...</property>
-    <property name="modal">1</property>
+    <property name="decorated">0</property>
+    <property name="use_header_bar">0</property>
+    <property name="modal">true</property>
     <property name="icon-name">zrythm</property>
     <child internal-child="content_area">
       <object class="GtkBox">
         <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
         <child>
-          <object class="GtkLabel">
-            <property name="label" translatable="yes">Details</property>
-            <style>
-              <class name="section_heading"/>
-            </style>
+          <object class="AdwHeaderBar">
+            <property name="centering-policy">strict</property>
+            <child type="title">
+              <object class="AdwViewSwitcherTitle" id="title">
+                <property name="stack">stack</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
-          <object class="GtkGrid">
+          <object class="AdwViewStack" id="stack">
             <child>
-              <object class="GtkLabel" id="output_label">
-                <property name="margin-start">4</property>
-                <property name="margin-end">4</property>
-                <property name="margin-bottom">8</property>
-                <property name="vexpand">1</property>
-                <property name="yalign">0</property>
-                <layout>
-                  <property name="column">1</property>
-                  <property name="row">9</property>
-                  <property name="column-span">3</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="label" translatable="yes">Output Files</property>
-                <style>
-                  <class name="section_heading"/>
-                </style>
-                <layout>
-                  <property name="column">1</property>
-                  <property name="row">8</property>
-                  <property name="column-span">3</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="label" translatable="yes">Time Range</property>
-                <style>
-                  <class name="section_heading"/>
-                </style>
-                <layout>
-                  <property name="column">1</property>
-                  <property name="row">4</property>
-                  <property name="column-span">3</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="label" translatable="yes">Tracks</property>
-                <style>
-                  <class name="section_heading"/>
-                </style>
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">4</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeView" id="tracks_treeview">
-                <property name="focusable">1</property>
-                <property name="vexpand">1</property>
-                <child internal-child="selection">
-                  <object class="GtkTreeSelection"/>
-                </child>
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">6</property>
-                  <property name="row-span">4</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox">
-                <child>
-                  <object class="GtkToggleButton" id="mixdown_toggle">
-                    <property name="label" translatable="yes">Mixdown</property>
-                    <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkToggleButton" id="stems_toggle">
-                    <property name="label" translatable="yes">Stems</property>
-                    <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
-                  </object>
-                </child>
-                <style>
-                  <class name="linked"/>
-                </style>
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">5</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox">
-                <child>
-                  <object class="GtkToggleButton" id="time_range_song">
-                    <property name="label" translatable="yes">Song</property>
-                    <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkToggleButton" id="time_range_loop">
-                    <property name="label" translatable="yes">Loop</property>
-                    <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkToggleButton" id="time_range_custom">
-                    <property name="label" translatable="yes">Custom</property>
-                    <property name="focusable">1</property>
-                    <property name="receives-default">1</property>
-                  </object>
-                </child>
-                <style>
-                  <class name="linked"/>
-                </style>
-                <layout>
-                  <property name="column">1</property>
-                  <property name="row">5</property>
-                  <property name="column-span">3</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkGrid">
-                <property name="row-homogeneous">1</property>
-                <child>
-                  <object class="GtkLabel" id="label5">
-                    <property name="margin-start">4</property>
-                    <property name="margin-end">4</property>
-                    <property name="label" translatable="yes">Filename Pattern</property>
-                    <layout>
-                      <property name="column">0</property>
-                      <property name="row">4</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkComboBox" id="filename_pattern">
-                    <layout>
-                      <property name="column">1</property>
-                      <property name="row">4</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="export_title">
-                    <property name="focusable">1</property>
-                    <property name="hexpand">1</property>
-                    <layout>
-                      <property name="column">3</property>
-                      <property name="row">1</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label6">
-                    <property name="label" translatable="yes">Title</property>
-                    <layout>
-                      <property name="column">2</property>
-                      <property name="row">1</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label2">
-                    <property name="label" translatable="yes">Artist</property>
-                    <layout>
-                      <property name="column">0</property>
-                      <property name="row">1</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="export_artist">
-                    <property name="focusable">1</property>
-                    <property name="hexpand">1</property>
-                    <layout>
-                      <property name="column">1</property>
-                      <property name="row">1</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label1">
-                    <property name="label" translatable="yes">Genre</property>
-                    <layout>
-                      <property name="column">0</property>
-                      <property name="row">2</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="export_genre">
-                    <property name="focusable">1</property>
-                    <layout>
-                      <property name="column">1</property>
-                      <property name="row">2</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkComboBox" id="format">
-                    <property name="hexpand">1</property>
-                    <layout>
-                      <property name="column">3</property>
-                      <property name="row">2</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label3">
-                    <property name="label" translatable="yes">Format</property>
-                    <layout>
-                      <property name="column">2</property>
-                      <property name="row">2</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label4">
-                    <property name="margin-start">2</property>
-                    <property name="margin-end">2</property>
-                    <property name="label" translatable="yes">Bit depth</property>
-                    <layout>
-                      <property name="column">0</property>
-                      <property name="row">3</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkComboBox" id="bit_depth">
-                    <layout>
-                      <property name="column">1</property>
-                      <property name="row">3</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkToggleButton" id="dither">
-                    <property name="label" translatable="yes">Dither</property>
-                    <property name="focusable">1</property>
-                    <layout>
-                      <property name="column">2</property>
-                      <property name="row">4</property>
-                      <property name="column-span">2</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="lanes_as_tracks">
-                    <property name="label" translatable="yes">Lanes as separate tracks</property>
-                    <property name="focusable">1</property>
-                    <property name="tooltip-text" translatable="yes">Export track lanes as separate MIDI tracks</property>
-                    <layout>
-                      <property name="column">2</property>
-                      <property name="row">3</property>
-                      <property name="column-span">2</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">0</property>
-                  <property name="column-span">4</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox">
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <layout>
-                  <property name="column">1</property>
-                  <property name="row">7</property>
-                  <property name="column-span">3</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox">
-                <child>
-                  <object class="GtkBox" id="from_meter">
-                    <property name="hexpand">1</property>
-                    <property name="orientation">vertical</property>
+              <object class="AdwViewStackPage">
+                <property name="name">audio</property>
+                <property name="title">Audio</property>
+                <property name="icon-name">signal-audio</property>
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="homogeneous">true</property>
                     <child>
-                      <placeholder/>
+                      <object class="AdwPreferencesPage">
+                        <property name="title">Export Audio</property>
+                        <child>
+                          <object class="AdwPreferencesGroup">
+                            <property name="title" translatable="yes">Metadata</property>
+                            <child>
+                              <object class="AdwEntryRow" id="audio_title">
+                                <property name="title" translatable="yes">Title</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwEntryRow" id="audio_artist">
+                                <property name="title" translatable="yes">Artist</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwEntryRow" id="audio_genre">
+                                <property name="title" translatable="yes">Genre</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwPreferencesGroup">
+                            <property name="title" translatable="yes">Options</property>
+                            <child>
+                              <object class="AdwComboRow" id="audio_format">
+                                <property name="title" translatable="yes">Format</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwComboRow" id="audio_bit_depth">
+                                <property name="title" translatable="yes">Bit Depth</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwActionRow" id="audio_dither">
+                                <property name="title" translatable="yes">Dither</property>
+                                <property name="subtitle" translatable="yes">Add low level noise to reduce errors on lower bit depths.</property>
+                                <property name="activatable_widget">audio_dither_switch</property>
+                                <child>
+                                  <object class="GtkSwitch" id="audio_dither_switch">
+                                    <property name="valign">center</property>
+                                    <property name="state">False</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwComboRow" id="audio_filename_pattern">
+                                <property name="title" translatable="yes">Filename Pattern</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwComboRow" id="audio_mixdown_or_stems">
+                                <property name="title" translatable="yes">Mixdown or Stems</property>
+                                <property name="subtitle" translatable="yes">Whether to export the selected tracks as a single mixdown file or each track in its own file.</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwPreferencesPage">
+                        <property name="title">Export Audio</property>
+                        <child>
+                          <object class="AdwPreferencesGroup">
+                            <property name="title" translatable="yes">Selection</property>
+                            <child>
+                              <object class="AdwActionRow">
+                                <property name="title" translatable="yes">Time range</property>
+                                <property name="subtitle" translatable="yes">Only events inside this time range will be exported.</property>
+                                <property name="activatable_widget">audio_time_range_drop_down</property>
+                                <child>
+                                  <object class="GtkDropDown" id="audio_time_range_drop_down">
+                                    <property name="valign">center</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwExpanderRow">
+                                <property name="title" translatable="yes">Track Selection</property>
+                                <property name="expanded">true</property>
+                                <child>
+                                  <object class="GtkListBoxRow">
+                                    <property name="activatable">0</property>
+                                    <child>
+                                      <object class="GtkTreeView" id="audio_tracks_treeview">
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwPreferencesGroup">
+                            <property name="title" translatable="yes">Output</property>
+                            <child>
+                              <object class="GtkLabel" id="audio_output_label">
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
                     </child>
                   </object>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="margin-start">4</property>
-                    <property name="margin-end">4</property>
-                    <property name="label" translatable="yes">~</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkBox" id="to_meter">
-                    <property name="hexpand">1</property>
-                    <property name="orientation">vertical</property>
-                    <child>
-                      <placeholder/>
-                    </child>
-                  </object>
-                </child>
-                <layout>
-                  <property name="column">1</property>
-                  <property name="row">6</property>
-                  <property name="column-span">3</property>
-                </layout>
+                </property>
               </object>
             </child>
             <child>
-              <placeholder/>
+              <object class="AdwViewStackPage">
+                <property name="name">midi</property>
+                <property name="title">MIDI</property>
+                <property name="icon-name">signal-midi</property>
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="homogeneous">true</property>
+                    <child>
+                      <object class="AdwPreferencesPage">
+                        <property name="title">Export MIDI</property>
+                        <child>
+                          <object class="AdwPreferencesGroup">
+                            <property name="title" translatable="yes">Metadata</property>
+                            <child>
+                              <object class="AdwEntryRow" id="midi_title">
+                                <property name="title" translatable="yes">Title</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwEntryRow" id="midi_artist">
+                                <property name="title" translatable="yes">Artist</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwEntryRow" id="midi_genre">
+                                <property name="title" translatable="yes">Genre</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwPreferencesGroup">
+                            <property name="title" translatable="yes">Options</property>
+                            <child>
+                              <object class="AdwComboRow" id="midi_format">
+                                <property name="title" translatable="yes">Format</property>
+                                <property name="model">
+                                  <object class="GtkStringList">
+                                    <items>
+                                      <item>Type 0</item>
+                                      <item>Type 1</item>
+                                    </items>
+                                  </object>
+                                </property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwActionRow" id="midi_export_lanes_as_tracks">
+                                <property name="title" translatable="yes">Export Lanes as Tracks</property>
+                                <property name="activatable_widget">midi_export_lanes_as_tracks_switch</property>
+                                <child>
+                                  <object class="GtkSwitch" id="midi_export_lanes_as_tracks_switch">
+                                    <property name="valign">center</property>
+                                    <property name="state">False</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwComboRow" id="midi_filename_pattern">
+                                <property name="title" translatable="yes">Filename Pattern</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwComboRow" id="midi_mixdown_or_stems">
+                                <property name="title" translatable="yes">Mixdown or Stems</property>
+                                <property name="subtitle" translatable="yes">Whether to export the selected tracks as a single mixdown file or each track in its own file.</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwPreferencesPage">
+                        <property name="title">Export MIDI</property>
+                        <child>
+                          <object class="AdwPreferencesGroup">
+                            <property name="title" translatable="yes">Selection</property>
+                            <child>
+                              <object class="AdwActionRow">
+                                <property name="title" translatable="yes">Time range</property>
+                                <property name="subtitle" translatable="yes">Only events inside this time range will be exported.</property>
+                                <property name="activatable_widget">midi_time_range_drop_down</property>
+                                <child>
+                                  <object class="GtkDropDown" id="midi_time_range_drop_down">
+                                    <property name="valign">center</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwExpanderRow">
+                                <property name="title" translatable="yes">Track Selection</property>
+                                <property name="expanded">true</property>
+                                <child>
+                                  <object class="GtkListBoxRow">
+                                    <property name="activatable">0</property>
+                                    <child>
+                                      <object class="GtkTreeView" id="midi_tracks_treeview">
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwPreferencesGroup">
+                            <property name="title" translatable="yes">Output</property>
+                            <child>
+                              <object class="GtkLabel" id="midi_output_label">
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
             </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-          </object>
-        </child>
-      </object>
-    </child>
-    <child internal-child="action_area">
-      <object class="GtkBox">
-        <property name="valign">center</property>
-        <child>
-          <object class="GtkButton" id="cancel_button">
-            <property name="label" translatable="yes">Cancel</property>
-            <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <signal name="clicked" handler="on_cancel_clicked" object="ExportDialogWidget" swapped="no"/>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="export_button">
-            <property name="label" translatable="yes">Export</property>
-            <property name="focusable">1</property>
-            <property name="receives-default">1</property>
           </object>
         </child>
       </object>
     </child>
   </template>
-  <object class="GtkSizeGroup" id="top_ctrl_sz_group">
-    <widgets>
-      <widget name="export_title"/>
-      <widget name="export_artist"/>
-      <widget name="export_genre"/>
-      <widget name="format"/>
-      <widget name="bit_depth"/>
-      <widget name="filename_pattern"/>
-    </widgets>
-  </object>
-  <object class="GtkSizeGroup" id="top_label_sz_group">
-    <widgets>
-      <widget name="label1"/>
-      <widget name="label2"/>
-      <widget name="label3"/>
-      <widget name="label4"/>
-      <widget name="label5"/>
-      <widget name="label6"/>
-    </widgets>
-  </object>
 </interface>

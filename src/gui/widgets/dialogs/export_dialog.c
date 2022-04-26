@@ -19,6 +19,7 @@
 #include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -57,25 +58,43 @@ enum
 
 static const char * dummy_text = "";
 
-static void
-on_response (
-  GtkDialog * dialog,
-  gint        response,
-  gpointer    user_data)
+#define AUDIO_STACK_VISIBLE(self) \
+  (string_is_equal ( \
+    adw_view_stack_get_visible_child_name ( \
+      self->stack), \
+    "audio"))
+
+/**
+ * Returns either the audio or MIDI settings
+ * depending on the current stack page.
+ */
+static GSettings *
+get_current_settings (ExportDialogWidget * self)
 {
-  gtk_window_destroy (GTK_WINDOW (dialog));
+  if (AUDIO_STACK_VISIBLE (self))
+    {
+      return S_EXPORT_AUDIO;
+    }
+  else
+    {
+      return S_EXPORT_MIDI;
+    }
 }
 
 static void
 add_enabled_recursively (
   ExportDialogWidget * self,
+  GtkTreeView *        tree_view,
   GtkTreeIter *        iter,
   Track ***            tracks,
   size_t *             size,
   int *                count)
 {
+  GtkTreeModelFilter * parent_model =
+    GTK_TREE_MODEL_FILTER (
+      gtk_tree_view_get_model (tree_view));
   GtkTreeModel * model =
-    GTK_TREE_MODEL (self->tracks_store);
+    gtk_tree_model_filter_get_model (parent_model);
 
   Track *  track;
   gboolean checked;
@@ -107,7 +126,8 @@ add_enabled_recursively (
 
           /* recurse */
           add_enabled_recursively (
-            self, &child_iter, tracks, size, count);
+            self, tree_view, &child_iter, tracks,
+            size, count);
         }
     }
 }
@@ -125,19 +145,23 @@ add_enabled_recursively (
 static Track **
 get_enabled_tracks (
   ExportDialogWidget * self,
+  GtkTreeView *        tree_view,
   int *                num_tracks)
 {
   size_t   size = 1;
   int      count = 0;
   Track ** tracks = object_new_n (size, Track *);
 
+  GtkTreeModelFilter * parent_model =
+    GTK_TREE_MODEL_FILTER (
+      gtk_tree_view_get_model (tree_view));
   GtkTreeModel * model =
-    GTK_TREE_MODEL (self->tracks_store);
+    gtk_tree_model_filter_get_model (parent_model);
   GtkTreeIter iter;
   gtk_tree_model_get_iter_first (model, &iter);
 
   add_enabled_recursively (
-    self, &iter, &tracks, &size, &count);
+    self, tree_view, &iter, &tracks, &size, &count);
 
   if (count == 0)
     {
@@ -154,26 +178,45 @@ get_enabled_tracks (
 
 static char *
 get_mixdown_export_filename (
-  ExportDialogWidget * self)
+  ExportDialogWidget * self,
+  bool                 audio)
 {
   const char * mixdown_str = "mixdown";
-  const char * format =
-    exporter_stringize_export_format (
-      gtk_combo_box_get_active (self->format), true);
-  char * datetime_str =
-    datetime_get_for_filename ();
-  char * base = NULL;
-  switch (g_settings_get_enum (
-    S_EXPORT, "filename-pattern"))
+  const char * format_ext = NULL;
+  if (audio)
+    {
+      GtkStringObject * so = GTK_STRING_OBJECT (
+        adw_combo_row_get_selected_item (
+          self->audio_format));
+      ExportFormat format =
+        export_format_from_pretty_str (
+          gtk_string_object_get_string (so));
+      format_ext = export_format_to_ext (format);
+    }
+  else
+    {
+      format_ext =
+        export_format_to_ext (EXPORT_FORMAT_MIDI0);
+    }
+
+  GSettings * s = get_current_settings (self);
+  char *      base = NULL;
+  switch (
+    g_settings_get_enum (s, "filename-pattern"))
     {
     case EFP_APPEND_FORMAT:
       base = g_strdup_printf (
-        "%s.%s", mixdown_str, format);
+        "%s.%s", mixdown_str, format_ext);
       break;
     case EFP_PREPEND_DATE_APPEND_FORMAT:
-      base = g_strdup_printf (
-        "%s_%s.%s", datetime_str, mixdown_str,
-        format);
+      {
+        char * datetime_str =
+          datetime_get_for_filename ();
+        base = g_strdup_printf (
+          "%s_%s.%s", datetime_str, mixdown_str,
+          format_ext);
+        g_free (datetime_str);
+      }
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -189,7 +232,6 @@ get_mixdown_export_filename (
   g_free (base);
   g_free (tmp);
   g_free (exports_dir);
-  g_free (datetime_str);
 
   /* we now have the full path, get only the
    * basename */
@@ -211,20 +253,37 @@ static char *
 get_stem_export_filenames (
   ExportDialogWidget * self,
   int                  max_files,
-  Track *              in_track)
+  Track *              in_track,
+  bool                 audio)
 {
+  GtkTreeView * tree_view =
+    audio ? self->audio_tracks_treeview
+          : self->midi_tracks_treeview;
   int      num_tracks;
-  Track ** tracks =
-    get_enabled_tracks (self, &num_tracks);
+  Track ** tracks = get_enabled_tracks (
+    self, tree_view, &num_tracks);
 
   if (!tracks)
     {
       return g_strdup (_ ("none"));
     }
 
-  const char * format =
-    exporter_stringize_export_format (
-      gtk_combo_box_get_active (self->format), true);
+  const char * format_ext = NULL;
+  if (audio)
+    {
+      GtkStringObject * so = GTK_STRING_OBJECT (
+        adw_combo_row_get_selected_item (
+          self->audio_format));
+      ExportFormat format =
+        export_format_from_pretty_str (
+          gtk_string_object_get_string (so));
+      format_ext = export_format_to_ext (format);
+    }
+  else
+    {
+      format_ext =
+        export_format_to_ext (EXPORT_FORMAT_MIDI0);
+    }
   char * datetime_str =
     datetime_get_for_filename ();
 
@@ -241,18 +300,20 @@ get_stem_export_filenames (
           track = in_track;
         }
 
+      GSettings * s =
+        audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI;
       char * base = NULL;
       switch (g_settings_get_enum (
-        S_EXPORT, "filename-pattern"))
+        s, "filename-pattern"))
         {
         case EFP_APPEND_FORMAT:
           base = g_strdup_printf (
-            "%s.%s", track->name, format);
+            "%s.%s", track->name, format_ext);
           break;
         case EFP_PREPEND_DATE_APPEND_FORMAT:
           base = g_strdup_printf (
             "%s_%s.%s", datetime_str, track->name,
-            format);
+            format_ext);
           break;
         default:
           g_return_val_if_reached (NULL);
@@ -311,10 +372,11 @@ return_result:
 }
 
 static char *
-get_exports_dir (void)
+get_exports_dir (ExportDialogWidget * self)
 {
-  bool export_stems = g_settings_get_boolean (
-    S_EXPORT, "export-stems");
+  GSettings * s = get_current_settings (self);
+  bool        export_stems =
+    g_settings_get_boolean (s, "export-stems");
   return project_get_path (
     PROJECT,
     export_stems
@@ -336,16 +398,19 @@ get_export_filename (
   bool                 absolute,
   Track *              track)
 {
-  bool export_stems = g_settings_get_boolean (
-    S_EXPORT, "export-stems");
+  GSettings * s = get_current_settings (self);
+  bool is_audio = AUDIO_STACK_VISIBLE (self);
+  bool export_stems =
+    g_settings_get_boolean (s, "export-stems");
   char * filename = NULL;
   if (export_stems)
     {
-      filename =
-        get_stem_export_filenames (self, 4, track);
+      filename = get_stem_export_filenames (
+        self, 4, track, is_audio);
       if (absolute)
         {
-          char * exports_dir = get_exports_dir ();
+          char * exports_dir =
+            get_exports_dir (self);
           char * abs_path = g_build_filename (
             exports_dir, filename, NULL);
           g_free (exports_dir);
@@ -359,11 +424,13 @@ get_export_filename (
     }
   else
     {
-      filename = get_mixdown_export_filename (self);
+      filename = get_mixdown_export_filename (
+        self, is_audio);
 
       if (absolute)
         {
-          char * exports_dir = get_exports_dir ();
+          char * exports_dir =
+            get_exports_dir (self);
           char * abs_path = g_build_filename (
             exports_dir, filename, NULL);
           g_free (exports_dir);
@@ -391,7 +458,7 @@ update_text (ExportDialogWidget * self)
   "<span " \
   "foreground=\"" matcha "\">" x "</span>"
 
-  char * exports_dir = get_exports_dir ();
+  char * exports_dir = get_exports_dir (self);
   char * str = g_strdup_printf (
     "%s\n"
     "<span foreground=\"%s\">%s</span>"
@@ -401,13 +468,18 @@ update_text (ExportDialogWidget * self)
     _ ("The following files will be created:"),
     matcha, filename, _ ("in the directory:"),
     exports_dir, exports_dir);
-  gtk_label_set_markup (self->output_label, str);
+  bool       is_audio = AUDIO_STACK_VISIBLE (self);
+  GtkLabel * lbl =
+    is_audio
+      ? self->audio_output_label
+      : self->midi_output_label;
+  gtk_label_set_markup (lbl, str);
   g_free (filename);
   g_free (str);
   g_free (exports_dir);
 
   g_signal_connect (
-    G_OBJECT (self->output_label), "activate-link",
+    G_OBJECT (lbl), "activate-link",
     G_CALLBACK (z_gtk_activate_dir_link_func),
     self);
 
@@ -415,289 +487,83 @@ update_text (ExportDialogWidget * self)
 }
 
 static void
-on_song_toggled (
-  GtkToggleButton *    toggle,
-  ExportDialogWidget * self)
+setup_bit_depth_drop_down (AdwComboRow * combo_row)
 {
-  if (gtk_toggle_button_get_active (toggle))
+  GtkStringList * string_list =
+    gtk_string_list_new (NULL);
+
+  for (BitDepth i = BIT_DEPTH_16;
+       i <= BIT_DEPTH_32; i++)
     {
-      gtk_toggle_button_set_active (
-        self->time_range_loop, 0);
-      gtk_toggle_button_set_active (
-        self->time_range_custom, 0);
+      const char * str =
+        audio_bit_depth_to_pretty_str (i);
+      gtk_string_list_append (string_list, str);
     }
-}
 
-static void
-on_loop_toggled (
-  GtkToggleButton *    toggle,
-  ExportDialogWidget * self)
-{
-  if (gtk_toggle_button_get_active (toggle))
-    {
-      gtk_toggle_button_set_active (
-        self->time_range_song, 0);
-      gtk_toggle_button_set_active (
-        self->time_range_custom, 0);
-    }
-}
+  adw_combo_row_set_model (
+    combo_row, G_LIST_MODEL (string_list));
 
-static void
-on_custom_toggled (
-  GtkToggleButton *    toggle,
-  ExportDialogWidget * self)
-{
-  if (gtk_toggle_button_get_active (toggle))
-    {
-      gtk_toggle_button_set_active (
-        self->time_range_song, 0);
-      gtk_toggle_button_set_active (
-        self->time_range_loop, 0);
-    }
-}
-
-static void
-on_mixdown_toggled (
-  GtkToggleButton *    toggle,
-  ExportDialogWidget * self)
-{
-  bool export_stems =
-    !gtk_toggle_button_get_active (toggle);
-  g_settings_set_boolean (
-    S_EXPORT, "export-stems", export_stems);
-  gtk_toggle_button_set_active (
-    self->stems_toggle, export_stems);
-  update_text (self);
-}
-
-static void
-on_stems_toggled (
-  GtkToggleButton *    toggle,
-  ExportDialogWidget * self)
-{
-  bool export_stems =
-    gtk_toggle_button_get_active (toggle);
-  g_settings_set_boolean (
-    S_EXPORT, "export-stems", export_stems);
-  gtk_toggle_button_set_active (
-    self->mixdown_toggle, !export_stems);
-  update_text (self);
-}
-
-/**
- * Creates the combo box model for bit depth.
- */
-static GtkTreeModel *
-create_bit_depth_store (void)
-{
-  GtkTreeIter    iter;
-  GtkTreeStore * store;
-
-  store = gtk_tree_store_new (1, G_TYPE_STRING);
-
-  gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (
-    store, &iter, 0, "16 bit", -1);
-  gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (
-    store, &iter, 0, "24 bit", -1);
-  gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (
-    store, &iter, 0, "32 bit", -1);
-
-  return GTK_TREE_MODEL (store);
-}
-
-static void
-setup_bit_depth_combo_box (
-  ExportDialogWidget * self)
-{
-  GtkTreeModel * model = create_bit_depth_store ();
-  gtk_combo_box_set_model (self->bit_depth, model);
-  gtk_cell_layout_clear (
-    GTK_CELL_LAYOUT (self->bit_depth));
-  GtkCellRenderer * renderer =
-    gtk_cell_renderer_text_new ();
-  gtk_cell_layout_pack_start (
-    GTK_CELL_LAYOUT (self->bit_depth), renderer,
-    TRUE);
-  gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (self->bit_depth), renderer,
-    "text", 0, NULL);
-
-  gtk_combo_box_set_active (self->bit_depth, 0);
-}
-
-/**
- * Creates the combo box model for the pattern.
- */
-static GtkTreeModel *
-create_filename_pattern_store (void)
-{
-  GtkTreeIter    iter;
-  GtkTreeStore * store;
-
-  store = gtk_tree_store_new (1, G_TYPE_STRING);
-
-  gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (
-    store, &iter, 0, _ ("<name>.<format>"), -1);
-  gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (
-    store, &iter, 0, _ ("<date>_<name>.<format>"),
-    -1);
-
-  return GTK_TREE_MODEL (store);
+  int selected_bit_depth = g_settings_get_int (
+    S_EXPORT_AUDIO, "bit-depth");
+  BitDepth depth = audio_bit_depth_int_to_enum (
+    selected_bit_depth);
+  adw_combo_row_set_selected (
+    combo_row, (guint) depth);
 }
 
 static void
 on_filename_pattern_changed (
-  GtkComboBox *        widget,
+  AdwComboRow *        combo_row,
+  GParamSpec *         pspec,
   ExportDialogWidget * self)
 {
+  GSettings * s = get_current_settings (self);
+
   g_settings_set_enum (
-    S_EXPORT, "filename-pattern",
-    gtk_combo_box_get_active (widget));
+    s, "filename-pattern",
+    (int) adw_combo_row_get_selected (combo_row));
 
   update_text (self);
 }
 
 static void
-setup_filename_pattern_combo_box (
-  ExportDialogWidget * self)
+setup_audio_formats_dropdown (
+  AdwComboRow * combo_row)
 {
-  GtkTreeModel * model =
-    create_filename_pattern_store ();
-  gtk_combo_box_set_model (
-    self->filename_pattern, model);
-  gtk_cell_layout_clear (
-    GTK_CELL_LAYOUT (self->filename_pattern));
-  GtkCellRenderer * renderer =
-    gtk_cell_renderer_text_new ();
-  gtk_cell_layout_pack_start (
-    GTK_CELL_LAYOUT (self->filename_pattern),
-    renderer, TRUE);
-  gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (self->filename_pattern),
-    renderer, "text", 0, NULL);
+  GtkStringList * string_list =
+    gtk_string_list_new (NULL);
 
-  gtk_combo_box_set_active (
-    self->filename_pattern,
-    g_settings_get_enum (
-      S_EXPORT, "filename-pattern"));
-
-  g_signal_connect (
-    G_OBJECT (self->filename_pattern), "changed",
-    G_CALLBACK (on_filename_pattern_changed), self);
-}
-
-/**
- * Creates the combo box model for the audio
- * formats.
- */
-static GtkTreeModel *
-create_formats_store (void)
-{
-  GtkTreeIter    iter;
-  GtkTreeStore * store;
-
-  store = gtk_tree_store_new (
-    NUM_EXPORT_FORMAT_COLUMNS, G_TYPE_STRING,
-    G_TYPE_INT);
-
-  for (int i = 0; i < NUM_EXPORT_FORMATS; i++)
+  for (ExportFormat i = 0; i < NUM_EXPORT_FORMATS;
+       i++)
     {
-      gtk_tree_store_append (store, &iter, NULL);
+      if (
+        i == EXPORT_FORMAT_MIDI0
+        || i == EXPORT_FORMAT_MIDI1)
+        continue;
+
       const char * str =
-        exporter_stringize_export_format (i, false);
-      gtk_tree_store_set (
-        store, &iter, COLUMN_EXPORT_FORMAT_LABEL,
-        str, COLUMN_EXPORT_FORMAT, i, -1);
+        export_format_to_pretty_str (i);
+      gtk_string_list_append (string_list, str);
     }
 
-  return GTK_TREE_MODEL (store);
+  adw_combo_row_set_model (
+    combo_row, G_LIST_MODEL (string_list));
+
+  const char * selected_str = g_settings_get_string (
+    S_EXPORT_AUDIO, "format");
+  ExportFormat format =
+    export_format_from_pretty_str (selected_str);
+  adw_combo_row_set_selected (
+    combo_row, (guint) format);
 }
 
 static void
-on_format_changed (
-  GtkComboBox *        widget,
+on_visible_child_changed (
+  AdwViewStack *       stack,
+  GParamSpec *         pspec,
   ExportDialogWidget * self)
 {
   update_text (self);
-  ExportFormat format =
-    gtk_combo_box_get_active (widget);
-
-  g_settings_set_enum (S_EXPORT, "format", format);
-
-#define SET_SENSITIVE(x) \
-  gtk_widget_set_sensitive ( \
-    GTK_WIDGET (self->x), 1)
-
-#define SET_UNSENSITIVE(x) \
-  gtk_widget_set_sensitive ( \
-    GTK_WIDGET (self->x), 0)
-
-  SET_UNSENSITIVE (export_genre);
-  SET_UNSENSITIVE (export_artist);
-  SET_UNSENSITIVE (export_title);
-  SET_UNSENSITIVE (bit_depth);
-  SET_UNSENSITIVE (lanes_as_tracks);
-  SET_UNSENSITIVE (dither);
-
-  switch (format)
-    {
-    case EXPORT_FORMAT_MIDI0:
-      break;
-    case EXPORT_FORMAT_MIDI1:
-      SET_SENSITIVE (lanes_as_tracks);
-      break;
-    case EXPORT_FORMAT_OGG_VORBIS:
-    case EXPORT_FORMAT_OGG_OPUS:
-      SET_SENSITIVE (export_genre);
-      SET_SENSITIVE (export_artist);
-      SET_SENSITIVE (export_title);
-      SET_SENSITIVE (dither);
-      break;
-    default:
-      SET_SENSITIVE (export_genre);
-      SET_SENSITIVE (export_artist);
-      SET_SENSITIVE (export_title);
-      SET_SENSITIVE (bit_depth);
-      SET_SENSITIVE (dither);
-      break;
-    }
-
-#undef SET_SENSITIVE
-#undef SET_UNSENSITIVE
-}
-
-static void
-setup_formats_combo_box (ExportDialogWidget * self)
-{
-  GtkTreeModel * model = create_formats_store ();
-  gtk_combo_box_set_model (self->format, model);
-  gtk_cell_layout_clear (
-    GTK_CELL_LAYOUT (self->format));
-  GtkCellRenderer * renderer =
-    gtk_cell_renderer_text_new ();
-  gtk_cell_layout_pack_start (
-    GTK_CELL_LAYOUT (self->format), renderer, TRUE);
-  gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (self->format), renderer,
-    "text", COLUMN_EXPORT_FORMAT_LABEL, NULL);
-
-  gtk_combo_box_set_active (
-    self->format,
-    g_settings_get_enum (S_EXPORT, "format"));
-}
-
-static void
-on_cancel_clicked (
-  GtkButton *          btn,
-  ExportDialogWidget * self)
-{
-  gtk_window_close (GTK_WINDOW (self));
-  /*gtk_widget_destroy (GTK_WIDGET (self));*/
 }
 
 static void
@@ -719,58 +585,94 @@ init_export_info (
   ExportSettings *     info,
   Track *              track)
 {
+  bool is_audio = AUDIO_STACK_VISIBLE (self);
+  GSettings * s = get_current_settings (self);
+
   memset (info, 0, sizeof (ExportSettings));
-  info->format =
-    gtk_combo_box_get_active (self->format);
-  g_settings_set_enum (
-    S_EXPORT, "format", info->format);
-  info->depth =
-    gtk_combo_box_get_active (self->bit_depth);
-  g_settings_set_enum (
-    S_EXPORT, "bit-depth", info->depth);
-  info->lanes_as_tracks =
-    gtk_check_button_get_active (
-      self->lanes_as_tracks);
-  g_settings_set_boolean (
-    S_EXPORT, "lanes-as-tracks",
-    info->lanes_as_tracks);
-  info->dither =
-    gtk_toggle_button_get_active (self->dither);
-  g_settings_set_boolean (
-    S_EXPORT, "dither", info->dither);
-  info->artist = g_strdup (gtk_editable_get_text (
-    GTK_EDITABLE (self->export_artist)));
-  info->title = g_strdup (gtk_editable_get_text (
-    GTK_EDITABLE (self->export_title)));
-  info->genre = g_strdup (gtk_editable_get_text (
-    GTK_EDITABLE (self->export_genre)));
-  g_settings_set_string (
-    S_EXPORT, "artist", info->artist);
-  g_settings_set_string (
-    S_EXPORT, "title", info->title);
-  g_settings_set_string (
-    S_EXPORT, "genre", info->genre);
 
-#define SET_TIME_RANGE(x) \
-  g_settings_set_enum ( \
-    S_EXPORT, "time-range", TIME_RANGE_##x); \
-  info->time_range = TIME_RANGE_##x
+  if (is_audio)
+    {
+      GtkStringObject * so = GTK_STRING_OBJECT (
+        adw_combo_row_get_selected_item (
+          self->audio_format));
+      const char * pretty_str =
+        gtk_string_object_get_string (so);
+      info->format =
+        export_format_from_pretty_str (pretty_str);
+      g_settings_set_string (
+        s, "format", pretty_str);
+    }
+  else
+    {
+      guint idx = adw_combo_row_get_selected (
+        self->midi_format);
+      if (idx == 0)
+        info->format = EXPORT_FORMAT_MIDI0;
+      else
+        info->format = EXPORT_FORMAT_MIDI1;
+      g_settings_set_int (s, "format", (int) idx);
+    }
 
-  if (gtk_toggle_button_get_active (
-        self->time_range_song))
+  if (is_audio)
     {
-      SET_TIME_RANGE (SONG);
+      BitDepth depth =
+        (BitDepth) adw_combo_row_get_selected (
+          self->audio_bit_depth);
+      info->depth = depth;
+      g_settings_set_int (
+        S_EXPORT_AUDIO, "bit-depth",
+        audio_bit_depth_enum_to_int (depth));
+
+      info->dither = gtk_switch_get_active (
+        self->audio_dither_switch);
+      g_settings_set_boolean (
+        s, "dither", info->dither);
     }
-  else if (gtk_toggle_button_get_active (
-             self->time_range_loop))
+
+  if (!is_audio)
     {
-      SET_TIME_RANGE (LOOP);
+      info->lanes_as_tracks = gtk_switch_get_active (
+        self->midi_export_lanes_as_tracks_switch);
+      g_settings_set_boolean (
+        s, "lanes-as-tracks",
+        info->lanes_as_tracks);
     }
-  else if (gtk_toggle_button_get_active (
-             self->time_range_custom))
+
+  AdwEntryRow * title;
+  AdwEntryRow * artist;
+  AdwEntryRow * genre;
+  if (is_audio)
     {
-      SET_TIME_RANGE (CUSTOM);
+      title = self->audio_title;
+      artist = self->audio_artist;
+      genre = self->audio_genre;
     }
+  else
+    {
+      title = self->midi_title;
+      artist = self->midi_artist;
+      genre = self->midi_genre;
+    }
+
+  info->artist = g_strdup (
+    gtk_editable_get_text (GTK_EDITABLE (artist)));
+  info->title = g_strdup (
+    gtk_editable_get_text (GTK_EDITABLE (title)));
+  info->genre = g_strdup (
+    gtk_editable_get_text (GTK_EDITABLE (genre)));
+  g_settings_set_string (s, "artist", info->artist);
+  g_settings_set_string (s, "title", info->title);
+  g_settings_set_string (s, "genre", info->genre);
+
+  GtkDropDown * time_range_drop_down =
+    is_audio
+      ? self->audio_time_range_drop_down
+      : self->midi_time_range_drop_down;
+  info->time_range =
+    (ExportTimeRange) gtk_drop_down_get_selected (
+      time_range_drop_down);
+  g_settings_set_enum (
+    s, "time-range", info->time_range);
 
   info->file_uri =
     get_export_filename (self, true, track);
@@ -783,17 +685,26 @@ init_export_info (
   strcpy (info->progress_info.error_str, "");
 }
 
+/**
+ * Export.
+ *
+ * @param audio Whether exporting audio, otherwise
+ *   MIDI.
+ */
 static void
-on_export_clicked (
-  GtkButton *          btn,
-  ExportDialogWidget * self)
+on_export (ExportDialogWidget * self, bool audio)
 {
-  bool export_stems = g_settings_get_boolean (
-    S_EXPORT, "export-stems");
+  GSettings * s =
+    audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI;
+  GtkTreeView * tree_view =
+    audio ? self->audio_tracks_treeview
+          : self->midi_tracks_treeview;
+  bool export_stems =
+    g_settings_get_boolean (s, "export-stems");
 
   int      num_tracks;
-  Track ** tracks =
-    get_enabled_tracks (self, &num_tracks);
+  Track ** tracks = get_enabled_tracks (
+    self, tree_view, &num_tracks);
   if (!tracks)
     {
       ui_show_error_message (
@@ -803,7 +714,7 @@ on_export_clicked (
     }
 
   /* make exports dir if not there yet */
-  char * exports_dir = get_exports_dir ();
+  char * exports_dir = get_exports_dir (self);
   io_mkdir (exports_dir);
   g_free (exports_dir);
 
@@ -923,6 +834,24 @@ on_export_clicked (
   free (tracks);
 }
 
+static void
+on_response (
+  GtkDialog * dialog,
+  gint        response_id,
+  gpointer    user_data)
+{
+  ExportDialogWidget * self =
+    Z_EXPORT_DIALOG_WIDGET (user_data);
+
+  if (response_id == GTK_RESPONSE_ACCEPT)
+    {
+      on_export (self, AUDIO_STACK_VISIBLE (self));
+      return;
+    }
+
+  gtk_window_destroy (GTK_WINDOW (dialog));
+}
+
 /**
  * Visible function for tracks tree model.
  *
@@ -993,34 +922,6 @@ add_group_track_children (
     }
 }
 
-static GtkTreeModel *
-create_model_for_tracks (ExportDialogWidget * self)
-{
-  /* checkbox, icon, foreground rgba,
-   * background rgba, name, track */
-  GtkTreeStore * tree_store = gtk_tree_store_new (
-    NUM_TRACK_COLUMNS, G_TYPE_BOOLEAN,
-    G_TYPE_STRING, GDK_TYPE_RGBA, G_TYPE_STRING,
-    G_TYPE_STRING, G_TYPE_POINTER);
-
-  /*GtkTreeIter iter;*/
-  /*gtk_tree_store_append (tree_store, &iter, NULL);*/
-  add_group_track_children (
-    self, tree_store, NULL, P_MASTER_TRACK);
-
-  self->tracks_store = tree_store;
-
-  GtkTreeModel * model = gtk_tree_model_filter_new (
-    GTK_TREE_MODEL (tree_store), NULL);
-  gtk_tree_model_filter_set_visible_func (
-    GTK_TREE_MODEL_FILTER (model),
-    (GtkTreeModelFilterVisibleFunc)
-      tracks_tree_model_visible_func,
-    self, NULL);
-
-  return model;
-}
-
 /**
  * This toggles on all parents recursively if
  * something is toggled.
@@ -1028,6 +929,7 @@ create_model_for_tracks (ExportDialogWidget * self)
 static void
 set_track_toggle_on_parent_recursively (
   ExportDialogWidget * self,
+  GtkTreeView *        tree_view,
   GtkTreeIter *        iter,
   bool                 toggled)
 {
@@ -1036,8 +938,11 @@ set_track_toggle_on_parent_recursively (
       return;
     }
 
+  GtkTreeModelFilter * parent_model =
+    GTK_TREE_MODEL_FILTER (
+      gtk_tree_view_get_model (tree_view));
   GtkTreeModel * model =
-    GTK_TREE_MODEL (self->tracks_store);
+    gtk_tree_model_filter_get_model (parent_model);
 
   /* enable the parent if toggled */
   GtkTreeIter parent_iter;
@@ -1051,18 +956,22 @@ set_track_toggle_on_parent_recursively (
         TRACK_COLUMN_CHECKBOX, toggled, -1);
 
       set_track_toggle_on_parent_recursively (
-        self, &parent_iter, toggled);
+        self, tree_view, &parent_iter, toggled);
     }
 }
 
 static void
 set_track_toggle_recursively (
   ExportDialogWidget * self,
+  GtkTreeView *        tree_view,
   GtkTreeIter *        iter,
   bool                 toggled)
 {
+  GtkTreeModelFilter * parent_model =
+    GTK_TREE_MODEL_FILTER (
+      gtk_tree_view_get_model (tree_view));
   GtkTreeModel * model =
-    GTK_TREE_MODEL (self->tracks_store);
+    gtk_tree_model_filter_get_model (parent_model);
 
   /* if group track, also enable/disable children
    * recursively */
@@ -1086,7 +995,7 @@ set_track_toggle_recursively (
 
           /* recurse */
           set_track_toggle_recursively (
-            self, &child_iter, toggled);
+            self, tree_view, &child_iter, toggled);
         }
     }
 }
@@ -1097,8 +1006,18 @@ on_track_toggled (
   gchar *                 path_str,
   ExportDialogWidget *    self)
 {
+  bool is_audio = AUDIO_STACK_VISIBLE (self);
+  GSettings * s = get_current_settings (self);
+
+  GtkTreeView * tree_view =
+    is_audio
+      ? self->audio_tracks_treeview
+      : self->midi_tracks_treeview;
+  GtkTreeModelFilter * parent_model =
+    GTK_TREE_MODEL_FILTER (
+      gtk_tree_view_get_model (tree_view));
   GtkTreeModel * model =
-    GTK_TREE_MODEL (self->tracks_store);
+    gtk_tree_model_filter_get_model (parent_model);
   g_debug ("path str: %s", path_str);
 
   /* get tree path and iter */
@@ -1128,16 +1047,15 @@ on_track_toggled (
     TRACK_COLUMN_CHECKBOX, toggled, -1);
 
   /* if exporting mixdown (single file) */
-  if (!g_settings_get_boolean (
-        S_EXPORT, "export-stems"))
+  if (!g_settings_get_boolean (s, "export-stems"))
     {
       /* toggle parents if toggled */
       set_track_toggle_on_parent_recursively (
-        self, &iter, toggled);
+        self, tree_view, &iter, toggled);
 
       /* propagate value to children recursively */
       set_track_toggle_recursively (
-        self, &iter, toggled);
+        self, tree_view, &iter, toggled);
     }
 
   update_text (self);
@@ -1300,15 +1218,45 @@ on_track_right_click (
   show_tracks_context_menu (self);
 }
 
-static void
-setup_treeview (ExportDialogWidget * self)
+static GtkTreeModel *
+create_model_for_tracks (ExportDialogWidget * self)
 {
-  self->tracks_model =
-    create_model_for_tracks (self);
-  gtk_tree_view_set_model (
-    self->tracks_treeview, self->tracks_model);
+  /* checkbox, icon, foreground rgba,
+   * background rgba, name, track */
+  GtkTreeStore * tree_store = gtk_tree_store_new (
+    NUM_TRACK_COLUMNS, G_TYPE_BOOLEAN,
+    G_TYPE_STRING, GDK_TYPE_RGBA, G_TYPE_STRING,
+    G_TYPE_STRING, G_TYPE_POINTER);
 
-  GtkTreeView * tree_view = self->tracks_treeview;
+  /*GtkTreeIter iter;*/
+  /*gtk_tree_store_append (tree_store, &iter, NULL);*/
+  add_group_track_children (
+    self, tree_store, NULL, P_MASTER_TRACK);
+
+  GtkTreeModel * model = gtk_tree_model_filter_new (
+    GTK_TREE_MODEL (tree_store), NULL);
+  gtk_tree_model_filter_set_visible_func (
+    GTK_TREE_MODEL_FILTER (model),
+    (GtkTreeModelFilterVisibleFunc)
+      tracks_tree_model_visible_func,
+    self, NULL);
+
+  return model;
+}
+
+static void
+setup_tracks_treeview (
+  ExportDialogWidget * self,
+  bool                 is_audio)
+{
+  GtkTreeView * tree_view =
+    is_audio
+      ? self->audio_tracks_treeview
+      : self->midi_tracks_treeview;
+
+  GtkTreeModel * model =
+    create_model_for_tracks (self);
+  gtk_tree_view_set_model (tree_view, model);
 
   /* init tree view */
   GtkCellRenderer *   renderer;
@@ -1387,6 +1335,98 @@ setup_treeview (ExportDialogWidget * self)
 #endif
 }
 
+static void
+setup_filename_pattern_combo_row (
+  ExportDialogWidget * self,
+  AdwComboRow *        combo_row,
+  bool                 is_audio)
+{
+  const char * strings[] = {
+    _ ("<name>.<format>"),
+    _ ("<date>_<name>.<format>"),
+    NULL,
+  };
+  GtkStringList * string_list =
+    gtk_string_list_new (strings);
+
+  adw_combo_row_set_model (
+    combo_row, G_LIST_MODEL (string_list));
+
+  GSettings * s =
+    is_audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI;
+  adw_combo_row_set_selected (
+    combo_row,
+    (guint) g_settings_get_enum (
+      s, "filename-pattern"));
+
+  g_signal_connect (
+    G_OBJECT (combo_row), "notify::selected-item",
+    G_CALLBACK (on_filename_pattern_changed), self);
+}
+
+static void
+on_mixdown_stem_selection_changed (
+  AdwComboRow *        combo_row,
+  GParamSpec *         pspec,
+  ExportDialogWidget * self)
+{
+  update_text (self);
+}
+
+static void
+setup_mixdown_or_stems_combo_row (
+  ExportDialogWidget * self,
+  AdwComboRow *        combo_row,
+  bool                 is_audio)
+{
+  const char * strings[] = {
+    _ ("Mixdown"),
+    _ ("Stems"),
+    NULL,
+  };
+  GtkStringList * string_list =
+    gtk_string_list_new (strings);
+
+  adw_combo_row_set_model (
+    combo_row, G_LIST_MODEL (string_list));
+
+  adw_combo_row_set_selected (
+    combo_row,
+    (guint) g_settings_get_boolean (
+      is_audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI,
+      "export-stems"));
+
+  g_signal_connect (
+    G_OBJECT (combo_row), "notify::selected-item",
+    G_CALLBACK (on_mixdown_stem_selection_changed),
+    self);
+}
+
+static void
+setup_time_range_drop_down (
+  ExportDialogWidget * self,
+  GtkDropDown *        drop_down,
+  bool                 is_audio)
+{
+  const char * strings[] = {
+    _ ("Loop"),
+    _ ("Song"),
+    _ ("Custom"),
+    NULL,
+  };
+  GtkStringList * string_list =
+    gtk_string_list_new (strings);
+
+  gtk_drop_down_set_model (
+    drop_down, G_LIST_MODEL (string_list));
+
+  gtk_drop_down_set_selected (
+    drop_down,
+    (guint) g_settings_get_enum (
+      is_audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI,
+      "time-range"));
+}
+
 /**
  * Creates a new export dialog.
  */
@@ -1397,31 +1437,6 @@ export_dialog_widget_new ()
     g_object_new (EXPORT_DIALOG_WIDGET_TYPE, NULL);
 
   update_text (self);
-
-  g_signal_connect (
-    G_OBJECT (self->export_button), "clicked",
-    G_CALLBACK (on_export_clicked), self);
-  g_signal_connect (
-    G_OBJECT (self->format), "changed",
-    G_CALLBACK (on_format_changed), self);
-  g_signal_connect (
-    G_OBJECT (self->time_range_song), "toggled",
-    G_CALLBACK (on_song_toggled), self);
-  g_signal_connect (
-    G_OBJECT (self->time_range_loop), "toggled",
-    G_CALLBACK (on_loop_toggled), self);
-  g_signal_connect (
-    G_OBJECT (self->time_range_custom), "toggled",
-    G_CALLBACK (on_custom_toggled), self);
-  g_signal_connect (
-    G_OBJECT (self->mixdown_toggle), "toggled",
-    G_CALLBACK (on_mixdown_toggled), self);
-  g_signal_connect (
-    G_OBJECT (self->stems_toggle), "toggled",
-    G_CALLBACK (on_stems_toggled), self);
-  g_signal_connect (
-    G_OBJECT (self), "response",
-    G_CALLBACK (on_response), self);
 
   return self;
 }
@@ -1439,28 +1454,31 @@ export_dialog_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, ExportDialogWidget, x)
 
-  BIND_CHILD (cancel_button);
-  BIND_CHILD (export_button);
-  BIND_CHILD (export_artist);
-  BIND_CHILD (export_title);
-  BIND_CHILD (export_genre);
-  BIND_CHILD (filename_pattern);
-  BIND_CHILD (bit_depth);
-  BIND_CHILD (time_range_song);
-  BIND_CHILD (time_range_loop);
-  BIND_CHILD (time_range_custom);
-  BIND_CHILD (format);
-  BIND_CHILD (lanes_as_tracks);
-  BIND_CHILD (dither);
-  BIND_CHILD (output_label);
-  BIND_CHILD (tracks_treeview);
-  BIND_CHILD (mixdown_toggle);
-  BIND_CHILD (stems_toggle);
+  BIND_CHILD (title);
+  BIND_CHILD (stack);
+  BIND_CHILD (audio_title);
+  BIND_CHILD (audio_artist);
+  BIND_CHILD (audio_genre);
+  BIND_CHILD (audio_format);
+  BIND_CHILD (audio_bit_depth);
+  BIND_CHILD (audio_dither_switch);
+  BIND_CHILD (audio_filename_pattern);
+  BIND_CHILD (audio_mixdown_or_stems);
+  BIND_CHILD (audio_time_range_drop_down);
+  BIND_CHILD (audio_tracks_treeview);
+  BIND_CHILD (audio_output_label);
+  BIND_CHILD (midi_title);
+  BIND_CHILD (midi_artist);
+  BIND_CHILD (midi_genre);
+  BIND_CHILD (midi_format);
+  BIND_CHILD (midi_export_lanes_as_tracks_switch);
+  BIND_CHILD (midi_filename_pattern);
+  BIND_CHILD (midi_mixdown_or_stems);
+  BIND_CHILD (midi_time_range_drop_down);
+  BIND_CHILD (midi_tracks_treeview);
+  BIND_CHILD (midi_output_label);
 
 #undef BIND_CHILD
-
-  gtk_widget_class_bind_template_callback (
-    klass, on_cancel_clicked);
 }
 
 static void
@@ -1469,59 +1487,87 @@ export_dialog_widget_init (
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  gtk_editable_set_text (
-    GTK_EDITABLE (self->export_artist),
-    g_settings_get_string (S_EXPORT, "artist"));
-  gtk_editable_set_text (
-    GTK_EDITABLE (self->export_title),
-    g_settings_get_string (S_EXPORT, "title"));
-  gtk_editable_set_text (
-    GTK_EDITABLE (self->export_genre),
-    g_settings_get_string (S_EXPORT, "genre"));
+  gtk_dialog_add_button (
+    GTK_DIALOG (self), _ ("_Cancel"),
+    GTK_RESPONSE_REJECT);
+  gtk_dialog_add_button (
+    GTK_DIALOG (self), _ ("_Export"),
+    GTK_RESPONSE_ACCEPT);
+  gtk_dialog_set_default_response (
+    GTK_DIALOG (self), GTK_RESPONSE_ACCEPT);
 
-  gtk_toggle_button_set_active (
-    self->time_range_song, false);
-  gtk_toggle_button_set_active (
-    self->time_range_loop, false);
-  gtk_toggle_button_set_active (
-    self->time_range_custom, false);
-  switch (
-    g_settings_get_enum (S_EXPORT, "time-range"))
-    {
-    case 0: // loop
-      gtk_toggle_button_set_active (
-        self->time_range_loop, true);
-      break;
-    case 1: // song
-      gtk_toggle_button_set_active (
-        self->time_range_song, true);
-      break;
-    case 2: // custom
-      gtk_toggle_button_set_active (
-        self->time_range_custom, true);
-      break;
-    }
-  bool export_stems = g_settings_get_boolean (
-    S_EXPORT, "export-stems");
-  gtk_toggle_button_set_active (
-    self->mixdown_toggle, !export_stems);
-  gtk_toggle_button_set_active (
-    self->stems_toggle, export_stems);
+  /* --- audio --- */
 
-  gtk_check_button_set_active (
-    GTK_CHECK_BUTTON (self->lanes_as_tracks),
+  /* metadata */
+  gtk_editable_set_text (
+    GTK_EDITABLE (self->audio_title),
+    g_settings_get_string (S_EXPORT_AUDIO, "title"));
+  gtk_editable_set_text (
+    GTK_EDITABLE (self->audio_artist),
+    g_settings_get_string (
+      S_EXPORT_AUDIO, "artist"));
+  gtk_editable_set_text (
+    GTK_EDITABLE (self->audio_genre),
+    g_settings_get_string (S_EXPORT_AUDIO, "genre"));
+
+  /* options */
+  setup_audio_formats_dropdown (self->audio_format);
+  gtk_switch_set_active (
+    self->audio_dither_switch,
     g_settings_get_boolean (
-      S_EXPORT, "lanes-as-tracks"));
+      S_EXPORT_AUDIO, "dither"));
+  setup_bit_depth_drop_down (self->audio_bit_depth);
+  setup_filename_pattern_combo_row (
+    self, self->audio_filename_pattern, true);
+  setup_mixdown_or_stems_combo_row (
+    self, self->audio_mixdown_or_stems, true);
 
-  gtk_toggle_button_set_active (
-    GTK_TOGGLE_BUTTON (self->dither),
-    g_settings_get_boolean (S_EXPORT, "dither"));
+  /* selections */
+  setup_time_range_drop_down (
+    self, self->audio_time_range_drop_down, true);
+  setup_tracks_treeview (self, true);
 
-  setup_bit_depth_combo_box (self);
-  setup_formats_combo_box (self);
-  setup_filename_pattern_combo_box (self);
+  /* --- end audio --- */
 
-  setup_treeview (self);
+  /* --- MIDI --- */
 
-  on_format_changed (self->format, self);
+  /* metadata */
+  gtk_editable_set_text (
+    GTK_EDITABLE (self->midi_title),
+    g_settings_get_string (S_EXPORT_MIDI, "title"));
+  gtk_editable_set_text (
+    GTK_EDITABLE (self->midi_artist),
+    g_settings_get_string (S_EXPORT_MIDI, "artist"));
+  gtk_editable_set_text (
+    GTK_EDITABLE (self->midi_genre),
+    g_settings_get_string (S_EXPORT_MIDI, "genre"));
+
+  /* options */
+  adw_combo_row_set_selected (
+    self->midi_format,
+    (guint) g_settings_get_int (
+      S_EXPORT_MIDI, "format"));
+  gtk_switch_set_active (
+    self->midi_export_lanes_as_tracks_switch,
+    g_settings_get_boolean (
+      S_EXPORT_MIDI, "lanes-as-tracks"));
+  setup_filename_pattern_combo_row (
+    self, self->midi_filename_pattern, false);
+  setup_mixdown_or_stems_combo_row (
+    self, self->midi_mixdown_or_stems, false);
+
+  /* selections */
+  setup_time_range_drop_down (
+    self, self->midi_time_range_drop_down, false);
+  setup_tracks_treeview (self, false);
+
+  /* --- end MIDI --- */
+
+  g_signal_connect (
+    G_OBJECT (self->stack), "notify::visible-child",
+    G_CALLBACK (on_visible_child_changed), self);
+
+  g_signal_connect (
+    G_OBJECT (self), "response",
+    G_CALLBACK (on_response), self);
 }

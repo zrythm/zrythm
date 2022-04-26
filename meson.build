@@ -946,7 +946,7 @@ gtk_dep = dependency (
   static: all_static)
 
 libadwaita_dep = dependency (
-  'libadwaita-1', version: '>=1.0.0',
+  'libadwaita-1', version: '>=1.2',
   fallback: ['libadwaita', 'libadwaita_dep'],
   default_options: [
     'vapi=false', 'tests=false',

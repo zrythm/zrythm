@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_EXPORT_H__
 #define __AUDIO_EXPORT_H__
@@ -40,17 +24,33 @@ typedef enum ExportFormat
   EXPORT_FORMAT_WAV,
   EXPORT_FORMAT_MP3,
 
+  /** Raw audio data. */
+  EXPORT_FORMAT_RAW,
+
   /** MIDI type 0. */
   EXPORT_FORMAT_MIDI0,
 
   /** MIDI type 1. */
   EXPORT_FORMAT_MIDI1,
 
-  /** Raw audio data. */
-  EXPORT_FORMAT_RAW,
-
   NUM_EXPORT_FORMATS,
 } ExportFormat;
+
+/**
+ * Returns the format as a human friendly label.
+ */
+const char *
+export_format_to_pretty_str (ExportFormat format);
+
+/**
+ * Returns the audio format as a file extension.
+ */
+const char *
+export_format_to_ext (ExportFormat format);
+
+ExportFormat
+export_format_from_pretty_str (
+  const char * pretty_str);
 
 /**
  * Time range to export.
@@ -256,17 +256,6 @@ void
 exporter_create_audio_track_after_bounce (
   ExportSettings * settings,
   const Position * pos);
-
-/**
- * Returns the audio format as string.
- *
- * @param extension Whether to return the extension
- *   for this format, or a human friendly label.
- */
-const char *
-exporter_stringize_export_format (
-  ExportFormat format,
-  bool         extension);
 
 /**
  * Exports an audio file based on the given

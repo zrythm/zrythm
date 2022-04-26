@@ -7,7 +7,10 @@
 #include "project.h"
 #include "utils/audio.h"
 #include "utils/math.h"
+#include "utils/string.h"
 #include "utils/vamp.h"
+
+#include <glib/gi18n.h>
 
 #include <audec/audec.h>
 #include <samplerate.h>
@@ -19,6 +22,32 @@
 #endif
 
 static int num_cores = 0;
+
+static const char * bit_depth_pretty_strings[] = {
+  __ ("16 bit"),
+  __ ("24 bit"),
+  __ ("32 bit"),
+};
+
+BitDepth
+audio_bit_depth_from_pretty_str (const char * str)
+{
+  for (BitDepth i = BIT_DEPTH_16;
+       i <= BIT_DEPTH_32; i++)
+    {
+      if (string_is_equal (
+            str, _ (bit_depth_pretty_strings[i])))
+        return i;
+    }
+
+  g_return_val_if_reached (BIT_DEPTH_16);
+}
+
+const char *
+audio_bit_depth_to_pretty_str (BitDepth depth)
+{
+  return _ (bit_depth_pretty_strings[depth]);
+}
 
 void
 audio_audec_log_func (

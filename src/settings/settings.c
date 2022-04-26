@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -60,8 +44,10 @@ settings_new (void)
 
   self->general = g_settings_new (
     GSETTINGS_ZRYTHM_PREFIX ".general");
-  self->export = g_settings_new (
-    GSETTINGS_ZRYTHM_PREFIX ".export");
+  self->export_audio = g_settings_new (
+    GSETTINGS_ZRYTHM_PREFIX ".export.audio");
+  self->export_midi = g_settings_new (
+    GSETTINGS_ZRYTHM_PREFIX ".export.midi");
   self->monitor = g_settings_new (
     GSETTINGS_ZRYTHM_PREFIX ".monitor");
   self->ui =
@@ -103,7 +89,7 @@ settings_new (void)
 #undef PREFERENCES_PREFIX
 
   g_return_val_if_fail (
-    self->general && self->export && self->ui
+    self->general && self->export_audio && self->ui
       && self->ui_inspector,
     NULL);
 
@@ -573,7 +559,8 @@ settings_free (Settings * self)
   FREE_SETTING (monitor);
   FREE_SETTING (ui);
   FREE_SETTING (transport);
-  FREE_SETTING (export);
+  FREE_SETTING (export_audio);
+  FREE_SETTING (export_midi);
   FREE_SETTING (ui_mixer);
   FREE_SETTING (ui_inspector);
   FREE_SETTING (ui_panels);

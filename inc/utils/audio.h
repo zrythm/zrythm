@@ -56,6 +56,28 @@ audio_bit_depth_enum_to_int (BitDepth depth)
     }
 }
 
+static inline BitDepth
+audio_bit_depth_int_to_enum (int depth)
+{
+  switch (depth)
+    {
+    case 16:
+      return BIT_DEPTH_16;
+    case 24:
+      return BIT_DEPTH_24;
+    case 32:
+      return BIT_DEPTH_32;
+    default:
+      g_return_val_if_reached (BIT_DEPTH_16);
+    }
+}
+
+BitDepth
+audio_bit_depth_from_pretty_str (const char * str);
+
+const char *
+audio_bit_depth_to_pretty_str (BitDepth depth);
+
 /**
  * Number of plugin slots per channel.
  */

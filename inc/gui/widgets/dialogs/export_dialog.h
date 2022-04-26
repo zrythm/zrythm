@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -26,6 +10,7 @@
 #ifndef __GUI_WIDGETS_EXPORT_DIALOG_H__
 #define __GUI_WIDGETS_EXPORT_DIALOG_H__
 
+#include <adwaita.h>
 #include <gtk/gtk.h>
 
 #define EXPORT_DIALOG_WIDGET_TYPE \
@@ -54,9 +39,37 @@ typedef enum ExportFilenamePattern
  */
 typedef struct _ExportDialogWidget
 {
-  GtkDialog         parent_instance;
-  GtkButton *       cancel_button;
-  GtkButton *       export_button;
+  GtkDialog parent_instance;
+
+  AdwViewSwitcherTitle * title;
+  AdwViewStack *         stack;
+
+  /* audio */
+  AdwEntryRow * audio_title;
+  AdwEntryRow * audio_artist;
+  AdwEntryRow * audio_genre;
+  AdwComboRow * audio_format;
+  AdwComboRow * audio_bit_depth;
+  GtkSwitch *   audio_dither_switch;
+  AdwComboRow * audio_filename_pattern;
+  AdwComboRow * audio_mixdown_or_stems;
+  GtkDropDown * audio_time_range_drop_down;
+  GtkTreeView * audio_tracks_treeview;
+  GtkLabel *    audio_output_label;
+
+  /* MIDI */
+  AdwEntryRow * midi_title;
+  AdwEntryRow * midi_artist;
+  AdwEntryRow * midi_genre;
+  AdwComboRow * midi_format;
+  GtkSwitch *   midi_export_lanes_as_tracks_switch;
+  AdwComboRow * midi_filename_pattern;
+  AdwComboRow * midi_mixdown_or_stems;
+  GtkDropDown * midi_time_range_drop_down;
+  GtkTreeView * midi_tracks_treeview;
+  GtkLabel *    midi_output_label;
+
+#if 0
   GtkEntry *        export_artist;
   GtkEntry *        export_title;
   GtkEntry *        export_genre;
@@ -68,17 +81,10 @@ typedef struct _ExportDialogWidget
   GtkComboBox *     bit_depth;
   GtkCheckButton *  lanes_as_tracks;
   GtkToggleButton * dither;
-  GtkLabel *        output_label;
-
-  GtkTreeView *  tracks_treeview;
-  GtkTreeModel * tracks_model;
-
-  /** Underlying model of @ref
-   * ExportDialogWidget.tracks_model. */
-  GtkTreeStore * tracks_store;
 
   GtkToggleButton * mixdown_toggle;
   GtkToggleButton * stems_toggle;
+#endif
 } ExportDialogWidget;
 
 /**

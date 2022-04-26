@@ -253,13 +253,6 @@ Args:
            "export-time-range"
            '("loop" "song" "custom"))
          (print-enum
-           "export-format"
-           '("flac" "ogg-vorbis" "ogg-opus" "wav"
-             "mp3" "midi-0" "midi-1" "raw"))
-         (print-enum
-           "export-bit-depth"
-           '("16" "24" "32"))
-         (print-enum
            "export-filename-pattern"
            '("append-format"
              "prepend-date-append-format"))
@@ -906,7 +899,7 @@ Args:
 
          (schema-print
            (make-schema
-             "export"
+             "export.audio"
              (list
                (make-schema-key
                  "genre" "s" "Electronic"
@@ -925,10 +918,55 @@ Args:
                  "song"
                  "Time range"
                  "Time range to export.")
-               (make-schema-key-with-enum
-                 "format" "export-format" "flac"
+               (make-schema-key
+                 "format" "s" "FLAC"
                  "Format"
                  "Format to export to.")
+               (make-schema-key-with-enum
+                 "filename-pattern"
+                 "export-filename-pattern"
+                 "append-format"
+                 "Filename pattern"
+                 "Filename pattern for exported files.")
+               (make-schema-key
+                 "dither" "b" "false"
+                 "Dither"
+                 "Add dither while exporting, if applicable.")
+               (make-schema-key
+                 "export-stems" "b" "false"
+                 "Export stems"
+                 "Whether to export stems instead of the mixdown.")
+               (make-schema-key
+                 "bit-depth" "i" "24"
+                 "Bit depth"
+                 "Bit depth to use when exporting")
+             ))) ;; export.audio
+
+         (schema-print
+           (make-schema
+             "export.midi"
+             (list
+               (make-schema-key
+                 "genre" "s" "Electronic"
+                 "Genre"
+                 "Genre to use when exporting.")
+               (make-schema-key
+                 "artist" "s" "Zrythm"
+                 "Artist"
+                 "Artist to use when exporting.")
+               (make-schema-key
+                 "title" "s" "My Project"
+                 "Title"
+                 "Title to use when exporting.")
+               (make-schema-key-with-enum
+                 "time-range" "export-time-range"
+                 "song"
+                 "Time range"
+                 "Time range to export.")
+               (make-schema-key-with-range
+                 "format" "i" "0" "1"
+                 "1" "Format"
+                 "MIDI file format (Type 0 or 1).")
                (make-schema-key-with-enum
                  "filename-pattern"
                  "export-filename-pattern"
@@ -940,19 +978,10 @@ Args:
                  "Lanes as tracks"
                  "Export track lanes as separate MIDI tracks.")
                (make-schema-key
-                 "dither" "b" "false"
-                 "Dither"
-                 "Add dither while exporting, if applicable.")
-               (make-schema-key
                  "export-stems" "b" "false"
                  "Export stems"
                  "Whether to export stems instead of the mixdown.")
-               (make-schema-key-with-enum
-                 "bit-depth"
-                 "export-bit-depth" "24"
-                 "Bit depth"
-                 "Bit depth to use when exporting")
-             ))) ;; export
+             ))) ;; export.midi
 
          (schema-print
            (make-schema

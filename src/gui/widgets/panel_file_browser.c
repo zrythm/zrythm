@@ -343,7 +343,7 @@ on_bookmark_row_activated (
 
 static void
 on_file_search_changed (
-  GtkSearchEntry *      search_entry,
+  GtkSearchEntry *         search_entry,
   PanelFileBrowserWidget * self)
 {
   gtk_filter_changed (
