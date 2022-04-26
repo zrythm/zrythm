@@ -9,16 +9,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-14 12:07+0100\n"
-"PO-Revision-Date: 2022-02-28 15:54+0000\n"
-"Last-Translator: 이정희 <daemul72@gmail.com>\n"
-"Language-Team: Korean <https://hosted.weblate.org/projects/zrythm/zrythm/ko/"
-">\n"
+"PO-Revision-Date: 2022-04-21 05:09+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Korean <https://hosted.weblate.org/projects/zrythm/zrythm/ko/>"
+"\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.11.1-dev\n"
+"X-Generator: Weblate 4.12-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:139 inc/audio/engine.h:278
@@ -3103,7 +3103,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:111
 msgid "Welcome"
-msgstr ""
+msgstr "어서 오십시오"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:101
 msgid "MIDI region exported."

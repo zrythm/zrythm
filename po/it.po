@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-14 12:07+0100\n"
-"PO-Revision-Date: 2022-01-22 17:40+0000\n"
-"Last-Translator: G R <gradaellig@gmail.com>\n"
+"PO-Revision-Date: 2022-04-21 05:09+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/zrythm/it/"
 ">\n"
 "Language: it\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.11-dev\n"
+"X-Generator: Weblate 4.12-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:139 inc/audio/engine.h:278
@@ -3989,7 +3989,7 @@ msgstr ""
 
 #: src/settings/settings.c:335
 msgid "Reset to Factory Settings"
-msgstr ""
+msgstr "Ripristina alle impostazioni di fabbrica"
 
 #: src/settings/settings.c:347
 msgid ""

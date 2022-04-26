@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.28\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-14 12:08+0100\n"
-"PO-Revision-Date: 2022-04-14 10:42+0000\n"
+"PO-Revision-Date: 2022-04-24 18:08+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
+"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ca/>\n"
 "Language: ca\n"
-"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ca/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.12.1-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -32,9 +33,9 @@ msgid ""
 "path zrythm_launch``"
 msgstr ""
 "Zrythm entén les següents variables d'entorn. Es poden configurar a :file:`."
-"bashrc` o a un fitxer de configuració de la shell similar, la configuració "
-"del sistema operatiu, o es poden passar directament quan s'executen :program:"
-"`zrythm` o :program:`zrythm_launch`, com a: ``LV2_PATH=/el meu/camí/"
+"bashrc` o a un fitxer de configuració de la shell semblant, la configuració "
+"del sistema operatiu, o es poden passar directament quan s'executen "
+":program:`zrythm` o :program:`zrythm_launch`, com a: ``LV2_PATH=/el meu/camí/"
 "personalitzat zrythm_launch``"
 
 #: ../../appendix/environment.rst:23
@@ -87,8 +88,8 @@ msgid ""
 "details."
 msgstr ""
 "Quan Zrythm s'iniciï per primera vegada, també et demanarà que seleccionis "
-"un directori per a desar les teves dades d'usuari. Veure :term:`Zrythm user "
-"path` per a més detalls."
+"un directori per a desar les teves dades d'usuari. Consulta :term:`Zrythm "
+"user path` per a més detalls."
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "Installed Files"
@@ -213,8 +214,8 @@ msgid ""
 "details."
 msgstr ""
 "Zrythm proporciona maneres de sobreescriure alguns d'aquests fitxers amb "
-"fitxers especificats per :term:`Zrythm user path`. Veure :doc:`.. /theming/"
-"intro` per a més detalls."
+"fitxers especificats per :term:`Zrythm user path`. Consulta :doc:`.. /"
+"theming/intro` per a més detalls."
 
 #: ../../appendix/files-and-directories.rst:78
 msgid "User Files"
@@ -324,7 +325,7 @@ msgid ""
 "These 12 chords are linked to the chords in the :ref:`Chord Editor <editing/"
 "clip-editors/chord-editor:Chord Editor>`."
 msgstr ""
-"Aquests 12 acords estan enllaçats amb els acords del :ref:`Chord Editor "
+"Aquests 12 acords estan enllaçats amb els acords de l' :ref:`Editor d'acords "
 "<editing/clip-editors/chord-editor:Chord Editor>`."
 
 #: ../../chords-and-scales/chord-pad.rst:23
@@ -351,7 +352,7 @@ msgid ""
 "A list of preset packs and presets is found in the :ref:`Right Panel <zrythm-"
 "interface/right-panel:Right Panel>` under :guilabel:`Chord Preset Browser`."
 msgstr ""
-"Una llista de paquets i valors predefinits es troba a :ref:`Right Panel "
+"Una llista de paquets i valors predefinits es troba al :ref:`quadre dret "
 "<zrythm-interface/right-panel:Right Panel>` a :guilabel:`Chord Preset "
 "Browser`."
 
@@ -369,7 +370,7 @@ msgid ""
 "Clicking a preset pack in the top will filter the list of presets to presets "
 "in the selected pack."
 msgstr ""
-"En fer clic a un paquet predefinit a la part superior, es filtrarà la llista "
+"Fent clic a un paquet predefinit a la part superior, es filtrarà la llista "
 "de predefinits a predefinits del paquet seleccionat."
 
 #: ../../chords-and-scales/chord-pad.rst:48
@@ -384,10 +385,10 @@ msgid ""
 "`auditioning in the File Browser <plugins-files/audio-midi-files/file-"
 "browser:Auditioning>`."
 msgstr ""
-"Pots audicionar els preajustos d'acords seleccionant un complement "
+"Pots escoltar els preajustos d'acords seleccionant un complement "
 "d'instrument de la llista i utilitzant els controls de reproducció "
-"disponibles. Això funciona de manera similar a :ref:`auditioning in the File "
-"Browser <plugins-files/audio-midi-files/file-browser:Auditioning>`."
+"disponibles. Això funciona de manera semblant a :ref:`audició al navegador "
+"de fitxers <plugins-files/audio-midi-files/file-browser:Auditioning>`."
 
 #: ../../chords-and-scales/chord-pad.rst:56
 msgid "Standard Packs"
@@ -398,7 +399,7 @@ msgid ""
 "Zrythm comes with some standard packs that cannot be renamed or deleted."
 msgstr ""
 "Zrythm inclou alguns paquets estàndard que no es poden canviar de nom ni "
-"esborrar."
+"suprimir."
 
 #: ../../chords-and-scales/chord-pad.rst:62
 msgid "Custom Packs"
@@ -406,7 +407,7 @@ msgstr "Paquets personalitzats"
 
 #: ../../chords-and-scales/chord-pad.rst:65
 msgid "Creating Custom Packs"
-msgstr "Crear pistes personalitzades"
+msgstr "Creació de pistes personalitzades"
 
 #: ../../chords-and-scales/chord-pad.rst:67
 msgid ""
@@ -449,7 +450,7 @@ msgid ""
 "Clicking on the :guilabel:`Save Preset` button in the top part of the chord "
 "pad will allow you to save the current chord configuration in a preset."
 msgstr ""
-"Fer clic al botó :guilabel:`Save Preset`a la part superior del pad d'acords "
+"Fent clic al botó :guilabel:`Save Preset`a la part superior del pad d'acords "
 "et permetrà desar la configuració actual de l'acord en un preajust."
 
 #: ../../chords-and-scales/chord-pad.rst:100
@@ -465,9 +466,9 @@ msgid ""
 "To load a preset, click the :guilabel:`Load Preset` button in the top part "
 "of the chord pad, then select the preset you want to use."
 msgstr ""
-"Per carregar un valor preestablert, feu clic al botó :guilabel:`Load Preset` "
-"a la part superior del pad d'acords i, a continuació, selecciona el preajust "
-"que vols utilitzar."
+"Per a carregar un valor preestablert, fes clic al botó :guilabel:`Load "
+"Preset` a la part superior del pad d'acords i, a continuació, selecciona el "
+"preajust que vols utilitzar."
 
 #: ../../chords-and-scales/chord-pad.rst:112
 msgid "Selecting a chord preset"
@@ -489,9 +490,9 @@ msgid ""
 "Chords can be generated from a scale and a root note by clicking on the :"
 "guilabel:`Load Preset` button, then selecting a scale and a root note."
 msgstr ""
-"Els acords es poden generar a partir d'una escala i una nota d'arrel fent "
+"Els acords es poden generar a partir d'una escala i una nota fonamental fent "
 "clic al botó :guilabel:`Load Preset` i, a continuació, seleccionant una "
-"escala i una nota d'arrel."
+"escala i una nota fonamental."
 
 #: ../../chords-and-scales/chord-pad.rst:127
 msgid "Generating chords from a scale"
@@ -506,7 +507,7 @@ msgid ""
 "Clicking on the up/down transpose buttons will transpose all chords by 1 "
 "semitone up or down."
 msgstr ""
-"En fer clic als botons de transposició amunt/avall, tots els acords "
+"Fent clic als botons de transposició amunt/avall, tots els acords "
 "transposaran 1 semitó amunt o avall."
 
 #: ../../chords-and-scales/chord-pad.rst:136
@@ -522,7 +523,7 @@ msgid ""
 "Clicking on the chord button will bring up the chord selector window that "
 "allows you to change the current chord."
 msgstr ""
-"En fer clic al botó d'acord, apareixerà la finestra de selecció d'acords que "
+"Fent clic al botó d'acord, apareixerà la finestra de selecció d'acords que "
 "et permetrà canviar l'acord actual."
 
 #: ../../chords-and-scales/chord-pad.rst:148
@@ -561,7 +562,7 @@ msgid ""
 "octave higher, and each inversion towards the left moves the highest note in "
 "the chord one octave below."
 msgstr ""
-"Fer clic a les fletxes esquerra o dreta et permetrà invertir l'acord. Cada "
+"Fent clic a les fletxes esquerra o dreta et permetrà invertir l'acord. Cada "
 "inversió cap a la dreta mou la nota més baixa de l'acord una octava més "
 "amunt, i cada inversió cap a l'esquerra mou la nota més alta de l'acord una "
 "octava per sota."
@@ -641,7 +642,7 @@ msgstr "Visualitzant els paràmetres actuals"
 
 #: ../../configuration/additional-settings.rst:28
 msgid "See :option:`zrythm --print-settings`."
-msgstr "Veure :option:`zrythm --print-settings`."
+msgstr "Consulta :option:`zrythm --print-settings`."
 
 #: ../../configuration/additional-settings.rst:31
 #: ../../configuration/preferences.rst:106
@@ -653,6 +654,8 @@ msgid ""
 "See :option:`zrythm --reset-to-factory` and :ref:`configuration/preferences:"
 "Reset to Factory Settings`."
 msgstr ""
+"Consulta :option:`zrythm --reset-to-factory` i :ref:`configuration/"
+"preferences:Reset to Factory Settings`."
 
 #: ../../configuration/additional-settings.rst:37
 msgid "Plugin Settings"
@@ -668,10 +671,10 @@ msgid ""
 msgstr ""
 "Situat a :file:`plugin-settings.yaml` sota el :term:`Zrythm user path`, "
 "aquesta és una col·lecció de paràmetres per complement, com ara si s'ha "
-"d'obrir el complement amb :term:`Carla`, el mode :ref:`bridge mode <plugins-"
-"files/plugins/plugin-window:Opening Plugins in Bridged Mode>` per a "
-"utilitzar i si s'ha d'utilitzar una interfície d'usuari genèrica :ref:"
-"`generic UI <plugins-files/plugins/plugin-window:Generic UIs>`."
+"d'obrir el complement amb :term:`Carla`, el :ref:`mode pontat<plugins-files/"
+"plugins/plugin-window:Opening Plugins in Bridged Mode>` per a utilitzar i si "
+"s'ha d'utilitzar una :ref:`IU genèrica <plugins-files/plugins/plugin-window:"
+"Generic UIs>`."
 
 #: ../../configuration/additional-settings.rst:46
 msgid ""
@@ -681,7 +684,8 @@ msgid ""
 msgstr ""
 "Zrythm recordarà l'última configuració utilitzada per a cada complement i "
 "l'aplicarà automàticament quan decideixis instanciar aquest complement des "
-"del :doc:`plugin browser <../plugins-files/plugins/plugin-browser>`."
+"del :doc:`navegador de complements <../plugins-files/plugins/plugin-"
+"browser>`."
 
 #: ../../configuration/additional-settings.rst:51
 msgid ""
@@ -709,10 +713,10 @@ msgid ""
 "<configuration/preferences:Preferences>` and make these devices available "
 "in :ref:`track inputs <tracks/inspector-page:Inputs>` and other places."
 msgstr ""
-"Zrythm es connectarà automàticament als dispositius especificats a :ref:"
-"`Preferences <configuration/preferences:Preferences>` i farà que aquests "
-"dispositius estiguin disponibles a :ref:`track inputs <tracks/inspector-page:"
-"Inputs>` i altres llocs."
+"Zrythm es connectarà automàticament als dispositius especificats a :ref:`"
+"Preferències <configuration/preferences:Preferences>` i farà que aquests "
+"dispositius estiguin disponibles a les :ref:`entrades de pista <tracks/"
+"inspector-page:Inputs>` i altres llocs."
 
 #: ../../configuration/device-setup.rst:23
 msgid "JACK/PipeWire"
@@ -725,7 +729,7 @@ msgid ""
 "qjackctl.sourceforge.io/>`_."
 msgstr ""
 "Zrythm exposa els ports a JACK (o PipeWire) quan s'utilitza l'àudio JACK i "
-"el backend MIDI. Aquests ports es poden veure amb una eina com `Qjackctl "
+"el rerefons MIDI. Aquests ports es poden veure amb una eina com `Qjackctl "
 "<https://qjackctl.sourceforge.io/>`_."
 
 #: ../../configuration/device-setup.rst:33
@@ -765,10 +769,10 @@ msgid ""
 "clicking on eligible controls and selecting :guilabel:`MIDI learn`."
 msgstr ""
 "Els controls del dispositiu MIDI es poden assignar als controls dins de "
-"Zrythm (en els controls que ho admeten). Després d'habilitar un dispositiu a:"
-"ref:`Preferences <configuration/preferences:Preferences>`, es pot crear un "
-"mapa fent clic amb el botó dret sobre els controls elegibles i seleccionant :"
-"guilabel:`MIDI learn`."
+"Zrythm (en els controls que ho admeten). Després d'habilitar un dispositiu a "
+":ref:`Preferències <configuration/preferences:Preferences>`, es pot crear un "
+"mapa fent clic amb el botó dret sobre els controls elegibles i seleccionant "
+":guilabel:`MIDI learn`."
 
 #: ../../configuration/device-setup.rst:62
 msgid "MIDI learn on channel sends"
@@ -803,8 +807,9 @@ msgid ""
 "Device mappings (bindings) can be found under the :guilabel:`Bindings` tab "
 "in the :ref:`main panel <zrythm-interface/main-panel:Main Panel>`."
 msgstr ""
-"Els mapes de dispositius (enllaços) es poden trobar a la pestanya :guilabel:"
-"`Bindings` al :ref:`main panel <zrythm-interface/main-panel:Main Panel>`."
+"Els mapes de dispositius (enllaços) es poden trobar a la pestanya "
+":guilabel:`Bindings` al :ref:`quadre principal <zrythm-interface/main-panel:"
+"Main Panel>`."
 
 #: ../../configuration/device-setup.rst:86
 msgid "MIDI CC bindings"
@@ -890,7 +895,7 @@ msgstr ""
 
 #: ../../configuration/preferences.rst:51
 msgid "Backend Selection"
-msgstr "Selecció de backend"
+msgstr "Selecció de rerefons"
 
 #: ../../configuration/preferences.rst:53
 msgid ""
@@ -899,10 +904,10 @@ msgid ""
 "send output to devices. :term:`JACK`/JACK MIDI is the recommended backend "
 "combination on all systems."
 msgstr ""
-"El backend d'àudio/MIDI a :menuselection:`General --> Engine` controla quina "
-"implementació del motor d'àudio utilitzarà Zrythm per a rebre entrada i "
-"enviar sortida als dispositius. :term:`JACK`/JACK MIDI és la combinació de "
-"backend recomanada en tots els sistemes."
+"El rerefons d'àudio/MIDI a :menuselection:`General --> Engine` controla "
+"quina implementació del motor d'àudio utilitzarà Zrythm per a rebre entrada "
+"i enviar sortida als dispositius. :term:`JACK`/JACK MIDI és la combinació de "
+"rerefons recomanada en tots els sistemes."
 
 #: ../../configuration/preferences.rst:61
 msgid "Input Devices/Controllers"
@@ -922,7 +927,7 @@ msgstr ""
 #: ../../configuration/preferences.rst:69
 msgid "Zrythm will ignore input from any devices not explicitly enabled."
 msgstr ""
-"Zrythm ignorarà l'entrada de qualsevol dispositiu que no estigui activat "
+"Zrythm ignorarà l'entrada de qualsevol dispositiu que no estigui habilitat "
 "explícitament."
 
 #: ../../configuration/preferences.rst:73
@@ -946,7 +951,7 @@ msgid ""
 "after you load the project in a new instance of Zrythm."
 msgstr ""
 "L'historial de desfer es desa dins dels projectes Zrythm, de manera que "
-"encara podeu desfer fins i tot després de carregar el projecte en una nova "
+"encara pots desfer fins i tot després de carregar el projecte en una nova "
 "instància de Zrythm."
 
 #: ../../configuration/preferences.rst:85
@@ -991,11 +996,13 @@ msgid ""
 "There is an option to reset Zrythm to its default settings under :"
 "menuselection:`General --> Other`."
 msgstr ""
+"Hi ha una opció per a restablir Zrythm a la seva configuració predeterminada "
+"a :menuselection:`General --> Other`."
 
 #: ../../configuration/preferences.rst:111
-#, fuzzy
 msgid "This behaves similarly to :option:`zrythm --reset-to-factory`."
-msgstr "Veure :option:`zrythm --reset-to-factory`."
+msgstr ""
+"Això es comporta de manera semblant a :option:`zrythm --reset-to-factory`."
 
 #: ../../configuration/shortcuts.rst:7
 msgid "Shortcuts"
@@ -1113,7 +1120,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:45
 msgid "Editing this Manual"
-msgstr "Editant aquest manual"
+msgstr "Edició d'aquest manual"
 
 #: ../../contributing/intro.rst:46
 msgid ""
@@ -1155,9 +1162,9 @@ msgid ""
 "`official documentation <https://docs.weblate.org/en/latest/user/translating."
 "html>`_."
 msgstr ""
-"Clica el projecte en què vols treballar i, a continuació, selecciona un "
+"Clica al projecte en què vols treballar i, a continuació, seleccionant un "
 "idioma a la pantalla que segueix. Per a més informació sobre l'ús del "
-"Weblate, consulta `official documentation <https://docs.weblate.org/en/"
+"Weblate, consulta la `documentació oficial <https://docs.weblate.org/en/"
 "latest/user/translating.html>`_."
 
 #: ../../contributing/intro.rst:69
@@ -1167,10 +1174,10 @@ msgid ""
 "<https://steinberg.help/cubase_pro_artist/v9/fr/>`_ for example (replace "
 "`fr` in the URL with your language code)."
 msgstr ""
-"Zrythm conté una terminologia similar al programari d'àudio existent. És "
-"possible que et resulti útil demanar-los en préstec termes. Veure el manual "
-"`Cubase Pro Artist manual <https://steinberg.help/cubase_pro_artist/v9/fr/"
-">`_ per exemple (substituïu `fr` a l'URL amb el teu codi d'idioma)."
+"Zrythm conté una terminologia semblant al programari d'àudio existent. És "
+"possible que et resulti útil demanar termes en préstec. Consulta el manual `"
+"Cubase Pro Artist manual <https://steinberg.help/cubase_pro_artist/v9/fr/>`_ "
+"per exemple (substituint `fr` a l'URL amb el teu codi d'idioma)."
 
 #: ../../contributing/intro.rst:76
 msgid "User Manual"
@@ -1272,8 +1279,8 @@ msgid ""
 "Alternatively, you can `purchase a Zrythm installer <https://www.zrythm.org/"
 "en/download.html>`_."
 msgstr ""
-"Alternativament, pots `purchase a Zrythm installer <https://www.zrythm.org/"
-"en/download.html>`_."
+"Alternativament, pots `comprar un instal·lador Zrythm <https://www.zrythm."
+"org/en/download.html>`_."
 
 #: ../../credits/intro.rst:5
 msgid "Credits"
@@ -1312,7 +1319,7 @@ msgid ""
 "See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source "
 "distribution."
 msgstr ""
-"Veure el fitxer :download:`TRANSLATORS <../../../TRANSLATORS>` a la "
+"Consulta el fitxer :download:`TRADUCTORS <../../../TRANSLATORS>` a la "
 "distribució font."
 
 #: ../../credits/intro.rst:37
@@ -1475,7 +1482,7 @@ msgstr "Atenua l'àudio des de l'amplitud total fins al silenci."
 
 #: ../../editing/clip-editors/audio-editor.rst:83
 msgid "Nudge"
-msgstr "Empenyér"
+msgstr "Copet"
 
 #: ../../editing/clip-editors/audio-editor.rst:84
 msgid "Shift the audio by 1 sample backward or forward."
@@ -1487,7 +1494,7 @@ msgstr "Invertir"
 
 #: ../../editing/clip-editors/audio-editor.rst:86
 msgid "Reverse the audio (play back backwards)."
-msgstr "Inverteix l'àudio (reprodueix al revés)."
+msgstr "Invertir l'àudio (reprodueix al revés)."
 
 #: ../../editing/clip-editors/audio-editor.rst:111
 msgid "External Program"
@@ -1634,7 +1641,8 @@ msgstr "Vital"
 #: ../../editing/clip-editors/automation-editor.rst:51
 msgid "The curve that Vital synth uses, similar to exponential curve."
 msgstr ""
-"La corba que utilitza el sintetitzador Vital, similar a la corba exponencial."
+"La corba que utilitza el sintetitzador Vital, semblant a la corba "
+"exponencial."
 
 #: ../../editing/clip-editors/automation-editor.rst:54
 msgid "Pulse"
@@ -1712,12 +1720,12 @@ msgid ""
 "These chords correspond to each chord in the :ref:`Chord pad <chords-and-"
 "scales/chord-pad:Chord Pad>`."
 msgstr ""
-"Aquests acords corresponen a cada acord del :ref:`Chord pad <chords-and-"
-"scales/chord-pad:Chord Pad>`."
+"Aquests acords corresponen a cada acord del :ref:`Pad d'acords <chords-"
+"and-scales/chord-pad:Chord Pad>`."
 
 #: ../../editing/clip-editors/chord-editor.rst:35
 msgid "The controls available are similar to those in the chord pad."
-msgstr "Els controls disponibles són similars als del pad d'acords."
+msgstr "Els controls disponibles són semblants als del pad d'acords."
 
 #: ../../editing/clip-editors/chord-editor.rst:39
 msgid "Chord Arranger"
@@ -1805,8 +1813,8 @@ msgid ""
 "Switch to drum editor view (or `Drum mode`), where each :term:`MIDI note` is "
 "drawn as a diamond and the piano roll keys display the name of each drum."
 msgstr ""
-"Canvieu a la vista de l'editor de tambors (o `Drum mode`), on cada :term:"
-"`MIDI note` es dibuixa com un diamant i les tecles del rotlle de pianola "
+"Canviar a la vista de l'editor de tambors (o `Drum mode`), on cada :term:`"
+"MIDI note` es dibuixa com un diamant i les tecles del rotlle de pianola "
 "mostren el nom de cada tambor."
 
 #: ../../editing/clip-editors/piano-roll.rst:39
@@ -1815,7 +1823,7 @@ msgstr "Mode tambor"
 
 #: ../../editing/clip-editors/piano-roll.rst:43
 msgid "Listen to notes"
-msgstr "Oir les notes"
+msgstr "Escoltar les notes"
 
 #: ../../editing/clip-editors/piano-roll.rst:42
 msgid "Play back each note as you drag it inside the piano roll."
@@ -1839,7 +1847,8 @@ msgid ""
 "Clicking on each key allows you to listen to it, much like pressing a key on "
 "a real piano."
 msgstr ""
-"Clicar una tecla et permet oir-la, com en prémer una tecla en un piano real."
+"Fent clic a una tecla et permet sentir-la, com en prémer una tecla en un "
+"piano real."
 
 #: ../../editing/clip-editors/piano-roll.rst:60
 msgid ""
@@ -1847,8 +1856,8 @@ msgid ""
 "addition to any highlighting (if selected). See :ref:`chord-highlighting` "
 "for more information."
 msgstr ""
-"Se mostra una etiqueta a la part esquerra de cada tecla (blanques i negres), "
-"a més de qualsevol ressaltat (si està seleccionat). Veure :ref:`chord-"
+"Es mostra una etiqueta a la part esquerra de cada tecla (blanques i negres), "
+"a més de qualsevol ressaltat (si està seleccionat). Consulta :ref:`chord-"
 "highlighting` per a més informació."
 
 #: ../../editing/clip-editors/piano-roll.rst:65
@@ -2001,7 +2010,7 @@ msgstr "Portato"
 
 #: ../../editing/clip-editors/piano-roll.rst:140
 msgid "Similar to legato, but leaves some space between the notes."
-msgstr "Semblant al legato, però deixa una mica d'espai entre les notes."
+msgstr "Semblant a legato, però deixa una mica d'espai entre les notes."
 
 #: ../../editing/clip-editors/piano-roll.rst:142
 msgid "Staccato"
@@ -2048,8 +2057,8 @@ msgid ""
 "The editor ruler is similar to the timeline ruler explained in :ref:"
 "`timeline-ruler`, with some differences."
 msgstr ""
-"El regle de l'editor és similar al regle de la línia de temps explicat a :"
-"ref:`timeline-ruler`, amb algunes diferències."
+"El regle de l'editor és semblant al regle de la línia de temps explicat a "
+":ref:`timeline-ruler`, amb algunes diferències."
 
 #: ../../editing/clip-editors/ruler.rst:17
 msgid "Editor ruler"
@@ -2095,14 +2104,14 @@ msgstr ""
 #: ../../editing/clip-editors/ruler.rst:36
 #: ../../playback-and-recording/loop-points-and-markers.rst:12
 msgid "Loop Points"
-msgstr "Punts de repetició"
+msgstr "Punts de bucle"
 
 #: ../../editing/clip-editors/ruler.rst:34
 msgid ""
 "These control the range where the clip will loop after it reaches the loop "
 "end point. Displayed as 2 green arrows."
 msgstr ""
-"Aquests controlen el rang on el clip es repetirà després d'arribar al punt "
+"Aquests controlen l'interval on el clip farà bucle després d'arribar al punt "
 "final del bucle. Es mostra com a 2 fletxes verdes."
 
 #: ../../editing/clip-editors/ruler.rst:38
@@ -2114,7 +2123,7 @@ msgid ""
 "Clicking and dragging on empty space will allow you to reposition the "
 "playhead."
 msgstr ""
-"Clicar i arrossegar a l'espai buit et permetrà reposicionar el capçal de "
+"Fent clic i arrossegant a l'espai buit pots reposicionar el capçal de "
 "reproducció."
 
 #: ../../editing/clip-editors/ruler.rst:44
@@ -2164,13 +2173,13 @@ msgid ""
 ":ref:`Snapping options <editing/snapping-grid-options:Snapping and Grid "
 "Options>`"
 msgstr ""
-":ref:`Snapping options <editing/snapping-grid-options:Snapping and Grid "
+":ref:`Opcions d'ajust <editing/snapping-grid-options:Snapping and Grid "
 "Options>`"
 
 #: ../../editing/clip-editors/toolbar.rst:24
 #: ../../editing/timeline/toolbar.rst:20
 msgid ":ref:`Quantization options <editing/quantization:Quantization>`"
-msgstr ":ref:`Quantization options <editing/quantization:Quantization>`"
+msgstr ":ref:`Opcions de quantizació <editing/quantization:Quantization>`"
 
 #: ../../editing/clip-editors/toolbar.rst:25
 #: ../../editing/timeline/toolbar.rst:23
@@ -2178,18 +2187,20 @@ msgid ""
 ":ref:`Playhead tracking options <editing/common-operations:Playhead "
 "Tracking>`"
 msgstr ""
-":ref:`Playhead tracking options <editing/common-operations:Playhead "
-"Tracking>`"
+":ref:`Opcions de seguiment del capçal de reproducció <editing/common-"
+"operations:Playhead Tracking>`"
 
 #: ../../editing/clip-editors/toolbar.rst:26
 #: ../../editing/timeline/toolbar.rst:25
 msgid ":ref:`Zoom options <editing/common-operations:Zooming>`"
-msgstr ":ref:`Zoom options <editing/common-operations:Zooming>`"
+msgstr ":ref:`Opcions de zoom <editing/common-operations:Zooming>`"
 
 #: ../../editing/clip-editors/toolbar.rst:27
 #: ../../editing/timeline/toolbar.rst:26
 msgid ":ref:`Event viewer options <editing/event-viewers:Event Viewers>`"
-msgstr ":ref:`Event viewer options <editing/event-viewers:Event Viewers>`"
+msgstr ""
+":ref:`Opcions del visor d'esdeveniments <editing/event-viewers:Event "
+"Viewers>`"
 
 #: ../../editing/clip-editors/toolbar.rst:32
 msgid "The piano roll toolbar includes the following additional sections."
@@ -2200,12 +2211,12 @@ msgid ""
 ":ref:`Chord highlighting options <chords-and-scales/piano-roll-integration:"
 "Highlighting>`"
 msgstr ""
-":ref:`Chord highlighting options <chords-and-scales/piano-roll-integration:"
-"Highlighting>`"
+":ref:`Opcions de ressaltat d'acords <chords-and-scales/piano-roll-"
+"integration:Highlighting>`"
 
 #: ../../editing/clip-editors/toolbar.rst:36
 msgid ":ref:`MIDI functions <editing/clip-editors/piano-roll:MIDI Functions>`"
-msgstr ":ref:`MIDI functions <editing/clip-editors/piano-roll:MIDI Functions>`"
+msgstr ":ref:`Funcions MIDI <editing/clip-editors/piano-roll:MIDI Functions>`"
 
 #: ../../editing/clip-editors/toolbar.rst:37
 msgid "Default velocity options"
@@ -2231,7 +2242,7 @@ msgid ""
 ":ref:`Automation functions <editing/clip-editors/automation-editor:"
 "Automation Functions>`"
 msgstr ""
-":ref:`Automation functions <editing/clip-editors/automation-editor:"
+":ref:`Funcions d'automatització <editing/clip-editors/automation-editor:"
 "Automation Functions>`"
 
 #: ../../editing/clip-editors/toolbar.rst:56
@@ -2244,7 +2255,7 @@ msgstr ""
 msgid ""
 ":ref:`Audio functions <editing/clip-editors/audio-editor:Audio Functions>`"
 msgstr ""
-":ref:`Audio functions <editing/clip-editors/audio-editor:Audio Functions>`"
+":ref:`Funcions d'àudio <editing/clip-editors/audio-editor:Audio Functions>`"
 
 #: ../../editing/clip-editors/toolbar.rst:64
 msgid "`The chord editor toolbar includes no additional sections.`"
@@ -2324,9 +2335,9 @@ msgid ""
 "Delete and copy the selected objects and save them in the clipboard so that "
 "they can be pasted elsewhere. The shortcut for cutting is :kbd:`Control-x`."
 msgstr ""
-"Suprimeix i copia els objectes seleccionats i desa'ls al porta-retalls "
-"perquè es puguin enganxar en un altre lloc. La drecera per al tall és :kbd:"
-"`Control-x`."
+"Suprimir i copiar els objectes seleccionats i desar-los al porta-retalls "
+"perquè es puguin enganxar en un altre lloc. La drecera per al tall és "
+":kbd:`Control-x`."
 
 #: ../../editing/common-operations.rst:53
 msgid "Copy"
@@ -2371,11 +2382,11 @@ msgstr "Duplicant una regió"
 
 #: ../../editing/common-operations.rst:78
 msgid "Delete"
-msgstr "Eliminar"
+msgstr "Suprimir"
 
 #: ../../editing/common-operations.rst:79
 msgid "Delete the selected objects. You can also press :kbd:`Delete`."
-msgstr "Suprimeix els objectes seleccionats. També pots prémer :kbd:`Delete`."
+msgstr "Suprimir els objectes seleccionats. També pots prémer :kbd:`Delete`."
 
 #: ../../editing/common-operations.rst:84
 msgid "Selections"
@@ -2400,13 +2411,12 @@ msgstr "Seleccionar tots els objectes de l'editor actual (:kbd:`Control-a`)."
 
 #: ../../editing/common-operations.rst:95
 msgid "Loop Selection"
-msgstr "Selecció de repetició"
+msgstr "Selecció de bucle"
 
 #: ../../editing/common-operations.rst:96
 msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
 msgstr ""
-"Col·loca els marcadors de repetició al voltant de la selecció (:kbd:`Control-"
-"l`)."
+"Col·loca els marcadors de bucle al voltant de la selecció (:kbd:`Control-l`)."
 
 #: ../../editing/common-operations.rst:100
 msgid "Zooming"
@@ -2451,7 +2461,7 @@ msgstr "Torna al nivell de zoom predeterminat"
 
 #: ../../editing/common-operations.rst:119
 msgid "Best Fit"
-msgstr "Millor ajustament"
+msgstr "Millor encaix"
 
 #: ../../editing/common-operations.rst:118
 msgid ""
@@ -2519,7 +2529,7 @@ msgid ""
 "cursor signifies a separate tool, and Zrythm offers the following tools."
 msgstr ""
 "Quan treballis en cada editor o arranjador, és probable que utilitzis les "
-"eines de cursor proporcionades per Zrythm per a crear, editar i eliminar "
+"eines de cursor proporcionades per Zrythm per a crear, editar i suprimir "
 "objectes. Cada cursor significa una eina separada, i Zrythm ofereix les "
 "eines següents."
 
@@ -2546,8 +2556,8 @@ msgid ""
 "Stretch mode is similar to the Select mode, with the exception that when you "
 "resize objects, their contents will be stretched to fit the new size."
 msgstr ""
-"El mode Estirar és similar al mode Seleccionar, amb l'excepció que quan "
-"canvies la mida dels objectes, el seu contingut s'estirarà per a ajustar-se "
+"El mode Estirar és semblant al mode Seleccionar, amb l'excepció que quan "
+"canvies la mida dels objectes, el seu contingut s'estirarà per a encaixar-se "
 "a la mida nova."
 
 #: ../../editing/edit-tools.rst:35
@@ -2700,7 +2710,7 @@ msgid ""
 "objects`, with the exception that you can just click instead of :kbd:`Alt`-"
 "clicking."
 msgstr ""
-"L'eina Tallar es comporta de manera similar a l'esmentada a :ref:`cutting-"
+"L'eina Tallar es comporta de manera semblant a l'esmentada a :ref:`cutting-"
 "objects`, amb l'excepció que només pots clicar en lloc de :kbd:`Alt`-clic."
 
 #: ../../editing/edit-tools.rst:126
@@ -2712,7 +2722,7 @@ msgid ""
 "Using the Erase tool you can just click on objects to delete them, or click "
 "and drag to make a selection, deleting all objects inside it."
 msgstr ""
-"Utilitzant l'eina Esborrar només pots clicar els objectes per a eliminar-"
+"Utilitzant l'eina Esborrar només pots clicar els objectes per a suprimir-"
 "los, o clicar i arrossegar per a seleccionar, suprimint tots els objectes de "
 "dins."
 
@@ -2864,7 +2874,7 @@ msgid ""
 "Clicking the Quantize button will open up a popup that will let you specify "
 "the settings to quantize the current selection with."
 msgstr ""
-"En clicar el botó Quantitzar s'obrirà una finestra emergent que et permetrà "
+"Fent clic al botó Quantitzar s'obrirà una finestra emergent que et permetrà "
 "especificar els paràmetres amb els que quantitzar la selecció actual."
 
 #: ../../editing/quantization.rst:26
@@ -2925,7 +2935,7 @@ msgid ""
 "Clicking Quantize will perform the quantization and save the settings for "
 "quick quantization with Quick-Quantize."
 msgstr ""
-"En clicar a Quantizar es realitzarà la quantizació i es desaran els "
+"Fent clic a Quantizar es realitzarà la quantizació i es desaran els "
 "paràmetres per a una quantizació ràpida amb Quantitzar-ràpidament."
 
 #: ../../editing/quantization.rst:46
@@ -2974,27 +2984,25 @@ msgid ""
 "When snapping, keep the offset of objects from the nearest snap point on "
 "their left"
 msgstr ""
-"En fer clic, es manté el desplaçament dels objectes des del punt d'ajust més "
-"proper a la seva esquerra"
+"En ajustar, manté el desplaçament dels objectes des del punt d'ajust més "
+"proper a l'esquerra"
 
 #: ../../editing/snapping-grid-options.rst:27
 #: ../../editing/snapping-grid-options.rst:33
 msgid "Requires Snap to Grid to be toggled on"
-msgstr "Requereix Ajustar a quadrícula per a activar-se"
+msgstr "Requereix ajustar a quadrícula per a activar-se"
 
 #: ../../editing/snapping-grid-options.rst:33
-#, fuzzy
 msgid "Snap to Events"
-msgstr "Oir les notes"
+msgstr "Ajusta a esdeveniments"
 
 #: ../../editing/snapping-grid-options.rst:30
 msgid "When snapping, snap to the start/end positions other objects"
 msgstr "En ajustar, s'ajusta a les posicions inicial/final d'altres objectes"
 
 #: ../../editing/snapping-grid-options.rst:36
-#, fuzzy
 msgid "Snap/Grid Options"
-msgstr "Desfà les opcions."
+msgstr "Opcions d'ajust/quadrícula"
 
 #: ../../editing/snapping-grid-options.rst:38
 msgid ""
@@ -3005,9 +3013,8 @@ msgstr ""
 "dins els arranjadors."
 
 #: ../../editing/snapping-grid-options.rst:44
-#, fuzzy
 msgid "Snap/Grid options"
-msgstr "Desfà les opcions."
+msgstr "Opcions d'ajust/quadrícula"
 
 #: ../../editing/snapping-grid-options.rst:47
 msgid "Snap"
@@ -3026,9 +3033,8 @@ msgid "Note Length"
 msgstr "Durada de la nota"
 
 #: ../../editing/snapping-grid-options.rst:52
-#, fuzzy
 msgid "Note length to snap to"
-msgstr "Durada de la nota a la que s'ha d'ajustar."
+msgstr "Durada de la nota a la que s'ha d'ajustar"
 
 #: ../../editing/snapping-grid-options.rst:54
 msgid "Triplet (t)"
@@ -3049,9 +3055,8 @@ msgstr ""
 "seleccionada)"
 
 #: ../../editing/snapping-grid-options.rst:60
-#, fuzzy
 msgid "Adaptive"
-msgstr "Quadrícula adaptativa"
+msgstr "Adaptativa"
 
 #: ../../editing/snapping-grid-options.rst:60
 msgid "Adapt snapping to the current zoom level"
@@ -3066,9 +3071,8 @@ msgid "The Length section controls the default length of objects."
 msgstr "La secció durada controla la durada per defecte dels objectes."
 
 #: ../../editing/snapping-grid-options.rst:67
-#, fuzzy
 msgid "Link"
-msgstr "Complement"
+msgstr "Enllaç"
 
 #: ../../editing/snapping-grid-options.rst:68
 msgid "Use the same options as Snap"
@@ -3125,7 +3129,7 @@ msgid ""
 "`editor <editors>`. Regions can be repeated, like below."
 msgstr ""
 "Les regions (o :term:`clips <Clip>`) són contenidors per a esdeveniments o "
-"dades (com ara notes MIDI i clips d'àudio - veure més avall) que es poden "
+"dades (com ara notes MIDI i clips d'àudio - consulta més avall) que es poden "
 "editar en un :ref:`editor <editors>`. Les regions es poden repetir, com a "
 "continuació."
 
@@ -3146,9 +3150,8 @@ msgid "Audio regions contain audio clips from audio files."
 msgstr "Les regions d'àudio contenen clips d'àudio de fitxers d'àudio."
 
 #: ../../editing/timeline/arranger.rst:54
-#, fuzzy
 msgid "Audio region"
-msgstr "Regions d'àudio"
+msgstr "Regió d'àudio"
 
 #: ../../editing/timeline/arranger.rst:56
 msgid "Audio regions belong to track lanes and appear inside Audio tracks."
@@ -3165,7 +3168,7 @@ msgid ""
 "Double-clicking an audio region will bring up the :doc:`Audio Editor <../../"
 "editing/clip-editors/audio-editor>`."
 msgstr ""
-"En fer doble clic en una regió d'àudio, apareixerà el :doc:`Audio Editor "
+"Fent doble clic en una regió d'àudio, apareixerà el :doc:`Editor d'àudio "
 "<../../editing/clip-editors/audio-editor>`."
 
 #: ../../editing/timeline/arranger.rst:68
@@ -3177,9 +3180,8 @@ msgid "MIDI regions contain :term:`MIDI` notes."
 msgstr "Les regions MIDI contenen notes :term:`MIDI`."
 
 #: ../../editing/timeline/arranger.rst:74
-#, fuzzy
 msgid "MIDI region"
-msgstr "Regions d'àudio"
+msgstr "Regió MIDI"
 
 #: ../../editing/timeline/arranger.rst:76
 msgid ""
@@ -3190,17 +3192,16 @@ msgstr ""
 "MIDI o d'Instrument."
 
 #: ../../editing/timeline/arranger.rst:82
-#, fuzzy
 msgid "MIDI track with MIDI region"
-msgstr "Retorna una regió midi nova."
+msgstr "Pista MIDI amb regió MIDI"
 
 #: ../../editing/timeline/arranger.rst:84
 msgid ""
 "Double-clicking a MIDI region will bring up the :doc:`Piano Roll <../../"
 "editing/clip-editors/piano-roll>`."
 msgstr ""
-"En fer doble clic en una regió MIDI, apareixerà el :doc:`Piano Roll <../../"
-"editing/clip-editors/piano-roll>`."
+"Fent doble clic en una regió MIDI, apareixerà el :doc:`rotlle de pianola "
+"<../../editing/clip-editors/piano-roll>`."
 
 #: ../../editing/timeline/arranger.rst:88
 msgid "Automation Regions"
@@ -3211,9 +3212,8 @@ msgid "Automation regions contain automation events."
 msgstr "Les regions d'automatització contenen esdeveniments d'automatització."
 
 #: ../../editing/timeline/arranger.rst:94
-#, fuzzy
 msgid "Automation region"
-msgstr "Regions d'automatització"
+msgstr "Regió d'automatització"
 
 #: ../../editing/timeline/arranger.rst:96
 msgid "Automation regions appear inside automation lanes."
@@ -3229,8 +3229,8 @@ msgid ""
 "Double-clicking an automation region will bring up the :doc:`Automation "
 "Editor <../../editing/clip-editors/automation-editor>`."
 msgstr ""
-"En fer doble clic en una regió d'automatització, apareixerà el :doc:"
-"`Automation Editor <../../editing/clip-editors/automation-editor>`."
+"Fent doble clic en una regió d'automatització, apareixerà l' :doc:`Editor "
+"d'automatització <../../editing/clip-editors/automation-editor>`."
 
 #: ../../editing/timeline/arranger.rst:108
 msgid "Chord regions"
@@ -3241,25 +3241,23 @@ msgid "Chord regions contain sequences of chords."
 msgstr "Les regions d'acords contenen seqüències d'acords."
 
 #: ../../editing/timeline/arranger.rst:114
-#, fuzzy
 msgid "Chord region"
-msgstr "Regions d'acords"
+msgstr "Regió d'acords"
 
 #: ../../editing/timeline/arranger.rst:116
 msgid "Chord regions appear inside the chord track."
 msgstr "Les regions d'acords apareixen dins la pista d'acords."
 
 #: ../../editing/timeline/arranger.rst:121
-#, fuzzy
 msgid "Chord track with chord region"
-msgstr "Objectes d'acords dins la regió d'acords de dalt."
+msgstr "Pista d'acords amb regió d'acords"
 
 #: ../../editing/timeline/arranger.rst:123
 msgid ""
 "Double-clicking a chord region will bring up the :doc:`Chord Editor <../../"
 "editing/clip-editors/chord-editor>`."
 msgstr ""
-"En fer doble clic en una regió d'acords, apareixerà el :doc:`Chord Editor "
+"Fent doble clic en una regió d'acords, apareixerà l' :doc:`Editor d'acords "
 "<../../editing/clip-editors/chord-editor>`."
 
 #: ../../editing/timeline/arranger.rst:128
@@ -3280,7 +3278,7 @@ msgstr "Els marcadors apareixen dins la pista de marcadors."
 
 #: ../../editing/timeline/arranger.rst:142
 msgid "Marker track with marker"
-msgstr "Pista marcador amb marcador"
+msgstr "Pista de marcadors amb marcador"
 
 #: ../../editing/timeline/arranger.rst:144
 msgid ""
@@ -3303,22 +3301,20 @@ msgstr ""
 "escala musical específica."
 
 #: ../../editing/timeline/arranger.rst:156
-#, fuzzy
 msgid "Scale"
-msgstr "Escales"
+msgstr "Escala"
 
 #: ../../editing/timeline/arranger.rst:158
 msgid "Scales appear inside the Chord track."
 msgstr "Les escales apareixen dins la pista d'acords."
 
 #: ../../editing/timeline/arranger.rst:163
-#, fuzzy
 msgid "Chord track with scale"
-msgstr "Regions d'acords, escales"
+msgstr "Pista d'acords amb escala"
 
 #: ../../editing/timeline/arranger.rst:166
 msgid "Editing Regions"
-msgstr "Editant regions"
+msgstr "Edició de regions"
 
 #: ../../editing/timeline/arranger.rst:167
 msgid "The following operations apply to regions."
@@ -3326,33 +3322,32 @@ msgstr "Les operacions següents s'apliquen a les regions."
 
 #: ../../editing/timeline/arranger.rst:170
 msgid "Looping"
-msgstr "Bucle"
+msgstr "Fer bucles"
 
 #: ../../editing/timeline/arranger.rst:171
-#, fuzzy
 msgid ""
 "Regions can be repeated, and hence they have :ref:`editable loop points and "
 "a clip start position <editing/clip-editors/ruler:Markers>` in the :doc:"
 "`Editor ruler <../../editing/clip-editors/ruler>` to modify the looping "
 "(repeating) behavior."
 msgstr ""
-"Les regions es poden repetir, i per tant tenen :ref:`editable loop points "
-"and a clip start position <editing/clip-editors/ruler:Loop Points>` al :doc:"
-"`Editor Ruler <../../editing/clip-editors/ruler>` per a modificar el "
-"comportament de la repetició (bucle)."
+"Les regions poden tenir bucles i, per tant, tenen :ref:`punts de bucle "
+"editables i una posició inicial del clip <editing/clip-editors/"
+"ruler:Markers>` al :doc:`Regle de l'editor <../../editing/clip-editors/"
+"ruler>` per a modificar el comportament del bucle (repetició)."
 
 #: ../../editing/timeline/arranger.rst:177
 msgid ""
 "Regions can also be looped inside the timeline, by moving the cursor to the "
 "bottom-left or bottom-right edge of the region, then clicking and dragging."
 msgstr ""
-"Les regions també es poden repetir dins la línia de temps, movent el cursor "
-"a la vora inferior esquerra o inferior dreta de la regió i, a continuació, "
-"clicant i arrossegant."
+"Les regions també poden tenir bucles dins la línia de temps, movent el "
+"cursor a la vora inferior esquerra o inferior dreta de la regió i, a "
+"continuació, clicant i arrossegant."
 
 #: ../../editing/timeline/arranger.rst:185
 msgid "Looping (loop-resizing) a region"
-msgstr "Repetició (redimensionament de les repeticions) d'una regió"
+msgstr "Fent bucle (redimensionament del bucle) d'una regió"
 
 #: ../../editing/timeline/arranger.rst:187
 msgid ""
@@ -3360,23 +3355,21 @@ msgid ""
 "loop points match exactly the region's start and end points."
 msgstr ""
 "Si la regió ja es repeteix, ja no es pot redimensionar fins que els seus "
-"punts de repetició coincideixin exactament amb els punts d'inici i final de "
-"la regió."
+"punts de bucle coincideixin exactament amb els punts d'inici i final de la "
+"regió."
 
 #: ../../editing/timeline/arranger.rst:192
 msgid "Link-Moving"
-msgstr "Moviment d'enllaços"
+msgstr "Enllaçar-moure"
 
 #: ../../editing/timeline/arranger.rst:193
 msgid "Linked regions can be created by holding down :kbd:`Alt` while moving."
 msgstr ""
-"Les regions enllaçades es poden crear mantenint encés de manera subsada :kbd:"
-"`Alt` mentre es mou."
+"Es poden crear regions enllaçades mantenint premut :kbd:`Alt` en moure-les."
 
 #: ../../editing/timeline/arranger.rst:199
-#, fuzzy
 msgid "Link-moving a MIDI region"
-msgstr "Copiar-moure una regió"
+msgstr "Enllaçar-moure una regió MIDI"
 
 #: ../../editing/timeline/arranger.rst:201
 msgid ""
@@ -3387,9 +3380,8 @@ msgstr ""
 "mostra a la part superior dreta."
 
 #: ../../editing/timeline/arranger.rst:207
-#, fuzzy
 msgid "Linked MIDI regions"
-msgstr "Regions d'àudio"
+msgstr "Regions MIDI enllaçades"
 
 #: ../../editing/timeline/arranger.rst:210
 msgid "Renaming"
@@ -3432,7 +3424,7 @@ msgid ""
 "Clicking and dragging the grey part up or down will adjust the curviness of "
 "the fade."
 msgstr ""
-"En clicar i arrossegar la part grisa cap amunt o cap avall s'ajustarà la "
+"Fent clic i arrossegant la part grisa cap amunt o cap avall ajustarà la "
 "curvatura de l'atenuació."
 
 #: ../../editing/timeline/arranger.rst:243
@@ -3487,15 +3479,15 @@ msgid "Timeline"
 msgstr "Línia de temps"
 
 #: ../../editing/timeline/overview.rst:8
-#, fuzzy
 msgid ""
 "Editing in the timeline is the most common workflow inside Zrythm. The "
 "timeline section consists of the tracklist on the left and the ruler/"
 "arranger on the right, along with a timeline-specific toolbar at the top."
 msgstr ""
 "L'edició a la línia de temps és el flux de treball més comú dins de Zrythm. "
-"La secció de línia de temps consisteix en la llista de pistes a l'esquerra i "
-"el regle / arranjador a la part dreta."
+"La secció de la línia de temps consta de la llista de cançons a l'esquerra i "
+"el regle/arranjador a la dreta, juntament amb una barra d'eines específica "
+"de la línia de temps a la part superior."
 
 #: ../../editing/timeline/overview.rst:20
 msgid "Tracklist"
@@ -3536,8 +3528,8 @@ msgstr "La resta de la llista de pistes es toca breument a :ref:`tracklist`."
 #: ../../editing/timeline/overview.rst:41
 msgid "For more details about track operations, see the :ref:`tracks` section."
 msgstr ""
-"Per a més informació sobre les operacions de la pista, veure la secció :ref:"
-"`tracks`."
+"Per a més informació sobre les operacions de la pista, consulta la secció "
+":ref:`tracks`."
 
 #: ../../editing/timeline/overview.rst:45
 msgid "Minimap"
@@ -3567,8 +3559,7 @@ msgstr "Regle de línia de temps"
 #: ../../editing/timeline/ruler.rst:11
 msgid "The ruler is mainly used to control looping and playback."
 msgstr ""
-"El regle s'utilitza principalment per controlar les repeticions i la "
-"reproducció."
+"El regle s'utilitza principalment per controlar els bucles i la reproducció."
 
 #: ../../editing/timeline/ruler.rst:17
 msgid ""
@@ -3586,7 +3577,7 @@ msgstr "Fita"
 
 #: ../../editing/timeline/ruler.rst:23
 msgid "Displayed as a blue, right-pointing arrow."
-msgstr "Se mostra com una fletxa blava que apunta cap a la dreta."
+msgstr "Es mostra com una fletxa blava que apunta cap a la dreta."
 
 #: ../../editing/timeline/ruler.rst:24
 msgid "Playhead position"
@@ -3594,29 +3585,28 @@ msgstr "Posició del capçal de reproducció"
 
 #: ../../editing/timeline/ruler.rst:25
 msgid "Shown as a grey, down-facing arrow."
-msgstr "Se mostra com una fletxa grisa i cap avall."
+msgstr "Es mostra com una fletxa grisa i cap avall."
 
 #: ../../editing/timeline/ruler.rst:29
 msgid "Loop points"
-msgstr "Punts de repetició"
+msgstr "Punts de bucle"
 
 #: ../../editing/timeline/ruler.rst:27
 msgid ""
 "Shown as 2 green arrows, and the area between them is shown in bright green "
 "if loop is enabled, or grey if disabled. Can be dragged to reposition."
 msgstr ""
-"Se mostra com 2 fletxes verdes, i l'àrea entre elles es mostra en verd "
-"brillant si la repetició està habilitada, o gris si està desactivada. Es pot "
+"Es mostra com 2 fletxes verdes, i l'àrea entre elles es mostra en verd "
+"brillant si bucle està habilitat, o gris si està desactivat. Es pot "
 "arrossegar per a reposicionar."
 
 #: ../../editing/timeline/ruler.rst:31
-#, fuzzy
 msgid ""
 "Clicking and dragging on empty space in the bottom half of the ruler will "
 "allow you to reposition the playhead."
 msgstr ""
-"Clicar i arrossegar a l'espai buit et permetrà reposicionar el capçal de "
-"reproducció."
+"Fent clic i arrossegant l'espai buit de la meitat inferior del regle, pots "
+"reposicionar el capçal de reproducció."
 
 #: ../../editing/timeline/ruler.rst:36
 msgid "Setting the Cue Point"
@@ -3631,9 +3621,8 @@ msgstr ""
 "reproducció es tornarà a aquesta."
 
 #: ../../editing/timeline/ruler.rst:41
-#, fuzzy
 msgid "Range Selection"
-msgstr "Selecció d'idioma"
+msgstr "Selecció d'interval"
 
 #: ../../editing/timeline/ruler.rst:42
 msgid ""
@@ -3641,14 +3630,13 @@ msgid ""
 "`range <Range>` selection. If an existing range exists, you can click an "
 "drag it to move it."
 msgstr ""
-"En fer clic i arrossegant a la meitat superior del regle, es crearà una "
-"selecció de :term:`rang <Range>`. Si existeix un interval existent, pots fer "
-"clic i arrossegar-lo per a moure'l."
+"Fent clic i arrossegant a la meitat superior del regle, es crearà una "
+"selecció d' :term:`interval <Range>`. Si hi ha un interval existent, pots "
+"fer clic i arrossegar-lo per a moure'l."
 
 #: ../../editing/timeline/ruler.rst:50
-#, fuzzy
 msgid "Range selection"
-msgstr "Selecció d'idioma"
+msgstr "Selecció d'interval"
 
 #: ../../editing/timeline/toolbar.rst:7
 msgid "Toolbar"
@@ -3661,34 +3649,28 @@ msgstr ""
 "específiques de la línia de temps."
 
 #: ../../editing/timeline/toolbar.rst:15
-#, fuzzy
 msgid "Timeline toolbar"
-msgstr "Regle de línia de temps"
+msgstr "Barra d'eines de la línia de temps"
 
 #: ../../editing/timeline/toolbar.rst:17
-#, fuzzy
 msgid "It includes the following sections:"
-msgstr "Zrythm utilitza el format següent per a les posicions:"
+msgstr "Inclou els següents apartats:"
 
 #: ../../editing/timeline/toolbar.rst:21
-#, fuzzy
 msgid "Audio region options"
-msgstr "Secció de la regió d'àudio"
+msgstr "Opcions de regió d'àudio"
 
 #: ../../editing/timeline/toolbar.rst:22
-#, fuzzy
 msgid "Range actions"
-msgstr "Traducció"
+msgstr "Accions d'interval"
 
 #: ../../editing/timeline/toolbar.rst:24
-#, fuzzy
 msgid "Object merge options"
-msgstr "Operacions sobre objectes"
+msgstr "Opcions de combinació d'objectes"
 
 #: ../../editing/timeline/toolbar.rst:29
-#, fuzzy
 msgid "Audio Region Options"
-msgstr "Secció de la regió d'àudio"
+msgstr "Opcions de regió d'àudio"
 
 #: ../../editing/timeline/toolbar.rst:32
 msgid "Musical Mode"
@@ -3707,9 +3689,8 @@ msgstr ""
 "conseqüència perquè coincideixin amb el nou BPM sense estirar el temps."
 
 #: ../../editing/timeline/toolbar.rst:40
-#, fuzzy
 msgid "Range Actions"
-msgstr "Traducció"
+msgstr "Accions d'interval"
 
 #: ../../editing/timeline/toolbar.rst:42
 msgid "Range actions are performed on the selected :term:`Range`."
@@ -3728,9 +3709,8 @@ msgstr ""
 "l'interval"
 
 #: ../../editing/timeline/toolbar.rst:50
-#, fuzzy
 msgid "Remove Range"
-msgstr "Interval de temps"
+msgstr "Eliminar l'interval"
 
 #: ../../editing/timeline/toolbar.rst:49
 msgid ""
@@ -3740,14 +3720,12 @@ msgstr ""
 "després de l'interval cap enrere"
 
 #: ../../editing/timeline/toolbar.rst:53
-#, fuzzy
 msgid "Object Merging"
-msgstr "Paràmetres del projecte."
+msgstr "Combinar objectes"
 
 #: ../../editing/timeline/toolbar.rst:56
-#, fuzzy
 msgid "Merge Selections"
-msgstr "Selecció de projectes"
+msgstr "Combinar seleccions"
 
 #: ../../editing/timeline/toolbar.rst:56
 msgid "Merge the selected objects into a single object, if possible"
@@ -3763,9 +3741,9 @@ msgid ""
 "into audio or MIDI files. It can be accessed by clicking :ref:`zrythm-"
 "interface/main-toolbar:Export`."
 msgstr ""
-"El diàleg Exportar a continuació s'utilitza per a exportar el projecte o "
-"part del projecte a fitxers d'àudio o MIDI. S'hi pot accedir clicant a :ref:"
-"`zrythm-interface/main-toolbar:Export`."
+"El diàleg Exportar s'utilitza per a exportar el projecte o part del projecte "
+"a fitxers d'àudio o MIDI. S'hi pot accedir clicant a :ref:`zrythm-interface/"
+"main-toolbar:Export`."
 
 #: ../../exporting/audio-and-midi.rst:19
 msgid "Export dialog"
@@ -3797,9 +3775,9 @@ msgid ""
 "<plugins-files/audio-midi-files/overview:Supported Formats>` are available, "
 "with the exception of MP3."
 msgstr ""
-"El format al qual s'ha d'exportar. Els formats esmentats a :ref:`Supported "
-"Formats <plugins-files/audio-midi-files/overview:Supported Formats>` estan "
-"disponibles, amb l'excepció de MP3."
+"El format al qual s'ha d'exportar. Els formats esmentats a :ref:`Formats "
+"compatibles <plugins-files/audio-midi-files/overview:Supported Formats>` "
+"estan disponibles, amb l'excepció de MP3."
 
 #: ../../exporting/audio-and-midi.rst:37
 msgid "Dither"
@@ -3807,7 +3785,7 @@ msgstr "Dither"
 
 #: ../../exporting/audio-and-midi.rst:39 ../../tracks/inspector-page.rst:157
 msgid "Implement."
-msgstr "Implementar."
+msgstr "Implementa."
 
 #: ../../exporting/audio-and-midi.rst:42
 msgid "Bit Depth"
@@ -3831,9 +3809,9 @@ msgid ""
 "The time range to export. You can choose to export the whole song (defined "
 "by the start/end markers), the current loop range or a custom time range."
 msgstr ""
-"L'interval de temps per a exportar. Pots triar exportar tota la cançó "
-"(definida pels marcadors d'inici/final), la repetició actual o un interval "
-"de temps personalitzat."
+"L'interval de temps per a exportar. Pots triar exportar tota la cançó ("
+"definida pels marcadors d'inici/final), el bucle actual o un interval de "
+"temps personalitzat."
 
 #: ../../exporting/audio-and-midi.rst:55
 msgid "Filename Pattern"
@@ -3877,7 +3855,7 @@ msgid ""
 msgstr ""
 "L'exportació de pliques significa que cada pista seleccionada s'exportarà al "
 "seu propi fitxer. Això és útil quan vols compartir els components de la "
-"cançó per separat. Per exemple, pots :term:`bounce <Bounce>` els tambors i "
+"cançó per separat. Per exemple, pots :term:`rebotar <Bounce>` els tambors i "
 "el baix com a fitxers d'àudio separats."
 
 #: ../../exporting/audio-and-midi.rst:86
@@ -3910,8 +3888,8 @@ msgid ""
 "interface/main-toolbar` will show the following selection. The routing graph "
 "can be exported as either a PNG image or a .dot graph."
 msgstr ""
-"En clicar el botó :guilabel:`Export Graph` al :doc:`../zrythm-interface/main-"
-"toolbar` mostrarà la següent selecció. El gràfic d'encaminament es pot "
+"Fent clic al botó :guilabel:`Export Graph` al :doc:`../zrythm-interface/main-"
+"toolbar` es mostrarà la següent selecció. El gràfic d'encaminament es pot "
 "exportar com una imatge PNG o un gràfic .dot."
 
 #: ../../exporting/routing-graph.rst:23
@@ -3932,14 +3910,13 @@ msgid "Plugins"
 msgstr "Complements"
 
 #: ../../getting-started/getting-plugins.rst:14
-#, fuzzy
 msgid ""
 "Zrythm ships with a few bundled plugins to help users get started, but users "
 "can also download and install their own plugins that suit their preferences."
 msgstr ""
-"Zrythm ve amb alguns complements agrupats per a ajudar els usuaris a "
-"començar, però s'espera que els usuaris baixin i instal·lin els seus propis "
-"complements que s'adaptin a les seves preferències."
+"Zrythm s'envia amb uns quants complements inclosos per a ajudar els usuaris "
+"a començar, però els usuaris també poden descarregar i instal·lar els seus "
+"propis complements que s'adaptin a les seves preferències."
 
 #: ../../getting-started/getting-plugins.rst:19
 msgid ""
@@ -3954,8 +3931,8 @@ msgid ""
 "For other systems, you can find a `list of free software plugins here "
 "<https://github.com/webprofusion/OpenAudio>`_."
 msgstr ""
-"Per a altres sistemes, pots trobar una `list of free software plugins here "
-"<https://github.com/webprofusion/OpenAudio>`_."
+"Per a altres sistemes, pots trobar una `llista de complements de programari "
+"lliure aquí <https://github.com/webprofusion/OpenAudio>`_."
 
 #: ../../getting-started/getting-plugins.rst:27
 msgid ""
@@ -3964,20 +3941,18 @@ msgid ""
 "are many plugins that can easily be installed via apt."
 msgstr ""
 "Per als usuaris de distribucions basades en Debian com Ubuntu i Linux Mint "
-"recomanem utilitzar els repositoris `KXstudio repositories <https://kx."
-"studio/>`_, ja que hi ha molts complements que es poden instal·lar fàcilment "
-"a través d'apt."
+"recomanem utilitzar els `repositoris KXstudio <https://kx.studio/>`_, ja que "
+"hi ha molts complements que es poden instal·lar fàcilment via apt."
 
 #: ../../getting-started/getting-plugins.rst:32
-#, fuzzy
 msgid ""
 "For users of Arch Linux-based distributions such as Manjaro we recommend "
 "installing the `lv2-plugins <https://archlinux.org/groups/x86_64/lv2-plugins/"
 ">`_ group."
 msgstr ""
-"Per als usuaris de distribucions basades en Arch Linux com Manjaro recomanem "
-"instal·lar el grup`lv2-plugins <https://www.archlinux.org/groups/x86_64/lv2-"
-"plugins/>`_."
+"Per als usuaris de distribucions basades en Arch Linux, com ara Manjaro, "
+"recomanem instal·lar el grup `complements lv2 <https://archlinux.org/groups/"
+"x86_64/lv2-plugins/>`_."
 
 #: ../../getting-started/getting-plugins.rst:38
 msgid "Recommended Plugin Bundles"
@@ -3989,22 +3964,21 @@ msgstr ""
 "`DISTRHO Ports`_ proporciona una bona varietat de sintetitzadors i efectes."
 
 #: ../../getting-started/getting-plugins.rst:43
-#, fuzzy
 msgid ""
 "`ZAM Plugins <https://www.zamaudio.com/?p=976>`_ is an effects pack that "
 "contains high quality plugins for all the basic effects such as Delay, "
 "Reverb, Compression, EQ and Saturation."
 msgstr ""
-"`ZAM Plugins <http://www.zamaudio.com/?p=976>`_ és un paquet d'efectes que "
-"conté complements d'alta qualitat per a tots els efectes bàsics com retard, "
-"reverberació, compressió, EQ i saturació."
+"`Complements ZAM <https://www.zamaudio.com/?p=976>`_ és un paquet d'efectes "
+"que conté complements d'alta qualitat per a tots els efectes bàsics com "
+"retard, reverberació, compressió, EQ i saturació."
 
 #: ../../getting-started/getting-plugins.rst:48
 msgid ""
 "The `LSP Project <https://lsp-plug.in/>`_ has a wide variety of effect "
 "plugins."
 msgstr ""
-"El `LSP Project <https://lsp-plug.in/>`_ té una àmplia varietat de "
+"El projecte LSP <https://lsp-plug.in/>`_ té una àmplia varietat de "
 "complements d'efectes."
 
 #: ../../getting-started/getting-plugins.rst:51
@@ -4012,7 +3986,7 @@ msgid ""
 "`X42 Plugins <http://x42-plugins.com/x42/>`_ is a collection of various MIDI "
 "effect and meter plugins."
 msgstr ""
-"`X42 Plugins <http://x42-plugins.com/x42/>`_ és una col·lecció de "
+"`Complements X42 <http://x42-plugins.com/x42/>`_ és una col·lecció de "
 "complements d'efectes i vúmetres MIDI."
 
 #: ../../getting-started/getting-plugins.rst:55
@@ -4066,13 +4040,13 @@ msgid ""
 "`GeonKick <https://gitlab.com/iurie-sw/geonkick>`_ is a kick drum "
 "synthesizer that can also synthesize other types of percussion."
 msgstr ""
-"`GeonKick <https://gitlab.com/iurie-sw/geonkick>`_és un sintetitzador de "
+"`GeonKick <https://gitlab.com/iurie-sw/geonkick>`_ és un sintetitzador de "
 "bombo que també pot sintetitzar altres tipus de percussió."
 
 #: ../../getting-started/getting-plugins.rst:82
 msgid "See :ref:`scanning-plugins` for paths where plugins will be scanned in."
 msgstr ""
-"Veure :ref:`scanning-plugins` per a trobar els camins on s'exploraran els "
+"Consulta :ref:`scanning-plugins` per a trobar els camins on s'exploraran els "
 "complements."
 
 #: ../../getting-started/getting-plugins.rst:87
@@ -4094,8 +4068,8 @@ msgid ""
 "You can find a list of SFZ instruments under free licenses at `sfz "
 "instruments <https://sfzinstruments.github.io/>`_."
 msgstr ""
-"Pots trobar una llista d'instruments SFZ sota llicències lliures a `sfz "
-"instruments <https://sfzinstruments.github.io/>`_."
+"Pots trobar una llista d'instruments SFZ sota llicències lliures a `"
+"instruments sfz <https://sfzinstruments.github.io/>`_."
 
 #: ../../getting-started/getting-plugins.rst:103
 msgid "We recommend using `Freesound`_ for collecting CC-licensed samples."
@@ -4104,7 +4078,7 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:106
 msgid "We will also be offering sample packs for download in the future."
-msgstr "També oferirem paquets de mostra per descarregar en el futur."
+msgstr "També oferirem paquets de mostra per a descarregar en el futur."
 
 #: ../../getting-started/installation.rst:9
 msgid "Installation"
@@ -4121,7 +4095,7 @@ msgid ""
 "download.html>`_ page on our website."
 msgstr ""
 "Pots instal·lar l'última versió de Zrythm per a la teva distribució o "
-"sistema operatiu mitjançant un instal·lador des de la pàgina `Download "
+"sistema operatiu mitjançant un instal·lador des de la pàgina `Descàrregues "
 "<https://www.zrythm.org/en/download.html>` del nostre lloc web."
 
 #: ../../getting-started/installation.rst:21
@@ -4149,34 +4123,32 @@ msgid "Distribution Repositories"
 msgstr "Repositoris de distribució"
 
 #: ../../getting-started/installation.rst:34
-#, fuzzy
 msgid ""
 "If Zrythm is available in your distro's repositories, you can also install "
 "it from there."
 msgstr ""
-"Si la teva distribució proporciona un paquet Zrythm, també pots instal·lar-"
-"ho des d'allà."
+"Si Zrythm està disponible als repositoris de la vostra distribució, també "
+"pots instal·lar-lo des d'allà."
 
 #: ../../getting-started/installation.rst:38
 msgid "Building from Source"
 msgstr "Construint des de la Font"
 
 #: ../../getting-started/installation.rst:39
-#, fuzzy
 msgid ""
 "You can build Zrythm from source, either using a `source distribution "
 "tarball <https://www.zrythm.org/releases/>`_ or `git <https://git.zrythm.org/"
 "zrythm/zrythm/>`_."
 msgstr ""
-"Si ets un usuari avançat, també pots construir Zrythm des de la font, ja "
-"sigui utilitzant un `source distribution tarball <https://www.zrythm.org/"
-"releases/>`_ o `git <https://git.zrythm.org/zrythm/zrythm/>`_."
+"Pots crear Zrythm des de la font, ja sigui utilitzant un `arxiu tar de "
+"distribució de fonts <https://www.zrythm.org/releases/>`_ o `git <https://git"
+".zrythm.org/zrythm/zrythm/>`_."
 
 #: ../../getting-started/installation.rst:43
 msgid ""
 "See ``INSTALL.rst`` in the source distribution for installation instructions."
 msgstr ""
-"Veure ``INSTALL.rst`` a la distribució d'origen per a instruccions "
+"Consulta ``INSTALL.rst`` a la distribució d'origen per a instruccions "
 "d'instal·lació."
 
 #: ../../getting-started/intro.rst:9
@@ -4192,24 +4164,22 @@ msgid "Initial Configuration"
 msgstr "Configuració inicial"
 
 #: ../../getting-started/running-zrythm.rst:14
-#, fuzzy
 msgid ""
 "When you first run Zrythm, it will display a dialog that lets you configure "
 "the basic settings that Zrythm will use. These include the :term:`Zrythm "
 "user path` and the language of the user interface."
 msgstr ""
-"Quan executes Zrythm per primera vegada, podràs fer la configuració bàsica "
-"que utilitzarà Zrythm. Aquesta inclou :term:`Zrythm user path`, l'idioma de "
-"la interfície d'usuari i els backend d'àudio/MIDI."
+"Quan executis Zrythm per primera vegada, es mostrarà un diàleg que et "
+"permetrà configurar els paràmetres bàsics que utilitzarà Zrythm. Aquests "
+"inclouen el :term:`Zrythm user path` i l'idioma de la interfície d'usuari."
 
 #: ../../getting-started/running-zrythm.rst:23
 msgid "Initial configuration dialog"
 msgstr "Diàleg de configuració inicial"
 
 #: ../../getting-started/running-zrythm.rst:31
-#, fuzzy
 msgid "Language"
-msgstr "Interval"
+msgstr "Idioma"
 
 #: ../../getting-started/running-zrythm.rst:26
 msgid ""
@@ -4219,7 +4189,7 @@ msgid ""
 "comfortable in."
 msgstr ""
 "Zrythm et permet triar l'idioma de la interfície. La interfície està "
-"traduïda a `multiple languages <https://hosted.weblate.org/projects/zrythm/"
+"traduïda a `múltiples idiomes <https://hosted.weblate.org/projects/zrythm/"
 "#languages>`_, així que tria l'idioma en què et sents més còmode."
 
 #: ../../getting-started/running-zrythm.rst:31
@@ -4249,8 +4219,8 @@ msgid ""
 "When the first run wizard is completed, Zrythm will start :doc:`scanning for "
 "plugins <../plugins-files/plugins/scanning>`."
 msgstr ""
-"Quan es completi l'auxiliar de primera execució, Zrythm començarà :doc:"
-"`scanning for plugins <../plugins-files/plugins/scanning>`."
+"Quan es completi l'assistent de primera execució, Zrythm començarà a :doc:`"
+"buscar complements <../plugins-files/plugins/scanning>`."
 
 #: ../../getting-started/running-zrythm.rst:49
 msgid "Project Selection"
@@ -4262,9 +4232,9 @@ msgid ""
 "saving-loading>` and then the :doc:`main interface <../zrythm-interface/"
 "overview>` will show up."
 msgstr ""
-"Finalment, Zrythm et demanarà que :doc:`load or create a project <../"
-"projects/saving-loading>` i després apareixerà el :doc:`main interface <../"
-"zrythm-interface/overview>`."
+"Finalment, Zrythm et demanarà :doc:`carregar o crear un projecte <../"
+"projects/saving-loading>` i després apareixerà el :doc:`interfície principal "
+"<../zrythm-interface/overview>`."
 
 #: ../../getting-started/running-zrythm.rst:59
 #: ../../projects/saving-loading.rst:20
@@ -4325,7 +4295,7 @@ msgid ""
 "It is recommended to have at least 16 inches of monitor space to work "
 "efficiently with Zrythm."
 msgstr ""
-"Se recomana tenir almenys un monitor 16 polzades per a treballar "
+"Es recomana tenir almenys un monitor 16 polzades per a treballar "
 "eficientment amb Zrythm."
 
 #: ../../getting-started/system-requirements.rst:29
@@ -4364,10 +4334,10 @@ msgid ""
 "articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack."
 "html>`_, so we will skip this part."
 msgstr ""
-"Quan s'utilitza el backend :term:`JACK`, el JACK s'ha de configurar i "
+"Quan s'utilitza el rerefons :term:`JACK`, el JACK s'ha d'arrencar i "
 "configurar abans d'executar Zrythm. Trobaràs molta informació en línia sobre "
-"com configurar JACK, com ara `Demystifying JACK - A Beginners Guide to "
-"Getting Started with JACK <https://linuxaudio.github.io/libremusicproduction/"
+"com configurar JACK, com ara `Desmitificar JACK: una guia per a principiants "
+"per començar amb JACK <https://linuxaudio.github.io/libremusicproduction/"
 "html/articles/demystifying-jack-1%E22%80%93-beginners-guide-getting-started-"
 "jack.html>`_, de manera que saltarem aquesta part."
 
@@ -4382,9 +4352,9 @@ msgid ""
 "the kernel, causing xruns when attempting to access the data."
 msgstr ""
 "Zrythm requereix privilegis de bloqueig de memòria per a una operació fiable "
-"i sense abandonament. En resum, si les dades no estan bloquejades a la "
-"memòria, poden ser intercanviades pel nucli, causant xruns en intentar "
-"accedir a les dades."
+"i sense pèrdues. En resum, si les dades no estan bloquejades a la memòria, "
+"poden ser intercanviades pel nucli, causant xruns en intentar accedir a les "
+"dades."
 
 #: ../../getting-started/system-requirements.rst:54
 msgid "Realtime Scheduling"
@@ -4397,8 +4367,8 @@ msgid ""
 "to meet timing deadlines more reliably."
 msgstr ""
 "Zrythm requereix privilegis de planificació en temps real per a un "
-"funcionament fiable i sense abandonament. La planificació en temps real (RT) "
-"és una funcionalitat que permet a les aplicacions complir els terminis de "
+"funcionament fiable i sense pèrdues. La planificació en temps real (RT) és "
+"una funcionalitat que permet a les aplicacions complir els terminis de "
 "manera més fiable."
 
 #: ../../getting-started/system-requirements.rst:61
@@ -4411,9 +4381,10 @@ msgid ""
 "system to allow JACK to use realtime scheduling? <https://jackaudio.org/faq/"
 "linux_rt_config.html#systems-using-pam>`_."
 msgstr ""
-"Per a configurar aquests privilegis per al teu usuari, veure `How do I "
-"configure my linux system to allow JACK to use realtime scheduling? <https://"
-"jackaudio.org/faq/linux_rt_config.html#systems-using-pam>`_."
+"Per a configurar aquests privilegis per al teu usuari, consulta `Com puc "
+"configurar el meu sistema Linux per a permetre que JACK utilitzi la "
+"programació en temps real? <https://jackaudio.org/faq/linux_rt_config.html"
+"#systems-using-pam>`_."
 
 #: ../../getting-started/system-requirements.rst:66
 msgid "FreeBSD"
@@ -4506,9 +4477,10 @@ msgid ""
 "library Zrythm uses to load some plugins. Plugins loaded through Carla can "
 "be bridged to separate processes."
 msgstr ""
-"Un `plugin host <https://kx.studio/Applications:Carla>`_ que proporciona una "
-"biblioteca que Zrythm utilitza per a carregar alguns complements. Els "
-"complements carregats a través de Carla poden pontar a processos separats."
+"Un `amfitrió de complements <https://kx.studio/Applications:Carla>`_ que "
+"proporciona una biblioteca que Zrythm utilitza per a carregar alguns "
+"complements. Els complements carregats a través de Carla poden pontar a "
+"processos separats."
 
 #: ../../glossary/intro.rst:38
 msgid "CLI"
@@ -4528,7 +4500,7 @@ msgstr "Clip"
 
 #: ../../glossary/intro.rst:45
 msgid "Used interchangeably with :ref:`region <regions>`."
-msgstr "S'utilitza indistintament amb :ref:`region <regions>`."
+msgstr "S'utilitza indistintament amb :ref:`regió <regions>`."
 
 #: ../../glossary/intro.rst:47 ../../routing/ports.rst:47
 msgid "Control"
@@ -4655,7 +4627,7 @@ msgstr "Mono"
 
 #: ../../glossary/intro.rst:103
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
-msgstr "Un senyal d'àudio d'un sol canal (veure també :term:`Stereo`)."
+msgstr "Un senyal d'àudio d'un sol canal (consulta també :term:`Stereo`)."
 
 #: ../../glossary/intro.rst:105
 msgid "Pan law"
@@ -4710,7 +4682,7 @@ msgid ""
 msgstr ""
 "Un projecte fa referència a una sessió de treball. Es desa com a directori "
 "que conté un fitxer de projecte juntament amb altres fitxers auxiliars. "
-"Veure :ref:`Projects` per a més detalls."
+"Consulta :ref:`Projects` per a més detalls."
 
 #: ../../glossary/intro.rst:128
 msgid "Range"
@@ -4726,7 +4698,7 @@ msgid ""
 "events. See :ref:`regions`."
 msgstr ""
 "Una regió (o :term:`Clip`) és un contenidor de notes MIDI, àudio o altres "
-"esdeveniments. Veure :ref:`regions`."
+"esdeveniments. Consulta :ref:`regions`."
 
 #: ../../glossary/intro.rst:140
 msgid "SFZ"
@@ -4751,8 +4723,8 @@ msgstr "Estèreo"
 #: ../../glossary/intro.rst:149
 msgid "A two-channel audio signal (left and right) (see also :term:`Mono`)."
 msgstr ""
-"Un senyal d'àudio de dos canals (esquerra i dreta) (veure també :term:"
-"`Mono`)."
+"Un senyal d'àudio de dos canals (esquerra i dreta) (consulta també "
+":term:`Mono`)."
 
 #: ../../glossary/intro.rst:151
 msgid "VST2"
@@ -4795,8 +4767,8 @@ msgid ""
 "increased to ease the work done by the sound card."
 msgstr ""
 "Una memòria intermèdia desbordada o infracarredada. Això vol dir que Zrythm "
-"no era prou ràpid per a lliurar dades al backend o no prou ràpid per "
-"processar les dades entrants del backend. Normalment els XRUNs són audibles "
+"no era prou ràpid per a lliurar dades al rerefons o no prou ràpid per "
+"processar les dades entrants del rerefons. Normalment els XRUNs són audibles "
 "com sibilacions o pops. Els XRUNs solen ocórrer quan la mida de la memòria "
 "intermèdia del motor d'àudio és massa baixa i la targeta de so no pot "
 "processar les memòries intermèdies entrants prou ràpid (desbordament). "
@@ -4823,10 +4795,10 @@ msgid ""
 "specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_) on "
 "freedesktop-compliant systems (or if :envvar:`XDG_DATA_HOME` is defined), or"
 msgstr ""
-":envvar:`XDG_DATA_HOME` (veure `XDG Base Directory Specification <https://"
-"specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_) en "
-"sistemes compatibles amb el freedesktop (o si :envvar:`XDG_DATA_HOME` està "
-"definit), o"
+":envvar:`XDG_DATA_HOME` (consulta `Especificació del directori base XDG "
+"<https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest."
+"html>`_) en sistemes compatibles amb el freedesktop (o si "
+":envvar:`XDG_DATA_HOME` està definit), o"
 
 #: ../../glossary/intro.rst:188
 msgid "the directory for local application data on Windows"
@@ -4874,19 +4846,19 @@ msgstr "Mostra una llista d'opcions disponibles."
 
 #: ../../invoking-from-command-line/intro.rst:28
 msgid "Pretty-print the output (where applicable)."
-msgstr "Imprimir la sortida amb qualitat (si escau)."
+msgstr "Imprimeix la sortida amb qualitat (si escau)."
 
 #: ../../invoking-from-command-line/intro.rst:32
 msgid ""
 "Print all the user settings. Can be combined with :option:`--pretty` to get "
 "pretty-printed output, like below."
 msgstr ""
-"Imprimir tots els paràmetres d'usuari. Es pot combinar amb :option:`--"
-"pretty` per a una sortida impresa de qualitat, com a continuació."
+"Imprimeix tots els paràmetres d'usuari. Es pot combinar amb "
+":option:`--pretty` per a una sortida impresa de qualitat, com a continuació."
 
 #: ../../invoking-from-command-line/intro.rst:41
 msgid "Reset user settings to their default values."
-msgstr "Reinicialitzar la configuració d'usuari als seus valors per defecte."
+msgstr "Reinicialitza la configuració d'usuari als seus valors per defecte."
 
 #: ../../invoking-from-command-line/intro.rst:43
 msgid ""
@@ -4902,7 +4874,7 @@ msgstr "Això esborrarà TOTS els paràmetres d'usuari."
 
 #: ../../invoking-from-command-line/intro.rst:55
 msgid "Convert a .zpj project file to YAML."
-msgstr "Convertir un fitxer de projecte .zpj en YAML."
+msgstr "Converteix un fitxer de projecte .zpj en YAML."
 
 #: ../../invoking-from-command-line/intro.rst:59
 msgid "Convert a YAML file to the .zpj format."
@@ -4914,7 +4886,7 @@ msgstr "Imprimeix la versió de Zrythm."
 
 #: ../../invoking-from-command-line/intro.rst:64
 msgid "zrythm_launch"
-msgstr "llançament_zrythm"
+msgstr "zrythm_launch"
 
 #: ../../invoking-from-command-line/intro.rst:65
 msgid ""
@@ -4922,9 +4894,9 @@ msgid ""
 "Zrythm. All of the options for :program:`zrythm` can also be passed to :"
 "program:`zrythm_launch`."
 msgstr ""
-"Embolcall sobre :program:`zrythm` que estableix els camins correctes abans "
-"de llançar Zrythm. Totes les opcions per a :program:`zrythm` també es pot "
-"passar a :program:`zrythm_launch`."
+"Un embolcall al voltant de :program:`zrythm` que estableix els camins "
+"correctes abans de llançar Zrythm. Totes les opcions per a :program:`zrythm` "
+"també es pot passar a :program:`zrythm_launch`."
 
 #: ../../mixing/intro.rst:9
 msgid "Mixing"
@@ -4953,23 +4925,23 @@ msgid "Mixer"
 msgstr "Mesclador"
 
 #: ../../mixing/overview.rst:26
-#, fuzzy
 msgid ""
 "The mixer contains all of the channels in the project corresponding to "
 "visible tracks. There is some extra space reserved  for drag-and-dropping "
 "plugins or files."
 msgstr ""
-"El mesclador conté tots els canals del projecte corresponents a pistes "
-"visibles."
+"El mesclador conté tots els canals del projecte corresponents a les pistes "
+"visibles. Hi ha espai addicional reservat per a arrossegar i deixar anar "
+"complements o fitxers."
 
 #: ../../mixing/overview.rst:31
-#, fuzzy
 msgid ""
 "Most of the activities that can be performed in the mixer are also available "
 "in the :ref:`Track inspector <tracks/inspector-page:Track Inspector>`."
 msgstr ""
 "La majoria de les activitats que es poden realitzar al mesclador també estan "
-"disponibles a l'inspector de pista descrit a :ref:`track-inspector`."
+"disponibles a :ref:`Inspector de pistes <tracks/inspector-page:Track "
+"Inspector>`."
 
 #: ../../mixing/overview.rst:38
 msgid "Channels"
@@ -5006,9 +4978,8 @@ msgstr ""
 "dispositiu d'àudio de sortida, està ancorat a la part dreta del mesclador."
 
 #: ../../mixing/overview.rst:62
-#, fuzzy
 msgid "The master channel"
-msgstr "Se mostren els últims canvis."
+msgstr "El canal mestre"
 
 #: ../../mixing/overview.rst:65
 msgid "Changing the Track Name"
@@ -5035,14 +5006,14 @@ msgid "Groups"
 msgstr "Grups"
 
 #: ../../mixing/routing.rst:11
-#, fuzzy
 msgid ""
 ":ref:`Audio group tracks <tracks/track-types:Audio Group Track>` and :ref:"
 "`MIDI group tracks <tracks/track-types:MIDI Group Track>` can be created for "
 "grouping signals."
 msgstr ""
-"Se poden crear pistes de grup d'àudio i MIDI (tractades a :ref:`audio-group-"
-"track` i :ref:`midi-group-track` respectivament) per a agrupar senyals."
+":ref:`Pistes en grup d'àudio <tracks/track-types:Audio Group Track>` i :ref:`"
+"pistes en grup MIDI <tracks/track-types:MIDI Group Track>` es poden crear "
+"per a agrupar senyals."
 
 #: ../../mixing/routing.rst:16
 msgid ""
@@ -5050,17 +5021,17 @@ msgid ""
 "choose them, similar to how it works in the :ref:`track properties in the "
 "track inspector <tracks/inspector-page:Track Properties>`."
 msgstr ""
-"Per a enrutar els canals a aquestes pistes, pots fer clic al selector de "
-"sortida directa i triar-los, de manera similar a com funciona al :ref:`track "
-"properties in the track inspector <tracks/inspector-page:Track Properties>`."
+"Per a encaminar els canals a aquestes pistes, pots fer clic al selector de "
+"sortida directa i triar-los, semblant a com funcionen :ref:`propietats de la "
+"pista a l'inspector de pistes <tracks/inspector-page:Track Properties>`."
 
 #: ../../mixing/routing.rst:21
 msgid "The Master track is also a group."
-msgstr "La pista Mestra també és un grup."
+msgstr "La pista mestra també és un grup."
 
 #: ../../mixing/routing.rst:24
 msgid "Buses/FX Tracks"
-msgstr "Busos / Pistes FX"
+msgstr "Pistes bus / FX"
 
 #: ../../mixing/routing.rst:26
 msgid ""
@@ -5068,8 +5039,8 @@ msgid ""
 "tracks <tracks/track-types:MIDI FX Track>` can be created for sending "
 "additional signals to them, in addition to the channel's main direct output."
 msgstr ""
-":ref:`Audio FX tracks <tracks/track-types:Audio FX Track>` i :ref:`MIDI FX "
-"tracks <tracks/track-types:MIDI FX Track>` es poden crear per a enviar-los "
+":ref:`Pistes FX d'àudio <tracks/track-types:Audio FX Track>` i :ref:`Pistes "
+"FX MIDI <tracks/track-types:MIDI FX Track>` es poden crear per a enviar-los "
 "senyals addicionals, a més de la sortida directa principal del canal."
 
 #: ../../mixing/routing.rst:33
@@ -5107,9 +5078,9 @@ msgid ""
 "Similar to sending signals to FX tracks, you can also send signals to plugin "
 "sidechain ports, if the plugin has any. See :ref:`track-sends` for details."
 msgstr ""
-"Similar a l'enviament de senyals a pistes FX, també pots enviar senyals als "
-"ports d'encadenament lateral del complement, si el complement en té. Veure :"
-"ref:`track-sends` per a més detalls."
+"Semblant a l'enviament de senyals a pistes FX, també pots enviar senyals als "
+"ports d'encadenament lateral del complement, si el complement en té. "
+"Consulta :ref:`track-sends` per a més detalls."
 
 #: ../../modulators/intro.rst:9 ../../tracks/track-types.rst:60
 msgid "Modulators"
@@ -5122,37 +5093,36 @@ msgid ""
 "example, you can route an LFO to a filter cutoff parameter to modulate its "
 "value."
 msgstr ""
-"Els moduladors són qualsevol complement que tingui almenys un port de "
-"sortida :term:`CV`. Aquests ports CV es poden encaminar a qualsevol "
-"paràmetre automatitzable dins de Zrythm. Per exemple, pots encaminar un LFO "
-"a un paràmetre de tall de filtre per a modular-ne el valor."
+"Un modulador és qualsevol complement que tingui almenys un port de sortida "
+":term:`CV`. Aquests ports CV es poden encaminar a qualsevol paràmetre "
+"automatitzable dins de Zrythm. Per exemple, pots encaminar un LFO a un "
+"paràmetre de tall de filtre per a modular-ne el valor."
 
 #: ../../modulators/intro.rst:17
 msgid "Modulators Tab"
 msgstr "Pestanya moduladors"
 
 #: ../../modulators/intro.rst:18
-#, fuzzy
 msgid ""
 "Zrythm has a modulators tab in the bottom panel that can hold any number of "
 "modulators and a fixed number of macro knobs."
 msgstr ""
-"Zrythm té una pestanya moduladors al quadre inferior que pot contenir "
-"qualsevol nombre de moduladors."
+"Zrythm té una pestanya de moduladors al quadre inferior que pot contenir "
+"qualsevol nombre de moduladors i un nombre fix de rodetes macro."
 
 #: ../../modulators/intro.rst:25
-#, fuzzy
 msgid ""
 "Modulators and macro knobs are associated with the :ref:`Modulator Track "
 "<tracks/track-types:Modulator Track>`, which contains all modulators in the :"
 "term:`Project`."
 msgstr ""
-"Els moduladors estan associats amb el :doc:`../tracks/modulator-track`, que "
-"conté tots els moduladors del :term:`Project`."
+"Els moduladors i les rodetes macro estan associats amb la :ref:`Pista del "
+"modulador <tracks/track-types:Modulator Track>`, que conté tots els "
+"moduladors del :term:`Project`."
 
 #: ../../modulators/intro.rst:30
 msgid "Adding Modulators"
-msgstr "Addició de moduladors"
+msgstr "Afegir moduladors"
 
 #: ../../modulators/intro.rst:31
 msgid ""
@@ -5161,14 +5131,14 @@ msgid ""
 "ref:`filtered inside the plugin browser <plugins-files/plugins/plugin-"
 "browser:Filter Buttons>`."
 msgstr ""
-"Els complements del modulador es poden arrossegar i deixar anar des de :doc:"
-"`../plugins-files/plugins/plugin-browser` a la pestanya Moduladors. Els "
-"complements del modulador poden ser :ref:`filtered inside the plugin browser "
-"<plugins-files/plugins/plugin-browser:Filter Buttons>`."
+"Els complements del modulador es poden arrossegar i deixar anar des de :doc"
+":`../plugins-files/plugins/plugin-browser` a la pestanya Moduladors. Els "
+"complements del modulador poden ser :ref:`filtrats dins el navegador de "
+"complements <plugins-files/plugins/plugin-browser:Filter Buttons>`."
 
 #: ../../modulators/intro.rst:37
 msgid "Routing Modulators"
-msgstr "Encaminament de moduladors"
+msgstr "Encaminat moduladors"
 
 #: ../../modulators/intro.rst:38
 msgid ""
@@ -5180,9 +5150,8 @@ msgstr ""
 "seleccionar la destinació."
 
 #: ../../modulators/intro.rst:50
-#, fuzzy
 msgid "Macro Knobs"
-msgstr "Rodeta de guany"
+msgstr "Rodetes macro"
 
 #: ../../modulators/intro.rst:52
 msgid ""
@@ -5190,37 +5159,35 @@ msgid ""
 "parameters. They can be automated in the :ref:`Modulator Track <tracks/track-"
 "types:Modulator Track>`, and you can also route envelopes like LFOs to them."
 msgstr ""
-"Les rodetes de macro són controls senzills que es poden utilitzar per a "
-"controlar diversos paràmetres. Es poden automatitzar a :ref:`Modulator Track "
-"<tracks/track-types:Modulator Track>`, i també hi podeu enrutar envolupants "
-"com els LFO."
+"Les rodetes macro són controls senzills que es poden utilitzar per a "
+"controlar diversos paràmetres. Es poden automatitzar a la :ref:`Pista del "
+"modulador <tracks/track-types:Modulator Track>`, i també pots encaminar "
+"envolupants com els LFO."
 
 #: ../../modulators/intro.rst:59
-#, fuzzy
 msgid "Adding Inputs"
-msgstr "Entrades d’àudio"
+msgstr "Afegir entrades"
 
 #: ../../modulators/intro.rst:61
 msgid ""
 "Click the :guilabel:`Add` button on the left side of a macro knob to add "
 "inputs to modulate the macro knob."
 msgstr ""
-"Fer clic al botó :guilabel:`Add ` al costat esquerre d'una rodeta macro per "
-"a afegir entrades per a modular les rodetes macro."
+"Clica al botó :guilabel:`Add ` al costat esquerre d'una rodeta macro per a "
+"afegir entrades per a modular les rodetes macro."
 
 #: ../../modulators/intro.rst:66
-#, fuzzy
 msgid "Routing to Outputs"
-msgstr "Sortida monitor"
+msgstr "Encaminant a sortides"
 
 #: ../../modulators/intro.rst:68
 msgid ""
 "Click the arrow button on the right side of a macro knob to route it to one "
 "or more controls. The process is similar to modulator output routing."
 msgstr ""
-"Fer clic al botó de fletxa del costat dret d'una rodeta de macro per a "
-"encaminar-lo a una o més controls. El procés és similar a l'encaminament de "
-"sortida del modulador."
+"Clica al botó de fletxa del costat dret d'una rodeta macro per a encaminar-"
+"lo a una o més controls. El procés és semblant a l'encaminament de sortida "
+"del modulador."
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:7
 msgid "BPM and Time Signatures"
@@ -5240,9 +5207,9 @@ msgid ""
 "g., from 140.24 to 141.24) and clicking and dragging on the decimal "
 "counterpart will change the decimal value (e.g., from 140.24 to 140.25)."
 msgstr ""
-"En clicar i arrossegar sobre la part entera, canviarà l'enter (per exemple, "
-"de 140,24 a 141,24) i en clicar i arrossegar sobre la part decimal canviarà "
-"el valor decimal (per exemple, de 140,24 a 140,25)."
+"Fent clic i arrossegant sobre la part entera, es canviarà l'enter (per "
+"exemple, de 140,24 a 141,24) i fet clic i arrossegant sobre la part decimal "
+"es canviarà el valor decimal (per exemple, de 140,24 a 140,25)."
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:26
 msgid "Time Signature"
@@ -5290,15 +5257,15 @@ msgstr "Reproducció i gravació"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:7
 msgid "Loop Points and Markers"
-msgstr "Punts de repetició i marcadors"
+msgstr "Punts de bucle i marcadors"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:17
 msgid ""
 "The loop points indicate the area that will be looped during playback, if "
 "looping is enabled."
 msgstr ""
-"Els punts de repetició indiquen l'àrea que es repetirà durant la "
-"reproducció, si repetició està habilitada."
+"Els punts de bucle indiquen l'àrea que es repetirà durant la reproducció, si "
+"bucle està habilitat."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:20
 #: ../../playback-and-recording/loop-points-and-markers.rst:33
@@ -5343,24 +5310,24 @@ msgstr ""
 "exportar la mescla a àudio."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:52
-#, fuzzy
 msgid ""
 "These markers are part of the :ref:`Marker Track <tracks/track-types:Marker "
 "Track>`."
-msgstr "Aquests marcadors formen part del :ref:`marker-track`."
+msgstr ""
+"Aquests marcadors formen part de la :ref:`Pista marcador <tracks/track-types:"
+"Marker Track>`."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:56
 msgid "Custom Markers"
 msgstr "Marcadors personalitzats"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:57
-#, fuzzy
 msgid ""
 "Custom Markers can also be created inside the :ref:`Marker Track <tracks/"
 "track-types:Marker Track>`."
 msgstr ""
-"Els marcadors personalitzats també es poden crear dins el :ref:`marker-"
-"track`."
+"Els marcadors personalitzats també es poden crear dins de la :ref:`Pista "
+"marcador <tracks/track-types:Marker Track>`."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:63
 msgid ""
@@ -5388,9 +5355,8 @@ msgstr ""
 "vermella dins els arranjadors."
 
 #: ../../playback-and-recording/overview.rst:21
-#, fuzzy
 msgid "The playhead"
-msgstr "Capçal de reproducció"
+msgstr "El capçal de reproducció"
 
 #: ../../playback-and-recording/overview.rst:24
 msgid "Position"
@@ -5423,8 +5389,8 @@ msgid ""
 "inspector <track-inspector>`."
 msgstr ""
 "Les pistes es poden armar per a gravar clicant el botó de gravació, ja sigui "
-"dins la pista o dins la seva secció d'atenuador al canal o :ref:`track "
-"inspector <track-inspector>`."
+"dins la pista o dins la seva secció d'atenuador al canal o :ref:`inspector "
+"de pistes <track-inspector>`."
 
 #: ../../playback-and-recording/recording.rst:19
 msgid ""
@@ -5432,8 +5398,8 @@ msgid ""
 "their :ref:`track-inputs` and these signals will be passed along in the "
 "processing chain."
 msgstr ""
-"Quan les pistes estan armades per a la gravació, comencen a oir senyals en "
-"el seu :ref:`track-inputs` i aquests senyals es passaran al llarg de la "
+"Quan les pistes estan armades per a la gravació, comencen a sentir senyals "
+"en el seu :ref:`track-inputs` i aquests senyals es passaran al llarg de la "
 "cadena de processament."
 
 #: ../../playback-and-recording/recording.rst:24
@@ -5476,7 +5442,7 @@ msgid ""
 "Inspector>` to adjust inputs for recording."
 msgstr ""
 "Les pistes d'àudio i MIDI/Instrument tenen una secció :ref:`tracks/inspector-"
-"page:Inputs` a la seva :ref:`Inspector Page <tracks/inspector-page:Track "
+"page:Inputs` a la seva :ref:`Pàgina Inspector <tracks/inspector-page:Track "
 "Inspector>` per a ajustar les entrades per a la gravació."
 
 #: ../../playback-and-recording/recording.rst:52
@@ -5485,20 +5451,20 @@ msgstr "Entrades de pista"
 
 #: ../../playback-and-recording/recording.rst:55
 msgid "Recording Settings"
-msgstr "Paràmetres de la gravació"
+msgstr "Paràmetres de gravació"
 
 #: ../../playback-and-recording/recording.rst:56
 msgid ""
 "Clicking the arrow next to the record button will bring up the recording "
 "settings where various options and recording modes can be selected."
 msgstr ""
-"En clicar la fletxa que hi ha al costat del botó de gravació es mostraran "
+"Fent clic la fletxa que hi ha al costat del botó de gravació es mostraran "
 "els paràmetres de la gravació on es poden seleccionar diverses opcions i "
 "modes de gravació."
 
 #: ../../playback-and-recording/recording.rst:63
 msgid "Recording settings"
-msgstr "Paràmetres de la gravació"
+msgstr "Paràmetres de gravació"
 
 #: ../../playback-and-recording/recording.rst:66
 msgid "Options"
@@ -5574,7 +5540,7 @@ msgid ""
 "Similar to `Create takes` but mutes the last recorded take before creating a "
 "new one"
 msgstr ""
-"Similar a `Create takes` però silencia l'última captura gravada abans de "
+"Semblant a `Create takes` però silencia l'última captura gravada abans de "
 "crear-ne una de nova"
 
 #: ../../playback-and-recording/recording.rst:102
@@ -5675,7 +5641,7 @@ msgstr "Estableix el volum del metrònom"
 
 #: ../../playback-and-recording/transport-controls.rst:38
 msgid "Return to cue point on stop"
-msgstr "Tornar a la fita quan s'aturi"
+msgstr "Retornar a la fita quan s'aturi"
 
 #: ../../playback-and-recording/transport-controls.rst:37
 msgid ""
@@ -5741,15 +5707,15 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:60
 msgid "Loop"
-msgstr "Repetició"
+msgstr "Bucle"
 
 #: ../../playback-and-recording/transport-controls.rst:58
 msgid ""
 "If enabled, the Playhead will move back to the Loop Start point when it "
 "reaches the Loop End point."
 msgstr ""
-"Si està habilitat, el capçal de reproducció tornarà al punt d'inici de la "
-"repetició quan arribi al punt final de la repetició."
+"Si està habilitat, el capçal de reproducció tornarà al punt d'inici del "
+"bucle quan arribi al punt final del bucle."
 
 #: ../../playback-and-recording/transport-controls.rst:63
 msgid "Playhead Display"
@@ -5777,10 +5743,10 @@ msgid ""
 "available by right-clicking the playhead position display when using the "
 "JACK audio backend and will be remembered across projects."
 msgstr ""
-"Zrythm pot sincronitzar-se amb `JACK transport <https://jackaudio.org/api/"
+"Zrythm pot sincronitzar-se amb `transport JACK <https://jackaudio.org/api/"
 "transport-design.html>` o convertir-se en el mestre de transport JACK. "
 "Aquestes opcions estan disponibles clicant el botó dret a la pantalla de la "
-"posició del capçal de reproducció quan s'utilitza el backend d'àudio JACK i "
+"posició del capçal de reproducció quan s'utilitza el rerefons d'àudio JACK i "
 "es recordaran en tots els projectes."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:9
@@ -5836,7 +5802,7 @@ msgid ""
 "Similarly, custom bookmarks can be removed by right-clicking on the bookmark "
 "and selecting :guilabel:`Delete`."
 msgstr ""
-"De la mateixa manera, els favorits personalitzats es poden eliminar clicant "
+"De la mateixa manera, els favorits personalitzats es poden suprimir clicant "
 "el botó dret al favorit i seleccionant :guilabel:`Delete`."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:51
@@ -5849,8 +5815,8 @@ msgid ""
 "Similarly to the :doc:`plugin browser <../plugins/plugin-browser>`, files "
 "can be filtered based on their type."
 msgstr ""
-"De la mateixa manera que el :doc:`plugin browser <../plugins/plugin-"
-"browser>`, els fitxers es poden filtrar en funció del seu tipus."
+"De la mateixa manera que el :doc:`navegador de complements <../plugins/"
+"plugin-browser>`, els fitxers es poden filtrar en funció del seu tipus."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:59
 msgid "Filtering by audio files"
@@ -5900,8 +5866,8 @@ msgid ""
 msgstr ""
 "Per defecte, només es mostraran els fitxers admesos a la llista de fitxers. "
 "Per a mostrar també fitxers no compatibles, habilita :guilabel:`Show "
-"unsupported files` al :ref:`file browser preferences <plugins-files/audio-"
-"midi-files/file-browser:Preferences>`."
+"unsupported files` a :ref:`preferències del navegador de fitxers <plugins-"
+"files/audio-midi-files/file-browser:Preferences>`."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:80
 msgid "Showing Hidden Files"
@@ -5915,9 +5881,9 @@ msgid ""
 "Preferences>`."
 msgstr ""
 "Per defecte, només es mostraran els fitxers que no estiguin ocults a la "
-"llista de fitxers. Per a mostrar també fitxers ocults, habilita :guilabel:"
-"`Show hidden files` :ref:`file browser preferences <plugins-files/audio-midi-"
-"files/file-browser:Preferences>`."
+"llista de fitxers. Per a mostrar també fitxers ocults, habilita :guilabel:`"
+"Show hidden files` :ref:`preferències del navegador de fitxers <plugins-"
+"files/audio-midi-files/file-browser:Preferences>`."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:88
 msgid ""
@@ -5984,8 +5950,8 @@ msgstr ""
 msgid ""
 "Clicking the cog icon will bring up the preferences for the file browser."
 msgstr ""
-"En clicar la icona de roda dentada es mostrarà les preferències del "
-"navegador de fitxers."
+"Fent clic a la icona de roda dentada mostrarà les preferències del navegador "
+"de fitxers."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:125
 msgid "File browser preferences"
@@ -6034,7 +6000,7 @@ msgid ""
 "the main window."
 msgstr ""
 "Hi ha disponible un navegador de fitxers addicional amb funcionalitats "
-"similars clicant el botó :guilabel:`Popup File Browser` a prop de la part "
+"semblants clicant el botó :guilabel:`Popup File Browser` a prop de la part "
 "inferior dreta de la finestra principal."
 
 #: ../../plugins-files/audio-midi-files/intro.rst:7
@@ -6048,8 +6014,8 @@ msgid ""
 "browser <file-browser>` into a track."
 msgstr ""
 "Zrythm pot importar fitxers MIDI i àudio al projecte. Els fitxers es poden "
-"importar arrossegant i deixant anar des de l'ordinador o des del :doc:`file "
-"browser <file-browser>` en una pista."
+"importar arrossegant i deixant anar des de l'ordinador o des del :doc:`"
+"navegador de fitxers <file-browser>` en una pista."
 
 #: ../../plugins-files/audio-midi-files/overview.rst:16
 msgid "Supported Formats"
@@ -6196,18 +6162,16 @@ msgid "Inspector Page"
 msgstr "Pàgina de l'inspector"
 
 #: ../../plugins-files/plugins/inspector-page.rst:11
-#, fuzzy
 msgid ""
 "When a plugin is selected in the Mixer, or when using :menuselection:`right "
 "click --> Inspect` on an instrument, its page will appear in the inspector "
 "as follows."
 msgstr ""
-"Quan es selecciona un complement al Mesclador, o quan s'utilitza el clic "
-"dret -> Inspecciona en un instrument, la pàgina apareixerà a l'inspector de "
-"la manera següent."
+"Quan es selecciona un complement al mesclador, o quan s'utilitza "
+":menuselection:`right click --> Inspect` en un instrument, la seva pàgina "
+"apareixerà a l'inspector de la manera següent."
 
 #: ../../plugins-files/plugins/inspector-page.rst:19
-#, fuzzy
 msgid "Plugin inspector"
 msgstr "Inspector de complements"
 
@@ -6241,14 +6205,12 @@ msgid "These are the ports that the plugin has."
 msgstr "Aquests són els ports que té el complement."
 
 #: ../../plugins-files/plugins/inspector-page.rst:40
-#, fuzzy
 msgid ""
 "Control input ports can be changed by clicking and dragging, and can also be "
 "automated using automation tracks."
 msgstr ""
-"Els ports d'entrada de control es poden canviar clicant i arrossegant, i "
-"també es poden automatitzar mitjançant pistes d'automatització. Els ports es "
-"poden encaminar a altres ports des de Zrythm fent-hi doble clic."
+"Els ports d'entrada de control es poden canviar fent clic i arrossegant, i "
+"també es poden automatitzar mitjançant pistes d'automatització."
 
 #: ../../plugins-files/plugins/inspector-page.rst:44
 msgid ""
@@ -6275,15 +6237,14 @@ msgid "Display"
 msgstr "Mostrar"
 
 #: ../../plugins-files/plugins/inspector-page.rst:54
-#, fuzzy
 msgid ""
 "The number in the top right of each port name will display the current "
 "number of connections to/from this port. See :ref:`routing/connections:"
 "Connections` for details."
 msgstr ""
-"El número de la part superior dreta de cada nom del port mostrarà el nombre "
-"actual de connexions a/des d'aquest port. Veure :doc:`../../routing/making-"
-"connections` per a més detalls."
+"El nombre de la part superior dreta de cada nom de port mostrarà el nombre "
+"actual de connexions cap a/des d'aquest port. Consulta :ref:`routing/"
+"connections:Connexions` per a més detalls."
 
 #: ../../plugins-files/plugins/inspector-page.rst:59
 msgid ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
@@ -6340,11 +6301,11 @@ msgstr "Filtrar per complement fabricant/autor."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:32
 msgid "Built-in plugins can be found under"
-msgstr ""
+msgstr "Els complements integrats es poden trobar a sota"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "`Zrythm DAW` here."
-msgstr ""
+msgstr "Aquí `Zrythm DAW`."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:35
 msgid "Category"
@@ -6360,7 +6321,7 @@ msgstr "Protocol"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "Filter by protocol (`LV2`, `SFZ`, etc.)."
-msgstr "Filtre per protocol (`LV2`, `SFZ`, etc.)."
+msgstr "Filtrar per protocol (`LV2`, `SFZ`, etc.)."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:40
 msgid "You can mix filters from various tabs for a custom search."
@@ -6389,8 +6350,8 @@ msgid ""
 "See :ref:`plugin-types` for more information about the various types of "
 "plugins there are."
 msgstr ""
-"Veure :ref:`plugin-types` per a més informació sobre els diferents tipus de "
-"complements que hi ha."
+"Consulta :ref:`plugin-types` per a més informació sobre els diferents tipus "
+"de complements que hi ha."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:61
 msgid "Keyword Search"
@@ -6458,7 +6419,7 @@ msgid ""
 "There are various :term:`plugin <Plugin>` formats supported by Zrythm, "
 "covered in :ref:`scanning-plugins`."
 msgstr ""
-"Hi ha diversos formats :term:`plugin <Plugin>` compatibles amb Zrythm, "
+"Hi ha diversos formats :term:`complement <Plugin>` compatibles amb Zrythm, "
 "tractats a :ref:`scanning-plugins`."
 
 #: ../../plugins-files/plugins/plugin-info.rst:13
@@ -6478,13 +6439,12 @@ msgid "|icon_instrument| Instrument"
 msgstr "|icon_instrument| Instrument"
 
 #: ../../plugins-files/plugins/plugin-info.rst:24
-#, fuzzy
 msgid ""
 "These plugins will create an :ref:`Instrument Track <tracks/track-types:"
 "Instrument Track>` when added to the project."
 msgstr ""
-"Aquests complements crearan una pista :ref:`instrument track <tracks/"
-"instrument-track:Instrument Track>` quan s'afegeixi al projecte."
+"Aquests complements crearan una :ref:`Pista d'Instruments <tracks/track-"
+"types:Instrument Track>` quan s'afegeixin al projecte."
 
 #: ../../plugins-files/plugins/plugin-info.rst:32
 msgid "|icon_audio-insert| Effect"
@@ -6497,8 +6457,8 @@ msgid ""
 "new FX tracks."
 msgstr ""
 "Aquests complements es poden arrossegar a les ranures d'inserció dels canals "
-"existents al :ref:`mixer <mixing/overview:Mixer>` o es poden instanciar per "
-"a crear pistes noves de FX."
+"existents al :ref:`mesclador <mixing/overview:Mixer>` o es poden instanciar "
+"per a crear pistes FX noves."
 
 #: ../../plugins-files/plugins/plugin-info.rst:36
 msgid "|icon_modulator| Modulator"
@@ -6517,16 +6477,14 @@ msgid "|icon_signal-midi| MIDI Effect"
 msgstr "|icon_signal-midi| Efecte MIDI"
 
 #: ../../plugins-files/plugins/plugin-info.rst:39
-#, fuzzy
 msgid ""
 "These plugins modify incoming :term:`MIDI` signals and can be used in the "
 "MIDI signal chain of an :ref:`Instrument <tracks/track-types:Instrument "
 "Track>` or :ref:`MIDI Track <tracks/track-types:MIDI Track>`."
 msgstr ""
-"Aquests complements modifiquen els senyals entrants :term:`MIDI` i es poden "
-"utilitzar a la cadena de senyal MIDI d'un :ref:`instrument <tracks/"
-"instrument-track:Instrument Track>` o :ref:`MIDI track <tracks/midi-track:"
-"MIDI Track>`."
+"Aquests complements modifiquen els senyals :term:`MIDI` entrants i es poden "
+"utilitzar a la cadena de senyals MIDI d'un :ref:`Instrument <tracks/track-"
+"types:Instrument Track>` o :ref:`Pista MIDI <tracks/track-types:MIDI Track>`."
 
 #: ../../plugins-files/plugins/plugin-info.rst:45
 msgid ""
@@ -6558,7 +6516,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:63
 msgid "Enabled"
-msgstr "Habilitació"
+msgstr "Habilitat"
 
 #: ../../plugins-files/plugins/plugin-info.rst:63
 msgid "Controls whether the plugin is active or bypassed."
@@ -6577,8 +6535,8 @@ msgid ""
 "All of the plugin's ports will be shown in the plugin's :ref:`inspector page "
 "<plugins-files/plugins/inspector-page:Inspector Page>`"
 msgstr ""
-"Tots els ports del complement es mostraran a la pàgina :ref:`inspector page "
-"<plugins-files/plugins/inspector-page:Inspector Page>`"
+"Tots els ports del complement es mostraran a la pàgina :ref:`pàgina "
+"d'inspector <plugins-files/plugins/inspector-page:Inspector Page>`"
 
 #: ../../plugins-files/plugins/plugin-window.rst:7
 msgid "Plugin Window"
@@ -6589,16 +6547,14 @@ msgid "Custom UIs"
 msgstr "IU personalitzades"
 
 #: ../../plugins-files/plugins/plugin-window.rst:11
-#, fuzzy
 msgid ""
 "When Plugin UIs are opened, a window such as the following will be "
 "displayed, if the plugin ships with its own UI. This window may contain "
 "additions by Zrythm (such as `File` and `Presets` menus)."
 msgstr ""
-"Quan s'obren els IU del complement, es mostrarà una finestra com la següent, "
-"si el complement s'envia amb la seva pròpia interfície d'usuari. Aquesta "
-"finestra contindrà addicions de Zrythm (com ara els menús `File` i "
-"`Presets`)."
+"Quan s'obren les IU del complement, es mostrarà una finestra com la següent, "
+"si el complement s'envia amb la seva pròpia IU. Aquesta finestra pot "
+"contenir addicions de Zrythm (com els menús`File` i `Presets`)."
 
 #: ../../plugins-files/plugins/plugin-window.rst:21
 msgid "Generic UIs"
@@ -6623,10 +6579,10 @@ msgid ""
 "compatible with Zrythm and need to be bridged (ie, run as separate "
 "processes)."
 msgstr ""
-"La majoria dels complements s'instancia en el mateix procés que Zrythm. Això "
-"té l'avantatge que :term:`DSP`és molt ràpid, però, alguns IO del complement "
-"no són compatibles amb Zrythm i necessiten pontar (és a dir, executar-se com "
-"a processos separats)."
+"La majoria dels complements s'instancien en el mateix procés que Zrythm. "
+"Això té l'avantatge que :term:`DSP`és molt ràpid, però, alguns IO del "
+"complement no són compatibles amb Zrythm i necessiten pontar-se (és a dir, "
+"executar-se com a processos separats)."
 
 #: ../../plugins-files/plugins/plugin-window.rst:38
 msgid ""
@@ -6635,10 +6591,10 @@ msgid ""
 "is required, this will have some performance implications, since it is "
 "required to communicate with the plugin in another process."
 msgstr ""
-"Quan sigui possible pontar només la interfície d'usuari, Zrythm ho farà, i "
-"això no tindrà cap implicació de rendiment en DSP. Si es requereix pontar "
-"tot el complement, això tindrà algunes implicacions de rendiment, ja que es "
-"requereix comunicar-se amb el complement en un altre procés."
+"Quan sigui possible pontar només la IU, Zrythm ho farà, i això no tindrà cap "
+"implicació de rendiment en DSP. Si es requereix pontar tot el complement, "
+"això tindrà algunes implicacions de rendiment, ja que es requereix comunicar-"
+"se amb el complement en un altre procés."
 
 #: ../../plugins-files/plugins/plugin-window.rst:45
 msgid ""
@@ -6663,9 +6619,8 @@ msgstr ""
 "browser`."
 
 #: ../../plugins-files/plugins/plugin-window.rst:58
-#, fuzzy
 msgid "Opening ZynAddSubFX in bridged mode"
-msgstr "Obrint complements en mode pontat"
+msgstr "Obrint ZynAddSubFX en mode pontat"
 
 #: ../../plugins-files/plugins/scanning.rst:9
 msgid "Scanning for Plugins"
@@ -6702,14 +6657,12 @@ msgid "LV2 Scan"
 msgstr "Exploració LV2"
 
 #: ../../plugins-files/plugins/scanning.rst:29
-#, fuzzy
 msgid ""
 "Zrythm will scan for LV2 plugins in the `standard paths specified here "
 "<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_."
 msgstr ""
-"Zrythm explorarà complements LV2 en els `standard paths specified here "
-"<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. Pots evitar "
-"aquest comportament passant :envvar:`LV2_PATH`."
+"Zrythm buscarà complements LV2 als `camins estàndard especificats aquí "
+"<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_."
 
 #: ../../plugins-files/plugins/scanning.rst:32
 msgid ""
@@ -6769,13 +6722,12 @@ msgid "Windows"
 msgstr "Windows"
 
 #: ../../plugins-files/plugins/scanning.rst:80
-#, fuzzy
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in the :ref:"
 "`preferences <configuration/preferences:Preferences>`."
 msgstr ""
-"Zrythm explorarà complements VST en els camins especificats a :ref:`vst-"
-"paths`."
+"Zrythm buscarà complements VST als camins especificats a :ref:`preferències <"
+"configuration/preferences:Preferences>`."
 
 #: ../../plugins-files/plugins/scanning.rst:85
 msgid "MacOS"
@@ -6787,9 +6739,9 @@ msgid ""
 "locations on Mac OS X and macOS <https://helpcenter.steinberg.de/hc/en-us/"
 "articles/115000171310>`_."
 msgstr ""
-"Zrythm explorarà complements VST en els camins especificats en `VST plug-in "
-"locations on Mac OS X and macOS <https://helpcenter.steinberg.de/hc/en-us/"
-"articles/115000171310>`_."
+"Zrythm explorarà complements VST en els camins especificats a `Ubicacions "
+"dels complements VST a Mac OS X i macOS <https://helpcenter.steinberg.de/hc/"
+"en-us/articles/115000171310>`_."
 
 #: ../../plugins-files/plugins/scanning.rst:89
 msgid ":file:`/Library/Audio/Plug-Ins/VST` for VST2"
@@ -6872,14 +6824,14 @@ msgid "SFZ/SF2 Scan"
 msgstr "Exploració SFZ/SF2"
 
 #: ../../plugins-files/plugins/scanning.rst:150
-#, fuzzy
 msgid ""
 ":term:`SFZ` and :term:`SF2` instruments will be scanned in all  directories "
 "and subdirectories specified in the :ref:`preferences <configuration/"
 "preferences:Preferences>`."
 msgstr ""
-"Els instruments :term:`SFZ` i :term:`SF2` s'exploraran en tots els "
-"directoris i subdirectoris especificats a :ref:`vst-paths`."
+"Els instruments :term:`SFZ` i :term:`SF2`s'escanejaran a tots els directoris "
+"i subdirectoris especificats a :ref:`preferències <configuration/"
+"preferences:Preferences>`."
 
 #: ../../projects/intro.rst:9
 msgid "Projects"
@@ -6911,7 +6863,7 @@ msgid ""
 "additional files and directories used by the project, such as audio files "
 "and plugin states."
 msgstr ""
-"A Zrythm, el treball es guarda dins de :term:`projects <Project>`. Els "
+"A Zrythm, el treball es guarda dins de :term:`projectes <Project>`. Els "
 "projectes consisteixen en un directori amb un fitxer de projecte que descriu "
 "el projecte juntament amb fitxers i directoris addicionals utilitzats pel "
 "projecte, com ara fitxers d'àudio i estats dels complements."
@@ -6939,7 +6891,6 @@ msgstr ""
 "consideren còpies de seguretat del projecte principal."
 
 #: ../../projects/project-structure.rst:27
-#, fuzzy
 msgid ""
 "Zrythm will keep backups automatically by default during autosave. You can "
 "change the autosave interval or turn it off in the :ref:`preferences "
@@ -6947,8 +6898,7 @@ msgid ""
 msgstr ""
 "Zrythm mantindrà les còpies de seguretat automàticament per defecte durant "
 "el desat automàtic. Pots canviar l'interval de desat automàtic o desactivar-"
-"lo a l'opció :ref:`preferences <configuration/preferences:General "
-"(Project)>`."
+"lo a :ref:`preferències <configuration/preferences:Preferences>`."
 
 #: ../../projects/project-structure.rst:34
 msgid "Project Directory"
@@ -7000,22 +6950,20 @@ msgid "Loading Projects"
 msgstr "Carregant projectes"
 
 #: ../../projects/saving-loading.rst:13
-#, fuzzy
 msgid ""
 "When Zrythm launches, it will ask you to select a project to load from a "
 "list of recent projects or from a path, or to create a new one."
 msgstr ""
-"Quan Zrythm es llança, us demanarà que seleccionis un projecte a carregar "
-"d'una llista de projectes recents o que en creïs un de nou."
+"Quan s'iniciï Zrythm, et demanarà que seleccionis un projecte per a carregar "
+"d'una llista de projectes recents o d'un camí, o que en creis un de nou."
 
 #: ../../projects/saving-loading.rst:22
-#, fuzzy
 msgid ""
 "When you select a project and click :guilabel:`&Open Selected`, Zrythm will "
 "load that project."
 msgstr ""
-"Quan seleccionis un projecte i cliquis :guilabel:`Apply`, Zrythm carregarà "
-"aquest projecte."
+"Quan seleccionis un projecte i facis clic a :guilabel:`&Open Selected`, "
+"Zrythm carregarà aquest projecte."
 
 #: ../../projects/saving-loading.rst:26
 msgid "To load a project from a path, click :guilabel:`Open from Path`."
@@ -7037,9 +6985,8 @@ msgstr ""
 "guilabel:`Create`."
 
 #: ../../projects/saving-loading.rst:40
-#, fuzzy
 msgid "Project template selection"
-msgstr "Selecció de projectes"
+msgstr "Selecció de plantilla de projecte"
 
 #: ../../projects/saving-loading.rst:42
 msgid ""
@@ -7052,26 +6999,24 @@ msgstr ""
 "`Zrythm user path`."
 
 #: ../../projects/saving-loading.rst:47
-#, fuzzy
 msgid ""
 "After clicking :guilabel:`Create`, Zrythm will ask you for a parent "
 "directory to save the project in and a title for the project."
 msgstr ""
-"Un cop seleccionada una plantilla (o en blanc) i cliquis :guilabel:`Apply`, "
-"Zrythm et demanarà un directori principal per a desar el projecte i un títol "
-"de projecte."
+"Després de fer clic a :guilabel:`Create `, Zrythm et demanarà un directori "
+"principal per a desar el projecte i un títol per al projecte."
 
 #: ../../projects/saving-loading.rst:54
-#, fuzzy
 msgid "New project creation"
-msgstr "Configuració general del projecte."
+msgstr "Creació de projecte nou"
 
 #: ../../projects/saving-loading.rst:56
-#, fuzzy
 msgid ""
 "Once you click :guilabel:`OK`, the new project will be set up and you will "
 "be ready to go."
-msgstr "Un cop acceptis, es configurarà el projecte nou i ja estarà llest."
+msgstr ""
+"Un cop facis clic a :guilabel:`OK `, el projecte nou s'instal·larà i estarà "
+"llest per a començar."
 
 #: ../../projects/saving-loading.rst:60
 msgid "Saving Projects"
@@ -7112,22 +7057,20 @@ msgid ""
 "See :ref:`projects/project-structure:Backups` for more information about "
 "backups."
 msgstr ""
-"Veure :ref:`projects/project-structure:Backups` per a més informació sobre "
-"les còpies de seguretat."
+"Consulta :ref:`projects/project-structure:Backups` per a més informació "
+"sobre les còpies de seguretat."
 
 #: ../../routing/connections.rst:8
-#, fuzzy
 msgid "Connections"
-msgstr "Connexions de port"
+msgstr "Connexions"
 
 #: ../../routing/connections.rst:11
 msgid "Making Connections"
 msgstr "Fent connexions"
 
 #: ../../routing/connections.rst:14
-#, fuzzy
 msgid "Direct Connections"
-msgstr "Connexions de port"
+msgstr "Connexions directes"
 
 #: ../../routing/connections.rst:16
 msgid ""
@@ -7148,9 +7091,8 @@ msgstr ""
 "`track-inspector` o la :ref:`plugin-inspector-page`."
 
 #: ../../routing/connections.rst:28
-#, fuzzy
 msgid "Plugin controls"
-msgstr "Ports del complement"
+msgstr "Controls del complement"
 
 #: ../../routing/connections.rst:30
 msgid ""
@@ -7161,9 +7103,8 @@ msgstr ""
 "guilabel:`Add ` per a crear una connexió nova."
 
 #: ../../routing/connections.rst:36
-#, fuzzy
 msgid "Port connections for control"
-msgstr "Opcions d'exportació per a la mescla"
+msgstr "Connexions de port per al control"
 
 #: ../../routing/connections.rst:38
 msgid "You can select the port to connect to in the presented dialog."
@@ -7179,7 +7120,7 @@ msgid ""
 "ref:`Aux Sends <tracks/inspector-page:Aux Sends>`."
 msgstr ""
 "El senyal de les pistes es pot encaminar a complements que tinguin entrades "
-"de cadena lateral mitjançant :ref:`Aux Sends <tracks/inspector-page:Aux "
+"de cadena lateral mitjançant :ref:`enviaments aux <tracks/inspector-page:Aux "
 "Sends>`."
 
 #: ../../routing/connections.rst:58
@@ -7187,28 +7128,25 @@ msgid ""
 "For example, you can use a compressor plugin on a bass track that accepts a "
 "sidechain input from a kick track to get a pumping/ducking effect."
 msgstr ""
-"Per exemple, pots utilitzar un complement de compressor en una pista de baix "
+"Per exemple, pots utilitzar un complement de compressor en una pista baixa "
 "que accepti una entrada de cadena lateral d'una pista de bombo per a obtenir "
 "un efecte de bombeig/atenuació."
 
 #: ../../routing/connections.rst:63
-#, fuzzy
 msgid "Managing Connections"
-msgstr "Fent connexions"
+msgstr "Gestió de connexions"
 
 #: ../../routing/connections.rst:65
-#, fuzzy
 msgid ""
 "Connections can be managed in the Connections tab in the :ref:`Main Panel "
 "<zrythm-interface/main-panel:Main Panel>`."
 msgstr ""
-"Els mapatges de dispositius (vinculacions) es poden trobar a la pestanya :"
-"guilabel:`Bindings` del quadre principal."
+"Les connexions es poden gestionar a la pestanya Connexions del :ref:`Quadre "
+"principal <zrythm-interface/main-panel:Main Panel>`."
 
 #: ../../routing/connections.rst:72
-#, fuzzy
 msgid "Managing connections"
-msgstr "Fent connexions"
+msgstr "Gestió de connexions"
 
 #: ../../routing/connections.rst:74
 msgid ""
@@ -7219,9 +7157,8 @@ msgstr ""
 "doble clic."
 
 #: ../../routing/connections.rst:80
-#, fuzzy
 msgid "Editing a connection"
-msgstr "Fent connexions"
+msgstr "Edició d'una connexió"
 
 #: ../../routing/connections.rst:82
 msgid ""
@@ -7236,9 +7173,8 @@ msgstr ""
 "senyal."
 
 #: ../../routing/connections.rst:88
-#, fuzzy
 msgid "The following controls are also available."
-msgstr "Hi ha disponibles els següents commutadors."
+msgstr "Els controls següents també estan disponibles."
 
 #: ../../routing/connections.rst:90
 msgid "Enable/Disable Connection"
@@ -7246,71 +7182,66 @@ msgstr "Habilitar / deshabilitar la connexió"
 
 #: ../../routing/connections.rst:91
 msgid "Toggle whether the connection is enabled (active)"
-msgstr "Commuta si la connexió està habilitada (activa)"
+msgstr "Commutar si la connexió està habilitada (activa)"
 
 #: ../../routing/connections.rst:93
-#, fuzzy
 msgid "Delete Connection"
-msgstr "Connexions de port"
+msgstr "Suprimir connexió"
 
 #: ../../routing/connections.rst:93
-#, fuzzy
 msgid "Delete the connection"
-msgstr "Actualitza aquesta secció/imatge."
+msgstr "Suprimir la connexió"
 
 #: ../../routing/connections.rst:97
-#, fuzzy
 msgid ""
 "It may be helpful to be able to view the routing graph when making "
 "connections. We plan to add this functionality into Zrythm in the future, "
 "but for now Zrythm allows you to export the whole routing graph as an image, "
 "so you can view it externally."
 msgstr ""
-"És molt útil poder veure el gràfic d'encaminament quan es fan connexions. "
-"Tenim previst afegir aquesta funcionalitat al Zrythm en el futur, però per "
-"ara Zrythm et permet exportar tot el gràfic d'encaminament com a imatge PNG, "
-"de manera que puguis veure-la externament."
+"Pot ser útil poder veure el gràfic d'encaminament en fer connexions. Tenim "
+"previst afegir aquesta funcionalitat a Zrythm en el futur, però ara per ara "
+"Zrythm et permet exportar tot el gràfic d'encaminament com a imatge, de "
+"manera que pots veure'l externament."
 
 #: ../../routing/connections.rst:103
 msgid "See :ref:`export-routing-graph` for details."
-msgstr "Veure :ref:`export-routing-graph` per a més detalls."
+msgstr "Consulta :ref:`export-routing-graph` per a més detalls."
 
 #: ../../routing/monitor-section.rst:6
 msgid "Monitor Section"
-msgstr "Secció de monitors"
+msgstr "Secció del monitor"
 
 #: ../../routing/monitor-section.rst:7
-#, fuzzy
 msgid ""
 "The monitor section is used to edit global settings related to mixing and "
 "routing signals. It is found inside the :ref:`Right Panel <zrythm-interface/"
 "right-panel:Right Panel>`."
 msgstr ""
-"La sala de control s'utilitza per a editar els paràmetres global relacionats "
-"amb la mescla i l'encaminament de senyals."
+"La secció de monitor s'utilitza per a editar la configuració global "
+"relacionada amb la mescla i l'encaminament de senyals. Es troba dins del "
+":ref:`Quadre dret <zrythm-interface/right-panel:Right Panel>`."
 
 #: ../../routing/monitor-section.rst:15
 msgid "Monitor section"
-msgstr "Secció de monitor"
+msgstr "Secció del monitor"
 
 #: ../../routing/monitor-section.rst:18
-#, fuzzy
 msgid "Channel Controls"
-msgstr "Barra d'eines principal"
+msgstr "Controls de canal"
 
 #: ../../routing/monitor-section.rst:20
 msgid ""
 "The monitor section displays the number of tracks currently soloed, muted or "
 "listened, along with buttons to unsolo, unmute, or unlisten every track."
 msgstr ""
-"La secció del monitor mostra el nombre de pistes en solo, silenciades o no "
+"La secció de monitor mostra el nombre de pistes en solo, silenciades o no "
 "actualment, juntament amb botons per a treure el solo, treure el silenciat o "
 "no escoltar cada pista."
 
 #: ../../routing/monitor-section.rst:25
-#, fuzzy
 msgid "Global Levels"
-msgstr "Menús Global"
+msgstr "Nivells globals"
 
 #: ../../routing/monitor-section.rst:27
 msgid ""
@@ -7348,38 +7279,37 @@ msgstr ""
 "almenys 1 pista"
 
 #: ../../routing/monitor-section.rst:39
-#, fuzzy
 msgid "Monitor Output"
-msgstr "Sortida monitor"
+msgstr "Sortida del monitor"
 
 #: ../../routing/monitor-section.rst:41
-#, fuzzy
 msgid ""
 "In Zrythm, what you actually hear through your speakers is not the output of "
 "the master track, but the monitor output. The master track routes its output "
 "to this special processor that processes the signal before sending the "
 "output to the speakers."
 msgstr ""
-"A Zrythm, el que realment sents a través dels altaveus no és la sortida de "
-"la pista mestra, sinó la sortida del monitor."
+"A Zrythm, el que realment sents pels altaveus no és la sortida de la pista "
+"mestra, sinó la sortida del monitor. La pista mestra encamina la seva "
+"sortida a aquest processador especial que processa el senyal abans d'enviar "
+"la sortida als altaveus."
 
 #: ../../routing/monitor-section.rst:49
-#, fuzzy
 msgid "Monitor Knob"
-msgstr "Monitor"
+msgstr "Rodeta del monitor"
 
 #: ../../routing/monitor-section.rst:51
 msgid ""
 "The :guilabel:`Monitor` knob controls the output volume. If set to 0dB, the "
 "volume coming from the master track will remain unchanged."
 msgstr ""
-"El control :guilabel:`Monitor` controla el volum de sortida. Si s'estableix "
-"a 0 dB, el volum que prové de la pista mestra es mantindrà sense canvis."
+"La rodeta del :guilabel:`Monitor` controla el volum de sortida. Si "
+"s'estableix a 0 dB, el volum que prové de la pista mestra es mantindrà sense "
+"canvis."
 
 #: ../../routing/monitor-section.rst:56
-#, fuzzy
 msgid "Monitor Controls"
-msgstr "Controls"
+msgstr "Controls del monitor"
 
 #: ../../routing/monitor-section.rst:58
 msgid ""
@@ -7399,7 +7329,7 @@ msgstr "Això és útil per a comprovar com sona la mescla en mono."
 
 #: ../../routing/monitor-section.rst:68
 msgid "Dim"
-msgstr "Disminució"
+msgstr "Atenuació"
 
 #: ../../routing/monitor-section.rst:68
 msgid "Dim the output to the dim level"
@@ -7411,12 +7341,11 @@ msgstr "Silenciar"
 
 #: ../../routing/monitor-section.rst:71
 msgid "Mute the output"
-msgstr "Silencia la sortida"
+msgstr "Silenciar la sortida"
 
 #: ../../routing/monitor-section.rst:74
-#, fuzzy
 msgid "JACK Output"
-msgstr "Entrades de pista"
+msgstr "Sortida JACK"
 
 #: ../../routing/monitor-section.rst:76
 msgid ""
@@ -7424,14 +7353,13 @@ msgid ""
 "route the output signal to one or more user-specified devices, instead of "
 "the default device used by JACK."
 msgstr ""
-"Quan utilitzis el backend :term:`JACK`, hi haurà controls addicionals per a "
+"Quan utilitzis el rerefons :term:`JACK`, hi haurà controls addicionals per a "
 "encaminar el senyal de sortida a un o més dispositius especificats per "
 "l'usuari, en lloc del dispositiu predeterminat utilitzat per JACK."
 
 #: ../../routing/monitor-section.rst:84
-#, fuzzy
 msgid "JACK output"
-msgstr "Entrades de pista"
+msgstr "Sortida JACK"
 
 #: ../../routing/ports.rst:8
 msgid "Ports"
@@ -7464,7 +7392,6 @@ msgstr ""
 "ports de sortida"
 
 #: ../../routing/ports.rst:25
-#, fuzzy
 msgid ""
 "For example, an instrument track has a `MIDI input` port it uses to read "
 "MIDI data from and 2 `Audio output` ports where it copies the stereo signal "
@@ -7710,7 +7637,7 @@ msgstr "Explora el sistema per a cercar complements."
 
 #: ../../scripting/api/project.rst:6
 msgid "Return the project’s title."
-msgstr "Retornar el títol del projecte."
+msgstr "Retorna el títol del projecte."
 
 #: ../../scripting/api/project.rst:10
 msgid "Returns the tracklist for the project."
@@ -7722,15 +7649,15 @@ msgstr "Retorna el gestor de desfer del projecte."
 
 #: ../../scripting/api/zrythm.rst:6
 msgid "Return the Zrythm version as a string."
-msgstr "Retornar la versió de Zrythm com a cadena."
+msgstr "Retorna la versió de Zrythm com a cadena."
 
 #: ../../scripting/api/zrythm.rst:10
 msgid "Return the PluginManager instance."
-msgstr "Retornar la instància PluginManager."
+msgstr "Retorna la instància PluginManager."
 
 #: ../../scripting/api/zrythm.rst:14
 msgid "Return the currently loaded Project instance."
-msgstr "Retornar la instància del projecte carregada actualment."
+msgstr "Retorna la instància del projecte carregada actualment."
 
 #: ../../scripting/api/zrythm.rst:18
 msgid "Returns a NULL pointer."
@@ -7797,26 +7724,22 @@ msgid ""
 "The Guile API is not available on Windows. See `this ticket <https://github."
 "com/msys2/MINGW-packages/issues/3298>`_ for details."
 msgstr ""
-"L'API Guile no està disponible al Windows. Veure `this ticket <https://"
-"github.com/msys2/MINGW-packages/issues/3298>`_ per a més detalls."
+"L'API Guile no està disponible al Windows. Consulta `aquesta incidència "
+"<https://github.com/msys2/MINGW-packages/issues/3298>`_ per a més detalls."
 
 #: ../../scripting/overview.rst:27
-#, fuzzy
 msgid ""
 "The :ref:`API section <scripting/api/intro:API>` is a comprehensive list of "
 "all available procedures in the API. Each section in the API corresponds to "
 "a specific Guile module."
 msgstr ""
-"La següent secció és una llista completa de tots els procediments "
-"disponibles a l'API. Cada secció de l'API correspon a un mòdul Guile "
-"específic, de manera que, per exemple, per a utilitzar els procediments a la "
-"secció :scheme:`audio position`, es faria :scheme:`(use-modules (audio "
-"position))` a la part superior del script."
+"La :ref:`secció API <scripting/api/intro:API>`és una llista completa de tots "
+"els procediments disponibles a l'API. Cada secció de l'API correspon a un "
+"mòdul Guile específic."
 
 #: ../../scripting/overview.rst:33
-#, fuzzy
 msgid "Using Modules"
-msgstr "Encaminament de moduladors"
+msgstr "Ús de mòduls"
 
 #: ../../scripting/overview.rst:35
 msgid ""
@@ -7828,7 +7751,7 @@ msgstr ""
 
 #: ../../scripting/overview.rst:44
 msgid "To use it from ECMAScript, use:"
-msgstr "Per utilitzar-lo des d'ECMAScript, utilitza:"
+msgstr "Per a utilitzar-lo des d'ECMAScript, utilitza:"
 
 #: ../../scripting/scripting-interface.rst:7
 #: ../../zrythm-interface/main-toolbar.rst:105
@@ -7841,12 +7764,11 @@ msgid ""
 "Toolbar <zrythm-interface/main-toolbar:Main Toolbar>` will bring up the "
 "scripting interface dialog."
 msgstr ""
-"Si feu clic al botó :guilabel:`Scripting Interface` a la :ref:`Main Toolbar "
-"<zrythm-interface/main-toolbar:Main Toolbar>` s'obrirà el diàleg de la "
-"interfície del script."
+"Fent clic al botó :guilabel:`Scripting Interface` a la :ref:`Barra d'eines "
+"principal <zrythm-interface/main-toolbar:Main Toolbar>` s'obrirà el diàleg "
+"de la interfície del script."
 
 #: ../../scripting/scripting-interface.rst:17
-#, fuzzy
 msgid "Scripting interface"
 msgstr "Interfície de script"
 
@@ -7859,9 +7781,8 @@ msgstr ""
 "interfície del scrpit."
 
 #: ../../scripting/scripting-interface.rst:23
-#, fuzzy
 msgid "Execution"
-msgstr "Seleccions"
+msgstr "Execució"
 
 #: ../../scripting/scripting-interface.rst:25
 msgid ""
@@ -7872,9 +7793,8 @@ msgstr ""
 "sortida a l'etiqueta de la part inferior."
 
 #: ../../scripting/scripting-interface.rst:30
-#, fuzzy
 msgid "Changing Language"
-msgstr "Canviant valors"
+msgstr "Canviant idioma"
 
 #: ../../scripting/scripting-interface.rst:32
 msgid ""
@@ -7947,21 +7867,19 @@ msgid "Here are some links by official GNOME sources:"
 msgstr "Aquests són alguns enllaços de fonts oficials del GNOME:"
 
 #: ../../theming/css.rst:37
-#, fuzzy
 msgid "`GTK+ CSS Overview <https://docs.gtk.org/gtk4/css-overview.html>`_"
-msgstr "`GTK+ CSS Overview <https://docs.gtk.org/gtk3/css-overview.html>`_"
+msgstr "`GTK+ CSS Overview <https://docs.gtk.org/gtk4/css-overview.html>`_"
 
 #: ../../theming/css.rst:38
-#, fuzzy
 msgid "`GTK+ CSS Properties <https://docs.gtk.org/gtk4/css-properties.html>`_"
-msgstr "`GTK+ CSS Properties <https://docs.gtk.org/gtk3/css-properties.html>`_"
+msgstr "`Propietats GTK+ CSS <https://docs.gtk.org/gtk4/css-properties.html>`_"
 
 #: ../../theming/css.rst:39
 msgid ""
 "`Styling GTK with CSS <https://thegnomejournal.wordpress.com/2011/03/15/"
 "styling-gtk-with-css/>`_"
 msgstr ""
-"`Styling GTK with CSS <https://thegnomejournal.wordpress.com/2011/03/15/"
+"`Donar estil a GTK amb CSS <https://thegnomejournal.wordpress.com/2011/03/15/"
 "styling-gtk-with-css/>`_"
 
 #: ../../theming/icon-themes.rst:9
@@ -7983,7 +7901,7 @@ msgid ""
 "under your Zrythm installation directory."
 msgstr ""
 "Per a sobreescriure el tema de la icona de Zrythm amb el teu propi tema "
-"d'icones, has de crear un directori similar a :file:`share/zrythm/themes/"
+"d'icones, has de crear un directori semblant a :file:`share/zrythm/themes/"
 "icons/zrythm-dark` sota el teu directori d'instal·lació de Zrythm."
 
 #: ../../theming/icon-themes.rst:18
@@ -8010,9 +7928,9 @@ msgid ""
 "Specification <https://specifications.freedesktop.org/icon-theme-spec/latest/"
 ">`_."
 msgstr ""
-"Una manera més elegant de fer-ho és seguint l'especificació `Freedesktop "
-"Icon Theme Specification <https://specifications.freedesktop.org/icon-theme-"
-"spec/latest/>`_."
+"Una manera més elegant de fer-ho és seguint l'`Especificació del tema "
+"d'icones de Freedesktop <https://specifications.freedesktop.org/"
+"icon-theme-spec/latest/>`_."
 
 #: ../../theming/intro.rst:7 ../../theming/overview.rst:7
 msgid "Theming"
@@ -8074,7 +7992,6 @@ msgid "Automation track for Fader Volume"
 msgstr "Pista d'automatització per al volum de l'atenuador"
 
 #: ../../tracks/automation.rst:26
-#, fuzzy
 msgid ""
 "You can choose which parameter you want to automate in each automation lane."
 msgstr ""
@@ -8086,7 +8003,7 @@ msgstr "Selecció d'un control automatitzat"
 
 #: ../../tracks/automation.rst:35
 msgid "Editing Automation"
-msgstr "Editant l'automatització"
+msgstr "Edició de l'automatització"
 
 #: ../../tracks/automation.rst:36
 msgid ""
@@ -8163,7 +8080,7 @@ msgstr ""
 #: ../../tracks/creating-tracks.rst:26
 msgid "See :ref:`instantiating-plugins` for how to instantiate plugins."
 msgstr ""
-"Veure :ref:`instantiating-plugins` sobre com instanciar els complements."
+"Consulta :ref:`instantiating-plugins` sobre com instanciar els complements."
 
 #: ../../tracks/creating-tracks.rst:30
 msgid "Creating Audio Tracks From Audio Files"
@@ -8219,9 +8136,8 @@ msgid "Track Name"
 msgstr "Nom de pista"
 
 #: ../../tracks/inspector-page.rst:27
-#, fuzzy
 msgid "Name of the track. Can be changed by double clicking."
-msgstr "El nom de la pista. Pots fer doble clic per a canviar-lo."
+msgstr "Nom de la pista. Es pot canviar fent doble clic."
 
 #: ../../tracks/inspector-page.rst:35
 msgid "Direct Out"
@@ -8240,8 +8156,8 @@ msgid ""
 "The instrument plugin from this track. This is only applicable to :ref:"
 "`Instrument tracks <tracks/track-types:Instrument Track>`."
 msgstr ""
-"El complement d'instrument des d'aquesta pista. Això només és aplicable a :"
-"ref:`Instrument tracks <tracks/track-types:Instrument Track>`."
+"El complement d'instrument des d'aquesta pista. Això només és aplicable a "
+":ref:`Pistes d'instruments <tracks/track-types:Instrument Track>`."
 
 #: ../../tracks/inspector-page.rst:47
 msgid ""
@@ -8270,7 +8186,7 @@ msgstr "Canals MIDI"
 
 #: ../../tracks/inspector-page.rst:60
 msgid "MIDI channels to listen to (other channels will be ignored)"
-msgstr "Canals MIDI a oir (s'ignoraran altres canals)"
+msgstr "Canals MIDI a escoltar (s'ignoraran altres canals)"
 
 #: ../../tracks/inspector-page.rst:64
 msgid "Audio Inputs"
@@ -8282,7 +8198,7 @@ msgstr "Entrada esquerra"
 
 #: ../../tracks/inspector-page.rst:70
 msgid "Left audio input port to listen to"
-msgstr "Port d'entrada d'àudio esquerre per a oir"
+msgstr "Port d'entrada d'àudio esquerre per a escoltar"
 
 #: ../../tracks/inspector-page.rst:71
 msgid "Right Input"
@@ -8290,7 +8206,7 @@ msgstr "Entrada dreta"
 
 #: ../../tracks/inspector-page.rst:72
 msgid "Right audio input port to listen to"
-msgstr "Port d'entrada d'àudio dret per a oir"
+msgstr "Port d'entrada d'àudio dret per a escoltar"
 
 #: ../../tracks/inspector-page.rst:73
 msgid "Mono toggle"
@@ -8310,7 +8226,7 @@ msgstr "Ajustar el guany d'entrada"
 
 #: ../../tracks/inspector-page.rst:79
 msgid "MIDI FX/Inserts"
-msgstr "MIDI FX / Insercions"
+msgstr "FX MIDI / Insercions"
 
 #: ../../tracks/inspector-page.rst:81
 msgid ""
@@ -8325,13 +8241,13 @@ msgid ""
 "MIDI FX are processed after the input and piano roll events and before the "
 "instruments in instrument tracks, or before the inserts in MIDI tracks."
 msgstr ""
-"MIDI FX es processa després dels esdeveniments d'entrada i rotlle de pianola "
+"FX MIDI es processa després dels esdeveniments d'entrada i rotlle de pianola "
 "i abans dels instruments en pistes d'instruments, o abans de les insercions "
 "en pistes MIDI."
 
 #: ../../tracks/inspector-page.rst:91
 msgid "Only MIDI and Instrument tracks support MIDI FX."
-msgstr "Només les pistes MIDI i d'Instrument admeten MIDI FX."
+msgstr "Només les pistes MIDI i d'Instrument admeten FX MIDI."
 
 #: ../../tracks/inspector-page.rst:93
 msgid ""
@@ -8365,8 +8281,8 @@ msgid ""
 "tracks or plugin side-chain inputs. These are generally useful for side-"
 "chaining or applying additional effects to channels, such as reverb."
 msgstr ""
-"Es tracta de `aux sends <https://en.wikipedia.org/wiki/Aux-send>`_ a altres "
-"pistes o entrades de la cadena lateral del complement. Aquests són "
+"Es tracta d'un `enviament aux <https://en.wikipedia.org/wiki/Aux-send>`_ a "
+"altres pistes o entrades de la cadena lateral del complement. Aquests són "
 "generalment útils per a l'encadenament lateral o l'aplicació d'efectes "
 "addicionals als canals, com la reverberació."
 
@@ -8415,26 +8331,24 @@ msgid "Peak"
 msgstr "Pic"
 
 #: ../../tracks/inspector-page.rst:140
-#, fuzzy
 msgid "Peak signal value"
-msgstr "Valor del pic del senyal."
+msgstr "Valor pic del senyal"
 
 #: ../../tracks/inspector-page.rst:142
 msgid "RMS"
 msgstr "RMS"
 
 #: ../../tracks/inspector-page.rst:142
-#, fuzzy
 msgid "Root Mean Square of the signal value"
-msgstr "Desviació quadràtica mitjana del valor del senyal."
+msgstr "Arrel quadrada mitjana del valor del senyal"
 
 #: ../../tracks/inspector-page.rst:144
-#, fuzzy
 msgid ""
 "The controls available for controlling the signal flow are covered in :ref:"
 "`tracks/track-controls:Signal Flow`."
 msgstr ""
-"Els controls següents estan disponibles per controlar el flux de senyal."
+"Els controls disponibles per a controlar el flux del senyal estan coberts a "
+":ref:`tracks/track-controls:Signal Flow`."
 
 #: ../../tracks/inspector-page.rst:148
 msgid "MIDI faders use MIDI volume CC."
@@ -8465,7 +8379,7 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:167
 msgid "Clicking the pencil button will bring up a popup to edit the comment."
 msgstr ""
-"En clicar el botó llapis apareixerà una finestra emergent per a editar el "
+"Fent clic al botó llapis apareixerà una finestra emergent per a editar el "
 "comentari."
 
 #: ../../tracks/intro.rst:8
@@ -8473,44 +8387,41 @@ msgid "Tracks"
 msgstr "Pistes"
 
 #: ../../tracks/overview.rst:8
-#, fuzzy
 msgid ""
 "Tracks are the main building blocks of projects. Tracks appear in the "
 "tracklist and contain various events such as :ref:`regions <regions>`."
 msgstr ""
-"Les pistes són els principals elements de construcció dels projectes. Les "
-"pistes apareixen a la llista de pistes i contenen diversos esdeveniments, "
-"com ara :ref:`regions`."
+"Les pistes són els construccions principals dels projectes. Les pistes "
+"apareixen a la llista de cançons i contenen diversos esdeveniments com ara "
+":ref:`regions <regions>`."
 
 #: ../../tracks/overview.rst:15
-#, fuzzy
 msgid "Track in tracklist"
-msgstr "Interfície de pista"
+msgstr "Pista a la llista de pistes"
 
 #: ../../tracks/overview.rst:17
-#, fuzzy
 msgid ""
 "Most types of tracks have a corresponding channel that appears in the :ref:"
 "`Mixer <mixer>`. See :ref:`channels` for more info."
 msgstr ""
-"La majoria dels tipus de pistes tenen un canal corresponent que apareix a :"
-"ref:`mixer`. Veure :ref:`channels` per a més informació."
+"La majoria dels tipus de pistes tenen un canal corresponent que apareix a "
+":ref:`Mesclador <mixer>`. Consulta :ref:`channels ` per a més informació."
 
 #: ../../tracks/overview.rst:24
 msgid "Channel in mixer"
 msgstr "Canal al mesclador"
 
 #: ../../tracks/overview.rst:26
-#, fuzzy
 msgid ""
 "There are various kinds of tracks suited for different purposes, explained "
 "in the following sections. Some tracks are special, like the :ref:`Chord "
 "Track <tracks/track-types:Chord Track>` and the :ref:`Marker Track <tracks/"
 "track-types:Marker Track>`, which contain chords and markers respectively."
 msgstr ""
-"Hi ha diversos tipus de pistes adaptades per a diferents finalitats, "
-"explicades a les seccions següents. Algunes pistes són especials, com ara "
-"la :ref:`chord-track` i la :ref:`marker-track`, que contenen acords i "
+"Hi ha diversos tipus de pistes adequades per a diferents propòsits, que "
+"s'expliquen a les seccions següents. Algunes pistes són especials, com la "
+":ref:`Pista d'acords <tracks/track-types:Chord Track>` i la de :ref:`Pista "
+"marcadors <tracks/track-types:Marker Track>`, que contenen acords i "
 "marcadors respectivament."
 
 #: ../../tracks/overview.rst:34
@@ -8520,9 +8431,9 @@ msgid ""
 "used for putting tracks under the same folder and performing common "
 "operations."
 msgstr ""
-"A Zrythm, les pistes de grup s'utilitzen per a agrupar senyals (encaminament "
-"directe), les pistes de FX / bus s'utilitzen per a efectes / enviaments, i "
-"les pistes de carpeta (aviat) s'utilitzen per a posar pistes sota la mateixa "
+"A Zrythm, les pistes en grup s'utilitzen per a agrupar senyals (encaminament "
+"directe), les pistes de FX/bus s'utilitzen per a efectes / enviaments, i les "
+"pistes en carpeta (aviat) s'utilitzen per a posar pistes sota la mateixa "
 "carpeta i realitzar operacions comunes."
 
 #: ../../tracks/overview.rst:41
@@ -8599,9 +8510,8 @@ msgstr ""
 "disponibles."
 
 #: ../../tracks/track-controls.rst:6
-#, fuzzy
 msgid "Track Controls"
-msgstr "Icona de pista"
+msgstr "Controls de pista"
 
 #: ../../tracks/track-controls.rst:8
 msgid ""
@@ -8622,11 +8532,10 @@ msgid "Arm the track for recording."
 msgstr "Armar la pista per a la gravació."
 
 #: ../../tracks/track-controls.rst:19
-#, fuzzy
 msgid "Mute the track, meaning no signal will be sent to its direct out."
 msgstr ""
-"Silencia la pista, el que significa que no s'enviarà cap so a la seva "
-"sortida directa."
+"Silencia la pista, és a dir, no s'enviarà cap senyal a la seva sortida "
+"directa."
 
 #: ../../tracks/track-controls.rst:22
 msgid ""
@@ -8641,28 +8550,27 @@ msgid "Solo"
 msgstr "Solo"
 
 #: ../../tracks/track-controls.rst:27
-#, fuzzy
 msgid ""
 "Solo the track. If any track is soloed, only the soloed tracks will produce "
 "sounds."
 msgstr ""
-"Posar en solo la pista. Si alguna pista està en solo, només les pistes en "
-"solo produiran sons."
+"Posar en solo la pista. Si alguna pista en solo, només les pistes en solo "
+"produiran sons."
 
 #: ../../tracks/track-controls.rst:32
 msgid "Listen"
-msgstr "Oir"
+msgstr "Escoltar"
 
 #: ../../tracks/track-controls.rst:30
-#, fuzzy
 msgid ""
 "Similar to solo, except it dims the volume of other tracks instead of muting "
 "them. The dim amount can be controlled in the :ref:`Monitor Section <routing/"
 "monitor-section:Monitor Section>`."
 msgstr ""
-"Similar al solo, excepte que disminueix el volum d'altres pistes en lloc de "
+"Semblant al solo, excepte que disminueix el volum d'altres pistes en lloc de "
 "silenciar-les. La quantitat disminuïda es pot controlar a la sala de control "
-"descrita a :ref:`control-room`."
+"descrita a :ref:`Secció del monitor <routing/monitor-section:Monitor "
+"Section>`."
 
 #: ../../tracks/track-controls.rst:35
 msgid "Listen to incoming signal when recording."
@@ -8673,9 +8581,8 @@ msgid "This is only used on audio tracks."
 msgstr "Això només s'utilitza en pistes d'àudio."
 
 #: ../../tracks/track-controls.rst:40
-#, fuzzy
 msgid "Visibility"
-msgstr "Visibilitat de la pista"
+msgstr "Visibilitat"
 
 #: ../../tracks/track-controls.rst:43
 msgid "Show Lanes"
@@ -8685,28 +8592,28 @@ msgstr "Mostrar carrils"
 msgid ""
 "Toggle the visibility of :ref:`track lanes <tracks/track-lanes:Track Lanes>`."
 msgstr ""
-"Commuta la visibilitat de :ref:`track lanes <tracks/track-lanes:Track "
+"Commutar la visibilitat de :ref:`carrils de pista <tracks/track-lanes:Track "
 "Lanes>`."
 
 #: ../../tracks/track-controls.rst:46
 msgid "Show Automation"
-msgstr "Se mostra l'automatització"
+msgstr "Mostrar l'automatització"
 
 #: ../../tracks/track-controls.rst:46
-#, fuzzy
 msgid ""
 "Toggle the visibility of :ref:`automation tracks <tracks/automation:"
 "Automation Tracks>`."
-msgstr "Commuta la pista d'automatització visible."
+msgstr ""
+"Commutar la visibilitat de les :ref:`pistes d'automatització <tracks/"
+"automation:Automation Tracks>`."
 
 #: ../../tracks/track-controls.rst:51
 msgid "Show UI"
 msgstr "Mostrar la IU"
 
 #: ../../tracks/track-controls.rst:49
-#, fuzzy
 msgid "Show or hide the UI of the instrument plugin."
-msgstr "Mostra la IU del complement principal."
+msgstr "Mostrar o amagar la IU del complement de l'instrument."
 
 #: ../../tracks/track-controls.rst:51
 msgid "Only available on instrument tracks."
@@ -8725,9 +8632,8 @@ msgid "Prevent any edits on the track while locked."
 msgstr "Evita qualsevol edició a la pista mentre està bloquejada."
 
 #: ../../tracks/track-controls.rst:59 ../../tracks/track-controls.rst:66
-#, fuzzy
 msgid "Not implemented yet."
-msgstr "Aquesta funcionalitat encara no s'ha implementat."
+msgstr "Encara no s'ha implementat."
 
 #: ../../tracks/track-controls.rst:65
 msgid "Freeze"
@@ -8739,7 +8645,7 @@ msgid ""
 "This is intended to reduce :term:`DSP` load on DSP-hungry tracks."
 msgstr ""
 "Rebota la pista a un fitxer d'àudio internament i evita les edicions mentre "
-"està congelada.Això pretén reduir la càrrega de :term:`DSP` a les pistes "
+"està congelada. Això pretén reduir la càrrega de :term:`DSP` a les pistes "
 "lleugeres de DSP."
 
 #: ../../tracks/track-lanes.rst:6
@@ -8747,44 +8653,40 @@ msgid "Track Lanes"
 msgstr "Carrils"
 
 #: ../../tracks/track-lanes.rst:8
-#, fuzzy
 msgid ""
 "Some tracks can have multiple lanes for their regions. By default, all "
 "regions are created on the first lane. Additional lanes will be auto-created "
 "and deleted as you add regions to each lane."
 msgstr ""
-"La pista MIDI pot tenir diversos carrils per a desar regions. Per defecte, "
-"totes les regions que creïs es crearan al carril 1. Es crearan i es "
-"suprimiran carrils addicionals a mesura que afegeixis regions a cada carril."
+"Algunes pistes poden tenir diversos carrils per a les seves regions. Per "
+"defecte, totes les regions es creen al primer carril. Els carrils "
+"addicionals es crearan i se suprimiran automàticament a mesura que afegiu "
+"regions a cada carril."
 
 #: ../../tracks/track-lanes.rst:17
-#, fuzzy
 msgid "Instrument track lanes"
-msgstr "Pista d'instrument"
+msgstr "Carrils de pista d'instrument"
 
 #: ../../tracks/track-lanes.rst:19
-#, fuzzy
 msgid ""
 "Lanes can be made visible by clicking the \"hamburger\" icon in the track "
 "view."
-msgstr "Els carrils es poden fer visibles clicant la icona «hamburguesa»."
+msgstr ""
+"Els carrils es poden fer visibles clicant la icona «hamburguesa» a la vista "
+"de la pista."
 
 #: ../../tracks/track-lanes.rst:23
-#, fuzzy
 msgid "Organization"
-msgstr "Quantizació"
+msgstr "Organització"
 
 #: ../../tracks/track-lanes.rst:25
-#, fuzzy
 msgid ""
 "Track lanes are useful for organizing regions in a track into layers. For "
 "example you can keep high notes in lane 1 and bass notes in lane 2."
 msgstr ""
-"Els carrils són útils a l'hora de gravar, ja que cada vegada que es "
-"repeteixi la reproducció, començarà a gravar en un carril nou i silenciarà "
-"la regió del carril anterior. Els carrils també són útils per a organitzar "
-"les teves regions en general. Per exemple, pots mantenir notes altes al "
-"carril 1 i notes baixes al carril 2."
+"Els carrils de pista són útils per a organitzar les regions d'una pista en "
+"capes. Per exemple, pots mantenir les notes agudes al carril 1 i les notes "
+"greus al carril 2."
 
 #: ../../tracks/track-lanes.rst:32
 msgid ""
@@ -8793,8 +8695,8 @@ msgid ""
 "takes`, each time playback loops it will start recording in a new lane and "
 "optionally mute the last recorded region in the previous lane."
 msgstr ""
-"Els carrils també són útils quan es grava. Si s'ajusta la ref:`recording "
-"mode <playback-and-recording/recording:Recording Modes>` a :guilabel:`Create "
+"Els carrils també són útils quan es grava. Si s'ajusta el ref:`mode gravació "
+"<playback-and-recording/recording:Recording Modes>` a :guilabel:`Create "
 "takes`, cada vegada que la reproducció faci un bucle començarà a gravar en "
 "un nou carril i, opcionalment , silenciarà l'última regió gravada al carril "
 "anterior."
@@ -8831,9 +8733,8 @@ msgstr ""
 "es ressaltaran a mesura que moguis la pista."
 
 #: ../../tracks/track-operations.rst:18
-#, fuzzy
 msgid "Copying Tracks"
-msgstr "Movent pistes"
+msgstr "Còpia de pistes"
 
 #: ../../tracks/track-operations.rst:20
 msgid ""
@@ -8864,10 +8765,8 @@ msgid "Track Types"
 msgstr "Tipus de pista"
 
 #: ../../tracks/track-types.rst:8
-#, fuzzy
 msgid "Zrythm has the following types of Tracks."
-msgstr ""
-"Zrythm té els següents menús global a la part superior de la seva interfície."
+msgstr "Zrythm té els següents tipus de pistes."
 
 #: ../../tracks/track-types.rst:10
 msgid "Track types and characteristics"
@@ -8879,7 +8778,7 @@ msgstr "Tipus de pista"
 
 #: ../../tracks/track-types.rst:18
 msgid "Can record"
-msgstr "Se pot gravar"
+msgstr "Es pot gravar"
 
 #: ../../tracks/track-types.rst:19
 msgid "Objects"
@@ -8943,7 +8842,7 @@ msgstr "Mestra"
 
 #: ../../tracks/track-types.rst:70
 msgid "MIDI FX"
-msgstr "MIDI FX"
+msgstr "FX MIDI"
 
 #: ../../tracks/track-types.rst:75
 msgid "MIDI Group"
@@ -8954,13 +8853,12 @@ msgid "Tempo"
 msgstr "Tempo"
 
 #: ../../tracks/track-types.rst:86
-#, fuzzy
 msgid ""
 "All tracks types except Chord and Folder tracks have automation lanes "
 "available."
 msgstr ""
-"Totes les pistes excepte el :doc:`chord-track` tenen carrils "
-"d'automatització disponibles."
+"Tots els tipus de pistes, excepte les pistes d'acord i en carpeta, tenen "
+"carrils d'automatització disponibles."
 
 #: ../../tracks/track-types.rst:90
 msgid "Audio Track"
@@ -8980,20 +8878,19 @@ msgstr "Pista d'àudio amb una regió d'àudio"
 
 #: ../../tracks/track-types.rst:101
 msgid "Audio FX Track"
-msgstr "Pista d'àudio FX"
+msgstr "Pista FX d'àudio"
 
 #: ../../tracks/track-types.rst:102
 msgid ""
 "Audio FX tracks can be used for effects by sending audio signals to them "
 "with :ref:`track-sends`."
 msgstr ""
-"Les pistes de FX d'àudio es poden utilitzar per als efectes enviant-los "
-"senyals d'àudio amb :ref:`track-sends`."
+"Les pistes FX d'àudio es poden utilitzar per als efectes enviant-los senyals "
+"d'àudio amb :ref:`track-sends`."
 
 #: ../../tracks/track-types.rst:109
-#, fuzzy
 msgid "Audio FX track"
-msgstr "Pista d'àudio"
+msgstr "Pista FX d'àudio"
 
 #: ../../tracks/track-types.rst:111
 msgid ""
@@ -9002,14 +8899,14 @@ msgid ""
 "signal can be managed separately from its source, or even be shared among "
 "several tracks."
 msgstr ""
-"Un cas d'ús comú és crear una pista d'àudio FX independent amb un complement "
+"Un cas d'ús comú és crear una pista FX d'àudio independent amb un complement "
 "de reverberació i enviar-hi àudio des d'una altra pista. D'aquesta manera, "
 "el senyal de reverberació es pot gestionar per separat de la seva font, o "
 "fins i tot compartir-se entre diverses pistes."
 
 #: ../../tracks/track-types.rst:118
 msgid "Audio Group Track"
-msgstr "Pista de grup d'àudio"
+msgstr "Pista en grup d'àudio"
 
 #: ../../tracks/track-types.rst:120
 msgid ""
@@ -9018,19 +8915,18 @@ msgid ""
 "\"Drums\" audio group track so you can add effects and control their volume "
 "collectively instead of separately."
 msgstr ""
-"Les pistes de grup d'àudio es poden utilitzar per a agrupar senyals d'àudio "
+"Les pistes en grup d'àudio es poden utilitzar per a agrupar senyals d'àudio "
 "mitjançant encaminament directe. Per exemple, bombos, caixes i xarlestons es "
-"poden encaminar a una pista de grup d'àudio «tambors» perquè puguis afegir "
+"poden encaminar a una pista en grup d'àudio «tambors» perquè puguis afegir "
 "efectes i controlar el seu volum col·lectivament en lloc de per separat."
 
 #: ../../tracks/track-types.rst:130
-#, fuzzy
 msgid "Audio Group track"
-msgstr "Pista de grup d'àudio"
+msgstr "Pista en grup d'àudio"
 
 #: ../../tracks/track-types.rst:132 ../../tracks/track-types.rst:286
 msgid "Group tracks are foldable."
-msgstr "Les pistes de grup són plegables."
+msgstr "Les pistes en grup es poden encarpetar."
 
 #: ../../tracks/track-types.rst:135
 msgid "Chord Track"
@@ -9051,12 +8947,12 @@ msgid "Chord track with a chord region and a scale"
 msgstr "Pista d'acords amb una regió d'acords i una escala"
 
 #: ../../tracks/track-types.rst:147
-#, fuzzy
 msgid ""
 "For more information about chords, see the section :ref:`chords-and-scales/"
 "intro:Chords and Scales`."
 msgstr ""
-"Per a més informació, consultar la secció :doc:`../chords-and-scales/intro`."
+"Per a més informació sobre acords, consulta la secció :ref:`chords-"
+"and-scales/intro:Chords and Scales`."
 
 #: ../../tracks/track-types.rst:150
 msgid ""
@@ -9071,48 +8967,46 @@ msgid "Live Audition"
 msgstr "Audició en directe"
 
 #: ../../tracks/track-types.rst:156
-#, fuzzy
 msgid ""
 "You can route the output of the chord track to a MIDI or Instrument track "
 "for live auditioning of the chord track's events. You can also play the "
 "chords live with a MIDI keyboard."
 msgstr ""
 "Pots encaminar la sortida de la pista d'acords a una pista MIDI o "
-"d'Instrument per a fer una audició en directe dels esdeveniments de la pista "
-"d'acords."
+"d'instrument per a fer una audició en directe dels esdeveniments de la pista "
+"d'acords. També pots tocar els acords en directe amb un teclat MIDI."
 
 #: ../../tracks/track-types.rst:162
-#, fuzzy
 msgid "Folder Track"
-msgstr "Solo a la pista."
+msgstr "Pista en carpeta"
 
 #: ../../tracks/track-types.rst:164
 msgid "Folder tracks are used to organize tracks."
-msgstr "Les pistes de carpetes s'utilitzen per a organitzar les pistes."
+msgstr "Les pistes en carpeta s'utilitzen per a organitzar les pistes."
 
 #: ../../tracks/track-types.rst:169
 msgid "Folder track with a MIDI FX track as a child"
-msgstr "Pista de carpeta amb una pista MIDI FX quan era fill"
+msgstr "Pista en carpeta amb una pista FX MIDI quan era fill"
 
 #: ../../tracks/track-types.rst:171
 msgid ""
 "To move tracks inside folder tracks, simply select the tracks you want and "
 "drag-and-drop them inside the folder track."
 msgstr ""
-"Per a moure les pistes dins les pistes de carpeta, només cal que seleccionis "
-"les pistes que vulguis i les arrosseguis i les deixis anar dins la pista de "
+"Per a moure pistes dins les pistes en carpeta, només cal que seleccionis les "
+"pistes que vulguis i les arrosseguis i les deixis anar dins la pista en "
 "carpeta."
 
 #: ../../tracks/track-types.rst:175
 msgid ""
 "Clicking the folder button will hide and expand the folder track's children."
 msgstr ""
-"En fer clic al botó de la carpeta, s'amagarà i ampliarà els fills de la "
-"pista de carpeta."
+"Fent clic al botó de la carpeta, s'amagarà i ampliarà els fills de la pista "
+"en carpeta."
 
 #: ../../tracks/track-types.rst:178
 msgid "Audio/MIDI group tracks are also foldable."
-msgstr "Les pistes de grup d'àudio/MIDI també són plegables."
+msgstr "Les pistes en grup d'àudio/MIDI també es poden encarpetar."
 
 #: ../../tracks/track-types.rst:181
 msgid "Instrument Track"
@@ -9126,7 +9020,7 @@ msgid ""
 msgstr ""
 "La pista d'instrument s'utilitza per a sintetitzadors i altres instruments. "
 "Les pistes d'instrument contenen una `instrument slot` especial al mesclador "
-"que es processarà `after` de la secció MIDI FX i `before` de la secció "
+"que es processarà `after` de la secció FX MIDI i `before` de la secció "
 "Inserir."
 
 #: ../../tracks/track-types.rst:192
@@ -9138,12 +9032,12 @@ msgid ""
 "Instrument tracks are similar to MIDI tracks, except that they produce audio "
 "instead of :term:`MIDI`."
 msgstr ""
-"Les pistes d'instrument són similars a les pistes MIDI, excepte que "
+"Les pistes d'instrument són semblants a les pistes MIDI, excepte que "
 "produeixen àudio en lloc de :term:`MIDI`."
 
 #: ../../tracks/track-types.rst:198
 msgid "Marker Track"
-msgstr "Pista de marcador"
+msgstr "Pista de marcadors"
 
 #: ../../tracks/track-types.rst:200
 msgid ""
@@ -9152,32 +9046,30 @@ msgid ""
 "Each project can only have one marker track and it cannot be deleted (but "
 "can be hidden)."
 msgstr ""
-"La pista de marcador conté marcadors de cançons - ja siguin personalitzats o "
-"predefinits - que faciliten el salt o l'exportació de seccions específiques "
-"de la cançó. Cada projecte només pot tenir una pista de marcadors i no es "
-"pot suprimir (però es pot ocultar)."
+"La pista de marcadors conté marcadors de cançons - ja siguin personalitzats "
+"o predefinits - que faciliten el salt o l'exportació de seccions "
+"específiques de la cançó. Cada projecte només pot tenir una pista de "
+"marcadors i no es pot suprimir (però es pot ocultar)."
 
 #: ../../tracks/track-types.rst:210
 msgid "Marker track with 2 markers"
-msgstr "Pista marcador amb 2 marcadors"
+msgstr "Pista de marcadors amb 2 marcadors"
 
 #: ../../tracks/track-types.rst:213
 msgid "Master Track"
 msgstr "Pista mestra"
 
 #: ../../tracks/track-types.rst:215
-#, fuzzy
 msgid ""
 "The master track is a special type of Audio Group Track that Zrythm uses to "
 "route the resulting audio signal after all the processing is done to the "
 "audio backend."
 msgstr ""
-"La pista mestra és un tipus especial de :ref:`audio-group-track` que Zrythm "
-"utilitza per a encaminar el senyal d'àudio resultant després de tot el "
-"processament es fa al backend d'àudio."
+"La pista mestra és un tipus especial de pista en grup d'àudio que Zrythm "
+"utilitza per encaminar el senyal d'àudio resultant després de fer tot el "
+"processament al rerefons d'àudio."
 
 #: ../../tracks/track-types.rst:224
-#, fuzzy
 msgid "Master track"
 msgstr "Pista mestra"
 
@@ -9197,7 +9089,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:237
 msgid "Modulator track with automation for macro knob 1"
-msgstr "Pista moduladora amb automatització per macro rodeta 1"
+msgstr "Pista moduladora amb automatització per a rodeta macro 1"
 
 #: ../../tracks/track-types.rst:239
 msgid "For more details, see :ref:`modulators/intro:Modulators`."
@@ -9240,38 +9132,35 @@ msgstr "Pista MIDI amb una regió MIDI"
 
 #: ../../tracks/track-types.rst:263
 msgid "MIDI FX Track"
-msgstr "Pista MIDI FX"
+msgstr "Pista FX MIDI"
 
 #: ../../tracks/track-types.rst:265
 msgid ""
 "MIDI FX tracks can be used for MIDI effects by sending MIDI signals to them "
 "using :ref:`track-sends`."
 msgstr ""
-"Les pistes MIDI FX es poden utilitzar per als efectes MIDI enviant-los "
+"Les pistes FX MIDI es poden utilitzar per als efectes MIDI enviant-los "
 "senyals MIDI mitjançant :ref:`track-sends`."
 
 #: ../../tracks/track-types.rst:272
-#, fuzzy
 msgid "MIDI FX track"
-msgstr "Nom de la pista"
+msgstr "Pista FX MIDI"
 
 #: ../../tracks/track-types.rst:275
 msgid "MIDI Group Track"
-msgstr "Pista de grup MIDI"
+msgstr "Pista en grup MIDI"
 
 #: ../../tracks/track-types.rst:277
-#, fuzzy
 msgid ""
 "These are similar to Audio Group tracks, except that they act on MIDI "
 "signals instead of audio signals."
 msgstr ""
-"Aquests són similars a :ref:`audio-group-track`, excepte que actuen sobre "
+"Aquests són semblant a les pistes en grup d'àudio, excepte que actuen sobre "
 "senyals MIDI en lloc de senyals d'àudio."
 
 #: ../../tracks/track-types.rst:284
-#, fuzzy
 msgid "MIDI Group track"
-msgstr "Pista de grup d'àudio"
+msgstr "Pista en grup d'àudio"
 
 #: ../../tracks/track-types.rst:289
 msgid "Tempo Track"
@@ -9328,23 +9217,20 @@ msgid "Concept"
 msgstr "Concepte"
 
 #: ../../user-media/intro.rst:20
-#, fuzzy
 msgid "Concept by `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
-msgstr "Concepte de `FanaticMoose`_ [`CC-BY-SA`_]"
+msgstr "Concepte de `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
 
 #: ../../user-media/intro.rst:23
 msgid "Sketches"
 msgstr "Esbossos"
 
 #: ../../user-media/intro.rst:25
-#, fuzzy
 msgid "User Sketches"
-msgstr "Esbossos"
+msgstr "Esbossos d'usuari"
 
 #: ../../user-media/intro.rst:30
-#, fuzzy
 msgid "Sketch by `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
-msgstr "Esbós de `FanaticMoose`_ [`CC-BY-SA`_]"
+msgstr "Esbós de `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
 
 #: ../../user-media/intro.rst:35
 msgid "Sketch by `@weoxm@koyu.space`_"
@@ -9355,18 +9241,16 @@ msgid "Bottom Panel"
 msgstr "Quadre inferior"
 
 #: ../../zrythm-interface/bottom-panel.rst:13
-#, fuzzy
 msgid "Bottom panel"
 msgstr "Quadre inferior"
 
 #: ../../zrythm-interface/bottom-panel.rst:15
-#, fuzzy
 msgid ""
 "The bottom panel consists of the following views, each explained in its own "
 "section."
 msgstr ""
-"Zrythm té els següents tipus de pistes, i s'expliquen més endavant en les "
-"seves pròpies seccions."
+"El quadre inferior consta de les vistes següents, cadascuna explicada en la "
+"seva pròpia secció."
 
 #: ../../zrythm-interface/bottom-panel.rst:18
 msgid ":ref:`Editor <editors>`"
@@ -9374,15 +9258,15 @@ msgstr ":ref:`Editor <editors>`"
 
 #: ../../zrythm-interface/bottom-panel.rst:19
 msgid ":ref:`Mixer <mixing>`"
-msgstr ":ref:`Mixer <mixing>`"
+msgstr ":ref:`Mesclador <mixing>`"
 
 #: ../../zrythm-interface/bottom-panel.rst:20
 msgid ":ref:`Modulators <modulators/intro:Modulators>`"
-msgstr ":ref:`Modulators <modulators/intro:Modulators>`"
+msgstr ":ref:`Moduladors <modulators/intro:Modulators>`"
 
 #: ../../zrythm-interface/bottom-panel.rst:21
 msgid ":ref:`Chord Pad <chords-and-scales/chord-pad:Chord Pad>`"
-msgstr ":ref:`Chord Pad <chords-and-scales/chord-pad:Chord Pad>`"
+msgstr ":ref:`Pad d'acords <chords-and-scales/chord-pad:Chord Pad>`"
 
 #: ../../zrythm-interface/intro.rst:6
 msgid "Interface"
@@ -9393,72 +9277,63 @@ msgid "Left Panel"
 msgstr "Quadre esquerre"
 
 #: ../../zrythm-interface/left-panel.rst:13
-#, fuzzy
 msgid "Left panel"
 msgstr "Quadre esquerre"
 
 #: ../../zrythm-interface/left-panel.rst:15
-#, fuzzy
 msgid ""
 "The left panel consists of the following views, each explained in its own "
 "section."
 msgstr ""
-"Zrythm té els següents tipus de pistes, i s'expliquen més endavant en les "
-"seves pròpies seccions."
+"El quadre esquerre consta de les vistes següents, cadascuna explicada en la "
+"seva pròpia secció."
 
 #: ../../zrythm-interface/left-panel.rst:18
 msgid ":ref:`Track Inspector <track-inspector>`"
-msgstr ":ref:`Track Inspector <track-inspector>`"
+msgstr ":ref:`Inspector de pistes <track-inspector>`"
 
 #: ../../zrythm-interface/left-panel.rst:19
-#, fuzzy
 msgid ""
 ":ref:`Plugin Inspector <plugins-files/plugins/inspector-page:Inspector Page>`"
 msgstr ""
-"Tots els ports del complement es mostraran a la pàgina :ref:`inspector page "
-"<plugins-files/plugins/inspector-page:Inspector Page>`"
+":ref:`Inspector de complements<plugins-files/plugins/inspector-page:"
+"Inspector Page>`"
 
 #: ../../zrythm-interface/left-panel.rst:20
-#, fuzzy
 msgid ":ref:`Track Visibility <track-visibility>`"
-msgstr "Veure :ref:`track-visibility`."
+msgstr ":ref:`Visibilitat de pistes <track-visibility>`"
 
 #: ../../zrythm-interface/main-panel.rst:8
-#, fuzzy
 msgid "Main Panel"
-msgstr "Arranjador de línia de temps"
+msgstr "Quadre principal"
 
 #: ../../zrythm-interface/main-panel.rst:13
-#, fuzzy
 msgid "Main panel"
-msgstr "Arranjador de línia de temps"
+msgstr "Quadre principal"
 
 #: ../../zrythm-interface/main-panel.rst:15
-#, fuzzy
 msgid ""
 "The main panel consists of the following views, each explained in its own "
 "section."
 msgstr ""
-"Zrythm té els següents tipus de pistes, i s'expliquen més endavant en les "
-"seves pròpies seccions."
+"El quadre principal consta de les vistes següents, cadascuna explicada en la "
+"seva pròpia secció."
 
 #: ../../zrythm-interface/main-panel.rst:18
-#, fuzzy
 msgid ":ref:`Timeline <editing-timeline>`"
-msgstr ":ref:`timeline` (1)"
+msgstr ":ref:`Línia de temps <editing-timeline>`"
 
 #: ../../zrythm-interface/main-panel.rst:19
 msgid ":ref:`Connections <routing/connections:Managing Connections>`"
-msgstr ":ref:`Connections <routing/connections:Managing Connections>`"
+msgstr ":ref:`Connexions <routing/connections:Managing Connections>`"
 
 #: ../../zrythm-interface/main-panel.rst:20
 msgid ":ref:`Bindings <configuration/device-setup:MIDI Bindings>`"
-msgstr ":ref:`Bindings <configuration/device-setup:MIDI Bindings>`"
+msgstr ":ref:`Vinculacions <configuration/device-setup:MIDI Bindings>`"
 
 #: ../../zrythm-interface/main-panel.rst:21
-#, fuzzy
 msgid "Scenes *(not implemented yet)*"
-msgstr "Aquesta funcionalitat encara no s'ha implementat."
+msgstr "Escenes *(encara no implementat)*"
 
 #: ../../zrythm-interface/main-toolbar.rst:8
 msgid "Main Toolbar"
@@ -9481,12 +9356,11 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:21
 msgid "Global Menus"
-msgstr "Menús Global"
+msgstr "Menú Global"
 
 #: ../../zrythm-interface/main-toolbar.rst:22
-#, fuzzy
 msgid "The main toolbar contains the following global menus."
-msgstr "La barra d'eines principal també conté els ginys següents."
+msgstr "La barra d'eines principal conté els següents menús globals."
 
 #: ../../zrythm-interface/main-toolbar.rst:25
 msgid "Edit Menu"
@@ -9526,7 +9400,7 @@ msgstr "Projecte nou"
 
 #: ../../zrythm-interface/main-toolbar.rst:41
 msgid "Create a new project."
-msgstr "Crea un projecte nou."
+msgstr "Crear un projecte nou."
 
 #: ../../zrythm-interface/main-toolbar.rst:42
 msgid "Save"
@@ -9565,8 +9439,8 @@ msgid ""
 "Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for "
 "more details."
 msgstr ""
-"Exporta el projecte com a àudio o MIDI. Veure :ref:`export-audio-and-midi` "
-"per a més detalls."
+"Exporta el projecte com a àudio o MIDI. Consulta :ref:`export-audio-and-midi`"
+" per a més detalls."
 
 #: ../../zrythm-interface/main-toolbar.rst:56
 msgid "Export Graph"
@@ -9577,35 +9451,34 @@ msgid ""
 "Export the routing graph as an image or .dot graph. See :ref:`export-routing-"
 "graph` for more details."
 msgstr ""
-"Exporta el gràfic d'encaminament com a imatge o gràfic .dot. Veure :ref:"
-"`export-routing-graph` per a més detalls."
+"Exporta el gràfic d'encaminament com a imatge o gràfic .dot. Consulta :ref"
+":`export-routing-graph` per a més detalls."
 
 #: ../../zrythm-interface/main-toolbar.rst:58
 msgid "For more information about projects, see the :ref:`projects` chapter."
 msgstr ""
-"Per a més informació sobre els projectes, veure el capítol :ref:`projects`."
+"Per a més informació sobre els projectes, consulta el capítol "
+":ref:`projects`."
 
 #: ../../zrythm-interface/main-toolbar.rst:62
 msgid "View Menu"
 msgstr "Menú Visualitzar"
 
 #: ../../zrythm-interface/main-toolbar.rst:63
-#, fuzzy
 msgid ""
 "The View menu contains controls to change the appearance of Zrythm and its "
 "various areas."
 msgstr ""
 "El menú Visualitzar conté controls per a canviar l'aparença de Zrythm i les "
-"seves diverses àrees, com ara el zoom."
+"seves diferents àrees."
 
 #: ../../zrythm-interface/main-toolbar.rst:66
 msgid "Toggle Status Bar"
 msgstr "Commutar la barra d'estat"
 
 #: ../../zrythm-interface/main-toolbar.rst:67
-#, fuzzy
 msgid "Toggles the visibility of the status bar."
-msgstr "Commuta el carril visible."
+msgstr "Commuta la visibilitat de la barra d'estat."
 
 #: ../../zrythm-interface/main-toolbar.rst:68
 msgid "Fullscreen"
@@ -9616,14 +9489,12 @@ msgid "Toggles fullscreen mode."
 msgstr "Commuta el mode de pantalla completa."
 
 #: ../../zrythm-interface/main-toolbar.rst:71
-#, fuzzy
 msgid "Toggle Left/Right/Bottom/Main Panels"
-msgstr "Commutar entre els quadres esquerra/dreta/inferior"
+msgstr "Canvia els quadres esquerra/dreta/inferior/principal"
 
 #: ../../zrythm-interface/main-toolbar.rst:71
-#, fuzzy
 msgid "Toggles the visiblity of the selected panel."
-msgstr "Commuta el carril visible."
+msgstr "Commuta la visibilitat del quadre seleccionat."
 
 #: ../../zrythm-interface/main-toolbar.rst:74
 msgid "Help Menu"
@@ -9663,7 +9534,7 @@ msgstr "Manual"
 
 #: ../../zrythm-interface/main-toolbar.rst:88
 msgid "View the user manual."
-msgstr "Veure el manual d'usuari."
+msgstr "Consulta el manual d'usuari."
 
 #: ../../zrythm-interface/main-toolbar.rst:89
 msgid "News"
@@ -9671,7 +9542,7 @@ msgstr "Novetats"
 
 #: ../../zrythm-interface/main-toolbar.rst:90
 msgid "Show the latest changelog."
-msgstr "Se mostren els últims canvis."
+msgstr "Es mostren els últims canvis."
 
 #: ../../zrythm-interface/main-toolbar.rst:91
 msgid "Keyboard Shortcuts"
@@ -9679,7 +9550,7 @@ msgstr "Dreceres del teclat"
 
 #: ../../zrythm-interface/main-toolbar.rst:92
 msgid "Show all the available keyboard shortcuts."
-msgstr "Se mostren totes les dreceres de teclat disponibles."
+msgstr "Es mostren totes les dreceres de teclat disponibles."
 
 #: ../../zrythm-interface/main-toolbar.rst:93
 msgid "Donate"
@@ -9698,19 +9569,16 @@ msgid "Opens the page to report a new bug."
 msgstr "Obre la pàgina per a informar d'un error nou."
 
 #: ../../zrythm-interface/main-toolbar.rst:99
-#, fuzzy
 msgid "Additional Buttons"
-msgstr "Paràmetres addicionals"
+msgstr "Botons addicionals"
 
 #: ../../zrythm-interface/main-toolbar.rst:100
-#, fuzzy
 msgid "The main toolbar also contains the following buttons."
-msgstr "La barra d'eines principal també conté els ginys següents."
+msgstr "La barra d'eines principal també conté els botons següents."
 
 #: ../../zrythm-interface/main-toolbar.rst:106
-#, fuzzy
 msgid "Shows the :ref:`scripting interface <scripting>`."
-msgstr "Mostra la interfície de scripting."
+msgstr "Mostra la :ref:`interfície de script <scripting>`."
 
 #: ../../zrythm-interface/main-toolbar.rst:107
 msgid "Log Viewer"
@@ -9721,14 +9589,12 @@ msgid "Displays the log, which gets updated real-time."
 msgstr "Mostra el registre, que s'actualitza en temps real."
 
 #: ../../zrythm-interface/main-toolbar.rst:110
-#, fuzzy
 msgid "Shows the :ref:`preferences dialog <preferences>`."
-msgstr "Mostra el diàleg de preferències."
+msgstr "Mostra el :ref:`diàleg de preferències <preferences>`."
 
 #: ../../zrythm-interface/main-toolbar.rst:113
-#, fuzzy
 msgid "Live Indicators"
-msgstr "Fitxers i directoris"
+msgstr "Indicadors en viu"
 
 #: ../../zrythm-interface/main-toolbar.rst:115
 msgid "The following live indicators are displayed on the right."
@@ -9760,14 +9626,12 @@ msgid "Each sub-module is explained in its own section."
 msgstr "Cada submòdul s'explica en la seva pròpia secció."
 
 #: ../../zrythm-interface/overview.rst:15
-#, fuzzy
 msgid ":ref:`main-toolbar` (1)"
-msgstr ":ref:`main-toolbar` (2)"
+msgstr ":ref:`main-toolbar` (1)"
 
 #: ../../zrythm-interface/overview.rst:16
-#, fuzzy
 msgid ":ref:`main-panel` (2)"
-msgstr ":ref:`timeline` (1)"
+msgstr ":ref:`main-panel` (2)"
 
 #: ../../zrythm-interface/overview.rst:17
 msgid ":ref:`left-panel` (3)"
@@ -9778,14 +9642,12 @@ msgid ":ref:`bottom-panel` (4)"
 msgstr ":ref:`bottom-panel` (4)"
 
 #: ../../zrythm-interface/overview.rst:19
-#, fuzzy
 msgid ":ref:`right-panel` (5)"
-msgstr ":ref:`right-panel` (6)"
+msgstr ":ref:`right-panel` (5)"
 
 #: ../../zrythm-interface/overview.rst:20
-#, fuzzy
 msgid ":ref:`transport-bar` (6)"
-msgstr ":ref:`transport-bar` (5)"
+msgstr ":ref:`transport-bar` (6)"
 
 #: ../../zrythm-interface/overview.rst:22
 msgid ""
@@ -9797,72 +9659,72 @@ msgstr ""
 
 #: ../../zrythm-interface/overview.rst:26
 msgid "Detaching Views"
-msgstr ""
+msgstr "Vistes separades"
 
 #: ../../zrythm-interface/overview.rst:27
 msgid ""
 "Views in each panel are detachable. To detach a view into its own separate "
 "window, click and drag its tab outside the main window of Zrythm."
 msgstr ""
+"Les vistes de cada quadre són desmuntables. Per a separar una vista a la "
+"seva pròpia finestra separada, fes clic i arrossega la seva pestanya fora de "
+"la finestra principal de Zrythm."
 
 #: ../../zrythm-interface/overview.rst:35
 msgid "Detached timeline view"
-msgstr ""
+msgstr "Vista de la línia de temps separada"
 
 #: ../../zrythm-interface/right-panel.rst:8
 msgid "Right Panel"
 msgstr "Quadre dret"
 
 #: ../../zrythm-interface/right-panel.rst:13
-#, fuzzy
 msgid "Right panel"
 msgstr "Quadre dret"
 
 #: ../../zrythm-interface/right-panel.rst:15
-#, fuzzy
 msgid ""
 "The right panel consists of the following views, each explained in its own "
 "section."
 msgstr ""
-"Zrythm té els següents tipus de pistes, i s'expliquen més endavant en les "
-"seves pròpies seccions."
+"El quadre dret consta de les vistes següents, cadascuna explicada en la seva "
+"pròpia secció."
 
 #: ../../zrythm-interface/right-panel.rst:18
 msgid ":ref:`Plugin Browsers <plugin-browser>`"
-msgstr ""
+msgstr ":ref:`Navegadors de complements <plugin-browser>`"
 
 #: ../../zrythm-interface/right-panel.rst:19
-#, fuzzy
 msgid ":ref:`File Browser <file-browser>`"
-msgstr "El navegador de fitxers es tracta a :ref:`file-browser`."
+msgstr ":ref:`Navegador de fitxers <file-browser>`"
 
 #: ../../zrythm-interface/right-panel.rst:20
 msgid ":ref:`Monitor Section <routing/monitor-section:Monitor Section>`"
-msgstr ""
+msgstr ":ref:`Secció de monitors <routing/monitor-section:Monitor Section>`"
 
 #: ../../zrythm-interface/right-panel.rst:21
 msgid ":ref:`Chord Preset Browser <chords-and-scales/chord-pad:Presets>`"
 msgstr ""
+":ref:`Navegador d'acords predefinits <chords-and-scales/chord-pad:Presets>`"
 
 #: ../../zrythm-interface/right-panel.rst:23
 msgid "Write and point to correct chord preset browser section."
 msgstr ""
+"Escriure i apuntar a la secció del navegador preestablert d'acords correcta."
 
 #: ../../zrythm-interface/transport-bar.rst:8
 msgid "Transport Bar"
 msgstr "Barra de transport"
 
 #: ../../zrythm-interface/transport-bar.rst:10
-#, fuzzy
 msgid ""
 "The transport bar contains information about the audio engine, transport "
 "controls and CPU/DSP usage."
 msgstr ""
-"La barra de transport conté informació sobre el motor d'àudio i els controls "
-"de transport."
+"La barra de transport conté informació sobre el motor d'àudio, els controls "
+"de transport i l'ús de CPU/DSP."
 
 #: ../../zrythm-interface/transport-bar.rst:16
-#, fuzzy
 msgid "Transport bar"
 msgstr "Barra de transport"
 
@@ -9888,48 +9750,54 @@ msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:29
 msgid "Backend Information"
-msgstr "Informació del backend"
+msgstr "Informació del rerefons"
 
 #: ../../zrythm-interface/transport-bar.rst:30
 msgid ""
 "Information about the currently selected backend and options is visible in "
 "the bottom left corner."
 msgstr ""
-"La informació sobre el backend seleccionat i les opcions és visible a la "
+"La informació sobre el rerefons seleccionat i les opcions és visible a la "
 "cantonada inferior esquerra."
 
 #: ../../zrythm-interface/transport-bar.rst:36
-#, fuzzy
 msgid "Backend info"
-msgstr "Informació del backend"
+msgstr "Informació del rerefons"
 
 #: ../../zrythm-interface/transport-bar.rst:38
 msgid ""
 "If the backend supports it, the buffer size can be changed live by clicking "
 "the :guilabel:`change` button."
 msgstr ""
+"Si el rerefons ho admet, la mida del buffer es pot canviar en directe fent "
+"clic al botó :guilabel:`change`."
 
 #: ../../zrythm-interface/transport-bar.rst:42
 msgid ""
 "If the backend supports it, the engine can be temporarily disabled by "
 "clicking the :guilabel:`Disable` button."
 msgstr ""
+"Si el rerefons ho admet, el motor es pot desactivar temporalment fent clic "
+"al botó :guilabel:`Disable`."
 
 #: ../../zrythm-interface/transport-bar.rst:47
 msgid "CPU/DSP Usage"
-msgstr ""
+msgstr "Ús de CPU/DSP"
 
 #: ../../zrythm-interface/transport-bar.rst:52
 msgid "CPU/DSP usage"
-msgstr ""
+msgstr "Ús de CPU/DSP"
 
 #: ../../zrythm-interface/transport-bar.rst:54
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "This widget displays the current CPU % usage at the top and the current DSP "
 "% usage at the bottom. If the DSP % exceeds 100 (all bars filled), audio "
 "will start clipping."
 msgstr ""
+"Aquest giny mostra el % d'ús actual de la CPU a la part superior i el % d'ús "
+"actual del DSP a la part inferior. Si el % DSP supera els 100 (totes les "
+"barres s'omplen), l'àudio començarà a retallar-se."
 
 #~ msgid "Add this to the UI."
 #~ msgstr "Afegir a la IU."

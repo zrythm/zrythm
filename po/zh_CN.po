@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-14 12:07+0100\n"
-"PO-Revision-Date: 2022-04-09 18:10+0000\n"
+"PO-Revision-Date: 2022-04-19 19:15+0000\n"
 "Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -2832,7 +2832,6 @@ msgid "Select path"
 msgstr "选择路径"
 
 #: src/gui/widgets/editor_toolbar.c:52
-#, fuzzy
 msgid "Apply function"
 msgstr "应用函数"
 
@@ -5765,14 +5764,12 @@ msgid "Port Info"
 msgstr "端口信息"
 
 #: resources/ui/modulator_view.ui:43
-#, fuzzy
 msgid "No modulators"
-msgstr "调制器"
+msgstr "无调制器"
 
 #: resources/ui/modulator_view.ui:44
-#, fuzzy
 msgid "Drag and drop a modulator plugin from the plugin browser"
-msgstr "插件浏览器中所选作者的树路径。"
+msgstr "从插件浏览器拖放调制器插件"
 
 #: resources/ui/panel_file_browser.ui:28
 msgid "Bookmarks"
@@ -7171,18 +7168,16 @@ msgid "Samplerate"
 msgstr "采样"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:960
-#, fuzzy
 msgid "Samplerate to pass to the backend."
-msgstr "传递到后端的采样率"
+msgstr "传递到后端的采样率。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:964
 msgid "Buffer size"
 msgstr "缓冲区大小"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:965
-#, fuzzy
 msgid "Buffer size to pass to the backend."
-msgstr "传递到后端的缓冲区大小"
+msgstr "传递到后端的缓冲区大小。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:969
 msgid "MIDI backend"
@@ -7193,18 +7188,16 @@ msgid "Audio inputs"
 msgstr "音频输入"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:975
-#, fuzzy
 msgid "A list of audio inputs to enable."
-msgstr "要启用的音频输入列表"
+msgstr "要启用的音频输入列表。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:979
 msgid "MIDI controllers"
 msgstr "MIDI 控制器"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:980
-#, fuzzy
 msgid "A list of controllers to enable."
-msgstr "启用的控制器列表"
+msgstr "启用的控制器列表。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:989
 #: build/data/org.zrythm.Zrythm.gschema.xml:1057
@@ -7216,9 +7209,8 @@ msgid "Zrythm path"
 msgstr "Zrythm 路径"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:994
-#, fuzzy
 msgid "Directory used to save user data in."
-msgstr "用于保存用户数据的目录"
+msgstr "用于保存用户数据的目录。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1003
 msgid "Updates"
@@ -7229,9 +7221,8 @@ msgid "Check for updates"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1008
-#, fuzzy
 msgid "Whether to check for updates on startup."
-msgstr "是否检查更新"
+msgstr "是否在启动时检查更新。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1026
 msgid "UIs"
@@ -7242,48 +7233,43 @@ msgid "Open UI on instantiation"
 msgstr "实例化时打开用户界面"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1031
-#, fuzzy
 msgid "Open plugin UIs when they are instantiated."
-msgstr "当插件用户界面实例化时打开它们"
+msgstr "当插件用户界面实例化时打开它们。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1035
 msgid "Keep window on top"
 msgstr "将窗口保持在顶部"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1036
-#, fuzzy
 msgid "Show plugin UIs on top of the main window (if possible)."
-msgstr "总是在主窗口的顶部显示插件用户界面"
+msgstr "如可能，在主窗口的顶部显示插件用户界面。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1041
 msgid "Refresh rate"
 msgstr "刷新率"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1042
-#, fuzzy
 msgid ""
 "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
-msgstr "赫兹为单位的刷新率（设为 0 将使用屏幕刷新率）"
+msgstr "赫兹为单位的刷新率（设为 0 将使用屏幕刷新率）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1047
 msgid "Scale factor"
 msgstr "缩放因子"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1048
-#, fuzzy
 msgid ""
 "Scale factor to pass to plugin UIs. If set to 0, the monitor's scale factor "
 "will be used."
-msgstr "传递到插件用户界面的缩放因子（如设为 0，将使用监视器的缩放因子）"
+msgstr "传递到插件用户界面的缩放因子（如设为 0，将使用监视器的缩放因子）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1065
 msgid "VST plugins"
 msgstr "VST 插件"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1066
-#, fuzzy
 msgid "Plugin search paths."
-msgstr "插件浏览器作者"
+msgstr "插件搜索路径。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1070
 msgid "SFZ instruments"
@@ -7291,9 +7277,8 @@ msgstr "SFZ 乐器"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1071
 #: build/data/org.zrythm.Zrythm.gschema.xml:1076
-#, fuzzy
 msgid "Instrument search paths."
-msgstr "乐器"
+msgstr "乐器搜索路径。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1075
 msgid "SF2 instruments"
@@ -7314,18 +7299,16 @@ msgid "Default fade in/out algorithm."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1104
-#, fuzzy
 msgid "Default automation curve algorithm."
-msgstr "曲线算法设置失败"
+msgstr "默认自动化曲线算法。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1118
 msgid "Undo stack length"
 msgstr "撤销次数限制"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1119
-#, fuzzy
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
-msgstr "最大撤消历史堆栈长度（设置为 -1 表示无限制）"
+msgstr "最大撤消历史堆栈长度（设置为 -1 表示无限制）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1127
 msgid "Projects"
@@ -7336,9 +7319,8 @@ msgid "Autosave interval"
 msgstr "自动保存间隔"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1134
-#, fuzzy
 msgid "Interval to auto-save project backups, in minutes. Set to 0 to disable."
-msgstr "自动保存项目的间隔，以分钟为单位（设为 0 将禁用自动保存）"
+msgstr "自动保存项目的间隔，以分钟为单位（设为 0 将禁用自动保存）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1142
 msgid "UI"
@@ -7349,18 +7331,16 @@ msgid "Draw detail"
 msgstr "绘制详细信息"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1148
-#, fuzzy
 msgid "Level of detail to use when drawing graphics."
-msgstr "绘制图形时使用的详细级别"
+msgstr "绘制图形时使用的详细级别。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1153
 msgid "Font scale"
 msgstr "字体缩放"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1154
-#, fuzzy
 msgid "Font scaling."
-msgstr "字体缩放"
+msgstr "字体缩放。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1158
 msgid "User interface language"
@@ -7404,9 +7384,8 @@ msgid "Default script"
 msgstr "默认脚本"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1202
-#, fuzzy
 msgid "Default script to use in the scripting window."
-msgstr "在脚本窗口中使用的默认脚本"
+msgstr "在脚本窗口中使用的默认脚本。"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:7
 msgid "The Zrythm contributors"
@@ -7502,9 +7481,8 @@ msgid "Implement base/full MIDI export"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:84
-#, fuzzy
 msgid "Preferences: add option to reset to factory settings"
-msgstr "重置到出厂设置"
+msgstr "首选项：添加重置为出厂设置的选项"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:85
 msgid "Add ECMAScript support for scripting"
