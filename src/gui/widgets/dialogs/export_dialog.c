@@ -1427,6 +1427,22 @@ setup_time_range_drop_down (
       "time-range"));
 }
 
+static void
+setup_dither (
+  AdwActionRow * dither_row,
+  GtkSwitch *    dither_switch)
+{
+  gtk_switch_set_active (
+    dither_switch,
+    g_settings_get_boolean (
+      S_EXPORT_AUDIO, "dither"));
+
+  char * descr = settings_get_description (
+    S_EXPORT_AUDIO, "dither");
+  adw_action_row_set_subtitle (dither_row, descr);
+  g_free (descr);
+}
+
 /**
  * Creates a new export dialog.
  */
@@ -1461,6 +1477,7 @@ export_dialog_widget_class_init (
   BIND_CHILD (audio_genre);
   BIND_CHILD (audio_format);
   BIND_CHILD (audio_bit_depth);
+  BIND_CHILD (audio_dither);
   BIND_CHILD (audio_dither_switch);
   BIND_CHILD (audio_filename_pattern);
   BIND_CHILD (audio_mixdown_or_stems);
@@ -1512,10 +1529,8 @@ export_dialog_widget_init (
 
   /* options */
   setup_audio_formats_dropdown (self->audio_format);
-  gtk_switch_set_active (
-    self->audio_dither_switch,
-    g_settings_get_boolean (
-      S_EXPORT_AUDIO, "dither"));
+  setup_dither (
+    self->audio_dither, self->audio_dither_switch);
   setup_bit_depth_drop_down (self->audio_bit_depth);
   setup_filename_pattern_combo_row (
     self, self->audio_filename_pattern, true);

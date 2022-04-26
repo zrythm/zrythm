@@ -70,7 +70,6 @@
                             <child>
                               <object class="AdwActionRow" id="audio_dither">
                                 <property name="title" translatable="yes">Dither</property>
-                                <property name="subtitle" translatable="yes">Add low level noise to reduce errors on lower bit depths.</property>
                                 <property name="activatable_widget">audio_dither_switch</property>
                                 <child>
                                   <object class="GtkSwitch" id="audio_dither_switch">

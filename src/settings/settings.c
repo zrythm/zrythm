@@ -451,6 +451,53 @@ settings_get_range_double (
 }
 
 /**
+ * Returns the localized summary as a newly
+ * allocated string.
+ */
+char *
+settings_get_summary (
+  GSettings *  settings,
+  const char * key)
+{
+  GSettingsSchema * settings_schema;
+  g_object_get (
+    settings, "settings-schema", &settings_schema,
+    NULL);
+  GSettingsSchemaKey * schema_key =
+    g_settings_schema_get_key (settings_schema, key);
+  char * descr = g_strdup (
+    g_settings_schema_key_get_summary (schema_key));
+  g_settings_schema_key_unref (schema_key);
+  g_settings_schema_unref (settings_schema);
+
+  return descr;
+}
+
+/**
+ * Returns the localized description as a newly
+ * allocated string.
+ */
+char *
+settings_get_description (
+  GSettings *  settings,
+  const char * key)
+{
+  GSettingsSchema * settings_schema;
+  g_object_get (
+    settings, "settings-schema", &settings_schema,
+    NULL);
+  GSettingsSchemaKey * schema_key =
+    g_settings_schema_get_key (settings_schema, key);
+  char * descr = g_strdup (
+    g_settings_schema_key_get_description (
+      schema_key));
+  g_settings_schema_key_unref (schema_key);
+  g_settings_schema_unref (settings_schema);
+
+  return descr;
+}
+
+/**
  * Returns whether the "as" key contains the given
  * string.
  */

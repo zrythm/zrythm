@@ -212,6 +212,24 @@ settings_get_default_value_double (
   const char * key);
 
 /**
+ * Returns the localized summary as a newly
+ * allocated string.
+ */
+char *
+settings_get_summary (
+  GSettings *  settings,
+  const char * key);
+
+/**
+ * Returns the localized description as a newly
+ * allocated string.
+ */
+char *
+settings_get_description (
+  GSettings *  settings,
+  const char * key);
+
+/**
  * Frees settings.
  */
 void

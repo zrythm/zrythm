@@ -931,7 +931,7 @@ Args:
                (make-schema-key
                  "dither" "b" "false"
                  "Dither"
-                 "Add dither while exporting, if applicable.")
+                 "Add low level noise to reduce errors on lower bit depths.")
                (make-schema-key
                  "export-stems" "b" "false"
                  "Export stems"

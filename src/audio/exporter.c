@@ -40,14 +40,15 @@
 #define AMPLITUDE (1.0 * 0x7F000000)
 
 static const char * pretty_formats[] = {
-  "FLAC",        "OGG (Vorbis)", "OGG (OPUS)",
-  "WAV",         "MP3",          "RAW",
-  "MIDI Type 0", "MIDI Type 1",
+  "AIFF",       "AU",          "CAF",
+  "FLAC",       "MP3",         "OGG (Vorbis)",
+  "OGG (OPUS)", "RAW",         "WAV",
+  "W64",        "MIDI Type 0", "MIDI Type 1",
 };
 
 static const char * format_exts[] = {
-  "FLAC", "ogg", "ogg", "wav",
-  "mp3",  "raw", "mid", "mid",
+  "aiff", "au",  "caf", "FLAC", "mp3", "ogg",
+  "ogg",  "raw", "wav", "w64",  "mid", "mid",
 };
 
 /**
@@ -92,6 +93,15 @@ export_audio (ExportSettings * info)
 
   switch (info->format)
     {
+    case EXPORT_FORMAT_AIFF:
+      sfinfo.format = SF_FORMAT_AIFF;
+      break;
+    case EXPORT_FORMAT_AU:
+      sfinfo.format = SF_FORMAT_AU;
+      break;
+    case EXPORT_FORMAT_CAF:
+      sfinfo.format = SF_FORMAT_CAF;
+      break;
     case EXPORT_FORMAT_FLAC:
       sfinfo.format = SF_FORMAT_FLAC;
       break;
@@ -100,6 +110,9 @@ export_audio (ExportSettings * info)
       break;
     case EXPORT_FORMAT_WAV:
       sfinfo.format = SF_FORMAT_WAV;
+      break;
+    case EXPORT_FORMAT_W64:
+      sfinfo.format = SF_FORMAT_W64;
       break;
     case EXPORT_FORMAT_OGG_VORBIS:
 #ifdef HAVE_OPUS

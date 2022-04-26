@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_EXPORT_H__
@@ -18,14 +18,19 @@
  */
 typedef enum ExportFormat
 {
+  EXPORT_FORMAT_AIFF,
+  EXPORT_FORMAT_AU,
+  EXPORT_FORMAT_CAF,
   EXPORT_FORMAT_FLAC,
+  EXPORT_FORMAT_MP3,
   EXPORT_FORMAT_OGG_VORBIS,
   EXPORT_FORMAT_OGG_OPUS,
-  EXPORT_FORMAT_WAV,
-  EXPORT_FORMAT_MP3,
 
   /** Raw audio data. */
   EXPORT_FORMAT_RAW,
+
+  EXPORT_FORMAT_WAV,
+  EXPORT_FORMAT_W64,
 
   /** MIDI type 0. */
   EXPORT_FORMAT_MIDI0,

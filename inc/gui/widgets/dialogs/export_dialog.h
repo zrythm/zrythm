@@ -45,17 +45,18 @@ typedef struct _ExportDialogWidget
   AdwViewStack *         stack;
 
   /* audio */
-  AdwEntryRow * audio_title;
-  AdwEntryRow * audio_artist;
-  AdwEntryRow * audio_genre;
-  AdwComboRow * audio_format;
-  AdwComboRow * audio_bit_depth;
-  GtkSwitch *   audio_dither_switch;
-  AdwComboRow * audio_filename_pattern;
-  AdwComboRow * audio_mixdown_or_stems;
-  GtkDropDown * audio_time_range_drop_down;
-  GtkTreeView * audio_tracks_treeview;
-  GtkLabel *    audio_output_label;
+  AdwEntryRow *  audio_title;
+  AdwEntryRow *  audio_artist;
+  AdwEntryRow *  audio_genre;
+  AdwComboRow *  audio_format;
+  AdwComboRow *  audio_bit_depth;
+  AdwActionRow * audio_dither;
+  GtkSwitch *    audio_dither_switch;
+  AdwComboRow *  audio_filename_pattern;
+  AdwComboRow *  audio_mixdown_or_stems;
+  GtkDropDown *  audio_time_range_drop_down;
+  GtkTreeView *  audio_tracks_treeview;
+  GtkLabel *     audio_output_label;
 
   /* MIDI */
   AdwEntryRow * midi_title;
