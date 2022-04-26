@@ -8,7 +8,7 @@
 # Sahaathyva <sahaa.thyva@laposte.net>, 2020, 2021.
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
 # Olivier Humbert <trebmuh@tuxfamily.org>, 2020, 2021, 2022.
-# Romain Alb <romain.alb@lilo.org>, 2021.
+# Romain Alb <romain.alb@lilo.org>, 2021, 2022.
 # J. Lavoie <j.lavoie@net-c.ca>, 2021.
 # Panos Alevropoulos <panosalevropoulos@protonmail.com>, 2021.
 # sub26nico10b0a294e11e4b4b <faurenicolas5595@neuf.fr>, 2021.
@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-14 12:07+0100\n"
-"PO-Revision-Date: 2022-04-19 19:15+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2022-04-24 18:08+0000\n"
+"Last-Translator: Romain Alb <romain.alb@lilo.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.12-dev\n"
+"X-Generator: Weblate 4.12.1-dev\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -223,8 +223,9 @@ msgid "Nudge right"
 msgstr "Pousser vers la droite"
 
 #: inc/audio/audio_function.h:81
+#, fuzzy
 msgid "Reverse"
-msgstr "Inverser"
+msgstr "Inversion"
 
 #: inc/audio/audio_function.h:82
 msgid "External program"
@@ -2373,7 +2374,7 @@ msgstr "Accords"
 #: src/gui/widgets/right_dock_edge.c:149
 #, fuzzy
 msgid "Chord preset browser"
-msgstr "Navigateur de préréglages d'accords"
+msgstr "Navigateur de pré-réglages d'accords"
 
 #: src/gui/widgets/right_dock_edge.c:155
 msgid "Show file browser"
@@ -2490,7 +2491,7 @@ msgstr "Prédéfini"
 #: src/gui/widgets/chord_pad_panel.c:108
 #, fuzzy
 msgid "Preset Packs"
-msgstr "Pré-réglages"
+msgstr "Pack de Pré-réglages"
 
 #: src/gui/widgets/main_window.c:139
 msgid "Unsaved changes"
