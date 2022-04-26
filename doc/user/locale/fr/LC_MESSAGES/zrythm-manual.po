@@ -13,18 +13,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-04-14 12:08+0100\n"
+"POT-Creation-Date: 2022-04-26 15:30+0100\n"
 "PO-Revision-Date: 2022-04-26 14:22+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/fr/>\n"
 "Language: fr\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/fr/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.12.1-dev\n"
-"Generated-By: Babel 2.9.1\n"
+"Generated-By: Babel 2.10.1\n"
 
 #: ../../appendix/environment.rst:11
 msgid "Environment Variables"
@@ -275,8 +274,8 @@ msgid ""
 msgstr ""
 "Zrythm écrira un fichier de journal à chaque démarrage dans :file:`log` "
 "subdirectory under the :term:`Zrythm user path`.  Le nom de fichier "
-"contiendra la date et l'heure actuelle, par exmple "
-":file:`log_2020-06-26_15-34-19.log`."
+"contiendra la date et l'heure actuelle, par exmple :file:"
+"`log_2020-06-26_15-34-19.log`."
 
 #: ../../appendix/files-and-directories.rst:101
 #, fuzzy
@@ -345,8 +344,8 @@ msgid ""
 "These 12 chords are linked to the chords in the :ref:`Chord Editor <editing/"
 "clip-editors/chord-editor:Chord Editor>`."
 msgstr ""
-"Ces 12 accords sont liés aux accords dans :ref:`Chord Editor <editing/"
-"clip-editors/chord-editor:Chord Editor>`."
+"Ces 12 accords sont liés aux accords dans :ref:`Chord Editor <editing/clip-"
+"editors/chord-editor:Chord Editor>`."
 
 #: ../../chords-and-scales/chord-pad.rst:23
 #: ../../getting-started/getting-plugins.rst:86
@@ -442,8 +441,8 @@ msgid ""
 "You can create your own pack by clicking the :guilabel:`Add` button below "
 "the list of chord preset packs."
 msgstr ""
-"Vous pouvez créer votre propre pack en cliquant sur le bouton :guilabel:`Add`"
-"en dessous de la liste des pack de pré-réglages d'accords."
+"Vous pouvez créer votre propre pack en cliquant sur le bouton :guilabel:"
+"`Add`en dessous de la liste des pack de pré-réglages d'accords."
 
 #: ../../chords-and-scales/chord-pad.rst:74
 #, fuzzy
@@ -754,8 +753,8 @@ msgid ""
 "<configuration/preferences:Preferences>` and make these devices available "
 "in :ref:`track inputs <tracks/inspector-page:Inputs>` and other places."
 msgstr ""
-"Zythm connectera automatiquement les périphériques MIDI spécifiés dans :ref:`"
-"Preferences <configuration/preferences:Preferences>`et les rendra "
+"Zythm connectera automatiquement les périphériques MIDI spécifiés dans :ref:"
+"`Preferences <configuration/preferences:Preferences>`et les rendra "
 "disponibles dans :ref:`track inputs <tracks/inspector-page:Inputs>` ainsi "
 "que dans d'autres endroits."
 
@@ -818,9 +817,9 @@ msgid ""
 msgstr ""
 "Les contrôles de périphériques MIDI peuvent êtres liés à des contrôles "
 "internes à Zrythm (ou à d'autres contrôles qui les supporte). Après avoir "
-"activé un périphérique dans :ref:`Preferences <configuration/"
-"preferences:Preferences>`, une liaison peut être créée en cliquant-droit sur "
-"un contrôle et en séléctionnant :guilabel: `MIDI learn`."
+"activé un périphérique dans :ref:`Preferences <configuration/preferences:"
+"Preferences>`, une liaison peut être créée en cliquant-droit sur un contrôle "
+"et en séléctionnant :guilabel: `MIDI learn`."
 
 #: ../../configuration/device-setup.rst:62
 #, fuzzy
@@ -975,8 +974,8 @@ msgid ""
 msgstr ""
 "Pour pouvoir enregistrer un signal d'entrée à partir des périphériques audio/"
 "MIDI, les périphériques doivent être explicitement activés en utilisant les "
-"réglages :guilabel: `MIDI controllers`et `Audio inputs`dans :menuselection:`"
-"General --> Engine`."
+"réglages :guilabel: `MIDI controllers`et `Audio inputs`dans :menuselection:"
+"`General --> Engine`."
 
 #: ../../configuration/preferences.rst:69
 msgid "Zrythm will ignore input from any devices not explicitly enabled."
@@ -6573,11 +6572,7 @@ msgid "Filter by plugin manufacturer/author."
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:32
-msgid "Built-in plugins can be found under"
-msgstr ""
-
-#: ../../plugins-files/plugins/plugin-browser.rst:33
-msgid "`Zrythm DAW` here."
+msgid "Built-in plugins can be found under `Zrythm DAW` here."
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:35
@@ -10094,7 +10089,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:71
 #, fuzzy
-msgid "Toggles the visiblity of the selected panel."
+msgid "Toggles the visibility of the selected panel."
 msgstr "Basculer la visibilité des lignes."
 
 #: ../../zrythm-interface/main-toolbar.rst:74

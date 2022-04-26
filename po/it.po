@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-04-14 12:07+0100\n"
+"POT-Creation-Date: 2022-04-26 15:29+0100\n"
 "PO-Revision-Date: 2022-04-21 05:09+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/zrythm/it/"
@@ -33,7 +33,7 @@ msgid "Dummy"
 msgstr "di test"
 
 #: inc/schemas/gui/backend/arranger_object.h:51
-#: inc/gui/backend/arranger_object.h:102 inc/audio/transport.h:54
+#: inc/gui/backend/arranger_object.h:86 inc/audio/transport.h:54
 #: src/gui/widgets/channel_send_selector.c:276
 #: src/gui/widgets/plugin_properties_expander.c:188
 #: src/gui/widgets/plugin_properties_expander.c:189
@@ -43,44 +43,44 @@ msgid "None"
 msgstr "Nessuno"
 
 #: inc/schemas/gui/backend/arranger_object.h:52
-#: inc/gui/backend/arranger_object.h:103
+#: inc/gui/backend/arranger_object.h:87
 #: resources/ui/chord_selector_window.ui:489
 msgid "All"
 msgstr "Tutto"
 
 #: inc/schemas/gui/backend/arranger_object.h:53
-#: inc/gui/backend/arranger_object.h:104 resources/ui/inspector_master.ui:7
+#: inc/gui/backend/arranger_object.h:88 resources/ui/inspector_master.ui:7
 #: resources/ui/inspector_ap.ui:7 resources/ui/inspector_midi.ui:7
 msgid "Region"
 msgstr "Area geografica"
 
 #: inc/schemas/gui/backend/arranger_object.h:54
-#: inc/gui/backend/arranger_object.h:105
+#: inc/gui/backend/arranger_object.h:89
 msgid "Midi Note"
 msgstr "Nota Midi"
 
 #: inc/schemas/gui/backend/arranger_object.h:56
-#: inc/gui/backend/arranger_object.h:107
+#: inc/gui/backend/arranger_object.h:91
 msgid "Chord Object"
 msgstr "Oggetto Chord"
 
 #: inc/schemas/gui/backend/arranger_object.h:58
-#: inc/gui/backend/arranger_object.h:109
+#: inc/gui/backend/arranger_object.h:93
 msgid "Scale Object"
 msgstr "Scala Oggetto"
 
 #: inc/schemas/gui/backend/arranger_object.h:60
-#: inc/gui/backend/arranger_object.h:111 inc/audio/track.h:193
+#: inc/gui/backend/arranger_object.h:95 inc/audio/track.h:177
 msgid "Marker"
 msgstr "Marcatore"
 
 #: inc/schemas/gui/backend/arranger_object.h:61
-#: inc/gui/backend/arranger_object.h:112
+#: inc/gui/backend/arranger_object.h:96
 msgid "Automation Point"
 msgstr "Punto d'Automazione"
 
 #: inc/schemas/gui/backend/arranger_object.h:63
-#: inc/gui/backend/arranger_object.h:114 src/gui/widgets/velocity_settings.c:81
+#: inc/gui/backend/arranger_object.h:98 src/gui/widgets/velocity_settings.c:81
 #: src/gui/widgets/event_viewer.c:728 src/gui/widgets/item_factory.c:293
 #: src/gui/widgets/item_factory.c:882 resources/ui/midi_editor_space.ui:91
 msgid "Velocity"
@@ -106,7 +106,7 @@ msgid "Pulse"
 msgstr "Impulso"
 
 #: inc/schemas/audio/region.h:46 inc/audio/region.h:86
-#: src/gui/widgets/track.c:991
+#: src/gui/widgets/track.c:975
 msgid "Inherit"
 msgstr "Eredita"
 
@@ -173,16 +173,16 @@ msgstr "Seleziona tutto"
 msgid "Duplicate"
 msgstr "Duplica"
 
-#: inc/utils/gtk.h:94 src/gui/widgets/channel.c:700
+#: inc/utils/gtk.h:94 src/gui/widgets/channel.c:726
 #: src/gui/widgets/monitor_section.c:39 src/gui/widgets/monitor_section.c:340
-#: src/gui/widgets/track.c:348 src/gui/widgets/track.c:837
+#: src/gui/widgets/track.c:332 src/gui/widgets/track.c:821
 #: resources/ui/fader_buttons.ui:49
-#: build/data/org.zrythm.Zrythm.gschema.xml:325
+#: build/data/org.zrythm.Zrythm.gschema.xml:310
 msgid "Mute"
 msgstr "Silenzia"
 
-#: inc/utils/gtk.h:98 src/gui/widgets/channel.c:709 src/gui/widgets/track.c:344
-#: src/gui/widgets/track.c:846
+#: inc/utils/gtk.h:98 src/gui/widgets/channel.c:735 src/gui/widgets/track.c:328
+#: src/gui/widgets/track.c:830
 msgid "Unmute"
 msgstr "Riattivare"
 
@@ -250,58 +250,58 @@ msgstr "2 misure"
 msgid "4 bars"
 msgstr "4 misure"
 
-#: inc/audio/track.h:189 src/gui/widgets/track_properties_expander.c:130
+#: inc/audio/track.h:173 src/gui/widgets/track_properties_expander.c:130
 #: src/gui/widgets/route_target_selector_popover.c:170
-#: build/data/org.zrythm.Zrythm.gschema.xml:609
+#: build/data/org.zrythm.Zrythm.gschema.xml:594
 msgid "Instrument"
 msgstr "Strumento"
 
-#: inc/audio/track.h:190 src/gui/widgets/bot_bar.c:465 src/audio/region.c:502
+#: inc/audio/track.h:174 src/gui/widgets/bot_bar.c:465 src/audio/region.c:502
 #: resources/ui/file_browser_filters.ui:10
-#: build/data/org.zrythm.Zrythm.gschema.xml:1085
+#: build/data/org.zrythm.Zrythm.gschema.xml:1110
 msgid "Audio"
 msgstr "Audio"
 
-#: inc/audio/track.h:191 src/project.c:703
+#: inc/audio/track.h:175 src/project.c:703
 #: src/gui/widgets/route_target_selector_popover.c:150
 msgid "Master"
 msgstr "Master"
 
-#: inc/audio/track.h:192 src/audio/region.c:508
+#: inc/audio/track.h:176 src/audio/region.c:508
 msgid "Chord"
 msgstr "Accordo"
 
-#: inc/audio/track.h:194 src/gui/widgets/automatable_selector_popover.c:358
+#: inc/audio/track.h:178 src/gui/widgets/automatable_selector_popover.c:358
 #: src/audio/tempo_track.c:124
 msgid "Tempo"
 msgstr "Tempo"
 
-#: inc/audio/track.h:195
+#: inc/audio/track.h:179
 msgid "Modulator"
 msgstr "Modulatore"
 
-#: inc/audio/track.h:196
+#: inc/audio/track.h:180
 msgid "Audio FX"
 msgstr "Effetti Audio"
 
-#: inc/audio/track.h:197
+#: inc/audio/track.h:181
 msgid "Audio Group"
 msgstr "Gruppo Audio"
 
-#: inc/audio/track.h:198 src/audio/region.c:499
+#: inc/audio/track.h:182 src/audio/region.c:499
 #: resources/ui/file_browser_filters.ui:18
 msgid "MIDI"
 msgstr "MIDI"
 
-#: inc/audio/track.h:199
+#: inc/audio/track.h:183
 msgid "MIDI FX"
 msgstr "Effetti MIDI"
 
-#: inc/audio/track.h:200
+#: inc/audio/track.h:184
 msgid "MIDI Group"
 msgstr "Gruppo MIDI"
 
-#: inc/audio/track.h:201
+#: inc/audio/track.h:185
 msgid "Folder"
 msgstr "Cartella"
 
@@ -638,15 +638,15 @@ msgstr ""
 msgid "Japanese 2"
 msgstr ""
 
-#: inc/audio/exporter.h:106
+#: inc/audio/exporter.h:111
 msgid "Before inserts"
 msgstr "Prima degli inserti"
 
-#: inc/audio/exporter.h:107
+#: inc/audio/exporter.h:112
 msgid "Pre-fader"
 msgstr "Pre-fader"
 
-#: inc/audio/exporter.h:108
+#: inc/audio/exporter.h:113
 msgid "Post fader"
 msgstr "Postfader"
 
@@ -664,11 +664,11 @@ msgid "-6dB"
 msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
-#: inc/audio/pan.h:73 src/utils/ui.c:864 src/audio/curve.c:326
+#: inc/audio/pan.h:73 src/utils/ui.c:848 src/audio/curve.c:326
 msgid "Linear"
 msgstr "Lineare"
 
-#: inc/audio/pan.h:74 src/utils/ui.c:865
+#: inc/audio/pan.h:74 src/utils/ui.c:849
 msgid "Square Root"
 msgstr "Radice Quadrata"
 
@@ -838,74 +838,74 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/zrythm_app.c:1475
+#: src/zrythm_app.c:1473
 #, c-format
 msgid "File %s not found."
 msgstr "File %s non trovato."
 
-#: src/zrythm_app.c:1494
+#: src/zrythm_app.c:1492
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 
-#: src/zrythm_app.c:1555
+#: src/zrythm_app.c:1553
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr ""
 
-#: src/zrythm_app.c:1572
+#: src/zrythm_app.c:1570
 msgid "Unknown operation"
 msgstr "Operazione sconosciuta"
 
-#: src/zrythm_app.c:1590
+#: src/zrythm_app.c:1588
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr ""
 
-#: src/zrythm_app.c:1751
+#: src/zrythm_app.c:1749
 msgid "Print version information"
 msgstr "Informazioni sulla versione stampabile"
 
-#: src/zrythm_app.c:1754
+#: src/zrythm_app.c:1752
 msgid "Convert ZPJ-FILE to YAML"
 msgstr ""
 
-#: src/zrythm_app.c:1757
+#: src/zrythm_app.c:1755
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr ""
 
-#: src/zrythm_app.c:1761
+#: src/zrythm_app.c:1759
 msgid "Generate a project from SCRIPT-FILE"
 msgstr ""
 
-#: src/zrythm_app.c:1765
+#: src/zrythm_app.c:1763
 msgid "Print output in user-friendly way"
 msgstr "Stampa l'output in modo leggibile"
 
-#: src/zrythm_app.c:1769
+#: src/zrythm_app.c:1767
 msgid "Print current settings"
 msgstr ""
 
-#: src/zrythm_app.c:1772 src/gui/widgets/preferences.c:743
+#: src/zrythm_app.c:1770 src/gui/widgets/preferences.c:830
 msgid "Reset to factory settings"
 msgstr ""
 
-#: src/zrythm_app.c:1775
+#: src/zrythm_app.c:1773
 msgid "Override the audio backend to use"
 msgstr ""
 
-#: src/zrythm_app.c:1779
+#: src/zrythm_app.c:1777
 msgid "Override the MIDI backend to use"
 msgstr ""
 
-#: src/zrythm_app.c:1783
+#: src/zrythm_app.c:1781
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr ""
 
-#: src/zrythm_app.c:1811
+#: src/zrythm_app.c:1809
 msgid "[PROJECT-FILE]"
 msgstr ""
 
-#: src/zrythm_app.c:1817
+#: src/zrythm_app.c:1815
 #, c-format
 msgid ""
 "Examples:\n"
@@ -917,7 +917,7 @@ msgid ""
 "Please report issues to %s\n"
 msgstr ""
 
-#: src/zrythm_app.c:1829
+#: src/zrythm_app.c:1827
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr ""
@@ -967,56 +967,56 @@ msgstr "Inizializzazione"
 msgid "Preset %u"
 msgstr "Nome del dispositivo"
 
-#: src/plugins/carla_native_plugin.c:1133
+#: src/plugins/carla_native_plugin.c:1152
 msgid "Audio in"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:1196
+#: src/plugins/carla_native_plugin.c:1215
 msgid "Audio out"
 msgstr ""
 
 #. TRANSLATORS: either leave this untranslated or make sure the translated text is max 7 characters
-#: src/plugins/carla_native_plugin.c:1206 resources/ui/header.ui:74
+#: src/plugins/carla_native_plugin.c:1225 resources/ui/header.ui:74
 msgid "MIDI in"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:1218 src/audio/channel.c:1283
+#: src/plugins/carla_native_plugin.c:1237 src/audio/channel.c:1283
 msgid "MIDI out"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:1230
+#: src/plugins/carla_native_plugin.c:1249
 msgid "CV in"
 msgstr "Ingresso CV"
 
-#: src/plugins/carla_native_plugin.c:1240
+#: src/plugins/carla_native_plugin.c:1259
 msgid "CV out"
 msgstr "Uscita CV"
 
-#: src/plugins/carla_native_plugin.c:1893
+#: src/plugins/carla_native_plugin.c:1932
 #, c-format
 msgid "Error adding carla plugin: %s"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:2110
+#: src/plugins/carla_native_plugin.c:2149
 msgid "Failed to load Carla state"
 msgstr "Fallita il caricamento dello stato di Carla"
 
-#: src/plugins/carla_native_plugin.c:2125
+#: src/plugins/carla_native_plugin.c:2164
 msgid ""
 "Failed to instantiate Carla plugin: handle/descriptor not initialized "
 "properly"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:2557
+#: src/plugins/carla_native_plugin.c:2596
 #, c-format
 msgid "State file %s doesn't exist"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:400
+#: src/plugins/plugin_manager.c:421
 msgid "Error loading LV2 bundle dir: "
 msgstr ""
 
-#: src/plugins/plugin_manager.c:1116
+#: src/plugins/plugin_manager.c:1147
 #, c-format
 msgid "Scanned %s plugin: %s"
 msgstr "Plugin %s scansionato: %s"
@@ -1024,25 +1024,25 @@ msgstr "Plugin %s scansionato: %s"
 #. TRANSLATORS: first argument
 #. * is plugin protocol, 2nd
 #. * argument is path
-#: src/plugins/plugin_manager.c:1130
+#: src/plugins/plugin_manager.c:1161
 #, c-format
 msgid "Skipped %1$s plugin at %2$s"
 msgstr "Tralasciato il plugin %1$s al percorso %2$s"
 
-#: src/plugins/plugin_manager.c:1259
+#: src/plugins/plugin_manager.c:1290
 msgid "Scanned LV2 plugin"
 msgstr "Plugin LV2 scansionato"
 
-#: src/plugins/plugin_manager.c:1270
+#: src/plugins/plugin_manager.c:1301
 #, c-format
 msgid "Skipped LV2 plugin at %s"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:1357
+#: src/plugins/plugin_manager.c:1388
 msgid "Scanned AU plugin"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:1364
+#: src/plugins/plugin_manager.c:1395
 #, c-format
 msgid "Skipped AU plugin at %u"
 msgstr ""
@@ -1068,7 +1068,7 @@ msgstr "Guadagno"
 msgid "Plugin gain"
 msgstr ""
 
-#: src/plugins/plugin.c:506 src/plugins/plugin_gtk.c:177
+#: src/plugins/plugin.c:506 src/plugins/plugin_gtk.c:159
 #: src/gui/widgets/plugin_properties_expander.c:159
 msgid "Failed to apply preset"
 msgstr "Impossibile applicare il preset"
@@ -1098,7 +1098,7 @@ msgstr "Avvio del plugin Carla fallito"
 msgid "LV2 plugin instantiation failed"
 msgstr "Avvio del plugin LV2 fallito"
 
-#: src/plugins/plugin.c:1970
+#: src/plugins/plugin.c:1969
 #, c-format
 msgid ""
 "%s <%s> has a deprecated UI type:\n"
@@ -1108,64 +1108,65 @@ msgid ""
 "  %s <%s>"
 msgstr ""
 
-#: src/plugins/plugin.c:2288
+#: src/plugins/plugin.c:2287
 #, c-format
 msgid "Failed to create plugin clone for %s"
 msgstr "Fallita la creazione del clone del plugin %s"
 
-#: src/plugins/plugin_gtk.c:101 src/plugins/lv2/lv2_gtk.c:74
+#: src/plugins/plugin_gtk.c:83 src/plugins/lv2/lv2_gtk.c:74
 msgid "Save State"
 msgstr ""
 
-#: src/plugins/plugin_gtk.c:104 src/plugins/plugin_gtk.c:323
+#: src/plugins/plugin_gtk.c:86 src/plugins/plugin_gtk.c:305
 #: src/plugins/lv2/lv2_gtk.c:77 src/plugins/lv2/lv2_gtk.c:265
 #: src/gui/widgets/project_assistant.c:512
 #: src/gui/widgets/plugin_properties_expander.c:110
-#: src/gui/widgets/main_window.c:145
-#: src/gui/widgets/dialogs/save_chord_preset_dialog.c:174
+#: src/gui/widgets/main_window.c:147
+#: src/gui/widgets/dialogs/save_chord_preset_dialog.c:158
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:149
-#: src/gui/widgets/dialogs/bug_report_dialog.c:227
-#: src/gui/widgets/dialogs/first_run_dialog.c:306
+#: src/gui/widgets/dialogs/bug_report_dialog.c:228
+#: src/gui/widgets/dialogs/first_run_dialog.c:295
+#: src/gui/widgets/dialogs/export_dialog.c:1508
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:163
-#: src/utils/dialogs.c:43 src/utils/dialogs.c:66 src/audio/clip.c:631
+#: src/utils/dialogs.c:43 src/utils/dialogs.c:66 src/audio/clip.c:629
 #: src/actions/actions.c:737 resources/ui/project_assistant.ui:93
 #: resources/ui/string_entry_dialog.ui:47
 #: resources/ui/port_selector_dialog.ui:120 resources/ui/quantize_dialog.ui:149
 msgid "_Cancel"
 msgstr ""
 
-#: src/plugins/plugin_gtk.c:105 src/plugins/plugin_gtk.c:324
+#: src/plugins/plugin_gtk.c:87 src/plugins/plugin_gtk.c:306
 #: src/plugins/lv2/lv2_gtk.c:78
-#: src/gui/widgets/dialogs/save_chord_preset_dialog.c:171
+#: src/gui/widgets/dialogs/save_chord_preset_dialog.c:155
 #: src/actions/actions.c:738
 msgid "_Save"
 msgstr ""
 
-#: src/plugins/plugin_gtk.c:319
+#: src/plugins/plugin_gtk.c:301
 msgid "Save Preset"
 msgstr "Salva Preset"
 
-#: src/plugins/plugin_gtk.c:362
+#: src/plugins/plugin_gtk.c:344
 msgid "_Prefix plugin name"
 msgstr ""
 
-#: src/plugins/plugin_gtk.c:371
+#: src/plugins/plugin_gtk.c:353
 msgid "URI (Optional):"
 msgstr ""
 
-#: src/plugins/plugin_gtk.c:1275
+#: src/plugins/plugin_gtk.c:1264
 msgid "Open File"
 msgstr "Apri File"
 
-#: src/plugins/plugin_gtk.c:1436
+#: src/plugins/plugin_gtk.c:1431
 msgid "Close"
 msgstr ""
 
-#: src/plugins/plugin_gtk.c:1544
+#: src/plugins/plugin_gtk.c:1539
 msgid "Unknown widget type for value"
 msgstr ""
 
-#: src/plugins/plugin_gtk.c:1572
+#: src/plugins/plugin_gtk.c:1567
 msgid "Unknown widget type for value\n"
 msgstr ""
 
@@ -1254,9 +1255,9 @@ msgid "Delete Preset?"
 msgstr ""
 
 #: src/plugins/lv2/lv2_gtk.c:266
-#: src/gui/widgets/dialogs/bug_report_dialog.c:226
-#: src/gui/widgets/dialogs/first_run_dialog.c:308 src/utils/dialogs.c:65
-#: src/audio/clip.c:631 resources/ui/string_entry_dialog.ui:55
+#: src/gui/widgets/dialogs/bug_report_dialog.c:227
+#: src/gui/widgets/dialogs/first_run_dialog.c:297 src/utils/dialogs.c:65
+#: src/audio/clip.c:629 resources/ui/string_entry_dialog.ui:55
 #: resources/ui/port_selector_dialog.ui:126
 msgid "_OK"
 msgstr ""
@@ -1270,6 +1271,27 @@ msgstr "Fallita l'apertura del file: %s"
 #, fuzzy
 msgid "Failed to edit position"
 msgstr "Fallita l'apertura del file: %s"
+
+#: src/gui/widgets/tracklist.c:64
+msgid "Add _MIDI Track"
+msgstr ""
+
+#: src/gui/widgets/tracklist.c:69
+msgid "Add Audio Track"
+msgstr ""
+
+#: src/gui/widgets/tracklist.c:83
+msgid "Add FX Track"
+msgstr ""
+
+#: src/gui/widgets/tracklist.c:97
+msgid "Add Group Track"
+msgstr ""
+
+#: src/gui/widgets/tracklist.c:101
+#, fuzzy
+msgid "Add Folder Track"
+msgstr "Nascondi traccia"
 
 #: src/gui/widgets/bounce_step_selector.c:169
 msgid "Bounce step selector"
@@ -1288,18 +1310,18 @@ msgid "OUTPUTS"
 msgstr "USCITE"
 
 #: src/gui/widgets/port_connections_popover.c:188
-#: src/gui/widgets/plugin_browser.c:472 src/gui/widgets/track.c:405
+#: src/gui/widgets/plugin_browser.c:472 src/gui/widgets/track.c:389
 msgid "Add"
 msgstr "Aggiungi"
 
 #: src/gui/widgets/inspector_port.c:151 src/gui/widgets/modulator_inner.c:164
 #: src/gui/widgets/plugin_browser.c:548 src/gui/widgets/plugin_browser.c:596
-#: src/gui/widgets/preferences.c:309 src/gui/widgets/balance_control.c:285
+#: src/gui/widgets/preferences.c:333 src/gui/widgets/balance_control.c:285
 #: src/gui/widgets/modulator_macro.c:159 src/gui/widgets/fader.c:291
 msgid "Reset"
 msgstr ""
 
-#: src/gui/widgets/inspector_port.c:163 src/gui/widgets/midi_arranger.c:495
+#: src/gui/widgets/inspector_port.c:163 src/gui/widgets/midi_arranger.c:479
 #: src/gui/widgets/modulator_inner.c:173 src/gui/widgets/modulator_macro.c:168
 msgid "View info"
 msgstr "Visualizza informazioni"
@@ -1350,82 +1372,81 @@ msgstr ""
 msgid "Track Properties"
 msgstr "Proprietà della traccia"
 
-#: src/gui/widgets/channel.c:630 src/gui/widgets/track.c:735
+#: src/gui/widgets/channel.c:656 src/gui/widgets/track.c:719
 msgid "_Delete Track"
 msgstr ""
 
-#: src/gui/widgets/channel.c:632 src/gui/widgets/track.c:737
+#: src/gui/widgets/channel.c:658 src/gui/widgets/track.c:721
 msgid "_Delete Tracks"
 msgstr ""
 
-#: src/gui/widgets/channel.c:641 src/gui/widgets/track.c:747
+#: src/gui/widgets/channel.c:667 src/gui/widgets/track.c:731
 msgid "_Duplicate Track"
 msgstr ""
 
-#: src/gui/widgets/channel.c:643 src/gui/widgets/track.c:750
+#: src/gui/widgets/channel.c:669 src/gui/widgets/track.c:734
 msgid "_Duplicate Tracks"
 msgstr ""
 
-#: src/gui/widgets/channel.c:653 src/gui/widgets/track.c:771
+#: src/gui/widgets/channel.c:679 src/gui/widgets/track.c:755
 msgid "Hide Track"
 msgstr "Nascondi traccia"
 
-#: src/gui/widgets/channel.c:654 src/gui/widgets/track.c:772
+#: src/gui/widgets/channel.c:680 src/gui/widgets/track.c:756
 msgid "Hide Tracks"
 msgstr "Nascondi tracce"
 
-#: src/gui/widgets/channel.c:660 src/gui/widgets/track.c:778
+#: src/gui/widgets/channel.c:686 src/gui/widgets/track.c:762
 msgid "Pin/Unpin Track"
 msgstr ""
 
-#: src/gui/widgets/channel.c:661 src/gui/widgets/track.c:779
+#: src/gui/widgets/channel.c:687 src/gui/widgets/track.c:763
 msgid "Pin/Unpin Tracks"
 msgstr ""
 
-#: src/gui/widgets/channel.c:666 src/gui/widgets/left_dock_edge.c:205
-#: resources/ui/port_selector_dialog.ui:26
+#: src/gui/widgets/channel.c:692 resources/ui/port_selector_dialog.ui:26
 msgid "Track"
 msgstr ""
 
-#: src/gui/widgets/channel.c:681 src/gui/widgets/track.c:327
-#: src/gui/widgets/track.c:818 resources/ui/fader_buttons.ui:37
+#: src/gui/widgets/channel.c:707 src/gui/widgets/track.c:311
+#: src/gui/widgets/track.c:802 resources/ui/fader_buttons.ui:37
 msgid "Solo"
 msgstr ""
 
-#: src/gui/widgets/channel.c:690 src/gui/widgets/track.c:827
+#: src/gui/widgets/channel.c:716 src/gui/widgets/track.c:811
 msgid "Unsolo"
 msgstr ""
 
-#: src/gui/widgets/channel.c:719 src/gui/widgets/monitor_section.c:45
-#: src/gui/widgets/track.c:359 src/gui/widgets/track.c:856
+#: src/gui/widgets/channel.c:745 src/gui/widgets/monitor_section.c:45
+#: src/gui/widgets/track.c:343 src/gui/widgets/track.c:840
 #: resources/ui/fader_buttons.ui:61
 msgid "Listen"
 msgstr "Ascolta"
 
-#: src/gui/widgets/channel.c:728 src/gui/widgets/track.c:355
-#: src/gui/widgets/track.c:865
+#: src/gui/widgets/channel.c:754 src/gui/widgets/track.c:339
+#: src/gui/widgets/track.c:849
 #, fuzzy
 msgid "Unlisten"
 msgstr "Ascolta"
 
-#: src/gui/widgets/channel.c:735
+#: src/gui/widgets/channel.c:761
 #: src/gui/widgets/automatable_selector_popover.c:387
-#: src/gui/widgets/track.c:872
+#: src/gui/widgets/track.c:856
 #, fuzzy
 msgid "Channel"
 msgstr "Canale %s"
 
-#: src/gui/widgets/channel.c:744 src/gui/widgets/bot_bar.c:497
-#: src/gui/widgets/track.c:920 src/gui/widgets/dialogs/export_dialog.c:1287
+#: src/gui/widgets/channel.c:770 src/gui/widgets/bot_bar.c:497
+#: src/gui/widgets/track.c:904 src/gui/widgets/dialogs/export_dialog.c:1191
 msgid "Disable"
 msgstr "Disabilita"
 
-#: src/gui/widgets/channel.c:751 src/gui/widgets/bot_bar.c:498
-#: src/gui/widgets/track.c:927 src/gui/widgets/dialogs/export_dialog.c:1277
+#: src/gui/widgets/channel.c:777 src/gui/widgets/bot_bar.c:498
+#: src/gui/widgets/track.c:911 src/gui/widgets/dialogs/export_dialog.c:1181
 msgid "Enable"
 msgstr "Abilita"
 
-#: src/gui/widgets/channel.c:757 src/gui/widgets/track.c:933
+#: src/gui/widgets/channel.c:783 src/gui/widgets/track.c:917
 msgid "Change color..."
 msgstr "Cambia colore..."
 
@@ -1552,39 +1573,32 @@ msgstr "Ultima modifica"
 msgid "Blank project"
 msgstr "Progetto vuoto"
 
-#: src/gui/widgets/left_dock_edge.c:206
-msgid "Track inspector"
-msgstr ""
-
-#: src/gui/widgets/left_dock_edge.c:224 src/gui/widgets/channel_slot.c:723
-#: resources/ui/port_selector_dialog.ui:60
-msgid "Plugin"
-msgstr ""
-
-#: src/gui/widgets/left_dock_edge.c:224
-msgid "Plugin inspector"
-msgstr ""
-
-#: src/gui/widgets/left_dock_edge.c:238 src/utils/gtk.c:1290
-#: resources/ui/chord_selector_window.ui:478
-msgid "Visibility"
-msgstr "Visibilità"
-
-#: src/gui/widgets/left_dock_edge.c:239
+#: src/gui/widgets/left_dock_edge.c:196 src/utils/gtk.c:1284
 #, fuzzy
-msgid "Track visibility"
+msgid "Track Inspector"
+msgstr "Cambia BPM"
+
+#: src/gui/widgets/left_dock_edge.c:212 src/utils/gtk.c:1287
+#, fuzzy
+msgid "Plugin Inspector"
+msgstr "Proprietà del plugin"
+
+#: src/gui/widgets/left_dock_edge.c:225
+#, fuzzy
+msgid "Track Visibility"
 msgstr "Visibilità"
 
-#: src/gui/widgets/plugin_strip_expander.c:188
+#: src/gui/widgets/plugin_strip_expander.c:175
 msgid "Inserts"
 msgstr ""
 
-#: src/gui/widgets/midi_arranger.c:521
+#: src/gui/widgets/midi_arranger.c:505 resources/ui/export_dialog.ui:102
+#: resources/ui/export_dialog.ui:226
 #, fuzzy
 msgid "Selection"
 msgstr "Selezioni"
 
-#: src/gui/widgets/modulator_inner.c:97 src/actions/actions.c:3472
+#: src/gui/widgets/modulator_inner.c:97 src/actions/actions.c:3492
 #, fuzzy
 msgid "Failed to delete plugins"
 msgstr "Impossibile scrivere il file: %s"
@@ -1617,45 +1631,27 @@ msgstr ""
 msgid "No object selected"
 msgstr ""
 
-#: src/gui/widgets/channel_send.c:234
+#: src/gui/widgets/channel_send.c:237
 #, fuzzy
 msgid "Failed to change send amount"
 msgstr "Impossibile scrivere il file: %s"
 
-#: src/gui/widgets/bot_dock_edge.c:277 src/utils/gtk.c:1287
-msgid "Editor"
-msgstr ""
-
-#: src/gui/widgets/bot_dock_edge.c:277
+#: src/gui/widgets/bot_dock_edge.c:295
 msgid "Editor view"
 msgstr ""
 
-#: src/gui/widgets/bot_dock_edge.c:281 src/utils/gtk.c:1277
-msgid "Mixer"
-msgstr ""
-
-#: src/gui/widgets/bot_dock_edge.c:281
+#: src/gui/widgets/bot_dock_edge.c:297
 msgid "Mixer view"
 msgstr ""
 
-#: src/gui/widgets/bot_dock_edge.c:285 src/gui/widgets/bot_dock_edge.c:286
-#: src/utils/gtk.c:1281 src/audio/modulator_track.c:63
-#: resources/ui/plugin_browser.ui:111
+#: src/gui/widgets/bot_dock_edge.c:300 src/utils/gtk.c:1272
+#: src/audio/modulator_track.c:63 resources/ui/plugin_browser.ui:112
 msgid "Modulators"
 msgstr "Modulatori"
 
-#: src/gui/widgets/bot_dock_edge.c:290 src/utils/gtk.c:1284
-msgid "Chord Pad"
-msgstr ""
-
-#: src/gui/widgets/bot_dock_edge.c:290
+#: src/gui/widgets/bot_dock_edge.c:303
 msgid "Chord pad"
 msgstr ""
-
-#: src/gui/widgets/bot_dock_edge.c:301
-#, fuzzy
-msgid "Show/hide top panel"
-msgstr "Strumenti SFZ"
 
 #: src/gui/widgets/digital_meter.c:103
 msgid "Tempo/BPM"
@@ -1704,70 +1700,53 @@ msgstr "Fallita l'apertura del file: %s"
 msgid "Failed to move or copy track"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/gui/widgets/drag_dest_box.c:444
-msgid "Add _MIDI Track"
-msgstr ""
-
-#: src/gui/widgets/drag_dest_box.c:449
-msgid "Add Audio Track"
-msgstr ""
-
-#: src/gui/widgets/drag_dest_box.c:463
-msgid "Add FX Track"
-msgstr ""
-
-#: src/gui/widgets/drag_dest_box.c:477
-msgid "Add Group Track"
-msgstr ""
-
-#: src/gui/widgets/drag_dest_box.c:481
-#, fuzzy
-msgid "Add Folder Track"
-msgstr "Nascondi traccia"
-
-#: src/gui/widgets/channel_slot.c:209
+#: src/gui/widgets/channel_slot.c:214
 msgid "No instrument"
 msgstr "Nessuno strumento"
 
-#: src/gui/widgets/channel_slot.c:214
+#: src/gui/widgets/channel_slot.c:219
 #, c-format
 msgid "Slot #%d"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:332
+#: src/gui/widgets/channel_slot.c:330
 #, fuzzy
 msgid "Failed to move or copy plugins"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/gui/widgets/channel_slot.c:361 src/audio/sample_processor.c:607
+#: src/gui/widgets/channel_slot.c:359 src/audio/sample_processor.c:607
 #: src/actions/tracklist_selections.c:800
 #, fuzzy, c-format
 msgid "Failed to create plugin %s"
 msgstr "Impossibile scrivere il file: %s"
 
-#: src/gui/widgets/channel_slot.c:377
+#: src/gui/widgets/channel_slot.c:375
 #, c-format
 msgid "Plugin %s cannot be added to this slot"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:714
+#: src/gui/widgets/channel_slot.c:712
 msgid "Bypass"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:719
+#: src/gui/widgets/channel_slot.c:717
 msgid "Inspect"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:749 src/gui/widgets/timeline_arranger.c:1079
-#: src/gui/widgets/track.c:784 resources/ui/header.ui:12
+#: src/gui/widgets/channel_slot.c:721 resources/ui/port_selector_dialog.ui:60
+msgid "Plugin"
+msgstr ""
+
+#: src/gui/widgets/channel_slot.c:747 src/gui/widgets/timeline_arranger.c:1079
+#: src/gui/widgets/track.c:768 resources/ui/header.ui:12
 msgid "Edit"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:763
+#: src/gui/widgets/channel_slot.c:761
 msgid "Select"
 msgstr "Seleziona"
 
-#: src/gui/widgets/channel_slot.c:993
+#: src/gui/widgets/channel_slot.c:989
 msgid "empty slot"
 msgstr "slot vuoto"
 
@@ -1783,7 +1762,7 @@ msgstr "Fallita l'apertura del file: %s"
 msgid "Failed to move chords"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/gui/widgets/arranger.c:2445 src/gui/widgets/track.c:697
+#: src/gui/widgets/arranger.c:2445 src/gui/widgets/track.c:681
 #: resources/ui/string_entry_dialog.ui:23
 msgid "Marker name"
 msgstr ""
@@ -1911,19 +1890,19 @@ msgstr "Fallita l'apertura del file: %s"
 msgid "%s name"
 msgstr ""
 
-#: src/gui/widgets/piano_roll_keys.c:167
+#: src/gui/widgets/piano_roll_keys.c:163
 msgid "bass"
 msgstr ""
 
-#: src/gui/widgets/piano_roll_keys.c:189
+#: src/gui/widgets/piano_roll_keys.c:185
 msgid "both"
 msgstr ""
 
-#: src/gui/widgets/piano_roll_keys.c:208
+#: src/gui/widgets/piano_roll_keys.c:204
 msgid "scale"
 msgstr "scala"
 
-#: src/gui/widgets/piano_roll_keys.c:227
+#: src/gui/widgets/piano_roll_keys.c:223
 msgid "chord"
 msgstr "accordo"
 
@@ -1933,14 +1912,15 @@ msgid "Rename"
 msgstr "Rinomina traccia"
 
 #: src/gui/widgets/plugin_browser.c:463
-#: src/gui/widgets/panel_file_browser.c:126
+#: src/gui/widgets/panel_file_browser.c:111
 #: src/gui/widgets/port_connections_tree.c:168
 #: src/gui/widgets/home_toolbar.c:148 src/gui/widgets/cc_bindings_tree.c:54
 #: resources/ui/modulator_inner.ui:24
 msgid "Delete"
 msgstr "Cancella"
 
-#: src/gui/widgets/plugin_browser.c:1486
+#: src/gui/widgets/plugin_browser.c:1497
+#: src/gui/widgets/panel_file_browser.c:662
 msgid "Search..."
 msgstr ""
 
@@ -2037,7 +2017,7 @@ msgid "Metronome options"
 msgstr "Metronomo"
 
 #. volume
-#: src/gui/widgets/bot_bar.c:540 resources/ui/file_auditioner_controls.ui:28
+#: src/gui/widgets/bot_bar.c:540 resources/ui/file_auditioner_controls.ui:29
 msgid "Volume"
 msgstr "Volume"
 
@@ -2046,11 +2026,11 @@ msgstr "Volume"
 msgid "Count-in"
 msgstr ""
 
-#: src/gui/widgets/bot_bar.c:637
+#: src/gui/widgets/bot_bar.c:630
 msgid "bpm"
 msgstr ""
 
-#: src/gui/widgets/bot_bar.c:640
+#: src/gui/widgets/bot_bar.c:633
 msgid "time sig."
 msgstr ""
 
@@ -2091,7 +2071,8 @@ msgstr ""
 msgid "Start on MIDI input"
 msgstr ""
 
-#: src/gui/widgets/transport_controls.c:409
+#: src/gui/widgets/transport_controls.c:409 resources/ui/export_dialog.ui:59
+#: resources/ui/export_dialog.ui:180
 msgid "Options"
 msgstr "Opzioni"
 
@@ -2112,7 +2093,7 @@ msgid "Create takes (mute previous)"
 msgstr ""
 
 #: src/gui/widgets/transport_controls.c:427
-#: build/data/org.zrythm.Zrythm.gschema.xml:925
+#: build/data/org.zrythm.Zrythm.gschema.xml:950
 msgid "Recording mode"
 msgstr "Modalità di registrazione"
 
@@ -2164,11 +2145,11 @@ msgstr "Esporta come file MIDI"
 msgid "MIDI Regions"
 msgstr "Backend MIDI"
 
-#: src/gui/widgets/timeline_arranger.c:1193 src/gui/widgets/track.c:793
+#: src/gui/widgets/timeline_arranger.c:1193 src/gui/widgets/track.c:777
 msgid "Quick bounce"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1198 src/gui/widgets/track.c:798
+#: src/gui/widgets/timeline_arranger.c:1198 src/gui/widgets/track.c:782
 msgid "Bounce..."
 msgstr ""
 
@@ -2178,25 +2159,25 @@ msgid "Failed to create selections"
 msgstr "Impossibile scrivere il file: %s"
 
 #: src/gui/widgets/automation_arranger.c:226
-#: build/data/org.zrythm.Zrythm.gschema.xml:1103
+#: build/data/org.zrythm.Zrythm.gschema.xml:1128
 msgid "Curve algorithm"
 msgstr "Algoritmo della curva"
 
-#: src/gui/widgets/header.c:84
+#: src/gui/widgets/header.c:97
 #, c-format
 msgid "About %s"
 msgstr "Info su %s"
 
-#: src/gui/widgets/panel_file_browser.c:262 src/gui/widgets/file_browser.c:58
+#: src/gui/widgets/panel_file_browser.c:258 src/gui/widgets/file_browser.c:58
 #, fuzzy
 msgid "No file selected"
 msgstr "Nessuna porta selezionata"
 
-#: src/gui/widgets/panel_file_browser.c:402
-#: src/gui/widgets/panel_file_browser.c:415 src/settings/plugin_settings.c:371
+#: src/gui/widgets/panel_file_browser.c:408
+#: src/gui/widgets/panel_file_browser.c:421 src/settings/plugin_settings.c:371
 #: src/settings/plugin_settings.c:386 src/settings/plugin_settings.c:465
 #: src/settings/plugin_settings.c:594 src/audio/tracklist.c:1541
-#: src/audio/track.c:3834
+#: src/audio/track.c:3838
 #, fuzzy
 msgid "Failed to create track"
 msgstr "Impossibile scrivere il file: %s"
@@ -2248,7 +2229,7 @@ msgid "Redo"
 msgstr ""
 
 #: src/gui/widgets/home_toolbar.c:49
-#: build/data/org.zrythm.Zrythm.gschema.xml:1113
+#: build/data/org.zrythm.Zrythm.gschema.xml:1138
 msgid "Undo"
 msgstr "Annulla"
 
@@ -2277,48 +2258,22 @@ msgstr ""
 msgid "Loop selection"
 msgstr ""
 
-#: src/gui/widgets/right_dock_edge.c:107
-#: build/data/org.zrythm.Zrythm.gschema.xml:1025
-#: build/data/org.zrythm.Zrythm.gschema.xml:1056
-msgid "Plugins"
+#: src/gui/widgets/right_dock_edge.c:110 src/utils/gtk.c:1290
+msgid "Plugin Browser"
 msgstr ""
 
-#: src/gui/widgets/right_dock_edge.c:108
-#, fuzzy
-msgid "Plugin browser"
-msgstr "Proprietà del plugin"
-
-#: src/gui/widgets/right_dock_edge.c:120
-msgid "Files"
-msgstr ""
-
-#: src/gui/widgets/right_dock_edge.c:121
-#, fuzzy
-msgid "File browser"
-msgstr "Impossibile scrivere il file: %s"
-
-#: src/gui/widgets/right_dock_edge.c:134 src/gui/widgets/monitor_section.c:33
-#: src/gui/widgets/track.c:364 src/utils/gtk.c:1309
-msgid "Monitor"
+#: src/gui/widgets/right_dock_edge.c:122 src/gui/widgets/right_dock_edge.c:159
+#: src/gui/widgets/file_browser_window.c:21 src/utils/gtk.c:1293
+msgid "File Browser"
 msgstr ""
 
 #: src/gui/widgets/right_dock_edge.c:135
 #, fuzzy
-msgid "Monitor section"
+msgid "Monitor Section"
 msgstr "Connetti le porte"
 
-#: src/gui/widgets/right_dock_edge.c:148 src/settings/chord_preset.c:66
-#: src/audio/chord_track.c:43 resources/ui/inspector_chord.ui:7
-msgid "Chords"
-msgstr ""
-
-#: src/gui/widgets/right_dock_edge.c:149
-#, fuzzy
-msgid "Chord preset browser"
-msgstr "Impossibile scrivere il file: %s"
-
-#: src/gui/widgets/right_dock_edge.c:155
-msgid "Show file browser"
+#: src/gui/widgets/right_dock_edge.c:148 src/utils/gtk.c:1296
+msgid "Chord Preset Browser"
 msgstr ""
 
 #: src/gui/widgets/plugin_properties_expander.c:106
@@ -2434,35 +2389,35 @@ msgstr ""
 msgid "Preset Packs"
 msgstr ""
 
-#: src/gui/widgets/main_window.c:139
+#: src/gui/widgets/main_window.c:141
 msgid "Unsaved changes"
 msgstr ""
 
-#: src/gui/widgets/main_window.c:143
+#: src/gui/widgets/main_window.c:145
 msgid "_Save & Quit"
 msgstr ""
 
-#: src/gui/widgets/main_window.c:144
+#: src/gui/widgets/main_window.c:146
 msgid "_Quit without saving"
 msgstr ""
 
-#: src/gui/widgets/main_window.c:150
+#: src/gui/widgets/main_window.c:152
 msgid ""
 "The project contains unsaved changes.\n"
 "If you quit without saving, unsaved changes will be lost."
 msgstr ""
 
-#: src/gui/widgets/main_window.c:776 src/gui/widgets/preferences.c:987
+#: src/gui/widgets/main_window.c:797 src/gui/widgets/preferences.c:1074
 #: resources/gtk/menus.ui:40 resources/gtk/help-overlay.ui:39
-#: resources/ui/file_auditioner_controls.ui:33
+#: resources/ui/file_auditioner_controls.ui:34
 msgid "Preferences"
 msgstr "Preferenze"
 
-#: src/gui/widgets/main_window.c:777
+#: src/gui/widgets/main_window.c:798
 msgid "Log viewer"
 msgstr ""
 
-#: src/gui/widgets/main_window.c:779
+#: src/gui/widgets/main_window.c:800
 msgid "Scripting interface"
 msgstr ""
 
@@ -2484,31 +2439,36 @@ msgstr ""
 msgid "Snap/Grid options"
 msgstr ""
 
-#: src/gui/widgets/preferences.c:156
+#: src/gui/widgets/preferences.c:180
 msgid "All preferences have been successfully reset to initial values"
 msgstr ""
 
-#: src/gui/widgets/preferences.c:493
+#: src/gui/widgets/preferences.c:579
 msgid "Select a folder"
 msgstr ""
 
-#: src/gui/widgets/preferences.c:494
+#: src/gui/widgets/preferences.c:580
 msgid "Select a file"
 msgstr "Seleziona un file"
 
-#: src/gui/widgets/preferences.c:724
-#: build/data/org.zrythm.Zrythm.gschema.xml:1017
+#: src/gui/widgets/preferences.c:811
+#: build/data/org.zrythm.Zrythm.gschema.xml:1042
 msgid "Other"
 msgstr ""
 
-#: src/gui/widgets/preferences.c:745
+#: src/gui/widgets/preferences.c:832
 msgid "Reset all preferences to initial values."
 msgstr ""
 
-#: src/gui/widgets/preferences.c:972
+#: src/gui/widgets/preferences.c:1059
 #, c-format
 msgid "Some changes will only take effect after you restart %s"
 msgstr "Alcune modifiche avranno effetto solo dopo il riavvio %s"
+
+#: src/gui/widgets/monitor_section.c:33 src/gui/widgets/track.c:348
+#: src/utils/gtk.c:1300
+msgid "Monitor"
+msgstr ""
 
 #: src/gui/widgets/monitor_section.c:51 src/gui/widgets/monitor_section.c:334
 #, fuzzy
@@ -2606,18 +2566,18 @@ msgid "Failed to move or copy track(s)"
 msgstr "Fallita l'apertura del file: %s"
 
 #: src/gui/widgets/file_auditioner_controls.c:231
-#: build/data/org.zrythm.Zrythm.gschema.xml:584
+#: build/data/org.zrythm.Zrythm.gschema.xml:569
 msgid "Autoplay"
 msgstr ""
 
 #: src/gui/widgets/file_auditioner_controls.c:235
-#: build/data/org.zrythm.Zrythm.gschema.xml:589
+#: build/data/org.zrythm.Zrythm.gschema.xml:574
 #, fuzzy
 msgid "Show unsupported files"
 msgstr "Tipo di file non supportato %s"
 
 #: src/gui/widgets/file_auditioner_controls.c:238
-#: build/data/org.zrythm.Zrythm.gschema.xml:594
+#: build/data/org.zrythm.Zrythm.gschema.xml:579
 #, fuzzy
 msgid "Show hidden files"
 msgstr "Strumenti SFZ"
@@ -2649,7 +2609,7 @@ msgstr "Fallita l'apertura del file: %s"
 msgid "Live waveform indicator"
 msgstr ""
 
-#: src/gui/widgets/ruler.c:1569
+#: src/gui/widgets/ruler.c:1553
 msgid "Display"
 msgstr ""
 
@@ -2667,6 +2627,11 @@ msgstr ""
 #, fuzzy
 msgid "Failed to edit scale"
 msgstr "Fallita l'apertura del file: %s"
+
+#: src/gui/widgets/add_track_menu_button.c:66
+#, fuzzy
+msgid "Add track"
+msgstr "Nascondi traccia"
 
 #: src/gui/widgets/event_viewer.c:603 src/gui/widgets/event_viewer.c:742
 #: src/gui/widgets/event_viewer.c:867 src/gui/widgets/item_factory.c:227
@@ -2816,10 +2781,6 @@ msgstr "Fallita l'apertura del file: %s"
 msgid "Failed to remove direct out"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/gui/widgets/file_browser_window.c:21 src/utils/gtk.c:1302
-msgid "File Browser"
-msgstr ""
-
 #: src/gui/widgets/project_toolbar.c:40
 msgid "New Project"
 msgstr "Nuovo progetto"
@@ -2840,29 +2801,13 @@ msgstr "Esporta come"
 msgid "Export Graph"
 msgstr "Esporta grafico"
 
-#: src/gui/widgets/view_toolbar.c:39
+#: src/gui/widgets/view_toolbar.c:23
 msgid "Toggle Status Bar"
 msgstr ""
 
-#: src/gui/widgets/view_toolbar.c:40
+#: src/gui/widgets/view_toolbar.c:24
 msgid "Fullscreen"
 msgstr "Schermo intero"
-
-#: src/gui/widgets/view_toolbar.c:41
-msgid "Toggle Left Panel"
-msgstr ""
-
-#: src/gui/widgets/view_toolbar.c:43
-msgid "Toggle Bottom Panel"
-msgstr ""
-
-#: src/gui/widgets/view_toolbar.c:44
-msgid "Toggle Top Panel"
-msgstr ""
-
-#: src/gui/widgets/view_toolbar.c:46
-msgid "Toggle Right Panel"
-msgstr ""
 
 #: src/gui/widgets/item_factory.c:103
 #, fuzzy
@@ -2962,7 +2907,7 @@ msgstr "Evidenziare"
 msgid "Failed to create track for file '%s'"
 msgstr "Impossibile scrivere il file: %s"
 
-#: src/gui/widgets/inspector_track.c:157
+#: src/gui/widgets/inspector_track.c:144
 msgid "Comment"
 msgstr "Commento"
 
@@ -2971,134 +2916,122 @@ msgstr "Commento"
 msgid "Visible"
 msgstr "Visibilità"
 
-#: src/gui/widgets/track.c:333
+#: src/gui/widgets/track.c:317
 #, fuzzy
 msgid "Hide instrument UI"
 msgstr "Strumenti SFZ"
 
-#: src/gui/widgets/track.c:337
+#: src/gui/widgets/track.c:321
 #, fuzzy
 msgid "Show instrument UI"
 msgstr "Strumenti SFZ"
 
-#: src/gui/widgets/track.c:368 resources/ui/fader_buttons.ui:13
+#: src/gui/widgets/track.c:352 resources/ui/fader_buttons.ui:13
 msgid "Mono compatibility"
 msgstr ""
 
-#: src/gui/widgets/track.c:374
+#: src/gui/widgets/track.c:358
 msgid "Disarm"
 msgstr "Disarma"
 
-#: src/gui/widgets/track.c:378
+#: src/gui/widgets/track.c:362
 msgid "Arm for recording"
 msgstr "Arma per la registrazione"
 
-#: src/gui/widgets/track.c:385
+#: src/gui/widgets/track.c:369
 msgid "Hide lanes"
 msgstr ""
 
-#: src/gui/widgets/track.c:389
+#: src/gui/widgets/track.c:373
 msgid "Show lanes"
 msgstr ""
 
-#: src/gui/widgets/track.c:396
+#: src/gui/widgets/track.c:380
 msgid "Hide automation"
 msgstr "Nascondi automazione"
 
-#: src/gui/widgets/track.c:400
+#: src/gui/widgets/track.c:384
 msgid "Show automation"
 msgstr "Mostra automazione"
 
-#: src/gui/widgets/track.c:409
+#: src/gui/widgets/track.c:393
 msgid "Remove"
 msgstr ""
 
-#: src/gui/widgets/track.c:413
+#: src/gui/widgets/track.c:397
 msgid "Freeze/unfreeze"
 msgstr ""
 
-#: src/gui/widgets/track.c:417
+#: src/gui/widgets/track.c:401
 msgid "Lock/unlock"
 msgstr "Blocca/sblocca"
 
-#: src/gui/widgets/track.c:421
+#: src/gui/widgets/track.c:405
 msgid "Fold"
 msgstr ""
 
-#: src/gui/widgets/track.c:425
+#: src/gui/widgets/track.c:409
 msgid "Unfold"
 msgstr ""
 
-#: src/gui/widgets/track.c:763
+#: src/gui/widgets/track.c:747
 msgid "Add Region"
 msgstr ""
 
-#: src/gui/widgets/track.c:803 resources/ui/bounce_dialog.ui:101
+#: src/gui/widgets/track.c:787 resources/ui/bounce_dialog.ui:101
 msgid "Bounce"
 msgstr ""
 
-#: src/gui/widgets/track.c:904
+#: src/gui/widgets/track.c:888
 #, fuzzy
 msgid "Direct out"
 msgstr "Scollega le porte"
 
-#: src/gui/widgets/track.c:910
+#: src/gui/widgets/track.c:894
 #, fuzzy
 msgid "New direct out"
 msgstr "Nuovo progetto"
 
-#: src/gui/widgets/track.c:940
+#: src/gui/widgets/track.c:924
 msgid "Rename lane..."
 msgstr "Rinomina traccia..."
 
-#: src/gui/widgets/track.c:956
+#: src/gui/widgets/track.c:940
 msgid "Passthrough input"
 msgstr ""
 
-#: src/gui/widgets/track.c:966 src/gui/widgets/track.c:994
+#: src/gui/widgets/track.c:950 src/gui/widgets/track.c:978
 #, c-format
 msgid "MIDI Channel %d"
 msgstr ""
 
-#: src/gui/widgets/track.c:979
+#: src/gui/widgets/track.c:963
 msgid "Track MIDI Channel"
 msgstr ""
 
-#: src/gui/widgets/track.c:1009
+#: src/gui/widgets/track.c:993
 msgid "Lane MIDI Channel"
 msgstr ""
 
-#: src/gui/widgets/track.c:1014
+#: src/gui/widgets/track.c:998
 msgid "Piano Roll"
 msgstr ""
 
-#: src/gui/widgets/main_notebook.c:131 src/utils/gtk.c:1313
+#: src/gui/widgets/main_notebook.c:134 src/utils/gtk.c:1304
 msgid "Timeline"
 msgstr ""
 
-#: src/gui/widgets/main_notebook.c:135
+#: src/gui/widgets/main_notebook.c:137 src/utils/gtk.c:1310
 #, fuzzy
-msgid "Connections"
+msgid "Port Connections"
 msgstr "Connetti le porte"
 
-#: src/gui/widgets/main_notebook.c:136
-msgid "Port connections"
+#: src/gui/widgets/main_notebook.c:140 src/utils/gtk.c:1307
+msgid "MIDI CC Bindings"
 msgstr ""
 
-#: src/gui/widgets/main_notebook.c:140
-msgid "Bindings"
-msgstr ""
-
-#: src/gui/widgets/main_notebook.c:141
-msgid "MIDI CC bindings"
-msgstr ""
-
-#: src/gui/widgets/main_notebook.c:145 src/utils/gtk.c:1321
-msgid "Scenes"
-msgstr ""
-
-#: src/gui/widgets/main_notebook.c:146
-msgid "Scenes (live view)"
+#: src/gui/widgets/main_notebook.c:144
+msgid "Scenes (Live View)"
 msgstr ""
 
 #: src/gui/widgets/zoom_buttons.c:66
@@ -3121,38 +3054,38 @@ msgstr ""
 msgid "Arranger object info"
 msgstr ""
 
-#: src/gui/widgets/dialogs/create_project_dialog.c:113
+#: src/gui/widgets/dialogs/create_project_dialog.c:104
 msgid "Create New Project"
 msgstr "Creare un nuovo progetto"
 
-#: src/gui/widgets/dialogs/create_project_dialog.c:123
+#: src/gui/widgets/dialogs/create_project_dialog.c:114
 msgid "Untitled Project"
 msgstr ""
 
-#: src/gui/widgets/dialogs/create_project_dialog.c:154
+#: src/gui/widgets/dialogs/create_project_dialog.c:145
 msgid "Select parent directory to save the project in"
 msgstr ""
 
-#: src/gui/widgets/dialogs/save_chord_preset_dialog.c:70
+#: src/gui/widgets/dialogs/save_chord_preset_dialog.c:54
 msgid "Please enter a valid name."
 msgstr ""
 
-#: src/gui/widgets/dialogs/save_chord_preset_dialog.c:78
+#: src/gui/widgets/dialogs/save_chord_preset_dialog.c:62
 #, c-format
 msgid "Name '%s' is taken. Please enter a different name"
 msgstr ""
 
-#: src/gui/widgets/dialogs/save_chord_preset_dialog.c:154
+#: src/gui/widgets/dialogs/save_chord_preset_dialog.c:138
 #, fuzzy
 msgid "Save Chord Preset"
 msgstr "Salva Preset"
 
-#: src/gui/widgets/dialogs/save_chord_preset_dialog.c:182
+#: src/gui/widgets/dialogs/save_chord_preset_dialog.c:166
 msgid "Pack"
 msgstr ""
 
-#: src/gui/widgets/dialogs/save_chord_preset_dialog.c:184
-#: src/actions/actions.c:3407
+#: src/gui/widgets/dialogs/save_chord_preset_dialog.c:168
+#: src/actions/actions.c:3427
 #, fuzzy
 msgid "Preset Name"
 msgstr "Nome del dispositivo"
@@ -3250,6 +3183,7 @@ msgid "Select MIDI file"
 msgstr "Seleziona file MIDI"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:149
+#: src/gui/widgets/dialogs/export_dialog.c:1511
 msgid "_Export"
 msgstr ""
 
@@ -3323,13 +3257,13 @@ msgid "Move tracks under group"
 msgstr ""
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:128
-#: src/actions/actions.c:1684
+#: src/actions/actions.c:1692
 #, fuzzy
 msgid "Failed to create audio group track"
 msgstr "Impossibile scrivere il file: %s"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:143
-#: src/actions/actions.c:1697
+#: src/actions/actions.c:1705
 #, fuzzy
 msgid "Failed to create MIDI group track"
 msgstr "Impossibile scrivere il file: %s"
@@ -3363,127 +3297,127 @@ msgstr "Apri cartella"
 msgid "Opens the containing directory"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:64
+#: src/gui/widgets/dialogs/bug_report_dialog.c:65
 msgid "Please enter more details"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:203
+#: src/gui/widgets/dialogs/bug_report_dialog.c:204
 #, fuzzy, c-format
 msgid "error: %s"
 msgstr "Errore ALSA: %s"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:208
-#: src/gui/widgets/dialogs/bug_report_dialog.c:412
+#: src/gui/widgets/dialogs/bug_report_dialog.c:209
+#: src/gui/widgets/dialogs/bug_report_dialog.c:413
 msgid "Done"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:225
+#: src/gui/widgets/dialogs/bug_report_dialog.c:226
 #, fuzzy
 msgid "Send Automatically"
 msgstr "Automazione"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:242
+#: src/gui/widgets/dialogs/bug_report_dialog.c:243
 #, c-format
 msgid ""
 "Click OK to submit. You can verify what will be sent below. By clicking OK, "
 "you agree to our %sPrivacy Policy%s."
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:257
+#: src/gui/widgets/dialogs/bug_report_dialog.c:258
 msgid "<b>Data</b>"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:307
+#: src/gui/widgets/dialogs/bug_report_dialog.c:308
 msgid "<b>Log file</b>"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:347
+#: src/gui/widgets/dialogs/bug_report_dialog.c:348
 msgid "<b>Screenshot</b>"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:400
+#: src/gui/widgets/dialogs/bug_report_dialog.c:401
 msgid "Sending"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:410
+#: src/gui/widgets/dialogs/bug_report_dialog.c:411
 msgid "Sending data..."
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:414
+#: src/gui/widgets/dialogs/bug_report_dialog.c:415
 msgid "Failed"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:418
+#: src/gui/widgets/dialogs/bug_report_dialog.c:419
 msgid "Sending..."
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:444
+#: src/gui/widgets/dialogs/bug_report_dialog.c:445
 #, fuzzy
 msgid "Sent successfully"
 msgstr "Esecuzione dello script riuscita"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:487
+#: src/gui/widgets/dialogs/bug_report_dialog.c:488
 msgid "Send via Sourcehut"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:493
+#: src/gui/widgets/dialogs/bug_report_dialog.c:494
 #, c-format
 msgid "Please copy the template below in a %snew issue%s."
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:592
+#: src/gui/widgets/dialogs/bug_report_dialog.c:593
 msgid "Fatal Error"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:592
+#: src/gui/widgets/dialogs/bug_report_dialog.c:593
 msgid "Error"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:595
+#: src/gui/widgets/dialogs/bug_report_dialog.c:596
 #, c-format
 msgid "%sPlease help us fix this by submitting a bug report"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:676
+#: src/gui/widgets/dialogs/bug_report_dialog.c:677
 msgid "What did you do?"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:679
+#: src/gui/widgets/dialogs/bug_report_dialog.c:680
 msgid "Please enter as many details as possible (such as steps to reproduce)"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:699
+#: src/gui/widgets/dialogs/bug_report_dialog.c:700
 msgid "Error details"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:707
+#: src/gui/widgets/dialogs/bug_report_dialog.c:708
 #, fuzzy
 msgid "Backtrace"
 msgstr "Errore - Backtrace:\n"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:726
+#: src/gui/widgets/dialogs/bug_report_dialog.c:727
 #, fuzzy
 msgid "Log"
 msgstr "Basso"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:744
+#: src/gui/widgets/dialogs/bug_report_dialog.c:745
 #, fuzzy
 msgid "System info"
 msgstr "Visualizza informazioni"
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:762
+#: src/gui/widgets/dialogs/bug_report_dialog.c:763
 msgid "_Close"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:763
+#: src/gui/widgets/dialogs/bug_report_dialog.c:764
 msgid "Submit on _SourceHut"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:765
+#: src/gui/widgets/dialogs/bug_report_dialog.c:766
 msgid "Send via _email (publicly visible)"
 msgstr ""
 
-#: src/gui/widgets/dialogs/bug_report_dialog.c:767
+#: src/gui/widgets/dialogs/bug_report_dialog.c:768
 msgid "Preview and send _automatically (privately)"
 msgstr ""
 
@@ -3520,78 +3454,102 @@ msgstr "Queste porte non possono essere connesse"
 msgid "Track Ports"
 msgstr ""
 
-#: src/gui/widgets/dialogs/first_run_dialog.c:194
+#: src/gui/widgets/dialogs/first_run_dialog.c:183
 msgid "Setup Zrythm"
 msgstr ""
 
-#: src/gui/widgets/dialogs/first_run_dialog.c:234
+#: src/gui/widgets/dialogs/first_run_dialog.c:223
 msgid "Initial Configuration"
 msgstr ""
 
-#: src/gui/widgets/dialogs/first_run_dialog.c:244
+#: src/gui/widgets/dialogs/first_run_dialog.c:233
 #: src/gui/widgets/dialogs/scripting_dialog.c:113
 msgid "Language"
 msgstr "Lingua"
 
-#: src/gui/widgets/dialogs/first_run_dialog.c:246
+#: src/gui/widgets/dialogs/first_run_dialog.c:235
 #, fuzzy
 msgid "Preferred language"
 msgstr "Lingua dell'interfaccia utente"
 
-#: src/gui/widgets/dialogs/first_run_dialog.c:267
+#: src/gui/widgets/dialogs/first_run_dialog.c:256
 #, fuzzy
 msgid "User path"
 msgstr "Seleziona un modello"
 
-#: src/gui/widgets/dialogs/first_run_dialog.c:269
+#: src/gui/widgets/dialogs/first_run_dialog.c:258
 msgid "Location to save user files"
 msgstr ""
 
-#: src/gui/widgets/dialogs/first_run_dialog.c:271
+#: src/gui/widgets/dialogs/first_run_dialog.c:260
 #, fuzzy
 msgid "Select a directory"
 msgstr "Seleziona un progetto"
 
-#: src/gui/widgets/dialogs/first_run_dialog.c:307
+#: src/gui/widgets/dialogs/first_run_dialog.c:296
 msgid "_Reset"
 msgstr ""
 
-#: src/gui/widgets/dialogs/export_dialog.c:238
+#: src/gui/widgets/dialogs/export_dialog.c:268
 msgid "none"
 msgstr ""
 
-#: src/gui/widgets/dialogs/export_dialog.c:312
+#: src/gui/widgets/dialogs/export_dialog.c:357
 msgid ""
 "\n"
 "1 more file..."
 msgstr ""
 
-#: src/gui/widgets/dialogs/export_dialog.c:317
+#: src/gui/widgets/dialogs/export_dialog.c:362
 #, c-format
 msgid ""
 "\n"
 "%d more files..."
 msgstr ""
 
-#: src/gui/widgets/dialogs/export_dialog.c:417
+#: src/gui/widgets/dialogs/export_dialog.c:468
 msgid "The following files will be created:"
 msgstr ""
 
-#: src/gui/widgets/dialogs/export_dialog.c:418
+#: src/gui/widgets/dialogs/export_dialog.c:469
 msgid "in the directory:"
 msgstr "nella directory:"
 
-#: src/gui/widgets/dialogs/export_dialog.c:560
+#: src/gui/widgets/dialogs/export_dialog.c:712
+msgid "No tracks to export"
+msgstr ""
+
+#: src/gui/widgets/dialogs/export_dialog.c:1345
 msgid "<name>.<format>"
 msgstr ""
 
-#: src/gui/widgets/dialogs/export_dialog.c:563
+#: src/gui/widgets/dialogs/export_dialog.c:1346
 msgid "<date>_<name>.<format>"
 msgstr ""
 
-#: src/gui/widgets/dialogs/export_dialog.c:817
-msgid "No tracks to export"
+#: src/gui/widgets/dialogs/export_dialog.c:1383
+msgid "Mixdown"
 msgstr ""
+
+#: src/gui/widgets/dialogs/export_dialog.c:1384
+msgid "Stems"
+msgstr ""
+
+#: src/gui/widgets/dialogs/export_dialog.c:1412
+msgctxt "Export time range"
+msgid "Loop"
+msgstr ""
+
+#: src/gui/widgets/dialogs/export_dialog.c:1413
+msgctxt "Export time range"
+msgid "Song"
+msgstr ""
+
+#: src/gui/widgets/dialogs/export_dialog.c:1414
+#, fuzzy
+msgctxt "Export time range"
+msgid "Custom"
+msgstr "Plugin personalizzato"
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:65
 msgid "Saving..."
@@ -3649,22 +3607,22 @@ msgstr "Pagina principale"
 msgid "Desktop"
 msgstr ""
 
-#: src/gui/backend/arranger_selections.c:2562
+#: src/gui/backend/arranger_selections.c:2572
 #, fuzzy
 msgid "Failed to paste selections"
 msgstr "Impossibile scrivere il file: %s"
 
-#: src/gui/backend/arranger_object.c:1806
+#: src/gui/backend/arranger_object.c:1834
 #, fuzzy
 msgid "Failed to edit object"
 msgstr "Impossibile scrivere il file: %s"
 
-#: src/gui/backend/arranger_object.c:3413
+#: src/gui/backend/arranger_object.c:3442
 #, c-format
 msgid "Invalid object name %s"
 msgstr ""
 
-#: src/gui/backend/arranger_object.c:3451
+#: src/gui/backend/arranger_object.c:3480
 #, fuzzy
 msgid "Failed to rename object"
 msgstr "Fallita l'apertura del file: %s"
@@ -3699,42 +3657,47 @@ msgstr "Fallita l'apertura del file: %s"
 msgid "Failed to paste tracks"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/gui/backend/mixer_selections.c:687
+#: src/gui/backend/mixer_selections.c:672
 #, fuzzy
 msgid "Failed to paste plugins"
 msgstr "Impossibile scrivere il file: %s"
 
-#: src/utils/log.c:831
+#: src/utils/audio.c:27
+msgid "16 bit"
+msgstr ""
+
+#: src/utils/audio.c:28
+msgid "24 bit"
+msgstr ""
+
+#: src/utils/audio.c:29
+msgid "32 bit"
+msgstr ""
+
+#: src/utils/log.c:837
 #, c-format
 msgid "%s has encountered an error\n"
 msgstr ""
 
-#: src/utils/gtk.c:1293
-#, fuzzy
-msgid "Track Inspector"
-msgstr "Cambia BPM"
-
-#: src/utils/gtk.c:1296
-#, fuzzy
-msgid "Plugin Inspector"
-msgstr "Proprietà del plugin"
-
-#: src/utils/gtk.c:1299
-msgid "Plugin Browser"
+#: src/utils/gtk.c:1268
+msgid "Mixer"
 msgstr ""
 
-#: src/utils/gtk.c:1305
-msgid "Chord Preset Browser"
+#: src/utils/gtk.c:1275
+msgid "Chord Pad"
 msgstr ""
 
-#: src/utils/gtk.c:1316
-msgid "MIDI CC Bindings"
+#: src/utils/gtk.c:1278
+msgid "Editor"
 msgstr ""
 
-#: src/utils/gtk.c:1319
-#, fuzzy
-msgid "Port Connections"
-msgstr "Connetti le porte"
+#: src/utils/gtk.c:1281 resources/ui/chord_selector_window.ui:478
+msgid "Visibility"
+msgstr "Visibilità"
+
+#: src/utils/gtk.c:1312
+msgid "Scenes"
+msgstr ""
 
 #: src/utils/dialogs.c:64
 msgid "Overwrite Plugin"
@@ -3748,18 +3711,18 @@ msgstr ""
 msgid "Error instantiating plugin. Please see log for details."
 msgstr ""
 
-#: src/utils/ui.c:866
+#: src/utils/ui.c:850
 msgid "Sine (Equal Power)"
 msgstr ""
 
-#: src/utils/ui.c:1038
+#: src/utils/ui.c:1023
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
 "install one first and restart %s"
 msgstr ""
 
-#: src/utils/ui.c:1043
+#: src/utils/ui.c:1029
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -3899,6 +3862,11 @@ msgstr ""
 msgid "_Rename"
 msgstr "Rinomina traccia"
 
+#: src/settings/chord_preset.c:66 src/audio/chord_track.c:43
+#: resources/ui/inspector_chord.ui:7
+msgid "Chords"
+msgstr ""
+
 #: src/settings/plugin_settings.c:329
 msgid ""
 "This plugin contains multiple audio outputs. Would you like to auto-route "
@@ -3946,63 +3914,63 @@ msgstr "Fallita l'apertura del file: %s"
 msgid "Failed to connect R port"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/settings/settings.c:154
+#: src/settings/settings.c:140
 #, c-format
 msgid "Schema %s%s%s"
 msgstr ""
 
-#: src/settings/settings.c:166
+#: src/settings/settings.c:152
 #, c-format
 msgid "Resetting schema %s...\n"
 msgstr ""
 
-#: src/settings/settings.c:202
+#: src/settings/settings.c:188
 #, c-format
 msgid "skipping %s"
 msgstr ""
 
-#: src/settings/settings.c:213
+#: src/settings/settings.c:199
 #, c-format
 msgid "resetting %s to %s"
 msgstr ""
 
-#: src/settings/settings.c:258
+#: src/settings/settings.c:244
 #, c-format
 msgid "Failed to find schema %s. %s is likely not installed"
 msgstr ""
 
-#: src/settings/settings.c:273
+#: src/settings/settings.c:259
 #, c-format
 msgid "Failed to view schema %s"
 msgstr ""
 
-#: src/settings/settings.c:280
+#: src/settings/settings.c:266
 #, c-format
 msgid "Failed to reset schema %s"
 msgstr ""
 
-#: src/settings/settings.c:329
+#: src/settings/settings.c:315
 msgid ""
 "This will reset Zrythm to factory settings. <b>You will lose all your "
 "preferences</b>. Continue?"
 msgstr ""
 
-#: src/settings/settings.c:335
+#: src/settings/settings.c:321
 msgid "Reset to Factory Settings"
 msgstr "Ripristina alle impostazioni di fabbrica"
 
-#: src/settings/settings.c:347
+#: src/settings/settings.c:333
 msgid ""
 "This will reset Zrythm to factory settings. You will lose all your "
 "preferences. Type 'y' to continue:"
 msgstr ""
 
-#: src/settings/settings.c:354
+#: src/settings/settings.c:340
 #, c-format
 msgid "Aborting...\n"
 msgstr ""
 
-#: src/settings/settings.c:366
+#: src/settings/settings.c:352
 #, c-format
 msgid "Reset to factory settings successful\n"
 msgstr ""
@@ -4168,39 +4136,39 @@ msgstr ""
 msgid "Macro CV Out %d"
 msgstr ""
 
-#: src/audio/exporter.c:140
+#: src/audio/exporter.c:131
 #, c-format
 msgid "Format %s not supported yet"
 msgstr ""
 
-#: src/audio/exporter.c:230
+#: src/audio/exporter.c:221
 msgid "SF INFO invalid"
 msgstr ""
 
-#: src/audio/exporter.c:252
+#: src/audio/exporter.c:243
 #, c-format
 msgid ""
 "Couldn't open SNDFILE %s:\n"
 "%d: %s"
 msgstr ""
 
-#: src/audio/exporter.c:963 src/audio/exporter.c:971 src/actions/actions.c:1632
+#: src/audio/exporter.c:952 src/audio/exporter.c:960 src/actions/actions.c:1640
 #, fuzzy
 msgid "Failed to create audio track"
 msgstr "Impossibile scrivere il file: %s"
 
-#: src/audio/supported_file.c:292
+#: src/audio/supported_file.c:277
 #, fuzzy
 msgid "Failed opening file"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/audio/supported_file.c:297
+#: src/audio/supported_file.c:282
 #, c-format
 msgid ""
 "<b>%s</b>\n"
 "Sample rate: %d\n"
-"Length: %ld s %ld ms | BPM: %.1f\n"
-"Channel(s): %d | Bitrate: %'d.%d kb/s\n"
+"Length: %<PRId64>s %<PRId64> ms | BPM: %.1f\n"
+"Channel(s): %u | Bitrate: %'d.%d kb/s\n"
 "Bit depth: %d bits"
 msgstr ""
 
@@ -4210,7 +4178,7 @@ msgstr ""
 msgid "PortAudio Error: %s"
 msgstr ""
 
-#: src/audio/region.c:505 build/data/org.zrythm.Zrythm.gschema.xml:1099
+#: src/audio/region.c:505 build/data/org.zrythm.Zrythm.gschema.xml:1124
 msgid "Automation"
 msgstr "Automazione"
 
@@ -4231,34 +4199,34 @@ msgstr ""
 msgid "Failed to change BPM"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/audio/engine.c:540
+#: src/audio/engine.c:542
 #, c-format
 msgid ""
 "Failed to initialize the %s audio backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
 
-#: src/audio/engine.c:582
+#: src/audio/engine.c:584
 #, c-format
 msgid ""
 "The JACK MIDI backend can only be used with the JACK audio backend (your "
 "current audio backend is %s). Will use the dummy MIDI backend instead."
 msgstr ""
 
-#: src/audio/engine.c:619
+#: src/audio/engine.c:621
 #, c-format
 msgid ""
 "Failed to initialize the %s MIDI backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
 
-#: src/audio/engine.c:664
+#: src/audio/engine.c:666
 msgid ""
 "Your selected combination of backends may not work properly. If you want to "
 "use JACK, please select JACK as both your audio and MIDI backend."
 msgstr ""
 
-#: src/audio/engine.c:866
+#: src/audio/engine.c:868
 #, c-format
 msgid ""
 "The selected MIDI/audio backend was not found in the version of %s you have "
@@ -4313,7 +4281,7 @@ msgstr "Nascondi tracce"
 msgid "Cannot set track lane muted"
 msgstr "Nascondi tracce"
 
-#: src/audio/audio_function.c:145 src/audio/track.c:2234 src/audio/track.c:3356
+#: src/audio/audio_function.c:145 src/audio/track.c:2234 src/audio/track.c:3360
 #: src/actions/mixer_selections_action.c:587
 #, fuzzy
 msgid "Failed to instantiate plugin"
@@ -4338,7 +4306,7 @@ msgstr ""
 msgid "ALSA Error: %s"
 msgstr "Errore ALSA: %s"
 
-#: src/audio/graph_thread.c:511
+#: src/audio/graph_thread.c:514
 #, c-format
 msgid ""
 "Your user does not have enough privileges to allow %s to set the scheduling "
@@ -4351,7 +4319,7 @@ msgstr ""
 msgid "Failed to instantiate plugin %s"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/audio/recording_manager.c:173
+#: src/audio/recording_manager.c:159
 #, fuzzy
 msgid "Failed to create recorded regions"
 msgstr "Impossibile scrivere il file: %s"
@@ -4391,17 +4359,17 @@ msgstr "Nascondi tracce"
 msgid "Cannot set track listened"
 msgstr "Nascondi tracce"
 
-#: src/audio/track.c:3408 src/audio/track.c:3455
+#: src/audio/track.c:3412 src/audio/track.c:3459
 #, fuzzy
 msgid "Cannot set track comment"
 msgstr "Nascondi tracce"
 
-#: src/audio/track.c:3494
+#: src/audio/track.c:3498
 #, fuzzy
 msgid "Cannot set track icon"
 msgstr "Nascondi tracce"
 
-#: src/audio/track.c:3740
+#: src/audio/track.c:3744
 #, fuzzy
 msgid "Cannot set track enabled"
 msgstr "Nascondi tracce"
@@ -4411,16 +4379,16 @@ msgstr "Nascondi tracce"
 msgid "Unimplemented"
 msgstr ""
 
-#: src/audio/clip.c:627
+#: src/audio/clip.c:625
 msgid "Edit in external app"
 msgstr ""
 
-#: src/audio/clip.c:649
+#: src/audio/clip.c:647
 #, c-format
 msgid "Edit the file at <u>%s</u>, then press OK"
 msgstr ""
 
-#: src/audio/clip.c:664
+#: src/audio/clip.c:662
 msgid "Launch"
 msgstr ""
 
@@ -4598,19 +4566,19 @@ msgstr "Controller MIDI"
 msgid "Arranger selections contain an undeletable object"
 msgstr ""
 
-#: src/actions/arranger_selections.c:547 src/actions/actions.c:2485
+#: src/actions/arranger_selections.c:547 src/actions/actions.c:2505
 #, fuzzy
 msgid "Failed to apply MIDI function"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/arranger_selections.c:584 src/actions/actions.c:2512
-#: src/actions/actions.c:2557
+#: src/actions/arranger_selections.c:584 src/actions/actions.c:2532
+#: src/actions/actions.c:2577
 #, fuzzy
 msgid "Failed to apply automation function"
 msgstr "Fallita l'apertura del file: %s"
 
 #: src/actions/arranger_selections.c:626 src/actions/arranger_selections.c:641
-#: src/actions/actions.c:2965
+#: src/actions/actions.c:2985
 msgid "Failed to apply audio function"
 msgstr ""
 
@@ -4829,225 +4797,225 @@ msgstr ""
 msgid "Failed to duplicate selections"
 msgstr "Impossibile scrivere il file: %s"
 
-#: src/actions/actions.c:1505
+#: src/actions/actions.c:1513
 #, fuzzy
 msgid "Failed to unbind"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:1551 src/actions/actions.c:2091
-#: src/actions/actions.c:2127
+#: src/actions/actions.c:1559 src/actions/actions.c:2111
+#: src/actions/actions.c:2147
 #, fuzzy
 msgid "Failed to quantize"
 msgstr "Abilita/disabilita la connessione"
 
-#: src/actions/actions.c:1645
+#: src/actions/actions.c:1653
 #, fuzzy
 msgid "Failed to create MIDI track"
 msgstr "Impossibile scrivere il file: %s"
 
-#: src/actions/actions.c:1658
+#: src/actions/actions.c:1666
 #, fuzzy
 msgid "Failed to create audio FX track"
 msgstr "Impossibile scrivere il file: %s"
 
-#: src/actions/actions.c:1671
+#: src/actions/actions.c:1679
 #, fuzzy
 msgid "Failed to create MIDI FX track"
 msgstr "Impossibile scrivere il file: %s"
 
-#: src/actions/actions.c:1710
+#: src/actions/actions.c:1718
 #, fuzzy
 msgid "Failed to create folder track"
 msgstr "Impossibile scrivere il file: %s"
 
-#: src/actions/actions.c:1724
+#: src/actions/actions.c:1732
 #, fuzzy
 msgid "Failed to duplicate tracks"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:1799
+#: src/actions/actions.c:1807 src/actions/actions.c:1875
 #, fuzzy
 msgid "Failed to delete tracks"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:1826
+#: src/actions/actions.c:1834
 msgid "Cannot delete tracks: selection contains an undeletable track"
 msgstr ""
 
-#: src/actions/actions.c:1840
+#: src/actions/actions.c:1848
 msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
 msgstr ""
 
-#: src/actions/actions.c:1893
+#: src/actions/actions.c:1913
 #, fuzzy
 msgid "Failed to pin/unpin tracks"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:1906
+#: src/actions/actions.c:1926
 #, fuzzy
 msgid "Failed to solo tracks"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:1919
+#: src/actions/actions.c:1939
 #, fuzzy
 msgid "Failed to unsolo tracks"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:1932
+#: src/actions/actions.c:1952
 #, fuzzy
 msgid "Failed to mute tracks"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:1945
+#: src/actions/actions.c:1965
 #, fuzzy
 msgid "Failed to unmute tracks"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:1958
+#: src/actions/actions.c:1978
 #, fuzzy
 msgid "Failed to listen tracks"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:1971
+#: src/actions/actions.c:1991
 #, fuzzy
 msgid "Failed to unlisten tracks"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:1984
+#: src/actions/actions.c:2004
 #, fuzzy
 msgid "Failed to enable tracks"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:1997
+#: src/actions/actions.c:2017
 #, fuzzy
 msgid "Failed to disable tracks"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:2146
+#: src/actions/actions.c:2166
 #, c-format
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
 msgstr ""
 
-#: src/actions/actions.c:2223
+#: src/actions/actions.c:2243
 #, fuzzy
 msgid "Failed to mute selections"
 msgstr "Impossibile scrivere il file: %s"
 
-#: src/actions/actions.c:2238
+#: src/actions/actions.c:2258
 msgid "No regions selected"
 msgstr ""
 
-#: src/actions/actions.c:2246
+#: src/actions/actions.c:2266
 msgid "Selections must be on the same lane"
 msgstr ""
 
-#: src/actions/actions.c:2254
+#: src/actions/actions.c:2274
 msgid "Cannot merge looped regions"
 msgstr ""
 
-#: src/actions/actions.c:2271
+#: src/actions/actions.c:2291
 #, fuzzy
 msgid "Failed to merge selections"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:2383
+#: src/actions/actions.c:2403
 #, fuzzy
 msgid "Failed to insert silence"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:2402
+#: src/actions/actions.c:2422
 #, fuzzy
 msgid "Failed to remove range"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:2768
+#: src/actions/actions.c:2788
 #, fuzzy
 msgid "Object name"
 msgstr "Cancella selezione"
 
-#: src/actions/actions.c:2811
+#: src/actions/actions.c:2831
 msgid "Please enter a BPM"
 msgstr ""
 
-#: src/actions/actions.c:2884
+#: src/actions/actions.c:2904
 #, fuzzy
 msgid "Failed to move selections"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:2904
+#: src/actions/actions.c:2924
 #, c-format
 msgid "Detected BPM: %.2f"
 msgstr ""
 
-#: src/actions/actions.c:2906
+#: src/actions/actions.c:2926
 msgid "Candidates:"
 msgstr ""
 
-#: src/actions/actions.c:3090
+#: src/actions/actions.c:3110
 #, fuzzy
 msgid "Failed to set curve algorithm"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:3149
+#: src/actions/actions.c:3169
 #, fuzzy
 msgid "Failed to edit fades"
 msgstr "Impossibile scrivere il file: %s"
 
-#: src/actions/actions.c:3219
+#: src/actions/actions.c:3239
 msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
 msgstr ""
 
-#: src/actions/actions.c:3315 src/actions/actions.c:3363
+#: src/actions/actions.c:3335 src/actions/actions.c:3383
 #, fuzzy
 msgid "Preset Pack Name"
 msgstr "Nome della traccia"
 
-#: src/actions/actions.c:3341 src/actions/actions.c:3385
+#: src/actions/actions.c:3361 src/actions/actions.c:3405
 msgid "Are you sure you want to remove this chord preset pack?"
 msgstr ""
 
-#: src/actions/actions.c:3498
+#: src/actions/actions.c:3518
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
 "undoable and the undo history will be cleared. Continue with deletion?"
 msgstr ""
 
-#: src/actions/actions.c:3552
+#: src/actions/actions.c:3572
 #, fuzzy, c-format
 msgid "Failed to reset %s"
 msgstr "Fallita l'apertura del file: %s"
 
-#: src/actions/actions.c:3580
+#: src/actions/actions.c:3600
 #, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "Impossibile scollegare %s da %s"
 
-#: src/actions/actions.c:3615
+#: src/actions/actions.c:3635
 msgid "Cannot delete standard bookmark"
 msgstr ""
 
-#: src/actions/actions.c:3624
+#: src/actions/actions.c:3644
 msgid "Are you sure you want to remove this bookmark?"
 msgstr ""
 
-#: src/actions/actions.c:3842 src/actions/actions.c:3873
+#: src/actions/actions.c:3862 src/actions/actions.c:3893
 #, fuzzy
 msgid "Collection name"
 msgstr "Cancella selezione"
 
-#: src/actions/actions.c:3899
+#: src/actions/actions.c:3919
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
 msgstr ""
 
-#: src/actions/actions.c:4092
+#: src/actions/actions.c:4112
 #, fuzzy
 msgid "Failed to change direct output"
 msgstr "Fallita l'apertura del file: %s"
@@ -5516,13 +5484,13 @@ msgid "Global Shortcuts"
 msgstr ""
 
 #: resources/gtk/help-overlay.ui:35
-#: build/data/org.zrythm.Zrythm.gschema.xml:939
-#: build/data/org.zrythm.Zrythm.gschema.xml:988
-#: build/data/org.zrythm.Zrythm.gschema.xml:1002
-#: build/data/org.zrythm.Zrythm.gschema.xml:1016
-#: build/data/org.zrythm.Zrythm.gschema.xml:1128
-#: build/data/org.zrythm.Zrythm.gschema.xml:1143
-#: build/data/org.zrythm.Zrythm.gschema.xml:1197
+#: build/data/org.zrythm.Zrythm.gschema.xml:964
+#: build/data/org.zrythm.Zrythm.gschema.xml:1013
+#: build/data/org.zrythm.Zrythm.gschema.xml:1027
+#: build/data/org.zrythm.Zrythm.gschema.xml:1041
+#: build/data/org.zrythm.Zrythm.gschema.xml:1153
+#: build/data/org.zrythm.Zrythm.gschema.xml:1168
+#: build/data/org.zrythm.Zrythm.gschema.xml:1222
 msgid "General"
 msgstr ""
 
@@ -5662,6 +5630,22 @@ msgstr ""
 msgid "Looping"
 msgstr ""
 
+#: resources/ui/view_toolbar.ui:41 resources/ui/main_window.ui:37
+msgid "Toggle Left Panel"
+msgstr ""
+
+#: resources/ui/view_toolbar.ui:47 resources/ui/bot_bar.ui:63
+msgid "Toggle Bottom Panel"
+msgstr ""
+
+#: resources/ui/view_toolbar.ui:53
+msgid "Toggle Top Panel"
+msgstr ""
+
+#: resources/ui/view_toolbar.ui:59 resources/ui/main_window.ui:51
+msgid "Toggle Right Panel"
+msgstr ""
+
 #: resources/ui/bind_cc_dialog.ui:5
 msgid "Bind MIDI CC"
 msgstr ""
@@ -5676,7 +5660,6 @@ msgstr ""
 
 #: resources/ui/bind_cc_dialog.ui:36 resources/ui/create_project_dialog.ui:58
 #: resources/ui/generic_progress_dialog.ui:52 resources/ui/bounce_dialog.ui:93
-#: resources/ui/export_dialog.ui:400
 msgid "Cancel"
 msgstr ""
 
@@ -5784,7 +5767,7 @@ msgid "TODO keyboard"
 msgstr ""
 
 #: resources/ui/scale_selector_window.ui:214
-#: resources/ui/chord_selector_window.ui:614 resources/ui/export_dialog.ui:131
+#: resources/ui/chord_selector_window.ui:614
 msgid "Custom"
 msgstr ""
 
@@ -5793,7 +5776,7 @@ msgid "Fishbowl"
 msgstr ""
 
 #: resources/ui/timeline_toolbar.ui:39
-#: build/data/org.zrythm.Zrythm.gschema.xml:411
+#: build/data/org.zrythm.Zrythm.gschema.xml:396
 msgid "Musical mode"
 msgstr ""
 
@@ -6026,19 +6009,19 @@ msgstr "Modulatori"
 msgid "Drag and drop a modulator plugin from the plugin browser"
 msgstr ""
 
-#: resources/ui/panel_file_browser.ui:28
+#: resources/ui/panel_file_browser.ui:29
 msgid "Bookmarks"
 msgstr ""
 
-#: resources/ui/chord_pad_panel.ui:45
+#: resources/ui/chord_pad_panel.ui:53
 msgid "Transpose"
 msgstr ""
 
-#: resources/ui/file_auditioner_controls.ui:14
+#: resources/ui/file_auditioner_controls.ui:15
 msgid "Play/Pause"
 msgstr ""
 
-#: resources/ui/file_auditioner_controls.ui:21
+#: resources/ui/file_auditioner_controls.ui:22
 #: resources/ui/transport_controls.ui:38
 msgid "Stop"
 msgstr ""
@@ -6075,7 +6058,7 @@ msgstr ""
 msgid "Forward"
 msgstr ""
 
-#: resources/ui/transport_controls.ui:74 resources/ui/export_dialog.ui:124
+#: resources/ui/transport_controls.ui:74
 msgid "Loop"
 msgstr ""
 
@@ -6128,7 +6111,7 @@ msgid "Bounce Options"
 msgstr ""
 
 #: resources/ui/bounce_dialog.ui:21
-#: build/data/org.zrythm.Zrythm.gschema.xml:344
+#: build/data/org.zrythm.Zrythm.gschema.xml:329
 msgid "Bounce with parents"
 msgstr ""
 
@@ -6141,7 +6124,7 @@ msgid "ms"
 msgstr ""
 
 #: resources/ui/bounce_dialog.ui:82
-#: build/data/org.zrythm.Zrythm.gschema.xml:349
+#: build/data/org.zrythm.Zrythm.gschema.xml:334
 msgid "Disable after bounce"
 msgstr ""
 
@@ -6185,116 +6168,112 @@ msgstr ""
 msgid "_Quantize"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:5
+#: resources/ui/export_dialog.ui:6
 msgid "Export As..."
 msgstr ""
 
-#: resources/ui/export_dialog.ui:14
-msgid "Details"
+#: resources/ui/export_dialog.ui:39 resources/ui/export_dialog.ui:160
+msgid "Metadata"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:38
-msgid "Output Files"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:51
-msgid "Time Range"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:64
-msgid "Tracks"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:92
-msgid "Mixdown"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:99
-msgid "Stems"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:117
-msgid "Song"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:153
-msgid "Filename Pattern"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:180
-#: build/data/org.zrythm.Zrythm.gschema.xml:845
+#: resources/ui/export_dialog.ui:42 resources/ui/export_dialog.ui:163
+#: build/data/org.zrythm.Zrythm.gschema.xml:830
+#: build/data/org.zrythm.Zrythm.gschema.xml:879
 msgid "Title"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:189
-#: build/data/org.zrythm.Zrythm.gschema.xml:840
+#: resources/ui/export_dialog.ui:47 resources/ui/export_dialog.ui:168
+#: build/data/org.zrythm.Zrythm.gschema.xml:825
+#: build/data/org.zrythm.Zrythm.gschema.xml:874
 msgid "Artist"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:208
-#: build/data/org.zrythm.Zrythm.gschema.xml:835
+#: resources/ui/export_dialog.ui:52 resources/ui/export_dialog.ui:173
+#: build/data/org.zrythm.Zrythm.gschema.xml:820
+#: build/data/org.zrythm.Zrythm.gschema.xml:869
 msgid "Genre"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:235
-#: build/data/org.zrythm.Zrythm.gschema.xml:855
+#: resources/ui/export_dialog.ui:62 resources/ui/export_dialog.ui:183
+#: build/data/org.zrythm.Zrythm.gschema.xml:840
+#: build/data/org.zrythm.Zrythm.gschema.xml:890
 msgid "Format"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:246
-#: build/data/org.zrythm.Zrythm.gschema.xml:880
-msgid "Bit depth"
+#: resources/ui/export_dialog.ui:67
+msgid "Bit Depth"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:263
-#: build/data/org.zrythm.Zrythm.gschema.xml:870
+#: resources/ui/export_dialog.ui:72
+#: build/data/org.zrythm.Zrythm.gschema.xml:850
 msgid "Dither"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:274
+#: resources/ui/export_dialog.ui:84 resources/ui/export_dialog.ui:208
+msgid "Filename Pattern"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:89 resources/ui/export_dialog.ui:213
+msgid "Mixdown or Stems"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:90 resources/ui/export_dialog.ui:214
+msgid ""
+"Whether to export the selected tracks as a single mixdown file or each track "
+"in its own file."
+msgstr ""
+
+#: resources/ui/export_dialog.ui:105 resources/ui/export_dialog.ui:229
+#: build/data/org.zrythm.Zrythm.gschema.xml:835
+#: build/data/org.zrythm.Zrythm.gschema.xml:884
+msgid "Time range"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:106 resources/ui/export_dialog.ui:230
+msgid "Only events inside this time range will be exported."
+msgstr ""
+
+#: resources/ui/export_dialog.ui:117 resources/ui/export_dialog.ui:241
 #, fuzzy
-msgid "Lanes as separate tracks"
-msgstr "Impossibile scrivere il file: %s"
+msgid "Track Selection"
+msgstr "Selezioni"
 
-#: resources/ui/export_dialog.ui:276
-msgid "Export track lanes as separate MIDI tracks"
+#: resources/ui/export_dialog.ui:134 resources/ui/export_dialog.ui:258
+msgid "Output"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:336
-msgid "~"
-msgstr ""
+#: resources/ui/export_dialog.ui:196
+#, fuzzy
+msgid "Export Lanes as Tracks"
+msgstr "Esporta come"
 
-#: resources/ui/export_dialog.ui:408
-msgid "Export"
-msgstr ""
-
-#: resources/ui/plugin_browser.ui:27
+#: resources/ui/plugin_browser.ui:28
 msgid "Collection"
 msgstr ""
 
-#: resources/ui/plugin_browser.ui:41
+#: resources/ui/plugin_browser.ui:42
 msgid "Author"
 msgstr ""
 
-#: resources/ui/plugin_browser.ui:55
+#: resources/ui/plugin_browser.ui:56
 msgid "Category"
 msgstr ""
 
-#: resources/ui/plugin_browser.ui:69
+#: resources/ui/plugin_browser.ui:70
 msgid "Protocol"
 msgstr ""
 
-#: resources/ui/plugin_browser.ui:95
+#: resources/ui/plugin_browser.ui:96
 #, fuzzy
 msgid "Instruments"
 msgstr "Strumento"
 
-#: resources/ui/plugin_browser.ui:103
+#: resources/ui/plugin_browser.ui:104
 #, fuzzy
 msgid "Effects"
 msgstr "Proprietà del plugin"
 
-#: resources/ui/plugin_browser.ui:119
+#: resources/ui/plugin_browser.ui:120
 #, fuzzy
 msgid "MIDI Modifiers"
 msgstr "Controller MIDI"
@@ -6419,1146 +6398,1172 @@ msgstr ""
 msgid "daw;audio;midi;music;"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:252
+#: build/data/org.zrythm.Zrythm.gschema.xml:237
 msgid "Recent project list"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:253
+#: build/data/org.zrythm.Zrythm.gschema.xml:238
 msgid "A list of recent projects to be referenced on startup."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:257
+#: build/data/org.zrythm.Zrythm.gschema.xml:242
 msgid "First run"
 msgstr "Primo avvio"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:258
+#: build/data/org.zrythm.Zrythm.gschema.xml:243
 msgid "Whether this is the first run or not."
 msgstr "Che si tratti del primo avvio o meno."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:262
+#: build/data/org.zrythm.Zrythm.gschema.xml:247
 #, fuzzy
 msgid "Installation directory"
 msgstr "Inizializzazione delle impostazioni"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:263
+#: build/data/org.zrythm.Zrythm.gschema.xml:248
 msgid ""
 "This is the directory Zrythm is installed in. Currently only used on Windows."
 msgstr ""
 "Questa è la cartella in cui è installato Zrythm. Attualmente utilizzato solo "
 "su Windows."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:267
+#: build/data/org.zrythm.Zrythm.gschema.xml:252
 msgid "Last project directory"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:268
+#: build/data/org.zrythm.Zrythm.gschema.xml:253
 msgid "Last directory a project was created in."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:272
+#: build/data/org.zrythm.Zrythm.gschema.xml:257
 msgid "List of all versions run at least once"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:273
+#: build/data/org.zrythm.Zrythm.gschema.xml:258
 #, fuzzy
 msgid "A list of versions run at least once."
 msgstr "Una lista di controller audio a cui autoconnettersi."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:277
+#: build/data/org.zrythm.Zrythm.gschema.xml:262
 msgid "Last version that was notified of a new release"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:278
+#: build/data/org.zrythm.Zrythm.gschema.xml:263
 msgid ""
 "The last version that received a 'new version has been released' "
 "notification."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:282
+#: build/data/org.zrythm.Zrythm.gschema.xml:267
 msgid "First check for updates"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:283
+#: build/data/org.zrythm.Zrythm.gschema.xml:268
 #, fuzzy
 msgid "Whether this is the first time attempting to check for updates."
 msgstr "Che si tratti del primo avvio o meno."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:292
+#: build/data/org.zrythm.Zrythm.gschema.xml:277
 msgid "Monitor volume"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:293
+#: build/data/org.zrythm.Zrythm.gschema.xml:278
 msgid "The monitor volume in amplitude (0 to 2)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:298
+#: build/data/org.zrythm.Zrythm.gschema.xml:283
 msgid "Mute volume"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:299
+#: build/data/org.zrythm.Zrythm.gschema.xml:284
 msgid "The monitor mute volume in amplitude (0 to 2)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:304
+#: build/data/org.zrythm.Zrythm.gschema.xml:289
 #, fuzzy
 msgid "Listen volume"
 msgstr "Ascolta"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:305
+#: build/data/org.zrythm.Zrythm.gschema.xml:290
 msgid "The monitor listen volume in amplitude (0 to 2)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:310
+#: build/data/org.zrythm.Zrythm.gschema.xml:295
 #, fuzzy
 msgid "Dim volume"
 msgstr "Volume"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:311
+#: build/data/org.zrythm.Zrythm.gschema.xml:296
 msgid "The monitor dim volume in amplitude (0 to 2)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:315
+#: build/data/org.zrythm.Zrythm.gschema.xml:300
 msgid "Sum to mono"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:316
+#: build/data/org.zrythm.Zrythm.gschema.xml:301
 #, fuzzy
 msgid "Whether to sum the monitor signal to mono."
 msgstr "Che si tratti del primo avvio o meno."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:320
+#: build/data/org.zrythm.Zrythm.gschema.xml:305
 msgid "Dim output"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:321
+#: build/data/org.zrythm.Zrythm.gschema.xml:306
 #, fuzzy
 msgid "Whether to dim the the monitor signal."
 msgstr "Che si tratti del primo avvio o meno."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:326
+#: build/data/org.zrythm.Zrythm.gschema.xml:311
 #, fuzzy
 msgid "Whether to mute the monitor signal."
 msgstr "Che si tratti del primo avvio o meno."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:330
-#: build/data/org.zrythm.Zrythm.gschema.xml:335
+#: build/data/org.zrythm.Zrythm.gschema.xml:315
+#: build/data/org.zrythm.Zrythm.gschema.xml:320
 msgid "Left output devices"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:331
+#: build/data/org.zrythm.Zrythm.gschema.xml:316
 msgid "A list of output devices to route the left monitor output to."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:336
+#: build/data/org.zrythm.Zrythm.gschema.xml:321
 msgid "A list of output devices to route the right monitor output to."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:345
+#: build/data/org.zrythm.Zrythm.gschema.xml:330
 msgid "Whether to bounce with parent tracks (direct outputs)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:350
+#: build/data/org.zrythm.Zrythm.gschema.xml:335
 msgid "Disable track after bouncing."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:354
+#: build/data/org.zrythm.Zrythm.gschema.xml:339
 msgid "Bounce step"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:355
+#: build/data/org.zrythm.Zrythm.gschema.xml:340
 msgid "Step in the processing chain to bounce at."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:359
+#: build/data/org.zrythm.Zrythm.gschema.xml:344
 msgid "Bounce tail"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:360
+#: build/data/org.zrythm.Zrythm.gschema.xml:345
 msgid ""
 "Tail to allow when bouncing (for example to catch reverb tails), in "
 "milliseconds."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:364
+#: build/data/org.zrythm.Zrythm.gschema.xml:349
 #, fuzzy
 msgid "Timeline object length"
 msgstr "lunghezza della nota"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:365
+#: build/data/org.zrythm.Zrythm.gschema.xml:350
 msgid "Default length to use when creating timeline objects."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:369
+#: build/data/org.zrythm.Zrythm.gschema.xml:354
 msgid "Timeline object length type"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:370
+#: build/data/org.zrythm.Zrythm.gschema.xml:355
 msgid ""
 "Default length type to use when creating timeline objects (normal, dotted, "
 "triplet)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:375
+#: build/data/org.zrythm.Zrythm.gschema.xml:360
 #, fuzzy
 msgid "Last timeline object's length"
 msgstr "lunghezza della nota"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:376
+#: build/data/org.zrythm.Zrythm.gschema.xml:361
 msgid "The length of the last created timeline object (in ticks)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:380
+#: build/data/org.zrythm.Zrythm.gschema.xml:365
 msgid "Editor object length"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:381
+#: build/data/org.zrythm.Zrythm.gschema.xml:366
 msgid "Default length to use when creating editor objects."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:385
+#: build/data/org.zrythm.Zrythm.gschema.xml:370
 msgid "Editor object length type"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:386
+#: build/data/org.zrythm.Zrythm.gschema.xml:371
 msgid ""
 "Default length type to use when creating editor objects (normal, dotted, "
 "triplet)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:391
+#: build/data/org.zrythm.Zrythm.gschema.xml:376
 #, fuzzy
 msgid "Last editor object's length"
 msgstr "lunghezza della nota"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:392
+#: build/data/org.zrythm.Zrythm.gschema.xml:377
 msgid "The length of the last created editor object (in ticks)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:396
+#: build/data/org.zrythm.Zrythm.gschema.xml:381
 msgid "Note notation"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:397
+#: build/data/org.zrythm.Zrythm.gschema.xml:382
 msgid ""
 "The note notation used in the piano roll - MIDI pitch index or notes (C, C#, "
 "etc.)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:401
+#: build/data/org.zrythm.Zrythm.gschema.xml:386
 #, fuzzy
 msgid "Default velocity"
 msgstr "Valore predefinito"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:402
+#: build/data/org.zrythm.Zrythm.gschema.xml:387
 msgid "The default velocity to use when creating new MIDI notes."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:406
+#: build/data/org.zrythm.Zrythm.gschema.xml:391
 #, fuzzy
 msgid "Last set velocity"
 msgstr "Automazione"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:407
+#: build/data/org.zrythm.Zrythm.gschema.xml:392
 msgid "Last set velocity on a MIDI note."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:412
+#: build/data/org.zrythm.Zrythm.gschema.xml:397
 msgid ""
 "Whether to use musical mode. If this is on, time-stretching will be applied "
 "to events so that they match the project BPM. This mostly applies to audio "
 "regions."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:416
+#: build/data/org.zrythm.Zrythm.gschema.xml:401
 msgid "Listen to notes while they are moved"
 msgstr "Ascolta le note mentre vengono spostate"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:417
+#: build/data/org.zrythm.Zrythm.gschema.xml:402
 msgid "Whether to listen to MIDI notes while dragging them in the piano roll."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:421
+#: build/data/org.zrythm.Zrythm.gschema.xml:406
 msgid "Piano roll highlight"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:422
+#: build/data/org.zrythm.Zrythm.gschema.xml:407
 msgid "Whether to highlight chords, scales, both or none in the piano roll."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:426
+#: build/data/org.zrythm.Zrythm.gschema.xml:411
 msgid "Piano roll MIDI modifier"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:427
+#: build/data/org.zrythm.Zrythm.gschema.xml:412
 msgid ""
 "The MIDI modifier to display in the MIDI editor (only velocity is valid at "
 "the moment)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:431
+#: build/data/org.zrythm.Zrythm.gschema.xml:416
 #, fuzzy
 msgid "Show automation values"
 msgstr "Mostra automazione"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:432
+#: build/data/org.zrythm.Zrythm.gschema.xml:417
 msgid "Whether to show automation values in the automation editor."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:436
+#: build/data/org.zrythm.Zrythm.gschema.xml:421
 msgid "Browser divider position"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:437
+#: build/data/org.zrythm.Zrythm.gschema.xml:422
 msgid "Height of the top part of the plugin/file browser."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:441
+#: build/data/org.zrythm.Zrythm.gschema.xml:426
 msgid "Left panel divider position"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:442
+#: build/data/org.zrythm.Zrythm.gschema.xml:427
 msgid "Position of the resize handle of the left panel."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:446
+#: build/data/org.zrythm.Zrythm.gschema.xml:431
 msgid "Left panel tab index"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:447
+#: build/data/org.zrythm.Zrythm.gschema.xml:432
 msgid "Index of the currently opened left panel tab."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:451
+#: build/data/org.zrythm.Zrythm.gschema.xml:436
 msgid "Right panel divider position"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:452
+#: build/data/org.zrythm.Zrythm.gschema.xml:437
 msgid "Position of the resize handle of the right panel."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:456
+#: build/data/org.zrythm.Zrythm.gschema.xml:441
 msgid "Right panel tab index"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:457
+#: build/data/org.zrythm.Zrythm.gschema.xml:442
 msgid "Index of the currently opened right panel tab."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:461
+#: build/data/org.zrythm.Zrythm.gschema.xml:446
 msgid "Bot panel divider position"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:462
+#: build/data/org.zrythm.Zrythm.gschema.xml:447
 msgid "Position of the resize handle of the bot panel."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:466
+#: build/data/org.zrythm.Zrythm.gschema.xml:451
 msgid "Bot panel tab index"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:467
+#: build/data/org.zrythm.Zrythm.gschema.xml:452
 msgid "Index of the currently opened bottom panel tab."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:471
+#: build/data/org.zrythm.Zrythm.gschema.xml:456
 msgid "Timeline event viewer visibility"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:472
+#: build/data/org.zrythm.Zrythm.gschema.xml:457
 msgid "Whether the timeline event viewer is visible or not."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:476
+#: build/data/org.zrythm.Zrythm.gschema.xml:461
 msgid "Editor event viewer visibility"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:477
+#: build/data/org.zrythm.Zrythm.gschema.xml:462
 #, fuzzy
 msgid "Whether the editor event viewer is visible."
 msgstr "Che si tratti del primo avvio o meno."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:481
+#: build/data/org.zrythm.Zrythm.gschema.xml:466
 msgid "Playhead display type"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:482
+#: build/data/org.zrythm.Zrythm.gschema.xml:467
 msgid "Selected playhead display type (BBT/time)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:486
+#: build/data/org.zrythm.Zrythm.gschema.xml:471
 msgid "JACK transport type"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:487
+#: build/data/org.zrythm.Zrythm.gschema.xml:472
 msgid "Selected JACK transport behavior (master/client/none)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:491
+#: build/data/org.zrythm.Zrythm.gschema.xml:476
 msgid "Ruler display type"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:492
+#: build/data/org.zrythm.Zrythm.gschema.xml:477
 msgid "Selected ruler display type (BBT/time)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:496
+#: build/data/org.zrythm.Zrythm.gschema.xml:481
 msgid "Selected editing tool"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:497
+#: build/data/org.zrythm.Zrythm.gschema.xml:482
 msgid "Selected editing tool."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:501
+#: build/data/org.zrythm.Zrythm.gschema.xml:486
 msgid "Last used MIDI function"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:502
+#: build/data/org.zrythm.Zrythm.gschema.xml:487
 msgid ""
 "Last used MIDI function (index corresponding to enum in midi function "
 "action)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:506
+#: build/data/org.zrythm.Zrythm.gschema.xml:491
 msgid "Last used automation function"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:507
+#: build/data/org.zrythm.Zrythm.gschema.xml:492
 msgid ""
 "Last used automation function (index corresponding to enum in automation "
 "function action)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:511
+#: build/data/org.zrythm.Zrythm.gschema.xml:496
 msgid "Last used audio function"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:512
+#: build/data/org.zrythm.Zrythm.gschema.xml:497
 msgid ""
 "Last used audio function (index corresponding to enum in audio function "
 "action)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:516
+#: build/data/org.zrythm.Zrythm.gschema.xml:501
 msgid "Playhead scroll edges (timeline)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:517
+#: build/data/org.zrythm.Zrythm.gschema.xml:502
 msgid ""
 "Whether to scroll when the playhead reaches the visible edge (timeline)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:521
+#: build/data/org.zrythm.Zrythm.gschema.xml:506
 msgid "Follow playhead (timeline)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:522
+#: build/data/org.zrythm.Zrythm.gschema.xml:507
 msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
 "centered on the playhead (timeline)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:526
+#: build/data/org.zrythm.Zrythm.gschema.xml:511
 msgid "Playhead scroll edges (editor)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:527
+#: build/data/org.zrythm.Zrythm.gschema.xml:512
 msgid "Whether to scroll when the playhead reaches the visible edge (editor)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:531
+#: build/data/org.zrythm.Zrythm.gschema.xml:516
 msgid "Follow playhead (editor)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:532
+#: build/data/org.zrythm.Zrythm.gschema.xml:517
 msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
 "centered on the playhead (editor)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:540
+#: build/data/org.zrythm.Zrythm.gschema.xml:525
 msgid "Plugin browser tab"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:541
+#: build/data/org.zrythm.Zrythm.gschema.xml:526
 msgid "Selected plugin browser tab."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:545
+#: build/data/org.zrythm.Zrythm.gschema.xml:530
 msgid "Plugin browser filter"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:546
+#: build/data/org.zrythm.Zrythm.gschema.xml:531
 msgid "Selected plugin browser filter"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:550
+#: build/data/org.zrythm.Zrythm.gschema.xml:535
 #, fuzzy
 msgid "Plugin browser collections"
 msgstr "Proprietà del plugin"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:551
+#: build/data/org.zrythm.Zrythm.gschema.xml:536
 msgid "Tree paths of the selected collections in the plugin browser."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:555
+#: build/data/org.zrythm.Zrythm.gschema.xml:540
 #, fuzzy
 msgid "Plugin browser authors"
 msgstr "Proprietà del plugin"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:556
+#: build/data/org.zrythm.Zrythm.gschema.xml:541
 msgid "Tree paths of the selected authors in the plugin browser."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:560
+#: build/data/org.zrythm.Zrythm.gschema.xml:545
 #, fuzzy
 msgid "Plugin browser categories"
 msgstr "Proprietà del plugin"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:561
+#: build/data/org.zrythm.Zrythm.gschema.xml:546
 msgid "Tree paths of the selected categories in the plugin browser."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:565
+#: build/data/org.zrythm.Zrythm.gschema.xml:550
 #, fuzzy
 msgid "Plugin browser protocols"
 msgstr "Proprietà del plugin"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:566
+#: build/data/org.zrythm.Zrythm.gschema.xml:551
 msgid "Tree paths of the selected protocols in the plugin browser."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:574
+#: build/data/org.zrythm.Zrythm.gschema.xml:559
 msgid "File browser bookmarks"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:575
+#: build/data/org.zrythm.Zrythm.gschema.xml:560
 msgid "Location bookmarks for file browser (absolute paths)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:579
+#: build/data/org.zrythm.Zrythm.gschema.xml:564
 msgid "File browser selected bookmark"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:580
+#: build/data/org.zrythm.Zrythm.gschema.xml:565
 msgid "Selected bookmark in file browser."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:585
+#: build/data/org.zrythm.Zrythm.gschema.xml:570
 #, fuzzy
 msgid "Whether to autoplay the selected file."
 msgstr "Che si tratti del primo avvio o meno."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:590
+#: build/data/org.zrythm.Zrythm.gschema.xml:575
 msgid "Whether to show unsupported files in the file browser."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:595
+#: build/data/org.zrythm.Zrythm.gschema.xml:580
 #, fuzzy
 msgid "Whether to show hidden files in the file browser."
 msgstr "Che si tratti del primo avvio o meno."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:599
+#: build/data/org.zrythm.Zrythm.gschema.xml:584
 #, fuzzy
 msgid "File browser filter"
 msgstr "Impossibile scrivere il file: %s"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:600
+#: build/data/org.zrythm.Zrythm.gschema.xml:585
 msgid "Selected file browser filter"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:604
+#: build/data/org.zrythm.Zrythm.gschema.xml:589
 #, fuzzy
 msgid "Last location"
 msgstr "Automazione"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:605
+#: build/data/org.zrythm.Zrythm.gschema.xml:590
 msgid "Last visited location."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:610
+#: build/data/org.zrythm.Zrythm.gschema.xml:595
 msgid "Instrument plugin to use for MIDI auditioning."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:618
+#: build/data/org.zrythm.Zrythm.gschema.xml:603
 #, fuzzy
 msgid "Inserts expanded"
 msgstr "Inserisci silenzio"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:619
+#: build/data/org.zrythm.Zrythm.gschema.xml:604
 msgid "Whether inserts are expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:623
+#: build/data/org.zrythm.Zrythm.gschema.xml:608
 #, fuzzy
 msgid "MIDI FX expanded"
 msgstr "Backend MIDI"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:624
+#: build/data/org.zrythm.Zrythm.gschema.xml:609
 msgid "Whether MIDI FX are expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:628
+#: build/data/org.zrythm.Zrythm.gschema.xml:613
 msgid "Sends expanded"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:629
+#: build/data/org.zrythm.Zrythm.gschema.xml:614
 msgid "Whether sends are expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:637
+#: build/data/org.zrythm.Zrythm.gschema.xml:622
 msgid "Track properties expanded"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:638
+#: build/data/org.zrythm.Zrythm.gschema.xml:623
 msgid "Whether track properties is expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:642
+#: build/data/org.zrythm.Zrythm.gschema.xml:627
 msgid "Track outputs expanded"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:643
+#: build/data/org.zrythm.Zrythm.gschema.xml:628
 msgid "Whether track outputs is expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:647
+#: build/data/org.zrythm.Zrythm.gschema.xml:632
 msgid "Track sends expanded"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:648
+#: build/data/org.zrythm.Zrythm.gschema.xml:633
 msgid "Whether track sends is expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:652
+#: build/data/org.zrythm.Zrythm.gschema.xml:637
 msgid "Track inputs expanded"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:653
+#: build/data/org.zrythm.Zrythm.gschema.xml:638
 msgid "Whether track inputs is expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:657
+#: build/data/org.zrythm.Zrythm.gschema.xml:642
 msgid "Track controls expanded"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:658
+#: build/data/org.zrythm.Zrythm.gschema.xml:643
 msgid "Whether track controls is expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:662
+#: build/data/org.zrythm.Zrythm.gschema.xml:647
 msgid "Track inserts expanded"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:663
+#: build/data/org.zrythm.Zrythm.gschema.xml:648
 msgid "Whether track inserts is expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:667
+#: build/data/org.zrythm.Zrythm.gschema.xml:652
 msgid "Track midi-fx expanded"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:668
+#: build/data/org.zrythm.Zrythm.gschema.xml:653
 msgid "Whether track midi-fx is expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:672
+#: build/data/org.zrythm.Zrythm.gschema.xml:657
 msgid "Track fader expanded"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:673
+#: build/data/org.zrythm.Zrythm.gschema.xml:658
 msgid "Whether track fader is expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:677
+#: build/data/org.zrythm.Zrythm.gschema.xml:662
 msgid "Track comment expanded"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:678
+#: build/data/org.zrythm.Zrythm.gschema.xml:663
 msgid "Whether track comment is expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:686
+#: build/data/org.zrythm.Zrythm.gschema.xml:671
 msgid "Track visibility detached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:687
+#: build/data/org.zrythm.Zrythm.gschema.xml:672
 msgid "Whether the track visibility panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:691
+#: build/data/org.zrythm.Zrythm.gschema.xml:676
 msgid "Track visibility size"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:692
+#: build/data/org.zrythm.Zrythm.gschema.xml:677
 msgid "Track visibility panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:696
+#: build/data/org.zrythm.Zrythm.gschema.xml:681
 #, fuzzy
 msgid "Track inspector detached"
 msgstr "Cambia BPM"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:697
+#: build/data/org.zrythm.Zrythm.gschema.xml:682
 msgid "Whether the track inspector panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:701
+#: build/data/org.zrythm.Zrythm.gschema.xml:686
 #, fuzzy
 msgid "Track inspector size"
 msgstr "Cambia BPM"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:702
+#: build/data/org.zrythm.Zrythm.gschema.xml:687
 msgid "Track inspector panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:706
+#: build/data/org.zrythm.Zrythm.gschema.xml:691
 msgid "Plugin inspector detached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:707
+#: build/data/org.zrythm.Zrythm.gschema.xml:692
 msgid "Whether the plugin inspector panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:711
+#: build/data/org.zrythm.Zrythm.gschema.xml:696
 #, fuzzy
 msgid "Plugin inspector size"
 msgstr "Proprietà del plugin"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:712
+#: build/data/org.zrythm.Zrythm.gschema.xml:697
 msgid "Plugin inspector panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:716
+#: build/data/org.zrythm.Zrythm.gschema.xml:701
 #, fuzzy
 msgid "Plugin browser detached"
 msgstr "Proprietà del plugin"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:717
+#: build/data/org.zrythm.Zrythm.gschema.xml:702
 msgid "Whether the plugin browser panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:721
+#: build/data/org.zrythm.Zrythm.gschema.xml:706
 #, fuzzy
 msgid "Plugin browser size"
 msgstr "Proprietà del plugin"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:722
+#: build/data/org.zrythm.Zrythm.gschema.xml:707
 msgid "Plugin browser panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:726
+#: build/data/org.zrythm.Zrythm.gschema.xml:711
 #, fuzzy
 msgid "File browser detached"
 msgstr "Impossibile scrivere il file: %s"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:727
+#: build/data/org.zrythm.Zrythm.gschema.xml:712
 msgid "Whether the file browser panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:731
+#: build/data/org.zrythm.Zrythm.gschema.xml:716
 #, fuzzy
 msgid "Chord pack browser detached"
 msgstr "Impossibile scrivere il file: %s"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:732
+#: build/data/org.zrythm.Zrythm.gschema.xml:717
 #, fuzzy
 msgid "Whether the chord pack browser panel is detached."
 msgstr "Che si tratti del primo avvio o meno."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:736
+#: build/data/org.zrythm.Zrythm.gschema.xml:721
 #, fuzzy
 msgid "File browser size"
 msgstr "Impossibile scrivere il file: %s"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:737
+#: build/data/org.zrythm.Zrythm.gschema.xml:722
 msgid "File browser panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:741
+#: build/data/org.zrythm.Zrythm.gschema.xml:726
 #, fuzzy
 msgid "Monitor section detached"
 msgstr "Connetti le porte"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:742
+#: build/data/org.zrythm.Zrythm.gschema.xml:727
 #, fuzzy
 msgid "Whether the monitor section panel is detached."
 msgstr "Che si tratti del primo avvio o meno."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:746
+#: build/data/org.zrythm.Zrythm.gschema.xml:731
 #, fuzzy
 msgid "Monitor section size"
 msgstr "Connetti le porte"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:747
+#: build/data/org.zrythm.Zrythm.gschema.xml:732
 msgid "Monitor section panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:751
+#: build/data/org.zrythm.Zrythm.gschema.xml:736
 msgid "Modulator view detached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:752
+#: build/data/org.zrythm.Zrythm.gschema.xml:737
 msgid "Whether the modulator view panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:756
+#: build/data/org.zrythm.Zrythm.gschema.xml:741
 #, fuzzy
 msgid "Modulator view size"
 msgstr "Modulatori"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:757
+#: build/data/org.zrythm.Zrythm.gschema.xml:742
 msgid "Modulator view panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:761
+#: build/data/org.zrythm.Zrythm.gschema.xml:746
 msgid "Mixer detached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:762
+#: build/data/org.zrythm.Zrythm.gschema.xml:747
 msgid "Whether the mixer panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:766
+#: build/data/org.zrythm.Zrythm.gschema.xml:751
 msgid "Mixer size"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:767
+#: build/data/org.zrythm.Zrythm.gschema.xml:752
 msgid "Mixer panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:771
+#: build/data/org.zrythm.Zrythm.gschema.xml:756
 msgid "Clip editor detached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:772
+#: build/data/org.zrythm.Zrythm.gschema.xml:757
 msgid "Whether the clip editor panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:776
+#: build/data/org.zrythm.Zrythm.gschema.xml:761
 msgid "Clip editor size"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:777
+#: build/data/org.zrythm.Zrythm.gschema.xml:762
 msgid "Clip editor panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:781
+#: build/data/org.zrythm.Zrythm.gschema.xml:766
 msgid "Chord pad detached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:782
+#: build/data/org.zrythm.Zrythm.gschema.xml:767
 msgid "Whether the chord pad panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:786
+#: build/data/org.zrythm.Zrythm.gschema.xml:771
 msgid "Chord pad size"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:787
+#: build/data/org.zrythm.Zrythm.gschema.xml:772
 msgid "Chord pad panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:791
+#: build/data/org.zrythm.Zrythm.gschema.xml:776
 #, fuzzy
 msgid "Timeline detached"
 msgstr "lunghezza della nota"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:792
+#: build/data/org.zrythm.Zrythm.gschema.xml:777
 msgid "Whether the timeline panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:796
+#: build/data/org.zrythm.Zrythm.gschema.xml:781
 msgid "Timeline size"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:797
+#: build/data/org.zrythm.Zrythm.gschema.xml:782
 msgid "Timeline panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:801
+#: build/data/org.zrythm.Zrythm.gschema.xml:786
 msgid "CC bindings detached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:802
+#: build/data/org.zrythm.Zrythm.gschema.xml:787
 msgid "Whether the CC bindings panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:806
+#: build/data/org.zrythm.Zrythm.gschema.xml:791
 msgid "CC bindings size"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:807
+#: build/data/org.zrythm.Zrythm.gschema.xml:792
 msgid "CC bindings panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:811
+#: build/data/org.zrythm.Zrythm.gschema.xml:796
 msgid "Port connections detached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:812
+#: build/data/org.zrythm.Zrythm.gschema.xml:797
 msgid "Whether the port connections panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:816
+#: build/data/org.zrythm.Zrythm.gschema.xml:801
 #, fuzzy
 msgid "Port connections size"
 msgstr "Elimina connessione"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:817
+#: build/data/org.zrythm.Zrythm.gschema.xml:802
 msgid "Port connections panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:821
+#: build/data/org.zrythm.Zrythm.gschema.xml:806
 msgid "Scenes detached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:822
+#: build/data/org.zrythm.Zrythm.gschema.xml:807
 msgid "Whether the scenes panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:826
+#: build/data/org.zrythm.Zrythm.gschema.xml:811
 msgid "Scenes size"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:827
+#: build/data/org.zrythm.Zrythm.gschema.xml:812
 msgid "Scenes panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:836
+#: build/data/org.zrythm.Zrythm.gschema.xml:821
 msgid "Genre to use when exporting, if the file type supports it."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:841
+#: build/data/org.zrythm.Zrythm.gschema.xml:826
 msgid "Artist to use when exporting, if the file type supports it."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:846
+#: build/data/org.zrythm.Zrythm.gschema.xml:831
 msgid "Title to use when exporting, if the file type supports it."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:850
-msgid "Time range"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:851
+#: build/data/org.zrythm.Zrythm.gschema.xml:836
+#: build/data/org.zrythm.Zrythm.gschema.xml:885
 msgid "Time range to export."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:856
+#: build/data/org.zrythm.Zrythm.gschema.xml:841
 msgid "Format to export to."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:860
+#: build/data/org.zrythm.Zrythm.gschema.xml:845
+#: build/data/org.zrythm.Zrythm.gschema.xml:895
 msgid "Filename pattern"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:861
+#: build/data/org.zrythm.Zrythm.gschema.xml:846
+#: build/data/org.zrythm.Zrythm.gschema.xml:896
 msgid "Filename pattern for exported files."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:865
-#, fuzzy
-msgid "Lanes as tracks"
-msgstr "Nascondi tracce"
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:866
-msgid "Export track lanes as separate MIDI tracks."
+#: build/data/org.zrythm.Zrythm.gschema.xml:851
+msgid "Add low level noise to reduce errors on lower bit depths."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:871
-msgid "Add dither while exporting, if applicable."
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:875
+#: build/data/org.zrythm.Zrythm.gschema.xml:855
+#: build/data/org.zrythm.Zrythm.gschema.xml:905
 #, fuzzy
 msgid "Export stems"
 msgstr "Esporta come"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:876
+#: build/data/org.zrythm.Zrythm.gschema.xml:856
+#: build/data/org.zrythm.Zrythm.gschema.xml:906
 msgid "Whether to export stems instead of the mixdown."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:881
+#: build/data/org.zrythm.Zrythm.gschema.xml:860
+msgid "Bit depth"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:861
 msgid "Bit depth to use when exporting"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:889
+#: build/data/org.zrythm.Zrythm.gschema.xml:870
+msgid "Genre to use when exporting."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:875
+msgid "Artist to use when exporting."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:880
+msgid "Title to use when exporting."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:891
+msgid "MIDI file format (Type 0 or 1)."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:900
+#, fuzzy
+msgid "Lanes as tracks"
+msgstr "Nascondi tracce"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:901
+msgid "Export track lanes as separate MIDI tracks."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:914
 msgid "Transport loop"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:890
+#: build/data/org.zrythm.Zrythm.gschema.xml:915
 msgid "Whether looping is enabled."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:894
+#: build/data/org.zrythm.Zrythm.gschema.xml:919
 msgid "Return to cue"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:895
+#: build/data/org.zrythm.Zrythm.gschema.xml:920
 msgid "Whether return to cue on stop is enabled."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:899
+#: build/data/org.zrythm.Zrythm.gschema.xml:924
 msgid "Metronome enabled"
 msgstr "Metronomo abilitato"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:900
+#: build/data/org.zrythm.Zrythm.gschema.xml:925
 msgid "Whether the metronome is enabled."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:905
+#: build/data/org.zrythm.Zrythm.gschema.xml:930
 msgid "Metronome volume"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:906
+#: build/data/org.zrythm.Zrythm.gschema.xml:931
 msgid "The metronome volume in amplitude (0 to 2)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:910
+#: build/data/org.zrythm.Zrythm.gschema.xml:935
 #, fuzzy
 msgid "Metronome Count-in"
 msgstr "Metronomo"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:911
+#: build/data/org.zrythm.Zrythm.gschema.xml:936
 msgid "Count-in bars for the metronome."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:915
+#: build/data/org.zrythm.Zrythm.gschema.xml:940
 msgid "Punch mode enabled"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:916
+#: build/data/org.zrythm.Zrythm.gschema.xml:941
 msgid "Whether punch in/out is enabled for recording."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:920
+#: build/data/org.zrythm.Zrythm.gschema.xml:945
 msgid "Start playback on MIDI input"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:921
+#: build/data/org.zrythm.Zrythm.gschema.xml:946
 msgid "Whether to start playback on MIDI input."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:926
+#: build/data/org.zrythm.Zrythm.gschema.xml:951
 msgid "Recording mode."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:930
+#: build/data/org.zrythm.Zrythm.gschema.xml:955
 #, fuzzy
 msgid "Recording Pre-Roll"
 msgstr "Modalità di registrazione"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:931
+#: build/data/org.zrythm.Zrythm.gschema.xml:956
 msgid "Number of bars to pre-roll when recording."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:940
+#: build/data/org.zrythm.Zrythm.gschema.xml:965
 msgid "Engine"
 msgstr "Motore"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:944
+#: build/data/org.zrythm.Zrythm.gschema.xml:969
 msgid "Audio backend"
 msgstr "Backend audio"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:949
+#: build/data/org.zrythm.Zrythm.gschema.xml:974
 msgid "RtAudio device"
 msgstr "Dispositivo RtAudio"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:954
+#: build/data/org.zrythm.Zrythm.gschema.xml:979
 msgid "SDL device"
 msgstr "Dispositivo SDL"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:959
+#: build/data/org.zrythm.Zrythm.gschema.xml:984
 msgid "Samplerate"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:960
+#: build/data/org.zrythm.Zrythm.gschema.xml:985
 msgid "Samplerate to pass to the backend."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:964
+#: build/data/org.zrythm.Zrythm.gschema.xml:989
 msgid "Buffer size"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:965
+#: build/data/org.zrythm.Zrythm.gschema.xml:990
 msgid "Buffer size to pass to the backend."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:969
+#: build/data/org.zrythm.Zrythm.gschema.xml:994
 msgid "MIDI backend"
 msgstr "Backend MIDI"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:974
+#: build/data/org.zrythm.Zrythm.gschema.xml:999
 #, fuzzy
 msgid "Audio inputs"
 msgstr "Nessun input"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:975
+#: build/data/org.zrythm.Zrythm.gschema.xml:1000
 #, fuzzy
 msgid "A list of audio inputs to enable."
 msgstr "Una lista di controller audio a cui autoconnettersi."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:979
+#: build/data/org.zrythm.Zrythm.gschema.xml:1004
 msgid "MIDI controllers"
 msgstr "Controller MIDI"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:980
+#: build/data/org.zrythm.Zrythm.gschema.xml:1005
 #, fuzzy
 msgid "A list of controllers to enable."
 msgstr "Una lista di controller audio a cui autoconnettersi."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:989
-#: build/data/org.zrythm.Zrythm.gschema.xml:1057
+#: build/data/org.zrythm.Zrythm.gschema.xml:1014
+#: build/data/org.zrythm.Zrythm.gschema.xml:1082
 msgid "Paths"
 msgstr "Percorso"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:993
+#: build/data/org.zrythm.Zrythm.gschema.xml:1018
 msgid "Zrythm path"
 msgstr "Percorso di Zrythm"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:994
+#: build/data/org.zrythm.Zrythm.gschema.xml:1019
 msgid "Directory used to save user data in."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1003
+#: build/data/org.zrythm.Zrythm.gschema.xml:1028
 msgid "Updates"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1007
+#: build/data/org.zrythm.Zrythm.gschema.xml:1032
 msgid "Check for updates"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1008
+#: build/data/org.zrythm.Zrythm.gschema.xml:1033
 #, fuzzy
 msgid "Whether to check for updates on startup."
 msgstr "Che si tratti del primo avvio o meno."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1026
+#: build/data/org.zrythm.Zrythm.gschema.xml:1050
+#: build/data/org.zrythm.Zrythm.gschema.xml:1081
+msgid "Plugins"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:1051
 msgid "UIs"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1030
+#: build/data/org.zrythm.Zrythm.gschema.xml:1055
 msgid "Open UI on instantiation"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1031
+#: build/data/org.zrythm.Zrythm.gschema.xml:1056
 msgid "Open plugin UIs when they are instantiated."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1035
+#: build/data/org.zrythm.Zrythm.gschema.xml:1060
 msgid "Keep window on top"
 msgstr "Mantieni la finestra in cima"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1036
+#: build/data/org.zrythm.Zrythm.gschema.xml:1061
 msgid "Show plugin UIs on top of the main window (if possible)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1041
+#: build/data/org.zrythm.Zrythm.gschema.xml:1066
 msgid "Refresh rate"
 msgstr "Frequenza d'aggiornamento"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1042
+#: build/data/org.zrythm.Zrythm.gschema.xml:1067
 #, fuzzy
 msgid ""
 "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
@@ -7566,11 +7571,11 @@ msgstr ""
 "Frequenza d'aggiornamento in Hz. Se impostata a 0 verrà utilizzata la "
 "frequenza di aggiornamento dello schermo."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1047
+#: build/data/org.zrythm.Zrythm.gschema.xml:1072
 msgid "Scale factor"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1048
+#: build/data/org.zrythm.Zrythm.gschema.xml:1073
 #, fuzzy
 msgid ""
 "Scale factor to pass to plugin UIs. If set to 0, the monitor's scale factor "
@@ -7579,135 +7584,135 @@ msgstr ""
 "Frequenza d'aggiornamento in Hz. Se impostata a 0 verrà utilizzata la "
 "frequenza di aggiornamento dello schermo."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1065
+#: build/data/org.zrythm.Zrythm.gschema.xml:1090
 msgid "VST plugins"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1066
+#: build/data/org.zrythm.Zrythm.gschema.xml:1091
 #, fuzzy
 msgid "Plugin search paths."
 msgstr "Proprietà del plugin"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1070
+#: build/data/org.zrythm.Zrythm.gschema.xml:1095
 msgid "SFZ instruments"
 msgstr "Strumenti SFZ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1071
-#: build/data/org.zrythm.Zrythm.gschema.xml:1076
+#: build/data/org.zrythm.Zrythm.gschema.xml:1096
+#: build/data/org.zrythm.Zrythm.gschema.xml:1101
 #, fuzzy
 msgid "Instrument search paths."
 msgstr "Strumento"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1075
+#: build/data/org.zrythm.Zrythm.gschema.xml:1100
 msgid "SF2 instruments"
 msgstr "Strumenti SF2"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1084
-#: build/data/org.zrythm.Zrythm.gschema.xml:1098
-#: build/data/org.zrythm.Zrythm.gschema.xml:1112
+#: build/data/org.zrythm.Zrythm.gschema.xml:1109
+#: build/data/org.zrythm.Zrythm.gschema.xml:1123
+#: build/data/org.zrythm.Zrythm.gschema.xml:1137
 msgid "Editing"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1089
+#: build/data/org.zrythm.Zrythm.gschema.xml:1114
 msgid "Fade algorithm"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1090
+#: build/data/org.zrythm.Zrythm.gschema.xml:1115
 msgid "Default fade in/out algorithm."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1104
+#: build/data/org.zrythm.Zrythm.gschema.xml:1129
 #, fuzzy
 msgid "Default automation curve algorithm."
 msgstr "Fallita l'apertura del file: %s"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1118
+#: build/data/org.zrythm.Zrythm.gschema.xml:1143
 msgid "Undo stack length"
 msgstr "Annulla lunghezza pila"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1119
+#: build/data/org.zrythm.Zrythm.gschema.xml:1144
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1127
+#: build/data/org.zrythm.Zrythm.gschema.xml:1152
 msgid "Projects"
 msgstr "Progetti"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1133
+#: build/data/org.zrythm.Zrythm.gschema.xml:1158
 msgid "Autosave interval"
 msgstr "Intervallo di salvataggio automatico"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1134
+#: build/data/org.zrythm.Zrythm.gschema.xml:1159
 #, fuzzy
 msgid "Interval to auto-save project backups, in minutes. Set to 0 to disable."
 msgstr ""
 "Intervallo, in minuti, per autosalvare il progetto. L'autosalvataggio verrà "
 "disabilitato se impostato a 0."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1142
+#: build/data/org.zrythm.Zrythm.gschema.xml:1167
 msgid "UI"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1147
+#: build/data/org.zrythm.Zrythm.gschema.xml:1172
 msgid "Draw detail"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1148
+#: build/data/org.zrythm.Zrythm.gschema.xml:1173
 msgid "Level of detail to use when drawing graphics."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1153
+#: build/data/org.zrythm.Zrythm.gschema.xml:1178
 #, fuzzy
 msgid "Font scale"
 msgstr "scala"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1154
+#: build/data/org.zrythm.Zrythm.gschema.xml:1179
 #, fuzzy
 msgid "Font scaling."
 msgstr "scala"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1158
+#: build/data/org.zrythm.Zrythm.gschema.xml:1183
 msgid "User interface language"
 msgstr "Lingua dell'interfaccia utente"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1163
+#: build/data/org.zrythm.Zrythm.gschema.xml:1188
 msgid "CSS theme"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1168
+#: build/data/org.zrythm.Zrythm.gschema.xml:1193
 msgid "Icon theme"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1177
+#: build/data/org.zrythm.Zrythm.gschema.xml:1202
 msgid "DSP"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1178
+#: build/data/org.zrythm.Zrythm.gschema.xml:1203
 msgid "Pan"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1182
+#: build/data/org.zrythm.Zrythm.gschema.xml:1207
 msgid "Pan algorithm"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1183
-#: build/data/org.zrythm.Zrythm.gschema.xml:1188
+#: build/data/org.zrythm.Zrythm.gschema.xml:1208
+#: build/data/org.zrythm.Zrythm.gschema.xml:1213
 msgid "Not used at the moment."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1187
+#: build/data/org.zrythm.Zrythm.gschema.xml:1212
 msgid "Pan law"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1196
+#: build/data/org.zrythm.Zrythm.gschema.xml:1221
 msgid "Scripting"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1201
+#: build/data/org.zrythm.Zrythm.gschema.xml:1226
 msgid "Default script"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1202
+#: build/data/org.zrythm.Zrythm.gschema.xml:1227
 msgid "Default script to use in the scripting window."
 msgstr ""
 
@@ -7737,263 +7742,247 @@ msgstr ""
 msgid "Main window with plugins"
 msgstr "Scansionando i plugin"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:37
-msgid "Main window with detached panels"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:54
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
+msgid "Added:"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:132
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:56
+msgid "Add status page to modulators tab"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:57
+msgid "Add bundled plugins: compressor, delay, gate, distortion, reverb"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:59
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:112
 #, fuzzy
 msgid "Changed:"
 msgstr "Cambia BPM"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
-msgid "Become a full libadwaita app"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:61
+msgid "Add some vertical padding to automation editor"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:61
-msgid "Simplify theme CSS"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+msgid "Port some split buttons to AdwSplitButton"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:143
-msgid "Fixed:"
+msgid "Simplify check for unsaved changes (only look at last performed action)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+msgid "Update French, Chinese (Simplified), Portuguese, Catalan translations"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:65
-msgid "Fix defaulting to JACK on Windows/Mac"
+msgid "User manual: update some sections"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:66
-msgid "Fix compilation failure on some distros"
+msgid "User manual: change PDF author to 'The Zrythm contributors'"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:67
-msgid "Fix crash when passing --reset-to-factory"
+msgid "Hardcode standard LV2 paths for all OSes"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:68
-msgid "Fix fonts disappearing on Windows after opening preferences"
+msgid "Update screenshot URL in metainfo"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:70
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:156
-msgid "Removed:"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:142
+msgid "Fixed:"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:72
-msgid "Remove matcha theme"
+msgid "Fix preference rows not being centered"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:127
-msgid "Added:"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+msgid "Fix arranger objects not being draggable from their bottom/left side"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
-msgid "Include system info in automatic bug reports"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+msgid "Various CSS/style fixes"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
-msgid "Add clang-format target"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
-msgid "Implement base/full MIDI export"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+msgid "Fix issues with fonts in some custom widgets"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:84
-msgid "Preferences: add option to reset to factory settings"
+msgid "Become a full libadwaita app"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:85
-msgid "Add ECMAScript support for scripting"
+msgid "Simplify theme CSS"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
-msgid "Add language selection in scripting dialog"
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+msgid "Fix defaulting to JACK on Windows/Mac"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:90
-msgid "Switch to REUSE v3.0 and SPDX license identifiers"
+msgid "Fix compilation failure on some distros"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:91
-msgid "Reformat whole source code using clang-format"
+msgid "Fix crash when passing --reset-to-factory"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:92
-msgid "User manual: update initial configuration, scripting sections"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
-msgid "Simplify initial configuration: only select language and path"
+msgid "Fix fonts disappearing on Windows after opening preferences"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
+msgid "Removed:"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+msgid "Remove matcha theme"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
+msgid "Include system info in automatic bug reports"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+msgid "Add clang-format target"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
+msgid "Implement base/full MIDI export"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
+msgid "Preferences: add option to reset to factory settings"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
+msgid "Add ECMAScript support for scripting"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:110
+msgid "Add language selection in scripting dialog"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:114
+msgid "Switch to REUSE v3.0 and SPDX license identifiers"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
+msgid "Reformat whole source code using clang-format"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
+msgid "User manual: update initial configuration, scripting sections"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
+msgid "Simplify initial configuration: only select language and path"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
 msgid ""
 "Update German, French, Japanese, Chinese (Simplified), Turkish translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
 msgid "Update README, INSTALL, HACKING content"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
 msgid "Redesign bug report dialog"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
 msgid "Preferences: use subtitles instead of tooltips"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
 msgid "Welcome dialog: point to trademark policy"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
 msgid ""
 "Welcome dialog: mention that only flatpak-packaged plugins are supported in "
 "flatpak builds"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:127
 msgid "Fix formatting in appdata XML"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
 msgid "User manual: fix broken references"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
 msgid "Fix MIDI region content selection in MIDI export dialog"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
 msgid "Fix some memory leaks reported by gcc sanitizer"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
 msgid "Fix error when right-clicking inside audio editor"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
 msgid "Remove unused bootstrap js files"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:144
 msgid "Fix PDF manual build"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
-msgid "Use one instance for each channel for mono plugins"
-msgstr ""
+#, fuzzy
+#~ msgctxt "Loop"
+#~ msgid "Export time range"
+#~ msgstr "Esporta come"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
-msgid "Include release changelog info in appstream data"
-msgstr ""
+#, fuzzy
+#~ msgctxt "Song"
+#~ msgid "Export time range"
+#~ msgstr "Esporta come"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
-msgid "Scroll to mid note when first showing the piano roll"
-msgstr ""
+#, fuzzy
+#~ msgctxt "Custom"
+#~ msgid "Export time range"
+#~ msgstr "Esporta come"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
-msgid "Update Hungarian translations"
-msgstr ""
+#, fuzzy
+#~ msgid "Show/hide top panel"
+#~ msgstr "Strumenti SFZ"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:136
-msgid "INSTALL: clarify build instructions"
-msgstr ""
+#, fuzzy
+#~ msgid "Plugin browser"
+#~ msgstr "Proprietà del plugin"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
-msgid "Enable locale detection for all languages"
-msgstr ""
+#, fuzzy
+#~ msgid "File browser"
+#~ msgstr "Impossibile scrivere il file: %s"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
-msgid ""
-"TRADEMARKS: simplify some wording and reserve right to review and object to "
-"use deemed outside the policy"
-msgstr ""
+#, fuzzy
+#~ msgid "Chord preset browser"
+#~ msgstr "Impossibile scrivere il file: %s"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
-msgid ""
-"Make sure UI event queue is cleared before freeing (fixes occasional errors)"
-msgstr ""
+#, fuzzy
+#~ msgid "Connections"
+#~ msgstr "Connetti le porte"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:140
-msgid ""
-"User manual: update Routing, Chords and Scales, Modulators, Scripting, "
-"Theming, User Media, Contributing and Credits chapters"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
-msgid "User manual: update some URLs (fix permanent redirects)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:145
-msgid "Fix automation lanes not being shown immediately when made visible"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:146
-msgid "Fix MIDI files not being activatable in the file browser"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:147
-msgid "Fix audio engine not being resumed after running Guile scripts"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:148
-msgid ""
-"Fix engine preprocessing sometimes running while the graph is being updated"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:149
-msgid "Fix various invalid accesses reported by GCC address sanitizer"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:150
-msgid "Fix various memory leaks reported by GCC leak sanitizer"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:151
-msgid "Fix various custom widget children not being unparented during dispose"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:152
-msgid "Fix segfault when attempting to add a plugin to a collection"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:153
-msgid "Fix scale objects throwing errors in the event viewer"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:154
-msgid "Fix plugin sidechain options not being available in channel sends"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:158
-msgid ""
-"Remove clang-tidy targets from meson configuration (speeds up "
-"reconfiguration)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:159
-msgid "User manual: remove copyright and license info from translatables"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
-msgid ""
-"Remove drop motion handler from timeline (should fix errors on drag and "
-"hover)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:161
-msgid "Remove emails from AUTHORS/THANKS/TRANSLATORS"
-msgstr ""
+#, fuzzy
+#~ msgid "Lanes as separate tracks"
+#~ msgstr "Impossibile scrivere il file: %s"
 
 #~ msgid "Undo..."
 #~ msgstr "Annulla..."

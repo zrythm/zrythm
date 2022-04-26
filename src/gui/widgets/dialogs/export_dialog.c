@@ -1409,9 +1409,9 @@ setup_time_range_drop_down (
   bool                 is_audio)
 {
   const char * strings[] = {
-    _ ("Loop"),
-    _ ("Song"),
-    _ ("Custom"),
+    C_ ("Export time range", "Loop"),
+    C_ ("Export time range", "Song"),
+    C_ ("Export time range", "Custom"),
     NULL,
   };
   GtkStringList * string_list =

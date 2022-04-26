@@ -126,6 +126,7 @@ inc/gui/widgets/snap_grid_popover.h
 inc/gui/widgets/modulator_inner.h
 inc/gui/widgets/midi_note.h
 inc/gui/widgets/file_browser_window.h
+inc/gui/widgets/add_track_menu_button.h
 inc/gui/widgets/port_connection_row.h
 inc/gui/widgets/snap_box.h
 inc/gui/widgets/custom_image.h
@@ -333,6 +334,7 @@ inc/utils/general.h
 inc/utils/zrythm_object.h
 inc/utils/math.h
 inc/utils/backtrace.h
+inc/utils/windows.h
 inc/utils/mpmc_queue.h
 inc/utils/vamp.h
 inc/utils/object_pool.h
@@ -613,6 +615,7 @@ src/gui/widgets/scale_selector_window.c
 src/gui/widgets/bar_slider.c
 src/gui/widgets/timeline_panel.c
 src/gui/widgets/timeline_toolbar.c
+src/gui/widgets/add_track_menu_button.c
 src/gui/widgets/preroll_count_selector.c
 src/gui/widgets/event_viewer.c
 src/gui/widgets/cc_bindings_tree.c
@@ -725,6 +728,7 @@ src/utils/general.c
 src/utils/hash.c
 src/utils/stack.c
 src/utils/curl.c
+src/utils/windows.c
 src/utils/log.c
 src/utils/midi.c
 src/utils/algorithms.c

@@ -16,17 +16,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-04-14 12:08+0100\n"
+"POT-Creation-Date: 2022-04-26 15:30+0100\n"
 "PO-Revision-Date: 2022-02-02 16:54+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language: es\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/user-"
 "manual/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"Generated-By: Babel 2.10.1\n"
 
 #: ../../appendix/environment.rst:11
 msgid "Environment Variables"
@@ -6342,11 +6342,7 @@ msgid "Filter by plugin manufacturer/author."
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:32
-msgid "Built-in plugins can be found under"
-msgstr ""
-
-#: ../../plugins-files/plugins/plugin-browser.rst:33
-msgid "`Zrythm DAW` here."
+msgid "Built-in plugins can be found under `Zrythm DAW` here."
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:35
@@ -9342,7 +9338,7 @@ msgstr "Alternar paneles izquierdo/derecho/inferior"
 
 #: ../../zrythm-interface/main-toolbar.rst:71
 #, fuzzy
-msgid "Toggles the visiblity of the selected panel."
+msgid "Toggles the visibility of the selected panel."
 msgstr "Conmuta la visibilidad de las pistas de automatización."
 
 #: ../../zrythm-interface/main-toolbar.rst:74

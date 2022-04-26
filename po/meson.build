@@ -21,7 +21,10 @@ i18n.gettext (
     '--directory=' + meson_src_root,
     '--msgid-bugs-address=https://todo.sr.ht/~alextee/zrythm-bug',
     '--add-comments',
+    # FIXME port all uses of __ to N_ and remove __
+    # from here
     '--keyword=__',
+    '--keyword=N_',
     '--keyword=C_:1c,2',
     ],
   )
