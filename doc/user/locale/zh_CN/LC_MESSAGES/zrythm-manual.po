@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-04-14 12:08+0100\n"
-"PO-Revision-Date: 2022-04-09 18:10+0000\n"
-"Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
-"Language: zh_CN\n"
+"PO-Revision-Date: 2022-04-21 05:09+0000\n"
+"Last-Translator: InvalidTricycle <trz1118@126.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.12-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -1228,7 +1229,7 @@ msgstr ""
 #: ../../editing/clip-editors/audio-editor.rst:83
 #, fuzzy
 msgid "Nudge"
-msgstr "Nudge"
+msgstr "范围"
 
 #: ../../editing/clip-editors/audio-editor.rst:84
 msgid "Shift the audio by 1 sample backward or forward."
@@ -6889,7 +6890,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:105
 msgid "Aux Sends"
-msgstr ""
+msgstr "辅助发送"
 
 #: ../../tracks/inspector-page.rst:107
 msgid ""
