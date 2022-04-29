@@ -6,6 +6,20 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.2.1.1] - 2022-04-29
+### Added
+- Use libpanel for docking/panels
+- Add search entry in file browser
+- Add AIFF, AU, CAF, W64 export support
+
+### Changed
+- Redesign export dialog
+- Update French, Chinese (Simplified), Catalan translations
+
+### Fixed
+- Fix error when creating a region in the 3rd automation track
+- Fix undo history getting cleared when deleting tracks
+
 ## [1.0.0-beta.2.0.3] - 2022-04-23
 ### Added
 - Add more bundled plugins: Flanger, Phaser, Wah4, Triple Synth, Parametric EQ, Highpass Filter, Lowpass Filter, Peak Limiter, White Noise
