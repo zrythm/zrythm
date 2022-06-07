@@ -107,13 +107,11 @@ tempo_track_get_current_bpm_as_str (void * self);
 /**
  * Sets the BPM.
  *
- * @param update_snap_points Whether to update the
- *   snap points.
- * @param stretch_audio_region Whether to stretch
- *   audio regions. This should only be true when
- *   the BPM change is final.
  * @param start_bpm The BPM at the start of the
  *   action, if not temporary.
+ * @param temporary Whether the change is temporary
+ *   (eg, while dragging the BPM meter). If false,
+ *   an undoable action will be performed.
  */
 void
 tempo_track_set_bpm (

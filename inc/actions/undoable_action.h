@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -29,6 +13,7 @@
 #include <stdbool.h>
 
 #include "utils/yaml.h"
+#include "utils/types.h"
 
 typedef struct AudioClip AudioClip;
 typedef struct PortConnectionsManager
@@ -102,6 +87,23 @@ typedef struct UndoableAction
 
   /** Undoable action type. */
   UndoableActionType type;
+
+  /**
+   * Whether undoable_action_init_loaded() must
+   * be called before this action is used.
+   *
+   * This was added because sometimes the action
+   * depends on the current state of the project
+   * (such as BPM) to run the initialization logic
+   * successfully.
+   */
+  //bool pending_init_loaded;
+
+  /** BPM on action creation. */
+  bpm_t bpm_on_creation;
+
+  /** BPM on action creation. */
+  sample_rate_t sample_rate_on_creation;
 
   /**
    * Index in the stack.

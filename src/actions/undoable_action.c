@@ -65,6 +65,11 @@ undoable_action_init (
     UNDOABLE_ACTION_SCHEMA_VERSION;
   self->type = type;
   self->num_actions = 1;
+
+  /*self->bpm_on_creation =*/
+    /*AUDIO_ENGINE->bpm;*/
+  /*self->sample_rate_on_creation =*/
+    /*AUDIO_ENGINE->sample_rate;*/
 }
 
 /**
@@ -245,6 +250,20 @@ undoable_action_do (
 
   int ret = 0;
 
+  switch (self->type)
+    {
+    case UA_ARRANGER_SELECTIONS:
+      arranger_selections_action_update_positions (
+        (ArrangerSelectionsAction *) self);
+      break;
+    case UA_RANGE:
+      range_action_update_positions (
+        (RangeAction *) self);
+      break;
+    default:
+      break;
+    }
+
   /* uppercase, camel case, snake case */
 #define DO_ACTION(uc, sc, cc) \
   case UA_##uc: \
@@ -341,6 +360,20 @@ undoable_action_undo (
     }
 
   int ret = 0;
+
+  switch (self->type)
+    {
+    case UA_ARRANGER_SELECTIONS:
+      arranger_selections_action_update_positions (
+        (ArrangerSelectionsAction *) self);
+      break;
+    case UA_RANGE:
+      range_action_update_positions (
+        (RangeAction *) self);
+      break;
+    default:
+      break;
+    }
 
 /* uppercase, camel case, snake case */
 #define UNDO_ACTION(uc, sc, cc) \

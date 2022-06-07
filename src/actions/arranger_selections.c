@@ -110,6 +110,65 @@ arranger_selections_action_init_loaded (
       arranger_object_init_loaded (
         (ArrangerObject *) self->region_after);
     }
+#undef DO_SELECTIONS
+}
+
+void
+arranger_selections_action_update_positions (
+  ArrangerSelectionsAction * self)
+{
+#define DO_SELECTIONS(sc) \
+  if (self->sc##_sel) \
+    { \
+      arranger_selections_update_positions ( \
+        self->sel); \
+      if (self->sel_after) \
+        { \
+          arranger_selections_update_positions ( \
+            self->sel_after); \
+        } \
+    }
+  DO_SELECTIONS (chord);
+  DO_SELECTIONS (tl);
+  DO_SELECTIONS (ma);
+  DO_SELECTIONS (automation);
+  DO_SELECTIONS (audio);
+
+  for (int j = 0; j < self->num_split_objs; j++)
+    {
+      if (self->region_r1[j])
+        {
+          arranger_object_update_positions (
+            (ArrangerObject *) self->region_r1[j],
+            true, false);
+          arranger_object_update_positions (
+            (ArrangerObject *) self->region_r2[j],
+            true, false);
+        }
+      else if (self->mn_r1[j])
+        {
+          arranger_object_update_positions (
+            (ArrangerObject *) self->mn_r1[j],
+            true, false);
+          arranger_object_update_positions (
+            (ArrangerObject *) self->mn_r2[j],
+            true, false);
+        }
+    }
+
+  if (self->region_before)
+    {
+      arranger_object_update_positions (
+        (ArrangerObject *) self->region_before,
+        true, false);
+    }
+  if (self->region_after)
+    {
+      arranger_object_update_positions (
+        (ArrangerObject *) self->region_after,
+        true, false);
+    }
+#undef DO_SELECTIONS
 }
 
 /**

@@ -77,8 +77,6 @@ arranger_selections_init_loaded (
                     g_get_monotonic_time (); \
                 } \
             } \
-          arranger_object_update_positions ( \
-            obj, true, false); \
           sel->sc##s[i] = \
             (cc *) arranger_object_find (obj); \
         } \
@@ -86,8 +84,6 @@ arranger_selections_init_loaded (
         { \
           arranger_object_init_loaded ( \
             (ArrangerObject *) sel->sc##s[i]); \
-          arranger_object_update_positions ( \
-            obj, true, false); \
         } \
     }
 
@@ -138,6 +134,66 @@ arranger_selections_init_loaded (
     }
 
 #undef SET_OBJ
+}
+
+void
+arranger_selections_update_positions (
+  ArrangerSelections *   self)
+{
+  int                      i;
+  TimelineSelections *     ts;
+  ChordSelections *        cs;
+  MidiArrangerSelections * mas;
+  AutomationSelections *   as;
+
+#define UPDATE_POSITIONS(sel, cc, sc) \
+  for (i = 0; i < sel->num_##sc##s; i++) \
+    { \
+      ArrangerObject * obj = \
+        (ArrangerObject *) sel->sc##s[i]; \
+      arranger_object_update_positions ( \
+        obj, true, false); \
+    }
+
+  switch (self->type)
+    {
+    case TYPE (TIMELINE):
+      ts = (TimelineSelections *) self;
+      UPDATE_POSITIONS (ts, ZRegion, region);
+      UPDATE_POSITIONS (ts, ScaleObject, scale_object);
+      UPDATE_POSITIONS (ts, Marker, marker);
+      break;
+    case TYPE (MIDI):
+      mas = (MidiArrangerSelections *) self;
+      for (i = 0; i < mas->num_midi_notes; i++)
+        {
+          MidiNote *       mn = mas->midi_notes[i];
+          ArrangerObject * mn_obj =
+            (ArrangerObject *) mn;
+          arranger_object_update_positions (
+            mn_obj, true, false);
+          arranger_object_init_loaded (
+            (ArrangerObject *)
+              mas->midi_notes[i]);
+          g_warn_if_fail (mas->midi_notes[i]);
+        }
+      break;
+    case TYPE (AUTOMATION):
+      as = (AutomationSelections *) self;
+      UPDATE_POSITIONS (
+        as, AutomationPoint, automation_point);
+      break;
+    case TYPE (CHORD):
+      cs = (ChordSelections *) self;
+      UPDATE_POSITIONS (cs, ChordObject, chord_object);
+      break;
+    case TYPE (AUDIO):
+      break;
+    default:
+      g_return_if_reached ();
+    }
+
+#undef UPDATE_POSITIONS
 }
 
 /**

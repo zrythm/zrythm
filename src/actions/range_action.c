@@ -35,6 +35,22 @@ range_action_init_loaded (RangeAction * self)
     self->transport, NULL, NULL);
 }
 
+void
+range_action_update_positions (
+  RangeAction * self)
+{
+  if (self->sel_before)
+    {
+      arranger_selections_update_positions (
+        (ArrangerSelections *) self->sel_before);
+    }
+  if (self->sel_after)
+    {
+      arranger_selections_update_positions (
+        (ArrangerSelections *) self->sel_after);
+    }
+}
+
 /**
  * Creates a new action.
  *

@@ -117,6 +117,10 @@ static const cyaml_schema_value_t
 void
 range_action_init_loaded (RangeAction * self);
 
+void
+range_action_update_positions (
+  RangeAction * self);
+
 /**
  * Creates a new action.
  *

@@ -138,6 +138,10 @@ arranger_selections_init_loaded (
   ArrangerSelections * self,
   bool                 project);
 
+void
+arranger_selections_update_positions (
+  ArrangerSelections *   self);
+
 /**
  * Initializes the selections.
  */

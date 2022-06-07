@@ -1128,6 +1128,18 @@ load (const char * filename, const int is_template)
   arranger_selections_init_loaded (
     (ArrangerSelections *) self->audio_selections,
     true);
+  arranger_selections_update_positions (
+    (ArrangerSelections *) self->timeline_selections);
+  arranger_selections_update_positions (
+    (ArrangerSelections *)
+      self->midi_arranger_selections);
+  arranger_selections_update_positions (
+    (ArrangerSelections *) self->chord_selections);
+  arranger_selections_update_positions (
+    (ArrangerSelections *)
+      self->automation_selections);
+  arranger_selections_update_positions (
+    (ArrangerSelections *) self->audio_selections);
 
   tracklist_selections_init_loaded (
     self->tracklist_selections);
