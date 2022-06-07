@@ -518,6 +518,55 @@ check_after_move_timeline (int new_tracks)
     }
 }
 
+static void
+test_move_audio_region_and_lower_bpm (void)
+{
+  return;
+  test_helper_zrythm_init ();
+
+  char audio_file_path[2000];
+  sprintf (
+    audio_file_path, "%s%s%s", TESTS_SRCDIR,
+    G_DIR_SEPARATOR_S, "test.wav");
+
+  /* create audio track with region */
+  Position pos;
+  position_init (&pos);
+  int track_pos = TRACKLIST->num_tracks;
+  SupportedFile * file =
+    supported_file_new_from_path (audio_file_path);
+  Track * track = track_create_with_action (
+    TRACK_TYPE_AUDIO, NULL, file, &pos, track_pos,
+    1, NULL);
+
+  /* move the region */
+  arranger_object_select (
+    (ArrangerObject *) track->lanes[0]->regions[0],
+    F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_selections_action_perform_move_timeline (
+    TL_SELECTIONS, MOVE_TICKS, 0, 0,
+    F_NOT_ALREADY_MOVED, NULL);
+
+  for (int i = 0; i < 2; i++)
+    {
+      float bpm_diff = (i == 1) ? 20.f : 40.f;
+
+      /* lower BPM and attempt to save */
+      bpm_t bpm_before =
+        tempo_track_get_current_bpm (P_TEMPO_TRACK);
+      tempo_track_set_bpm (
+        P_TEMPO_TRACK, bpm_before - bpm_diff,
+        bpm_before,
+        Z_F_NOT_TEMPORARY, F_NO_PUBLISH_EVENTS);
+      test_project_save_and_reload ();
+
+      /* undo lowering BPM */
+      undo_manager_undo (UNDO_MANAGER, NULL);
+    }
+
+  test_helper_zrythm_cleanup ();
+}
+
 /**
  * Tests the move action.
  *
@@ -3329,6 +3378,12 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/actions/arranger_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test move audio_region_and lower bpm",
+    (GTestFunc) test_move_audio_region_and_lower_bpm);
+  g_test_add_func (
+    TEST_PREFIX "test move timeline",
+    (GTestFunc) test_move_timeline);
+  g_test_add_func (
     TEST_PREFIX "test cut automation region",
     (GTestFunc) test_cut_automation_region);
   g_test_add_func (
@@ -3400,9 +3455,6 @@ main (int argc, char * argv[])
     "test duplicate midi regions to track below",
     (GTestFunc)
       test_duplicate_midi_regions_to_track_below);
-  g_test_add_func (
-    TEST_PREFIX "test move timeline",
-    (GTestFunc) test_move_timeline);
   g_test_add_func (
     TEST_PREFIX "test duplicate timeline",
     (GTestFunc) test_duplicate_timeline);
