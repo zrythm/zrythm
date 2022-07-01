@@ -3659,7 +3659,7 @@ DEFINE_SIMPLE (
 
 /**
  * Activate \ref setting if given, otherwise create
- * a defeault setting from the descriptor.
+ * a default setting from the descriptor.
  */
 static void
 activate_plugin_setting (

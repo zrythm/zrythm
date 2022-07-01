@@ -2490,7 +2490,7 @@ arranger_selections_paste_to_pos (
   arranger_selections_get_start_pos (
     clone_sel, &first_obj_pos, F_NOT_GLOBAL);
 
-  /* if timeline selecctions */
+  /* if timeline selections */
   if (self->type == ARRANGER_SELECTIONS_TYPE_TIMELINE)
     {
       TimelineSelections * ts =
